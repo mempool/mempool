@@ -101,6 +101,10 @@ export class PriceService {
   lastQueriedCurrency: string;
   lastQueriedHistoricalCurrency: string;
 
+  network: string;
+  networkChangedSinceLastQuery = false;
+  networkChangedSinceLastSingleQuery = false;
+
   historicalPrice: ConversionDict = {
     prices: null,
     exchangeRates: null,
@@ -110,6 +114,13 @@ export class PriceService {
     private apiService: ApiService,
     private stateService: StateService
   ) {
+    this.stateService.networkChanged$.subscribe((network: string) => {
+      if (this.network !== network) {
+        this.network = network;
+        this.networkChangedSinceLastQuery = true;
+        this.networkChangedSinceLastSingleQuery = true;
+      }
+    });
   }
 
   getEmptyPrice(): Price {
@@ -144,10 +155,11 @@ export class PriceService {
      * query a different timestamp than the last one
      */
     if (singlePrice) {
-      if (!this.singlePriceObservable$ || (this.singlePriceObservable$ && (blockTimestamp !== this.lastQueriedTimestamp || currency !== this.lastQueriedCurrency))) {
+      if (!this.singlePriceObservable$ || (this.singlePriceObservable$ && (blockTimestamp !== this.lastQueriedTimestamp || currency !== this.lastQueriedCurrency || this.networkChangedSinceLastSingleQuery))) {
         this.singlePriceObservable$ = this.apiService.getHistoricalPrice$(blockTimestamp, currency).pipe(shareReplay());
         this.lastQueriedTimestamp = blockTimestamp;
         this.lastQueriedCurrency = currency;
+        this.networkChangedSinceLastSingleQuery = false;
       }
 
       return this.singlePriceObservable$.pipe(
@@ -180,10 +192,11 @@ export class PriceService {
      * Query all price history only once. The observable is invalidated after 1 hour
      */
     else {
-      if (!this.priceObservable$ || (this.priceObservable$ && (now - this.lastPriceHistoryUpdate > 3600 || currency !== this.lastQueriedHistoricalCurrency))) {
+      if (!this.priceObservable$ || (this.priceObservable$ && (now - this.lastPriceHistoryUpdate > 3600 || currency !== this.lastQueriedHistoricalCurrency || this.networkChangedSinceLastQuery))) {
         this.priceObservable$ = this.apiService.getHistoricalPrice$(undefined, currency).pipe(shareReplay());
         this.lastPriceHistoryUpdate = new Date().getTime() / 1000;
         this.lastQueriedHistoricalCurrency = currency;
+        this.networkChangedSinceLastQuery = false;
       }
 
       return this.priceObservable$.pipe(
