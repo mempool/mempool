@@ -240,6 +240,10 @@ export class ApiService {
     return this.httpClient.post<any>(this.apiBaseUrl + this.apiBasePath + '/api/tx', hexPayload, { responseType: 'text' as 'json'});
   }
 
+  getTransactionStatus$(txid: string): Observable<any> {
+    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + '/api/tx/' + txid + '/status');
+  }
+
   listPools$(interval: string | undefined) : Observable<any> {
     return this.httpClient.get<any>(
       this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pools` +

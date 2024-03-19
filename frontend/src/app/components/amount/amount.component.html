@@ -8,8 +8,11 @@
     }}
   </span>
   <ng-template #noblockconversion>
-    <span class="fiat">{{ addPlus && satoshis >= 0 ? '+' : '' }}{{ (conversions[currency] > -1 ? conversions[currency] : 0) * satoshis / 100000000 | fiatCurrency : digitsInfo : currency }}
+    <span class="fiat" *ngIf="!forceBlockConversion; else zeroValue">{{ addPlus && satoshis >= 0 ? '+' : '' }}{{ (conversions[currency] > -1 ? conversions[currency] : 0) * satoshis / 100000000 | fiatCurrency : digitsInfo : currency }}
     </span>
+  </ng-template>
+  <ng-template #zeroValue>
+    <span class="fiat">{{ 0 | fiatCurrency : digitsInfo : currency }}</span>
   </ng-template>
 </ng-container>
 
