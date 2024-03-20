@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { combineLatest, EMPTY, fromEvent, interval, merge, Observable, of, Subject, Subscription, timer } from 'rxjs';
 import { catchError, delayWhen, distinctUntilChanged, filter, map, scan, share, shareReplay, startWith, switchMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
 import { AuditStatus, BlockExtended, CurrentPegs, FederationAddress, FederationUtxo, OptimizedMempoolStats, PegsVolume, RecentPeg } from '../interfaces/node-api.interface';
@@ -8,6 +8,7 @@ import { StateService } from '../services/state.service';
 import { WebsocketService } from '../services/websocket.service';
 import { SeoService } from '../services/seo.service';
 import { ActiveFilter, FilterMode, toFlags } from '../shared/filters.utils';
+import { detectWebGL } from '../shared/graphs.utils';
 
 interface MempoolBlocksData {
   blocks: number;
@@ -67,6 +68,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   currency: string;
   incomingGraphHeight: number = 300;
   lbtcPegGraphHeight: number = 360;
+  webGlEnabled = true;
   private lastPegBlockUpdate: number = 0;
   private lastPegAmount: string = '';
   private lastReservesBlockUpdate: number = 0;
@@ -88,8 +90,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     public stateService: StateService,
     private apiService: ApiService,
     private websocketService: WebsocketService,
-    private seoService: SeoService
-  ) { }
+    private seoService: SeoService,
+    @Inject(PLATFORM_ID) private platformId: Object,
+  ) {
+    this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
+  }
 
   ngAfterViewInit(): void {
     this.stateService.focusSearchInputDesktop();

@@ -62,7 +62,7 @@
     </div>
   </div>
 
-  <div [class.chart]="!widget" [class.chart-widget]="widget" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+  <div [class.chart]="!widget" [class.chart-widget]="widget" *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions"
     (chartInit)="onChartInit($event)">
   </div>
   <div class="text-center loadingGraphs" *ngIf="!stateService.isBrowser || isLoading">

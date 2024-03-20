@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnDestroy, OnInit } from '@angular/core';
-import { EChartsOption } from 'echarts';
+import { EChartsOption } from '../../../graphs/echarts';
 import { Observable, Subscription, combineLatest, fromEvent, share } from 'rxjs';
 import { startWith, switchMap, tap } from 'rxjs/operators';
 import { SeoService } from '../../../services/seo.service';
@@ -11,6 +11,7 @@ import { MiningService } from '../../../services/mining.service';
 import { ActivatedRoute } from '@angular/router';
 import { Acceleration } from '../../../interfaces/node-api.interface';
 import { ServicesApiServices } from '../../../services/services-api.service';
+import { StateService } from '../../../services/state.service';
 
 @Component({
   selector: 'app-acceleration-fees-graph',
@@ -59,6 +60,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
     private storageService: StorageService,
     private miningService: MiningService,
     private route: ActivatedRoute,
+    public stateService: StateService,
     private cd: ChangeDetectorRef,
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
@@ -176,10 +178,10 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
           padding: [10, 0, 0, 0],
         },
         type: 'time',
-        boundaryGap: false,
+        boundaryGap: [0, 0],
         axisLine: { onZero: true },
         axisLabel: {
-          formatter: val => formatterXAxisTimeCategory(this.locale, this.timespan, parseInt(val, 10)),
+          formatter: (val): string => formatterXAxisTimeCategory(this.locale, this.timespan, val),
           align: 'center',
           fontSize: 11,
           lineHeight: 12,

@@ -8,7 +8,7 @@
     </div>
 
   <ng-container *ngIf="!error">
-    <div class="chart" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+    <div class="chart" *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions"
       (chartInit)="onChartInit($event)">
     </div>
     <div class="text-center loadingGraphs" *ngIf="isLoading">

@@ -85,7 +85,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     readonly elRef: ElementRef,
     public stateService: StateService,
   ) {
-    this.webGlEnabled = detectWebGL();
+    this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
     this.vertexArray = new FastVertexArray(512, TxSprite.dataSize);
     this.searchSubscription = this.stateService.searchText$.subscribe((text) => {
       this.searchText = text;

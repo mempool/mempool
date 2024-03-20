@@ -8,7 +8,6 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { SeoService } from '../../services/seo.service';
 import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { WebsocketService } from '../../services/websocket.service';
-import { isPlatformServer } from '@angular/common';
 
 @Component({
   selector: 'app-mempool-block',
@@ -33,7 +32,7 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {
-    this.webGlEnabled = isPlatformServer(this.platformId) || detectWebGL();
+    this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
   }
 
   ngOnInit(): void {

@@ -22,8 +22,10 @@
     <small style="color: #ffffff66" i18n="lightning.tor-nodes-excluded">(Tor nodes excluded)</small>
   </div>
 
-  <div *ngIf="channelsObservable | async" class="chart-graph" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
-    (chartInit)="onChartInit($event)" (chartFinished)="onChartFinished($event)">
-  </div>
+  <ng-container *ngIf="channelsObservable | async">
+    <div class="chart-graph" *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+      (chartInit)="onChartInit($event)" (chartFinished)="onChartFinished($event)">
+    </div>
+  </ng-container>
 
 </div>
