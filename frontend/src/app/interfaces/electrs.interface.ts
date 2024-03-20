@@ -149,6 +149,13 @@ export interface AddressOrScriptHash {
   mempool_stats: MempoolStats;
 }
 
+export interface AddressTxSummary {
+  txid: string;
+  value: number;
+  height: number;
+  time: number;
+}
+
 export interface ChainStats {
   funded_txo_count: number;
   funded_txo_sum: number;

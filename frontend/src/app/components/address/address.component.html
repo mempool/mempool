@@ -49,8 +49,18 @@
           </div>
         </div>
       </div>
-
     </div>
+
+    <ng-container *ngIf="address && transactions && transactions.length > 2">
+      <br>
+      <div class="box">
+        <div class="row">
+          <div class="col-md">
+            <app-address-graph [address]="addressString" [isPubkey]="address?.is_pubkey" [stats]="address.chain_stats" />
+          </div>
+        </div>
+      </div>
+    </ng-container>
 
     <br>
     <div class="title-tx">

@@ -45,7 +45,6 @@ import { TransactionsListComponent } from '../components/transactions-list/trans
 import { BlockOverviewGraphComponent } from '../components/block-overview-graph/block-overview-graph.component';
 import { BlockOverviewTooltipComponent } from '../components/block-overview-tooltip/block-overview-tooltip.component';
 import { BlockFiltersComponent } from '../components/block-filters/block-filters.component';
-import { AddressComponent } from '../components/address/address.component';
 import { AddressGroupComponent } from '../components/address-group/address-group.component';
 import { SearchFormComponent } from '../components/search-form/search-form.component';
 import { AddressLabelsComponent } from '../components/address-labels/address-labels.component';
@@ -147,7 +146,6 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     BlockOverviewTooltipComponent,
     BlockFiltersComponent,
     TransactionsListComponent,
-    AddressComponent,
     AddressGroupComponent,
     SearchFormComponent,
     AddressLabelsComponent,
@@ -276,7 +274,6 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     BlockOverviewTooltipComponent,
     BlockFiltersComponent,
     TransactionsListComponent,
-    AddressComponent,
     AddressGroupComponent,
     SearchFormComponent,
     AddressLabelsComponent,
