@@ -39,6 +39,10 @@ export class RecentPegsListComponent implements OnInit {
   queryParamSubscription: Subscription;
   keyNavigationSubscription: Subscription;
   dir: 'rtl' | 'ltr' = 'ltr';
+  lastKeyNavTime = 0;
+  isArrowKeyPressed = false;
+  keydownListener: EventListener;
+  keyupListener: EventListener;
 
   private destroy$ = new Subject();
 
@@ -55,6 +59,10 @@ export class RecentPegsListComponent implements OnInit {
     if (this.locale.startsWith('ar') || this.locale.startsWith('fa') || this.locale.startsWith('he')) {
       this.dir = 'rtl';
     }
+    this.keydownListener = this.onKeyDown.bind(this);
+    this.keyupListener = this.onKeyUp.bind(this);
+    window.addEventListener('keydown', this.keydownListener);
+    window.addEventListener('keyup', this.keyupListener);
   }
 
   ngOnInit(): void {
@@ -67,7 +75,10 @@ export class RecentPegsListComponent implements OnInit {
       this.websocketService.want(['blocks']);
 
       this.queryParamSubscription = this.route.queryParams.pipe(
-        tap((params) => this.pageChange(+params['page'] || 1)),
+        tap((params) => {
+          this.page = +params['page'] || 1;
+          this.startingIndexSubject.next((this.page - 1) * 15);
+        }),
       ).subscribe();
 
       this.keyNavigationSubscription = this.stateService.keyNavigation$.subscribe((event) => {
@@ -75,12 +86,16 @@ export class RecentPegsListComponent implements OnInit {
         const nextKey = this.dir === 'ltr' ? 'ArrowRight' : 'ArrowLeft';
         if (event.key === prevKey && this.page > 1) {
           this.page--;
-          this.pageChange(this.page);
+          this.page === 1 ? this.isArrowKeyPressed = false : null;
+          this.keyNavPageChange(this.page);
+          this.lastKeyNavTime = Date.now();
           this.cd.markForCheck();
         }
         if (event.key === nextKey && this.page < this.pegsCount / this.pageSize) {
           this.page++;
-          this.pageChange(this.page);
+          this.page >= this.pegsCount / this.pageSize ? this.isArrowKeyPressed = false : null;
+          this.keyNavPageChange(this.page);
+          this.lastKeyNavTime = Date.now();
           this.cd.markForCheck();
         }
       });
@@ -166,12 +181,39 @@ export class RecentPegsListComponent implements OnInit {
     this.destroy$.complete();
     this.queryParamSubscription?.unsubscribe();
     this.keyNavigationSubscription?.unsubscribe();
+    window.removeEventListener('keydown', this.keydownListener);
+    window.removeEventListener('keyup', this.keyupListener);
+
   }
 
   pageChange(page: number): void {
     this.router.navigate([], { queryParams: { page: page } });
-    this.startingIndexSubject.next((page - 1) * 15);
-    this.page = page;
+  }
+
+  keyNavPageChange(page: number): void {
+    this.isLoading = true;
+    if (this.isArrowKeyPressed) {
+      timer(400).pipe(
+        take(1),
+        filter(() => Date.now() - this.lastKeyNavTime >= 400 && this.isArrowKeyPressed === false),
+      ).subscribe(() => {
+        this.pageChange(page);
+      });
+    } else {
+      this.pageChange(page);
+    }
+  }
+
+  onKeyDown(event: KeyboardEvent) {
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      this.isArrowKeyPressed = true;
+    }
+  }
+
+  onKeyUp(event: KeyboardEvent) {
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      this.isArrowKeyPressed = false;
+    }
   }
 
 }

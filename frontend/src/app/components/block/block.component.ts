@@ -594,19 +594,6 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.transactionsError = null;
     target.scrollIntoView(); // works for chrome
     this.router.navigate([], { queryParams: { page: page }, queryParamsHandling: 'merge' });
-
-    this.electrsApiService.getBlockTransactions$(this.block.id, start)
-      .pipe(
-        catchError((err) => {
-          this.transactionsError = err;
-          return of([]);
-      })
-      )
-     .subscribe((transactions) => {
-        this.transactions = transactions;
-        this.isLoadingTransactions = false;
-        target.scrollIntoView(); // works for firefox
-      });
   }
 
   toggleShowDetails() {

@@ -26,6 +26,11 @@ export class BlocksList implements OnInit {
   auditAvailable = false;
   isLoading = true;
   fromBlockHeight = undefined;
+  lastKeyNavTime = 0;
+  lastBlockHeightFetched = -1;
+  isArrowKeyPressed = false;
+  keydownListener: EventListener;
+  keyupListener: EventListener;
   paginationMaxSize: number;
   page = 1;
   lastPage = 1;
@@ -54,6 +59,10 @@ export class BlocksList implements OnInit {
     if (this.locale.startsWith('ar') || this.locale.startsWith('fa') || this.locale.startsWith('he')) {
       this.dir = 'rtl';
     }
+    this.keydownListener = this.onKeyDown.bind(this);
+    this.keyupListener = this.onKeyUp.bind(this);
+    window.addEventListener('keydown', this.keydownListener);
+    window.addEventListener('keyup', this.keyupListener);
   }
 
   ngOnInit(): void {
@@ -63,14 +72,12 @@ export class BlocksList implements OnInit {
 
     if (!this.widget) {
       this.websocketService.want(['blocks']);
-      this.blocksCountInitializedSubscription = this.blocksCountInitialized$.pipe(
-        filter(blocksCountInitialized => blocksCountInitialized),
-        take(1),
-        switchMap(() => this.route.queryParams),
-        take(1),
-        tap(params => {
+      this.blocksCountInitializedSubscription = combineLatest([this.blocksCountInitialized$, this.route.queryParams]).pipe(
+        filter(([blocksCountInitialized, _]) => blocksCountInitialized),
+        tap(([_, params]) => {
           this.page = +params['page'] || 1;
-          this.pageChange(this.page);
+          this.page === 1 ? this.fromHeightSubject.next(undefined) : this.fromHeightSubject.next((this.blocksCount - 1) - (this.page - 1) * 15);
+          this.cd.markForCheck();
         })
       ).subscribe();
 
@@ -79,13 +86,16 @@ export class BlocksList implements OnInit {
         const nextKey = this.dir === 'ltr' ? 'ArrowRight' : 'ArrowLeft';
         if (event.key === prevKey && this.page > 1) {
           this.page--;
-          this.pageChange(this.page);
+          this.page === 1 ? this.isArrowKeyPressed = false : null;
+          this.keyNavPageChange(this.page);
+          this.lastKeyNavTime = Date.now();
           this.cd.markForCheck();
-
         }
         if (event.key === nextKey && this.page * 15 < this.blocksCount) {
           this.page++;
-          this.pageChange(this.page);
+          this.page >= this.blocksCount / 15 ? this.isArrowKeyPressed = false : null;
+          this.keyNavPageChange(this.page);
+          this.lastKeyNavTime = Date.now();
           this.cd.markForCheck();
         }
       });
@@ -107,8 +117,10 @@ export class BlocksList implements OnInit {
 
     this.blocks$ = combineLatest([
       this.fromHeightSubject.pipe(
+        filter(fromBlockHeight => fromBlockHeight !== this.lastBlockHeightFetched),
         switchMap((fromBlockHeight) => {
           this.isLoading = true;
+          this.lastBlockHeightFetched = fromBlockHeight;
           return this.apiService.getBlocks$(this.page === 1 ? undefined : fromBlockHeight)
             .pipe(
               tap(blocks => {
@@ -177,7 +189,32 @@ export class BlocksList implements OnInit {
 
   pageChange(page: number): void {
     this.router.navigate([], { queryParams: { page: page } });
-    this.fromHeightSubject.next((this.blocksCount - 1) - (page - 1) * 15);
+  }
+
+  keyNavPageChange(page: number): void {
+    this.isLoading = true;
+    if (this.isArrowKeyPressed) {
+      timer(400).pipe(
+        take(1),
+        filter(() => Date.now() - this.lastKeyNavTime >= 400 && this.isArrowKeyPressed === false),
+      ).subscribe(() => {
+        this.pageChange(page);
+      });
+    } else {
+      this.pageChange(page);
+    }
+  }
+
+  onKeyDown(event: KeyboardEvent) {
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      this.isArrowKeyPressed = true;
+    }
+  }
+
+  onKeyUp(event: KeyboardEvent) {
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      this.isArrowKeyPressed = false;
+    }
   }
 
   trackByBlock(index: number, block: BlockExtended): number {
@@ -191,5 +228,7 @@ export class BlocksList implements OnInit {
   ngOnDestroy(): void {
     this.blocksCountInitializedSubscription?.unsubscribe();
     this.keyNavigationSubscription?.unsubscribe();
+    window.removeEventListener('keydown', this.keydownListener);
+    window.removeEventListener('keyup', this.keyupListener);
   }
 }
