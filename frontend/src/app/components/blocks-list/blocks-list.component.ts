@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef, Inject, LOCALE_ID } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, Observable, timer, of, Subscription } from 'rxjs';
 import { delayWhen, filter, map, retryWhen, scan, switchMap, take, tap } from 'rxjs/operators';
@@ -36,6 +36,8 @@ export class BlocksList implements OnInit {
   lastBlockHeight = -1;
   blocksCountInitialized$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   blocksCountInitializedSubscription: Subscription;
+  keyNavigationSubscription: Subscription;
+  dir: 'rtl' | 'ltr' = 'ltr';
 
   constructor(
     private apiService: ApiService,
@@ -45,9 +47,13 @@ export class BlocksList implements OnInit {
     private seoService: SeoService,
     private ogService: OpenGraphService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    @Inject(LOCALE_ID) private locale: string,
   ) {
     this.isMempoolModule = this.stateService.env.BASE_MODULE === 'mempool';
+    if (this.locale.startsWith('ar') || this.locale.startsWith('fa') || this.locale.startsWith('he')) {
+      this.dir = 'rtl';
+    }
   }
 
   ngOnInit(): void {
@@ -67,6 +73,22 @@ export class BlocksList implements OnInit {
           this.pageChange(this.page);
         })
       ).subscribe();
+
+      this.keyNavigationSubscription = this.stateService.keyNavigation$.subscribe((event) => {
+        const prevKey = this.dir === 'ltr' ? 'ArrowLeft' : 'ArrowRight';
+        const nextKey = this.dir === 'ltr' ? 'ArrowRight' : 'ArrowLeft';
+        if (event.key === prevKey && this.page > 1) {
+          this.page--;
+          this.pageChange(this.page);
+          this.cd.markForCheck();
+
+        }
+        if (event.key === nextKey && this.page * 15 < this.blocksCount) {
+          this.page++;
+          this.pageChange(this.page);
+          this.cd.markForCheck();
+        }
+      });
     }
 
     this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
@@ -168,5 +190,6 @@ export class BlocksList implements OnInit {
 
   ngOnDestroy(): void {
     this.blocksCountInitializedSubscription?.unsubscribe();
+    this.keyNavigationSubscription?.unsubscribe();
   }
 }
