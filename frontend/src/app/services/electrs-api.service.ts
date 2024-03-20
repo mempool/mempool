@@ -159,6 +159,16 @@ export class ElectrsApiService {
     );
   }
 
+  getScriptHashSummary$(script: string,  txid?: string): Observable<AddressTxSummary[]> {
+    let params = new HttpParams();
+    if (txid) {
+      params = params.append('after_txid', txid);
+    }
+    return from(calcScriptHash$(script)).pipe(
+      switchMap(scriptHash => this.httpClient.get<AddressTxSummary[]>(this.apiBaseUrl + this.apiBasePath + '/api/scripthash/' + scriptHash + '/txs/summary', { params })),
+    );
+  }
+
   getAsset$(assetId: string): Observable<Asset> {
     return this.httpClient.get<Asset>(this.apiBaseUrl + this.apiBasePath + '/api/asset/' + assetId);
   }

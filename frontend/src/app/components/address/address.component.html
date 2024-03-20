@@ -56,7 +56,7 @@
       <div class="box">
         <div class="row">
           <div class="col-md">
-            <app-address-graph [address]="addressString" [stats]="address.chain_stats" />
+            <app-address-graph [address]="addressString" [isPubkey]="address?.is_pubkey" [stats]="address.chain_stats" />
           </div>
         </div>
       </div>

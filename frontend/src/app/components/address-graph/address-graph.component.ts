@@ -22,6 +22,7 @@ import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
 })
 export class AddressGraphComponent implements OnInit, OnChanges {
   @Input() address: string;
+  @Input() isPubkey: boolean = false;
   @Input() stats: ChainStats;
   @Input() right: number | string = 10;
   @Input() left: number | string = 70;
@@ -49,7 +50,9 @@ export class AddressGraphComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.isLoading = true;
-    this.electrsApiService.getAddressSummary$(this.address).pipe(
+    (this.isPubkey
+      ? this.electrsApiService.getScriptHashSummary$((this.address.length === 66 ? '21' : '41') + this.address + 'ac')
+      : this.electrsApiService.getAddressSummary$(this.address)).pipe(
       catchError(e => {
         this.error = `Failed to fetch address balance history: ${e?.status || ''} ${e?.statusText || 'unknown error'}`;
         return of(null);
