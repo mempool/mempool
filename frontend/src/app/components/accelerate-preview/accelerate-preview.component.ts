@@ -304,7 +304,7 @@ export class AcceleratePreviewComponent implements OnDestroy, OnChanges {
           }
         });
         this.cashAppPay = await this.payments.cashAppPay(paymentRequest, {
-          redirectURL: 'https://my.website/checkout',
+          redirectURL: `https://mempool.space/tx/${this.tx.txid}`,
           referenceId: `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
         });
         await this.cashAppPay.attach('#cash-app-pay');
