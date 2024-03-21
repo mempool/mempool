@@ -146,13 +146,10 @@
   </ng-template>
 
   <ng-template [ngIf]="error">
-    <div class="text-center">
+    <app-http-error [error]="error">
       <span i18n="asset.error.loading-asset-data">Error loading asset data.</span>
-      <br>
-      <i>{{ error.error }}</i>
-    </div>
+    </app-http-error>
   </ng-template>
-
 </div>
 
 <br>
