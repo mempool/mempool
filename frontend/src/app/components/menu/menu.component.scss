@@ -3,7 +3,7 @@
   background-color: transparent;
   width: 225px;
   height: calc(100vh - 65px);
-  position: fixed;
+  position: absolute;
   top: 65px;
   left: -250px;
   transition: left 0.25s;
