@@ -141,6 +141,10 @@ export class ServicesApiServices {
     return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/accelerator/accelerate`, { txInput: txInput, userBid: userBid });
   }
 
+  accelerateWithCashApp$(txInput: string, userBid: number, token: string, cashtag: string, referenceId: string) {
+    return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/accelerator/accelerate/cashapp`, { txInput: txInput, userBid: userBid, token: token, cashtag: cashtag, referenceId: referenceId });
+  }
+
   getAccelerations$(): Observable<Acceleration[]> {
     return this.httpClient.get<Acceleration[]>(`${SERVICES_API_PREFIX}/accelerator/accelerations`);
   }
@@ -159,5 +163,9 @@ export class ServicesApiServices {
 
   getAccelerationStats$(): Observable<AccelerationStats> {
     return this.httpClient.get<AccelerationStats>(`${SERVICES_API_PREFIX}/accelerator/accelerations/stats`);
+  }
+
+  setupSquare$(): Observable<{squareAppId: string, squareLocationId: string}> {
+    return this.httpClient.get<{squareAppId: string, squareLocationId: string}>(`${SERVICES_API_PREFIX}/square/setup`);
   }
 }
