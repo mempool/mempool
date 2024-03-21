@@ -139,14 +139,16 @@ export class AddressGraphComponent implements OnInit, OnChanges {
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: (val): string => {
-              if (maxValue > 100_000_000) {
+              if (maxValue > 1_000_000_000) {
                 return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 0)} BTC`;
+              } else if (maxValue > 100_000_000) {
+                return `${(val / 100_000_000).toFixed(1)} BTC`;
               } else if (maxValue > 10_000_000) {
-                return `${Math.round(val / 100_000_000)} BTC`;
-              } else if (maxValue > 100_000) {
                 return `${(val / 100_000_000).toFixed(2)} BTC`;
+              } else if (maxValue > 1_000_000) {
+                return `${(val / 100_000_000).toFixed(3)} BTC`;
               } else {
-                return `${this.amountShortenerPipe.transform(100_000_000, 0)} sats`;
+                return `${this.amountShortenerPipe.transform(val, 0)} sats`;
               }
             }
           },
