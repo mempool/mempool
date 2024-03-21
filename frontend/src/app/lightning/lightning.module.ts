@@ -34,7 +34,6 @@ import { OldestNodes } from '../lightning/nodes-ranking/oldest-nodes/oldest-node
 import { NodesRankingsDashboard } from '../lightning/nodes-rankings-dashboard/nodes-rankings-dashboard.component';
 import { NodeChannels } from '../lightning/nodes-channels/node-channels.component';
 import { GroupComponent } from './group/group.component';
-import { NodeOwnerComponent } from './node-owner/node-owner.component';
 
 @NgModule({
   declarations: [
@@ -67,7 +66,6 @@ import { NodeOwnerComponent } from './node-owner/node-owner.component';
     NodesRankingsDashboard,
     NodeChannels,
     GroupComponent,
-    NodeOwnerComponent,
   ],
   imports: [
     CommonModule,
@@ -105,7 +103,6 @@ import { NodeOwnerComponent } from './node-owner/node-owner.component';
     OldestNodes,
     NodesRankingsDashboard,
     NodeChannels,
-    NodeOwnerComponent,
   ],
   providers: [
     LightningApiService,
