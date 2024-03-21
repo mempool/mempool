@@ -71,13 +71,15 @@ export class TxBowtieGraphTooltipComponent implements OnChanges {
     if (changes.line?.currentValue) {
       if (changes.line.currentValue.type === 'input') {
         if (!this.inputStatus[changes.line.currentValue.index]) {
-          this.apiService.getTransactionStatus$(changes.line.currentValue.txid).pipe(
-            tap((status) => {
-              changes.line.currentValue.status = status;
-              this.inputStatus[changes.line.currentValue.index] = status;
-              this.fetchPrices(changes);
-            })
-          ).subscribe();
+          if (changes.line.currentValue.txid) {
+            this.apiService.getTransactionStatus$(changes.line.currentValue.txid).pipe(
+              tap((status) => {
+                changes.line.currentValue.status = status;
+                this.inputStatus[changes.line.currentValue.index] = status;
+                this.fetchPrices(changes);
+              })
+            ).subscribe();
+          }
         } else {
           changes.line.currentValue.status = this.inputStatus[changes.line.currentValue.index];
           this.fetchPrices(changes);
