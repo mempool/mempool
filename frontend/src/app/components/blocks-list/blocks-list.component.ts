@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef, Inject, LOCALE_ID } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, Observable, timer, of, Subscription } from 'rxjs';
-import { delayWhen, filter, map, retryWhen, scan, switchMap, take, tap } from 'rxjs/operators';
+import { debounceTime, delayWhen, filter, map, retryWhen, scan, skip, switchMap, tap, throttleTime } from 'rxjs/operators';
 import { BlockExtended } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { StateService } from '../../services/state.service';
@@ -28,9 +28,6 @@ export class BlocksList implements OnInit {
   fromBlockHeight = undefined;
   lastKeyNavTime = 0;
   lastBlockHeightFetched = -1;
-  isArrowKeyPressed = false;
-  keydownListener: EventListener;
-  keyupListener: EventListener;
   paginationMaxSize: number;
   page = 1;
   lastPage = 1;
@@ -59,10 +56,6 @@ export class BlocksList implements OnInit {
     if (this.locale.startsWith('ar') || this.locale.startsWith('fa') || this.locale.startsWith('he')) {
       this.dir = 'rtl';
     }
-    this.keydownListener = this.onKeyDown.bind(this);
-    this.keyupListener = this.onKeyUp.bind(this);
-    window.addEventListener('keydown', this.keydownListener);
-    window.addEventListener('keyup', this.keyupListener);
   }
 
   ngOnInit(): void {
@@ -81,23 +74,23 @@ export class BlocksList implements OnInit {
         })
       ).subscribe();
 
-      this.keyNavigationSubscription = this.stateService.keyNavigation$.subscribe((event) => {
-        const prevKey = this.dir === 'ltr' ? 'ArrowLeft' : 'ArrowRight';
-        const nextKey = this.dir === 'ltr' ? 'ArrowRight' : 'ArrowLeft';
-        if (event.key === prevKey && this.page > 1) {
-          this.page--;
-          this.page === 1 ? this.isArrowKeyPressed = false : null;
-          this.keyNavPageChange(this.page);
-          this.lastKeyNavTime = Date.now();
-          this.cd.markForCheck();
-        }
-        if (event.key === nextKey && this.page * 15 < this.blocksCount) {
-          this.page++;
-          this.page >= this.blocksCount / 15 ? this.isArrowKeyPressed = false : null;
-          this.keyNavPageChange(this.page);
-          this.lastKeyNavTime = Date.now();
-          this.cd.markForCheck();
-        }
+      this.keyNavigationSubscription = this.stateService.keyNavigation$
+      .pipe(
+        tap((event) => {
+          const prevKey = this.dir === 'ltr' ? 'ArrowLeft' : 'ArrowRight';
+          const nextKey = this.dir === 'ltr' ? 'ArrowRight' : 'ArrowLeft';
+          if (event.key === prevKey && this.page > 1) {
+            this.page--;
+            this.cd.markForCheck();
+          }
+          if (event.key === nextKey && this.page * 15 < this.blocksCount) {
+            this.page++;
+            this.cd.markForCheck();
+          }
+        }),
+        throttleTime(1000, undefined, { leading: true, trailing: true }),
+      ).subscribe(() => {
+        this.pageChange(this.page);
       });
     }
 
@@ -192,29 +185,7 @@ export class BlocksList implements OnInit {
   }
 
   keyNavPageChange(page: number): void {
-    this.isLoading = true;
-    if (this.isArrowKeyPressed) {
-      timer(400).pipe(
-        take(1),
-        filter(() => Date.now() - this.lastKeyNavTime >= 400 && this.isArrowKeyPressed === false),
-      ).subscribe(() => {
-        this.pageChange(page);
-      });
-    } else {
-      this.pageChange(page);
-    }
-  }
-
-  onKeyDown(event: KeyboardEvent) {
-    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-      this.isArrowKeyPressed = true;
-    }
-  }
-
-  onKeyUp(event: KeyboardEvent) {
-    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-      this.isArrowKeyPressed = false;
-    }
+    this.pageChange(page);
   }
 
   trackByBlock(index: number, block: BlockExtended): number {
@@ -228,7 +199,5 @@ export class BlocksList implements OnInit {
   ngOnDestroy(): void {
     this.blocksCountInitializedSubscription?.unsubscribe();
     this.keyNavigationSubscription?.unsubscribe();
-    window.removeEventListener('keydown', this.keydownListener);
-    window.removeEventListener('keyup', this.keyupListener);
   }
 }
