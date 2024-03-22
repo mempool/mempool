@@ -26,7 +26,6 @@ export class BlocksList implements OnInit {
   auditAvailable = false;
   isLoading = true;
   fromBlockHeight = undefined;
-  lastKeyNavTime = 0;
   lastBlockHeightFetched = -1;
   paginationMaxSize: number;
   page = 1;
@@ -77,6 +76,7 @@ export class BlocksList implements OnInit {
       this.keyNavigationSubscription = this.stateService.keyNavigation$
       .pipe(
         tap((event) => {
+          this.isLoading = true;
           const prevKey = this.dir === 'ltr' ? 'ArrowLeft' : 'ArrowRight';
           const nextKey = this.dir === 'ltr' ? 'ArrowRight' : 'ArrowLeft';
           if (event.key === prevKey && this.page > 1) {
@@ -182,10 +182,6 @@ export class BlocksList implements OnInit {
 
   pageChange(page: number): void {
     this.router.navigate([], { queryParams: { page: page } });
-  }
-
-  keyNavPageChange(page: number): void {
-    this.pageChange(page);
   }
 
   trackByBlock(index: number, block: BlockExtended): number {
