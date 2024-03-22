@@ -27,6 +27,7 @@ export interface Transaction {
   _channels?: TransactionChannels;
   price?: Price;
   sigops?: number;
+  flags?: bigint;
 }
 
 export interface TransactionChannels {
