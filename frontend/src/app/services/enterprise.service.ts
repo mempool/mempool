@@ -29,6 +29,7 @@ export class EnterpriseService {
       this.subdomain = subdomain;
       this.fetchSubdomainInfo();
       this.disableSubnetworks();
+      this.stateService.env.ACCELERATOR = false;
     } else {
       this.insertMatomo();
     }
