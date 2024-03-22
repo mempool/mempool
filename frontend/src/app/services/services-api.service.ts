@@ -104,12 +104,6 @@ export class ServicesApiServices {
     return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/account`);
   }
 
-  getNodeOwner$(publicKey: string): Observable<any> {
-    let params = new HttpParams()
-      .set('node_public_key', publicKey);
-    return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/lightning/claim/current`, { params, observe: 'response' });
-  }
-
   getUserMenuGroups$(): Observable<MenuGroup[]> {
     const auth = this.storageService.getAuth();
     if (!auth) {
