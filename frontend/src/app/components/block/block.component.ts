@@ -302,8 +302,9 @@ export class BlockComponent implements OnInit, OnDestroy {
       throttleTime(300, asyncScheduler, { leading: true, trailing: true }),
       shareReplay(1)
     );
-    this.transactionSubscription = block$.pipe(
-      switchMap((block) => this.electrsApiService.getBlockTransactions$(block.id)
+    this.transactionSubscription = combineLatest([block$, this.route.queryParams]).pipe(
+      tap(([_, queryParams]) => this.page = +queryParams['page'] || 1),
+      switchMap(([block, _]) => this.electrsApiService.getBlockTransactions$(block.id, (this.page - 1) * this.itemsPerPage)
         .pipe(
           catchError((err) => {
             this.transactionsError = err;
@@ -592,19 +593,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.transactions = null;
     this.transactionsError = null;
     target.scrollIntoView(); // works for chrome
-
-    this.electrsApiService.getBlockTransactions$(this.block.id, start)
-      .pipe(
-        catchError((err) => {
-          this.transactionsError = err;
-          return of([]);
-      })
-      )
-     .subscribe((transactions) => {
-        this.transactions = transactions;
-        this.isLoadingTransactions = false;
-        target.scrollIntoView(); // works for firefox
-      });
+    this.router.navigate([], { queryParams: { page: page }, queryParamsHandling: 'merge' });
   }
 
   toggleShowDetails() {
