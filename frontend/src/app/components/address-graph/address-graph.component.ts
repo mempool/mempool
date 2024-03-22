@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnChanges, SimpleChanges } from '@angular/core';
 import { echarts, EChartsOption } from '../../graphs/echarts';
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ChainStats } from '../../interfaces/electrs.interface';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-address-graph',
@@ -20,12 +21,15 @@ import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddressGraphComponent implements OnInit, OnChanges {
+export class AddressGraphComponent implements OnChanges {
   @Input() address: string;
   @Input() isPubkey: boolean = false;
   @Input() stats: ChainStats;
   @Input() right: number | string = 10;
   @Input() left: number | string = 70;
+
+  data: any[] = [];
+  hoverData: any[] = [];
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -39,14 +43,10 @@ export class AddressGraphComponent implements OnInit, OnChanges {
   constructor(
     @Inject(LOCALE_ID) public locale: string,
     private electrsApiService: ElectrsApiService,
+    private router: Router,
     private amountShortenerPipe: AmountShortenerPipe,
     private cd: ChangeDetectorRef,
-  ) {
-  }
-
-  ngOnInit(): void {
-    
-  }
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     this.isLoading = true;
@@ -69,13 +69,13 @@ export class AddressGraphComponent implements OnInit, OnChanges {
 
   prepareChartOptions(summary): void {
     let total = (this.stats.funded_txo_sum - this.stats.spent_txo_sum); // + (summary[0]?.value || 0);
-    const data = summary.map(d => {
+    this.data = summary.map(d => {
       const balance = total;
       total -= d.value;
       return [d.time * 1000, balance, d];
     }).reverse();
 
-    const maxValue = data.reduce((acc, d) => Math.max(acc, Math.abs(d[1])), 0);
+    const maxValue = this.data.reduce((acc, d) => Math.max(acc, Math.abs(d[1])), 0);
 
     this.chartOptions = {
       color: [
@@ -163,10 +163,11 @@ export class AddressGraphComponent implements OnInit, OnChanges {
           showSymbol: false,
           symbol: 'circle',
           symbolSize: 8,
-          data: data,
+          data: this.data,
           areaStyle: {
             opacity: 0.5,
           },
+          triggerLineEvent: true,
           type: 'line',
           smooth: false,
           step: 'end'
@@ -175,8 +176,20 @@ export class AddressGraphComponent implements OnInit, OnChanges {
     };
   }
 
+  onChartClick(e) {
+    if (this.hoverData?.length && this.hoverData[0]?.[2]?.txid) {
+      this.router.navigate(['/tx/', this.hoverData[0][2].txid]);
+    }
+  }
+
+  onTooltip(e) {
+    this.hoverData = (e?.dataByCoordSys?.[0]?.dataByAxis?.[0]?.seriesDataIndices || []).map(indices => this.data[indices.dataIndex]);
+  }
+
   onChartInit(ec) {
     this.chartInstance = ec;
+    this.chartInstance.on('showTip', this.onTooltip.bind(this));
+    this.chartInstance.on('click', 'series', this.onChartClick.bind(this));
   }
 
   isMobile() {
