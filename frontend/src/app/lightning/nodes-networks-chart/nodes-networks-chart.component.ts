@@ -11,6 +11,7 @@ import { SeoService } from '../../services/seo.service';
 import { LightningApiService } from '../lightning-api.service';
 import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
 import { isMobile } from '../../shared/common.utils';
+import { StateService } from '../../services/state.service';
 
 @Component({
   selector: 'app-nodes-networks-chart',
@@ -58,6 +59,7 @@ export class NodesNetworksChartComponent implements OnInit, OnChanges {
     private formBuilder: UntypedFormBuilder,
     private storageService: StorageService,
     private miningService: MiningService,
+    public stateService: StateService,
     private amountShortenerPipe: AmountShortenerPipe,
   ) {
   }

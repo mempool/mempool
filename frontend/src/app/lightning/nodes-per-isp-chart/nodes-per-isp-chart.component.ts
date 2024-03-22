@@ -44,7 +44,7 @@ export class NodesPerISPChartComponent implements OnInit {
     private amountShortenerPipe: AmountShortenerPipe,
     private router: Router,
     private zone: NgZone,
-    private stateService: StateService,
+    public stateService: StateService,
   ) {
   }
 

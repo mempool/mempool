@@ -59,7 +59,7 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
   hasMenu = false;
 
   constructor(
-    private stateService: StateService,
+    public stateService: StateService,
     private cd: ChangeDetectorRef,
   ) {
     this.isiOS = ['iPhone','iPod','iPad'].includes((navigator as any)?.userAgentData?.platform || navigator.platform);

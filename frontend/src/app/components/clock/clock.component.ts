@@ -110,8 +110,8 @@ export class ClockComponent implements OnInit {
   
   @HostListener('window:resize', ['$event'])
   resizeCanvas(): void {
-    const windowWidth = this.limitWidth || window.innerWidth;
-    const windowHeight = this.limitHeight || window.innerHeight;
+    const windowWidth = this.limitWidth || window.innerWidth || 800;
+    const windowHeight = this.limitHeight || window.innerHeight || 800;
     this.chainWidth = windowWidth;
     this.chainHeight = Math.max(60, windowHeight / 8);
     this.clockSize = Math.min(800, windowWidth, windowHeight - (1.4 * this.chainHeight));

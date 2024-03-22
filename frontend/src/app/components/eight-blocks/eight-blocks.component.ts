@@ -95,7 +95,7 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private bytesPipe: BytesPipe,
   ) {
-    this.webGlEnabled = detectWebGL();
+    this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
   }
 
   ngOnInit(): void {

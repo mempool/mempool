@@ -76,11 +76,11 @@
   </div>
 
   <div [class]="!widget ? '' : 'pb-0'" class="container pb-lg-0">
-    <div [class]="widget ? 'chart-widget' : 'chart'" [style]="{ height: widget ? (height + 'px') : null}" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+    <div [class]="widget ? 'chart-widget' : 'chart'" *browserOnly [style]="{ height: widget ? (height + 'px') : null}" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
       (chartInit)="onChartInit($event)">
     </div>
 
-    <div class="text-center loadingGraphs" *ngIf="isLoading">
+    <div class="text-center loadingGraphs" *ngIf="!stateService.isBrowser || isLoading">
       <div class="spinner-border text-light"></div>
     </div>
 
@@ -102,7 +102,7 @@
         <tr *ngFor="let pool of miningStats.pools">
           <td class="d-none d-md-table-cell">{{ pool.rank }}</td>
           <td class="text-right">
-            <img width="25" height="25" src="{{ pool.logo }}" [alt]="pool.name + ' mining pool logo'" onError="this.src = '/resources/mining-pools/default.svg'">
+            <img width="25" height="25" src="{{ pool.logo }}" [alt]="pool.name + ' mining pool logo'" onError="this.onerror=null; this.src = '/resources/mining-pools/default.svg'">
           </td>
           <td class="pool-name"><a [routerLink]="[('/mining/pool/' + pool.slug) | relativeUrl]">{{ pool.name }}</a></td>
           <td class="" *ngIf="this.miningWindowPreference === '24h'">{{ pool.lastEstimatedHashrate }} {{

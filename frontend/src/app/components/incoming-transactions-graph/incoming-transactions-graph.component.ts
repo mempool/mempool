@@ -48,7 +48,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
   constructor(
     @Inject(LOCALE_ID) private locale: string,
     private storageService: StorageService,
-    private stateService: StateService,
+    public stateService: StateService,
   ) { }
 
   ngOnInit() {

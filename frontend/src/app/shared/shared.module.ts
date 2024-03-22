@@ -33,6 +33,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { LanguageSelectorComponent } from '../components/language-selector/language-selector.component';
 import { FiatSelectorComponent } from '../components/fiat-selector/fiat-selector.component';
 import { RateUnitSelectorComponent } from '../components/rate-unit-selector/rate-unit-selector.component';
+import { BrowserOnlyDirective } from './directives/browser-only.directive';
+import { ServerOnlyDirective } from './directives/server-only.directive';
 import { ColoredPriceDirective } from './directives/colored-price.directive';
 import { NoSanitizePipe } from './pipes/no-sanitize.pipe';
 import { MempoolBlocksComponent } from '../components/mempool-blocks/mempool-blocks.component';
@@ -132,6 +134,8 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     FeeRoundingPipe,
     FiatCurrencyPipe,
     ColoredPriceDirective,
+    BrowserOnlyDirective,
+    ServerOnlyDirective,
     BlockchainComponent,
     BlockViewComponent,
     EightBlocksComponent,
@@ -264,6 +268,8 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     Decimal2HexPipe,
     FeeRoundingPipe,
     ColoredPriceDirective,
+    BrowserOnlyDirective,
+    ServerOnlyDirective,
     NoSanitizePipe,
     BlockchainComponent,
     MempoolBlocksComponent,

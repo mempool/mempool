@@ -60,7 +60,7 @@ export class HashrateChartComponent implements OnInit {
     private storageService: StorageService,
     private miningService: MiningService,
     private route: ActivatedRoute,
-    private stateService: StateService
+    public stateService: StateService
   ) {
   }
 
@@ -326,7 +326,7 @@ export class HashrateChartComponent implements OnInit {
             },
           },
         ],
-        selected: JSON.parse(this.storageService.getValue('hashrate_difficulty_legend')) ?? {
+        selected: JSON.parse(this.storageService?.getValue('hashrate_difficulty_legend') || 'null') ?? {
           '$localize`:@@79a9dc5b1caca3cbeb1733a19515edacc5fc7920:Hashrate`': true,
           '$localize`::Difficulty`': this.network === '',
           '$localize`Hashrate (MA)`': true,
