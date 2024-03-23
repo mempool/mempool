@@ -12,6 +12,8 @@
       [clickable]="!!selectedTx"
       [auditEnabled]="auditHighlighting"
       [blockConversion]="blockConversion"
+      [filterFlags]="activeFilterFlags"
+      [filterMode]="filterMode"
     ></app-block-overview-tooltip>
     <app-block-filters *ngIf="webGlEnabled && showFilters && filtersAvailable" [excludeFilters]="excludeFilters" [cssWidth]="cssWidth" (onFilterChanged)="setFilterFlags($event)"></app-block-filters>
     <div *ngIf="!webGlEnabled" class="placeholder">
