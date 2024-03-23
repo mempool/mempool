@@ -517,9 +517,9 @@
     </div>
 
     <ng-template #errorTemplate>
-      <div class="text-center">
-        <h3>{{ error.error }}</h3>
-      </div>
+      <app-http-error [error]="error">
+        <span i18n="transaction.error.loading-transaction-data">Error loading transaction data.</span>
+      </app-http-error>
     </ng-template>
   </ng-template>
 

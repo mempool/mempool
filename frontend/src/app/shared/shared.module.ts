@@ -21,6 +21,7 @@ import { ScriptpubkeyTypePipe } from './pipes/scriptpubkey-type-pipe/scriptpubke
 import { BytesPipe } from './pipes/bytes-pipe/bytes.pipe';
 import { WuBytesPipe } from './pipes/bytes-pipe/wubytes.pipe';
 import { FiatCurrencyPipe } from './pipes/fiat-currency.pipe';
+import { HttpErrorPipe } from './pipes/http-error-pipe/http-error.pipe';
 import { BlockchainComponent } from '../components/blockchain/blockchain.component';
 import { TimeComponent } from '../components/time/time.component';
 import { ClipboardComponent } from '../components/clipboard/clipboard.component';
@@ -104,6 +105,7 @@ import { ClockFaceComponent } from '../components/clock-face/clock-face.componen
 import { ClockComponent } from '../components/clock/clock.component';
 import { CalculatorComponent } from '../components/calculator/calculator.component';
 import { BitcoinsatoshisPipe } from '../shared/pipes/bitcoinsatoshis.pipe';
+import { HttpErrorComponent } from '../shared/components/http-error/http-error.component';
 
 import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-directives/weight-directives';
 
@@ -133,6 +135,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     Decimal2HexPipe,
     FeeRoundingPipe,
     FiatCurrencyPipe,
+    HttpErrorPipe,
     ColoredPriceDirective,
     BrowserOnlyDirective,
     ServerOnlyDirective,
@@ -208,6 +211,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     AccelerationsListComponent,
     AccelerationStatsComponent,
     PendingStatsComponent,
+    HttpErrorComponent,
   ],
   imports: [
     CommonModule,
@@ -262,6 +266,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     VbytesPipe,
     WuBytesPipe,
     FiatCurrencyPipe,
+    HttpErrorPipe,
     CeilPipe,
     ShortenStringPipe,
     CapAddressPipe,
@@ -327,6 +332,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     AccelerationsListComponent,
     AccelerationStatsComponent,
     PendingStatsComponent,
+    HttpErrorComponent,
 
     MempoolBlockOverviewComponent,
     ClockchainComponent,
