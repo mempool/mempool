@@ -63,8 +63,7 @@
       {{ activeFilters.rbf }}
       <tr *ngIf="(!auditEnabled && tx && tx.status === 'accelerated') || filters.length">
         <td colspan="2">
-          <div class="tags" [class.any-mode]="filterMode === 'or'">
-            <span class="goggles-icon"><app-svg-images name="goggles" width="100%" height="100%"></app-svg-images></span>
+          <div class="tags mt-2" [class.any-mode]="filterMode === 'or'">
             <span *ngIf="!auditEnabled && tx && tx.status === 'accelerated'" class="badge badge-accelerated" i18n="transaction.audit.accelerated">Accelerated</span>
             <ng-container *ngFor="let filter of filters;">
               <span class="btn badge filter-tag" [class.matching]="activeFilters[filter.key]">{{ filter.label }}</span>
