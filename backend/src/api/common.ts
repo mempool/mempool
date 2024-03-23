@@ -946,6 +946,29 @@ export class Common {
     return this.validateTransactionHex(matches[1].toLowerCase());
   }
 
+  static getTransactionsFromRequest(req: Request): string[] {
+    if (typeof req.body !== 'string') {
+      throw Object.assign(new Error('Non-string request body'), { code: -1 });
+    }
+
+    const txs = req.body.split(',');
+
+    return txs.map(rawTx => {
+      // Support both upper and lower case hex
+      // Support both txHash= Form and direct API POST
+      const reg = /^((?:[a-fA-F0-9]{2})+)$/;
+      const matches = reg.exec(rawTx);
+      if (!matches || !matches[1]) {
+        throw Object.assign(new Error('Invalid hex string'), { code: -2 });
+      }
+
+      // Guaranteed to be a hex string of multiple of 2
+      // Guaranteed to be lower case
+      // Guaranteed to pass validation (see function below)
+      return this.validateTransactionHex(matches[1].toLowerCase());
+    });
+  }
+
   private static validateTransactionHex(txhex: string): string {
     // Do not mutate txhex
 
