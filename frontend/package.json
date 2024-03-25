@@ -94,7 +94,7 @@
     "ngx-infinite-scroll": "^17.0.0",
     "qrcode": "1.5.1",
     "rxjs": "~7.8.1",
-    "tinyify": "^3.1.0",
+    "tinyify": "^4.0.0",
     "tlite": "^0.1.9",
     "tslib": "~2.6.0",
     "zone.js": "~0.14.4"

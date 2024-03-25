@@ -1,4 +1,3 @@
-import 'zone.js/dist/zone-node';
 import './src/resources/config.js';
 
 import * as domino from 'domino';
