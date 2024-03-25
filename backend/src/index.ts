@@ -48,7 +48,9 @@ import bitcoinCoreRoutes from './api/bitcoin/bitcoin-core.routes';
 
 class Server {
   private wss: WebSocket.Server | undefined;
+  private wssUnixSocket: WebSocket.Server | undefined;
   private server: http.Server | undefined;
+  private serverUnixSocket: http.Server | undefined;
   private app: Application;
   private currentBackendRetryInterval = 1;
   private backendRetryCount = 0;
@@ -136,7 +138,9 @@ class Server {
     }
 
     this.server = http.createServer(this.app);
+    this.serverUnixSocket = http.createServer(this.app);
     this.wss = new WebSocket.Server({ server: this.server });
+    this.wssUnixSocket = new WebSocket.Server({ server: this.serverUnixSocket });
 
     this.setUpWebsocketHandling();
 
@@ -197,6 +201,14 @@ class Server {
         logger.info(`Mempool Server worker #${process.pid} started`);
       } else {
         logger.notice(`Mempool Server is running on port ${config.MEMPOOL.HTTP_PORT}`);
+      }
+    });
+
+    this.serverUnixSocket.listen(config.MEMPOOL.UNIX_SOCKET_PATH, () => {
+      if (worker) {
+        logger.info(`Mempool Server worker #${process.pid} started`);
+      } else {
+        logger.notice(`Mempool Server is listening on ${config.MEMPOOL.UNIX_SOCKET_PATH}`);
       }
     });
   }
@@ -270,7 +282,10 @@ class Server {
 
   setUpWebsocketHandling(): void {
     if (this.wss) {
-      websocketHandler.setWebsocketServer(this.wss);
+      websocketHandler.addWebsocketServer(this.wss);
+    }
+    if (this.wssUnixSocket) {
+      websocketHandler.addWebsocketServer(this.wssUnixSocket);
     }
     if (Common.isLiquid() && config.DATABASE.ENABLED) {
       blocks.setNewBlockCallback(async () => {
@@ -342,6 +357,10 @@ class Server {
     if (config.DATABASE.ENABLED) {
       DB.releasePidLock();
     }
+    this.server?.close();
+    this.serverUnixSocket?.close();
+    this.wss?.close();
+    this.wssUnixSocket?.close();
     process.exit(code);
   }
 
