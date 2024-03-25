@@ -64,8 +64,8 @@
         <th class="channels text-right" i18n="lightning.channels">Channels</th>
         <th class="city text-right" i18n="lightning.location">Location</th>
       </thead>
-      <tbody *ngIf="nodes$ | async as countryNodes; else skeleton">
-        <tr *ngFor="let node of countryNodes.nodes; let i= index; trackBy: trackByPublicKey">
+      <tbody *ngIf="nodesPagination$ | async as countryNodes; else skeleton">
+        <tr *ngFor="let node of countryNodes; let i= index; trackBy: trackByPublicKey">
           <td class="alias text-left text-truncate">
             <a [routerLink]="['/lightning/node/' | relativeUrl, node.public_key]">{{ node.alias }}</a>
           </td>
@@ -116,6 +116,10 @@
       </ng-template>
 
     </table>
-  </div>
 
+    <ngb-pagination *ngIf="nodes$ | async as countryNodes" class="pagination-container float-right mt-2" [class]="isLoading ? 'disabled' : ''"
+        [collectionSize]="countryNodes.nodes.length" [rotate]="true" [maxSize]="maxSize" [pageSize]="pageSize" [(page)]="page"
+        (pageChange)="pageChange(page)" [boundaryLinks]="true" [ellipses]="false">
+      </ngb-pagination>
+  </div>
 </div>

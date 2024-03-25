@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, HostListener, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, HostListener, ViewChild, ElementRef, Inject, ChangeDetectorRef } from '@angular/core';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import {
@@ -7,23 +7,46 @@ import {
   catchError,
   retryWhen,
   delay,
-  map,
   mergeMap,
-  tap
+  tap,
+  map
 } from 'rxjs/operators';
 import { Transaction } from '../../interfaces/electrs.interface';
-import { of, merge, Subscription, Observable, Subject, timer, from, throwError } from 'rxjs';
+import { of, merge, Subscription, Observable, Subject, from, throwError, combineLatest } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { CacheService } from '../../services/cache.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from '../../services/audio.service';
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
-import { BlockExtended, CpfpInfo } from '../../interfaces/node-api.interface';
+import { StorageService } from '../../services/storage.service';
+import { seoDescriptionNetwork } from '../../shared/common.utils';
+import { getTransactionFlags } from '../../shared/transaction.utils';
+import { Filter, toFilters, TransactionFlags } from '../../shared/filters.utils';
+import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration } from '../../interfaces/node-api.interface';
 import { LiquidUnblinding } from './liquid-ublinding';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { Price, PriceService } from '../../services/price.service';
 import { isFeatureActive } from '../../bitcoin.utils';
+import { ServicesApiServices } from '../../services/services-api.service';
+import { EnterpriseService } from '../../services/enterprise.service';
+import { ZONE_SERVICE } from '../../injection-tokens';
+
+interface Pool {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+interface AuditStatus {
+  seen?: boolean;
+  expected?: boolean;
+  added?: boolean;
+  delayed?: number;
+  accelerated?: boolean;
+  conflict?: boolean;
+  coinbase?: boolean;
+}
 
 @Component({
   selector: 'app-transaction',
@@ -35,9 +58,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   tx: Transaction;
   txId: string;
   txInBlockIndex: number;
+  mempoolPosition: MempoolPosition;
   isLoadingTx = true;
   error: any = undefined;
   errorUnblinded: any = undefined;
+  loadingCachedTx = false;
   waitingForTransaction = false;
   latestBlock: BlockExtended;
   transactionTime = -1;
@@ -45,27 +70,42 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   fetchCpfpSubscription: Subscription;
   fetchRbfSubscription: Subscription;
   fetchCachedTxSubscription: Subscription;
+  fetchAccelerationSubscription: Subscription;
   txReplacedSubscription: Subscription;
-  blocksSubscription: Subscription;
+  txRbfInfoSubscription: Subscription;
+  mempoolPositionSubscription: Subscription;
   queryParamsSubscription: Subscription;
   urlFragmentSubscription: Subscription;
+  mempoolBlocksSubscription: Subscription;
+  blocksSubscription: Subscription;
+  miningSubscription: Subscription;
+  currencyChangeSubscription: Subscription;
   fragmentParams: URLSearchParams;
   rbfTransaction: undefined | Transaction;
   replaced: boolean = false;
   rbfReplaces: string[];
+  rbfInfo: RbfTree;
   cpfpInfo: CpfpInfo | null;
+  accelerationInfo: Acceleration | null = null;
+  sigops: number | null;
+  adjustedVsize: number | null;
+  pool: Pool | null;
+  auditStatus: AuditStatus | null;
+  filters: Filter[] = [];
   showCpfpDetails = false;
   fetchCpfp$ = new Subject<string>();
   fetchRbfHistory$ = new Subject<string>();
   fetchCachedTx$ = new Subject<string>();
+  fetchAcceleration$ = new Subject<string>();
+  fetchMiningInfo$ = new Subject<{ hash: string, height: number, txid: string }>();
   isCached: boolean = false;
-  now = new Date().getTime();
-  timeAvg$: Observable<number>;
+  now = Date.now();
+  da$: Observable<DifficultyAdjustment>;
   liquidUnblinding = new LiquidUnblinding();
   inputIndex: number;
   outputIndex: number;
   graphExpanded: boolean = false;
-  graphWidth: number = 1000;
+  graphWidth: number = 1068;
   graphHeight: number = 360;
   inOutLimit: number = 150;
   maxInOut: number = 0;
@@ -73,7 +113,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   hideFlow: boolean = this.stateService.hideFlow.value;
   overrideFlowPreference: boolean = null;
   flowEnabled: boolean;
-  blockConversion: Price;
   tooltipPosition: { x: number, y: number };
   isMobile: boolean;
 
@@ -81,6 +120,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   segwitEnabled: boolean;
   rbfEnabled: boolean;
   taprootEnabled: boolean;
+  hasEffectiveFeeRate: boolean;
+  accelerateCtaType: 'alert' | 'button' = 'button';
+  acceleratorAvailable: boolean = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
+  showAccelerationSummary = false;
+  scrollIntoAccelPreview = false;
+  auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
 
   @ViewChild('graphContainer')
   graphContainer: ElementRef;
@@ -90,20 +135,34 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private relativeUrlPipe: RelativeUrlPipe,
     private electrsApiService: ElectrsApiService,
-    private stateService: StateService,
+    public stateService: StateService,
     private cacheService: CacheService,
     private websocketService: WebsocketService,
     private audioService: AudioService,
     private apiService: ApiService,
+    private servicesApiService: ServicesApiServices,
     private seoService: SeoService,
     private priceService: PriceService,
+    private storageService: StorageService,
+    private enterpriseService: EnterpriseService,
+    private cd: ChangeDetectorRef,
+    @Inject(ZONE_SERVICE) private zoneService: any,
   ) {}
 
   ngOnInit() {
+    this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
+
+    this.enterpriseService.page();
+
     this.websocketService.want(['blocks', 'mempool-blocks']);
     this.stateService.networkChanged$.subscribe(
-      (network) => (this.network = network)
+      (network) => {
+        this.network = network;
+        this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
+      }
     );
+
+    this.accelerateCtaType = (this.storageService.getValue('accel-cta-type') as 'alert' | 'button') ?? 'button';
 
     this.setFlowEnabled();
     this.flowPrefSubscription = this.stateService.hideFlow.subscribe((hide) => {
@@ -111,11 +170,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.setFlowEnabled();
     });
 
-    this.timeAvg$ = timer(0, 1000)
-      .pipe(
-        switchMap(() => this.stateService.difficultyAdjustment$),
-        map((da) => da.timeAvg)
-      );
+    this.da$ = this.stateService.difficultyAdjustment$.pipe(
+      tap(() => {
+        this.now = Date.now();
+      })
+    );
 
     this.urlFragmentSubscription = this.route.fragment.subscribe((fragment) => {
       this.fragmentParams = new URLSearchParams(fragment || '');
@@ -123,6 +182,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       const vout = parseInt(this.fragmentParams.get('vout'), 10);
       this.inputIndex = (!isNaN(vin) && vin >= 0) ? vin : null;
       this.outputIndex = (!isNaN(vout) && vout >= 0) ? vout : null;
+    });
+
+    this.blocksSubscription = this.stateService.blocks$.subscribe((blocks) => {
+      this.latestBlock = blocks[0];
     });
 
     this.fetchCpfpSubscription = this.fetchCpfp$
@@ -150,30 +213,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         })
       )
       .subscribe((cpfpInfo) => {
-        if (!cpfpInfo || !this.tx) {
-          this.cpfpInfo = null;
-          return;
-        }
-        // merge ancestors/descendants
-        const relatives = [...(cpfpInfo.ancestors || []), ...(cpfpInfo.descendants || [])];
-        if (cpfpInfo.bestDescendant && !cpfpInfo.descendants?.length) {
-          relatives.push(cpfpInfo.bestDescendant);
-        }
-        let totalWeight =
-          this.tx.weight +
-          relatives.reduce((prev, val) => prev + val.weight, 0);
-        let totalFees =
-          this.tx.fee +
-          relatives.reduce((prev, val) => prev + val.fee, 0);
-
-        this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
-
-        if (!this.tx.status.confirmed) {
-          this.stateService.markBlock$.next({
-            txFeePerVSize: this.tx.effectiveFeePerVsize,
-          });
-        }
-        this.cpfpInfo = cpfpInfo;
+        this.setCpfpInfo(cpfpInfo);
       });
 
     this.fetchRbfSubscription = this.fetchRbfHistory$
@@ -183,14 +223,18 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           .getRbfHistory$(txId)
       ),
       catchError(() => {
-        return of([]);
+        return of(null);
       })
-    ).subscribe((replaces) => {
-      this.rbfReplaces = replaces;
+    ).subscribe((rbfResponse) => {
+      this.rbfInfo = rbfResponse?.replacements;
+      this.rbfReplaces = rbfResponse?.replaces || null;
     });
 
     this.fetchCachedTxSubscription = this.fetchCachedTx$
     .pipe(
+      tap(() => {
+        this.loadingCachedTx = true;
+      }),
       switchMap((txId) =>
         this.apiService
           .getRbfCachedTx$(txId)
@@ -199,29 +243,126 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         return of(null);
       })
     ).subscribe((tx) => {
+      this.loadingCachedTx = false;
       if (!tx) {
+        this.seoService.logSoft404();
         return;
       }
+      this.seoService.clearSoft404();
 
-      this.tx = tx;
-      this.setFeatures();
-      this.isCached = true;
-      if (tx.fee === undefined) {
-        this.tx.fee = 0;
-      }
-      this.tx.feePerVsize = tx.fee / (tx.weight / 4);
-      this.isLoadingTx = false;
-      this.error = undefined;
-      this.waitingForTransaction = false;
-      this.graphExpanded = false;
-      this.setupGraph();
+      if (!this.tx) {
+        this.tx = tx;
+        this.setFeatures();
+        this.isCached = true;
+        if (tx.fee === undefined) {
+          this.tx.fee = 0;
+        }
+        this.tx.feePerVsize = tx.fee / (tx.weight / 4);
+        this.isLoadingTx = false;
+        this.error = undefined;
+        this.waitingForTransaction = false;
+        this.graphExpanded = false;
+        this.transactionTime = tx.firstSeen || 0;
+        this.setupGraph();
 
-      if (!this.tx?.status?.confirmed) {
         this.fetchRbfHistory$.next(this.tx.txid);
+        this.txRbfInfoSubscription = this.stateService.txRbfInfo$.subscribe((rbfInfo) => {
+          if (this.tx) {
+            this.rbfInfo = rbfInfo;
+          }
+        });
       }
     });
 
-    this.subscription = this.route.paramMap
+    this.fetchAccelerationSubscription = this.fetchAcceleration$.pipe(
+      filter(() => this.stateService.env.ACCELERATOR === true),
+      tap(() => {
+        this.accelerationInfo = null;
+      }),
+      switchMap((blockHash: string) => {
+        return this.servicesApiService.getAccelerationHistory$({ blockHash });
+      }),
+      catchError(() => {
+        return of(null);
+      })
+    ).subscribe((accelerationHistory) => {
+      for (const acceleration of accelerationHistory) {
+        if (acceleration.txid === this.txId && (acceleration.status === 'completed' || acceleration.status === 'completed_provisional')) {
+          acceleration.acceleratedFee = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + acceleration.feePaid - acceleration.baseFee - acceleration.vsizeFee);
+          this.accelerationInfo = acceleration;
+        }
+      }
+    });
+
+    this.miningSubscription = this.fetchMiningInfo$.pipe(
+      filter((target) => target.txid === this.txId),
+      tap(() => {
+        this.pool = null;
+        this.auditStatus = null;
+      }),
+      switchMap(({ hash, height, txid }) => {
+        const foundBlock = this.cacheService.getCachedBlock(height) || null;
+        const auditAvailable = this.isAuditAvailable(height);
+        const isCoinbase = this.tx.vin.some(v => v.is_coinbase);
+        const fetchAudit = auditAvailable && !isCoinbase;
+        return combineLatest([
+          foundBlock ? of(foundBlock.extras.pool) : this.apiService.getBlock$(hash).pipe(
+            map(block => {
+              return block.extras.pool;
+            }),
+            catchError(() => {
+              return of(null);
+            })
+          ),
+          fetchAudit ? this.apiService.getBlockAudit$(hash).pipe(
+            map(audit => {
+              const isAdded = audit.addedTxs.includes(txid);
+              const isAccelerated = audit.acceleratedTxs.includes(txid);
+              const isConflict = audit.fullrbfTxs.includes(txid);
+              const isExpected = audit.template.some(tx => tx.txid === txid);
+              return {
+                seen: isExpected || !(isAdded || isConflict),
+                expected: isExpected,
+                added: isAdded,
+                conflict: isConflict,
+                accelerated: isAccelerated,
+              };
+            }),
+            catchError(() => {
+              return of(null);
+            })
+          ) : of(isCoinbase ? { coinbase: true } : null)
+        ]);
+      }),
+      catchError(() => {
+        return of(null);
+      })
+    ).subscribe(([pool, auditStatus]) => {
+      this.pool = pool;
+      this.auditStatus = auditStatus;
+    });
+
+    this.mempoolPositionSubscription = this.stateService.mempoolTxPosition$.subscribe(txPosition => {
+      this.now = Date.now();
+      if (txPosition && txPosition.txid === this.txId && txPosition.position) {
+        this.mempoolPosition = txPosition.position;
+        if (this.tx && !this.tx.status.confirmed) {
+          this.stateService.markBlock$.next({
+            txid: txPosition.txid,
+            mempoolPosition: this.mempoolPosition
+          });
+          this.txInBlockIndex = this.mempoolPosition.block;
+
+          if (txPosition.cpfp !== undefined) {
+            this.setCpfpInfo(txPosition.cpfp);
+          }
+        }
+      } else {
+        this.mempoolPosition = null;
+      }
+    });
+
+    this.subscription = this.zoneService.wrapObservable(this.route.paramMap
       .pipe(
         switchMap((params: ParamMap) => {
           const urlMatch = (params.get('id') || '').split(':');
@@ -253,12 +394,15 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.seoService.setTitle(
             $localize`:@@bisq.transaction.browser-title:Transaction: ${this.txId}:INTERPOLATION:`
           );
+          const network = this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet' ? 'Liquid' : 'Bitcoin';
+          const seoDescription = seoDescriptionNetwork(this.stateService.network);
+          this.seoService.setDescription($localize`:@@meta.description.bitcoin.transaction:Get real-time status, addresses, fees, script info, and more for ${network}${seoDescription} transaction with txid ${this.txId}.`);
           this.resetTransaction();
           return merge(
             of(true),
             this.stateService.connectionState$.pipe(
               filter(
-                (state) => state === 2 && this.tx && !this.tx.status.confirmed
+                (state) => state === 2 && this.tx && !this.tx.status?.confirmed
               )
             )
           );
@@ -292,11 +436,14 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           }
           return of(tx);
         })
-      )
+      ))
       .subscribe((tx: Transaction) => {
           if (!tx) {
+            this.fetchCachedTx$.next(this.txId);
+            this.seoService.logSoft404();
             return;
           }
+          this.seoService.clearSoft404();
 
           this.tx = tx;
           this.setFeatures();
@@ -304,22 +451,32 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           if (tx.fee === undefined) {
             this.tx.fee = 0;
           }
+          if (this.tx.sigops != null) {
+            this.sigops = this.tx.sigops;
+            this.adjustedVsize = Math.max(this.tx.weight / 4, this.sigops * 5);
+          }
           this.tx.feePerVsize = tx.fee / (tx.weight / 4);
           this.isLoadingTx = false;
           this.error = undefined;
+          this.loadingCachedTx = false;
           this.waitingForTransaction = false;
-          this.setMempoolBlocksSubscription();
           this.websocketService.startTrackTransaction(tx.txid);
           this.graphExpanded = false;
           this.setupGraph();
 
-          if (!tx.status.confirmed && tx.firstSeen) {
-            this.transactionTime = tx.firstSeen;
+          if (!tx.status?.confirmed) {
+            if (tx.firstSeen) {
+              this.transactionTime = tx.firstSeen;
+            } else {
+              this.getTransactionTime();
+            }
           } else {
-            this.getTransactionTime();
+            this.fetchAcceleration$.next(tx.status.block_hash);
+            this.fetchMiningInfo$.next({ hash: tx.status.block_hash, height: tx.status.block_height, txid: tx.txid });
+            this.transactionTime = 0;
           }
 
-          if (this.tx.status.confirmed) {
+          if (this.tx?.status?.confirmed) {
             this.stateService.markBlock$.next({
               blockHeight: tx.status.block_height,
             });
@@ -327,36 +484,43 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           } else {
             if (tx.cpfpChecked) {
               this.stateService.markBlock$.next({
+                txid: tx.txid,
                 txFeePerVSize: tx.effectiveFeePerVsize,
+                mempoolPosition: this.mempoolPosition,
               });
               this.cpfpInfo = {
                 ancestors: tx.ancestors,
                 bestDescendant: tx.bestDescendant,
               };
+              const hasRelatives = !!(tx.ancestors?.length || tx.bestDescendant);
+              this.hasEffectiveFeeRate = hasRelatives || (tx.effectiveFeePerVsize && (Math.abs(tx.effectiveFeePerVsize - tx.feePerVsize) > 0.01));
             } else {
               this.fetchCpfp$.next(this.tx.txid);
             }
-            this.fetchRbfHistory$.next(this.tx.txid);
           }
-
-          this.priceService.getBlockPrice$(tx.status.block_time, true).pipe(
-            tap((price) => {
-              this.blockConversion = price;
+          this.fetchRbfHistory$.next(this.tx.txid);
+          this.currencyChangeSubscription?.unsubscribe();
+          this.currencyChangeSubscription = this.stateService.fiatCurrency$.pipe(
+            switchMap((currency) => {
+              return tx.status.block_time ? this.priceService.getBlockPrice$(tx.status.block_time, true, currency).pipe(
+                tap((price) => tx['price'] = price),
+              ) : of(undefined);
             })
           ).subscribe();
-      
+
           setTimeout(() => { this.applyFragment(); }, 0);
+
+          this.cd.detectChanges();
         },
         (error) => {
           this.error = error;
+          this.seoService.logSoft404();
           this.isLoadingTx = false;
         }
       );
 
-    this.blocksSubscription = this.stateService.blocks$.subscribe(([block, txConfirmed]) => {
-      this.latestBlock = block;
-
-      if (txConfirmed && this.tx && !this.tx.status.confirmed) {
+    this.stateService.txConfirmed$.subscribe(([txConfirmed, block]) => {
+      if (txConfirmed && this.tx && !this.tx.status.confirmed && txConfirmed === this.tx.txid) {
         this.tx.status = {
           confirmed: true,
           block_height: block.height,
@@ -364,19 +528,34 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           block_time: block.timestamp,
         };
         this.stateService.markBlock$.next({ blockHeight: block.height });
-        this.audioService.playSound('magic');
+        if (this.tx.acceleration || (this.accelerationInfo && ['accelerating', 'completed_provisional', 'completed'].includes(this.accelerationInfo.status))) {
+          this.audioService.playSound('wind-chimes-harp-ascend');
+        } else {
+          this.audioService.playSound('magic');
+        }
+        this.fetchAcceleration$.next(block.id);
+        this.fetchMiningInfo$.next({ hash: block.id, height: block.height, txid: this.tx.txid });
       }
     });
 
     this.txReplacedSubscription = this.stateService.txReplaced$.subscribe((rbfTransaction) => {
       if (!this.tx) {
         this.error = new Error();
+        this.loadingCachedTx = false;
         this.waitingForTransaction = false;
       }
       this.rbfTransaction = rbfTransaction;
       this.replaced = true;
+      this.stateService.markBlock$.next({});
+
       if (rbfTransaction && !this.tx) {
         this.fetchCachedTx$.next(this.txId);
+      }
+    });
+
+    this.txRbfInfoSubscription = this.stateService.txRbfInfo$.subscribe((rbfInfo) => {
+      if (this.tx) {
+        this.rbfInfo = rbfInfo;
       }
     });
 
@@ -391,10 +570,53 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.setFlowEnabled();
       this.setGraphSize();
     });
+
+    this.mempoolBlocksSubscription = this.stateService.mempoolBlocks$.subscribe((mempoolBlocks) => {
+      this.now = Date.now();
+
+      if (!this.tx || this.mempoolPosition) {
+        return;
+      }
+
+      const txFeePerVSize =
+        this.tx.effectiveFeePerVsize || this.tx.fee / (this.tx.weight / 4);
+
+      let found = false;
+      this.txInBlockIndex = 0;
+      for (const block of mempoolBlocks) {
+        for (let i = 0; i < block.feeRange.length - 1 && !found; i++) {
+          if (
+            txFeePerVSize <= block.feeRange[i + 1] &&
+            txFeePerVSize >= block.feeRange[i]
+          ) {
+            this.txInBlockIndex = mempoolBlocks.indexOf(block);
+            found = true;
+          }
+        }
+      }
+      if (!found && mempoolBlocks.length && txFeePerVSize < mempoolBlocks[mempoolBlocks.length - 1].feeRange[0]) {
+        this.txInBlockIndex = 7;
+      }
+    });
   }
 
   ngAfterViewInit(): void {
     this.setGraphSize();
+  }
+
+  dismissAccelAlert(): void {
+    this.storageService.setValue('accel-cta-type', 'button');
+    this.accelerateCtaType = 'button';
+  }
+
+  onAccelerateClicked() {
+    if (!this.txId) {
+      return;
+    }
+    this.enterpriseService.goal(8);
+    this.showAccelerationSummary = true && this.acceleratorAvailable;
+    this.scrollIntoAccelPreview = !this.scrollIntoAccelPreview;
+    return false;
   }
 
   handleLoadElectrsTransactionError(error: any): Observable<any> {
@@ -403,38 +625,54 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.waitingForTransaction = true;
     }
     this.error = error;
+    this.seoService.logSoft404();
     this.isLoadingTx = false;
     return of(false);
-  }
-
-  setMempoolBlocksSubscription() {
-    this.stateService.mempoolBlocks$.subscribe((mempoolBlocks) => {
-      if (!this.tx) {
-        return;
-      }
-
-      const txFeePerVSize =
-        this.tx.effectiveFeePerVsize || this.tx.fee / (this.tx.weight / 4);
-
-      for (const block of mempoolBlocks) {
-        for (let i = 0; i < block.feeRange.length - 1; i++) {
-          if (
-            txFeePerVSize <= block.feeRange[i + 1] &&
-            txFeePerVSize >= block.feeRange[i]
-          ) {
-            this.txInBlockIndex = mempoolBlocks.indexOf(block);
-          }
-        }
-      }
-    });
   }
 
   getTransactionTime() {
     this.apiService
       .getTransactionTimes$([this.tx.txid])
       .subscribe((transactionTimes) => {
-        this.transactionTime = transactionTimes[0];
+        if (transactionTimes?.length) {
+          this.transactionTime = transactionTimes[0];
+        }
       });
+  }
+
+  setCpfpInfo(cpfpInfo: CpfpInfo): void {
+    if (!cpfpInfo || !this.tx) {
+      this.cpfpInfo = null;
+      this.hasEffectiveFeeRate = false;
+      return;
+    }
+    // merge ancestors/descendants
+    const relatives = [...(cpfpInfo.ancestors || []), ...(cpfpInfo.descendants || [])];
+    if (cpfpInfo.bestDescendant && !cpfpInfo.descendants?.length) {
+      relatives.push(cpfpInfo.bestDescendant);
+    }
+    const hasRelatives = !!relatives.length;
+    if (!cpfpInfo.effectiveFeePerVsize && hasRelatives) {
+      const totalWeight =
+        this.tx.weight +
+        relatives.reduce((prev, val) => prev + val.weight, 0);
+      const totalFees =
+        this.tx.fee +
+        relatives.reduce((prev, val) => prev + val.fee, 0);
+      this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
+    } else {
+      this.tx.effectiveFeePerVsize = cpfpInfo.effectiveFeePerVsize;
+    }
+    if (cpfpInfo.acceleration) {
+      this.tx.acceleration = cpfpInfo.acceleration;
+    }
+
+    this.cpfpInfo = cpfpInfo;
+    if (this.cpfpInfo.adjustedVsize && this.cpfpInfo.sigops != null) {
+      this.sigops = this.cpfpInfo.sigops;
+      this.adjustedVsize = this.cpfpInfo.adjustedVsize;
+    }
+    this.hasEffectiveFeeRate = hasRelatives || (this.tx.effectiveFeePerVsize && (Math.abs(this.tx.effectiveFeePerVsize - this.tx.feePerVsize) > 0.01));
   }
 
   setFeatures(): void {
@@ -442,12 +680,37 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.segwitEnabled = !this.tx.status.confirmed || isFeatureActive(this.stateService.network, this.tx.status.block_height, 'segwit');
       this.taprootEnabled = !this.tx.status.confirmed || isFeatureActive(this.stateService.network, this.tx.status.block_height, 'taproot');
       this.rbfEnabled = !this.tx.status.confirmed || isFeatureActive(this.stateService.network, this.tx.status.block_height, 'rbf');
+      this.tx.flags = getTransactionFlags(this.tx);
+      this.filters = this.tx.flags ? toFilters(this.tx.flags).filter(f => f.txPage) : [];
     } else {
       this.segwitEnabled = false;
       this.taprootEnabled = false;
       this.rbfEnabled = false;
     }
     this.featuresEnabled = this.segwitEnabled || this.taprootEnabled || this.rbfEnabled;
+  }
+
+  isAuditAvailable(blockHeight: number): boolean {
+    if (!this.auditEnabled) {
+      return false;
+    }
+    switch (this.stateService.network) {
+      case 'testnet':
+        if (blockHeight < this.stateService.env.TESTNET_BLOCK_AUDIT_START_HEIGHT) {
+          return false;
+        }
+        break;
+      case 'signet':
+        if (blockHeight < this.stateService.env.SIGNET_BLOCK_AUDIT_START_HEIGHT) {
+          return false;
+        }
+        break;
+      default:
+        if (blockHeight < this.stateService.env.MAINNET_BLOCK_AUDIT_START_HEIGHT) {
+          return false;
+        }
+    }
+    return true;
   }
 
   resetTransaction() {
@@ -460,8 +723,18 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.replaced = false;
     this.transactionTime = -1;
     this.cpfpInfo = null;
+    this.adjustedVsize = null;
+    this.sigops = null;
+    this.hasEffectiveFeeRate = false;
+    this.rbfInfo = null;
     this.rbfReplaces = [];
+    this.filters = [];
     this.showCpfpDetails = false;
+    this.accelerationInfo = null;
+    this.txInBlockIndex = null;
+    this.mempoolPosition = null;
+    this.pool = null;
+    this.auditStatus = null;
     document.body.scrollTo(0, 0);
     this.leaveTransaction();
   }
@@ -508,10 +781,14 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   // simulate normal anchor fragment behavior
   applyFragment(): void {
     const anchor = Array.from(this.fragmentParams.entries()).find(([frag, value]) => value === '');
-    if (anchor) {
-      const anchorElement = document.getElementById(anchor[0]);
-      if (anchorElement) {
-        anchorElement.scrollIntoView();
+    if (anchor?.length) {
+      if (anchor[0] === 'accelerate') {
+        setTimeout(this.onAccelerateClicked.bind(this), 100);
+      } else {
+        const anchorElement = document.getElementById(anchor[0]);
+        if (anchorElement) {
+          anchorElement.scrollIntoView();
+        }
       }
     }
   }
@@ -519,9 +796,13 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostListener('window:resize', ['$event'])
   setGraphSize(): void {
     this.isMobile = window.innerWidth < 850;
-    if (this.graphContainer) {
+    if (this.graphContainer?.nativeElement && this.stateService.isBrowser) {
       setTimeout(() => {
-        this.graphWidth = this.graphContainer.nativeElement.clientWidth;
+        if (this.graphContainer?.nativeElement?.clientWidth) {
+          this.graphWidth = this.graphContainer.nativeElement.clientWidth;
+        } else {
+          setTimeout(() => { this.setGraphSize(); }, 1);
+        }
       }, 1);
     }
   }
@@ -531,11 +812,18 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fetchCpfpSubscription.unsubscribe();
     this.fetchRbfSubscription.unsubscribe();
     this.fetchCachedTxSubscription.unsubscribe();
+    this.fetchAccelerationSubscription.unsubscribe();
     this.txReplacedSubscription.unsubscribe();
-    this.blocksSubscription.unsubscribe();
+    this.txRbfInfoSubscription.unsubscribe();
     this.queryParamsSubscription.unsubscribe();
     this.flowPrefSubscription.unsubscribe();
     this.urlFragmentSubscription.unsubscribe();
+    this.mempoolBlocksSubscription.unsubscribe();
+    this.mempoolPositionSubscription.unsubscribe();
+    this.mempoolBlocksSubscription.unsubscribe();
+    this.blocksSubscription.unsubscribe();
+    this.miningSubscription?.unsubscribe();
+    this.currencyChangeSubscription?.unsubscribe();
     this.leaveTransaction();
   }
 }

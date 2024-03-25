@@ -113,7 +113,8 @@ Below we list all settings from `mempool-config.json` and the corresponding over
     "ADVANCED_GBT_MEMPOOL": false,
     "CPFP_INDEXING": false,
     "MAX_BLOCKS_BULK_QUERY": 0,
-    "DISK_CACHE_BLOCK_INTERVAL": 6
+    "DISK_CACHE_BLOCK_INTERVAL": 6,
+    "PRICE_UPDATES_PER_HOUR": 1
   },
 ```
 
@@ -123,7 +124,7 @@ Corresponding `docker-compose.yml` overrides:
     environment:
       MEMPOOL_NETWORK: ""
       MEMPOOL_BACKEND: ""
-      MEMPOOL_HTTP_PORT: ""
+      BACKEND_HTTP_PORT: ""
       MEMPOOL_SPAWN_CLUSTER_PROCS: ""
       MEMPOOL_API_URL_PREFIX: ""
       MEMPOOL_POLL_RATE_MS: ""
@@ -144,8 +145,9 @@ Corresponding `docker-compose.yml` overrides:
       MEMPOOL_ADVANCED_GBT_AUDIT: ""
       MEMPOOL_ADVANCED_GBT_MEMPOOL: ""
       MEMPOOL_CPFP_INDEXING: ""
-      MAX_BLOCKS_BULK_QUERY: ""
-      DISK_CACHE_BLOCK_INTERVAL: ""
+      MEMPOOL_MAX_BLOCKS_BULK_QUERY: ""
+      MEMPOOL_DISK_CACHE_BLOCK_INTERVAL: ""
+      MEMPOOL_PRICE_UPDATES_PER_HOUR: ""
       ...
 ```
 
@@ -162,7 +164,9 @@ Corresponding `docker-compose.yml` overrides:
     "PORT": 8332,
     "USERNAME": "mempool",
     "PASSWORD": "mempool",
-    "TIMEOUT": 60000
+    "TIMEOUT": 60000,
+    "COOKIE": false,
+    "COOKIE_PATH": ""
   },
 ```
 
@@ -175,6 +179,8 @@ Corresponding `docker-compose.yml` overrides:
       CORE_RPC_USERNAME: ""
       CORE_RPC_PASSWORD: ""
       CORE_RPC_TIMEOUT: 60000
+      CORE_RPC_COOKIE: false
+      CORE_RPC_COOKIE_PATH: ""
       ...
 ```
 
@@ -204,7 +210,9 @@ Corresponding `docker-compose.yml` overrides:
 `mempool-config.json`:
 ```json
   "ESPLORA": {
-    "REST_API_URL": "http://127.0.0.1:3000"
+    "REST_API_URL": "http://127.0.0.1:3000",
+    "UNIX_SOCKET_PATH": "/tmp/esplora-socket",
+    "RETRY_UNIX_SOCKET_AFTER": 30000
   },
 ```
 
@@ -213,6 +221,8 @@ Corresponding `docker-compose.yml` overrides:
   api:
     environment:
       ESPLORA_REST_API_URL: ""
+      ESPLORA_UNIX_SOCKET_PATH: ""
+      ESPLORA_RETRY_UNIX_SOCKET_AFTER: ""
       ...
 ```
 
@@ -225,7 +235,9 @@ Corresponding `docker-compose.yml` overrides:
     "PORT": 8332,
     "USERNAME": "mempool",
     "PASSWORD": "mempool",
-    "TIMEOUT": 60000
+    "TIMEOUT": 60000,
+    "COOKIE": false,
+    "COOKIE_PATH": ""
   },
 ```
 
@@ -238,6 +250,8 @@ Corresponding `docker-compose.yml` overrides:
       SECOND_CORE_RPC_USERNAME: ""
       SECOND_CORE_RPC_PASSWORD: ""
       SECOND_CORE_RPC_TIMEOUT: ""
+      SECOND_CORE_RPC_COOKIE: false
+      SECOND_CORE_RPC_COOKIE_PATH: ""
       ...
 ```
 
@@ -265,6 +279,7 @@ Corresponding `docker-compose.yml` overrides:
       DATABASE_DATABASE: ""
       DATABASE_USERNAME: ""
       DATABASE_PASSWORD: ""
+      DATABASE_TIMEOUT: ""
       ...
 ```
 
@@ -353,25 +368,6 @@ Corresponding `docker-compose.yml` overrides:
       SOCKS5PROXY_PORT: ""
       SOCKS5PROXY_USERNAME: ""
       SOCKS5PROXY_PASSWORD: ""
-      ...
-```
-
-<br/>
-
-`mempool-config.json`:
-```json
-  "PRICE_DATA_SERVER": {
-    "TOR_URL": "http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices",
-    "CLEARNET_URL": "https://price.bisq.wiz.biz/getAllMarketPrices"
-  }
-```
-
-Corresponding `docker-compose.yml` overrides:
-```yaml
-  api:
-    environment:
-      PRICE_DATA_SERVER_TOR_URL: ""
-      PRICE_DATA_SERVER_CLEARNET_URL: ""
       ...
 ```
 

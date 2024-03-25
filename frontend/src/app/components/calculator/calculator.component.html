@@ -1,0 +1,69 @@
+<div class="container-xl">
+  <div class="text-center">
+    <h2 i18n="shared.calculator">Calculator</h2>
+  </div>
+
+  <ng-container *ngIf="price$ | async; else loading">
+
+    <div class="row justify-content-center">
+
+      <form [formGroup]="form">
+        <div class="input-group input-group-lg mb-1">
+          <div class="input-group-prepend">
+            <span class="input-group-text">{{ currency$ | async }}</span>
+          </div>
+          <input type="text" class="form-control" formControlName="fiat" (input)="transformInput('fiat')" (click)="selectAll($event)">
+          <app-clipboard [button]="true" [text]="form.get('fiat').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
+        </div>
+
+        <div class="input-group input-group-lg mb-1">
+          <div class="input-group-prepend">
+            <span class="input-group-text">BTC</span>
+          </div>
+          <input type="text" class="form-control" formControlName="bitcoin" (input)="transformInput('bitcoin')" (click)="selectAll($event)">
+          <app-clipboard [button]="true" [text]="form.get('bitcoin').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
+        </div>
+
+        <div class="input-group input-group-lg mb-1">
+          <div class="input-group-prepend">
+            <span class="input-group-text" i18n="shared.sats">sats</span>
+          </div>
+          <input type="text" class="form-control" formControlName="satoshis" (input)="transformInput('satoshis')" (click)="selectAll($event)">
+          <app-clipboard [button]="true" [text]="form.get('satoshis').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
+        </div>
+      </form>
+
+    </div>
+
+    <br>
+
+    <div class="row justify-content-center">
+      <div class="bitcoin-satoshis-text">
+        ₿
+         <span [innerHTML]="form.get('bitcoin').value | bitcoinsatoshis"></span> 
+        <span class="sats" i18n="shared.sats">sats</span>
+      </div>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="fiat-text">
+        <app-fiat [value]="form.get('satoshis').value" digitsInfo="1.0-0"></app-fiat>
+      </div>
+    </div>
+
+    <div class="row justify-content-center mt-3">
+      <div class="symbol">
+        Fiat price last updated <app-time kind="since" [time]="lastFiatPrice$ | async" [fastRender]="true"></app-time>
+      </div>
+    </div>
+
+
+  </ng-container>
+
+  <ng-template #loading>
+    <div class="text-center">
+      Waiting for price feed...
+    </div>
+  </ng-template>
+
+</div>

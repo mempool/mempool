@@ -1,0 +1,26 @@
+<div class="container-xl" style="max-width: 1400px;">
+  <div>
+    <h1 i18n="liquid.federation-wallet">Liquid Federation Wallet</h1>
+  </div>
+
+  <div class="nav-container">
+    <ul class="nav nav-pills">
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="['/audit/wallet/utxos' | relativeUrl]" routerLinkActive="active" [routerLinkActiveOptions]="{matrixParams: 'ignored', queryParams: 'ignored', paths: 'exact', fragment: isExpiredFragment() ? 'exact' : 'ignored'}">UTXOs</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="['/audit/wallet/utxos' | relativeUrl]" [fragment]="'expired'" routerLinkActive="active" [routerLinkActiveOptions]="{matrixParams: 'ignored', queryParams: 'ignored', paths: 'exact', fragment: 'exact'}"><ng-container i18n="liquid.timelock-expired-utxos">Timelock-Expired UTXOs</ng-container></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="['/audit/wallet/addresses' | relativeUrl]" routerLinkActive="active"><ng-container i18n="mining.addresses">Addresses</ng-container></a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="clearfix"></div>
+
+  <router-outlet></router-outlet>
+
+</div>
+
+<br>

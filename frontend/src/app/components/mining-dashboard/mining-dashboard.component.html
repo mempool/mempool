@@ -26,9 +26,11 @@
 
     <!-- pool distribution -->
     <div class="col" style="margin-bottom: 1.47rem">
-      <div class="card graph-card">
+      <div class="card">
         <div class="card-body pl-2 pr-2">
-          <app-pool-ranking [attr.data-cy]="'pool-distribution'" [widget]=true></app-pool-ranking>
+          <div class="mempool-graph">
+            <app-pool-ranking [height]="graphHeight" [attr.data-cy]="'pool-distribution'" [widget]=true></app-pool-ranking>
+          </div>
           <div class="mt-1"><a [attr.data-cy]="'pool-distribution-view-more'" [routerLink]="['/graphs/mining/pools' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
         </div>
       </div>
@@ -38,20 +40,22 @@
     <div class="col" style="margin-bottom: 1.47rem">
       <div class="card">
         <div class="card-body pl-lg-3 pr-lg-3 pl-2 pr-2">
-          <app-hashrate-chart [attr.data-cy]="'hashrate-graph'" [widget]="true"></app-hashrate-chart>
+          <div class="fixed-mempool-graph">
+            <app-hashrate-chart [height]="graphHeight" [attr.data-cy]="'hashrate-graph'" [widget]="true"></app-hashrate-chart>
+          </div>
           <div class="mt-1"><a [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" fragment="1y" i18n="dashboard.view-more">View more &raquo;</a></div>
         </div>
       </div>
     </div>
 
-    <!-- Latest blocks -->
+    <!-- Recent blocks -->
     <div class="col">
       <div class="card">
         <div class="card-body">
           <a class="title-link" href="" [routerLink]="['/blocks' | relativeUrl]">
-            <h5 class="card-title d-inline" i18n="dashboard.latest-blocks">Latest blocks</h5>
+            <h5 class="card-title d-inline" i18n="dashboard.recent-blocks">Recent Blocks</h5>
             <span>&nbsp;</span>
-            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: 'text-top'; font-size: 13px; color: '#4a68b9'"></fa-icon>
+            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: #4a68b9"></fa-icon>
           </a>
           <app-blocks-list [attr.data-cy]="'latest-blocks'" [widget]=true></app-blocks-list>
         </div>
@@ -65,7 +69,7 @@
           <a class="title-link" href="" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]">
             <h5 class="card-title d-inline" i18n="dashboard.adjustments">Adjustments</h5>
             <span>&nbsp;</span>
-            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: 'text-top'; font-size: 13px; color: '#4a68b9'"></fa-icon>
+            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: #4a68b9"></fa-icon>
           </a>
           <app-difficulty-adjustments-table [attr.data-cy]="'difficulty-adjustments-table'"></app-difficulty-adjustments-table>
         </div>
@@ -73,24 +77,4 @@
     </div>
 
   </div>
-
-  <div class="pref-selectors">
-    <div class="selector">
-      <app-language-selector></app-language-selector>
-    </div>
-    <div class="selector">
-      <app-fiat-selector></app-fiat-selector>
-    </div>
-  </div>
-
-  <div class="terms-of-service">
-    <a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a>
-    |
-    <a [routerLink]="['/privacy-policy']" i18n="shared.privacy-policy|Privacy Policy">Privacy Policy</a>
-    |
-    <a [routerLink]="['/tx/push' | relativeUrl]" i18n="shared.broadcast-transaction|Broadcast Transaction">Broadcast Transaction</a>
-  </div>
-
-  <br>
-
 </div>

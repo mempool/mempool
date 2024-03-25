@@ -1,3 +1,11 @@
+.sticky-header {
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+}
+
 li.nav-item.active {
   background-color: #653b9c;
 }
@@ -20,6 +28,16 @@ li.nav-item {
     margin: auto 7px;
     padding-left: 8px;
     padding-right: 8px;
+  }
+  @media (max-width: 429px) {
+    margin: auto 5px;
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+  @media (max-width: 369px) {
+    margin: auto 3px;
+    padding-left: 4px;
+    padding-right: 4px;
   }
 }
 
@@ -45,7 +63,7 @@ li.nav-item {
   box-shadow: 0px 0px 15px 0px #000;
   flex-direction: row;
   left: 0;
-  justify-content: center;
+  justify-content: space-between;
   position: fixed;
   width: 100%;
   @media (min-width: 992px) {
@@ -56,15 +74,25 @@ li.nav-item {
   }
   a {
     font-size: 0.8em;
-    @media (min-width: 375px) {
+    @media (min-width: 370px) {
+      font-size: 0.9em;
+    }
+    @media (min-width: 430px) {
       font-size: 1em;
     }
+  }
+
+  li {
+    flex-grow: 1; /* Allows items to grow */
+    text-align: center; /* For text alignment */
   }
 }
 
 
 .navbar-collapse {
-  flex-basis: auto;
+  @media (min-width: 564px) {
+    flex-basis: auto;
+  }
   justify-content: flex-end;
 }
 
@@ -84,7 +112,6 @@ li.nav-item {
 
 .navbar-brand {
   position: relative;
-  height: 65px;
 }
 
 .navbar-brand.dual-logos {
@@ -100,7 +127,7 @@ nav {
 
 .connection-badge {
   position: absolute;
-  top: 22px;
+  top: 12px;
   width: 100%;
 }
 
@@ -189,7 +216,63 @@ nav {
   margin: 24px 0px 0px -15px;
   font-size: 8px;
   @media (max-width: 767.98px) {
-    margin: 33px 0px 0px -19px;
+    margin: 30px 0px 0px -19px;
     font-size: 7px;
   }
+  @media (max-width: 3429px) {
+    margin: 25px 0px 0px -19px;
+    font-size: 7px;
+  }
+  @media (max-width: 369px) {
+    margin: 20px 0px 0px -19px;
+    font-size: 7px;
+  }
+}
+
+.current-network-svg {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+
+:host-context(.rtl-layout) {
+  .current-network-svg {
+    width: 20px;
+    height: 20px;
+    margin-left: 5px;
+    margin-right: 0px;
+  }
+}
+
+.profile_image_container {
+  width: 35px;
+  margin-right: 15px;
+  text-align: center;
+  align-self: center;
+  cursor: pointer;
+  &.anon {
+    border: 1.5px solid lightgrey;
+    color: lightgrey;
+    border-radius: 5px;
+  }
+}
+.profile_image {
+  height: 35px;
+  border-radius: 5px;
+}
+
+main {
+  transition: 0.2s;
+  transition-property: max-width;
+}
+
+// empty sidenav
+.empty-sidenav {
+  z-index: 1;
+  background-color: transparent;
+  width: 0px;
+  height: calc(100vh - 65px);
+  position: sticky;
+  top: 65px;
+  padding-bottom: 20px;
 }

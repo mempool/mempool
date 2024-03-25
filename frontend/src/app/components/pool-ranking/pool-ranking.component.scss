@@ -10,6 +10,7 @@
   padding: 0px 15px;
   width: 100%;
   height: calc(100% - 140px);
+  padding-bottom: 20px;
   @media (max-width: 992px) {
     height: calc(100% - 190px);
   };
@@ -27,25 +28,30 @@
 .chart-widget {
   width: 100%;
   height: 100%;
-  height: 240px;
+  @media (max-width: 767px) {
+    max-height: 240px;
+  }
   @media (max-width: 485px) {
     max-height: 200px;
   }
-}
-
-.bottom-padding {
-  @media (max-width: 992px) {
-    padding-bottom: 65px
-  };
-  @media (max-width: 576px) {
-    padding-bottom: 65px
-  };
 }
 
 @media (max-width: 767.98px) {
   .pools-table th,
   .pools-table td {
     padding: .3em !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .pool-name {
+    max-width: 110px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .health-column {
+    display: none;
   }
 }
 
@@ -118,4 +124,15 @@
 .disabled {
   pointer-events: none;
   opacity: 0.5;
+}
+
+td {
+  .difference {
+    &.positive {
+      color: rgb(66, 183, 71);
+    }
+    &.negative {
+      color: rgb(183, 66, 66);
+    }
+  }
 }

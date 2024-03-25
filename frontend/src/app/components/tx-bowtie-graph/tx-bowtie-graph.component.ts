@@ -1,12 +1,14 @@
 import { Component, OnInit, Input, OnChanges, HostListener, Inject, LOCALE_ID } from '@angular/core';
 import { StateService } from '../../services/state.service';
-import { Outspend, Transaction } from '../../interfaces/electrs.interface';
+import { Outspend, Transaction, Vin, Vout } from '../../interfaces/electrs.interface';
 import { Router } from '@angular/router';
 import { ReplaySubject, merge, Subscription, of } from 'rxjs';
 import { tap, switchMap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { AssetsService } from '../../services/assets.service';
+import { environment } from '../../../environments/environment';
+import { ElectrsApiService } from '../../services/electrs-api.service';
 
 interface SvgLine {
   path: string;
@@ -20,6 +22,7 @@ interface SvgLine {
 interface Xput {
   type: 'input' | 'output' | 'fee';
   value?: number;
+  displayValue?: number;
   index?: number;
   txid?: string;
   vin?: number;
@@ -31,6 +34,7 @@ interface Xput {
   pegout?: string;
   confidential?: boolean;
   timestamp?: number;
+  blockHeight?: number;
   asset?: string;
 }
 
@@ -74,6 +78,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   zeroValueThickness = 20;
   hasLine: boolean;
   assetsMinimal: any;
+  nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;
 
   outspendsSubscription: Subscription;
   refreshOutspends$: ReplaySubject<string> = new ReplaySubject();
@@ -96,8 +101,8 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   constructor(
     private router: Router,
     private relativeUrlPipe: RelativeUrlPipe,
-    private stateService: StateService,
-    private apiService: ApiService,
+    public stateService: StateService,
+    private electrsApiService: ElectrsApiService,
     private assetsService: AssetsService,
     @Inject(LOCALE_ID) private locale: string,
   ) {
@@ -120,7 +125,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
         .pipe(
           switchMap((txid) => {
             if (!this.cached) {
-              return this.apiService.getOutspendsBatched$([txid]);
+              return this.electrsApiService.cachedRequest(this.electrsApiService.getOutspendsBatched$, 250, [txid]);
             } else {
               return of(null);
             }
@@ -167,12 +172,14 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     let voutWithFee = this.tx.vout.map((v, i) => {
       return {
         type: v.scriptpubkey_type === 'fee' ? 'fee' : 'output',
-        value: v?.value,
+        value: this.getOutputValue(v),
+        displayValue: v?.value,
         address: v?.scriptpubkey_address || v?.scriptpubkey_type?.toUpperCase(),
         index: i,
         pegout: v?.pegout?.scriptpubkey_address,
         confidential: (this.isLiquid && v?.value === undefined),
         timestamp: this.tx.status.block_time,
+        blockHeight: this.tx.status.block_height,
         asset: v?.asset,
       } as Xput;
     });
@@ -185,7 +192,8 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     let truncatedInputs = this.tx.vin.map((v, i) => {
       return {
         type: 'input',
-        value: v?.prevout?.value || (v?.is_coinbase && !totalValue ? 0 : undefined),
+        value: (v?.is_coinbase && !totalValue ? 0 : this.getInputValue(v)),
+        displayValue: v?.prevout?.value,
         txid: v.txid,
         vout: v.vout,
         address: v?.prevout?.scriptpubkey_address || v?.prevout?.scriptpubkey_type?.toUpperCase(),
@@ -194,6 +202,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
         pegin: v?.is_pegin,
         confidential: (this.isLiquid && v?.prevout?.value === undefined),
         timestamp: this.tx.status.block_time,
+        blockHeight: this.tx.status.block_height,
         asset: v?.prevout?.asset,
       } as Xput;
     });
@@ -229,14 +238,14 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   }
 
   calcTotalValue(tx: Transaction): number {
-    const totalOutput = this.tx.vout.reduce((acc, v) => (v.value == null ? 0 : v.value) + acc, 0);
+    let totalOutput = this.tx.vout.reduce((acc, v) => (this.getOutputValue(v) || 0) + acc, 0);
     // simple sum of outputs + fee for bitcoin
     if (!this.isLiquid) {
       return this.tx.fee ? totalOutput + this.tx.fee : totalOutput;
     } else {
-      const totalInput = this.tx.vin.reduce((acc, v) => (v?.prevout?.value == null ? 0 : v.prevout.value) + acc, 0);
-      const confidentialInputCount = this.tx.vin.reduce((acc, v) => acc + (v?.prevout?.value == null ? 1 : 0), 0);
-      const confidentialOutputCount = this.tx.vout.reduce((acc, v) => acc + (v.value == null ? 1 : 0), 0);
+      const totalInput = this.tx.vin.reduce((acc, v) => (this.getInputValue(v) || 0) + acc, 0);
+      const confidentialInputCount = this.tx.vin.reduce((acc, v) => acc + (this.isUnknownInputValue(v) ? 1 : 0), 0);
+      const confidentialOutputCount = this.tx.vout.reduce((acc, v) => acc + (this.isUnknownOutputValue(v) ? 1 : 0), 0);
 
       // if there are unknowns on both sides, the total is indeterminate, so we'll just fudge it
       if (confidentialInputCount && confidentialOutputCount) {
@@ -454,6 +463,34 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     } else {
       return `stroke-width: ${minWeight}`;
     }
+  }
+
+  getOutputValue(v: Vout): number | void {
+    if (!v) {
+      return null;
+    } else if (this.isLiquid && v.asset !== this.nativeAssetId) {
+      return null;
+    } else {
+      return v.value;
+    }
+  }
+
+  getInputValue(v: Vin): number | void {
+    if (!v?.prevout) {
+      return null;
+    } else if (this.isLiquid && v.prevout.asset !== this.nativeAssetId) {
+      return null;
+    } else {
+      return v.prevout.value;
+    }
+  }
+
+  isUnknownInputValue(v: Vin): boolean {
+    return v?.prevout?.value == null || this.isLiquid && v?.prevout?.asset !== this.nativeAssetId;
+  }
+
+  isUnknownOutputValue(v: Vout): boolean {
+    return v?.value == null || this.isLiquid && v?.asset !== this.nativeAssetId;
   }
 
   @HostListener('pointermove', ['$event'])

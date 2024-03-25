@@ -14,7 +14,7 @@ class NodesSocketsRepository {
       await DB.query(`
         INSERT INTO nodes_sockets(public_key, socket, type)
         VALUE (?, ?, ?)
-      `, [socket.publicKey, socket.addr, socket.network]);
+      `, [socket.publicKey, socket.addr, socket.network], 'silent');
     } catch (e: any) {
       if (e.errno !== 1062) { // ER_DUP_ENTRY - Not an issue, just ignore this
         logger.err(`Cannot save node socket (${[socket.publicKey, socket.addr, socket.network]}) into db. Reason: ` + (e instanceof Error ? e.message : e));

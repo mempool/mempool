@@ -8,10 +8,7 @@
     </div>
     <div *ngIf="network !== 'liquid' && network !== 'liquidtestnet'" class="features">
       <app-tx-features [tx]="tx"></app-tx-features>
-      <span *ngIf="cpfpInfo && (cpfpInfo.bestDescendant || cpfpInfo.descendants.length)" class="badge badge-primary mr-1">
-        CPFP
-      </span>
-      <span *ngIf="cpfpInfo && !cpfpInfo.bestDescendant && !cpfpInfo.descendants.length && cpfpInfo.ancestors.length" class="badge badge-info mr-1">
+      <span *ngIf="cpfpInfo && (cpfpInfo?.bestDescendant || cpfpInfo?.descendants?.length || cpfpInfo?.ancestors?.length)" class="badge badge-primary ml-1 mr-1">
         CPFP
       </span>
     </div>
@@ -36,14 +33,14 @@
         <span [innerHTML]="'&lrm;' + (tx.weight | wuBytes: 2)"></span>
       </p>
       <p class="field" *ngIf="!isCoinbase(tx)">
-        {{ tx.feePerVsize | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+        <app-fee-rate [fee]="tx.feePerVsize"></app-fee-rate>
       </p>
     </div>
     <div class="overlaid">
       <ng-container [ngSwitch]="extraData">
         <div class="opreturns" *ngSwitchCase="'coinbase'">
             <div class="opreturn-row">
-              <span class="label">Coinbase</span>
+              <span class="label" i18n="transactions-list.coinbase">Coinbase</span>
               <span class="message">{{ tx.vin[0].scriptsig | hex2ascii }}</span>
             </div>
         </div>

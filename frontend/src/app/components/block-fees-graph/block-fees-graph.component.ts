@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
-import { EChartsOption, graphic } from 'echarts';
+import { echarts, EChartsOption } from '../../graphs/echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
@@ -12,6 +12,7 @@ import { MiningService } from '../../services/mining.service';
 import { ActivatedRoute } from '@angular/router';
 import { FiatShortenerPipe } from '../../shared/pipes/fiat-shortener.pipe';
 import { FiatCurrencyPipe } from '../../shared/pipes/fiat-currency.pipe';
+import { StateService } from '../../services/state.service';
 
 @Component({
   selector: 'app-block-fees-graph',
@@ -54,6 +55,7 @@ export class BlockFeesGraphComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private storageService: StorageService,
     private miningService: MiningService,
+    public stateService: StateService,
     private route: ActivatedRoute,
     private fiatShortenerPipe: FiatShortenerPipe,
     private fiatCurrencyPipe: FiatCurrencyPipe,
@@ -65,6 +67,7 @@ export class BlockFeesGraphComponent implements OnInit {
 
   ngOnInit(): void {
     this.seoService.setTitle($localize`:@@6c453b11fd7bd159ae30bc381f367bc736d86909:Block Fees`);
+    this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.block-fees:See the average mining fees earned per Bitcoin block visualized in BTC and USD over time.`);
     this.miningWindowPreference = this.miningService.getDefaultTimespan('1m');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
@@ -122,11 +125,11 @@ export class BlockFeesGraphComponent implements OnInit {
     this.chartOptions = {
       title: title,
       color: [
-        new graphic.LinearGradient(0, 0, 0, 1, [
+        new echarts.graphic.LinearGradient(0, 0, 0, 1, [
           { offset: 0, color: '#FDD835' },
           { offset: 1, color: '#FB8C00' },
         ]),
-        new graphic.LinearGradient(0, 0, 0, 1, [
+        new echarts.graphic.LinearGradient(0, 0, 0, 1, [
           { offset: 0, color: '#C0CA33' },
           { offset: 1, color: '#1B5E20' },
         ]),
@@ -192,7 +195,7 @@ export class BlockFeesGraphComponent implements OnInit {
           {
             name: 'Fees ' + this.currency,
             inactiveColor: 'rgb(110, 112, 121)',
-            textStyle: {  
+            textStyle: {
               color: 'white',
             },
             icon: 'roundRect',

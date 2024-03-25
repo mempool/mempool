@@ -25,7 +25,7 @@
       </div>
   </div>
   <div class="row hash-chart full-width-row">
-    <div class="chart" echarts [initOpts]="chartInitOptions" [options]="chartOptions" (chartFinished)="onChartReady()"></div>
+    <div class="chart" *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions" (chartFinished)="onChartReady()"></div>
   </div>
 </div>
 

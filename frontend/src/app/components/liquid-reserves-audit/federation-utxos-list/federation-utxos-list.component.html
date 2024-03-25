@@ -1,0 +1,122 @@
+<div [ngClass]="{'widget': widget}">
+
+  <div class="clearfix"></div>
+  
+  <div style="min-height: 295px">
+    <table class="table table-borderless">
+      <thead style="vertical-align: middle;">
+        <th class="txid text-left" [ngClass]="{'widget': widget}" i18n="transaction.output">Output</th>
+        <th class="address text-left" *ngIf="!widget" i18n="shared.address">Address</th>
+        <th class="amount text-right" [ngClass]="{'widget': widget}" i18n="shared.amount">Amount</th>
+        <th class="pegin text-left" *ngIf="!widget" i18n="liquid.related-peg-in">Related Peg-In</th>
+        <th class="timestamp text-left" i18n="shared.date" [ngClass]="{'widget': widget}">Date</th>
+        <th class="expires-in text-left" *ngIf="!widget && showExpiredUtxos === false" i18n="liquid.expires-in">Expires in</th>
+        <th class="expires-in text-left" *ngIf="!widget && showExpiredUtxos === true" i18n="liquid.expired-since">Expired since</th>
+        <th class="is-dust text-right" *ngIf="!widget && showExpiredUtxos === true" i18n="liquid.is-dust">Is Dust</th>
+      </thead>
+      <tbody *ngIf="federationUtxos$ | async as utxos; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
+        <ng-container *ngIf="widget; else regularRows">
+          <tr *ngFor="let utxo of utxos | slice:0:6">
+            <td class="txid text-left widget">
+              <a href="{{ env.MEMPOOL_WEBSITE_URL + '/tx/' + utxo.txid + ':' + utxo.txindex }}" target="_blank" style="color:#b86d12">
+                <app-truncate [text]="utxo.txid + ':' + utxo.txindex" [lastChars]="6"></app-truncate>
+              </a>
+            </td>
+            <td class="amount text-right widget">
+              <app-amount [satoshis]="utxo.amount" [noFiat]="true" [forceBtc]="true"></app-amount>
+            </td>
+            <td class="timestamp text-left widget">
+              <app-time kind="since" [time]="utxo.blocktime"></app-time>
+            </td>
+          </tr>
+        </ng-container>
+        <ng-template #regularRows>
+          <tr *ngFor="let utxo of utxos | slice:(page - 1) * pageSize:page * pageSize">
+            <td class="txid text-left">
+              <a href="{{ env.MEMPOOL_WEBSITE_URL + '/tx/' + utxo.txid + ':' + utxo.txindex }}" target="_blank" style="color:#b86d12">
+                <app-truncate [text]="utxo.txid + ':' + utxo.txindex" [lastChars]="6"></app-truncate>
+              </a>
+            </td>
+            <td class="address text-left">
+              <a href="{{ env.MEMPOOL_WEBSITE_URL + '/address/' + utxo.bitcoinaddress }}" target="_blank" style="color:#b86d12">
+                <app-truncate [text]="utxo.bitcoinaddress" [lastChars]="6"></app-truncate>
+              </a>
+            </td>
+            <td class="amount text-right">
+              <app-amount [satoshis]="utxo.amount" [noFiat]="true" [forceBtc]="true"></app-amount>
+            </td>
+            <td class="pegin text-left">
+              <ng-container *ngIf="utxo.pegtxid; else noPeginMessage">
+                <a [routerLink]="['/tx' | relativeUrl, utxo.pegtxid]" [fragment]="'vin=' + utxo.pegindex">
+                  <app-truncate [text]="utxo.pegtxid + ':' + utxo.pegindex" [lastChars]="6"></app-truncate>
+                </a>
+              </ng-container>
+              <ng-template #noPeginMessage>
+                <i><span class="text-muted" i18n="liquid.change-output">Change output</span></i>
+              </ng-template>
+            </td>
+            <td class="timestamp text-left">
+              &lrm;{{ utxo.blocktime * 1000 | date:'yyyy-MM-dd HH:mm' }}
+              <div class="symbol lg-inline relative-time"><i>(<app-time kind="since" [time]="utxo.blocktime"></app-time>)</i></div>
+            </td>
+            <td class="expires-in text-left" [ngStyle]="{ 'color': getGradientColor(utxo.blocknumber + utxo.timelock - lastReservesBlockUpdate) }">
+              {{ utxo.blocknumber + utxo.timelock - lastReservesBlockUpdate < 0 ? -(utxo.blocknumber + utxo.timelock - lastReservesBlockUpdate) : utxo.blocknumber + utxo.timelock - lastReservesBlockUpdate }} <span i18n="shared.blocks" class="symbol">blocks</span>
+            </td>
+            <td *ngIf="!widget && showExpiredUtxos === true" class="is-dust text-right" [ngStyle]="{ 'color': !utxo.isDust ? '#D81B60' : '' }">
+              <div i18n="shared.yes" *ngIf="utxo.isDust">Yes</div>
+              <div i18n="shared.no" *ngIf="!utxo.isDust">No</div>
+            </td>
+          </tr>
+        </ng-template>
+      </tbody>
+      <ng-template #skeleton>
+        <tbody *ngIf="widget; else regularRowsSkeleton">
+          <tr *ngFor="let item of skeletonLines">
+            <td class="txid text-left widget">
+              <span class="skeleton-loader" style="max-width: 400px"></span>
+            </td>
+            <td class="amount text-right widget">
+              <span class="skeleton-loader" style="max-width: 300px"></span>
+            </td>
+            <td class="timestamp text-left widget">
+              <span class="skeleton-loader" style="max-width: 300px"></span>
+            </td>
+          </tr>
+        </tbody>
+        <ng-template #regularRowsSkeleton>
+          <tr *ngFor="let item of skeletonLines">
+            <td class="txid text-left">
+              <span class="skeleton-loader" style="max-width: 300px"></span>
+            </td>
+            <td class="address text-left">
+              <span class="skeleton-loader" style="max-width: 300px"></span>
+            </td>
+            <td class="amount text-right">
+              <span class="skeleton-loader" style="max-width: 140px"></span>
+            </td>
+            <td class="pegin text-left">
+              <span class="skeleton-loader" style="max-width: 300px"></span>
+            </td>
+            <td class="timestamp text-left">
+              <span class="skeleton-loader" style="max-width: 140px"></span>
+            </td>
+            <td class="expires-in text-left">
+              <span class="skeleton-loader" style="max-width: 140px"></span>
+            </td>
+          </tr>
+        </ng-template>
+      </ng-template>
+    </table>
+
+    <ngb-pagination *ngIf="!widget && federationUtxos$ | async as utxos" class="pagination-container float-right mt-2" [class]="isLoading ? 'disabled' : ''"
+      [collectionSize]="utxos.length" [rotate]="true" [maxSize]="maxSize" [pageSize]="15" [(page)]="page"
+      (pageChange)="pageChange(page)" [boundaryLinks]="true" [ellipses]="false">
+    </ngb-pagination>
+
+    <ng-template [ngIf]="!widget">
+      <div class="clearfix"></div>
+      <br>
+    </ng-template>
+  </div>
+  
+</div>

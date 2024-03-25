@@ -1,22 +1,14 @@
 import TxSprite from './tx-sprite';
 import { FastVertexArray } from './fast-vertex-array';
-import { TransactionStripped } from '../../interfaces/websocket.interface';
 import { SpriteUpdateParams, Square, Color, ViewUpdateParams } from './sprite-types';
-import { feeLevels, mempoolFeeColors } from '../../app.constants';
+import { hexToColor } from './utils';
 import BlockScene from './block-scene';
+import { TransactionStripped } from '../../interfaces/node-api.interface';
+import { TransactionFlags } from '../../shared/filters.utils';
 
 const hoverTransitionTime = 300;
 const defaultHoverColor = hexToColor('1bd8f4');
-
-const feeColors = mempoolFeeColors.map(hexToColor);
-const auditFeeColors = feeColors.map((color) => darken(desaturate(color, 0.3), 0.9));
-const marginalFeeColors = feeColors.map((color) => darken(desaturate(color, 0.8), 1.1));
-const auditColors = {
-  censored: hexToColor('f344df'),
-  missing: darken(desaturate(hexToColor('f344df'), 0.3), 0.7),
-  added: hexToColor('0099ff'),
-  selected: darken(desaturate(hexToColor('0099ff'), 0.3), 0.7),
-};
+const defaultHighlightColor = hexToColor('800080');
 
 // convert from this class's update format to TxSprite's update format
 function toSpriteUpdate(params: ViewUpdateParams): SpriteUpdateParams {
@@ -36,15 +28,21 @@ export default class TxView implements TransactionStripped {
   vsize: number;
   value: number;
   feerate: number;
-  status?: 'found' | 'missing' | 'fresh' | 'added' | 'censored' | 'selected';
+  acc?: boolean;
+  rate?: number;
+  flags: number;
+  bigintFlags?: bigint | null = 0b00000100_00000000_00000000_00000000n;
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'rbf' | 'accelerated';
   context?: 'projected' | 'actual';
   scene?: BlockScene;
 
   initialised: boolean;
   vertexArray: FastVertexArray;
   hover: boolean;
+  highlight: boolean;
   sprite: TxSprite;
   hoverColor: Color | void;
+  highlightColor: Color | void;
 
   screenPosition: Square;
   gridPosition: Square | void;
@@ -58,8 +56,12 @@ export default class TxView implements TransactionStripped {
     this.fee = tx.fee;
     this.vsize = tx.vsize;
     this.value = tx.value;
-    this.feerate = tx.fee / tx.vsize;
+    this.feerate = tx.rate || (tx.fee / tx.vsize); // sort by effective fee rate where available
+    this.acc = tx.acc;
+    this.rate = tx.rate;
     this.status = tx.status;
+    this.flags = tx.flags || 0;
+    this.bigintFlags = tx.flags ? (BigInt(tx.flags) | (this.acc ? TransactionFlags.acceleration : 0n)): 0n;
     this.initialised = false;
     this.vertexArray = scene.vertexArray;
 
@@ -148,69 +150,43 @@ export default class TxView implements TransactionStripped {
     } else {
       this.hover = false;
       this.hoverColor = null;
-      if (this.sprite) {
-        this.sprite.resume(hoverTransitionTime);
+      if (this.highlight) {
+        this.setHighlight(true, this.highlightColor);
+      } else {
+        if (this.sprite) {
+          this.sprite.resume(hoverTransitionTime);
+        }
       }
     }
     this.dirty = false;
     return performance.now() + hoverTransitionTime;
   }
 
-  getColor(): Color {
-    const feeLevelIndex = feeLevels.findIndex((feeLvl) => Math.max(1, this.feerate) < feeLvl) - 1;
-    const feeLevelColor = feeColors[feeLevelIndex] || feeColors[mempoolFeeColors.length - 1];
-    // Normal mode
-    if (!this.scene?.highlightingEnabled) {
-      return feeLevelColor;
-    }
-    // Block audit
-    switch(this.status) {
-      case 'censored':
-        return auditColors.censored;
-      case 'missing':
-        return marginalFeeColors[feeLevelIndex] || marginalFeeColors[mempoolFeeColors.length - 1];
-      case 'fresh':
-        return auditColors.missing;
-      case 'added':
-        return auditColors.added;
-      case 'selected':
-        return marginalFeeColors[feeLevelIndex] || marginalFeeColors[mempoolFeeColors.length - 1];
-      case 'found':
-        if (this.context === 'projected') {
-          return auditFeeColors[feeLevelIndex] || auditFeeColors[mempoolFeeColors.length - 1];
-        } else {
-          return feeLevelColor;
+  // Temporarily override the tx color
+  // returns minimum transition end time
+  setHighlight(highlightOn: boolean, color: Color | void = defaultHighlightColor): number {
+    if (highlightOn) {
+      this.highlight = true;
+      this.highlightColor = color;
+
+      this.sprite.update({
+        ...this.highlightColor,
+        duration: hoverTransitionTime,
+        adjust: false,
+        temp: true
+      });
+    } else {
+      this.highlight = false;
+      this.highlightColor = null;
+      if (this.hover) {
+        this.setHover(true, this.hoverColor);
+      } else {
+        if (this.sprite) {
+          this.sprite.resume(hoverTransitionTime);
         }
-      default:
-        return feeLevelColor;
+      }
     }
-  }
-}
-
-function hexToColor(hex: string): Color {
-  return {
-    r: parseInt(hex.slice(0, 2), 16) / 255,
-    g: parseInt(hex.slice(2, 4), 16) / 255,
-    b: parseInt(hex.slice(4, 6), 16) / 255,
-    a: 1
-  };
-}
-
-function desaturate(color: Color, amount: number): Color {
-  const gray = (color.r + color.g + color.b) / 6;
-  return {
-    r: color.r + ((gray - color.r) * amount),
-    g: color.g + ((gray - color.g) * amount),
-    b: color.b + ((gray - color.b) * amount),
-    a: color.a,
-  };
-}
-
-function darken(color: Color, amount: number): Color {
-  return {
-    r: color.r * amount,
-    g: color.g * amount,
-    b: color.b * amount,
-    a: color.a,
+    this.dirty = false;
+    return performance.now() + hoverTransitionTime;
   }
 }

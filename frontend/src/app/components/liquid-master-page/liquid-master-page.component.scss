@@ -1,3 +1,11 @@
+.sticky-header {
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+}
+
 li.nav-item.active {
   background-color: #653b9c;
 }
@@ -15,6 +23,11 @@ li.nav-item {
   margin: auto 10px;
   padding-left: 10px;
   padding-right: 10px;
+  @media (max-width: 429px) {
+    margin: auto 5px;
+    padding-left: 6px;
+    padding-right: 6px;
+  }
 }
 
 @media (min-width: 992px) {
@@ -136,4 +149,19 @@ nav {
 }
 .navbar-dark .navbar-nav .nav-link {
   color: #f1f1f1;
+}
+
+.current-network-svg {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+
+:host-context(.rtl-layout) {
+  .current-network-svg {
+    width: 20px;
+    height: 20px;
+    margin-left: 5px;
+    margin-right: 0px;
+  }
 }

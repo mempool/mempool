@@ -29,6 +29,14 @@ export const mempoolFeeColors = [
   'ba3243',
   'b92b48',
   'b9254b',
+  'b8214d',
+  'b71d4f',
+  'b61951',
+  'b41453',
+  'b30e55',
+  'b10857',
+  'b00259',
+  'ae005b',
 ];
 
 export const chartColors = [
@@ -69,6 +77,7 @@ export const chartColors = [
   "#3E2723",
   "#212121",
   "#263238",
+  "#801313",
 ];
 
 export const poolsColor = {
@@ -257,6 +266,136 @@ export const fiatCurrencies = {
   USD: {
     name: 'US Dollar',
     code: 'USD',
+    indexed: true,
+  },
+  BGN: {
+    name: 'Bulgarian Lev',
+    code: 'BGN',
+    indexed: true,
+  },
+  BRL: {
+    name: 'Brazilian Real',
+    code: 'BRL',
+    indexed: true,
+  },
+  CNY: {
+    name: 'Chinese Yuan',
+    code: 'CNY',
+    indexed: true,
+  },
+  CZK: {
+    name: 'Czech Koruna',
+    code: 'CZK',
+    indexed: true,
+  },
+  DKK: {
+    name: 'Danish Krone',
+    code: 'DKK',
+    indexed: true,
+  },
+  HKD: {
+    name: 'Hong Kong Dollar',
+    code: 'HKD',
+    indexed: true,
+  },
+  HRK: {
+    name: 'Croatian Kuna',
+    code: 'HRK',
+    indexed: true,
+  },
+  HUF: {
+    name: 'Hungarian Forint',
+    code: 'HUF',
+    indexed: true,
+  },
+  IDR: {
+    name: 'Indonesian Rupiah',
+    code: 'IDR',
+    indexed: true,
+  },
+  ILS: {
+    name: 'Israeli Shekel',
+    code: 'ILS',
+    indexed: true,
+  },
+  INR: {
+    name: 'Indian Rupee',
+    code: 'INR',
+    indexed: true,
+  },
+  ISK: {
+    name: 'Icelandic Krona',
+    code: 'ISK',
+    indexed: true,
+  },
+  KRW: {
+    name: 'South Korean Won',
+    code: 'KRW',
+    indexed: true,
+  },
+  MXN: {
+    name: 'Mexican Peso',
+    code: 'MXN',
+    indexed: true,
+  },
+  MYR: {
+    name: 'Malaysian Ringgit',
+    code: 'MYR',
+    indexed: true,
+  },
+  NOK: {
+    name: 'Norwegian Krone',
+    code: 'NOK',
+    indexed: true,
+  },
+  NZD: {
+    name: 'New Zealand Dollar',
+    code: 'NZD',
+    indexed: true,
+  },
+  PHP: {
+    name: 'Philippine Peso',
+    code: 'PHP',
+    indexed: true,
+  },
+  PLN: {
+    name: 'Polish Zloty',
+    code: 'PLN',
+    indexed: true,
+  },
+  RON: {
+    name: 'Romanian Leu',
+    code: 'RON',
+    indexed: true,
+  },
+  RUB: {
+    name: 'Russian Ruble',
+    code: 'RUB',
+    indexed: true,
+  },
+  SEK: {
+    name: 'Swedish Krona',
+    code: 'SEK',
+    indexed: true,
+  },
+  SGD: {
+    name: 'Singapore Dollar',
+    code: 'SGD',
+    indexed: true,
+  },
+  THB: {
+    name: 'Thai Baht',
+    code: 'THB',
+    indexed: true,
+  },
+  TRY: {
+    name: 'Turkish Lira',
+    code: 'TRY',
+    indexed: true,
+  },
+  ZAR: {
+    name: 'South African Rand',
+    code: 'ZAR',
     indexed: true,
   },
 };

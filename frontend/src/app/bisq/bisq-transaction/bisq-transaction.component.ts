@@ -14,7 +14,7 @@ import { WebsocketService } from '../../services/websocket.service';
 @Component({
   selector: 'app-bisq-transaction',
   templateUrl: './bisq-transaction.component.html',
-  styleUrls: ['./bisq-transaction.component.scss']
+  styleUrls: ['./../../components/transaction/transaction.component.scss']
 })
 export class BisqTransactionComponent implements OnInit, OnDestroy {
   bisqTx: BisqTransaction;
@@ -48,6 +48,7 @@ export class BisqTransactionComponent implements OnInit, OnDestroy {
         document.body.scrollTo(0, 0);
         this.txId = params.get('id') || '';
         this.seoService.setTitle($localize`:@@bisq.transaction.browser-title:Transaction: ${this.txId}:INTERPOLATION:`);
+        this.seoService.setDescription($localize`:@@meta.description.bisq.transaction:See inputs, outputs, transaction type, burnt amount, and more for transaction with txid ${this.txId}:INTERPOLATION:.`);
         if (history.state.data) {
           return of(history.state.data);
         }
@@ -70,11 +71,13 @@ export class BisqTransactionComponent implements OnInit, OnDestroy {
                     catchError((txError: HttpErrorResponse) => {
                       console.log(txError);
                       this.error = txError;
+                      this.seoService.logSoft404();
                       return of(null);
                     })
                   );
               }
               this.error = bisqTxError;
+              this.seoService.logSoft404();
               return of(null);
             })
           );
@@ -103,6 +106,7 @@ export class BisqTransactionComponent implements OnInit, OnDestroy {
       this.isLoadingTx = false;
 
       if (!tx) {
+        this.seoService.logSoft404();
         return;
       }
 
@@ -112,7 +116,7 @@ export class BisqTransactionComponent implements OnInit, OnDestroy {
       this.error = error;
     });
 
-    this.latestBlock$ = this.stateService.blocks$.pipe(map((([block]) => block)));
+    this.latestBlock$ = this.stateService.blocks$.pipe(map((blocks) => blocks[0]));
 
     this.stateService.bsqPrice$
       .subscribe((bsqPrice) => {

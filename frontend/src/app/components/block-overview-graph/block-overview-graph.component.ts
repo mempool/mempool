@@ -4,8 +4,25 @@ import { FastVertexArray } from './fast-vertex-array';
 import BlockScene from './block-scene';
 import TxSprite from './tx-sprite';
 import TxView from './tx-view';
-import { Position } from './sprite-types';
+import { Color, Position } from './sprite-types';
 import { Price } from '../../services/price.service';
+import { StateService } from '../../services/state.service';
+import { Subscription } from 'rxjs';
+import { defaultColorFunction, setOpacity, defaultFeeColors, defaultAuditFeeColors, defaultMarginalFeeColors, defaultAuditColors } from './utils';
+import { ActiveFilter, FilterMode, toFlags } from '../../shared/filters.utils';
+import { detectWebGL } from '../../shared/graphs.utils';
+
+const unmatchedOpacity = 0.2;
+const unmatchedFeeColors = defaultFeeColors.map(c => setOpacity(c, unmatchedOpacity));
+const unmatchedAuditFeeColors = defaultAuditFeeColors.map(c => setOpacity(c, unmatchedOpacity));
+const unmatchedMarginalFeeColors = defaultMarginalFeeColors.map(c => setOpacity(c, unmatchedOpacity));
+const unmatchedAuditColors = {
+  censored: setOpacity(defaultAuditColors.censored, unmatchedOpacity),
+  missing: setOpacity(defaultAuditColors.missing, unmatchedOpacity),
+  added: setOpacity(defaultAuditColors.added, unmatchedOpacity),
+  selected: setOpacity(defaultAuditColors.selected, unmatchedOpacity),
+  accelerated: setOpacity(defaultAuditColors.accelerated, unmatchedOpacity),
+};
 
 @Component({
   selector: 'app-block-overview-graph',
@@ -18,12 +35,19 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   @Input() blockLimit: number;
   @Input() orientation = 'left';
   @Input() flip = true;
+  @Input() animationDuration: number = 1000;
+  @Input() animationOffset: number | null = null;
   @Input() disableSpinner = false;
   @Input() mirrorTxid: string | void;
   @Input() unavailable: boolean = false;
   @Input() auditHighlighting: boolean = false;
+  @Input() showFilters: boolean = false;
+  @Input() excludeFilters: string[] = [];
+  @Input() filterFlags: bigint | null = null;
+  @Input() filterMode: FilterMode = 'and';
   @Input() blockConversion: Price;
-  @Output() txClickEvent = new EventEmitter<TransactionStripped>();
+  @Input() overrideColors: ((tx: TxView) => Color) | null = null;
+  @Output() txClickEvent = new EventEmitter<{ tx: TransactionStripped, keyModifier: boolean}>();
   @Output() txHoverEvent = new EventEmitter<string>();
   @Output() readyEvent = new EventEmitter();
 
@@ -43,25 +67,43 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   scene: BlockScene;
   hoverTx: TxView | void;
   selectedTx: TxView | void;
+  highlightTx: TxView | void;
   mirrorTx: TxView | void;
   tooltipPosition: Position;
 
   readyNextFrame = false;
 
+  searchText: string;
+  searchSubscription: Subscription;
+  filtersAvailable: boolean = true;
+  activeFilterFlags: bigint | null = null;
+
+  webGlEnabled = true;
+
   constructor(
     readonly ngZone: NgZone,
     readonly elRef: ElementRef,
+    public stateService: StateService,
   ) {
+    this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
     this.vertexArray = new FastVertexArray(512, TxSprite.dataSize);
+    this.searchSubscription = this.stateService.searchText$.subscribe((text) => {
+      this.searchText = text;
+      this.updateSearchHighlight();
+    });
   }
 
   ngAfterViewInit(): void {
-    this.canvas.nativeElement.addEventListener('webglcontextlost', this.handleContextLost, false);
-    this.canvas.nativeElement.addEventListener('webglcontextrestored', this.handleContextRestored, false);
-    this.gl = this.canvas.nativeElement.getContext('webgl');
-    this.initCanvas();
+    if (this.canvas) {
+      this.canvas.nativeElement.addEventListener('webglcontextlost', this.handleContextLost, false);
+      this.canvas.nativeElement.addEventListener('webglcontextrestored', this.handleContextRestored, false);
+      this.gl = this.canvas.nativeElement.getContext('webgl');
 
-    this.resizeCanvas();
+      if (this.gl) {
+        this.initCanvas();
+        this.resizeCanvas();
+      }
+    }
   }
 
   ngOnChanges(changes): void {
@@ -76,6 +118,25 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     if (changes.auditHighlighting) {
       this.setHighlightingEnabled(this.auditHighlighting);
     }
+    if (changes.overrideColor && this.scene) {
+      this.scene.setColorFunction(this.overrideColors);
+    }
+    if ((changes.filterFlags || changes.showFilters || changes.filterMode)) {
+      this.setFilterFlags();
+    }
+  }
+
+  setFilterFlags(goggle?: ActiveFilter): void {
+    this.filterMode = goggle?.mode || this.filterMode;
+    this.activeFilterFlags = goggle?.filters ? toFlags(goggle.filters) : this.filterFlags;
+    if (this.scene) {
+      if (this.activeFilterFlags != null && this.filtersAvailable) {
+        this.scene.setColorFunction(this.getFilterColorFunction(this.activeFilterFlags));
+      } else {
+        this.scene.setColorFunction(this.overrideColors);
+      }
+    }
+    this.start();
   }
 
   ngOnDestroy(): void {
@@ -83,8 +144,10 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
       cancelAnimationFrame(this.animationFrameRequest);
       clearTimeout(this.animationHeartBeat);
     }
-    this.canvas.nativeElement.removeEventListener('webglcontextlost', this.handleContextLost);
-    this.canvas.nativeElement.removeEventListener('webglcontextrestored', this.handleContextRestored);
+    if (this.canvas) {
+      this.canvas.nativeElement.removeEventListener('webglcontextlost', this.handleContextLost);
+      this.canvas.nativeElement.removeEventListener('webglcontextrestored', this.handleContextRestored);
+    }
   }
 
   clear(direction): void {
@@ -104,10 +167,16 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   // initialize the scene without any entry transition
   setup(transactions: TransactionStripped[]): void {
+    const filtersAvailable = transactions.reduce((flagSet, tx) => flagSet || tx.flags > 0, false);
+    if (filtersAvailable !== this.filtersAvailable) {
+      this.setFilterFlags();
+    }
+    this.filtersAvailable = filtersAvailable;
     if (this.scene) {
       this.scene.setup(transactions);
       this.readyNextFrame = true;
       this.start();
+      this.updateSearchHighlight();
     }
   }
 
@@ -115,6 +184,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     if (this.scene) {
       this.scene.enter(transactions, direction);
       this.start();
+      this.updateSearchHighlight();
     }
   }
 
@@ -122,24 +192,31 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     if (this.scene) {
       this.scene.exit(direction);
       this.start();
+      this.updateSearchHighlight();
     }
   }
 
-  replace(transactions: TransactionStripped[], direction: string, sort: boolean = true): void {
+  replace(transactions: TransactionStripped[], direction: string, sort: boolean = true, startTime?: number): void {
     if (this.scene) {
-      this.scene.replace(transactions || [], direction, sort);
+      this.scene.replace(transactions || [], direction, sort, startTime);
       this.start();
+      this.updateSearchHighlight();
     }
   }
 
-  update(add: TransactionStripped[], remove: string[], direction: string = 'left', resetLayout: boolean = false): void {
+  update(add: TransactionStripped[], remove: string[], change: { txid: string, rate: number | undefined, acc: boolean | undefined }[], direction: string = 'left', resetLayout: boolean = false): void {
     if (this.scene) {
-      this.scene.update(add, remove, direction, resetLayout);
+      this.scene.update(add, remove, change, direction, resetLayout);
       this.start();
+      this.updateSearchHighlight();
     }
   }
 
   initCanvas(): void {
+    if (!this.canvas || !this.gl) {
+      return;
+    }
+
     this.gl.clearColor(0.0, 0.0, 0.0, 0.0);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
@@ -179,34 +256,47 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     cancelAnimationFrame(this.animationFrameRequest);
     this.animationFrameRequest = null;
     this.running = false;
+    this.gl = null;
   }
 
   handleContextRestored(event): void {
-    this.initCanvas();
+    if (this.canvas?.nativeElement) {
+      this.gl = this.canvas.nativeElement.getContext('webgl');
+      if (this.gl) {
+        this.initCanvas();
+      }
+    }
   }
 
   @HostListener('window:resize', ['$event'])
   resizeCanvas(): void {
-    this.cssWidth = this.canvas.nativeElement.offsetParent.clientWidth;
-    this.cssHeight = this.canvas.nativeElement.offsetParent.clientHeight;
-    this.displayWidth = window.devicePixelRatio * this.cssWidth;
-    this.displayHeight = window.devicePixelRatio * this.cssHeight;
-    this.canvas.nativeElement.width = this.displayWidth;
-    this.canvas.nativeElement.height = this.displayHeight;
-    if (this.gl) {
-      this.gl.viewport(0, 0, this.displayWidth, this.displayHeight);
-    }
-    if (this.scene) {
-      this.scene.resize({ width: this.displayWidth, height: this.displayHeight, animate: false });
-      this.start();
-    } else {
-      this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: this.resolution,
-        blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray, highlighting: this.auditHighlighting });
-      this.start();
+    if (this.canvas) {
+      this.cssWidth = this.canvas.nativeElement.offsetParent.clientWidth;
+      this.cssHeight = this.canvas.nativeElement.offsetParent.clientHeight;
+      this.displayWidth = window.devicePixelRatio * this.cssWidth;
+      this.displayHeight = window.devicePixelRatio * this.cssHeight;
+      this.canvas.nativeElement.width = this.displayWidth;
+      this.canvas.nativeElement.height = this.displayHeight;
+      if (this.gl) {
+        this.gl.viewport(0, 0, this.displayWidth, this.displayHeight);
+      }
+      if (this.scene) {
+        this.scene.resize({ width: this.displayWidth, height: this.displayHeight, animate: false });
+        this.start();
+      } else {
+        this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: this.resolution,
+          blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray,
+          highlighting: this.auditHighlighting, animationDuration: this.animationDuration, animationOffset: this.animationOffset,
+        colorFunction: this.getColorFunction() });
+        this.start();
+      }
     }
   }
 
   compileShader(src, type): WebGLShader {
+    if (!this.gl) {
+      return;
+    }
     const shader = this.gl.createShader(type);
 
     this.gl.shaderSource(shader, src);
@@ -220,6 +310,9 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   }
 
   buildShaderProgram(shaderInfo): WebGLProgram {
+    if (!this.gl) {
+      return;
+    }
     const program = this.gl.createProgram();
 
     shaderInfo.forEach((desc) => {
@@ -256,7 +349,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
       now = performance.now();
     }
     // skip re-render if there's no change to the scene
-    if (this.scene) {
+    if (this.scene && this.gl) {
       /* SET UP SHADER UNIFORMS */
       // screen dimensions
       this.gl.uniform2f(this.gl.getUniformLocation(this.shaderProgram, 'screenSize'), this.displayWidth, this.displayHeight);
@@ -323,17 +416,27 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   @HostListener('pointerup', ['$event'])
   onClick(event) {
+    if (!this.canvas) {
+      return;
+    }
     if (event.target === this.canvas.nativeElement && event.pointerType === 'touch') {
       this.setPreviewTx(event.offsetX, event.offsetY, true);
     } else if (event.target === this.canvas.nativeElement) {
-      this.onTxClick(event.offsetX, event.offsetY);
+      const keyMod = event.shiftKey || event.ctrlKey || event.metaKey;
+      const middleClick = event.which === 2 || event.button === 1;
+      this.onTxClick(event.offsetX, event.offsetY, keyMod || middleClick);
     }
   }
 
   @HostListener('pointermove', ['$event'])
   onPointerMove(event) {
+    if (!this.canvas) {
+      return;
+    }
     if (event.target === this.canvas.nativeElement) {
       this.setPreviewTx(event.offsetX, event.offsetY, false);
+    } else {
+      this.onPointerLeave(event);
     }
   }
 
@@ -402,6 +505,19 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     }
   }
 
+  updateSearchHighlight(): void {
+    if (this.highlightTx && this.highlightTx.txid !== this.searchText && this.scene) {
+      this.scene.setHighlight(this.highlightTx, false);
+      this.start();
+    } else if (this.scene?.txs && this.searchText && this.searchText.length === 64) {
+      this.highlightTx = this.scene.txs[this.searchText];
+      if (this.highlightTx) {
+        this.scene.setHighlight(this.highlightTx, true);
+        this.start();
+      }
+    }
+  }
+
   setHighlightingEnabled(enabled: boolean): void {
     if (this.scene) {
       this.scene.setHighlighting(enabled);
@@ -409,17 +525,45 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     }
   }
 
-  onTxClick(cssX: number, cssY: number) {
-    const x = cssX * window.devicePixelRatio;
-    const y = cssY * window.devicePixelRatio;
-    const selected = this.scene.getTxAt({ x, y });
-    if (selected && selected.txid) {
-      this.txClickEvent.emit(selected);
+  onTxClick(cssX: number, cssY: number, keyModifier: boolean = false) {
+    if (this.scene) {
+      const x = cssX * window.devicePixelRatio;
+      const y = cssY * window.devicePixelRatio;
+      const selected = this.scene.getTxAt({ x, y });
+      if (selected && selected.txid) {
+        this.txClickEvent.emit({ tx: selected, keyModifier });
+      }
     }
   }
 
   onTxHover(hoverId: string) {
     this.txHoverEvent.emit(hoverId);
+  }
+
+  getColorFunction(): ((tx: TxView) => Color) {
+    if (this.filterFlags) {
+      return this.getFilterColorFunction(this.filterFlags);
+    } else if (this.activeFilterFlags) {
+      return this.getFilterColorFunction(this.activeFilterFlags);
+    } else {
+      return this.overrideColors;
+    }
+  }
+
+  getFilterColorFunction(flags: bigint): ((tx: TxView) => Color) {
+    return (tx: TxView) => {
+      if ((this.filterMode === 'and' && (tx.bigintFlags & flags) === flags) || (this.filterMode === 'or' && (flags === 0n || (tx.bigintFlags & flags) > 0n))) {
+        return defaultColorFunction(tx);
+      } else {
+        return defaultColorFunction(
+          tx,
+          unmatchedFeeColors,
+          unmatchedAuditFeeColors,
+          unmatchedMarginalFeeColors,
+          unmatchedAuditColors
+        );
+      }
+    };
   }
 }
 

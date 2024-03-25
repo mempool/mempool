@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 59;
+  private static currentVersion = 75;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -516,6 +516,144 @@ class DatabaseMigration {
       // https://github.com/mempool/mempool/issues/3360
       await this.$executeQuery(`TRUNCATE prices`);
     }
+
+    if (databaseSchemaVersion < 60 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD sigop_txs JSON DEFAULT "[]"');
+      await this.updateToSchemaVersion(60);
+    }
+
+    if (databaseSchemaVersion < 61 && isBitcoin === true) {
+      // Break block templates into their own table
+      if (! await this.$checkIfTableExists('blocks_templates')) {
+        await this.$executeQuery('CREATE TABLE blocks_templates AS SELECT id, template FROM blocks_summaries WHERE template != "[]"');
+      }
+      await this.$executeQuery('ALTER TABLE blocks_templates MODIFY template JSON DEFAULT "[]"');
+      await this.$executeQuery('ALTER TABLE blocks_templates ADD PRIMARY KEY (id)');
+      await this.$executeQuery('ALTER TABLE blocks_summaries DROP COLUMN template');
+      await this.updateToSchemaVersion(61);
+    }
+
+    if (databaseSchemaVersion < 62 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD expected_fees BIGINT UNSIGNED DEFAULT NULL');
+      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD expected_weight BIGINT UNSIGNED DEFAULT NULL');
+      await this.updateToSchemaVersion(62);
+    }
+
+    if (databaseSchemaVersion < 63 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD fullrbf_txs JSON DEFAULT "[]"');
+      await this.updateToSchemaVersion(63);
+    }
+
+    if (databaseSchemaVersion < 64 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `nodes` ADD features text NULL');
+      await this.updateToSchemaVersion(64);
+    }
+
+    if (databaseSchemaVersion < 65 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD accelerated_txs JSON DEFAULT "[]"');
+      await this.updateToSchemaVersion(65);
+    }
+
+    if (databaseSchemaVersion < 66) {
+      await this.$executeQuery('ALTER TABLE `statistics` ADD min_fee FLOAT UNSIGNED DEFAULT NULL');
+      await this.updateToSchemaVersion(66);
+    }
+
+    if (databaseSchemaVersion < 67  && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `blocks_summaries` ADD version INT NOT NULL DEFAULT 0');
+      await this.$executeQuery('ALTER TABLE `blocks_summaries` ADD INDEX `version` (`version`)');
+      await this.$executeQuery('ALTER TABLE `blocks_templates` ADD version INT NOT NULL DEFAULT 0');
+      await this.$executeQuery('ALTER TABLE `blocks_templates` ADD INDEX `version` (`version`)');
+      await this.updateToSchemaVersion(67);
+    }
+    
+    if (databaseSchemaVersion < 68 && config.MEMPOOL.NETWORK === "liquid") {
+      await this.$executeQuery('TRUNCATE TABLE elements_pegs');
+      await this.$executeQuery('ALTER TABLE elements_pegs ADD PRIMARY KEY (txid, txindex);');
+      await this.$executeQuery(`UPDATE state SET number = 0 WHERE name = 'last_elements_block';`);
+      // Create the federation_addresses table and add the two Liquid Federation change addresses in
+      await this.$executeQuery(this.getCreateFederationAddressesTableQuery(), await this.$checkIfTableExists('federation_addresses'));
+      await this.$executeQuery(`INSERT INTO federation_addresses (bitcoinaddress) VALUES ('bc1qxvay4an52gcghxq5lavact7r6qe9l4laedsazz8fj2ee2cy47tlqff4aj4')`); // Federation change address
+      await this.$executeQuery(`INSERT INTO federation_addresses (bitcoinaddress) VALUES ('3EiAcrzq1cELXScc98KeCswGWZaPGceT1d')`); // Federation change address
+      // Create the federation_txos table that uses the federation_addresses table as a foreign key
+      await this.$executeQuery(this.getCreateFederationTxosTableQuery(), await this.$checkIfTableExists('federation_txos'));
+      await this.$executeQuery(`INSERT INTO state VALUES('last_bitcoin_block_audit', 0, NULL);`);
+      await this.updateToSchemaVersion(68);
+    }
+
+    if (databaseSchemaVersion < 69 && config.MEMPOOL.NETWORK === 'mainnet') {
+      await this.$executeQuery(this.getCreateAccelerationsTableQuery(), await this.$checkIfTableExists('accelerations'));
+      await this.updateToSchemaVersion(69);
+    }
+
+    if (databaseSchemaVersion < 70 && config.MEMPOOL.NETWORK === 'mainnet') {
+      await this.$executeQuery('ALTER TABLE accelerations MODIFY COLUMN added DATETIME;');
+      await this.updateToSchemaVersion(70);
+    }
+
+    if (databaseSchemaVersion < 71 && config.MEMPOOL.NETWORK === 'liquid') {
+      await this.$executeQuery('TRUNCATE TABLE elements_pegs');
+      await this.$executeQuery('TRUNCATE TABLE federation_txos');
+      await this.$executeQuery('SET FOREIGN_KEY_CHECKS = 0');
+      await this.$executeQuery('TRUNCATE TABLE federation_addresses');
+      await this.$executeQuery('SET FOREIGN_KEY_CHECKS = 1');
+      await this.$executeQuery(`INSERT INTO federation_addresses (bitcoinaddress) VALUES ('bc1qxvay4an52gcghxq5lavact7r6qe9l4laedsazz8fj2ee2cy47tlqff4aj4')`); // Federation change address
+      await this.$executeQuery(`INSERT INTO federation_addresses (bitcoinaddress) VALUES ('3EiAcrzq1cELXScc98KeCswGWZaPGceT1d')`); // Federation change address
+      await this.$executeQuery(`UPDATE state SET number = 0 WHERE name = 'last_elements_block';`);
+      await this.$executeQuery(`UPDATE state SET number = 0 WHERE name = 'last_bitcoin_block_audit';`);
+      await this.$executeQuery('ALTER TABLE `federation_txos` ADD timelock INT NOT NULL DEFAULT 0');
+      await this.$executeQuery('ALTER TABLE `federation_txos` ADD expiredAt INT NOT NULL DEFAULT 0');
+      await this.$executeQuery('ALTER TABLE `federation_txos` ADD emergencyKey TINYINT NOT NULL DEFAULT 0');
+      await this.updateToSchemaVersion(71);
+    }
+
+    if (databaseSchemaVersion < 72 && isBitcoin === true) {
+      // reindex Goggles flags for mined block templates above height 832000
+      await this.$executeQuery('UPDATE blocks_summaries SET version = 0 WHERE height >= 832000;');
+      await this.updateToSchemaVersion(72);
+    }
+
+    if (databaseSchemaVersion < 73 && config.MEMPOOL.NETWORK === 'mainnet') {
+      // Clear bad data
+      await this.$executeQuery(`TRUNCATE accelerations`);
+      this.uniqueLog(logger.notice, `'accelerations' table has been truncated`);
+      await this.updateToSchemaVersion(73);
+    }
+
+    if (databaseSchemaVersion < 74 && config.MEMPOOL.NETWORK === 'mainnet') {
+      await this.$executeQuery(`INSERT INTO state(name, number) VALUE ('last_acceleration_block', 0);`);
+      await this.updateToSchemaVersion(74);
+    }
+
+    if (databaseSchemaVersion < 75) {
+      await this.$executeQuery('ALTER TABLE `prices` ADD `BGN` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `BRL` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `CNY` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `CZK` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `DKK` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `HKD` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `HRK` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `HUF` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `IDR` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `ILS` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `INR` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `ISK` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `KRW` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `MXN` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `MYR` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `NOK` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `NZD` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `PHP` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `PLN` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `RON` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `RUB` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `SEK` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `SGD` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `THB` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `TRY` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `ZAR` float DEFAULT "-1"');
+      await this.updateToSchemaVersion(75);
+    }
   }
 
   /**
@@ -760,6 +898,32 @@ class DatabaseMigration {
       bitcointxid varchar(65) NOT NULL,
       bitcoinindex int(11) NOT NULL,
       final_tx int(11) NOT NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateFederationAddressesTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS federation_addresses (
+      bitcoinaddress varchar(100) NOT NULL,
+      PRIMARY KEY (bitcoinaddress)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateFederationTxosTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS federation_txos (
+      txid varchar(65) NOT NULL,
+      txindex int(11) NOT NULL,
+      bitcoinaddress varchar(100) NOT NULL,
+      amount bigint(20) unsigned NOT NULL,
+      blocknumber int(11) unsigned NOT NULL,
+      blocktime int(11) unsigned NOT NULL,
+      unspent tinyint(1) NOT NULL,
+      lastblockupdate int(11) unsigned NOT NULL,
+      lasttimeupdate int(11) unsigned NOT NULL,
+      pegtxid varchar(65) NOT NULL,
+      pegindex int(11) NOT NULL,
+      pegblocktime int(11) unsigned NOT NULL,
+      PRIMARY KEY (txid, txindex), 
+      FOREIGN KEY (bitcoinaddress) REFERENCES federation_addresses (bitcoinaddress)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
@@ -1033,8 +1197,25 @@ class DatabaseMigration {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
+  private getCreateAccelerationsTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS accelerations (
+      txid varchar(65) NOT NULL,
+      added datetime NOT NULL,
+      height int(10) NOT NULL,
+      pool smallint unsigned NULL,
+      effective_vsize int(10) NOT NULL,
+      effective_fee bigint(20) unsigned NOT NULL,
+      boost_rate float unsigned,
+      boost_cost bigint(20) unsigned NOT NULL,
+      PRIMARY KEY (txid),
+      INDEX (added),
+      INDEX (height),
+      INDEX (pool)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
   public async $blocksReindexingTruncate(): Promise<void> {
-    logger.warn(`Truncating pools, blocks and hashrates for re-indexing (using '--reindex-blocks'). You can cancel this command within 5 seconds`);
+    logger.warn(`Truncating pools, blocks, hashrates and difficulty_adjustments tables for re-indexing (using '--reindex-blocks'). You can cancel this command within 5 seconds`);
     await Common.sleep$(5000);
 
     await this.$executeQuery(`TRUNCATE blocks`);

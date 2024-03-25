@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
-import { EChartsOption, graphic } from 'echarts';
-import { merge, Observable, of } from 'rxjs';
+import { echarts, EChartsOption } from '../../graphs/echarts';
+import { combineLatest, fromEvent, merge, Observable, of } from 'rxjs';
 import { map, mergeMap, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
@@ -12,6 +12,7 @@ import { MiningService } from '../../services/mining.service';
 import { download } from '../../shared/graphs.utils';
 import { ActivatedRoute } from '@angular/router';
 import { StateService } from '../../services/state.service';
+import { seoDescriptionNetwork } from '../../shared/common.utils';
 
 @Component({
   selector: 'app-hashrate-chart',
@@ -30,6 +31,7 @@ import { StateService } from '../../services/state.service';
 export class HashrateChartComponent implements OnInit {
   @Input() tableOnly = false;
   @Input() widget = false;
+  @Input() height: number = 300;
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
 
@@ -58,7 +60,7 @@ export class HashrateChartComponent implements OnInit {
     private storageService: StorageService,
     private miningService: MiningService,
     private route: ActivatedRoute,
-    private stateService: StateService
+    public stateService: StateService
   ) {
   }
 
@@ -71,6 +73,7 @@ export class HashrateChartComponent implements OnInit {
       this.miningWindowPreference = '1y';
     } else {
       this.seoService.setTitle($localize`:@@3510fc6daa1d975f331e3a717bdf1a34efa06dff:Hashrate & Difficulty`);
+      this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.hashrate:See hashrate and difficulty for the Bitcoin${seoDescriptionNetwork(this.network)} network visualized over time.`);
       this.miningWindowPreference = this.miningService.getDefaultTimespan('3m');
     }
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
@@ -84,30 +87,42 @@ export class HashrateChartComponent implements OnInit {
         }
       });
 
-    this.hashrateObservable$ = merge(
-      this.radioGroupForm.get('dateSpan').valueChanges
-        .pipe(
-          startWith(this.radioGroupForm.controls.dateSpan.value),
-          switchMap((timespan) => {
-            if (!this.widget && !firstRun) {
-              this.storageService.setValue('miningWindowPreference', timespan);
-            }
-            this.timespan = timespan;
-            firstRun = false;
-            this.miningWindowPreference = timespan;
-            this.isLoading = true;
-            return this.apiService.getHistoricalHashrate$(this.timespan);
-          })
-        ),
-        this.stateService.chainTip$
+    this.hashrateObservable$ = combineLatest(
+        merge(
+        this.radioGroupForm.get('dateSpan').valueChanges
           .pipe(
-            switchMap(() => {
+            startWith(this.radioGroupForm.controls.dateSpan.value),
+            switchMap((timespan) => {
+              if (!this.widget && !firstRun) {
+                this.storageService.setValue('miningWindowPreference', timespan);
+              }
+              this.timespan = timespan;
+              firstRun = false;
+              this.miningWindowPreference = timespan;
+              this.isLoading = true;
               return this.apiService.getHistoricalHashrate$(this.timespan);
             })
-          )
+          ),
+          this.stateService.chainTip$
+            .pipe(
+              switchMap(() => {
+                return this.apiService.getHistoricalHashrate$(this.timespan);
+              })
+            )
+        ),
+        fromEvent(window, 'resize').pipe(startWith(null)),
       ).pipe(
+        map(([response, _]) => response),
         tap((response: any) => {
           const data = response.body;
+
+          // always include the latest difficulty
+          if (data.difficulty.length && data.difficulty[data.difficulty.length - 1].difficulty !== data.currentDifficulty) {
+            data.difficulty.push({
+              timestamp: Date.now() / 1000,
+              difficulty: data.currentDifficulty
+            });
+          }
 
           // We generate duplicated data point so the tooltip works nicely
           const diffFixed = [];
@@ -122,6 +137,7 @@ export class HashrateChartComponent implements OnInit {
                 });
                 ++hashIndex;
               }
+              diffIndex++;
               break;
             }
 
@@ -135,6 +151,14 @@ export class HashrateChartComponent implements OnInit {
               ++hashIndex;
             }
             ++diffIndex;
+          }
+
+          while (diffIndex <= data.difficulty.length) {
+            diffFixed.push({
+              timestamp: data.difficulty[diffIndex - 1].time,
+              difficulty: data.difficulty[diffIndex - 1].difficulty
+            });
+            diffIndex++;
           }
 
           let maResolution = 15;
@@ -185,7 +209,7 @@ export class HashrateChartComponent implements OnInit {
       title: title,
       animation: false,
       color: [
-        new graphic.LinearGradient(0, 0, 0, 0.65, [
+        new echarts.graphic.LinearGradient(0, 0, 0, 0.65, [
           { offset: 0, color: '#F4511E99' },
           { offset: 0.25, color: '#FB8C0099' },
           { offset: 0.5, color: '#FFB30099' },
@@ -193,7 +217,7 @@ export class HashrateChartComponent implements OnInit {
           { offset: 1, color: '#7CB34299' }
         ]),
         '#D81B60',
-        new graphic.LinearGradient(0, 0, 0, 0.65, [
+        new echarts.graphic.LinearGradient(0, 0, 0, 0.65, [
           { offset: 0, color: '#F4511E' },
           { offset: 0.25, color: '#FB8C00' },
           { offset: 0.5, color: '#FFB300' },
@@ -202,6 +226,7 @@ export class HashrateChartComponent implements OnInit {
         ]),
       ],
       grid: {
+        height: (this.widget && this.height) ? this.height - 30 : undefined,
         top: this.widget ? 20 : 40,
         bottom: this.widget ? 30 : 70,
         right: this.right,
@@ -230,29 +255,23 @@ export class HashrateChartComponent implements OnInit {
           for (const tick of ticks) {
             if (tick.seriesIndex === 0) { // Hashrate
               let hashrate = tick.data[1];
-              if (this.isMobile()) {
-                hashratePowerOfTen = selectPowerOfTen(tick.data[1]);
-                hashrate = Math.round(tick.data[1] / hashratePowerOfTen.divider);
-              }
+              hashratePowerOfTen = selectPowerOfTen(tick.data[1], 10);
+              hashrate = tick.data[1] / hashratePowerOfTen.divider;
               hashrateString = `${tick.marker} ${tick.seriesName}: ${formatNumber(hashrate, this.locale, '1.0-0')} ${hashratePowerOfTen.unit}H/s<br>`;
             } else if (tick.seriesIndex === 1) { // Difficulty
               let difficultyPowerOfTen = hashratePowerOfTen;
               let difficulty = tick.data[1];
               if (difficulty === null) {
-                difficultyString = `${tick.marker} ${tick.seriesName}: No data<br>`;  
+                difficultyString = `${tick.marker} ${tick.seriesName}: No data<br>`;
               } else {
-                if (this.isMobile()) {
-                  difficultyPowerOfTen = selectPowerOfTen(tick.data[1]);
-                  difficulty = Math.round(tick.data[1] / difficultyPowerOfTen.divider);
-                }
+                difficultyPowerOfTen = selectPowerOfTen(tick.data[1]);
+                difficulty = tick.data[1] / difficultyPowerOfTen.divider;
                 difficultyString = `${tick.marker} ${tick.seriesName}: ${formatNumber(difficulty, this.locale, '1.2-2')} ${difficultyPowerOfTen.unit}<br>`;
               }
             } else if (tick.seriesIndex === 2) { // Hashrate MA
               let hashrate = tick.data[1];
-              if (this.isMobile()) {
-                hashratePowerOfTen = selectPowerOfTen(tick.data[1]);
-                hashrate = Math.round(tick.data[1] / hashratePowerOfTen.divider);
-              }
+              hashratePowerOfTen = selectPowerOfTen(tick.data[1], 10);
+              hashrate = tick.data[1] / hashratePowerOfTen.divider;
               hashrateStringMA = `${tick.marker} ${tick.seriesName}: ${formatNumber(hashrate, this.locale, '1.0-0')} ${hashratePowerOfTen.unit}H/s`;
             }
           }
@@ -307,7 +326,7 @@ export class HashrateChartComponent implements OnInit {
             },
           },
         ],
-        selected: JSON.parse(this.storageService.getValue('hashrate_difficulty_legend')) ?? {
+        selected: JSON.parse(this.storageService?.getValue('hashrate_difficulty_legend') || 'null') ?? {
           '$localize`:@@79a9dc5b1caca3cbeb1733a19515edacc5fc7920:Hashrate`': true,
           '$localize`::Difficulty`': this.network === '',
           '$localize`Hashrate (MA)`': true,
@@ -323,7 +342,7 @@ export class HashrateChartComponent implements OnInit {
           type: 'value',
           axisLabel: {
             color: 'rgb(110, 112, 121)',
-            formatter: (val) => {
+            formatter: (val): string => {
               const selectedPowerOfTen: any = selectPowerOfTen(val);
               const newVal = Math.round(val / selectedPowerOfTen.divider);
               return `${newVal} ${selectedPowerOfTen.unit}H/s`;
@@ -345,9 +364,9 @@ export class HashrateChartComponent implements OnInit {
           position: 'right',
           axisLabel: {
             color: 'rgb(110, 112, 121)',
-            formatter: (val) => {
+            formatter: (val): string => {
               if (this.stateService.network === 'signet') {
-                return val;
+                return `${val}`;
               }
               const selectedPowerOfTen: any = selectPowerOfTen(val);
               const newVal = Math.round(val / selectedPowerOfTen.divider);

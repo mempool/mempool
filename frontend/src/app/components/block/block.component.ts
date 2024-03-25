@@ -1,19 +1,22 @@
-import { Component, OnInit, OnDestroy, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChildren, QueryList, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
-import { switchMap, tap, throttleTime, catchError, map, shareReplay, startWith, pairwise, filter } from 'rxjs/operators';
+import { switchMap, tap, throttleTime, catchError, map, shareReplay, startWith } from 'rxjs/operators';
 import { Transaction, Vout } from '../../interfaces/electrs.interface';
-import { Observable, of, Subscription, asyncScheduler, EMPTY, combineLatest } from 'rxjs';
+import { Observable, of, Subscription, asyncScheduler, EMPTY, combineLatest, forkJoin } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { SeoService } from '../../services/seo.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
-import { BlockAudit, BlockExtended, TransactionStripped } from '../../interfaces/node-api.interface';
+import { AccelerationInfo, BlockAudit, BlockExtended, TransactionStripped } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { BlockOverviewGraphComponent } from '../../components/block-overview-graph/block-overview-graph.component';
 import { detectWebGL } from '../../shared/graphs.utils';
+import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { PriceService, Price } from '../../services/price.service';
+import { CacheService } from '../../services/cache.service';
+import { ServicesApiServices } from '../../services/services-api.service';
 
 @Component({
   selector: 'app-block',
@@ -40,11 +43,11 @@ export class BlockComponent implements OnInit, OnDestroy {
   latestBlock: BlockExtended;
   latestBlocks: BlockExtended[] = [];
   transactions: Transaction[];
+  oobFees: number = 0;
   isLoadingTransactions = true;
   strippedTransactions: TransactionStripped[];
   overviewTransitionDirection: string;
   isLoadingOverview = true;
-  isLoadingAudit = true;
   error: any;
   blockSubsidy: number;
   fees: number;
@@ -58,6 +61,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   transactionsError: any = null;
   overviewError: any = null;
   webGlEnabled = true;
+  auditParamEnabled: boolean = false;
   auditSupported: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
   auditModeEnabled: boolean = !this.stateService.hideAudit.value;
   auditAvailable = true;
@@ -73,6 +77,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   auditSubscription: Subscription;
   keyNavigationSubscription: Subscription;
   blocksSubscription: Subscription;
+  cacheBlocksSubscription: Subscription;
   networkChangedSubscription: Subscription;
   queryParamsSubscription: Subscription;
   nextBlockSubscription: Subscription = undefined;
@@ -82,6 +87,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   timeLtr: boolean;
   childChangeSubscription: Subscription;
   auditPrefSubscription: Subscription;
+  oobSubscription: Subscription;
   
   priceSubscription: Subscription;
   blockConversion: Price;
@@ -100,8 +106,12 @@ export class BlockComponent implements OnInit, OnDestroy {
     private relativeUrlPipe: RelativeUrlPipe,
     private apiService: ApiService,
     private priceService: PriceService,
+    private cacheService: CacheService,
+    private servicesApiService: ServicesApiServices,
+    private cd: ChangeDetectorRef,
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
-    this.webGlEnabled = detectWebGL();
+    this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
   }
 
   ngOnInit() {
@@ -117,9 +127,15 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.setAuditAvailable(this.auditSupported);
 
     if (this.auditSupported) {
-      this.auditPrefSubscription = this.stateService.hideAudit.subscribe((hide) => {
-        this.auditModeEnabled = !hide;
-        this.showAudit = this.auditAvailable && this.auditModeEnabled;
+      this.isAuditEnabledFromParam().subscribe(auditParam => {
+        if (this.auditParamEnabled) {
+          this.auditModeEnabled = auditParam;
+        } else {
+          this.auditPrefSubscription = this.stateService.hideAudit.subscribe(hide => {
+            this.auditModeEnabled = !hide;
+            this.showAudit = this.auditAvailable && this.auditModeEnabled;
+          });
+        }
       });
     }
 
@@ -129,17 +145,29 @@ export class BlockComponent implements OnInit, OnDestroy {
         map((indicators) => indicators['blocktxs-' + this.blockHash] !== undefined ? indicators['blocktxs-' + this.blockHash] : 0)
       );
 
+    this.cacheBlocksSubscription = this.cacheService.loadedBlocks$.subscribe((block) => {
+      this.loadedCacheBlock(block);
+    });
+
     this.blocksSubscription = this.stateService.blocks$
-      .subscribe(([block]) => {
-        this.latestBlock = block;
-        this.latestBlocks.unshift(block);
-        this.latestBlocks = this.latestBlocks.slice(0, this.stateService.env.KEEP_BLOCKS_AMOUNT);
+      .subscribe((blocks) => {
+        this.latestBlock = blocks[0];
+        this.latestBlocks = blocks;
         this.setNextAndPreviousBlockLink();
 
-        if (block.id === this.blockHash) {
-          this.block = block;
-          if (block?.extras?.reward != undefined) {
-            this.fees = block.extras.reward / 100000000 - this.blockSubsidy;
+        for (const block of blocks) {
+          if (block.id === this.blockHash) {
+            this.block = block;
+            if (block.extras) {
+              block.extras.minFee = this.getMinBlockFee(block);
+              block.extras.maxFee = this.getMaxBlockFee(block);
+              if (block?.extras?.reward != undefined) {
+                this.fees = block.extras.reward / 100000000 - this.blockSubsidy;
+              }
+            }
+          } else if (block.height === this.block?.height) {
+            this.block.stale = true;
+            this.block.canonical = block.id;
           }
         }
       });
@@ -151,7 +179,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         this.page = 1;
         this.error = undefined;
         this.fees = undefined;
-        this.stateService.markBlock$.next({});
+        this.oobFees = 0;
 
         if (history.state.data && history.state.data.blockHeight) {
           this.blockHeight = history.state.data.blockHeight;
@@ -161,6 +189,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         let isBlockHeight = false;
         if (/^[0-9]+$/.test(blockHash)) {
           isBlockHeight = true;
+          this.stateService.markBlock$.next({ blockHeight: parseInt(blockHash, 10)});
         } else {
           this.blockHash = blockHash;
         }
@@ -187,11 +216,13 @@ export class BlockComponent implements OnInit, OnDestroy {
                   this.location.replaceState(
                     this.router.createUrlTree([(this.network ? '/' + this.network : '') + '/block/', hash]).toString()
                   );
+                  this.seoService.updateCanonical(this.location.path());
                   return this.apiService.getBlock$(hash).pipe(
                     catchError((err) => {
                       this.error = err;
                       this.isLoadingBlock = false;
                       this.isLoadingOverview = false;
+                      this.seoService.logSoft404();
                       return EMPTY;
                     })
                   );
@@ -200,6 +231,7 @@ export class BlockComponent implements OnInit, OnDestroy {
                   this.error = err;
                   this.isLoadingBlock = false;
                   this.isLoadingOverview = false;
+                  this.seoService.logSoft404();
                   return EMPTY;
                 }),
               );
@@ -215,6 +247,7 @@ export class BlockComponent implements OnInit, OnDestroy {
               this.error = err;
               this.isLoadingBlock = false;
               this.isLoadingOverview = false;
+              this.seoService.logSoft404();
               return EMPTY;
             })
           );
@@ -234,12 +267,21 @@ export class BlockComponent implements OnInit, OnDestroy {
         }
         this.updateAuditAvailableFromBlockHeight(block.height);
         this.block = block;
+        if (block.extras) {
+          block.extras.minFee = this.getMinBlockFee(block);
+          block.extras.maxFee = this.getMaxBlockFee(block);
+        }
         this.blockHeight = block.height;
         this.lastBlockHeight = this.blockHeight;
         this.nextBlockHeight = block.height + 1;
         this.setNextAndPreviousBlockLink();
 
         this.seoService.setTitle($localize`:@@block.component.browser-title:Block ${block.height}:BLOCK_HEIGHT:: ${block.id}:BLOCK_ID:`);
+        if( this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet' ) {
+          this.seoService.setDescription($localize`:@@meta.description.liquid.block:See size, weight, fee range, included transactions, and more for Liquid${seoDescriptionNetwork(this.stateService.network)} block ${block.height}:BLOCK_HEIGHT: (${block.id}:BLOCK_ID:).`);
+        } else {
+          this.seoService.setDescription($localize`:@@meta.description.bitcoin.block:See size, weight, fee range, included transactions, audit (expected v actual), and more for Bitcoin${seoDescriptionNetwork(this.stateService.network)} block ${block.height}:BLOCK_HEIGHT: (${block.id}:BLOCK_ID:).`);
+        }
         this.isLoadingBlock = false;
         this.setBlockSubsidy();
         if (block?.extras?.reward !== undefined) {
@@ -251,12 +293,20 @@ export class BlockComponent implements OnInit, OnDestroy {
         this.transactionsError = null;
         this.isLoadingOverview = true;
         this.overviewError = null;
+
+        const cachedBlock = this.cacheService.getCachedBlock(block.height);
+        if (!cachedBlock) {
+          this.cacheService.loadBlock(block.height);
+        } else {
+          this.loadedCacheBlock(cachedBlock);
+        }
       }),
       throttleTime(300, asyncScheduler, { leading: true, trailing: true }),
       shareReplay(1)
     );
-    this.transactionSubscription = block$.pipe(
-      switchMap((block) => this.electrsApiService.getBlockTransactions$(block.id)
+    this.transactionSubscription = combineLatest([block$, this.route.queryParams]).pipe(
+      tap(([_, queryParams]) => this.page = +queryParams['page'] || 1),
+      switchMap(([block, _]) => this.electrsApiService.getBlockTransactions$(block.id, (this.page - 1) * this.itemsPerPage)
         .pipe(
           catchError((err) => {
             this.transactionsError = err;
@@ -270,6 +320,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       }
       this.transactions = transactions;
       this.isLoadingTransactions = false;
+      this.cd.markForCheck();
     },
     (error) => {
       this.error = error;
@@ -277,134 +328,180 @@ export class BlockComponent implements OnInit, OnDestroy {
       this.isLoadingOverview = false;
     });
 
-    if (!this.auditSupported) {
-      this.overviewSubscription = block$.pipe(
-        startWith(null),
-        pairwise(),
-        switchMap(([prevBlock, block]) => this.apiService.getStrippedBlockTransactions$(block.id)
-          .pipe(
-            catchError((err) => {
-              this.overviewError = err;
-              return of([]);
-            }),
-            switchMap((transactions) => {
-              if (prevBlock) {
-                return of({ transactions, direction: (prevBlock.height < block.height) ? 'right' : 'left' });
-              } else {
-                return of({ transactions, direction: 'down' });
-              }
-            })
-          )
-        ),
-      )
-      .subscribe(({transactions, direction}: {transactions: TransactionStripped[], direction: string}) => {
-        this.strippedTransactions = transactions;
-        this.isLoadingOverview = false;
-        this.setupBlockGraphs();
-      },
-      (error) => {
-        this.error = error;
-        this.isLoadingOverview = false;
-      });
-    }
-
-    if (this.auditSupported) {
-      this.auditSubscription = block$.pipe(
-        startWith(null),
-        pairwise(),
-        switchMap(([prevBlock, block]) => {
-          this.isLoadingAudit = true;
-          this.blockAudit = null;
-          return this.apiService.getBlockAudit$(block.id)
+    this.overviewSubscription = block$.pipe(
+      switchMap((block) => {
+        return forkJoin([
+          this.apiService.getStrippedBlockTransactions$(block.id)
             .pipe(
               catchError((err) => {
                 this.overviewError = err;
-                this.isLoadingAudit = false;
-                return of([]);
+                return of(null);
               })
-            );
-        }
-        ),
-        filter((response) => response != null),
-        map((response) => {
-          const blockAudit = response.body;
-          const inTemplate = {};
-          const inBlock = {};
-          const isAdded = {};
-          const isCensored = {};
-          const isMissing = {};
-          const isSelected = {};
-          const isFresh = {};
-          this.numMissing = 0;
-          this.numUnexpected = 0;
+            ),
+          !this.isAuditAvailableFromBlockHeight(block.height) ? of(null) : this.apiService.getBlockAudit$(block.id)
+            .pipe(
+              catchError((err) => {
+                this.overviewError = err;
+                return of(null);
+              })
+            ),
+          this.stateService.env.ACCELERATOR === true && block.height > 819500 ? this.servicesApiService.getAccelerationHistory$({ blockHash: block.id }) : of([])
+        ]);
+      })
+    )
+    .subscribe(([transactions, blockAudit, accelerations]) => {
+      if (transactions) {
+        this.strippedTransactions = transactions;
+      } else {
+        this.strippedTransactions = [];
+      }
 
-          if (blockAudit?.template) {
-            for (const tx of blockAudit.template) {
-              inTemplate[tx.txid] = true;
+      const acceleratedInBlock = {};
+      for (const acc of accelerations) {
+        acceleratedInBlock[acc.txid] = acc;
+      }
+      for (const tx of transactions) {
+        if (acceleratedInBlock[tx.txid]) {
+          tx.acc = true;
+        }
+      }
+
+      this.blockAudit = null;
+      if (transactions && blockAudit) {
+        const inTemplate = {};
+        const inBlock = {};
+        const isAdded = {};
+        const isCensored = {};
+        const isMissing = {};
+        const isSelected = {};
+        const isFresh = {};
+        const isSigop = {};
+        const isRbf = {};
+        const isAccelerated = {};
+        this.numMissing = 0;
+        this.numUnexpected = 0;
+
+        if (blockAudit?.template) {
+          for (const tx of blockAudit.template) {
+            inTemplate[tx.txid] = true;
+            if (tx.acc) {
+              isAccelerated[tx.txid] = true;
             }
-            for (const tx of blockAudit.transactions) {
-              inBlock[tx.txid] = true;
-            }
-            for (const txid of blockAudit.addedTxs) {
-              isAdded[txid] = true;
-            }
-            for (const txid of blockAudit.missingTxs) {
-              isCensored[txid] = true;
-            }
-            for (const txid of blockAudit.freshTxs || []) {
-              isFresh[txid] = true;
-            }
-            // set transaction statuses
-            for (const tx of blockAudit.template) {
-              tx.context = 'projected';
-              if (isCensored[tx.txid]) {
-                tx.status = 'censored';
-              } else if (inBlock[tx.txid]) {
-                tx.status = 'found';
-              } else {
-                tx.status = isFresh[tx.txid] ? 'fresh' : 'missing';
-                isMissing[tx.txid] = true;
-                this.numMissing++;
-              }
-            }
-            for (const [index, tx] of blockAudit.transactions.entries()) {
-              tx.context = 'actual';
-              if (index === 0) {
-                tx.status = null;
-              } else if (isAdded[tx.txid]) {
-                tx.status = 'added';
-              } else if (inTemplate[tx.txid]) {
-                tx.status = 'found';
-              } else {
-                tx.status = 'selected';
-                isSelected[tx.txid] = true;
-                this.numUnexpected++;
-              }
-            }
-            for (const tx of blockAudit.transactions) {
-              inBlock[tx.txid] = true;
-            }
-            this.setAuditAvailable(true);
-          } else {
-            this.setAuditAvailable(false);
           }
-          return blockAudit;
-        }),
-        catchError((err) => {
-          console.log(err);
-          this.error = err;
-          this.isLoadingOverview = false;
-          this.isLoadingAudit = false;
+          for (const tx of transactions) {
+            inBlock[tx.txid] = true;
+          }
+          for (const txid of blockAudit.addedTxs) {
+            isAdded[txid] = true;
+          }
+          for (const txid of blockAudit.missingTxs) {
+            isCensored[txid] = true;
+          }
+          for (const txid of blockAudit.freshTxs || []) {
+            isFresh[txid] = true;
+          }
+          for (const txid of blockAudit.sigopTxs || []) {
+            isSigop[txid] = true;
+          }
+          for (const txid of blockAudit.fullrbfTxs || []) {
+            isRbf[txid] = true;
+          }
+          for (const txid of blockAudit.acceleratedTxs || []) {
+            isAccelerated[txid] = true;
+          }
+          // set transaction statuses
+          for (const tx of blockAudit.template) {
+            tx.context = 'projected';
+            if (isCensored[tx.txid]) {
+              tx.status = 'censored';
+            } else if (inBlock[tx.txid]) {
+              tx.status = 'found';
+            } else {
+              if (isFresh[tx.txid]) {
+                if (tx.rate - (tx.fee / tx.vsize) >= 0.1) {
+                  tx.status = 'freshcpfp';
+                } else {
+                  tx.status = 'fresh';
+                }
+              } else if (isSigop[tx.txid]) {
+                tx.status = 'sigop';
+              } else if (isRbf[tx.txid]) {
+                tx.status = 'rbf';
+              } else {
+                tx.status = 'missing';
+              }
+              isMissing[tx.txid] = true;
+              this.numMissing++;
+            }
+            if (isAccelerated[tx.txid]) {
+              tx.status = 'accelerated';
+            }
+          }
+          for (const [index, tx] of transactions.entries()) {
+            tx.context = 'actual';
+            if (index === 0) {
+              tx.status = null;
+            } else if (isAdded[tx.txid]) {
+              tx.status = 'added';
+            } else if (inTemplate[tx.txid]) {
+              tx.status = 'found';
+            } else if (isRbf[tx.txid]) {
+              tx.status = 'rbf';
+            } else {
+              tx.status = 'selected';
+              isSelected[tx.txid] = true;
+              this.numUnexpected++;
+            }
+            if (isAccelerated[tx.txid]) {
+              tx.status = 'accelerated';
+            }
+          }
+          for (const tx of transactions) {
+            inBlock[tx.txid] = true;
+          }
+
+          blockAudit.feeDelta = blockAudit.expectedFees > 0 ? (blockAudit.expectedFees - (this.block.extras.totalFees + this.oobFees)) / blockAudit.expectedFees : 0;
+          blockAudit.weightDelta = blockAudit.expectedWeight > 0 ? (blockAudit.expectedWeight - this.block.weight) / blockAudit.expectedWeight : 0;
+          blockAudit.txDelta = blockAudit.template.length > 0 ? (blockAudit.template.length - this.block.tx_count) / blockAudit.template.length : 0;
+          this.blockAudit = blockAudit;
+          this.setAuditAvailable(true);
+        } else {
           this.setAuditAvailable(false);
-          return of(null);
-        }),
-      ).subscribe((blockAudit) => {
-        this.blockAudit = blockAudit;
-        this.setupBlockGraphs();
-        this.isLoadingOverview = false;
-        this.isLoadingAudit = false;
-      });
-    }
+        }
+      } else {
+        this.setAuditAvailable(false);
+      }
+
+      this.isLoadingOverview = false;
+      this.setupBlockGraphs();
+      this.cd.markForCheck();
+    });
+
+    this.oobSubscription = block$.pipe(
+      switchMap((block) => this.apiService.getAccelerationsByHeight$(block.height)
+        .pipe(
+          map(accelerations => {
+            return { block, accelerations };
+          }),
+          catchError((err) => {
+            return of({ block, accelerations: [] });
+        }))
+      ),
+    ).subscribe(({ block, accelerations}) => {
+      let totalFees = 0;
+      for (const acc of accelerations) {
+        totalFees += acc.boost_cost;
+      }
+      this.oobFees = totalFees;
+      if (block && this.block && this.blockAudit && block?.height === this.block?.height) {
+        this.blockAudit.feeDelta = this.blockAudit.expectedFees > 0 ? (this.blockAudit.expectedFees - (this.block.extras.totalFees + this.oobFees)) / this.blockAudit.expectedFees : 0;
+      }
+    },
+    (error) => {
+      this.error = error;
+      this.isLoadingBlock = false;
+      this.isLoadingOverview = false;
+    });
 
     this.networkChangedSubscription = this.stateService.networkChanged$
       .subscribe((network) => this.network = network);
@@ -441,9 +538,9 @@ export class BlockComponent implements OnInit, OnDestroy {
     if (this.priceSubscription) {
       this.priceSubscription.unsubscribe();
     }
-    this.priceSubscription = block$.pipe(
-      switchMap((block) => {
-        return this.priceService.getBlockPrice$(block.timestamp).pipe(
+    this.priceSubscription = combineLatest([this.stateService.fiatCurrency$, block$]).pipe(
+      switchMap(([currency, block]) => {
+        return this.priceService.getBlockPrice$(block.timestamp, true, currency).pipe(
           tap((price) => {
             this.blockConversion = price;
           })
@@ -465,6 +562,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.auditSubscription?.unsubscribe();
     this.keyNavigationSubscription?.unsubscribe();
     this.blocksSubscription?.unsubscribe();
+    this.cacheBlocksSubscription?.unsubscribe();
     this.networkChangedSubscription?.unsubscribe();
     this.queryParamsSubscription?.unsubscribe();
     this.timeLtrSubscription?.unsubscribe();
@@ -472,6 +570,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.unsubscribeNextBlockSubscriptions();
     this.childChangeSubscription?.unsubscribe();
     this.priceSubscription?.unsubscribe();
+    this.oobSubscription?.unsubscribe();
   }
 
   unsubscribeNextBlockSubscriptions() {
@@ -498,19 +597,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.transactions = null;
     this.transactionsError = null;
     target.scrollIntoView(); // works for chrome
-
-    this.electrsApiService.getBlockTransactions$(this.block.id, start)
-      .pipe(
-        catchError((err) => {
-          this.transactionsError = err;
-          return of([]);
-      })
-      )
-     .subscribe((transactions) => {
-        this.transactions = transactions;
-        this.isLoadingTransactions = false;
-        target.scrollIntoView(); // works for firefox
-      });
+    this.router.navigate([], { queryParams: { page: page }, queryParamsHandling: 'merge' });
   }
 
   toggleShowDetails() {
@@ -612,9 +699,13 @@ export class BlockComponent implements OnInit, OnDestroy {
     });
   }
 
-  onTxClick(event: TransactionStripped): void {
-    const url = new RelativeUrlPipe(this.stateService).transform(`/tx/${event.txid}`);
-    this.router.navigate([url]);
+  onTxClick(event: { tx: TransactionStripped, keyModifier: boolean }): void {
+    const url = new RelativeUrlPipe(this.stateService).transform(`/tx/${event.tx.txid}`);
+    if (!event.keyModifier) {
+      this.router.navigate([url]);
+    } else {
+      window.open(url, '_blank');
+    }
   }
 
   onTxHover(txid: string): void {
@@ -632,27 +723,88 @@ export class BlockComponent implements OnInit, OnDestroy {
 
   toggleAuditMode(): void {
     this.stateService.hideAudit.next(this.auditModeEnabled);
+
+    this.route.queryParams.subscribe(params => {
+      let queryParams = { ...params };
+      delete queryParams['audit'];
+
+      let newUrl = this.router.url.split('?')[0];
+      let queryString = new URLSearchParams(queryParams).toString();
+      if (queryString) {
+        newUrl += '?' + queryString;
+      }
+  
+      this.location.replaceState(newUrl);
+    });
+
+    this.auditPrefSubscription = this.stateService.hideAudit.subscribe((hide) => {
+      this.auditModeEnabled = !hide;
+      this.showAudit = this.auditAvailable && this.auditModeEnabled;
+    });
   }
 
   updateAuditAvailableFromBlockHeight(blockHeight: number): void {
-    if (!this.auditSupported) {
+    if (!this.isAuditAvailableFromBlockHeight(blockHeight)) {
       this.setAuditAvailable(false);
+    }
+  }
+
+  isAuditEnabledFromParam(): Observable<boolean> {
+    return this.route.queryParams.pipe(
+      map(params => {
+        this.auditParamEnabled = 'audit' in params;
+        
+        return this.auditParamEnabled ? !(params['audit'] === 'false') : true;
+      })
+    );
+  }
+
+  isAuditAvailableFromBlockHeight(blockHeight: number): boolean {
+    if (!this.auditSupported) {
+      return false;
     }
     switch (this.stateService.network) {
       case 'testnet':
         if (blockHeight < this.stateService.env.TESTNET_BLOCK_AUDIT_START_HEIGHT) {
-          this.setAuditAvailable(false);
+          return false;
         }
         break;
       case 'signet':
         if (blockHeight < this.stateService.env.SIGNET_BLOCK_AUDIT_START_HEIGHT) {
-          this.setAuditAvailable(false);
+          return false;
         }
         break;
       default:
         if (blockHeight < this.stateService.env.MAINNET_BLOCK_AUDIT_START_HEIGHT) {
-          this.setAuditAvailable(false);
+          return false;
         }
+    }
+    return true;
+  }
+
+  getMinBlockFee(block: BlockExtended): number {
+    if (block?.extras?.feeRange) {
+      // heuristic to check if feeRange is adjusted for effective rates
+      if (block.extras.medianFee === block.extras.feeRange[3]) {
+        return block.extras.feeRange[1];
+      } else {
+        return block.extras.feeRange[0];
+      }
+    }
+    return 0;
+  }
+
+  getMaxBlockFee(block: BlockExtended): number {
+    if (block?.extras?.feeRange) {
+      return block.extras.feeRange[block.extras.feeRange.length - 1];
+    }
+    return 0;
+  }
+
+  loadedCacheBlock(block: BlockExtended): void {
+    if (this.block && block.height === this.block.height && block.id !== this.block.id) {
+      this.block.stale = true;
+      this.block.canonical = block.id;
     }
   }
 }

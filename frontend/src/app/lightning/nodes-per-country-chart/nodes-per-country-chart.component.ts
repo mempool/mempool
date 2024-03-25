@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, HostBinding, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
-import { EChartsOption, PieSeriesOption } from 'echarts';
+import { EChartsOption, PieSeriesOption } from '../../graphs/echarts';
 import { map, Observable, share, tap } from 'rxjs';
 import { chartColors } from '../../app.constants';
 import { ApiService } from '../../services/api.service';
@@ -37,14 +37,14 @@ export class NodesPerCountryChartComponent implements OnInit {
     private seoService: SeoService,
     private amountShortenerPipe: AmountShortenerPipe,
     private zone: NgZone,
-    private stateService: StateService,
+    public stateService: StateService,
     private router: Router,
   ) {
   }
 
   ngOnInit(): void {
     this.seoService.setTitle($localize`:@@9d3ad4c6623870d96b65fb7a708fed6ce7c20044:Lightning Nodes Per Country`);
-
+    this.seoService.setDescription($localize`:@@meta.description.lightning.nodes-country-overview:See a geographical breakdown of the Lightning network: how many Lightning nodes are hosted in countries around the world, aggregate BTC capacity for each country, and more.`);
     this.nodesPerCountryObservable$ = this.apiService.getNodesPerCountry$()
       .pipe(
         map(data => {

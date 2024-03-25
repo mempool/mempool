@@ -1,13 +1,14 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { Observable } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, map, switchMap, tap, share } from 'rxjs/operators';
 import { SeoService } from '../../services/seo.service';
 import { ApiService } from '../../services/api.service';
 import { LightningApiService } from '../lightning-api.service';
 import { GeolocationData } from '../../shared/components/geolocation/geolocation.component';
 import { ILiquidityAd, parseLiquidityAdHex } from './liquidity-ad';
 import { haversineDistance, kmToMiles } from '../../../app/shared/common.utils';
+import { ServicesApiServices } from '../../services/services-api.service';
 
 interface CustomRecord {
   type: string;
@@ -37,14 +38,16 @@ export class NodeComponent implements OnInit {
   liquidityAd: ILiquidityAd;
   tlvRecords: CustomRecord[];
   avgChannelDistance$: Observable<number | null>;
-
+  showFeatures = false;
   kmToMiles = kmToMiles;
 
   constructor(
     private apiService: ApiService,
+    private servicesApiService: ServicesApiServices,
     private lightningApiService: LightningApiService,
     private activatedRoute: ActivatedRoute,
     private seoService: SeoService,
+    private cd: ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
@@ -58,6 +61,7 @@ export class NodeComponent implements OnInit {
         }),
         map((node) => {
           this.seoService.setTitle($localize`Node: ${node.alias}`);
+          this.seoService.setDescription($localize`:@@meta.description.lightning.node:Overview for the Lightning network node named ${node.alias}. See channels, capacity, location, fee stats, and more.`);
           this.clearnetSocketCount = 0;
           this.torSocketCount = 0;
 
@@ -121,6 +125,7 @@ export class NodeComponent implements OnInit {
         }),
         catchError(err => {
           this.error = err;
+          this.seoService.logSoft404();
           return [{
             alias: this.publicKey,
             public_key: this.publicKey,
@@ -163,5 +168,10 @@ export class NodeComponent implements OnInit {
 
   onLoadingEvent(e) {
     this.channelListLoading = e;
+  }
+
+  toggleFeatures() {
+    this.showFeatures = !this.showFeatures;
+    return false;
   }
 }

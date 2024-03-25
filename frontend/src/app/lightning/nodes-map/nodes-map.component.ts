@@ -3,7 +3,7 @@ import { SeoService } from '../../services/seo.service';
 import { ApiService } from '../../services/api.service';
 import { Observable, BehaviorSubject, switchMap, tap, combineLatest } from 'rxjs';
 import { AssetsService } from '../../services/assets.service';
-import { EChartsOption, registerMap } from 'echarts';
+import { EChartsOption, echarts } from '../../graphs/echarts';
 import { lerpColor } from '../../shared/graphs.utils';
 import { Router } from '@angular/router';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
@@ -26,6 +26,7 @@ export class NodesMap implements OnInit, OnChanges {
   inputNodes$: BehaviorSubject<any>;
   nodes$: Observable<any>;
   observable$: Observable<any>;
+  isLoading: boolean = true;
 
   chartInstance = undefined;
   chartOptions: EChartsOption = {};
@@ -37,7 +38,7 @@ export class NodesMap implements OnInit, OnChanges {
     @Inject(LOCALE_ID) public locale: string,
     private seoService: SeoService,
     private apiService: ApiService,
-    private stateService: StateService,
+    public stateService: StateService,
     private assetsService: AssetsService,
     private router: Router,
     private zone: NgZone,
@@ -48,6 +49,7 @@ export class NodesMap implements OnInit, OnChanges {
   ngOnInit(): void {
     if (!this.widget) {
       this.seoService.setTitle($localize`:@@af8560ca50882114be16c951650f83bca73161a7:Lightning Nodes World Map`);
+      this.seoService.setDescription($localize`:@@meta.description.lightning.node-channel-map:See the locations of non-Tor Lightning network nodes visualized on a world map. Hover/tap on points on the map for node names and details.`);
     }
 
     if (!this.inputNodes$) {
@@ -62,7 +64,7 @@ export class NodesMap implements OnInit, OnChanges {
       this.assetsService.getWorldMapJson$,
       this.nodes$
     ).pipe(tap((data) => {
-      registerMap('world', data[0]);
+      echarts.registerMap('world', data[0]);
 
       let maxLiquidity = data[1].maxLiquidity;
       let inputNodes: any[] = data[1].nodes;
@@ -113,7 +115,7 @@ export class NodesMap implements OnInit, OnChanges {
           node[3], // Alias
           node[2], // Public key
           node[5], // Channels
-          node[6].en, // Country
+          node[6]?.en, // Country
           node[7], // ISO Code
         ]);
       }
@@ -225,6 +227,7 @@ export class NodesMap implements OnInit, OnChanges {
         },
       ]
     };
+    this.isLoading = false;
   }
 
   onChartInit(ec) {
@@ -233,6 +236,10 @@ export class NodesMap implements OnInit, OnChanges {
     }
 
     this.chartInstance = ec;
+
+    this.chartInstance.on('finished', () => {
+      this.isLoading = false;
+    });
 
     this.chartInstance.on('click', (e) => {
       if (e.data) {

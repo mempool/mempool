@@ -6,7 +6,7 @@ import { Outspend, Transaction, Vin, Vout } from '../../interfaces/electrs.inter
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { environment } from '../../../environments/environment';
 import { AssetsService } from '../../services/assets.service';
-import { filter, map, tap, switchMap, shareReplay } from 'rxjs/operators';
+import { filter, map, tap, switchMap, shareReplay, catchError } from 'rxjs/operators';
 import { BlockExtended } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { PriceService } from '../../services/price.service';
@@ -32,11 +32,14 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   @Input() outputIndex: number;
   @Input() address: string = '';
   @Input() rowLimit = 12;
+  @Input() blockTime: number = 0; // Used for price calculation if all the transactions are in the same block
 
   @Output() loadMore = new EventEmitter();
 
   latestBlock$: Observable<BlockExtended>;
   outspendsSubscription: Subscription;
+  currencyChangeSubscription: Subscription;
+  currency: string;
   refreshOutspends$: ReplaySubject<string[]> = new ReplaySubject();
   refreshChannels$: ReplaySubject<string[]> = new ReplaySubject();
   showDetails$ = new BehaviorSubject<boolean>(false);
@@ -56,7 +59,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-    this.latestBlock$ = this.stateService.blocks$.pipe(map(([block]) => block));
+    this.latestBlock$ = this.stateService.blocks$.pipe(map((blocks) => blocks[0]));
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
     if (this.network === 'liquid' || this.network === 'liquidtestnet') {
@@ -75,7 +78,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
               for (let i = 0; i < txIds.length; i += 50) {
                 batches.push(txIds.slice(i, i + 50));
               }
-              return forkJoin(batches.map(batch => this.apiService.getOutspendsBatched$(batch)));
+              return forkJoin(batches.map(batch => { return this.electrsApiService.cachedRequest(this.electrsApiService.getOutspendsBatched$, 250, batch); }));
             } else {
               return of([]);
             }
@@ -90,6 +93,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
             outspends.forEach((outspend, i) => {
               transactions[i]._outspends = outspend;
             });
+            this.ref.markForCheck();
           }),
         ),
       this.stateService.utxoSpent$
@@ -108,6 +112,10 @@ export class TransactionsListComponent implements OnInit, OnChanges {
           .pipe(
             filter(() => this.stateService.env.LIGHTNING),
             switchMap((txIds) => this.apiService.getChannelByTxIds$(txIds)),
+            catchError((error) => {
+              // handle 404
+              return of([]);
+            }),
             tap((channels) => {
               if (!this.transactions) {
                 return;
@@ -120,6 +128,35 @@ export class TransactionsListComponent implements OnInit, OnChanges {
           )
         ,
     ).subscribe(() => this.ref.markForCheck());
+
+    this.currencyChangeSubscription = this.stateService.fiatCurrency$
+    .subscribe(currency => {
+      this.currency = currency;
+      this.refreshPrice();
+    });
+  }
+
+  refreshPrice(): void {
+    // Loop over all transactions
+    if (!this.transactions || !this.transactions.length || !this.currency) {
+      return;
+    }
+    const confirmedTxs = this.transactions.filter((tx) => tx.status.confirmed).length;
+    if (!this.blockTime) {
+      this.transactions.forEach((tx) => {
+        if (!this.blockTime) {
+          if (tx.status.block_time) {
+            this.priceService.getBlockPrice$(tx.status.block_time, confirmedTxs < 10, this.currency).pipe(
+              tap((price) => tx['price'] = price),
+            ).subscribe();
+          }
+        }
+      });
+    } else {
+      this.priceService.getBlockPrice$(this.blockTime, true, this.currency).pipe(
+        tap((price) => this.transactions.forEach((tx) => tx['price'] = price)),
+      ).subscribe();
+    }
   }
 
   ngOnChanges(changes): void {
@@ -143,6 +180,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       this.transactionsLength = this.transactions.length;
       this.cacheService.setTxCache(this.transactions);
 
+      const confirmedTxs = this.transactions.filter((tx) => tx.status.confirmed).length;
       this.transactions.forEach((tx) => {
         tx['@voutLimit'] = true;
         tx['@vinLimit'] = true;
@@ -151,23 +189,59 @@ export class TransactionsListComponent implements OnInit, OnChanges {
         }
 
         if (this.address) {
-          const addressIn = tx.vout
-            .filter((v: Vout) => v.scriptpubkey_address === this.address)
-            .map((v: Vout) => v.value || 0)
-            .reduce((a: number, b: number) => a + b, 0);
+          const isP2PKUncompressed = this.address.length === 130;
+          const isP2PKCompressed = this.address.length === 66;
+          if (isP2PKCompressed) {
+            const addressIn = tx.vout
+              .filter((v: Vout) => v.scriptpubkey === '21' + this.address + 'ac')
+              .map((v: Vout) => v.value || 0)
+              .reduce((a: number, b: number) => a + b, 0);
 
-          const addressOut = tx.vin
-            .filter((v: Vin) => v.prevout && v.prevout.scriptpubkey_address === this.address)
-            .map((v: Vin) => v.prevout.value || 0)
-            .reduce((a: number, b: number) => a + b, 0);
+            const addressOut = tx.vin
+              .filter((v: Vin) => v.prevout && v.prevout.scriptpubkey === '21' + this.address + 'ac')
+              .map((v: Vin) => v.prevout.value || 0)
+              .reduce((a: number, b: number) => a + b, 0);
 
-          tx['addressValue'] = addressIn - addressOut;
+            tx['addressValue'] = addressIn - addressOut;
+          } else if (isP2PKUncompressed) {
+            const addressIn = tx.vout
+              .filter((v: Vout) => v.scriptpubkey === '41' + this.address + 'ac')
+              .map((v: Vout) => v.value || 0)
+              .reduce((a: number, b: number) => a + b, 0);
+
+            const addressOut = tx.vin
+              .filter((v: Vin) => v.prevout && v.prevout.scriptpubkey === '41' + this.address + 'ac')
+              .map((v: Vin) => v.prevout.value || 0)
+              .reduce((a: number, b: number) => a + b, 0);
+
+            tx['addressValue'] = addressIn - addressOut;
+          } else {
+            const addressIn = tx.vout
+              .filter((v: Vout) => v.scriptpubkey_address === this.address)
+              .map((v: Vout) => v.value || 0)
+              .reduce((a: number, b: number) => a + b, 0);
+
+            const addressOut = tx.vin
+              .filter((v: Vin) => v.prevout && v.prevout.scriptpubkey_address === this.address)
+              .map((v: Vin) => v.prevout.value || 0)
+              .reduce((a: number, b: number) => a + b, 0);
+
+            tx['addressValue'] = addressIn - addressOut;
+          }
         }
 
-        this.priceService.getBlockPrice$(tx.status.block_time).pipe(
-          tap((price) => tx['price'] = price)
-        ).subscribe();
+        if (!this.blockTime && tx.status.block_time && this.currency) {
+          this.priceService.getBlockPrice$(tx.status.block_time, confirmedTxs < 10, this.currency).pipe(
+            tap((price) => tx['price'] = price),
+          ).subscribe();
+        }
       });
+
+      if (this.blockTime && this.transactions?.length && this.currency) {
+        this.priceService.getBlockPrice$(this.blockTime, true, this.currency).pipe(
+          tap((price) => this.transactions.forEach((tx) => tx['price'] = price)),
+        ).subscribe();
+      }
       const txIds = this.transactions.filter((tx) => !tx._outspends).map((tx) => tx.txid);
       if (txIds.length && !this.cached) {
         this.refreshOutspends$.next(txIds);
@@ -182,14 +256,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   }
 
   onScroll(): void {
-    const scrollHeight = document.body.scrollHeight;
-    const scrollTop = document.documentElement.scrollTop;
-    if (scrollHeight > 0) {
-      const percentageScrolled = scrollTop * 100 / scrollHeight;
-      if (percentageScrolled > 50) {
-        this.loadMore.emit();
-      }
-    }
+    this.loadMore.emit();
   }
 
   haveBlindedOutputValues(tx: Transaction): boolean {
@@ -282,5 +349,6 @@ export class TransactionsListComponent implements OnInit, OnChanges {
 
   ngOnDestroy(): void {
     this.outspendsSubscription.unsubscribe();
+    this.currencyChangeSubscription?.unsubscribe();
   }
 }

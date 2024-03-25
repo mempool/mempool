@@ -280,6 +280,56 @@
             }
           }
         },
+        "server": {
+          "builder": "@angular-devkit/build-angular:server",
+          "options": {
+            "outputPath": "dist/mempool/server",
+            "main": "server.ts",
+            "tsConfig": "tsconfig.server.json"
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "media",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "sourceMap": false,
+              "localize": true,
+              "optimization": false
+            }
+          }
+        },
+        "serve-ssr": {
+          "builder": "@nguniversal/builders:ssr-dev-server",
+          "options": {
+            "browserTarget": "mempool:build",
+            "serverTarget": "mempool:server"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "mempool:build:production",
+              "serverTarget": "mempool:server:production",
+              "optimization": false,
+              "sourceMap": true
+            }
+          }
+        },
+        "prerender": {
+          "builder": "@nguniversal/builders:prerender",
+          "options": {
+            "browserTarget": "mempool:build:production",
+            "serverTarget": "mempool:server:production",
+            "routes": [
+              "/"
+            ]
+          },
+          "configurations": {
+            "production": {}
+          }
+        },
         "cypress-run": {
           "builder": "@cypress/schematic:cypress",
           "options": {

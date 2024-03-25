@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, HostListener, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
-import { combineLatest, Observable, timer } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, ElementRef, ViewChild, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
+import { combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { StateService } from '../..//services/state.service';
 
 interface EpochProgress {
@@ -19,6 +19,7 @@ interface EpochProgress {
   blocksUntilHalving: number;
   timeUntilHalving: number;
   timeAvg: number;
+  adjustedTimeAvg: number;
 }
 
 type BlockStatus = 'mined' | 'behind' | 'ahead' | 'next' | 'remaining';
@@ -44,6 +45,8 @@ export class DifficultyComponent implements OnInit {
   @Input() showProgress = true;
   @Input() showHalving = false;
   @Input() showTitle = true;
+
+  @ViewChild('epochSvg') epochSvgElement: ElementRef<SVGElement>;
  
   isLoadingWebSocket$: Observable<boolean>;
   difficultyEpoch$: Observable<EpochProgress>;
@@ -61,17 +64,19 @@ export class DifficultyComponent implements OnInit {
 
   constructor(
     public stateService: StateService,
+    private cd: ChangeDetectorRef,
     @Inject(LOCALE_ID) private locale: string,
   ) { }
 
   ngOnInit(): void {
     this.isLoadingWebSocket$ = this.stateService.isLoadingWebSocket$;
     this.difficultyEpoch$ = combineLatest([
-      this.stateService.blocks$.pipe(map(([block]) => block)),
+      this.stateService.blocks$,
       this.stateService.difficultyAdjustment$,
     ])
     .pipe(
-      map(([block, da]) => {
+      map(([blocks, da]) => {
+        const maxHeight = blocks.reduce((max, block) => Math.max(max, block.height), 0);
         let colorAdjustments = '#ffffff66';
         if (da.difficultyChange > 0) {
           colorAdjustments = '#3bcc49';
@@ -92,7 +97,7 @@ export class DifficultyComponent implements OnInit {
           colorPreviousAdjustments = '#ffffff66';
         }
 
-        const blocksUntilHalving = 210000 - (block.height % 210000);
+        const blocksUntilHalving = 210000 - (maxHeight % 210000);
         const timeUntilHalving = new Date().getTime() + (blocksUntilHalving * 600000);
         const newEpochStart = Math.floor(this.stateService.latestBlockHeight / EPOCH_BLOCK_LENGTH) * EPOCH_BLOCK_LENGTH;
         const newExpectedHeight = Math.floor(newEpochStart + da.expectedBlocks);
@@ -149,6 +154,7 @@ export class DifficultyComponent implements OnInit {
           blocksUntilHalving,
           timeUntilHalving,
           timeAvg: da.timeAvg,
+          adjustedTimeAvg: da.adjustedTimeAvg,
         };
         return data;
       })
@@ -188,16 +194,27 @@ export class DifficultyComponent implements OnInit {
     return shapes;
   }
 
-  @HostListener('pointermove', ['$event'])
-  onPointerMove(event) {
-    this.tooltipPosition = { x: event.clientX, y: event.clientY };
+  @HostListener('pointerdown', ['$event'])
+  onPointerDown(event): void {
+    if (this.epochSvgElement?.nativeElement?.contains(event.target)) {
+      this.onPointerMove(event);
+      event.preventDefault();
+    }
   }
 
-  onHover(event, rect): void {
+  @HostListener('pointermove', ['$event'])
+  onPointerMove(event): void {
+    if (this.epochSvgElement?.nativeElement?.contains(event.target)) {
+      this.tooltipPosition = { x: event.clientX, y: event.clientY };
+      this.cd.markForCheck();
+    }
+  }
+
+  onHover(_, rect): void {
     this.hoverSection = rect;
   }
 
-  onBlur(event): void {
+  onBlur(): void {
     this.hoverSection = null;
   }
 }
