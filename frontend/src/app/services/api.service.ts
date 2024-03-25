@@ -238,8 +238,8 @@ export class ApiService {
     return this.httpClient.post<any>(this.apiBaseUrl + this.apiBasePath + '/api/tx', hexPayload, { responseType: 'text' as 'json'});
   }
 
-  testTransactions$(hexPayload: string, maxfeerate?: number): Observable<TestMempoolAcceptResult[]> {
-    return this.httpClient.post<TestMempoolAcceptResult[]>(this.apiBaseUrl + this.apiBasePath + `/api/txs/test${maxfeerate != null ? '?maxfeerate=' + maxfeerate.toFixed(8) : ''}`, hexPayload);
+  testTransactions$(rawTxs: string[], maxfeerate?: number): Observable<TestMempoolAcceptResult[]> {
+    return this.httpClient.post<TestMempoolAcceptResult[]>(this.apiBaseUrl + this.apiBasePath + `/api/txs/test${maxfeerate != null ? '?maxfeerate=' + maxfeerate.toFixed(8) : ''}`, rawTxs);
   }
 
   getTransactionStatus$(txid: string): Observable<any> {

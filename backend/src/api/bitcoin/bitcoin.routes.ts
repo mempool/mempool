@@ -751,13 +751,13 @@ class BitcoinRoutes {
   }
 
   private async $testTransactions(req: Request, res: Response) {
-    res.setHeader('content-type', 'text/plain');
     try {
       const rawTxs = Common.getTransactionsFromRequest(req);
       const maxfeerate = parseFloat(req.query.maxfeerate as string);
       const result = await bitcoinApi.$testMempoolAccept(rawTxs, maxfeerate);
       res.send(result);
     } catch (e: any) {
+      res.setHeader('content-type', 'text/plain');
       res.status(400).send(e.message && e.code ? 'testmempoolaccept RPC error: ' + JSON.stringify({ code: e.code, message: e.message })
         : (e.message || 'Error'));
     }

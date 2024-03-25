@@ -946,12 +946,16 @@ export class Common {
     return this.validateTransactionHex(matches[1].toLowerCase());
   }
 
-  static getTransactionsFromRequest(req: Request): string[] {
-    if (typeof req.body !== 'string') {
-      throw Object.assign(new Error('Non-string request body'), { code: -1 });
+  static getTransactionsFromRequest(req: Request, limit: number = 25): string[] {
+    if (!Array.isArray(req.body) || req.body.some(hex => typeof hex !== 'string')) {
+      throw Object.assign(new Error('Invalid request body (should be an array of hexadecimal strings)'), { code: -1 });
     }
 
-    const txs = req.body.split(',');
+    if (limit && req.body.length > limit) {
+      throw Object.assign(new Error('Exceeded maximum of 25 transactions'), { code: -1 });
+    }
+
+    const txs = req.body;
 
     return txs.map(rawTx => {
       // Support both upper and lower case hex

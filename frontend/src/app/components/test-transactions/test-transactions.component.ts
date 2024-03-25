@@ -37,6 +37,21 @@ export class TestTransactionsComponent implements OnInit {
   }
 
   testTxs() {
+    let txs: string[] = [];
+    try {
+      txs = (this.testTxsForm.get('txs')?.value as string).split(',').map(hex => hex.trim());
+      if (!txs?.length) {
+        this.error = 'At least one transaction is required';
+        return;
+      } else if (txs.length > 25) {
+        this.error = 'Exceeded maximum of 25 transactions';
+        return;
+      }
+    } catch (e) {
+      this.error = e?.message;
+      return;
+    }
+
     let maxfeerate;
     this.invalidMaxfeerate = false;
     try {
@@ -51,7 +66,7 @@ export class TestTransactionsComponent implements OnInit {
     this.isLoading = true;
     this.error = '';
     this.results = [];
-    this.apiService.testTransactions$((this.testTxsForm.get('txs')?.value as string).split(',').map(hex => hex.trim()).join(','), maxfeerate === 0.1 ? null : maxfeerate)
+    this.apiService.testTransactions$(txs, maxfeerate === 0.1 ? null : maxfeerate)
       .subscribe((result) => {
         this.isLoading = false;
         this.results = result || [];
