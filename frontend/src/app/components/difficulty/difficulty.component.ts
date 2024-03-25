@@ -51,6 +51,10 @@ export class DifficultyComponent implements OnInit {
   isLoadingWebSocket$: Observable<boolean>;
   difficultyEpoch$: Observable<EpochProgress>;
 
+  mode: 'difficulty' | 'halving' = 'difficulty';
+  userSelectedMode: boolean = false;
+
+  now: number = Date.now();
   epochStart: number;
   currentHeight: number;
   currentIndex: number;
@@ -101,6 +105,11 @@ export class DifficultyComponent implements OnInit {
         const timeUntilHalving = new Date().getTime() + (blocksUntilHalving * 600000);
         const newEpochStart = Math.floor(this.stateService.latestBlockHeight / EPOCH_BLOCK_LENGTH) * EPOCH_BLOCK_LENGTH;
         const newExpectedHeight = Math.floor(newEpochStart + da.expectedBlocks);
+        this.now = new Date().getTime();
+
+        if (blocksUntilHalving < da.remainingBlocks && !this.userSelectedMode) {
+          this.mode = 'halving';
+        }
 
         if (newEpochStart !== this.epochStart || newExpectedHeight !== this.expectedHeight || this.currentHeight !== this.stateService.latestBlockHeight) {
           this.epochStart = newEpochStart;
@@ -192,6 +201,12 @@ export class DifficultyComponent implements OnInit {
     }
 
     return shapes;
+  }
+
+  setMode(mode: 'difficulty' | 'halving'): boolean {
+    this.mode = mode;
+    this.userSelectedMode = true;
+    return false;
   }
 
   @HostListener('pointerdown', ['$event'])
