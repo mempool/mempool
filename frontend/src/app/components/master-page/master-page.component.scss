@@ -63,7 +63,7 @@ li.nav-item {
   box-shadow: 0px 0px 15px 0px #000;
   flex-direction: row;
   left: 0;
-  justify-content: center;
+  justify-content: space-between;
   position: fixed;
   width: 100%;
   @media (min-width: 992px) {
@@ -80,6 +80,11 @@ li.nav-item {
     @media (min-width: 430px) {
       font-size: 1em;
     }
+  }
+
+  li {
+    flex-grow: 1; /* Allows items to grow */
+    text-align: center; /* For text alignment */
   }
 }
 

@@ -4,6 +4,7 @@
 __MEMPOOL_NETWORK__=${MEMPOOL_NETWORK:=mainnet}
 __MEMPOOL_BACKEND__=${MEMPOOL_BACKEND:=electrum}
 __MEMPOOL_ENABLED__=${MEMPOOL_ENABLED:=true}
+__MEMPOOL_OFFICIAL__=${MEMPOOL_OFFICIAL:=false}
 __MEMPOOL_HTTP_PORT__=${BACKEND_HTTP_PORT:=8999}
 __MEMPOOL_UNIX_SOCKET_PATH__=${MEMPOOL_UNIX_SOCKET_PATH:=/mempool/socket/mempool-bitcoin-mainnet}
 __MEMPOOL_SPAWN_CLUSTER_PROCS__=${MEMPOOL_SPAWN_CLUSTER_PROCS:=0}
@@ -82,6 +83,7 @@ __DATABASE_USERNAME__=${DATABASE_USERNAME:=mempool}
 __DATABASE_PASSWORD__=${DATABASE_PASSWORD:=mempool}
 __DATABASE_TIMEOUT__=${DATABASE_TIMEOUT:=180000}
 __DATABASE_PID_DIR__=${DATABASE_PID_DIR:=""}
+__DATABASE_POOL_SIZE__=${DATABASE_POOL_SIZE:=100}
 
 # SYSLOG
 __SYSLOG_ENABLED__=${SYSLOG_ENABLED:=false}
@@ -154,11 +156,16 @@ __REDIS_ENABLED__=${REDIS_ENABLED:=false}
 __REDIS_UNIX_SOCKET_PATH__=${REDIS_UNIX_SOCKET_PATH:=true}
 __REDIS_BATCH_QUERY_BASE_SIZE__=${REDIS_BATCH_QUERY_BASE_SIZE:=5000}
 
+# FIAT_PRICE
+__FIAT_PRICE_ENABLED__=${FIAT_PRICE_ENABLED:=true}
+__FIAT_PRICE_API_KEY__=${FIAT_PRICE_API_KEY:=""}
+
 mkdir -p "${__MEMPOOL_CACHE_DIR__}"
 
 sed -i "s!__MEMPOOL_NETWORK__!${__MEMPOOL_NETWORK__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_BACKEND__!${__MEMPOOL_BACKEND__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_ENABLED__!${__MEMPOOL_ENABLED__}!g" mempool-config.json
+sed -i "s!__MEMPOOL_OFFICIAL__!${__MEMPOOL_OFFICIAL__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_HTTP_PORT__!${__MEMPOOL_HTTP_PORT__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_UNIX_SOCKET_PATH__!${__MEMPOOL_UNIX_SOCKET_PATH__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_SPAWN_CLUSTER_PROCS__!${__MEMPOOL_SPAWN_CLUSTER_PROCS__}!g" mempool-config.json
@@ -232,6 +239,7 @@ sed -i "s!__DATABASE_USERNAME__!${__DATABASE_USERNAME__}!g" mempool-config.json
 sed -i "s!__DATABASE_PASSWORD__!${__DATABASE_PASSWORD__}!g" mempool-config.json
 sed -i "s!__DATABASE_TIMEOUT__!${__DATABASE_TIMEOUT__}!g" mempool-config.json
 sed -i "s!__DATABASE_PID_DIR__!${__DATABASE_PID_DIR__}!g" mempool-config.json
+sed -i "s!__DATABASE_POOL_SIZE__!${__DATABASE_POOL_SIZE__}!g" mempool-config.json
 
 sed -i "s!__SYSLOG_ENABLED__!${__SYSLOG_ENABLED__}!g" mempool-config.json
 sed -i "s!__SYSLOG_HOST__!${__SYSLOG_HOST__}!g" mempool-config.json
@@ -298,5 +306,9 @@ sed -i "s!__MEMPOOL_SERVICES_ACCELERATIONS__!${__MEMPOOL_SERVICES_ACCELERATIONS_
 sed -i "s!__REDIS_ENABLED__!${__REDIS_ENABLED__}!g" mempool-config.json
 sed -i "s!__REDIS_UNIX_SOCKET_PATH__!${__REDIS_UNIX_SOCKET_PATH__}!g" mempool-config.json
 sed -i "s!__REDIS_BATCH_QUERY_BASE_SIZE__!${__REDIS_BATCH_QUERY_BASE_SIZE__}!g" mempool-config.json
+
+# FIAT_PRICE
+sed -i "s!__FIAT_PRICE_ENABLED__!${__FIAT_PRICE_ENABLED__}!g" mempool-config.json
+sed -i "s!__FIAT_PRICE_API_KEY__!${__FIAT_PRICE_API_KEY__}!g" mempool-config.json
 
 node /backend/package/index.js

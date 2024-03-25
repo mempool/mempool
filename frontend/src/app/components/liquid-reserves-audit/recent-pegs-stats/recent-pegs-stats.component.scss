@@ -1,7 +1,7 @@
 .fee-estimation-container {
   display: flex;
   justify-content: space-between;
-  padding-bottom: 1rem;
+  margin-bottom: 10px;
   @media (min-width: 376px) {
     flex-direction: row;
   }  
@@ -36,6 +36,7 @@
       top: 0px;
     }
     .fee-text{
+      border-bottom: 1px solid #ffffff1c;
       width: fit-content;
       margin: auto;
       line-height: 1.45;
@@ -68,4 +69,12 @@
   margin-bottom: 4px;
   text-decoration: none;
   color: inherit;
+}
+
+.credit {
+  color: #7CB342;
+}
+
+.debit {
+  color: #D81B60;
 }

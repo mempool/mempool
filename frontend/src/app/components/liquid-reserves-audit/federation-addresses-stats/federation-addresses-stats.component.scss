@@ -1,6 +1,7 @@
 .fee-estimation-container {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 10px;
   @media (min-width: 376px) {
     flex-direction: row;
   }  
@@ -21,6 +22,7 @@
     }
 
     .card-text {
+      padding-top: 9px;
       font-size: 22px;
       span {
         font-size: 11px;
@@ -46,10 +48,6 @@
       font-size: 14px !important;
     }
   }
-}
-
-.loading-container{
-  min-height: 76px;
 }
 
 .card-text {

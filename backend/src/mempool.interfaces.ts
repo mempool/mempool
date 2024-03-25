@@ -65,9 +65,9 @@ export interface MempoolBlockWithTransactions extends MempoolBlock {
 }
 
 export interface MempoolBlockDelta {
-  added: TransactionClassified[];
+  added: TransactionCompressed[];
   removed: string[];
-  changed: { txid: string, rate: number | undefined, flags?: number }[];
+  changed: MempoolDeltaChange[];
 }
 
 interface VinStrippedToScriptsig {
@@ -196,6 +196,11 @@ export interface TransactionClassified extends TransactionStripped {
   flags: number;
 }
 
+// [txid, fee, vsize, value, rate, flags, acceleration?]
+export type TransactionCompressed = [string, number, number, number, number, number, 1?];
+// [txid, rate, flags, acceleration?]
+export type MempoolDeltaChange = [string, number, number, (1|0)];
+
 // binary flags for transaction classification
 export const TransactionFlags = {
   // features
@@ -203,6 +208,8 @@ export const TransactionFlags = {
   no_rbf:                                                      0b00000010n,
   v1:                                                          0b00000100n,
   v2:                                                          0b00001000n,
+  v3:                                                          0b00010000n,
+  nonstandard:                                                 0b00100000n,
   // address types
   p2pk:                                               0b00000001_00000000n,
   p2ms:                                               0b00000010_00000000n,
@@ -219,6 +226,7 @@ export const TransactionFlags = {
   op_return:                        0b00000001_00000000_00000000_00000000n,
   fake_pubkey:                      0b00000010_00000000_00000000_00000000n,
   inscription:                      0b00000100_00000000_00000000_00000000n,
+  fake_scripthash:                  0b00001000_00000000_00000000_00000000n,
   // heuristics
   coinjoin:                0b00000001_00000000_00000000_00000000_00000000n,
   consolidation:           0b00000010_00000000_00000000_00000000_00000000n,

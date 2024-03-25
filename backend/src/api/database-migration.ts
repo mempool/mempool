@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 68;
+  private static currentVersion = 75;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -580,6 +580,80 @@ class DatabaseMigration {
       await this.$executeQuery(`INSERT INTO state VALUES('last_bitcoin_block_audit', 0, NULL);`);
       await this.updateToSchemaVersion(68);
     }
+
+    if (databaseSchemaVersion < 69 && config.MEMPOOL.NETWORK === 'mainnet') {
+      await this.$executeQuery(this.getCreateAccelerationsTableQuery(), await this.$checkIfTableExists('accelerations'));
+      await this.updateToSchemaVersion(69);
+    }
+
+    if (databaseSchemaVersion < 70 && config.MEMPOOL.NETWORK === 'mainnet') {
+      await this.$executeQuery('ALTER TABLE accelerations MODIFY COLUMN added DATETIME;');
+      await this.updateToSchemaVersion(70);
+    }
+
+    if (databaseSchemaVersion < 71 && config.MEMPOOL.NETWORK === 'liquid') {
+      await this.$executeQuery('TRUNCATE TABLE elements_pegs');
+      await this.$executeQuery('TRUNCATE TABLE federation_txos');
+      await this.$executeQuery('SET FOREIGN_KEY_CHECKS = 0');
+      await this.$executeQuery('TRUNCATE TABLE federation_addresses');
+      await this.$executeQuery('SET FOREIGN_KEY_CHECKS = 1');
+      await this.$executeQuery(`INSERT INTO federation_addresses (bitcoinaddress) VALUES ('bc1qxvay4an52gcghxq5lavact7r6qe9l4laedsazz8fj2ee2cy47tlqff4aj4')`); // Federation change address
+      await this.$executeQuery(`INSERT INTO federation_addresses (bitcoinaddress) VALUES ('3EiAcrzq1cELXScc98KeCswGWZaPGceT1d')`); // Federation change address
+      await this.$executeQuery(`UPDATE state SET number = 0 WHERE name = 'last_elements_block';`);
+      await this.$executeQuery(`UPDATE state SET number = 0 WHERE name = 'last_bitcoin_block_audit';`);
+      await this.$executeQuery('ALTER TABLE `federation_txos` ADD timelock INT NOT NULL DEFAULT 0');
+      await this.$executeQuery('ALTER TABLE `federation_txos` ADD expiredAt INT NOT NULL DEFAULT 0');
+      await this.$executeQuery('ALTER TABLE `federation_txos` ADD emergencyKey TINYINT NOT NULL DEFAULT 0');
+      await this.updateToSchemaVersion(71);
+    }
+
+    if (databaseSchemaVersion < 72 && isBitcoin === true) {
+      // reindex Goggles flags for mined block templates above height 832000
+      await this.$executeQuery('UPDATE blocks_summaries SET version = 0 WHERE height >= 832000;');
+      await this.updateToSchemaVersion(72);
+    }
+
+    if (databaseSchemaVersion < 73 && config.MEMPOOL.NETWORK === 'mainnet') {
+      // Clear bad data
+      await this.$executeQuery(`TRUNCATE accelerations`);
+      this.uniqueLog(logger.notice, `'accelerations' table has been truncated`);
+      await this.updateToSchemaVersion(73);
+    }
+
+    if (databaseSchemaVersion < 74 && config.MEMPOOL.NETWORK === 'mainnet') {
+      await this.$executeQuery(`INSERT INTO state(name, number) VALUE ('last_acceleration_block', 0);`);
+      await this.updateToSchemaVersion(74);
+    }
+
+    if (databaseSchemaVersion < 75) {
+      await this.$executeQuery('ALTER TABLE `prices` ADD `BGN` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `BRL` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `CNY` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `CZK` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `DKK` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `HKD` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `HRK` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `HUF` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `IDR` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `ILS` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `INR` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `ISK` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `KRW` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `MXN` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `MYR` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `NOK` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `NZD` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `PHP` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `PLN` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `RON` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `RUB` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `SEK` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `SGD` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `THB` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `TRY` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `ZAR` float DEFAULT "-1"');
+      await this.updateToSchemaVersion(75);
+    }
   }
 
   /**
@@ -1120,6 +1194,23 @@ class DatabaseMigration {
       txid binary(32) NOT NULL,
       cluster binary(32) DEFAULT NULL,
       PRIMARY KEY (txid)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateAccelerationsTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS accelerations (
+      txid varchar(65) NOT NULL,
+      added datetime NOT NULL,
+      height int(10) NOT NULL,
+      pool smallint unsigned NULL,
+      effective_vsize int(10) NOT NULL,
+      effective_fee bigint(20) unsigned NOT NULL,
+      boost_rate float unsigned,
+      boost_cost bigint(20) unsigned NOT NULL,
+      PRIMARY KEY (txid),
+      INDEX (added),
+      INDEX (height),
+      INDEX (pool)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 

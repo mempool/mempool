@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Env, StateService } from '../../services/state.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { SeoService } from '../../services/seo.service';
+import { OpenGraphService } from '../../services/opengraph.service';
 
 @Component({
   selector: 'app-docs',
@@ -24,6 +25,7 @@ export class DocsComponent implements OnInit {
     private stateService: StateService,
     private websocket: WebsocketService,
     private seoService: SeoService,
+    private ogService: OpenGraphService,
   ) { }
 
   ngOnInit(): void {
@@ -44,6 +46,7 @@ export class DocsComponent implements OnInit {
       this.activeTab = 0;
       this.seoService.setTitle($localize`:@@meta.title.docs.faq:FAQ`);
       this.seoService.setDescription($localize`:@@meta.description.docs.faq:Get answers to common questions like: What is a mempool? Why isn't my transaction confirming? How can I run my own instance of The Mempool Open Source Project? And more.`);
+      this.ogService.setManualOgImage('faq.jpg');
     } else if( url[1].path === "rest" ) {
       this.activeTab = 1;
       this.seoService.setTitle($localize`:@@meta.title.docs.rest:REST API`);

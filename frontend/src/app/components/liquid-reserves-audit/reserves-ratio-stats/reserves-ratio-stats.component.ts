@@ -9,6 +9,7 @@ import { Observable, map } from 'rxjs';
 })
 export class ReservesRatioStatsComponent implements OnInit {
   @Input() fullHistory$: Observable<any>;
+  @Input() emergencyUtxosStats$: Observable<any>;
   unbackedMonths$: Observable<any>
 
   constructor() { }

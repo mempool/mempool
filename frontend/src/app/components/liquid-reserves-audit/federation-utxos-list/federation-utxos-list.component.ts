@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
-import { Observable, Subject, combineLatest, of, timer } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { BehaviorSubject, Observable, Subject, combineLatest, of, timer } from 'rxjs';
 import { delayWhen, filter, map, share, shareReplay, switchMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
 import { ApiService } from '../../../services/api.service';
 import { Env, StateService } from '../../../services/state.service';
@@ -24,6 +25,9 @@ export class FederationUtxosListComponent implements OnInit {
   skeletonLines: number[] = [];
   auditStatus$: Observable<AuditStatus>;
   auditUpdated$: Observable<boolean>;
+  showExpiredUtxos: boolean = false;
+  showExpiredUtxosToggleSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(this.showExpiredUtxos);
+  showExpiredUtxosToggle$: Observable<boolean> = this.showExpiredUtxosToggleSubject.asObservable();
   lastReservesBlockUpdate: number = 0;
   currentPeg$: Observable<CurrentPegs>;
   lastPegBlockUpdate: number = 0;
@@ -36,6 +40,8 @@ export class FederationUtxosListComponent implements OnInit {
     private apiService: ApiService,
     public stateService: StateService,
     private websocketService: WebsocketService,
+    private route: ActivatedRoute,
+    private router: Router
   ) {
   }
 
@@ -45,7 +51,12 @@ export class FederationUtxosListComponent implements OnInit {
     this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
 
     if (!this.widget) {
+      this.route.fragment.subscribe((fragment) => {
+        this.showExpiredUtxosToggleSubject.next(['expired'].indexOf(fragment) > -1);
+      });
+
       this.websocketService.want(['blocks']);
+
       this.auditStatus$ = this.stateService.blocks$.pipe(
         takeUntil(this.destroy$),
         throttleTime(40000),
@@ -70,27 +81,30 @@ export class FederationUtxosListComponent implements OnInit {
 
       this.auditUpdated$ = combineLatest([
         this.auditStatus$,
-        this.currentPeg$
+        this.currentPeg$,
+        this.showExpiredUtxosToggle$
       ]).pipe(
-        filter(([auditStatus, _]) => auditStatus.isAuditSynced === true),
-        map(([auditStatus, currentPeg]) => ({
+        filter(([auditStatus, _, __]) => auditStatus.isAuditSynced === true),
+        map(([auditStatus, currentPeg, showExpiredUtxos]) => ({
           lastBlockAudit: auditStatus.lastBlockAudit,
-          currentPegAmount: currentPeg.amount
+          currentPegAmount: currentPeg.amount,
+          showExpiredUtxos: showExpiredUtxos
         })),
-        switchMap(({ lastBlockAudit, currentPegAmount }) => {
+        switchMap(({ lastBlockAudit, currentPegAmount, showExpiredUtxos }) => {
           const blockAuditCheck = lastBlockAudit > this.lastReservesBlockUpdate;
           const amountCheck = currentPegAmount !== this.lastPegAmount;
+          const expiredCheck = showExpiredUtxos !== this.showExpiredUtxos;
           this.lastReservesBlockUpdate = lastBlockAudit;
           this.lastPegAmount = currentPegAmount;
-          return of(blockAuditCheck || amountCheck);
+          this.showExpiredUtxos = showExpiredUtxos;
+          return of(blockAuditCheck || amountCheck || expiredCheck);
         }),
         share()
       );
 
       this.federationUtxos$ = this.auditUpdated$.pipe(
         filter(auditUpdated => auditUpdated === true),
-        throttleTime(40000),
-        switchMap(_ => this.apiService.federationUtxos$()),
+        switchMap(_ => this.showExpiredUtxos ? this.apiService.expiredUtxos$() : this.apiService.federationUtxos$()),
         tap(_ => this.isLoading = false),
         share()
       );
@@ -104,6 +118,34 @@ export class FederationUtxosListComponent implements OnInit {
 
   pageChange(page: number): void {
     this.page = page;
+  }
+
+  getGradientColor(value: number): string {
+    const distanceToGreen = Math.abs(4032 - value);
+    const green = '#7CB342';
+    const red = '#D81B60';
+  
+    if (value < 0) {
+      return red;
+    } else if (value >= 4032) {
+      return green;
+    } else {
+      const scaleFactor = 1 - distanceToGreen / 4032;
+      const r = parseInt(red.slice(1, 3), 16);
+      const g = parseInt(green.slice(1, 3), 16);
+      const b = parseInt(red.slice(5, 7), 16);
+      
+      const newR = Math.floor(r + (g - r) * scaleFactor);
+      const newG = Math.floor(g - (g - r) * scaleFactor);
+      const newB = b;
+      
+      return '#' + this.componentToHex(newR) + this.componentToHex(newG) + this.componentToHex(newB);
+    }
+  }
+
+  componentToHex(c: number): string {
+    const hex = c.toString(16);
+    return hex.length == 1 ? '0' + hex : hex;
   }
 
 }

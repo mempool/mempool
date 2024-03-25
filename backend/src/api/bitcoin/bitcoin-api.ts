@@ -1,5 +1,5 @@
 import * as bitcoinjs from 'bitcoinjs-lib';
-import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
+import { AbstractBitcoinApi, HealthCheckHost } from './bitcoin-api-abstract-factory';
 import { IBitcoinApi } from './bitcoin-api.interface';
 import { IEsploraApi } from './esplora-api.interface';
 import blocks from '../blocks';
@@ -382,6 +382,10 @@ class BitcoinApi implements AbstractBitcoinApi {
   }
 
   public startHealthChecks(): void {};
+
+  public getHealthStatus() {
+    return [];
+  }
 }
 
 export default BitcoinApi;

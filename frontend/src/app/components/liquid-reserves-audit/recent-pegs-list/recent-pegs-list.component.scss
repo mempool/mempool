@@ -6,11 +6,14 @@
 
 tr, td, th {
   border: 0px;
-  padding-top: 0.65rem !important;
-  padding-bottom: 0.6rem !important;
-  padding-right: 2rem !important;
-  .widget {
-    padding-right: 1rem !important;
+  padding-top: 0.65rem;
+  padding-bottom: 0.6rem;
+  padding-right: 2rem;
+  .widget &.widget {
+    padding-right: 1rem;
+    @media (max-width: 510px) {
+      padding-right: 0.5rem;
+    }
   }
 }
 
@@ -28,7 +31,7 @@ tr, td, th {
 }
 
 .transaction {
-  width: 20%;
+  width: 65%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -54,7 +57,7 @@ tr, td, th {
 }
 
 .output {
-  width: 20%;
+  width: 50%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -93,7 +96,7 @@ tr, td, th {
     display: block;
   }
 
-  @media (max-width: 500px) {
+  @media (max-width: 510px) {
     display: none;
   }
 }
@@ -104,4 +107,17 @@ tr, td, th {
 
 .debit {
   color: #D81B60;
+}
+
+.glow-effect {
+  animation: color-oscillation 1s ease-in-out infinite alternate;
+}
+
+@keyframes color-oscillation {
+  0% {
+      color: #777983;
+  }
+  100% {
+      color: #D81B60;
+  }
 }

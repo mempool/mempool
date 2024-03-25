@@ -1,6 +1,6 @@
-import { Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
+import { Component, Inject, Input, LOCALE_ID, OnInit, HostBinding, OnChanges, SimpleChanges } from '@angular/core';
 import { echarts, EChartsOption } from '../../graphs/echarts';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest, fromEvent } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { SeoService } from '../../services/seo.service';
 import { formatNumber } from '@angular/common';
@@ -11,6 +11,7 @@ import { download } from '../../shared/graphs.utils';
 import { LightningApiService } from '../lightning-api.service';
 import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
 import { isMobile } from '../../shared/common.utils';
+import { StateService } from '../../services/state.service';
 
 @Component({
   selector: 'app-lightning-statistics-chart',
@@ -25,7 +26,8 @@ import { isMobile } from '../../shared/common.utils';
     }
   `],
 })
-export class LightningStatisticsChartComponent implements OnInit {
+export class LightningStatisticsChartComponent implements OnInit, OnChanges {
+  @Input() height: number = 150;
   @Input() right: number | string = 45;
   @Input() left: number | string = 45;
   @Input() widget = false;
@@ -37,6 +39,7 @@ export class LightningStatisticsChartComponent implements OnInit {
   chartInitOptions = {
     renderer: 'svg',
   };
+  chartData: any;
 
   @HostBinding('attr.dir') dir = 'ltr';
 
@@ -53,6 +56,7 @@ export class LightningStatisticsChartComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private storageService: StorageService,
     private miningService: MiningService,
+    public stateService: StateService,
     private amountShortenerPipe: AmountShortenerPipe,
   ) {
   }
@@ -70,36 +74,42 @@ export class LightningStatisticsChartComponent implements OnInit {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
-    this.capacityObservable$ = this.radioGroupForm.get('dateSpan').valueChanges
-      .pipe(
-        startWith(this.miningWindowPreference),
-        switchMap((timespan) => {
-          this.timespan = timespan;
-          if (!this.widget && !firstRun) {
-            this.storageService.setValue('lightningWindowPreference', timespan);
-          }
-          firstRun = false;
-          this.miningWindowPreference = timespan;
-          this.isLoading = true;
-          return this.lightningApiService.cachedRequest(this.lightningApiService.listStatistics$, 250, timespan)
-            .pipe(
-              tap((response:any) => {
-                const data = response.body;
-                this.prepareChartOptions({
-                  channel_count: data.map(val => [val.added * 1000, val.channel_count]),
-                  capacity: data.map(val => [val.added * 1000, val.total_capacity]),
-                });
-                this.isLoading = false;
-              }),
-              map((response) => {
-                return {
-                  days: parseInt(response.headers.get('x-total-count'), 10),
-                };
-              }),
-            );
-        }),
-        share(),
-      );
+    this.capacityObservable$ = this.radioGroupForm.get('dateSpan').valueChanges.pipe(
+      startWith(this.miningWindowPreference),
+      switchMap((timespan) => {
+        this.timespan = timespan;
+        if (!this.widget && !firstRun) {
+          this.storageService.setValue('lightningWindowPreference', timespan);
+        }
+        firstRun = false;
+        this.miningWindowPreference = timespan;
+        this.isLoading = true;
+        return this.lightningApiService.cachedRequest(this.lightningApiService.listStatistics$, 250, timespan)
+          .pipe(
+            tap((response:any) => {
+              const data = response.body;
+              this.chartData = {
+                channel_count: data.map(val => [val.added * 1000, val.channel_count]),
+                capacity: data.map(val => [val.added * 1000, val.total_capacity]),
+              };
+              this.prepareChartOptions(this.chartData);
+              this.isLoading = false;
+            }),
+            map((response) => {
+              return {
+                days: parseInt(response.headers.get('x-total-count'), 10),
+              };
+            }),
+          );
+      }),
+      share(),
+    );
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.height && this.chartData) {
+      this.prepareChartOptions(this.chartData);
+    }
   }
 
   prepareChartOptions(data): void {
@@ -138,7 +148,7 @@ export class LightningStatisticsChartComponent implements OnInit {
         ]),
       ],
       grid: {
-        height: this.widget ? 90 : undefined,
+        height: this.widget ? ((this.height || 120) - 60) : undefined,
         top: this.widget ? 20 : 40,
         bottom: this.widget ? 0 : 70,
         right: (isMobile() && this.widget) ? 35 : this.right,

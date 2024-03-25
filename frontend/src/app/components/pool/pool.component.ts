@@ -1,14 +1,19 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { echarts, EChartsOption } from '../../graphs/echarts';
-import { BehaviorSubject, Observable, of, timer } from 'rxjs';
-import { catchError, distinctUntilChanged, map, share, switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, combineLatest, of, timer } from 'rxjs';
+import { catchError, distinctUntilChanged, filter, map, share, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended, PoolStat } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { StateService } from '../../services/state.service';
 import { selectPowerOfTen } from '../../bitcoin.utils';
 import { formatNumber } from '@angular/common';
 import { SeoService } from '../../services/seo.service';
+
+interface AccelerationTotal {
+  cost: number,
+  count: number,
+}
 
 @Component({
   selector: 'app-pool',
@@ -25,6 +30,7 @@ export class PoolComponent implements OnInit {
   formatNumber = formatNumber;
   poolStats$: Observable<PoolStat>;
   blocks$: Observable<BlockExtended[]>;
+  oobFees$: Observable<AccelerationTotal[]>;
   isLoading = true;
 
   chartOptions: EChartsOption = {};
@@ -111,6 +117,17 @@ export class PoolComponent implements OnInit {
         map(() => this.blocks),
         share(),
       );
+
+    this.oobFees$ = this.route.params.pipe(map((params) => params.slug)).pipe(
+      switchMap(slug => {
+        return combineLatest([
+          this.apiService.getAccelerationTotals$(this.slug, '1w'),
+          this.apiService.getAccelerationTotals$(this.slug, '1m'),
+          this.apiService.getAccelerationTotals$(this.slug),
+        ]);
+      }),
+      filter(oob => oob.length === 3 && oob[2].count > 0)
+    );
   }
 
   prepareChartOptions(data) {

@@ -1,9 +1,9 @@
 
 <div class="grid-align" [style.gridTemplateColumns]="'repeat(auto-fit, ' + resolution + 'px)'">
   <div class="block-overview-graph">
-    <canvas class="block-overview-canvas" [class.clickable]="!!hoverTx" #blockCanvas></canvas>
+    <canvas *browserOnly class="block-overview-canvas" [class.clickable]="!!hoverTx" #blockCanvas></canvas>
     <div class="loader-wrapper" [class.hidden]="(!isLoading || disableSpinner) && !unavailable">
-      <div *ngIf="isLoading" class="spinner-border ml-3 loading" role="status"></div>
+      <div *ngIf="!unavailable" class="spinner-border ml-3 loading" role="status"></div>
       <div *ngIf="!isLoading && unavailable" class="ml-3" i18n="block.not-available">not available</div>
     </div>
     <app-block-overview-tooltip
@@ -12,7 +12,12 @@
       [clickable]="!!selectedTx"
       [auditEnabled]="auditHighlighting"
       [blockConversion]="blockConversion"
+      [filterFlags]="activeFilterFlags"
+      [filterMode]="filterMode"
     ></app-block-overview-tooltip>
-    <app-block-filters *ngIf="showFilters && filtersAvailable" [excludeFilters]="excludeFilters" [cssWidth]="cssWidth" (onFilterChanged)="setFilterFlags($event)"></app-block-filters>
+    <app-block-filters *ngIf="webGlEnabled && showFilters && filtersAvailable" [excludeFilters]="excludeFilters" [cssWidth]="cssWidth" (onFilterChanged)="setFilterFlags($event)"></app-block-filters>
+    <div *ngIf="!webGlEnabled" class="placeholder">
+      <span i18n="webgl-disabled">Your browser does not support this feature.</span>
+    </div>
   </div>
 </div>

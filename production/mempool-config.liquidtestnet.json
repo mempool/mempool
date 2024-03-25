@@ -1,5 +1,6 @@
 {
   "MEMPOOL": {
+    "OFFICIAL": true,
     "NETWORK": "liquid",
     "BACKEND": "esplora",
     "HTTP_PORT": 8994,
@@ -64,15 +65,7 @@
       "http://node203.tk7.mempool.space:3004",
       "http://node204.tk7.mempool.space:3004",
       "http://node205.tk7.mempool.space:3004",
-      "http://node206.tk7.mempool.space:3004",
-      "http://node207.tk7.mempool.space:3004",
-      "http://node208.tk7.mempool.space:3004",
-      "http://node209.tk7.mempool.space:3004",
-      "http://node210.tk7.mempool.space:3004",
-      "http://node211.tk7.mempool.space:3004",
-      "http://node212.tk7.mempool.space:3004",
-      "http://node213.tk7.mempool.space:3004",
-      "http://node214.tk7.mempool.space:3004"
+      "http://node206.tk7.mempool.space:3004"
     ]
   },
   "DATABASE": {

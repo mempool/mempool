@@ -1,12 +1,13 @@
 <div class="map-wrapper" [class]="style" *ngIf="style !== 'graph'">
   <ng-container *ngIf="channelsObservable | async">
     <div *ngIf="chartOptions" [class]="'full-container ' + style + (fitContainer ? ' fit-container' : '')">
-      <div class="chart" [class]="style" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+      <div class="chart" [class]="style" *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions"
         (chartInit)="onChartInit($event)" (chartFinished)="onChartFinished($event)">
       </div>
       <div *ngIf="!chartOptions && style === 'nodepage'" style="padding-top: 30px"></div>
     </div>
-    <div class="text-center loading-spinner" [class]="style" *ngIf="isLoading && !disableSpinner">
+
+    <div class="text-center loading-spinner" [class]="style" *ngIf="(!stateService.isBrowser || isLoading) && !disableSpinner">
       <div class="spinner-border text-light"></div>
     </div>
   </ng-container>
@@ -21,8 +22,10 @@
     <small style="color: #ffffff66" i18n="lightning.tor-nodes-excluded">(Tor nodes excluded)</small>
   </div>
 
-  <div *ngIf="channelsObservable | async" class="chart-graph" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
-    (chartInit)="onChartInit($event)" (chartFinished)="onChartFinished($event)">
-  </div>
+  <ng-container *ngIf="channelsObservable | async">
+    <div class="chart-graph" *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+      (chartInit)="onChartInit($event)" (chartFinished)="onChartFinished($event)">
+    </div>
+  </ng-container>
 
 </div>

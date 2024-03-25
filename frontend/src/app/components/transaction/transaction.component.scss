@@ -149,6 +149,10 @@
 		.btn {
 			display: block;
 		}
+
+    &.wrap-cell {
+      white-space: normal;
+    }
 	}
 }
 
@@ -283,7 +287,7 @@
 
 .etaDeepMempool {
   display: flex !important;
-  justify-content: end;
+  justify-content: flex-end;
   flex-wrap: wrap;
   align-content: center;
   @media (max-width: 995px) {
@@ -305,4 +309,9 @@
   @media (max-width: 849px) {
     margin-left: 5px;
   }
+}
+
+.goggles-icon {
+  display: block;
+  width: 2.2em;
 }

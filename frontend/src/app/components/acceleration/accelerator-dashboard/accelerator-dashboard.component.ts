@@ -1,14 +1,16 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { SeoService } from '../../../services/seo.service';
+import { OpenGraphService } from '../../../services/opengraph.service';
 import { WebsocketService } from '../../../services/websocket.service';
 import { Acceleration, BlockExtended } from '../../../interfaces/node-api.interface';
 import { StateService } from '../../../services/state.service';
-import { Observable, Subject, catchError, combineLatest, distinctUntilChanged, interval, map, of, share, startWith, switchMap, tap } from 'rxjs';
-import { ApiService } from '../../../services/api.service';
+import { Observable, catchError, combineLatest, distinctUntilChanged, interval, map, of, share, startWith, switchMap, tap } from 'rxjs';
 import { Color } from '../../block-overview-graph/sprite-types';
 import { hexToColor } from '../../block-overview-graph/utils';
 import TxView from '../../block-overview-graph/tx-view';
 import { feeLevels, mempoolFeeColors } from '../../../app.constants';
+import { ServicesApiServices } from '../../../services/services-api.service';
+import { detectWebGL } from '../../../shared/graphs.utils';
 
 const acceleratedColor: Color = hexToColor('8F5FF6');
 const normalColors = mempoolFeeColors.map(hex => hexToColor(hex + '5F'));
@@ -29,23 +31,31 @@ export class AcceleratorDashboardComponent implements OnInit {
   pendingAccelerations$: Observable<Acceleration[]>;
   minedAccelerations$: Observable<Acceleration[]>;
   loadingBlocks: boolean = true;
+  webGlEnabled = true;
+
+  graphHeight: number = 300;
 
   constructor(
     private seoService: SeoService,
+    private ogService: OpenGraphService,
     private websocketService: WebsocketService,
-    private apiService: ApiService,
+    private serviceApiServices: ServicesApiServices,
     private stateService: StateService,
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
+    this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
     this.seoService.setTitle($localize`:@@a681a4e2011bb28157689dbaa387de0dd0aa0c11:Accelerator Dashboard`);
+    this.ogService.setManualOgImage('accelerator.jpg');
   }
 
   ngOnInit(): void {
+    this.onResize();
     this.websocketService.want(['blocks', 'mempool-blocks', 'stats']);
 
-    this.pendingAccelerations$ = interval(30000).pipe(
+    this.pendingAccelerations$ = (this.stateService.isBrowser ? interval(30000) : of(null)).pipe(
       startWith(true),
       switchMap(() => {
-        return this.apiService.getAccelerations$().pipe(
+        return this.serviceApiServices.getAccelerations$().pipe(
           catchError(() => {
             return of([]);
           }),
@@ -57,7 +67,7 @@ export class AcceleratorDashboardComponent implements OnInit {
     this.accelerations$ = this.stateService.chainTip$.pipe(
       distinctUntilChanged(),
       switchMap(() => {
-        return this.apiService.getAccelerationHistory$({ timeframe: '1m' }).pipe(
+        return this.serviceApiServices.getAccelerationHistory$({}).pipe(
           catchError(() => {
             return of([]);
           }),
@@ -68,7 +78,7 @@ export class AcceleratorDashboardComponent implements OnInit {
 
     this.minedAccelerations$ = this.accelerations$.pipe(
       map(accelerations => {
-        return accelerations.filter(acc => ['mined', 'completed'].includes(acc.status));
+        return accelerations.filter(acc => ['completed_provisional', 'completed'].includes(acc.status));
       })
     );
 
@@ -97,7 +107,7 @@ export class AcceleratorDashboardComponent implements OnInit {
         }
         const accelerationsByBlock: { [ hash: string ]: Acceleration[] } = {};
         for (const acceleration of accelerations) {
-          if (['mined', 'completed'].includes(acceleration.status) && acceleration.pools.includes(blockMap[acceleration.blockHash]?.extras.pool.id)) {
+          if (['completed_provisional', 'failed_provisional', 'completed'].includes(acceleration.status) && acceleration.pools.includes(blockMap[acceleration.blockHash]?.extras.pool.id)) {
             if (!accelerationsByBlock[acceleration.blockHash]) {
               accelerationsByBlock[acceleration.blockHash] = [];
             }
@@ -119,6 +129,17 @@ export class AcceleratorDashboardComponent implements OnInit {
       const rate = tx.fee / tx.vsize; // color by simple single-tx fee rate
       const feeLevelIndex = feeLevels.findIndex((feeLvl) => Math.max(1, rate) < feeLvl) - 1;
       return normalColors[feeLevelIndex] || normalColors[mempoolFeeColors.length - 1];
+    }
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(): void {
+    if (window.innerWidth >= 992) {
+      this.graphHeight = 380;
+    } else if (window.innerWidth >= 768) {
+      this.graphHeight = 300;
+    } else {
+      this.graphHeight = 270;
     }
   }
 }

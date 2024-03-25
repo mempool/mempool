@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, NgZone, OnInit } from '@angular/core';
-import { EChartsOption, graphic } from 'echarts';
+import { echarts, EChartsOption } from '../../graphs/echarts';
 import { Observable, combineLatest, of } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
@@ -55,7 +55,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private storageService: StorageService,
     private miningService: MiningService,
-    private stateService: StateService,
+    public stateService: StateService,
     private router: Router,
     private zone: NgZone,
     private route: ActivatedRoute,
@@ -209,7 +209,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
 
   prepareChartOptions(data, weightMode) {
     this.chartOptions = {
-      color: this.widget ? ['#6b6b6b', new graphic.LinearGradient(0, 0, 0, 0.65, [
+      color: this.widget ? ['#6b6b6b', new echarts.graphic.LinearGradient(0, 0, 0, 0.65, [
         { offset: 0, color: '#F4511E' },
         { offset: 0.25, color: '#FB8C00' },
         { offset: 0.5, color: '#FFB300' },
@@ -282,7 +282,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
       legend: (this.widget || data.series.length === 0) ? undefined : {
         padding: [10, 75],
         data: data.legends,
-        selected: JSON.parse(this.storageService.getValue('fee_rates_legend')) ?? {
+        selected:  JSON.parse(this.storageService.getValue('fee_rates_legend') || 'null') ?? {
           'Min': true,
           '10th': true,
           '25th': true,

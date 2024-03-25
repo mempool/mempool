@@ -1,14 +1,14 @@
 import { Inject, Injectable, PLATFORM_ID, LOCALE_ID } from '@angular/core';
 import { ReplaySubject, BehaviorSubject, Subject, fromEvent, Observable, merge } from 'rxjs';
 import { Transaction } from '../interfaces/electrs.interface';
-import { IBackendInfo, MempoolBlock, MempoolBlockDelta, MempoolInfo, Recommendedfees, ReplacedTransaction, ReplacementInfo, TransactionStripped } from '../interfaces/websocket.interface';
+import { HealthCheckHost, IBackendInfo, MempoolBlock, MempoolBlockDelta, MempoolInfo, Recommendedfees, ReplacedTransaction, ReplacementInfo, TransactionStripped } from '../interfaces/websocket.interface';
 import { BlockExtended, CpfpInfo, DifficultyAdjustment, MempoolPosition, OptimizedMempoolStats, RbfTree } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { filter, map, scan, shareReplay } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 import { hasTouchScreen } from '../shared/pipes/bytes-pipe/utils';
-import { ApiService } from './api.service';
+import { ActiveFilter } from '../shared/filters.utils';
 
 export interface MarkBlockState {
   blockHeight?: number;
@@ -49,6 +49,7 @@ export interface Env {
   SIGNET_BLOCK_AUDIT_START_HEIGHT: number;
   HISTORICAL_PRICE: boolean;
   ACCELERATOR: boolean;
+  ADDITIONAL_CURRENCIES: boolean;
   GIT_COMMIT_HASH_MEMPOOL_SPACE?: string;
   PACKAGE_JSON_VERSION_MEMPOOL_SPACE?: string;
 }
@@ -82,6 +83,7 @@ const defaultEnv: Env = {
   'SIGNET_BLOCK_AUDIT_START_HEIGHT': 0,
   'HISTORICAL_PRICE': true,
   'ACCELERATOR': false,
+  'ADDITIONAL_CURRENCIES': false,
 };
 
 @Injectable({
@@ -89,6 +91,7 @@ const defaultEnv: Env = {
 })
 export class StateService {
   isBrowser: boolean = isPlatformBrowser(this.platformId);
+  isMempoolSpaceBuild = window['isMempoolSpaceBuild'] ?? false;
   network = '';
   lightning = false;
   blockVSize: number;
@@ -100,7 +103,7 @@ export class StateService {
   lightningChanged$ = new ReplaySubject<boolean>(1);
   blocksSubject$ = new BehaviorSubject<BlockExtended[]>([]);
   blocks$: Observable<BlockExtended[]>;
-  transactions$ = new ReplaySubject<TransactionStripped>(6);
+  transactions$ = new BehaviorSubject<TransactionStripped[]>(null);
   conversions$ = new ReplaySubject<any>(1);
   bsqPrice$ = new ReplaySubject<number>(1);
   mempoolInfo$ = new ReplaySubject<MempoolInfo>(1);
@@ -118,6 +121,7 @@ export class StateService {
   mempoolTransactions$ = new Subject<Transaction>();
   mempoolTxPosition$ = new Subject<{ txid: string, position: MempoolPosition, cpfp: CpfpInfo | null}>();
   mempoolRemovedTransactions$ = new Subject<Transaction>();
+  multiAddressTransactions$ = new Subject<{ [address: string]: { mempool: Transaction[], confirmed: Transaction[], removed: Transaction[] }}>();
   blockTransactions$ = new Subject<Transaction>();
   isLoadingWebSocket$ = new ReplaySubject<boolean>(1);
   isLoadingMempool$ = new BehaviorSubject<boolean>(true);
@@ -128,6 +132,7 @@ export class StateService {
   loadingIndicators$ = new ReplaySubject<ILoadingIndicators>(1);
   recommendedFees$ = new ReplaySubject<Recommendedfees>(1);
   chainTip$ = new ReplaySubject<number>(-1);
+  serverHealth$ = new Subject<HealthCheckHost[]>();
 
   live2Chart$ = new Subject<OptimizedMempoolStats>();
 
@@ -150,7 +155,7 @@ export class StateService {
   searchFocus$: Subject<boolean> = new Subject<boolean>();
   menuOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-  activeGoggles$: BehaviorSubject<string[]> = new BehaviorSubject([]);
+  activeGoggles$: BehaviorSubject<ActiveFilter> = new BehaviorSubject({ mode: 'and', filters: [] });
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
@@ -214,7 +219,7 @@ export class StateService {
     }
 
     this.networkChanged$.subscribe((network) => {
-      this.transactions$ = new ReplaySubject<TransactionStripped>(6);
+      this.transactions$ = new BehaviorSubject<TransactionStripped[]>(null);
       this.blocksSubject$.next([]);
     });
 

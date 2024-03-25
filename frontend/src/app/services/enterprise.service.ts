@@ -4,6 +4,7 @@ import { ApiService } from './api.service';
 import { SeoService } from './seo.service';
 import { StateService } from './state.service';
 import { ActivatedRoute } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,9 +12,9 @@ import { ActivatedRoute } from '@angular/router';
 export class EnterpriseService {
   exclusiveHostName = '.mempool.space';
   subdomain: string | null = null;
-  info: object = {};
   statsUrl: string;
   siteId: number;
+  info$: BehaviorSubject<object> = new BehaviorSubject(null);
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -28,6 +29,7 @@ export class EnterpriseService {
       this.subdomain = subdomain;
       this.fetchSubdomainInfo();
       this.disableSubnetworks();
+      this.stateService.env.ACCELERATOR = false;
     } else {
       this.insertMatomo();
     }
@@ -47,9 +49,9 @@ export class EnterpriseService {
 
   fetchSubdomainInfo(): void {
     this.apiService.getEnterpriseInfo$(this.subdomain).subscribe((info) => {
-      this.info = info;
       this.insertMatomo(info.site_id);
       this.seoService.setEnterpriseTitle(info.title);
+      this.info$.next(info);
     },
     (error) => {
       if (error.status === 404) {
@@ -137,6 +139,14 @@ export class EnterpriseService {
   goal(id: number) {
     // @ts-ignore
     this.getMatomo()?.trackGoal(id);
+  }
+
+  page() {
+    const matomo = this.getMatomo();
+    if (matomo) {
+      matomo.setCustomUrl(this.getCustomUrl());
+      matomo.trackPageView();
+    }
   }
 
   private getCustomUrl(): string {

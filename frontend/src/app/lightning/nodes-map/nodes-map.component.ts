@@ -26,6 +26,7 @@ export class NodesMap implements OnInit, OnChanges {
   inputNodes$: BehaviorSubject<any>;
   nodes$: Observable<any>;
   observable$: Observable<any>;
+  isLoading: boolean = true;
 
   chartInstance = undefined;
   chartOptions: EChartsOption = {};
@@ -37,7 +38,7 @@ export class NodesMap implements OnInit, OnChanges {
     @Inject(LOCALE_ID) public locale: string,
     private seoService: SeoService,
     private apiService: ApiService,
-    private stateService: StateService,
+    public stateService: StateService,
     private assetsService: AssetsService,
     private router: Router,
     private zone: NgZone,
@@ -88,7 +89,7 @@ export class NodesMap implements OnInit, OnChanges {
             node.public_key,
             node.alias,
             node.capacity,
-            node.active_channel_count,
+            node.channels,
             node.country,
             node.iso_code,
           ]);
@@ -226,6 +227,7 @@ export class NodesMap implements OnInit, OnChanges {
         },
       ]
     };
+    this.isLoading = false;
   }
 
   onChartInit(ec) {
@@ -234,6 +236,10 @@ export class NodesMap implements OnInit, OnChanges {
     }
 
     this.chartInstance = ec;
+
+    this.chartInstance.on('finished', () => {
+      this.isLoading = false;
+    });
 
     this.chartInstance.on('click', (e) => {
       if (e.data) {

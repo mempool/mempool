@@ -17,13 +17,18 @@ class LiquidRoutes {
       app
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs', this.$getElementsPegs)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs/month', this.$getElementsPegsByMonth)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs/list/:count', this.$getPegsList)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs/volume', this.$getPegsVolumeDaily)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs/count', this.$getPegsCount)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves', this.$getFederationReserves)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/month', this.$getFederationReservesByMonth)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegouts', this.$getPegOuts)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/addresses', this.$getFederationAddresses)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/addresses/previous-month', this.$getFederationAddressesOneMonthAgo)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/addresses/total', this.$getFederationAddressesNumber)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/utxos', this.$getFederationUtxos)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/utxos/previous-month', this.$getFederationUtxosOneMonthAgo)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/utxos/total', this.$getFederationUtxosNumber)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/utxos/expired', this.$getExpiredUtxos)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/utxos/emergency-spent', this.$getEmergencySpentUtxos)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/utxos/emergency-spent/stats', this.$getEmergencySpentUtxosStats)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/status', this.$getFederationAuditStatus)
         ;
     }
@@ -141,12 +146,12 @@ class LiquidRoutes {
     }
   }
 
-  private async $getFederationAddressesOneMonthAgo(req: Request, res: Response) {
+  private async $getFederationAddressesNumber(req: Request, res: Response) {
     try {
-      const federationAddresses = await elementsParser.$getFederationAddressesOneMonthAgo();
+      const federationAddresses = await elementsParser.$getFederationAddressesNumber();
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
-      res.setHeader('Expires', new Date(Date.now() + 1000 * 60 * 60 * 24).toUTCString());
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
       res.json(federationAddresses);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
@@ -165,25 +170,85 @@ class LiquidRoutes {
     }
   }
 
-  private async $getFederationUtxosOneMonthAgo(req: Request, res: Response) {
+  private async $getExpiredUtxos(req: Request, res: Response) {
     try {
-      const federationUtxos = await elementsParser.$getFederationUtxosOneMonthAgo();
+      const expiredUtxos = await elementsParser.$getExpiredUtxos();
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
-      res.setHeader('Expires', new Date(Date.now() + 1000 * 60 * 60 * 24).toUTCString());
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+      res.json(expiredUtxos);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getFederationUtxosNumber(req: Request, res: Response) {
+    try {
+      const federationUtxos = await elementsParser.$getFederationUtxosNumber();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
       res.json(federationUtxos);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
-  private async $getPegOuts(req: Request, res: Response) {
+  private async $getEmergencySpentUtxos(req: Request, res: Response) {
     try {
-      const recentPegOuts = await elementsParser.$getRecentPegouts();
+      const emergencySpentUtxos = await elementsParser.$getEmergencySpentUtxos();
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
-      res.json(recentPegOuts);
+      res.json(emergencySpentUtxos);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getEmergencySpentUtxosStats(req: Request, res: Response) {
+    try {
+      const emergencySpentUtxos = await elementsParser.$getEmergencySpentUtxosStats();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+      res.json(emergencySpentUtxos);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getPegsList(req: Request, res: Response) {
+    try {
+      const recentPegs = await elementsParser.$getPegsList(parseInt(req.params?.count));
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+      res.json(recentPegs);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getPegsVolumeDaily(req: Request, res: Response) {
+    try {
+      const pegsVolume = await elementsParser.$getPegsVolumeDaily();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+      res.json(pegsVolume);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getPegsCount(req: Request, res: Response) {
+    try {
+      const pegsCount = await elementsParser.$getPegsCount();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+      res.json(pegsCount);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

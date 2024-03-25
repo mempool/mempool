@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { map, Observable, share } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, share, tap } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
 import { getFlagEmoji } from '../../shared/common.utils';
@@ -15,6 +15,12 @@ import { GeolocationData } from '../../shared/components/geolocation/geolocation
 export class NodesPerISP implements OnInit {
   nodes$: Observable<any>;
   isp: {name: string, id: number};
+  nodesPagination$: Observable<any>;
+  startingIndexSubject: BehaviorSubject<number> = new BehaviorSubject(0);
+  page = 1;
+  pageSize = 15;
+  maxSize = window.innerWidth <= 767.98 ? 3 : 5;
+  isLoading = true;
 
   skeletonLines: number[] = [];
 
@@ -23,7 +29,7 @@ export class NodesPerISP implements OnInit {
     private seoService: SeoService,
     private route: ActivatedRoute,
   ) {
-    for (let i = 0; i < 20; ++i) {
+    for (let i = 0; i < this.pageSize; ++i) {
       this.skeletonLines.push(i);
     }
   }
@@ -31,6 +37,7 @@ export class NodesPerISP implements OnInit {
   ngOnInit(): void {
     this.nodes$ = this.apiService.getNodeForISP$(this.route.snapshot.params.isp)
       .pipe(
+        tap(() => this.isLoading = true),
         map(response => {
           this.isp = {
             name: response.isp,
@@ -77,11 +84,21 @@ export class NodesPerISP implements OnInit {
             topCountry: topCountry,
           };
         }),
+        tap(() => this.isLoading = false),
         share()
       );
+
+    this.nodesPagination$ = combineLatest([this.nodes$, this.startingIndexSubject]).pipe(
+      map(([response, startingIndex]) => response.nodes.slice(startingIndex, startingIndex + this.pageSize))
+    );
   }
 
   trackByPublicKey(index: number, node: any): string {
     return node.public_key;
+  }
+
+  pageChange(page: number): void {
+    this.startingIndexSubject.next((page - 1) * this.pageSize);
+    this.page = page;
   }
 }

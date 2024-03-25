@@ -10,6 +10,7 @@ import { StorageService } from '../../services/storage.service';
 import { MiningService } from '../../services/mining.service';
 import { download } from '../../shared/graphs.utils';
 import { ActivatedRoute } from '@angular/router';
+import { StateService } from '../../services/state.service';
 
 interface Hashrate {
   timestamp: number;
@@ -60,6 +61,7 @@ export class HashrateChartPoolsComponent implements OnInit {
     private cd: ChangeDetectorRef,
     private storageService: StorageService,
     private miningService: MiningService,
+    public stateService: StateService,
     private route: ActivatedRoute,
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });

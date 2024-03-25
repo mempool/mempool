@@ -37,8 +37,10 @@ class Blocks {
   private currentBits = 0;
   private lastDifficultyAdjustmentTime = 0;
   private previousDifficultyRetarget = 0;
+  private quarterEpochBlockTime: number | null = null;
   private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
   private newAsyncBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: MempoolTransactionExtended[]) => Promise<void>)[] = [];
+  private classifyingBlocks: boolean = false;
 
   private mainLoopTimeout: number = 120000;
 
@@ -567,6 +569,11 @@ class Blocks {
    * [INDEXING] Index transaction classification flags for Goggles
    */
   public async $classifyBlocks(): Promise<void> {
+    if (this.classifyingBlocks) {
+      return;
+    }
+    this.classifyingBlocks = true;
+
     // classification requires an esplora backend
     if (!Common.gogglesIndexingEnabled() || config.MEMPOOL.BACKEND !== 'esplora') {
       return;
@@ -678,6 +685,8 @@ class Blocks {
         indexedThisRun = 0;
       }
     }
+
+    this.classifyingBlocks = false;
   }
 
   /**
@@ -774,6 +783,16 @@ class Blocks {
       this.currentBlockHeight = Math.max(blockHeightTip - config.MEMPOOL.INITIAL_BLOCKS_AMOUNT, -1);
     } else {
       this.currentBlockHeight = this.blocks[this.blocks.length - 1].height;
+    }
+    if (this.currentBlockHeight >= 503) {
+      try {
+        const quarterEpochBlockHash = await bitcoinApi.$getBlockHash(this.currentBlockHeight - 503);
+        const quarterEpochBlock = await bitcoinApi.$getBlock(quarterEpochBlockHash);
+        this.quarterEpochBlockTime = quarterEpochBlock?.timestamp;
+      } catch (e) {
+        this.quarterEpochBlockTime = null;
+        logger.warn('failed to update last epoch block time: ' + (e instanceof Error ? e.message : e));
+      }
     }
 
     if (blockHeightTip - this.currentBlockHeight > config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 2) {
@@ -1306,6 +1325,10 @@ class Blocks {
 
   public getPreviousDifficultyRetarget(): number {
     return this.previousDifficultyRetarget;
+  }
+
+  public getQuarterEpochBlockTime(): number | null {
+    return this.quarterEpochBlockTime;
   }
 
   public getCurrentBlockHeight(): number {

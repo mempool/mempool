@@ -1,0 +1,19 @@
+name: 'Check if servers are in sync'
+
+on: [workflow_dispatch]
+
+jobs:
+  print-backend-sha:
+    runs-on: 'ubuntu-latest'
+    name: Get block height
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: repo
+
+      - name: Run script
+        working-directory: repo
+        run: |
+          chmod +x ./scripts/get_block_tip_height.sh
+          sh ./scripts/get_block_tip_height.sh

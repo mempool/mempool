@@ -1,5 +1,6 @@
 {
   "MEMPOOL": {
+    "OFFICIAL": false,
     "NETWORK": "mainnet",
     "BACKEND": "electrum",
     "ENABLED": true,
@@ -154,5 +155,9 @@
   "MEMPOOL_SERVICES": {
     "API": "https://mempool.space/api",
     "ACCELERATIONS": false
+  },
+  "FIAT_PRICE": {
+    "ENABLED": true,
+    "API_KEY": "your-api-key-from-freecurrencyapi.com"
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChildren, QueryList, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
@@ -9,13 +9,14 @@ import { StateService } from '../../services/state.service';
 import { SeoService } from '../../services/seo.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
-import { BlockAudit, BlockExtended, TransactionStripped } from '../../interfaces/node-api.interface';
+import { AccelerationInfo, BlockAudit, BlockExtended, TransactionStripped } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { BlockOverviewGraphComponent } from '../../components/block-overview-graph/block-overview-graph.component';
 import { detectWebGL } from '../../shared/graphs.utils';
 import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { PriceService, Price } from '../../services/price.service';
 import { CacheService } from '../../services/cache.service';
+import { ServicesApiServices } from '../../services/services-api.service';
 
 @Component({
   selector: 'app-block',
@@ -42,6 +43,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   latestBlock: BlockExtended;
   latestBlocks: BlockExtended[] = [];
   transactions: Transaction[];
+  oobFees: number = 0;
   isLoadingTransactions = true;
   strippedTransactions: TransactionStripped[];
   overviewTransitionDirection: string;
@@ -59,6 +61,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   transactionsError: any = null;
   overviewError: any = null;
   webGlEnabled = true;
+  auditParamEnabled: boolean = false;
   auditSupported: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
   auditModeEnabled: boolean = !this.stateService.hideAudit.value;
   auditAvailable = true;
@@ -84,6 +87,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   timeLtr: boolean;
   childChangeSubscription: Subscription;
   auditPrefSubscription: Subscription;
+  oobSubscription: Subscription;
   
   priceSubscription: Subscription;
   blockConversion: Price;
@@ -103,8 +107,11 @@ export class BlockComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private priceService: PriceService,
     private cacheService: CacheService,
+    private servicesApiService: ServicesApiServices,
+    private cd: ChangeDetectorRef,
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
-    this.webGlEnabled = detectWebGL();
+    this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
   }
 
   ngOnInit() {
@@ -120,9 +127,15 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.setAuditAvailable(this.auditSupported);
 
     if (this.auditSupported) {
-      this.auditPrefSubscription = this.stateService.hideAudit.subscribe((hide) => {
-        this.auditModeEnabled = !hide;
-        this.showAudit = this.auditAvailable && this.auditModeEnabled;
+      this.isAuditEnabledFromParam().subscribe(auditParam => {
+        if (this.auditParamEnabled) {
+          this.auditModeEnabled = auditParam;
+        } else {
+          this.auditPrefSubscription = this.stateService.hideAudit.subscribe(hide => {
+            this.auditModeEnabled = !hide;
+            this.showAudit = this.auditAvailable && this.auditModeEnabled;
+          });
+        }
       });
     }
 
@@ -166,6 +179,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         this.page = 1;
         this.error = undefined;
         this.fees = undefined;
+        this.oobFees = 0;
 
         if (history.state.data && history.state.data.blockHeight) {
           this.blockHeight = history.state.data.blockHeight;
@@ -290,8 +304,9 @@ export class BlockComponent implements OnInit, OnDestroy {
       throttleTime(300, asyncScheduler, { leading: true, trailing: true }),
       shareReplay(1)
     );
-    this.transactionSubscription = block$.pipe(
-      switchMap((block) => this.electrsApiService.getBlockTransactions$(block.id)
+    this.transactionSubscription = combineLatest([block$, this.route.queryParams]).pipe(
+      tap(([_, queryParams]) => this.page = +queryParams['page'] || 1),
+      switchMap(([block, _]) => this.electrsApiService.getBlockTransactions$(block.id, (this.page - 1) * this.itemsPerPage)
         .pipe(
           catchError((err) => {
             this.transactionsError = err;
@@ -305,6 +320,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       }
       this.transactions = transactions;
       this.isLoadingTransactions = false;
+      this.cd.markForCheck();
     },
     (error) => {
       this.error = error;
@@ -329,7 +345,7 @@ export class BlockComponent implements OnInit, OnDestroy {
                 return of(null);
               })
             ),
-          this.stateService.env.ACCELERATOR === true && block.height > 819500 ? this.apiService.getAccelerationHistory$({ blockHash: block.id }) : of([])
+          this.stateService.env.ACCELERATOR === true && block.height > 819500 ? this.servicesApiService.getAccelerationHistory$({ blockHash: block.id }) : of([])
         ]);
       })
     )
@@ -444,7 +460,7 @@ export class BlockComponent implements OnInit, OnDestroy {
             inBlock[tx.txid] = true;
           }
 
-          blockAudit.feeDelta = blockAudit.expectedFees > 0 ? (blockAudit.expectedFees - this.block.extras.totalFees) / blockAudit.expectedFees : 0;
+          blockAudit.feeDelta = blockAudit.expectedFees > 0 ? (blockAudit.expectedFees - (this.block.extras.totalFees + this.oobFees)) / blockAudit.expectedFees : 0;
           blockAudit.weightDelta = blockAudit.expectedWeight > 0 ? (blockAudit.expectedWeight - this.block.weight) / blockAudit.expectedWeight : 0;
           blockAudit.txDelta = blockAudit.template.length > 0 ? (blockAudit.template.length - this.block.tx_count) / blockAudit.template.length : 0;
           this.blockAudit = blockAudit;
@@ -458,6 +474,33 @@ export class BlockComponent implements OnInit, OnDestroy {
 
       this.isLoadingOverview = false;
       this.setupBlockGraphs();
+      this.cd.markForCheck();
+    });
+
+    this.oobSubscription = block$.pipe(
+      switchMap((block) => this.apiService.getAccelerationsByHeight$(block.height)
+        .pipe(
+          map(accelerations => {
+            return { block, accelerations };
+          }),
+          catchError((err) => {
+            return of({ block, accelerations: [] });
+        }))
+      ),
+    ).subscribe(({ block, accelerations}) => {
+      let totalFees = 0;
+      for (const acc of accelerations) {
+        totalFees += acc.boost_cost;
+      }
+      this.oobFees = totalFees;
+      if (block && this.block && this.blockAudit && block?.height === this.block?.height) {
+        this.blockAudit.feeDelta = this.blockAudit.expectedFees > 0 ? (this.blockAudit.expectedFees - (this.block.extras.totalFees + this.oobFees)) / this.blockAudit.expectedFees : 0;
+      }
+    },
+    (error) => {
+      this.error = error;
+      this.isLoadingBlock = false;
+      this.isLoadingOverview = false;
     });
 
     this.networkChangedSubscription = this.stateService.networkChanged$
@@ -495,9 +538,9 @@ export class BlockComponent implements OnInit, OnDestroy {
     if (this.priceSubscription) {
       this.priceSubscription.unsubscribe();
     }
-    this.priceSubscription = block$.pipe(
-      switchMap((block) => {
-        return this.priceService.getBlockPrice$(block.timestamp).pipe(
+    this.priceSubscription = combineLatest([this.stateService.fiatCurrency$, block$]).pipe(
+      switchMap(([currency, block]) => {
+        return this.priceService.getBlockPrice$(block.timestamp, true, currency).pipe(
           tap((price) => {
             this.blockConversion = price;
           })
@@ -527,6 +570,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.unsubscribeNextBlockSubscriptions();
     this.childChangeSubscription?.unsubscribe();
     this.priceSubscription?.unsubscribe();
+    this.oobSubscription?.unsubscribe();
   }
 
   unsubscribeNextBlockSubscriptions() {
@@ -553,19 +597,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.transactions = null;
     this.transactionsError = null;
     target.scrollIntoView(); // works for chrome
-
-    this.electrsApiService.getBlockTransactions$(this.block.id, start)
-      .pipe(
-        catchError((err) => {
-          this.transactionsError = err;
-          return of([]);
-      })
-      )
-     .subscribe((transactions) => {
-        this.transactions = transactions;
-        this.isLoadingTransactions = false;
-        target.scrollIntoView(); // works for firefox
-      });
+    this.router.navigate([], { queryParams: { page: page }, queryParamsHandling: 'merge' });
   }
 
   toggleShowDetails() {
@@ -691,12 +723,40 @@ export class BlockComponent implements OnInit, OnDestroy {
 
   toggleAuditMode(): void {
     this.stateService.hideAudit.next(this.auditModeEnabled);
+
+    this.route.queryParams.subscribe(params => {
+      let queryParams = { ...params };
+      delete queryParams['audit'];
+
+      let newUrl = this.router.url.split('?')[0];
+      let queryString = new URLSearchParams(queryParams).toString();
+      if (queryString) {
+        newUrl += '?' + queryString;
+      }
+  
+      this.location.replaceState(newUrl);
+    });
+
+    this.auditPrefSubscription = this.stateService.hideAudit.subscribe((hide) => {
+      this.auditModeEnabled = !hide;
+      this.showAudit = this.auditAvailable && this.auditModeEnabled;
+    });
   }
 
   updateAuditAvailableFromBlockHeight(blockHeight: number): void {
     if (!this.isAuditAvailableFromBlockHeight(blockHeight)) {
       this.setAuditAvailable(false);
     }
+  }
+
+  isAuditEnabledFromParam(): Observable<boolean> {
+    return this.route.queryParams.pipe(
+      map(params => {
+        this.auditParamEnabled = 'audit' in params;
+        
+        return this.auditParamEnabled ? !(params['audit'] === 'false') : true;
+      })
+    );
   }
 
   isAuditAvailableFromBlockHeight(blockHeight: number): boolean {

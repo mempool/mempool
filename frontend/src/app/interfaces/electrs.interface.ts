@@ -27,6 +27,7 @@ export interface Transaction {
   _channels?: TransactionChannels;
   price?: Price;
   sigops?: number;
+  flags?: bigint;
 }
 
 export interface TransactionChannels {
@@ -147,6 +148,13 @@ export interface AddressOrScriptHash {
   scripthash?: string;
   chain_stats: ChainStats;
   mempool_stats: MempoolStats;
+}
+
+export interface AddressTxSummary {
+  txid: string;
+  value: number;
+  height: number;
+  time: number;
 }
 
 export interface ChainStats {

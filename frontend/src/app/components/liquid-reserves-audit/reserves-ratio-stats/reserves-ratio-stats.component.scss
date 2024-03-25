@@ -3,7 +3,15 @@
   justify-content: space-between;
   @media (min-width: 376px) {
     flex-direction: row;
-  }  
+  }
+
+  .avg-ratio {
+    display: none;
+    @media (min-width: 480px) and (max-width: 767px), (min-width: 915px) {
+      display: block;
+    }
+  }
+  
   .item {
     max-width: 300px;
     margin: 0;

@@ -52,7 +52,7 @@ export class BlockHealthGraphComponent implements OnInit {
     private storageService: StorageService,
     private zone: NgZone,
     private route: ActivatedRoute,
-    private stateService: StateService,
+    public stateService: StateService,
     private router: Router,
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { EnterpriseService } from '../../services/enterprise.service';
 
 @Component({
@@ -7,6 +7,9 @@ import { EnterpriseService } from '../../services/enterprise.service';
   styleUrls: ['./about-sponsors.component.scss'],
 })
 export class AboutSponsorsComponent {
+  @Input() host = 'https://mempool.space';
+  @Input() context = 'about';
+
   constructor(private enterpriseService: EnterpriseService) {
   }
 

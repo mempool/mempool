@@ -54,6 +54,7 @@ export interface DifficultyAdjustment {
   previousTime: number;
   nextRetargetHeight: number;
   timeAvg: number;
+  adjustedTimeAvg: number;
   timeOffset: number;
   expectedBlocks: number;
 }
@@ -82,6 +83,11 @@ export interface CurrentPegs {
   hash: string;
 }
 
+export interface PegsVolume {
+  volume: string;
+  number: number;
+}
+
 export interface FederationAddress { 
   bitcoinaddress: string;
   balance: string;
@@ -97,6 +103,9 @@ export interface FederationUtxo {
   pegtxid: string;
   pegindex: number;
   pegblocktime: number;
+  timelock: number;
+  expiredAt: number;
+  isDust?: boolean;
 }
 
 export interface RecentPeg {
@@ -369,7 +378,7 @@ export interface INode {
 
 export interface Acceleration {
   txid: string;
-  status: 'requested' | 'accelerating' | 'mined' | 'completed' | 'failed';
+  status: 'requested' | 'accelerating' | 'completed_provisional' | 'completed' | 'failed' | 'failed_provisional';
   pools: number[];
   feePaid: number;
   added: number; // timestamp
@@ -387,8 +396,25 @@ export interface Acceleration {
 }
 
 export interface AccelerationHistoryParams {
-  timeframe?: string,
-  status?: string,
-  pool?: string,
-  blockHash?: string,
+  status?: string;
+  timeframe?: string;
+  poolUniqueId?: number;
+  blockHash?: string;
+  blockHeight?: number;
+  page?: number;
+  pageLength?: number;
+}
+
+export interface AccelerationInfo {
+  txid: string,
+  height: number,
+  pool: {
+    id: number,
+    slug: string,
+    name: string,
+  },
+  effective_vsize: number,
+  effective_fee: number,
+  boost_rate: number,
+  boost_cost: number,
 }

@@ -33,7 +33,7 @@
             <div *ngIf="indexingAvailable" class="tooltip-custom">
               <a class="clear-link" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]">
                 <img width="22" height="22" src="{{ block.extras.pool['logo'] }}"
-                  onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'">
+                  onError="this.onerror=null; this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'">
                 <span class="pool-name">{{ block.extras.pool.name }}</span>
               </a>
               <span *ngIf="!widget" class="tooltiptext badge badge-secondary scriptmessage">{{ block.extras.coinbaseRaw | hex2ascii }}</span>
@@ -92,13 +92,10 @@
               <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
             <td *ngIf="isMempoolModule" class="pool text-left" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
-              <span class="skeleton-loader" style="max-width: 125px"></span>
+              <span class="skeleton-loader" style="max-width: 150px"></span>
             </td>
             <td class="timestamp" *ngIf="!widget" [class]="isMempoolModule ? '' : 'legacy'">
               <span class="skeleton-loader" style="max-width: 150px"></span>
-            </td>
-            <td class="mined" *ngIf="!widget" [class]="isMempoolModule ? '' : 'legacy'">
-              <span class="skeleton-loader" style="max-width: 125px"></span>
             </td>
             <td *ngIf="auditAvailable" class="health text-right" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
               <span class="skeleton-loader" style="max-width: 75px"></span>
@@ -106,7 +103,7 @@
             <td *ngIf="isMempoolModule" class="reward text-right" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
               <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
-            <td *ngIf="isMempoolModule && !widget" class="fees text-right" [class]="isMempoolModule ? '' : 'legacy'">
+            <td *ngIf="isMempoolModule && !auditAvailable || isMempoolModule && !widget" class="fees text-right" [class]="isMempoolModule ? '' : 'legacy'">
               <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
             <td *ngIf="auditAvailable && !widget" class="fee-delta" [class]="isMempoolModule ? '' : 'legacy'">

@@ -4,13 +4,22 @@
   margin-top: 13px;
 }
 
+.extra-margin-right {
+  @media (max-width: 380px) {
+    margin-left: -10px;
+  }
+}
+
 tr, td, th {
   border: 0px;
-  padding-top: 0.65rem !important;
-  padding-bottom: 0.6rem !important;
-  padding-right: 2rem !important;
-  .widget {
-    padding-right: 1rem !important;
+  padding-top: 0.65rem;
+  padding-bottom: 0.6rem;
+  padding-right: 2rem;
+  .widget &.widget {
+    padding-right: 1rem;
+    @media (max-width: 510px) {
+      padding-right: 0.5rem;
+    }
   }
 }
 

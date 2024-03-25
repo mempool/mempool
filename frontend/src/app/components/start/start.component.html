@@ -13,8 +13,6 @@
 
 <div class="blockchain-wrapper" [class.time-ltr]="timeLtr" [class.time-rtl]="!timeLtr" #blockchainWrapper>
   <div id="blockchain-container" [dir]="timeLtr ? 'rtl' : 'ltr'" #blockchainContainer
-    [class.menu-open]="menuOpen"
-    [class.menu-closing]="menuSliding && !menuOpen"
     [class.with-menu]="hasMenu"
     (mousedown)="onMouseDown($event)"
     (pointerdown)="onPointerDown($event)"
@@ -36,5 +34,11 @@
     <fa-icon [icon]="['fas', 'circle-left']" [fixedWidth]="true"></fa-icon>
   </div>
 </div>
+
+<ng-container *serverOnly>
+  <!-- disgusting hack to apply an initial scroll to server-side rendered blockchain bar -->
+  <img *ngIf="!stateService.isLiquid()" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="pixel" style="visibility: hidden; position: absolute;" onload="(() => { const b = document.getElementById('blockchain-container'); const d = document.getElementById('divider'); if (b && d) { b.scrollLeft = d.getBoundingClientRect().x - (window.innerWidth * (window.innerWidth >= 768 ? 0.5 : 0.95)); }})()">
+  <img *ngIf="stateService.isLiquid()" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="pixel" style="visibility: hidden; position: absolute;" onload="(() => { const b = document.getElementById('blockchain-container'); const d = document.getElementById('divider'); if (b && d) { b.scrollLeft = d.getBoundingClientRect().x - (window.innerWidth >= 768 ? 420 : (window.innerWidth * 0.5)); }})()">
+</ng-container>
 
 <router-outlet></router-outlet>

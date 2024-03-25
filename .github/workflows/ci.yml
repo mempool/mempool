@@ -9,7 +9,7 @@ jobs:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
     strategy:
       matrix:
-        node: ["18", "20"]
+        node: ["20", "21"]
         flavor: ["dev", "prod"]
       fail-fast: false
     runs-on: "ubuntu-latest"
@@ -29,7 +29,7 @@ jobs:
 
       - name: Read rust-toolchain file from repository
         id: gettoolchain
-        run: echo "::set-output name=toolchain::$(cat rust-toolchain)"
+        run: echo "::set-output name=toolchain::$(cat ./rust/gbt/rust-toolchain)"
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}
 
       - name: Install ${{ steps.gettoolchain.outputs.toolchain }} Rust toolchain
@@ -115,6 +115,10 @@ jobs:
 
       - name: Sync-assets
         run: npm run sync-assets-dev
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MEMPOOL_CDN: 1
+          VERBOSE: 1
         working-directory: assets/frontend
 
       - name: Zip mining-pool assets
@@ -156,7 +160,7 @@ jobs:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
     strategy:
       matrix:
-        node: ["18", "20"]
+        node: ["20", "21"]
         flavor: ["dev", "prod"]
       fail-fast: false
     runs-on: "ubuntu-latest"
@@ -237,6 +241,8 @@ jobs:
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/frontend
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MEMPOOL_CDN: 1
+          VERBOSE: 1
   
   e2e:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
@@ -329,4 +335,32 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
-        
+
+  validate_docker_json:
+    if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
+    runs-on: "ubuntu-latest"
+    name: Validate generated backend Docker JSON
+
+    steps: 
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: docker
+      
+      - name: Install jq
+        run: sudo apt-get install jq -y
+
+      - name: Create new start script to run on CI
+        run: |
+          sed '$d' start.sh > start_ci.sh
+        working-directory: docker/docker/backend
+
+      - name: Run the script to generate the sample JSON
+        run: |
+          sh start_ci.sh
+        working-directory: docker/docker/backend
+
+      - name: Validate JSON syntax
+        run: |
+          cat mempool-config.json | jq
+        working-directory: docker/docker/backend

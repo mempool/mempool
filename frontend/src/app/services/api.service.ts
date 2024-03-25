@@ -1,17 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators,
-  PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights, RbfTree, BlockAudit, Acceleration, AccelerationHistoryParams, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg } from '../interfaces/node-api.interface';
+  PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights, RbfTree, BlockAudit, Acceleration, AccelerationHistoryParams, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume, AccelerationInfo } from '../interfaces/node-api.interface';
 import { BehaviorSubject, Observable, catchError, filter, of, shareReplay, take, tap } from 'rxjs';
 import { StateService } from './state.service';
-import { IBackendInfo, WebsocketResponse } from '../interfaces/websocket.interface';
-import { Outspend, Transaction } from '../interfaces/electrs.interface';
+import { Transaction } from '../interfaces/electrs.interface';
 import { Conversion } from './price.service';
-import { MenuGroup } from '../interfaces/services.interface';
 import { StorageService } from './storage.service';
-
-// Todo - move to config.json
-const SERVICES_API_PREFIX = `/api/v1/services`;
+import { WebsocketResponse } from '../interfaces/websocket.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -38,12 +34,6 @@ export class ApiService {
       }
       this.apiBasePath = network ? '/' + network : '';
     });
-
-    if (this.stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE) {
-      this.getServicesBackendInfo$().subscribe(version => {
-        this.stateService.servicesBackendInfo$.next(version);
-      })
-    }
   }
 
   private generateCacheKey(functionName: string, params: any[]): string {
@@ -182,6 +172,10 @@ export class ApiService {
     return this.httpClient.get<CurrentPegs>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegs');
   }
 
+  pegsVolume$(): Observable<PegsVolume[]> {
+    return this.httpClient.get<PegsVolume[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegs/volume');
+  }
+
   listLiquidPegsMonth$(): Observable<LiquidPegs[]> {
     return this.httpClient.get<LiquidPegs[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegs/month');
   }
@@ -206,16 +200,32 @@ export class ApiService {
     return this.httpClient.get<FederationUtxo[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/utxos');
   }
 
-  recentPegOuts$(): Observable<RecentPeg[]> {
-    return this.httpClient.get<RecentPeg[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegouts');
+  expiredUtxos$(): Observable<FederationUtxo[]> {
+    return this.httpClient.get<FederationUtxo[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/utxos/expired');
   }
 
-  federationAddressesOneMonthAgo$(): Observable<any> {
-    return this.httpClient.get<FederationAddress[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/addresses/previous-month');
+  emergencySpentUtxos$(): Observable<FederationUtxo[]> {
+    return this.httpClient.get<FederationUtxo[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/utxos/emergency-spent');
   }
 
-  federationUtxosOneMonthAgo$(): Observable<any> {
-    return this.httpClient.get<FederationUtxo[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/utxos/previous-month');
+  recentPegsList$(count: number = 0): Observable<RecentPeg[]> {
+    return this.httpClient.get<RecentPeg[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegs/list/' + count);
+  }
+
+  pegsCount$(): Observable<any> {
+    return this.httpClient.get<number>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegs/count');
+  }
+
+  federationAddressesNumber$(): Observable<any> {
+    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/addresses/total');
+  }
+
+  federationUtxosNumber$(): Observable<any> {
+    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/utxos/total');
+  }
+
+  emergencySpentUtxosStats$(): Observable<any> {
+    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/utxos/emergency-spent/stats');
   }
 
   listFeaturedAssets$(): Observable<any[]> {
@@ -228,6 +238,10 @@ export class ApiService {
 
   postTransaction$(hexPayload: string): Observable<any> {
     return this.httpClient.post<any>(this.apiBaseUrl + this.apiBasePath + '/api/tx', hexPayload, { responseType: 'text' as 'json'});
+  }
+
+  getTransactionStatus$(txid: string): Observable<any> {
+    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + '/api/tx/' + txid + '/status');
   }
 
   listPools$(interval: string | undefined) : Observable<any> {
@@ -395,7 +409,7 @@ export class ApiService {
     );
   }
 
-  getHistoricalPrice$(timestamp: number | undefined): Observable<Conversion> {
+  getHistoricalPrice$(timestamp: number | undefined, currency?: string): Observable<Conversion> {
     if (this.stateService.isAnyTestnet()) {
       return of({
         prices: [],
@@ -406,70 +420,79 @@ export class ApiService {
           USDCHF: 0,
           USDAUD: 0,
           USDJPY: 0,
+          USDBGN: 0,
+          USDBRL: 0,
+          USDCNY: 0,
+          USDCZK: 0,
+          USDDKK: 0,
+          USDHKD: 0,
+          USDHRK: 0,
+          USDHUF: 0,
+          USDIDR: 0,
+          USDILS: 0,
+          USDINR: 0,
+          USDISK: 0,
+          USDKRW: 0,
+          USDMXN: 0,
+          USDMYR: 0,
+          USDNOK: 0,
+          USDNZD: 0,
+          USDPHP: 0,
+          USDPLN: 0,
+          USDRON: 0,
+          USDRUB: 0,
+          USDSEK: 0,
+          USDSGD: 0,
+          USDTHB: 0,
+          USDTRY: 0,
+          USDZAR: 0,
         }
       });
     }
+    const queryParams = [];
+
+    if (timestamp) {
+      queryParams.push(`timestamp=${timestamp}`);
+    }
+
+    if (currency) {
+      queryParams.push(`currency=${currency}`);
+    }
     return this.httpClient.get<Conversion>(
-      this.apiBaseUrl + this.apiBasePath + '/api/v1/historical-price' +
-        (timestamp ? `?timestamp=${timestamp}` : '')
+      `${this.apiBaseUrl}${this.apiBasePath}/api/v1/historical-price` +
+        (queryParams.length > 0 ? `?${queryParams.join('&')}` : '')
     );
   }
 
-  /**
-   * Services
-   */
-
-  getNodeOwner$(publicKey: string): Observable<any> {
-    let params = new HttpParams()
-      .set('node_public_key', publicKey);
-    return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/lightning/claim/current`, { params, observe: 'response' });
+  getAccelerationsByPool$(slug: string): Observable<AccelerationInfo[]> {
+    return this.httpClient.get<AccelerationInfo[]>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/accelerations/pool/${slug}`
+    );
   }
 
-  getUserMenuGroups$(): Observable<MenuGroup[]> {
-    const auth = this.storageService.getAuth();
-    if (!auth) {
-      return of(null);
+  getAccelerationsByHeight$(height: number): Observable<AccelerationInfo[]> {
+    return this.httpClient.get<AccelerationInfo[]>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/accelerations/block/${height}`
+    );
+  }
+
+  getRecentAccelerations$(interval: string | undefined): Observable<AccelerationInfo[]> {
+    return this.httpClient.get<AccelerationInfo[]>(
+      this.apiBaseUrl + this.apiBasePath + '/api/v1/accelerations/interval' + (interval !== undefined ? `/${interval}` : '')
+    );
+  }
+
+  getAccelerationTotals$(pool?: string, interval?: string): Observable<{ cost: number, count: number }> {
+    const queryParams = new URLSearchParams();
+    if (pool) {
+      queryParams.append('pool', pool);
     }
-
-    return this.httpClient.get<MenuGroup[]>(`${SERVICES_API_PREFIX}/account/menu`);
-  }
-
-  getUserInfo$(): Observable<any> {
-    const auth = this.storageService.getAuth();
-    if (!auth) {
-      return of(null);
+    if (interval) {
+      queryParams.append('interval', interval);
     }
-
-    return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/account`);
-  }
-
-  logout$(): Observable<any> {
-    const auth = this.storageService.getAuth();
-    if (!auth) {
-      return of(null);
-    }
-
-    localStorage.removeItem('auth');
-    return this.httpClient.post(`${SERVICES_API_PREFIX}/auth/logout`, {});
-  }
-
-  getServicesBackendInfo$(): Observable<IBackendInfo> {
-    return this.httpClient.get<IBackendInfo>(`${SERVICES_API_PREFIX}/version`);
-  }
-
-  estimate$(txInput: string) {
-    return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/accelerator/estimate`, { txInput: txInput }, { observe: 'response' });
-  }
-
-  accelerate$(txInput: string, userBid: number) {
-    return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/accelerator/accelerate`, { txInput: txInput, userBid: userBid });
-  }
-
-  getAccelerations$(): Observable<Acceleration[]> {
-    return this.httpClient.get<Acceleration[]>(`${SERVICES_API_PREFIX}/accelerator/accelerations`);
-  }
-
-  getAccelerationHistory$(params: AccelerationHistoryParams): Observable<Acceleration[]> {
-    return this.httpClient.get<Acceleration[]>(`${SERVICES_API_PREFIX}/accelerator/accelerations/history`, { params: { ...params } });
+    const queryString = queryParams.toString();
+    return this.httpClient.get<{ cost: number, count: number }>(
+      this.apiBaseUrl + this.apiBasePath + '/api/v1/accelerations/total' + (queryString?.length ? '?' + queryString : '')
+    );
   }
 }
