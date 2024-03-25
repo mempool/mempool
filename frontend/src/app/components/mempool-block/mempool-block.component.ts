@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
+import { detectWebGL } from '../../shared/graphs.utils';
 import { StateService } from '../../services/state.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap, map, tap, filter } from 'rxjs/operators';
@@ -28,8 +29,10 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
     public stateService: StateService,
     private seoService: SeoService,
     private websocketService: WebsocketService,
+    private cd: ChangeDetectorRef,
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
-    this.webGlEnabled = detectWebGL();
+    this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
   }
 
   ngOnInit(): void {
@@ -63,6 +66,7 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
         }),
         tap(() => {
           this.stateService.markBlock$.next({ mempoolBlockIndex: this.mempoolBlockIndex });
+          this.websocketService.startTrackMempoolBlock(this.mempoolBlockIndex);
         })
       );
 
@@ -73,6 +77,7 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.stateService.markBlock$.next({});
+    this.websocketService.stopTrackMempoolBlock();
   }
 
   getOrdinal(mempoolBlock: MempoolBlock): string {
@@ -89,10 +94,4 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
   setTxPreview(event: TransactionStripped | void): void {
     this.previewTx = event;
   }
-}
-
-function detectWebGL() {
-  const canvas = document.createElement('canvas');
-  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-  return (gl && gl instanceof WebGLRenderingContext);
 }

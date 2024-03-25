@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
-import { EChartsOption} from 'echarts';
+import { EChartsOption} from '../../graphs/echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
@@ -10,6 +10,7 @@ import { StorageService } from '../../services/storage.service';
 import { MiningService } from '../../services/mining.service';
 import { ActivatedRoute } from '@angular/router';
 import { download, formatterXAxis } from '../../shared/graphs.utils';
+import { StateService } from '../../services/state.service';
 
 @Component({
   selector: 'app-block-sizes-weights-graph',
@@ -52,6 +53,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private storageService: StorageService,
     private miningService: MiningService,
+    public stateService: StateService,
     private route: ActivatedRoute,
   ) {
   }

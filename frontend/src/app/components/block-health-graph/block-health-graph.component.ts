@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, NgZone, OnInit } from '@angular/core';
-import { EChartsOption } from 'echarts';
+import { EChartsOption } from '../../graphs/echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
@@ -52,7 +52,7 @@ export class BlockHealthGraphComponent implements OnInit {
     private storageService: StorageService,
     private zone: NgZone,
     private route: ActivatedRoute,
-    private stateService: StateService,
+    public stateService: StateService,
     private router: Router,
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });

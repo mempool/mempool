@@ -7,6 +7,12 @@ mempool-config.json
 pools.json
 icons.json
 
+# docker
+Dockerfile
+GeoIP
+start.sh
+wait-for-it.sh
+
 # compiled output
 /dist
 /tmp
@@ -48,3 +54,6 @@ Thumbs.db
 
 # package folder (npm run package output)
 /package
+
+# Rust GBT folder (We build externally first)
+/rust-gbt

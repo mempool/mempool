@@ -5,6 +5,7 @@ const configFromFile = require(
 interface IConfig {
   MEMPOOL: {
     ENABLED: boolean;
+    OFFICIAL: boolean;
     NETWORK: 'mainnet' | 'testnet' | 'signet' | 'liquid' | 'liquidtestnet';
     BACKEND: 'esplora' | 'electrum' | 'none';
     HTTP_PORT: number;
@@ -20,6 +21,7 @@ interface IConfig {
     MEMPOOL_BLOCKS_AMOUNT: number;
     INDEXING_BLOCKS_AMOUNT: number;
     BLOCKS_SUMMARIES_INDEXING: boolean;
+    GOGGLES_INDEXING: boolean;
     USE_SECOND_NODE_FOR_MINFEE: boolean;
     EXTERNAL_ASSETS: string[];
     EXTERNAL_MAX_RETRY: number;
@@ -39,11 +41,15 @@ interface IConfig {
     MAX_PUSH_TX_SIZE_WEIGHT: number;
     ALLOW_UNREACHABLE: boolean;
     PRICE_UPDATES_PER_HOUR: number;
+    MAX_TRACKED_ADDRESSES: number;
   };
   ESPLORA: {
     REST_API_URL: string;
     UNIX_SOCKET_PATH: string | void | null;
+    BATCH_QUERY_BASE_SIZE: number;
     RETRY_UNIX_SOCKET_AFTER: number;
+    REQUEST_TIMEOUT: number;
+    FALLBACK_TIMEOUT: number;
     FALLBACK: string[];
   };
   LIGHTNING: {
@@ -76,6 +82,8 @@ interface IConfig {
     USERNAME: string;
     PASSWORD: string;
     TIMEOUT: number;
+    COOKIE: boolean;
+    COOKIE_PATH: string;
   };
   SECOND_CORE_RPC: {
     HOST: string;
@@ -83,6 +91,8 @@ interface IConfig {
     USERNAME: string;
     PASSWORD: string;
     TIMEOUT: number;
+    COOKIE: boolean;
+    COOKIE_PATH: string;
   };
   DATABASE: {
     ENABLED: boolean;
@@ -93,6 +103,8 @@ interface IConfig {
     USERNAME: string;
     PASSWORD: string;
     TIMEOUT: number;
+    PID_DIR: string;
+    POOL_SIZE: number;
   };
   SYSLOG: {
     ENABLED: boolean;
@@ -144,12 +156,18 @@ interface IConfig {
   REDIS: {
     ENABLED: boolean;
     UNIX_SOCKET_PATH: string;
+    BATCH_QUERY_BASE_SIZE: number;
+  },
+  FIAT_PRICE: {
+    ENABLED: boolean;
+    API_KEY: string;
   },
 }
 
 const defaults: IConfig = {
   'MEMPOOL': {
     'ENABLED': true,
+    'OFFICIAL': false,
     'NETWORK': 'mainnet',
     'BACKEND': 'none',
     'HTTP_PORT': 8999,
@@ -165,6 +183,7 @@ const defaults: IConfig = {
     'MEMPOOL_BLOCKS_AMOUNT': 8,
     'INDEXING_BLOCKS_AMOUNT': 11000, // 0 = disable indexing, -1 = index all blocks
     'BLOCKS_SUMMARIES_INDEXING': false,
+    'GOGGLES_INDEXING': false,
     'USE_SECOND_NODE_FOR_MINFEE': false,
     'EXTERNAL_ASSETS': [],
     'EXTERNAL_MAX_RETRY': 1,
@@ -184,11 +203,15 @@ const defaults: IConfig = {
     'MAX_PUSH_TX_SIZE_WEIGHT': 400000,
     'ALLOW_UNREACHABLE': true,
     'PRICE_UPDATES_PER_HOUR': 1,
+    'MAX_TRACKED_ADDRESSES': 1,
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',
     'UNIX_SOCKET_PATH': null,
+    'BATCH_QUERY_BASE_SIZE': 1000,
     'RETRY_UNIX_SOCKET_AFTER': 30000,
+    'REQUEST_TIMEOUT': 10000,
+    'FALLBACK_TIMEOUT': 5000,
     'FALLBACK': [],
   },
   'ELECTRUM': {
@@ -202,6 +225,8 @@ const defaults: IConfig = {
     'USERNAME': 'mempool',
     'PASSWORD': 'mempool',
     'TIMEOUT': 60000,
+    'COOKIE': false,
+    'COOKIE_PATH': '/bitcoin/.cookie'
   },
   'SECOND_CORE_RPC': {
     'HOST': '127.0.0.1',
@@ -209,6 +234,8 @@ const defaults: IConfig = {
     'USERNAME': 'mempool',
     'PASSWORD': 'mempool',
     'TIMEOUT': 60000,
+    'COOKIE': false,
+    'COOKIE_PATH': '/bitcoin/.cookie'
   },
   'DATABASE': {
     'ENABLED': true,
@@ -219,6 +246,8 @@ const defaults: IConfig = {
     'USERNAME': 'mempool',
     'PASSWORD': 'mempool',
     'TIMEOUT': 180000,
+    'PID_DIR': '',
+    'POOL_SIZE': 100,
   },
   'SYSLOG': {
     'ENABLED': true,
@@ -289,6 +318,11 @@ const defaults: IConfig = {
   'REDIS': {
     'ENABLED': false,
     'UNIX_SOCKET_PATH': '',
+    'BATCH_QUERY_BASE_SIZE': 5000,
+  },
+  'FIAT_PRICE': {
+    'ENABLED': true,
+    'API_KEY': '',
   },
 };
 
@@ -311,6 +345,7 @@ class Config implements IConfig {
   REPLICATION: IConfig['REPLICATION'];
   MEMPOOL_SERVICES: IConfig['MEMPOOL_SERVICES'];
   REDIS: IConfig['REDIS'];
+  FIAT_PRICE: IConfig['FIAT_PRICE'];
 
   constructor() {
     const configs = this.merge(configFromFile, defaults);
@@ -332,6 +367,7 @@ class Config implements IConfig {
     this.REPLICATION = configs.REPLICATION;
     this.MEMPOOL_SERVICES = configs.MEMPOOL_SERVICES;
     this.REDIS = configs.REDIS;
+    this.FIAT_PRICE = configs.FIAT_PRICE;
   }
 
   merge = (...objects: object[]): IConfig => {

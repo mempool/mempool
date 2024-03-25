@@ -1,9 +1,11 @@
 {
   "MEMPOOL": {
     "ENABLED": true,
+    "OFFICIAL": false,
     "NETWORK": "__MEMPOOL_NETWORK__",
     "BACKEND": "__MEMPOOL_BACKEND__",
     "BLOCKS_SUMMARIES_INDEXING": true,
+    "GOGGLES_INDEXING": false,
     "HTTP_PORT": 1,
     "SPAWN_CLUSTER_PROCS": 2,
     "API_URL_PREFIX": "__MEMPOOL_API_URL_PREFIX__",
@@ -34,14 +36,17 @@
     "DISK_CACHE_BLOCK_INTERVAL": 999,
     "MAX_PUSH_TX_SIZE_WEIGHT": 4000000,
     "ALLOW_UNREACHABLE": true,
-    "PRICE_UPDATES_PER_HOUR": 1
+    "PRICE_UPDATES_PER_HOUR": 1,
+    "MAX_TRACKED_ADDRESSES": 1
   },
   "CORE_RPC": {
     "HOST": "__CORE_RPC_HOST__",
     "PORT": 15,
     "USERNAME": "__CORE_RPC_USERNAME__",
     "PASSWORD": "__CORE_RPC_PASSWORD__",
-    "TIMEOUT": 1000
+    "TIMEOUT": 1000,
+    "COOKIE": false,
+    "COOKIE_PATH": "__CORE_RPC_COOKIE_PATH__"
   },
   "ELECTRUM": {
     "HOST": "__ELECTRUM_HOST__",
@@ -51,7 +56,10 @@
   "ESPLORA": {
     "REST_API_URL": "__ESPLORA_REST_API_URL__",
     "UNIX_SOCKET_PATH": "__ESPLORA_UNIX_SOCKET_PATH__",
+    "BATCH_QUERY_BASE_SIZE": 1000,
     "RETRY_UNIX_SOCKET_AFTER": 888,
+    "REQUEST_TIMEOUT": 10000,
+    "FALLBACK_TIMEOUT": 5000,
     "FALLBACK": []
   },
   "SECOND_CORE_RPC": {
@@ -59,7 +67,9 @@
     "PORT": 17,
     "USERNAME": "__SECOND_CORE_RPC_USERNAME__",
     "PASSWORD": "__SECOND_CORE_RPC_PASSWORD__",
-    "TIMEOUT": 2000
+    "TIMEOUT": 2000,
+    "COOKIE": false,
+    "COOKIE_PATH": "__SECOND_CORE_RPC_COOKIE_PATH__"
   },
   "DATABASE": {
     "ENABLED": false,
@@ -69,7 +79,9 @@
     "DATABASE": "__DATABASE_DATABASE__",
     "USERNAME": "__DATABASE_USERNAME__",
     "PASSWORD": "__DATABASE_PASSWORD__",
-    "TIMEOUT": 3000
+    "PID_DIR": "__DATABASE_PID_FILE__",
+    "TIMEOUT": 3000,
+    "POOL_SIZE": 100
   },
   "SYSLOG": {
     "ENABLED": false,
@@ -133,6 +145,11 @@
   },
   "REDIS": {
     "ENABLED": false,
-    "UNIX_SOCKET_PATH": "/tmp/redis.sock"
+    "UNIX_SOCKET_PATH": "/tmp/redis.sock",
+    "BATCH_QUERY_BASE_SIZE": 5000
+  },
+  "FIAT_PRICE": {
+    "ENABLED": true,
+    "API_KEY": "__MEMPOOL_CURRENCY_API_KEY__"
   }
 }

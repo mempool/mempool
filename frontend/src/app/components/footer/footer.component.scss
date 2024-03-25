@@ -6,6 +6,12 @@
   background-color: #1d1f31;
   box-shadow: 15px 15px 15px 15px #000;
   z-index: 10;
+
+  &.inline-footer {
+    position: relative;
+    bottom: unset;
+    top: -44px;
+  }
 }
 
 .sub-text {

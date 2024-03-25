@@ -35,6 +35,11 @@ export class FiatSelectorComponent implements OnInit {
     this.stateService.fiatCurrency$.subscribe((fiat) => {
       this.fiatForm.get('fiat')?.setValue(fiat);
     });
+    if (!this.stateService.env.ADDITIONAL_CURRENCIES) {
+      this.currencies = this.currencies.filter((currency: any) => {
+        return ['AUD', 'CAD', 'EUR', 'JPY', 'GBP', 'CHF', 'USD'].includes(currency[0]);
+      });
+    }
   }
 
   changeFiat() {

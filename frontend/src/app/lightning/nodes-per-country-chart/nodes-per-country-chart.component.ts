@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, HostBinding, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
-import { EChartsOption, PieSeriesOption } from 'echarts';
+import { EChartsOption, PieSeriesOption } from '../../graphs/echarts';
 import { map, Observable, share, tap } from 'rxjs';
 import { chartColors } from '../../app.constants';
 import { ApiService } from '../../services/api.service';
@@ -37,7 +37,7 @@ export class NodesPerCountryChartComponent implements OnInit {
     private seoService: SeoService,
     private amountShortenerPipe: AmountShortenerPipe,
     private zone: NgZone,
-    private stateService: StateService,
+    public stateService: StateService,
     private router: Router,
   ) {
   }

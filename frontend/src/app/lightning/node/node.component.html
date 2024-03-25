@@ -5,7 +5,6 @@
     <div class="title-container mb-2">
       <div class="d-flex justify-content-between align-items-center">
         <h1 class="mb-0 text-truncate">{{ node.alias }}</h1>
-        <!-- <app-node-owner [nodeOwner$]="nodeOwner$" [publicKey]="node.public_key" [alias]="node.alias" class="claim-btn"></app-node-owner> -->
       </div>
       <span class="tx-link justify-content-between align-items-center">
         <span class="node-id">
@@ -13,7 +12,6 @@
             <app-clipboard [text]="node.public_key"></app-clipboard>
           </app-truncate>
         </span>
-        <!-- <app-node-owner [nodeOwner$]="nodeOwner$" [publicKey]="node.public_key" [alias]="node.alias" class="claim-btn-mobile"></app-node-owner> -->
       </span>
     </div>
   </ng-container>
@@ -119,7 +117,7 @@
   </div>
 
   <ng-template #featurebits let-bits="bits">
-    <td i18n="lightning.features" class="text-truncate label">Features</td>
+    <td i18n="transaction.features|Transaction features" class="text-truncate label">Features</td>
     <td class="d-flex justify-content-between">
       <span class="text-truncate w-90">{{ bits }}</span>
       <button type="button" class="btn btn-outline-info btn-xs" (click)="toggleFeatures()" i18n="transaction.details|Transaction Details">Details</button>
@@ -133,11 +131,11 @@
           <h5>Raw bits</h5>
           <span class="text-wrap w-100"><small>{{ node.featuresBits }}</small></span>
         </div>
-        <h5>Decoded</h5>
+        <h5 i18n="lightning.decoded|Decoded">Decoded</h5>
         <table class="table table-borderless table-striped table-fixed">
           <thead>
             <th style="width: 13%">Bit</th>
-            <th>Name</th>
+            <th i18n="lightning.as-name">Name</th>
             <th style="width: 25%; text-align: right">Required</th>
           </thead>
           <tbody>

@@ -26,7 +26,7 @@
             </div>
             <ng-template #emptyfees>
               <div [attr.data-cy]="'bitcoin-block-offset=' + offset + '-index-' + i + '-fees'" class="fees">
-                &nbsp;
+                <app-fee-rate unitClass=""></app-fee-rate>
               </div>
             </ng-template>
             <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-fee-span'" class="fee-span"
@@ -37,7 +37,7 @@
             </div>
             <ng-template #emptyfeespan>
               <div [attr.data-cy]="'bitcoin-block-offset=' + offset + '-index-' + i + '-fees'" class="fee-span">
-                &nbsp;
+                <app-fee-rate unitClass=""></app-fee-rate>
               </div>
             </ng-template>
             <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-total-fees'" *ngIf="showMiningInfo"
@@ -56,7 +56,7 @@
               <app-time kind="since" [time]="block.timestamp" [fastRender]="true" [precision]="1" minUnit="minute"></app-time></div>
           </ng-container>
         </div>
-        <div class="animated" [class]="showMiningInfo ? 'show' : 'hide'" *ngIf="block.extras?.pool != undefined">
+        <div class="animated" [class]="markHeight === block.height ? 'hide' : 'show'" *ngIf="block.extras?.pool != undefined && showPools">
           <a [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-pool'" class="badge badge-primary"
             [routerLink]="[('/mining/pool/' + block.extras.pool.slug) | relativeUrl]">
             {{ block.extras.pool.name}}</a>

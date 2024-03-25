@@ -54,6 +54,10 @@ export function toDecimal(value: number, decimal: number): number {
   return Math.round(value * Math.pow(10, decimal)) / Math.pow(10, decimal);
 }
 
+export function toSigFigs(value: number, sigFigs: number): string {
+  return value >= Math.pow(10, sigFigs - 1) ? Math.round(value).toString() : value.toPrecision(sigFigs);
+}
+
 export function upperFirst(value: string): string {
   return value.slice(0, 1).toUpperCase() + value.slice(1);
 }
@@ -319,7 +323,7 @@ export function hasTouchScreen(): boolean {
     // @ts-ignore
     hasTouchScreen = navigator.msMaxTouchPoints > 0;
   } else {
-    const mQ = matchMedia?.('(pointer:coarse)');
+    const mQ = window.matchMedia?.('(pointer:coarse)');
     if (mQ?.media === '(pointer:coarse)') {
       hasTouchScreen = !!mQ.matches;
     } else if ('orientation' in window) {

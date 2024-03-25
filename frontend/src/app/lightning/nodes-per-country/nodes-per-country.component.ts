@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { map, Observable, share } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, share, tap } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
 import { getFlagEmoji } from '../../shared/common.utils';
@@ -15,15 +15,22 @@ import { GeolocationData } from '../../shared/components/geolocation/geolocation
 export class NodesPerCountry implements OnInit {
   nodes$: Observable<any>;
   country: {name: string, flag: string};
+  nodesPagination$: Observable<any>;
+  startingIndexSubject: BehaviorSubject<number> = new BehaviorSubject(0);
+  page = 1;
+  pageSize = 15;
+  maxSize = window.innerWidth <= 767.98 ? 3 : 5;
+  isLoading = true;
 
   skeletonLines: number[] = [];
 
   constructor(
     private apiService: ApiService,
     private seoService: SeoService,
+    private cd: ChangeDetectorRef,
     private route: ActivatedRoute,
   ) {
-    for (let i = 0; i < 20; ++i) {
+    for (let i = 0; i < this.pageSize; ++i) {
       this.skeletonLines.push(i);
     }
   }
@@ -31,6 +38,7 @@ export class NodesPerCountry implements OnInit {
   ngOnInit(): void {
     this.nodes$ = this.apiService.getNodeForCountry$(this.route.snapshot.params.country)
       .pipe(
+        tap(() => this.isLoading = true),
         map(response => {
           this.seoService.setTitle($localize`Lightning nodes in ${response.country.en}`);
           this.seoService.setDescription($localize`:@@meta.description.lightning.nodes-country:Explore all the Lightning nodes hosted in ${response.country.en} and see an overview of each node's capacity, number of open channels, and more.`);
@@ -87,11 +95,24 @@ export class NodesPerCountry implements OnInit {
             ispCount: Object.keys(isps).length
           };
         }),
+        tap(() => {
+          this.isLoading = false
+          this.cd.markForCheck();
+        }),
         share()
       );
+
+    this.nodesPagination$ = combineLatest([this.nodes$, this.startingIndexSubject]).pipe(
+      map(([response, startingIndex]) => response.nodes.slice(startingIndex, startingIndex + this.pageSize))
+    );
   }
 
   trackByPublicKey(index: number, node: any): string {
     return node.public_key;
+  }
+
+  pageChange(page: number): void {
+    this.startingIndexSubject.next((page - 1) * this.pageSize);
+    this.page = page;
   }
 }

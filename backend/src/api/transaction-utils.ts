@@ -116,7 +116,7 @@ class TransactionUtils {
   public extendMempoolTransaction(transaction: IEsploraApi.Transaction): MempoolTransactionExtended {
     const vsize = Math.ceil(transaction.weight / 4);
     const fractionalVsize = (transaction.weight / 4);
-    const sigops = !Common.isLiquid() ? this.countSigops(transaction) : 0;
+    let sigops = Common.isLiquid() ? 0 : (transaction.sigops != null ? transaction.sigops : this.countSigops(transaction));
     // https://github.com/bitcoin/bitcoin/blob/e9262ea32a6e1d364fb7974844fadc36f931f8c6/src/policy/policy.cpp#L295-L298
     const adjustedVsize = Math.max(fractionalVsize, sigops *  5); // adjusted vsize = Max(weight, sigops * bytes_per_sigop) / witness_scale_factor
     const feePerVbytes = (transaction.fee || 0) / fractionalVsize;
@@ -145,6 +145,10 @@ class TransactionUtils {
   }
 
   public countScriptSigops(script: string, isRawScript: boolean = false, witness: boolean = false): number {
+    if (!script?.length) {
+      return 0;
+    }
+
     let sigops = 0;
     // count OP_CHECKSIG and OP_CHECKSIGVERIFY
     sigops += (script.match(/OP_CHECKSIG/g)?.length || 0);
@@ -155,7 +159,7 @@ class TransactionUtils {
       sigops += 20 * (script.match(/OP_CHECKMULTISIG/g)?.length || 0);
     } else {
       // in redeem scripts and witnesses, worth N if preceded by OP_N, 20 otherwise
-      const matches = script.matchAll(/(?:OP_(\d+))? OP_CHECKMULTISIG/g);
+      const matches = script.matchAll(/(?:OP_(?:PUSHNUM_)?(\d+))? OP_CHECKMULTISIG/g);
       for (const match of matches) {
         const n = parseInt(match[1]);
         if (Number.isInteger(n)) {
@@ -187,6 +191,12 @@ class TransactionUtils {
           case input.prevout.scriptpubkey_type === 'v0_p2wsh':
             if (input.witness?.length) {
               sigops += this.countScriptSigops(bitcoinjs.script.toASM(Buffer.from(input.witness[input.witness.length - 1], 'hex')), false, true);
+            }
+            break;
+
+          case input.prevout.scriptpubkey_type === 'p2sh':
+            if (input.inner_redeemscript_asm) {
+              sigops += this.countScriptSigops(input.inner_redeemscript_asm);
             }
             break;
         }

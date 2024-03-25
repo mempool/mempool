@@ -46,7 +46,16 @@
 }
 
 td.amount {
-	width: 32.5%;
+	width: 36%;
+	@media (max-width: 576px) {
+		width: 50%;
+	}
+}
+td.amount.large {
+	width: 45%;
+	@media (max-width: 576px) {
+		width: 60%;
+	}
 }
 
 .extra-info {

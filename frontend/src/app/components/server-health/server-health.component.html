@@ -1,0 +1,36 @@
+<div class="tomahawk">
+  <div class="links">
+    <span>Monitoring</span>
+    <a [routerLink]='"/nodes"'>Nodes</a>
+  </div>
+
+  <app-start [showLoadingIndicator]="true"></app-start>
+  <app-footer [inline]="true"></app-footer>
+
+  <ng-container *ngIf="(hosts$ | async) as hosts">
+    <div class="status-panel">
+      <table class="status-table table table-fixed table-borderless table-striped" *ngIf="(tip$ | async) as tip">
+        <tbody>
+          <tr>
+            <th class="rank"></th>
+            <th class="flag"></th>
+            <th class="host">Host</th>
+            <th class="updated">Last checked</th>
+            <th class="rtt only-small">RTT</th>
+            <th class="rtt only-large">RTT</th>
+            <th class="height">Height</th>
+          </tr>
+          <tr *ngFor="let host of hosts; let i = index; trackBy: trackByFn">
+            <td class="rank">{{ i + 1 }}</td>
+            <td class="flag">{{ host.active ? '⭐️' : host.flag }}</td>
+            <td class="host">{{ host.link }}</td>
+            <td class="updated">{{ getLastUpdateSeconds(host) }}</td>
+            <td class="rtt only-small">{{ (host.rtt / 1000) | number : '1.1-1' }} {{ host.rtt == null ? '' : 's'}} {{ !host.checked ? '⏳' : (host.unreachable ? '🔥' : '✅') }}</td>
+            <td class="rtt only-large">{{ host.rtt | number : '1.0-0' }} {{ host.rtt == null ? '' : 'ms'}} {{ !host.checked ? '⏳' : (host.unreachable ? '🔥' : '✅') }}</td>
+            <td class="height">{{ host.latestHeight }} {{ !host.checked ? '⏳' : (host.outOfSync ? '🚫' : (host.latestHeight && host.latestHeight < tip ? '🟧' : '✅')) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+</div>

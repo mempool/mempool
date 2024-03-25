@@ -1,10 +1,10 @@
 import { Component, OnInit, Input, Output, EventEmitter, HostListener, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApiService } from '../../services/api.service';
 import { MenuGroup } from '../../interfaces/services.interface';
 import { StorageService } from '../../services/storage.service';
 import { Router, NavigationStart } from '@angular/router';
 import { StateService } from '../../services/state.service';
+import { IUser, ServicesApiServices } from '../../services/services-api.service';
 
 @Component({
   selector: 'app-menu',
@@ -18,11 +18,12 @@ export class MenuComponent implements OnInit, OnDestroy {
   @Output() menuToggled = new EventEmitter<boolean>();
   
   userMenuGroups$: Observable<MenuGroup[]> | undefined;
+  user$: Observable<IUser | null>;
   userAuth: any | undefined;
   isServicesPage = false;
 
   constructor(
-    private apiService: ApiService,
+    private servicesApiServices: ServicesApiServices,
     private storageService: StorageService,
     private router: Router,
     private stateService: StateService
@@ -32,7 +33,8 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.userAuth = this.storageService.getAuth();
     
     if (this.stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE) {
-      this.userMenuGroups$ = this.apiService.getUserMenuGroups$();
+      this.userMenuGroups$ = this.servicesApiServices.getUserMenuGroups$();
+      this.user$ = this.servicesApiServices.userSubject$;
     }
 
     this.isServicesPage = this.router.url.includes('/services/');
@@ -55,10 +57,10 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   logout(): void {
-    this.apiService.logout$().subscribe(() => {
+    this.servicesApiServices.logout$().subscribe(() => {
       this.loggedOut.emit(true);
       if (this.stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE) {
-        this.userMenuGroups$ = this.apiService.getUserMenuGroups$();
+        this.userMenuGroups$ = this.servicesApiServices.getUserMenuGroups$();
         this.router.navigateByUrl('/');
       }
     });
@@ -74,6 +76,15 @@ export class MenuComponent implements OnInit, OnDestroy {
   hamburgerClick() {
     this.toggleMenu(!this.navOpen);
     this.stateService.menuOpen$.next(this.navOpen);
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    if (this.isSmallScreen()) {
+      this.toggleMenu(false);
+    } else if (this.isServicesPage) {
+      this.toggleMenu(true);
+    }
   }
 
   @HostListener('window:click', ['$event'])

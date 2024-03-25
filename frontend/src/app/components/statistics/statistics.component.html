@@ -14,7 +14,7 @@
             [class]="(stateService.env.MINING_DASHBOARD || stateService.env.LIGHTNING) ? 'mining' : 'no-menu'" (click)="saveGraphPreference()">
             <div class="small-buttons">
               <a class="btn btn-primary btn-sm mb-0" [routerLink]="['/clock/mempool/0' | relativeUrl]" style="color: white" id="btn-clock">
-                <fa-icon [icon]="['fas', 'clock']" [fixedWidth]="true" i18n-title="master-page.clockview" title="Clock view"></fa-icon>
+                <fa-icon [icon]="['fas', 'clock']" [fixedWidth]="true" i18n-title="master-page.clockview" i18n-title="footer.clock-mempool" title="Clock (Mempool)"></fa-icon>
               </a>
               <a *ngIf="!isMobile()" class="btn btn-primary btn-sm mb-0" [routerLink]="['/tv' | relativeUrl]" style="color: white" id="btn-tv">
                 <fa-icon [icon]="['fas', 'tv']" [fixedWidth]="true" i18n-title="master-page.tvview" title="TV view"></fa-icon>
@@ -109,18 +109,26 @@
     <div>
       <div class="card mb-3">
         <div class="card-header">
-          <div class="d-flex d-md-block align-items-baseline">
-            <span i18n="statistics.transaction-vbytes-per-second">Transaction vBytes per second (vB/s)</span>
-            <button class="btn p-0 pl-2" style="margin: 0 0 4px 0px" (click)="onSaveChart('incoming')">
-              <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
-            </button>
-          </div>  
+          <div class="vbytes-title">
+            <div>
+              <span i18n="statistics.transaction-vbytes-per-second">Transaction vBytes per second (vB/s)</span>
+              <button class="btn p-0 pl-2" style="margin: 0 0 4px 0px" (click)="onSaveChart('incoming')">
+                <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
+              </button>
+            </div>
+            <div class="form-check">
+              <input style="margin-top: 9px" class="form-check-input" type="checkbox" [checked]="outlierCappingEnabled" id="hide-outliers" (change)="onOutlierToggleChange($event)">
+              <label class="form-check-label" for="hide-outliers">
+                <small i18n="statistics.cap-outliers">Cap outliers</small>
+              </label>
+            </div>
+          </div>
         </div>
 
         <div class="card-body">
           <div class="incoming-transactions-graph">
             <app-incoming-transactions-graph #incominggraph [height]="500" [left]="65" [template]="'advanced'"
-              [data]="mempoolTransactionsWeightPerSecondData"></app-incoming-transactions-graph>
+              [data]="mempoolTransactionsWeightPerSecondData" [outlierCappingEnabled]="outlierCappingEnabled"></app-incoming-transactions-graph>
           </div>
         </div>
       </div>

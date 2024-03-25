@@ -1,0 +1,23 @@
+<app-indexing-progress></app-indexing-progress>
+
+<div class="full-container">
+  <div class="card-header mb-0 mb-md-2">
+    <div class="d-flex d-md-block align-items-baseline">
+      <span i18n="address.balance-history">Balance History</span>
+    </div>  
+    </div>
+
+  <ng-container *ngIf="!error">
+    <div class="chart" *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+      (chartInit)="onChartInit($event)">
+    </div>
+    <div class="text-center loadingGraphs" *ngIf="isLoading">
+      <div class="spinner-border text-light"></div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="error">
+    <div class="error-wrapper">
+      <p class="error">{{ error }}</p>
+    </div>
+  </ng-container>
+</div>

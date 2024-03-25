@@ -41,7 +41,7 @@ export class GroupComponent implements OnInit {
     this.seoService.setTitle(`Mempool.space Lightning Nodes`);
     this.seoService.setDescription(`See all Lightning nodes run by mempool.space -- these are the nodes that provide the data on the mempool.space Lightning dashboard.`);
 
-    this.nodes$ = this.lightningApiService.getNodGroupNodes$('mempool.space')
+    this.nodes$ = this.lightningApiService.getNodeGroup$('mempool.space')
       .pipe(
         map((nodes) => {
           for (const node of nodes) {

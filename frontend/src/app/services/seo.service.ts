@@ -10,7 +10,7 @@ import { StateService } from './state.service';
 export class SeoService {
   network = '';
   baseTitle = 'mempool';
-  baseDescription = 'Explore the full Bitcoin ecosystem with The Mempool Open Project™.';
+  baseDescription = 'Explore the full Bitcoin ecosystem&reg; with The Mempool Open Source Project&reg;.';
 
   canonicalLink: HTMLElement = document.getElementById('canonical');
 
@@ -39,14 +39,14 @@ export class SeoService {
   setTitle(newTitle: string): void {
     this.titleService.setTitle(newTitle + ' - ' + this.getTitle());
     this.metaService.updateTag({ property: 'og:title', content: newTitle});
-    this.metaService.updateTag({ property: 'twitter:title', content: newTitle});
+    this.metaService.updateTag({ name: 'twitter:title', content: newTitle});
     this.metaService.updateTag({ property: 'og:meta:ready', content: 'ready'});
   }
 
   resetTitle(): void {
     this.titleService.setTitle(this.getTitle());
     this.metaService.updateTag({ property: 'og:title', content: this.getTitle()});
-    this.metaService.updateTag({ property: 'twitter:title', content: this.getTitle()});
+    this.metaService.updateTag({ name: 'twitter:title', content: this.getTitle()});
     this.metaService.updateTag({ property: 'og:meta:ready', content: 'ready'});
   }
 

@@ -3,7 +3,7 @@ import { SeoService } from '../../services/seo.service';
 import { ApiService } from '../../services/api.service';
 import { Observable, BehaviorSubject, switchMap, tap, combineLatest } from 'rxjs';
 import { AssetsService } from '../../services/assets.service';
-import { EChartsOption, registerMap } from 'echarts';
+import { EChartsOption, echarts } from '../../graphs/echarts';
 import { lerpColor } from '../../shared/graphs.utils';
 import { Router } from '@angular/router';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
@@ -26,6 +26,7 @@ export class NodesMap implements OnInit, OnChanges {
   inputNodes$: BehaviorSubject<any>;
   nodes$: Observable<any>;
   observable$: Observable<any>;
+  isLoading: boolean = true;
 
   chartInstance = undefined;
   chartOptions: EChartsOption = {};
@@ -37,7 +38,7 @@ export class NodesMap implements OnInit, OnChanges {
     @Inject(LOCALE_ID) public locale: string,
     private seoService: SeoService,
     private apiService: ApiService,
-    private stateService: StateService,
+    public stateService: StateService,
     private assetsService: AssetsService,
     private router: Router,
     private zone: NgZone,
@@ -63,7 +64,7 @@ export class NodesMap implements OnInit, OnChanges {
       this.assetsService.getWorldMapJson$,
       this.nodes$
     ).pipe(tap((data) => {
-      registerMap('world', data[0]);
+      echarts.registerMap('world', data[0]);
 
       let maxLiquidity = data[1].maxLiquidity;
       let inputNodes: any[] = data[1].nodes;
@@ -226,6 +227,7 @@ export class NodesMap implements OnInit, OnChanges {
         },
       ]
     };
+    this.isLoading = false;
   }
 
   onChartInit(ec) {
@@ -234,6 +236,10 @@ export class NodesMap implements OnInit, OnChanges {
     }
 
     this.chartInstance = ec;
+
+    this.chartInstance.on('finished', () => {
+      this.isLoading = false;
+    });
 
     this.chartInstance.on('click', (e) => {
       if (e.data) {

@@ -1,5 +1,13 @@
 <div class="bowtie-graph">
-  <svg *ngIf="inputs && outputs" class="bowtie" [class.rtl]="dir === 'rtl'" [attr.height]="(height + 10) + 'px'" [attr.width]="width + 'px'">
+  <svg
+    *ngIf="inputs && outputs"
+    class="bowtie"
+    [class.rtl]="dir === 'rtl'"
+    [attr.height]="(height + 10) + 'px'"
+    [attr.width]="stateService.isBrowser ? (width + 'px') : '100%'"
+    [attr.viewBox]="stateService.isBrowser ? null : ('0 0 ' + width + ' ' + (height + 10))"
+    [attr.preserveAspectRatio]="stateService.isBrowser ? null : 'none'"
+  >
     <defs>
       <marker id="input-arrow" viewBox="-5 -5 10 10"
           refX="0" refY="0"

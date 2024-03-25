@@ -8,6 +8,7 @@ import { ApiService } from '../../services/api.service';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { AssetsService } from '../../services/assets.service';
 import { environment } from '../../../environments/environment';
+import { ElectrsApiService } from '../../services/electrs-api.service';
 
 interface SvgLine {
   path: string;
@@ -33,6 +34,7 @@ interface Xput {
   pegout?: string;
   confidential?: boolean;
   timestamp?: number;
+  blockHeight?: number;
   asset?: string;
 }
 
@@ -99,8 +101,8 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   constructor(
     private router: Router,
     private relativeUrlPipe: RelativeUrlPipe,
-    private stateService: StateService,
-    private apiService: ApiService,
+    public stateService: StateService,
+    private electrsApiService: ElectrsApiService,
     private assetsService: AssetsService,
     @Inject(LOCALE_ID) private locale: string,
   ) {
@@ -123,7 +125,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
         .pipe(
           switchMap((txid) => {
             if (!this.cached) {
-              return this.apiService.getOutspendsBatched$([txid]);
+              return this.electrsApiService.cachedRequest(this.electrsApiService.getOutspendsBatched$, 250, [txid]);
             } else {
               return of(null);
             }
@@ -177,6 +179,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
         pegout: v?.pegout?.scriptpubkey_address,
         confidential: (this.isLiquid && v?.value === undefined),
         timestamp: this.tx.status.block_time,
+        blockHeight: this.tx.status.block_height,
         asset: v?.asset,
       } as Xput;
     });
@@ -199,6 +202,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
         pegin: v?.is_pegin,
         confidential: (this.isLiquid && v?.prevout?.value === undefined),
         timestamp: this.tx.status.block_time,
+        blockHeight: this.tx.status.block_height,
         asset: v?.prevout?.asset,
       } as Xput;
     });

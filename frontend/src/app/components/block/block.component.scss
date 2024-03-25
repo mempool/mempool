@@ -57,11 +57,6 @@
         text-align: left;
       }
     }
-    .info-link {
-      color: rgba(255, 255, 255, 0.4);
-      margin-left: 5px;
-    }
-
     .difference {
       margin-left: 0.5em;
   
@@ -72,6 +67,14 @@
         color: rgb(183, 66, 66);
       }
     }
+  }
+}
+
+.audit-col {
+  max-width: 50%;
+
+  &.mobile {
+    max-width: 100%;
   }
 }
 
@@ -292,6 +295,10 @@ h1 {
   margin-top: 1.25rem;
   @media (max-width: 767.98px) {
     margin-top: 0.75rem;
+  }
+
+  .oobFees {
+    color: #905cf4;
   }
 }
 

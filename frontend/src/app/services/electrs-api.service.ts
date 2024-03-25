@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, from, of, switchMap } from 'rxjs';
-import { Transaction, Address, Outspend, Recent, Asset, ScriptHash } from '../interfaces/electrs.interface';
+import { BehaviorSubject, Observable, catchError, filter, from, of, shareReplay, switchMap, take, tap } from 'rxjs';
+import { Transaction, Address, Outspend, Recent, Asset, ScriptHash, AddressTxSummary } from '../interfaces/electrs.interface';
 import { StateService } from './state.service';
 import { BlockExtended } from '../interfaces/node-api.interface';
 import { calcScriptHash$ } from '../bitcoin.utils';
@@ -12,6 +12,8 @@ import { calcScriptHash$ } from '../bitcoin.utils';
 export class ElectrsApiService {
   private apiBaseUrl: string; // base URL is protocol, hostname, and port
   private apiBasePath: string; // network path is /testnet, etc. or '' for mainnet
+
+  private requestCache = new Map<string, { subject: BehaviorSubject<any>, expiry: number }>;
 
   constructor(
     private httpClient: HttpClient,
@@ -28,6 +30,46 @@ export class ElectrsApiService {
       }
       this.apiBasePath = network ? '/' + network : '';
     });
+  }
+
+  private generateCacheKey(functionName: string, params: any[]): string {
+    return functionName + JSON.stringify(params);
+  }
+
+  // delete expired cache entries
+  private cleanExpiredCache(): void {
+    this.requestCache.forEach((value, key) => {
+      if (value.expiry < Date.now()) {
+        this.requestCache.delete(key);
+      }
+    });
+  }
+
+  cachedRequest<T, F extends (...args: any[]) => Observable<T>>(
+    apiFunction: F,
+    expireAfter: number, // in ms
+    ...params: Parameters<F>
+  ): Observable<T> {
+    this.cleanExpiredCache();
+
+    const cacheKey = this.generateCacheKey(apiFunction.name, params);
+    if (!this.requestCache.has(cacheKey)) {
+      const subject = new BehaviorSubject<T | null>(null);
+      this.requestCache.set(cacheKey, { subject, expiry: Date.now() + expireAfter });
+
+      apiFunction.bind(this)(...params).pipe(
+        tap(data => {
+          subject.next(data as T);
+        }),
+        catchError((error) => {
+          subject.error(error);
+          return of(null);
+        }),
+        shareReplay(1),
+      ).subscribe();
+    }
+
+    return this.requestCache.get(cacheKey).subject.asObservable().pipe(filter(val => val !== null), take(1));
   }
 
   getBlock$(hash: string): Observable<BlockExtended> {
@@ -52,6 +94,12 @@ export class ElectrsApiService {
 
   getOutspends$(hash: string): Observable<Outspend[]> {
     return this.httpClient.get<Outspend[]>(this.apiBaseUrl + this.apiBasePath + '/api/tx/' + hash + '/outspends');
+  }
+
+  getOutspendsBatched$(txids: string[]): Observable<Outspend[][]> {
+    let params = new HttpParams();
+    params = params.append('txids', txids.join(','));
+    return this.httpClient.get<Outspend[][]>(this.apiBaseUrl + this.apiBasePath + '/api/txs/outspends', { params });
   }
 
   getBlockTransactions$(hash: string, index: number = 0): Observable<Transaction[]> {
@@ -93,6 +141,14 @@ export class ElectrsApiService {
     return this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/address/' + address + '/txs', { params });
   }
 
+  getAddressSummary$(address: string,  txid?: string): Observable<AddressTxSummary[]> {
+    let params = new HttpParams();
+    if (txid) {
+      params = params.append('after_txid', txid);
+    }
+    return this.httpClient.get<AddressTxSummary[]>(this.apiBaseUrl + this.apiBasePath + '/api/address/' + address + '/txs/summary', { params });
+  }
+
   getScriptHashTransactions$(script: string,  txid?: string): Observable<Transaction[]> {
     let params = new HttpParams();
     if (txid) {
@@ -100,6 +156,16 @@ export class ElectrsApiService {
     }
     return from(calcScriptHash$(script)).pipe(
       switchMap(scriptHash => this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/scripthash/' + scriptHash + '/txs', { params })),
+    );
+  }
+
+  getScriptHashSummary$(script: string,  txid?: string): Observable<AddressTxSummary[]> {
+    let params = new HttpParams();
+    if (txid) {
+      params = params.append('after_txid', txid);
+    }
+    return from(calcScriptHash$(script)).pipe(
+      switchMap(scriptHash => this.httpClient.get<AddressTxSummary[]>(this.apiBaseUrl + this.apiBasePath + '/api/scripthash/' + scriptHash + '/txs/summary', { params })),
     );
   }
 

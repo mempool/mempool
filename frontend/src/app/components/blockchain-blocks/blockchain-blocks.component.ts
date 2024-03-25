@@ -27,6 +27,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   @Input() minimal: boolean = false;
   @Input() blockWidth: number = 125;
   @Input() spotlight: number = 0;
+  @Input() showPools: boolean = true;
   @Input() getHref?: (index, block) => string = (index, block) => `/block/${block.id}`;
   
   specialBlocks = specialBlocks;
@@ -79,7 +80,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   enabledMiningInfoIfNeeded(url) {
-    this.showMiningInfo = url.indexOf('/mining') !== -1;
+    this.showMiningInfo = url.includes('/mining') || url.includes('/acceleration');
     this.cd.markForCheck(); // Need to update the view asap
   }
 

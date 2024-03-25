@@ -1,0 +1,106 @@
+.spinner-border {
+  height: 25px;
+  width: 25px;
+  margin-top: 13px;
+}
+
+tr, td, th {
+  border: 0px;
+  padding-top: 0.65rem !important;
+  padding-bottom: 0.6rem !important;
+  padding-right: 2rem !important;
+  .widget {
+    padding-right: 1rem !important;
+  }
+}
+
+.clear-link {
+  color: white;
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.progress {
+  background-color: #2d3348;
+}
+
+.txid {
+  width: 25%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 160px;
+}
+.txid.widget {
+  width: 40%;
+  
+}
+
+.address {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 160px;
+  @media (max-width: 527px) {
+    display: none;
+  }
+}
+
+.amount {
+  width: 12%;
+}
+.amount.widget {
+  width: 30%;
+}
+
+.pegin {
+  width: 25%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 160px;
+  @media (max-width: 872px) {
+    display: none;
+  }
+}
+
+.timestamp {
+  width: 18%;
+  @media (max-width: 800px) {
+    display: none;
+  }
+  @media (max-width: 1190px) {
+    .relative-time {
+      display: none;
+    }
+  }
+}
+.timestamp.widget {
+  width: 100%;
+  @media (min-width: 768px) AND (max-width: 1050px) {
+    display: none;
+  }
+  @media (max-width: 767px) {
+    display: block;
+  }
+
+  @media (max-width: 500px) {
+    display: none;
+  }
+}
+
+.expires-in {
+  @media (max-width: 987px) {
+    display: none;
+  }
+}
+
+.is-dust {
+  @media (max-width: 1090px) {
+    display: none;
+  }
+}
+
