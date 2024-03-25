@@ -1,7 +1,7 @@
-import { Component, OnInit, LOCALE_ID, Inject, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, LOCALE_ID, Inject, ViewChild} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { UntypedFormGroup, UntypedFormBuilder } from '@angular/forms';
-import { of, merge} from 'rxjs';
+import { of, merge, Subject} from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
 import { OptimizedMempoolStats } from '../../interfaces/node-api.interface';
@@ -49,6 +49,9 @@ export class StatisticsComponent implements OnInit {
   timespan = '';
   titleCount = $localize`Count`;
 
+  useDefaultMempool = false;
+  switchChanged = new Subject();
+
   constructor(
     @Inject(LOCALE_ID) private locale: string,
     private formBuilder: UntypedFormBuilder,
@@ -59,6 +62,10 @@ export class StatisticsComponent implements OnInit {
     private seoService: SeoService,
     private storageService: StorageService,
   ) { }
+
+  onSwitchChanged(e) {
+    this.switchChanged.next(e.target.checked);
+  }
 
   ngOnInit() {
     this.inverted = this.storageService.getValue('inverted-graph') === 'true';
@@ -85,46 +92,50 @@ export class StatisticsComponent implements OnInit {
 
     merge(
       of(''),
-      this.radioGroupForm.controls.dateSpan.valueChanges
+      this.radioGroupForm.controls.dateSpan.valueChanges,
+      this.switchChanged
     )
     .pipe(
-      switchMap(() => {
+      switchMap((val) => {
+        if (typeof val === 'boolean') {
+          this.useDefaultMempool = val;
+        }
         this.timespan = this.radioGroupForm.controls.dateSpan.value;
         this.spinnerLoading = true;
         if (this.radioGroupForm.controls.dateSpan.value === '2h') {
           this.websocketService.want(['blocks', 'live-2h-chart']);
-          return this.apiService.list2HStatistics$();
+          return this.apiService.list2HStatistics$(false);
         }
         this.websocketService.want(['blocks']);
         if (this.radioGroupForm.controls.dateSpan.value === '24h') {
-          return this.apiService.list24HStatistics$();
+          return this.apiService.list24HStatistics$(this.useDefaultMempool);
         }
         if (this.radioGroupForm.controls.dateSpan.value === '1w') {
-          return this.apiService.list1WStatistics$();
+          return this.apiService.list1WStatistics$(this.useDefaultMempool);
         }
         if (this.radioGroupForm.controls.dateSpan.value === '1m') {
-          return this.apiService.list1MStatistics$();
+          return this.apiService.list1MStatistics$(this.useDefaultMempool);
         }
         if (this.radioGroupForm.controls.dateSpan.value === '3m') {
-          return this.apiService.list3MStatistics$();
+          return this.apiService.list3MStatistics$(this.useDefaultMempool);
         }
         if (this.radioGroupForm.controls.dateSpan.value === '6m') {
-          return this.apiService.list6MStatistics$();
+          return this.apiService.list6MStatistics$(this.useDefaultMempool);
         }
         if (this.radioGroupForm.controls.dateSpan.value === '1y') {
-          return this.apiService.list1YStatistics$();
+          return this.apiService.list1YStatistics$(this.useDefaultMempool);
         }
         if (this.radioGroupForm.controls.dateSpan.value === '2y') {
-          return this.apiService.list2YStatistics$();
+          return this.apiService.list2YStatistics$(this.useDefaultMempool);
         }
         if (this.radioGroupForm.controls.dateSpan.value === '3y') {
-          return this.apiService.list3YStatistics$();
+          return this.apiService.list3YStatistics$(this.useDefaultMempool);
         }
         if (this.radioGroupForm.controls.dateSpan.value === '4y') {
-          return this.apiService.list4YStatistics$();
+          return this.apiService.list4YStatistics$(this.useDefaultMempool);
         }
         if (this.radioGroupForm.controls.dateSpan.value === 'all') {
-          return this.apiService.listAllTimeStatistics$();
+          return this.apiService.listAllTimeStatistics$(this.useDefaultMempool);
         }
       })
     )
