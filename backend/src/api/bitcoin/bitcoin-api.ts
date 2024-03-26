@@ -1,6 +1,6 @@
 import * as bitcoinjs from 'bitcoinjs-lib';
 import { AbstractBitcoinApi, HealthCheckHost } from './bitcoin-api-abstract-factory';
-import { IBitcoinApi } from './bitcoin-api.interface';
+import { IBitcoinApi, TestMempoolAcceptResult } from './bitcoin-api.interface';
 import { IEsploraApi } from './esplora-api.interface';
 import blocks from '../blocks';
 import mempool from '../mempool';
@@ -172,6 +172,14 @@ class BitcoinApi implements AbstractBitcoinApi {
 
   $sendRawTransaction(rawTransaction: string): Promise<string> {
     return this.bitcoindClient.sendRawTransaction(rawTransaction);
+  }
+
+  async $testMempoolAccept(rawTransactions: string[], maxfeerate?: number): Promise<TestMempoolAcceptResult[]> {
+    if (rawTransactions.length) {
+      return this.bitcoindClient.testMempoolAccept(rawTransactions, maxfeerate ?? undefined);
+    } else {
+      return [];
+    }
   }
 
   async $getOutspend(txId: string, vout: number): Promise<IEsploraApi.Outspend> {

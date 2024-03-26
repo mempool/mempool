@@ -205,3 +205,16 @@ export namespace IBitcoinApi {
     "utxo_size_inc": number;
   }
 }
+
+export interface TestMempoolAcceptResult {
+  txid: string,
+  wtxid: string,
+  allowed?: boolean,
+  vsize?: number,
+  fees?: {
+    base: number,
+    "effective-feerate": number,
+    "effective-includes": string[],
+  },
+  ['reject-reason']?: string,
+}

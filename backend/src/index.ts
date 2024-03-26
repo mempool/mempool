@@ -129,6 +129,7 @@ class Server {
       })
       .use(express.urlencoded({ extended: true }))
       .use(express.text({ type: ['text/plain', 'application/base64'] }))
+      .use(express.json())
       ;
 
     if (config.DATABASE.ENABLED && config.FIAT_PRICE.ENABLED) {

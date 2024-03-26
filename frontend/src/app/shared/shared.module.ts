@@ -65,6 +65,7 @@ import { DifficultyMiningComponent } from '../components/difficulty-mining/diffi
 import { RbfTimelineComponent } from '../components/rbf-timeline/rbf-timeline.component';
 import { RbfTimelineTooltipComponent } from '../components/rbf-timeline/rbf-timeline-tooltip.component';
 import { PushTransactionComponent } from '../components/push-transaction/push-transaction.component';
+import { TestTransactionsComponent } from '../components/test-transactions/test-transactions.component';
 import { AssetsFeaturedComponent } from '../components/assets/assets-featured/assets-featured.component';
 import { AssetGroupComponent } from '../components/assets/asset-group/asset-group.component';
 import { AssetCirculationComponent } from '../components/asset-circulation/asset-circulation.component';
@@ -169,6 +170,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     RbfTimelineComponent,
     RbfTimelineTooltipComponent,
     PushTransactionComponent,
+    TestTransactionsComponent,
     AssetsNavComponent,
     AssetsFeaturedComponent,
     AssetGroupComponent,
@@ -301,6 +303,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     RbfTimelineComponent,
     RbfTimelineTooltipComponent,
     PushTransactionComponent,
+    TestTransactionsComponent,
     AssetsNavComponent,
     AssetsFeaturedComponent,
     AssetGroupComponent,

@@ -418,3 +418,16 @@ export interface AccelerationInfo {
   boost_rate: number,
   boost_cost: number,
 }
+
+export interface TestMempoolAcceptResult {
+  txid: string,
+  wtxid: string,
+  allowed?: boolean,
+  vsize?: number,
+  fees?: {
+    base: number,
+    "effective-feerate": number,
+    "effective-includes": string[],
+  },
+  ['reject-reason']?: string,
+}
