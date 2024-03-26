@@ -338,14 +338,12 @@
     <app-transactions-list [transactions]="transactions" [paginated]="true" [blockTime]="block.timestamp"></app-transactions-list>
 
     <ng-template [ngIf]="transactionsError">
-      <div class="text-center">
-        <br>
+      <br>
+      <app-http-error [error]="transactionsError">
         <span i18n="error.general-loading-data">Error loading data.</span>
-        <br><br>
-        <i>{{ transactionsError.status }}: {{ transactionsError.error }}</i>
-        <br>
-        <br>
-      </div>
+      </app-http-error>
+      <br>
+      <br>
     </ng-template>
 
     <ng-template [ngIf]="isLoadingTransactions && !transactionsError">
@@ -378,11 +376,9 @@
     <br>
   </ng-template>
   <ng-template [ngIf]="error">
-    <div class="text-center">
+    <app-http-error [error]="error">
       <span i18n="error.general-loading-data">Error loading data.</span>
-      <br><br>
-      <i>{{ error.status }}: {{ error.error }}</i>
-    </div>
+    </app-http-error>
   </ng-template>
 
   <ng-template #headerLoader>

@@ -46,9 +46,7 @@
 </ng-template>
 
 <ng-template [ngIf]="error">
-  <div class="text-center">
-    <ng-container i18n="Asset data load error">Error loading assets data.</ng-container>
-    <br>
-    <i>{{ error.error }}</i>
-  </div>
+  <app-http-error [error]="error">
+    <span i18n="Asset data load error">Error loading assets data.</span>
+  </app-http-error>
 </ng-template>

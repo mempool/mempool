@@ -140,10 +140,22 @@ export class AddressComponent implements OnInit, OnDestroy {
           if (!fetchTxs.length) {
             return of([]);
           }
-          return this.apiService.getTransactionTimes$(fetchTxs);
+          return this.apiService.getTransactionTimes$(fetchTxs).pipe(
+            catchError((err) => {
+              this.isLoadingAddress = false;
+              this.isLoadingTransactions = false;
+              this.error = err;
+              this.seoService.logSoft404();
+              console.log(err);
+              return of([]);
+            })
+          );
         })
       )
-      .subscribe((times: number[]) => {
+      .subscribe((times: number[] | null) => {
+        if (!times) {
+          return;
+        }
         times.forEach((time, index) => {
           this.tempTransactions[this.timeTxIndexes[index]].firstSeen = time;
         });
