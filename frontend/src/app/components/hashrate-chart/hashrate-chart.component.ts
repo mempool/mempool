@@ -339,6 +339,9 @@ export class HashrateChartComponent implements OnInit {
             const newMin = Math.floor(value.min / selectedPowerOfTen.divider / 10);
             return newMin * selectedPowerOfTen.divider * 10;
           },
+          max: (value) => {
+            return value.max;
+          },
           type: 'value',
           axisLabel: {
             color: 'rgb(110, 112, 121)',
@@ -357,11 +360,18 @@ export class HashrateChartComponent implements OnInit {
           },
         },
         {
-          min: (value) => {
-            return value.min * 0.9;
-          },
           type: 'value',
           position: 'right',
+          min: (_) => {
+            const firstYAxisMin = this.chartInstance.getModel().getComponent('yAxis', 0).axis.scale.getExtent()[0];
+            const selectedPowerOfTen: any = selectPowerOfTen(firstYAxisMin);
+            const newMin = Math.floor(firstYAxisMin / selectedPowerOfTen.divider / 10)
+            return 600 / 2 ** 32 * newMin * selectedPowerOfTen.divider * 10;
+          },
+          max: (_) => {
+            const firstYAxisMax = this.chartInstance.getModel().getComponent('yAxis', 0).axis.scale.getExtent()[1];
+            return 600 / 2 ** 32 * firstYAxisMax;
+          },
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: (val): string => {
