@@ -25,9 +25,6 @@ export class ElectrsApiService {
     }
     this.apiBasePath = ''; // assume mainnet by default
     this.stateService.networkChanged$.subscribe((network) => {
-      if (network === 'bisq') {
-        network = '';
-      }
       this.apiBasePath = network ? '/' + network : '';
     });
   }

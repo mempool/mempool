@@ -55,8 +55,6 @@ export class AppComponent implements OnInit {
         let domain = 'mempool.space';
         if (this.stateService.env.BASE_MODULE === 'liquid') {
           domain = 'liquid.network';
-        } else if (this.stateService.env.BASE_MODULE === 'bisq') {
-          domain = 'bisq.markets';
         }
         this.link.setAttribute('href', 'https://' + domain + this.location.path());
       }

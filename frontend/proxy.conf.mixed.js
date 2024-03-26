@@ -61,39 +61,6 @@ if (configContent && configContent.BASE_MODULE === 'liquid') {
   ]);
 }
 
-if (configContent && configContent.BASE_MODULE === 'bisq') {
-  PROXY_CONFIG.push(...[
-    {
-      context: ['/bisq/api/v1/ws'],
-      target: `http://localhost:8999`,
-      secure: false,
-      ws: true,
-      changeOrigin: true,
-      proxyTimeout: 30000,
-      pathRewrite: {
-          "^/bisq": ""
-      },
-    },
-    {
-      context: ['/bisq/api/v1/**'],
-      target: `http://localhost:8999`,
-      secure: false,
-      changeOrigin: true,
-      proxyTimeout: 30000,
-    },
-    {
-      context: ['/bisq/api/**'],
-      target: `http://localhost:8999`,
-      secure: false,
-      changeOrigin: true,
-      proxyTimeout: 30000,
-      pathRewrite: {
-          "^/bisq/api/": "/api/v1/bisq/"
-      },
-    },
-  ]);
-}
-
 PROXY_CONFIG.push(...[
   {
     context: ['/api/v1/services/**'],

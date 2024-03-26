@@ -178,7 +178,7 @@ export class SearchFormComponent implements OnInit {
           const addressPrefixSearchResults = result[0];
           const lightningResults = result[1];
 
-          // Do not show date and timestamp results for liquid and bisq
+          // Do not show date and timestamp results for liquid
           const isNetworkBitcoin = this.network === '' || this.network === 'testnet' || this.network === 'signet';
 
           const matchesBlockHeight = this.regexBlockheight.test(searchText) && parseInt(searchText) <= this.stateService.latestBlockHeight;
@@ -186,16 +186,10 @@ export class SearchFormComponent implements OnInit {
           const matchesUnixTimestamp = this.regexUnixTimestamp.test(searchText) && parseInt(searchText) <= Math.floor(Date.now() / 1000) && isNetworkBitcoin;
           const matchesTxId = this.regexTransaction.test(searchText) && !this.regexBlockhash.test(searchText);
           const matchesBlockHash = this.regexBlockhash.test(searchText);
-          let matchesAddress = !matchesTxId && this.regexAddress.test(searchText);
+          const matchesAddress = !matchesTxId && this.regexAddress.test(searchText);
           const otherNetworks = findOtherNetworks(searchText, this.network as any || 'mainnet', this.env);
           const liquidAsset = this.assets ? (this.assets[searchText] || []) : [];
-
-          // Add B prefix to addresses in Bisq network
-          if (!matchesAddress && this.network === 'bisq' && getRegex('address', 'mainnet').test(searchText)) {
-              searchText = 'B' + searchText;
-              matchesAddress = !matchesTxId && this.regexAddress.test(searchText);
-          }
-
+          
           if (matchesDateTime && searchText.indexOf('/') !== -1) {
             searchText = searchText.replace(/\//g, '-');
           }
@@ -299,7 +293,7 @@ export class SearchFormComponent implements OnInit {
 
 
   navigate(url: string, searchText: string, extras?: any, swapNetwork?: string) {
-    if (needBaseModuleChange(this.env.BASE_MODULE as 'liquid' | 'bisq' | 'mempool', swapNetwork as Network)) {
+    if (needBaseModuleChange(this.env.BASE_MODULE as 'liquid' | 'mempool', swapNetwork as Network)) {
       window.location.href = getTargetUrl(swapNetwork as Network, searchText, this.env);
     } else {
       this.router.navigate([this.relativeUrlPipe.transform(url, swapNetwork), searchText], extras);

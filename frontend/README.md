@@ -22,14 +22,13 @@ cd mempool/frontend
 
 ### 2. Specify Website
 
-The same frontend codebase is used for https://mempool.space, https://liquid.network and https://bisq.markets.
+The same frontend codebase is used for https://mempool.space and https://liquid.network.
 
 Configure the frontend for the site you want by running the corresponding command:
 
 ```
 $ npm run config:defaults:mempool
 $ npm run config:defaults:liquid
-$ npm run config:defaults:bisq
 ```
 
 ### 3. Run the Frontend

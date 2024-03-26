@@ -31,9 +31,8 @@ export class DocsComponent implements OnInit {
   ngOnInit(): void {
     this.websocket.want(['blocks']);
     this.env = this.stateService.env;
-    this.showWebSocketTab = ( ! ( ( this.stateService.network === "bisq" ) || ( this.stateService.network === "liquidtestnet" ) ) );
     this.showFaqTab = ( this.env.BASE_MODULE === 'mempool' ) ? true : false;
-    this.showElectrsTab = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && ( this.stateService.network !== "bisq" );
+    this.showElectrsTab = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
 
     document.querySelector<HTMLElement>( "html" ).style.scrollBehavior = "smooth";
   }
@@ -50,10 +49,8 @@ export class DocsComponent implements OnInit {
     } else if( url[1].path === "rest" ) {
       this.activeTab = 1;
       this.seoService.setTitle($localize`:@@meta.title.docs.rest:REST API`);
-      if( this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet' ) {
+      if (this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet' ) {
         this.seoService.setDescription($localize`:@@meta.description.docs.rest-liquid:Documentation for the liquid.network REST API service: get info on addresses, transactions, assets, blocks, and more.`);
-      } else if( this.stateService.network === 'bisq' ) {
-        this.seoService.setDescription($localize`:@@meta.description.docs.rest-bisq:Documentation for the bisq.markets REST API service: get info on recent trades, current offers, transactions, network state, and more.`);
       } else {
         this.seoService.setDescription($localize`:@@meta.description.docs.rest-bitcoin:Documentation for the mempool.space REST API service: get info on addresses, transactions, blocks, fees, mining, the Lightning network, and more.`);
       }

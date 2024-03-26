@@ -44,7 +44,6 @@ export class EnterpriseService {
     this.stateService.env.LIQUID_ENABLED = false;
     this.stateService.env.LIQUID_TESTNET_ENABLED = false;
     this.stateService.env.SIGNET_ENABLED = false;
-    this.stateService.env.BISQ_ENABLED = false;
   }
 
   fetchSubdomainInfo(): void {
@@ -80,14 +79,6 @@ export class EnterpriseService {
         case 'liquid.place':
           siteId = 10;
           statsUrl = '//stats.liquid.network/';
-          break;
-        case 'bisq.markets':
-          siteId = 7;
-          statsUrl = '//stats.bisq.markets/';
-          break;
-        case 'bisq.ninja':
-          statsUrl = '//stats.bisq.markets/';
-          siteId = 11;
           break;
         default:
           return;

@@ -407,7 +407,6 @@ export interface WebsocketResponse {
   'track-tx': string;
   'track-address': string;
   'watch-mempool': boolean;
-  'track-bisq-market': string;
 }
 
 export interface VbytesPerSecond {

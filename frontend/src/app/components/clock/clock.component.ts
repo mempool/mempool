@@ -33,7 +33,6 @@ export class ClockComponent implements OnInit {
 
   gradientColors = {
     '': ['#9339f4', '#105fb0'],
-    bisq: ['#9339f4', '#105fb0'],
     liquid: ['#116761', '#183550'],
     'liquidtestnet': ['#494a4a', '#272e46'],
     testnet: ['#1d486f', '#183550'],
