@@ -55,6 +55,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   blocksFilled = false;
   arrowTransition = '1s';
   showMiningInfo = false;
+  showMiningInfoSubscription: Subscription;
   timeLtrSubscription: Subscription;
   timeLtr: boolean;
 
@@ -80,8 +81,11 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   enabledMiningInfoIfNeeded(url) {
-    this.showMiningInfo = url.includes('/mining') || url.includes('/acceleration');
-    this.cd.markForCheck(); // Need to update the view asap
+    const urlParts = url.split('/');
+    const onDashboard = ['','testnet','signet','mining','acceleration'].includes(urlParts[urlParts.length - 1]);
+    if (onDashboard) { // Only update showMiningInfo if we are on the main, mining or acceleration dashboards
+      this.stateService.showMiningInfo$.next(url.includes('/mining') || url.includes('/acceleration'));
+    }
   }
 
   ngOnInit() {
@@ -90,6 +94,10 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     if (['', 'testnet', 'signet'].includes(this.stateService.network)) {
       this.enabledMiningInfoIfNeeded(this.location.path());
       this.location.onUrlChange((url) => this.enabledMiningInfoIfNeeded(url));
+      this.showMiningInfoSubscription = this.stateService.showMiningInfo$.subscribe((showMiningInfo) => {
+        this.showMiningInfo = showMiningInfo;
+        this.cd.markForCheck();
+      });
     }
 
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
@@ -202,6 +210,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.tabHiddenSubscription.unsubscribe();
     this.markBlockSubscription.unsubscribe();
     this.timeLtrSubscription.unsubscribe();
+    this.showMiningInfoSubscription.unsubscribe();
     clearInterval(this.interval);
   }
 
