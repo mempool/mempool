@@ -1,11 +1,6 @@
 <div class="container-xl" [class.liquid-address]="network === 'liquid' || network === 'liquidtestnet'">
   <div class="title-address">
-    <h1 i18n="shared.address">Address</h1>
-    <div class="tx-link">
-      <app-truncate [text]="addressString" [lastChars]="8" [link]="['/address/' | relativeUrl, addressString]">
-        <app-clipboard [text]="addressString"></app-clipboard>
-      </app-truncate>
-    </div>
+    <h1 i18n="shared.wallet">Wallet</h1>
   </div>
 
   <div class="clearfix"></div>
@@ -17,41 +12,54 @@
         <div class="col-md">
           <table class="table table-borderless table-striped address-table">
             <tbody>
-              <tr *ngIf="addressInfo && addressInfo.unconfidential">
-                <td i18n="address.unconfidential">Unconfidential</td>
-                <td>
-                  <app-truncate [text]="addressInfo.unconfidential" [lastChars]="8" [link]="['/address/' | relativeUrl, addressInfo.unconfidential]">
-                    <app-clipboard [text]="addressInfo.unconfidential"></app-clipboard>
-                  </app-truncate>
+              <tr>
+                <td i18n="address.number-addresses">Addresses</td>
+                <td *ngIf="addressStrings.length" class="address-list">
+                  <app-truncate [text]="addressStrings[0]" [lastChars]="8" [link]="['/address/' | relativeUrl, addressStrings[0]]"></app-truncate>
+                  <ng-container *ngIf="addressStrings.length > 1">
+                    <app-truncate [text]="addressStrings[1]" [lastChars]="8" [link]="['/address/' | relativeUrl, addressStrings[1]]"></app-truncate>
+                  </ng-container>
+                  <div>
+                    <div #collapse="ngbCollapse" [(ngbCollapse)]="collapseAddresses">
+                      <app-truncate
+                        *ngFor="let address of addressStrings | slice: (addressStrings.length > 1 ? 2 : 1)"
+                        [text]="address" [lastChars]="8" [link]="['/address/' | relativeUrl, address]"
+                      ></app-truncate>
+                    </div>
+                    <button *ngIf="addressStrings.length > 2" type="button"
+                      class="btn btn-sm btn-primary small-button" (click)="collapse.toggle()"
+                      [attr.aria-expanded]="!collapseAddresses" aria-controls="collapseExample">
+                      <div *ngIf="collapseAddresses"><span i18n="show-all">Show all</span> ({{ addressStrings.length }})</div>
+                      <span *ngIf="!collapseAddresses" i18n="hide">Hide</span>
+                    </button>
+                  </div>
                 </td>
               </tr>
-              <ng-template [ngIf]="!address.electrum">
+              <ng-template [ngIf]="!addresses[0].electrum">
                 <tr>
                   <td i18n="address.total-received">Total received</td>
-                  <td *ngIf="address.chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="received" [noFiat]="true"></app-amount></td>
+                  <td *ngIf="addresses[0].chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="received" [noFiat]="true"></app-amount></td>
                 </tr>
                 <tr>
                   <td i18n="address.total-sent">Total sent</td>
-                  <td *ngIf="address.chain_stats.spent_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="sent" [noFiat]="true"></app-amount></td>
+                  <td *ngIf="addresses[0].chain_stats.spent_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="sent" [noFiat]="true"></app-amount></td>
                 </tr>
               </ng-template>
               <tr>
                 <td i18n="address.balance">Balance</td>
-                <td *ngIf="address.chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="received - sent" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="received - sent"></app-fiat></span></td>
+                <td *ngIf="addresses[0].chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="received - sent" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="received - sent"></app-fiat></span></td>
               </tr>
             </tbody>
           </table>
         </div>
         <div class="w-100 d-block d-md-none"></div>
-        <div class="col-md qrcode-col">
-          <div class="qr-wrapper">
-            <app-qrcode [data]="address.address"></app-qrcode>
-          </div>
+        <div class="col-md treemap-col">
+          <app-addresses-treemap [addresses]="addresses" [isLoading]="isLoadingAddress"></app-addresses-treemap>
         </div>
       </div>
     </div>
 
-    <ng-container *ngIf="address && transactions && transactions.length > 2">
+    <ng-container *ngIf="addresses && addresses.length && transactions && transactions.length > 2">
       <br>
       <div class="title-tx">
         <h2 class="text-left" i18n="address.balance-history">Balance History</h2>
@@ -59,7 +67,7 @@
       <div class="box">
         <div class="row">
           <div class="col-md">
-            <app-address-graph [address]="addressString" [isPubkey]="address?.is_pubkey" [balance]="chainBalance" />
+            <app-address-graph [addresses]="addressStrings" [isPubkey]="addresses[0]?.is_pubkey" [balance]="chainBalance" />
           </div>
         </div>
       </div>
@@ -67,14 +75,12 @@
 
     <br>
     <div class="title-tx">
-      <h2 class="text-left">
-        <ng-template [ngIf]="!transactions?.length">&nbsp;</ng-template>
-        <ng-template i18n="X of X Address Transaction" [ngIf]="transactions?.length === 1">{{ (transactions?.length | number) || '?' }} of {{ txCount | number }} transaction</ng-template>
-        <ng-template i18n="X of X Address Transactions (Plural)" [ngIf]="transactions?.length > 1">{{ (transactions?.length | number) || '?' }} of {{ txCount | number }} transactions</ng-template>
+      <h2 class="text-left" i18n="address.transactions">
+        Transactions
       </h2>
     </div>
 
-    <app-transactions-list [transactions]="transactions" [showConfirmations]="true" [addresses]="[address.address]" (loadMore)="loadMore()"></app-transactions-list>
+    <app-transactions-list [transactions]="transactions" [showConfirmations]="true" [addresses]="addressStrings" (loadMore)="loadMore()"></app-transactions-list>
 
     <div class="text-center">
       <ng-template [ngIf]="isLoadingTransactions">
@@ -140,24 +146,24 @@
     <br>
     <ng-template [ngIf]="error.status === 413 || error.status === 405 || error.status === 504" [ngIfElse]="displayServerError">
       <div class="text-center">
-        <span i18n="address.error.loading-address-data">Error loading address data.</span>
+        <span i18n="address.error.loading-wallet-data">Error loading wallet data.</span>
         <br>
         <ng-container i18n="Electrum server limit exceeded error">
-          <i>There many transactions on this address, more than your backend can handle. See more on <a href="/docs/faq#address-lookup-issues">setting up a stronger backend</a>.</i>
+          <i>There many transactions in this wallet, more than your backend can handle. See more on <a href="/docs/faq#address-lookup-issues">setting up a stronger backend</a>.</i>
           <br><br>
-          Consider viewing this address on the official Mempool website instead:
+          Consider viewing this wallet on the official Mempool website instead:
         </ng-container>
         <br>
-        <a href="https://mempool.space/address/{{ addressString }}" target="_blank">https://mempool.space/address/{{ addressString }}</a>
+        <a href="https://mempool.space/wallet?addresses={{ addressStrings.join(',') }}" target="_blank">https://mempool.space/wallet?addresses={{ addressStrings.join(',') }}</a>
         <br>
-        <a href="http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion/address/{{ addressString }}" target="_blank">http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion/address/{{ addressString }}</a>
+        <a href="http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion/wallet?addresses={{ addressStrings.join(',') }}" target="_blank">http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion/wallet?addresses={{ addressStrings.join(',') }}</a>
         <br><br>
         <i class="small">({{ error | httpErrorMsg }})</i>
       </div>
     </ng-template>
     <ng-template #displayServerError>
       <app-http-error [error]="error">
-        <span i18n="address.error.loading-address-data">Error loading address data.</span>
+        <span i18n="address.error.loading-wallet-data">Error loading wallet data.</span>
       </app-http-error>
     </ng-template>
   </ng-template>

@@ -22,9 +22,10 @@ import { Router } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddressGraphComponent implements OnChanges {
-  @Input() address: string;
+  @Input() address: string = null;
+  @Input() addresses: string[] = [];
   @Input() isPubkey: boolean = false;
-  @Input() stats: ChainStats;
+  @Input() balance: number;
   @Input() right: number | string = 10;
   @Input() left: number | string = 70;
 
@@ -50,9 +51,16 @@ export class AddressGraphComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.isLoading = true;
-    (this.isPubkey
-      ? this.electrsApiService.getScriptHashSummary$((this.address.length === 66 ? '21' : '41') + this.address + 'ac')
-      : this.electrsApiService.getAddressSummary$(this.address)).pipe(
+    (this.addresses?.length
+      ? (this.isPubkey
+        ? this.electrsApiService.getScriptHashesSummary$(this.addresses.map(address => (address.length === 66 ? '21' : '41') + address + 'ac'))
+        : this.electrsApiService.getAddressesSummary$(this.addresses)
+      )
+      : (this.isPubkey
+        ? this.electrsApiService.getScriptHashSummary$((this.address.length === 66 ? '21' : '41') + this.address + 'ac')
+        : this.electrsApiService.getAddressSummary$(this.address)
+      )
+    ).pipe(
       catchError(e => {
         this.error = `Failed to fetch address balance history: ${e?.status || ''} ${e?.statusText || 'unknown error'}`;
         return of(null);
@@ -68,7 +76,7 @@ export class AddressGraphComponent implements OnChanges {
   }
 
   prepareChartOptions(summary): void {
-    let total = (this.stats.funded_txo_sum - this.stats.spent_txo_sum); // + (summary[0]?.value || 0);
+    let total = this.balance;
     this.data = summary.map(d => {
       const balance = total;
       total -= d.value;

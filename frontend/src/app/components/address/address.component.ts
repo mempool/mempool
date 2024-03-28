@@ -35,6 +35,7 @@ export class AddressComponent implements OnInit, OnDestroy {
   txCount = 0;
   received = 0;
   sent = 0;
+  chainBalance = 0;
 
   private tempTransactions: Transaction[];
   private timeTxIndexes: number[];
@@ -291,6 +292,7 @@ export class AddressComponent implements OnInit, OnDestroy {
     this.received = this.address.chain_stats.funded_txo_sum + this.address.mempool_stats.funded_txo_sum;
     this.sent = this.address.chain_stats.spent_txo_sum + this.address.mempool_stats.spent_txo_sum;
     this.txCount = this.address.chain_stats.tx_count + this.address.mempool_stats.tx_count;
+    this.chainBalance = this.address.chain_stats.funded_txo_sum - this.address.chain_stats.spent_txo_sum;
   }
 
   ngOnDestroy() {

@@ -33,7 +33,9 @@ import { HashrateChartComponent } from '../components/hashrate-chart/hashrate-ch
 import { HashrateChartPoolsComponent } from '../components/hashrates-chart-pools/hashrate-chart-pools.component';
 import { BlockHealthGraphComponent } from '../components/block-health-graph/block-health-graph.component';
 import { AddressComponent } from '../components/address/address.component';
+import { WalletComponent } from '../components/wallet/wallet.component';
 import { AddressGraphComponent } from '../components/address-graph/address-graph.component';
+import { AddressesTreemap } from '../components/addresses-treemap/addresses-treemap.component';
 import { CommonModule } from '@angular/common';
 
 @NgModule({
@@ -41,6 +43,7 @@ import { CommonModule } from '@angular/common';
     DashboardComponent,
     MempoolBlockComponent,
     AddressComponent,
+    WalletComponent,
 
     MiningDashboardComponent,
     AcceleratorDashboardComponent,
@@ -71,6 +74,7 @@ import { CommonModule } from '@angular/common';
     HashrateChartPoolsComponent,
     BlockHealthGraphComponent,
     AddressGraphComponent,
+    AddressesTreemap,
   ],
   imports: [
     CommonModule,
