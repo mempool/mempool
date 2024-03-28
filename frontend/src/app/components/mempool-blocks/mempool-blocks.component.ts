@@ -60,6 +60,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   showMiningInfo = false;
   timeLtrSubscription: Subscription;
   timeLtr: boolean;
+  showMiningInfoSubscription: Subscription;
   animateEntry: boolean = false;
 
   blockOffset: number = 155;
@@ -89,11 +90,6 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     private location: Location,
   ) { }
 
-  enabledMiningInfoIfNeeded(url) {
-    this.showMiningInfo = url.includes('/mining') || url.includes('/acceleration');
-    this.cd.markForCheck(); // Need to update the view asap
-  }
-
   ngOnInit() {
     this.chainTip = this.stateService.latestBlockHeight;
 
@@ -102,8 +98,10 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.widthChange.emit(this.mempoolWidth);
 
     if (['', 'testnet', 'signet'].includes(this.stateService.network)) {
-      this.enabledMiningInfoIfNeeded(this.location.path());
-      this.location.onUrlChange((url) => this.enabledMiningInfoIfNeeded(url));
+      this.showMiningInfoSubscription = this.stateService.showMiningInfo$.subscribe((showMiningInfo) => {
+        this.showMiningInfo = showMiningInfo;
+        this.cd.markForCheck();
+      });
     }
 
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
@@ -269,6 +267,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.chainTipSubscription.unsubscribe();
     this.keySubscription.unsubscribe();
     this.isTabHiddenSubscription.unsubscribe();
+    this.showMiningInfoSubscription.unsubscribe();
     clearTimeout(this.resetTransitionTimeout);
   }
 
