@@ -6,7 +6,7 @@
         <span class="menu-click text-nowrap ellipsis">
           <strong>
             <span *ngIf="user.username.includes('@'); else usernamenospace">{{ user.username }}</span>
-            <ng-template #usernamenospace>@{{ user.username }}</ng-template>
+            <ng-template #usernamenospace>&#64;{{ user.username }}</ng-template>
           </strong>
         </span>
         <span class="badge mr-1 badge-og" *ngIf="user.ogRank">

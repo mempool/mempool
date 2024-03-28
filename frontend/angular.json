@@ -223,11 +223,11 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "mempool:build"
+            "buildTarget": "mempool:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "mempool:build:production"
+              "buildTarget": "mempool:build:production"
             },
             "local": {
               "proxyConfig": "proxy.conf.local.js",
@@ -264,7 +264,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "mempool:build"
+            "buildTarget": "mempool:build"
           }
         },
         "e2e": {
@@ -303,7 +303,7 @@
           }
         },
         "serve-ssr": {
-          "builder": "@nguniversal/builders:ssr-dev-server",
+          "builder": "@angular-devkit/build-angular:ssr-dev-server",
           "options": {
             "browserTarget": "mempool:build",
             "serverTarget": "mempool:server"
@@ -318,7 +318,7 @@
           }
         },
         "prerender": {
-          "builder": "@nguniversal/builders:prerender",
+          "builder": "@angular-devkit/build-angular:prerender",
           "options": {
             "browserTarget": "mempool:build:production",
             "serverTarget": "mempool:server:production",
