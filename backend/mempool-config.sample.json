@@ -153,7 +153,7 @@
     ]
   },
   "MEMPOOL_SERVICES": {
-    "API": "https://mempool.space/api",
+    "API": "https://mempool.space/api/v1/services",
     "ACCELERATIONS": false
   },
   "FIAT_PRICE": {
