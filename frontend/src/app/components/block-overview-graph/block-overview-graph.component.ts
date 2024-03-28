@@ -32,6 +32,7 @@ const unmatchedAuditColors = {
 export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, OnChanges {
   @Input() isLoading: boolean;
   @Input() resolution: number;
+  @Input() autofit: boolean = false;
   @Input() blockLimit: number;
   @Input() orientation = 'left';
   @Input() flip = true;

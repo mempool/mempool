@@ -1,5 +1,5 @@
 
-<div class="grid-align" [style.gridTemplateColumns]="'repeat(auto-fit, ' + resolution + 'px)'">
+<div class="graph-alignment" [class.grid-align]="!autofit" [style.gridTemplateColumns]="'repeat(auto-fit, ' + resolution + 'px)'">
   <div class="block-overview-graph">
     <canvas *browserOnly class="block-overview-canvas" [class.clickable]="!!hoverTx" #blockCanvas></canvas>
     <div class="loader-wrapper" [class.hidden]="(!isLoading || disableSpinner) && !unavailable">
