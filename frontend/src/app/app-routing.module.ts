@@ -31,7 +31,7 @@ let routes: Routes = [
         data: { preload: true },
       },
       {
-        path: 'wallet',
+        path: 'widget/wallet',
         children: [],
         component: AddressGroupComponent,
         data: {
@@ -112,7 +112,7 @@ let routes: Routes = [
         data: { preload: true },
       },
       {
-        path: 'wallet',
+        path: 'widget/wallet',
         children: [],
         component: AddressGroupComponent,
         data: {
@@ -153,7 +153,7 @@ let routes: Routes = [
     data: { preload: true },
   },
   {
-    path: 'wallet',
+    path: 'widget/wallet',
     children: [],
     component: AddressGroupComponent,
     data: {
@@ -234,7 +234,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
           data: { preload: true },
         },
         {
-          path: 'wallet',
+          path: 'widget/wallet',
           children: [],
           component: AddressGroupComponent,
           data: {
@@ -269,7 +269,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
       data: { preload: true },
     },
     {
-      path: 'wallet',
+      path: 'widget/wallet',
       children: [],
       component: AddressGroupComponent,
       data: {
