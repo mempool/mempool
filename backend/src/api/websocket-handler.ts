@@ -2,7 +2,7 @@ import logger from '../logger';
 import * as WebSocket from 'ws';
 import {
   BlockExtended, TransactionExtended, MempoolTransactionExtended, WebsocketResponse,
-  OptimizedStatistic, ILoadingIndicators
+  OptimizedStatistic, ILoadingIndicators, MempoolBlockDelta, MempoolDelta, MempoolDeltaTxids
 } from '../mempool.interfaces';
 import blocks from './blocks';
 import memPool from './mempool';
@@ -320,6 +320,18 @@ class WebsocketHandler {
             }
           }
 
+          if (parsedMessage['track-mempool-txids'] === true) {
+            client['track-mempool-txids'] = true;
+          } else if (parsedMessage['track-mempool-txids'] === false) {
+            delete client['track-mempool-txids'];
+          }
+
+          if (parsedMessage['track-mempool'] === true) {
+            client['track-mempool'] = true;
+          } else if (parsedMessage['track-mempool'] === false) {
+            delete client['track-mempool'];
+          }
+
           if (Object.keys(response).length) {
             client.send(this.serializeResponse(response));
           }
@@ -479,6 +491,27 @@ class WebsocketHandler {
     const recommendedFees = feeApi.getRecommendedFee();
 
     const latestTransactions = memPool.getLatestTransactions();
+
+    const replacedTransactions: { replaced: string, by: TransactionExtended }[] = [];
+    for (const tx of newTransactions) {
+      if (rbfTransactions[tx.txid]) {
+        for (const replaced of rbfTransactions[tx.txid]) {
+          replacedTransactions.push({ replaced: replaced.txid, by: tx });
+        }
+      }
+    }
+    const mempoolDeltaTxids: MempoolDeltaTxids = {
+      added: newTransactions.map(tx => tx.txid),
+      removed: deletedTransactions.map(tx => tx.txid),
+      mined: [],
+      replaced: replacedTransactions.map(replacement => ({ replaced: replacement.replaced, by: replacement.by.txid })),
+    };
+    const mempoolDelta: MempoolDelta = {
+      added: newTransactions,
+      removed: deletedTransactions.map(tx => tx.txid),
+      mined: [],
+      replaced: replacedTransactions,
+    };
 
     // update init data
     const socketDataFields = {
@@ -724,6 +757,14 @@ class WebsocketHandler {
         response['rbfLatestSummary'] = getCachedResponse('rbfLatestSummary', rbfSummary);
       }
 
+      if (client['track-mempool-txids']) {
+        response['mempool-txids'] = getCachedResponse('mempool-txids', mempoolDeltaTxids);
+      }
+
+      if (client['track-mempool']) {
+        response['mempool-transactions'] = getCachedResponse('mempool-transactions', mempoolDelta);
+      }
+
       if (Object.keys(response).length) {
         client.send(this.serializeResponse(response));
       }
@@ -868,6 +909,25 @@ class WebsocketHandler {
     });
 
     const mBlocksWithTransactions = mempoolBlocks.getMempoolBlocksWithTransactions();
+
+    const replacedTransactions: { replaced: string, by: TransactionExtended }[] = [];
+    for (const txid of Object.keys(rbfTransactions)) {
+      for (const replaced of rbfTransactions[txid].replaced) {
+        replacedTransactions.push({ replaced: replaced.txid, by: rbfTransactions[txid].replacedBy });
+      }
+    }
+    const mempoolDeltaTxids: MempoolDeltaTxids = {
+      added: [],
+      removed: [],
+      mined: transactions.map(tx => tx.txid),
+      replaced: replacedTransactions.map(replacement => ({ replaced: replacement.replaced, by: replacement.by.txid })),
+    };
+    const mempoolDelta: MempoolDelta = {
+      added: [],
+      removed: [],
+      mined: transactions.map(tx => tx.txid),
+      replaced: replacedTransactions,
+    };
 
     const responseCache = { ...this.socketData };
     function getCachedResponse(key, data): string {
@@ -1030,6 +1090,14 @@ class WebsocketHandler {
             });
           }
         }
+      }
+
+      if (client['track-mempool-txids']) {
+        response['mempool-txids'] = getCachedResponse('mempool-txids', mempoolDeltaTxids);
+      }
+
+      if (client['track-mempool']) {
+        response['mempool-transactions'] = getCachedResponse('mempool-transactions', mempoolDelta);
       }
 
       if (Object.keys(response).length) {
