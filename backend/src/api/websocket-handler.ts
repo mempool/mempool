@@ -2,7 +2,7 @@ import logger from '../logger';
 import * as WebSocket from 'ws';
 import {
   BlockExtended, TransactionExtended, MempoolTransactionExtended, WebsocketResponse,
-  OptimizedStatistic, ILoadingIndicators
+  OptimizedStatistic, ILoadingIndicators, GbtCandidates,
 } from '../mempool.interfaces';
 import blocks from './blocks';
 import memPool from './mempool';
@@ -18,7 +18,6 @@ import feeApi from './fee-api';
 import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
 import Audit from './audit';
-import { deepClone } from '../utils/clone';
 import priceUpdater from '../tasks/price-updater';
 import { ApiPrice } from '../repositories/PricesRepository';
 import accelerationApi from './services/acceleration';
@@ -32,6 +31,8 @@ interface AddressTransactions {
   confirmed: MempoolTransactionExtended[],
   removed: MempoolTransactionExtended[],
 }
+import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
+import { calculateCpfp } from './cpfp';
 
 // valid 'want' subscriptions
 const wantable = [
@@ -436,21 +437,26 @@ class WebsocketHandler {
   }
 
   async $handleMempoolChange(newMempool: { [txid: string]: MempoolTransactionExtended }, mempoolSize: number,
-    newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[], accelerationDelta: string[]): Promise<void> {
+    newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[], accelerationDelta: string[],
+    candidates?: GbtCandidates): Promise<void> {
     if (!this.wss) {
       throw new Error('WebSocket.Server is not set');
     }
 
     this.printLogs();
 
-    if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
-      if (config.MEMPOOL.RUST_GBT) {
-        await mempoolBlocks.$rustUpdateBlockTemplates(newMempool, mempoolSize, newTransactions, deletedTransactions, config.MEMPOOL_SERVICES.ACCELERATIONS);
-      } else {
-        await mempoolBlocks.$updateBlockTemplates(newMempool, newTransactions, deletedTransactions, accelerationDelta, true, config.MEMPOOL_SERVICES.ACCELERATIONS);
-      }
+    const transactionIds = (memPool.limitGBT && candidates) ? Object.keys(candidates?.txs || {}) : Object.keys(newMempool);
+    let added = newTransactions;
+    let removed = deletedTransactions;
+    if (memPool.limitGBT) {
+      added = candidates?.added || [];
+      removed = candidates?.removed || [];
+    }
+
+    if (config.MEMPOOL.RUST_GBT) {
+      await mempoolBlocks.$rustUpdateBlockTemplates(transactionIds, newMempool, added, removed, candidates, config.MEMPOOL_SERVICES.ACCELERATIONS);
     } else {
-      mempoolBlocks.updateMempoolBlocks(newMempool, true);
+      await mempoolBlocks.$updateBlockTemplates(transactionIds, newMempool, added, removed, candidates, accelerationDelta, true, config.MEMPOOL_SERVICES.ACCELERATIONS);
     }
 
     const mBlocks = mempoolBlocks.getMempoolBlocks();
@@ -689,6 +695,9 @@ class WebsocketHandler {
               accelerated: mempoolTx.acceleration || undefined,
             }
           };
+          if (!mempoolTx.cpfpChecked) {
+            calculateCpfp(mempoolTx, newMempool);
+          }
           if (mempoolTx.cpfpDirty) {
             positionData['cpfp'] = {
               ancestors: mempoolTx.ancestors,
@@ -739,8 +748,9 @@ class WebsocketHandler {
     await statistics.runStatistics();
 
     const _memPool = memPool.getMempool();
-
-    const isAccelerated = config.MEMPOOL_SERVICES.ACCELERATIONS && accelerationApi.isAcceleratedBlock(block, Object.values(mempool.getAccelerations()));
+    const candidateTxs = await memPool.getMempoolCandidates();
+    let candidates: GbtCandidates | undefined = (memPool.limitGBT && candidateTxs) ? { txs: candidateTxs, added: [], removed: [] } : undefined;
+    let transactionIds: string[] = (memPool.limitGBT) ? Object.keys(candidates?.txs || {}) : Object.keys(_memPool);
 
     const accelerations = Object.values(mempool.getAccelerations());
     await accelerationRepository.$indexAccelerationsForBlock(block, accelerations, transactions);
@@ -751,31 +761,19 @@ class WebsocketHandler {
 
     if (config.MEMPOOL.AUDIT && memPool.isInSync()) {
       let projectedBlocks;
-      let auditMempool = _memPool;
-      // template calculation functions have mempool side effects, so calculate audits using
-      // a cloned copy of the mempool if we're running a different algorithm for mempool updates
-      const separateAudit = config.MEMPOOL.ADVANCED_GBT_AUDIT !== config.MEMPOOL.ADVANCED_GBT_MEMPOOL;
-      if (separateAudit) {
-        auditMempool = deepClone(_memPool);
-        if (config.MEMPOOL.ADVANCED_GBT_AUDIT) {
-          if (config.MEMPOOL.RUST_GBT) {
-            projectedBlocks = await mempoolBlocks.$oneOffRustBlockTemplates(auditMempool, isAccelerated, block.extras.pool.id);
-          } else {
-            projectedBlocks = await mempoolBlocks.$makeBlockTemplates(auditMempool, false, isAccelerated, block.extras.pool.id);
-          }
+      const auditMempool = _memPool;
+      const isAccelerated = config.MEMPOOL_SERVICES.ACCELERATIONS && accelerationApi.isAcceleratedBlock(block, Object.values(mempool.getAccelerations()));
+
+      if ((config.MEMPOOL_SERVICES.ACCELERATIONS)) {
+        if (config.MEMPOOL.RUST_GBT) {
+          const added = memPool.limitGBT ? (candidates?.added || []) : [];
+          const removed = memPool.limitGBT ? (candidates?.removed || []) : [];
+          projectedBlocks = await mempoolBlocks.$rustUpdateBlockTemplates(transactionIds, auditMempool, added, removed, candidates, isAccelerated, block.extras.pool.id);
         } else {
-          projectedBlocks = mempoolBlocks.updateMempoolBlocks(auditMempool, false);
+          projectedBlocks = await mempoolBlocks.$makeBlockTemplates(transactionIds, auditMempool, candidates, false, isAccelerated, block.extras.pool.id);
         }
       } else {
-        if ((config.MEMPOOL_SERVICES.ACCELERATIONS)) {
-          if (config.MEMPOOL.RUST_GBT) {
-            projectedBlocks = await mempoolBlocks.$rustUpdateBlockTemplates(auditMempool, Object.keys(auditMempool).length, [], [], isAccelerated, block.extras.pool.id);
-          } else {
-            projectedBlocks = await mempoolBlocks.$makeBlockTemplates(auditMempool, false, isAccelerated, block.extras.pool.id);
-          }
-        } else {
-          projectedBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
-        }
+        projectedBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
       }
 
       if (Common.indexingEnabled()) {
@@ -838,14 +836,23 @@ class WebsocketHandler {
       confirmedTxids[txId] = true;
     }
 
-    if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
-      if (config.MEMPOOL.RUST_GBT) {
-        await mempoolBlocks.$rustUpdateBlockTemplates(_memPool, Object.keys(_memPool).length, [], transactions, true);
-      } else {
-        await mempoolBlocks.$makeBlockTemplates(_memPool, true, config.MEMPOOL_SERVICES.ACCELERATIONS);
-      }
+    if (memPool.limitGBT) {
+      const minFeeMempool = memPool.limitGBT ? await bitcoinSecondClient.getRawMemPool() : null;
+      const minFeeTip = memPool.limitGBT ? await bitcoinSecondClient.getBlockCount() : -1;
+      candidates = await memPool.getNextCandidates(minFeeMempool, minFeeTip, transactions);
+      transactionIds = Object.keys(candidates?.txs || {});
     } else {
-      mempoolBlocks.updateMempoolBlocks(_memPool, true);
+      candidates = undefined;
+      transactionIds = Object.keys(memPool.getMempool());
+    }
+
+
+    if (config.MEMPOOL.RUST_GBT) {
+      const added = memPool.limitGBT ? (candidates?.added || []) : [];
+      const removed = memPool.limitGBT ? (candidates?.removed || []) : transactions;
+      await mempoolBlocks.$rustUpdateBlockTemplates(transactionIds, _memPool, added, removed, candidates, true);
+    } else {
+      await mempoolBlocks.$makeBlockTemplates(transactionIds, _memPool, candidates, true, config.MEMPOOL_SERVICES.ACCELERATIONS);
     }
     const mBlocks = mempoolBlocks.getMempoolBlocks();
     const mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();

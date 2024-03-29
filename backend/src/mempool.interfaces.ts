@@ -107,6 +107,7 @@ export interface MempoolTransactionExtended extends TransactionExtended {
   inputs?: number[];
   lastBoosted?: number;
   cpfpDirty?: boolean;
+  cpfpUpdated?: number;
 }
 
 export interface AuditTransaction {
@@ -141,6 +142,12 @@ export interface CompactThreadTransaction {
   cpfpRoot?: number;
   cpfpChecked?: boolean;
   dirty?: boolean;
+}
+
+export interface GbtCandidates {
+  txs: { [txid: string ]: boolean },
+  added: MempoolTransactionExtended[];
+  removed: MempoolTransactionExtended[];
 }
 
 export interface ThreadTransaction {
@@ -181,6 +188,9 @@ export interface CpfpInfo {
   bestDescendant?: BestDescendant | null;
   descendants?: Ancestor[];
   effectiveFeePerVsize?: number;
+  sigops?: number;
+  adjustedVsize?: number,
+  acceleration?: boolean,
 }
 
 export interface TransactionStripped {
