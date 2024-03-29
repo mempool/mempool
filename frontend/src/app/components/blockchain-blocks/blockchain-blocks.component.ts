@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { specialBlocks } from '../../app.constants';
 import { BlockExtended } from '../../interfaces/node-api.interface';
@@ -45,6 +45,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   markBlockSubscription: Subscription;
   txConfirmedSubscription: Subscription;
   loadingBlocks$: Observable<boolean>;
+  showMiningInfo$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   blockStyles = [];
   emptyBlockStyles = [];
   interval: any;
@@ -54,8 +55,6 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   arrowLeftPx = 30;
   blocksFilled = false;
   arrowTransition = '1s';
-  showMiningInfo = false;
-  showMiningInfoSubscription: Subscription;
   timeLtrSubscription: Subscription;
   timeLtr: boolean;
 
@@ -94,10 +93,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     if (['', 'testnet', 'signet'].includes(this.stateService.network)) {
       this.enabledMiningInfoIfNeeded(this.location.path());
       this.location.onUrlChange((url) => this.enabledMiningInfoIfNeeded(url));
-      this.showMiningInfoSubscription = this.stateService.showMiningInfo$.subscribe((showMiningInfo) => {
-        this.showMiningInfo = showMiningInfo;
-        this.cd.markForCheck();
-      });
+      this.showMiningInfo$ = this.stateService.showMiningInfo$;
     }
 
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
@@ -210,7 +206,6 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.tabHiddenSubscription.unsubscribe();
     this.markBlockSubscription.unsubscribe();
     this.timeLtrSubscription.unsubscribe();
-    this.showMiningInfoSubscription.unsubscribe();
     clearInterval(this.interval);
   }
 
