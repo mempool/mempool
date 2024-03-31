@@ -62,6 +62,7 @@ export class DifficultyComponent implements OnInit {
   expectedIndex: number;
   difference: number;
   shapes: DiffShape[];
+  nextSubsidy: number;
 
   tooltipPosition = { x: 0, y: 0 };
   hoverSection: DiffShape | void;
@@ -106,6 +107,7 @@ export class DifficultyComponent implements OnInit {
         const newEpochStart = Math.floor(this.stateService.latestBlockHeight / EPOCH_BLOCK_LENGTH) * EPOCH_BLOCK_LENGTH;
         const newExpectedHeight = Math.floor(newEpochStart + da.expectedBlocks);
         this.now = new Date().getTime();
+        this.nextSubsidy = getNextBlockSubsidy(maxHeight);
 
         if (blocksUntilHalving < da.remainingBlocks && !this.userSelectedMode) {
           this.mode = 'halving';
@@ -232,4 +234,17 @@ export class DifficultyComponent implements OnInit {
   onBlur(): void {
     this.hoverSection = null;
   }
+}
+
+function getNextBlockSubsidy(height: number): number {
+  const halvings = Math.floor(height / 210_000) + 1;
+  // Force block reward to zero when right shift is undefined.
+  if (halvings >= 64) {
+    return 0;
+  }
+
+  let subsidy = BigInt(50 * 100_000_000);
+  // Subsidy is cut in half every 210,000 blocks which will occur approximately every 4 years.
+  subsidy >>= BigInt(halvings);
+  return Number(subsidy);
 }
