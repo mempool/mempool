@@ -2,7 +2,7 @@ import logger from '../logger';
 import * as WebSocket from 'ws';
 import {
   BlockExtended, TransactionExtended, MempoolTransactionExtended, WebsocketResponse,
-  OptimizedStatistic, ILoadingIndicators, GbtCandidates,
+  OptimizedStatistic, ILoadingIndicators, GbtCandidates, TxTrackingInfo,
 } from '../mempool.interfaces';
 import blocks from './blocks';
 import memPool from './mempool';
@@ -206,6 +206,52 @@ class WebsocketHandler {
               }
             } else {
               client['track-tx'] = null;
+            }
+          }
+
+          if (parsedMessage && parsedMessage['track-txs']) {
+            const txids: string[] = [];
+            if (Array.isArray(parsedMessage['track-txs'])) {
+              for (const txid of parsedMessage['track-txs']) {
+                if (/^[a-fA-F0-9]{64}$/.test(txid)) {
+                  txids.push(txid);
+                }
+              }
+            }
+
+            const txs: { [txid: string]: TxTrackingInfo } = {};
+            for (const txid of txids) {
+              const txInfo: TxTrackingInfo = {
+                confirmed: true,
+              };
+              const rbfCacheTxid = rbfCache.getReplacedBy(txid);
+              if (rbfCacheTxid) {
+                txInfo.replacedBy = rbfCacheTxid;
+                txInfo.confirmed = false;
+              }
+              const tx = memPool.getMempool()[txid];
+              if (tx && tx.position) {
+                txInfo.position = {
+                  ...tx.position
+                };
+                if (tx.acceleration) {
+                  txInfo.accelerated = tx.acceleration;
+                }
+              }
+              if (tx) {
+                txInfo.confirmed = false;
+              }
+              txs[txid] = txInfo;
+            }
+
+            if (txids.length) {
+              client['track-txs'] = txids;
+            } else {
+              client['track-txs'] = null;
+            }
+
+            if (Object.keys(txs).length) {
+              response['tracked-txs'] = JSON.stringify(txs);
             }
           }
 
@@ -517,6 +563,11 @@ class WebsocketHandler {
       if (client['track-tx']) {
         trackedTxs.add(client['track-tx']);
       }
+      if (client['track-txs']) {
+        for (const txid of client['track-txs']) {
+          trackedTxs.add(txid);
+        }
+      }
     });
     if (trackedTxs.size > 0) {
       for (const tx of newTransactions) {
@@ -710,6 +761,46 @@ class WebsocketHandler {
             };
           }
           response['txPosition'] = JSON.stringify(positionData);
+        }
+      }
+
+      if (client['track-txs']) {
+        const txids = client['track-txs'];
+        const txs: { [txid: string]: TxTrackingInfo } = {};
+        for (const txid of txids) {
+          const txInfo: TxTrackingInfo = {};
+          const outspends = outspendCache[txid];
+          if (outspends && Object.keys(outspends).length) {
+            txInfo.utxoSpent = outspends;
+          }
+          const replacedBy = rbfChanges.map[txid] ? rbfCache.getReplacedBy(txid) : false;
+          if (replacedBy) {
+            txInfo.replacedBy = replacedBy;
+          }
+          const mempoolTx = newMempool[txid];
+          if (mempoolTx && mempoolTx.position) {
+            txInfo.position = {
+              ...mempoolTx.position,
+              accelerated: mempoolTx.acceleration || undefined,
+            };
+            if (!mempoolTx.cpfpChecked) {
+              calculateCpfp(mempoolTx, newMempool);
+            }
+            if (mempoolTx.cpfpDirty) {
+              txInfo.cpfp = {
+                ancestors: mempoolTx.ancestors,
+                bestDescendant: mempoolTx.bestDescendant || null,
+                descendants: mempoolTx.descendants || null,
+                effectiveFeePerVsize: mempoolTx.effectiveFeePerVsize || null,
+                sigops: mempoolTx.sigops,
+                adjustedVsize: mempoolTx.adjustedVsize,
+              };
+            }
+          }
+          txs[txid] = txInfo;
+        }
+        if (Object.keys(txs).length) {
+          response['tracked-txs'] = JSON.stringify(txs);
         }
       }
 
@@ -931,6 +1022,28 @@ class WebsocketHandler {
         }
       }
 
+      if (client['track-txs']) {
+        const txs: { [txid: string]: TxTrackingInfo } = {};
+        for (const txid of client['track-txs']) {
+          if (confirmedTxids[txid]) {
+            txs[txid] = { confirmed: true };
+          } else {
+            const mempoolTx = _memPool[txid];
+            if (mempoolTx && mempoolTx.position) {
+              txs[txid] = {
+                position: {
+                  ...mempoolTx.position,
+                },
+                accelerated: mempoolTx.acceleration || undefined,
+              };
+            }
+          }
+        }
+        if (Object.keys(txs).length) {
+          response['tracked-txs'] = JSON.stringify(txs);
+        }
+      }
+
       if (client['track-address']) {
         const foundTransactions: TransactionExtended[] = Array.from(addressCache[client['track-address']]?.values() || []);
 
@@ -1126,12 +1239,16 @@ class WebsocketHandler {
   private printLogs(): void {
     if (this.wss) {
       let numTxSubs = 0;
+      let numTxsSubs = 0;
       let numProjectedSubs = 0;
       let numRbfSubs = 0;
 
       this.wss.clients.forEach((client) => {
         if (client['track-tx']) {
           numTxSubs++;
+        }
+        if (client['track-txs']) {
+          numTxsSubs++;
         }
         if (client['track-mempool-block'] != null && client['track-mempool-block'] >= 0) {
           numProjectedSubs++;
@@ -1145,7 +1262,7 @@ class WebsocketHandler {
       const diff = count - this.numClients;
       this.numClients = count;
       logger.debug(`${count} websocket clients | ${this.numConnected} connected | ${this.numDisconnected} disconnected | (${diff >= 0 ? '+' : ''}${diff})`);
-      logger.debug(`websocket subscriptions: track-tx: ${numTxSubs}, track-mempool-block: ${numProjectedSubs} track-rbf: ${numRbfSubs}`);
+      logger.debug(`websocket subscriptions: track-tx: ${numTxSubs}, track-txs: ${numTxsSubs}, track-mempool-block: ${numProjectedSubs} track-rbf: ${numRbfSubs}`);
       this.numConnected = 0;
       this.numDisconnected = 0;
     }

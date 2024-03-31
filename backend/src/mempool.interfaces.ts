@@ -411,6 +411,22 @@ export interface OptimizedStatistic {
   vsizes: number[];
 }
 
+export interface TxTrackingInfo {
+  replacedBy?: string,
+  position?: { block: number, vsize: number, accelerated?: boolean },
+  cpfp?: {
+    ancestors?: Ancestor[],
+    bestDescendant?: Ancestor | null,
+    descendants?: Ancestor[] | null,
+    effectiveFeePerVsize?: number | null,
+    sigops: number,
+    adjustedVsize: number,
+  },
+  utxoSpent?: { [vout: number]: { vin: number, txid: string } },
+  accelerated?: boolean,
+  confirmed?: boolean
+}
+
 export interface WebsocketResponse {
   action: string;
   data: string[];
