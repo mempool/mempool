@@ -565,7 +565,7 @@ class WebsocketHandler {
       }
       if (client['track-txs']) {
         for (const txid of client['track-txs']) {
-          trackedTxs.add(client['track-tx']);
+          trackedTxs.add(txid);
         }
       }
     });
