@@ -478,7 +478,7 @@ class MempoolBlocks {
 
   private dataToMempoolBlocks(transactionIds: string[], transactions: MempoolTransactionExtended[], totalSize: number, totalWeight: number, totalFees: number, feeStats?: EffectiveFeeStats ): MempoolBlockWithTransactions {
     if (!feeStats) {
-      feeStats = Common.calcEffectiveFeeStatistics(transactions.filter(tx => !tx.acceleration));
+      feeStats = Common.calcEffectiveFeeStatistics(transactions);
     }
     return {
       blockSize: totalSize,
