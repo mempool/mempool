@@ -223,7 +223,7 @@ export class Common {
 
   static getTransactionFlags(tx: TransactionExtended): number {
     let flags = tx.flags ? BigInt(tx.flags) : 0n;
-
+    tx.spam = false;
     // Update variable flags (CPFP, RBF)
     if (tx.ancestors?.length) {
       flags |= TransactionFlags.cpfp_child;
@@ -278,6 +278,7 @@ export class Common {
             // inscriptions smuggle data within an 'OP_0 OP_IF ... OP_ENDIF' envelope
             if (asm?.includes('OP_0 OP_IF')) {
               flags |= TransactionFlags.inscription;
+              tx.spam = true;
             }
           }
         } break;
@@ -334,6 +335,7 @@ export class Common {
     }
     if (hasFakePubkey) {
       flags |= TransactionFlags.fake_pubkey;
+      tx.spam = true;
     }
     
     // fast but bad heuristic to detect possible coinjoins
