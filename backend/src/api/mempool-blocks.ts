@@ -334,6 +334,11 @@ class MempoolBlocks {
   }
 
   private processBlockTemplates(mempool: { [txid: string]: MempoolTransactionExtended }, blocks: string[][], blockWeights: number[] | null, rates: [string, number][], clusters: string[][], candidates: GbtCandidates | undefined, accelerations, accelerationPool, saveResults): MempoolBlockWithTransactions[] {
+    for (const txid of Object.keys(candidates?.txs ?? mempool)) {
+      if (txid in mempool) {
+        mempool[txid].cpfpDirty = false;
+      }
+    }
     for (const [txid, rate] of rates) {
       if (txid in mempool) {
         mempool[txid].cpfpDirty = (rate !== mempool[txid].effectiveFeePerVsize);
