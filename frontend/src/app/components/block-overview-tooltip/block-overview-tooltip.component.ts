@@ -3,6 +3,7 @@ import { Position } from '../../components/block-overview-graph/sprite-types.js'
 import { Price } from '../../services/price.service';
 import { TransactionStripped } from '../../interfaces/node-api.interface.js';
 import { Filter, FilterMode, TransactionFlags, toFilters } from '../../shared/filters.utils';
+import { Block } from '../../interfaces/electrs.interface.js';
 
 @Component({
   selector: 'app-block-overview-tooltip',
@@ -11,6 +12,7 @@ import { Filter, FilterMode, TransactionFlags, toFilters } from '../../shared/fi
 })
 export class BlockOverviewTooltipComponent implements OnChanges {
   @Input() tx: TransactionStripped | void;
+  @Input() relativeTime?: number;
   @Input() cursorPosition: Position;
   @Input() clickable: boolean;
   @Input() auditEnabled: boolean = false;
@@ -19,6 +21,7 @@ export class BlockOverviewTooltipComponent implements OnChanges {
   @Input() filterMode: FilterMode = 'and';
 
   txid = '';
+  time: number = 0;
   fee = 0;
   value = 0;
   vsize = 1;
@@ -56,6 +59,7 @@ export class BlockOverviewTooltipComponent implements OnChanges {
 
     if (this.tx && (changes.tx || changes.filterFlags || changes.filterMode)) {
       this.txid = this.tx.txid || '';
+      this.time = this.tx.time || 0;
       this.fee = this.tx.fee || 0;
       this.value = this.tx.value || 0;
       this.vsize = this.tx.vsize || 1;

@@ -164,7 +164,8 @@ export function uncompressTx(tx: TransactionCompressed): TransactionStripped {
     value: tx[3],
     rate: tx[4],
     flags: tx[5],
-    acc: !!tx[6],
+    time: tx[6],
+    acc: !!tx[7],
   };
 }
 

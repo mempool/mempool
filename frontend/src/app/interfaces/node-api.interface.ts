@@ -230,6 +230,7 @@ export interface TransactionStripped {
   rate?: number; // effective fee rate
   acc?: boolean;
   flags?: number | null;
+  time?: number;
   status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'rbf' | 'accelerated';
   context?: 'projected' | 'actual';
 }
