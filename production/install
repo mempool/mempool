@@ -1449,7 +1449,7 @@ if [ "${UNFURL_INSTALL}" = ON ];then
                 echo 'nvidia_xorg_enable="YES"' >> /etc/rc.conf
 
                 echo "[*] Installing color emoji"
-                osSudo "${ROOT_USER}" curl "https://github.com/samuelngs/apple-emoji-linux/releases/download/ios-15.4/AppleColorEmoji.ttf" -o /usr/local/share/fonts/TTF/AppleColorEmoji.ttf
+                osSudo "${ROOT_USER}" curl -sSL "https://github.com/samuelngs/apple-emoji-linux/releases/download/ios-15.4/AppleColorEmoji.ttf" -o /usr/local/share/fonts/TTF/AppleColorEmoji.ttf
                 cat > /usr/local/etc/fonts/conf.d/01-emoji.conf <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
