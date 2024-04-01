@@ -156,7 +156,7 @@ class Audit {
     const numCensored = Object.keys(isCensored).length;
     const numMatches = matches.length - 1; // adjust for coinbase tx
     let score = 0;
-    score = (numSpamTx/numTX);
+    score = (Math.abs((numSpamTx/numTX)-1));
     const similarity = projectedWeight ? matchedWeight / projectedWeight : 1;
 
     return {
