@@ -32,19 +32,19 @@ const githubSecret = process.env.GITHUB_TOKEN;
 const CONFIG_FILE_NAME = 'mempool-frontend-config.json';
 let configContent = {};
 
-var PATH;
+var ASSETS_PATH;
 if (process.argv[2]) {
-  PATH = process.argv[2];
-  PATH += PATH.endsWith("/") ? "" : "/"
-  PATH = path.resolve(path.normalize(PATH));
-  console.log(`[sync-assets] using PATH ${PATH}`);
-  if (!fs.existsSync(PATH)){
-    console.log(`${LOG_TAG} ${PATH} does not exist, creating`);
-    fs.mkdirSync(PATH, { recursive: true });
+  ASSETS_PATH = process.argv[2];
+  ASSETS_PATH += ASSETS_PATH.endsWith("/") ? "" : "/"
+  ASSETS_PATH = path.resolve(path.normalize(ASSETS_PATH));
+  console.log(`[sync-assets] using ASSETS_PATH ${ASSETS_PATH}`);
+  if (!fs.existsSync(ASSETS_PATH)){
+    console.log(`${LOG_TAG} ${ASSETS_PATH} does not exist, creating`);
+    fs.mkdirSync(ASSETS_PATH, { recursive: true });
   }
 }
 
-if (!PATH) {
+if (!ASSETS_PATH) {
   throw new Error('Resource path argument is not set');
 }
 
@@ -125,7 +125,8 @@ function downloadMiningPoolLogos$() {
             if (verbose) {
               console.log(`${LOG_TAG} Processing ${poolLogo.name}`);
             }
-            const filePath = `${PATH}/mining-pools/${poolLogo.name}`;
+            console.log(`${ASSETS_PATH}/mining-pools/${poolLogo.name}`);
+            const filePath = `${ASSETS_PATH}/mining-pools/${poolLogo.name}`;
             if (fs.existsSync(filePath)) {
               const localHash = getLocalHash(filePath);
               if (verbose) {
@@ -152,7 +153,7 @@ function downloadMiningPoolLogos$() {
               }
             } else {
               console.log(`${LOG_TAG} \t\t${poolLogo.name} is missing, downloading...`);
-              const miningPoolsDir = `${PATH}/mining-pools/`;
+              const miningPoolsDir = `${ASSETS_PATH}/mining-pools/`;
               if (!fs.existsSync(miningPoolsDir)){
                 fs.mkdirSync(miningPoolsDir, { recursive: true });
               }
@@ -219,7 +220,7 @@ function downloadPromoVideoSubtiles$() {
             if (verbose) {
               console.log(`${LOG_TAG} Processing ${language.name}`);
             }
-            const filePath = `${PATH}/promo-video/${language.name}`;
+            const filePath = `${ASSETS_PATH}/promo-video/${language.name}`;
             if (fs.existsSync(filePath)) {
               if (verbose) {
                 console.log(`${LOG_TAG} \t${language.name} remote promo video hash ${language.sha}`);
@@ -245,7 +246,7 @@ function downloadPromoVideoSubtiles$() {
               }
             } else {
               console.log(`${LOG_TAG} \t\t${language.name} is missing, downloading`);
-              const promoVideosDir = `${PATH}/promo-video/`;
+              const promoVideosDir = `${ASSETS_PATH}/promo-video/`;
               if (!fs.existsSync(promoVideosDir)){
                 fs.mkdirSync(promoVideosDir, { recursive: true });
               }
@@ -313,7 +314,7 @@ function downloadPromoVideo$() {
             if (item.name !== 'promo.mp4') {
               continue;
             }
-            const filePath = `${PATH}/promo-video/mempool-promo.mp4`;
+            const filePath = `${ASSETS_PATH}/promo-video/mempool-promo.mp4`;
             if (fs.existsSync(filePath)) {
               const localHash = getLocalHash(filePath);
 
@@ -373,16 +374,16 @@ if (configContent.BASE_MODULE && configContent.BASE_MODULE === 'liquid') {
   const testnetAssetsMinimalJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_testnet_db/master/index.minimal.json';
 
   console.log(`${LOG_TAG} Downloading assets`);
-  download(`${PATH}/assets.json`, assetsJsonUrl);
+  download(`${ASSETS_PATH}/assets.json`, assetsJsonUrl);
 
   console.log(`${LOG_TAG} Downloading assets minimal`);
-  download(`${PATH}/assets.minimal.json`, assetsMinimalJsonUrl);
+  download(`${ASSETS_PATH}/assets.minimal.json`, assetsMinimalJsonUrl);
 
   console.log(`${LOG_TAG} Downloading testnet assets`);
-  download(`${PATH}/assets-testnet.json`, testnetAssetsJsonUrl);
+  download(`${ASSETS_PATH}/assets-testnet.json`, testnetAssetsJsonUrl);
 
   console.log(`${LOG_TAG} Downloading testnet assets minimal`);
-  download(`${PATH}/assets-testnet.minimal.json`, testnetAssetsMinimalJsonUrl);
+  download(`${ASSETS_PATH}/assets-testnet.minimal.json`, testnetAssetsMinimalJsonUrl);
 } else {
   if (verbose) {
     console.log(`${LOG_TAG} BASE_MODULE is not set to Liquid (currently ${configContent.BASE_MODULE}), skipping downloading assets`);
