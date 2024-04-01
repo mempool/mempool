@@ -101,12 +101,13 @@ export interface TransactionStripped {
   acc?: boolean; // is accelerated?
   rate?: number; // effective fee rate
   flags?: number;
+  time?: number;
   status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'rbf' | 'accelerated';
   context?: 'projected' | 'actual';
 }
 
 // [txid, fee, vsize, value, rate, flags, acceleration?]
-export type TransactionCompressed = [string, number, number, number, number, number, 1?];
+export type TransactionCompressed = [string, number, number, number, number, number, number, 1?];
 // [txid, rate, flags, acceleration?]
 export type MempoolDeltaChange = [string, number, number, (1|0)];
 
