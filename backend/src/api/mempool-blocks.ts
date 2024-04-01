@@ -1,6 +1,6 @@
 import { GbtGenerator, GbtResult, ThreadTransaction as RustThreadTransaction, ThreadAcceleration as RustThreadAcceleration } from 'rust-gbt';
 import logger from '../logger';
-import { MempoolBlock, MempoolTransactionExtended, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, CompactThreadTransaction, EffectiveFeeStats, PoolTag, TransactionClassified, TransactionCompressed, MempoolDeltaChange } from '../mempool.interfaces';
+import { MempoolBlock, MempoolTransactionExtended, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, CompactThreadTransaction, EffectiveFeeStats, TransactionClassified, TransactionCompressed, MempoolDeltaChange, GbtCandidates } from '../mempool.interfaces';
 import { Common, OnlineFeeStatsCalculator } from './common';
 import config from '../config';
 import { Worker } from 'worker_threads';
@@ -18,6 +18,7 @@ class MempoolBlocks {
 
   private nextUid: number = 1;
   private uidMap: Map<number, string> = new Map(); // map short numerical uids to full txids
+  private txidMap: Map<string, number> = new Map(); // map full txids back to short numerical uids
 
   public getMempoolBlocks(): MempoolBlock[] {
     return this.mempoolBlocks.map((block) => {
@@ -38,132 +39,6 @@ class MempoolBlocks {
 
   public getMempoolBlockDeltas(): MempoolBlockDelta[] {
     return this.mempoolBlockDeltas;
-  }
-
-  public updateMempoolBlocks(memPool: { [txid: string]: MempoolTransactionExtended }, saveResults: boolean = false): MempoolBlockWithTransactions[] {
-    const latestMempool = memPool;
-    const memPoolArray: MempoolTransactionExtended[] = [];
-    for (const i in latestMempool) {
-      memPoolArray.push(latestMempool[i]);
-    }
-    const start = new Date().getTime();
-
-    // Clear bestDescendants & ancestors
-    memPoolArray.forEach((tx) => {
-      tx.bestDescendant = null;
-      tx.ancestors = [];
-      tx.cpfpChecked = false;
-      if (!tx.effectiveFeePerVsize) {
-        tx.effectiveFeePerVsize = tx.adjustedFeePerVsize;
-      }
-    });
-
-    // First sort
-    memPoolArray.sort((a, b) => {
-      if (a.adjustedFeePerVsize === b.adjustedFeePerVsize) {
-        // tie-break by lexicographic txid order for stability
-        return a.txid < b.txid ? -1 : 1;
-      } else {
-        return b.adjustedFeePerVsize - a.adjustedFeePerVsize;
-      }
-    });
-
-    // Loop through and traverse all ancestors and sum up all the sizes + fees
-    // Pass down size + fee to all unconfirmed children
-    let sizes = 0;
-    memPoolArray.forEach((tx) => {
-      sizes += tx.weight;
-      if (sizes > 4000000 * 8) {
-        return;
-      }
-      Common.setRelativesAndGetCpfpInfo(tx, memPool);
-    });
-
-    // Final sort, by effective fee
-    memPoolArray.sort((a, b) => {
-      if (a.effectiveFeePerVsize === b.effectiveFeePerVsize) {
-        // tie-break by lexicographic txid order for stability
-        return a.txid < b.txid ? -1 : 1;
-      } else {
-        return b.effectiveFeePerVsize - a.effectiveFeePerVsize;
-      }
-    });
-
-    const end = new Date().getTime();
-    const time = end - start;
-    logger.debug('Mempool blocks calculated in ' + time / 1000 + ' seconds');
-
-    const blocks = this.calculateMempoolBlocks(memPoolArray);
-
-    if (saveResults) {
-      const deltas = this.calculateMempoolDeltas(this.mempoolBlocks, blocks);
-      this.mempoolBlocks = blocks;
-      this.mempoolBlockDeltas = deltas;
-    }
-
-    return blocks;
-  }
-
-  private calculateMempoolBlocks(transactionsSorted: MempoolTransactionExtended[]): MempoolBlockWithTransactions[] {
-    const mempoolBlocks: MempoolBlockWithTransactions[] = [];
-    let feeStatsCalculator: OnlineFeeStatsCalculator = new OnlineFeeStatsCalculator(config.MEMPOOL.BLOCK_WEIGHT_UNITS);
-    let onlineStats = false;
-    let blockSize = 0;
-    let blockWeight = 0;
-    let blockVsize = 0;
-    let blockFees = 0;
-    const sizeLimit = (config.MEMPOOL.BLOCK_WEIGHT_UNITS / 4) * 1.2;
-    let transactionIds: string[] = [];
-    let transactions: MempoolTransactionExtended[] = [];
-    transactionsSorted.forEach((tx, index) => {
-      if (blockWeight + tx.weight <= config.MEMPOOL.BLOCK_WEIGHT_UNITS
-        || mempoolBlocks.length === config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT - 1) {
-        tx.position = {
-          block: mempoolBlocks.length,
-          vsize: blockVsize + (tx.vsize / 2),
-        };
-        blockWeight += tx.weight;
-        blockVsize += tx.vsize;
-        blockSize += tx.size;
-        blockFees += tx.fee;
-        if (blockVsize <= sizeLimit) {
-          transactions.push(tx);
-        }
-        transactionIds.push(tx.txid);
-        if (onlineStats) {
-          feeStatsCalculator.processNext(tx);
-        }
-      } else {
-        mempoolBlocks.push(this.dataToMempoolBlocks(transactionIds, transactions, blockSize, blockWeight, blockFees));
-        blockVsize = 0;
-        tx.position = {
-          block: mempoolBlocks.length,
-          vsize: blockVsize + (tx.vsize / 2),
-        };
-
-        if (mempoolBlocks.length === config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT - 1) {
-          const stackWeight = transactionsSorted.slice(index).reduce((total, tx) => total + (tx.weight || 0), 0);
-          if (stackWeight > config.MEMPOOL.BLOCK_WEIGHT_UNITS) {
-            onlineStats = true;
-            feeStatsCalculator = new OnlineFeeStatsCalculator(stackWeight, 0.5, [10, 20, 30, 40, 50, 60, 70, 80, 90]);
-            feeStatsCalculator.processNext(tx);
-          }
-        }
-
-        blockVsize += tx.vsize;
-        blockWeight = tx.weight;
-        blockSize = tx.size;
-        blockFees = tx.fee;
-        transactionIds = [tx.txid];
-        transactions = [tx];
-      }
-    });
-    if (transactions.length) {
-      const feeStats = onlineStats ? feeStatsCalculator.getRawFeeStats() : undefined;
-      mempoolBlocks.push(this.dataToMempoolBlocks(transactionIds, transactions, blockSize, blockWeight, blockFees, feeStats));
-    }
-
-    return mempoolBlocks;
   }
 
   private calculateMempoolDeltas(prevBlocks: MempoolBlockWithTransactions[], mempoolBlocks: MempoolBlockWithTransactions[]): MempoolBlockDelta[] {
@@ -207,7 +82,7 @@ class MempoolBlocks {
     return mempoolBlockDeltas;
   }
 
-  public async $makeBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, saveResults: boolean = false, useAccelerations: boolean = false, accelerationPool?: number): Promise<MempoolBlockWithTransactions[]> {
+  public async $makeBlockTemplates(transactions: string[], newMempool: { [txid: string]: MempoolTransactionExtended }, candidates: GbtCandidates | undefined, saveResults: boolean = false, useAccelerations: boolean = false, accelerationPool?: number): Promise<MempoolBlockWithTransactions[]> {
     const start = Date.now();
 
     // reset mempool short ids
@@ -215,7 +90,8 @@ class MempoolBlocks {
       this.resetUids();
     }
     // set missing short ids
-    for (const tx of Object.values(newMempool)) {
+    for (const txid of transactions) {
+      const tx = newMempool[txid];
       this.setUid(tx, !saveResults);
     }
 
@@ -224,7 +100,8 @@ class MempoolBlocks {
     // prepare a stripped down version of the mempool with only the minimum necessary data
     // to reduce the overhead of passing this data to the worker thread
     const strippedMempool: Map<number, CompactThreadTransaction> = new Map();
-    Object.values(newMempool).forEach(entry => {
+    for (const txid of transactions) {
+      const entry = newMempool[txid];
       if (entry.uid !== null && entry.uid !== undefined) {
         const stripped = {
           uid: entry.uid,
@@ -237,7 +114,7 @@ class MempoolBlocks {
         };
         strippedMempool.set(entry.uid, stripped);
       }
-    });
+    }
 
     // (re)initialize tx selection worker thread
     if (!this.txSelectionWorker) {
@@ -268,7 +145,7 @@ class MempoolBlocks {
       // clean up thread error listener
       this.txSelectionWorker?.removeListener('error', threadErrorListener);
 
-      const processed = this.processBlockTemplates(newMempool, blocks, null, Object.entries(rates), Object.values(clusters), accelerations, accelerationPool, saveResults);
+      const processed = this.processBlockTemplates(newMempool, blocks, null, Object.entries(rates), Object.values(clusters), candidates, accelerations, accelerationPool, saveResults);
 
       logger.debug(`makeBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
 
@@ -279,10 +156,10 @@ class MempoolBlocks {
     return this.mempoolBlocks;
   }
 
-  public async $updateBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[], accelerationDelta: string[] = [], saveResults: boolean = false, useAccelerations: boolean = false): Promise<void> {
+  public async $updateBlockTemplates(transactions: string[], newMempool: { [txid: string]: MempoolTransactionExtended }, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[], candidates: GbtCandidates | undefined, accelerationDelta: string[] = [], saveResults: boolean = false, useAccelerations: boolean = false): Promise<void> {
     if (!this.txSelectionWorker) {
       // need to reset the worker
-      await this.$makeBlockTemplates(newMempool, saveResults, useAccelerations);
+      await this.$makeBlockTemplates(transactions, newMempool, candidates, saveResults, useAccelerations);
       return;
     }
 
@@ -292,9 +169,9 @@ class MempoolBlocks {
     const addedAndChanged: MempoolTransactionExtended[] = useAccelerations ? accelerationDelta.map(txid => newMempool[txid]).filter(tx => tx != null).concat(added) : added;
 
     for (const tx of addedAndChanged) {
-      this.setUid(tx, true);
+      this.setUid(tx, false);
     }
-    const removedUids = removed.map(tx => this.getUid(tx)).filter(uid => uid != null) as number[];
+    const removedTxs = removed.filter(tx => tx.uid != null) as MempoolTransactionExtended[];
 
     // prepare a stripped down version of the mempool with only the minimum necessary data
     // to reduce the overhead of passing this data to the worker thread
@@ -320,15 +197,15 @@ class MempoolBlocks {
         });
         this.txSelectionWorker?.once('error', reject);
       });
-      this.txSelectionWorker.postMessage({ type: 'update', added: addedStripped, removed: removedUids });
+      this.txSelectionWorker.postMessage({ type: 'update', added: addedStripped, removed: removedTxs.map(tx => tx.uid) as number[] });
       const { blocks, rates, clusters } = this.convertResultTxids(await workerResultPromise);
 
-      this.removeUids(removedUids);
+      this.removeUids(removedTxs);
 
       // clean up thread error listener
       this.txSelectionWorker?.removeListener('error', threadErrorListener);
 
-      this.processBlockTemplates(newMempool, blocks, null, Object.entries(rates), Object.values(clusters), accelerations, null, saveResults);
+      this.processBlockTemplates(newMempool, blocks, null, Object.entries(rates), Object.values(clusters), candidates, accelerations, null, saveResults);
       logger.debug(`updateBlockTemplates completed in ${(Date.now() - start) / 1000} seconds`);
     } catch (e) {
       logger.err('updateBlockTemplates failed. ' + (e instanceof Error ? e.message : e));
@@ -340,25 +217,28 @@ class MempoolBlocks {
     this.rustGbtGenerator = new GbtGenerator();
   }
 
-  public async $rustMakeBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, saveResults: boolean = false, useAccelerations: boolean = false, accelerationPool?: number): Promise<MempoolBlockWithTransactions[]> {
+  public async $rustMakeBlockTemplates(txids: string[], newMempool: { [txid: string]: MempoolTransactionExtended }, candidates: GbtCandidates | undefined, saveResults: boolean = false, useAccelerations: boolean = false, accelerationPool?: number): Promise<MempoolBlockWithTransactions[]> {
     const start = Date.now();
 
     // reset mempool short ids
     if (saveResults) {
       this.resetUids();
     }
+
+    const transactions = txids.map(txid => newMempool[txid]).filter(tx => tx != null);
     // set missing short ids
-    for (const tx of Object.values(newMempool)) {
+    for (const tx of transactions) {
       this.setUid(tx, !saveResults);
     }
     // set short ids for transaction inputs
-    for (const tx of Object.values(newMempool)) {
+    for (const tx of transactions) {
       tx.inputs = tx.vin.map(v => this.getUid(newMempool[v.txid])).filter(uid => (uid !== null && uid !== undefined)) as number[];
     }
 
     const accelerations = useAccelerations ? mempool.getAccelerations() : {};
     const acceleratedList = accelerationPool ? Object.values(accelerations).filter(acc => newMempool[acc.txid] && acc.pools.includes(accelerationPool)) : Object.values(accelerations).filter(acc => newMempool[acc.txid]);
     const convertedAccelerations = acceleratedList.map(acc => {
+      this.setUid(newMempool[acc.txid], true);
       return {
         uid: this.getUid(newMempool[acc.txid]),
         delta: acc.feeDelta,
@@ -369,15 +249,15 @@ class MempoolBlocks {
     const rustGbt = saveResults ? this.rustGbtGenerator : new GbtGenerator();
     try {
       const { blocks, blockWeights, rates, clusters, overflow } = this.convertNapiResultTxids(
-        await rustGbt.make(Object.values(newMempool) as RustThreadTransaction[], convertedAccelerations as RustThreadAcceleration[], this.nextUid),
+        await rustGbt.make(transactions as RustThreadTransaction[], convertedAccelerations as RustThreadAcceleration[], this.nextUid),
       );
       if (saveResults) {
         this.rustInitialized = true;
       }
-      const mempoolSize = Object.keys(newMempool).length;
+      const expectedSize = transactions.length;
       const resultMempoolSize = blocks.reduce((total, block) => total + block.length, 0) + overflow.length;
-      logger.debug(`RUST updateBlockTemplates returned ${resultMempoolSize} txs out of ${mempoolSize} in the mempool, ${overflow.length} were unmineable`);
-      const processed = this.processBlockTemplates(newMempool, blocks, blockWeights, rates, clusters, accelerations, accelerationPool, saveResults);
+      logger.debug(`RUST updateBlockTemplates returned ${resultMempoolSize} txs out of ${expectedSize} in the mempool, ${overflow.length} were unmineable`);
+      const processed = this.processBlockTemplates(newMempool, blocks, blockWeights, rates, clusters, candidates, accelerations, accelerationPool, saveResults);
       logger.debug(`RUST makeBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
       return processed;
     } catch (e) {
@@ -389,36 +269,37 @@ class MempoolBlocks {
     return this.mempoolBlocks;
   }
 
-  public async $oneOffRustBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, useAccelerations: boolean, accelerationPool?: number): Promise<MempoolBlockWithTransactions[]> {
-    return this.$rustMakeBlockTemplates(newMempool, false, useAccelerations, accelerationPool);
+  public async $oneOffRustBlockTemplates(transactions: string[], newMempool: { [txid: string]: MempoolTransactionExtended }, candidates: GbtCandidates | undefined, useAccelerations: boolean, accelerationPool?: number): Promise<MempoolBlockWithTransactions[]> {
+    return this.$rustMakeBlockTemplates(transactions, newMempool, candidates, false, useAccelerations, accelerationPool);
   }
 
-  public async $rustUpdateBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, mempoolSize: number, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[], useAccelerations: boolean, accelerationPool?: number): Promise<MempoolBlockWithTransactions[]> {
+  public async $rustUpdateBlockTemplates(transactions: string[], newMempool: { [txid: string]: MempoolTransactionExtended }, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[], candidates: GbtCandidates | undefined, useAccelerations: boolean, accelerationPool?: number): Promise<MempoolBlockWithTransactions[]> {
     // GBT optimization requires that uids never get too sparse
     // as a sanity check, we should also explicitly prevent uint32 uid overflow
-    if (this.nextUid + added.length >= Math.min(Math.max(262144, 2 * mempoolSize), MAX_UINT32)) {
+    if (this.nextUid + added.length >= Math.min(Math.max(262144, 2 * transactions.length), MAX_UINT32)) {
       this.resetRustGbt();
     }
 
     if (!this.rustInitialized) {
       // need to reset the worker
-      return this.$rustMakeBlockTemplates(newMempool, true, useAccelerations, accelerationPool);
+      return this.$rustMakeBlockTemplates(transactions, newMempool, candidates, true, useAccelerations, accelerationPool);
     }
 
     const start = Date.now();
     // set missing short ids
     for (const tx of added) {
-      this.setUid(tx, true);
+      this.setUid(tx, false);
     }
     // set short ids for transaction inputs
     for (const tx of added) {
       tx.inputs = tx.vin.map(v => this.getUid(newMempool[v.txid])).filter(uid => (uid !== null && uid !== undefined)) as number[];
     }
-    const removedUids = removed.map(tx => this.getUid(tx)).filter(uid => (uid !== null && uid !== undefined)) as number[];
+    const removedTxs = removed.filter(tx => tx.uid != null) as MempoolTransactionExtended[];
 
     const accelerations = useAccelerations ? mempool.getAccelerations() : {};
     const acceleratedList = accelerationPool ? Object.values(accelerations).filter(acc => newMempool[acc.txid] && acc.pools.includes(accelerationPool)) : Object.values(accelerations).filter(acc => newMempool[acc.txid]);
     const convertedAccelerations = acceleratedList.map(acc => {
+      this.setUid(newMempool[acc.txid], true);
       return {
         uid: this.getUid(newMempool[acc.txid]),
         delta: acc.feeDelta,
@@ -430,18 +311,18 @@ class MempoolBlocks {
       const { blocks, blockWeights, rates, clusters, overflow } = this.convertNapiResultTxids(
         await this.rustGbtGenerator.update(
           added as RustThreadTransaction[],
-          removedUids,
+          removedTxs.map(tx => tx.uid) as number[],
           convertedAccelerations as RustThreadAcceleration[],
           this.nextUid,
         ),
       );
       const resultMempoolSize = blocks.reduce((total, block) => total + block.length, 0) + overflow.length;
-      logger.debug(`RUST updateBlockTemplates returned ${resultMempoolSize} txs out of ${mempoolSize} in the mempool, ${overflow.length} were unmineable`);
-      if (mempoolSize !== resultMempoolSize) {
-        throw new Error('GBT returned wrong number of transactions , cache is probably out of sync');
+      logger.debug(`RUST updateBlockTemplates returned ${resultMempoolSize} txs out of ${transactions.length} candidates, ${overflow.length} were unmineable`);
+      if (transactions.length !== resultMempoolSize) {
+        throw new Error(`GBT returned wrong number of transactions ${transactions.length} vs ${resultMempoolSize}, cache is probably out of sync`);
       } else {
-        const processed = this.processBlockTemplates(newMempool, blocks, blockWeights, rates, clusters, accelerations, accelerationPool, true);
-        this.removeUids(removedUids);
+        const processed = this.processBlockTemplates(newMempool, blocks, blockWeights, rates, clusters, candidates, accelerations, accelerationPool, true);
+        this.removeUids(removedTxs);
         logger.debug(`RUST updateBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
         return processed;
       }
@@ -452,7 +333,12 @@ class MempoolBlocks {
     }
   }
 
-  private processBlockTemplates(mempool: { [txid: string]: MempoolTransactionExtended }, blocks: string[][], blockWeights: number[] | null, rates: [string, number][], clusters: string[][], accelerations, accelerationPool, saveResults): MempoolBlockWithTransactions[] {
+  private processBlockTemplates(mempool: { [txid: string]: MempoolTransactionExtended }, blocks: string[][], blockWeights: number[] | null, rates: [string, number][], clusters: string[][], candidates: GbtCandidates | undefined, accelerations, accelerationPool, saveResults): MempoolBlockWithTransactions[] {
+    for (const txid of Object.keys(candidates?.txs ?? mempool)) {
+      if (txid in mempool) {
+        mempool[txid].cpfpDirty = false;
+      }
+    }
     for (const [txid, rate] of rates) {
       if (txid in mempool) {
         mempool[txid].cpfpDirty = (rate !== mempool[txid].effectiveFeePerVsize);
@@ -486,6 +372,9 @@ class MempoolBlocks {
             if (txid === memberTxid) {
               matched = true;
             } else {
+              if (!mempool[txid]) {
+                console.log('txid missing from mempool! ', txid, candidates?.txs[txid]);
+              }
               const relative = {
                 txid: txid,
                 fee: mempool[txid].fee,
@@ -518,6 +407,16 @@ class MempoolBlocks {
       let totalWeight = 0;
       let totalFees = 0;
       const transactions: MempoolTransactionExtended[] = [];
+
+      // backfill purged transactions
+      if (candidates?.txs && blockIndex === blocks.length - 1) {
+        for (const txid of Object.keys(mempool)) {
+          if (!candidates.txs[txid]) {
+            block.push(txid);
+          }
+        }
+      }
+
       for (const txid of block) {
         if (txid) {
           mempoolTx = mempool[txid];
@@ -526,16 +425,6 @@ class MempoolBlocks {
             block: blockIndex,
             vsize: totalVsize + (mempoolTx.vsize / 2),
           };
-          if (!mempoolTx.cpfpChecked) {
-            if (mempoolTx.ancestors?.length) {
-              mempoolTx.ancestors = [];
-            }
-            if (mempoolTx.descendants?.length) {
-              mempoolTx.descendants = [];
-            }
-            mempoolTx.bestDescendant = null;
-            mempoolTx.cpfpChecked = true;
-          }
 
           const acceleration = accelerations[txid];
           if (isAccelerated[txid] || (acceleration && (!accelerationPool || acceleration.pools.includes(accelerationPool)))) {
@@ -594,7 +483,7 @@ class MempoolBlocks {
 
   private dataToMempoolBlocks(transactionIds: string[], transactions: MempoolTransactionExtended[], totalSize: number, totalWeight: number, totalFees: number, feeStats?: EffectiveFeeStats ): MempoolBlockWithTransactions {
     if (!feeStats) {
-      feeStats = Common.calcEffectiveFeeStatistics(transactions.filter(tx => !tx.acceleration));
+      feeStats = Common.calcEffectiveFeeStatistics(transactions);
     }
     return {
       blockSize: totalSize,
@@ -610,30 +499,38 @@ class MempoolBlocks {
 
   private resetUids(): void {
     this.uidMap.clear();
+    this.txidMap.clear();
     this.nextUid = 1;
   }
 
   private setUid(tx: MempoolTransactionExtended, skipSet = false): number {
-    if (tx.uid === null || tx.uid === undefined || !skipSet) {
+    if (!this.txidMap.has(tx.txid) || !skipSet) {
       const uid = this.nextUid;
       this.nextUid++;
       this.uidMap.set(uid, tx.txid);
+      this.txidMap.set(tx.txid, uid);
       tx.uid = uid;
       return uid;
     } else {
+      tx.uid = this.txidMap.get(tx.txid) as number;
       return tx.uid;
     }
   }
 
   private getUid(tx: MempoolTransactionExtended): number | void {
-    if (tx?.uid !== null && tx?.uid !== undefined && this.uidMap.has(tx.uid)) {
-      return tx.uid;
+    if (tx) {
+      return this.txidMap.get(tx.txid);
     }
   }
 
-  private removeUids(uids: number[]): void {
-    for (const uid of uids) {
-      this.uidMap.delete(uid);
+  private removeUids(txs: MempoolTransactionExtended[]): void {
+    for (const tx of txs) {
+      const uid = this.txidMap.get(tx.txid);
+      if (uid != null) {
+        this.uidMap.delete(uid);
+        this.txidMap.delete(tx.txid);
+      }
+      tx.uid = undefined;
     }
   }
 
