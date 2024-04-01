@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 76;
+  private static currentVersion = 75;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -653,11 +653,6 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `prices` ADD `TRY` float DEFAULT "-1"');
       await this.$executeQuery('ALTER TABLE `prices` ADD `ZAR` float DEFAULT "-1"');
       await this.updateToSchemaVersion(75);
-    }
-
-    if (databaseSchemaVersion < 76 && isBitcoin === true) {
-      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD prioritized_txs JSON DEFAULT "[]"');
-      await this.updateToSchemaVersion(76);
     }
   }
 
