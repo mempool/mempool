@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { specialBlocks } from '../../app.constants';
 import { BlockExtended } from '../../interfaces/node-api.interface';
@@ -45,6 +45,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   markBlockSubscription: Subscription;
   txConfirmedSubscription: Subscription;
   loadingBlocks$: Observable<boolean>;
+  showMiningInfo$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   blockStyles = [];
   emptyBlockStyles = [];
   interval: any;
@@ -54,7 +55,6 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   arrowLeftPx = 30;
   blocksFilled = false;
   arrowTransition = '1s';
-  showMiningInfo = false;
   timeLtrSubscription: Subscription;
   timeLtr: boolean;
 
@@ -79,8 +79,11 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   enabledMiningInfoIfNeeded(url) {
-    this.showMiningInfo = url.includes('/mining') || url.includes('/acceleration');
-    this.cd.markForCheck(); // Need to update the view asap
+    const urlParts = url.split('/');
+    const onDashboard = ['','testnet','signet','mining','acceleration'].includes(urlParts[urlParts.length - 1]);
+    if (onDashboard) { // Only update showMiningInfo if we are on the main, mining or acceleration dashboards
+      this.stateService.showMiningInfo$.next(url.includes('/mining') || url.includes('/acceleration'));
+    }
   }
 
   ngOnInit() {
@@ -89,6 +92,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     if (['', 'testnet', 'signet'].includes(this.stateService.network)) {
       this.enabledMiningInfoIfNeeded(this.location.path());
       this.location.onUrlChange((url) => this.enabledMiningInfoIfNeeded(url));
+      this.showMiningInfo$ = this.stateService.showMiningInfo$;
     }
 
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {

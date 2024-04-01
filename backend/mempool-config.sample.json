@@ -28,9 +28,8 @@
     "POOLS_JSON_URL": "https://raw.githubusercontent.com/mempool/mining-pools/master/pools-v2.json",
     "POOLS_JSON_TREE_URL": "https://api.github.com/repos/mempool/mining-pools/git/trees/master",
     "AUDIT": false,
-    "ADVANCED_GBT_AUDIT": false,
-    "ADVANCED_GBT_MEMPOOL": false,
     "RUST_GBT": false,
+    "LIMIT_GBT": false,
     "CPFP_INDEXING": false,
     "DISK_CACHE_BLOCK_INTERVAL": 6,
     "MAX_PUSH_TX_SIZE_WEIGHT": 4000000,
@@ -147,7 +146,7 @@
     ]
   },
   "MEMPOOL_SERVICES": {
-    "API": "https://mempool.space/api",
+    "API": "https://mempool.space/api/v1/services",
     "ACCELERATIONS": false
   },
   "FIAT_PRICE": {

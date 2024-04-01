@@ -19,6 +19,7 @@ import bitcoinClient from './bitcoin-client';
 import difficultyAdjustment from '../difficulty-adjustment';
 import transactionRepository from '../../repositories/TransactionRepository';
 import rbfCache from '../rbf-cache';
+import { calculateCpfp } from '../cpfp';
 
 class BitcoinRoutes {
   public initRoutes(app: Application) {
@@ -217,7 +218,7 @@ class BitcoinRoutes {
         return;
       }
 
-      const cpfpInfo = Common.setRelativesAndGetCpfpInfo(tx, mempool.getMempool());
+      const cpfpInfo = calculateCpfp(tx, mempool.getMempool());
 
       res.json(cpfpInfo);
       return;
