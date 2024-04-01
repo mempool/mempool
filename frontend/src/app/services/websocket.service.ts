@@ -62,6 +62,7 @@ export class WebsocketService {
         if (theInitData.body.blocks) {
           theInitData.body.blocks = theInitData.body.blocks.reverse();
         }
+        this.stateService.backend$.next(theInitData.backend);
         this.stateService.isLoadingWebSocket$.next(false);
         this.handleResponse(theInitData.body);
         this.startSubscription(false, true);
@@ -289,6 +290,10 @@ export class WebsocketService {
 
   handleResponse(response: WebsocketResponse) {
     let reinitBlocks = false;
+
+    if (response.backend) {
+      this.stateService.backend$.next(response.backend);
+    }
 
     if (response.blocks && response.blocks.length) {
       const blocks = response.blocks;
