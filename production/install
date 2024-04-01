@@ -1047,9 +1047,9 @@ osSudo "${ROOT_USER}" crontab -u "${MEMPOOL_USER}" "${MEMPOOL_HOME}/${MEMPOOL_RE
 echo "[*] Installing nvm.sh from GitHub"
 osSudo "${MEMPOOL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh'
 
-echo "[*] Building NodeJS v20.5.1 via nvm.sh"
-osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm install v20.7.0 --shared-zlib'
-osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm alias default 20.7.0'
+echo "[*] Building NodeJS via nvm.sh"
+osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm install v20.12.0 --shared-zlib'
+osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm alias default 20.12.0'
 
 ####################
 # Tor installation #
@@ -1449,7 +1449,7 @@ if [ "${UNFURL_INSTALL}" = ON ];then
                 echo 'nvidia_xorg_enable="YES"' >> /etc/rc.conf
 
                 echo "[*] Installing color emoji"
-                osSudo "${ROOT_USER}" curl "https://github.com/samuelngs/apple-emoji-linux/releases/download/ios-15.4/AppleColorEmoji.ttf" -o /usr/local/share/fonts/TTF/AppleColorEmoji.ttf
+                osSudo "${ROOT_USER}" curl -sSL "https://github.com/samuelngs/apple-emoji-linux/releases/download/ios-15.4/AppleColorEmoji.ttf" -o /usr/local/share/fonts/TTF/AppleColorEmoji.ttf
                 cat > /usr/local/etc/fonts/conf.d/01-emoji.conf <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
@@ -1491,7 +1491,7 @@ EOF
             osSudo "${UNFURL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh'
 
             echo "[*] Building NodeJS via nvm.sh"
-            osSudo "${UNFURL_USER}" zsh -c 'source ~/.zshrc ; nvm install v20.7.0 --shared-zlib'
+            osSudo "${UNFURL_USER}" zsh -c 'source ~/.zshrc ; nvm install v20.12.0 --shared-zlib'
 
         ;;
     esac

@@ -151,6 +151,7 @@ export class StateService {
   hideAudit: BehaviorSubject<boolean>;
   fiatCurrency$: BehaviorSubject<string>;
   rateUnits$: BehaviorSubject<string>;
+  showMiningInfo$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   searchFocus$: Subject<boolean> = new Subject<boolean>();
   menuOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);

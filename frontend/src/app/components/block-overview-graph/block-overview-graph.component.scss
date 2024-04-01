@@ -22,9 +22,12 @@
   }
 }
 
-.grid-align {
+.graph-alignment {
   position: relative;
   width: 100%;
+}
+
+.grid-align {
   display: grid;
   grid-template-columns: repeat(auto-fit, 75px);
   justify-content: center;

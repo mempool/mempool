@@ -70,10 +70,10 @@
                     <app-tx-features [tx]="tx"></app-tx-features>
                   </td>
                 </tr>
-                <tr *ngIf="network === ''">
+                <tr *ngIf="network === '' && auditStatus">
                   <td class="td-width" i18n="transaction.audit">Audit</td>
                   <td *ngIf="pool" class="wrap-cell">
-                    <ng-container *ngIf="auditStatus">
+                    <ng-container>
                       <span *ngIf="auditStatus.coinbase; else expected" class="badge badge-primary mr-1" i18n="tx-features.tag.coinbase|Coinbase">Coinbase</span>
                       <ng-template #expected><span *ngIf="auditStatus.expected; else seen" class="badge badge-success mr-1" i18n-ngbTooltip="Expected in block tooltip" ngbTooltip="This transaction was projected to be included in the block" placement="bottom" i18n="tx-features.tag.expected|Expected in Block">Expected in Block</span></ng-template>
                       <ng-template #seen><span *ngIf="auditStatus.seen; else notSeen" class="badge badge-success mr-1" i18n-ngbTooltip="Seen in mempool tooltip" ngbTooltip="This transaction was seen in the mempool prior to mining" placement="bottom" i18n="tx-features.tag.seen|Seen in Mempool">Seen in Mempool</span></ng-template>

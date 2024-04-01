@@ -38,7 +38,13 @@ export const mockWebSocket = () => {
 				win.mockServer = server;
 				win.mockServer.on('connection', (socket) => {
 					win.mockSocket = socket;
-					win.mockSocket.send('{"action":"init"}');
+					win.mockSocket.send('{"conversions":{"USD":32365.338815782445}}');
+					cy.readFile('cypress/fixtures/mainnet_live2hchart.json', 'ascii').then((fixture) => {
+						win.mockSocket.send(JSON.stringify(fixture));
+					});
+					cy.readFile('cypress/fixtures/mainnet_mempoolInfo.json', 'ascii').then((fixture) => {
+						win.mockSocket.send(JSON.stringify(fixture));
+					});
 				});
 
 				win.mockServer.on('message', (message) => {
@@ -75,8 +81,6 @@ export const emitMempoolInfo = ({
 
 		switch (params.command) {
 			case "init": {
-				win.mockSocket.send('{"action":"init"}');
-				win.mockSocket.send('{"action":"want","data":["blocks","stats","mempool-blocks","live-2h-chart"]}');
 				win.mockSocket.send('{"conversions":{"USD":32365.338815782445}}');
 				cy.readFile('cypress/fixtures/mainnet_live2hchart.json', 'ascii').then((fixture) => {
 					win.mockSocket.send(JSON.stringify(fixture));
