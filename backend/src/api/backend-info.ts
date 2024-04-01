@@ -9,8 +9,8 @@ class BackendInfo {
 
   constructor() {
     // This file is created by ./fetch-version.ts during building
-    const versionFile = path.join(__dirname, 'version.json')
-    var versionInfo;
+    const versionFile = path.join(__dirname, 'version.json');
+    let versionInfo;
     if (fs.existsSync(versionFile)) {
       versionInfo = JSON.parse(fs.readFileSync(versionFile).toString());
     } else {
@@ -24,7 +24,8 @@ class BackendInfo {
       hostname: os.hostname(),
       version: versionInfo.version,
       gitCommit: versionInfo.gitCommit,
-      lightning: config.LIGHTNING.ENABLED
+      lightning: config.LIGHTNING.ENABLED,
+      backend: config.MEMPOOL.BACKEND,
     };
   }
 
@@ -32,7 +33,7 @@ class BackendInfo {
     return this.backendInfo;
   }
 
-  public getShortCommitHash() {
+  public getShortCommitHash(): string {
     return this.backendInfo.gitCommit.slice(0, 7);
   }
 }

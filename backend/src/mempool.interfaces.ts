@@ -455,6 +455,7 @@ export interface IBackendInfo {
   gitCommit: string;
   version: string;
   lightning: boolean;
+  backend: 'esplora' | 'electrum' | 'none';
 }
 
 export interface IDifficultyAdjustment {
