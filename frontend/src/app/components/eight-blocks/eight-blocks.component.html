@@ -12,6 +12,7 @@
           [animationDuration]="animationDuration"
           [animationOffset]="animationOffset"
           [disableSpinner]="true"
+          [relativeTime]="blockInfo[i]?.timestamp"
           (txClickEvent)="onTxClick($event)"
         ></app-block-overview-graph>
         <div *ngIf="showInfo && blockInfo[i]" class="info" @infoChange>

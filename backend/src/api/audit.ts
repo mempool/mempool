@@ -7,13 +7,14 @@ const PROPAGATION_MARGIN = 180; // in seconds, time since a transaction is first
 
 class Audit {
   auditBlock(transactions: MempoolTransactionExtended[], projectedBlocks: MempoolBlockWithTransactions[], mempool: { [txId: string]: MempoolTransactionExtended }, useAccelerations: boolean = false)
-   : { censored: string[], added: string[], fresh: string[], sigop: string[], fullrbf: string[], accelerated: string[], score: number, similarity: number } {
+   : { censored: string[], added: string[], prioritized: string[], fresh: string[], sigop: string[], fullrbf: string[], accelerated: string[], score: number, similarity: number } {
     if (!projectedBlocks?.[0]?.transactionIds || !mempool) {
-      return { censored: [], added: [], fresh: [], sigop: [], fullrbf: [], accelerated: [], score: 1, similarity: 1 };
+      return { censored: [], added: [], prioritized: [], fresh: [], sigop: [], fullrbf: [], accelerated: [], score: 1, similarity: 1 };
     }
 
     const matches: string[] = []; // present in both mined block and template
     const added: string[] = []; // present in mined block, not in template
+    const prioritized: string[] = [] // present in the mined block, not in the template, but further down in the mempool
     const fresh: string[] = []; // missing, but firstSeen or lastBoosted within PROPAGATION_MARGIN
     const rbf: string[] = []; // either missing or present, and either part of a full-rbf replacement, or a conflict with the mined block
     const accelerated: string[] = []; // prioritized by the mempool accelerator
@@ -68,20 +69,27 @@ class Audit {
 
     // we can expect an honest miner to include 'displaced' transactions in place of recent arrivals and censored txs
     // these displaced transactions should occupy the first N weight units of the next projected block
-    let displacedWeightRemaining = displacedWeight;
+    let displacedWeightRemaining = displacedWeight + 4000;
     let index = 0;
     let lastFeeRate = Infinity;
     let failures = 0;
-    while (projectedBlocks[1] && index < projectedBlocks[1].transactionIds.length && failures < 500) {
-      const txid = projectedBlocks[1].transactionIds[index];
+    let blockIndex = 1;
+    while (projectedBlocks[blockIndex] && failures < 500) {
+      if (index >= projectedBlocks[blockIndex].transactionIds.length) {
+        index = 0;
+        blockIndex++;
+      }
+      const txid = projectedBlocks[blockIndex].transactionIds[index];
       const tx = mempool[txid];
       if (tx) {
         const fits = (tx.weight - displacedWeightRemaining) < 4000;
-        const feeMatches = tx.effectiveFeePerVsize >= lastFeeRate;
+        // 0.005 margin of error for any remaining vsize rounding issues
+        const feeMatches = tx.effectiveFeePerVsize >= (lastFeeRate - 0.005);
         if (fits || feeMatches) {
           isDisplaced[txid] = true;
           if (fits) {
-            lastFeeRate = Math.min(lastFeeRate, tx.effectiveFeePerVsize);
+            // (tx.effectiveFeePerVsize * tx.vsize) / Math.ceil(tx.vsize) attempts to correct for vsize rounding in the simple non-CPFP case
+            lastFeeRate = Math.min(lastFeeRate, (tx.effectiveFeePerVsize * tx.vsize) / Math.ceil(tx.vsize));
           }
           if (tx.firstSeen == null || (now - (tx?.firstSeen || 0)) > PROPAGATION_MARGIN) {
             displacedWeightRemaining -= tx.weight;
@@ -106,7 +114,11 @@ class Audit {
         if (rbfCache.has(tx.txid)) {
           rbf.push(tx.txid);
         } else if (!isDisplaced[tx.txid]) {
-          added.push(tx.txid);
+          if (mempool[tx.txid]) {
+            prioritized.push(tx.txid);
+          } else {
+            added.push(tx.txid);
+          }
         }
         overflowWeight += tx.weight;
       }
@@ -155,6 +167,7 @@ class Audit {
     return {
       censored: Object.keys(isCensored),
       added,
+      prioritized,
       fresh,
       sigop: [],
       fullrbf: rbf,
