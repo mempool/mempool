@@ -19,7 +19,7 @@
           <div *ngIf="!item.hasOwnProperty('options') || ( item.hasOwnProperty('options') && item.options.hasOwnProperty('officialOnly') && item.options.officialOnly && officialMempoolInstance ) || ( item.hasOwnProperty('options') && item.options.hasOwnProperty('auditOnly') && item.options.auditOnly && auditEnabled )">
             <h3 *ngIf="item.type === 'category'">{{ item.title }}</h3>
             <div *ngIf="item.type !== 'category'" class="endpoint-container" id="{{ item.fragment }}">
-              <a id="{{ item.fragment + '-tab-header' }}" class="section-header" (click)="anchorLinkClick( $event )" [routerLink]="['./']" fragment="{{ item.fragment }}"><table><tr><td>{{ item.title }}</td><td><span>{{ item.category }}</span></td></tr></table></a>
+              <a id="{{ item.fragment + '-tab-header' }}" class="section-header" (click)="anchorLinkClick({event: $event, fragment: item.fragment})"><table><tr><td>{{ item.title }}</td><td><span>{{ item.category }}</span></td></tr></table></a>
               <div class="endpoint-content">
                 <ng-container *ngTemplateOutlet="dict[item.fragment]" class="endpoint"></ng-container>
               </div>
@@ -54,7 +54,7 @@
           <div *ngIf="!item.hasOwnProperty('options') || ( item.hasOwnProperty('options') && item.options.hasOwnProperty('officialOnly') && item.options.officialOnly && officialMempoolInstance )">
             <h3 *ngIf="( item.type === 'category' ) && ( item.showConditions.indexOf(network.val) > -1 )">{{ item.title }}</h3>
             <div *ngIf="( item.type !== 'category' ) && ( item.showConditions.indexOf(network.val) > -1 )" class="endpoint-container" id="{{ item.fragment }}">
-              <a id="{{ item.fragment + '-tab-header' }}" class="section-header" (click)="anchorLinkClick( $event )" [routerLink]="['./']" fragment="{{ item.fragment }}">{{ item.title }} <span>{{ item.category }}</span></a>
+              <a id="{{ item.fragment + '-tab-header' }}" class="section-header" (click)="anchorLinkClick({event: $event, fragment: item.fragment})">{{ item.title }} <span>{{ item.category }}</span></a>
               <div class="endpoint-content">
                 <div class="endpoint">
                   <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
