@@ -1,7 +1,7 @@
 import { SafeResourceUrl } from '@angular/platform-browser';
 import { ILoadingIndicators } from '../services/state.service';
 import { Transaction } from './electrs.interface';
-import { BlockExtended, DifficultyAdjustment, RbfTree } from './node-api.interface';
+import { BlockExtended, DifficultyAdjustment, RbfTree, TransactionStripped } from './node-api.interface';
 
 export interface WebsocketResponse {
   block?: BlockExtended;
@@ -90,19 +90,6 @@ export interface MempoolInfo {
   maxmempool: number;              //  (numeric) Maximum memory usage for the mempool
   mempoolminfee: number;           //  (numeric) Minimum fee rate in BTC/kB for tx to be accepted.
   minrelaytxfee: number;           //  (numeric) Current minimum relay fee for transactions
-}
-
-export interface TransactionStripped {
-  txid: string;
-  fee: number;
-  vsize: number;
-  value: number;
-  acc?: boolean; // is accelerated?
-  rate?: number; // effective fee rate
-  flags?: number;
-  time?: number;
-  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'rbf' | 'accelerated';
-  context?: 'projected' | 'actual';
 }
 
 // [txid, fee, vsize, value, rate, flags, acceleration?]
