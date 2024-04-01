@@ -92,6 +92,7 @@ const defaultEnv: Env = {
 export class StateService {
   isBrowser: boolean = isPlatformBrowser(this.platformId);
   isMempoolSpaceBuild = window['isMempoolSpaceBuild'] ?? false;
+  backend: 'esplora' | 'electrum' | 'none' = 'esplora';
   network = '';
   lightning = false;
   blockVSize: number;
@@ -99,6 +100,7 @@ export class StateService {
   latestBlockHeight = -1;
   blocks: BlockExtended[] = [];
 
+  backend$ = new BehaviorSubject<'esplora' | 'electrum' | 'none'>('esplora');
   networkChanged$ = new ReplaySubject<string>(1);
   lightningChanged$ = new ReplaySubject<boolean>(1);
   blocksSubject$ = new BehaviorSubject<BlockExtended[]>([]);
@@ -257,6 +259,10 @@ export class StateService {
 
     const rateUnitPreference = this.storageService.getValue('rate-unit-preference');
     this.rateUnits$ = new BehaviorSubject<string>(rateUnitPreference || 'vb');
+
+    this.backend$.subscribe(backend => {
+      this.backend = backend;
+    });
   }
 
   setNetworkBasedonUrl(url: string) {
