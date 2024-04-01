@@ -39,7 +39,7 @@
       <div class="col-sm">
         <table class="table table-borderless table-striped">
           <tbody>
-            <ng-container *ngIf="!isLoadingBlock; else skeletonRows">
+            <ng-container *ngIf="block && !isLoadingBlock; else skeletonRows">
               <tr>
                 <td class="td-width" i18n="block.hash">Hash</td>
                 <td>&lrm;<a [routerLink]="['/block/' | relativeUrl, block.id]" title="{{ block.id }}">{{ block.id | shortenString : 13 }}</a> <app-clipboard [text]="block.id"></app-clipboard></td>
@@ -126,16 +126,16 @@
   </div>
 
   <ng-template #restOfTable>
-    <ng-container *ngIf="!isLoadingBlock; else loadingRest">
+    <ng-container *ngIf="block && !isLoadingBlock; else loadingRest">
       <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
         <td i18n="mempool-block.fee-span">Fee span</td>
-        <td><app-fee-rate [fee]="block?.extras?.minFee" [showUnit]="false" rounding="1.0-0"></app-fee-rate> - <app-fee-rate [fee]="block?.extras?.maxFee" rounding="1.0-0"></app-fee-rate></td>
+        <td><app-fee-rate [fee]="block.extras?.minFee" [showUnit]="false" rounding="1.0-0"></app-fee-rate> - <app-fee-rate [fee]="block.extras?.maxFee" rounding="1.0-0"></app-fee-rate></td>
       </tr>
-      <tr *ngIf="block?.extras?.medianFee != undefined">
+      <tr *ngIf="block.extras?.medianFee != undefined">
         <td class="td-width" i18n="block.median-fee">Median fee</td>
-        <td>~<app-fee-rate [fee]="block?.extras?.medianFee" rounding="1.0-0"></app-fee-rate>
+        <td>~<app-fee-rate [fee]="block.extras?.medianFee" rounding="1.0-0"></app-fee-rate>
           <span class="fiat">
-            <app-fiat [blockConversion]="blockConversion" [value]="block?.extras?.medianFee * 140" digitsInfo="1.2-2"
+            <app-fiat [blockConversion]="blockConversion" [value]="block.extras?.medianFee * 140" digitsInfo="1.2-2"
               i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes"
               placement="bottom"></app-fiat>
           </span>
@@ -259,7 +259,7 @@
     </div>
   </div>
 
-  <ng-template [ngIf]="!isLoadingBlock && !error">
+  <ng-template [ngIf]="block && !isLoadingBlock && !error">
     <div [hidden]="!showDetails" id="details">
       <br>
 
