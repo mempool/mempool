@@ -19,8 +19,8 @@
         <td class="value"><i><app-time kind="since" [time]="time" [fastRender]="true"></app-time></i></td>
       </tr>
       <tr *ngIf="time && relativeTime">
-        <td class="label" i18n="transaction.first-seen|Transaction first seen">First seen</td>
-        <td class="value"><i><app-time kind="before" [time]="relativeTime - time"></app-time></i></td>
+        <td class="label" i18n="transaction.confirmed-after|Transaction confirmed after">Confirmed</td>
+        <td class="value"><i><app-time kind="span" [time]="relativeTime - time"></app-time></i></td>
       </tr>
       <tr>
         <td class="label" i18n="dashboard.latest-transactions.amount">Amount</td>
