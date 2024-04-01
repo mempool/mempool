@@ -44,7 +44,7 @@ export class AddressComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private electrsApiService: ElectrsApiService,
     private websocketService: WebsocketService,
-    private stateService: StateService,
+    public stateService: StateService,
     private audioService: AudioService,
     private apiService: ApiService,
     private seoService: SeoService,

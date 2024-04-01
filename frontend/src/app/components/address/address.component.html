@@ -51,7 +51,7 @@
       </div>
     </div>
 
-    <ng-container *ngIf="address && transactions && transactions.length > 2">
+    <ng-container *ngIf="(stateService.backend$ | async) === 'esplora' && address && transactions && transactions.length > 2">
       <br>
       <div class="box">
         <div class="row">
