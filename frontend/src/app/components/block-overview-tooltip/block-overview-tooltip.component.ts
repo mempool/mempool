@@ -29,6 +29,7 @@ export class BlockOverviewTooltipComponent implements OnChanges {
   effectiveRate;
   acceleration;
   hasEffectiveRate: boolean = false;
+  timeMode: 'mempool' | 'mined' | 'missed' | 'after' = 'mempool';
   filters: Filter[] = [];
   activeFilters: { [key: string]: boolean } = {};
 
@@ -76,6 +77,22 @@ export class BlockOverviewTooltipComponent implements OnChanges {
           this.activeFilters[filter.key] = true;
         }
       }
+
+      if (!this.relativeTime) {
+        this.timeMode = 'mempool';
+      } else {
+        if (this.tx?.context === 'actual' || this.tx?.status === 'found') {
+          this.timeMode = 'mined';
+        } else {
+          const time = this.relativeTime || Date.now();
+          if (this.time <= time) {
+            this.timeMode = 'missed';
+          } else {
+            this.timeMode = 'after';
+          }
+        }
+      }
+
       this.cd.markForCheck();
     }
   }
