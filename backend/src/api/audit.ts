@@ -83,11 +83,13 @@ class Audit {
       const tx = mempool[txid];
       if (tx) {
         const fits = (tx.weight - displacedWeightRemaining) < 4000;
-        const feeMatches = tx.effectiveFeePerVsize >= lastFeeRate;
+        // 0.005 margin of error for any remaining vsize rounding issues
+        const feeMatches = tx.effectiveFeePerVsize >= (lastFeeRate - 0.005);
         if (fits || feeMatches) {
           isDisplaced[txid] = true;
           if (fits) {
-            lastFeeRate = Math.min(lastFeeRate, tx.effectiveFeePerVsize);
+            // (tx.effectiveFeePerVsize * tx.vsize) / Math.ceil(tx.vsize) attempts to correct for vsize rounding in the simple non-CPFP case
+            lastFeeRate = Math.min(lastFeeRate, (tx.effectiveFeePerVsize * tx.vsize) / Math.ceil(tx.vsize));
           }
           if (tx.firstSeen == null || (now - (tx?.firstSeen || 0)) > PROPAGATION_MARGIN) {
             displacedWeightRemaining -= tx.weight;
