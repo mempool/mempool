@@ -7,7 +7,7 @@
     "declaration": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
-    "module": "ES2020",
+    "module": "ES2022",
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "ES2022",
@@ -15,7 +15,7 @@
       "node_modules/@types"
     ],
     "lib": [
-      "es2020",
+      "ES2022",
       "dom",
       "dom.iterable"
     ]
