@@ -411,7 +411,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
             padding: [20, 0, 0, 0],
           },
           type: 'time',
-          boundaryGap: false,
           axisLine: { onZero: true },
           axisLabel: {
             margin: 20,
