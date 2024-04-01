@@ -37,7 +37,6 @@ export interface BlockAudit {
   sigopTxs: string[],
   fullrbfTxs: string[],
   addedTxs: string[],
-  prioritizedTxs: string[],
   acceleratedTxs: string[],
   matchRate: number,
   expectedFees?: number,
@@ -201,7 +200,6 @@ export interface TransactionStripped {
   value: number;
   acc?: boolean;
   rate?: number; // effective fee rate
-  time?: number;
 }
 
 export interface TransactionClassified extends TransactionStripped {
@@ -209,7 +207,7 @@ export interface TransactionClassified extends TransactionStripped {
 }
 
 // [txid, fee, vsize, value, rate, flags, acceleration?]
-export type TransactionCompressed = [string, number, number, number, number, number, number, 1?];
+export type TransactionCompressed = [string, number, number, number, number, number, 1?];
 // [txid, rate, flags, acceleration?]
 export type MempoolDeltaChange = [string, number, number, (1|0)];
 

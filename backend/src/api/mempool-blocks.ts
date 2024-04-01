@@ -598,8 +598,7 @@ class MempoolBlocks {
         tx.value,
         Math.round((tx.rate || (tx.fee / tx.vsize)) * 100) / 100,
         tx.flags,
-        tx.time || 0,
-        1,
+        1
       ];
     } else {
       return [
@@ -609,7 +608,6 @@ class MempoolBlocks {
         tx.value,
         Math.round((tx.rate || (tx.fee / tx.vsize)) * 100) / 100,
         tx.flags,
-        tx.time || 0,
       ];
     }
   }

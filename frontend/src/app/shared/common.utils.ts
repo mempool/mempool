@@ -1,5 +1,4 @@
-import { MempoolBlockDelta, MempoolBlockDeltaCompressed, MempoolDeltaChange, TransactionCompressed } from "../interfaces/websocket.interface";
-import { TransactionStripped } from "../interfaces/node-api.interface";
+import { MempoolBlockDelta, MempoolBlockDeltaCompressed, MempoolDeltaChange, TransactionCompressed, TransactionStripped } from "../interfaces/websocket.interface";
 
 export function isMobile(): boolean {
   return (window.innerWidth <= 767.98);
@@ -165,8 +164,7 @@ export function uncompressTx(tx: TransactionCompressed): TransactionStripped {
     value: tx[3],
     rate: tx[4],
     flags: tx[5],
-    time: tx[6],
-    acc: !!tx[7],
+    acc: !!tx[6],
   };
 }
 

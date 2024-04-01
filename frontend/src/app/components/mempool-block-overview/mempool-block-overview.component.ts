@@ -1,8 +1,7 @@
 import { Component, ComponentRef, ViewChild, HostListener, Input, Output, EventEmitter,
   OnInit, OnDestroy, OnChanges, ChangeDetectionStrategy, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { StateService } from '../../services/state.service';
-import { MempoolBlockDelta } from '../../interfaces/websocket.interface';
-import { TransactionStripped } from '../../interfaces/node-api.interface';
+import { MempoolBlockDelta, TransactionStripped } from '../../interfaces/websocket.interface';
 import { BlockOverviewGraphComponent } from '../../components/block-overview-graph/block-overview-graph.component';
 import { Subscription, BehaviorSubject, merge, of, timer } from 'rxjs';
 import { switchMap, filter, concatMap, map } from 'rxjs/operators';

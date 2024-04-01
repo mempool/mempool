@@ -6,9 +6,9 @@ import { BlockAudit, AuditScore } from '../mempool.interfaces';
 class BlocksAuditRepositories {
   public async $saveAudit(audit: BlockAudit): Promise<void> {
     try {
-      await DB.query(`INSERT INTO blocks_audits(time, height, hash, missing_txs, added_txs, prioritized_txs, fresh_txs, sigop_txs, fullrbf_txs, accelerated_txs, match_rate, expected_fees, expected_weight)
-        VALUE (FROM_UNIXTIME(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [audit.time, audit.height, audit.hash, JSON.stringify(audit.missingTxs),
-          JSON.stringify(audit.addedTxs), JSON.stringify(audit.prioritizedTxs), JSON.stringify(audit.freshTxs), JSON.stringify(audit.sigopTxs), JSON.stringify(audit.fullrbfTxs), JSON.stringify(audit.acceleratedTxs), audit.matchRate, audit.expectedFees, audit.expectedWeight]);
+      await DB.query(`INSERT INTO blocks_audits(time, height, hash, missing_txs, added_txs, fresh_txs, sigop_txs, fullrbf_txs, accelerated_txs, match_rate, expected_fees, expected_weight)
+        VALUE (FROM_UNIXTIME(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [audit.time, audit.height, audit.hash, JSON.stringify(audit.missingTxs),
+          JSON.stringify(audit.addedTxs), JSON.stringify(audit.freshTxs), JSON.stringify(audit.sigopTxs), JSON.stringify(audit.fullrbfTxs), JSON.stringify(audit.acceleratedTxs), audit.matchRate, audit.expectedFees, audit.expectedWeight]);
     } catch (e: any) {
       if (e.errno === 1062) { // ER_DUP_ENTRY - This scenario is possible upon node backend restart
         logger.debug(`Cannot save block audit for block ${audit.hash} because it has already been indexed, ignoring`);
@@ -66,7 +66,6 @@ class BlocksAuditRepositories {
         template,
         missing_txs as missingTxs,
         added_txs as addedTxs,
-        prioritized_txs as prioritizedTxs,
         fresh_txs as freshTxs,
         sigop_txs as sigopTxs,
         fullrbf_txs as fullrbfTxs,
@@ -82,7 +81,6 @@ class BlocksAuditRepositories {
       if (rows.length) {
         rows[0].missingTxs = JSON.parse(rows[0].missingTxs);
         rows[0].addedTxs = JSON.parse(rows[0].addedTxs);
-        rows[0].prioritizedTxs = JSON.parse(rows[0].prioritizedTxs);
         rows[0].freshTxs = JSON.parse(rows[0].freshTxs);
         rows[0].sigopTxs = JSON.parse(rows[0].sigopTxs);
         rows[0].fullrbfTxs = JSON.parse(rows[0].fullrbfTxs);
