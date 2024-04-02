@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../../services/api.service';
+import { StateService } from '../../../services/state.service';
 
 @Component({
   selector: 'app-assets-featured',
@@ -12,10 +13,11 @@ export class AssetsFeaturedComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
+    private stateService: StateService,
   ) { }
 
   ngOnInit(): void {
-    this.featuredAssets$ = this.apiService.listFeaturedAssets$();
+    this.featuredAssets$ = this.apiService.listFeaturedAssets$(this.stateService.network);
   }
 
 }

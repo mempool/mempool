@@ -21,6 +21,7 @@ import { ScriptpubkeyTypePipe } from './pipes/scriptpubkey-type-pipe/scriptpubke
 import { BytesPipe } from './pipes/bytes-pipe/bytes.pipe';
 import { WuBytesPipe } from './pipes/bytes-pipe/wubytes.pipe';
 import { FiatCurrencyPipe } from './pipes/fiat-currency.pipe';
+import { HttpErrorPipe } from './pipes/http-error-pipe/http-error.pipe';
 import { BlockchainComponent } from '../components/blockchain/blockchain.component';
 import { TimeComponent } from '../components/time/time.component';
 import { ClipboardComponent } from '../components/clipboard/clipboard.component';
@@ -33,6 +34,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { LanguageSelectorComponent } from '../components/language-selector/language-selector.component';
 import { FiatSelectorComponent } from '../components/fiat-selector/fiat-selector.component';
 import { RateUnitSelectorComponent } from '../components/rate-unit-selector/rate-unit-selector.component';
+import { BrowserOnlyDirective } from './directives/browser-only.directive';
+import { ServerOnlyDirective } from './directives/server-only.directive';
 import { ColoredPriceDirective } from './directives/colored-price.directive';
 import { NoSanitizePipe } from './pipes/no-sanitize.pipe';
 import { MempoolBlocksComponent } from '../components/mempool-blocks/mempool-blocks.component';
@@ -102,6 +105,7 @@ import { ClockFaceComponent } from '../components/clock-face/clock-face.componen
 import { ClockComponent } from '../components/clock/clock.component';
 import { CalculatorComponent } from '../components/calculator/calculator.component';
 import { BitcoinsatoshisPipe } from '../shared/pipes/bitcoinsatoshis.pipe';
+import { HttpErrorComponent } from '../shared/components/http-error/http-error.component';
 
 import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-directives/weight-directives';
 
@@ -131,7 +135,10 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     Decimal2HexPipe,
     FeeRoundingPipe,
     FiatCurrencyPipe,
+    HttpErrorPipe,
     ColoredPriceDirective,
+    BrowserOnlyDirective,
+    ServerOnlyDirective,
     BlockchainComponent,
     BlockViewComponent,
     EightBlocksComponent,
@@ -204,6 +211,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     AccelerationsListComponent,
     AccelerationStatsComponent,
     PendingStatsComponent,
+    HttpErrorComponent,
   ],
   imports: [
     CommonModule,
@@ -258,12 +266,15 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     VbytesPipe,
     WuBytesPipe,
     FiatCurrencyPipe,
+    HttpErrorPipe,
     CeilPipe,
     ShortenStringPipe,
     CapAddressPipe,
     Decimal2HexPipe,
     FeeRoundingPipe,
     ColoredPriceDirective,
+    BrowserOnlyDirective,
+    ServerOnlyDirective,
     NoSanitizePipe,
     BlockchainComponent,
     MempoolBlocksComponent,
@@ -321,6 +332,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     AccelerationsListComponent,
     AccelerationStatsComponent,
     PendingStatsComponent,
+    HttpErrorComponent,
 
     MempoolBlockOverviewComponent,
     ClockchainComponent,

@@ -85,7 +85,6 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
 
   gradientColors = {
     '': ['#9339f4', '#105fb0', '#9339f400'],
-    bisq: ['#9339f4', '#105fb0', '#9339f400'],
     // liquid: ['#116761', '#183550'],
     liquid: ['#09a197', '#0f62af', '#09a19700'],
     // 'liquidtestnet': ['#494a4a', '#272e46'],
@@ -101,7 +100,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   constructor(
     private router: Router,
     private relativeUrlPipe: RelativeUrlPipe,
-    private stateService: StateService,
+    public stateService: StateService,
     private electrsApiService: ElectrsApiService,
     private assetsService: AssetsService,
     @Inject(LOCALE_ID) private locale: string,

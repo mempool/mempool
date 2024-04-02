@@ -33,7 +33,7 @@ export class NodeChannels implements OnChanges {
     private amountShortenerPipe: AmountShortenerPipe,
     private zone: NgZone,
     private router: Router,
-    private stateService: StateService,
+    public stateService: StateService,
   ) {}
 
   ngOnChanges(): void {

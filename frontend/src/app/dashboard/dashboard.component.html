@@ -1,7 +1,7 @@
 
 <div class="container-xl dashboard-container" *ngIf="(network$ | async) !== 'liquid'; else liquidDashboard">
   <div class="row row-cols-1 row-cols-md-2" *ngIf="{ value: (mempoolInfoData$ | async) } as mempoolInfoData">
-    <ng-container *ngIf="(network$ | async) !== 'liquidtestnet'">
+    <ng-container>
       <div class="col card-wrapper">
         <div class="main-title" i18n="fees-box.transaction-fees">Transaction Fees</div>
         <div class="card">
@@ -29,7 +29,7 @@
               </label>
             </div>
           </div>
-          <div class="mempool-block-wrapper">
+          <div class="mempool-block-wrapper" *ngIf="webGlEnabled">
             <app-mempool-block-overview
               [index]="0"
               [resolution]="goggleResolution"
@@ -45,12 +45,12 @@
         <div class="card-body">
           <ng-container *ngTemplateOutlet="mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
             <h5 class="card-title mt-3" i18n="dashboard.incoming-transactions">Incoming Transactions</h5>
-            <div class="mempool-graph" *ngIf="{ value: (mempoolStats$ | async) } as mempoolStats">
+            <div class="mempool-graph" *ngIf="(mempoolStats$ | async) as mempoolStats">
               <app-incoming-transactions-graph
                 [height]="incomingGraphHeight"
                 [left]="50"
                 [right]="20"
-                [data]="mempoolStats.value?.weightPerSecond"
+                [data]="mempoolStats?.weightPerSecond"
                 [windowPreferenceOverride]="'2h'"
                 ></app-incoming-transactions-graph>
             </div>

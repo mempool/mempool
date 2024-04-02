@@ -44,13 +44,14 @@ export class NodesPerISPChartComponent implements OnInit {
     private amountShortenerPipe: AmountShortenerPipe,
     private router: Router,
     private zone: NgZone,
-    private stateService: StateService,
+    public stateService: StateService,
   ) {
   }
 
   ngOnInit(): void {
     if (!this.widget) {
       this.seoService.setTitle($localize`:@@8573a1576789bd2c4faeaed23037c4917812c6cf:Lightning Nodes Per ISP`);
+      this.seoService.setDescription($localize`:@@meta.description.lightning.nodes-per-isp:Browse the top 100 ISPs hosting Lightning nodes along with stats like total number of nodes per ISP, aggregate BTC capacity per ISP, and more`);
     }
 
     this.nodesPerAsObservable$ = combineLatest([
@@ -106,7 +107,7 @@ export class NodesPerISPChartComponent implements OnInit {
       );
 
     if (this.widget) {
-      this.sortBySubject.next(false);  
+      this.sortBySubject.next(false);
     }
   }
 

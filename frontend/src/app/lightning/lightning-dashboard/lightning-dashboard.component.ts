@@ -1,5 +1,5 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, HostListener, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, OnInit } from '@angular/core';
+import { Observable, merge } from 'rxjs';
 import { share } from 'rxjs/operators';
 import { INodesRanking, INodesStatistics } from '../../interfaces/node-api.interface';
 import { SeoService } from '../../services/seo.service';
@@ -24,6 +24,7 @@ export class LightningDashboardComponent implements OnInit, AfterViewInit {
     private seoService: SeoService,
     private ogService: OpenGraphService,
     private stateService: StateService,
+    private cd: ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
@@ -35,6 +36,12 @@ export class LightningDashboardComponent implements OnInit, AfterViewInit {
 
     this.nodesRanking$ = this.lightningApiService.getNodesRanking$().pipe(share());
     this.statistics$ = this.lightningApiService.getLatestStatistics$().pipe(share());
+
+    if (!this.stateService.isBrowser) {
+      merge(this.nodesRanking$, this.statistics$).subscribe(() => {
+        this.cd.markForCheck();
+      });
+    }
   }
 
   ngAfterViewInit(): void {

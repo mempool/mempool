@@ -1,8 +1,8 @@
 import { Inject, Injectable, PLATFORM_ID, LOCALE_ID } from '@angular/core';
 import { ReplaySubject, BehaviorSubject, Subject, fromEvent, Observable, merge } from 'rxjs';
 import { Transaction } from '../interfaces/electrs.interface';
-import { HealthCheckHost, IBackendInfo, MempoolBlock, MempoolBlockDelta, MempoolInfo, Recommendedfees, ReplacedTransaction, ReplacementInfo, TransactionStripped } from '../interfaces/websocket.interface';
-import { BlockExtended, CpfpInfo, DifficultyAdjustment, MempoolPosition, OptimizedMempoolStats, RbfTree } from '../interfaces/node-api.interface';
+import { HealthCheckHost, IBackendInfo, MempoolBlock, MempoolBlockDelta, MempoolInfo, Recommendedfees, ReplacedTransaction, ReplacementInfo } from '../interfaces/websocket.interface';
+import { BlockExtended, CpfpInfo, DifficultyAdjustment, MempoolPosition, OptimizedMempoolStats, RbfTree, TransactionStripped } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { filter, map, scan, shareReplay } from 'rxjs/operators';
@@ -25,8 +25,6 @@ export interface Env {
   SIGNET_ENABLED: boolean;
   LIQUID_ENABLED: boolean;
   LIQUID_TESTNET_ENABLED: boolean;
-  BISQ_ENABLED: boolean;
-  BISQ_SEPARATE_BACKEND: boolean;
   ITEMS_PER_PAGE: number;
   KEEP_BLOCKS_AMOUNT: number;
   OFFICIAL_MEMPOOL_SPACE: boolean;
@@ -40,7 +38,6 @@ export interface Env {
   PACKAGE_JSON_VERSION: string;
   MEMPOOL_WEBSITE_URL: string;
   LIQUID_WEBSITE_URL: string;
-  BISQ_WEBSITE_URL: string;
   MINING_DASHBOARD: boolean;
   LIGHTNING: boolean;
   AUDIT: boolean;
@@ -60,8 +57,6 @@ const defaultEnv: Env = {
   'LIQUID_ENABLED': false,
   'LIQUID_TESTNET_ENABLED': false,
   'BASE_MODULE': 'mempool',
-  'BISQ_ENABLED': false,
-  'BISQ_SEPARATE_BACKEND': false,
   'ITEMS_PER_PAGE': 10,
   'KEEP_BLOCKS_AMOUNT': 8,
   'OFFICIAL_MEMPOOL_SPACE': false,
@@ -74,7 +69,6 @@ const defaultEnv: Env = {
   'PACKAGE_JSON_VERSION': '',
   'MEMPOOL_WEBSITE_URL': 'https://mempool.space',
   'LIQUID_WEBSITE_URL': 'https://liquid.network',
-  'BISQ_WEBSITE_URL': 'https://bisq.markets',
   'MINING_DASHBOARD': true,
   'LIGHTNING': false,
   'AUDIT': false,
@@ -92,6 +86,7 @@ const defaultEnv: Env = {
 export class StateService {
   isBrowser: boolean = isPlatformBrowser(this.platformId);
   isMempoolSpaceBuild = window['isMempoolSpaceBuild'] ?? false;
+  backend: 'esplora' | 'electrum' | 'none' = 'esplora';
   network = '';
   lightning = false;
   blockVSize: number;
@@ -99,6 +94,7 @@ export class StateService {
   latestBlockHeight = -1;
   blocks: BlockExtended[] = [];
 
+  backend$ = new BehaviorSubject<'esplora' | 'electrum' | 'none'>('esplora');
   networkChanged$ = new ReplaySubject<string>(1);
   lightningChanged$ = new ReplaySubject<boolean>(1);
   blocksSubject$ = new BehaviorSubject<BlockExtended[]>([]);
@@ -151,6 +147,7 @@ export class StateService {
   hideAudit: BehaviorSubject<boolean>;
   fiatCurrency$: BehaviorSubject<string>;
   rateUnits$: BehaviorSubject<string>;
+  showMiningInfo$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   searchFocus$: Subject<boolean> = new Subject<boolean>();
   menuOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -213,11 +210,6 @@ export class StateService {
       }
     }, {}));
 
-    if (this.env.BASE_MODULE === 'bisq') {
-      this.network = this.env.BASE_MODULE;
-      this.networkChanged$.next(this.env.BASE_MODULE);
-    }
-
     this.networkChanged$.subscribe((network) => {
       this.transactions$ = new BehaviorSubject<TransactionStripped[]>(null);
       this.blocksSubject$.next([]);
@@ -256,6 +248,10 @@ export class StateService {
 
     const rateUnitPreference = this.storageService.getValue('rate-unit-preference');
     this.rateUnits$ = new BehaviorSubject<string>(rateUnitPreference || 'vb');
+
+    this.backend$.subscribe(backend => {
+      this.backend = backend;
+    });
   }
 
   setNetworkBasedonUrl(url: string) {
@@ -266,9 +262,9 @@ export class StateService {
     // /^\/                                         starts with a forward slash...
     // (?:[a-z]{2}(?:-[A-Z]{2})?\/)?                optional locale prefix (non-capturing)
     // (?:preview\/)?                               optional "preview" prefix (non-capturing)
-    // (bisq|testnet|liquidtestnet|liquid|signet)/  network string (captured as networkMatches[1])
+    // (testnet|liquidtestnet|liquid|signet)/  network string (captured as networkMatches[1])
     // ($|\/)                                       network string must end or end with a slash
-    const networkMatches = url.match(/^\/(?:[a-z]{2}(?:-[A-Z]{2})?\/)?(?:preview\/)?(bisq|testnet|liquidtestnet|liquid|signet)($|\/)/);
+    const networkMatches = url.match(/^\/(?:[a-z]{2}(?:-[A-Z]{2})?\/)?(?:preview\/)?(testnet|liquidtestnet|liquid|signet)($|\/)/);
     switch (networkMatches && networkMatches[1]) {
       case 'liquid':
         if (this.network !== 'liquid') {
@@ -297,12 +293,6 @@ export class StateService {
             this.network = 'testnet';
             this.networkChanged$.next('testnet');
           }
-        }
-        return;
-      case 'bisq':
-        if (this.network !== 'bisq') {
-          this.network = 'bisq';
-          this.networkChanged$.next('bisq');
         }
         return;
       default:

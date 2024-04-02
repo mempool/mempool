@@ -42,7 +42,7 @@
             <span>&nbsp;</span>
             <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: 'text-top'; font-size: 13px; color: #4a68b9"></fa-icon>
           </a>
-          <div class="mempool-block-wrapper">
+          <div class="mempool-block-wrapper" *ngIf="webGlEnabled">
             <app-mempool-block-overview [index]="0" [overrideColors]="getAcceleratorColor"></app-mempool-block-overview>
           </div>
         </div>
@@ -65,16 +65,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Avg block fees graph -->
-    <!-- <div class="col" style="margin-bottom: 1.47rem">
-      <div class="card">
-        <div class="card-body pl-lg-3 pr-lg-3 pl-2 pr-2">
-          <app-block-fee-rates-graph [attr.data-cy]="'hashrate-graph'" [widget]="true"></app-block-fee-rates-graph>
-          <div class="mt-1"><a [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" fragment="1m" i18n="dashboard.view-more">View more &raquo;</a></div>
-        </div>
-      </div>
-    </div> -->
 
     <!-- Recent Accelerations List -->
     <div class="col">

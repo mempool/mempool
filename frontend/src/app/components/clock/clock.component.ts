@@ -33,7 +33,6 @@ export class ClockComponent implements OnInit {
 
   gradientColors = {
     '': ['#9339f4', '#105fb0'],
-    bisq: ['#9339f4', '#105fb0'],
     liquid: ['#116761', '#183550'],
     'liquidtestnet': ['#494a4a', '#272e46'],
     testnet: ['#1d486f', '#183550'],
@@ -110,8 +109,8 @@ export class ClockComponent implements OnInit {
   
   @HostListener('window:resize', ['$event'])
   resizeCanvas(): void {
-    const windowWidth = this.limitWidth || window.innerWidth;
-    const windowHeight = this.limitHeight || window.innerHeight;
+    const windowWidth = this.limitWidth || window.innerWidth || 800;
+    const windowHeight = this.limitHeight || window.innerHeight || 800;
     this.chainWidth = windowWidth;
     this.chainHeight = Math.max(60, windowHeight / 8);
     this.clockSize = Math.min(800, windowWidth, windowHeight - (1.4 * this.chainHeight));

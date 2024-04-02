@@ -52,9 +52,6 @@ export class ServicesApiServices {
     }
     this.apiBasePath = ''; // assume mainnet by default
     this.stateService.networkChanged$.subscribe((network) => {
-      if (network === 'bisq' && !this.stateService.env.BISQ_SEPARATE_BACKEND) {
-        network = '';
-      }
       this.apiBasePath = network ? '/' + network : '';
     });
 
@@ -102,12 +99,6 @@ export class ServicesApiServices {
     }
 
     return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/account`);
-  }
-
-  getNodeOwner$(publicKey: string): Observable<any> {
-    let params = new HttpParams()
-      .set('node_public_key', publicKey);
-    return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/lightning/claim/current`, { params, observe: 'response' });
   }
 
   getUserMenuGroups$(): Observable<MenuGroup[]> {

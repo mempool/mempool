@@ -9,7 +9,8 @@
   justify-content: space-between;
   padding: 10px 15px;
   text-align: left;
-  min-width: 320px;
+  min-width: 340px;
+  max-width: 340px;
   pointer-events: none;
   z-index: 11;
 
@@ -18,8 +19,14 @@
   }
 }
 
-.td-width {
-  padding-right: 10px;
+th, td {
+  &.label {
+    width: 30%;
+  }
+  &.value {
+    width: 70%;
+    text-align: end;
+  }
 }
 
 .badge.badge-accelerated {
@@ -27,6 +34,40 @@
   box-shadow: #ad7de57f 0px 0px 12px -2px;
   color: white;
   animation: acceleratePulse 1s infinite;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 0.25em;
+  margin-top: 0.2em;
+  max-width: 100%;
+
+  .badge {
+    border-radius: 0.2rem;
+    padding: 0.2em 0.5em;
+    margin-right: 0.25em;
+  }
+
+  .filter-tag {
+    background: #181b2daf;
+    border: solid 1px #105fb0;
+    color: white;
+    transition: background-color 300ms;
+
+    &.matching {
+      background-color: #105fb0;
+    }
+  }
+
+  &.any-mode {
+    .filter-tag {
+      border: solid 1px #1a9436;
+      &.matching {
+        background-color: #1a9436;
+      }
+    }
+  }
 }
 
 @keyframes acceleratePulse {

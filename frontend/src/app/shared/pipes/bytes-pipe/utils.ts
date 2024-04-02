@@ -323,7 +323,7 @@ export function hasTouchScreen(): boolean {
     // @ts-ignore
     hasTouchScreen = navigator.msMaxTouchPoints > 0;
   } else {
-    const mQ = matchMedia?.('(pointer:coarse)');
+    const mQ = window.matchMedia?.('(pointer:coarse)');
     if (mQ?.media === '(pointer:coarse)') {
       hasTouchScreen = !!mQ.matches;
     } else if ('orientation' in window) {

@@ -1,6 +1,0 @@
-<ng-container *ngIf="(forceFiat || (viewFiat$ | async)) && (conversions$ | async) as conversions; else viewFiatVin">
-  <span [class.green-color]="green">{{ conversions.USD * bsq / 100 * (bsqPrice$ | async) / 100000000 | currency:'USD':'symbol':'1.2-2' }}</span>
-</ng-container>
-<ng-template #viewFiatVin>
-  {{ bsq / 100 | number : digitsInfo }} <span class="symbol">BSQ</span>
-</ng-template>

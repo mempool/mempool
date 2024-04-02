@@ -24,7 +24,7 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
   timeLtrSubscription: Subscription;
   timeLtr: boolean = this.stateService.timeLtr.value;
   chainTipSubscription: Subscription;
-  chainTip: number = 100;
+  chainTip: number = -1;
   tipIsSet: boolean = false;
   lastMark: MarkBlockState;
   markBlockSubscription: Subscription;
@@ -59,7 +59,7 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
   hasMenu = false;
 
   constructor(
-    private stateService: StateService,
+    public stateService: StateService,
     private cd: ChangeDetectorRef,
   ) {
     this.isiOS = ['iPhone','iPod','iPad'].includes((navigator as any)?.userAgentData?.platform || navigator.platform);

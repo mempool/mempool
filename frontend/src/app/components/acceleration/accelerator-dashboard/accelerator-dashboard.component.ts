@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostListener, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { SeoService } from '../../../services/seo.service';
 import { OpenGraphService } from '../../../services/opengraph.service';
 import { WebsocketService } from '../../../services/websocket.service';
@@ -10,6 +10,7 @@ import { hexToColor } from '../../block-overview-graph/utils';
 import TxView from '../../block-overview-graph/tx-view';
 import { feeLevels, mempoolFeeColors } from '../../../app.constants';
 import { ServicesApiServices } from '../../../services/services-api.service';
+import { detectWebGL } from '../../../shared/graphs.utils';
 
 const acceleratedColor: Color = hexToColor('8F5FF6');
 const normalColors = mempoolFeeColors.map(hex => hexToColor(hex + '5F'));
@@ -30,6 +31,7 @@ export class AcceleratorDashboardComponent implements OnInit {
   pendingAccelerations$: Observable<Acceleration[]>;
   minedAccelerations$: Observable<Acceleration[]>;
   loadingBlocks: boolean = true;
+  webGlEnabled = true;
 
   graphHeight: number = 300;
 
@@ -39,8 +41,10 @@ export class AcceleratorDashboardComponent implements OnInit {
     private websocketService: WebsocketService,
     private serviceApiServices: ServicesApiServices,
     private stateService: StateService,
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
-    this.seoService.setTitle($localize`:@@a681a4e2011bb28157689dbaa387de0dd0aa0c11:Accelerator Dashboard`);
+    this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
+    this.seoService.setTitle($localize`:@@6b867dc61c6a92f3229f1950f9f2d414790cce95:Accelerator Dashboard`);
     this.ogService.setManualOgImage('accelerator.jpg');
   }
 
@@ -48,7 +52,7 @@ export class AcceleratorDashboardComponent implements OnInit {
     this.onResize();
     this.websocketService.want(['blocks', 'mempool-blocks', 'stats']);
 
-    this.pendingAccelerations$ = interval(30000).pipe(
+    this.pendingAccelerations$ = (this.stateService.isBrowser ? interval(30000) : of(null)).pipe(
       startWith(true),
       switchMap(() => {
         return this.serviceApiServices.getAccelerations$().pipe(

@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, HostListener, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, HostListener, ViewChild, ElementRef, Inject, ChangeDetectorRef } from '@angular/core';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import {
@@ -21,6 +21,8 @@ import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
 import { StorageService } from '../../services/storage.service';
 import { seoDescriptionNetwork } from '../../shared/common.utils';
+import { getTransactionFlags } from '../../shared/transaction.utils';
+import { Filter, toFilters, TransactionFlags } from '../../shared/filters.utils';
 import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration } from '../../interfaces/node-api.interface';
 import { LiquidUnblinding } from './liquid-ublinding';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
@@ -28,6 +30,7 @@ import { Price, PriceService } from '../../services/price.service';
 import { isFeatureActive } from '../../bitcoin.utils';
 import { ServicesApiServices } from '../../services/services-api.service';
 import { EnterpriseService } from '../../services/enterprise.service';
+import { ZONE_SERVICE } from '../../injection-tokens';
 
 interface Pool {
   id: number;
@@ -39,6 +42,7 @@ interface AuditStatus {
   seen?: boolean;
   expected?: boolean;
   added?: boolean;
+  prioritized?: boolean;
   delayed?: number;
   accelerated?: boolean;
   conflict?: boolean;
@@ -88,6 +92,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   adjustedVsize: number | null;
   pool: Pool | null;
   auditStatus: AuditStatus | null;
+  filters: Filter[] = [];
   showCpfpDetails = false;
   fetchCpfp$ = new Subject<string>();
   fetchRbfHistory$ = new Subject<string>();
@@ -101,7 +106,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   inputIndex: number;
   outputIndex: number;
   graphExpanded: boolean = false;
-  graphWidth: number = 1000;
+  graphWidth: number = 1068;
   graphHeight: number = 360;
   inOutLimit: number = 150;
   maxInOut: number = 0;
@@ -141,6 +146,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     private priceService: PriceService,
     private storageService: StorageService,
     private enterpriseService: EnterpriseService,
+    private cd: ChangeDetectorRef,
+    @Inject(ZONE_SERVICE) private zoneService: any,
   ) {}
 
   ngOnInit() {
@@ -311,13 +318,15 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           fetchAudit ? this.apiService.getBlockAudit$(hash).pipe(
             map(audit => {
               const isAdded = audit.addedTxs.includes(txid);
+              const isPrioritized = audit.prioritizedTxs.includes(txid);
               const isAccelerated = audit.acceleratedTxs.includes(txid);
               const isConflict = audit.fullrbfTxs.includes(txid);
               const isExpected = audit.template.some(tx => tx.txid === txid);
               return {
-                seen: isExpected || !(isAdded || isConflict),
+                seen: isExpected || isPrioritized || isAccelerated,
                 expected: isExpected,
                 added: isAdded,
+                prioritized: isPrioritized,
                 conflict: isConflict,
                 accelerated: isAccelerated,
               };
@@ -356,7 +365,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
-    this.subscription = this.route.paramMap
+    this.subscription = this.zoneService.wrapObservable(this.route.paramMap
       .pipe(
         switchMap((params: ParamMap) => {
           const urlMatch = (params.get('id') || '').split(':');
@@ -430,7 +439,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           }
           return of(tx);
         })
-      )
+      ))
       .subscribe((tx: Transaction) => {
           if (!tx) {
             this.fetchCachedTx$.next(this.txId);
@@ -503,6 +512,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           ).subscribe();
 
           setTimeout(() => { this.applyFragment(); }, 0);
+
+          this.cd.detectChanges();
         },
         (error) => {
           this.error = error;
@@ -672,6 +683,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.segwitEnabled = !this.tx.status.confirmed || isFeatureActive(this.stateService.network, this.tx.status.block_height, 'segwit');
       this.taprootEnabled = !this.tx.status.confirmed || isFeatureActive(this.stateService.network, this.tx.status.block_height, 'taproot');
       this.rbfEnabled = !this.tx.status.confirmed || isFeatureActive(this.stateService.network, this.tx.status.block_height, 'rbf');
+      this.tx.flags = getTransactionFlags(this.tx);
+      this.filters = this.tx.flags ? toFilters(this.tx.flags).filter(f => f.txPage) : [];
     } else {
       this.segwitEnabled = false;
       this.taprootEnabled = false;
@@ -718,6 +731,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.hasEffectiveFeeRate = false;
     this.rbfInfo = null;
     this.rbfReplaces = [];
+    this.filters = [];
     this.showCpfpDetails = false;
     this.accelerationInfo = null;
     this.txInBlockIndex = null;
@@ -785,9 +799,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostListener('window:resize', ['$event'])
   setGraphSize(): void {
     this.isMobile = window.innerWidth < 850;
-    if (this.graphContainer?.nativeElement) {
+    if (this.graphContainer?.nativeElement && this.stateService.isBrowser) {
       setTimeout(() => {
-        if (this.graphContainer?.nativeElement) {
+        if (this.graphContainer?.nativeElement?.clientWidth) {
           this.graphWidth = this.graphContainer.nativeElement.clientWidth;
         } else {
           setTimeout(() => { this.setGraphSize(); }, 1);

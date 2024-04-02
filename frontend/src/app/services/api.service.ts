@@ -29,9 +29,6 @@ export class ApiService {
     }
     this.apiBasePath = ''; // assume mainnet by default
     this.stateService.networkChanged$.subscribe((network) => {
-      if (network === 'bisq' && !this.stateService.env.BISQ_SEPARATE_BACKEND) {
-        network = '';
-      }
       this.apiBasePath = network ? '/' + network : '';
     });
   }
@@ -228,8 +225,9 @@ export class ApiService {
     return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/utxos/emergency-spent/stats');
   }
 
-  listFeaturedAssets$(): Observable<any[]> {
-    return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/assets/featured');
+  listFeaturedAssets$(network: string = 'liquid'): Observable<any[]> {
+    if (network === 'liquid') return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/assets/featured');
+    return of([]);
   }
 
   getAssetGroup$(id: string): Observable<any> {

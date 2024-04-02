@@ -37,7 +37,7 @@ export class NodesPerCountryChartComponent implements OnInit {
     private seoService: SeoService,
     private amountShortenerPipe: AmountShortenerPipe,
     private zone: NgZone,
-    private stateService: StateService,
+    public stateService: StateService,
     private router: Router,
   ) {
   }

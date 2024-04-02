@@ -1,6 +1,6 @@
 <app-block-overview-graph
   #blockGraph
-  [isLoading]="isLoading$ | async"
+  [isLoading]="(isLoading$ | async) || !stateService.isBrowser"
   [resolution]="resolution"
   [blockLimit]="stateService.blockVSize"
   [orientation]="timeLtr ? 'right' : 'left'"

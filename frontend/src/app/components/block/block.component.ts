@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChildren, QueryList, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
@@ -108,8 +108,10 @@ export class BlockComponent implements OnInit, OnDestroy {
     private priceService: PriceService,
     private cacheService: CacheService,
     private servicesApiService: ServicesApiServices,
+    private cd: ChangeDetectorRef,
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
-    this.webGlEnabled = detectWebGL();
+    this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
   }
 
   ngOnInit() {
@@ -302,8 +304,9 @@ export class BlockComponent implements OnInit, OnDestroy {
       throttleTime(300, asyncScheduler, { leading: true, trailing: true }),
       shareReplay(1)
     );
-    this.transactionSubscription = block$.pipe(
-      switchMap((block) => this.electrsApiService.getBlockTransactions$(block.id)
+    this.transactionSubscription = combineLatest([block$, this.route.queryParams]).pipe(
+      tap(([_, queryParams]) => this.page = +queryParams['page'] || 1),
+      switchMap(([block, _]) => this.electrsApiService.getBlockTransactions$(block.id, (this.page - 1) * this.itemsPerPage)
         .pipe(
           catchError((err) => {
             this.transactionsError = err;
@@ -317,6 +320,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       }
       this.transactions = transactions;
       this.isLoadingTransactions = false;
+      this.cd.markForCheck();
     },
     (error) => {
       this.error = error;
@@ -367,6 +371,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         const inTemplate = {};
         const inBlock = {};
         const isAdded = {};
+        const isPrioritized = {};
         const isCensored = {};
         const isMissing = {};
         const isSelected = {};
@@ -389,6 +394,9 @@ export class BlockComponent implements OnInit, OnDestroy {
           }
           for (const txid of blockAudit.addedTxs) {
             isAdded[txid] = true;
+          }
+          for (const txid of blockAudit.prioritizedTxs || []) {
+            isPrioritized[txid] = true;
           }
           for (const txid of blockAudit.missingTxs) {
             isCensored[txid] = true;
@@ -439,6 +447,8 @@ export class BlockComponent implements OnInit, OnDestroy {
               tx.status = null;
             } else if (isAdded[tx.txid]) {
               tx.status = 'added';
+            } else if (isPrioritized[tx.txid]) {
+              tx.status = 'prioritized';
             } else if (inTemplate[tx.txid]) {
               tx.status = 'found';
             } else if (isRbf[tx.txid]) {
@@ -456,9 +466,9 @@ export class BlockComponent implements OnInit, OnDestroy {
             inBlock[tx.txid] = true;
           }
 
-          blockAudit.feeDelta = blockAudit.expectedFees > 0 ? (blockAudit.expectedFees - (this.block.extras.totalFees + this.oobFees)) / blockAudit.expectedFees : 0;
-          blockAudit.weightDelta = blockAudit.expectedWeight > 0 ? (blockAudit.expectedWeight - this.block.weight) / blockAudit.expectedWeight : 0;
-          blockAudit.txDelta = blockAudit.template.length > 0 ? (blockAudit.template.length - this.block.tx_count) / blockAudit.template.length : 0;
+          blockAudit.feeDelta = blockAudit.expectedFees > 0 ? (blockAudit.expectedFees - (this.block?.extras.totalFees + this.oobFees)) / blockAudit.expectedFees : 0;
+          blockAudit.weightDelta = blockAudit.expectedWeight > 0 ? (blockAudit.expectedWeight - this.block?.weight) / blockAudit.expectedWeight : 0;
+          blockAudit.txDelta = blockAudit.template.length > 0 ? (blockAudit.template.length - this.block?.tx_count) / blockAudit.template.length : 0;
           this.blockAudit = blockAudit;
           this.setAuditAvailable(true);
         } else {
@@ -470,6 +480,7 @@ export class BlockComponent implements OnInit, OnDestroy {
 
       this.isLoadingOverview = false;
       this.setupBlockGraphs();
+      this.cd.markForCheck();
     });
 
     this.oobSubscription = block$.pipe(
@@ -592,19 +603,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.transactions = null;
     this.transactionsError = null;
     target.scrollIntoView(); // works for chrome
-
-    this.electrsApiService.getBlockTransactions$(this.block.id, start)
-      .pipe(
-        catchError((err) => {
-          this.transactionsError = err;
-          return of([]);
-      })
-      )
-     .subscribe((transactions) => {
-        this.transactions = transactions;
-        this.isLoadingTransactions = false;
-        target.scrollIntoView(); // works for firefox
-      });
+    this.router.navigate([], { queryParams: { page: page }, queryParamsHandling: 'merge' });
   }
 
   toggleShowDetails() {

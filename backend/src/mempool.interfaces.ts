@@ -37,6 +37,7 @@ export interface BlockAudit {
   sigopTxs: string[],
   fullrbfTxs: string[],
   addedTxs: string[],
+  prioritizedTxs: string[],
   acceleratedTxs: string[],
   matchRate: number,
   expectedFees?: number,
@@ -107,6 +108,7 @@ export interface MempoolTransactionExtended extends TransactionExtended {
   inputs?: number[];
   lastBoosted?: number;
   cpfpDirty?: boolean;
+  cpfpUpdated?: number;
 }
 
 export interface AuditTransaction {
@@ -141,6 +143,12 @@ export interface CompactThreadTransaction {
   cpfpRoot?: number;
   cpfpChecked?: boolean;
   dirty?: boolean;
+}
+
+export interface GbtCandidates {
+  txs: { [txid: string ]: boolean },
+  added: MempoolTransactionExtended[];
+  removed: MempoolTransactionExtended[];
 }
 
 export interface ThreadTransaction {
@@ -181,6 +189,9 @@ export interface CpfpInfo {
   bestDescendant?: BestDescendant | null;
   descendants?: Ancestor[];
   effectiveFeePerVsize?: number;
+  sigops?: number;
+  adjustedVsize?: number,
+  acceleration?: boolean,
 }
 
 export interface TransactionStripped {
@@ -190,6 +201,7 @@ export interface TransactionStripped {
   value: number;
   acc?: boolean;
   rate?: number; // effective fee rate
+  time?: number;
 }
 
 export interface TransactionClassified extends TransactionStripped {
@@ -197,7 +209,7 @@ export interface TransactionClassified extends TransactionStripped {
 }
 
 // [txid, fee, vsize, value, rate, flags, acceleration?]
-export type TransactionCompressed = [string, number, number, number, number, number, 1?];
+export type TransactionCompressed = [string, number, number, number, number, number, number, 1?];
 // [txid, rate, flags, acceleration?]
 export type MempoolDeltaChange = [string, number, number, (1|0)];
 
@@ -401,13 +413,28 @@ export interface OptimizedStatistic {
   vsizes: number[];
 }
 
+export interface TxTrackingInfo {
+  replacedBy?: string,
+  position?: { block: number, vsize: number, accelerated?: boolean },
+  cpfp?: {
+    ancestors?: Ancestor[],
+    bestDescendant?: Ancestor | null,
+    descendants?: Ancestor[] | null,
+    effectiveFeePerVsize?: number | null,
+    sigops: number,
+    adjustedVsize: number,
+  },
+  utxoSpent?: { [vout: number]: { vin: number, txid: string } },
+  accelerated?: boolean,
+  confirmed?: boolean
+}
+
 export interface WebsocketResponse {
   action: string;
   data: string[];
   'track-tx': string;
   'track-address': string;
   'watch-mempool': boolean;
-  'track-bisq-market': string;
 }
 
 export interface VbytesPerSecond {
@@ -429,6 +456,7 @@ export interface IBackendInfo {
   gitCommit: string;
   version: string;
   lightning: boolean;
+  backend: 'esplora' | 'electrum' | 'none';
 }
 
 export interface IDifficultyAdjustment {

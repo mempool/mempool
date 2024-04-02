@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild, HostListener, Input, Output, EventEmitter, NgZone, AfterViewInit, OnDestroy, OnChanges } from '@angular/core';
-import { TransactionStripped } from '../../interfaces/websocket.interface';
+import { TransactionStripped } from '../../interfaces/node-api.interface';
 import { FastVertexArray } from './fast-vertex-array';
 import BlockScene from './block-scene';
 import TxSprite from './tx-sprite';
@@ -20,7 +20,7 @@ const unmatchedAuditColors = {
   censored: setOpacity(defaultAuditColors.censored, unmatchedOpacity),
   missing: setOpacity(defaultAuditColors.missing, unmatchedOpacity),
   added: setOpacity(defaultAuditColors.added, unmatchedOpacity),
-  selected: setOpacity(defaultAuditColors.selected, unmatchedOpacity),
+  prioritized: setOpacity(defaultAuditColors.prioritized, unmatchedOpacity),
   accelerated: setOpacity(defaultAuditColors.accelerated, unmatchedOpacity),
 };
 
@@ -32,6 +32,7 @@ const unmatchedAuditColors = {
 export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, OnChanges {
   @Input() isLoading: boolean;
   @Input() resolution: number;
+  @Input() autofit: boolean = false;
   @Input() blockLimit: number;
   @Input() orientation = 'left';
   @Input() flip = true;
@@ -45,6 +46,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   @Input() excludeFilters: string[] = [];
   @Input() filterFlags: bigint | null = null;
   @Input() filterMode: FilterMode = 'and';
+  @Input() relativeTime: number | null;
   @Input() blockConversion: Price;
   @Input() overrideColors: ((tx: TxView) => Color) | null = null;
   @Output() txClickEvent = new EventEmitter<{ tx: TransactionStripped, keyModifier: boolean}>();
@@ -83,9 +85,9 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   constructor(
     readonly ngZone: NgZone,
     readonly elRef: ElementRef,
-    private stateService: StateService,
+    public stateService: StateService,
   ) {
-    this.webGlEnabled = detectWebGL();
+    this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
     this.vertexArray = new FastVertexArray(512, TxSprite.dataSize);
     this.searchSubscription = this.stateService.searchText$.subscribe((text) => {
       this.searchText = text;
@@ -94,13 +96,15 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   }
 
   ngAfterViewInit(): void {
-    this.canvas.nativeElement.addEventListener('webglcontextlost', this.handleContextLost, false);
-    this.canvas.nativeElement.addEventListener('webglcontextrestored', this.handleContextRestored, false);
-    this.gl = this.canvas.nativeElement.getContext('webgl');
+    if (this.canvas) {
+      this.canvas.nativeElement.addEventListener('webglcontextlost', this.handleContextLost, false);
+      this.canvas.nativeElement.addEventListener('webglcontextrestored', this.handleContextRestored, false);
+      this.gl = this.canvas.nativeElement.getContext('webgl');
 
-    if (this.gl) {
-      this.initCanvas();
-      this.resizeCanvas();
+      if (this.gl) {
+        this.initCanvas();
+        this.resizeCanvas();
+      }
     }
   }
 
@@ -142,8 +146,10 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
       cancelAnimationFrame(this.animationFrameRequest);
       clearTimeout(this.animationHeartBeat);
     }
-    this.canvas.nativeElement.removeEventListener('webglcontextlost', this.handleContextLost);
-    this.canvas.nativeElement.removeEventListener('webglcontextrestored', this.handleContextRestored);
+    if (this.canvas) {
+      this.canvas.nativeElement.removeEventListener('webglcontextlost', this.handleContextLost);
+      this.canvas.nativeElement.removeEventListener('webglcontextrestored', this.handleContextRestored);
+    }
   }
 
   clear(direction): void {
@@ -202,6 +208,10 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   update(add: TransactionStripped[], remove: string[], change: { txid: string, rate: number | undefined, acc: boolean | undefined }[], direction: string = 'left', resetLayout: boolean = false): void {
     if (this.scene) {
+      add = add.filter(tx => !this.scene.txs[tx.txid]);
+      remove = remove.filter(txid => this.scene.txs[txid]);
+      change = change.filter(tx => this.scene.txs[tx.txid]);
+
       this.scene.update(add, remove, change, direction, resetLayout);
       this.start();
       this.updateSearchHighlight();
@@ -209,6 +219,10 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   }
 
   initCanvas(): void {
+    if (!this.canvas || !this.gl) {
+      return;
+    }
+
     this.gl.clearColor(0.0, 0.0, 0.0, 0.0);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
@@ -262,24 +276,26 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   @HostListener('window:resize', ['$event'])
   resizeCanvas(): void {
-    this.cssWidth = this.canvas.nativeElement.offsetParent.clientWidth;
-    this.cssHeight = this.canvas.nativeElement.offsetParent.clientHeight;
-    this.displayWidth = window.devicePixelRatio * this.cssWidth;
-    this.displayHeight = window.devicePixelRatio * this.cssHeight;
-    this.canvas.nativeElement.width = this.displayWidth;
-    this.canvas.nativeElement.height = this.displayHeight;
-    if (this.gl) {
-      this.gl.viewport(0, 0, this.displayWidth, this.displayHeight);
-    }
-    if (this.scene) {
-      this.scene.resize({ width: this.displayWidth, height: this.displayHeight, animate: false });
-      this.start();
-    } else {
-      this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: this.resolution,
-        blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray,
-        highlighting: this.auditHighlighting, animationDuration: this.animationDuration, animationOffset: this.animationOffset,
+    if (this.canvas) {
+      this.cssWidth = this.canvas.nativeElement.offsetParent.clientWidth;
+      this.cssHeight = this.canvas.nativeElement.offsetParent.clientHeight;
+      this.displayWidth = window.devicePixelRatio * this.cssWidth;
+      this.displayHeight = window.devicePixelRatio * this.cssHeight;
+      this.canvas.nativeElement.width = this.displayWidth;
+      this.canvas.nativeElement.height = this.displayHeight;
+      if (this.gl) {
+        this.gl.viewport(0, 0, this.displayWidth, this.displayHeight);
+      }
+      if (this.scene) {
+        this.scene.resize({ width: this.displayWidth, height: this.displayHeight, animate: false });
+        this.start();
+      } else {
+        this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: this.resolution,
+          blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray,
+          highlighting: this.auditHighlighting, animationDuration: this.animationDuration, animationOffset: this.animationOffset,
         colorFunction: this.getColorFunction() });
-      this.start();
+        this.start();
+      }
     }
   }
 
@@ -406,6 +422,9 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   @HostListener('pointerup', ['$event'])
   onClick(event) {
+    if (!this.canvas) {
+      return;
+    }
     if (event.target === this.canvas.nativeElement && event.pointerType === 'touch') {
       this.setPreviewTx(event.offsetX, event.offsetY, true);
     } else if (event.target === this.canvas.nativeElement) {
@@ -417,6 +436,9 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   @HostListener('pointermove', ['$event'])
   onPointerMove(event) {
+    if (!this.canvas) {
+      return;
+    }
     if (event.target === this.canvas.nativeElement) {
       this.setPreviewTx(event.offsetX, event.offsetY, false);
     } else {

@@ -1,6 +1,11 @@
 footer {
   background-color: #1d1f31;
   margin-top: 30px;
+  &.services {
+    @media (min-width: 768px) {
+      padding-left: 240px;
+    }
+  }
 }
 
 footer a {
@@ -159,6 +164,61 @@ footer .sponsor {
 
   .explore-tagline-mobile {
     display: none;
+  }
+}
+
+.services {
+  @media (min-width: 901px) and (max-width: 1147px) {
+    :host-context(.ltr-layout) .services .language-selector {
+      float: none !important;
+    }
+    :host-context(.rtl-layout) .services .language-selector {
+      float: none !important;
+    }
+
+    .explore-tagline-desktop {
+      display: none;
+    }
+
+    .explore-tagline-mobile {
+      display: block;
+    }
+
+    .main-logo {
+      width: 220px;
+    }
+
+    footer .row.link-tree {
+      font-size: 16px;
+    }
+
+    footer .row.social-links svg {
+      width: 20px;
+    }
+
+    footer .row.link-tree {
+      display: block;
+      text-align: center;
+    }
+
+    footer .link-tree .links {
+      margin-bottom: 20px;
+    }
+
+    footer .row.main .branding {
+      text-align: center;
+      padding: 0px;
+    }
+
+    .main-logo {
+      display: block;
+      margin: 0 auto;
+    }
+
+    footer .site-options {
+      float: none;
+      margin-top: 15px;
+    }
   }
 }
 

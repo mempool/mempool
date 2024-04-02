@@ -154,7 +154,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       });
     } else {
       this.priceService.getBlockPrice$(this.blockTime, true, this.currency).pipe(
-        tap((price) => this.transactions.forEach((tx) => tx['price'] = price)),
+        tap((price) => this.transactions?.forEach((tx) => tx['price'] = price)),
       ).subscribe();
     }
   }
@@ -239,7 +239,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
 
       if (this.blockTime && this.transactions?.length && this.currency) {
         this.priceService.getBlockPrice$(this.blockTime, true, this.currency).pipe(
-          tap((price) => this.transactions.forEach((tx) => tx['price'] = price)),
+          tap((price) => this.transactions?.forEach((tx) => tx['price'] = price)),
         ).subscribe();
       }
       const txIds = this.transactions.filter((tx) => !tx._outspends).map((tx) => tx.txid);
