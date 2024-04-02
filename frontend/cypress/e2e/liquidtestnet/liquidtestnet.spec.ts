@@ -1,4 +1,4 @@
-describe.skip('Liquid Testnet', () => {
+describe('Liquid Testnet', () => {
   const baseModule = Cypress.env('BASE_MODULE');
   const basePath = '/testnet';
 
