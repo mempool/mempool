@@ -17,12 +17,7 @@ const networkModules = {
       { name: 'liquid', path: '' },
       { name: 'liquidtestnet', path: '/testnet' },
     ],
-  },
-  bisq: {
-    subnets: [
-      { name: 'bisq', path: '' },
-    ],
-  },
+  }
 };
 const networks = Object.keys(networkModules);
 
@@ -44,7 +39,7 @@ export class NavigationService {
     });
   }
 
-  // For each network (bitcoin/liquid/bisq), find and save the longest url path compatible with the current route
+  // For each network (bitcoin/liquid), find and save the longest url path compatible with the current route
   updateSubnetPaths(root: ActivatedRouteSnapshot): void {
     let path = '';
     const networkPaths = {};

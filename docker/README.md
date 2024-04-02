@@ -325,25 +325,6 @@ Corresponding `docker-compose.yml` overrides:
 
 `mempool-config.json`:
 ```json
-  "BISQ": {
-    "ENABLED": false,
-    "DATA_PATH": "/bisq/statsnode-data/btc_mainnet/db"
-  }
-```
-
-Corresponding `docker-compose.yml` overrides:
-```yaml
-  api:
-    environment:
-      BISQ_ENABLED: ""
-      BISQ_DATA_PATH: ""
-      ...
-```
-
-<br/>
-
-`mempool-config.json`:
-```json
   "SOCKS5PROXY": {
     "ENABLED": false,
     "HOST": "127.0.0.1",

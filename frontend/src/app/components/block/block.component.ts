@@ -371,6 +371,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         const inTemplate = {};
         const inBlock = {};
         const isAdded = {};
+        const isPrioritized = {};
         const isCensored = {};
         const isMissing = {};
         const isSelected = {};
@@ -393,6 +394,9 @@ export class BlockComponent implements OnInit, OnDestroy {
           }
           for (const txid of blockAudit.addedTxs) {
             isAdded[txid] = true;
+          }
+          for (const txid of blockAudit.prioritizedTxs || []) {
+            isPrioritized[txid] = true;
           }
           for (const txid of blockAudit.missingTxs) {
             isCensored[txid] = true;
@@ -443,6 +447,8 @@ export class BlockComponent implements OnInit, OnDestroy {
               tx.status = null;
             } else if (isAdded[tx.txid]) {
               tx.status = 'added';
+            } else if (isPrioritized[tx.txid]) {
+              tx.status = 'prioritized';
             } else if (inTemplate[tx.txid]) {
               tx.status = 'found';
             } else if (isRbf[tx.txid]) {
@@ -460,9 +466,9 @@ export class BlockComponent implements OnInit, OnDestroy {
             inBlock[tx.txid] = true;
           }
 
-          blockAudit.feeDelta = blockAudit.expectedFees > 0 ? (blockAudit.expectedFees - (this.block.extras.totalFees + this.oobFees)) / blockAudit.expectedFees : 0;
-          blockAudit.weightDelta = blockAudit.expectedWeight > 0 ? (blockAudit.expectedWeight - this.block.weight) / blockAudit.expectedWeight : 0;
-          blockAudit.txDelta = blockAudit.template.length > 0 ? (blockAudit.template.length - this.block.tx_count) / blockAudit.template.length : 0;
+          blockAudit.feeDelta = blockAudit.expectedFees > 0 ? (blockAudit.expectedFees - (this.block?.extras.totalFees + this.oobFees)) / blockAudit.expectedFees : 0;
+          blockAudit.weightDelta = blockAudit.expectedWeight > 0 ? (blockAudit.expectedWeight - this.block?.weight) / blockAudit.expectedWeight : 0;
+          blockAudit.txDelta = blockAudit.template.length > 0 ? (blockAudit.template.length - this.block?.tx_count) / blockAudit.template.length : 0;
           this.blockAudit = blockAudit;
           this.setAuditAvailable(true);
         } else {
