@@ -360,14 +360,6 @@ class WebsocketHandler {
             client['track-donation'] = parsedMessage['track-donation'];
           }
 
-          if (parsedMessage['track-bisq-market']) {
-            if (/^[a-z]{3}_[a-z]{3}$/.test(parsedMessage['track-bisq-market'])) {
-              client['track-bisq-market'] = parsedMessage['track-bisq-market'];
-            } else {
-              client['track-bisq-market'] = null;
-            }
-          }
-
           if (Object.keys(response).length) {
             client.send(this.serializeResponse(response));
           }

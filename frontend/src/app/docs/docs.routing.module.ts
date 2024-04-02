@@ -8,7 +8,7 @@ const browserWindowEnv = browserWindow.__env || {};
 
 let routes: Routes = [];
 
-if (browserWindowEnv.BASE_MODULE && (browserWindowEnv.BASE_MODULE === 'bisq' || browserWindowEnv.BASE_MODULE === 'liquid')) {
+if (browserWindowEnv.BASE_MODULE && browserWindowEnv.BASE_MODULE === 'liquid') {
   routes = [
     {
       path: '',

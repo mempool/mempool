@@ -36,7 +36,6 @@ export interface WebsocketResponse {
   'track-rbf'?: string;
   'track-rbf-summary'?: boolean;
   'watch-mempool'?: boolean;
-  'track-bisq-market'?: string;
   'refresh-blocks'?: boolean;
 }
 

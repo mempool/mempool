@@ -82,8 +82,5 @@ export class GlobalFooterComponent implements OnInit {
     if( network === 'liquid' || network === 'liquidtestnet' ) {
       return (this.env.BASE_MODULE === 'liquid' ? '' : this.env.LIQUID_WEBSITE_URL + this.urlLanguage) + this.networkPaths[thisNetwork] || '/';
     }
-    if( network === 'bisq' ) {
-      return (this.env.BASE_MODULE === 'bisq' ? '' : this.env.BISQ_WEBSITE_URL + this.urlLanguage) + this.networkPaths[thisNetwork] || '/';
-    }
   }
 }
