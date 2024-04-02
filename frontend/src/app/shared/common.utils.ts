@@ -1,4 +1,5 @@
-import { MempoolBlockDelta, MempoolBlockDeltaCompressed, MempoolDeltaChange, TransactionCompressed, TransactionStripped } from "../interfaces/websocket.interface";
+import { MempoolBlockDelta, MempoolBlockDeltaCompressed, MempoolDeltaChange, TransactionCompressed } from "../interfaces/websocket.interface";
+import { TransactionStripped } from "../interfaces/node-api.interface";
 
 export function isMobile(): boolean {
   return (window.innerWidth <= 767.98);
