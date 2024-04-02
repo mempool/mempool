@@ -395,7 +395,7 @@ export class BlockComponent implements OnInit, OnDestroy {
           for (const txid of blockAudit.addedTxs) {
             isAdded[txid] = true;
           }
-          for (const txid of blockAudit.prioritizedTxs) {
+          for (const txid of blockAudit.prioritizedTxs || []) {
             isPrioritized[txid] = true;
           }
           for (const txid of blockAudit.missingTxs) {

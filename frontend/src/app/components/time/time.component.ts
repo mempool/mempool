@@ -211,23 +211,23 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
       case 'before':
       if (number === 1) {
         switch (unit) { // singular (1 day)
-          case 'year': return $localize`:@@time-span:${dateStrings.i18nYear}:DATE: before`; break;
-          case 'month': return $localize`:@@time-span:${dateStrings.i18nMonth}:DATE: before`; break;
-          case 'week': return $localize`:@@time-span:${dateStrings.i18nWeek}:DATE: before`; break;
-          case 'day': return $localize`:@@time-span:${dateStrings.i18nDay}:DATE: before`; break;
-          case 'hour': return $localize`:@@time-span:${dateStrings.i18nHour}:DATE: before`; break;
-          case 'minute': return $localize`:@@time-span:${dateStrings.i18nMinute}:DATE: before`; break;
-          case 'second': return $localize`:@@time-span:${dateStrings.i18nSecond}:DATE: before`; break;
+          case 'year': return $localize`:@@time-before:${dateStrings.i18nYear}:DATE: before`; break;
+          case 'month': return $localize`:@@time-before:${dateStrings.i18nMonth}:DATE: before`; break;
+          case 'week': return $localize`:@@time-before:${dateStrings.i18nWeek}:DATE: before`; break;
+          case 'day': return $localize`:@@time-before:${dateStrings.i18nDay}:DATE: before`; break;
+          case 'hour': return $localize`:@@time-before:${dateStrings.i18nHour}:DATE: before`; break;
+          case 'minute': return $localize`:@@time-before:${dateStrings.i18nMinute}:DATE: before`; break;
+          case 'second': return $localize`:@@time-before:${dateStrings.i18nSecond}:DATE: before`; break;
         }
       } else {
         switch (unit) { // plural (2 days)
-          case 'year': return $localize`:@@time-span:${dateStrings.i18nYears}:DATE: before`; break;
-          case 'month': return $localize`:@@time-span:${dateStrings.i18nMonths}:DATE: before`; break;
-          case 'week': return $localize`:@@time-span:${dateStrings.i18nWeeks}:DATE: before`; break;
-          case 'day': return $localize`:@@time-span:${dateStrings.i18nDays}:DATE: before`; break;
-          case 'hour': return $localize`:@@time-span:${dateStrings.i18nHours}:DATE: before`; break;
-          case 'minute': return $localize`:@@time-span:${dateStrings.i18nMinutes}:DATE: before`; break;
-          case 'second': return $localize`:@@time-span:${dateStrings.i18nSeconds}:DATE: before`; break;
+          case 'year': return $localize`:@@time-before:${dateStrings.i18nYears}:DATE: before`; break;
+          case 'month': return $localize`:@@time-before:${dateStrings.i18nMonths}:DATE: before`; break;
+          case 'week': return $localize`:@@time-before:${dateStrings.i18nWeeks}:DATE: before`; break;
+          case 'day': return $localize`:@@time-before:${dateStrings.i18nDays}:DATE: before`; break;
+          case 'hour': return $localize`:@@time-before:${dateStrings.i18nHours}:DATE: before`; break;
+          case 'minute': return $localize`:@@time-before:${dateStrings.i18nMinutes}:DATE: before`; break;
+          case 'second': return $localize`:@@time-before:${dateStrings.i18nSeconds}:DATE: before`; break;
         }
       }
       break;
