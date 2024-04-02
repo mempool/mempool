@@ -9152,18 +9152,18 @@ export const restApiDocsData = [
     type: "endpoint",
     category: "accelerator-private",
     httpRequestMethod: "GET",
-    fragment: "accelerator-deposit-history",
-    title: "GET Deposit History",
+    fragment: "accelerator-top-up-history",
+    title: "GET Top Up History",
     description: {
-      default: "<p>Returns a list of deposits the user has made as prepayment for the accelerator service.</p>"
+      default: "<p>Returns a list of top ups the user has made as prepayment for the accelerator service.</p>"
     },
-    urlString: "/v1/services/accelerator/deposit-history",
+    urlString: "/v1/services/accelerator/top-up-history",
     showConditions: [""],
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
         codeTemplate: {
-          curl: `/api/v1/services/accelerator/deposit-history`,
+          curl: `/api/v1/services/accelerator/top-up-history`,
           commonJS: ``,
           esModule: ``
         },
