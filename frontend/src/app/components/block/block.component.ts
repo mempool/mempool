@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChildren, QueryList, Inject, PLATFORM
 import { Location } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
-import { switchMap, tap, throttleTime, catchError, map, shareReplay, startWith } from 'rxjs/operators';
+import { switchMap, tap, throttleTime, catchError, map, shareReplay, startWith, filter } from 'rxjs/operators';
 import { Transaction, Vout } from '../../interfaces/electrs.interface';
 import { Observable, of, Subscription, asyncScheduler, EMPTY, combineLatest, forkJoin } from 'rxjs';
 import { StateService } from '../../services/state.service';
@@ -484,6 +484,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     });
 
     this.oobSubscription = block$.pipe(
+      filter(() => this.stateService.env.PUBLIC_ACCELERATIONS === true),
       switchMap((block) => this.apiService.getAccelerationsByHeight$(block.height)
         .pipe(
           map(accelerations => {
