@@ -484,7 +484,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     });
 
     this.oobSubscription = block$.pipe(
-      filter(() => this.stateService.env.PUBLIC_ACCELERATIONS === true),
+      filter(() => this.stateService.env.PUBLIC_ACCELERATIONS === true && this.stateService.network === ''),
       switchMap((block) => this.apiService.getAccelerationsByHeight$(block.height)
         .pipe(
           map(accelerations => {
