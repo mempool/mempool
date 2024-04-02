@@ -11,6 +11,7 @@ module.exports = {
   encryptWallet: 'encryptwallet',
   estimateFee: 'estimatefee', // bitcoind v0.10.0x
   estimatePriority: 'estimatepriority', // bitcoind v0.10.0+
+  estimateSmartFee: 'estimatesmartfee',
   generate: 'generate', // bitcoind v0.11.0+
   getAccount: 'getaccount',
   getAccountAddress: 'getaccountaddress',

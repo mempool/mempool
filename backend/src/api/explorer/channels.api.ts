@@ -81,7 +81,7 @@ class ChannelsApi {
   public async $searchChannelsById(search: string): Promise<any[]> {
     try {
       // restrict search to valid id/short_id prefix formats
-      let searchStripped = search.match(/[0-9]+[0-9x]*/)?.[0] || '';
+      let searchStripped = search.match(/^[0-9]+[0-9x]*$/)?.[0] || '';
       if (!searchStripped.length) {
         return [];
       }

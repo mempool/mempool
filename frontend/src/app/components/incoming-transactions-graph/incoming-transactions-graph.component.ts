@@ -48,7 +48,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
   constructor(
     @Inject(LOCALE_ID) private locale: string,
     private storageService: StorageService,
-    private stateService: StateService,
+    public stateService: StateService,
   ) { }
 
   ngOnInit() {
@@ -265,8 +265,8 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
         type: 'value',
         axisLabel: {
           fontSize: 11,
-          formatter: (value) => {
-            return this.weightMode ? value * 4 : value;
+          formatter: (value): string => {
+            return this.weightMode ? (value * 4).toString() : value.toString();
           }
         },
         splitLine: {

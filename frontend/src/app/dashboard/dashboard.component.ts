@@ -1,12 +1,14 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { combineLatest, merge, Observable, of, Subscription } from 'rxjs';
-import { catchError, filter, map, scan, share, switchMap, tap } from 'rxjs/operators';
-import { BlockExtended, OptimizedMempoolStats } from '../interfaces/node-api.interface';
-import { MempoolInfo, TransactionStripped, ReplacementInfo } from '../interfaces/websocket.interface';
+import { AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
+import { combineLatest, EMPTY, fromEvent, interval, merge, Observable, of, Subject, Subscription, timer } from 'rxjs';
+import { catchError, delayWhen, distinctUntilChanged, filter, map, scan, share, shareReplay, startWith, switchMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
+import { AuditStatus, BlockExtended, CurrentPegs, FederationAddress, FederationUtxo, OptimizedMempoolStats, PegsVolume, RecentPeg, TransactionStripped } from '../interfaces/node-api.interface';
+import { MempoolInfo, ReplacementInfo } from '../interfaces/websocket.interface';
 import { ApiService } from '../services/api.service';
 import { StateService } from '../services/state.service';
 import { WebsocketService } from '../services/websocket.service';
 import { SeoService } from '../services/seo.service';
+import { ActiveFilter, FilterMode, toFlags } from '../shared/filters.utils';
+import { detectWebGL } from '../shared/graphs.utils';
 
 interface MempoolBlocksData {
   blocks: number;
@@ -32,7 +34,6 @@ interface MempoolStatsData {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
-  featuredAssets$: Observable<any>;
   network$: Observable<string>;
   mempoolBlocksData$: Observable<MempoolBlocksData>;
   mempoolInfoData$: Observable<MempoolInfoData>;
@@ -47,26 +48,69 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   transactionsWeightPerSecondOptions: any;
   isLoadingWebSocket$: Observable<boolean>;
   liquidPegsMonth$: Observable<any>;
+  currentPeg$: Observable<CurrentPegs>;
+  auditStatus$: Observable<AuditStatus>;
+  auditUpdated$: Observable<boolean>;
+  liquidReservesMonth$: Observable<any>;
+  currentReserves$: Observable<CurrentPegs>;
+  recentPegsList$: Observable<RecentPeg[]>;
+  pegsVolume$: Observable<PegsVolume[]>;
+  federationAddresses$: Observable<FederationAddress[]>;
+  federationAddressesNumber$: Observable<number>;
+  federationUtxosNumber$: Observable<number>;
+  expiredUtxos$: Observable<FederationUtxo[]>;
+  emergencySpentUtxosStats$: Observable<any>;
+  fullHistory$: Observable<any>;
+  isLoad: boolean = true;
+  filterSubscription: Subscription;
+  mempoolInfoSubscription: Subscription;
   currencySubscription: Subscription;
   currency: string;
+  incomingGraphHeight: number = 300;
+  lbtcPegGraphHeight: number = 360;
+  webGlEnabled = true;
+  private lastPegBlockUpdate: number = 0;
+  private lastPegAmount: string = '';
+  private lastReservesBlockUpdate: number = 0;
+
+  goggleResolution = 82;
+  goggleCycle: { index: number, name: string, mode: FilterMode, filters: string[] }[] = [
+    { index: 0, name: 'All', mode: 'and', filters: [] },
+    { index: 1, name: 'Consolidation', mode: 'and', filters: ['consolidation'] },
+    { index: 2, name: 'Coinjoin', mode: 'and', filters: ['coinjoin'] },
+    { index: 3, name: 'Data', mode: 'or', filters: ['inscription', 'fake_pubkey', 'op_return'] },
+  ];
+  goggleFlags = 0n;
+  goggleMode: FilterMode = 'and';
+  goggleIndex = 0;
+
+  private destroy$ = new Subject();
 
   constructor(
     public stateService: StateService,
     private apiService: ApiService,
     private websocketService: WebsocketService,
-    private seoService: SeoService
-  ) { }
+    private seoService: SeoService,
+    @Inject(PLATFORM_ID) private platformId: Object,
+  ) {
+    this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
+  }
 
   ngAfterViewInit(): void {
     this.stateService.focusSearchInputDesktop();
   }
 
   ngOnDestroy(): void {
+    this.filterSubscription.unsubscribe();
+    this.mempoolInfoSubscription.unsubscribe();
     this.currencySubscription.unsubscribe();
     this.websocketService.stopTrackRbfSummary();
+    this.destroy$.next(1);
+    this.destroy$.complete();
   }
 
   ngOnInit(): void {
+    this.onResize();
     this.isLoadingWebSocket$ = this.stateService.isLoadingWebSocket$;
     this.seoService.resetTitle();
     this.seoService.resetDescription();
@@ -78,11 +122,34 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         map((indicators) => indicators.mempool !== undefined ? indicators.mempool : 100)
       );
 
+    this.filterSubscription = this.stateService.activeGoggles$.subscribe((active: ActiveFilter) => {
+      const activeFilters = active.filters.sort().join(',');
+      for (const goggle of this.goggleCycle) {
+        if (goggle.mode === active.mode) {
+          const goggleFilters = goggle.filters.sort().join(',');
+          if (goggleFilters === activeFilters) {
+            this.goggleIndex = goggle.index;
+            this.goggleFlags = toFlags(goggle.filters);
+            this.goggleMode = goggle.mode;
+            return;
+          }
+        }
+      }
+      this.goggleCycle.push({
+        index: this.goggleCycle.length,
+        name: 'Custom',
+        mode: active.mode,
+        filters: active.filters,
+      });
+      this.goggleIndex = this.goggleCycle.length - 1;
+      this.goggleFlags = toFlags(active.filters);
+      this.goggleMode = active.mode;
+    });
+
     this.mempoolInfoData$ = combineLatest([
       this.stateService.mempoolInfo$,
       this.stateService.vbytesPerSecond$
-    ])
-    .pipe(
+    ]).pipe(
       map(([mempoolInfo, vbytesPerSecond]) => {
         const percent = Math.round((Math.min(vbytesPerSecond, this.vBytesPerSecondLimit) / this.vBytesPerSecondLimit) * 100);
 
@@ -112,6 +179,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       })
     );
 
+    this.mempoolInfoSubscription = this.mempoolInfoData$.subscribe();
+
     this.mempoolBlocksData$ = this.stateService.mempoolBlocks$
       .pipe(
         map((mempoolBlocks) => {
@@ -125,30 +194,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         })
       );
 
-    this.featuredAssets$ = this.apiService.listFeaturedAssets$()
-      .pipe(
-        map((featured) => {
-          const newArray = [];
-          for (const feature of featured) {
-            if (feature.ticker !== 'L-BTC' && feature.asset) {
-              newArray.push(feature);
-            }
-          }
-          return newArray.slice(0, 4);
-        }),
-      );
-
-    this.transactions$ = this.stateService.transactions$
-      .pipe(
-        scan((acc, tx) => {
-          if (acc.find((t) => t.txid == tx.txid)) {
-            return acc;
-          }
-          acc.unshift(tx);
-          acc = acc.slice(0, 6);
-          return acc;
-        }, []),
-      );
+    this.transactions$ = this.stateService.transactions$;
 
     this.blocks$ = this.stateService.blocks$
       .pipe(
@@ -185,7 +231,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
                   acc.unshift(stats);
                   acc = acc.slice(0, 120);
                   return acc;
-                }, mempoolStats)
+                }, (mempoolStats || []))
               ),
             of(mempoolStats)
           );
@@ -200,12 +246,118 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
             return null;
           }
         }),
-        share(),
+        shareReplay(1),
       );
 
-    if (this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet') {
-      this.liquidPegsMonth$ = this.apiService.listLiquidPegsMonth$()
+    if (this.stateService.network === 'liquid') {
+      this.auditStatus$ = this.stateService.blocks$.pipe(
+        takeUntil(this.destroy$),
+        throttleTime(40000),
+        delayWhen(_ => this.isLoad ? timer(0) : timer(2000)),
+        tap(() => this.isLoad = false),
+        switchMap(() => this.apiService.federationAuditSynced$()),
+        shareReplay(1)
+      );
+
+      this.currentPeg$ = this.auditStatus$.pipe(
+        switchMap(_ =>
+          this.apiService.liquidPegs$().pipe(
+            filter((currentPegs) => currentPegs.lastBlockUpdate >= this.lastPegBlockUpdate),
+            tap((currentPegs) => {
+              this.lastPegBlockUpdate = currentPegs.lastBlockUpdate;
+            })
+          )
+        ),
+        share()
+      );
+
+      this.auditUpdated$ = combineLatest([
+        this.auditStatus$,
+        this.currentPeg$
+      ]).pipe(
+        filter(([auditStatus, _]) => auditStatus.isAuditSynced === true),
+        map(([auditStatus, currentPeg]) => ({
+          lastBlockAudit: auditStatus.lastBlockAudit,
+          currentPegAmount: currentPeg.amount
+        })),
+        switchMap(({ lastBlockAudit, currentPegAmount }) => {
+          const blockAuditCheck = lastBlockAudit > this.lastReservesBlockUpdate;
+          const amountCheck = currentPegAmount !== this.lastPegAmount;
+          this.lastPegAmount = currentPegAmount;
+          return of(blockAuditCheck || amountCheck);
+        }),
+        share()
+      );
+
+      this.currentReserves$ = this.auditUpdated$.pipe(
+        filter(auditUpdated => auditUpdated === true),
+        throttleTime(40000),
+        switchMap(_ =>
+          this.apiService.liquidReserves$().pipe(
+            filter((currentReserves) => currentReserves.lastBlockUpdate >= this.lastReservesBlockUpdate),
+            tap((currentReserves) => {
+              this.lastReservesBlockUpdate = currentReserves.lastBlockUpdate;
+            })
+          )
+        ),
+        share()
+      );
+
+      this.recentPegsList$ = this.auditUpdated$.pipe(
+        filter(auditUpdated => auditUpdated === true),
+        throttleTime(40000),
+        switchMap(_ => this.apiService.recentPegsList$()),
+        share()
+      );
+  
+      this.pegsVolume$ = this.auditUpdated$.pipe(
+        filter(auditUpdated => auditUpdated === true),
+        throttleTime(40000),
+        switchMap(_ => this.apiService.pegsVolume$()),
+        share()
+      );
+  
+      this.federationAddresses$ = this.auditUpdated$.pipe(
+        filter(auditUpdated => auditUpdated === true),
+        throttleTime(40000),
+        switchMap(_ => this.apiService.federationAddresses$()),
+        share()
+      );
+  
+      this.federationAddressesNumber$ = this.auditUpdated$.pipe(
+        filter(auditUpdated => auditUpdated === true),
+        throttleTime(40000),
+        switchMap(_ => this.apiService.federationAddressesNumber$()),
+        map(count => count.address_count),
+        share()
+      );
+  
+      this.federationUtxosNumber$ = this.auditUpdated$.pipe(
+        filter(auditUpdated => auditUpdated === true),
+        throttleTime(40000),
+        switchMap(_ => this.apiService.federationUtxosNumber$()),
+        map(count => count.utxo_count),
+        share()
+      );
+
+      this.expiredUtxos$ = this.auditUpdated$.pipe(
+        filter(auditUpdated => auditUpdated === true),
+        throttleTime(40000),
+        switchMap(_ => this.apiService.expiredUtxos$()),
+        share()
+      );
+
+      this.emergencySpentUtxosStats$ = this.auditUpdated$.pipe(
+        filter(auditUpdated => auditUpdated === true),
+        throttleTime(40000),
+        switchMap(_ => this.apiService.emergencySpentUtxosStats$()),
+        share()
+      );
+  
+      this.liquidPegsMonth$ = interval(60 * 60 * 1000)
         .pipe(
+          startWith(0),
+          switchMap(() => this.apiService.listLiquidPegsMonth$()),
           map((pegs) => {
             const labels = pegs.map(stats => stats.date);
             const series = pegs.map(stats => parseFloat(stats.amount) / 100000000);
@@ -216,6 +368,45 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
             };
           }),
           share(),
+        );
+  
+      this.liquidReservesMonth$ = interval(60 * 60 * 1000).pipe(
+        startWith(0),
+        switchMap(() => this.apiService.listLiquidReservesMonth$()),
+        map(reserves => {
+          const labels = reserves.map(stats => stats.date);
+          const series = reserves.map(stats => parseFloat(stats.amount) / 100000000);
+          return {
+            series,
+            labels
+          };
+        }),
+        share()
+      );
+  
+      this.fullHistory$ = combineLatest([this.liquidPegsMonth$, this.currentPeg$, this.liquidReservesMonth$, this.currentReserves$])
+        .pipe(
+          map(([liquidPegs, currentPeg, liquidReserves, currentReserves]) => {
+            liquidPegs.series[liquidPegs.series.length - 1] = parseFloat(currentPeg.amount) / 100000000;
+  
+            if (liquidPegs.series.length === liquidReserves?.series.length) {
+              liquidReserves.series[liquidReserves.series.length - 1] = parseFloat(currentReserves?.amount) / 100000000;
+            } else if (liquidPegs.series.length === liquidReserves?.series.length + 1) {
+              liquidReserves.series.push(parseFloat(currentReserves?.amount) / 100000000);
+              liquidReserves.labels.push(liquidPegs.labels[liquidPegs.labels.length - 1]);
+            } else {
+              liquidReserves = {
+                series: [],
+                labels: []
+              };
+            }
+  
+            return {
+              liquidPegs,
+              liquidReserves
+            };
+          }),
+          share()
         );
     }
 
@@ -236,5 +427,31 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   trackByBlock(index: number, block: BlockExtended) {
     return block.height;
+  }
+
+  getArrayFromNumber(num: number): number[] {
+    return Array.from({ length: num }, (_, i) => i + 1);
+  }
+  
+  setFilter(index): void {
+    const selected = this.goggleCycle[index];
+    this.stateService.activeGoggles$.next(selected);
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(): void {
+    if (window.innerWidth >= 992) {
+      this.incomingGraphHeight = 300;
+      this.goggleResolution = 82;
+      this.lbtcPegGraphHeight = 360;
+    } else if (window.innerWidth >= 768) {
+      this.incomingGraphHeight = 215;
+      this.goggleResolution = 80;
+      this.lbtcPegGraphHeight = 270;
+    } else {
+      this.incomingGraphHeight = 180;
+      this.goggleResolution = 86;
+      this.lbtcPegGraphHeight = 270;
+    }
   }
 }

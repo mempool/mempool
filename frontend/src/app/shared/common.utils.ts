@@ -1,3 +1,6 @@
+import { MempoolBlockDelta, MempoolBlockDeltaCompressed, MempoolDeltaChange, TransactionCompressed } from "../interfaces/websocket.interface";
+import { TransactionStripped } from "../interfaces/node-api.interface";
+
 export function isMobile(): boolean {
   return (window.innerWidth <= 767.98);
 }
@@ -152,4 +155,30 @@ export function seoDescriptionNetwork(network: string): string {
     return ' ' + network.charAt(0).toUpperCase() + network.slice(1);
   }
   return '';
+}
+
+export function uncompressTx(tx: TransactionCompressed): TransactionStripped {
+  return {
+    txid: tx[0],
+    fee: tx[1],
+    vsize: tx[2],
+    value: tx[3],
+    rate: tx[4],
+    flags: tx[5],
+    time: tx[6],
+    acc: !!tx[7],
+  };
+}
+
+export function uncompressDeltaChange(delta: MempoolBlockDeltaCompressed): MempoolBlockDelta {
+  return {
+    added: delta.added.map(uncompressTx),
+    removed: delta.removed,
+    changed: delta.changed.map(tx => ({
+      txid: tx[0],
+      rate: tx[1],
+      flags: tx[2],
+      acc: !!tx[3],
+    }))
+  };
 }

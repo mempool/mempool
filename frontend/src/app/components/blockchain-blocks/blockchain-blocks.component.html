@@ -26,7 +26,7 @@
             </div>
             <ng-template #emptyfees>
               <div [attr.data-cy]="'bitcoin-block-offset=' + offset + '-index-' + i + '-fees'" class="fees">
-                &nbsp;
+                <app-fee-rate unitClass=""></app-fee-rate>
               </div>
             </ng-template>
             <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-fee-span'" class="fee-span"
@@ -37,15 +37,17 @@
             </div>
             <ng-template #emptyfeespan>
               <div [attr.data-cy]="'bitcoin-block-offset=' + offset + '-index-' + i + '-fees'" class="fee-span">
-                &nbsp;
+                <app-fee-rate unitClass=""></app-fee-rate>
               </div>
             </ng-template>
-            <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-total-fees'" *ngIf="showMiningInfo"
+            <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-total-fees'" *ngIf="showMiningInfo$ | async; else noMiningInfo"
               class="block-size">
               <app-amount [satoshis]="block.extras?.totalFees ?? 0" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
             </div>
-            <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + 'block-size'" *ngIf="!showMiningInfo"
+            <ng-template #noMiningInfo>
+            <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + 'block-size'"
               class="block-size" [innerHTML]="'&lrm;' + (block.size | bytes: 2)"></div>
+            </ng-template>
             <div [attr.data-cy]="'bitcoin-block-' + i + '-transactions'" class="transaction-count">
               <ng-container
                 *ngTemplateOutlet="block.tx_count === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: block.tx_count | number}"></ng-container>
@@ -56,7 +58,7 @@
               <app-time kind="since" [time]="block.timestamp" [fastRender]="true" [precision]="1" minUnit="minute"></app-time></div>
           </ng-container>
         </div>
-        <div class="animated" [class]="showMiningInfo ? 'show' : 'hide'" *ngIf="block.extras?.pool != undefined">
+        <div class="animated" [class]="markHeight === block.height ? 'hide' : 'show'" *ngIf="block.extras?.pool != undefined && showPools">
           <a [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-pool'" class="badge badge-primary"
             [routerLink]="[('/mining/pool/' + block.extras.pool.slug) | relativeUrl]">
             {{ block.extras.pool.name}}</a>

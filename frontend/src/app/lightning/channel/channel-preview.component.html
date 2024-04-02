@@ -66,9 +66,7 @@
 </div>
 
 <ng-template [ngIf]="error">
-  <div class="text-center">
+  <app-http-error [error]="error">
     <span i18n="error.general-loading-data">Error loading data.</span>
-    <br><br>
-    <i>{{ error.status }}: {{ error.error }}</i>
-  </div>
+  </app-http-error>
 </ng-template>

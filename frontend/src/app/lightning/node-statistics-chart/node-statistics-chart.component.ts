@@ -8,6 +8,7 @@ import { StorageService } from '../../services/storage.service';
 import { download } from '../../shared/graphs.utils';
 import { LightningApiService } from '../lightning-api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
+import { StateService } from '../../services/state.service';
 
 @Component({
   selector: 'app-node-statistics-chart',
@@ -48,6 +49,7 @@ export class NodeStatisticsChartComponent implements OnInit {
     @Inject(LOCALE_ID) public locale: string,
     private lightningApiService: LightningApiService,
     private storageService: StorageService,
+    public stateService: StateService,
     private activatedRoute: ActivatedRoute,
   ) {
   }

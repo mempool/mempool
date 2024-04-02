@@ -23,6 +23,8 @@ export class AmountComponent implements OnInit, OnDestroy {
   @Input() noFiat = false;
   @Input() addPlus = false;
   @Input() blockConversion: Price;
+  @Input() forceBtc: boolean = false;
+  @Input() forceBlockConversion: boolean = false; // true = displays fiat price as 0 if blockConversion is undefined instead of falling back to conversions
 
   constructor(
     private stateService: StateService,

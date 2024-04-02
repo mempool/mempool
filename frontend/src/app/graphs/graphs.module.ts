@@ -12,6 +12,14 @@ import { FeeDistributionGraphComponent } from '../components/fee-distribution-gr
 import { IncomingTransactionsGraphComponent } from '../components/incoming-transactions-graph/incoming-transactions-graph.component';
 import { MempoolGraphComponent } from '../components/mempool-graph/mempool-graph.component';
 import { LbtcPegsGraphComponent } from '../components/lbtc-pegs-graph/lbtc-pegs-graph.component';
+import { ReservesSupplyStatsComponent } from '../components/liquid-reserves-audit/reserves-supply-stats/reserves-supply-stats.component';
+import { ExpiredUtxosStatsComponent } from '../components/liquid-reserves-audit/expired-utxos-stats/expired-utxos-stats.component';
+import { ReservesRatioStatsComponent } from '../components/liquid-reserves-audit/reserves-ratio-stats/reserves-ratio-stats.component';
+import { ReservesRatioComponent } from '../components/liquid-reserves-audit/reserves-ratio/reserves-ratio.component';
+import { RecentPegsStatsComponent } from '../components/liquid-reserves-audit/recent-pegs-stats/recent-pegs-stats.component';
+import { RecentPegsListComponent } from '../components/liquid-reserves-audit/recent-pegs-list/recent-pegs-list.component';
+import { FederationAddressesStatsComponent } from '../components/liquid-reserves-audit/federation-addresses-stats/federation-addresses-stats.component';
+import { FederationAddressesListComponent } from '../components/liquid-reserves-audit/federation-addresses-list/federation-addresses-list.component';
 import { GraphsComponent } from '../components/graphs/graphs.component';
 import { StatisticsComponent } from '../components/statistics/statistics.component';
 import { MempoolBlockComponent } from '../components/mempool-block/mempool-block.component';
@@ -24,12 +32,15 @@ import { AcceleratorDashboardComponent } from '../components/acceleration/accele
 import { HashrateChartComponent } from '../components/hashrate-chart/hashrate-chart.component';
 import { HashrateChartPoolsComponent } from '../components/hashrates-chart-pools/hashrate-chart-pools.component';
 import { BlockHealthGraphComponent } from '../components/block-health-graph/block-health-graph.component';
+import { AddressComponent } from '../components/address/address.component';
+import { AddressGraphComponent } from '../components/address-graph/address-graph.component';
 import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
     DashboardComponent,
     MempoolBlockComponent,
+    AddressComponent,
 
     MiningDashboardComponent,
     AcceleratorDashboardComponent,
@@ -48,9 +59,18 @@ import { CommonModule } from '@angular/common';
     IncomingTransactionsGraphComponent,
     MempoolGraphComponent,
     LbtcPegsGraphComponent,
+    ReservesSupplyStatsComponent,
+    ExpiredUtxosStatsComponent,
+    ReservesRatioStatsComponent,
+    ReservesRatioComponent,
+    RecentPegsStatsComponent,
+    RecentPegsListComponent,
+    FederationAddressesStatsComponent,
+    FederationAddressesListComponent,
     HashrateChartComponent,
     HashrateChartPoolsComponent,
     BlockHealthGraphComponent,
+    AddressGraphComponent,
   ],
   imports: [
     CommonModule,

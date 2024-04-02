@@ -63,66 +63,82 @@ tr, td, th {
 }
 
 .txid {
-  width: 25%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 30%;
-  @media (max-width: 1060px) and (min-width: 768px) {
-    display: none;
-  }
-  @media (max-width: 500px) {
-    display: none;
-  }
-}
-
-.fee-rate {
   width: 20%;
-  @media (max-width: 1060px) and (min-width: 768px) {
-    text-align: start !important;
-  }
-  @media (max-width: 500px) {
-    text-align: start !important;
-  }
-  @media (max-width: 840px) and (min-width: 768px) {
-    display: none;
-  }
-  @media (max-width: 410px) {
-    display: none;
-  }
-}
-
-.bid {
-  width: 30%;
-  min-width: 150px;
-  @media (max-width: 840px) and (min-width: 768px) {
-    text-align: start !important;
-  }
-  @media (max-width: 410px) {
-    text-align: start !important;
-  }
-}
-
-.time {
-  width: 25%;
 }
 
 .fee {
-  width: 35%;
-  @media (max-width: 1060px) and (min-width: 768px) {
-    text-align: start !important;
-  }
-  @media (max-width: 500px) {
-    text-align: start !important;
-  }
+  width: 15%;
 }
 
 .block {
-  width: 20%;
+  width: 15%;
+  @media (max-width: 700px) {
+    display: none;
+  }
 }
 
 .status {
-  width: 20%
+  width: 13%;
+}
+
+.date {
+  width: 20%;
+  @media (max-width: 600px) {
+    display: none;
+  }
+}
+
+.widget {
+  .txid {
+    width: 30%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 30%;
+  }
+
+  .fee-rate {
+    width: 20%;
+    text-align: end !important;
+    @media (max-width: 975px) and (min-width: 768px) {
+      display: none;
+    }
+    @media (max-width: 410px) {
+      display: none;
+    }
+  }
+
+  .bid {
+    text-align: end !important;
+    width: 30%;
+    min-width: 150px;
+  }
+
+  .time {
+    width: 25%;
+    @media (max-width: 600px) {
+      display: none;
+    }
+    @media (max-width: 1200px) and (min-width: 768px) {
+      display: none;
+    }
+  }
+
+  .fee {
+    width: 30%;
+    text-align: end !important;
+  }
+
+  .block {
+    width: 20%;
+    @media (max-width: 1200px) and (min-width: 768px) {
+      display: none;
+    }
+  }
+
+  .status {
+    width: 20%
+  }
 }
 
 /* Tooltip text */

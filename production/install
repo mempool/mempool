@@ -395,7 +395,7 @@ FREEBSD_PKG+=(zsh sudo git git-lfs screen curl wget calc neovim)
 FREEBSD_PKG+=(openssh-portable py39-pip rust llvm10 jq base64 libzmq4)
 FREEBSD_PKG+=(boost-libs autoconf automake gmake gcc libevent libtool pkgconf)
 FREEBSD_PKG+=(nginx rsync py39-certbot-nginx mariadb1011-server keybase)
-FREEBSD_PKG+=(geoipupdate)
+FREEBSD_PKG+=(geoipupdate redis)
 
 FREEBSD_UNFURL_PKG=()
 FREEBSD_UNFURL_PKG+=(nvidia-driver-470 chromium xinit xterm twm ja-sourcehansans-otf)
@@ -1016,13 +1016,15 @@ osSudo "${MEMPOOL_USER}" ln -s mempool/production/mempool-kill-all stop
 osSudo "${MEMPOOL_USER}" ln -s mempool/production/mempool-start-all start
 osSudo "${MEMPOOL_USER}" ln -s mempool/production/mempool-reset-all reset
 
-
 case $OS in
     FreeBSD)
         echo "[*] Installing syslog configuration"
         osSudo "${ROOT_USER}" mkdir -p /usr/local/etc/syslog.d
         osSudo "${ROOT_USER}" install -c -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/mempool-logger" /usr/local/bin/mempool-logger
         osSudo "${ROOT_USER}" install -c -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/syslog.conf" /usr/local/etc/syslog.d/mempool.conf
+
+        echo "[*] Installing redis configuration"
+        osSudo "${ROOT_USER}" install -c -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/redis.conf" /usr/local/etc/redis.conf
 
         echo "[*] Installing newsyslog configuration"
         osSudo "${ROOT_USER}" mkdir -p /usr/local/etc/newsyslog.conf.d
@@ -1045,9 +1047,9 @@ osSudo "${ROOT_USER}" crontab -u "${MEMPOOL_USER}" "${MEMPOOL_HOME}/${MEMPOOL_RE
 echo "[*] Installing nvm.sh from GitHub"
 osSudo "${MEMPOOL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh'
 
-echo "[*] Building NodeJS v20.5.1 via nvm.sh"
-osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm install v20.7.0 --shared-zlib'
-osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm alias default 20.7.0'
+echo "[*] Building NodeJS via nvm.sh"
+osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm install v20.12.0 --shared-zlib'
+osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm alias default 20.12.0'
 
 ####################
 # Tor installation #
@@ -1447,7 +1449,7 @@ if [ "${UNFURL_INSTALL}" = ON ];then
                 echo 'nvidia_xorg_enable="YES"' >> /etc/rc.conf
 
                 echo "[*] Installing color emoji"
-                osSudo "${ROOT_USER}" curl "https://github.com/samuelngs/apple-emoji-linux/releases/download/ios-15.4/AppleColorEmoji.ttf" -o /usr/local/share/fonts/TTF/AppleColorEmoji.ttf
+                osSudo "${ROOT_USER}" curl -sSL "https://github.com/samuelngs/apple-emoji-linux/releases/download/ios-15.4/AppleColorEmoji.ttf" -o /usr/local/share/fonts/TTF/AppleColorEmoji.ttf
                 cat > /usr/local/etc/fonts/conf.d/01-emoji.conf <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
@@ -1489,7 +1491,7 @@ EOF
             osSudo "${UNFURL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh'
 
             echo "[*] Building NodeJS via nvm.sh"
-            osSudo "${UNFURL_USER}" zsh -c 'source ~/.zshrc ; nvm install v20.7.0 --shared-zlib'
+            osSudo "${UNFURL_USER}" zsh -c 'source ~/.zshrc ; nvm install v20.12.0 --shared-zlib'
 
         ;;
     esac

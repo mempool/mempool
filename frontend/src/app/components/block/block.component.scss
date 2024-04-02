@@ -70,6 +70,14 @@
   }
 }
 
+.audit-col {
+  max-width: 50%;
+
+  &.mobile {
+    max-width: 100%;
+  }
+}
+
 .block-subtitle.actual a {
   position: absolute;
   top: -3px;
@@ -287,6 +295,10 @@ h1 {
   margin-top: 1.25rem;
   @media (max-width: 767.98px) {
     margin-top: 0.75rem;
+  }
+
+  .oobFees {
+    color: #905cf4;
   }
 }
 

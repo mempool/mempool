@@ -18,6 +18,7 @@ import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pi
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesPerISPChartComponent implements OnInit {
+  @Input() height: number = 300;
   @Input() widget: boolean = false;
 
   isLoading = true;
@@ -43,7 +44,7 @@ export class NodesPerISPChartComponent implements OnInit {
     private amountShortenerPipe: AmountShortenerPipe,
     private router: Router,
     private zone: NgZone,
-    private stateService: StateService,
+    public stateService: StateService,
   ) {
   }
 

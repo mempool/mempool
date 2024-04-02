@@ -59,7 +59,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     private vbytesPipe: VbytesPipe,
     private wubytesPipe: WuBytesPipe,
     private amountShortenerPipe: AmountShortenerPipe,
-    private stateService: StateService,
+    public stateService: StateService,
     private storageService: StorageService,
     @Inject(LOCALE_ID) private locale: string,
   ) { }
@@ -411,7 +411,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
             padding: [20, 0, 0, 0],
           },
           type: 'time',
-          boundaryGap: false,
           axisLine: { onZero: true },
           axisLabel: {
             margin: 20,

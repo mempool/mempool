@@ -7,11 +7,27 @@
   justify-content: center;
   align-items: center;
   grid-column: 1/-1;
+
+  .placeholder {
+    display: flex;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.graph-alignment {
+  position: relative;
+  width: 100%;
 }
 
 .grid-align {
-  position: relative;
-  width: 100%;
   display: grid;
   grid-template-columns: repeat(auto-fit, 75px);
   justify-content: center;
@@ -47,6 +63,5 @@
 
   &.hidden {
     opacity: 0;
-    transition: opacity 500ms;
   }
 }

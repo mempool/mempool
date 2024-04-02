@@ -36,9 +36,6 @@ export class CodeTemplateComponent implements OnInit {
 
   npmGithubLink(){
     let npmLink = `https://github.com/mempool/mempool.js`;
-    if (this.network === 'bisq') {
-      npmLink = `https://github.com/mempool/mempool.js/tree/main/npm-bisq-js`;
-    }
     if (this.network === 'liquid' || this.network === 'liquidtestnet') {
       npmLink = `https://github.com/mempool/mempool.js/tree/main/npm-liquid-js`;
     }
@@ -47,9 +44,6 @@ export class CodeTemplateComponent implements OnInit {
 
   npmModuleLink() {
     let npmLink = `https://www.npmjs.org/package/@mempool/mempool.js`;
-    if (this.network === 'bisq') {
-      npmLink = `https://www.npmjs.org/package/@mempool/bisq.js`;
-    }
     if (this.network === 'liquid' || this.network === 'liquidtestnet') {
       npmLink = `https://www.npmjs.org/package/@mempool/liquid.js`;
     }
@@ -58,12 +52,12 @@ export class CodeTemplateComponent implements OnInit {
 
   normalizeHostsESModule(codeText: string) {
     if (this.env.BASE_MODULE === 'mempool') {
-      if (['liquid', 'bisq'].includes(this.network)) {
+      if (['liquid'].includes(this.network)) {
         codeText = codeText.replace('%{0}', this.network);
       } else {
         codeText = codeText.replace('%{0}', 'bitcoin');
       }
-      if(['', 'main', 'liquid', 'bisq', 'liquidtestnet'].includes(this.network)) {
+      if(['', 'main', 'liquid', 'liquidtestnet'].includes(this.network)) {
         codeText = codeText.replace('mempoolJS();', `mempoolJS({
     hostname: '${document.location.hostname}'
   });`);
@@ -75,11 +69,6 @@ export class CodeTemplateComponent implements OnInit {
       }
     }
 
-    if (this.env.BASE_MODULE === 'bisq') {
-      codeText = codeText.replace('} = mempoolJS();', ` = bisqJS();`);
-      codeText = codeText.replace('{ %{0}: ', '');
-    }
-
     if (this.env.BASE_MODULE === 'liquid') {
       codeText = codeText.replace('} = mempoolJS();', ` = liquidJS();`);
       codeText = codeText.replace('{ %{0}: ', '');
@@ -89,12 +78,12 @@ export class CodeTemplateComponent implements OnInit {
 
   normalizeHostsCommonJS(codeText: string) {
     if (this.env.BASE_MODULE === 'mempool') {
-      if (['liquid', 'bisq'].includes(this.network)) {
+      if (['liquid'].includes(this.network)) {
         codeText = codeText.replace('%{0}', this.network);
       } else {
         codeText = codeText.replace('%{0}', 'bitcoin');
       }
-      if(['', 'main', 'liquid', 'bisq'].includes(this.network)) {
+      if(['', 'main', 'liquid'].includes(this.network)) {
         codeText = codeText.replace('mempoolJS();', `mempoolJS({
           hostname: '${document.location.hostname}'
         });`);
@@ -104,11 +93,6 @@ export class CodeTemplateComponent implements OnInit {
           network: '${this.network}'
         });`);
       }
-    }
-
-    if (this.env.BASE_MODULE === 'bisq') {
-      codeText = codeText.replace('} = mempoolJS();', ` = bisqJS();`);
-      codeText = codeText.replace('{ %{0}: ', '');
     }
 
     if (this.env.BASE_MODULE === 'liquid') {
@@ -135,14 +119,8 @@ export class CodeTemplateComponent implements OnInit {
       if (this.network === 'liquid' || this.network === 'liquidtestnet') {
         codeText = this.replaceJSPlaceholder(codeText, code.codeSampleLiquid.esModule);
       }
-      if (this.network === 'bisq') {
-        codeText = this.replaceJSPlaceholder(codeText, code.codeSampleBisq.esModule);
-      }
 
       let importText = `import mempoolJS from "@mempool/mempool.js";`;
-      if (this.env.BASE_MODULE === 'bisq') {
-        importText = `import bisqJS from "@mempool/bisq.js";`;
-      }
       if (this.env.BASE_MODULE === 'liquid') {
         importText = `import liquidJS from "@mempool/liquid.js";`;
       }
@@ -174,18 +152,12 @@ init();`;
       if (this.network === 'liquid' || this.network === 'liquidtestnet') {
         codeText = this.replaceJSPlaceholder(codeText, code.codeSampleLiquid.esModule);
       }
-      if (this.network === 'bisq') {
-        codeText = this.replaceJSPlaceholder(codeText, code.codeSampleBisq.esModule);
-      }
 
       if (code.noWrap) {
         return codeText;
       }
 
       let importText = `<script src="https://mempool.space/mempool.js"></script>`;
-      if (this.env.BASE_MODULE === 'bisq') {
-        importText = `<script src="https://bisq.markets/bisq.js"></script>`;
-      }
       if (this.env.BASE_MODULE === 'liquid') {
         importText = `<script src="https://liquid.network/liquid.js"></script>`;
       }
@@ -224,14 +196,6 @@ npm install @mempool/mempool.js --save
 # yarn
 yarn add @mempool/mempool.js`;
 
-    if (this.env.BASE_MODULE === 'bisq') {
-      importTemplate = `# npm
-npm install @mempool/bisq.js --save
-
-# yarn
-yarn add @mempool/bisq.js`;
-    }
-
     if (this.env.BASE_MODULE === 'liquid') {
       importTemplate = `# npm
 npm install @mempool/liquid.js --save
@@ -257,9 +221,6 @@ yarn add @mempool/liquid.js`;
       if (this.network === 'liquidtestnet') {
         return this.replaceCurlPlaceholder(code.codeTemplate.curl, code.codeSampleLiquidTestnet);
       }
-      if (this.network === 'bisq') {
-        return this.replaceCurlPlaceholder(code.codeTemplate.curl, code.codeSampleBisq);
-      }
       if (this.network === '' || this.network === 'main') {
         return this.replaceCurlPlaceholder(code.codeTemplate.curl, code.codeSampleMainnet);
       }
@@ -281,9 +242,6 @@ yarn add @mempool/liquid.js`;
     }
     if (this.network === 'liquidtestnet') {
       return code.codeSampleLiquidTestnet.response;
-    }
-    if (this.network === 'bisq') {
-      return code.codeSampleBisq.response;
     }
     return code.codeSampleMainnet.response;
   }
@@ -311,27 +269,29 @@ yarn add @mempool/liquid.js`;
       text = text.replace('%{' + indexNumber + '}', textReplace);
     }
 
+    const headersString = code.headers ? ` -H "${code.headers}"` : ``;
+    
     if (this.env.BASE_MODULE === 'mempool') {
       if (this.network === 'main' || this.network === '') {
         if (this.method === 'POST') {
-          return `curl -X POST -sSLd "${text}"`;
+          return `curl${headersString} -X POST -sSLd "${text}"`;
         }
-        return `curl -sSL "${this.hostname}${text}"`;
+        return `curl${headersString} -sSL "${this.hostname}${text}"`;
       }
       if (this.method === 'POST') {
-        return `curl -X POST -sSLd "${text}"`;
+        return `curl${headersString} -X POST -sSLd "${text}"`;
       }
-      return `curl -sSL "${this.hostname}/${this.network}${text}"`;
+      return `curl${headersString} -sSL "${this.hostname}/${this.network}${text}"`;
     } else if (this.env.BASE_MODULE === 'liquid') {
       if (this.method === 'POST') {
         if (this.network !== 'liquid') {
           text = text.replace('/api', `/${this.network}/api`);
         }
-        return `curl -X POST -sSLd "${text}"`;
+        return `curl${headersString} -X POST -sSLd "${text}"`;
       }
-      return ( this.network === 'liquid' ? `curl -sSL "${this.hostname}${text}"` : `curl -sSL "${this.hostname}/${this.network}${text}"` );
+      return ( this.network === 'liquid' ? `curl${headersString} -sSL "${this.hostname}${text}"` : `curl${headersString} -sSL "${this.hostname}/${this.network}${text}"` );
     } else {
-        return `curl -sSL "${this.hostname}${text}"`;
+        return `curl${headersString} -sSL "${this.hostname}${text}"`;
     }
 
   }

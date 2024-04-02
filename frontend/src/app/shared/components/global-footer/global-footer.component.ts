@@ -30,7 +30,6 @@ export class GlobalFooterComponent implements OnInit {
   loggedIn = false;
   urlSubscription: Subscription;
   isServicesPage = false;
-  servicesEnabled = false;
 
   constructor(
     public stateService: StateService,
@@ -45,7 +44,6 @@ export class GlobalFooterComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.servicesEnabled = this.officialMempoolSpace && this.stateService.env.ACCELERATOR === true && this.stateService.network === '';
     this.isServicesPage = this.router.url.includes('/services/');
 
     this.env = this.stateService.env;
@@ -83,9 +81,6 @@ export class GlobalFooterComponent implements OnInit {
     }
     if( network === 'liquid' || network === 'liquidtestnet' ) {
       return (this.env.BASE_MODULE === 'liquid' ? '' : this.env.LIQUID_WEBSITE_URL + this.urlLanguage) + this.networkPaths[thisNetwork] || '/';
-    }
-    if( network === 'bisq' ) {
-      return (this.env.BASE_MODULE === 'bisq' ? '' : this.env.BISQ_WEBSITE_URL + this.urlLanguage) + this.networkPaths[thisNetwork] || '/';
     }
   }
 }

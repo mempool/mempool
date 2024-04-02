@@ -139,7 +139,7 @@ class HashratesRepository {
   public async $getPoolWeeklyHashrate(slug: string): Promise<any[]> {
     const pool = await PoolsRepository.$getPool(slug);
     if (!pool) {
-      throw new Error('This mining pool does not exist ' + escape(slug));
+      throw new Error('This mining pool does not exist');
     }
 
     // Find hashrate boundaries

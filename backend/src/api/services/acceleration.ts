@@ -7,7 +7,26 @@ export interface Acceleration {
   txid: string,
   feeDelta: number,
   pools: number[],
-}
+};
+
+export interface AccelerationHistory {
+  txid: string,
+  status: string,
+  feePaid: number,
+  added: number,
+  lastUpdated: number,
+  baseFee: number,
+  vsizeFee: number,
+  effectiveFee: number,
+  effectiveVsize: number,
+  feeDelta: number,
+  blockHash: string,
+  blockHeight: number,
+  pools: {
+    pool_unique_id: number,
+    username: string,
+  }[],
+};
 
 class AccelerationApi {
   public async $fetchAccelerations(): Promise<Acceleration[] | null> {
@@ -17,6 +36,27 @@ class AccelerationApi {
         return response.data as Acceleration[];
       } catch (e) {
         logger.warn('Failed to fetch current accelerations from the mempool services backend: ' + (e instanceof Error ? e.message : e));
+        return null;
+      }
+    } else {
+      return [];
+    }
+  }
+
+  public async $fetchAccelerationHistory(page?: number, status?: string): Promise<AccelerationHistory[] | null> {
+    if (config.MEMPOOL_SERVICES.ACCELERATIONS) {
+      try {
+        const response = await axios.get(`${config.MEMPOOL_SERVICES.API}/accelerator/accelerations/history`, {
+          responseType: 'json',
+          timeout: 10000,
+          params: {
+            page,
+            status,
+          }
+        });
+        return response.data as AccelerationHistory[];
+      } catch (e) {
+        logger.warn('Failed to fetch acceleration history from the mempool services backend: ' + (e instanceof Error ? e.message : e));
         return null;
       }
     } else {

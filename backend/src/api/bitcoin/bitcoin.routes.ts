@@ -19,6 +19,7 @@ import bitcoinClient from './bitcoin-client';
 import difficultyAdjustment from '../difficulty-adjustment';
 import transactionRepository from '../../repositories/TransactionRepository';
 import rbfCache from '../rbf-cache';
+import { calculateCpfp } from '../cpfp';
 
 class BitcoinRoutes {
   public initRoutes(app: Application) {
@@ -121,8 +122,10 @@ class BitcoinRoutes {
           .get(config.MEMPOOL.API_URL_PREFIX + 'block-height/:height', this.getBlockHeight)
           .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address', this.getAddress)
           .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs', this.getAddressTransactions)
+          .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs/summary', this.getAddressTransactionSummary)
           .get(config.MEMPOOL.API_URL_PREFIX + 'scripthash/:scripthash', this.getScriptHash)
           .get(config.MEMPOOL.API_URL_PREFIX + 'scripthash/:scripthash/txs', this.getScriptHashTransactions)
+          .get(config.MEMPOOL.API_URL_PREFIX + 'scripthash/:scripthash/txs/summary', this.getScriptHashTransactionSummary)
           .get(config.MEMPOOL.API_URL_PREFIX + 'address-prefix/:prefix', this.getAddressPrefix)
           ;
       }
@@ -215,7 +218,7 @@ class BitcoinRoutes {
         return;
       }
 
-      const cpfpInfo = Common.setRelativesAndGetCpfpInfo(tx, mempool.getMempool());
+      const cpfpInfo = calculateCpfp(tx, mempool.getMempool());
 
       res.json(cpfpInfo);
       return;
@@ -415,7 +418,7 @@ class BitcoinRoutes {
         const height = req.params.height === undefined ? undefined : parseInt(req.params.height, 10);
         res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
         res.json(await blocks.$getBlocks(height, 15));
-      } else { // Liquid, Bisq
+      } else { // Liquid
         return await this.getLegacyBlocks(req, res);
       }
     } catch (e) {
@@ -425,7 +428,7 @@ class BitcoinRoutes {
 
   private async getBlocksByBulk(req: Request, res: Response) {
     try {
-      if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) { // Liquid, Bisq - Not implemented
+      if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) { // Liquid - Not implemented
         return res.status(404).send(`This API is only available for Bitcoin networks`);
       }
       if (config.MEMPOOL.MAX_BLOCKS_BULK_QUERY <= 0) {
@@ -566,6 +569,13 @@ class BitcoinRoutes {
     }
   }
 
+  private async getAddressTransactionSummary(req: Request, res: Response): Promise<void> {
+    if (config.MEMPOOL.BACKEND !== 'esplora') {
+      res.status(405).send('Address summary lookups require mempool/electrs backend.');
+      return;
+    }
+  }
+
   private async getScriptHash(req: Request, res: Response) {
     if (config.MEMPOOL.BACKEND === 'none') {
       res.status(405).send('Address lookups cannot be used with bitcoind as backend.');
@@ -606,6 +616,13 @@ class BitcoinRoutes {
         return;
       }
       res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async getScriptHashTransactionSummary(req: Request, res: Response): Promise<void> {
+    if (config.MEMPOOL.BACKEND !== 'esplora') {
+      res.status(405).send('Scripthash summary lookups require mempool/electrs backend.');
+      return;
     }
   }
 

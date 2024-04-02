@@ -77,11 +77,15 @@ const ADDRESS_CHARS: {
       + `)`,
   },
   liquid: {
-    base58: `[GHPQ]` // G|H is P2PKH, P|Q is P2SH
-      + BASE58_CHARS
-      + `{33}`, // All min-max lengths are 34
+    base58: `[GHPQ]` // PQ is P2PKH, GH is P2SH
+        + BASE58_CHARS
+        + `{33}` // All min-max lengths are 34
+      + `|`
+        + `[V][TJ]` // Confidential P2PKH or P2SH starts with VT or VJ
+        + BASE58_CHARS
+        + `{78}`, 
     bech32: `(?:`
-        + `(?:` // bech32 liquid starts with ex1 or lq1
+        + `(?:` // bech32 liquid starts with ex1 (unconfidential) or lq1 (confidential)
           + `ex1`
           + `|`
           + `lq1`
@@ -120,25 +124,11 @@ const ADDRESS_CHARS: {
         + `{20,100}`
       + `)`,
   },
-  bisq: {
-    base58: `(?:[bB][13]` // b or B at the start, followed by a single 1 or 3
-      + BASE58_CHARS
-      + `{26,33})`,
-    bech32: `(?:`
-        + `[bB]bc1` // b or B at the start, followed by bc1
-        + BECH32_CHARS_LW
-        + `{20,100}` 
-      + `|`
-        + `[bB]BC1` // b or B at the start, followed by BC1
-        + BECH32_CHARS_UP
-        + `{20,100}`
-      + `)`,
-  },
 }
 type RegexTypeNoAddrNoBlockHash = | `transaction` | `blockheight` | `date` | `timestamp`;
 export type RegexType = `address` | `blockhash` | RegexTypeNoAddrNoBlockHash;
 
-export const NETWORKS = [`testnet`, `signet`, `liquid`, `liquidtestnet`, `bisq`, `mainnet`] as const;
+export const NETWORKS = [`testnet`, `signet`, `liquid`, `liquidtestnet`, `mainnet`] as const;
 export type Network = typeof NETWORKS[number]; // Turn const array into union type
 
 export const ADDRESS_REGEXES: [RegExp, Network][] = NETWORKS
@@ -160,8 +150,6 @@ function isNetworkAvailable(network: Network, env: Env): boolean {
       return env.LIQUID_ENABLED === true;
     case 'liquidtestnet':
       return env.LIQUID_TESTNET_ENABLED === true;
-    case 'bisq':
-      return env.BISQ_ENABLED === true;
     case 'mainnet':
       return true; // There is no "MAINNET_ENABLED" flag
     default:
@@ -169,16 +157,13 @@ function isNetworkAvailable(network: Network, env: Env): boolean {
   }
 }
 
-export function needBaseModuleChange(fromBaseModule: 'mempool' | 'liquid' | 'bisq', toNetwork: Network): boolean {
+export function needBaseModuleChange(fromBaseModule: 'mempool' | 'liquid', toNetwork: Network): boolean {
   if (!toNetwork) return false; // No target network means no change needed
   if (fromBaseModule === 'mempool') {
     return toNetwork !== 'mainnet' && toNetwork !== 'testnet' && toNetwork !== 'signet';
   }
   if (fromBaseModule === 'liquid') {
     return toNetwork !== 'liquid' && toNetwork !== 'liquidtestnet';
-  }
-  if (fromBaseModule === 'bisq') {
-    return toNetwork !== 'bisq';
   }
 }
 
@@ -187,11 +172,6 @@ export function getTargetUrl(toNetwork: Network, address: string, env: Env): str
   if (toNetwork === 'liquid' || toNetwork === 'liquidtestnet') {
     targetUrl = env.LIQUID_WEBSITE_URL;
     targetUrl += (toNetwork === 'liquidtestnet' ? '/testnet' : '');
-    targetUrl += '/address/';
-    targetUrl += address;
-  }
-  if (toNetwork === 'bisq') {
-    targetUrl = env.BISQ_WEBSITE_URL;
     targetUrl += '/address/';
     targetUrl += address;
   }
@@ -237,9 +217,6 @@ export function getRegex(type: RegexType, network?: Network): RegExp {
           break;
         case `liquidtestnet`:
           leadingZeroes = 8; // We are not interested in Liquid block hashes
-          break;
-        case `bisq`:
-          leadingZeroes = 8; // Assumes at least 32 bits of difficulty
           break;
         default:
           throw new Error(`Invalid Network ${network} (Unreachable error in TypeScript)`);
@@ -302,11 +279,6 @@ export function getRegex(type: RegexType, network?: Network): RegExp {
           regex += ADDRESS_CHARS.liquidtestnet.base58;
           regex += `|`; // OR
           regex += ADDRESS_CHARS.liquidtestnet.bech32;
-          break;
-        case `bisq`:
-          regex += ADDRESS_CHARS.bisq.base58;
-          regex += `|`; // OR
-          regex += ADDRESS_CHARS.bisq.bech32;
           break;
         default:
           throw new Error(`Invalid Network ${network} (Unreachable error in TypeScript)`);

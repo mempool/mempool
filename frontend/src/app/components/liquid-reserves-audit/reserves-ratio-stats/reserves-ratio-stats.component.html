@@ -1,0 +1,43 @@
+<div class="fee-estimation-container">
+  <div class="item"> 
+    <h5 class="card-title" i18n="liquid.unpeg">Unpeg</h5> 
+    <div *ngIf="(unbackedMonths$ | async) as unbackedMonths; else loadingData" class="card-text">
+      <ng-container *ngIf="unbackedMonths.historyComplete; else loadingData">
+        <div class="fee-text" [ngClass]="{'danger' : unbackedMonths.total > 0, 'correct': unbackedMonths.total === 0}">
+          {{ unbackedMonths.total }} <span i18n="liquid.unpeg-event">Unpeg Event</span>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="item avg-ratio"> 
+    <h5 class="card-title" i18n="liquid.avg-peg-ratio">Avg Peg Ratio</h5> 
+    <div *ngIf="(unbackedMonths$ | async) as unbackedMonths; else loadingData" class="card-text">
+      <ng-container *ngIf="unbackedMonths.historyComplete; else loadingData">
+        <div class="fee-text" [ngClass]="{'danger' : unbackedMonths.avg < 1, 'correct': unbackedMonths.avg >= 1}">
+          {{ (unbackedMonths.avg * 100).toFixed(3) }} %
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="item">
+    <!-- <a class="title-link" [routerLink]="['/audit/emergency-spends' | relativeUrl]">
+      <h5 class="card-title"><ng-container i18n="liquid.forfeited-utxos">Forfeited UTXOs</ng-container>&nbsp;<fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: #4a68b9"></fa-icon></h5>
+    </a> -->
+    <h5 class="card-title" i18n="liquid.emergency-keys">Emergency Keys</h5>
+    <div *ngIf="(emergencyUtxosStats$ | async) as emergencyUtxosStats; else loadingData" class="card-text">
+      <div class="fee-text" [ngClass]="{'danger' : emergencyUtxosStats.utxo_count > 0, 'correct': emergencyUtxosStats.utxo_count === 0}">
+        {{ emergencyUtxosStats.utxo_count }} <span i18n="shared.usage">usage</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingData>
+  <div class="card-text">
+    <div class="skeleton-loader"></div>
+  </div>
+</ng-template>
+
+

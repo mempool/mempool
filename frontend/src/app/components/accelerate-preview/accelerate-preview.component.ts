@@ -4,7 +4,9 @@ import { Subscription, catchError, of, tap } from 'rxjs';
 import { StorageService } from '../../services/storage.service';
 import { Transaction } from '../../interfaces/electrs.interface';
 import { nextRoundNumber } from '../../shared/common.utils';
+import { ServicesApiServices } from '../../services/services-api.service';
 import { AudioService } from '../../services/audio.service';
+import { StateService } from '../../services/state.service';
 
 export type AccelerationEstimate = {
   txSummary: TxSummary;
@@ -62,7 +64,8 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   maxRateOptions: RateOption[] = [];
 
   constructor(
-    private apiService: ApiService,
+    public stateService: StateService,
+    private servicesApiService: ServicesApiServices,
     private storageService: StorageService,
     private audioService: AudioService,
     private cd: ChangeDetectorRef
@@ -83,7 +86,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   ngOnInit() {
     this.user = this.storageService.getAuth()?.user ?? null;
 
-    this.estimateSubscription = this.apiService.estimate$(this.tx.txid).pipe(
+    this.estimateSubscription = this.servicesApiService.estimate$(this.tx.txid).pipe(
       tap((response) => {
         if (response.status === 204) {
           this.estimate = undefined;
@@ -183,7 +186,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
     if (this.accelerationSubscription) {
       this.accelerationSubscription.unsubscribe();
     }
-    this.accelerationSubscription = this.apiService.accelerate$(
+    this.accelerationSubscription = this.servicesApiService.accelerate$(
       this.tx.txid,
       this.userBid
     ).subscribe({

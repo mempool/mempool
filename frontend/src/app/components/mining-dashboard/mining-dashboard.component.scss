@@ -17,6 +17,19 @@
   }
 }
 
+.fixed-mempool-graph {
+  height: 330px;
+}
+
+.mempool-graph, .fixed-mempool-graph {
+  @media (min-width: 768px) {
+    height: 345px;
+  }
+  @media (min-width: 992px) {
+    height: 440px;
+  }
+}
+
 .card-title {
   font-size: 1rem;
   color: #4a68b9;

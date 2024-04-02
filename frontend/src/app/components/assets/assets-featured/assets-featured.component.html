@@ -1,5 +1,7 @@
 <div *ngIf="featuredAssets$ | async as featured; else loading" class="featuredBox">
-
+  <div *ngIf="featured.length === 0" class="text-center">
+    <div i18n="liquid.no-featured.assets" class="symbol">No featured assets</div>
+  </div>
   <div class="card" *ngFor="let group of featured">
     <ng-template [ngIf]="group.assets" [ngIfElse]="singleAsset">
       <a [routerLink]="['/assets/group' | relativeUrl, group.id]">

@@ -5,6 +5,7 @@ import { download } from '../../shared/graphs.utils';
 import { LightningApiService } from '../lightning-api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
+import { StateService } from '../../services/state.service';
 
 @Component({
   selector: 'app-node-fee-chart',
@@ -33,6 +34,7 @@ export class NodeFeeChartComponent implements OnInit {
   constructor(
     @Inject(LOCALE_ID) public locale: string,
     private lightningApiService: LightningApiService,
+    public stateService: StateService,
     private activatedRoute: ActivatedRoute,
     private amountShortenerPipe: AmountShortenerPipe,
   ) {

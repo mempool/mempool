@@ -1,0 +1,4 @@
+<div class="echarts" *browserOnly echarts [initOpts]="ratioChartInitOptions" [options]="ratioChartOptions" (chartRendered)="rendered()"></div>
+<div class="text-center loadingGraphs" *ngIf="isLoading">
+  <div class="spinner-border text-light"></div>
+</div>

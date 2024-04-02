@@ -19,6 +19,7 @@ import { TelevisionComponent } from '../components/television/television.compone
 import { DashboardComponent } from '../dashboard/dashboard.component';
 import { AccelerationFeesGraphComponent } from '../components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component';
 import { AccelerationsListComponent } from '../components/acceleration/accelerations-list/accelerations-list.component';
+import { AddressComponent } from '../components/address/address.component';
 
 const routes: Routes = [
   {
@@ -52,7 +53,7 @@ const routes: Routes = [
         ]
       },
       {
-        path: 'acceleration-list',
+        path: 'acceleration/list',
         data: { networks: ['bitcoin'] },
         component: AccelerationsListComponent,
       },
@@ -66,6 +67,15 @@ const routes: Routes = [
             component: MempoolBlockComponent,
           },
         ]
+      },
+      {
+        path: 'address/:id',
+        children: [],
+        component: AddressComponent,
+        data: {
+          ogImage: true,
+          networkSpecific: true,
+        }
       },
       {
         path: 'graphs',

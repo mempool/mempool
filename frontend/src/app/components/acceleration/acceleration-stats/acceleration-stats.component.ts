@@ -1,9 +1,12 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
-import { ApiService } from '../../../services/api.service';
-import { StateService } from '../../../services/state.service';
-import { Acceleration } from '../../../interfaces/node-api.interface';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ServicesApiServices } from '../../../services/services-api.service';
+
+export type AccelerationStats = {
+  totalRequested: number;
+  totalBidBoost: number;
+  successRate: number;
+}
 
 @Component({
   selector: 'app-acceleration-stats',
@@ -12,35 +15,13 @@ import { Acceleration } from '../../../interfaces/node-api.interface';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccelerationStatsComponent implements OnInit {
-  @Input() timespan: '24h' | '1w' | '1m' = '24h';
-  @Input() accelerations$: Observable<Acceleration[]>;
-  public accelerationStats$: Observable<any>;
+  accelerationStats$: Observable<AccelerationStats>;
 
   constructor(
-    private apiService: ApiService,
-    private stateService: StateService,
+    private servicesApiService: ServicesApiServices
   ) { }
 
   ngOnInit(): void {
-    this.accelerationStats$ = this.accelerations$.pipe(
-      switchMap(accelerations => {
-        let totalFeesPaid = 0;
-        let totalSucceeded = 0;
-        let totalCanceled = 0;
-        for (const acc of accelerations) {
-          if (acc.status === 'completed') {
-            totalSucceeded++;
-            totalFeesPaid += (acc.feePaid - acc.baseFee - acc.vsizeFee) || 0;
-          } else if (acc.status === 'failed') {
-            totalCanceled++;
-          }
-        }
-        return of({
-          count: totalSucceeded,
-          totalFeesPaid,
-          successRate: (totalSucceeded + totalCanceled > 0) ? ((totalSucceeded / (totalSucceeded + totalCanceled)) * 100) : 0.0,
-        });
-      })
-    );
+    this.accelerationStats$ = this.servicesApiService.getAccelerationStats$();
   }
 }

@@ -45,7 +45,7 @@ export const defaultAuditColors = {
   censored: hexToColor('f344df'),
   missing: darken(desaturate(hexToColor('f344df'), 0.3), 0.7),
   added: hexToColor('0099ff'),
-  selected: darken(desaturate(hexToColor('0099ff'), 0.3), 0.7),
+  prioritized: darken(desaturate(hexToColor('0099ff'), 0.3), 0.7),
   accelerated: hexToColor('8F5FF6'),
 };
 
@@ -81,6 +81,8 @@ export function defaultColorFunction(
       return auditColors.missing;
     case 'added':
       return auditColors.added;
+    case 'prioritized':
+      return auditColors.prioritized;
     case 'selected':
       return marginalFeeColors[feeLevelIndex] || marginalFeeColors[mempoolFeeColors.length - 1];
     case 'accelerated':
