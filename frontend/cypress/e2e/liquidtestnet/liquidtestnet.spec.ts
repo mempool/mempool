@@ -28,6 +28,17 @@ describe('Liquid Testnet', () => {
       cy.waitForSkeletonGone();
     });
 
+    it('loads the dashboard with no scrollbars on mobile', () => {
+      cy.viewport('iphone-xr');
+      cy.visit(`${basePath}`);
+      cy.waitForSkeletonGone();
+      cy.window().then(window => {
+        const htmlWidth = Cypress.$('html')[0].scrollWidth;
+        const scrollBarWidth = window.innerWidth - htmlWidth;
+        expect(scrollBarWidth).to.be.eq(0);  //check for no horizontal scrollbar
+      });
+    });
+
     it('loads the blocks page', () => {
       cy.visit(`${basePath}`)
       cy.get('#btn-blocks');
@@ -57,17 +68,14 @@ describe('Liquid Testnet', () => {
       cy.get('.tv-only').should('not.exist');
     });
 
-    it.skip('renders unconfidential addresses correctly on mobile', () => {
-      cy.viewport('iphone-6');
-      cy.visit(`${basePath}/address/__TODO__`);
+    it('renders unconfidential transactions correctly on mobile', () => {
+      cy.viewport('iphone-xr');
+      cy.visit(`${basePath}/tx/b119f338878416781dc285b94c0de52826341dea43566e4de4740d3ebfd1f6dc#blinded=99707,144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49,1377e4ec8eb0c89296e14ffca57e377f4b51ad8f1c881e43364434d8430dbfda,cdd6caae4c3452586cfcb107478dd2b7acaa5f82714a6a966578255e857eee60`);
       cy.waitForSkeletonGone();
-      //TODO: Add proper IDs for these selectors
-      const firstRowSelector = '.container-xl > :nth-child(3) > div > :nth-child(1) > .table > tbody';
-      const thirdRowSelector = '.container-xl > :nth-child(3) > div > :nth-child(3)';
-      cy.get(firstRowSelector).invoke('css', 'width').then(firstRowWidth => {
-        cy.get(thirdRowSelector).invoke('css', 'width').then(thirdRowWidth => {
-          expect(parseInt(firstRowWidth)).to.be.lessThan(parseInt(thirdRowWidth));
-        });
+      cy.window().then(window => {
+        const htmlWidth = Cypress.$('html')[0].scrollWidth;
+        const scrollBarWidth = window.innerWidth - htmlWidth;
+        expect(scrollBarWidth).to.be.eq(0);  //check for no horizontal scrollbar
       });
     });
 
