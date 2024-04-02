@@ -552,6 +552,7 @@ export class Common {
       value: tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0),
       acc: tx.acceleration || undefined,
       rate: tx.effectiveFeePerVsize,
+      time: tx.firstSeen || undefined,
     };
   }
 

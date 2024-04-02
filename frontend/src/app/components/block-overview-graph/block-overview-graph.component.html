@@ -14,6 +14,7 @@
       [blockConversion]="blockConversion"
       [filterFlags]="activeFilterFlags"
       [filterMode]="filterMode"
+      [relativeTime]="relativeTime"
     ></app-block-overview-tooltip>
     <app-block-filters *ngIf="webGlEnabled && showFilters && filtersAvailable" [excludeFilters]="excludeFilters" [cssWidth]="cssWidth" (onFilterChanged)="setFilterFlags($event)"></app-block-filters>
     <div *ngIf="!webGlEnabled" class="placeholder">
