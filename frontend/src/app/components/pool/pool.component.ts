@@ -121,6 +121,7 @@ export class PoolComponent implements OnInit {
       );
 
     this.oobFees$ = this.route.params.pipe(map((params) => params.slug)).pipe(
+      filter(() => this.stateService.env.PUBLIC_ACCELERATIONS === true && this.stateService.network === ''),
       switchMap(slug => {
         return combineLatest([
           this.apiService.getAccelerationTotals$(this.slug, '1w'),
