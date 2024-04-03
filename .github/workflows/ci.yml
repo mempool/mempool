@@ -251,7 +251,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # module: ["mempool", "liquid", "bisq"] Disabling bisq support for now
         module: ["mempool", "liquid"]
         include:
           - module: "mempool"
@@ -263,9 +262,6 @@ jobs:
             spec: |
               cypress/e2e/liquid/liquid.spec.ts
               cypress/e2e/liquidtestnet/liquidtestnet.spec.ts
-          # - module: "bisq"
-          #   spec: |
-          #     cypress/e2e/bisq/bisq.spec.ts
 
     name: E2E tests for ${{ matrix.module }}
     steps:
