@@ -264,22 +264,10 @@ export class StateService {
     // /^\/                                         starts with a forward slash...
     // (?:[a-z]{2}(?:-[A-Z]{2})?\/)?                optional locale prefix (non-capturing)
     // (?:preview\/)?                               optional "preview" prefix (non-capturing)
-    // (testnet|liquidtestnet|liquid|signet)/  network string (captured as networkMatches[1])
+    // (testnet|signet)/                            network string (captured as networkMatches[1])
     // ($|\/)                                       network string must end or end with a slash
-    const networkMatches = url.match(/^\/(?:[a-z]{2}(?:-[A-Z]{2})?\/)?(?:preview\/)?(testnet|liquidtestnet|liquid|signet)($|\/)/);
+    const networkMatches = url.match(/^\/(?:[a-z]{2}(?:-[A-Z]{2})?\/)?(?:preview\/)?(testnet|signet)($|\/)/);
     switch (networkMatches && networkMatches[1]) {
-      case 'liquid':
-        if (this.network !== 'liquid') {
-          this.network = 'liquid';
-          this.networkChanged$.next('liquid');
-        }
-        return;
-      case 'liquidtestnet':
-        if (this.network !== 'liquidtestnet') {
-          this.network = 'liquidtestnet';
-          this.networkChanged$.next('liquidtestnet');
-        }
-        return;
       case 'signet':
         if (this.network !== 'signet') {
           this.network = 'signet';
@@ -287,7 +275,7 @@ export class StateService {
         }
         return;
       case 'testnet':
-        if (this.network !== 'testnet') {
+        if (this.network !== 'testnet' && this.network !== 'liquidtestnet') {
           if (this.env.BASE_MODULE === 'liquid') {
             this.network = 'liquidtestnet';
             this.networkChanged$.next('liquidtestnet');
