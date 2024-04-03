@@ -15,12 +15,31 @@
     <div *ngIf="user === undefined" class="profile_image_container"></div>
   </ng-container>
 
-  <a class="navbar-brand" [ngClass]="{'dual-logos': subdomain}" [routerLink]="['/' | relativeUrl]" (click)="brandClick($event)">
-  <ng-template [ngIf]="subdomain && enterpriseInfo">
-    <div class="subdomain_container">
-      <img [src]="'/api/v1/services/enterprise/images/' + subdomain + '/logo?imageMd5=' + enterpriseInfo.imageMd5" class="subdomain_logo">
-    </div>
-  </ng-template>
+  <!-- Large screen -->
+  <a class="navbar-brand d-none d-md-flex" [ngClass]="{'dual-logos': subdomain}" [routerLink]="['/' | relativeUrl]" (click)="brandClick($event)">
+    <ng-template [ngIf]="subdomain && enterpriseInfo">
+      <div class="subdomain_container">
+        <img [src]="'/api/v1/services/enterprise/images/' + subdomain + '/logo?imageMd5=' + enterpriseInfo.imageMd5" class="subdomain_logo" [class]="{'rounded': enterpriseInfo.rounded_corner}">
+      </div>
+      <div class="vertical-line"></div>
+    </ng-template>
+    <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
+      <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126" class="mempool-logo" [ngStyle]="{'opacity': connectionState.val === 2 ? 1 : 0.5 }"></app-svg-images>
+      <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>
+      <div class="connection-badge">
+        <div class="badge badge-warning" *ngIf="connectionState.val === 0" i18n="master-page.offline">Offline</div>
+        <div class="badge badge-warning" *ngIf="connectionState.val === 1" i18n="master-page.reconnecting">Reconnecting...</div>
+      </div>
+    </ng-container>
+  </a>
+  <!-- Mobile -->
+  <a class="navbar-brand d-flex d-md-none justify-content-center" [ngClass]="{'dual-logos': subdomain, 'mr-0': subdomain}" [routerLink]="['/' | relativeUrl]" (click)="brandClick($event)">
+    <ng-template [ngIf]="subdomain && enterpriseInfo">
+      <div class="subdomain_container">
+        <img [src]="'/api/v1/services/enterprise/images/' + subdomain + '/logo?imageMd5=' + enterpriseInfo.imageMd5" class="subdomain_logo" [class]="{'rounded': enterpriseInfo.rounded_corner}">
+      </div>
+      <div class="vertical-line"></div>
+    </ng-template>
     <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
       <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126" class="mempool-logo" [ngStyle]="{'opacity': connectionState.val === 2 ? 1 : 0.5 }"></app-svg-images>
       <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>
@@ -77,7 +96,7 @@
         <a class="nav-link" [routerLink]="['/about']" (click)="collapse()"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true" i18n-title="master-page.about" title="About"></fa-icon></a>
       </li>
     </ul>
-    <app-search-form [hamburgerOpen]="user != null" class="search-form-container" location="top" (searchTriggered)="collapse()"></app-search-form>
+    <app-search-form [hamburgerOpen]="enterpriseInfo === null && user != null" class="search-form-container" location="top" (searchTriggered)="collapse()"></app-search-form>
   </div>
 </nav>
 <app-menu *ngIf="servicesEnabled" [navOpen]="menuOpen" (loggedOut)="onLoggedOut()" (menuToggled)="menuToggled($event)"></app-menu>
