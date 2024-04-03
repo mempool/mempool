@@ -71,8 +71,6 @@ export class SeoService {
     let domain = 'mempool.space';
     if (this.stateService.env.BASE_MODULE === 'liquid') {
       domain = 'liquid.network';
-    } else if (this.stateService.env.BASE_MODULE === 'bisq') {
-      domain = 'bisq.markets';
     }
     this.canonicalLink.setAttribute('href', 'https://' + domain + path);
   }
@@ -86,8 +84,6 @@ export class SeoService {
       return this.baseTitle + ' - Liquid Network';
     if (this.network === 'liquidtestnet')
       return this.baseTitle + ' - Liquid Testnet';
-    if (this.network === 'bisq')
-      return this.baseTitle + ' - Bisq Markets';
     return this.baseTitle + ' - ' + (this.network ? this.ucfirst(this.network) : 'Bitcoin') + ' Explorer';
   }
 
@@ -96,8 +92,6 @@ export class SeoService {
       return this.baseDescription + ' See the real-time status of your transactions, browse network stats, and more.';
     if ( (this.network === 'liquid') || (this.network === 'liquidtestnet') )
       return this.baseDescription + ' See Liquid transactions & assets, get network info, and more.';
-    if (this.network === 'bisq')
-      return this.baseDescription + ' See Bisq market prices, trading activity, and more.';
   }
 
   ucfirst(str: string) {

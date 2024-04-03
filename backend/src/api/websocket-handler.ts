@@ -83,6 +83,7 @@ class WebsocketHandler {
     const _blocks = blocks.getBlocks().slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT);
     const da = difficultyAdjustment.getDifficultyAdjustment();
     this.updateSocketDataFields({
+      'backend': config.MEMPOOL.BACKEND,
       'mempoolInfo': memPool.getMempoolInfo(),
       'vBytesPerSecond': memPool.getVBytesPerSecond(),
       'blocks': _blocks,
@@ -357,14 +358,6 @@ class WebsocketHandler {
 
           if (parsedMessage['track-donation'] && parsedMessage['track-donation'].length === 22) {
             client['track-donation'] = parsedMessage['track-donation'];
-          }
-
-          if (parsedMessage['track-bisq-market']) {
-            if (/^[a-z]{3}_[a-z]{3}$/.test(parsedMessage['track-bisq-market'])) {
-              client['track-bisq-market'] = parsedMessage['track-bisq-market'];
-            } else {
-              client['track-bisq-market'] = null;
-            }
           }
 
           if (Object.keys(response).length) {
@@ -868,7 +861,7 @@ class WebsocketHandler {
       }
 
       if (Common.indexingEnabled()) {
-        const { censored, added, fresh, sigop, fullrbf, accelerated, score, similarity } = Audit.auditBlock(transactions, projectedBlocks, auditMempool);
+        const { censored, added, prioritized, fresh, sigop, fullrbf, accelerated, score, similarity } = Audit.auditBlock(transactions, projectedBlocks, auditMempool);
         const matchRate = Math.round(score * 100 * 100) / 100;
 
         const stripped = projectedBlocks[0]?.transactions ? projectedBlocks[0].transactions : [];
@@ -894,6 +887,7 @@ class WebsocketHandler {
           height: block.height,
           hash: block.id,
           addedTxs: added,
+          prioritizedTxs: prioritized,
           missingTxs: censored,
           freshTxs: fresh,
           sigopTxs: sigop,

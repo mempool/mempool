@@ -12,7 +12,7 @@
         <th class="timestamp text-left" i18n="shared.date" [ngClass]="{'widget': widget}">Date</th>
         <th class="expires-in text-left" *ngIf="!widget && showExpiredUtxos === false" i18n="liquid.expires-in">Expires in</th>
         <th class="expires-in text-left" *ngIf="!widget && showExpiredUtxos === true" i18n="liquid.expired-since">Expired since</th>
-        <th class="is-dust text-right" *ngIf="!widget && showExpiredUtxos === true" i18n="liquid.is-dust">Is Dust</th>
+        <th class="is-dust text-right" *ngIf="!widget && showExpiredUtxos === true" i18n="liquid.dust">Dust</th>
       </thead>
       <tbody *ngIf="federationUtxos$ | async as utxos; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
         <ng-container *ngIf="widget; else regularRows">
@@ -63,8 +63,11 @@
               {{ utxo.blocknumber + utxo.timelock - lastReservesBlockUpdate < 0 ? -(utxo.blocknumber + utxo.timelock - lastReservesBlockUpdate) : utxo.blocknumber + utxo.timelock - lastReservesBlockUpdate }} <span i18n="shared.blocks" class="symbol">blocks</span>
             </td>
             <td *ngIf="!widget && showExpiredUtxos === true" class="is-dust text-right" [ngStyle]="{ 'color': !utxo.isDust ? '#D81B60' : '' }">
-              <div i18n="shared.yes" *ngIf="utxo.isDust">Yes</div>
-              <div i18n="shared.no" *ngIf="!utxo.isDust">No</div>
+              @if (utxo.isDust) {
+                ✔
+              } @else {
+                ➖
+              }
             </td>
           </tr>
         </ng-template>

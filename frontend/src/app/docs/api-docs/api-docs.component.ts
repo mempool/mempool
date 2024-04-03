@@ -179,10 +179,6 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
     if (network === 'liquidtestnet') {
       curlResponse = code.codeSampleLiquidTestnet.curl;
     }
-    if (network === 'bisq') {
-      curlResponse = code.codeSampleBisq.curl;
-    }
-
     let curlNetwork = '';
     if (this.env.BASE_MODULE === 'mempool') {
       if (!['', 'mainnet'].includes(network)) {

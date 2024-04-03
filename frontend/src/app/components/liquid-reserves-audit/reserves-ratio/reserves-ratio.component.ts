@@ -159,7 +159,7 @@ export class ReservesRatioComponent implements OnInit, OnChanges {
           data: [
             {
               value: value,
-              name: 'Assets vs Liabilities'
+              name: $localize`Assets vs Liabilities`
             }
           ]
         }

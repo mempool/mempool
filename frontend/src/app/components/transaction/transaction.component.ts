@@ -42,6 +42,7 @@ interface AuditStatus {
   seen?: boolean;
   expected?: boolean;
   added?: boolean;
+  prioritized?: boolean;
   delayed?: number;
   accelerated?: boolean;
   conflict?: boolean;
@@ -317,13 +318,15 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           fetchAudit ? this.apiService.getBlockAudit$(hash).pipe(
             map(audit => {
               const isAdded = audit.addedTxs.includes(txid);
+              const isPrioritized = audit.prioritizedTxs.includes(txid);
               const isAccelerated = audit.acceleratedTxs.includes(txid);
               const isConflict = audit.fullrbfTxs.includes(txid);
               const isExpected = audit.template.some(tx => tx.txid === txid);
               return {
-                seen: isExpected || !(isAdded || isConflict),
+                seen: isExpected || isPrioritized || isAccelerated,
                 expected: isExpected,
                 added: isAdded,
+                prioritized: isPrioritized,
                 conflict: isConflict,
                 accelerated: isAccelerated,
               };

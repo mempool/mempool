@@ -14,6 +14,26 @@
           <a [routerLink]="['/tx/' | relativeUrl, txid]">{{ txid | shortenString : 16}}</a>
         </td>
       </tr>
+      <tr *ngIf="time">
+        <ng-container [ngSwitch]="timeMode">
+          <ng-container *ngSwitchCase="'mempool'">
+            <td class="label" i18n="transaction.first-seen|Transaction first seen">First seen</td>
+            <td class="value"><i><app-time kind="since" [time]="time" [fastRender]="true"></app-time></i></td>
+          </ng-container>
+          <ng-container *ngSwitchCase="'missed'">
+            <td class="label" i18n="transaction.first-seen|Transaction first seen">First seen</td>
+            <td class="value"><i><app-time kind="before" [time]="relativeTime - time"></app-time></i></td>
+          </ng-container>
+          <ng-container *ngSwitchCase="'after'">
+            <td class="label" i18n="transaction.first-seen|Transaction first seen">First seen</td>
+            <td class="value"><i><app-time kind="span" [time]="time - relativeTime"></app-time></i></td>
+          </ng-container>
+          <ng-container *ngSwitchCase="'mined'">
+            <td class="label" i18n="transaction.confirmed|Transaction confirmed state">Confirmed</td>
+            <td class="value"><i><app-time kind="span" [time]="relativeTime - time"></app-time></i></td>
+          </ng-container>
+        </ng-container>
+      </tr>
       <tr>
         <td class="label" i18n="dashboard.latest-transactions.amount">Amount</td>
         <td class="value"><app-amount [blockConversion]="blockConversion" [satoshis]="value" [noFiat]="true"></app-amount></td>
@@ -48,14 +68,15 @@
         <td class="value">
           <ng-container [ngSwitch]="tx?.status">
             <span *ngSwitchCase="'found'" class="badge badge-success" i18n="transaction.audit.match">Match</span>
-            <span *ngSwitchCase="'censored'" class="badge badge-danger" i18n="transaction.audit.removed">Removed</span>
+            <span *ngSwitchCase="'censored'" class="badge badge-danger" i18n="transaction.audit.removed|Transaction removed state">Removed</span>
             <span *ngSwitchCase="'missing'" class="badge badge-warning" i18n="transaction.audit.marginal">Marginal fee rate</span>
             <span *ngSwitchCase="'sigop'" class="badge badge-warning" i18n="transaction.audit.sigop">High sigop count</span>
             <span *ngSwitchCase="'fresh'" class="badge badge-warning" i18n="transaction.audit.recently-broadcasted">Recently broadcasted</span>
             <span *ngSwitchCase="'freshcpfp'" class="badge badge-warning" i18n="transaction.audit.recently-cpfped">Recently CPFP'd</span>
-            <span *ngSwitchCase="'added'" class="badge badge-warning" i18n="transaction.audit.added">Added</span>
+            <span *ngSwitchCase="'added'" class="badge badge-warning" i18n="tx-features.tag.added|Added">Added</span>
+            <span *ngSwitchCase="'prioritized'" class="badge badge-warning" i18n="tx-features.tag.prioritized|Prioritized">Prioritized</span>
             <span *ngSwitchCase="'selected'" class="badge badge-warning" i18n="transaction.audit.marginal">Marginal fee rate</span>
-            <span *ngSwitchCase="'rbf'" class="badge badge-warning" i18n="transaction.audit.conflicting">Conflicting</span>
+            <span *ngSwitchCase="'rbf'" class="badge badge-warning" i18n="tx-features.tag.conflict|Conflict">Conflict</span>
             <span *ngSwitchCase="'accelerated'" class="badge badge-accelerated" i18n="transaction.audit.accelerated">Accelerated</span>
           </ng-container>
         </td>

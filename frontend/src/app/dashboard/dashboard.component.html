@@ -360,7 +360,8 @@
 <ng-template #auditInProgress>
   <ng-container *ngIf="(auditStatus$ | async) as auditStatus; else loadingSkeletonLiquid">
     <div class="in-progress-message" *ngIf="auditStatus.lastBlockAudit && auditStatus.bitcoinHeaders; else loadingSkeletonLiquid">
-      <span i18n="liquid.audit-in-progress">Audit in progress: Bitcoin block height #{{ auditStatus.lastBlockAudit }} / #{{ auditStatus.bitcoinHeaders }}</span>
+      <div i18n="lightning.indexing-in-progress">Indexing in progress</div>
+      <div>#{{ auditStatus.lastBlockAudit }} / #{{ auditStatus.bitcoinHeaders }}</div>
     </div>
   </ng-container>
 </ng-template>

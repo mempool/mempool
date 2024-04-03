@@ -418,7 +418,7 @@ class BitcoinRoutes {
         const height = req.params.height === undefined ? undefined : parseInt(req.params.height, 10);
         res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
         res.json(await blocks.$getBlocks(height, 15));
-      } else { // Liquid, Bisq
+      } else { // Liquid
         return await this.getLegacyBlocks(req, res);
       }
     } catch (e) {
@@ -428,7 +428,7 @@ class BitcoinRoutes {
 
   private async getBlocksByBulk(req: Request, res: Response) {
     try {
-      if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) { // Liquid, Bisq - Not implemented
+      if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) { // Liquid - Not implemented
         return res.status(404).send(`This API is only available for Bitcoin networks`);
       }
       if (config.MEMPOOL.MAX_BLOCKS_BULK_QUERY <= 0) {
