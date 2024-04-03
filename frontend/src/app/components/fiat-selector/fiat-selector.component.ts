@@ -13,10 +13,10 @@ import { StateService } from '../../services/state.service';
 export class FiatSelectorComponent implements OnInit {
   fiatForm: UntypedFormGroup;
   currencies = Object.entries(fiatCurrencies).sort((a: any, b: any) => {
-    if (a[1].name < b[1].name) {
+    if (a[1].code < b[1].code) {
       return -1;
     }
-    if (a[1].name > b[1].name) {
+    if (a[1].code > b[1].code) {
       return 1;
     }
     return 0;
