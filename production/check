@@ -6,6 +6,9 @@ check_mempoolspace_frontend_git_hash() {
 check_mempoolfoss_frontend_git_hash() {
 	echo -n $(curl -s "https://node${1}.${2}.mempool.space/resources/config.js"|grep GIT_COMMIT_HASH|cut -d "'" -f2|cut -c1-8)
 }
+check_mempoolfoss_backend_git_hash() {
+	echo -n $(curl -s "https://node${1}.${2}.mempool.space/api/v1/backend-info"|jq -r .gitCommit 2>/dev/null|cut -c1-8)
+}
 check_mempoolspace_frontend_md5_hash() {
 	echo -n $(curl -s --connect-to "::node${1}.${2}.mempool.space:443" https://mempool.space|md5|cut -c1-8)
 }
@@ -27,6 +30,8 @@ for site in fmt va1 fra tk7;do
 		check_mempoolspace_frontend_git_hash $node $site
 		echo -n " "
 		check_mempoolfoss_frontend_git_hash $node $site
+		echo -n " "
+		check_mempoolfoss_backend_git_hash $node $site
 		echo -n " "
 		check_mempoolspace_frontend_md5_hash $node $site
 		echo -n " "
