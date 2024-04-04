@@ -30,7 +30,7 @@
         <h5>Gradient</h5>
         <div class="btn-group btn-group-toggle">
           <label class="btn btn-xs yellow mode-toggle" [class.active]="gradientMode === 'fee'">
-            <input type="radio" [value]="'fee'" fragment="fee" (click)="setGradientMode('fee')">Fee
+            <input type="radio" [value]="'fee'" fragment="default" (click)="setGradientMode('fee')">Default
           </label>
           <label class="btn btn-xs blue mode-toggle" [class.active]="gradientMode === 'age'">
             <input type="radio" [value]="'age'" fragment="age" (click)="setGradientMode('age')">Age
