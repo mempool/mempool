@@ -32,7 +32,7 @@
     <track label="Português" kind="captions" srclang="pt" src="/resources/promo-video/pt.vtt" [attr.default]="showSubtitles('pt') ? '' : null">
   </video>
 
-  <ng-container *ngIf="officialMempoolSpace">
+  <ng-container>
     <app-about-sponsors></app-about-sponsors>
   </ng-container>
 
@@ -181,7 +181,7 @@
     </div>
   </div>
 
-  <ng-container *ngIf="officialMempoolSpace">
+  <ng-container>
     <div *ngIf="profiles$ | async as profiles" id="community-sponsors-anchor">
       <div class="community-sponsor" style="margin-bottom: 68px" *ngIf="profiles.whales.length > 0">
         <h3 i18n="about.sponsors.withHeart">Whale Sponsors</h3>
