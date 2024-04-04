@@ -16,7 +16,7 @@ class AccelerationRoutes {
   }
 
   private async $getAcceleratorAccelerations(req: Request, res: Response) {
-    const url = `https://mempool.space${req.originalUrl}`;
+    const url = `${config.MEMPOOL_SERVICES.API}/${req.originalUrl.replace('/api/v1/services/', '')}`;
     try {
       const response = await axios.get(url, { responseType: 'stream', timeout: 10000 });
       response.data.pipe(res);
@@ -27,7 +27,7 @@ class AccelerationRoutes {
   }
 
   private async $getAcceleratorAccelerationsHistory(req: Request, res: Response) {
-    const url = `https://mempool.space${req.originalUrl}`;
+    const url = `${config.MEMPOOL_SERVICES.API}/${req.originalUrl.replace('/api/v1/services/', '')}`;
     try {
       const response = await axios.get(url, { responseType: 'stream', timeout: 10000 });
       response.data.pipe(res);
@@ -38,7 +38,7 @@ class AccelerationRoutes {
   }
 
   private async $getAcceleratorAccelerationsHistoryAggregated(req: Request, res: Response) {
-    const url = `https://mempool.space${req.originalUrl}`;
+    const url = `${config.MEMPOOL_SERVICES.API}/${req.originalUrl.replace('/api/v1/services/', '')}`;
     try {
       const response = await axios.get(url, { responseType: 'stream', timeout: 10000 });
       response.data.pipe(res);
@@ -49,7 +49,7 @@ class AccelerationRoutes {
   }
 
   private async $getAcceleratorAccelerationsStats(req: Request, res: Response) {
-    const url = `https://mempool.space${req.originalUrl}`;
+    const url = `${config.MEMPOOL_SERVICES.API}/${req.originalUrl.replace('/api/v1/services/', '')}`;
     try {
       const response = await axios.get(url, { responseType: 'stream', timeout: 10000 });
       response.data.pipe(res);
