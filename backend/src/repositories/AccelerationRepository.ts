@@ -317,6 +317,26 @@ class AccelerationRepository {
 
     logger.debug(`Indexing accelerations completed`);
   }
+
+  /**
+   * Delete accelerations from the database above blockHeight
+   */
+  public async $deleteAccelerationsFrom(blockHeight: number): Promise<void> {
+    logger.info(`Delete newer accelerations from height ${blockHeight} from the database`);
+    try {
+      const currentSyncedHeight = await this.$getLastSyncedHeight();
+      if (currentSyncedHeight >= blockHeight) {
+        await DB.query(`
+          UPDATE state
+          SET number = ?
+          WHERE name = 'last_acceleration_block'
+        `, [blockHeight - 1]);
+      }
+      await DB.query(`DELETE FROM accelerations where height >= ${blockHeight}`);
+    } catch (e) {
+      logger.err('Cannot delete indexed accelerations. Reason: ' + (e instanceof Error ? e.message : e));
+    }
+  }
 }
 
 export default new AccelerationRepository();
