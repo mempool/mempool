@@ -11,9 +11,12 @@ export interface Filter {
 
 export type FilterMode = 'and' | 'or';
 
+export type GradientMode = 'fee' | 'age';
+
 export interface ActiveFilter {
   mode: FilterMode,
   filters: string[],
+  gradient: GradientMode,
 }
 
 // binary flags for transaction classification

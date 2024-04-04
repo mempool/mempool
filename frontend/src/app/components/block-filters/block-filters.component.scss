@@ -45,6 +45,13 @@
   }
 
   .filter-menu {
+    .filter-row {
+      display: flex;
+      flex-direction: row;
+      justify-content: start;
+      align-items: baseline;
+    }
+
     h5 {
       font-size: 0.8rem;
       color: white;
@@ -116,6 +123,12 @@
       border: solid 1px #1a9436;
       &.active {
         background: #1a9436;
+      }
+    }
+    &.yellow {
+      border: solid 1px #bf7815;
+      &.active {
+        background: #bf7815;
       }
     }
   }
