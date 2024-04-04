@@ -17,7 +17,7 @@
 }
 
 .red {
-  color:#dc3545;
+  color:var(--red);
 }
 
 .grey {
@@ -69,7 +69,7 @@ td.amount.large {
 		text-align: right;
 	}
 	.sats {
-		color: #ffffff66;
+		color: var(--transparent-fg);
 		font-size: 11px;
 	}
 }
@@ -112,7 +112,7 @@ td.amount.large {
 		padding: 0.75rem;
 		font-size: 12px;
 		&:first-child {
-			color: #ffffff66;
+			color: var(--transparent-fg);
 			white-space: pre-wrap;
 			width: 150px;
 		}
@@ -138,7 +138,7 @@ h2 {
 }
 
 .highlight {
-	background-color: #181b2d;
+	background-color: var(--stat-box-bg);
 }
 
 .summary {

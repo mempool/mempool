@@ -101,6 +101,47 @@
           </div>
           <div class="symbol">
             <span i18n="difficulty-box.new-subsidy">New subsidy</span>
+        <div class="item">
+          <h5 class="card-title" i18n="difficulty-box.remaining">Remaining</h5>
+          <div class="card-text">
+            <ng-container *ngTemplateOutlet="epochData.remainingBlocks === 1 ? blocksSingular : blocksPlural; context: {$implicit: epochData.remainingBlocks }"></ng-container>
+            <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
+            <ng-template #blocksSingular let-i i18n="shared.block">{{ i }} <span class="shared-block">block</span></ng-template>
+          </div>
+          <div class="symbol"><app-time-until [time]="epochData.estimatedRetargetDate" [fastRender]="true"></app-time-until></div>
+        </div>
+        <div class="item">
+          <h5 class="card-title" i18n="difficulty-box.estimate">Estimate</h5>
+          <div *ngIf="epochData.remainingBlocks < 1870; else recentlyAdjusted" class="card-text" [ngStyle]="{'color': epochData.colorAdjustments}">
+            <span *ngIf="epochData.change > 0; else arrowDownDifficulty" >
+              <fa-icon class="retarget-sign" [icon]="['fas', 'caret-up']" [fixedWidth]="true"></fa-icon>
+            </span>
+            <ng-template #arrowDownDifficulty >
+              <fa-icon class="retarget-sign" [icon]="['fas', 'caret-down']" [fixedWidth]="true"></fa-icon>
+            </ng-template>
+            {{ epochData.change | absolute | number: '1.2-2' }}
+            <span class="symbol">%</span>
+          </div>
+          <ng-template #recentlyAdjusted>
+            <div class="card-text">&#8212;</div>
+          </ng-template>
+          <div class="symbol">
+            <span i18n="difficulty-box.previous">Previous</span>:
+            <span [ngStyle]="{'color': epochData.colorPreviousAdjustments}">
+              <span *ngIf="epochData.previousRetarget > 0; else arrowDownPreviousDifficulty" >
+                <fa-icon class="previous-retarget-sign" [icon]="['fas', 'caret-up']" [fixedWidth]="true"></fa-icon>
+              </span>
+              <ng-template #arrowDownPreviousDifficulty >
+                <fa-icon class="previous-retarget-sign" [icon]="['fas', 'caret-down']" [fixedWidth]="true"></fa-icon>
+              </ng-template>
+              {{ epochData.previousRetarget | absolute | number: '1.2-2' }} </span> %
+          </div>
+        </div>
+        <div class="item" *ngIf="showProgress">
+          <h5 class="card-title" i18n="difficulty-box.current-period">Current Period</h5>
+          <div class="card-text">{{ epochData.progress | number: '1.2-2' }} <span class="symbol">%</span></div>
+          <div class="progress small-bar">
+            <div class="progress-bar" role="progressbar" style="width: 15%; background-color: var(--primary)" [ngStyle]="{'width': epochData.base}">&nbsp;</div>
           </div>
         </div>
         <div class="item">

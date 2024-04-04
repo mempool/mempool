@@ -239,7 +239,7 @@ export class LightningStatisticsChartComponent implements OnInit, OnChanges {
           splitLine: {
             lineStyle: {
               type: 'dotted',
-              color: '#ffffff66',
+              color: 'var(--transparent-fg)',
               opacity: 0.25,
             }
           },
@@ -280,7 +280,7 @@ export class LightningStatisticsChartComponent implements OnInit, OnChanges {
             symbol: 'none',
             lineStyle: {
               type: 'solid',
-              color: '#ffffff66',
+              color: 'var(--transparent-fg)',
               opacity: 1,
               width: 1,
             },
@@ -348,7 +348,7 @@ export class LightningStatisticsChartComponent implements OnInit, OnChanges {
     const now = new Date();
     // @ts-ignore
     this.chartOptions.grid.bottom = 40;
-    this.chartOptions.backgroundColor = '#11131f';
+    this.chartOptions.backgroundColor = 'var(--active-bg)';
     this.chartInstance.setOption(this.chartOptions);
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,

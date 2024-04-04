@@ -3,7 +3,7 @@
 }
 
 code {
-  background-color: #1d1f31;
+  background-color: var(--bg);
   font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New;
 }
 
@@ -25,7 +25,7 @@ li.nav-item {
 .nav-tabs .nav-link.active {
   border-bottom: 1px solid #fff;
   @media (min-width: 676px){
-    border-bottom: 1px solid #11131f;
+    border-bottom: 1px solid var(--active-bg);
   }
 }
 
@@ -43,7 +43,7 @@ li.nav-item {
     padding: 0px;
   }
   .nav-tabs .nav-link.active {
-    border-bottom: 1px solid #11131f;
+    border-bottom: 1px solid var(--active-bg);
   }
   .subtitle {
     display: flex;
@@ -87,7 +87,7 @@ pre {
   display: block;
   font-size: 87.5%;
   color: #f18920;
-  background-color: #1d1f31;
+  background-color: var(--bg);
   padding: 30px;
   code{
     background-color: transparent;

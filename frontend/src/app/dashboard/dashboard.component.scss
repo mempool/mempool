@@ -7,7 +7,7 @@
 }
 
 .card {
-  background-color: #1d1f31;
+  background-color: var(--bg);
   height: 100%;
 }
 
@@ -25,7 +25,7 @@
 .progress {
   display: inline-flex;
   width: 100%;
-  background-color: #2d3348;
+  background-color: var(--secondary);
   height: 1.1rem;
   max-width: 180px;
 }
@@ -101,7 +101,7 @@
     .card-text {
       font-size: 18px;
       span {
-        color: #ffffff66;
+        color: var(--transparent-fg);
         font-size: 12px;
       }
       .bitcoin-color {

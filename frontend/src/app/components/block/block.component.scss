@@ -254,7 +254,7 @@ h1 {
   cursor: pointer;
 
   &.active {
-    background: #24273e;
+    background: var(--box-bg);
   }
 
   &.active, &:hover {

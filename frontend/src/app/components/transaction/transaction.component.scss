@@ -70,11 +70,11 @@
 }
 
 .arrow-green {
-	color: #1a9436;
+	color: var(--success);
 }
 
 .arrow-red {
-	color: #dc3545;
+	color: var(--red);
 }
 
 .container-xl {
@@ -100,7 +100,7 @@
 .graph-container {
   position: relative;
   width: 100%;
-  background: #181b2d;
+  background: var(--stat-box-bg);
   padding: 10px 0;
   padding-bottom: 0;
 }
