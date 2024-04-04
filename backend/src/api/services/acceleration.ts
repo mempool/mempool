@@ -5,6 +5,9 @@ import axios from 'axios';
 
 export interface Acceleration {
   txid: string,
+  added: number,
+  effectiveVsize: number,
+  effectiveFee: number,
   feeDelta: number,
   pools: number[],
 };

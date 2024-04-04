@@ -6,7 +6,7 @@ import { IEsploraApi } from '../api/bitcoin/esplora-api.interface';
 import { Common } from '../api/common';
 import config from '../config';
 import blocks from '../api/blocks';
-import accelerationApi, { Acceleration } from '../api/services/acceleration';
+import accelerationApi, { Acceleration, AccelerationHistory } from '../api/services/acceleration';
 import accelerationCosts from '../api/acceleration/acceleration';
 import bitcoinApi from '../api/bitcoin/bitcoin-api-factory';
 import transactionUtils from '../api/transaction-utils';
@@ -15,6 +15,7 @@ import { BlockExtended, MempoolTransactionExtended } from '../mempool.interfaces
 export interface PublicAcceleration {
   txid: string,
   height: number,
+  added: number,
   pool: {
     id: number,
     slug: string,
@@ -29,15 +30,20 @@ export interface PublicAcceleration {
 class AccelerationRepository {
   private bidBoostV2Activated = 831580;
 
-  public async $saveAcceleration(acceleration: AccelerationInfo, block: IEsploraApi.Block, pool_id: number): Promise<void> {
+  public async $saveAcceleration(acceleration: AccelerationInfo, block: IEsploraApi.Block, pool_id: number, accelerationData: Acceleration[]): Promise<void> {
+    const accelerationMap: { [txid: string]: Acceleration } = {};
+    for (const acc of accelerationData) {
+      accelerationMap[acc.txid] = acc;
+    }
     try {
       await DB.query(`
-        INSERT INTO accelerations(txid, added, height, pool, effective_vsize, effective_fee, boost_rate, boost_cost)
-        VALUE (?, FROM_UNIXTIME(?), ?, ?, ?, ?, ?, ?)
+        INSERT INTO accelerations(txid, requested, added, height, pool, effective_vsize, effective_fee, boost_rate, boost_cost)
+        VALUE (?, FROM_UNIXTIME(?), FROM_UNIXTIME(?), ?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE
           height = ?
       `, [
         acceleration.txSummary.txid,
+        accelerationMap[acceleration.txSummary.txid].added,
         block.timestamp,
         block.height,
         pool_id,
@@ -64,7 +70,7 @@ class AccelerationRepository {
     }
 
     let query = `
-      SELECT * FROM accelerations
+      SELECT *, UNIX_TIMESTAMP(requested) as requested_timestamp, UNIX_TIMESTAMP(added) as block_timestamp FROM accelerations
       JOIN pools on pools.unique_id = accelerations.pool
     `;
     let params: any[] = [];
@@ -99,6 +105,7 @@ class AccelerationRepository {
         return rows.map(row => ({
           txid: row.txid,
           height: row.height,
+          added: row.requested_timestamp || row.block_timestamp,
           pool: {
             id: row.id,
             slug: row.slug,
@@ -202,7 +209,7 @@ class AccelerationRepository {
         const tx = blockTxs[acc.txid];
         const accelerationInfo = accelerationCosts.getAccelerationInfo(tx, boostRate, transactions);
         accelerationInfo.cost = Math.max(0, Math.min(acc.feeDelta, accelerationInfo.cost));
-        this.$saveAcceleration(accelerationInfo, block, block.extras.pool.id);
+        this.$saveAcceleration(accelerationInfo, block, block.extras.pool.id, successfulAccelerations);
       }
     }
     const lastSyncedHeight = await this.$getLastSyncedHeight();
@@ -230,7 +237,7 @@ class AccelerationRepository {
     logger.debug(`Fetching accelerations between block ${lastSyncedHeight} and ${currentHeight}`);
 
     // Fetch accelerations from mempool.space since the last synced block;
-    const accelerationsByBlock = {};
+    const accelerationsByBlock: {[height: number]: AccelerationHistory[]} = {};
     const blockHashes = {};
     let done = false;
     let page = 1;
@@ -297,12 +304,16 @@ class AccelerationRepository {
           const feeStats = Common.calcEffectiveFeeStatistics(template);
           boostRate = feeStats.medianFee;
         }
+        const accelerationSummaries = accelerations.map(acc => ({
+          ...acc,
+          pools: acc.pools.map(pool => pool.pool_unique_id),
+        }))
         for (const acc of accelerations) {
           if (blockTxs[acc.txid]) {
             const tx = blockTxs[acc.txid];
             const accelerationInfo = accelerationCosts.getAccelerationInfo(tx, boostRate, transactions);
             accelerationInfo.cost = Math.max(0, Math.min(acc.feeDelta, accelerationInfo.cost));
-            await this.$saveAcceleration(accelerationInfo, block, block.extras.pool.id);
+            await this.$saveAcceleration(accelerationInfo, block, block.extras.pool.id, accelerationSummaries);
           }
         }
         await this.$setLastSyncedHeight(height);

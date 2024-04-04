@@ -39,10 +39,10 @@
             </td>
           </ng-container>
           <ng-container *ngIf="!pending">
-            <td *ngIf="acceleration.feePaid" class="fee text-right">
+            <td *ngIf="acceleration.boost != null" class="fee text-right">
               {{ (acceleration.boost) | number }} <span class="symbol" i18n="shared.sat|sat">sat</span>
             </td>
-            <td *ngIf="!acceleration.feePaid" class="fee text-right">
+            <td *ngIf="acceleration.boost == null" class="fee text-right">
               ~
             </td>
             <td class="block text-right">
