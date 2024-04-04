@@ -43,6 +43,7 @@ import redisCache from './api/redis-cache';
 import accelerationApi from './api/services/acceleration';
 import bitcoinCoreRoutes from './api/bitcoin/bitcoin-core.routes';
 import bitcoinSecondClient from './api/bitcoin/bitcoin-second-client';
+import aboutRoutes from './api/about.routes';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -305,6 +306,7 @@ class Server {
       nodesRoutes.initRoutes(this.app);
       channelsRoutes.initRoutes(this.app);
     }
+    aboutRoutes.initRoutes(this.app);
   }
 
   healthCheck(): void {
