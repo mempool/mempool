@@ -263,7 +263,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
   imports: [RouterModule.forRoot(routes, {
     initialNavigation: 'enabledBlocking',
     scrollPositionRestoration: 'enabled',
-    anchorScrolling: 'enabled',
+    anchorScrolling: 'disabled',
     preloadingStrategy: AppPreloadingStrategy
   })],
 })
