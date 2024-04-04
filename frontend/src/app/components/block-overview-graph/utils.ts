@@ -1,4 +1,4 @@
-import { feeLevels, mempoolAgeColors, mempoolFeeColors } from '../../app.constants';
+import { feeLevels, mempoolFeeColors } from '../../app.constants';
 import { Color } from './sprite-types';
 import TxView from './tx-view';
 
@@ -51,12 +51,6 @@ const defaultColors: { [key: string]: ColorPalette } = {
     audit: [],
     marginal: [],
     baseLevel: (tx: TxView, rate: number) => feeLevels.findIndex((feeLvl) => Math.max(1, rate) < feeLvl) - 1
-  },
-  age: {
-    base: mempoolAgeColors.map(hexToColor),
-    audit: [],
-    marginal: [],
-    baseLevel: (tx: TxView, rate: number, relativeTime: number) => (!tx.time ? 0 : Math.max(0, Math.round(1.25 * Math.log2((Math.max(1, relativeTime - tx.time))))))
   },
 }
 for (const key in defaultColors) {
@@ -131,4 +125,21 @@ export function defaultColorFunction(
         return levelColor;
       }
   }
+}
+
+export function ageColorFunction(
+  tx: TxView,
+  colors: { base: Color[], audit: Color[], marginal: Color[], baseLevel: (tx: TxView, rate: number, time: number) => number } = defaultColors.fee,
+  auditColors: { [status: string]: Color } = defaultAuditColors,
+  relativeTime?: number,
+): Color {
+  const color = defaultColorFunction(tx, colors, auditColors, relativeTime); 
+
+  const ageLevel = (!tx.time ? 0 : (0.8 * Math.tanh((1 / 15) * Math.log2((Math.max(1, 0.6 * ((relativeTime - tx.time) - 60)))))));
+  return {
+    r: color.r,
+    g: color.g,
+    b: color.b,
+    a: color.a * (1 - ageLevel)
+  };
 }

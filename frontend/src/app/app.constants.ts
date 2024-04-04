@@ -39,8 +39,6 @@ export const mempoolFeeColors = [
   'ae005b',
 ];
 
-export const mempoolAgeColors = [  '28007d', '21017d', '1c027d', '14047d', '0d057d', '06067d', '081186',  '09188c', '0b2395', '0c2a9b', '0e37a6', '0f3caa', '1045b2', '114fbb',  '1254bf', '155cbf', '1965bf', '1e70be', '2076be', '2581bd', '2889bd',  '2d94bc', '309dbc', '34a6bc', '39b1bb', '3cbabb', '37bbb3', '32baa9',  '2bb99c', '25b993', '21b88c', '1db785', '19b67e', '14b475', '0eb36c',  '08b162', '02b059', '00ae53'];
-
 export const chartColors = [
   "#D81B60",
   "#8E24AA",
