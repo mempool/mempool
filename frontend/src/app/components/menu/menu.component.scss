@@ -5,13 +5,20 @@
   height: calc(100vh - 65px);
   position: absolute;
   top: 65px;
-  left: -250px;
-  transition: left 0.25s;
+  transition: 0.25s;
   box-shadow: 5px 0px 30px 0px #000;
   padding-bottom: 20px;
   @media (max-width: 613px) {
     top: 105px;
   }
+}
+
+:host-context(.ltr-layout) .sidenav {
+  left: -250px;
+}
+
+:host-context(.rtl-layout) .sidenav {
+  right: -250px;
 }
 
 .ellipsis {
@@ -26,9 +33,16 @@
 }
 
 .sidenav.open {
-  left: 0px;
   display: block;
   background-color: #1d1f31;
+}
+
+:host-context(.ltr-layout) .sidenav.open {
+  left: 0;
+}
+
+:host-context(.rtl-layout) .sidenav.open {
+  right: 0;
 }
 
 .sidenav a, button{
