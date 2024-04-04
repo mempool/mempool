@@ -13,7 +13,7 @@ import { ServicesApiServices } from '../../../services/services-api.service';
 import { detectWebGL } from '../../../shared/graphs.utils';
 
 const acceleratedColor: Color = hexToColor('8F5FF6');
-const normalColors = mempoolFeeColors.map(hex => hexToColor(hex + '5F'));
+const normalColors = mempoolFeeColors.map(hex => hexToColor(hex.slice(0,6) + '5F'));
 
 interface AccelerationBlock extends BlockExtended {
   accelerationCount: number,

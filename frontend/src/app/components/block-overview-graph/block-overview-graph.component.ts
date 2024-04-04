@@ -549,7 +549,9 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   }
 
   getColorFunction(): ((tx: TxView) => Color) {
-    if (this.filterFlags) {
+    if (this.overrideColors) {
+      return this.overrideColors;
+    } else if (this.filterFlags) {
       return this.getFilterColorFunction(this.filterFlags, this.gradientMode);
     } else if (this.activeFilterFlags) {
       return this.getFilterColorFunction(this.activeFilterFlags, this.gradientMode);
