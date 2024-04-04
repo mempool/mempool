@@ -652,6 +652,10 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `prices` ADD `THB` float DEFAULT "-1"');
       await this.$executeQuery('ALTER TABLE `prices` ADD `TRY` float DEFAULT "-1"');
       await this.$executeQuery('ALTER TABLE `prices` ADD `ZAR` float DEFAULT "-1"');
+
+      await this.$executeQuery('TRUNCATE hashrates');
+      await this.$executeQuery('TRUNCATE difficulty_adjustments');
+
       await this.updateToSchemaVersion(75);
     }
 
