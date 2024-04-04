@@ -43,6 +43,7 @@ import redisCache from './api/redis-cache';
 import accelerationApi from './api/services/acceleration';
 import bitcoinCoreRoutes from './api/bitcoin/bitcoin-core.routes';
 import bitcoinSecondClient from './api/bitcoin/bitcoin-second-client';
+import accelerationRoutes from './api/acceleration/acceleration.routes';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -304,6 +305,9 @@ class Server {
       generalLightningRoutes.initRoutes(this.app);
       nodesRoutes.initRoutes(this.app);
       channelsRoutes.initRoutes(this.app);
+    }
+    if (config.MEMPOOL_SERVICES.ACCELERATIONS) {
+      accelerationRoutes.initRoutes(this.app);
     }
   }
 
