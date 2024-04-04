@@ -8,12 +8,12 @@ import { Observable, catchError, combineLatest, distinctUntilChanged, interval, 
 import { Color } from '../../block-overview-graph/sprite-types';
 import { hexToColor } from '../../block-overview-graph/utils';
 import TxView from '../../block-overview-graph/tx-view';
-import { feeLevels, mempoolFeeColors } from '../../../app.constants';
+import { feeLevels, defaultMempoolFeeColors } from '../../../app.constants';
 import { ServicesApiServices } from '../../../services/services-api.service';
 import { detectWebGL } from '../../../shared/graphs.utils';
 
 const acceleratedColor: Color = hexToColor('8F5FF6');
-const normalColors = mempoolFeeColors.map(hex => hexToColor(hex + '5F'));
+const normalColors = defaultMempoolFeeColors.map(hex => hexToColor(hex + '5F'));
 
 interface AccelerationBlock extends BlockExtended {
   accelerationCount: number,
@@ -128,7 +128,7 @@ export class AcceleratorDashboardComponent implements OnInit {
     } else {
       const rate = tx.fee / tx.vsize; // color by simple single-tx fee rate
       const feeLevelIndex = feeLevels.findIndex((feeLvl) => Math.max(1, rate) < feeLvl) - 1;
-      return normalColors[feeLevelIndex] || normalColors[mempoolFeeColors.length - 1];
+      return normalColors[feeLevelIndex] || normalColors[defaultMempoolFeeColors.length - 1];
     }
   }
 

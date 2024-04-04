@@ -57,7 +57,7 @@ $dropdown-link-hover-bg: $active-bg;
 $dropdown-link-active-color: $fg;
 $dropdown-link-active-bg: $active-bg;
 
-@import "~bootstrap/scss/bootstrap";
+@import "bootstrap/scss/bootstrap";
 
 :root {
   --bg: #{$bg};
