@@ -19,6 +19,9 @@ class AccelerationRoutes {
     const url = `${config.MEMPOOL_SERVICES.API}/${req.originalUrl.replace('/api/v1/services/', '')}`;
     try {
       const response = await axios.get(url, { responseType: 'stream', timeout: 10000 });
+      for (const key in response.headers) {
+        res.setHeader(key, response.headers[key]); 
+      }      
       response.data.pipe(res);
     } catch (e) {
       logger.err(`Unable to get current accelerations from ${url} in $getAcceleratorAccelerations(), ${e}`, this.tag);
@@ -30,6 +33,9 @@ class AccelerationRoutes {
     const url = `${config.MEMPOOL_SERVICES.API}/${req.originalUrl.replace('/api/v1/services/', '')}`;
     try {
       const response = await axios.get(url, { responseType: 'stream', timeout: 10000 });
+      for (const key in response.headers) {
+        res.setHeader(key, response.headers[key]); 
+      }      
       response.data.pipe(res);
     } catch (e) {
       logger.err(`Unable to get acceleration history from ${url} in $getAcceleratorAccelerationsHistory(), ${e}`, this.tag);
@@ -41,6 +47,9 @@ class AccelerationRoutes {
     const url = `${config.MEMPOOL_SERVICES.API}/${req.originalUrl.replace('/api/v1/services/', '')}`;
     try {
       const response = await axios.get(url, { responseType: 'stream', timeout: 10000 });
+      for (const key in response.headers) {
+        res.setHeader(key, response.headers[key]); 
+      }      
       response.data.pipe(res);
     } catch (e) {
       logger.err(`Unable to get aggregated acceleration history from ${url} in $getAcceleratorAccelerationsHistoryAggregated(), ${e}`, this.tag);
@@ -52,6 +61,9 @@ class AccelerationRoutes {
     const url = `${config.MEMPOOL_SERVICES.API}/${req.originalUrl.replace('/api/v1/services/', '')}`;
     try {
       const response = await axios.get(url, { responseType: 'stream', timeout: 10000 });
+      for (const key in response.headers) {
+        res.setHeader(key, response.headers[key]); 
+      }      
       response.data.pipe(res);
     } catch (e) {
       logger.err(`Unable to get acceleration stats from ${url} in $getAcceleratorAccelerationsStats(), ${e}`, this.tag);
