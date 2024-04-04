@@ -103,7 +103,7 @@
     <ng-container *ngIf="!tx?.status?.confirmed && showAccelerationSummary">
       <br>
       <div class="title float-left">
-        <h2>Accelerate</h2>
+        <h2 i18n="transaction.accelerate|Accelerate button label">Accelerate</h2>
       </div>
       <button type="button" class="btn btn-outline-info accelerator-toggle btn-sm float-right" (click)="showAccelerationSummary = false" i18n="hide-accelerator">Hide accelerator</button>
       <div class="clearfix"></div>
@@ -562,7 +562,7 @@
         <td class="td-width" i18n="block.miner">Miner</td>
         <td *ngIf="pool" class="wrap-cell">
           <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, pool.slug]" class="badge mr-1"
-            [class]="pool.name === 'Unknown' ? 'badge-secondary' : 'badge-primary'">
+            [class]="pool.slug === 'unknown' ? 'badge-secondary' : 'badge-primary'">
             {{ pool.name }}
           </a>
         </td>

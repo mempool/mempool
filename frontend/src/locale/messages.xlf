@@ -406,39 +406,114 @@
         <note priority="1" from="description">sat</note>
         <note priority="1" from="meaning">shared.sat</note>
       </trans-unit>
+      <trans-unit id="7159011509695804248" datatype="html">
+        <source>maximum</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-fee-graph.component.ts</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="bdf0e930eb22431140a2eaeacd809cc5f8ebd38c" datatype="html">
+        <source>Next Block</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-fee-graph.component.ts</context>
+          <context context-type="linenumber">66</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block/block.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
+          <context context-type="linenumber">87</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="f24773075af97666c0feca0e883c2585712fe597" datatype="html">
+        <source>Your transaction</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.your-transaction</note>
+      </trans-unit>
+      <trans-unit id="bee6b649ee82d9a7cde233070b665eec7c531b1d" datatype="html">
+        <source>Plus <x id="INTERPOLATION" equiv-text="{{ estimate.txSummary.ancestorCount - 1 }}"/> unconfirmed ancestor(s)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.plus-unconfirmed-ancestors</note>
+      </trans-unit>
+      <trans-unit id="54c58b39481f1749fce23fa8a77f616eee84d761" datatype="html">
+        <source>Virtual size</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
+          <context context-type="linenumber">44</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
+          <context context-type="linenumber">59</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/rbf-timeline/rbf-timeline-tooltip.component.html</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">189</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">317</context>
+        </context-group>
+        <note priority="1" from="description">Transaction Virtual Size</note>
+        <note priority="1" from="meaning">transaction.vsize</note>
+      </trans-unit>
+      <trans-unit id="adbeb446bf941afda4d4a923b5e4ce0cf4a1c1b8" datatype="html">
+        <source>In-band fees</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
+          <context context-type="linenumber">53</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.in-band-fees</note>
+      </trans-unit>
       <trans-unit id="e4b2d9e6a2ab9e6ca34027ec03beaac42b7badd4" datatype="html">
         <source>sats</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
-          <context context-type="linenumber">59</context>
+          <context context-type="linenumber">55</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
-          <context context-type="linenumber">84</context>
+          <context context-type="linenumber">77</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
-          <context context-type="linenumber">118</context>
+          <context context-type="linenumber">109</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
-          <context context-type="linenumber">138</context>
+          <context context-type="linenumber">127</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
-          <context context-type="linenumber">150</context>
+          <context context-type="linenumber">139</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
-          <context context-type="linenumber">167</context>
+          <context context-type="linenumber">156</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
-          <context context-type="linenumber">190</context>
+          <context context-type="linenumber">179</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
-          <context context-type="linenumber">213</context>
+          <context context-type="linenumber">200</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/calculator/calculator.component.html</context>
@@ -502,19 +577,35 @@
         </context-group>
         <note priority="1" from="description">shared.sats</note>
       </trans-unit>
+      <trans-unit id="8611a038eb243bbed95bf5ff49af4129f22dc55a" datatype="html">
+        <source>How much more are you willing to pay?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
+          <context context-type="linenumber">68</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.pay-how-much</note>
+      </trans-unit>
+      <trans-unit id="4487eb902b70d33b4bb7a0828b66afec3a96fc18" datatype="html">
+        <source>Choose the maximum extra transaction fee you&apos;re willing to pay to get into the next block.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
+          <context context-type="linenumber">71</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.transaction-fee-description</note>
+      </trans-unit>
+      <trans-unit id="0b537472d5f7518ed2c2c2b747997b0447ec5ee8" datatype="html">
+        <source>Next block market rate</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
+          <context context-type="linenumber">95</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.next-block-rate</note>
+      </trans-unit>
       <trans-unit id="d2eb45d1cd8cd146b7cb0223ab97a4b03b614060" datatype="html">
         <source>sat/vB</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
-          <context context-type="linenumber">108</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
-          <context context-type="linenumber">173</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
-          <context context-type="linenumber">198</context>
+          <context context-type="linenumber">99</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/fee-rate/fee-rate.component.html</context>
@@ -526,6 +617,119 @@
         </context-group>
         <note priority="1" from="description">sat/vB</note>
         <note priority="1" from="meaning">shared.sat-vbyte</note>
+      </trans-unit>
+      <trans-unit id="c2836a2964adf9e369ee0a1ce67f991cf2aa435d" datatype="html">
+        <source>Estimated extra fee required</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
+          <context context-type="linenumber">103</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.estimated-extra-fee-required</note>
+      </trans-unit>
+      <trans-unit id="26e50fa97db4eecde26ff892d725e61ca9201c48" datatype="html">
+        <source>Mempool Accelerator™ fees</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
+          <context context-type="linenumber">117</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.mempool-accelerator-fees</note>
+      </trans-unit>
+      <trans-unit id="1ec82428244c76064090ea5a55827e3fada82306" datatype="html">
+        <source>Accelerator Service Fee</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
+          <context context-type="linenumber">121</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.service-fee</note>
+      </trans-unit>
+      <trans-unit id="7d07b80b17dfab3582807759420b8d723c9e4414" datatype="html">
+        <source>Transaction Size Surcharge</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
+          <context context-type="linenumber">133</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.tx-size-surcharge</note>
+      </trans-unit>
+      <trans-unit id="004732b44df582a2d24e2abbd3f46bc42ae8c546" datatype="html">
+        <source>Estimated acceleration cost</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
+          <context context-type="linenumber">148</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.estimated-cost</note>
+      </trans-unit>
+      <trans-unit id="c9ec95585f57bd87212693db7cb00d9ed70d49b1" datatype="html">
+        <source>Maximum acceleration cost</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
+          <context context-type="linenumber">171</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.maximum-cost</note>
+      </trans-unit>
+      <trans-unit id="f3ff11006f77909b9fca2e0fda0a72b097cd76de" datatype="html">
+        <source>Available balance</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
+          <context context-type="linenumber">195</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.available-balance</note>
+      </trans-unit>
+      <trans-unit id="ba4f24bf9bf3dc4db3d6bc1b8b63339295f0b806" datatype="html">
+        <source>Sign In</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
+          <context context-type="linenumber">214</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/menu/menu.component.html</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+        <note priority="1" from="description">shared.sign-in</note>
+      </trans-unit>
+      <trans-unit id="2504ca478a61c5e53f9ed55e9aeb3e8f2d01b3eb" datatype="html">
+        <source>Accelerate on mempool.space</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
+          <context context-type="linenumber">223</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.accelerate-on-mempoolspace</note>
+      </trans-unit>
+      <trans-unit id="913e89d2d1ae354079cccf48b3d3f4ebf2e74080" datatype="html">
+        <source>Accelerate</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
+          <context context-type="linenumber">235</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">106</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">145</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">155</context>
+        </context-group>
+        <note priority="1" from="description">Accelerate button label</note>
+        <note priority="1" from="meaning">transaction.accelerate</note>
+      </trans-unit>
+      <trans-unit id="2bec172478fbbbe6536a662f5d4d3d711c208b09" datatype="html">
+        <source>If your tx is accelerated to ~<x id="INTERPOLATION" equiv-text="{{ i | number : &apos;1.0-0&apos; }}"/> sat/vB</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
+          <context context-type="linenumber">249</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.accelerated-to-description</note>
       </trans-unit>
       <trans-unit id="bcf34abc2d9ed8f45a2f65dd464c46694e9a181e" datatype="html">
         <source>Acceleration Fees</source>
@@ -1937,27 +2141,6 @@
         <note priority="1" from="description">Effective transaction fee rate</note>
         <note priority="1" from="meaning">transaction.effective-fee-rate</note>
       </trans-unit>
-      <trans-unit id="54c58b39481f1749fce23fa8a77f616eee84d761" datatype="html">
-        <source>Virtual size</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
-          <context context-type="linenumber">59</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/rbf-timeline/rbf-timeline-tooltip.component.html</context>
-          <context context-type="linenumber">25</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">189</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">317</context>
-        </context-group>
-        <note priority="1" from="description">Transaction Virtual Size</note>
-        <note priority="1" from="meaning">transaction.vsize</note>
-      </trans-unit>
       <trans-unit id="13f5a75f3e01e5924e45052d2f336eda8bac37e8" datatype="html">
         <source>Weight</source>
         <context-group purpose="location">
@@ -2392,22 +2575,6 @@
         <note priority="1" from="description">Block reorg</note>
         <note priority="1" from="meaning">block.reorged</note>
       </trans-unit>
-      <trans-unit id="bdf0e930eb22431140a2eaeacd809cc5f8ebd38c" datatype="html">
-        <source>Next Block</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">12</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
-          <context context-type="linenumber">28</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
-          <context context-type="linenumber">87</context>
-        </context-group>
-        <note priority="1" from="description">Next Block</note>
-      </trans-unit>
       <trans-unit id="a0e07a711d171f4d40dd388d70ed32f9b8101e0a" datatype="html">
         <source>Previous Block</source>
         <context-group purpose="location">
@@ -2478,6 +2645,14 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">323</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/services/api.service.ts</context>
+          <context context-type="linenumber">254</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/services/api.service.ts</context>
+          <context context-type="linenumber">267</context>
         </context-group>
         <note priority="1" from="description">unknown</note>
       </trans-unit>
@@ -4147,22 +4322,6 @@
           <context context-type="linenumber">328</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="ba4f24bf9bf3dc4db3d6bc1b8b63339295f0b806" datatype="html">
-        <source>Sign In</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/menu/menu.component.html</context>
-          <context context-type="linenumber">21</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
-          <context context-type="linenumber">26</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
-          <context context-type="linenumber">31</context>
-        </context-group>
-        <note priority="1" from="description">shared.sign-in</note>
-      </trans-unit>
       <trans-unit id="26e78cd052d05a0c1a7db43fac8df52ec6950672" datatype="html">
         <source>Reward stats</source>
         <context-group purpose="location">
@@ -4400,7 +4559,11 @@
         </context-group>
       </trans-unit>
       <trans-unit id="3666195172774554282" datatype="html">
-        <source>Other (<x id="PH" equiv-text="percentage"/>)</source>
+        <source>Other (<x id="PH" equiv-text="totalShareOther.toFixed(2) + &apos;%&apos;"/>)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
+          <context context-type="linenumber">184</context>
+        </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">203</context>
@@ -5445,19 +5608,6 @@
         </context-group>
         <note priority="1" from="description">Transaction ETA in several hours or more</note>
         <note priority="1" from="meaning">transaction.eta.in-several-hours</note>
-      </trans-unit>
-      <trans-unit id="913e89d2d1ae354079cccf48b3d3f4ebf2e74080" datatype="html">
-        <source>Accelerate</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">145</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">155</context>
-        </context-group>
-        <note priority="1" from="description">Accelerate button label</note>
-        <note priority="1" from="meaning">transaction.accelerate</note>
       </trans-unit>
       <trans-unit id="f61c6867295f3b53d23557021f2f4e0aa1d0b8fc" datatype="html">
         <source>Type</source>

@@ -181,7 +181,7 @@ export class PoolRankingComponent implements OnInit {
         color: '#6b6b6b',
       },
       value: totalShareOther,
-      name: 'Other' + (isMobile() ? `` : ` (${totalShareOther.toFixed(2)}%)`),
+      name:  $localize`Other (${totalShareOther.toFixed(2) + '%'})`,
       label: {
         overflow: 'none',
         color: '#b1b1b1',
