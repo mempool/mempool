@@ -1,4 +1,4 @@
-import { feeLevels, defaultMempoolFeeColors } from '../../app.constants';
+import { feeLevels, defaultMempoolFeeColors, contrastMempoolFeeColors } from '../../app.constants';
 import { Color } from './sprite-types';
 import TxView from './tx-view';
 
@@ -46,7 +46,18 @@ export const defaultAuditColors = {
   missing: darken(desaturate(hexToColor('f344df'), 0.3), 0.7),
   added: hexToColor('0099ff'),
   prioritized: darken(desaturate(hexToColor('0099ff'), 0.3), 0.7),
-  accelerated: hexToColor('8F5FF6'),
+  accelerated: hexToColor('8f5ff6'),
+};
+
+export const contrastFeeColors = contrastMempoolFeeColors.map(hexToColor);
+export const contrastAuditFeeColors = contrastFeeColors.map((color) => darken(desaturate(color, 0.3), 0.9));
+export const contrastMarginalFeeColors = contrastFeeColors.map((color) => darken(desaturate(color, 0.8), 1.1));
+export const contrastAuditColors = {
+  censored: hexToColor('ffa8ff'),
+  missing: darken(desaturate(hexToColor('ffa8ff'), 0.3), 0.7),
+  added: hexToColor('00bb98'),
+  prioritized: darken(desaturate(hexToColor('00bb98'), 0.3), 0.7),
+  accelerated: hexToColor('8f5ff6'),
 };
 
 export function defaultColorFunction(
@@ -100,4 +111,14 @@ export function defaultColorFunction(
         return feeLevelColor;
       }
   }
+}
+
+export function contrastColorFunction(
+  tx: TxView,
+  feeColors: Color[] = contrastFeeColors,
+  auditFeeColors: Color[] = contrastAuditFeeColors,
+  marginalFeeColors: Color[] = contrastMarginalFeeColors,
+  auditColors: { [status: string]: Color } = contrastAuditColors
+): Color {
+  return defaultColorFunction(tx, feeColors, auditFeeColors, marginalFeeColors, auditColors);
 }

@@ -145,7 +145,7 @@ export default class TxView implements TransactionStripped {
   setHover(hoverOn: boolean, color: Color | void): number {
     if (hoverOn) {
       this.hover = true;
-      this.hoverColor = color || this.theme.defaultHoverColor;
+      this.hoverColor = color || defaultHoverColor;
 
       this.sprite.update({
         ...this.hoverColor,
@@ -194,31 +194,5 @@ export default class TxView implements TransactionStripped {
     }
     this.dirty = false;
     return performance.now() + hoverTransitionTime;
-  }
-
-  getColor(): Color {
-    const feeLevelIndex = feeLevels.findIndex((feeLvl) => Math.max(1, this.feerate) < feeLvl) - 1;
-    const feeLevelColor = this.theme.feeColors[feeLevelIndex] || this.theme.feeColors[this.theme.mempoolFeeColors.length - 1];
-    // Block audit
-    switch(this.status) {
-      case 'censored':
-        return this.theme.auditColors.censored;
-      case 'missing':
-        return this.theme.auditColors.missing;
-      case 'fresh':
-        return this.theme.auditColors.missing;
-      case 'added':
-        return this.theme.auditColors.added;
-      case 'selected':
-        return this.theme.auditColors.selected;
-      case 'found':
-        if (this.context === 'projected') {
-          return this.theme.auditFeeColors[feeLevelIndex] || this.theme.auditFeeColors[this.theme.mempoolFeeColors.length - 1];
-        } else {
-          return feeLevelColor;
-        }
-      default:
-        return feeLevelColor;
-    }
   }
 }

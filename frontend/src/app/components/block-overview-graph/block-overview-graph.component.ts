@@ -9,7 +9,7 @@ import { Price } from '../../services/price.service';
 import { StateService } from '../../services/state.service';
 import { ThemeService } from 'src/app/services/theme.service';
 import { Subscription } from 'rxjs';
-import { defaultColorFunction, setOpacity, defaultFeeColors, defaultAuditFeeColors, defaultMarginalFeeColors, defaultAuditColors } from './utils';
+import { defaultColorFunction, setOpacity, defaultFeeColors, defaultAuditFeeColors, defaultMarginalFeeColors, defaultAuditColors, contrastFeeColors, contrastAuditFeeColors, contrastMarginalFeeColors, contrastAuditColors, contrastColorFunction } from './utils';
 import { ActiveFilter, FilterMode, toFlags } from '../../shared/filters.utils';
 import { detectWebGL } from '../../shared/graphs.utils';
 
@@ -23,6 +23,16 @@ const unmatchedAuditColors = {
   added: setOpacity(defaultAuditColors.added, unmatchedOpacity),
   prioritized: setOpacity(defaultAuditColors.prioritized, unmatchedOpacity),
   accelerated: setOpacity(defaultAuditColors.accelerated, unmatchedOpacity),
+};
+const unmatchedContrastFeeColors = contrastFeeColors.map(c => setOpacity(c, unmatchedOpacity));
+const unmatchedContrastAuditFeeColors = contrastAuditFeeColors.map(c => setOpacity(c, unmatchedOpacity));
+const unmatchedContrastMarginalFeeColors = contrastMarginalFeeColors.map(c => setOpacity(c, unmatchedOpacity));
+const unmatchedContrastAuditColors = {
+  censored: setOpacity(contrastAuditColors.censored, unmatchedOpacity),
+  missing: setOpacity(contrastAuditColors.missing, unmatchedOpacity),
+  added: setOpacity(contrastAuditColors.added, unmatchedOpacity),
+  prioritized: setOpacity(contrastAuditColors.prioritized, unmatchedOpacity),
+  accelerated: setOpacity(contrastAuditColors.accelerated, unmatchedOpacity),
 };
 
 @Component({
@@ -108,8 +118,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
         this.initCanvas();
         this.resizeCanvas();
         this.themeChangedSubscription = this.themeService.themeChanged$.subscribe(() => {
-          // force full re-render
-          this.resizeCanvas();
+          this.scene.setColorFunction(this.getColorFunction());
         });
       }
     }
@@ -567,9 +576,15 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   getFilterColorFunction(flags: bigint): ((tx: TxView) => Color) {
     return (tx: TxView) => {
       if ((this.filterMode === 'and' && (tx.bigintFlags & flags) === flags) || (this.filterMode === 'or' && (flags === 0n || (tx.bigintFlags & flags) > 0n))) {
-        return defaultColorFunction(tx);
+        return this.themeService.theme !== 'default' ? contrastColorFunction(tx) : defaultColorFunction(tx);
       } else {
-        return defaultColorFunction(
+        return this.themeService.theme !== 'default' ? contrastColorFunction(
+          tx,
+          unmatchedContrastFeeColors,
+          unmatchedContrastAuditFeeColors,
+          unmatchedContrastMarginalFeeColors,
+          unmatchedContrastAuditColors
+        ) : defaultColorFunction(
           tx,
           unmatchedFeeColors,
           unmatchedAuditFeeColors,

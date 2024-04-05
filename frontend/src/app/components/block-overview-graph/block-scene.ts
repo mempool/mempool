@@ -2,7 +2,7 @@ import { FastVertexArray } from './fast-vertex-array';
 import TxView from './tx-view';
 import { TransactionStripped } from '../../interfaces/node-api.interface';
 import { Color, Position, Square, ViewUpdateParams } from './sprite-types';
-import { defaultColorFunction } from './utils';
+import { defaultColorFunction, contrastColorFunction } from './utils';
 import { ThemeService } from 'src/app/services/theme.service';
 
 export default class BlockScene {
@@ -69,7 +69,7 @@ export default class BlockScene {
   }
 
   setColorFunction(colorFunction: ((tx: TxView) => Color) | null): void {
-    this.getColor = colorFunction || defaultColorFunction;
+    this.theme.theme !== 'default' ? this.getColor = colorFunction || contrastColorFunction : this.getColor = colorFunction || defaultColorFunction;
     this.dirty = true;
     if (this.initialised && this.scene) {
       this.updateColors(performance.now(), 50);
@@ -241,7 +241,7 @@ export default class BlockScene {
     this.flip = flip;
     this.vertexArray = vertexArray;
     this.highlightingEnabled = highlighting;
-    this.getColor = colorFunction || defaultColorFunction;
+    theme.theme !== 'default' ? this.getColor = colorFunction || contrastColorFunction : this.getColor = colorFunction || defaultColorFunction;
     this.theme = theme;
 
     this.scene = {
