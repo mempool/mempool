@@ -7,7 +7,6 @@ import { EnterpriseService } from '../../services/enterprise.service';
 import { NavigationService } from '../../services/navigation.service';
 import { MenuComponent } from '../menu/menu.component';
 import { StorageService } from '../../services/storage.service';
-import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-master-page',
@@ -45,7 +44,6 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     private enterpriseService: EnterpriseService,
     private navigationService: NavigationService,
     private storageService: StorageService,
-    private apiService: ApiService,
     private router: Router,
   ) { }
 

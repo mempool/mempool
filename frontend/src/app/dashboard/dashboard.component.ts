@@ -75,14 +75,14 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   goggleResolution = 82;
   goggleCycle: { index: number, name: string, mode: FilterMode, filters: string[], gradient: GradientMode }[] = [
-    { index: 0, name: $localize`:@@dfc3c34e182ea73c5d784ff7c8135f087992dac1:All`, mode: 'and', filters: [], gradient: 'fee' },
+    { index: 0, name: $localize`:@@dfc3c34e182ea73c5d784ff7c8135f087992dac1:All`, mode: 'and', filters: [], gradient: 'age' },
     { index: 1, name: $localize`Consolidation`, mode: 'and', filters: ['consolidation'], gradient: 'fee' },
     { index: 2, name: $localize`Coinjoin`, mode: 'and', filters: ['coinjoin'], gradient: 'fee' },
     { index: 3, name: $localize`Data`, mode: 'or', filters: ['inscription', 'fake_pubkey', 'op_return'], gradient: 'fee' },
   ];
   goggleFlags = 0n;
   goggleMode: FilterMode = 'and';
-  gradientMode: GradientMode = 'fee';
+  gradientMode: GradientMode = 'age';
   goggleIndex = 0;
 
   private destroy$ = new Subject();
@@ -132,7 +132,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
             this.goggleIndex = goggle.index;
             this.goggleFlags = toFlags(goggle.filters);
             this.goggleMode = goggle.mode;
-            this.gradientMode = goggle.gradient;
+            this.gradientMode = active.gradient;
             return;
           }
         }

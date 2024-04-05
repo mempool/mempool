@@ -175,13 +175,15 @@ export class PoolRankingComponent implements OnInit {
       } as PieSeriesOption);
     });
 
+    const percentage = totalShareOther.toFixed(2) + '%';
+
     // 'Other'
     data.push({
       itemStyle: {
         color: '#6b6b6b',
       },
       value: totalShareOther,
-      name: 'Other' + (isMobile() ? `` : ` (${totalShareOther.toFixed(2)}%)`),
+      name:  $localize`Other (${percentage})`,
       label: {
         overflow: 'none',
         color: '#b1b1b1',
@@ -197,7 +199,6 @@ export class PoolRankingComponent implements OnInit {
         },
         borderColor: '#000',
         formatter: () => {
-          const percentage = totalShareOther.toFixed(2) + '%';
           const i = totalBlockOther.toString();
           if (this.miningWindowPreference === '24h') {
             return `<b style="color: white">` + $localize`Other (${percentage})` + `</b><br>` +

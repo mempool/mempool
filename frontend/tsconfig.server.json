@@ -2,7 +2,7 @@
   "extends": "./tsconfig.app.json",
   "compilerOptions": {
     "outDir": "./out-tsc/server",
-    "target": "ES2022",
+    "target": "ES2020",
     "sourceMap": true,
     "types": [
       "node"

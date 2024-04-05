@@ -32,18 +32,16 @@
         <div class="alert alert-mempool">You are currently on the waitlist</div>
       </div>
 
-      <h5>Your transaction</h5>
+      <h5 i18n="accelerator.your-transaction">Your transaction</h5>
       <div class="row">
         <div class="col">
           <small *ngIf="hasAncestors" class="form-text text-muted mb-2">
-            Plus {{ estimate.txSummary.ancestorCount - 1 }} unconfirmed ancestor{{ estimate.txSummary.ancestorCount > 2 ? 's' : ''}}.
+            <ng-container i18n="accelerator.plus-unconfirmed-ancestors">Plus {{ estimate.txSummary.ancestorCount - 1 }} unconfirmed ancestor(s)</ng-container>
           </small>
           <table class="table table-borderless table-border table-dark table-accelerator">
             <tbody>
               <tr class="group-first">
-                <td class="item">
-                  Virtual size
-                </td>
+                <td class="item" i18n="transaction.vsize|Transaction Virtual Size">Virtual size</td>
                 <td style="text-align: end;" [innerHTML]="'&lrm;' + (estimate.txSummary.effectiveVsize | vbytes: 2)"></td>
               </tr>
               <tr class="info">
@@ -52,9 +50,7 @@
                 </td>
               </tr>
               <tr>
-                <td class="item">
-                  In-band fees
-                </td>
+                <td class="item" i18n="accelerator.in-band-fees">In-band fees</td>
                 <td style="text-align: end;">
                   {{ estimate.txSummary.effectiveFee | number : '1.0-0' }} <span class="symbol" i18n="shared.sats">sats</span>
                 </td>
@@ -69,13 +65,10 @@
         </div>
       </div>
       <br>
-      <h5>How much more are you willing to pay?</h5>
+      <h5 i18n="accelerator.pay-how-much">How much more are you willing to pay?</h5>
       <div class="row">
         <div class="col">
-          <small class="form-text text-muted mb-2">
-            Choose the maximum extra transaction fee you're willing to pay to get into the next block.<br>
-            If the estimated next block rate rises beyond this limit, we will automatically cancel your acceleration request.
-          </small>
+          <small class="form-text text-muted mb-2" i18n="accelerator.transaction-fee-description">Choose the maximum extra transaction fee you're willing to pay to get into the next block.</small>
           <div class="form-group">
             <div class="fee-card">
               <div class="d-flex mb-0">
@@ -99,9 +92,7 @@
               <!-- ESTIMATED FEE -->
               <ng-container>
                 <tr class="group-first">
-                  <td class="item">
-                    Next block market rate
-                  </td>
+                  <td class="item" i18n="accelerator.next-block-rate">Next block market rate</td>
                   <td class="amt" style="font-size: 16px">
                     {{ estimate.targetFeeRate | number : '1.0-0' }}
                   </td>
@@ -109,7 +100,7 @@
                 </tr>
                 <tr class="info">
                   <td class="info">
-                    <i><small>Estimated extra fee required</small></i>
+                    <i><small i18n="accelerator.estimated-extra-fee-required">Estimated extra fee required</small></i>
                   </td>
                   <td class="amt">
                     {{ math.max(0, estimate.nextBlockFee - estimate.txSummary.effectiveFee) | number }}
@@ -123,13 +114,11 @@
   
               <!-- MEMPOOL BASE FEE -->
               <tr>
-                <td class="item">
-                  Mempool Accelerator™ fees
-                </td>
+                <td class="item" i18n="accelerator.mempool-accelerator-fees">Mempool Accelerator™ fees</td>
               </tr>
               <tr class="info">
                 <td class="info">
-                  <i><small>Accelerator Service Fee</small></i>
+                  <i><small i18n="accelerator.service-fee">Accelerator Service Fee</small></i>
                 </td>
                 <td class="amt">
                   +{{ estimate.mempoolBaseFee | number }}
@@ -141,7 +130,7 @@
               </tr>
               <tr class="info group-last">
                 <td class="info">
-                  <i><small>Transaction Size Surcharge</small></i>
+                  <i><small i18n="accelerator.tx-size-surcharge">Transaction Size Surcharge</small></i>
                 </td>
                 <td class="amt">
                   +{{ estimate.vsizeFee | number }}
@@ -156,7 +145,7 @@
               <ng-container>
                 <tr class="group-first" style="border-top: 1px dashed grey; border-collapse: collapse;">
                   <td class="item">
-                    <b style="background-color: #5E35B1" class="p-1 pl-0">Estimated acceleration cost</b>
+                    <b style="background-color: #5E35B1" class="p-1 pl-0" i18n="accelerator.estimated-cost">Estimated acceleration cost</b>
                   </td>
                   <td class="amt">
                     <span style="background-color: #5E35B1" class="p-1 pl-0">
@@ -170,7 +159,7 @@
                 </tr>
                 <tr class="info group-last" style="border-bottom: 1px solid lightgrey">
                   <td class="info" colspan=3>
-                    <i><small>If your tx is accelerated to </small><small>{{ estimate.targetFeeRate | number : '1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></small></i>
+                    <i><small><ng-container *ngTemplateOutlet="acceleratedTo; context: {$implicit: estimate.targetFeeRate }"></ng-container></small></i>
                   </td>
                 </tr>
               </ng-container>
@@ -179,7 +168,7 @@
               <ng-container>
                 <tr class="group-first">
                   <td class="item">
-                    <b style="background-color: #105fb0;" class="p-1 pl-0">Maximum acceleration cost</b>
+                    <b style="background-color: #105fb0;" class="p-1 pl-0" i18n="accelerator.maximum-cost">Maximum acceleration cost</b>
                   </td>
                   <td class="amt">
                     <span style="background-color: #105fb0" class="p-1 pl-0">
@@ -195,7 +184,7 @@
                 </tr>
                 <tr class="info group-last">
                   <td class="info" colspan=3>
-                    <i><small>If your tx is accelerated to </small><small>~{{ ((estimate.txSummary.effectiveFee + userBid) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }}  <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></small></i>
+                    <i><small><ng-container *ngTemplateOutlet="acceleratedTo; context: {$implicit: (estimate.txSummary.effectiveFee + userBid) / estimate.txSummary.effectiveVsize }"></ng-container></small></i>
                   </td>
                 </tr>
               </ng-container>
@@ -203,9 +192,7 @@
               <!-- USER BALANCE -->
               <ng-container *ngIf="isLoggedIn() && estimate.userBalance < maxCost">
                 <tr class="group-first group-last" style="border-top: 1px dashed grey">
-                  <td class="item">
-                    Available balance
-                  </td>
+                  <td class="item" i18n="accelerator.available-balance">Available balance</td>
                   <td class="amt">
                     {{ estimate.userBalance | number }}
                   </td>
@@ -219,12 +206,12 @@
               </ng-container>
 
               <!-- LOGIN CTA -->
-              <ng-container *ngIf="stateService.isMempoolSpaceBuild && !isLoggedIn()">
+              <ng-container *ngIf="stateService.isMempoolSpaceBuild && !isLoggedIn() && paymentType === 'bitcoin'">
                 <tr class="group-first group-last" style="border-top: 1px dashed grey">
                   <td class="item"></td>
                   <td class="amt"></td>
                   <td class="units d-flex">
-                    <a [routerLink]="['/login']" [queryParams]="{redirectTo: '/tx/' + tx.txid + '#accelerate'}" class="btn btn-purple flex-grow-1">Login</a>
+                    <a [routerLink]="['/login']" [queryParams]="{redirectTo: '/tx/' + tx.txid + '#accelerate'}" class="btn btn-purple flex-grow-1" i18n="shared.sign-in">Sign In</a>
                   </td>
                 </tr>
               </ng-container>
@@ -233,7 +220,7 @@
                   <td class="item"></td>
                   <td class="amt"></td>
                   <td class="units d-flex">
-                    <a [href]="'https://mempool.space/tx/' + tx.txid + '#accelerate'" class="btn btn-purple flex-grow-1">Accelerate on mempool.space</a>
+                    <a [href]="'https://mempool.space/tx/' + tx.txid + '#accelerate'" class="btn btn-purple flex-grow-1" i18n="accelerator.accelerate-on-mempoolspace">Accelerate on mempool.space</a>
                   </td>
                 </tr>
               </ng-container>
@@ -242,11 +229,19 @@
         </div>
       </div>
   
-      <div class="row mb-3" *ngIf="isLoggedIn()">
+      <div class="row mb-3" *ngIf="isLoggedIn() && paymentType === 'bitcoin'">
         <div class="col">
           <div class="d-flex justify-content-end" *ngIf="user && estimate.hasAccess">
-            <button class="btn btn-sm btn-primary btn-success" style="width: 150px" (click)="accelerate()">Accelerate</button>
+            <button class="btn btn-sm btn-primary btn-success" style="width: 150px" (click)="accelerate()" i18n="transaction.accelerate|Accelerate button label">Accelerate</button>
           </div>
+        </div>
+      </div>
+
+      <div class="row d-flex justify-content-end mr-1" style="height: 48px" *ngIf="!hideCashApp">
+        <div id="cash-app-pay" style="max-width: 320px" [style]="showSpinner ? 'opacity: 0' : 'opacity: 1'"></div>
+        <div *ngIf="showSpinner" class="d-flex align-items-center">
+          <span class="mr-2">Loading</span>
+          <div class="spinner-border text-light" style="width: 25px; height: 25px"></div>
         </div>
       </div>
   
@@ -258,3 +253,5 @@
   <div class="skeleton-loader"></div>
   <br>
 </ng-template>
+
+<ng-template #acceleratedTo let-i i18n="accelerator.accelerated-to-description">If your tx is accelerated to ~{{ i | number : '1.0-0' }} sat/vB</ng-template>
