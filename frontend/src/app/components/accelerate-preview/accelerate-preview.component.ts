@@ -80,6 +80,7 @@ export class AcceleratePreviewComponent implements OnDestroy, OnChanges {
     private cd: ChangeDetectorRef
   ) {
     if (window.document.referrer === 'cash.app') {
+      this.insertSquare();
       this.paymentType = 'cashapp';
     } else {
       this.paymentType = 'bitcoin';
@@ -344,5 +345,18 @@ export class AcceleratePreviewComponent implements OnDestroy, OnChanges {
         });
       }
     );
+  }
+
+  insertSquare(): void {
+    let statsUrl = 'https://sandbox.web.squarecdn.com/v1/square.js';
+    if (document.location.hostname === 'mempool-staging.tk7.mempool.space' || document.location.hostname === 'mempool.space') {
+      statsUrl = 'https://web.squarecdn.com/v1/square.js';
+    }
+
+    (function() {
+      const d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+      // @ts-ignore
+      g.type='text/javascript'; g.src=statsUrl; s.parentNode.insertBefore(g, s);
+    })();
   }
 }
