@@ -471,7 +471,7 @@
     @if (!isLoadingTx) {
       @if (featuresEnabled) {
         <tr>
-          <td class="td-width" i18n="transaction.features|Transaction features">Features</td>
+          <td class="td-width" i18n="transaction.features|Transaction features" id="acceleratePreviewAnchor">Features</td>
           <td>
             <app-tx-features [tx]="tx"></app-tx-features>
           </td>
