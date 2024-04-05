@@ -879,7 +879,11 @@
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
-        <note priority="1" from="description">master-page.blocks</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.accelerations</note>
       </trans-unit>
       <trans-unit id="94c248797dd2b6af49068cb49c3b4bc26bec6a16" datatype="html">
         <source>TXID</source>
@@ -1043,14 +1047,6 @@
           <context context-type="linenumber">25</context>
         </context-group>
         <note priority="1" from="description">mining.3-months</note>
-      </trans-unit>
-      <trans-unit id="4da05842868619df910fa4e2b5889b8b862938f9" datatype="html">
-        <source>Mempool Goggles™ : Accelerations</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
-          <context context-type="linenumber">41</context>
-        </context-group>
-        <note priority="1" from="description">dashboard.mempool-goggles-accelerations</note>
       </trans-unit>
       <trans-unit id="97ff5554c708164d58b14e45072acbcbf9f4d137" datatype="html">
         <source>View more »</source>
