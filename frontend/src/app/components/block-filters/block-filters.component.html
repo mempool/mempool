@@ -27,10 +27,10 @@
         </div>
       </div>
       <div class="filter-element">
-        <h5 i18n="mempool-goggles.gradient">Gradient</h5>
+        <h5 i18n="mempool-goggles.tint">Tint</h5>
         <div class="btn-group btn-group-toggle">
           <label class="btn btn-xs yellow mode-toggle" [class.active]="gradientMode === 'fee'">
-            <input type="radio" [value]="'fee'" fragment="default" (click)="setGradientMode('fee')"><ng-container i18n="mempool-goggles.default">Default</ng-container>
+            <input type="radio" [value]="'fee'" fragment="classic" (click)="setGradientMode('fee')"><ng-container i18n="mempool-goggles.classic">Classic</ng-container>
           </label>
           <label class="btn btn-xs blue mode-toggle" [class.active]="gradientMode === 'age'">
             <input type="radio" [value]="'age'" fragment="age" (click)="setGradientMode('age')"><ng-container i18n="mempool-goggles.age">Age</ng-container>
