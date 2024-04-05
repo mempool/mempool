@@ -76,6 +76,8 @@ $dropdown-link-active-bg: $active-bg;
   --stat-box-bg: #0b1018;
   --alert-bg: #3a1c61;
   --transparent-fg: #ffffffbb;
+  --fade-out-box-bg-start: rgba(23, 28, 42, 0);
+  --fade-out-box-bg-end: rgba(23, 28, 42, 1);
 
   --testnet: #1d486f;
   --signet: #6f1d5d;
