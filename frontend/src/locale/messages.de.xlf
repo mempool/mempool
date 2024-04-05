@@ -1723,7 +1723,7 @@
       </trans-unit>
       <trans-unit id="dfc3c34e182ea73c5d784ff7c8135f087992dac1" datatype="html">
         <source>All</source>
-        <target>Alle</target>
+        <target>Alles</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets-nav/assets-nav.component.html</context>
           <context context-type="linenumber">13</context>

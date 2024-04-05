@@ -741,6 +741,7 @@
       </trans-unit>
       <trans-unit id="2504ca478a61c5e53f9ed55e9aeb3e8f2d01b3eb" datatype="html">
         <source>Accelerate on mempool.space</source>
+        <target>在mempool.space上加速</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">223</context>
@@ -749,6 +750,7 @@
       </trans-unit>
       <trans-unit id="913e89d2d1ae354079cccf48b3d3f4ebf2e74080" datatype="html">
         <source>Accelerate</source>
+        <target>加速</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">235</context>
@@ -855,6 +857,7 @@
       </trans-unit>
       <trans-unit id="25fbf6e80a945703c906a5a7d8c92e8729c7ab21" datatype="html">
         <source>accelerated</source>
+        <target>已加速</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-stats/acceleration-stats.component.html</context>
           <context context-type="linenumber">7</context>
@@ -2360,6 +2363,7 @@
       </trans-unit>
       <trans-unit id="b484583f0ce10f3341ab36750d05271d9d22c9a1" datatype="html">
         <source>Accelerated</source>
+        <target>已加速</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">80</context>

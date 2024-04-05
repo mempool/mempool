@@ -268,6 +268,7 @@
       </trans-unit>
       <trans-unit id="9bada74bc2b36480a6db8734d56a2b89135de590" datatype="html">
         <source>Become a Community Sponsor</source>
+        <target>Zostań sponsorem społecznościowym</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about-sponsors.component.html</context>
           <context context-type="linenumber">4</context>
@@ -276,6 +277,7 @@
       </trans-unit>
       <trans-unit id="bef4c03ebfa29b890665fbcf6bf097b9ae29a91e" datatype="html">
         <source>Become an Enterprise Sponsor</source>
+        <target>Zostań sponsorem firmowym</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about-sponsors.component.html</context>
           <context context-type="linenumber">11</context>
@@ -476,6 +478,7 @@
       </trans-unit>
       <trans-unit id="f24773075af97666c0feca0e883c2585712fe597" datatype="html">
         <source>Your transaction</source>
+        <target>Twoja transakcja</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">35</context>
@@ -623,6 +626,7 @@
       </trans-unit>
       <trans-unit id="8611a038eb243bbed95bf5ff49af4129f22dc55a" datatype="html">
         <source>How much more are you willing to pay?</source>
+        <target>Ile jesteś gotów zapłacić?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">68</context>
@@ -880,6 +884,7 @@
       </trans-unit>
       <trans-unit id="53475bdf4a94f0103f33211d02102859e9a8fe3e" datatype="html">
         <source>BTC</source>
+        <target>BTC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-stats/acceleration-stats.component.html</context>
           <context context-type="linenumber">13</context>
@@ -1660,7 +1665,7 @@
       </trans-unit>
       <trans-unit id="dfc3c34e182ea73c5d784ff7c8135f087992dac1" datatype="html">
         <source>All</source>
-        <target>Wszystkie</target>
+        <target>Wszystko</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets-nav/assets-nav.component.html</context>
           <context context-type="linenumber">13</context>
@@ -1946,6 +1951,7 @@
       </trans-unit>
       <trans-unit id="b1fa5b210c9670d49a6506f046d4a0c2797fd402" datatype="html">
         <source>Block Health</source>
+        <target>Stan zdrowia bloku</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-health-graph/block-health-graph.component.html</context>
           <context context-type="linenumber">6</context>
@@ -1958,6 +1964,7 @@
       </trans-unit>
       <trans-unit id="d7d5fcf50179ad70c938491c517efb82de2c8146" datatype="html">
         <source>Block Health</source>
+        <target>Stan zdrowia bloku</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-health-graph/block-health-graph.component.ts</context>
           <context context-type="linenumber">63</context>
@@ -6518,6 +6525,7 @@
       </trans-unit>
       <trans-unit id="4136162380400286378" datatype="html">
         <source>Consolidation</source>
+        <target>Konsolidacje</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.ts</context>
           <context context-type="linenumber">79</context>
@@ -6529,6 +6537,7 @@
       </trans-unit>
       <trans-unit id="7816493330657272952" datatype="html">
         <source>Coinjoin</source>
+        <target>Coinjoiny</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.ts</context>
           <context context-type="linenumber">80</context>
@@ -6540,6 +6549,7 @@
       </trans-unit>
       <trans-unit id="146442697456175258" datatype="html">
         <source>Data</source>
+        <target>Dane</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.ts</context>
           <context context-type="linenumber">81</context>
@@ -6645,6 +6655,7 @@
       </trans-unit>
       <trans-unit id="meta.title.docs.faq" datatype="html">
         <source>FAQ</source>
+        <target>FAQ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">46</context>
@@ -6659,6 +6670,7 @@
       </trans-unit>
       <trans-unit id="meta.title.docs.rest" datatype="html">
         <source>REST API</source>
+        <target>REST API</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">51</context>
@@ -6680,6 +6692,7 @@
       </trans-unit>
       <trans-unit id="meta.title.docs.websocket" datatype="html">
         <source>WebSocket API</source>
+        <target>WebSocket API</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">59</context>
@@ -6701,6 +6714,7 @@
       </trans-unit>
       <trans-unit id="meta.title.docs.electrum" datatype="html">
         <source>Electrum RPC</source>
+        <target>Electrum RPC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -7572,6 +7586,7 @@
       </trans-unit>
       <trans-unit id="34e302a08660d9860dda71e3f350351d34bda498" datatype="html">
         <source>Penalties</source>
+        <target>Kary</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/justice-list/justice-list.component.html</context>
           <context context-type="linenumber">4</context>
@@ -8426,6 +8441,7 @@
       </trans-unit>
       <trans-unit id="5ce2bda884ea801c34a1a6c23627d9a5e08f0a82" datatype="html">
         <source>My Account</source>
+        <target>Moje konto</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">25</context>
@@ -8438,6 +8454,7 @@
       </trans-unit>
       <trans-unit id="1773b1dad3e4b72bca77621985366b9e6a92ae28" datatype="html">
         <source>Explore</source>
+        <target>Eksploruj</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">41</context>
@@ -8502,6 +8519,7 @@
       </trans-unit>
       <trans-unit id="03f766a5a2abdbfbdcc2b6135691b9fb1f2ed530" datatype="html">
         <source>More FAQs »</source>
+        <target>Więcej FAQ »</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">55</context>
@@ -8510,6 +8528,7 @@
       </trans-unit>
       <trans-unit id="7a1c82a943fc99d3080aeffeeb7d21f0726ad8cc" datatype="html">
         <source>Networks</source>
+        <target>Sieci</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">59</context>
@@ -8518,6 +8537,7 @@
       </trans-unit>
       <trans-unit id="f96488094a57809ea9bfe4a2f2bf91af66a0d0a3" datatype="html">
         <source>Mainnet Explorer</source>
+        <target>Eksplorator Mainnet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">60</context>
@@ -8526,6 +8546,7 @@
       </trans-unit>
       <trans-unit id="a31347c0f3ec966c373229584cfb7bd6725a0e64" datatype="html">
         <source>Testnet Explorer</source>
+        <target>Eksplorator Testnet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">61</context>
@@ -8534,6 +8555,7 @@
       </trans-unit>
       <trans-unit id="c9bf4b5d16994e42297cbe174e831a7edd9cfe72" datatype="html">
         <source>Signet Explorer</source>
+        <target>Eksplorator Signet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">62</context>
@@ -8542,6 +8564,7 @@
       </trans-unit>
       <trans-unit id="c127ef3218deed36fb86af83def0b54846f92252" datatype="html">
         <source>Liquid Testnet Explorer</source>
+        <target>Eksplorator Liquid Testnet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">63</context>
@@ -8550,6 +8573,7 @@
       </trans-unit>
       <trans-unit id="3c07f1c84d76a9999153e87343fd642852bb6d34" datatype="html">
         <source>Liquid Explorer</source>
+        <target>Eksplorator Liquid</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">64</context>
@@ -8575,6 +8599,7 @@
       </trans-unit>
       <trans-unit id="9a91783e9c0f790ed49edae730f9156070ed9dd5" datatype="html">
         <source>Legal</source>
+        <target>Informacje prawen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">75</context>
@@ -8603,6 +8628,7 @@
       </trans-unit>
       <trans-unit id="6a0a8485405b9b289101e52a46e282342c8dc9e0" datatype="html">
         <source>Trademark Policy</source>
+        <target>Polityka znaku towarowego</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">78</context>
@@ -8612,6 +8638,7 @@
       </trans-unit>
       <trans-unit id="3acac5d996ebd58adf283129c084bd8f837689f1" datatype="html">
         <source>Third-party Licenses</source>
+        <target>Licencje stron trzecich</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">79</context>
@@ -8621,6 +8648,7 @@
       </trans-unit>
       <trans-unit id="64dd13424d9486cf3d680d934987ec685bac0b3d" datatype="html">
         <source>This is a test network. Coins have no value.</source>
+        <target>To jest sieć testowa. Monety nie mają wartości.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/testnet-alert/testnet-alert.component.html</context>
           <context context-type="linenumber">3</context>
@@ -8629,6 +8657,7 @@
       </trans-unit>
       <trans-unit id="3399131819685362332" datatype="html">
         <source>Address Types</source>
+        <target>Typy adresów</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/filters.utils.ts</context>
           <context context-type="linenumber">119</context>
@@ -8636,6 +8665,7 @@
       </trans-unit>
       <trans-unit id="7779249123661446825" datatype="html">
         <source>Behavior</source>
+        <target>Zachowanie</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/filters.utils.ts</context>
           <context context-type="linenumber">120</context>
@@ -8643,6 +8673,7 @@
       </trans-unit>
       <trans-unit id="6290595884142884507" datatype="html">
         <source>Heuristics</source>
+        <target>Heurystyki</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/filters.utils.ts</context>
           <context context-type="linenumber">122</context>
@@ -8650,6 +8681,7 @@
       </trans-unit>
       <trans-unit id="2259944601214794924" datatype="html">
         <source>Sighash Flags</source>
+        <target>Flagi sighash</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/filters.utils.ts</context>
           <context context-type="linenumber">123</context>

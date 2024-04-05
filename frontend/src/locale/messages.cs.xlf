@@ -266,6 +266,7 @@
       </trans-unit>
       <trans-unit id="9bada74bc2b36480a6db8734d56a2b89135de590" datatype="html">
         <source>Become a Community Sponsor</source>
+        <target>Stát se Community sponzorem</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about-sponsors.component.html</context>
           <context context-type="linenumber">4</context>
@@ -274,6 +275,7 @@
       </trans-unit>
       <trans-unit id="bef4c03ebfa29b890665fbcf6bf097b9ae29a91e" datatype="html">
         <source>Become an Enterprise Sponsor</source>
+        <target>Stát se Enterprise sponzorem</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about-sponsors.component.html</context>
           <context context-type="linenumber">11</context>
@@ -474,6 +476,7 @@
       </trans-unit>
       <trans-unit id="f24773075af97666c0feca0e883c2585712fe597" datatype="html">
         <source>Your transaction</source>
+        <target>Vaše transakce</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">35</context>
@@ -1409,6 +1412,7 @@
       </trans-unit>
       <trans-unit id="0f6ada0cfb60aefd8f77f8a22349850ce186d666" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="of {{ txCount | number }} transactions&lt;/ng-template&gt;"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transactions</source>
+        <target><x id="INTERPOLATION" equiv-text="of {{ txCount | number }} transactions&lt;/ng-template&gt;"/> z <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transakcí</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">70</context>
@@ -3023,6 +3027,7 @@
       </trans-unit>
       <trans-unit id="27387c2af5dcaf343a548feba821515f5dc00faa" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="transaction&lt;/ng-template&gt;         &lt;ng-template #transactionsPlural let-i i18n=&quot;shared.trans"/> transaction</source>
+        <target><x id="INTERPOLATION" equiv-text="transaction&lt;/ng-template&gt;         &lt;ng-template #transactionsPlural let-i i18n=&quot;shared.trans"/> transakce</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">331</context>
@@ -3039,6 +3044,7 @@
       </trans-unit>
       <trans-unit id="14779b0ce4cbc4d975a35a8fe074426228a324f3" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="transactions&lt;/ng-template&gt;       &lt;/h2&gt;        &lt;ngb-pagination class=&quot;pagination-container"/> transactions</source>
+        <target><x id="INTERPOLATION" equiv-text="transactions&lt;/ng-template&gt;       &lt;/h2&gt;        &lt;ngb-pagination class=&quot;pagination-container"/> transakcí</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">332</context>
@@ -3692,6 +3698,7 @@
       </trans-unit>
       <trans-unit id="9dfdbeb922d811d7b7b3fecd48360a059e52aaba" datatype="html">
         <source>Incoming Transactions</source>
+        <target>Příchozí Transakce</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">5</context>
@@ -5411,6 +5418,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.mempool" datatype="html">
         <source>See mempool size (in MvB) and transactions per second (in vB/s) visualized over time.</source>
+        <target>Zobrazit velikost mempoolu (v MvB) a transakce za vteřinu (v vB/s) visualizované v čase.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -6425,6 +6433,7 @@
       </trans-unit>
       <trans-unit id="aa6ce7e6e6fe5cd080713965451f25bca15a2a25" datatype="html">
         <source>Recent Transactions</source>
+        <target>Nedávné Transakce</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">131</context>
@@ -6506,6 +6515,7 @@
       </trans-unit>
       <trans-unit id="4136162380400286378" datatype="html">
         <source>Consolidation</source>
+        <target>Konsolidace</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.ts</context>
           <context context-type="linenumber">79</context>

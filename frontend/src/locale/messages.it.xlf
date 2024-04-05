@@ -455,6 +455,7 @@
       </trans-unit>
       <trans-unit id="7159011509695804248" datatype="html">
         <source>maximum</source>
+        <target>massimo</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-fee-graph.component.ts</context>
           <context context-type="linenumber">55</context>
@@ -482,6 +483,7 @@
       </trans-unit>
       <trans-unit id="f24773075af97666c0feca0e883c2585712fe597" datatype="html">
         <source>Your transaction</source>
+        <target>La tua transazione</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">35</context>
@@ -490,6 +492,7 @@
       </trans-unit>
       <trans-unit id="bee6b649ee82d9a7cde233070b665eec7c531b1d" datatype="html">
         <source>Plus <x id="INTERPOLATION" equiv-text="{{ estimate.txSummary.ancestorCount - 1 }}"/> unconfirmed ancestor(s)</source>
+        <target>Più <x id="INTERPOLATION" equiv-text="{{ estimate.txSummary.ancestorCount - 1 }}"/> antenati non confermati</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">39</context>
@@ -524,6 +527,7 @@
       </trans-unit>
       <trans-unit id="adbeb446bf941afda4d4a923b5e4ce0cf4a1c1b8" datatype="html">
         <source>In-band fees</source>
+        <target>Commissioni in-band</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">53</context>
@@ -629,6 +633,7 @@
       </trans-unit>
       <trans-unit id="8611a038eb243bbed95bf5ff49af4129f22dc55a" datatype="html">
         <source>How much more are you willing to pay?</source>
+        <target>Quanto sei disposto a pagare in più?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">68</context>
@@ -637,6 +642,7 @@
       </trans-unit>
       <trans-unit id="4487eb902b70d33b4bb7a0828b66afec3a96fc18" datatype="html">
         <source>Choose the maximum extra transaction fee you're willing to pay to get into the next block.</source>
+        <target>Scegli la commissione di transazione extra massima che sei disposto a pagare per accedere al blocco successivo.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">71</context>
@@ -645,6 +651,7 @@
       </trans-unit>
       <trans-unit id="0b537472d5f7518ed2c2c2b747997b0447ec5ee8" datatype="html">
         <source>Next block market rate</source>
+        <target>Tasso di mercato del blocco successivo</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">95</context>
@@ -671,6 +678,7 @@
       </trans-unit>
       <trans-unit id="c2836a2964adf9e369ee0a1ce67f991cf2aa435d" datatype="html">
         <source>Estimated extra fee required</source>
+        <target>Stima della commissione aggiuntiva richiesta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">103</context>
@@ -679,6 +687,7 @@
       </trans-unit>
       <trans-unit id="26e50fa97db4eecde26ff892d725e61ca9201c48" datatype="html">
         <source>Mempool Accelerator™ fees</source>
+        <target>Commissioni di Mempool Accelerator™</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">117</context>
@@ -687,6 +696,7 @@
       </trans-unit>
       <trans-unit id="1ec82428244c76064090ea5a55827e3fada82306" datatype="html">
         <source>Accelerator Service Fee</source>
+        <target>Commissione per il Servizio di Accelerazione</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">121</context>
@@ -695,6 +705,7 @@
       </trans-unit>
       <trans-unit id="7d07b80b17dfab3582807759420b8d723c9e4414" datatype="html">
         <source>Transaction Size Surcharge</source>
+        <target>Supplemento per Dimensione della Transazione</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">133</context>
@@ -703,6 +714,7 @@
       </trans-unit>
       <trans-unit id="004732b44df582a2d24e2abbd3f46bc42ae8c546" datatype="html">
         <source>Estimated acceleration cost</source>
+        <target>Costo di accelerazione stimato</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">148</context>
@@ -711,6 +723,7 @@
       </trans-unit>
       <trans-unit id="c9ec95585f57bd87212693db7cb00d9ed70d49b1" datatype="html">
         <source>Maximum acceleration cost</source>
+        <target>Costo di accelerazione massimo</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">171</context>
@@ -719,6 +732,7 @@
       </trans-unit>
       <trans-unit id="f3ff11006f77909b9fca2e0fda0a72b097cd76de" datatype="html">
         <source>Available balance</source>
+        <target>Saldo disponibile</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">195</context>
@@ -727,6 +741,7 @@
       </trans-unit>
       <trans-unit id="ba4f24bf9bf3dc4db3d6bc1b8b63339295f0b806" datatype="html">
         <source>Sign In</source>
+        <target>Accedi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">214</context>
@@ -747,6 +762,7 @@
       </trans-unit>
       <trans-unit id="2504ca478a61c5e53f9ed55e9aeb3e8f2d01b3eb" datatype="html">
         <source>Accelerate on mempool.space</source>
+        <target>Accelera su mempool.space</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">223</context>

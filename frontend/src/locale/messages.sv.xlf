@@ -5964,7 +5964,7 @@
       </trans-unit>
       <trans-unit id="08c516e1fe345b4ae1fcae5fd4e5a0cd22e646dd" datatype="html">
         <source>Seen in Mempool</source>
-        <target>Sett i mempoolen</target>
+        <target>Sedd i mempoolen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">79</context>
@@ -5983,7 +5983,7 @@
       </trans-unit>
       <trans-unit id="53d5fe49e4a07a663eb2f26ceeb76afceef86334" datatype="html">
         <source>Not seen in Mempool</source>
-        <target>Inte sett i mempoolen</target>
+        <target>Inte sedd i mempoolen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">80</context>
