@@ -46,6 +46,7 @@ export interface Env {
   SIGNET_BLOCK_AUDIT_START_HEIGHT: number;
   HISTORICAL_PRICE: boolean;
   ACCELERATOR: boolean;
+  PUBLIC_ACCELERATIONS: boolean;
   ADDITIONAL_CURRENCIES: boolean;
   GIT_COMMIT_HASH_MEMPOOL_SPACE?: string;
   PACKAGE_JSON_VERSION_MEMPOOL_SPACE?: string;
@@ -77,6 +78,7 @@ const defaultEnv: Env = {
   'SIGNET_BLOCK_AUDIT_START_HEIGHT': 0,
   'HISTORICAL_PRICE': true,
   'ACCELERATOR': false,
+  'PUBLIC_ACCELERATIONS': false,
   'ADDITIONAL_CURRENCIES': false,
 };
 
@@ -152,7 +154,7 @@ export class StateService {
   searchFocus$: Subject<boolean> = new Subject<boolean>();
   menuOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-  activeGoggles$: BehaviorSubject<ActiveFilter> = new BehaviorSubject({ mode: 'and', filters: [] });
+  activeGoggles$: BehaviorSubject<ActiveFilter> = new BehaviorSubject({ mode: 'and', filters: [], gradient: 'fee' });
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
@@ -262,22 +264,10 @@ export class StateService {
     // /^\/                                         starts with a forward slash...
     // (?:[a-z]{2}(?:-[A-Z]{2})?\/)?                optional locale prefix (non-capturing)
     // (?:preview\/)?                               optional "preview" prefix (non-capturing)
-    // (testnet|liquidtestnet|liquid|signet)/  network string (captured as networkMatches[1])
+    // (testnet|signet)/                            network string (captured as networkMatches[1])
     // ($|\/)                                       network string must end or end with a slash
-    const networkMatches = url.match(/^\/(?:[a-z]{2}(?:-[A-Z]{2})?\/)?(?:preview\/)?(testnet|liquidtestnet|liquid|signet)($|\/)/);
+    const networkMatches = url.match(/^\/(?:[a-z]{2}(?:-[A-Z]{2})?\/)?(?:preview\/)?(testnet|signet)($|\/)/);
     switch (networkMatches && networkMatches[1]) {
-      case 'liquid':
-        if (this.network !== 'liquid') {
-          this.network = 'liquid';
-          this.networkChanged$.next('liquid');
-        }
-        return;
-      case 'liquidtestnet':
-        if (this.network !== 'liquidtestnet') {
-          this.network = 'liquidtestnet';
-          this.networkChanged$.next('liquidtestnet');
-        }
-        return;
       case 'signet':
         if (this.network !== 'signet') {
           this.network = 'signet';
@@ -285,7 +275,7 @@ export class StateService {
         }
         return;
       case 'testnet':
-        if (this.network !== 'testnet') {
+        if (this.network !== 'testnet' && this.network !== 'liquidtestnet') {
           if (this.env.BASE_MODULE === 'liquid') {
             this.network = 'liquidtestnet';
             this.networkChanged$.next('liquidtestnet');

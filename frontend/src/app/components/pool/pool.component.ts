@@ -121,6 +121,7 @@ export class PoolComponent implements OnInit {
       );
 
     this.oobFees$ = this.route.params.pipe(map((params) => params.slug)).pipe(
+      filter(() => this.stateService.env.PUBLIC_ACCELERATIONS === true && this.stateService.network === ''),
       switchMap(slug => {
         return combineLatest([
           this.apiService.getAccelerationTotals$(this.slug, '1w'),
@@ -209,7 +210,7 @@ export class PoolComponent implements OnInit {
       legend: {
         data: [
           {
-            name: $localize`:mining.hashrate:Hashrate`,
+            name: $localize`:@@79a9dc5b1caca3cbeb1733a19515edacc5fc7920:Hashrate`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -263,7 +264,7 @@ export class PoolComponent implements OnInit {
       series: hashrate.length <= 1 ? undefined : [
         {
           zlevel: 1,
-          name: $localize`:mining.hashrate:Hashrate`,
+          name: $localize`:@@79a9dc5b1caca3cbeb1733a19515edacc5fc7920:Hashrate`,
           showSymbol: false,
           symbol: 'none',
           data: hashrate,

@@ -68,6 +68,10 @@ export default class BlockScene {
 
   setColorFunction(colorFunction: ((tx: TxView) => Color) | null): void {
     this.getColor = colorFunction || defaultColorFunction;
+    this.updateAllColors();
+  }
+
+  updateAllColors(): void {
     this.dirty = true;
     if (this.initialised && this.scene) {
       this.updateColors(performance.now(), 50);

@@ -33,8 +33,9 @@ export class ApiDocsNavComponent implements OnInit {
     }
   }
 
-  navLinkClick(event) {
-    this.navLinkClickEvent.emit(event);
+  navLinkClick(event, fragment) {
+    event.preventDefault();
+    this.navLinkClickEvent.emit({event: event, fragment: fragment});
   }
 
 }
