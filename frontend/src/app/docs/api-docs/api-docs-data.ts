@@ -9584,7 +9584,7 @@ export const faqData = [
     category: "advanced",
     showConditions: bitcoinNetworks,
     fragment: "how-do-mempool-goggles-work",
-    title: "How do Mempool Goggles work?",
+    title: "How do Mempool Goggles™ work?",
   },
   {
     type: "endpoint",
