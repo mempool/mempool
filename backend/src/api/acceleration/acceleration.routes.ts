@@ -18,51 +18,23 @@ class AccelerationRoutes {
   }
 
   private async $getAcceleratorAccelerations(req: Request, res: Response): Promise<void> {
-    if (config.MEMPOOL_SERVICES.PREFER_LOCAL) {
-      const accelerations = mempool.getAccelerations();
-      res.status(200).send(Object.values(accelerations));
-    } else {
-      const url = `${config.MEMPOOL_SERVICES.API}/${req.originalUrl.replace('/api/v1/services/', '')}`;
-      try {
-        const response = await axios.get(url, { responseType: 'stream', timeout: 10000 });
-        for (const key in response.headers) {
-          res.setHeader(key, response.headers[key]);
-        }
-        response.data.pipe(res);
-      } catch (e) {
-        logger.err(`Unable to get current accelerations from ${url} in $getAcceleratorAccelerations(), ${e}`, this.tag);
-        res.status(500).end();
-      }
-    }
+    const accelerations = mempool.getAccelerations();
+    res.status(200).send(Object.values(accelerations));
   }
 
   private async $getAcceleratorAccelerationsHistory(req: Request, res: Response): Promise<void> {
-    if (config.MEMPOOL_SERVICES.PREFER_LOCAL) {
-      const history = await AccelerationRepository.$getAccelerationInfo(null, req.query.blockHeight ? parseInt(req.query.blockHeight as string, 10) : null);
-      res.status(200).send(history.map(accel => ({
-        txid: accel.txid,
-        added: accel.added,
-        status: 'completed',
-        effectiveFee: accel.effective_fee,
-        effectiveVsize: accel.effective_vsize,
-        boostRate: accel.boost_rate,
-        boostCost: accel.boost_cost,
-        blockHeight: accel.height,
-        pools: [accel.pool],
-      })));
-    } else {
-      const url = `${config.MEMPOOL_SERVICES.API}/${req.originalUrl.replace('/api/v1/services/', '')}`;
-      try {
-        const response = await axios.get(url, { responseType: 'stream', timeout: 10000 });
-        for (const key in response.headers) {
-          res.setHeader(key, response.headers[key]);
-        }
-        response.data.pipe(res);
-      } catch (e) {
-        logger.err(`Unable to get acceleration history from ${url} in $getAcceleratorAccelerationsHistory(), ${e}`, this.tag);
-        res.status(500).end();
-      }
-    }
+    const history = await AccelerationRepository.$getAccelerationInfo(null, req.query.blockHeight ? parseInt(req.query.blockHeight as string, 10) : null);
+    res.status(200).send(history.map(accel => ({
+      txid: accel.txid,
+      added: accel.added,
+      status: 'completed',
+      effectiveFee: accel.effective_fee,
+      effectiveVsize: accel.effective_vsize,
+      boostRate: accel.boost_rate,
+      boostCost: accel.boost_cost,
+      blockHeight: accel.height,
+      pools: [accel.pool],
+    })));
   }
 
   private async $getAcceleratorAccelerationsHistoryAggregated(req: Request, res: Response): Promise<void> {
