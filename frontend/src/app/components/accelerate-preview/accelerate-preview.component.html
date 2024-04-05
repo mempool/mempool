@@ -237,7 +237,8 @@
         </div>
       </div>
 
-      <div class="row d-flex justify-content-end mr-1" style="height: 48px" *ngIf="!hideCashApp">
+      <div class="row d-flex justify-content-end align-items-center mr-1" style="height: 48px" *ngIf="!hideCashApp">
+        <div [style]="showSpinner ? 'opacity: 0' : 'opacity: 1'" class="p-2">Accelerate with</div>
         <div id="cash-app-pay" style="max-width: 320px" [style]="showSpinner ? 'opacity: 0' : 'opacity: 1'"></div>
         <div *ngIf="showSpinner" class="d-flex align-items-center">
           <span class="mr-2">Loading</span>
