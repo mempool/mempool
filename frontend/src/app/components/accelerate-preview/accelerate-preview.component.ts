@@ -103,7 +103,9 @@ export class AcceleratePreviewComponent implements OnDestroy, OnChanges {
   }
 
   ngAfterViewInit() {
-    this.showSpinner = true;
+    if (this.paymentType === 'cashapp') {
+      this.showSpinner = true;
+    }
 
     this.user = this.storageService.getAuth()?.user ?? null;
 
