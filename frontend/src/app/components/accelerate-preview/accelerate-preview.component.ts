@@ -79,7 +79,7 @@ export class AcceleratePreviewComponent implements OnDestroy, OnChanges {
     private audioService: AudioService,
     private cd: ChangeDetectorRef
   ) {
-    if (window.document.referrer === 'cash.app') {
+    if (window.document.referrer === 'https://cash.app/') {
       this.insertSquare();
       this.paymentType = 'cashapp';
     } else {
