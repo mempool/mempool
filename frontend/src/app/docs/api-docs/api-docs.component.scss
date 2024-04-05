@@ -204,6 +204,7 @@ h3 {
   margin: 20px 0 20px 0;
   font-size: 24px;
   position: relative;
+  cursor: pointer;
 }
 .endpoint-container .section-header:hover {
   text-decoration: none;
@@ -269,7 +270,7 @@ h3 {
   .position-container {
     position: absolute;
     left: 50%;
-    bottom: 150px;
+    bottom: 158px;
   }
 
   #divider {

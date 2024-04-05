@@ -19,6 +19,7 @@ import bitcoinClient from './bitcoin-client';
 import difficultyAdjustment from '../difficulty-adjustment';
 import transactionRepository from '../../repositories/TransactionRepository';
 import rbfCache from '../rbf-cache';
+import { calculateCpfp } from '../cpfp';
 
 class BitcoinRoutes {
   public initRoutes(app: Application) {
@@ -36,60 +37,6 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'replacements', this.getRbfReplacements)
       .get(config.MEMPOOL.API_URL_PREFIX + 'fullrbf/replacements', this.getFullRbfReplacements)
       .post(config.MEMPOOL.API_URL_PREFIX + 'tx/push', this.$postTransactionForm)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'donations', async (req, res) => {
-        try {
-          const response = await axios.get(`${config.EXTERNAL_DATA_SERVER.MEMPOOL_API}/donations`, { responseType: 'stream', timeout: 10000 });
-          response.data.pipe(res);
-        } catch (e) {
-          res.status(500).end();
-        }
-      })
-      .get(config.MEMPOOL.API_URL_PREFIX + 'donations/images/:id', async (req, res) => {
-        try {
-          const response = await axios.get(`${config.EXTERNAL_DATA_SERVER.MEMPOOL_API}/donations/images/${req.params.id}`, {
-            responseType: 'stream', timeout: 10000
-          });
-          response.data.pipe(res);
-        } catch (e) {
-          res.status(500).end();
-        }
-      })
-      .get(config.MEMPOOL.API_URL_PREFIX + 'contributors', async (req, res) => {
-        try {
-          const response = await axios.get(`${config.EXTERNAL_DATA_SERVER.MEMPOOL_API}/contributors`, { responseType: 'stream', timeout: 10000 });
-          response.data.pipe(res);
-        } catch (e) {
-          res.status(500).end();
-        }
-      })
-      .get(config.MEMPOOL.API_URL_PREFIX + 'contributors/images/:id', async (req, res) => {
-        try {
-          const response = await axios.get(`${config.EXTERNAL_DATA_SERVER.MEMPOOL_API}/contributors/images/${req.params.id}`, {
-            responseType: 'stream', timeout: 10000
-          });
-          response.data.pipe(res);
-        } catch (e) {
-          res.status(500).end();
-        }
-      })
-      .get(config.MEMPOOL.API_URL_PREFIX + 'translators', async (req, res) => {
-        try {
-          const response = await axios.get(`${config.EXTERNAL_DATA_SERVER.MEMPOOL_API}/translators`, { responseType: 'stream', timeout: 10000 });
-          response.data.pipe(res);
-        } catch (e) {
-          res.status(500).end();
-        }
-      })
-      .get(config.MEMPOOL.API_URL_PREFIX + 'translators/images/:id', async (req, res) => {
-        try {
-          const response = await axios.get(`${config.EXTERNAL_DATA_SERVER.MEMPOOL_API}/translators/images/${req.params.id}`, {
-            responseType: 'stream', timeout: 10000
-          });
-          response.data.pipe(res);
-        } catch (e) {
-          res.status(500).end();
-        }
-      })
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks', this.getBlocks.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/:height', this.getBlocks.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash', this.getBlock)
@@ -217,7 +164,7 @@ class BitcoinRoutes {
         return;
       }
 
-      const cpfpInfo = Common.setRelativesAndGetCpfpInfo(tx, mempool.getMempool());
+      const cpfpInfo = calculateCpfp(tx, mempool.getMempool());
 
       res.json(cpfpInfo);
       return;
@@ -417,7 +364,7 @@ class BitcoinRoutes {
         const height = req.params.height === undefined ? undefined : parseInt(req.params.height, 10);
         res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
         res.json(await blocks.$getBlocks(height, 15));
-      } else { // Liquid, Bisq
+      } else { // Liquid
         return await this.getLegacyBlocks(req, res);
       }
     } catch (e) {
@@ -427,7 +374,7 @@ class BitcoinRoutes {
 
   private async getBlocksByBulk(req: Request, res: Response) {
     try {
-      if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) { // Liquid, Bisq - Not implemented
+      if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) { // Liquid - Not implemented
         return res.status(404).send(`This API is only available for Bitcoin networks`);
       }
       if (config.MEMPOOL.MAX_BLOCKS_BULK_QUERY <= 0) {

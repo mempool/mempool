@@ -65,7 +65,9 @@ export class PoolComponent implements OnInit {
             .pipe(
               switchMap((data) => {
                 this.isLoading = false;
-                this.prepareChartOptions(data.map(val => [val.timestamp * 1000, val.avgHashrate]));
+                const hashrate = data.map(val => [val.timestamp * 1000, val.avgHashrate]);
+                const share = data.map(val => [val.timestamp * 1000, val.share * 100]);
+                this.prepareChartOptions(hashrate, share);
                 return [slug];
               }),
               catchError(() => {
@@ -119,6 +121,7 @@ export class PoolComponent implements OnInit {
       );
 
     this.oobFees$ = this.route.params.pipe(map((params) => params.slug)).pipe(
+      filter(() => this.stateService.env.PUBLIC_ACCELERATIONS === true && this.stateService.network === ''),
       switchMap(slug => {
         return combineLatest([
           this.apiService.getAccelerationTotals$(this.slug, '1w'),
@@ -130,9 +133,9 @@ export class PoolComponent implements OnInit {
     );
   }
 
-  prepareChartOptions(data) {
+  prepareChartOptions(hashrate, share) {
     let title: object;
-    if (data.length <= 1) {
+    if (hashrate.length <= 1) {
       title = {
         textStyle: {
           color: 'grey',
@@ -177,26 +180,57 @@ export class PoolComponent implements OnInit {
         },
         borderColor: '#000',
         formatter: function (ticks: any[]) {
-          let hashratePowerOfTen: any = selectPowerOfTen(1);
-          let hashrate = ticks[0].data[1];
+          let hashrateString = '';
+          let dominanceString = '';
 
-          hashratePowerOfTen = selectPowerOfTen(ticks[0].data[1], 10);
-          hashrate = ticks[0].data[1] / hashratePowerOfTen.divider;
-
+          for (const tick of ticks) {
+            if (tick.seriesIndex === 0) {
+              let hashratePowerOfTen = selectPowerOfTen(tick.data[1], 10);
+              let hashrateData = tick.data[1] / hashratePowerOfTen.divider;
+              hashrateString = `${tick.marker} ${tick.seriesName}: ${formatNumber(hashrateData, this.locale, '1.0-0')} ${hashratePowerOfTen.unit}H/s<br>`;
+            } else if (tick.seriesIndex === 1) {
+              dominanceString = `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-2')}%`;
+            }             
+          }
+          
           return `
             <b style="color: white; margin-left: 18px">${ticks[0].axisValueLabel}</b><br>
-            <span>${ticks[0].marker} ${ticks[0].seriesName}: ${formatNumber(hashrate, this.locale, '1.0-0')} ${hashratePowerOfTen.unit}H/s</span><br>
+            <span>${hashrateString}</span>
+            <span>${dominanceString}</span>
           `;
         }.bind(this)
       },
-      xAxis: data.length <= 1 ? undefined : {
+      xAxis: hashrate.length <= 1 ? undefined : {
         type: 'time',
         splitNumber: (this.isMobile()) ? 5 : 10,
         axisLabel: {
           hideOverlap: true,
         }
       },
-      yAxis: data.length <= 1 ? undefined : [
+      legend: {
+        data: [
+          {
+            name: $localize`:@@79a9dc5b1caca3cbeb1733a19515edacc5fc7920:Hashrate`,
+            inactiveColor: 'rgb(110, 112, 121)',
+            textStyle: {
+              color: 'white',
+            },
+            icon: 'roundRect',
+            itemStyle: {
+              color: '#FFB300',
+            },
+          },
+          {
+            name: $localize`:mining.pool-dominance:Pool Dominance`,
+            inactiveColor: 'rgb(110, 112, 121)',
+            textStyle: {
+              color: 'white',
+            },
+            icon: 'roundRect',
+          },
+        ],
+      },
+      yAxis: hashrate.length <= 1 ? undefined : [
         {
           min: (value) => {
             return value.min * 0.9;
@@ -214,21 +248,45 @@ export class PoolComponent implements OnInit {
             show: false,
           }
         },
-      ],
-      series: data.length <= 1 ? undefined : [
         {
-          zlevel: 0,
-          name: 'Hashrate',
+          type: 'value',
+          axisLabel: {
+            color: 'rgb(110, 112, 121)',
+            formatter: (val) => {
+              return `${val}%`
+            }
+          },
+          splitLine: {
+            show: false,
+          }
+        }
+      ],
+      series: hashrate.length <= 1 ? undefined : [
+        {
+          zlevel: 1,
+          name: $localize`:@@79a9dc5b1caca3cbeb1733a19515edacc5fc7920:Hashrate`,
           showSymbol: false,
           symbol: 'none',
-          data: data,
+          data: hashrate,
           type: 'line',
           lineStyle: {
             width: 2,
           },
         },
+        {
+          zlevel: 0,
+          name: $localize`:mining.pool-dominance:Pool Dominance`,
+          showSymbol: false,
+          symbol: 'none',
+          data: share,
+          type: 'line',
+          yAxisIndex: 1,
+          lineStyle: {
+            width: 2,
+          },
+        }
       ],
-      dataZoom: data.length <= 1 ? undefined : [{
+      dataZoom: hashrate.length <= 1 ? undefined : [{
         type: 'inside',
         realtime: true,
         zoomLock: true,

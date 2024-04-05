@@ -129,8 +129,8 @@ export NVM_DIR="${HOME}/.nvm"
 source "${NVM_DIR}/nvm.sh"
 
 # what to look for
-frontends=(mainnet liquid bisq)
-backends=(mainnet testnet signet liquid liquidtestnet bisq)
+frontends=(mainnet liquid)
+backends=(mainnet testnet signet liquid liquidtestnet)
 frontend_repos=()
 backend_repos=()
 
@@ -151,7 +151,7 @@ for repo in $backend_repos;do
 done
 
 # build unfurlers
-for repo in mainnet liquid bisq;do
+for repo in mainnet liquid;do
     build_unfurler "${repo}"
 done
 
@@ -166,7 +166,7 @@ for repo in $frontend_repos;do
 done
 
 # ship frontend dist folders to public_html
-for target in mainnet liquid bisq;do
+for target in mainnet liquid;do
     ship_frontend "${target}"
 done
 

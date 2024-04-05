@@ -53,13 +53,13 @@
             <td i18n="block.miner">Miner</td>
             <td *ngIf="stateService.env.MINING_DASHBOARD">
               <a [attr.data-cy]="'block-details-miner-badge'" placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, block?.extras.pool.slug]" class="badge"
-                [class]="!block?.extras.pool.name || block?.extras.pool.name === 'Unknown' ? 'badge-secondary' : 'badge-primary'">
+                [class]="!block?.extras.pool.name || block?.extras.pool.slug === 'unknown' ? 'badge-secondary' : 'badge-primary'">
                 {{ block?.extras.pool.name }}
               </a>
             </td>
             <td *ngIf="!stateService.env.MINING_DASHBOARD && stateService.env.BASE_MODULE === 'mempool'">
               <span [attr.data-cy]="'block-details-miner-badge'" placement="bottom" class="badge"
-                [class]="!block?.extras.pool.name || block?.extras.pool.name === 'Unknown' ? 'badge-secondary' : 'badge-primary'">
+                [class]="!block?.extras.pool.name || block?.extras.pool.slug === 'unknown' ? 'badge-secondary' : 'badge-primary'">
                 {{ block?.extras.pool.name }}
             </span>
             </td>
@@ -70,8 +70,9 @@
     <div class="col-sm chart-container">
       <app-block-overview-graph
         #blockGraph
+        [autofit]="true"
         [isLoading]="false"
-        [resolution]="80"
+        [resolution]="86"
         [blockLimit]="stateService.blockVSize"
         [orientation]="'top'"
         [flip]="false"

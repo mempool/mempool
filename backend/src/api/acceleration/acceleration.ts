@@ -1,6 +1,6 @@
-import logger from '../logger';
-import { MempoolTransactionExtended } from '../mempool.interfaces';
-import { IEsploraApi } from './bitcoin/esplora-api.interface';
+import logger from '../../logger';
+import { MempoolTransactionExtended } from '../../mempool.interfaces';
+import { IEsploraApi } from '../bitcoin/esplora-api.interface';
 
 const BLOCK_WEIGHT_UNITS = 4_000_000;
 const BLOCK_SIGOPS = 80_000;

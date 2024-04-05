@@ -187,7 +187,7 @@ export class BlockHealthGraphComponent implements OnInit {
       series: data.length === 0 ? undefined : [
         {
           zlevel: 0,
-          name: $localize`Health`,
+          name: $localize`:@@d2bcd3296d2850de762fb943060b7e086a893181:Health`,
           data: data.map(health => ({
             value: health[2],
             block: health[1],

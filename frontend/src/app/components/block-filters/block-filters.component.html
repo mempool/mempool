@@ -14,14 +14,29 @@
     </div>
   </div>
   <div class="filter-menu" *ngIf="menuOpen && cssWidth > 280">
-    <h5>Match</h5>
-    <div class="btn-group btn-group-toggle">
-      <label class="btn btn-xs blue mode-toggle" [class.active]="filterMode === 'and'">
-        <input type="radio" [value]="'all'" fragment="all" (click)="setFilterMode('and')">All
-      </label>
-      <label class="btn btn-xs green mode-toggle" [class.active]="filterMode === 'or'">
-        <input type="radio" [value]="'any'" fragment="any" (click)="setFilterMode('or')">Any
-      </label>
+    <div class="filter-row">
+      <div class="filter-element">
+        <h5 i18n="mempool-goggles.match">Match</h5>
+        <div class="btn-group btn-group-toggle">
+          <label class="btn btn-xs blue mode-toggle" [class.active]="filterMode === 'and'">
+            <input type="radio" [value]="'all'" fragment="all" (click)="setFilterMode('and')"><ng-container i18n>All</ng-container>
+          </label>
+          <label class="btn btn-xs green mode-toggle" [class.active]="filterMode === 'or'">
+            <input type="radio" [value]="'any'" fragment="any" (click)="setFilterMode('or')"><ng-container i18n="mempool-goggles.any">Any</ng-container>
+          </label>
+        </div>
+      </div>
+      <div class="filter-element">
+        <h5 i18n="mempool-goggles.gradient">Gradient</h5>
+        <div class="btn-group btn-group-toggle">
+          <label class="btn btn-xs yellow mode-toggle" [class.active]="gradientMode === 'fee'">
+            <input type="radio" [value]="'fee'" fragment="default" (click)="setGradientMode('fee')"><ng-container i18n="mempool-goggles.default">Default</ng-container>
+          </label>
+          <label class="btn btn-xs blue mode-toggle" [class.active]="gradientMode === 'age'">
+            <input type="radio" [value]="'age'" fragment="age" (click)="setGradientMode('age')"><ng-container i18n="mempool-goggles.age">Age</ng-container>
+          </label>
+        </div>
+      </div>
     </div>
     <ng-container *ngFor="let group of filterGroups;">
       <h5>{{ group.label }}</h5>

@@ -39,7 +39,7 @@
       <div class="col-sm">
         <table class="table table-borderless table-striped">
           <tbody>
-            <ng-container *ngIf="!isLoadingBlock; else skeletonRows">
+            <ng-container *ngIf="block && !isLoadingBlock; else skeletonRows">
               <tr>
                 <td class="td-width" i18n="block.hash">Hash</td>
                 <td>&lrm;<a [routerLink]="['/block/' | relativeUrl, block.id]" title="{{ block.id }}">{{ block.id | shortenString : 13 }}</a> <app-clipboard [text]="block.id"></app-clipboard></td>
@@ -117,6 +117,7 @@
             [blockConversion]="blockConversion"
             [showFilters]="true"
             [excludeFilters]="['replacement']"
+            [relativeTime]="block?.timestamp"
             (txClickEvent)="onTxClick($event)"
           ></app-block-overview-graph>
           <ng-container *ngTemplateOutlet="emptyBlockInfo"></ng-container>
@@ -126,16 +127,16 @@
   </div>
 
   <ng-template #restOfTable>
-    <ng-container *ngIf="!isLoadingBlock; else loadingRest">
+    <ng-container *ngIf="block && !isLoadingBlock; else loadingRest">
       <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
         <td i18n="mempool-block.fee-span">Fee span</td>
-        <td><app-fee-rate [fee]="block?.extras?.minFee" [showUnit]="false" rounding="1.0-0"></app-fee-rate> - <app-fee-rate [fee]="block?.extras?.maxFee" rounding="1.0-0"></app-fee-rate></td>
+        <td><app-fee-rate [fee]="block.extras?.minFee" [showUnit]="false" rounding="1.0-0"></app-fee-rate> - <app-fee-rate [fee]="block.extras?.maxFee" rounding="1.0-0"></app-fee-rate></td>
       </tr>
-      <tr *ngIf="block?.extras?.medianFee != undefined">
+      <tr *ngIf="block.extras?.medianFee != undefined">
         <td class="td-width" i18n="block.median-fee">Median fee</td>
-        <td>~<app-fee-rate [fee]="block?.extras?.medianFee" rounding="1.0-0"></app-fee-rate>
+        <td>~<app-fee-rate [fee]="block.extras?.medianFee" rounding="1.0-0"></app-fee-rate>
           <span class="fiat">
-            <app-fiat [blockConversion]="blockConversion" [value]="block?.extras?.medianFee * 140" digitsInfo="1.2-2"
+            <app-fiat [blockConversion]="blockConversion" [value]="block.extras?.medianFee * 140" digitsInfo="1.2-2"
               i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes"
               placement="bottom"></app-fiat>
           </span>
@@ -181,13 +182,13 @@
         <td i18n="block.miner">Miner</td>
         <td *ngIf="stateService.env.MINING_DASHBOARD">
           <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]" class="badge"
-            [class]="block.extras.pool.name === 'Unknown' ? 'badge-secondary' : 'badge-primary'">
+            [class]="block.extras.pool.slug === 'unknown' ? 'badge-secondary' : 'badge-primary'">
             {{ block.extras.pool.name }}
           </a>
         </td>
         <td *ngIf="!stateService.env.MINING_DASHBOARD && stateService.env.BASE_MODULE === 'mempool'">
           <span placement="bottom" class="badge"
-            [class]="block.extras.pool.name === 'Unknown' ? 'badge-secondary' : 'badge-primary'">
+            [class]="block.extras.pool.slug === 'unknown' ? 'badge-secondary' : 'badge-primary'">
             {{ block.extras.pool.name }}
         </span>
         </td>
@@ -232,7 +233,7 @@
           <app-block-overview-graph #blockGraphProjected [isLoading]="!stateService.isBrowser || isLoadingOverview" [resolution]="86"
             [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" [auditHighlighting]="showAudit"
             (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="!isMobile && !showAudit"
-            [showFilters]="true" [excludeFilters]="['replacement']"></app-block-overview-graph>
+            [showFilters]="true" [excludeFilters]="['replacement']" [relativeTime]="block?.timestamp"></app-block-overview-graph>
           <ng-container *ngIf="!isMobile || mode !== 'actual'; else emptyBlockInfo"></ng-container>
         </div>
         <ng-container *ngIf="network !== 'liquid'">
@@ -247,7 +248,7 @@
           <app-block-overview-graph #blockGraphActual [isLoading]="!stateService.isBrowser || isLoadingOverview" [resolution]="86"
             [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" mode="mined"  [auditHighlighting]="showAudit"
             (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="isMobile && !showAudit"
-            [showFilters]="true" [excludeFilters]="['replacement']"></app-block-overview-graph>
+            [showFilters]="true" [excludeFilters]="['replacement']" [relativeTime]="block?.timestamp"></app-block-overview-graph>
           <ng-container *ngTemplateOutlet="emptyBlockInfo"></ng-container>
         </div>
         <ng-container *ngIf="network !== 'liquid'">
@@ -259,7 +260,7 @@
     </div>
   </div>
 
-  <ng-template [ngIf]="!isLoadingBlock && !error">
+  <ng-template [ngIf]="block && !isLoadingBlock && !error">
     <div [hidden]="!showDetails" id="details">
       <br>
 

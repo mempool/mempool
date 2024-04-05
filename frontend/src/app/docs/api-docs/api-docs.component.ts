@@ -56,7 +56,10 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
       if( this.route.snapshot.fragment ) {
         this.openEndpointContainer( this.route.snapshot.fragment );
         if (document.getElementById( this.route.snapshot.fragment )) {
-          document.getElementById( this.route.snapshot.fragment ).scrollIntoView();
+          let vOffset = ( window.innerWidth <= 992 ) ? 100 : 60;
+          window.scrollTo({
+            top: document.getElementById( this.route.snapshot.fragment ).offsetTop - vOffset
+          });
         }
       }
       window.addEventListener('scroll', that.onDocScroll, { passive: true });
@@ -124,20 +127,13 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
     this.desktopDocsNavPosition = ( window.pageYOffset > 115 ) ? "fixed" : "relative";
   }
 
-  anchorLinkClick( event: any ) {
-    let targetId = "";
-    if( event.target.nodeName === "A" ) {
-      targetId = event.target.hash.substring(1);
-    } else {
-      let element = event.target;
-      while( element.nodeName !== "A" ) {
-        element = element.parentElement;
-      }
-      targetId = element.hash.substring(1);
-    }
-    if( this.route.snapshot.fragment === targetId && document.getElementById( targetId )) {
-      document.getElementById( targetId ).scrollIntoView();
-    }
+  anchorLinkClick( e ) {
+    let targetId = e.fragment;
+    let vOffset = ( window.innerWidth <= 992 ) ? 100 : 60;
+    window.scrollTo({
+      top: document.getElementById( targetId ).offsetTop - vOffset
+    });
+    window.history.pushState({}, null, document.location.href.split("#")[0] + "#" + targetId);
     this.openEndpointContainer( targetId );
   }
 
@@ -183,10 +179,6 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
     if (network === 'liquidtestnet') {
       curlResponse = code.codeSampleLiquidTestnet.curl;
     }
-    if (network === 'bisq') {
-      curlResponse = code.codeSampleBisq.curl;
-    }
-
     let curlNetwork = '';
     if (this.env.BASE_MODULE === 'mempool') {
       if (!['', 'mainnet'].includes(network)) {

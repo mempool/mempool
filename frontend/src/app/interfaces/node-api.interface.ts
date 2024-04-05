@@ -163,6 +163,7 @@ export interface PoolInfo {
   emptyBlocks: number;
   slug: string;
   poolUniqueId: number;
+  unique_id: number;
 }
 export interface PoolStat {
   pool: PoolInfo;
@@ -208,6 +209,7 @@ export interface BlockExtended extends Block {
 export interface BlockAudit extends BlockExtended {
   missingTxs: string[],
   addedTxs: string[],
+  prioritizedTxs: string[],
   freshTxs: string[],
   sigopTxs: string[],
   fullrbfTxs: string[],
@@ -230,7 +232,8 @@ export interface TransactionStripped {
   rate?: number; // effective fee rate
   acc?: boolean;
   flags?: number | null;
-  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'rbf' | 'accelerated';
+  time?: number;
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'prioritized' | 'censored' | 'selected' | 'rbf' | 'accelerated';
   context?: 'projected' | 'actual';
 }
 

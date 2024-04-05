@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild, HostListener, Input, Output, EventEmitter, NgZone, AfterViewInit, OnDestroy, OnChanges } from '@angular/core';
-import { TransactionStripped } from '../../interfaces/websocket.interface';
+import { TransactionStripped } from '../../interfaces/node-api.interface';
 import { FastVertexArray } from './fast-vertex-array';
 import BlockScene from './block-scene';
 import TxSprite from './tx-sprite';
@@ -8,19 +8,16 @@ import { Color, Position } from './sprite-types';
 import { Price } from '../../services/price.service';
 import { StateService } from '../../services/state.service';
 import { Subscription } from 'rxjs';
-import { defaultColorFunction, setOpacity, defaultFeeColors, defaultAuditFeeColors, defaultMarginalFeeColors, defaultAuditColors } from './utils';
+import { defaultColorFunction, setOpacity, defaultAuditColors, defaultColors, ageColorFunction } from './utils';
 import { ActiveFilter, FilterMode, toFlags } from '../../shared/filters.utils';
 import { detectWebGL } from '../../shared/graphs.utils';
 
 const unmatchedOpacity = 0.2;
-const unmatchedFeeColors = defaultFeeColors.map(c => setOpacity(c, unmatchedOpacity));
-const unmatchedAuditFeeColors = defaultAuditFeeColors.map(c => setOpacity(c, unmatchedOpacity));
-const unmatchedMarginalFeeColors = defaultMarginalFeeColors.map(c => setOpacity(c, unmatchedOpacity));
 const unmatchedAuditColors = {
   censored: setOpacity(defaultAuditColors.censored, unmatchedOpacity),
   missing: setOpacity(defaultAuditColors.missing, unmatchedOpacity),
   added: setOpacity(defaultAuditColors.added, unmatchedOpacity),
-  selected: setOpacity(defaultAuditColors.selected, unmatchedOpacity),
+  prioritized: setOpacity(defaultAuditColors.prioritized, unmatchedOpacity),
   accelerated: setOpacity(defaultAuditColors.accelerated, unmatchedOpacity),
 };
 
@@ -32,6 +29,7 @@ const unmatchedAuditColors = {
 export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, OnChanges {
   @Input() isLoading: boolean;
   @Input() resolution: number;
+  @Input() autofit: boolean = false;
   @Input() blockLimit: number;
   @Input() orientation = 'left';
   @Input() flip = true;
@@ -45,6 +43,8 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   @Input() excludeFilters: string[] = [];
   @Input() filterFlags: bigint | null = null;
   @Input() filterMode: FilterMode = 'and';
+  @Input() gradientMode: 'fee' | 'age' = 'fee';
+  @Input() relativeTime: number | null;
   @Input() blockConversion: Price;
   @Input() overrideColors: ((tx: TxView) => Color) | null = null;
   @Output() txClickEvent = new EventEmitter<{ tx: TransactionStripped, keyModifier: boolean}>();
@@ -119,21 +119,22 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
       this.setHighlightingEnabled(this.auditHighlighting);
     }
     if (changes.overrideColor && this.scene) {
-      this.scene.setColorFunction(this.overrideColors);
+      this.scene.setColorFunction(this.getFilterColorFunction(0n, this.gradientMode));
     }
-    if ((changes.filterFlags || changes.showFilters || changes.filterMode)) {
+    if ((changes.filterFlags || changes.showFilters || changes.filterMode || changes.gradientMode)) {
       this.setFilterFlags();
     }
   }
 
   setFilterFlags(goggle?: ActiveFilter): void {
     this.filterMode = goggle?.mode || this.filterMode;
+    this.gradientMode = goggle?.gradient || this.gradientMode;
     this.activeFilterFlags = goggle?.filters ? toFlags(goggle.filters) : this.filterFlags;
     if (this.scene) {
       if (this.activeFilterFlags != null && this.filtersAvailable) {
-        this.scene.setColorFunction(this.getFilterColorFunction(this.activeFilterFlags));
+        this.scene.setColorFunction(this.getFilterColorFunction(this.activeFilterFlags, this.gradientMode));
       } else {
-        this.scene.setColorFunction(this.overrideColors);
+        this.scene.setColorFunction(this.getFilterColorFunction(0n, this.gradientMode));
       }
     }
     this.start();
@@ -206,6 +207,13 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   update(add: TransactionStripped[], remove: string[], change: { txid: string, rate: number | undefined, acc: boolean | undefined }[], direction: string = 'left', resetLayout: boolean = false): void {
     if (this.scene) {
+      add = add.filter(tx => !this.scene.txs[tx.txid]);
+      remove = remove.filter(txid => this.scene.txs[txid]);
+      change = change.filter(tx => this.scene.txs[tx.txid]);
+
+      if (this.gradientMode === 'age') {
+        this.scene.updateAllColors();
+      }
       this.scene.update(add, remove, change, direction, resetLayout);
       this.start();
       this.updateSearchHighlight();
@@ -542,25 +550,24 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   getColorFunction(): ((tx: TxView) => Color) {
     if (this.filterFlags) {
-      return this.getFilterColorFunction(this.filterFlags);
+      return this.getFilterColorFunction(this.filterFlags, this.gradientMode);
     } else if (this.activeFilterFlags) {
-      return this.getFilterColorFunction(this.activeFilterFlags);
+      return this.getFilterColorFunction(this.activeFilterFlags, this.gradientMode);
     } else {
-      return this.overrideColors;
+      return this.getFilterColorFunction(0n, this.gradientMode);
     }
   }
 
-  getFilterColorFunction(flags: bigint): ((tx: TxView) => Color) {
+  getFilterColorFunction(flags: bigint, gradient: 'fee' | 'age'): ((tx: TxView) => Color) {
     return (tx: TxView) => {
       if ((this.filterMode === 'and' && (tx.bigintFlags & flags) === flags) || (this.filterMode === 'or' && (flags === 0n || (tx.bigintFlags & flags) > 0n))) {
-        return defaultColorFunction(tx);
+        return (gradient === 'age') ? ageColorFunction(tx, defaultColors.fee, defaultAuditColors, this.relativeTime || (Date.now() / 1000)) : defaultColorFunction(tx, defaultColors.fee, defaultAuditColors, this.relativeTime || (Date.now() / 1000));
       } else {
-        return defaultColorFunction(
+        return (gradient === 'age') ? { r: 1, g: 1, b: 1, a: 0.05 } : defaultColorFunction(
           tx,
-          unmatchedFeeColors,
-          unmatchedAuditFeeColors,
-          unmatchedMarginalFeeColors,
-          unmatchedAuditColors
+          defaultColors.unmatchedfee,
+          unmatchedAuditColors,
+          this.relativeTime || (Date.now() / 1000)
         );
       }
     };

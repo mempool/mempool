@@ -170,13 +170,6 @@ let routes: Routes = [
   },
 ];
 
-if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'bisq') {
-  routes = [{
-    path: '',
-    loadChildren: () => import('./bisq/bisq.module').then(m => m.BisqModule)
-  }];
-}
-
 if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
   routes = [
     {
@@ -270,7 +263,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
   imports: [RouterModule.forRoot(routes, {
     initialNavigation: 'enabledBlocking',
     scrollPositionRestoration: 'enabled',
-    anchorScrolling: 'enabled',
+    anchorScrolling: 'disabled',
     preloadingStrategy: AppPreloadingStrategy
   })],
 })
