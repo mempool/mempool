@@ -295,7 +295,7 @@
       </trans-unit>
       <trans-unit id="8a4411dcb4da0aa489ec367bf2a3ec289e07a86e" datatype="html">
         <source>Our mempool and blockchain explorer for the Bitcoin community, focusing on the transaction fee market and multi-layer ecosystem, completely self-hosted without any trusted third-parties.</source>
-        <target>Unser Mempool- und Blockchain-Explorer für die Bitcoin-Community, der sich auf den Markt für Transaktionsgebühren und das mehrschichtige Ökosystem konzentriert und vollständig selbst gehostet wird, ohne vertrauenswürdige Drittanbieter.</target>
+        <target>Unser Mempool- und Blockchain-Explorer für die Bitcoin-Community, der sich auf den Markt für Transaktionsgebühren und das mehrschichtige Ökosystem konzentriert und vollständig selbst gehostet wird, ohne vertrauten Drittanbieter.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">14</context>
@@ -409,7 +409,7 @@
       </trans-unit>
       <trans-unit id="meta.description.about" datatype="html">
         <source>Learn more about The Mempool Open Source Project®: enterprise sponsors, individual sponsors, integrations, who contributes, FOSS licensing, and more.</source>
-        <target>Mehr über das Mempool Open Source Project® erfahren: Unternehmenssponsoren, Einzelsponsoren, Integrationen, wer beiträgt, FOSS-Lizenzierung und mehr.</target>
+        <target>Mehr über das Mempool Open Source Project® erfahren: Unternehmenssponsoren, Einzelsponsoren, Integrationen, Beitragende, FOSS-Lizenzierung und mehr.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.ts</context>
           <context context-type="linenumber">50</context>
@@ -642,7 +642,7 @@
       </trans-unit>
       <trans-unit id="4487eb902b70d33b4bb7a0828b66afec3a96fc18" datatype="html">
         <source>Choose the maximum extra transaction fee you're willing to pay to get into the next block.</source>
-        <target>Wähle die maximale zusätzliche Transaktionsgebühr, die Du zu zahlen bereit sind, um in den nächsten Block zu gelangen.</target>
+        <target>Wähle die maximale zusätzliche Transaktionsgebühr, die Du zu zahlen bereit bist, um in den nächsten Block zu gelangen.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">71</context>
@@ -1105,7 +1105,7 @@
       </trans-unit>
       <trans-unit id="0c2d0d4986aed63c43d3d39a37d5039a55ddf9d0" datatype="html">
         <source>There are no recent accelerations</source>
-        <target>Es gibt keine aktuellen Beschleunigungen</target>
+        <target>Es gibt keine jüngsten Beschleunigungen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">97</context>
@@ -1170,7 +1170,7 @@
       </trans-unit>
       <trans-unit id="f0ae1220633178276128371f3965fb53d63581d4" datatype="html">
         <source>Recent Accelerations</source>
-        <target>Aktuelle Beschleunigungen</target>
+        <target>Jüngste Beschleunigungen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">86</context>
@@ -1493,7 +1493,7 @@
       </trans-unit>
       <trans-unit id="49cef95661d86f4341788ce40068d58801adc6e6" datatype="html">
         <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="There many transactions on this address, more than your backend can handle. See more on &lt;a href=&quot;/d"/>There many transactions on this address, more than your backend can handle. See more on <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;/docs/faq#address-lookup-issues&quot;&gt;"/>setting up a stronger backend<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.<x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/><x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> Consider viewing this address on the official Mempool website instead: </source>
-        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="There many transactions on this address, more than your backend can handle. See more on &lt;a href=&quot;/d"/>Es gibt viele Transaktionen auf diese Adresse, mehr als Ihr Backend verarbeiten kann. Weitere Informationen finden Sie unter <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;/docs/faq#address-lookup-issues&quot;&gt;"/>Einrichten eines stärkeren Backends<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.<x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/><x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> Oder verwende für diese Addresse die offiziellen Mempool-Website:</target>
+        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="There many transactions on this address, more than your backend can handle. See more on &lt;a href=&quot;/d"/>Es gibt viele Transaktionen auf diese Adresse, mehr als dein Backend verarbeiten kann. Weitere Informationen findest du unter <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;/docs/faq#address-lookup-issues&quot;&gt;"/>Einrichten eines stärkeren Backends<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.<x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/><x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> Oder verwende für diese Addresse die offiziellen Mempool-Website:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">143,146</context>
@@ -1665,7 +1665,7 @@
       </trans-unit>
       <trans-unit id="meta.description.liquid.asset" datatype="html">
         <source>Browse an overview of the Liquid asset <x id="INTERPOLATION" equiv-text="this.assetContract[1]"/> (<x id="INTERPOLATION" equiv-text="this.assetContract[1]"/>): see issued amount, burned amount, circulating amount, related transactions, and more.</source>
-        <target>Durchsuche eine Übersicht über das Liquid Asset <x id="INTERPOLATION" equiv-text="this.assetContract[1]"/> (<x id="INTERPOLATION" equiv-text="this.assetContract[1]"/>): Sehe den ausgegebenen Betrag, den verbrannten Betrag, den Umlaufbetrag, zugehörige Transaktionen usw. an.</target>
+        <target>Durchsuche eine Übersicht über das Liquid Asset <x id="INTERPOLATION" equiv-text="this.assetContract[1]"/> (<x id="INTERPOLATION" equiv-text="this.assetContract[1]"/>): Sieh den ausgegebenen Betrag, den verbrannten Betrag, den Umlaufbetrag, zugehörige Transaktionen usw. an.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.ts</context>
           <context context-type="linenumber">108</context>
@@ -3007,7 +3007,7 @@
       </trans-unit>
       <trans-unit id="d71be278785ad5940aacaf2b29a67bdbf6fc6be8" datatype="html">
         <source>Merkle root</source>
-        <target>Merkle root</target>
+        <target>Merkle Root</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">281</context>
@@ -3682,7 +3682,7 @@
       </trans-unit>
       <trans-unit id="b9161223dda21fe34200a720dcb36830ca568104" datatype="html">
         <source>halving</source>
-        <target>halving</target>
+        <target>Halving</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">10</context>
@@ -3727,7 +3727,7 @@
       </trans-unit>
       <trans-unit id="6ff9e8b67bc2cda7569dc0996d4c2fd858c5d4e6" datatype="html">
         <source>Either 2x the minimum, or the Low Priority rate (whichever is lower)</source>
-        <target>Entweder das 2-fache des Minimums oder die niedrige Prioritätsrate (je nachdem, welcher Wert niedriger ist)</target>
+        <target>Entweder das doppelte des Minimums oder die niedrige Prioritätsrate (je nachdem, welcher Wert niedriger ist)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">4</context>
@@ -4087,7 +4087,7 @@
       </trans-unit>
       <trans-unit id="meta.descriptions.bitcoin.graphs.hashrate-pools" datatype="html">
         <source>See Bitcoin mining pool dominance visualized over time: see how top mining pools' share of total hashrate has fluctuated over time.</source>
-        <target>Sehe die Dominanz der Bitcoin-Mining-Pools im Zeitverlauf an: Sehe , wie sich der Anteil der Top-Mining-Pools an der Gesamt-Hashrate im Laufe der Zeit verändert hat.</target>
+        <target>Sieh die Dominanz der Bitcoin-Mining-Pools im Zeitverlauf an: Sieh , wie sich der Anteil der Top-Mining-Pools an der Gesamt-Hashrate im Laufe der Zeit verändert hat.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrates-chart-pools/hashrate-chart-pools.component.ts</context>
           <context context-type="linenumber">75</context>
@@ -4708,7 +4708,7 @@
       </trans-unit>
       <trans-unit id="meta.description.mining.dashboard" datatype="html">
         <source>Get real-time Bitcoin mining stats like hashrate, difficulty adjustment, block rewards, pool dominance, and more.</source>
-        <target>Erhalten Sie Bitcoin-Mining-Statistiken in Echtzeit wie Hashrate, Schwierigkeitsanpassung, Blockbelohnungen, Pool-Dominanz und mehr.</target>
+        <target>Erhalte Bitcoin-Mining-Statistiken in Echtzeit wie Hashrate, Schwierigkeitsanpassung, Blockbelohnungen, Pool-Dominanz und mehr.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.ts</context>
           <context context-type="linenumber">29</context>
@@ -4725,7 +4725,7 @@
       </trans-unit>
       <trans-unit id="4e338e7daa64c7a074cee3824fbd7425e5b7c9a5" datatype="html">
         <source>Pools Luck</source>
-        <target>Pools Glück</target>
+        <target>Poolglück</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">9</context>
@@ -4893,7 +4893,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.pool-ranking" datatype="html">
         <source>See the top Bitcoin mining pools ranked by number of blocks mined, over your desired timeframe.</source>
-        <target>Zeige die Top-Bitcoin-Mining-Pools an, sortiert nach der Anzahl der im gewünschten Zeitraum abgebauten Blöcke.</target>
+        <target>Zeige die Top-Bitcoin-Mining-Pools an, sortiert nach der Anzahl der im gewünschten Zeitraum geschürften Blöcke.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">60</context>
@@ -5187,7 +5187,7 @@
       </trans-unit>
       <trans-unit id="7e93f7285e22e5a3c58cdde2205d4d2b5bfc079c" datatype="html">
         <source>Transaction hex</source>
-        <target>Transaktion hex</target>
+        <target>Transaktion in Hex</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/push-transaction/push-transaction.component.html</context>
           <context context-type="linenumber">6</context>
@@ -6603,7 +6603,7 @@
       </trans-unit>
       <trans-unit id="4fe744df6d36b5e9b0afab728b77fc635b99f040" datatype="html">
         <source>Recent Replacements</source>
-        <target>Aktuelle Ersetzungen</target>
+        <target>Jüngste Ersetzungen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">65</context>
@@ -6652,7 +6652,7 @@
       </trans-unit>
       <trans-unit id="bbdf5ec7a729b8323727675b26e4dffccaaf60f0" datatype="html">
         <source>Federation Timelock-Expired UTXOs</source>
-        <target>Föderation Timelock-Abgelaufene UTXOs</target>
+        <target>Föderation UTXOs mit abgelaufenem Timelock</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">174</context>
@@ -7543,7 +7543,7 @@
       </trans-unit>
       <trans-unit id="a541dbcef4908bf2e767e77d7a09cc62450e8e56" datatype="html">
         <source>Med Base Fee</source>
-        <target>Media Basisgebühr</target>
+        <target>Median Basisgebühr</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">87</context>
@@ -7785,7 +7785,7 @@
       </trans-unit>
       <trans-unit id="34e302a08660d9860dda71e3f350351d34bda498" datatype="html">
         <source>Penalties</source>
-        <target>Strafen</target>
+        <target>Bestrafungen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/justice-list/justice-list.component.html</context>
           <context context-type="linenumber">4</context>
@@ -8100,7 +8100,7 @@
       </trans-unit>
       <trans-unit id="e8e09fa12864e94f094a2a7c8c97cfdf0cff8aab" datatype="html">
         <source>Compact lease</source>
-        <target>Compact_lease</target>
+        <target>Compact Lease</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">234</context>
@@ -8173,7 +8173,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.node-map" datatype="html">
         <source>See the channels of non-Tor Lightning network nodes visualized on a world map. Hover/tap on points on the map for node names and details.</source>
-        <target>Zeige die Kanäle von Nicht-Tor-Lightning-Netzwerkknoten visualisiert auf einer Weltkarte an. Bewegen Sie den Mauszeiger/tippen Sie auf Punkte auf der Karte, um Knotennamen und Details anzuzeigen.</target>
+        <target>Zeige die Kanäle von Nicht-Tor-Lightning-Netzwerkknoten visualisiert auf einer Weltkarte an. Bewege den Mauszeiger/tippe auf Punkte auf der Karte, um Knotennamen und Details anzuzeigen.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-channels-map/nodes-channels-map.component.ts</context>
           <context context-type="linenumber">74</context>
@@ -8198,7 +8198,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.node-channel-map" datatype="html">
         <source>See the locations of non-Tor Lightning network nodes visualized on a world map. Hover/tap on points on the map for node names and details.</source>
-        <target>Zeige die Standorte von Nicht-Tor-Lightning-Netzwerkknoten visualisiert auf einer Weltkarte an. Bewegen Sie den Mauszeiger/tippen Sie auf Punkte auf der Karte, um Knotennamen und Details anzuzeigen.</target>
+        <target>Zeige die Standorte von Nicht-Tor-Lightning-Netzwerkknoten visualisiert auf einer Weltkarte an. Bewege den Mauszeiger/tippe auf Punkte auf der Karte, um Knotennamen und Details anzuzeigen.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-map/nodes-map.component.ts</context>
           <context context-type="linenumber">52</context>
@@ -8283,7 +8283,7 @@
       </trans-unit>
       <trans-unit id="5222540403093176126" datatype="html">
         <source><x id="PH" equiv-text="nodeCount"/> nodes</source>
-        <target><x id="PH" equiv-text="nodeCount"/> nodes</target>
+        <target><x id="PH" equiv-text="nodeCount"/> Nodes</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
           <context context-type="linenumber">104</context>
@@ -8346,7 +8346,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.nodes-country" datatype="html">
         <source>Explore all the Lightning nodes hosted in <x id="PH" equiv-text="response.country.en"/> and see an overview of each node's capacity, number of open channels, and more.</source>
-        <target>Erkunde alle Lightning-Knoten, die in <x id="PH" equiv-text="response.country.en"/> gehostet werden, und sehe einen Überblick über die Kapazität jedes Knotens, die Anzahl der offenen Kanäle und mehr an.</target>
+        <target>Erkunde alle Lightning-Knoten, die in <x id="PH" equiv-text="response.country.en"/> gehostet werden, und sieh einen Überblick über die Kapazität jedes Knotens, die Anzahl der offenen Kanäle und mehr an.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.ts</context>
           <context context-type="linenumber">44</context>
@@ -8367,7 +8367,7 @@
       </trans-unit>
       <trans-unit id="ccabb31683868066778a1d664aa53ee9fcf77d6b" datatype="html">
         <source>How much liquidity is running on nodes advertising at least one clearnet IP address</source>
-        <target>Wie viel Liquidität auf Nodes liegt, die mindestens eine Klarnetz IP Adresse verbreiten</target>
+        <target>Wie viel Liquidität auf Nodes liegt, die mindestens eine Clearnet IP Adresse verbreiten</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">8</context>
@@ -8492,7 +8492,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.nodes-isp" datatype="html">
         <source>Browse all Bitcoin Lightning nodes using the <x id="PH" equiv-text="response.isp"/> [AS<x id="PH_1" equiv-text="this.route.snapshot.params.isp"/>] ISP and see aggregate stats like total number of nodes, total capacity, and more for the ISP.</source>
-        <target>Durchsuche alle Bitcoin Lightning-Knoten, die den <x id="PH" equiv-text="response.isp"/> [AS <x id="PH_1" equiv-text="this.route.snapshot.params.isp"/>] ISP verwenden, und sehe aggregierte Statistiken wie die Gesamtzahl der Knoten, die Gesamtkapazität und mehr für den ISP.</target>
+        <target>Durchsuche alle Bitcoin Lightning-Knoten, die den <x id="PH" equiv-text="response.isp"/> [AS <x id="PH_1" equiv-text="this.route.snapshot.params.isp"/>] ISP verwenden, und sieh aggregierte Statistiken wie die Gesamtzahl der Knoten, die Gesamtkapazität und mehr für den ISP.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp-preview.component.ts</context>
           <context context-type="linenumber">45</context>
@@ -8589,7 +8589,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.rankings-dashboard" datatype="html">
         <source>See the top Lightning network nodes ranked by liquidity, connectivity, and age.</source>
-        <target>Siehe die wichtigsten Lightning-Netzwerkknoten an, sortiert nach Liquidität, Konnektivität und Alter.</target>
+        <target>Zeige die wichtigsten Lightning-Netzwerkknoten an, sortiert nach Liquidität, Konnektivität und Alter.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-rankings-dashboard/nodes-rankings-dashboard.component.ts</context>
           <context context-type="linenumber">23</context>
@@ -8816,7 +8816,7 @@
       </trans-unit>
       <trans-unit id="8c23995422ac012b80a2369a878b199c39271906" datatype="html">
         <source>Clock (Mined)</source>
-        <target>Uhr (Mined)</target>
+        <target>Uhr (Geschürft)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">70</context>
