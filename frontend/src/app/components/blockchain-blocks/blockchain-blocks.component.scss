@@ -144,7 +144,7 @@
 }
 
 .loading .bitcoin-block.mined-block {
-  background: #2d3348;
+  background: var(--secondary);
 }
 
 @keyframes opacityPulse {

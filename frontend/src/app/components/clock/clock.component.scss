@@ -161,7 +161,7 @@
     }
 
     .side.bottom {
-      background: #105fb0;
+      background: var(--primary);
       transform: rotateX(-90deg); 
       margin-top: var(--half-side);
     }

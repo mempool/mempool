@@ -399,11 +399,11 @@
 .goggle-badge {
   margin: 6px 5px 8px;
   background: none;
-  border: solid 2px #105fb0;
+  border: solid 2px var(--primary);
   cursor: pointer;
 
   &.active {
-    background: #105fb0;
+    background: var(--primary);
   }
 }
 
@@ -418,7 +418,7 @@
 }
 
 .card-liquid {
-  background-color: #1d1f31;
+  background-color: var(--bg);
   height: 418px;
   @media (min-width: 992px) {
     height: 512px;

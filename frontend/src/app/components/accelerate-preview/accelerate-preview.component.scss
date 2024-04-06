@@ -1,6 +1,6 @@
 .fee-card {
   padding: 15px;
-  background-color: #1d1f31;
+  background-color: var(--bg);
 
   .feerate {
     display: flex;
@@ -23,7 +23,7 @@
 }
 
 .feerate.active {
-  background-color: #105fb0 !important;
+  background-color: var(--primary) !important;
   opacity: 1;
   border: 1px solid #007fff !important;
 }

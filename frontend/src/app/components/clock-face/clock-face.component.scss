@@ -29,8 +29,8 @@
     }
 
     &.hour {
-      fill: #105fb0;
-      stroke: #105fb0;
+      fill: var(--primary);
+      stroke: var(--primary);
       stroke-width: 6px;
     }
   }

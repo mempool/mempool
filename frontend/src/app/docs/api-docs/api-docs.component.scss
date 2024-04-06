@@ -211,7 +211,7 @@ h3 {
 }
 
 .endpoint-container .section-header span {
-  color: #fff;
+  color: var(--fg);
   background-color: var(--tertiary);
   font-size: 12px;
   text-transform: uppercase;
@@ -254,7 +254,7 @@ h3 {
 #doc-nav-mobile button {
   width: 100%;
   background-color: var(--primary);
-  color: #fff;
+  color: var(--fg);
   border-color: var(--primary);
   border-radius: 0.5rem 0.5rem 0 0;
 }
@@ -318,7 +318,7 @@ h3 {
 
 #enterprise-cta-mobile {
   padding: 20px;
-  background-color: #1d1f31;
+  background-color: var(--bg);
   border-radius: 0.25rem;
   text-align: center;
   position: fixed;
@@ -343,8 +343,8 @@ h3 {
 }
 
 #enterprise-cta-mobile .btn-secondary:hover {
-  background-color: #2d3348;
-  border-color: #2d3348;
+  background-color: var(--secondary);
+  border-color: var(--secondary);
 }
 
 #enterprise-cta-mobile .no-line-break {
@@ -438,7 +438,7 @@ dl {
 
 dt {
   font-weight: bold;
-  color: #4a68b9;
+  color: var(--title-fg);
   padding: 5px 0;
 }
 
@@ -447,7 +447,7 @@ dd {
 
   & > dl {
     padding-left: 1em;
-    border-left: 2px solid #4a68b9;
+    border-left: 2px solid var(--title-fg);
     margin-left: 1em;
     margin-top: 5px;
   }

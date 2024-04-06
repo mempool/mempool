@@ -1,5 +1,5 @@
 footer {
-  background-color: #1d1f31;
+  background-color: var(--bg);
   margin-top: 30px;
   &.services {
     @media (min-width: 768px) {
@@ -34,11 +34,11 @@ footer .row.main .branding > p {
 
 footer .row.main .branding .btn {
   display: inline-block;
-  color: #fff !important;
+  color: var(--fg) !important;
 }
 
 footer .row.main .branding button.account {
-  background-color: #2d3348;
+  background-color: var(--secondary);
 }
 
 footer .row.main .branding .cta {
@@ -59,7 +59,7 @@ footer .row.main .links > div:first-child {
 }
 
 footer .links .category {
-  color: #4a68b9;
+  color: var(--title-fg);
   font-weight: 700;
 }
 
@@ -114,7 +114,7 @@ footer .row.social-links svg {
 footer .row.version {
   padding-top: 20px !important;
   padding-bottom: 20px !important;
-  background-color: #1d1f31;
+  background-color: var(--bg);
 }
 
 footer .row.version p {
