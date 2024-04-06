@@ -1,7 +1,7 @@
 import { Ancestor, CpfpCluster, CpfpInfo, CpfpSummary, MempoolTransactionExtended, TransactionExtended } from '../mempool.interfaces';
 import { GraphTx, convertToGraphTx, expandRelativesGraph, initializeRelatives, makeBlockTemplate, mempoolComparator, removeAncestors, setAncestorScores } from './mini-miner';
 import memPool from './mempool';
-import { Acceleration } from './acceleration';
+import { Acceleration } from './acceleration/acceleration';
 
 const CPFP_UPDATE_INTERVAL = 60_000; // update CPFP info at most once per 60s per transaction
 const MAX_CLUSTER_ITERATIONS = 100;

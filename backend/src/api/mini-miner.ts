@@ -1,4 +1,4 @@
-import { Acceleration } from './acceleration';
+import { Acceleration } from './acceleration/acceleration';
 import { MempoolTransactionExtended } from '../mempool.interfaces';
 import logger from '../logger';
 
