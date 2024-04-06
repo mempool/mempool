@@ -39,7 +39,7 @@ export const MAX_BID_RATIO = 4;
   templateUrl: 'accelerate-preview.component.html',
   styleUrls: ['accelerate-preview.component.scss']
 })
-export class AcceleratePreviewComponent implements OnDestroy, OnChanges {
+export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges {
   @Input() tx: Transaction | undefined;
   @Input() scrollEvent: boolean;
 
@@ -79,11 +79,8 @@ export class AcceleratePreviewComponent implements OnDestroy, OnChanges {
     private audioService: AudioService,
     private cd: ChangeDetectorRef
   ) {
-    if (window.document.referrer === 'https://cash.app/') {
+    if (this.stateService.ref === 'https://cash.app/') {
       this.insertSquare();
-      this.paymentType = 'cashapp';
-    } else {
-      this.paymentType = 'bitcoin';
     }
   }
 
@@ -93,6 +90,15 @@ export class AcceleratePreviewComponent implements OnDestroy, OnChanges {
     }
     if (this.cashAppPay) {
       this.cashAppPay.destroy();
+    }
+  }
+
+  ngOnInit() {
+    if (this.stateService.ref === 'https://cash.app/') {
+      this.paymentType = 'cashapp';
+      this.stateService.ref = '';
+    } else {
+      this.paymentType = 'bitcoin';
     }
   }
 
