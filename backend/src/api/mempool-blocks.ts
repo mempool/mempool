@@ -343,7 +343,7 @@ class MempoolBlocks {
       if (txid in mempool) {
         mempool[txid].cpfpDirty = (rate !== mempool[txid].effectiveFeePerVsize);
         mempool[txid].effectiveFeePerVsize = rate;
-        mempool[txid].cpfpChecked = false;
+        mempool[txid].cpfpChecked = true;
       }
     }
 

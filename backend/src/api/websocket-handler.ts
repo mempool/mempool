@@ -739,7 +739,7 @@ class WebsocketHandler {
               accelerated: mempoolTx.acceleration || undefined,
             }
           };
-          if (!mempoolTx.cpfpChecked) {
+          if (!mempoolTx.cpfpChecked && !mempoolTx.acceleration) {
             calculateCpfp(mempoolTx, newMempool);
           }
           if (mempoolTx.cpfpDirty) {
