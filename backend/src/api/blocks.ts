@@ -31,6 +31,7 @@ import rbfCache from './rbf-cache';
 import { calcBitsDifference } from './difficulty-adjustment';
 import AccelerationRepository from '../repositories/AccelerationRepository';
 import { calculateFastBlockCpfp, calculateGoodBlockCpfp } from './cpfp';
+import mempool from './mempool';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -602,13 +603,13 @@ class Blocks {
 
     for (let height = currentBlockHeight; height >= 0; height--) {
       try {
-        let txs: TransactionExtended[] | null = null;
+        let txs: MempoolTransactionExtended[] | null = null;
         if (unclassifiedBlocks[height]) {
           const blockHash = unclassifiedBlocks[height];
           // fetch transactions
-          txs = (await bitcoinApi.$getTxsForBlock(blockHash)).map(tx => transactionUtils.extendTransaction(tx)) || [];
+          txs = (await bitcoinApi.$getTxsForBlock(blockHash)).map(tx => transactionUtils.extendMempoolTransaction(tx)) || [];
           // add CPFP
-          const cpfpSummary = calculateFastBlockCpfp(height, txs, true);
+          const cpfpSummary = calculateGoodBlockCpfp(height, txs, []);
           // classify
           const { transactions: classifiedTxs } = this.summarizeBlockTransactions(blockHash, cpfpSummary.transactions);
           await BlocksSummariesRepository.$saveTransactions(height, blockHash, classifiedTxs, 1);
@@ -637,7 +638,7 @@ class Blocks {
               }
               templateTxs.push(tx || templateTx);
             }
-            const cpfpSummary = calculateFastBlockCpfp(height, templateTxs?.filter(tx => tx['effectiveFeePerVsize'] != null) as TransactionExtended[], true);
+            const cpfpSummary = calculateGoodBlockCpfp(height, templateTxs?.filter(tx => tx['effectiveFeePerVsize'] != null) as MempoolTransactionExtended[], []);
             // classify
             const { transactions: classifiedTxs } = this.summarizeBlockTransactions(blockHash, cpfpSummary.transactions);
             const classifiedTxMap: { [txid: string]: TransactionClassified } = {};
@@ -891,7 +892,7 @@ class Blocks {
         }
       }
 
-      const cpfpSummary: CpfpSummary = calculateGoodBlockCpfp(block.height, transactions);
+      const cpfpSummary: CpfpSummary = calculateGoodBlockCpfp(block.height, transactions, Object.values(mempool.getAccelerations()).map(a => ({ txid: a.txid, max_bid: a.feeDelta })));
       const blockExtended: BlockExtended = await this.$getBlockExtended(block, cpfpSummary.transactions);
       const blockSummary: BlockSummary = this.summarizeBlockTransactions(block.id, cpfpSummary.transactions);
       this.updateTimerProgress(timer, `got block data for ${this.currentBlockHeight}`);
