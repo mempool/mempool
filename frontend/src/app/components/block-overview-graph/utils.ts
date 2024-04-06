@@ -133,6 +133,10 @@ export function ageColorFunction(
   auditColors: { [status: string]: Color } = defaultAuditColors,
   relativeTime?: number,
 ): Color {
+  if (tx.acc || tx.status === 'accelerated') {
+    return auditColors.accelerated;
+  }
+
   const color = defaultColorFunction(tx, colors, auditColors, relativeTime); 
 
   const ageLevel = (!tx.time ? 0 : (0.8 * Math.tanh((1 / 15) * Math.log2((Math.max(1, 0.6 * ((relativeTime - tx.time) - 60)))))));
