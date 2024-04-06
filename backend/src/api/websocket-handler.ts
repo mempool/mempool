@@ -32,7 +32,7 @@ interface AddressTransactions {
   removed: MempoolTransactionExtended[],
 }
 import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
-import { calculateCpfp } from './cpfp';
+import { calculateMempoolTxCpfp } from './cpfp';
 
 // valid 'want' subscriptions
 const wantable = [
@@ -740,7 +740,7 @@ class WebsocketHandler {
             }
           };
           if (!mempoolTx.cpfpChecked) {
-            calculateCpfp(mempoolTx, newMempool);
+            calculateMempoolTxCpfp(mempoolTx, newMempool);
           }
           if (mempoolTx.cpfpDirty) {
             positionData['cpfp'] = {
@@ -777,7 +777,7 @@ class WebsocketHandler {
               accelerated: mempoolTx.acceleration || undefined,
             };
             if (!mempoolTx.cpfpChecked) {
-              calculateCpfp(mempoolTx, newMempool);
+              calculateMempoolTxCpfp(mempoolTx, newMempool);
             }
             if (mempoolTx.cpfpDirty) {
               txInfo.cpfp = {
