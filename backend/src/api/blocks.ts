@@ -1151,7 +1151,7 @@ class Blocks {
         transactions: cpfpSummary.transactions.map(tx => {
           let flags: number = 0;
           try {
-            flags = tx.flags || Common.getTransactionFlags(tx);
+            flags = Common.getTransactionFlags(tx);
           } catch (e) {
             logger.warn('Failed to classify transaction: ' + (e instanceof Error ? e.message : e));
           }

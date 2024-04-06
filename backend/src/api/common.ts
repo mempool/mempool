@@ -419,12 +419,15 @@ export class Common {
     let flags = tx.flags ? BigInt(tx.flags) : 0n;
 
     // Update variable flags (CPFP, RBF)
+    flags &= ~TransactionFlags.cpfp_child;
     if (tx.ancestors?.length) {
       flags |= TransactionFlags.cpfp_child;
     }
+    flags &= ~TransactionFlags.cpfp_parent;
     if (tx.descendants?.length) {
       flags |= TransactionFlags.cpfp_parent;
     }
+    flags &= ~TransactionFlags.replacement;
     if (tx.replacement) {
       flags |= TransactionFlags.replacement;
     }
