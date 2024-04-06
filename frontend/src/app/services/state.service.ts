@@ -86,6 +86,7 @@ const defaultEnv: Env = {
   providedIn: 'root'
 })
 export class StateService {
+  ref: string = '';
   isBrowser: boolean = isPlatformBrowser(this.platformId);
   isMempoolSpaceBuild = window['isMempoolSpaceBuild'] ?? false;
   backend: 'esplora' | 'electrum' | 'none' = 'esplora';
@@ -162,6 +163,8 @@ export class StateService {
     private router: Router,
     private storageService: StorageService,
   ) {
+    this.ref = window.document.referrer;
+
     const browserWindow = window || {};
     // @ts-ignore
     const browserWindowEnv = browserWindow.__env || {};
