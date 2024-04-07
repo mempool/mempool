@@ -86,6 +86,7 @@ const defaultEnv: Env = {
   providedIn: 'root'
 })
 export class StateService {
+  ref: string = '';
   isBrowser: boolean = isPlatformBrowser(this.platformId);
   isMempoolSpaceBuild = window['isMempoolSpaceBuild'] ?? false;
   backend: 'esplora' | 'electrum' | 'none' = 'esplora';
@@ -154,7 +155,7 @@ export class StateService {
   searchFocus$: Subject<boolean> = new Subject<boolean>();
   menuOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-  activeGoggles$: BehaviorSubject<ActiveFilter> = new BehaviorSubject({ mode: 'and', filters: [], gradient: 'fee' });
+  activeGoggles$: BehaviorSubject<ActiveFilter> = new BehaviorSubject({ mode: 'and', filters: [], gradient: 'age' });
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
@@ -162,6 +163,8 @@ export class StateService {
     private router: Router,
     private storageService: StorageService,
   ) {
+    this.ref = window.document.referrer;
+
     const browserWindow = window || {};
     // @ts-ignore
     const browserWindowEnv = browserWindow.__env || {};
