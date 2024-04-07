@@ -77,7 +77,7 @@ class BitcoinRoutes {
           ;
       }
 
-      app.get(config.MEMPOOL.API_URL_PREFIX + 'health', this.generateHealthReport);
+      app.get('/api/internal/health', this.generateHealthReport);
   }
 
   private async generateHealthReport(req: Request, res: Response): Promise<void> {
