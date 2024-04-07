@@ -42,6 +42,7 @@ interface AuditStatus {
   seen?: boolean;
   expected?: boolean;
   added?: boolean;
+  prioritized?: boolean;
   delayed?: number;
   accelerated?: boolean;
   conflict?: boolean;
@@ -86,6 +87,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   rbfReplaces: string[];
   rbfInfo: RbfTree;
   cpfpInfo: CpfpInfo | null;
+  hasCpfp: boolean = false;
   accelerationInfo: Acceleration | null = null;
   sigops: number | null;
   adjustedVsize: number | null;
@@ -317,13 +319,15 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           fetchAudit ? this.apiService.getBlockAudit$(hash).pipe(
             map(audit => {
               const isAdded = audit.addedTxs.includes(txid);
+              const isPrioritized = audit.prioritizedTxs.includes(txid);
               const isAccelerated = audit.acceleratedTxs.includes(txid);
               const isConflict = audit.fullrbfTxs.includes(txid);
               const isExpected = audit.template.some(tx => tx.txid === txid);
               return {
-                seen: isExpected || !(isAdded || isConflict),
+                seen: isExpected || isPrioritized || isAccelerated,
                 expected: isExpected,
                 added: isAdded,
+                prioritized: isPrioritized,
                 conflict: isConflict,
                 accelerated: isAccelerated,
               };
@@ -488,10 +492,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
                 txFeePerVSize: tx.effectiveFeePerVsize,
                 mempoolPosition: this.mempoolPosition,
               });
-              this.cpfpInfo = {
+              this.setCpfpInfo({
                 ancestors: tx.ancestors,
                 bestDescendant: tx.bestDescendant,
-              };
+              });
               const hasRelatives = !!(tx.ancestors?.length || tx.bestDescendant);
               this.hasEffectiveFeeRate = hasRelatives || (tx.effectiveFeePerVsize && (Math.abs(tx.effectiveFeePerVsize - tx.feePerVsize) > 0.01));
             } else {
@@ -643,6 +647,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   setCpfpInfo(cpfpInfo: CpfpInfo): void {
     if (!cpfpInfo || !this.tx) {
       this.cpfpInfo = null;
+      this.hasCpfp = false;
       this.hasEffectiveFeeRate = false;
       return;
     }
@@ -672,6 +677,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.sigops = this.cpfpInfo.sigops;
       this.adjustedVsize = this.cpfpInfo.adjustedVsize;
     }
+    this.hasCpfp =!!(this.cpfpInfo && (this.cpfpInfo.bestDescendant || this.cpfpInfo.descendants?.length || this.cpfpInfo.ancestors?.length));
     this.hasEffectiveFeeRate = hasRelatives || (this.tx.effectiveFeePerVsize && (Math.abs(this.tx.effectiveFeePerVsize - this.tx.feePerVsize) > 0.01));
   }
 

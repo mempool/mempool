@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, HostListener, Input, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
-import { Subscription, Observable, of, combineLatest } from 'rxjs';
+import { Subscription, Observable, of, combineLatest, BehaviorSubject } from 'rxjs';
 import { MempoolBlock } from '../../interfaces/websocket.interface';
 import { StateService } from '../../services/state.service';
 import { Router } from '@angular/router';
@@ -42,6 +42,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   mempoolBlocks$: Observable<MempoolBlock[]>;
   difficultyAdjustments$: Observable<DifficultyAdjustment>;
   loadingBlocks$: Observable<boolean>;
+  showMiningInfo$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   blocksSubscription: Subscription;
 
   mempoolBlocksFull: MempoolBlock[] = [];
@@ -57,7 +58,6 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   network = '';
   now = new Date().getTime();
   timeOffset = 0;
-  showMiningInfo = false;
   timeLtrSubscription: Subscription;
   timeLtr: boolean;
   animateEntry: boolean = false;
@@ -89,11 +89,6 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     private location: Location,
   ) { }
 
-  enabledMiningInfoIfNeeded(url) {
-    this.showMiningInfo = url.includes('/mining') || url.includes('/acceleration');
-    this.cd.markForCheck(); // Need to update the view asap
-  }
-
   ngOnInit() {
     this.chainTip = this.stateService.latestBlockHeight;
 
@@ -102,8 +97,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.widthChange.emit(this.mempoolWidth);
 
     if (['', 'testnet', 'signet'].includes(this.stateService.network)) {
-      this.enabledMiningInfoIfNeeded(this.location.path());
-      this.location.onUrlChange((url) => this.enabledMiningInfoIfNeeded(url));
+      this.showMiningInfo$ = this.stateService.showMiningInfo$;
     }
 
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {

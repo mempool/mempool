@@ -1,7 +1,8 @@
 import { Component, ComponentRef, ViewChild, HostListener, Input, Output, EventEmitter,
   OnInit, OnDestroy, OnChanges, ChangeDetectionStrategy, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { StateService } from '../../services/state.service';
-import { MempoolBlockDelta, TransactionStripped } from '../../interfaces/websocket.interface';
+import { MempoolBlockDelta } from '../../interfaces/websocket.interface';
+import { TransactionStripped } from '../../interfaces/node-api.interface';
 import { BlockOverviewGraphComponent } from '../../components/block-overview-graph/block-overview-graph.component';
 import { Subscription, BehaviorSubject, merge, of, timer } from 'rxjs';
 import { switchMap, filter, concatMap, map } from 'rxjs/operators';
@@ -10,7 +11,7 @@ import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pi
 import { Router } from '@angular/router';
 import { Color } from '../block-overview-graph/sprite-types';
 import TxView from '../block-overview-graph/tx-view';
-import { FilterMode } from '../../shared/filters.utils';
+import { FilterMode, GradientMode } from '../../shared/filters.utils';
 
 @Component({
   selector: 'app-mempool-block-overview',
@@ -24,6 +25,7 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
   @Input() overrideColors: ((tx: TxView) => Color) | null = null;
   @Input() filterFlags: bigint | undefined = undefined;
   @Input() filterMode: FilterMode = 'and';
+  @Input() gradientMode: GradientMode = 'fee';
   @Output() txPreviewEvent = new EventEmitter<TransactionStripped | void>();
 
   @ViewChild('blockGraph') blockGraph: BlockOverviewGraphComponent;

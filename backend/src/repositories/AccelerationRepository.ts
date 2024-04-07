@@ -1,4 +1,4 @@
-import { AccelerationInfo, makeBlockTemplate } from '../api/acceleration';
+import { AccelerationInfo, makeBlockTemplate } from '../api/acceleration/acceleration';
 import { RowDataPacket } from 'mysql2';
 import DB from '../database';
 import logger from '../logger';
@@ -7,7 +7,7 @@ import { Common } from '../api/common';
 import config from '../config';
 import blocks from '../api/blocks';
 import accelerationApi, { Acceleration } from '../api/services/acceleration';
-import accelerationCosts from '../api/acceleration';
+import accelerationCosts from '../api/acceleration/acceleration';
 import bitcoinApi from '../api/bitcoin/bitcoin-api-factory';
 import transactionUtils from '../api/transaction-utils';
 import { BlockExtended, MempoolTransactionExtended } from '../mempool.interfaces';

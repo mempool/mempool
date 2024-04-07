@@ -1,6 +1,6 @@
 import { FastVertexArray } from './fast-vertex-array';
 import TxView from './tx-view';
-import { TransactionStripped } from '../../interfaces/websocket.interface';
+import { TransactionStripped } from '../../interfaces/node-api.interface';
 import { Color, Position, Square, ViewUpdateParams } from './sprite-types';
 import { defaultColorFunction } from './utils';
 
@@ -68,6 +68,10 @@ export default class BlockScene {
 
   setColorFunction(colorFunction: ((tx: TxView) => Color) | null): void {
     this.getColor = colorFunction || defaultColorFunction;
+    this.updateAllColors();
+  }
+
+  updateAllColors(): void {
     this.dirty = true;
     if (this.initialised && this.scene) {
       this.updateColors(performance.now(), 50);
