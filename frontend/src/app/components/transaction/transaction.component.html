@@ -458,13 +458,18 @@
 </ng-template>
 
 <ng-template #firstSeenRow>
-  @if (!isLoadingTx && transactionTime !== -1) {
+  @if (isLoadingTx) {
+    <ng-container *ngTemplateOutlet="skeletonDetailsRow"></ng-container>
+  } @else if (transactionTime === -1) {
+    <tr>
+      <td i18n="transaction.first-seen|Transaction first seen">First seen</td>
+      <td><span class="skeleton-loader"></span></td>
+    </tr>
+  } @else {
     <tr>
       <td i18n="transaction.first-seen|Transaction first seen">First seen</td>
       <td><i><app-time kind="since" [time]="transactionTime" [fastRender]="true"></app-time></i></td>
     </tr>
-  } @else {
-    <ng-container *ngTemplateOutlet="skeletonDetailsRow"></ng-container>
   }
 </ng-template>
 
@@ -615,7 +620,7 @@
         }
         <td>
           <div class="effective-fee-container">
-            @if (accelerationInfo && (accelerationInfo.acceleratedFeeRate >= tx.effectiveFeePerVsize)) {
+            @if (accelerationInfo?.acceleratedFeeRate && (!tx.effectiveFeePerVsize || accelerationInfo.acceleratedFeeRate >= tx.effectiveFeePerVsize)) {
               <app-fee-rate [fee]="accelerationInfo.acceleratedFeeRate"></app-fee-rate>
             } @else {
               <app-fee-rate [fee]="tx.effectiveFeePerVsize"></app-fee-rate>
