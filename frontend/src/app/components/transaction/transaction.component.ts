@@ -9,7 +9,8 @@ import {
   delay,
   mergeMap,
   tap,
-  map
+  map,
+  retry
 } from 'rxjs/operators';
 import { Transaction } from '../../interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, Subject, from, throwError, combineLatest } from 'rxjs';
@@ -93,6 +94,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   adjustedVsize: number | null;
   pool: Pool | null;
   auditStatus: AuditStatus | null;
+  isAcceleration: boolean = false;
   filters: Filter[] = [];
   showCpfpDetails = false;
   fetchCpfp$ = new Subject<string>();
@@ -287,6 +289,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       filter(() => this.stateService.env.ACCELERATOR === true),
       tap(() => {
         this.accelerationInfo = null;
+        this.setIsAccelerated();
       }),
       switchMap((blockHeight: number) => {
         return this.servicesApiService.getAccelerationHistory$({ blockHeight });
@@ -302,6 +305,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           acceleration.boost = boostCost;
 
           this.accelerationInfo = acceleration;
+          this.setIsAccelerated();
         }
       }
     });
@@ -322,6 +326,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             map(block => {
               return block.extras.pool;
             }),
+            retry({ count: 3, delay: 2000 }),
             catchError(() => {
               return of(null);
             })
@@ -342,18 +347,21 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
                 accelerated: isAccelerated,
               };
             }),
+            retry({ count: 3, delay: 2000 }),
             catchError(() => {
               return of(null);
             })
           ) : of(isCoinbase ? { coinbase: true } : null)
         ]);
       }),
-      catchError(() => {
+      catchError((e) => {
         return of(null);
       })
     ).subscribe(([pool, auditStatus]) => {
       this.pool = pool;
       this.auditStatus = auditStatus;
+
+      this.setIsAccelerated();
     });
 
     this.mempoolPositionSubscription = this.stateService.mempoolTxPosition$.subscribe(txPosition => {
@@ -680,6 +688,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     if (cpfpInfo.acceleration) {
       this.tx.acceleration = cpfpInfo.acceleration;
+      this.setIsAccelerated();
     }
 
     this.cpfpInfo = cpfpInfo;
@@ -689,6 +698,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.hasCpfp =!!(this.cpfpInfo && (this.cpfpInfo.bestDescendant || this.cpfpInfo.descendants?.length || this.cpfpInfo.ancestors?.length));
     this.hasEffectiveFeeRate = hasRelatives || (this.tx.effectiveFeePerVsize && (Math.abs(this.tx.effectiveFeePerVsize - this.tx.feePerVsize) > 0.01));
+  }
+
+  setIsAccelerated() {
+    console.log(this.tx.acceleration, this.accelerationInfo, this.pool, this.accelerationInfo?.pools);
+    this.isAcceleration = (this.tx.acceleration || (this.accelerationInfo && this.pool && this.accelerationInfo.pools.some(pool => (pool === this.pool.id || pool?.['pool_unique_id'] === this.pool.id))));
   }
 
   setFeatures(): void {
@@ -757,6 +771,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.pool = null;
     this.auditStatus = null;
     document.body.scrollTo(0, 0);
+    this.isAcceleration = false;
     this.leaveTransaction();
   }
 
