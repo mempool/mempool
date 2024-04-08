@@ -561,13 +561,13 @@
 
 <ng-template #gogglesRow>
   @if (!isLoadingTx) {
-    @if (((auditStatus && auditStatus.accelerated) || accelerationInfo || (tx && tx.acceleration)) || filters.length) {
+    @if (isAcceleration || filters.length) {
       <tr>
         <td class="td-width">
           <span class="goggles-icon"><app-svg-images name="goggles" width="100%" height="100%"></app-svg-images></span>
         </td>
         <td class="wrap-cell">
-          @if ((auditStatus && auditStatus.accelerated) || accelerationInfo || (tx && tx.acceleration)) {
+          @if (isAcceleration) {
             <span class="badge badge-accelerated mr-1" i18n="transaction.audit.accelerated">Accelerated</span>
           }
           <ng-container *ngFor="let filter of filters;">

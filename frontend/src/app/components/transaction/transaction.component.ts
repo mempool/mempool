@@ -9,7 +9,8 @@ import {
   delay,
   mergeMap,
   tap,
-  map
+  map,
+  retry
 } from 'rxjs/operators';
 import { Transaction } from '../../interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, Subject, from, throwError, combineLatest } from 'rxjs';
@@ -325,6 +326,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             map(block => {
               return block.extras.pool;
             }),
+            retry({ count: 3, delay: 2000 }),
             catchError(() => {
               return of(null);
             })
@@ -345,13 +347,14 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
                 accelerated: isAccelerated,
               };
             }),
+            retry({ count: 3, delay: 2000 }),
             catchError(() => {
               return of(null);
             })
           ) : of(isCoinbase ? { coinbase: true } : null)
         ]);
       }),
-      catchError(() => {
+      catchError((e) => {
         return of(null);
       })
     ).subscribe(([pool, auditStatus]) => {
