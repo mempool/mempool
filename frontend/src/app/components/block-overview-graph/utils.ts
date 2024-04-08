@@ -44,6 +44,13 @@ interface ColorPalette {
   baseLevel: (tx: TxView, rate: number, time: number) => number,
 }
 
+interface ColorPalette {
+  base: Color[],
+  audit: Color[],
+  marginal: Color[],
+  baseLevel: (tx: TxView, rate: number, time: number) => number,
+}
+
 // precomputed colors
 const defaultColors: { [key: string]: ColorPalette } = {
   fee: {
@@ -110,6 +117,9 @@ export function defaultColorFunction(
   colors: { base: Color[], audit: Color[], marginal: Color[], baseLevel: (tx: TxView, rate: number, time: number) => number } = defaultColors.fee,
   auditColors: { [status: string]: Color } = defaultAuditColors,
   relativeTime?: number,
+  colors: { base: Color[], audit: Color[], marginal: Color[], baseLevel: (tx: TxView, rate: number, time: number) => number } = defaultColors.fee,
+  auditColors: { [status: string]: Color } = defaultAuditColors,
+  relativeTime?: number,
 ): Color {
   const rate = tx.fee / tx.vsize; // color by simple single-tx fee rate
   const levelIndex = colors.baseLevel(tx, rate, relativeTime || (Date.now() / 1000));
@@ -120,7 +130,9 @@ export function defaultColorFunction(
       return auditColors.accelerated;
     } else {
       return levelColor;
+      return levelColor;
     }
+    return levelColor;
     return levelColor;
   }
   // Block audit
@@ -146,6 +158,7 @@ export function defaultColorFunction(
       if (tx.context === 'projected') {
         return colors.audit[levelIndex] || colors.audit[defaultMempoolFeeColors.length - 1];
       } else {
+        return levelColor;
         return levelColor;
       }
     default:

@@ -131,6 +131,12 @@
         background: #bf7815;
       }
     }
+    &.yellow {
+      border: solid 1px #bf7815;
+      &.active {
+        background: #bf7815;
+      }
+    }
   }
 
   :host-context(.block-overview-graph:hover) &, &:hover, &:active {

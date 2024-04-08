@@ -168,7 +168,7 @@
               <ng-container>
                 <tr class="group-first">
                   <td class="item">
-                    <b style="background-color: var(--primary);" class="p-1 pl-0" i18n="accelerator.maximum-cost">Maximum acceleration cost</b>
+                    <b style="background-color: #105fb0;" class="p-1 pl-0" i18n="accelerator.maximum-cost">Maximum acceleration cost</b>
                   </td>
                   <td class="amt">
                     <span style="background-color: var(--primary)" class="p-1 pl-0">
@@ -237,7 +237,7 @@
         </div>
       </div>
 
-      <div class="row d-flex justify-content-end align-items-center mr-1" style="height: 48px" *ngIf="!hideCashApp">
+      <div class="row d-flex justify-content-end align-items-center mr-1" style="height: 48px" *ngIf="!hideCashApp && paymentType === 'cashapp'">
         <div [style]="showSpinner ? 'opacity: 0' : 'opacity: 1'" class="p-2">Accelerate with</div>
         <div id="cash-app-pay" style="max-width: 320px" [style]="showSpinner ? 'opacity: 0' : 'opacity: 1'"></div>
         <div *ngIf="showSpinner" class="d-flex align-items-center">

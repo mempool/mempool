@@ -45,6 +45,14 @@
   right: 0;
 }
 
+:host-context(.ltr-layout) .sidenav.open {
+  left: 0;
+}
+
+:host-context(.rtl-layout) .sidenav.open {
+  right: 0;
+}
+
 .sidenav a, button{
   text-decoration: none;
   color: lightgray;
