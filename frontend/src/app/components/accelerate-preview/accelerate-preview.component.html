@@ -65,24 +65,26 @@
         </div>
       </div>
       <br>
-      <h5 i18n="accelerator.pay-how-much">How much more are you willing to pay?</h5>
-      <div class="row">
-        <div class="col">
-          <small class="form-text text-muted mb-2" i18n="accelerator.transaction-fee-description">Choose the maximum extra transaction fee you're willing to pay to get into the next block.</small>
-          <div class="form-group">
-            <div class="fee-card">
-              <div class="d-flex mb-0">
-                <ng-container *ngFor="let option of maxRateOptions">
-                  <button type="button" class="btn btn-primary flex-grow-1 btn-border btn-sm feerate" [class]="{active: selectFeeRateIndex === option.index}" (click)="setUserBid(option)">
-                    <span class="fee">{{ option.fee + estimate.mempoolBaseFee + estimate.vsizeFee | number }} <span class="symbol" i18n="shared.sats">sats</span></span>
-                    <span class="rate">~<app-fee-rate [fee]="option.rate" rounding="1.0-0"></app-fee-rate></span>
-                  </button>
-                </ng-container>
+      @if (paymentType !== 'cashapp') {
+        <h5 i18n="accelerator.pay-how-much">How much more are you willing to pay?</h5>
+        <div class="row">
+          <div class="col">
+            <small class="form-text text-muted mb-2" i18n="accelerator.transaction-fee-description">Choose the maximum extra transaction fee you're willing to pay to get into the next block.</small>
+            <div class="form-group">
+              <div class="fee-card">
+                <div class="d-flex mb-0">
+                  <ng-container *ngFor="let option of maxRateOptions">
+                    <button type="button" class="btn btn-primary flex-grow-1 btn-border btn-sm feerate" [class]="{active: selectFeeRateIndex === option.index}" (click)="setUserBid(option)">
+                      <span class="fee">{{ option.fee + estimate.mempoolBaseFee + estimate.vsizeFee | number }} <span class="symbol" i18n="shared.sats">sats</span></span>
+                      <span class="rate">~<app-fee-rate [fee]="option.rate" rounding="1.0-0"></app-fee-rate></span>
+                    </button>
+                  </ng-container>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      }
   
       <h5>Acceleration summary</h5>
       <div class="row mb-3">
@@ -90,27 +92,51 @@
           <table class="table table-borderless table-border table-dark table-accelerator">
             <tbody>
               <!-- ESTIMATED FEE -->
-              <ng-container>
-                <tr class="group-first">
-                  <td class="item" i18n="accelerator.next-block-rate">Next block market rate</td>
-                  <td class="amt" style="font-size: 16px">
-                    {{ estimate.targetFeeRate | number : '1.0-0' }}
-                  </td>
-                  <td class="units"><span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
-                </tr>
-                <tr class="info">
-                  <td class="info">
-                    <i><small i18n="accelerator.estimated-extra-fee-required">Estimated extra fee required</small></i>
-                  </td>
-                  <td class="amt">
-                    {{ math.max(0, estimate.nextBlockFee - estimate.txSummary.effectiveFee) | number }}
-                  </td>
-                  <td class="units">
-                    <span class="symbol" i18n="shared.sats">sats</span>
-                    <span class="fiat ml-1"><app-fiat [value]="math.max(0, estimate.nextBlockFee - estimate.txSummary.effectiveFee)"></app-fiat></span>
-                  </td>
-                </tr>
-              </ng-container>
+              @if (paymentType === 'cashapp') {
+                <ng-container>
+                  <tr class="group-first">
+                    <td class="item" i18n="accelerator.boost-rate">Boost rate</td>
+                    <td class="amt" style="font-size: 16px">
+                      {{ maxRateOptions[selectFeeRateIndex].rate | number : '1.0-0' }}
+                    </td>
+                    <td class="units"><span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
+                  </tr>
+                  <tr class="info">
+                    <td class="info">
+                      <i><small i18n="accelerator.estimated-extra-fee-required">Boost fee</small></i>
+                    </td>
+                    <td class="amt">
+                      {{ maxRateOptions[selectFeeRateIndex].fee | number }}
+                    </td>
+                    <td class="units">
+                      <span class="symbol" i18n="shared.sats">sats</span>
+                      <span class="fiat ml-1"><app-fiat [value]="maxRateOptions[selectFeeRateIndex].fee"></app-fiat></span>
+                    </td>
+                  </tr>
+                </ng-container>
+              } @else {
+                <ng-container>
+                  <tr class="group-first">
+                    <td class="item" i18n="accelerator.next-block-rate">Next block market rate</td>
+                    <td class="amt" style="font-size: 16px">
+                      {{ estimate.targetFeeRate | number : '1.0-0' }}
+                    </td>
+                    <td class="units"><span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
+                  </tr>
+                  <tr class="info">
+                    <td class="info">
+                      <i><small i18n="accelerator.estimated-extra-fee-required">Estimated extra fee required</small></i>
+                    </td>
+                    <td class="amt">
+                      {{ math.max(0, estimate.nextBlockFee - estimate.txSummary.effectiveFee) | number }}
+                    </td>
+                    <td class="units">
+                      <span class="symbol" i18n="shared.sats">sats</span>
+                      <span class="fiat ml-1"><app-fiat [value]="math.max(0, estimate.nextBlockFee - estimate.txSummary.effectiveFee)"></app-fiat></span>
+                    </td>
+                  </tr>
+                </ng-container>
+              }
   
               <!-- MEMPOOL BASE FEE -->
               <tr>
@@ -141,53 +167,76 @@
                 </td>
               </tr>
 
-              <!-- NEXT BLOCK ESTIMATE -->
-              <ng-container>
-                <tr class="group-first" style="border-top: 1px dashed grey; border-collapse: collapse;">
-                  <td class="item">
-                    <b style="background-color: #5E35B1" class="p-1 pl-0" i18n="accelerator.estimated-cost">Estimated acceleration cost</b>
-                  </td>
-                  <td class="amt">
-                    <span style="background-color: #5E35B1" class="p-1 pl-0">
-                      {{ estimate.cost + estimate.mempoolBaseFee + estimate.vsizeFee | number }}
-                    </span>
-                  </td>
-                  <td class="units">
-                    <span class="symbol" i18n="shared.sats">sats</span>
-                    <span class="fiat ml-1"><app-fiat [value]="estimate.cost + estimate.mempoolBaseFee + estimate.vsizeFee"></app-fiat></span>
-                  </td>
-                </tr>
-                <tr class="info group-last" style="border-bottom: 1px solid lightgrey">
-                  <td class="info" colspan=3>
-                    <i><small><ng-container *ngTemplateOutlet="acceleratedTo; context: {$implicit: estimate.targetFeeRate }"></ng-container></small></i>
-                  </td>
-                </tr>
-              </ng-container>
+              
+              @if (paymentType === 'cashapp') {
+                <!-- FIXED COST -->
+                <ng-container>
+                  <tr class="group-first group-last" style="border-top: 1px solid lightgrey; border-collapse: collapse;">
+                    <td class="item">
+                      <b style="background-color: #105fb0;" class="p-1 pl-0" i18n="accelerator.total-cost">Total cost</b>
+                    </td>
+                    <td class="amt">
+                      <span style="background-color: #105fb0" class="p-1 pl-0">
+                        {{ maxCost | number }}
+                      </span>
+                    </td>
+                    <td class="units">
+                      <span class="symbol" i18n="shared.sats">sats</span>
+                      <span class="fiat ml-1">
+                        <app-fiat [value]="maxCost" [colorClass]="'green-color'"></app-fiat>
+                      </span>
+                    </td>
+                  </tr>
+                </ng-container>
+              } @else {
+                <!-- NEXT BLOCK ESTIMATE -->
+                <ng-container>
+                  <tr class="group-first" style="border-top: 1px dashed grey; border-collapse: collapse;">
+                    <td class="item">
+                      <b style="background-color: #5E35B1" class="p-1 pl-0" i18n="accelerator.estimated-cost">Estimated acceleration cost</b>
+                    </td>
+                    <td class="amt">
+                      <span style="background-color: #5E35B1" class="p-1 pl-0">
+                        {{ estimate.cost + estimate.mempoolBaseFee + estimate.vsizeFee | number }}
+                      </span>
+                    </td>
+                    <td class="units">
+                      <span class="symbol" i18n="shared.sats">sats</span>
+                      <span class="fiat ml-1"><app-fiat [value]="estimate.cost + estimate.mempoolBaseFee + estimate.vsizeFee"></app-fiat></span>
+                    </td>
+                  </tr>
+                  <tr class="info group-last" style="border-bottom: 1px solid lightgrey">
+                    <td class="info" colspan=3>
+                      <i><small><ng-container *ngTemplateOutlet="acceleratedTo; context: {$implicit: estimate.targetFeeRate }"></ng-container></small></i>
+                    </td>
+                  </tr>
+                </ng-container>
   
-              <!-- MAX COST -->
-              <ng-container>
-                <tr class="group-first">
-                  <td class="item">
-                    <b style="background-color: #105fb0;" class="p-1 pl-0" i18n="accelerator.maximum-cost">Maximum acceleration cost</b>
-                  </td>
-                  <td class="amt">
-                    <span style="background-color: #105fb0" class="p-1 pl-0">
-                      {{ maxCost | number }}
-                    </span>
-                  </td>
-                  <td class="units">
-                    <span class="symbol" i18n="shared.sats">sats</span>
-                    <span class="fiat ml-1">
-                      <app-fiat [value]="maxCost" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat>
-                    </span>
-                  </td>
-                </tr>
-                <tr class="info group-last">
-                  <td class="info" colspan=3>
-                    <i><small><ng-container *ngTemplateOutlet="acceleratedTo; context: {$implicit: (estimate.txSummary.effectiveFee + userBid) / estimate.txSummary.effectiveVsize }"></ng-container></small></i>
-                  </td>
-                </tr>
-              </ng-container>
+                <!-- MAX COST -->
+                <ng-container>
+                  <tr class="group-first">
+                    <td class="item">
+                      <b style="background-color: #105fb0;" class="p-1 pl-0" i18n="accelerator.maximum-cost">Maximum acceleration cost</b>
+                    </td>
+                    <td class="amt">
+                      <span style="background-color: #105fb0" class="p-1 pl-0">
+                        {{ maxCost | number }}
+                      </span>
+                    </td>
+                    <td class="units">
+                      <span class="symbol" i18n="shared.sats">sats</span>
+                      <span class="fiat ml-1">
+                        <app-fiat [value]="maxCost" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat>
+                      </span>
+                    </td>
+                  </tr>
+                  <tr class="info group-last">
+                    <td class="info" colspan=3>
+                      <i><small><ng-container *ngTemplateOutlet="acceleratedTo; context: {$implicit: (estimate.txSummary.effectiveFee + userBid) / estimate.txSummary.effectiveVsize }"></ng-container></small></i>
+                    </td>
+                  </tr>
+                </ng-container>
+              }
   
               <!-- USER BALANCE -->
               <ng-container *ngIf="isLoggedIn() && estimate.userBalance < maxCost">
@@ -237,14 +286,17 @@
         </div>
       </div>
 
-      <div class="row d-flex justify-content-end align-items-center mr-1" style="height: 48px" *ngIf="!hideCashApp && paymentType === 'cashapp'">
-        <div [style]="showSpinner ? 'opacity: 0' : 'opacity: 1'" class="p-2">Accelerate with</div>
-        <div id="cash-app-pay" style="max-width: 320px" [style]="showSpinner ? 'opacity: 0' : 'opacity: 1'"></div>
-        <div *ngIf="showSpinner" class="d-flex align-items-center">
-          <span class="mr-2">Loading</span>
-          <div class="spinner-border text-light" style="width: 25px; height: 25px"></div>
+      @if (!hideCashApp && paymentType === 'cashapp') {
+        <div #cashappCTA class="cashapp-placeholder {{ stickyCTA }}"></div>
+        <div class="d-flex justify-content-center align-items-center cashapp-cta {{ stickyCTA }}" (click)="submitCashappPay()">
+          <div [style]="showSpinner ? 'opacity: 0' : 'opacity: 1'" class="p-2">Accelerate for <app-fiat [value]="maxCost" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat> with</div>
+          <div id="cash-app-pay" style="max-width: 320px" [style]="showSpinner ? 'opacity: 0' : 'opacity: 1'"></div>
+          <div *ngIf="showSpinner" class="d-flex align-items-center">
+            <span class="mr-2">Loading</span>
+            <div class="spinner-border text-light" style="width: 25px; height: 25px"></div>
+          </div>
         </div>
-      </div>
+      }
   
     </div>
   </ng-container>

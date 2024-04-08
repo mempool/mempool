@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnDestroy, OnChanges, SimpleChanges, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, OnChanges, SimpleChanges, HostListener, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import { Subscription, catchError, of, tap } from 'rxjs';
 import { StorageService } from '../../services/storage.service';
 import { Transaction } from '../../interfaces/electrs.interface';
@@ -43,6 +43,9 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   @Input() tx: Transaction | undefined;
   @Input() scrollEvent: boolean;
 
+  @ViewChild('cashappCTA')
+  cashappCTA: ElementRef;
+
   math = Math;
   error = '';
   showSuccess = false;
@@ -59,6 +62,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   selectFeeRateIndex = 1;
   isMobile: boolean = window.innerWidth <= 767.98;
   user: any = undefined;
+  stickyCTA: string = 'non-stick';
 
   maxRateOptions: RateOption[] = [];
 
@@ -66,6 +70,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   paymentType: 'bitcoin' | 'cashapp' = 'bitcoin';
   cashAppSubscription: Subscription;
   conversionsSubscription: Subscription;
+  cashappSubmit: any;
   payments: any;
   showSpinner = false;
   square: any;
@@ -96,14 +101,14 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   ngOnInit() {
     if (this.stateService.ref === 'https://cash.app/') {
       this.paymentType = 'cashapp';
-      this.stateService.ref = '';
     } else {
       this.paymentType = 'bitcoin';
     }
+    this.onScroll();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.scrollEvent) {
+    if (changes.scrollEvent && this.paymentType !== 'cashapp') {
       this.scrollToPreview('acceleratePreviewAnchor', 'start');
     }
   }
@@ -173,10 +178,11 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
             this.maxCost = this.userBid + this.estimate.mempoolBaseFee + this.estimate.vsizeFee;
 
             if (!this.error) {
-              this.scrollToPreview('acceleratePreviewAnchor', 'start');
               if (this.paymentType === 'cashapp') {
                 this.setupSquare();
-              } 
+              } else {
+                this.scrollToPreview('acceleratePreviewAnchor', 'start');
+              }
             }
           }
         }),
@@ -310,13 +316,15 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
             label: 'Total',
             pending: true,
             productUrl: `https://mempool.space/tx/${this.tx.txid}`,
-          }
+          },
+          button: { shape: 'semiround', size: 'small', theme: 'light'}
         });
         this.cashAppPay = await this.payments.cashAppPay(paymentRequest, {
           redirectURL: `https://mempool.space/tx/${this.tx.txid}`,
           referenceId: `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
+          button: { shape: 'semiround', size: 'small', theme: 'light'}
         });
-        await this.cashAppPay.attach('#cash-app-pay');
+        const renderPromise = this.cashAppPay.CashAppPayInstance.render('#cash-app-pay', { button: { theme: 'light', size: 'small', shape: 'semiround' }, manage: false });
         this.showSpinner = false;
         
         const that = this;
@@ -351,6 +359,8 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
             });
           }
         });
+
+        this.cashappSubmit = await renderPromise;
       }
     );
   }
@@ -366,5 +376,29 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
       // @ts-ignore
       g.type='text/javascript'; g.src=statsUrl; s.parentNode.insertBefore(g, s);
     })();
+  }
+
+  submitCashappPay(): void {
+    if (this.cashappSubmit) {
+      this.cashappSubmit?.begin();
+    }
+  }
+
+  @HostListener('window:scroll', ['$event']) // for window scroll events
+  onScroll() {
+    if (!this.cashappCTA?.nativeElement || this.paymentType !== 'cashapp' || !this.isMobile) {
+      return;
+    }
+    const cta = this.cashappCTA.nativeElement;
+    const rect = cta.getBoundingClientRect();
+    const topOffset = window.innerWidth <= 572 ? 102 : 62;
+    const bottomOffset = window.innerWidth < 430 ? 50 : 56;
+    if (rect.top < topOffset) {
+      this.stickyCTA = 'sticky-top';
+    } else if (rect.top > window.innerHeight - (bottomOffset + 54)) {
+      this.stickyCTA = 'sticky-bottom';
+    } else {
+      this.stickyCTA = 'non-stick';
+    }
   }
 }
