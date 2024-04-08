@@ -59,6 +59,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   defaultBid = 0;
   maxCost = 0;
   userBid = 0;
+  accelerationUUID: string;
   selectFeeRateIndex = 1;
   isMobile: boolean = window.innerWidth <= 767.98;
   user: any = undefined;
@@ -102,6 +103,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   }
 
   ngOnInit() {
+    this.accelerationUUID = window.crypto.randomUUID();
     if (this.stateService.ref === 'https://cash.app/') {
       this.paymentType = 'cashapp';
     } else {
@@ -245,7 +247,8 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
     }
     this.accelerationSubscription = this.servicesApiService.accelerate$(
       this.tx.txid,
-      this.userBid
+      this.userBid,
+      this.accelerationUUID
     ).subscribe({
       next: () => {
         this.audioService.playSound('ascend-chime-cartoon');
@@ -348,7 +351,8 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
               that.userBid,
               tokenResult.token,
               tokenResult.details.cashAppPay.cashtag,
-              tokenResult.details.cashAppPay.referenceId
+              tokenResult.details.cashAppPay.referenceId,
+              that.accelerationUUID
             ).subscribe({
               next: () => {
                 that.audioService.playSound('ascend-chime-cartoon');
