@@ -318,6 +318,10 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
     
     this.conversionsSubscription = this.stateService.conversions$.subscribe(
       async (conversions) => {
+        if (this.cashAppPay) {
+          this.cashAppPay.destroy();
+        }
+
         const maxCostUsd = this.maxCost / 100_000_000 * conversions.USD;
         const paymentRequest = this.payments.paymentRequest({
           countryCode: 'US',
