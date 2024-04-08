@@ -9,7 +9,7 @@ import { Price } from '../../services/price.service';
 import { StateService } from '../../services/state.service';
 import { ThemeService } from 'src/app/services/theme.service';
 import { Subscription } from 'rxjs';
-import { defaultColorFunction, setOpacity, defaultFeeColors, defaultAuditFeeColors, defaultMarginalFeeColors, defaultAuditColors } from './utils';
+import { defaultColorFunction, setOpacity, defaultAuditColors, defaultColors, ageColorFunction, contrastColorFunction, contrastAuditColors, contrastColors } from './utils';
 import { ActiveFilter, FilterMode, toFlags } from '../../shared/filters.utils';
 import { detectWebGL } from '../../shared/graphs.utils';
 
@@ -21,9 +21,6 @@ const unmatchedAuditColors = {
   prioritized: setOpacity(defaultAuditColors.prioritized, unmatchedOpacity),
   accelerated: setOpacity(defaultAuditColors.accelerated, unmatchedOpacity),
 };
-const unmatchedContrastFeeColors = contrastFeeColors.map(c => setOpacity(c, unmatchedOpacity));
-const unmatchedContrastAuditFeeColors = contrastAuditFeeColors.map(c => setOpacity(c, unmatchedOpacity));
-const unmatchedContrastMarginalFeeColors = contrastMarginalFeeColors.map(c => setOpacity(c, unmatchedOpacity));
 const unmatchedContrastAuditColors = {
   censored: setOpacity(contrastAuditColors.censored, unmatchedOpacity),
   missing: setOpacity(contrastAuditColors.missing, unmatchedOpacity),
@@ -580,14 +577,27 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   getFilterColorFunction(flags: bigint, gradient: 'fee' | 'age'): ((tx: TxView) => Color) {
     return (tx: TxView) => {
       if ((this.filterMode === 'and' && (tx.bigintFlags & flags) === flags) || (this.filterMode === 'or' && (flags === 0n || (tx.bigintFlags & flags) > 0n))) {
-        return defaultColorFunction(tx);
+        if (this.themeService.theme !== 'contrast') {
+          return (gradient === 'age') ? ageColorFunction(tx, defaultColors.fee, defaultAuditColors, this.relativeTime || (Date.now() / 1000)) : defaultColorFunction(tx, defaultColors.fee, defaultAuditColors, this.relativeTime || (Date.now() / 1000));
+        } else {
+          return (gradient === 'age') ? ageColorFunction(tx, contrastColors.fee, contrastAuditColors, this.relativeTime || (Date.now() / 1000)) : contrastColorFunction(tx, contrastColors.fee, contrastAuditColors, this.relativeTime || (Date.now() / 1000));
+        }
       } else {
-        return defaultColorFunction(
-          tx,
-          defaultColors.unmatchedfee,
-          unmatchedAuditColors,
-          this.relativeTime || (Date.now() / 1000)
-        );
+        if (this.themeService.theme !== 'contrast') {
+          return (gradient === 'age') ? { r: 1, g: 1, b: 1, a: 0.05 } : defaultColorFunction(
+            tx,
+            defaultColors.unmatchedfee,
+            unmatchedAuditColors,
+            this.relativeTime || (Date.now() / 1000)
+          );
+        } else {
+          return (gradient === 'age') ? { r: 1, g: 1, b: 1, a: 0.05 } : contrastColorFunction(
+            tx,
+            contrastColors.unmatchedfee,
+            unmatchedContrastAuditColors,
+            this.relativeTime || (Date.now() / 1000)
+          );
+        }
       }
     };
   }

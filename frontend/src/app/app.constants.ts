@@ -70,14 +70,14 @@ export const contrastMempoolFeeColors = [
   'edac31',
   'f6ad2b',
   'ffaf24',
-  'ffaf24',
-  'ffaf24',
-  'ffaf24',
-  'ffaf24',
-  'ffaf24',
-  'ffaf24',
-  'ffaf24',
-  'ffaf24',
+  'ffb01e',
+  'ffb118',
+  'ffb212',
+  'ffb30c',
+  'ffb406',
+  'ffb500',
+  'ffb600',
+  'ffb700',
  ];
 
 export const chartColors = [

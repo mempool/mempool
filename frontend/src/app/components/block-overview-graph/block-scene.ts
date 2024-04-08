@@ -69,7 +69,11 @@ export default class BlockScene {
   }
 
   setColorFunction(colorFunction: ((tx: TxView) => Color) | null): void {
-    this.getColor = colorFunction || defaultColorFunction;
+    this.theme.theme !== 'default' ? this.getColor = colorFunction || contrastColorFunction : this.getColor = colorFunction || defaultColorFunction;
+    this.updateAllColors();
+  }
+
+  updateAllColors(): void {
     this.dirty = true;
     if (this.initialised && this.scene) {
       this.updateColors(performance.now(), 50);
@@ -92,7 +96,7 @@ export default class BlockScene {
     });
     this.layout = new BlockLayout({ width: this.gridWidth, height: this.gridHeight });
     txs.forEach(tx => {
-      const txView = new TxView(tx, this, this.theme);
+      const txView = new TxView(tx, this);
       this.txs[tx.txid] = txView;
       this.place(txView);
       this.saveGridToScreenPosition(txView);
@@ -138,7 +142,7 @@ export default class BlockScene {
     });
     txs.forEach(tx => {
       if (!this.txs[tx.txid]) {
-        this.txs[tx.txid] = new TxView(tx, this, this.theme);
+        this.txs[tx.txid] = new TxView(tx, this);
       }
     });
 
@@ -180,7 +184,7 @@ export default class BlockScene {
     if (resetLayout) {
       add.forEach(tx => {
         if (!this.txs[tx.txid]) {
-          this.txs[tx.txid] = new TxView(tx, this, this.theme);
+          this.txs[tx.txid] = new TxView(tx, this);
         }
       });
       this.layout = new BlockLayout({ width: this.gridWidth, height: this.gridHeight });
@@ -200,7 +204,7 @@ export default class BlockScene {
 
       // try to insert new txs directly
       const remaining = [];
-      add.map(tx => new TxView(tx, this, this.theme)).sort(feeRateDescending).forEach(tx => {
+      add.map(tx => new TxView(tx, this)).sort(feeRateDescending).forEach(tx => {
         if (!this.tryInsertByFee(tx)) {
           remaining.push(tx);
         }

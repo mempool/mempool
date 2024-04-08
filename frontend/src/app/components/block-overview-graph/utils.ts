@@ -45,9 +45,28 @@ interface ColorPalette {
 }
 
 // precomputed colors
-export const defaultFeeColors = mempoolFeeColors.map(hexToColor);
-export const defaultAuditFeeColors = defaultFeeColors.map((color) => darken(desaturate(color, 0.3), 0.9));
-export const defaultMarginalFeeColors = defaultFeeColors.map((color) => darken(desaturate(color, 0.8), 1.1));
+const defaultColors: { [key: string]: ColorPalette } = {
+  fee: {
+    base: defaultMempoolFeeColors.map(hexToColor),
+    audit: [],
+    marginal: [],
+    baseLevel: (tx: TxView, rate: number) => feeLevels.findIndex((feeLvl) => Math.max(1, rate) < feeLvl) - 1
+  },
+}
+for (const key in defaultColors) {
+  const base = defaultColors[key].base;
+  defaultColors[key].audit = base.map((color) => darken(desaturate(color, 0.3), 0.9));
+  defaultColors[key].marginal = base.map((color) => darken(desaturate(color, 0.8), 1.1));
+  defaultColors['unmatched' + key] = {
+    base: defaultColors[key].base.map(c => setOpacity(c, 0.2)),
+    audit: defaultColors[key].audit.map(c => setOpacity(c, 0.2)),
+    marginal: defaultColors[key].marginal.map(c => setOpacity(c, 0.2)),
+    baseLevel: defaultColors[key].baseLevel,
+  };
+}
+
+export { defaultColors as defaultColors };
+
 export const defaultAuditColors = {
   censored: hexToColor('f344df'),
   missing: darken(desaturate(hexToColor('f344df'), 0.3), 0.7),
@@ -56,9 +75,28 @@ export const defaultAuditColors = {
   accelerated: hexToColor('8f5ff6'),
 };
 
-export const contrastFeeColors = contrastMempoolFeeColors.map(hexToColor);
-export const contrastAuditFeeColors = contrastFeeColors.map((color) => darken(desaturate(color, 0.3), 0.9));
-export const contrastMarginalFeeColors = contrastFeeColors.map((color) => darken(desaturate(color, 0.8), 1.1));
+const contrastColors: { [key: string]: ColorPalette } = {
+  fee: {
+    base: contrastMempoolFeeColors.map(hexToColor),
+    audit: [],
+    marginal: [],
+    baseLevel: (tx: TxView, rate: number) => feeLevels.findIndex((feeLvl) => Math.max(1, rate) < feeLvl) - 1
+  },
+}
+for (const key in contrastColors) {
+  const base = contrastColors[key].base;
+  contrastColors[key].audit = base.map((color) => darken(desaturate(color, 0.3), 0.9));
+  contrastColors[key].marginal = base.map((color) => darken(desaturate(color, 0.8), 1.1));
+  contrastColors['unmatched' + key] = {
+    base: contrastColors[key].base.map(c => setOpacity(c, 0.2)),
+    audit: contrastColors[key].audit.map(c => setOpacity(c, 0.2)),
+    marginal: contrastColors[key].marginal.map(c => setOpacity(c, 0.2)),
+    baseLevel: contrastColors[key].baseLevel,
+  };
+}
+
+export { contrastColors as contrastColors };
+
 export const contrastAuditColors = {
   censored: hexToColor('ffa8ff'),
   missing: darken(desaturate(hexToColor('ffa8ff'), 0.3), 0.7),
@@ -74,8 +112,8 @@ export function defaultColorFunction(
   relativeTime?: number,
 ): Color {
   const rate = tx.fee / tx.vsize; // color by simple single-tx fee rate
-  const feeLevelIndex = feeLevels.findIndex((feeLvl) => Math.max(1, rate) < feeLvl) - 1;
-  const feeLevelColor = feeColors[feeLevelIndex] || feeColors[mempoolFeeColors.length - 1];
+  const levelIndex = colors.baseLevel(tx, rate, relativeTime || (Date.now() / 1000));
+  const levelColor = colors.base[levelIndex] || colors.base[defaultMempoolFeeColors.length - 1];
   // Normal mode
   if (!tx.scene?.highlightingEnabled) {
     if (tx.acc) {
@@ -92,7 +130,7 @@ export function defaultColorFunction(
     case 'missing':
     case 'sigop':
     case 'rbf':
-      return marginalFeeColors[feeLevelIndex] || marginalFeeColors[mempoolFeeColors.length - 1];
+      return colors.marginal[levelIndex] || colors.marginal[defaultMempoolFeeColors.length - 1];
     case 'fresh':
     case 'freshcpfp':
       return auditColors.missing;
@@ -101,12 +139,12 @@ export function defaultColorFunction(
     case 'prioritized':
       return auditColors.prioritized;
     case 'selected':
-      return marginalFeeColors[feeLevelIndex] || marginalFeeColors[mempoolFeeColors.length - 1];
+      return colors.marginal[levelIndex] || colors.marginal[defaultMempoolFeeColors.length - 1];
     case 'accelerated':
       return auditColors.accelerated;
     case 'found':
       if (tx.context === 'projected') {
-        return auditFeeColors[feeLevelIndex] || auditFeeColors[mempoolFeeColors.length - 1];
+        return colors.audit[levelIndex] || colors.audit[defaultMempoolFeeColors.length - 1];
       } else {
         return levelColor;
       }
@@ -119,17 +157,27 @@ export function defaultColorFunction(
   }
 }
 
+export function contrastColorFunction(
+  tx: TxView,
+  colors: { base: Color[], audit: Color[], marginal: Color[], baseLevel: (tx: TxView, rate: number, time: number) => number } = contrastColors.fee,
+  auditColors: { [status: string]: Color } = contrastAuditColors,
+  relativeTime?: number,
+): Color {
+  return defaultColorFunction(tx, colors, auditColors, relativeTime);
+}
+
 export function ageColorFunction(
   tx: TxView,
   colors: { base: Color[], audit: Color[], marginal: Color[], baseLevel: (tx: TxView, rate: number, time: number) => number } = defaultColors.fee,
   auditColors: { [status: string]: Color } = defaultAuditColors,
   relativeTime?: number,
+  theme?: string,
 ): Color {
   if (tx.acc || tx.status === 'accelerated') {
     return auditColors.accelerated;
   }
 
-  const color = defaultColorFunction(tx, colors, auditColors, relativeTime); 
+  const color = theme !== 'contrast' ? defaultColorFunction(tx, colors, auditColors, relativeTime) : contrastColorFunction(tx, colors, auditColors, relativeTime);
 
   const ageLevel = (!tx.time ? 0 : (0.8 * Math.tanh((1 / 15) * Math.log2((Math.max(1, 0.6 * ((relativeTime - tx.time) - 60)))))));
   return {
@@ -138,14 +186,4 @@ export function ageColorFunction(
     b: color.b,
     a: color.a * (1 - ageLevel)
   };
-}
-
-export function contrastColorFunction(
-  tx: TxView,
-  feeColors: Color[] = contrastFeeColors,
-  auditFeeColors: Color[] = contrastAuditFeeColors,
-  marginalFeeColors: Color[] = contrastMarginalFeeColors,
-  auditColors: { [status: string]: Color } = contrastAuditColors
-): Color {
-  return defaultColorFunction(tx, feeColors, auditFeeColors, marginalFeeColors, auditColors);
 }
