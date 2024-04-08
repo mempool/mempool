@@ -85,7 +85,10 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
     private cd: ChangeDetectorRef
   ) {
     if (this.stateService.ref === 'https://cash.app/') {
+      this.paymentType = 'cashapp';
       this.insertSquare();
+    } else {
+      this.paymentType = 'bitcoin';
     }
   }
 
@@ -104,16 +107,17 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
     } else {
       this.paymentType = 'bitcoin';
     }
-    this.onScroll();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.scrollEvent && this.paymentType !== 'cashapp') {
+    if (changes.scrollEvent && this.paymentType !== 'cashapp' && this.stateService.ref !== 'https://cash.app/') {
       this.scrollToPreview('acceleratePreviewAnchor', 'start');
     }
   }
 
   ngAfterViewInit() {
+    this.onScroll();
+
     if (this.paymentType === 'cashapp') {
       this.showSpinner = true;
     }
@@ -183,6 +187,10 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
               } else {
                 this.scrollToPreview('acceleratePreviewAnchor', 'start');
               }
+
+              setTimeout(() => {
+                this.onScroll();
+              }, 100);
             }
           }
         }),
@@ -390,6 +398,12 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
 
   @HostListener('window:scroll', ['$event']) // for window scroll events
   onScroll() {
+    if (this.estimate && this.user && !this.cashappCTA?.nativeElement) {
+      setTimeout(() => {
+        this.onScroll();
+      }, 200);
+      return;
+    }
     if (!this.cashappCTA?.nativeElement || this.paymentType !== 'cashapp' || !this.isMobile) {
       return;
     }
