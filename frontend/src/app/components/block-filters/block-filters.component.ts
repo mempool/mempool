@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output, HostListener, Input, ChangeDetectorRef, OnChanges, SimpleChanges, OnInit, OnDestroy } from '@angular/core';
-import { ActiveFilter, FilterGroups, FilterMode, TransactionFilters } from '../../shared/filters.utils';
+import { ActiveFilter, FilterGroups, FilterMode, GradientMode, TransactionFilters } from '../../shared/filters.utils';
 import { StateService } from '../../services/state.service';
 import { Subscription } from 'rxjs';
 
@@ -22,6 +22,7 @@ export class BlockFiltersComponent implements OnInit, OnChanges, OnDestroy {
   activeFilters: string[] = [];
   filterFlags: { [key: string]: boolean } = {};
   filterMode: FilterMode = 'and';
+  gradientMode: GradientMode = 'fee';
   menuOpen: boolean = false;
 
   constructor(
@@ -32,6 +33,7 @@ export class BlockFiltersComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit(): void {
     this.filterSubscription = this.stateService.activeGoggles$.subscribe((active: ActiveFilter) => {
       this.filterMode = active.mode;
+      this.gradientMode = active.gradient;
       for (const key of Object.keys(this.filterFlags)) {
         this.filterFlags[key] = false;
       }
@@ -39,7 +41,7 @@ export class BlockFiltersComponent implements OnInit, OnChanges, OnDestroy {
         this.filterFlags[key] = !this.disabledFilters[key];
       }
       this.activeFilters = [...active.filters.filter(key => !this.disabledFilters[key])];
-      this.onFilterChanged.emit({ mode: active.mode, filters: this.activeFilters });
+      this.onFilterChanged.emit({ mode: active.mode, filters: this.activeFilters, gradient: this.gradientMode });
     });
   }
 
@@ -57,8 +59,14 @@ export class BlockFiltersComponent implements OnInit, OnChanges, OnDestroy {
 
   setFilterMode(mode): void {
     this.filterMode = mode;
-    this.onFilterChanged.emit({ mode: this.filterMode, filters: this.activeFilters });
-    this.stateService.activeGoggles$.next({ mode: this.filterMode, filters: [...this.activeFilters] });
+    this.onFilterChanged.emit({ mode: this.filterMode, filters: this.activeFilters, gradient: this.gradientMode });
+    this.stateService.activeGoggles$.next({ mode: this.filterMode, filters: [...this.activeFilters], gradient: this.gradientMode });
+  }
+
+  setGradientMode(mode): void {
+    this.gradientMode = mode;
+    this.onFilterChanged.emit({ mode: this.filterMode, filters: this.activeFilters, gradient: this.gradientMode });
+    this.stateService.activeGoggles$.next({ mode: this.filterMode, filters: [...this.activeFilters], gradient: this.gradientMode });
   }
 
   toggleFilter(key): void {
@@ -81,8 +89,8 @@ export class BlockFiltersComponent implements OnInit, OnChanges, OnDestroy {
       this.activeFilters = this.activeFilters.filter(f => f != key);
     }
     const booleanFlags = this.getBooleanFlags();
-    this.onFilterChanged.emit({ mode: this.filterMode, filters: this.activeFilters });
-    this.stateService.activeGoggles$.next({ mode: this.filterMode, filters: [...this.activeFilters] });
+    this.onFilterChanged.emit({ mode: this.filterMode, filters: this.activeFilters, gradient: this.gradientMode });
+    this.stateService.activeGoggles$.next({ mode: this.filterMode, filters: [...this.activeFilters], gradient: this.gradientMode });
   }
   
   getBooleanFlags(): bigint | null {

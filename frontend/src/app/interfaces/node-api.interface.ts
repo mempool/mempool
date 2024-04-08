@@ -163,6 +163,7 @@ export interface PoolInfo {
   emptyBlocks: number;
   slug: string;
   poolUniqueId: number;
+  unique_id: number;
 }
 export interface PoolStat {
   pool: PoolInfo;

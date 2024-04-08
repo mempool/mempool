@@ -11,11 +11,12 @@ import TxView from '../../block-overview-graph/tx-view';
 import { feeLevels, defaultMempoolFeeColors, contrastMempoolFeeColors } from '../../../app.constants';
 import { ServicesApiServices } from '../../../services/services-api.service';
 import { detectWebGL } from '../../../shared/graphs.utils';
+import { AudioService } from '../../../services/audio.service';
 import { ThemeService } from '../../../services/theme.service';
 
 const acceleratedColor: Color = hexToColor('8F5FF6');
 const normalColors = defaultMempoolFeeColors.map(hex => hexToColor(hex + '5F'));
-const contrastColors = contrastMempoolFeeColors.map(hex => hexToColor(hex + '5F'));
+const contrastColors = contrastMempoolFeeColors.map(hex => hexToColor(hex.slice(0,6) + '5F'));
 
 interface AccelerationBlock extends BlockExtended {
   accelerationCount: number,
@@ -34,6 +35,8 @@ export class AcceleratorDashboardComponent implements OnInit {
   minedAccelerations$: Observable<Acceleration[]>;
   loadingBlocks: boolean = true;
   webGlEnabled = true;
+  seen: Set<string> = new Set();
+  firstLoad = true;
 
   graphHeight: number = 300;
   theme: ThemeService;
@@ -43,6 +46,7 @@ export class AcceleratorDashboardComponent implements OnInit {
     private ogService: OpenGraphService,
     private websocketService: WebsocketService,
     private serviceApiServices: ServicesApiServices,
+    private audioService: AudioService,
     private stateService: StateService,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {
@@ -63,6 +67,15 @@ export class AcceleratorDashboardComponent implements OnInit {
             return of([]);
           }),
         );
+      }),
+      tap(accelerations => {
+        if (!this.firstLoad && accelerations.some(acc => !this.seen.has(acc.txid))) {
+          this.audioService.playSound('bright-harmony');
+        }
+        for(const acc of accelerations) {
+          this.seen.add(acc.txid);
+        }
+        this.firstLoad = false;
       }),
       share(),
     );

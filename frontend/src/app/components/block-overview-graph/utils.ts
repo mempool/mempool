@@ -37,8 +37,15 @@ export function setOpacity(color: Color, opacity: number): Color {
   };
 }
 
+interface ColorPalette {
+  base: Color[],
+  audit: Color[],
+  marginal: Color[],
+  baseLevel: (tx: TxView, rate: number, time: number) => number,
+}
+
 // precomputed colors
-export const defaultFeeColors = defaultMempoolFeeColors.map(hexToColor);
+export const defaultFeeColors = mempoolFeeColors.map(hexToColor);
 export const defaultAuditFeeColors = defaultFeeColors.map((color) => darken(desaturate(color, 0.3), 0.9));
 export const defaultMarginalFeeColors = defaultFeeColors.map((color) => darken(desaturate(color, 0.8), 1.1));
 export const defaultAuditColors = {
@@ -62,22 +69,21 @@ export const contrastAuditColors = {
 
 export function defaultColorFunction(
   tx: TxView,
-  feeColors: Color[] = defaultFeeColors,
-  auditFeeColors: Color[] = defaultAuditFeeColors,
-  marginalFeeColors: Color[] = defaultMarginalFeeColors,
-  auditColors: { [status: string]: Color } = defaultAuditColors
+  colors: { base: Color[], audit: Color[], marginal: Color[], baseLevel: (tx: TxView, rate: number, time: number) => number } = defaultColors.fee,
+  auditColors: { [status: string]: Color } = defaultAuditColors,
+  relativeTime?: number,
 ): Color {
   const rate = tx.fee / tx.vsize; // color by simple single-tx fee rate
   const feeLevelIndex = feeLevels.findIndex((feeLvl) => Math.max(1, rate) < feeLvl) - 1;
-  const feeLevelColor = feeColors[feeLevelIndex] || feeColors[defaultMempoolFeeColors.length - 1];
+  const feeLevelColor = feeColors[feeLevelIndex] || feeColors[mempoolFeeColors.length - 1];
   // Normal mode
   if (!tx.scene?.highlightingEnabled) {
     if (tx.acc) {
       return auditColors.accelerated;
     } else {
-      return feeLevelColor;
+      return levelColor;
     }
-    return feeLevelColor;
+    return levelColor;
   }
   // Block audit
   switch(tx.status) {
@@ -86,7 +92,7 @@ export function defaultColorFunction(
     case 'missing':
     case 'sigop':
     case 'rbf':
-      return marginalFeeColors[feeLevelIndex] || marginalFeeColors[defaultMempoolFeeColors.length - 1];
+      return marginalFeeColors[feeLevelIndex] || marginalFeeColors[mempoolFeeColors.length - 1];
     case 'fresh':
     case 'freshcpfp':
       return auditColors.missing;
@@ -95,22 +101,43 @@ export function defaultColorFunction(
     case 'prioritized':
       return auditColors.prioritized;
     case 'selected':
-      return marginalFeeColors[feeLevelIndex] || marginalFeeColors[defaultMempoolFeeColors.length - 1];
+      return marginalFeeColors[feeLevelIndex] || marginalFeeColors[mempoolFeeColors.length - 1];
     case 'accelerated':
       return auditColors.accelerated;
     case 'found':
       if (tx.context === 'projected') {
-        return auditFeeColors[feeLevelIndex] || auditFeeColors[defaultMempoolFeeColors.length - 1];
+        return auditFeeColors[feeLevelIndex] || auditFeeColors[mempoolFeeColors.length - 1];
       } else {
-        return feeLevelColor;
+        return levelColor;
       }
     default:
       if (tx.acc) {
         return auditColors.accelerated;
       } else {
-        return feeLevelColor;
+        return levelColor;
       }
   }
+}
+
+export function ageColorFunction(
+  tx: TxView,
+  colors: { base: Color[], audit: Color[], marginal: Color[], baseLevel: (tx: TxView, rate: number, time: number) => number } = defaultColors.fee,
+  auditColors: { [status: string]: Color } = defaultAuditColors,
+  relativeTime?: number,
+): Color {
+  if (tx.acc || tx.status === 'accelerated') {
+    return auditColors.accelerated;
+  }
+
+  const color = defaultColorFunction(tx, colors, auditColors, relativeTime); 
+
+  const ageLevel = (!tx.time ? 0 : (0.8 * Math.tanh((1 / 15) * Math.log2((Math.max(1, 0.6 * ((relativeTime - tx.time) - 60)))))));
+  return {
+    r: color.r,
+    g: color.g,
+    b: color.b,
+    a: color.a * (1 - ageLevel)
+  };
 }
 
 export function contrastColorFunction(

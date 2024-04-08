@@ -6,6 +6,7 @@ import { ChainStats } from '../../interfaces/electrs.interface';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
 import { Router } from '@angular/router';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
   selector: 'app-address-graph',
@@ -46,6 +47,7 @@ export class AddressGraphComponent implements OnChanges {
     private router: Router,
     private amountShortenerPipe: AmountShortenerPipe,
     private cd: ChangeDetectorRef,
+    private relativeUrlPipe: RelativeUrlPipe,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -122,7 +124,7 @@ export class AddressGraphComponent implements OnChanges {
               </div>
               <span>${date}</span>
             </div>
-          `; 
+          `;
         }.bind(this)
       },
       xAxis: {
@@ -178,7 +180,7 @@ export class AddressGraphComponent implements OnChanges {
 
   onChartClick(e) {
     if (this.hoverData?.length && this.hoverData[0]?.[2]?.txid) {
-      this.router.navigate(['/tx/', this.hoverData[0][2].txid]);
+      this.router.navigate([this.relativeUrlPipe.transform('/tx/'), this.hoverData[0][2].txid]);
     }
   }
 

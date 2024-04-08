@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators,
   PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights, RbfTree, BlockAudit, Acceleration, AccelerationHistoryParams, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume, AccelerationInfo } from '../interfaces/node-api.interface';
-import { BehaviorSubject, Observable, catchError, filter, of, shareReplay, take, tap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, filter, map, of, shareReplay, take, tap } from 'rxjs';
 import { StateService } from './state.service';
 import { Transaction } from '../interfaces/electrs.interface';
 import { Conversion } from './price.service';
@@ -246,11 +246,29 @@ export class ApiService {
     return this.httpClient.get<any>(
       this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pools` +
       (interval !== undefined ? `/${interval}` : ''), { observe: 'response' }
+    )
+    .pipe(
+      map((response) => {
+        response.body.pools.forEach((pool) => {
+          if (pool.poolUniqueId === 0) {
+            pool.name = $localize`:@@e5d8bb389c702588877f039d72178f219453a72d:Unknown`;
+          }
+        });
+        return response;
+      })
     );
   }  
 
   getPoolStats$(slug: string): Observable<PoolStat> {
-    return this.httpClient.get<PoolStat>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${slug}`);
+    return this.httpClient.get<PoolStat>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${slug}`)
+    .pipe(
+      map((poolStats) => {
+        if (poolStats.pool.unique_id === 0) {
+          poolStats.pool.name = $localize`:@@e5d8bb389c702588877f039d72178f219453a72d:Unknown`;
+        }
+        return poolStats;
+      })
+    );
   }
 
   getPoolHashrate$(slug: string): Observable<any> {
