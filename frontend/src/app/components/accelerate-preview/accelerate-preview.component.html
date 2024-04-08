@@ -206,7 +206,7 @@
               </ng-container>
 
               <!-- LOGIN CTA -->
-              <ng-container *ngIf="stateService.isMempoolSpaceBuild && !isLoggedIn()">
+              <ng-container *ngIf="stateService.isMempoolSpaceBuild && !isLoggedIn() && paymentType === 'bitcoin'">
                 <tr class="group-first group-last" style="border-top: 1px dashed grey">
                   <td class="item"></td>
                   <td class="amt"></td>
@@ -229,11 +229,20 @@
         </div>
       </div>
   
-      <div class="row mb-3" *ngIf="isLoggedIn()">
+      <div class="row mb-3" *ngIf="isLoggedIn() && paymentType === 'bitcoin'">
         <div class="col">
           <div class="d-flex justify-content-end" *ngIf="user && estimate.hasAccess">
             <button class="btn btn-sm btn-primary btn-success" style="width: 150px" (click)="accelerate()" i18n="transaction.accelerate|Accelerate button label">Accelerate</button>
           </div>
+        </div>
+      </div>
+
+      <div class="row d-flex justify-content-end align-items-center mr-1" style="height: 48px" *ngIf="!hideCashApp && paymentType === 'cashapp'">
+        <div [style]="showSpinner ? 'opacity: 0' : 'opacity: 1'" class="p-2">Accelerate with</div>
+        <div id="cash-app-pay" style="max-width: 320px" [style]="showSpinner ? 'opacity: 0' : 'opacity: 1'"></div>
+        <div *ngIf="showSpinner" class="d-flex align-items-center">
+          <span class="mr-2">Loading</span>
+          <div class="spinner-border text-light" style="width: 25px; height: 25px"></div>
         </div>
       </div>
   

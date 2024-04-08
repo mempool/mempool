@@ -373,6 +373,21 @@ export class Common {
     ].includes(pubkey);
   }
 
+  static isInscription(vin, flags): bigint {
+    // in taproot, if the last witness item begins with 0x50, it's an annex
+    const hasAnnex = vin.witness?.[vin.witness.length - 1].startsWith('50');
+    // script spends have more than one witness item, not counting the annex (if present)
+    if (vin.witness.length > (hasAnnex ? 2 : 1)) {
+      // the script itself is the second-to-last witness item, not counting the annex
+      const asm = vin.inner_witnessscript_asm || transactionUtils.convertScriptSigAsm(vin.witness[vin.witness.length - (hasAnnex ? 3 : 2)]);
+      // inscriptions smuggle data within an 'OP_0 OP_IF ... OP_ENDIF' envelope
+      if (asm?.includes('OP_0 OP_IF')) {
+        flags |= TransactionFlags.inscription;
+      }
+    }
+    return flags;
+  }
+
   static getTransactionFlags(tx: TransactionExtended): number {
     let flags = tx.flags ? BigInt(tx.flags) : 0n;
 
@@ -409,30 +424,31 @@ export class Common {
       if (vin.sequence < 0xfffffffe) {
         rbf = true;
       }
-      switch (vin.prevout?.scriptpubkey_type) {
-        case 'p2pk': flags |= TransactionFlags.p2pk; break;
-        case 'multisig': flags |= TransactionFlags.p2ms; break;
-        case 'p2pkh': flags |= TransactionFlags.p2pkh; break;
-        case 'p2sh': flags |= TransactionFlags.p2sh; break;
-        case 'v0_p2wpkh': flags |= TransactionFlags.p2wpkh; break;
-        case 'v0_p2wsh': flags |= TransactionFlags.p2wsh; break;
-        case 'v1_p2tr': {
-          if (!vin.witness?.length) {
-            throw new Error('Taproot input missing witness data');
-          }
-          flags |= TransactionFlags.p2tr;
-          // in taproot, if the last witness item begins with 0x50, it's an annex
-          const hasAnnex = vin.witness?.[vin.witness.length - 1].startsWith('50');
-          // script spends have more than one witness item, not counting the annex (if present)
-          if (vin.witness.length > (hasAnnex ? 2 : 1)) {
-            // the script itself is the second-to-last witness item, not counting the annex
-            const asm = vin.inner_witnessscript_asm || transactionUtils.convertScriptSigAsm(vin.witness[vin.witness.length - (hasAnnex ? 3 : 2)]);
-            // inscriptions smuggle data within an 'OP_0 OP_IF ... OP_ENDIF' envelope
-            if (asm?.includes('OP_0 OP_IF')) {
-              flags |= TransactionFlags.inscription;
+      if (vin.prevout?.scriptpubkey_type) {
+        switch (vin.prevout?.scriptpubkey_type) {
+          case 'p2pk': flags |= TransactionFlags.p2pk; break;
+          case 'multisig': flags |= TransactionFlags.p2ms; break;
+          case 'p2pkh': flags |= TransactionFlags.p2pkh; break;
+          case 'p2sh': flags |= TransactionFlags.p2sh; break;
+          case 'v0_p2wpkh': flags |= TransactionFlags.p2wpkh; break;
+          case 'v0_p2wsh': flags |= TransactionFlags.p2wsh; break;
+          case 'v1_p2tr': {
+            if (!vin.witness?.length) {
+              throw new Error('Taproot input missing witness data');
             }
+            flags |= TransactionFlags.p2tr;
+            flags = Common.isInscription(vin, flags);
+          } break;
+        }
+      } else {
+        // no prevouts, optimistically check witness-bearing inputs
+        if (vin.witness?.length >= 2) {
+          try {
+            flags = Common.isInscription(vin, flags);
+          } catch {
+            // witness script parsing will fail if this isn't really a taproot output
           }
-        } break;
+        }
       }
 
       // sighash flags
