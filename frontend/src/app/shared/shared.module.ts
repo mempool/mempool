@@ -50,6 +50,7 @@ import { BlockOverviewGraphComponent } from '../components/block-overview-graph/
 import { BlockOverviewTooltipComponent } from '../components/block-overview-tooltip/block-overview-tooltip.component';
 import { BlockFiltersComponent } from '../components/block-filters/block-filters.component';
 import { AddressGroupComponent } from '../components/address-group/address-group.component';
+import { TrackerComponent } from '../components/tracker/tracker.component';
 import { SearchFormComponent } from '../components/search-form/search-form.component';
 import { AddressLabelsComponent } from '../components/address-labels/address-labels.component';
 import { FooterComponent } from '../components/footer/footer.component';
@@ -156,6 +157,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     BlockFiltersComponent,
     TransactionsListComponent,
     AddressGroupComponent,
+    TrackerComponent,
     SearchFormComponent,
     AddressLabelsComponent,
     FooterComponent,
@@ -289,6 +291,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     BlockFiltersComponent,
     TransactionsListComponent,
     AddressGroupComponent,
+    TrackerComponent,
     SearchFormComponent,
     AddressLabelsComponent,
     FooterComponent,

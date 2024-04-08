@@ -7,6 +7,7 @@ import { MempoolBlockViewComponent } from './components/mempool-block-view/mempo
 import { ClockComponent } from './components/clock/clock.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
 import { AddressGroupComponent } from './components/address-group/address-group.component';
+import { TrackerComponent } from './components/tracker/tracker.component';
 
 const browserWindow = window || {};
 // @ts-ignore
@@ -104,6 +105,10 @@ let routes: Routes = [
     path: '',
     loadChildren: () => import('./master-page.module').then(m => m.MasterPageModule),
     data: { preload: true },
+  },
+  {
+    path: 'tracker/:id',
+    component: TrackerComponent,
   },
   {
     path: 'wallet',
