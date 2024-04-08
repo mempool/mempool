@@ -290,7 +290,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     ).subscribe((accelerationHistory) => {
       for (const acceleration of accelerationHistory) {
         if (acceleration.txid === this.txId && (acceleration.status === 'completed' || acceleration.status === 'completed_provisional')) {
-          acceleration.acceleratedFee = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + acceleration.feePaid - acceleration.baseFee - acceleration.vsizeFee);
+          acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + acceleration.feePaid - acceleration.baseFee - acceleration.vsizeFee) / acceleration.effectiveVsize;
           this.accelerationInfo = acceleration;
         }
       }

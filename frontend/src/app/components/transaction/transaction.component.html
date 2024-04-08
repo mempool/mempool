@@ -613,8 +613,8 @@
         }
         <td>
           <div class="effective-fee-container">
-            @if (accelerationInfo) {
-              <app-fee-rate [fee]="accelerationInfo.acceleratedFee" [weight]="accelerationInfo.effectiveVsize * 4"></app-fee-rate>
+            @if (accelerationInfo && (accelerationInfo.acceleratedFeeRate >= tx.effectiveFeePerVsize)) {
+              <app-fee-rate [fee]="accelerationInfo.acceleratedFeeRate"></app-fee-rate>
             } @else {
               <app-fee-rate [fee]="tx.effectiveFeePerVsize"></app-fee-rate>
             }
