@@ -286,14 +286,17 @@
         </div>
       </div>
 
-      <div class="row d-flex justify-content-end align-items-center mr-1" style="height: 48px" *ngIf="!hideCashApp && paymentType === 'cashapp'">
-        <div [style]="showSpinner ? 'opacity: 0' : 'opacity: 1'" class="p-2">Accelerate with</div>
-        <div id="cash-app-pay" style="max-width: 320px" [style]="showSpinner ? 'opacity: 0' : 'opacity: 1'"></div>
-        <div *ngIf="showSpinner" class="d-flex align-items-center">
-          <span class="mr-2">Loading</span>
-          <div class="spinner-border text-light" style="width: 25px; height: 25px"></div>
+      @if (!hideCashApp && paymentType === 'cashapp') {
+        <div #cashappCTA class="cashapp-placeholder {{ stickyCTA }}"></div>
+        <div class="d-flex justify-content-center align-items-center cashapp-cta {{ stickyCTA }}" (click)="submitCashappPay()">
+          <div [style]="showSpinner ? 'opacity: 0' : 'opacity: 1'" class="p-2">Accelerate for <app-fiat [value]="maxCost" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat> with</div>
+          <div id="cash-app-pay" style="max-width: 320px" [style]="showSpinner ? 'opacity: 0' : 'opacity: 1'"></div>
+          <div *ngIf="showSpinner" class="d-flex align-items-center">
+            <span class="mr-2">Loading</span>
+            <div class="spinner-border text-light" style="width: 25px; height: 25px"></div>
+          </div>
         </div>
-      </div>
+      }
   
     </div>
   </ng-container>

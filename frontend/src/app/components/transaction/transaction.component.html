@@ -80,7 +80,9 @@
       <div class="title float-left">
         <h2 i18n="transaction.accelerate|Accelerate button label">Accelerate</h2>
       </div>
-      <button type="button" class="btn btn-outline-info accelerator-toggle btn-sm float-right" (click)="showAccelerationSummary = false" i18n="hide-accelerator">Hide accelerator</button>
+      @if (!(isMobile && paymentType === 'cashapp')) {
+        <button type="button" class="btn btn-outline-info accelerator-toggle btn-sm float-right" (click)="showAccelerationSummary = false" i18n="hide-accelerator">Hide accelerator</button>
+      }
       <div class="clearfix"></div>
 
       <div class="box">
@@ -409,9 +411,6 @@
   } @else {
     <ng-container *ngTemplateOutlet="firstSeenRow"></ng-container>
     <ng-container *ngTemplateOutlet="etaRow"></ng-container>
-    @if (isMobile) {
-      <ng-container *ngTemplateOutlet="accelerateRow"></ng-container>
-    }
   }
   <ng-container *ngTemplateOutlet="featuresRow"></ng-container>
   @if (tx?.status?.confirmed) {
@@ -533,7 +532,7 @@
           } @else if (this.mempoolPosition.block >= 7) {
             <span [class]="(acceleratorAvailable && accelerateCtaType === 'button') ? 'etaDeepMempool d-flex justify-content-end align-items-center' : ''">
               <span i18n="transaction.eta.in-several-hours|Transaction ETA in several hours or more">In several hours (or more)</span>
-              @if (!isMobile && !tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration) {
+              @if (!(isMobile && paymentType === 'cashapp') && !tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration) {
                 <a [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn btn-sm accelerateDeepMempool btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
               }
             </span>
@@ -542,7 +541,7 @@
           } @else {
             <span class="eta justify-content-end" [class]="(acceleratorAvailable && accelerateCtaType === 'button') ? 'd-flex align-items-center' : ''">
               <app-time kind="until" *ngIf="(da$ | async) as da;" [time]="da.adjustedTimeAvg * (this.mempoolPosition.block + 1) + now + da.timeOffset" [fastRender]="false" [fixedRender]="true"></app-time>
-              @if (!isMobile && !tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration) {
+              @if (!(isMobile && paymentType === 'cashapp') && !tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration) {
                 <a [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn btn-sm accelerate btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
               }
             </span>
@@ -550,18 +549,6 @@
         </td>
       </tr>
     }
-  } @else {
-    <ng-container *ngTemplateOutlet="skeletonDetailsRow"></ng-container>
-  }
-</ng-template>
-
-<ng-template #accelerateRow>
-  @if (!isLoadingTx) {
-    <tr>
-      <td class="td-width align-items-center align-middle p-0" colspan="2">
-        <a [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn accelerateFullSize" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
-      </td>
-    </tr>
   } @else {
     <ng-container *ngTemplateOutlet="skeletonDetailsRow"></ng-container>
   }

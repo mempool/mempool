@@ -117,6 +117,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   flowEnabled: boolean;
   tooltipPosition: { x: number, y: number };
   isMobile: boolean;
+  paymentType: 'bitcoin' | 'cashapp' = 'bitcoin';
+  firstLoad = true;
 
   featuresEnabled: boolean;
   segwitEnabled: boolean;
@@ -153,6 +155,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
+
+    if (this.acceleratorAvailable && this.stateService.ref === 'https://cash.app/') {
+      this.showAccelerationSummary = true;
+      this.paymentType = 'cashapp';
+    }
 
     this.enterpriseService.page();
 
@@ -720,6 +727,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   resetTransaction() {
+    if (!this.firstLoad) {
+      this.stateService.ref = '';
+    } else {
+      this.firstLoad = false;
+    }
     this.error = undefined;
     this.tx = null;
     this.setFeatures();
@@ -814,6 +826,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.stateService.ref = '';
     this.subscription.unsubscribe();
     this.fetchCpfpSubscription.unsubscribe();
     this.fetchRbfSubscription.unsubscribe();
