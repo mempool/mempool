@@ -367,7 +367,11 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
 
   insertSquare(): void {
     let statsUrl = 'https://sandbox.web.squarecdn.com/v1/square.js';
-    if (document.location.hostname === 'mempool-staging.tk7.mempool.space' || document.location.hostname === 'mempool.space') {
+    if (document.location.hostname === 'mempool-staging.fmt.mempool.space' ||
+        document.location.hostname === 'mempool-staging.va1.mempool.space' ||
+        document.location.hostname === 'mempool-staging.fra.mempool.space' ||
+        document.location.hostname === 'mempool-staging.tk7.mempool.space' ||
+        document.location.hostname === 'mempool.space') {
       statsUrl = 'https://web.squarecdn.com/v1/square.js';
     }
 
