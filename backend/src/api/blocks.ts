@@ -29,6 +29,7 @@ import websocketHandler from './websocket-handler';
 import redisCache from './redis-cache';
 import rbfCache from './rbf-cache';
 import { calcBitsDifference } from './difficulty-adjustment';
+import AccelerationRepository from '../repositories/AccelerationRepository';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -872,6 +873,7 @@ class Blocks {
             await BlocksRepository.$deleteBlocksFrom(lastBlock.height - 10);
             await HashratesRepository.$deleteLastEntries();
             await cpfpRepository.$deleteClustersFrom(lastBlock.height - 10);
+            await AccelerationRepository.$deleteAccelerationsFrom(lastBlock.height - 10);
             this.blocks = this.blocks.slice(0, -10);
             this.updateTimerProgress(timer, `rolled back chain divergence from ${this.currentBlockHeight}`);
             for (let i = 10; i >= 0; --i) {

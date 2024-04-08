@@ -396,6 +396,9 @@ export interface Acceleration {
 
   acceleratedFeeRate?: number;
   boost?: number;
+
+  boostCost?: number;
+  boostRate?: number;
 }
 
 export interface AccelerationHistoryParams {

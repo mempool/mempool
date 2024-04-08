@@ -98,7 +98,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   fetchCpfp$ = new Subject<string>();
   fetchRbfHistory$ = new Subject<string>();
   fetchCachedTx$ = new Subject<string>();
-  fetchAcceleration$ = new Subject<string>();
+  fetchAcceleration$ = new Subject<number>();
   fetchMiningInfo$ = new Subject<{ hash: string, height: number, txid: string }>();
   isCached: boolean = false;
   now = Date.now();
@@ -288,8 +288,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       tap(() => {
         this.accelerationInfo = null;
       }),
-      switchMap((blockHash: string) => {
-        return this.servicesApiService.getAccelerationHistory$({ blockHash });
+      switchMap((blockHeight: number) => {
+        return this.servicesApiService.getAccelerationHistory$({ blockHeight });
       }),
       catchError(() => {
         return of(null);
@@ -297,7 +297,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     ).subscribe((accelerationHistory) => {
       for (const acceleration of accelerationHistory) {
         if (acceleration.txid === this.txId && (acceleration.status === 'completed' || acceleration.status === 'completed_provisional')) {
-          acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + acceleration.feePaid - acceleration.baseFee - acceleration.vsizeFee) / acceleration.effectiveVsize;
+          const boostCost = acceleration.boostCost || (acceleration.feePaid - acceleration.baseFee - acceleration.vsizeFee);
+          acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
+          acceleration.boost = boostCost;
+
           this.accelerationInfo = acceleration;
         }
       }
@@ -482,7 +485,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               this.getTransactionTime();
             }
           } else {
-            this.fetchAcceleration$.next(tx.status.block_hash);
+            this.fetchAcceleration$.next(tx.status.block_height);
             this.fetchMiningInfo$.next({ hash: tx.status.block_hash, height: tx.status.block_height, txid: tx.txid });
             this.transactionTime = 0;
           }
@@ -544,7 +547,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         } else {
           this.audioService.playSound('magic');
         }
-        this.fetchAcceleration$.next(block.id);
+        this.fetchAcceleration$.next(block.height);
         this.fetchMiningInfo$.next({ hash: block.id, height: block.height, txid: this.tx.txid });
       }
     });
