@@ -398,7 +398,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
 
   @HostListener('window:scroll', ['$event']) // for window scroll events
   onScroll() {
-    if (this.estimate && this.user && !this.cashappCTA?.nativeElement) {
+    if (this.estimate && !this.cashappCTA?.nativeElement) {
       setTimeout(() => {
         this.onScroll();
       }, 200);
