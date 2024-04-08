@@ -14,8 +14,8 @@ import { detectWebGL } from '../../../shared/graphs.utils';
 import { ThemeService } from '../../../services/theme.service';
 
 const acceleratedColor: Color = hexToColor('8F5FF6');
-const normalColors = defaultMempoolFeeColors.map(hex => hexToColor(hex + '5F'));
-const contrastColors = contrastMempoolFeeColors.map(hex => hexToColor(hex + '5F'));
+const normalColors = defaultMempoolFeeColors.map(hex => hexToColor(hex.slice(0,6) + '5F'));
+const contrastColors = contrastMempoolFeeColors.map(hex => hexToColor(hex.slice(0,6) + '5F'));
 
 interface AccelerationBlock extends BlockExtended {
   accelerationCount: number,

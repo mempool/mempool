@@ -9,14 +9,11 @@ import { Price } from '../../services/price.service';
 import { StateService } from '../../services/state.service';
 import { ThemeService } from 'src/app/services/theme.service';
 import { Subscription } from 'rxjs';
-import { defaultColorFunction, setOpacity, defaultFeeColors, defaultAuditFeeColors, defaultMarginalFeeColors, defaultAuditColors, contrastFeeColors, contrastAuditFeeColors, contrastMarginalFeeColors, contrastAuditColors, contrastColorFunction } from './utils';
+import { defaultColorFunction, setOpacity, defaultAuditColors, defaultColors, ageColorFunction, contrastColorFunction, contrastAuditColors, contrastColors } from './utils';
 import { ActiveFilter, FilterMode, toFlags } from '../../shared/filters.utils';
 import { detectWebGL } from '../../shared/graphs.utils';
 
 const unmatchedOpacity = 0.2;
-const unmatchedFeeColors = defaultFeeColors.map(c => setOpacity(c, unmatchedOpacity));
-const unmatchedAuditFeeColors = defaultAuditFeeColors.map(c => setOpacity(c, unmatchedOpacity));
-const unmatchedMarginalFeeColors = defaultMarginalFeeColors.map(c => setOpacity(c, unmatchedOpacity));
 const unmatchedAuditColors = {
   censored: setOpacity(defaultAuditColors.censored, unmatchedOpacity),
   missing: setOpacity(defaultAuditColors.missing, unmatchedOpacity),
@@ -24,9 +21,6 @@ const unmatchedAuditColors = {
   prioritized: setOpacity(defaultAuditColors.prioritized, unmatchedOpacity),
   accelerated: setOpacity(defaultAuditColors.accelerated, unmatchedOpacity),
 };
-const unmatchedContrastFeeColors = contrastFeeColors.map(c => setOpacity(c, unmatchedOpacity));
-const unmatchedContrastAuditFeeColors = contrastAuditFeeColors.map(c => setOpacity(c, unmatchedOpacity));
-const unmatchedContrastMarginalFeeColors = contrastMarginalFeeColors.map(c => setOpacity(c, unmatchedOpacity));
 const unmatchedContrastAuditColors = {
   censored: setOpacity(contrastAuditColors.censored, unmatchedOpacity),
   missing: setOpacity(contrastAuditColors.missing, unmatchedOpacity),
@@ -57,6 +51,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   @Input() excludeFilters: string[] = [];
   @Input() filterFlags: bigint | null = null;
   @Input() filterMode: FilterMode = 'and';
+  @Input() gradientMode: 'fee' | 'age' = 'fee';
   @Input() relativeTime: number | null;
   @Input() blockConversion: Price;
   @Input() overrideColors: ((tx: TxView) => Color) | null = null;
@@ -137,21 +132,22 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
       this.setHighlightingEnabled(this.auditHighlighting);
     }
     if (changes.overrideColor && this.scene) {
-      this.scene.setColorFunction(this.overrideColors);
+      this.scene.setColorFunction(this.getFilterColorFunction(0n, this.gradientMode));
     }
-    if ((changes.filterFlags || changes.showFilters || changes.filterMode)) {
+    if ((changes.filterFlags || changes.showFilters || changes.filterMode || changes.gradientMode)) {
       this.setFilterFlags();
     }
   }
 
   setFilterFlags(goggle?: ActiveFilter): void {
     this.filterMode = goggle?.mode || this.filterMode;
+    this.gradientMode = goggle?.gradient || this.gradientMode;
     this.activeFilterFlags = goggle?.filters ? toFlags(goggle.filters) : this.filterFlags;
     if (this.scene) {
       if (this.activeFilterFlags != null && this.filtersAvailable) {
-        this.scene.setColorFunction(this.getFilterColorFunction(this.activeFilterFlags));
+        this.scene.setColorFunction(this.getFilterColorFunction(this.activeFilterFlags, this.gradientMode));
       } else {
-        this.scene.setColorFunction(this.overrideColors);
+        this.scene.setColorFunction(this.getFilterColorFunction(0n, this.gradientMode));
       }
     }
     this.start();
@@ -229,6 +225,9 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
       remove = remove.filter(txid => this.scene.txs[txid]);
       change = change.filter(tx => this.scene.txs[tx.txid]);
 
+      if (this.gradientMode === 'age') {
+        this.scene.updateAllColors();
+      }
       this.scene.update(add, remove, change, direction, resetLayout);
       this.start();
       this.updateSearchHighlight();
@@ -564,33 +563,41 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   }
 
   getColorFunction(): ((tx: TxView) => Color) {
-    if (this.filterFlags) {
-      return this.getFilterColorFunction(this.filterFlags);
-    } else if (this.activeFilterFlags) {
-      return this.getFilterColorFunction(this.activeFilterFlags);
-    } else {
+    if (this.overrideColors) {
       return this.overrideColors;
+    } else if (this.filterFlags) {
+      return this.getFilterColorFunction(this.filterFlags, this.gradientMode);
+    } else if (this.activeFilterFlags) {
+      return this.getFilterColorFunction(this.activeFilterFlags, this.gradientMode);
+    } else {
+      return this.getFilterColorFunction(0n, this.gradientMode);
     }
   }
 
-  getFilterColorFunction(flags: bigint): ((tx: TxView) => Color) {
+  getFilterColorFunction(flags: bigint, gradient: 'fee' | 'age'): ((tx: TxView) => Color) {
     return (tx: TxView) => {
       if ((this.filterMode === 'and' && (tx.bigintFlags & flags) === flags) || (this.filterMode === 'or' && (flags === 0n || (tx.bigintFlags & flags) > 0n))) {
-        return this.themeService.theme !== 'default' ? contrastColorFunction(tx) : defaultColorFunction(tx);
+        if (this.themeService.theme !== 'contrast') {
+          return (gradient === 'age') ? ageColorFunction(tx, defaultColors.fee, defaultAuditColors, this.relativeTime || (Date.now() / 1000)) : defaultColorFunction(tx, defaultColors.fee, defaultAuditColors, this.relativeTime || (Date.now() / 1000));
+        } else {
+          return (gradient === 'age') ? ageColorFunction(tx, contrastColors.fee, contrastAuditColors, this.relativeTime || (Date.now() / 1000)) : contrastColorFunction(tx, contrastColors.fee, contrastAuditColors, this.relativeTime || (Date.now() / 1000));
+        }
       } else {
-        return this.themeService.theme !== 'default' ? contrastColorFunction(
-          tx,
-          unmatchedContrastFeeColors,
-          unmatchedContrastAuditFeeColors,
-          unmatchedContrastMarginalFeeColors,
-          unmatchedContrastAuditColors
-        ) : defaultColorFunction(
-          tx,
-          unmatchedFeeColors,
-          unmatchedAuditFeeColors,
-          unmatchedMarginalFeeColors,
-          unmatchedAuditColors
-        );
+        if (this.themeService.theme !== 'contrast') {
+          return (gradient === 'age') ? { r: 1, g: 1, b: 1, a: 0.05 } : defaultColorFunction(
+            tx,
+            defaultColors.unmatchedfee,
+            unmatchedAuditColors,
+            this.relativeTime || (Date.now() / 1000)
+          );
+        } else {
+          return (gradient === 'age') ? { r: 1, g: 1, b: 1, a: 0.05 } : contrastColorFunction(
+            tx,
+            contrastColors.unmatchedfee,
+            unmatchedContrastAuditColors,
+            this.relativeTime || (Date.now() / 1000)
+          );
+        }
       }
     };
   }
