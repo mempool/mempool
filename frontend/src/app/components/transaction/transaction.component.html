@@ -613,7 +613,7 @@
   @if (!isLoadingTx) {
     @if ((cpfpInfo && hasEffectiveFeeRate) || accelerationInfo) {
       <tr>
-        @if (tx.acceleration || accelerationInfo) {
+        @if (isAcceleration) {
           <td i18n="transaction.accelerated-fee-rate|Accelerated transaction fee rate">Accelerated fee rate</td>
         } @else {
           <td i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
