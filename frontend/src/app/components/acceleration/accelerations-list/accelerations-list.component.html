@@ -40,7 +40,7 @@
           </ng-container>
           <ng-container *ngIf="!pending">
             <td *ngIf="acceleration.boost != null" class="fee text-right">
-              {{ (acceleration.boost) | number }} <span class="symbol" i18n="shared.sat|sat">sat</span>
+              {{ acceleration.boost | number }} <span class="symbol" i18n="shared.sat|sat">sat</span>
             </td>
             <td *ngIf="acceleration.boost == null" class="fee text-right">
               ~
