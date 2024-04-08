@@ -976,6 +976,9 @@ class Blocks {
       if (this.blocks.length > config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4) {
         this.blocks = this.blocks.slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4);
       }
+      blockSummary.transactions.forEach(tx => {
+        delete tx.acc;
+      });
       this.blockSummaries.push(blockSummary);
       if (this.blockSummaries.length > config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4) {
         this.blockSummaries = this.blockSummaries.slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4);
@@ -1119,6 +1122,7 @@ class Blocks {
           }
           return {
             txid: tx.txid,
+            time: tx.firstSeen,
             fee: tx.fee || 0,
             vsize: tx.vsize,
             value: Math.round(tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0)),
