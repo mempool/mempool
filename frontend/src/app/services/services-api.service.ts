@@ -128,12 +128,12 @@ export class ServicesApiServices {
     return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/accelerator/estimate`, { txInput: txInput }, { observe: 'response' });
   }
 
-  accelerate$(txInput: string, userBid: number) {
-    return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/accelerator/accelerate`, { txInput: txInput, userBid: userBid });
+  accelerate$(txInput: string, userBid: number, accelerationUUID: string) {
+    return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/accelerator/accelerate`, { txInput: txInput, userBid: userBid, accelerationUUID: accelerationUUID });
   }
 
-  accelerateWithCashApp$(txInput: string, userBid: number, token: string, cashtag: string, referenceId: string) {
-    return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/accelerator/accelerate/cashapp`, { txInput: txInput, userBid: userBid, token: token, cashtag: cashtag, referenceId: referenceId });
+  accelerateWithCashApp$(txInput: string, userBid: number, token: string, cashtag: string, referenceId: string, accelerationUUID: string) {
+    return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/accelerator/accelerate/cashapp`, { txInput: txInput, userBid: userBid, token: token, cashtag: cashtag, referenceId: referenceId, accelerationUUID: accelerationUUID });
   }
 
   getAccelerations$(): Observable<Acceleration[]> {
