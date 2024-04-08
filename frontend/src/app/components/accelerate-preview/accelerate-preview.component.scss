@@ -150,6 +150,14 @@
       bottom: 56px;
     }
   }
+
+  @media (max-width: 400px) {
+    width: calc(100% + 1.5rem);
+    margin: 0 -0.75rem;
+    &.sticky-top, &.sticky-bottom {
+      width: calc(100vw - 30px);
+    }
+  }
 }
 
 .cashapp-placeholder {
