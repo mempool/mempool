@@ -117,9 +117,6 @@ export function defaultColorFunction(
   colors: { base: Color[], audit: Color[], marginal: Color[], baseLevel: (tx: TxView, rate: number, time: number) => number } = defaultColors.fee,
   auditColors: { [status: string]: Color } = defaultAuditColors,
   relativeTime?: number,
-  colors: { base: Color[], audit: Color[], marginal: Color[], baseLevel: (tx: TxView, rate: number, time: number) => number } = defaultColors.fee,
-  auditColors: { [status: string]: Color } = defaultAuditColors,
-  relativeTime?: number,
 ): Color {
   const rate = tx.fee / tx.vsize; // color by simple single-tx fee rate
   const levelIndex = colors.baseLevel(tx, rate, relativeTime || (Date.now() / 1000));
