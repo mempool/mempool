@@ -7,8 +7,9 @@ import TxView from './tx-view';
 import { Color, Position } from './sprite-types';
 import { Price } from '../../services/price.service';
 import { StateService } from '../../services/state.service';
+import { ThemeService } from '../../services/theme.service';
 import { Subscription } from 'rxjs';
-import { defaultColorFunction, setOpacity, defaultAuditColors, defaultColors, ageColorFunction } from './utils';
+import { defaultColorFunction, setOpacity, defaultAuditColors, defaultColors, ageColorFunction, contrastColorFunction, contrastAuditColors, contrastColors } from './utils';
 import { ActiveFilter, FilterMode, toFlags } from '../../shared/filters.utils';
 import { detectWebGL } from '../../shared/graphs.utils';
 
@@ -19,6 +20,13 @@ const unmatchedAuditColors = {
   added: setOpacity(defaultAuditColors.added, unmatchedOpacity),
   prioritized: setOpacity(defaultAuditColors.prioritized, unmatchedOpacity),
   accelerated: setOpacity(defaultAuditColors.accelerated, unmatchedOpacity),
+};
+const unmatchedContrastAuditColors = {
+  censored: setOpacity(contrastAuditColors.censored, unmatchedOpacity),
+  missing: setOpacity(contrastAuditColors.missing, unmatchedOpacity),
+  added: setOpacity(contrastAuditColors.added, unmatchedOpacity),
+  prioritized: setOpacity(contrastAuditColors.prioritized, unmatchedOpacity),
+  accelerated: setOpacity(contrastAuditColors.accelerated, unmatchedOpacity),
 };
 
 @Component({
@@ -53,6 +61,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   @ViewChild('blockCanvas')
   canvas: ElementRef<HTMLCanvasElement>;
+  themeChangedSubscription: Subscription;
 
   gl: WebGLRenderingContext;
   animationFrameRequest: number;
@@ -84,6 +93,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     readonly ngZone: NgZone,
     readonly elRef: ElementRef,
     public stateService: StateService,
+    private themeService: ThemeService,
   ) {
     this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
     this.vertexArray = new FastVertexArray(512, TxSprite.dataSize);
@@ -102,6 +112,9 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
       if (this.gl) {
         this.initCanvas();
         this.resizeCanvas();
+        this.themeChangedSubscription = this.themeService.themeChanged$.subscribe(() => {
+          this.scene.setColorFunction(this.getColorFunction());
+        });
       }
     }
   }
@@ -148,6 +161,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     if (this.canvas) {
       this.canvas.nativeElement.removeEventListener('webglcontextlost', this.handleContextLost);
       this.canvas.nativeElement.removeEventListener('webglcontextrestored', this.handleContextRestored);
+      this.themeChangedSubscription?.unsubscribe();
     }
   }
 
@@ -293,7 +307,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
         this.start();
       } else {
         this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: this.resolution,
-          blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray,
+          blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray, theme: this.themeService,
           highlighting: this.auditHighlighting, animationDuration: this.animationDuration, animationOffset: this.animationOffset,
         colorFunction: this.getColorFunction() });
         this.start();
@@ -563,14 +577,27 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   getFilterColorFunction(flags: bigint, gradient: 'fee' | 'age'): ((tx: TxView) => Color) {
     return (tx: TxView) => {
       if ((this.filterMode === 'and' && (tx.bigintFlags & flags) === flags) || (this.filterMode === 'or' && (flags === 0n || (tx.bigintFlags & flags) > 0n))) {
-        return (gradient === 'age') ? ageColorFunction(tx, defaultColors.fee, defaultAuditColors, this.relativeTime || (Date.now() / 1000)) : defaultColorFunction(tx, defaultColors.fee, defaultAuditColors, this.relativeTime || (Date.now() / 1000));
+        if (this.themeService.theme !== 'contrast') {
+          return (gradient === 'age') ? ageColorFunction(tx, defaultColors.fee, defaultAuditColors, this.relativeTime || (Date.now() / 1000)) : defaultColorFunction(tx, defaultColors.fee, defaultAuditColors, this.relativeTime || (Date.now() / 1000));
+        } else {
+          return (gradient === 'age') ? ageColorFunction(tx, contrastColors.fee, contrastAuditColors, this.relativeTime || (Date.now() / 1000)) : contrastColorFunction(tx, contrastColors.fee, contrastAuditColors, this.relativeTime || (Date.now() / 1000));
+        }
       } else {
-        return (gradient === 'age') ? { r: 1, g: 1, b: 1, a: 0.05 } : defaultColorFunction(
-          tx,
-          defaultColors.unmatchedfee,
-          unmatchedAuditColors,
-          this.relativeTime || (Date.now() / 1000)
-        );
+        if (this.themeService.theme !== 'contrast') {
+          return (gradient === 'age') ? { r: 1, g: 1, b: 1, a: 0.05 } : defaultColorFunction(
+            tx,
+            defaultColors.unmatchedfee,
+            unmatchedAuditColors,
+            this.relativeTime || (Date.now() / 1000)
+          );
+        } else {
+          return (gradient === 'age') ? { r: 1, g: 1, b: 1, a: 0.05 } : contrastColorFunction(
+            tx,
+            contrastColors.unmatchedfee,
+            unmatchedContrastAuditColors,
+            this.relativeTime || (Date.now() / 1000)
+          );
+        }
       }
     };
   }

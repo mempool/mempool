@@ -272,7 +272,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
         splitLine: {
           lineStyle: {
             type: 'dotted',
-            color: '#ffffff66',
+            color: 'var(--transparent-fg)',
             opacity: 0.25,
           }
         }
@@ -332,7 +332,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
     const now = new Date();
     // @ts-ignore
     this.mempoolStatsChartOption.grid.height = prevHeight + 20;
-    this.mempoolStatsChartOption.backgroundColor = '#11131f';
+    this.mempoolStatsChartOption.backgroundColor = 'var(--active-bg)';
     this.chartInstance.setOption(this.mempoolStatsChartOption);
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,

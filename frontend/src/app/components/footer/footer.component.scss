@@ -3,7 +3,7 @@
   bottom: 0;
   width: 100%;
   height: 60px;
-  background-color: #1d1f31;
+  background-color: var(--bg);
   box-shadow: 15px 15px 15px 15px #000;
   z-index: 10;
 
@@ -40,16 +40,8 @@
   }
 }
 
-.txPerSecond {
-  color: #4a9ff4;
-}
-
 .mempoolSize {
-  color: #4a68b9;
-}
-
-.unconfirmedTx {
-  color: #f14d80;
+  color: var(--title-fg);
 }
 
 .info-block {
@@ -61,7 +53,7 @@
 .progress {
   display: inline-flex;
   width: 160px;
-  background-color: #2d3348;
+  background-color: var(--secondary);
   height: 1.1rem;
 }
 

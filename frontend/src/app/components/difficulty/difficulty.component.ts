@@ -82,24 +82,24 @@ export class DifficultyComponent implements OnInit {
     .pipe(
       map(([blocks, da]) => {
         const maxHeight = blocks.reduce((max, block) => Math.max(max, block.height), 0);
-        let colorAdjustments = '#ffffff66';
+        let colorAdjustments = 'var(--transparent-fg)';
         if (da.difficultyChange > 0) {
-          colorAdjustments = '#3bcc49';
+          colorAdjustments = 'var(--green)';
         }
         if (da.difficultyChange < 0) {
-          colorAdjustments = '#dc3545';
+          colorAdjustments = 'var(--red)';
         }
 
-        let colorPreviousAdjustments = '#dc3545';
+        let colorPreviousAdjustments = 'var(--red)';
         if (da.previousRetarget) {
           if (da.previousRetarget >= 0) {
-            colorPreviousAdjustments = '#3bcc49';
+            colorPreviousAdjustments = 'var(--green)';
           }
           if (da.previousRetarget === 0) {
-            colorPreviousAdjustments = '#ffffff66';
+            colorPreviousAdjustments = 'var(--transparent-fg)';
           }
         } else {
-          colorPreviousAdjustments = '#ffffff66';
+          colorPreviousAdjustments = 'var(--transparent-fg)';
         }
 
         const blocksUntilHalving = 210000 - (maxHeight % 210000);

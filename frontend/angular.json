@@ -170,6 +170,11 @@
             ],
             "styles": [
               "src/styles.scss",
+              {
+                "input": "src/theme-contrast.scss",
+                "bundleName": "contrast",
+                "inject": false
+              },
               "node_modules/@fortawesome/fontawesome-svg-core/styles.css"
             ],
             "vendorChunk": true,

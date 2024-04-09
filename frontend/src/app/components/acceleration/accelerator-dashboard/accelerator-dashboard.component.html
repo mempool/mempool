@@ -40,7 +40,7 @@
           <a class="title-link" href="" [routerLink]="['/mempool-block/0' | relativeUrl]">
             <h5 class="card-title d-inline">Mempool Goggles&trade; : <ng-container i18n="accelerator.accelerations">Accelerations</ng-container></h5>
             <span>&nbsp;</span>
-            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: 'text-top'; font-size: 13px; color: #4a68b9"></fa-icon>
+            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: 'text-top'; font-size: 13px; color: var(--title-fg)"></fa-icon>
           </a>
           <div class="mempool-block-wrapper" *ngIf="webGlEnabled">
             <app-mempool-block-overview [index]="0" [overrideColors]="getAcceleratorColor"></app-mempool-block-overview>
@@ -85,7 +85,7 @@
           <a class="title-link" href="" [routerLink]="['/acceleration/list' | relativeUrl]">
             <h5 class="card-title d-inline" i18n="dashboard.recent-accelerations">Recent Accelerations</h5>
             <span>&nbsp;</span>
-            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: 'text-top'; font-size: 13px; color: #4a68b9"></fa-icon>
+            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: 'text-top'; font-size: 13px; color: var(--title-fg)"></fa-icon>
           </a>
           <app-accelerations-list [attr.data-cy]="'recent-accelerations'" [widget]=true [accelerations$]="minedAccelerations$"></app-accelerations-list>
         </div>

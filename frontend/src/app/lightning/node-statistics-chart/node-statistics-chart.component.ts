@@ -112,7 +112,7 @@ export class NodeStatisticsChartComponent implements OnInit {
         borderRadius: 4,
         shadowColor: 'rgba(0, 0, 0, 0.5)',
         textStyle: {
-          color: '#b1b1b1',
+          color: 'var(--tooltip-grey)',
           align: 'left',
         },
         borderColor: '#000',
@@ -181,7 +181,7 @@ export class NodeStatisticsChartComponent implements OnInit {
           splitLine: {
             lineStyle: {
               type: 'dotted',
-              color: '#ffffff66',
+              color: 'var(--transparent-fg)',
               opacity: 0.25,
             }
           },
@@ -217,7 +217,7 @@ export class NodeStatisticsChartComponent implements OnInit {
             symbol: 'none',
             lineStyle: {
               type: 'solid',
-              color: '#ffffff66',
+              color: 'var(--transparent-fg)',
               opacity: 1,
               width: 1,
             },

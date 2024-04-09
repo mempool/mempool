@@ -1,7 +1,7 @@
 <div class="container-xl" *ngIf="(channel$ | async) as channel; else skeletonLoader">
 
   <ng-container *ngIf="!error">
-    <h5 class="mb-0" style="color: #ffffff66" i18n="lightning.channel">Lightning channel</h5>
+    <h5 class="mb-0" style="color: var(--transparent-fg)" i18n="lightning.channel">Lightning channel</h5>
     <div class="title-container">
       <h1 class="mb-0">{{ channel.short_id }}</h1>
       <span class="tx-link">
@@ -113,7 +113,7 @@
 
 <ng-template #skeletonLoader>
   <div class="container-xl">
-    <h5 class="mb-0" style="color: #ffffff66" i18n="lightning.channel">Lightning channel</h5>
+    <h5 class="mb-0" style="color: var(--transparent-fg)" i18n="lightning.channel">Lightning channel</h5>
     <div class="title-container">
       <h1 class="mb-0"><span class="skeleton-loader" style="width: 275px; height: 25px;"></span></h1>
       <span class="tx-link">

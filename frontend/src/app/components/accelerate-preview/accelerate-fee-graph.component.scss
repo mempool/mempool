@@ -92,7 +92,7 @@
 
       &.target {
         .fill {
-          background: #653b9c;
+          background: var(--tertiary);
         }
         .fee {
           position: absolute;
@@ -114,7 +114,7 @@
         }
         &.active, &:hover {
           .fill {
-            background: #105fb0;
+            background: var(--primary);
           }
           .line {
             .fee-rate .label {
