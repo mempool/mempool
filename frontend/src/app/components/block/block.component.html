@@ -39,7 +39,7 @@
       <div class="col-sm">
         <table class="table table-borderless table-striped">
           <tbody>
-            <ng-container *ngIf="!isLoadingBlock; else skeletonRows">
+            <ng-container *ngIf="block && !isLoadingBlock; else skeletonRows">
               <tr>
                 <td class="td-width" i18n="block.hash">Hash</td>
                 <td>&lrm;<a [routerLink]="['/block/' | relativeUrl, block.id]" title="{{ block.id }}">{{ block.id | shortenString : 13 }}</a> <app-clipboard [text]="block.id"></app-clipboard></td>
@@ -109,7 +109,7 @@
         <div class="col-sm chart-container" *ngIf="webGlEnabled && !showAudit">
           <app-block-overview-graph
             #blockGraphActual
-            [isLoading]="isLoadingOverview"
+            [isLoading]="!stateService.isBrowser || isLoadingOverview"
             [resolution]="86"
             [blockLimit]="stateService.blockVSize"
             [orientation]="'top'"
@@ -117,6 +117,7 @@
             [blockConversion]="blockConversion"
             [showFilters]="true"
             [excludeFilters]="['replacement']"
+            [relativeTime]="block?.timestamp"
             (txClickEvent)="onTxClick($event)"
           ></app-block-overview-graph>
           <ng-container *ngTemplateOutlet="emptyBlockInfo"></ng-container>
@@ -126,16 +127,16 @@
   </div>
 
   <ng-template #restOfTable>
-    <ng-container *ngIf="!isLoadingBlock; else loadingRest">
+    <ng-container *ngIf="block && !isLoadingBlock; else loadingRest">
       <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
         <td i18n="mempool-block.fee-span">Fee span</td>
-        <td><app-fee-rate [fee]="block?.extras?.minFee" [showUnit]="false" rounding="1.0-0"></app-fee-rate> - <app-fee-rate [fee]="block?.extras?.maxFee" rounding="1.0-0"></app-fee-rate></td>
+        <td><app-fee-rate [fee]="block.extras?.minFee" [showUnit]="false" rounding="1.0-0"></app-fee-rate> - <app-fee-rate [fee]="block.extras?.maxFee" rounding="1.0-0"></app-fee-rate></td>
       </tr>
-      <tr *ngIf="block?.extras?.medianFee != undefined">
+      <tr *ngIf="block.extras?.medianFee != undefined">
         <td class="td-width" i18n="block.median-fee">Median fee</td>
-        <td>~<app-fee-rate [fee]="block?.extras?.medianFee" rounding="1.0-0"></app-fee-rate>
+        <td>~<app-fee-rate [fee]="block.extras?.medianFee" rounding="1.0-0"></app-fee-rate>
           <span class="fiat">
-            <app-fiat [blockConversion]="blockConversion" [value]="block?.extras?.medianFee * 140" digitsInfo="1.2-2"
+            <app-fiat [blockConversion]="blockConversion" [value]="block.extras?.medianFee * 140" digitsInfo="1.2-2"
               i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes"
               placement="bottom"></app-fiat>
           </span>
@@ -181,13 +182,13 @@
         <td i18n="block.miner">Miner</td>
         <td *ngIf="stateService.env.MINING_DASHBOARD">
           <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]" class="badge"
-            [class]="block.extras.pool.name === 'Unknown' ? 'badge-secondary' : 'badge-primary'">
+            [class]="block.extras.pool.slug === 'unknown' ? 'badge-secondary' : 'badge-primary'">
             {{ block.extras.pool.name }}
           </a>
         </td>
         <td *ngIf="!stateService.env.MINING_DASHBOARD && stateService.env.BASE_MODULE === 'mempool'">
           <span placement="bottom" class="badge"
-            [class]="block.extras.pool.name === 'Unknown' ? 'badge-secondary' : 'badge-primary'">
+            [class]="block.extras.pool.slug === 'unknown' ? 'badge-secondary' : 'badge-primary'">
             {{ block.extras.pool.name }}
         </span>
         </td>
@@ -226,13 +227,13 @@
         fragment="actual" (click)="changeMode('actual')">Actual</a>
     </div>
     <div class="row">
-      <div class="col-sm">
+      <div class="col-sm audit-col" [class.mobile]="isMobile">
         <h3 class="block-subtitle" *ngIf="!isMobile"><ng-container i18n="block.expected-block">Expected Block</ng-container></h3>
         <div class="block-graph-wrapper">
-          <app-block-overview-graph #blockGraphProjected [isLoading]="isLoadingOverview" [resolution]="86"
+          <app-block-overview-graph #blockGraphProjected [isLoading]="!stateService.isBrowser || isLoadingOverview" [resolution]="86"
             [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" [auditHighlighting]="showAudit"
             (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="!isMobile && !showAudit"
-            [showFilters]="true" [excludeFilters]="['replacement']"></app-block-overview-graph>
+            [showFilters]="true" [excludeFilters]="['replacement']" [relativeTime]="block?.timestamp"></app-block-overview-graph>
           <ng-container *ngIf="!isMobile || mode !== 'actual'; else emptyBlockInfo"></ng-container>
         </div>
         <ng-container *ngIf="network !== 'liquid'">
@@ -241,13 +242,13 @@
           </ng-template>
         </ng-container>
       </div>
-      <div class="col-sm" *ngIf="!isMobile">
+      <div class="col-sm audit-col" *ngIf="!isMobile">
         <h3 class="block-subtitle actual" *ngIf="!isMobile"><ng-container i18n="block.actual-block">Actual Block</ng-container><a class="info-link" [routerLink]="['/docs/faq' | relativeUrl ]" fragment="how-do-block-audits-work"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></a></h3>
         <div class="block-graph-wrapper">
-          <app-block-overview-graph #blockGraphActual [isLoading]="isLoadingOverview" [resolution]="86"
+          <app-block-overview-graph #blockGraphActual [isLoading]="!stateService.isBrowser || isLoadingOverview" [resolution]="86"
             [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" mode="mined"  [auditHighlighting]="showAudit"
             (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="isMobile && !showAudit"
-            [showFilters]="true" [excludeFilters]="['replacement']"></app-block-overview-graph>
+            [showFilters]="true" [excludeFilters]="['replacement']" [relativeTime]="block?.timestamp"></app-block-overview-graph>
           <ng-container *ngTemplateOutlet="emptyBlockInfo"></ng-container>
         </div>
         <ng-container *ngIf="network !== 'liquid'">
@@ -259,7 +260,7 @@
     </div>
   </div>
 
-  <ng-template [ngIf]="!isLoadingBlock && !error">
+  <ng-template [ngIf]="block && !isLoadingBlock && !error">
     <div [hidden]="!showDetails" id="details">
       <br>
 
@@ -335,17 +336,15 @@
     </div>
     <div class="clearfix"></div>
 
-    <app-transactions-list [transactions]="transactions" [paginated]="true"></app-transactions-list>
+    <app-transactions-list [transactions]="transactions" [paginated]="true" [blockTime]="block.timestamp"></app-transactions-list>
 
     <ng-template [ngIf]="transactionsError">
-      <div class="text-center">
-        <br>
+      <br>
+      <app-http-error [error]="transactionsError">
         <span i18n="error.general-loading-data">Error loading data.</span>
-        <br><br>
-        <i>{{ transactionsError.status }}: {{ transactionsError.error }}</i>
-        <br>
-        <br>
-      </div>
+      </app-http-error>
+      <br>
+      <br>
     </ng-template>
 
     <ng-template [ngIf]="isLoadingTransactions && !transactionsError">
@@ -378,11 +377,9 @@
     <br>
   </ng-template>
   <ng-template [ngIf]="error">
-    <div class="text-center">
+    <app-http-error [error]="error">
       <span i18n="error.general-loading-data">Error loading data.</span>
-      <br><br>
-      <i>{{ error.status }}: {{ error.error }}</i>
-    </div>
+    </app-http-error>
   </ng-template>
 
   <ng-template #headerLoader>
@@ -431,8 +428,11 @@
     <tbody>
       <tr>
         <td i18n="block.total-fees|Total fees in a block">Total fees</td>
-        <td>
+        <td class="text-wrap">
           <app-amount [satoshis]="block.extras.totalFees" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
+          <span *ngIf="oobFees" class="oobFees" i18n-ngbTooltip="Acceleration Fees" ngbTooltip="Acceleration fees paid out-of-band">
+             +<app-amount [satoshis]="oobFees" digitsInfo="1.2-8" [noFiat]="true"></app-amount>
+          </span>
           <span *ngIf="blockAudit.feeDelta" class="difference" [class.positive]="blockAudit.feeDelta <= 0" [class.negative]="blockAudit.feeDelta > 0">
             {{ blockAudit.feeDelta < 0 ? '+' : '' }}{{ (-blockAudit.feeDelta * 100) | amountShortener: 2 }}%
           </span>

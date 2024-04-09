@@ -141,7 +141,7 @@ export class ReservesRatioComponent implements OnInit, OnChanges {
             show: true,
             offsetCenter: [0, '-127%'],
             fontSize: 18,
-            color: '#4a68b9',
+            color: 'var(--title-fg)',
             fontFamily: 'inherit',
             fontWeight: 500,
           },
@@ -159,7 +159,7 @@ export class ReservesRatioComponent implements OnInit, OnChanges {
           data: [
             {
               value: value,
-              name: 'Assets vs Liabilities'
+              name: $localize`Assets vs Liabilities`
             }
           ]
         }

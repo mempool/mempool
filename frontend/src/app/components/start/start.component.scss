@@ -11,16 +11,6 @@
   transform: translateX(0px);
   transition: transform 0;
 
-  &.menu-open {
-    transform: translateX(-112.5px);
-    transition: transform 0.25s;
-  }
-
-  &.menu-closing {
-    transform: translateX(0px);
-    transition: transform 0.25s;
-  }
-
   &.with-menu {
     width: calc(100% + 120px);
   }
@@ -42,7 +32,7 @@
     cursor: pointer;
     opacity: 0.8;
     transition: opacity 500ms;
-    background: radial-gradient(#1d1f31 0%, transparent 50%);
+    background: radial-gradient(var(--bg) 0%, transparent 50%);
 
     &:hover {
       opacity: 1;

@@ -29,6 +29,7 @@ export interface AbstractBitcoinApi {
   $getOutSpendsByOutpoint(outpoints: { txid: string, vout: number }[]): Promise<IEsploraApi.Outspend[]>;
 
   startHealthChecks(): void;
+  getHealthStatus(): HealthCheckHost[];
 }
 export interface BitcoinRpcCredentials {
   host: string;
@@ -37,4 +38,16 @@ export interface BitcoinRpcCredentials {
   pass: string;
   timeout: number;
   cookie?: string;
+}
+
+export interface HealthCheckHost {
+  host: string;
+  active: boolean;
+  rtt: number;
+  latestHeight: number;
+  socket: boolean;
+  outOfSync: boolean;
+  unreachable: boolean;
+  checked: boolean;
+  lastChecked: number;
 }

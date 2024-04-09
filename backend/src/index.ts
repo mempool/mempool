@@ -11,8 +11,6 @@ import memPool from './api/mempool';
 import diskCache from './api/disk-cache';
 import statistics from './api/statistics/statistics';
 import websocketHandler from './api/websocket-handler';
-import bisq from './api/bisq/bisq';
-import bisqMarkets from './api/bisq/markets';
 import logger from './logger';
 import backendInfo from './api/backend-info';
 import loadingIndicators from './api/loading-indicators';
@@ -32,7 +30,6 @@ import networkSyncService from './tasks/lightning/network-sync.service';
 import statisticsRoutes from './api/statistics/statistics.routes';
 import pricesRoutes from './api/prices/prices.routes';
 import miningRoutes from './api/mining/mining-routes';
-import bisqRoutes from './api/bisq/bisq.routes';
 import liquidRoutes from './api/liquid/liquid.routes';
 import bitcoinRoutes from './api/bitcoin/bitcoin.routes';
 import fundingTxFetcher from './tasks/lightning/sync-tasks/funding-tx-fetcher';
@@ -45,6 +42,9 @@ import { formatBytes, getBytesUnit } from './utils/format';
 import redisCache from './api/redis-cache';
 import accelerationApi from './api/services/acceleration';
 import bitcoinCoreRoutes from './api/bitcoin/bitcoin-core.routes';
+import bitcoinSecondClient from './api/bitcoin/bitcoin-second-client';
+import accelerationRoutes from './api/acceleration/acceleration.routes';
+import aboutRoutes from './api/about.routes';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -131,7 +131,7 @@ class Server {
       .use(express.text({ type: ['text/plain', 'application/base64'] }))
       ;
 
-    if (config.DATABASE.ENABLED) {
+    if (config.DATABASE.ENABLED && config.FIAT_PRICE.ENABLED) {
       await priceUpdater.$initializeLatestPriceWithDb();
     }
 
@@ -155,14 +155,22 @@ class Server {
     }
 
     if (Common.isLiquid()) {
-      try {
-        icons.loadIcons();
-      } catch (e) {
-        logger.err('Cannot load liquid icons. Ignoring. Reason: ' + (e instanceof Error ? e.message : e));
-      }
+      const refreshIcons = () => {
+        try {
+          icons.loadIcons();
+        } catch (e) {
+          logger.err('Cannot load liquid icons. Ignoring. Reason: ' + (e instanceof Error ? e.message : e));
+        }
+      };
+      // Run once on startup.
+      refreshIcons();
+      // Matches crontab refresh interval for asset db.
+      setInterval(refreshIcons, 3600_000);
     }
 
-    priceUpdater.$run();
+    if (config.FIAT_PRICE.ENABLED) {
+      priceUpdater.$run();
+    }
     await chainTips.updateOrphanedBlocks();
 
     this.setUpHttpApiRoutes();
@@ -172,13 +180,6 @@ class Server {
     }
 
     setInterval(() => { this.healthCheck(); }, 2500);
-
-    if (config.BISQ.ENABLED) {
-      bisq.startBisqService();
-      bisq.setPriceCallbackFunction((price) => websocketHandler.setExtraInitData('bsq-price', price));
-      blocks.setNewBlockCallback(bisq.handleNewBitcoinBlock.bind(bisq));
-      bisqMarkets.startBisqService();
-    }
 
     if (config.LIGHTNING.ENABLED) {
       this.$runLightningBackend();
@@ -207,14 +208,18 @@ class Server {
         }
       }
       const newMempool = await bitcoinApi.$getRawMempool();
+      const minFeeMempool = memPool.limitGBT ? await bitcoinSecondClient.getRawMemPool() : null;
+      const minFeeTip = memPool.limitGBT ? await bitcoinSecondClient.getBlockCount() : -1;
       const newAccelerations = await accelerationApi.$fetchAccelerations();
       const numHandledBlocks = await blocks.$updateBlocks();
       const pollRate = config.MEMPOOL.POLL_RATE_MS * (indexer.indexerIsRunning() ? 10 : 1);
       if (numHandledBlocks === 0) {
-        await memPool.$updateMempool(newMempool, newAccelerations, pollRate);
+        await memPool.$updateMempool(newMempool, newAccelerations, minFeeMempool, minFeeTip, pollRate);
       }
       indexer.$run();
-      priceUpdater.$run();
+      if (config.FIAT_PRICE.ENABLED) {
+        priceUpdater.$run();
+      }
 
       // rerun immediately if we skipped the mempool update, otherwise wait POLL_RATE_MS
       const elapsed = Date.now() - start;
@@ -278,7 +283,9 @@ class Server {
       memPool.setAsyncMempoolChangedCallback(websocketHandler.$handleMempoolChange.bind(websocketHandler));
       blocks.setNewAsyncBlockCallback(websocketHandler.handleNewBlock.bind(websocketHandler));
     }
-    priceUpdater.setRatesChangedCallback(websocketHandler.handleNewConversionRates.bind(websocketHandler));
+    if (config.FIAT_PRICE.ENABLED) {
+      priceUpdater.setRatesChangedCallback(websocketHandler.handleNewConversionRates.bind(websocketHandler));
+    }
     loadingIndicators.setProgressChangedCallback(websocketHandler.handleLoadingChanged.bind(websocketHandler));
   }
   
@@ -292,9 +299,6 @@ class Server {
     if (Common.indexingEnabled() && config.MEMPOOL.ENABLED) {
       miningRoutes.initRoutes(this.app);
     }
-    if (config.BISQ.ENABLED) {
-      bisqRoutes.initRoutes(this.app);
-    }
     if (Common.isLiquid()) {
       liquidRoutes.initRoutes(this.app);
     }
@@ -303,6 +307,10 @@ class Server {
       nodesRoutes.initRoutes(this.app);
       channelsRoutes.initRoutes(this.app);
     }
+    if (config.MEMPOOL_SERVICES.ACCELERATIONS) {
+      accelerationRoutes.initRoutes(this.app);
+    }
+    aboutRoutes.initRoutes(this.app);
   }
 
   healthCheck(): void {

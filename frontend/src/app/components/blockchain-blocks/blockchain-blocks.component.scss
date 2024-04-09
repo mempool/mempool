@@ -117,7 +117,7 @@
 }
 
 .black-background {
-  background-color: #11131f;
+  background-color: var(--active-bg);
   z-index: 100;
   position: relative;
 }
@@ -144,7 +144,7 @@
 }
 
 .loading .bitcoin-block.mined-block {
-  background: #2d3348;
+  background: var(--secondary);
 }
 
 @keyframes opacityPulse {
@@ -166,7 +166,7 @@
   opacity: 1;
 }
 .hide {
-  opacity: 0;
+  opacity: 0.4;
   pointer-events : none;
 }
 

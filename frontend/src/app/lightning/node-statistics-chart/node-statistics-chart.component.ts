@@ -8,6 +8,7 @@ import { StorageService } from '../../services/storage.service';
 import { download } from '../../shared/graphs.utils';
 import { LightningApiService } from '../lightning-api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
+import { StateService } from '../../services/state.service';
 
 @Component({
   selector: 'app-node-statistics-chart',
@@ -48,6 +49,7 @@ export class NodeStatisticsChartComponent implements OnInit {
     @Inject(LOCALE_ID) public locale: string,
     private lightningApiService: LightningApiService,
     private storageService: StorageService,
+    public stateService: StateService,
     private activatedRoute: ActivatedRoute,
   ) {
   }
@@ -110,7 +112,7 @@ export class NodeStatisticsChartComponent implements OnInit {
         borderRadius: 4,
         shadowColor: 'rgba(0, 0, 0, 0.5)',
         textStyle: {
-          color: '#b1b1b1',
+          color: 'var(--tooltip-grey)',
           align: 'left',
         },
         borderColor: '#000',
@@ -179,7 +181,7 @@ export class NodeStatisticsChartComponent implements OnInit {
           splitLine: {
             lineStyle: {
               type: 'dotted',
-              color: '#ffffff66',
+              color: 'var(--transparent-fg)',
               opacity: 0.25,
             }
           },
@@ -215,7 +217,7 @@ export class NodeStatisticsChartComponent implements OnInit {
             symbol: 'none',
             lineStyle: {
               type: 'solid',
-              color: '#ffffff66',
+              color: 'var(--transparent-fg)',
               opacity: 1,
               width: 1,
             },

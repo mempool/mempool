@@ -1,5 +1,6 @@
 {
   "MEMPOOL": {
+    "OFFICIAL": true,
     "NETWORK": "mainnet",
     "BACKEND": "esplora",
     "HTTP_PORT": 8999,
@@ -14,14 +15,13 @@
     "GOGGLES_INDEXING": true,
     "AUDIT": true,
     "CPFP_INDEXING": true,
-    "ADVANCED_GBT_AUDIT": true,
-    "ADVANCED_GBT_MEMPOOL": true,
     "RUST_GBT": true,
     "USE_SECOND_NODE_FOR_MINFEE": true,
     "DISK_CACHE_BLOCK_INTERVAL": 1,
     "MAX_PUSH_TX_SIZE_WEIGHT": 4000000,
     "ALLOW_UNREACHABLE": true,
-    "PRICE_UPDATES_PER_HOUR": 12
+    "PRICE_UPDATES_PER_HOUR": 12,
+    "MAX_TRACKED_ADDRESSES": 10
   },
   "SYSLOG" : {
     "MIN_PRIORITY": "debug"

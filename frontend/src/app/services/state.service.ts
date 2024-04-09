@@ -1,14 +1,13 @@
 import { Inject, Injectable, PLATFORM_ID, LOCALE_ID } from '@angular/core';
 import { ReplaySubject, BehaviorSubject, Subject, fromEvent, Observable, merge } from 'rxjs';
 import { Transaction } from '../interfaces/electrs.interface';
-import { IBackendInfo, MempoolBlock, MempoolBlockDelta, MempoolInfo, Recommendedfees, ReplacedTransaction, ReplacementInfo, TransactionCompressed, TransactionStripped } from '../interfaces/websocket.interface';
-import { BlockExtended, CpfpInfo, DifficultyAdjustment, MempoolPosition, OptimizedMempoolStats, RbfTree } from '../interfaces/node-api.interface';
+import { HealthCheckHost, IBackendInfo, MempoolBlock, MempoolBlockDelta, MempoolInfo, Recommendedfees, ReplacedTransaction, ReplacementInfo } from '../interfaces/websocket.interface';
+import { BlockExtended, CpfpInfo, DifficultyAdjustment, MempoolPosition, OptimizedMempoolStats, RbfTree, TransactionStripped } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { filter, map, scan, shareReplay } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 import { hasTouchScreen } from '../shared/pipes/bytes-pipe/utils';
-import { ApiService } from './api.service';
 import { ActiveFilter } from '../shared/filters.utils';
 
 export interface MarkBlockState {
@@ -26,8 +25,6 @@ export interface Env {
   SIGNET_ENABLED: boolean;
   LIQUID_ENABLED: boolean;
   LIQUID_TESTNET_ENABLED: boolean;
-  BISQ_ENABLED: boolean;
-  BISQ_SEPARATE_BACKEND: boolean;
   ITEMS_PER_PAGE: number;
   KEEP_BLOCKS_AMOUNT: number;
   OFFICIAL_MEMPOOL_SPACE: boolean;
@@ -41,7 +38,6 @@ export interface Env {
   PACKAGE_JSON_VERSION: string;
   MEMPOOL_WEBSITE_URL: string;
   LIQUID_WEBSITE_URL: string;
-  BISQ_WEBSITE_URL: string;
   MINING_DASHBOARD: boolean;
   LIGHTNING: boolean;
   AUDIT: boolean;
@@ -50,6 +46,8 @@ export interface Env {
   SIGNET_BLOCK_AUDIT_START_HEIGHT: number;
   HISTORICAL_PRICE: boolean;
   ACCELERATOR: boolean;
+  PUBLIC_ACCELERATIONS: boolean;
+  ADDITIONAL_CURRENCIES: boolean;
   GIT_COMMIT_HASH_MEMPOOL_SPACE?: string;
   PACKAGE_JSON_VERSION_MEMPOOL_SPACE?: string;
 }
@@ -60,8 +58,6 @@ const defaultEnv: Env = {
   'LIQUID_ENABLED': false,
   'LIQUID_TESTNET_ENABLED': false,
   'BASE_MODULE': 'mempool',
-  'BISQ_ENABLED': false,
-  'BISQ_SEPARATE_BACKEND': false,
   'ITEMS_PER_PAGE': 10,
   'KEEP_BLOCKS_AMOUNT': 8,
   'OFFICIAL_MEMPOOL_SPACE': false,
@@ -74,7 +70,6 @@ const defaultEnv: Env = {
   'PACKAGE_JSON_VERSION': '',
   'MEMPOOL_WEBSITE_URL': 'https://mempool.space',
   'LIQUID_WEBSITE_URL': 'https://liquid.network',
-  'BISQ_WEBSITE_URL': 'https://bisq.markets',
   'MINING_DASHBOARD': true,
   'LIGHTNING': false,
   'AUDIT': false,
@@ -83,13 +78,18 @@ const defaultEnv: Env = {
   'SIGNET_BLOCK_AUDIT_START_HEIGHT': 0,
   'HISTORICAL_PRICE': true,
   'ACCELERATOR': false,
+  'PUBLIC_ACCELERATIONS': false,
+  'ADDITIONAL_CURRENCIES': false,
 };
 
 @Injectable({
   providedIn: 'root'
 })
 export class StateService {
+  ref: string = '';
   isBrowser: boolean = isPlatformBrowser(this.platformId);
+  isMempoolSpaceBuild = window['isMempoolSpaceBuild'] ?? false;
+  backend: 'esplora' | 'electrum' | 'none' = 'esplora';
   network = '';
   lightning = false;
   blockVSize: number;
@@ -97,11 +97,12 @@ export class StateService {
   latestBlockHeight = -1;
   blocks: BlockExtended[] = [];
 
+  backend$ = new BehaviorSubject<'esplora' | 'electrum' | 'none'>('esplora');
   networkChanged$ = new ReplaySubject<string>(1);
   lightningChanged$ = new ReplaySubject<boolean>(1);
   blocksSubject$ = new BehaviorSubject<BlockExtended[]>([]);
   blocks$: Observable<BlockExtended[]>;
-  transactions$ = new ReplaySubject<TransactionStripped>(6);
+  transactions$ = new BehaviorSubject<TransactionStripped[]>(null);
   conversions$ = new ReplaySubject<any>(1);
   bsqPrice$ = new ReplaySubject<number>(1);
   mempoolInfo$ = new ReplaySubject<MempoolInfo>(1);
@@ -119,6 +120,7 @@ export class StateService {
   mempoolTransactions$ = new Subject<Transaction>();
   mempoolTxPosition$ = new Subject<{ txid: string, position: MempoolPosition, cpfp: CpfpInfo | null}>();
   mempoolRemovedTransactions$ = new Subject<Transaction>();
+  multiAddressTransactions$ = new Subject<{ [address: string]: { mempool: Transaction[], confirmed: Transaction[], removed: Transaction[] }}>();
   blockTransactions$ = new Subject<Transaction>();
   isLoadingWebSocket$ = new ReplaySubject<boolean>(1);
   isLoadingMempool$ = new BehaviorSubject<boolean>(true);
@@ -129,6 +131,7 @@ export class StateService {
   loadingIndicators$ = new ReplaySubject<ILoadingIndicators>(1);
   recommendedFees$ = new ReplaySubject<Recommendedfees>(1);
   chainTip$ = new ReplaySubject<number>(-1);
+  serverHealth$ = new Subject<HealthCheckHost[]>();
 
   live2Chart$ = new Subject<OptimizedMempoolStats>();
 
@@ -147,11 +150,12 @@ export class StateService {
   hideAudit: BehaviorSubject<boolean>;
   fiatCurrency$: BehaviorSubject<string>;
   rateUnits$: BehaviorSubject<string>;
+  showMiningInfo$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   searchFocus$: Subject<boolean> = new Subject<boolean>();
   menuOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-  activeGoggles$: BehaviorSubject<ActiveFilter> = new BehaviorSubject({ mode: 'and', filters: [] });
+  activeGoggles$: BehaviorSubject<ActiveFilter> = new BehaviorSubject({ mode: 'and', filters: [], gradient: 'age' });
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
@@ -159,6 +163,8 @@ export class StateService {
     private router: Router,
     private storageService: StorageService,
   ) {
+    this.ref = window.document.referrer;
+
     const browserWindow = window || {};
     // @ts-ignore
     const browserWindowEnv = browserWindow.__env || {};
@@ -209,13 +215,8 @@ export class StateService {
       }
     }, {}));
 
-    if (this.env.BASE_MODULE === 'bisq') {
-      this.network = this.env.BASE_MODULE;
-      this.networkChanged$.next(this.env.BASE_MODULE);
-    }
-
     this.networkChanged$.subscribe((network) => {
-      this.transactions$ = new ReplaySubject<TransactionStripped>(6);
+      this.transactions$ = new BehaviorSubject<TransactionStripped[]>(null);
       this.blocksSubject$.next([]);
     });
 
@@ -252,6 +253,10 @@ export class StateService {
 
     const rateUnitPreference = this.storageService.getValue('rate-unit-preference');
     this.rateUnits$ = new BehaviorSubject<string>(rateUnitPreference || 'vb');
+
+    this.backend$.subscribe(backend => {
+      this.backend = backend;
+    });
   }
 
   setNetworkBasedonUrl(url: string) {
@@ -262,22 +267,10 @@ export class StateService {
     // /^\/                                         starts with a forward slash...
     // (?:[a-z]{2}(?:-[A-Z]{2})?\/)?                optional locale prefix (non-capturing)
     // (?:preview\/)?                               optional "preview" prefix (non-capturing)
-    // (bisq|testnet|liquidtestnet|liquid|signet)/  network string (captured as networkMatches[1])
+    // (testnet|signet)/                            network string (captured as networkMatches[1])
     // ($|\/)                                       network string must end or end with a slash
-    const networkMatches = url.match(/^\/(?:[a-z]{2}(?:-[A-Z]{2})?\/)?(?:preview\/)?(bisq|testnet|liquidtestnet|liquid|signet)($|\/)/);
+    const networkMatches = url.match(/^\/(?:[a-z]{2}(?:-[A-Z]{2})?\/)?(?:preview\/)?(testnet|signet)($|\/)/);
     switch (networkMatches && networkMatches[1]) {
-      case 'liquid':
-        if (this.network !== 'liquid') {
-          this.network = 'liquid';
-          this.networkChanged$.next('liquid');
-        }
-        return;
-      case 'liquidtestnet':
-        if (this.network !== 'liquidtestnet') {
-          this.network = 'liquidtestnet';
-          this.networkChanged$.next('liquidtestnet');
-        }
-        return;
       case 'signet':
         if (this.network !== 'signet') {
           this.network = 'signet';
@@ -285,7 +278,7 @@ export class StateService {
         }
         return;
       case 'testnet':
-        if (this.network !== 'testnet') {
+        if (this.network !== 'testnet' && this.network !== 'liquidtestnet') {
           if (this.env.BASE_MODULE === 'liquid') {
             this.network = 'liquidtestnet';
             this.networkChanged$.next('liquidtestnet');
@@ -293,12 +286,6 @@ export class StateService {
             this.network = 'testnet';
             this.networkChanged$.next('testnet');
           }
-        }
-        return;
-      case 'bisq':
-        if (this.network !== 'bisq') {
-          this.network = 'bisq';
-          this.networkChanged$.next('bisq');
         }
         return;
       default:

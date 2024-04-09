@@ -1,5 +1,6 @@
 {
   "MEMPOOL": {
+    "OFFICIAL": true,
     "NETWORK": "testnet",
     "BACKEND": "esplora",
     "HTTP_PORT": 8997,
@@ -8,13 +9,12 @@
     "API_URL_PREFIX": "/api/v1/",
     "INDEXING_BLOCKS_AMOUNT": -1,
     "AUDIT": true,
-    "ADVANCED_GBT_AUDIT": true,
-    "ADVANCED_GBT_MEMPOOL": true,
     "RUST_GBT": true,
     "POLL_RATE_MS": 1000,
     "DISK_CACHE_BLOCK_INTERVAL": 1,
     "MAX_PUSH_TX_SIZE_WEIGHT": 4000000,
-    "ALLOW_UNREACHABLE": true
+    "ALLOW_UNREACHABLE": true,
+    "MAX_TRACKED_ADDRESSES": 10
   },
   "SYSLOG" : {
     "MIN_PRIORITY": "debug"

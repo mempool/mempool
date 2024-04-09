@@ -1,4 +1,4 @@
-describe.skip('Liquid', () => {
+describe('Liquid', () => {
   const baseModule = Cypress.env('BASE_MODULE');
   const basePath = '';
 
@@ -21,6 +21,13 @@ describe.skip('Liquid', () => {
       cy.visit(`${basePath}`);
       cy.waitForSkeletonGone();
       cy.get('#mempool-block-0 > .blockLink').should('exist');
+    });
+
+    it('load first mempool block after skeleton loads', () => {
+      cy.visit(`${basePath}`);
+      cy.waitForSkeletonGone();
+      cy.get('#mempool-block-0 > .blockLink').click();
+      cy.waitForSkeletonGone();
     });
 
     it('loads the dashboard', () => {
@@ -84,10 +91,11 @@ describe.skip('Liquid', () => {
         cy.waitForSkeletonGone();
         //TODO: Change to an element id so we don't assert on a string
         cy.get('.table-tx-vin').should('contain', 'Peg-in');
-        cy.get('.table-tx-vin a').click().then(() => {
+        //Remove the target=_blank attribute so the new url opens in the same tab
+        cy.get('.table-tx-vin a').invoke('removeAttr', 'target').click().then(() => {
           cy.waitForSkeletonGone();
           if (baseModule === 'liquid') {
-            cy.url().should('eq', 'https://mempool.space/tx/f148c0d854db4174ea420655235f910543f0ec3680566dcfdf84fb0a1697b592');
+            cy.url().should('eq', 'https://mempool.space/tx/f148c0d854db4174ea420655235f910543f0ec3680566dcfdf84fb0a1697b592#vout=0');
           } else {
             //TODO: Use an environment variable to get the hostname
             cy.url().should('eq', 'http://localhost:4200/tx/f148c0d854db4174ea420655235f910543f0ec3680566dcfdf84fb0a1697b592');
@@ -98,7 +106,8 @@ describe.skip('Liquid', () => {
       it('loads peg out addresses', () => {
         cy.visit(`${basePath}/tx/ecf6eba04ffb3946faa172343c87162df76f1a57b07b0d6dc6ad956b13376dc8`);
         cy.waitForSkeletonGone();
-        cy.get('.table-tx-vout a').first().click().then(() => {
+        //Remove the target=_blank attribute so the new url opens in the same tab
+        cy.get('.table-tx-vout a').first().invoke('removeAttr', 'target').click().then(() => {
           cy.waitForSkeletonGone();
           if (baseModule === 'liquid') {
             cy.url().should('eq', 'https://mempool.space/address/1BxoGcMg14oaH3CwHD2hF4gU9VcfgX5yoR');

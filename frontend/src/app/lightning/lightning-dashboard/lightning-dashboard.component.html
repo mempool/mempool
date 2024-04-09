@@ -65,7 +65,7 @@
           <a class="title-link" href="" [routerLink]="['/lightning/nodes/rankings/liquidity' | relativeUrl]">
             <h5 class="card-title d-inline" i18n="lightning.liquidity-ranking">Liquidity Ranking</h5>
             <span>&nbsp;</span>
-            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: #4a68b9"></fa-icon>
+            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
           </a>
           <app-top-nodes-per-capacity [nodes$]="nodesRanking$" [statistics$]="statistics$" [widget]="true"></app-top-nodes-per-capacity>
         </div>
@@ -79,7 +79,7 @@
           <a class="title-link" href="" [routerLink]="['/lightning/nodes/rankings/connectivity' | relativeUrl]">
             <h5 class="card-title d-inline" i18n="lightning.connectivity-ranking">Connectivity Ranking</h5>
             <span>&nbsp;</span>
-            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: #4a68b9"></fa-icon>
+            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
           </a>
           <app-top-nodes-per-channels [nodes$]="nodesRanking$" [statistics$]="statistics$" [widget]="true"></app-top-nodes-per-channels>
         </div>

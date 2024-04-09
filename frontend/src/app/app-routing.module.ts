@@ -6,6 +6,7 @@ import { EightBlocksComponent } from './components/eight-blocks/eight-blocks.com
 import { MempoolBlockViewComponent } from './components/mempool-block-view/mempool-block-view.component';
 import { ClockComponent } from './components/clock/clock.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
+import { AddressGroupComponent } from './components/address-group/address-group.component';
 
 const browserWindow = window || {};
 // @ts-ignore
@@ -25,6 +26,14 @@ let routes: Routes = [
         path: '',
         loadChildren: () => import('./master-page.module').then(m => m.MasterPageModule),
         data: { preload: true },
+      },
+      {
+        path: 'wallet',
+        children: [],
+        component: AddressGroupComponent,
+        data: {
+          networkSpecific: true,
+        }
       },
       {
         path: 'status',
@@ -62,6 +71,14 @@ let routes: Routes = [
         data: { preload: true },
       },
       {
+        path: 'wallet',
+        children: [],
+        component: AddressGroupComponent,
+        data: {
+          networkSpecific: true,
+        }
+      },
+      {
         path: 'status',
         data: { networks: ['bitcoin', 'liquid'] },
         component: StatusViewComponent
@@ -87,6 +104,14 @@ let routes: Routes = [
     path: '',
     loadChildren: () => import('./master-page.module').then(m => m.MasterPageModule),
     data: { preload: true },
+  },
+  {
+    path: 'wallet',
+    children: [],
+    component: AddressGroupComponent,
+    data: {
+      networkSpecific: true,
+    }
   },
   {
     path: 'preview',
@@ -145,13 +170,6 @@ let routes: Routes = [
   },
 ];
 
-if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'bisq') {
-  routes = [{
-    path: '',
-    loadChildren: () => import('./bisq/bisq.module').then(m => m.BisqModule)
-  }];
-}
-
 if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
   routes = [
     {
@@ -167,6 +185,14 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
           path: '',
           loadChildren: () => import ('./liquid/liquid-master-page.module').then(m => m.LiquidMasterPageModule),
           data: { preload: true },
+        },
+        {
+          path: 'wallet',
+          children: [],
+          component: AddressGroupComponent,
+          data: {
+            networkSpecific: true,
+          }
         },
         {
           path: 'status',
@@ -194,6 +220,14 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
       path: '',
       loadChildren: () => import ('./liquid/liquid-master-page.module').then(m => m.LiquidMasterPageModule),
       data: { preload: true },
+    },
+    {
+      path: 'wallet',
+      children: [],
+      component: AddressGroupComponent,
+      data: {
+        networkSpecific: true,
+      }
     },
     {
       path: 'preview',
@@ -229,7 +263,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
   imports: [RouterModule.forRoot(routes, {
     initialNavigation: 'enabledBlocking',
     scrollPositionRestoration: 'enabled',
-    anchorScrolling: 'enabled',
+    anchorScrolling: 'disabled',
     preloadingStrategy: AppPreloadingStrategy
   })],
 })

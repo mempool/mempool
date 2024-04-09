@@ -45,6 +45,13 @@
   }
 
   .filter-menu {
+    .filter-row {
+      display: flex;
+      flex-direction: row;
+      justify-content: start;
+      align-items: baseline;
+    }
+
     h5 {
       font-size: 0.8rem;
       color: white;
@@ -64,7 +71,7 @@
   .filter-tag {
     font-size: 0.9em;
     background: #181b2daf;
-    border: solid 1px #105fb0;
+    border: solid 1px var(--primary);
     color: white;
     border-radius: 0.2rem;
     padding: 0.2em 0.5em;
@@ -73,15 +80,15 @@
     pointer-events: all;
 
     &.selected {
-      background-color: #105fb0;
+      background-color: var(--primary);
     }
   }
 
   &.any-mode {
     .filter-tag {
-      border: solid 1px #1a9436;
+      border: solid 1px var(--success);
       &.selected {
-        background-color: #1a9436;
+        background-color: var(--success);
       }
     }
   }
@@ -107,15 +114,21 @@
     }
 
     &.blue {
-      border: solid 1px #105fb0;
+      border: solid 1px var(--primary);
       &.active {
-        background: #105fb0;
+        background: var(--primary);
       }
     }
     &.green {
-      border: solid 1px #1a9436;
+      border: solid 1px var(--success);
       &.active {
-        background: #1a9436;
+        background: var(--success);
+      }
+    }
+    &.yellow {
+      border: solid 1px #bf7815;
+      &.active {
+        background: #bf7815;
       }
     }
   }

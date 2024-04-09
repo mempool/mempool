@@ -1,0 +1,22 @@
+.tomahawk {
+  .links {
+    text-align: right;
+    margin-inline-end: 1em;
+
+    a, span {
+      margin-left: 1em;
+    }
+  }
+
+  .mempoolStatus {
+    width: 100%;
+    height: 270px;
+    border: none;
+  }
+
+  .hostLink {
+    text-align: center;
+    margin: auto;
+    margin-top: 1em;
+  }
+}

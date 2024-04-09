@@ -28,6 +28,9 @@ export class AddressComponent implements OnInit, OnDestroy {
   retryLoadMore = false;
   error: any;
   mainSubscription: Subscription;
+  mempoolTxSubscription: Subscription;
+  mempoolRemovedTxSubscription: Subscription;
+  blockTxSubscription: Subscription;
   addressLoadingStatus$: Observable<number>;
   addressInfo: null | AddressInformation = null;
 
@@ -44,7 +47,7 @@ export class AddressComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private electrsApiService: ElectrsApiService,
     private websocketService: WebsocketService,
-    private stateService: StateService,
+    public stateService: StateService,
     private audioService: AudioService,
     private apiService: ApiService,
     private seoService: SeoService,
@@ -140,10 +143,22 @@ export class AddressComponent implements OnInit, OnDestroy {
           if (!fetchTxs.length) {
             return of([]);
           }
-          return this.apiService.getTransactionTimes$(fetchTxs);
+          return this.apiService.getTransactionTimes$(fetchTxs).pipe(
+            catchError((err) => {
+              this.isLoadingAddress = false;
+              this.isLoadingTransactions = false;
+              this.error = err;
+              this.seoService.logSoft404();
+              console.log(err);
+              return of([]);
+            })
+          );
         })
       )
-      .subscribe((times: number[]) => {
+      .subscribe((times: number[] | null) => {
+        if (!times) {
+          return;
+        }
         times.forEach((time, index) => {
           this.tempTransactions[this.timeTxIndexes[index]].firstSeen = time;
         });
@@ -167,17 +182,17 @@ export class AddressComponent implements OnInit, OnDestroy {
         this.isLoadingAddress = false;
       });
 
-    this.stateService.mempoolTransactions$
+    this.mempoolTxSubscription = this.stateService.mempoolTransactions$
       .subscribe(tx => {
         this.addTransaction(tx);
       });
 
-    this.stateService.mempoolRemovedTransactions$
+    this.mempoolRemovedTxSubscription = this.stateService.mempoolRemovedTransactions$
       .subscribe(tx => {
         this.removeTransaction(tx);
       });
 
-    this.stateService.blockTransactions$
+    this.blockTxSubscription = this.stateService.blockTransactions$
       .subscribe((transaction) => {
         const tx = this.transactions.find((t) => t.txid === transaction.txid);
         if (tx) {
@@ -253,7 +268,9 @@ export class AddressComponent implements OnInit, OnDestroy {
     }
     this.isLoadingTransactions = true;
     this.retryLoadMore = false;
-    this.electrsApiService.getAddressTransactions$(this.address.address, this.lastTransactionTxId)
+    (this.address.is_pubkey
+    ? this.electrsApiService.getScriptHashTransactions$((this.address.address.length === 66 ? '21' : '41') + this.address.address + 'ac', this.lastTransactionTxId)
+    : this.electrsApiService.getAddressTransactions$(this.address.address, this.lastTransactionTxId))
       .subscribe((transactions: Transaction[]) => {
         if (transactions && transactions.length) {
           this.lastTransactionTxId = transactions[transactions.length - 1].txid;
@@ -281,6 +298,9 @@ export class AddressComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.mainSubscription.unsubscribe();
+    this.mempoolTxSubscription.unsubscribe();
+    this.mempoolRemovedTxSubscription.unsubscribe();
+    this.blockTxSubscription.unsubscribe();
     this.websocketService.stopTrackingAddress();
   }
 }

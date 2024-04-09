@@ -13,6 +13,7 @@ import { IncomingTransactionsGraphComponent } from '../components/incoming-trans
 import { MempoolGraphComponent } from '../components/mempool-graph/mempool-graph.component';
 import { LbtcPegsGraphComponent } from '../components/lbtc-pegs-graph/lbtc-pegs-graph.component';
 import { ReservesSupplyStatsComponent } from '../components/liquid-reserves-audit/reserves-supply-stats/reserves-supply-stats.component';
+import { ExpiredUtxosStatsComponent } from '../components/liquid-reserves-audit/expired-utxos-stats/expired-utxos-stats.component';
 import { ReservesRatioStatsComponent } from '../components/liquid-reserves-audit/reserves-ratio-stats/reserves-ratio-stats.component';
 import { ReservesRatioComponent } from '../components/liquid-reserves-audit/reserves-ratio/reserves-ratio.component';
 import { RecentPegsStatsComponent } from '../components/liquid-reserves-audit/recent-pegs-stats/recent-pegs-stats.component';
@@ -31,12 +32,15 @@ import { AcceleratorDashboardComponent } from '../components/acceleration/accele
 import { HashrateChartComponent } from '../components/hashrate-chart/hashrate-chart.component';
 import { HashrateChartPoolsComponent } from '../components/hashrates-chart-pools/hashrate-chart-pools.component';
 import { BlockHealthGraphComponent } from '../components/block-health-graph/block-health-graph.component';
+import { AddressComponent } from '../components/address/address.component';
+import { AddressGraphComponent } from '../components/address-graph/address-graph.component';
 import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
     DashboardComponent,
     MempoolBlockComponent,
+    AddressComponent,
 
     MiningDashboardComponent,
     AcceleratorDashboardComponent,
@@ -56,6 +60,7 @@ import { CommonModule } from '@angular/common';
     MempoolGraphComponent,
     LbtcPegsGraphComponent,
     ReservesSupplyStatsComponent,
+    ExpiredUtxosStatsComponent,
     ReservesRatioStatsComponent,
     ReservesRatioComponent,
     RecentPegsStatsComponent,
@@ -65,6 +70,7 @@ import { CommonModule } from '@angular/common';
     HashrateChartComponent,
     HashrateChartPoolsComponent,
     BlockHealthGraphComponent,
+    AddressGraphComponent,
   ],
   imports: [
     CommonModule,

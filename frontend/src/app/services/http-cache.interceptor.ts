@@ -1,8 +1,8 @@
-import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { HttpInterceptor, HttpEvent, HttpRequest, HttpHandler, HttpResponse } from '@angular/common/http';
+import { Inject, Injectable, PLATFORM_ID, makeStateKey, TransferState } from '@angular/core';
+import { HttpInterceptor, HttpEvent, HttpRequest, HttpHandler, HttpResponse, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { tap } from 'rxjs/operators';
-import { TransferState, makeStateKey } from '@angular/platform-browser';
+import { catchError, tap } from 'rxjs/operators';
+
 import { isPlatformBrowser } from '@angular/common';
 
 @Injectable()
@@ -17,14 +17,18 @@ export class HttpCacheInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (this.isBrowser && request.method === 'GET') {
 
-      const cachedResponse = this.transferState.get<any>(makeStateKey(request.url), null);
-      if (cachedResponse) {
+      const { response, headers } = this.transferState.get<any>(makeStateKey(request.url), null) || {};
+      if (response) {
+        const httpHeaders = new HttpHeaders();
+        for (const [k,v] of Object.entries(headers)) {
+          httpHeaders.set(k,v as string[]);
+        }
         const modifiedResponse = new HttpResponse<any>({
-          headers: cachedResponse.headers,
-          body: cachedResponse.body,
-          status: cachedResponse.status,
-          statusText: cachedResponse.statusText,
-          url: cachedResponse.url
+          headers: httpHeaders,
+          body: response.body,
+          status: response.status,
+          statusText: response.statusText,
+          url: response.url
         });
         this.transferState.remove(makeStateKey(request.url));
         return of(modifiedResponse);
@@ -32,11 +36,41 @@ export class HttpCacheInterceptor implements HttpInterceptor {
     }
 
     return next.handle(request)
-      .pipe(tap((event: HttpEvent<any>) => {
-        if (!this.isBrowser && event instanceof HttpResponse) {
-          let keyId = request.url.split('/').slice(3).join('/');
-          this.transferState.set<any>(makeStateKey('/' + keyId), event);
-        }
-      }));
+      .pipe(
+        tap((event: HttpEvent<any>) => {
+          if (!this.isBrowser && event instanceof HttpResponse) {
+            let keyId = request.url.split('/').slice(3).join('/');
+            const headers = {};
+            for (const k of event.headers.keys()) {
+              headers[k] = event.headers.getAll(k);
+            }
+            this.transferState.set<any>(makeStateKey('/' + keyId), { response: event, headers });
+          }
+        }),
+        catchError((e) => {
+          if (e instanceof HttpErrorResponse) {
+            if (e.status === 0) {
+              throw new HttpErrorResponse({
+                error: 'Unknown error',
+                headers: e.headers,
+                status: 0,
+                statusText: 'Unknown error',
+                url: e.url,
+              });
+            } else {
+              throw e;
+            }
+          } else {
+            const msg = e?.['message'] || 'Unknown error';
+            throw new HttpErrorResponse({
+              error: msg,
+              headers: new HttpHeaders(),
+              status: 0,
+              statusText: msg,
+              url: '',
+            });
+          }
+        })
+      );
   }
 }

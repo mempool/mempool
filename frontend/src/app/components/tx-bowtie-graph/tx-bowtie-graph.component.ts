@@ -34,6 +34,7 @@ interface Xput {
   pegout?: string;
   confidential?: boolean;
   timestamp?: number;
+  blockHeight?: number;
   asset?: string;
 }
 
@@ -84,7 +85,6 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
 
   gradientColors = {
     '': ['#9339f4', '#105fb0', '#9339f400'],
-    bisq: ['#9339f4', '#105fb0', '#9339f400'],
     // liquid: ['#116761', '#183550'],
     liquid: ['#09a197', '#0f62af', '#09a19700'],
     // 'liquidtestnet': ['#494a4a', '#272e46'],
@@ -100,7 +100,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   constructor(
     private router: Router,
     private relativeUrlPipe: RelativeUrlPipe,
-    private stateService: StateService,
+    public stateService: StateService,
     private electrsApiService: ElectrsApiService,
     private assetsService: AssetsService,
     @Inject(LOCALE_ID) private locale: string,
@@ -178,6 +178,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
         pegout: v?.pegout?.scriptpubkey_address,
         confidential: (this.isLiquid && v?.value === undefined),
         timestamp: this.tx.status.block_time,
+        blockHeight: this.tx.status.block_height,
         asset: v?.asset,
       } as Xput;
     });
@@ -200,6 +201,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
         pegin: v?.is_pegin,
         confidential: (this.isLiquid && v?.prevout?.value === undefined),
         timestamp: this.tx.status.block_time,
+        blockHeight: this.tx.status.block_height,
         asset: v?.prevout?.asset,
       } as Xput;
     });

@@ -22,7 +22,7 @@
 }
 
 .qr-wrapper {
-  background-color: #FFF;
+  background-color: var(--fg);
   padding: 10px;
   padding-bottom: 5px;
   display: inline-block;
@@ -67,6 +67,14 @@
         color: rgb(183, 66, 66);
       }
     }
+  }
+}
+
+.audit-col {
+  max-width: 50%;
+
+  &.mobile {
+    max-width: 100%;
   }
 }
 
@@ -167,9 +175,7 @@ h1 {
   }
 
   a {
-    color: #1ad8f4;
     &:hover, &:focus {
-      color: #09a3ba;
       display: inline-block;
     }
   }
@@ -246,7 +252,7 @@ h1 {
   cursor: pointer;
 
   &.active {
-    background: #24273e;
+    background: var(--box-bg);
   }
 
   &.active, &:hover {
@@ -287,6 +293,10 @@ h1 {
   margin-top: 1.25rem;
   @media (max-width: 767.98px) {
     margin-top: 0.75rem;
+  }
+
+  .oobFees {
+    color: #905cf4;
   }
 }
 

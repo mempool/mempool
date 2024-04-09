@@ -1,8 +1,8 @@
-<footer class="footer">
+<footer class="footer" [class.inline-footer]="inline">
   <div class="container-xl">
     <div class="row text-center" *ngIf="mempoolInfoData$ | async as mempoolInfoData">
       <div class="col d-none d-sm-block">
-        <span class="txPerSecond" i18n="dashboard.incoming-transactions">Incoming transactions</span>&nbsp;
+        <span class="txPerSecond" i18n="dashboard.incoming-transactions">Incoming Transactions</span>&nbsp;
         <ng-template [ngIf]="(isLoadingWebSocket$ | async) === false && mempoolInfoData" [ngIfElse]="loadingTransactions">
           <span *ngIf="(mempoolLoadingStatus$ | async) !== 100; else inSync">
             &nbsp;<span class="badge badge-pill badge-warning"><ng-container i18n="dashboard.backend-is-synchronizing">Backend is synchronizing</ng-container> ({{ mempoolLoadingStatus$ | async }}%)</span>

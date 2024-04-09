@@ -1,7 +1,7 @@
 <ng-container *ngIf="(loadingBlocks$ | async) === false; else loadingBlocks" [class.minimal]="minimal">
   <div class="mempool-blocks-container" [class.time-ltr]="timeLtr" [style.--block-size]="blockWidth+'px'" *ngIf="(difficultyAdjustments$ | async) as da;">
-    <div class="flashing">
-      <ng-template ngFor let-projectedBlock [ngForOf]="mempoolBlocks$ | async" let-i="index" [ngForTrackBy]="trackByFn">
+    <div class="flashing" *ngIf="(mempoolBlocks$ | async) as mempoolBlocks">
+      <ng-template ngFor let-projectedBlock [ngForOf]="mempoolBlocks" let-i="index" [ngForTrackBy]="trackByFn">
         <div
           *ngIf="minimal && spotlight > 0 && spotlight === i + 1"
           class="spotlight-bottom"
@@ -20,10 +20,12 @@
                 -
                 <app-fee-rate [fee]="projectedBlock.feeRange[projectedBlock.feeRange.length - 1]" rounding="1.0-0" unitClass=""></app-fee-rate>
               </div>
-              <div *ngIf="showMiningInfo" class="block-size">
+              <div *ngIf="showMiningInfo$ | async; else noMiningInfo" class="block-size">
                 <app-amount [attr.data-cy]="'mempool-block-' + i + '-total-fees'" [satoshis]="projectedBlock.totalFees" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
               </div>
-              <div *ngIf="!showMiningInfo" class="block-size" [innerHTML]="'&lrm;' + (projectedBlock.blockSize | bytes: 2)"></div>
+              <ng-template #noMiningInfo>
+                <div class="block-size" [innerHTML]="'&lrm;' + (projectedBlock.blockSize | bytes: 2)"></div>
+              </ng-template>
               <div [attr.data-cy]="'mempool-block-' + i + '-transaction-count'" class="transaction-count">
                 <ng-container *ngTemplateOutlet="projectedBlock.nTx === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: projectedBlock.nTx | number}"></ng-container>
                 <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>

@@ -1,17 +1,24 @@
 .sidenav {
-  z-index: 1;
+  z-index: 10;
   background-color: transparent;
   width: 225px;
   height: calc(100vh - 65px);
-  position: sticky;
+  position: absolute;
   top: 65px;
   transition: 0.25s;
-  margin-left: -250px;
   box-shadow: 5px 0px 30px 0px #000;
   padding-bottom: 20px;
   @media (max-width: 613px) {
     top: 105px;
   }
+}
+
+:host-context(.ltr-layout) .sidenav {
+  left: -250px;
+}
+
+:host-context(.rtl-layout) .sidenav {
+  right: -250px;
 }
 
 .ellipsis {
@@ -26,10 +33,16 @@
 }
 
 .sidenav.open {
-  margin-left: 0px;
-  left: 0px;
   display: block;
-  background-color: #1d1f31;
+  background-color: var(--bg);
+}
+
+:host-context(.ltr-layout) .sidenav.open {
+  left: 0;
+}
+
+:host-context(.rtl-layout) .sidenav.open {
+  right: 0;
 }
 
 .sidenav a, button{
@@ -43,7 +56,7 @@
 .sidenav nav {
   width: 100%;
   height: calc(100vh - 65px);
-  background-color: #1d1f31;
+  background-color: var(--bg);
   padding-left: 20px;
   padding-right: 20px;
   padding-top: 20px;
@@ -62,7 +75,7 @@
 }
 
 .badge-og {
-  background-color: #4a68b9;
+  background-color: var(--title-fg);
 }
 
 .badge-pleb {
@@ -74,7 +87,7 @@
 }
 
 .badge-whale {
-  background-color: #653b9c;
+  background-color: var(--tertiary);
 }
 
 .badge-silver {
@@ -86,5 +99,5 @@
 }
 
 .badge-platinum {
-  background-color: #653b9c;
+  background-color: var(--tertiary);
 }

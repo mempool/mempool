@@ -89,7 +89,7 @@
     }
     .card-title {
       font-size: 1rem;
-      color: #4a68b9;
+      color: var(--title-fg);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -97,7 +97,7 @@
     .card-text {
       font-size: 18px;
       span {
-        color: #ffffff66;
+        color: var(--transparent-fg);
         font-size: 12px;
       }
     }

@@ -44,13 +44,14 @@ export class NodesPerISPChartComponent implements OnInit {
     private amountShortenerPipe: AmountShortenerPipe,
     private router: Router,
     private zone: NgZone,
-    private stateService: StateService,
+    public stateService: StateService,
   ) {
   }
 
   ngOnInit(): void {
     if (!this.widget) {
       this.seoService.setTitle($localize`:@@8573a1576789bd2c4faeaed23037c4917812c6cf:Lightning Nodes Per ISP`);
+      this.seoService.setDescription($localize`:@@meta.description.lightning.nodes-per-isp:Browse the top 100 ISPs hosting Lightning nodes along with stats like total number of nodes per ISP, aggregate BTC capacity per ISP, and more`);
     }
 
     this.nodesPerAsObservable$ = combineLatest([
@@ -106,7 +107,7 @@ export class NodesPerISPChartComponent implements OnInit {
       );
 
     if (this.widget) {
-      this.sortBySubject.next(false);  
+      this.sortBySubject.next(false);
     }
   }
 
@@ -143,7 +144,7 @@ export class NodesPerISPChartComponent implements OnInit {
         label: {
           overflow: 'truncate',
           width: isMobile() ? 75 : this.widget ? 125 : 250,
-          color: '#b1b1b1',
+          color: 'var(--tooltip-grey)',
           alignTo: 'edge',
           edgeDistance: edgeDistance,
         },
@@ -153,7 +154,7 @@ export class NodesPerISPChartComponent implements OnInit {
           borderRadius: 4,
           shadowColor: 'rgba(0, 0, 0, 0.5)',
           textStyle: {
-            color: '#b1b1b1',
+            color: 'var(--tooltip-grey)',
           },
           borderColor: '#000',
           formatter: () => {
@@ -177,7 +178,7 @@ export class NodesPerISPChartComponent implements OnInit {
       name: $localize`Other (${totalShareOther.toFixed(2) + '%'})`,
       label: {
         overflow: 'truncate',
-        color: '#b1b1b1',
+        color: 'var(--tooltip-grey)',
         alignTo: 'edge',
         edgeDistance: edgeDistance
       },
@@ -186,7 +187,7 @@ export class NodesPerISPChartComponent implements OnInit {
         borderRadius: 4,
         shadowColor: 'rgba(0, 0, 0, 0.5)',
         textStyle: {
-          color: '#b1b1b1',
+          color: 'var(--tooltip-grey)',
         },
         borderColor: '#000',
         formatter: () => {
@@ -274,7 +275,7 @@ export class NodesPerISPChartComponent implements OnInit {
 
   onSaveChart(): void {
     const now = new Date();
-    this.chartOptions.backgroundColor = '#11131f';
+    this.chartOptions.backgroundColor = 'var(--active-bg)';
     this.chartInstance.setOption(this.chartOptions);
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,

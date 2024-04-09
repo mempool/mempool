@@ -67,7 +67,7 @@ describe('Mainnet', () => {
       cy.get('[id^="bitcoin-block-"]').should('have.length', 22);
       cy.get('.footer').should('be.visible');
       cy.get('.row > :nth-child(1)').invoke('text').then((text) => {
-        expect(text).to.match(/Incoming transactions.* vB\/s/);
+        expect(text).to.match(/Incoming Transactions.* vB\/s/);
       });
       cy.get('.row > :nth-child(2)').invoke('text').then((text) => {
         expect(text).to.match(/Unconfirmed:(.*)/);

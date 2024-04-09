@@ -21,7 +21,7 @@ import { execSync } from 'child_process';
     database: config.DATABASE.DATABASE,
     user: config.DATABASE.USERNAME,
     password: config.DATABASE.PASSWORD,
-    connectionLimit: 10,
+    connectionLimit: config.DATABASE.POOL_SIZE,
     supportBigNumbers: true,
     timezone: '+00:00',
   };

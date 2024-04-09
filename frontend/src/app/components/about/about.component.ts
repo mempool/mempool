@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, ElementRef, Inject, LOCALE_ID, OnInit, ViewChild } from '@angular/core';
 import { WebsocketService } from '../../services/websocket.service';
 import { SeoService } from '../../services/seo.service';
+import { OpenGraphService } from '../../services/opengraph.service';
 import { StateService } from '../../services/state.service';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../services/api.service';
@@ -33,6 +34,7 @@ export class AboutComponent implements OnInit {
   constructor(
     private websocketService: WebsocketService,
     private seoService: SeoService,
+    private ogService: OpenGraphService,
     public stateService: StateService,
     private enterpriseService: EnterpriseService,
     private apiService: ApiService,
@@ -46,6 +48,7 @@ export class AboutComponent implements OnInit {
     this.backendInfo$ = this.stateService.backendInfo$;
     this.seoService.setTitle($localize`:@@004b222ff9ef9dd4771b777950ca1d0e4cd4348a:About`);
     this.seoService.setDescription($localize`:@@meta.description.about:Learn more about The Mempool Open Source Project®\: enterprise sponsors, individual sponsors, integrations, who contributes, FOSS licensing, and more.`);
+    this.ogService.setManualOgImage('about.jpg');
     this.websocketService.want(['blocks']);
 
     this.profiles$ = this.apiService.getAboutPageProfiles$().pipe(

@@ -14,13 +14,14 @@ const MempoolErrors = {
   'mempool_rejected_raw_tx': `Our mempool rejected this transaction`,
   'no_mining_pool_available': `No mining pool available at the moment`,
   'not_available': `You current subscription does not allow you to access this feature.`,
-  'not_enough_balance': `Your account balance is too low. Please make a <a style="color:#105fb0" href="/services/accelerator/overview">deposit.</a>`,
+  'not_enough_balance': `Your balance is too low. Please <a style="color:#105fb0" href="/services/accelerator/overview">top up your account</a>.`,
   'not_verified': `You must verify your account to use this feature.`,
   'recommended_fees_not_available': `Recommended fees are not available right now.`,
   'too_many_relatives': `This transaction has too many relatives.`,
   'txid_not_in_mempool': `This transaction is not in the mempool.`,
   'waitlisted': `You are currently on the wait list. You will get notified once you are granted access.`,  
   'not_whitelisted_by_any_pool': `You are not whitelisted by any mining pool`,
+  'unauthorized': `You are not authorized to do this`,
 } as { [error: string]: string };
 
 export function isMempoolError(error: string) {

@@ -7,6 +7,7 @@ import { RbfTree } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { StateService } from '../../services/state.service';
 import { SeoService } from '../../services/seo.service';
+import { OpenGraphService } from '../../services/opengraph.service';
 import { seoDescriptionNetwork } from '../../shared/common.utils';
 
 @Component({
@@ -29,6 +30,7 @@ export class RbfList implements OnInit, OnDestroy {
     public stateService: StateService,
     private websocketService: WebsocketService,
     private seoService: SeoService,
+    private ogService: OpenGraphService,
   ) { }
 
   ngOnInit(): void {
@@ -57,6 +59,7 @@ export class RbfList implements OnInit, OnDestroy {
 
     this.seoService.setTitle($localize`:@@5e3d5a82750902f159122fcca487b07f1af3141f:RBF Replacements`);
     this.seoService.setDescription($localize`:@@meta.description.rbf-list:See the most recent RBF replacements on the Bitcoin${seoDescriptionNetwork(this.stateService.network)} network, updated in real-time.`);
+    this.ogService.setManualOgImage('rbf.jpg');
   }
 
   ngOnDestroy(): void {

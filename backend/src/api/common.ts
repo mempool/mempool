@@ -7,6 +7,24 @@ import { isIP } from 'net';
 import transactionUtils from './transaction-utils';
 import { isPoint } from '../utils/secp256k1';
 import logger from '../logger';
+import { getVarIntLength, opcodes, parseMultisigScript } from '../utils/bitcoin-script';
+
+// Bitcoin Core default policy settings
+const TX_MAX_STANDARD_VERSION = 2;
+const MAX_STANDARD_TX_WEIGHT = 400_000;
+const MAX_BLOCK_SIGOPS_COST = 80_000;
+const MAX_STANDARD_TX_SIGOPS_COST = (MAX_BLOCK_SIGOPS_COST / 5);
+const MIN_STANDARD_TX_NONWITNESS_SIZE = 65;
+const MAX_P2SH_SIGOPS = 15;
+const MAX_STANDARD_P2WSH_STACK_ITEMS = 100;
+const MAX_STANDARD_P2WSH_STACK_ITEM_SIZE = 80;
+const MAX_STANDARD_TAPSCRIPT_STACK_ITEM_SIZE = 80;
+const MAX_STANDARD_P2WSH_SCRIPT_SIZE = 3600;
+const MAX_STANDARD_SCRIPTSIG_SIZE = 1650;
+const DUST_RELAY_TX_FEE = 3;
+const MAX_OP_RETURN_RELAY = 83;
+const DEFAULT_PERMIT_BAREMULTISIG = true;
+
 export class Common {
   static nativeAssetId = config.MEMPOOL.NETWORK === 'liquidtestnet' ?
     '144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49'
@@ -177,6 +195,140 @@ export class Common {
     );
   }
 
+  /**
+   * Validates most standardness rules
+   *
+   * returns true early if any standardness rule is violated, otherwise false
+   * (except for non-mandatory-script-verify-flag and p2sh script evaluation rules which are *not* enforced)
+   */
+  static isNonStandard(tx: TransactionExtended): boolean {
+    // version
+    if (tx.version > TX_MAX_STANDARD_VERSION) {
+      return true;
+    }
+
+    // tx-size
+    if (tx.weight > MAX_STANDARD_TX_WEIGHT) {
+      return true;
+    }
+
+    // tx-size-small
+    if (this.getNonWitnessSize(tx) < MIN_STANDARD_TX_NONWITNESS_SIZE) {
+      return true;
+    }
+
+    // bad-txns-too-many-sigops
+    if (tx.sigops && tx.sigops > MAX_STANDARD_TX_SIGOPS_COST) {
+      return true;
+    }
+
+    // input validation
+    for (const vin of tx.vin) {
+      if (vin.is_coinbase) {
+        // standardness rules don't apply to coinbase transactions
+        return false;
+      }
+      // scriptsig-size
+      if ((vin.scriptsig.length / 2) > MAX_STANDARD_SCRIPTSIG_SIZE) {
+        return true;
+      }
+      // scriptsig-not-pushonly
+      if (vin.scriptsig_asm) {
+        for (const op of vin.scriptsig_asm.split(' ')) {
+          if (opcodes[op] && opcodes[op] > opcodes['OP_16']) {
+            return true;
+          }
+        }
+      }
+      // bad-txns-nonstandard-inputs
+      if (vin.prevout?.scriptpubkey_type === 'p2sh') {
+        // TODO: evaluate script (https://github.com/bitcoin/bitcoin/blob/1ac627c485a43e50a9a49baddce186ee3ad4daad/src/policy/policy.cpp#L177)
+        // countScriptSigops returns the witness-scaled sigops, so divide by 4 before comparison with MAX_P2SH_SIGOPS
+        const sigops = (transactionUtils.countScriptSigops(vin.inner_redeemscript_asm) / 4);
+        if (sigops > MAX_P2SH_SIGOPS) {
+          return true;
+        }
+      } else if (['unknown', 'provably_unspendable', 'empty'].includes(vin.prevout?.scriptpubkey_type || '')) {
+        return true;
+      }
+      // TODO: bad-witness-nonstandard
+    }
+
+    // output validation
+    let opreturnCount = 0;
+    for (const vout of tx.vout) {
+      // scriptpubkey
+      if (['unknown', 'provably_unspendable', 'empty'].includes(vout.scriptpubkey_type)) {
+        // (non-standard output type)
+        return true;
+      } else if (vout.scriptpubkey_type === 'multisig') {
+        if (!DEFAULT_PERMIT_BAREMULTISIG) {
+          // bare-multisig
+          return true;
+        }
+        const mOfN = parseMultisigScript(vout.scriptpubkey_asm);
+        if (!mOfN || mOfN.n < 1 || mOfN.n > 3 || mOfN.m < 1 || mOfN.m > mOfN.n) {
+          // (non-standard bare multisig threshold)
+          return true;
+        }
+      } else if (vout.scriptpubkey_type === 'op_return') {
+        opreturnCount++;
+        if ((vout.scriptpubkey.length / 2) > MAX_OP_RETURN_RELAY) {
+          // over default datacarrier limit
+          return true;
+        }
+      }
+      // dust
+      // (we could probably hardcode this for the different output types...)
+      if (vout.scriptpubkey_type !== 'op_return') {
+        let dustSize = (vout.scriptpubkey.length / 2);
+        // add varint length overhead
+        dustSize += getVarIntLength(dustSize);
+        // add value size
+        dustSize += 8;
+        if (['v0_p2wpkh', 'v0_p2wsh', 'v1_p2tr'].includes(vout.scriptpubkey_type)) {
+          dustSize += 67;
+        } else {
+          dustSize += 148;
+        }
+        if (vout.value < (dustSize * DUST_RELAY_TX_FEE)) {
+          // under minimum output size
+          return true;
+        }
+      }
+    }
+
+    // multi-op-return
+    if (opreturnCount > 1) {
+      return true;
+    }
+
+    // TODO: non-mandatory-script-verify-flag
+
+    return false;
+  }
+
+  static getNonWitnessSize(tx: TransactionExtended): number {
+    let weight = tx.weight;
+    let hasWitness = false;
+    for (const vin of tx.vin) {
+      if (vin.witness?.length) {
+        hasWitness = true;
+        // witness count
+        weight -= getVarIntLength(vin.witness.length);
+        for (const witness of vin.witness) {
+          // witness item size + content
+          weight -= getVarIntLength(witness.length / 2) + (witness.length / 2);
+        }
+      }
+    }
+    if (hasWitness) {
+      // marker & segwit flag
+      weight -= 2;
+    }
+    return Math.ceil(weight / 4);
+  }
+
   static setSegwitSighashFlags(flags: bigint, witness: string[]): bigint {
     for (const w of witness) {
       if (this.isDERSig(w)) {
@@ -221,6 +373,21 @@ export class Common {
     ].includes(pubkey);
   }
 
+  static isInscription(vin, flags): bigint {
+    // in taproot, if the last witness item begins with 0x50, it's an annex
+    const hasAnnex = vin.witness?.[vin.witness.length - 1].startsWith('50');
+    // script spends have more than one witness item, not counting the annex (if present)
+    if (vin.witness.length > (hasAnnex ? 2 : 1)) {
+      // the script itself is the second-to-last witness item, not counting the annex
+      const asm = vin.inner_witnessscript_asm || transactionUtils.convertScriptSigAsm(vin.witness[vin.witness.length - (hasAnnex ? 3 : 2)]);
+      // inscriptions smuggle data within an 'OP_0 OP_IF ... OP_ENDIF' envelope
+      if (asm?.includes('OP_0 OP_IF')) {
+        flags |= TransactionFlags.inscription;
+      }
+    }
+    return flags;
+  }
+
   static getTransactionFlags(tx: TransactionExtended): number {
     let flags = tx.flags ? BigInt(tx.flags) : 0n;
     tx.spam = false;
@@ -257,31 +424,31 @@ export class Common {
       if (vin.sequence < 0xfffffffe) {
         rbf = true;
       }
-      switch (vin.prevout?.scriptpubkey_type) {
-        case 'p2pk': flags |= TransactionFlags.p2pk; break;
-        case 'multisig': flags |= TransactionFlags.p2ms; break;
-        case 'p2pkh': flags |= TransactionFlags.p2pkh; break;
-        case 'p2sh': flags |= TransactionFlags.p2sh; break;
-        case 'v0_p2wpkh': flags |= TransactionFlags.p2wpkh; break;
-        case 'v0_p2wsh': flags |= TransactionFlags.p2wsh; break;
-        case 'v1_p2tr': {
-          if (!vin.witness?.length) {
-            throw new Error('Taproot input missing witness data');
-          }
-          flags |= TransactionFlags.p2tr;
-          // in taproot, if the last witness item begins with 0x50, it's an annex
-          const hasAnnex = vin.witness?.[vin.witness.length - 1].startsWith('50');
-          // script spends have more than one witness item, not counting the annex (if present)
-          if (vin.witness.length > (hasAnnex ? 2 : 1)) {
-            // the script itself is the second-to-last witness item, not counting the annex
-            const asm = vin.inner_witnessscript_asm || transactionUtils.convertScriptSigAsm(vin.witness[vin.witness.length - (hasAnnex ? 3 : 2)]);
-            // inscriptions smuggle data within an 'OP_0 OP_IF ... OP_ENDIF' envelope
-            if (asm?.includes('OP_0 OP_IF')) {
-              flags |= TransactionFlags.inscription;
-              tx.spam = true;
+      if (vin.prevout?.scriptpubkey_type) {
+        switch (vin.prevout?.scriptpubkey_type) {
+          case 'p2pk': flags |= TransactionFlags.p2pk; break;
+          case 'multisig': flags |= TransactionFlags.p2ms; break;
+          case 'p2pkh': flags |= TransactionFlags.p2pkh; break;
+          case 'p2sh': flags |= TransactionFlags.p2sh; break;
+          case 'v0_p2wpkh': flags |= TransactionFlags.p2wpkh; break;
+          case 'v0_p2wsh': flags |= TransactionFlags.p2wsh; break;
+          case 'v1_p2tr': {
+            if (!vin.witness?.length) {
+              throw new Error('Taproot input missing witness data');
             }
+            flags |= TransactionFlags.p2tr;
+            flags = Common.isInscription(vin, flags);
+          } break;
+        }
+      } else {
+        // no prevouts, optimistically check witness-bearing inputs
+        if (vin.witness?.length >= 2) {
+          try {
+            flags = Common.isInscription(vin, flags);
+          } catch {
+            // witness script parsing will fail if this isn't really a taproot output
           }
-        } break;
+        }
       }
 
       // sighash flags
@@ -304,6 +471,8 @@ export class Common {
       flags |= TransactionFlags.no_rbf;
     }
     let hasFakePubkey = false;
+    let P2WSHCount = 0;
+    let olgaSize = 0;
     for (const vout of tx.vout) {
       switch (vout.scriptpubkey_type) {
         case 'p2pk': {
@@ -331,6 +500,20 @@ export class Common {
       if (vout.scriptpubkey_address) {
         reusedOutputAddresses[vout.scriptpubkey_address] = (reusedOutputAddresses[vout.scriptpubkey_address] || 0) + 1;
       }
+      if (vout.scriptpubkey_type === 'v0_p2wsh') {
+        if (!P2WSHCount) {
+          olgaSize = parseInt(vout.scriptpubkey.slice(4, 8), 16);
+        }
+        P2WSHCount++;
+        if (P2WSHCount === Math.ceil((olgaSize + 2) / 32)) {
+          const nullBytes = (P2WSHCount * 32) - olgaSize - 2;
+          if (vout.scriptpubkey.endsWith(''.padEnd(nullBytes * 2, '0'))) {
+            flags |= TransactionFlags.fake_scripthash;
+          }
+        }
+      } else {
+        P2WSHCount = 0;
+      }
       outValues[vout.value || Math.random()] = (outValues[vout.value || Math.random()] || 0) + 1;
     }
     if (hasFakePubkey) {
@@ -351,6 +534,10 @@ export class Common {
     // less than 1:5 input:output ratio
     if (tx.vin.length / tx.vout.length <= 0.2) {
       flags |= TransactionFlags.batch_payout;
+    }
+
+    if (this.isNonStandard(tx)) {
+      flags |= TransactionFlags.nonstandard;
     }
 
     return Number(flags);
@@ -382,6 +569,7 @@ export class Common {
       value: tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0),
       acc: tx.acceleration || undefined,
       rate: tx.effectiveFeePerVsize,
+      time: tx.firstSeen || undefined,
     };
   }
 
@@ -402,69 +590,6 @@ export class Common {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
-  }
-
-  static setRelativesAndGetCpfpInfo(tx: MempoolTransactionExtended, memPool: { [txid: string]: MempoolTransactionExtended }): CpfpInfo {
-    const parents = this.findAllParents(tx, memPool);
-    const lowerFeeParents = parents.filter((parent) => parent.adjustedFeePerVsize < tx.effectiveFeePerVsize);
-
-    let totalWeight = (tx.adjustedVsize * 4) + lowerFeeParents.reduce((prev, val) => prev + (val.adjustedVsize * 4), 0);
-    let totalFees = tx.fee + lowerFeeParents.reduce((prev, val) => prev + val.fee, 0);
-
-    tx.ancestors = parents
-      .map((t) => {
-        return {
-          txid: t.txid,
-          weight: (t.adjustedVsize * 4),
-          fee: t.fee,
-        };
-      });
-
-    // Add high (high fee) decendant weight and fees
-    if (tx.bestDescendant) {
-      totalWeight += tx.bestDescendant.weight;
-      totalFees += tx.bestDescendant.fee;
-    }
-
-    tx.effectiveFeePerVsize = Math.max(0, totalFees / (totalWeight / 4));
-    tx.cpfpChecked = true;
-
-    return {
-      ancestors: tx.ancestors,
-      bestDescendant: tx.bestDescendant || null,
-    };
-  }
-
-
-  private static findAllParents(tx: MempoolTransactionExtended, memPool: { [txid: string]: MempoolTransactionExtended }): MempoolTransactionExtended[] {
-    let parents: MempoolTransactionExtended[] = [];
-    tx.vin.forEach((parent) => {
-      if (parents.find((p) => p.txid === parent.txid)) {
-        return;
-      }
-
-      const parentTx = memPool[parent.txid];
-      if (parentTx) {
-        if (tx.bestDescendant && tx.bestDescendant.fee / (tx.bestDescendant.weight / 4) > parentTx.adjustedFeePerVsize) {
-          if (parentTx.bestDescendant && parentTx.bestDescendant.fee < tx.fee + tx.bestDescendant.fee) {
-            parentTx.bestDescendant = {
-              weight: (tx.adjustedVsize * 4) + tx.bestDescendant.weight,
-              fee: tx.fee + tx.bestDescendant.fee,
-              txid: tx.txid,
-            };
-          }
-        } else if (tx.adjustedFeePerVsize > parentTx.adjustedFeePerVsize) {
-          parentTx.bestDescendant = {
-            weight: (tx.adjustedVsize * 4),
-            fee: tx.fee,
-            txid: tx.txid
-          };
-        }
-        parents.push(parentTx);
-        parents = parents.concat(this.findAllParents(parentTx, memPool));
-      }
-    });
-    return parents;
   }
 
   // calculates the ratio of matched transactions to projected transactions by weight

@@ -7,7 +7,6 @@ import { LiquidMasterPageComponent } from '../components/liquid-master-page/liqu
 
 
 import { StartComponent } from '../components/start/start.component';
-import { AddressComponent } from '../components/address/address.component';
 import { PushTransactionComponent } from '../components/push-transaction/push-transaction.component';
 import { BlocksList } from '../components/blocks-list/blocks-list.component';
 import { AssetGroupComponent } from '../components/assets/asset-group/asset-group.component';
@@ -19,6 +18,8 @@ import { RecentPegsListComponent } from '../components/liquid-reserves-audit/rec
 import { FederationWalletComponent } from '../components/liquid-reserves-audit/federation-wallet/federation-wallet.component';
 import { FederationUtxosListComponent } from '../components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component';
 import { FederationAddressesListComponent } from '../components/liquid-reserves-audit/federation-addresses-list/federation-addresses-list.component';
+import { ServerHealthComponent } from '../components/server-health/server-health.component';
+import { ServerStatusComponent } from '../components/server-health/server-status.component';
 
 const routes: Routes = [
   {
@@ -48,15 +49,6 @@ const routes: Routes = [
       {
         path: 'trademark-policy',
         loadChildren: () => import('../components/trademark-policy/trademark-policy.module').then(m => m.TrademarkModule),
-      },
-      {
-        path: 'address/:id',
-        children: [],
-        component: AddressComponent,
-        data: {
-          ogImage: true,
-          networkSpecific: true,
-        }
       },
       {
         path: 'tx',
@@ -139,6 +131,19 @@ const routes: Routes = [
     ],
   },
 ];
+
+if (window['__env']?.OFFICIAL_MEMPOOL_SPACE) {
+  routes[0].children.push({
+    path: 'nodes',
+    data: { networks: ['bitcoin', 'liquid'] },
+    component: ServerHealthComponent
+  });
+  routes[0].children.push({
+    path: 'network',
+    data: { networks: ['bitcoin', 'liquid'] },
+    component: ServerStatusComponent
+  });
+}
 
 @NgModule({
   imports: [

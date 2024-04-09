@@ -1,13 +1,16 @@
 import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, NgZone, OnInit } from '@angular/core';
 import { SeoService } from '../../services/seo.service';
 import { ApiService } from '../../services/api.service';
-import { delay, Observable, switchMap, tap, zip } from 'rxjs';
+import { delay, Observable, of, switchMap, tap, zip } from 'rxjs';
 import { AssetsService } from '../../services/assets.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from '../../services/state.service';
 import { EChartsOption, echarts } from '../../graphs/echarts';
 import { isMobile } from '../../shared/common.utils';
+import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
+import { getFlagEmoji } from '../../shared/common.utils';
+import { lerpColor } from '../../shared/graphs.utils';
 
 @Component({
   selector: 'app-nodes-channels-map',
@@ -45,11 +48,12 @@ export class NodesChannelsMap implements OnInit {
   constructor(
     private seoService: SeoService,
     private apiService: ApiService,
-    private stateService: StateService,
+    public stateService: StateService,
     private assetsService: AssetsService,
     private router: Router,
     private zone: NgZone,
     private activatedRoute: ActivatedRoute,
+    private amountShortenerPipe: AmountShortenerPipe,
   ) {
   }
 
@@ -86,10 +90,12 @@ export class NodesChannelsMap implements OnInit {
         return zip(
           this.assetsService.getWorldMapJson$,
           this.style !== 'channelpage' ? this.apiService.getChannelsGeo$(params.get('public_key') ?? undefined, this.style) : [''],
-          [params.get('public_key') ?? undefined]
+          [params.get('public_key') ?? undefined],
+          this.style === 'widget' ? of(undefined) : this.apiService.getWorldNodes$(),
         ).pipe(tap((data) => {
           echarts.registerMap('world', data[0]);
 
+          let maxLiquidity = data[3]?.maxLiquidity;
           const channelsLoc = [];
           const nodes = [];
           const nodesPubkeys = {};
@@ -197,13 +203,24 @@ export class NodesChannelsMap implements OnInit {
             this.zoom = -0.05 * distance + 8;
           }
 
-          this.prepareChartOptions(nodes, channelsLoc);
+          if (data[3]) {
+            for (const node of nodes) {
+              const foundNode = data[3].nodes.find((n) => n[2] === node[3]);
+              if (foundNode) {
+                node.push(foundNode[4], foundNode[5], foundNode[6]?.en, foundNode[7]);
+                maxLiquidity = Math.max(maxLiquidity ?? 0, foundNode[4]);
+              }
+            }
+          }
+
+          maxLiquidity = Math.max(1, maxLiquidity);
+          this.prepareChartOptions(nodes, channelsLoc, maxLiquidity);
         }));
       })
      );
   }
 
-  prepareChartOptions(nodes, channels) {
+  prepareChartOptions(nodes, channels, maxLiquidity) {
     let title: object;
     if (channels.length === 0) {
       if (!this.placeholder) {
@@ -267,25 +284,44 @@ export class NodesChannelsMap implements OnInit {
           data: nodes,
           coordinateSystem: 'geo',
           geoIndex: 0,
-          symbolSize: this.nodeSize,
+          symbolSize: (params) => {
+            if (maxLiquidity) {
+              return 10 * Math.pow(params[5] / maxLiquidity, 0.2) + 3;
+            }
+            return this.nodeSize;
+          },
           tooltip: {
             show: true,
             backgroundColor: 'rgba(17, 19, 31, 1)',
             borderRadius: 4,
             shadowColor: 'rgba(0, 0, 0, 0.5)',
             textStyle: {
-              color: '#b1b1b1',
+              color: 'var(--tooltip-grey)',
               align: 'left',
             },
             borderColor: '#000',
             formatter: (value) => {
               const data = value.data;
               const alias = data[4].length > 0 ? data[4] : data[3].slice(0, 20);
-              return `<b style="color: white">${alias}</b>`;
-            }
+              const liquidity = data[5] >= 100000000 ?
+              `${this.amountShortenerPipe.transform(data[5] / 100000000)} BTC` :
+              `${this.amountShortenerPipe.transform(data[5], 2)} sats`;
+
+              return `
+              <b style="color: white">${alias}</b><br>
+              ${liquidity}<br>` +
+              $localize`:@@205c1b86ac1cc419c4d0cca51fdde418c4ffdc20:${data[6]}:INTERPOLATION: channels` + `<br>
+              ${getFlagEmoji(data[8])} ${data[7]}
+            `;
+            },
           },
           itemStyle: {
-            color: 'white',
+            color: (params) => {
+              if (!maxLiquidity) {
+                return 'white';
+              }
+              return `${lerpColor('#1E88E5', '#D81B60', Math.pow(params.data[5] / maxLiquidity, 0.2))}`;
+            },
             opacity: 1,
             borderColor: 'black',
             borderWidth: 0,
@@ -361,8 +397,6 @@ export class NodesChannelsMap implements OnInit {
       }
 
       chartOptions.series[0].itemStyle.borderWidth = nodeBorder;
-      chartOptions.series[0].symbolSize += e.zoom > 1 ? speed * 15 : -speed * 15;
-      chartOptions.series[0].symbolSize = Math.max(4, Math.min(7, chartOptions.series[0].symbolSize));
 
       chartOptions.series[1].lineStyle.opacity += e.zoom > 1 ? speed : -speed;
       chartOptions.series[1].lineStyle.width += e.zoom > 1 ? speed : -speed;

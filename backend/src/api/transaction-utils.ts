@@ -145,6 +145,10 @@ class TransactionUtils {
   }
 
   public countScriptSigops(script: string, isRawScript: boolean = false, witness: boolean = false): number {
+    if (!script?.length) {
+      return 0;
+    }
+
     let sigops = 0;
     // count OP_CHECKSIG and OP_CHECKSIGVERIFY
     sigops += (script.match(/OP_CHECKSIG/g)?.length || 0);

@@ -39,7 +39,6 @@ export class NodeComponent implements OnInit {
   tlvRecords: CustomRecord[];
   avgChannelDistance$: Observable<number | null>;
   showFeatures = false;
-  nodeOwner$: Observable<any>;
   kmToMiles = kmToMiles;
 
   constructor(
@@ -153,24 +152,6 @@ export class NodeComponent implements OnInit {
         return null;
       })
     ) as Observable<number | null>;
-
-    this.nodeOwner$ = this.activatedRoute.paramMap
-      .pipe(
-        switchMap((params: ParamMap) => {
-          return this.servicesApiService.getNodeOwner$(params.get('public_key')).pipe(
-            switchMap((response) =>  {
-              if (response.status === 204) {
-                return of(false);
-              }
-              return of(response.body);
-            }),
-            catchError(() => {
-              return of(false);
-            })
-          )
-        }),
-        share(),
-      );
   }
 
   toggleShowDetails(): void {

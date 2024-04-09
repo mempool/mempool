@@ -1,0 +1,101 @@
+.frame {
+  position: relative;
+  background: #24273e;
+  padding: 0.5rem;
+  height: calc(100% + 60px);
+}
+
+.heading {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  & > * {
+    flex-basis: 0;
+    flex-grow: 1;
+  }
+
+  h3 {
+    text-align: center;
+    margin: 0 1em;
+  }
+}
+
+.pagination {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+}
+
+.table {
+  margin-top: 0.5em;
+
+  td, th {
+    padding: 0.15rem 0.5rem;
+
+    &.address {
+      width: auto;
+    }
+    &.btc {
+      width: 140px;
+      text-align: right;
+    }
+    &.fiat {
+      width: 142px;
+      text-align: right;
+    }
+  }
+
+  tr {
+    border-collapse: collapse;
+
+    &:first-child {
+      border-bottom: solid 1px white;
+      td, th {
+        padding-bottom: 0.3rem;
+      }
+    }
+    &:nth-child(2) {
+      td, th {
+        padding-top: 0.3rem;
+      }
+    }
+    &:nth-child(even) {
+      background: #181b2d;
+    }
+  }
+
+  @media (min-width: 528px) {
+    td, th {
+      &.btc {
+        width: 160px;
+      }
+      &.fiat {
+        width: 140px;
+      }
+    }
+  }
+
+  @media (min-width: 576px) {
+    td, th {
+      &.btc {
+        width: 170px;
+      }
+      &.fiat {
+        width: 140px;
+      }
+    }
+  }
+
+  @media (min-width: 992px) {
+    td, th {
+      &.btc {
+        width: 210px;
+      }
+      &.fiat {
+        width: 140px;
+      }
+    }
+  }
+}

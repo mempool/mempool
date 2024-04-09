@@ -46,7 +46,7 @@ tr, td, th {
 }
 
 .progress {
-  background-color: #2d3348;
+  background-color: var(--secondary);
 }
 
 .pool {
@@ -266,7 +266,7 @@ tr, td, th {
 
 .tooltip-custom .tooltiptext {
   visibility: hidden;
-  color: #fff;
+  color: var(--fg);
   text-align: center;
   padding: 5px 0;
   border-radius: 6px;

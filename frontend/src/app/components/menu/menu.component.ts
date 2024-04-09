@@ -78,6 +78,15 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.stateService.menuOpen$.next(this.navOpen);
   }
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    if (this.isSmallScreen()) {
+      this.toggleMenu(false);
+    } else if (this.isServicesPage) {
+      this.toggleMenu(true);
+    }
+  }
+
   @HostListener('window:click', ['$event'])
   onClick(event) {
     const isServicesPageOnMobile = this.isServicesPage && this.isSmallScreen();

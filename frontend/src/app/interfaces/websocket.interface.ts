@@ -1,8 +1,10 @@
+import { SafeResourceUrl } from '@angular/platform-browser';
 import { ILoadingIndicators } from '../services/state.service';
 import { Transaction } from './electrs.interface';
-import { BlockExtended, DifficultyAdjustment, RbfTree } from './node-api.interface';
+import { BlockExtended, DifficultyAdjustment, RbfTree, TransactionStripped } from './node-api.interface';
 
 export interface WebsocketResponse {
+  backend?: 'esplora' | 'electrum' | 'none';
   block?: BlockExtended;
   blocks?: BlockExtended[];
   conversions?: any;
@@ -34,7 +36,6 @@ export interface WebsocketResponse {
   'track-rbf'?: string;
   'track-rbf-summary'?: boolean;
   'watch-mempool'?: boolean;
-  'track-bisq-market'?: string;
   'refresh-blocks'?: boolean;
 }
 
@@ -91,20 +92,8 @@ export interface MempoolInfo {
   minrelaytxfee: number;           //  (numeric) Current minimum relay fee for transactions
 }
 
-export interface TransactionStripped {
-  txid: string;
-  fee: number;
-  vsize: number;
-  value: number;
-  acc?: boolean; // is accelerated?
-  rate?: number; // effective fee rate
-  flags?: number;
-  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'rbf' | 'accelerated';
-  context?: 'projected' | 'actual';
-}
-
 // [txid, fee, vsize, value, rate, flags, acceleration?]
-export type TransactionCompressed = [string, number, number, number, number, number, 1?];
+export type TransactionCompressed = [string, number, number, number, number, number, number, 1?];
 // [txid, rate, flags, acceleration?]
 export type MempoolDeltaChange = [string, number, number, (1|0)];
 
@@ -120,4 +109,19 @@ export interface Recommendedfees {
   hourFee: number;
   minimumFee: number;
   economyFee: number;
+}
+
+export interface HealthCheckHost {
+  host: string;
+  active: boolean;
+  rtt: number;
+  latestHeight: number;
+  socket: boolean;
+  outOfSync: boolean;
+  unreachable: boolean;
+  checked: boolean;
+  lastChecked: number;
+  link?: string;
+  statusPage?: SafeResourceUrl;
+  flag?: string;
 }

@@ -7,6 +7,7 @@ import { MenuGroup } from '../interfaces/services.interface';
 import { Observable, of, ReplaySubject, tap, catchError, share, filter, switchMap } from 'rxjs';
 import { IBackendInfo } from '../interfaces/websocket.interface';
 import { Acceleration, AccelerationHistoryParams } from '../interfaces/node-api.interface';
+import { AccelerationStats } from '../components/acceleration/acceleration-stats/acceleration-stats.component';
 
 export type ProductType = 'enterprise' | 'community' | 'mining_pool' | 'custom';
 export interface IUser {
@@ -51,9 +52,6 @@ export class ServicesApiServices {
     }
     this.apiBasePath = ''; // assume mainnet by default
     this.stateService.networkChanged$.subscribe((network) => {
-      if (network === 'bisq' && !this.stateService.env.BISQ_SEPARATE_BACKEND) {
-        network = '';
-      }
       this.apiBasePath = network ? '/' + network : '';
     });
 
@@ -103,12 +101,6 @@ export class ServicesApiServices {
     return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/account`);
   }
 
-  getNodeOwner$(publicKey: string): Observable<any> {
-    let params = new HttpParams()
-      .set('node_public_key', publicKey);
-    return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/lightning/claim/current`, { params, observe: 'response' });
-  }
-
   getUserMenuGroups$(): Observable<MenuGroup[]> {
     const auth = this.storageService.getAuth();
     if (!auth) {
@@ -136,15 +128,35 @@ export class ServicesApiServices {
     return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/accelerator/estimate`, { txInput: txInput }, { observe: 'response' });
   }
 
-  accelerate$(txInput: string, userBid: number) {
-    return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/accelerator/accelerate`, { txInput: txInput, userBid: userBid });
+  accelerate$(txInput: string, userBid: number, accelerationUUID: string) {
+    return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/accelerator/accelerate`, { txInput: txInput, userBid: userBid, accelerationUUID: accelerationUUID });
+  }
+
+  accelerateWithCashApp$(txInput: string, userBid: number, token: string, cashtag: string, referenceId: string, accelerationUUID: string) {
+    return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/accelerator/accelerate/cashapp`, { txInput: txInput, userBid: userBid, token: token, cashtag: cashtag, referenceId: referenceId, accelerationUUID: accelerationUUID });
   }
 
   getAccelerations$(): Observable<Acceleration[]> {
     return this.httpClient.get<Acceleration[]>(`${SERVICES_API_PREFIX}/accelerator/accelerations`);
   }
 
+  getAggregatedAccelerationHistory$(params: AccelerationHistoryParams): Observable<any> {
+    return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/accelerator/accelerations/history/aggregated`, { params: { ...params }, observe: 'response' });
+  }
+
   getAccelerationHistory$(params: AccelerationHistoryParams): Observable<Acceleration[]> {
     return this.httpClient.get<Acceleration[]>(`${SERVICES_API_PREFIX}/accelerator/accelerations/history`, { params: { ...params } });
+  }
+
+  getAccelerationHistoryObserveResponse$(params: AccelerationHistoryParams): Observable<any> {
+    return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/accelerator/accelerations/history`, { params: { ...params }, observe: 'response'});
+  }
+
+  getAccelerationStats$(): Observable<AccelerationStats> {
+    return this.httpClient.get<AccelerationStats>(`${SERVICES_API_PREFIX}/accelerator/accelerations/stats`);
+  }
+
+  setupSquare$(): Observable<{squareAppId: string, squareLocationId: string}> {
+    return this.httpClient.get<{squareAppId: string, squareLocationId: string}>(`${SERVICES_API_PREFIX}/square/setup`);
   }
 }

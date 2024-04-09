@@ -1,0 +1,45 @@
+#!/usr/bin/env zsh
+#for j in fmt va1 fra tk7;do for i in 1 2 3 4 5 6;do echo -n 20$i.$j: ;curl -i -s https://node20$i.$j.mempool.space/api/v1/services/accelerator/accelerations|head -1;done;done
+check_mempoolspace_frontend_git_hash() {
+	echo -n $(curl -s --connect-to "::node${1}.${2}.mempool.space:443" https://mempool.space/en-US/resources/config.js|grep GIT_COMMIT_HASH_MEMPOOL_SPACE|cut -d "'" -f2|cut -c1-8)
+}
+check_mempoolfoss_frontend_git_hash() {
+	echo -n $(curl -s "https://node${1}.${2}.mempool.space/resources/config.js"|grep GIT_COMMIT_HASH|cut -d "'" -f2|cut -c1-8)
+}
+check_mempoolfoss_backend_git_hash() {
+	echo -n $(curl -s "https://node${1}.${2}.mempool.space/api/v1/backend-info"|jq -r .gitCommit 2>/dev/null|cut -c1-8)
+}
+check_mempoolspace_frontend_md5_hash() {
+	echo -n $(curl -s --connect-to "::node${1}.${2}.mempool.space:443" https://mempool.space|md5|cut -c1-8)
+}
+check_mempoolfoss_frontend_md5_hash() {
+	echo -n $(curl -s https://node${1}.${2}.mempool.space|md5|cut -c1-8)
+}
+check_mempool_electrs_git_hash() {
+	echo -n $(curl -s -i https://node${1}.${2}.mempool.space/api/mempool|grep -i x-powered-by|cut -d ' ' -f3|cut -d '-' -f3|tr -d '\r'|tr -d '\n')
+}
+check_liquid_electrs_git_hash() {
+	echo -n $(curl -s -i --connect-to "::node${1}.${2}.mempool.space:443" https://liquid.network/api/mempool|grep -i x-powered-by|cut -d ' ' -f3|cut -d '-' -f3|tr -d '\r'|tr -d '\n')
+}
+for site in fmt va1 fra tk7;do
+	echo "${site}"
+	for node in 201 202 203 204 205 206 207 208 209 210 211 212 213 214;do
+		[ "${site}" = "fmt" ] && [ "${node}" -gt 206 ] && continue
+		[ "${site}" = "tk7" ] && [ "${node}" -gt 206 ] && continue
+		echo -n "node${node}.${site}: "
+		check_mempoolspace_frontend_git_hash $node $site
+		echo -n " "
+		check_mempoolfoss_frontend_git_hash $node $site
+		echo -n " "
+		check_mempoolfoss_backend_git_hash $node $site
+		echo -n " "
+		check_mempoolspace_frontend_md5_hash $node $site
+		echo -n " "
+		check_mempoolfoss_frontend_md5_hash $node $site
+		echo -n " "
+		check_mempool_electrs_git_hash $node $site
+		echo -n " "
+		check_liquid_electrs_git_hash $node $site
+		echo
+	done
+done

@@ -7,12 +7,17 @@ interface Match {
 }
 
 const routes = {
-  block: {
-    render: true,
-    params: 1,
-    getTitle(path) {
-      return `Block: ${path[0]}`;
-    }
+  about: {
+    title: "About",
+    fallbackImg: '/resources/previews/about.jpg',
+  },
+  acceleration: {
+    title: "Acceleration",
+    fallbackImg: '/resources/previews/accelerator.jpg',
+  },
+  accelerator: {
+    title: "Mempool Accelerator",
+    fallbackImg: '/resources/previews/accelerator.jpg',
   },
   address: {
     render: true,
@@ -21,16 +26,38 @@ const routes = {
       return `Address: ${path[0]}`;
     }
   },
-  tx: {
+  block: {
     render: true,
     params: 1,
     getTitle(path) {
-      return `Transaction: ${path[0]}`;
+      return `Block: ${path[0]}`;
     }
+  },
+  blocks: {
+    title: "Blocks",
+    fallbackImg: '/resources/previews/blocks.jpg',
+  },
+  docs: {
+    title: "Docs",
+    fallbackImg: '/resources/previews/faq.jpg',
+    routes: {
+      faq: {
+        title: "FAQ",
+        fallbackImg: '/resources/previews/faq.jpg',
+      },
+      api: {
+        title: "API Docs",
+        fallbackImg: '/resources/previews/docs-api.jpg',
+      }
+    }
+  },
+  enterprise: {
+    title: "Mempool Enterprise",
+    fallbackImg: '/resources/previews/enterprise.jpg',
   },
   lightning: {
     title: "Lightning",
-    fallbackImg: '/resources/previews/lightning.png',
+    fallbackImg: '/resources/previews/lightning.jpg',
     routes: {
       node: {
         render: true,
@@ -68,7 +95,7 @@ const routes = {
   },
   mining: {
     title: "Mining",
-    fallbackImg: '/resources/previews/mining.png',
+    fallbackImg: '/resources/previews/mining.jpg',
     routes: {
       pool: {
         render: true,
@@ -78,12 +105,45 @@ const routes = {
         }
       }
     }
+  },
+  "privacy-policy": {
+    title: "Privacy Policy",
+    fallbackImg: '/resources/previews/privacy-policy.jpg',
+  },
+  rbf: {
+    title: "RBF",
+    fallbackImg: '/resources/previews/rbf.jpg',
+  },
+  sponsor: {
+    title: "Community Sponsors",
+    fallbackImg: '/resources/previews/sponsor.jpg',
+  },
+  "terms-of-service": {
+    title: "Terms of Service",
+    fallbackImg: '/resources/previews/terms-of-service.jpg',
+  },
+  "trademark-policy": {
+    title: "Trademark Policy",
+    fallbackImg: '/resources/previews/trademark-policy.jpg',
+  },
+  tx: {
+    render: true,
+    params: 1,
+    getTitle(path) {
+      return `Transaction: ${path[0]}`;
+    },
+    routes: {
+      push: {
+        title: "Push Transaction",
+        fallbackImg: '/resources/previews/tx-push.jpg',
+      }
+    }
   }
 };
 
 const networks = {
   bitcoin: {
-    fallbackImg: '/resources/previews/dashboard.png',
+    fallbackImg: '/resources/previews/mempool-space-preview.jpg',
     routes: {
       ...routes // all routes supported
     }
@@ -123,7 +183,7 @@ export function matchRoute(network: string, path: string): Match {
   match.fallbackImg = route.fallbackImg;
 
   // traverse the route tree until we run out of route or tree, or hit a renderable match
-  while (!route.render && route.routes && parts.length && route.routes[parts[0]]) {
+  while (route.routes && parts.length && route.routes[parts[0]]) {
     route = route.routes[parts[0]];
     parts.shift();
     if (route.fallbackImg) {

@@ -2,20 +2,20 @@
   <div class="fee-estimation-container">
     <div class="item">
       <a class="title-link" [routerLink]="['/audit/pegs' | relativeUrl]">
-        <h5 class="card-title"><ng-container i18n="liquid.recent-pegs">Recent Peg-In / Out's</ng-container>&nbsp;<fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: #4a68b9"></fa-icon></h5>
+        <h5 class="card-title"><ng-container i18n="liquid.recent-pegs">Recent Peg-In / Out's</ng-container>&nbsp;<fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: var(--title-fg)"></fa-icon></h5>
       </a>
     </div>
   </div>
   <div class="fee-estimation-container">
     <div class="item">
       <div class="card-text">
-        <div class="fee-text credit" i18n-ngbTooltip="liquid.peg-ins-volume-day" ngbTooltip="24h Peg-In Volume" placement="top">+{{ (+pegsVolume[0].volume) / 100000000 | number: '1.2-2' }} <span i18n="shared.addresses">BTC</span></div>
+        <div class="fee-text credit" i18n-ngbTooltip="liquid.peg-ins-volume-day" ngbTooltip="24h Peg-In Volume" placement="top">+{{ (+pegsVolume[0].volume) / 100000000 | number: '1.2-2' }} <span i18n="shared.btc|BTC">BTC</span></div>
         <div class="fiat">{{ (+pegsVolume[0].number) }} <span i18n="liquid.peg-ins">Peg-Ins</span></div>
       </div>
     </div>
     <div class="item">
       <div class="card-text">
-        <div class="fee-text debit" i18n-ngbTooltip="liquid.peg-out-volume-day" ngbTooltip="24h Peg-Out Volume" placement="top">{{ (+pegsVolume[1].volume) / 100000000 | number: '1.2-2' }} <span i18n="shared.addresses">BTC</span></div>
+        <div class="fee-text debit" i18n-ngbTooltip="liquid.peg-out-volume-day" ngbTooltip="24h Peg-Out Volume" placement="top">{{ (+pegsVolume[1].volume) / 100000000 | number: '1.2-2' }} <span i18n="shared.btc|BTC">BTC</span></div>
         <div class="fiat">{{ (+pegsVolume[1].number) }} <span i18n="liquid.peg-outs">Peg-Outs</span></div>
       </div>
     </div>
@@ -26,7 +26,7 @@
   <div class="fee-estimation-container loading-container">
     <div class="item">
       <a class="title-link" [routerLink]="['/audit/pegs' | relativeUrl]">
-        <h5 class="card-title"><ng-container i18n="liquid.recent-pegs">Recent Peg-In / Out's</ng-container>&nbsp;<fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: #4a68b9"></fa-icon></h5>
+        <h5 class="card-title"><ng-container i18n="liquid.recent-pegs">Recent Peg-In / Out's</ng-container>&nbsp;<fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: var(--title-fg)"></fa-icon></h5>
       </a>
     </div>
   </div>

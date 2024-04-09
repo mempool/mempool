@@ -5,6 +5,7 @@ import { download } from '../../shared/graphs.utils';
 import { LightningApiService } from '../lightning-api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
+import { StateService } from '../../services/state.service';
 
 @Component({
   selector: 'app-node-fee-chart',
@@ -33,6 +34,7 @@ export class NodeFeeChartComponent implements OnInit {
   constructor(
     @Inject(LOCALE_ID) public locale: string,
     private lightningApiService: LightningApiService,
+    public stateService: StateService,
     private activatedRoute: ActivatedRoute,
     private amountShortenerPipe: AmountShortenerPipe,
   ) {
@@ -140,7 +142,7 @@ export class NodeFeeChartComponent implements OnInit {
         borderRadius: 4,
         shadowColor: 'rgba(0, 0, 0, 0.5)',
         textStyle: {
-          color: '#b1b1b1',
+          color: 'var(--tooltip-grey)',
           align: 'left',
         },
         borderColor: '#000',
@@ -203,7 +205,7 @@ export class NodeFeeChartComponent implements OnInit {
           splitLine: {
             lineStyle: {
               type: 'dotted',
-              color: '#ffffff66',
+              color: 'var(--transparent-fg)',
               opacity: 0.25,
             }
           },

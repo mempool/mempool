@@ -51,6 +51,10 @@ export class DifficultyComponent implements OnInit {
   isLoadingWebSocket$: Observable<boolean>;
   difficultyEpoch$: Observable<EpochProgress>;
 
+  mode: 'difficulty' | 'halving' = 'difficulty';
+  userSelectedMode: boolean = false;
+
+  now: number = Date.now();
   epochStart: number;
   currentHeight: number;
   currentIndex: number;
@@ -58,6 +62,7 @@ export class DifficultyComponent implements OnInit {
   expectedIndex: number;
   difference: number;
   shapes: DiffShape[];
+  nextSubsidy: number;
 
   tooltipPosition = { x: 0, y: 0 };
   hoverSection: DiffShape | void;
@@ -77,30 +82,36 @@ export class DifficultyComponent implements OnInit {
     .pipe(
       map(([blocks, da]) => {
         const maxHeight = blocks.reduce((max, block) => Math.max(max, block.height), 0);
-        let colorAdjustments = '#ffffff66';
+        let colorAdjustments = 'var(--transparent-fg)';
         if (da.difficultyChange > 0) {
-          colorAdjustments = '#3bcc49';
+          colorAdjustments = 'var(--green)';
         }
         if (da.difficultyChange < 0) {
-          colorAdjustments = '#dc3545';
+          colorAdjustments = 'var(--red)';
         }
 
-        let colorPreviousAdjustments = '#dc3545';
+        let colorPreviousAdjustments = 'var(--red)';
         if (da.previousRetarget) {
           if (da.previousRetarget >= 0) {
-            colorPreviousAdjustments = '#3bcc49';
+            colorPreviousAdjustments = 'var(--green)';
           }
           if (da.previousRetarget === 0) {
-            colorPreviousAdjustments = '#ffffff66';
+            colorPreviousAdjustments = 'var(--transparent-fg)';
           }
         } else {
-          colorPreviousAdjustments = '#ffffff66';
+          colorPreviousAdjustments = 'var(--transparent-fg)';
         }
 
         const blocksUntilHalving = 210000 - (maxHeight % 210000);
         const timeUntilHalving = new Date().getTime() + (blocksUntilHalving * 600000);
         const newEpochStart = Math.floor(this.stateService.latestBlockHeight / EPOCH_BLOCK_LENGTH) * EPOCH_BLOCK_LENGTH;
         const newExpectedHeight = Math.floor(newEpochStart + da.expectedBlocks);
+        this.now = new Date().getTime();
+        this.nextSubsidy = getNextBlockSubsidy(maxHeight);
+
+        if (blocksUntilHalving < da.remainingBlocks && !this.userSelectedMode) {
+          this.mode = 'halving';
+        }
 
         if (newEpochStart !== this.epochStart || newExpectedHeight !== this.expectedHeight || this.currentHeight !== this.stateService.latestBlockHeight) {
           this.epochStart = newEpochStart;
@@ -194,6 +205,12 @@ export class DifficultyComponent implements OnInit {
     return shapes;
   }
 
+  setMode(mode: 'difficulty' | 'halving'): boolean {
+    this.mode = mode;
+    this.userSelectedMode = true;
+    return false;
+  }
+
   @HostListener('pointerdown', ['$event'])
   onPointerDown(event): void {
     if (this.epochSvgElement?.nativeElement?.contains(event.target)) {
@@ -217,4 +234,17 @@ export class DifficultyComponent implements OnInit {
   onBlur(): void {
     this.hoverSection = null;
   }
+}
+
+function getNextBlockSubsidy(height: number): number {
+  const halvings = Math.floor(height / 210_000) + 1;
+  // Force block reward to zero when right shift is undefined.
+  if (halvings >= 64) {
+    return 0;
+  }
+
+  let subsidy = BigInt(50 * 100_000_000);
+  // Subsidy is cut in half every 210,000 blocks which will occur approximately every 4 years.
+  subsidy >>= BigInt(halvings);
+  return Number(subsidy);
 }

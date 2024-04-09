@@ -103,6 +103,9 @@ export interface FederationUtxo {
   pegtxid: string;
   pegindex: number;
   pegblocktime: number;
+  timelock: number;
+  expiredAt: number;
+  isDust?: boolean;
 }
 
 export interface RecentPeg {
@@ -160,6 +163,7 @@ export interface PoolInfo {
   emptyBlocks: number;
   slug: string;
   poolUniqueId: number;
+  unique_id: number;
 }
 export interface PoolStat {
   pool: PoolInfo;
@@ -205,6 +209,7 @@ export interface BlockExtended extends Block {
 export interface BlockAudit extends BlockExtended {
   missingTxs: string[],
   addedTxs: string[],
+  prioritizedTxs: string[],
   freshTxs: string[],
   sigopTxs: string[],
   fullrbfTxs: string[],
@@ -227,7 +232,8 @@ export interface TransactionStripped {
   rate?: number; // effective fee rate
   acc?: boolean;
   flags?: number | null;
-  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'rbf' | 'accelerated';
+  time?: number;
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'prioritized' | 'censored' | 'selected' | 'rbf' | 'accelerated';
   context?: 'projected' | 'actual';
 }
 
@@ -375,7 +381,7 @@ export interface INode {
 
 export interface Acceleration {
   txid: string;
-  status: 'requested' | 'accelerating' | 'mined' | 'completed' | 'failed';
+  status: 'requested' | 'accelerating' | 'completed_provisional' | 'completed' | 'failed' | 'failed_provisional';
   pools: number[];
   feePaid: number;
   added: number; // timestamp
@@ -388,13 +394,33 @@ export interface Acceleration {
   blockHash: string;
   blockHeight: number;
 
-  acceleratedFee?: number;
+  acceleratedFeeRate?: number;
   boost?: number;
+
+  boostCost?: number;
+  boostRate?: number;
 }
 
 export interface AccelerationHistoryParams {
-  timeframe?: string,
-  status?: string,
-  pool?: string,
-  blockHash?: string,
+  status?: string;
+  timeframe?: string;
+  poolUniqueId?: number;
+  blockHash?: string;
+  blockHeight?: number;
+  page?: number;
+  pageLength?: number;
+}
+
+export interface AccelerationInfo {
+  txid: string,
+  height: number,
+  pool: {
+    id: number,
+    slug: string,
+    name: string,
+  },
+  effective_vsize: number,
+  effective_fee: number,
+  boost_rate: number,
+  boost_cost: number,
 }

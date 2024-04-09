@@ -4,11 +4,16 @@
     <div class="d-flex d-md-block align-items-baseline" style="margin-bottom: -5px">
       <span i18n="lightning.nodes-world-map">Lightning Nodes World Map</span>
     </div>
-    <small style="color: #ffffff66" i18n="lightning.tor-nodes-excluded">(Tor nodes excluded)</small>
+    <small style="color: var(--transparent-fg)" i18n="lightning.tor-nodes-excluded">(Tor nodes excluded)</small>
   </div>
 
-  <div *ngIf="observable$ | async" class="chart" [class]="widget ? 'widget' : ''" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
-    (chartInit)="onChartInit($event)" (chartFinished)="onChartFinished($event)">
+  <ng-container *ngIf="observable$ | async">
+    <div class="chart" [class]="widget ? 'widget' : ''" *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+      (chartInit)="onChartInit($event)" (chartFinished)="onChartFinished($event)">
+    </div>
+  </ng-container>
+  <div class="text-center loading-spinner" *ngIf="!stateService.isBrowser || isLoading">
+    <div class="spinner-border text-light"></div>
   </div>
 
 </div>

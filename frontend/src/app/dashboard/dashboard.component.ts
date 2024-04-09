@@ -1,13 +1,14 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { combineLatest, EMPTY, fromEvent, interval, merge, Observable, of, Subject, Subscription, timer } from 'rxjs';
 import { catchError, delayWhen, distinctUntilChanged, filter, map, scan, share, shareReplay, startWith, switchMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
-import { AuditStatus, BlockExtended, CurrentPegs, FederationAddress, OptimizedMempoolStats, PegsVolume, RecentPeg } from '../interfaces/node-api.interface';
-import { MempoolInfo, TransactionStripped, ReplacementInfo } from '../interfaces/websocket.interface';
+import { AuditStatus, BlockExtended, CurrentPegs, FederationAddress, FederationUtxo, OptimizedMempoolStats, PegsVolume, RecentPeg, TransactionStripped } from '../interfaces/node-api.interface';
+import { MempoolInfo, ReplacementInfo } from '../interfaces/websocket.interface';
 import { ApiService } from '../services/api.service';
 import { StateService } from '../services/state.service';
 import { WebsocketService } from '../services/websocket.service';
 import { SeoService } from '../services/seo.service';
-import { ActiveFilter, FilterMode, toFlags } from '../shared/filters.utils';
+import { ActiveFilter, FilterMode, GradientMode, toFlags } from '../shared/filters.utils';
+import { detectWebGL } from '../shared/graphs.utils';
 
 interface MempoolBlocksData {
   blocks: number;
@@ -57,6 +58,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   federationAddresses$: Observable<FederationAddress[]>;
   federationAddressesNumber$: Observable<number>;
   federationUtxosNumber$: Observable<number>;
+  expiredUtxos$: Observable<FederationUtxo[]>;
+  emergencySpentUtxosStats$: Observable<any>;
   fullHistory$: Observable<any>;
   isLoad: boolean = true;
   filterSubscription: Subscription;
@@ -64,20 +67,22 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   currencySubscription: Subscription;
   currency: string;
   incomingGraphHeight: number = 300;
-  lbtcPegGraphHeight: number = 320;
+  lbtcPegGraphHeight: number = 360;
+  webGlEnabled = true;
   private lastPegBlockUpdate: number = 0;
   private lastPegAmount: string = '';
   private lastReservesBlockUpdate: number = 0;
 
   goggleResolution = 82;
-  goggleCycle: { index: number, name: string, mode: FilterMode, filters: string[] }[] = [
-    { index: 0, name: 'All', mode: 'and', filters: [] },
-    { index: 1, name: 'Consolidation', mode: 'and', filters: ['consolidation'] },
-    { index: 2, name: 'Coinjoin', mode: 'and', filters: ['coinjoin'] },
-    { index: 3, name: 'Data', mode: 'or', filters: ['inscription', 'fake_pubkey', 'op_return'] },
+  goggleCycle: { index: number, name: string, mode: FilterMode, filters: string[], gradient: GradientMode }[] = [
+    { index: 0, name: $localize`:@@dfc3c34e182ea73c5d784ff7c8135f087992dac1:All`, mode: 'and', filters: [], gradient: 'age' },
+    { index: 1, name: $localize`Consolidation`, mode: 'and', filters: ['consolidation'], gradient: 'fee' },
+    { index: 2, name: $localize`Coinjoin`, mode: 'and', filters: ['coinjoin'], gradient: 'fee' },
+    { index: 3, name: $localize`Data`, mode: 'or', filters: ['inscription', 'fake_pubkey', 'op_return'], gradient: 'fee' },
   ];
   goggleFlags = 0n;
   goggleMode: FilterMode = 'and';
+  gradientMode: GradientMode = 'age';
   goggleIndex = 0;
 
   private destroy$ = new Subject();
@@ -86,8 +91,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     public stateService: StateService,
     private apiService: ApiService,
     private websocketService: WebsocketService,
-    private seoService: SeoService
-  ) { }
+    private seoService: SeoService,
+    @Inject(PLATFORM_ID) private platformId: Object,
+  ) {
+    this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
+  }
 
   ngAfterViewInit(): void {
     this.stateService.focusSearchInputDesktop();
@@ -124,6 +132,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
             this.goggleIndex = goggle.index;
             this.goggleFlags = toFlags(goggle.filters);
             this.goggleMode = goggle.mode;
+            this.gradientMode = active.gradient;
             return;
           }
         }
@@ -133,6 +142,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         name: 'Custom',
         mode: active.mode,
         filters: active.filters,
+        gradient: active.gradient,
       });
       this.goggleIndex = this.goggleCycle.length - 1;
       this.goggleFlags = toFlags(active.filters);
@@ -187,17 +197,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         })
       );
 
-    this.transactions$ = this.stateService.transactions$
-      .pipe(
-        scan((acc, tx) => {
-          if (acc.find((t) => t.txid == tx.txid)) {
-            return acc;
-          }
-          acc.unshift(tx);
-          acc = acc.slice(0, 6);
-          return acc;
-        }, []),
-      );
+    this.transactions$ = this.stateService.transactions$;
 
     this.blocks$ = this.stateService.blocks$
       .pipe(
@@ -234,7 +234,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
                   acc.unshift(stats);
                   acc = acc.slice(0, 120);
                   return acc;
-                }, mempoolStats)
+                }, (mempoolStats || []))
               ),
             of(mempoolStats)
           );
@@ -249,7 +249,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
             return null;
           }
         }),
-        share(),
+        shareReplay(1),
       );
 
     if (this.stateService.network === 'liquid') {
@@ -342,6 +342,20 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         map(count => count.utxo_count),
         share()
       );
+
+      this.expiredUtxos$ = this.auditUpdated$.pipe(
+        filter(auditUpdated => auditUpdated === true),
+        throttleTime(40000),
+        switchMap(_ => this.apiService.expiredUtxos$()),
+        share()
+      );
+
+      this.emergencySpentUtxosStats$ = this.auditUpdated$.pipe(
+        filter(auditUpdated => auditUpdated === true),
+        throttleTime(40000),
+        switchMap(_ => this.apiService.emergencySpentUtxosStats$()),
+        share()
+      );
   
       this.liquidPegsMonth$ = interval(60 * 60 * 1000)
         .pipe(
@@ -432,15 +446,15 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     if (window.innerWidth >= 992) {
       this.incomingGraphHeight = 300;
       this.goggleResolution = 82;
-      this.lbtcPegGraphHeight = 320;
+      this.lbtcPegGraphHeight = 360;
     } else if (window.innerWidth >= 768) {
       this.incomingGraphHeight = 215;
       this.goggleResolution = 80;
-      this.lbtcPegGraphHeight = 230;
+      this.lbtcPegGraphHeight = 270;
     } else {
       this.incomingGraphHeight = 180;
       this.goggleResolution = 86;
-      this.lbtcPegGraphHeight = 220;
+      this.lbtcPegGraphHeight = 270;
     }
   }
 }

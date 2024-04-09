@@ -4,6 +4,7 @@
 __MEMPOOL_NETWORK__=${MEMPOOL_NETWORK:=mainnet}
 __MEMPOOL_BACKEND__=${MEMPOOL_BACKEND:=electrum}
 __MEMPOOL_ENABLED__=${MEMPOOL_ENABLED:=true}
+__MEMPOOL_OFFICIAL__=${MEMPOOL_OFFICIAL:=false}
 __MEMPOOL_HTTP_PORT__=${BACKEND_HTTP_PORT:=8999}
 __MEMPOOL_SPAWN_CLUSTER_PROCS__=${MEMPOOL_SPAWN_CLUSTER_PROCS:=0}
 __MEMPOOL_API_URL_PREFIX__=${MEMPOOL_API_URL_PREFIX:=/api/v1/}
@@ -28,9 +29,8 @@ __MEMPOOL_AUTOMATIC_BLOCK_REINDEXING__=${MEMPOOL_AUTOMATIC_BLOCK_REINDEXING:=fal
 __MEMPOOL_POOLS_JSON_URL__=${MEMPOOL_POOLS_JSON_URL:=https://raw.githubusercontent.com/mempool/mining-pools/master/pools-v2.json}
 __MEMPOOL_POOLS_JSON_TREE_URL__=${MEMPOOL_POOLS_JSON_TREE_URL:=https://api.github.com/repos/mempool/mining-pools/git/trees/master}
 __MEMPOOL_AUDIT__=${MEMPOOL_AUDIT:=false}
-__MEMPOOL_ADVANCED_GBT_AUDIT__=${MEMPOOL_ADVANCED_GBT_AUDIT:=false}
-__MEMPOOL_ADVANCED_GBT_MEMPOOL__=${MEMPOOL_ADVANCED_GBT_MEMPOOL:=false}
 __MEMPOOL_RUST_GBT__=${MEMPOOL_RUST_GBT:=false}
+__MEMPOOL_LIMIT_GBT__=${MEMPOOL_LIMIT_GBT:=false}
 __MEMPOOL_CPFP_INDEXING__=${MEMPOOL_CPFP_INDEXING:=false}
 __MEMPOOL_MAX_BLOCKS_BULK_QUERY__=${MEMPOOL_MAX_BLOCKS_BULK_QUERY:=0}
 __MEMPOOL_DISK_CACHE_BLOCK_INTERVAL__=${MEMPOOL_DISK_CACHE_BLOCK_INTERVAL:=6}
@@ -81,6 +81,7 @@ __DATABASE_USERNAME__=${DATABASE_USERNAME:=mempool}
 __DATABASE_PASSWORD__=${DATABASE_PASSWORD:=mempool}
 __DATABASE_TIMEOUT__=${DATABASE_TIMEOUT:=180000}
 __DATABASE_PID_DIR__=${DATABASE_PID_DIR:=""}
+__DATABASE_POOL_SIZE__=${DATABASE_POOL_SIZE:=100}
 
 # SYSLOG
 __SYSLOG_ENABLED__=${SYSLOG_ENABLED:=false}
@@ -92,10 +93,6 @@ __SYSLOG_FACILITY__=${SYSLOG_FACILITY:=local7}
 # STATISTICS
 __STATISTICS_ENABLED__=${STATISTICS_ENABLED:=true}
 __STATISTICS_TX_PER_SECOND_SAMPLE_PERIOD__=${STATISTICS_TX_PER_SECOND_SAMPLE_PERIOD:=150}
-
-# BISQ
-__BISQ_ENABLED__=${BISQ_ENABLED:=false}
-__BISQ_DATA_PATH__=${BISQ_DATA_PATH:=/bisq/statsnode-data/btc_mainnet/db}
 
 # SOCKS5PROXY
 __SOCKS5PROXY_ENABLED__=${SOCKS5PROXY_ENABLED:=false}
@@ -110,8 +107,6 @@ __EXTERNAL_DATA_SERVER_MEMPOOL_API__=${EXTERNAL_DATA_SERVER_MEMPOOL_API:=https:/
 __EXTERNAL_DATA_SERVER_MEMPOOL_ONION__=${EXTERNAL_DATA_SERVER_MEMPOOL_ONION:=http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion/api/v1}
 __EXTERNAL_DATA_SERVER_LIQUID_API__=${EXTERNAL_DATA_SERVER_LIQUID_API:=https://liquid.network/api/v1}
 __EXTERNAL_DATA_SERVER_LIQUID_ONION__=${EXTERNAL_DATA_SERVER_LIQUID_ONION:=http://liquidmom47f6s3m53ebfxn47p76a6tlnxib3wp6deux7wuzotdr6cyd.onion/api/v1}
-__EXTERNAL_DATA_SERVER_BISQ_URL__=${EXTERNAL_DATA_SERVER_BISQ_URL:=https://bisq.markets/api}
-__EXTERNAL_DATA_SERVER_BISQ_ONION__=${EXTERNAL_DATA_SERVER_BISQ_ONION:=http://bisqmktse2cabavbr2xjq7xw3h6g5ottemo5rolfcwt6aly6tp5fdryd.onion/api}
 
 # LIGHTNING
 __LIGHTNING_ENABLED__=${LIGHTNING_ENABLED:=false}
@@ -139,8 +134,8 @@ __MAXMIND_GEOLITE2_ASN__=${MAXMIND_GEOLITE2_ASN:="/backend/GeoIP/GeoLite2-ASN.mm
 __MAXMIND_GEOIP2_ISP__=${MAXMIND_GEOIP2_ISP:=""}
 
 # REPLICATION
-__REPLICATION_ENABLED__=${REPLICATION_ENABLED:=true}
-__REPLICATION_AUDIT__=${REPLICATION_AUDIT:=true}
+__REPLICATION_ENABLED__=${REPLICATION_ENABLED:=false}
+__REPLICATION_AUDIT__=${REPLICATION_AUDIT:=false}
 __REPLICATION_AUDIT_START_HEIGHT__=${REPLICATION_AUDIT_START_HEIGHT:=774000}
 __REPLICATION_SERVERS__=${REPLICATION_SERVERS:=[]}
 
@@ -153,11 +148,16 @@ __REDIS_ENABLED__=${REDIS_ENABLED:=false}
 __REDIS_UNIX_SOCKET_PATH__=${REDIS_UNIX_SOCKET_PATH:=true}
 __REDIS_BATCH_QUERY_BASE_SIZE__=${REDIS_BATCH_QUERY_BASE_SIZE:=5000}
 
+# FIAT_PRICE
+__FIAT_PRICE_ENABLED__=${FIAT_PRICE_ENABLED:=true}
+__FIAT_PRICE_API_KEY__=${FIAT_PRICE_API_KEY:=""}
+
 mkdir -p "${__MEMPOOL_CACHE_DIR__}"
 
 sed -i "s!__MEMPOOL_NETWORK__!${__MEMPOOL_NETWORK__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_BACKEND__!${__MEMPOOL_BACKEND__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_ENABLED__!${__MEMPOOL_ENABLED__}!g" mempool-config.json
+sed -i "s!__MEMPOOL_OFFICIAL__!${__MEMPOOL_OFFICIAL__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_HTTP_PORT__!${__MEMPOOL_HTTP_PORT__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_SPAWN_CLUSTER_PROCS__!${__MEMPOOL_SPAWN_CLUSTER_PROCS__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_API_URL_PREFIX__!${__MEMPOOL_API_URL_PREFIX__}!g" mempool-config.json
@@ -182,9 +182,8 @@ sed -i "s!__MEMPOOL_AUTOMATIC_BLOCK_REINDEXING__!${__MEMPOOL_AUTOMATIC_BLOCK_REI
 sed -i "s!__MEMPOOL_POOLS_JSON_URL__!${__MEMPOOL_POOLS_JSON_URL__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_POOLS_JSON_TREE_URL__!${__MEMPOOL_POOLS_JSON_TREE_URL__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_AUDIT__!${__MEMPOOL_AUDIT__}!g" mempool-config.json
-sed -i "s!__MEMPOOL_ADVANCED_GBT_MEMPOOL__!${__MEMPOOL_ADVANCED_GBT_MEMPOOL__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_RUST_GBT__!${__MEMPOOL_RUST_GBT__}!g" mempool-config.json
-sed -i "s!__MEMPOOL_ADVANCED_GBT_AUDIT__!${__MEMPOOL_ADVANCED_GBT_AUDIT__}!g" mempool-config.json
+sed -i "s!__MEMPOOL_LIMIT_GBT__!${__MEMPOOL_LIMIT_GBT__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_CPFP_INDEXING__!${__MEMPOOL_CPFP_INDEXING__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_MAX_BLOCKS_BULK_QUERY__!${__MEMPOOL_MAX_BLOCKS_BULK_QUERY__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_DISK_CACHE_BLOCK_INTERVAL__!${__MEMPOOL_DISK_CACHE_BLOCK_INTERVAL__}!g" mempool-config.json
@@ -230,6 +229,7 @@ sed -i "s!__DATABASE_USERNAME__!${__DATABASE_USERNAME__}!g" mempool-config.json
 sed -i "s!__DATABASE_PASSWORD__!${__DATABASE_PASSWORD__}!g" mempool-config.json
 sed -i "s!__DATABASE_TIMEOUT__!${__DATABASE_TIMEOUT__}!g" mempool-config.json
 sed -i "s!__DATABASE_PID_DIR__!${__DATABASE_PID_DIR__}!g" mempool-config.json
+sed -i "s!__DATABASE_POOL_SIZE__!${__DATABASE_POOL_SIZE__}!g" mempool-config.json
 
 sed -i "s!__SYSLOG_ENABLED__!${__SYSLOG_ENABLED__}!g" mempool-config.json
 sed -i "s!__SYSLOG_HOST__!${__SYSLOG_HOST__}!g" mempool-config.json
@@ -239,9 +239,6 @@ sed -i "s!__SYSLOG_FACILITY__!${__SYSLOG_FACILITY__}!g" mempool-config.json
 
 sed -i "s!__STATISTICS_ENABLED__!${__STATISTICS_ENABLED__}!g" mempool-config.json
 sed -i "s!__STATISTICS_TX_PER_SECOND_SAMPLE_PERIOD__!${__STATISTICS_TX_PER_SECOND_SAMPLE_PERIOD__}!g" mempool-config.json
-
-sed -i "s!__BISQ_ENABLED__!${__BISQ_ENABLED__}!g" mempool-config.json
-sed -i "s!__BISQ_DATA_PATH__!${__BISQ_DATA_PATH__}!g" mempool-config.json
 
 sed -i "s!__SOCKS5PROXY_ENABLED__!${__SOCKS5PROXY_ENABLED__}!g" mempool-config.json
 sed -i "s!__SOCKS5PROXY_USE_ONION__!${__SOCKS5PROXY_USE_ONION__}!g" mempool-config.json
@@ -254,8 +251,6 @@ sed -i "s!__EXTERNAL_DATA_SERVER_MEMPOOL_API__!${__EXTERNAL_DATA_SERVER_MEMPOOL_
 sed -i "s!__EXTERNAL_DATA_SERVER_MEMPOOL_ONION__!${__EXTERNAL_DATA_SERVER_MEMPOOL_ONION__}!g" mempool-config.json
 sed -i "s!__EXTERNAL_DATA_SERVER_LIQUID_API__!${__EXTERNAL_DATA_SERVER_LIQUID_API__}!g" mempool-config.json
 sed -i "s!__EXTERNAL_DATA_SERVER_LIQUID_ONION__!${__EXTERNAL_DATA_SERVER_LIQUID_ONION__}!g" mempool-config.json
-sed -i "s!__EXTERNAL_DATA_SERVER_BISQ_URL__!${__EXTERNAL_DATA_SERVER_BISQ_URL__}!g" mempool-config.json
-sed -i "s!__EXTERNAL_DATA_SERVER_BISQ_ONION__!${__EXTERNAL_DATA_SERVER_BISQ_ONION__}!g" mempool-config.json
 
 # LIGHTNING
 sed -i "s!__LIGHTNING_ENABLED__!${__LIGHTNING_ENABLED__}!g" mempool-config.json
@@ -296,5 +291,9 @@ sed -i "s!__MEMPOOL_SERVICES_ACCELERATIONS__!${__MEMPOOL_SERVICES_ACCELERATIONS_
 sed -i "s!__REDIS_ENABLED__!${__REDIS_ENABLED__}!g" mempool-config.json
 sed -i "s!__REDIS_UNIX_SOCKET_PATH__!${__REDIS_UNIX_SOCKET_PATH__}!g" mempool-config.json
 sed -i "s!__REDIS_BATCH_QUERY_BASE_SIZE__!${__REDIS_BATCH_QUERY_BASE_SIZE__}!g" mempool-config.json
+
+# FIAT_PRICE
+sed -i "s!__FIAT_PRICE_ENABLED__!${__FIAT_PRICE_ENABLED__}!g" mempool-config.json
+sed -i "s!__FIAT_PRICE_API_KEY__!${__FIAT_PRICE_API_KEY__}!g" mempool-config.json
 
 node /backend/package/index.js

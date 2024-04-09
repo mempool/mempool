@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Env, StateService } from '../../services/state.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { SeoService } from '../../services/seo.service';
+import { OpenGraphService } from '../../services/opengraph.service';
 
 @Component({
   selector: 'app-docs',
@@ -24,14 +25,14 @@ export class DocsComponent implements OnInit {
     private stateService: StateService,
     private websocket: WebsocketService,
     private seoService: SeoService,
+    private ogService: OpenGraphService,
   ) { }
 
   ngOnInit(): void {
     this.websocket.want(['blocks']);
     this.env = this.stateService.env;
-    this.showWebSocketTab = ( ! ( ( this.stateService.network === "bisq" ) || ( this.stateService.network === "liquidtestnet" ) ) );
     this.showFaqTab = ( this.env.BASE_MODULE === 'mempool' ) ? true : false;
-    this.showElectrsTab = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && ( this.stateService.network !== "bisq" );
+    this.showElectrsTab = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
 
     document.querySelector<HTMLElement>( "html" ).style.scrollBehavior = "smooth";
   }
@@ -44,13 +45,12 @@ export class DocsComponent implements OnInit {
       this.activeTab = 0;
       this.seoService.setTitle($localize`:@@meta.title.docs.faq:FAQ`);
       this.seoService.setDescription($localize`:@@meta.description.docs.faq:Get answers to common questions like: What is a mempool? Why isn't my transaction confirming? How can I run my own instance of The Mempool Open Source Project? And more.`);
+      this.ogService.setManualOgImage('faq.jpg');
     } else if( url[1].path === "rest" ) {
       this.activeTab = 1;
       this.seoService.setTitle($localize`:@@meta.title.docs.rest:REST API`);
-      if( this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet' ) {
+      if (this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet' ) {
         this.seoService.setDescription($localize`:@@meta.description.docs.rest-liquid:Documentation for the liquid.network REST API service: get info on addresses, transactions, assets, blocks, and more.`);
-      } else if( this.stateService.network === 'bisq' ) {
-        this.seoService.setDescription($localize`:@@meta.description.docs.rest-bisq:Documentation for the bisq.markets REST API service: get info on recent trades, current offers, transactions, network state, and more.`);
       } else {
         this.seoService.setDescription($localize`:@@meta.description.docs.rest-bitcoin:Documentation for the mempool.space REST API service: get info on addresses, transactions, blocks, fees, mining, the Lightning network, and more.`);
       }
