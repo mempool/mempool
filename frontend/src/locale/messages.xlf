@@ -473,6 +473,14 @@
         <note priority="1" from="description">Transaction Virtual Size</note>
         <note priority="1" from="meaning">transaction.vsize</note>
       </trans-unit>
+      <trans-unit id="df89e157bacb4ab32e6ec725bf1eb176dc15201e" datatype="html">
+        <source>Size in vbytes of this transaction (including unconfirmed ancestors)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
+          <context context-type="linenumber">49</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.transaction-vbytes-size-description</note>
+      </trans-unit>
       <trans-unit id="adbeb446bf941afda4d4a923b5e4ce0cf4a1c1b8" datatype="html">
         <source>In-band fees</source>
         <context-group purpose="location">
@@ -584,6 +592,14 @@
           <context context-type="linenumber">79</context>
         </context-group>
         <note priority="1" from="description">shared.sats</note>
+      </trans-unit>
+      <trans-unit id="fad137784196a8fdc10588e27ed5d8ae95fe4e79" datatype="html">
+        <source>Fees already paid by this transaction (including unconfirmed ancestors)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
+          <context context-type="linenumber">60</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.fees-already-paid-description</note>
       </trans-unit>
       <trans-unit id="8611a038eb243bbed95bf5ff49af4129f22dc55a" datatype="html">
         <source>How much more are you willing to pay?</source>
@@ -941,23 +957,46 @@
         </context-group>
         <note priority="1" from="description">dashboard.latest-transactions.txid</note>
       </trans-unit>
-      <trans-unit id="91de1b9fba9fbc4b3dd8bda866e948524c3049e5" datatype="html">
-        <source>Fee Rate</source>
+      <trans-unit id="3e322ffba6477484e0dd2e65650fdd70322ea6d0" datatype="html">
+        <source>Fee rate</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">12</context>
         </context-group>
-        <note priority="1" from="description">Transaction fee</note>
-        <note priority="1" from="meaning">transaction.fee</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">105</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">598</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+        <note priority="1" from="description">Transaction fee rate</note>
+        <note priority="1" from="meaning">transaction.fee-rate</note>
       </trans-unit>
-      <trans-unit id="90345169b9d6df90f3545aa45fc56146cf9f6b68" datatype="html">
-        <source>Acceleration Bid</source>
+      <trans-unit id="9310d4be621ac60b19a4d73258b25f2b411971e7" datatype="html">
+        <source>Bid</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">13</context>
         </context-group>
-        <note priority="1" from="description">Transaction fee</note>
-        <note priority="1" from="meaning">transaction.fee</note>
+        <note priority="1" from="description">accelerator.bid</note>
       </trans-unit>
       <trans-unit id="dac1da772be9797ce39c7364d0e01373e4955ed1" datatype="html">
         <source>Requested</source>
@@ -969,7 +1008,7 @@
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">20</context>
         </context-group>
-        <note priority="1" from="description">accelerator.block</note>
+        <note priority="1" from="description">accelerator.requested</note>
       </trans-unit>
       <trans-unit id="57cde27765d527a0d9195212fa5a7ce06408c827" datatype="html">
         <source>Bid Boost</source>
@@ -994,7 +1033,7 @@
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">9</context>
         </context-group>
-        <note priority="1" from="description">accelerator.block</note>
+        <note priority="1" from="description">shared.block-title</note>
       </trans-unit>
       <trans-unit id="aa28c3afcb8b1a556fc1e1842e48a57f24fd643f" datatype="html">
         <source>Status</source>
@@ -2125,35 +2164,6 @@
         </context-group>
         <note priority="1" from="description">Transaction fee</note>
         <note priority="1" from="meaning">transaction.fee</note>
-      </trans-unit>
-      <trans-unit id="3e322ffba6477484e0dd2e65650fdd70322ea6d0" datatype="html">
-        <source>Fee rate</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
-          <context context-type="linenumber">46</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">105</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">598</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
-          <context context-type="linenumber">18</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
-          <context context-type="linenumber">31</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
-          <context context-type="linenumber">41</context>
-        </context-group>
-        <note priority="1" from="description">Transaction fee rate</note>
-        <note priority="1" from="meaning">transaction.fee-rate</note>
       </trans-unit>
       <trans-unit id="eb1737af67381ce6f0b347038bb4c65b3deb84be" datatype="html">
         <source>Effective fee rate</source>
