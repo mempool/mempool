@@ -48,6 +48,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
 
   math = Math;
   error = '';
+  processing = false;
   showSuccess = false;
   estimateSubscription: Subscription;
   accelerationSubscription: Subscription;
@@ -245,18 +246,21 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
     if (this.accelerationSubscription) {
       this.accelerationSubscription.unsubscribe();
     }
+    this.processing = true;
     this.accelerationSubscription = this.servicesApiService.accelerate$(
       this.tx.txid,
       this.userBid,
       this.accelerationUUID
     ).subscribe({
       next: () => {
+        this.processing = false;
         this.audioService.playSound('ascend-chime-cartoon');
         this.showSuccess = true;
         this.scrollToPreviewWithTimeout('successAlert', 'center');
         this.estimateSubscription.unsubscribe();
       },
       error: (response) => {
+        this.processing = false;
         if (response.status === 403 && response.error === 'not_available') {
           this.error = 'waitlisted';
         } else {
@@ -359,12 +363,14 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
               that.accelerationUUID
             ).subscribe({
               next: () => {
+                this.processing = false;
                 that.audioService.playSound('ascend-chime-cartoon');
                 that.showSuccess = true;
                 that.scrollToPreviewWithTimeout('successAlert', 'center');
                 that.estimateSubscription.unsubscribe();
               },
               error: (response) => {
+                this.processing = false;
                 if (response.status === 403 && response.error === 'not_available') {
                   that.error = 'waitlisted';
                 } else {
@@ -401,6 +407,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   submitCashappPay(): void {
     if (this.cashappSubmit) {
       this.cashappSubmit?.begin();
+      this.processing = true;
     }
   }
 
