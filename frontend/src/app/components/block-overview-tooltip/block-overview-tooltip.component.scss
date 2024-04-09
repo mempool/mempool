@@ -3,7 +3,7 @@
   background: rgba(#11131f, 0.95);
   border-radius: 4px;
   box-shadow: 1px 1px 10px rgba(0,0,0,0.5);
-  color: #b1b1b1;
+  color: var(--tooltip-grey);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -30,7 +30,7 @@ th, td {
 }
 
 .badge.badge-accelerated {
-  background-color: #653b9c;
+  background-color: var(--tertiary);
   box-shadow: #ad7de57f 0px 0px 12px -2px;
   color: white;
   animation: acceleratePulse 1s infinite;
@@ -51,27 +51,27 @@ th, td {
 
   .filter-tag {
     background: #181b2daf;
-    border: solid 1px #105fb0;
+    border: solid 1px var(--primary);
     color: white;
     transition: background-color 300ms;
 
     &.matching {
-      background-color: #105fb0;
+      background-color: var(--primary);
     }
   }
 
   &.any-mode {
     .filter-tag {
-      border: solid 1px #1a9436;
+      border: solid 1px var(--success);
       &.matching {
-        background-color: #1a9436;
+        background-color: var(--success);
       }
     }
   }
 }
 
 @keyframes acceleratePulse {
-  0% { background-color: #653b9c; box-shadow: #ad7de57f 0px 0px 12px -2px; }
+  0% { background-color: var(--tertiary); box-shadow: #ad7de57f 0px 0px 12px -2px; }
   50% { background-color: #8457bb; box-shadow: #ad7de5 0px 0px 18px -2px;}
-  100% { background-color: #653b9c; box-shadow: #ad7de57f 0px 0px 12px -2px; }
+  100% { background-color: var(--tertiary); box-shadow: #ad7de57f 0px 0px 12px -2px; }
 }

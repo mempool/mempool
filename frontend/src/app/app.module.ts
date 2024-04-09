@@ -19,6 +19,7 @@ import { SharedModule } from './shared/shared.module';
 import { StorageService } from './services/storage.service';
 import { HttpCacheInterceptor } from './services/http-cache.interceptor';
 import { LanguageService } from './services/language.service';
+import { ThemeService } from './services/theme.service';
 import { FiatShortenerPipe } from './shared/pipes/fiat-shortener.pipe';
 import { FiatCurrencyPipe } from './shared/pipes/fiat-currency.pipe';
 import { ShortenStringPipe } from './shared/pipes/shorten-string-pipe/shorten-string.pipe';
@@ -38,6 +39,7 @@ const providers = [
   StorageService,
   EnterpriseService,
   LanguageService,
+  ThemeService,
   ShortenStringPipe,
   FiatShortenerPipe,
   FiatCurrencyPipe,

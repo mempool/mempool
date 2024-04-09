@@ -8,13 +8,15 @@ import { Observable, catchError, combineLatest, distinctUntilChanged, interval, 
 import { Color } from '../../block-overview-graph/sprite-types';
 import { hexToColor } from '../../block-overview-graph/utils';
 import TxView from '../../block-overview-graph/tx-view';
-import { feeLevels, mempoolFeeColors } from '../../../app.constants';
+import { feeLevels, defaultMempoolFeeColors, contrastMempoolFeeColors } from '../../../app.constants';
 import { ServicesApiServices } from '../../../services/services-api.service';
 import { detectWebGL } from '../../../shared/graphs.utils';
 import { AudioService } from '../../../services/audio.service';
+import { ThemeService } from '../../../services/theme.service';
 
 const acceleratedColor: Color = hexToColor('8F5FF6');
-const normalColors = mempoolFeeColors.map(hex => hexToColor(hex.slice(0,6) + '5F'));
+const normalColors = defaultMempoolFeeColors.map(hex => hexToColor(hex + '5F'));
+const contrastColors = contrastMempoolFeeColors.map(hex => hexToColor(hex.slice(0,6) + '5F'));
 
 interface AccelerationBlock extends BlockExtended {
   accelerationCount: number,
@@ -37,6 +39,7 @@ export class AcceleratorDashboardComponent implements OnInit {
   firstLoad = true;
 
   graphHeight: number = 300;
+  theme: ThemeService;
 
   constructor(
     private seoService: SeoService,
@@ -116,15 +119,15 @@ export class AcceleratorDashboardComponent implements OnInit {
       switchMap(([accelerations, blocks]) => {
         const blockMap = {};
         for (const block of blocks) {
-          blockMap[block.id] = block;
+          blockMap[block.height] = block;
         }
-        const accelerationsByBlock: { [ hash: string ]: Acceleration[] } = {};
+        const accelerationsByBlock: { [ height: number ]: Acceleration[] } = {};
         for (const acceleration of accelerations) {
-          if (['completed_provisional', 'failed_provisional', 'completed'].includes(acceleration.status) && acceleration.pools.includes(blockMap[acceleration.blockHash]?.extras.pool.id)) {
-            if (!accelerationsByBlock[acceleration.blockHash]) {
-              accelerationsByBlock[acceleration.blockHash] = [];
+          if (['completed_provisional', 'failed_provisional', 'completed'].includes(acceleration.status) && acceleration.pools.includes(blockMap[acceleration.blockHeight]?.extras.pool.id)) {
+            if (!accelerationsByBlock[acceleration.blockHeight]) {
+              accelerationsByBlock[acceleration.blockHeight] = [];
             }
-            accelerationsByBlock[acceleration.blockHash].push(acceleration);
+            accelerationsByBlock[acceleration.blockHeight].push(acceleration);
           }
         }
         return of(blocks.slice(0, 6).map(block => {
@@ -141,7 +144,7 @@ export class AcceleratorDashboardComponent implements OnInit {
     } else {
       const rate = tx.fee / tx.vsize; // color by simple single-tx fee rate
       const feeLevelIndex = feeLevels.findIndex((feeLvl) => Math.max(1, rate) < feeLvl) - 1;
-      return normalColors[feeLevelIndex] || normalColors[mempoolFeeColors.length - 1];
+      return this.theme.theme === 'contrast' ? contrastColors[feeLevelIndex] || contrastColors[contrastColors.length - 1] : normalColors[feeLevelIndex] || normalColors[normalColors.length - 1];
     }
   }
 

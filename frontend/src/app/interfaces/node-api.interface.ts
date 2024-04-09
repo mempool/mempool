@@ -394,8 +394,11 @@ export interface Acceleration {
   blockHash: string;
   blockHeight: number;
 
-  acceleratedFee?: number;
+  acceleratedFeeRate?: number;
   boost?: number;
+
+  boostCost?: number;
+  boostRate?: number;
 }
 
 export interface AccelerationHistoryParams {

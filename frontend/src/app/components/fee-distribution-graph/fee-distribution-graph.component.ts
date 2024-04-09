@@ -128,7 +128,7 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges, OnDestr
         splitLine: {
           lineStyle: {
             type: 'dotted',
-            color: '#ffffff66',
+            color: 'var(--transparent-fg)',
             opacity: 0.25,
           }
         },

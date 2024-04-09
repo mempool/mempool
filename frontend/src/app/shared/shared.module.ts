@@ -34,6 +34,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { LanguageSelectorComponent } from '../components/language-selector/language-selector.component';
 import { FiatSelectorComponent } from '../components/fiat-selector/fiat-selector.component';
 import { RateUnitSelectorComponent } from '../components/rate-unit-selector/rate-unit-selector.component';
+import { ThemeSelectorComponent } from '../components/theme-selector/theme-selector.component';
 import { BrowserOnlyDirective } from './directives/browser-only.directive';
 import { ServerOnlyDirective } from './directives/server-only.directive';
 import { ColoredPriceDirective } from './directives/colored-price.directive';
@@ -119,6 +120,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     TxFeeRatingComponent,
     LanguageSelectorComponent,
     FiatSelectorComponent,
+    ThemeSelectorComponent,
     RateUnitSelectorComponent,
     ScriptpubkeyTypePipe,
     RelativeUrlPipe,
@@ -257,6 +259,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     LanguageSelectorComponent,
     FiatSelectorComponent,
     RateUnitSelectorComponent,
+    ThemeSelectorComponent,
     ScriptpubkeyTypePipe,
     RelativeUrlPipe,
     Hex2asciiPipe,

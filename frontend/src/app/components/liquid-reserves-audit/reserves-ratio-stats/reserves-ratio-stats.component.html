@@ -23,7 +23,7 @@
 
   <div class="item">
     <!-- <a class="title-link" [routerLink]="['/audit/emergency-spends' | relativeUrl]">
-      <h5 class="card-title"><ng-container i18n="liquid.forfeited-utxos">Forfeited UTXOs</ng-container>&nbsp;<fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: #4a68b9"></fa-icon></h5>
+      <h5 class="card-title"><ng-container i18n="liquid.forfeited-utxos">Forfeited UTXOs</ng-container>&nbsp;<fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: var(--title-fg)"></fa-icon></h5>
     </a> -->
     <h5 class="card-title" i18n="liquid.emergency-keys">Emergency Keys</h5>
     <div *ngIf="(emergencyUtxosStats$ | async) as emergencyUtxosStats; else loadingData" class="card-text">

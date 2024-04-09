@@ -34,7 +34,7 @@
 }
 
 .row.nodes {
-  background: #181b2d;
+  background: var(--stat-box-bg);
   margin: 15px 0 0;
 }
 
@@ -53,7 +53,7 @@
   width: 470px;
   min-width: 470px;
   padding: 0;
-  background: #181b2d;
+  background: var(--stat-box-bg);
   max-height: 350px;
   overflow: hidden;
 }

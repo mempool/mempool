@@ -1,6 +1,6 @@
 .fee-card {
   padding: 15px;
-  background-color: #1d1f31;
+  background-color: var(--bg);
 
   .feerate {
     display: flex;
@@ -23,7 +23,7 @@
 }
 
 .feerate.active {
-  background-color: #105fb0 !important;
+  background-color: var(--primary) !important;
   opacity: 1;
   border: 1px solid #007fff !important;
 }
@@ -109,4 +109,61 @@
 
 .item {
   white-space: initial;
+}
+
+.cashapp-cta {
+  width: 100%;
+  height: 54px;
+  background: #653b9c;
+  position: relative;
+  bottom: initial;
+  top: initial;
+  border-radius: 3px;
+  font-size: 14px;
+  line-height: 16px;
+  text-align: center;
+  padding: 4px 6px;
+  cursor: pointer;
+  box-shadow: 0px 0px 15px 0px #000;
+
+  &.sticky-top {
+    position: fixed;
+    width: calc(100vw - 30px - 1.5rem);
+    margin: auto;
+    z-index: 50;
+    left: 0;
+    right: 0;
+    top: 102px;
+    @media (min-width: 573px) {
+      top: 62px;
+    }
+  }
+  &.sticky-bottom {
+    position: fixed;
+    width: calc(100vw - 30px - 1.5rem);
+    margin: auto;
+    z-index: 50;
+    left: 0;
+    right: 0;
+    bottom: 50px;
+    @media (min-width: 430px) {
+      bottom: 56px;
+    }
+  }
+
+  @media (max-width: 400px) {
+    width: calc(100% + 1.5rem);
+    margin: 0 -0.75rem;
+    &.sticky-top, &.sticky-bottom {
+      width: calc(100vw - 30px);
+    }
+  }
+}
+
+.cashapp-placeholder {
+  height: 54px;
+
+  &.non-stick {
+    height: 0px;
+  }
 }

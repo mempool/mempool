@@ -80,7 +80,9 @@
       <div class="title float-left">
         <h2 i18n="transaction.accelerate|Accelerate button label">Accelerate</h2>
       </div>
-      <button type="button" class="btn btn-outline-info accelerator-toggle btn-sm float-right" (click)="showAccelerationSummary = false" i18n="hide-accelerator">Hide accelerator</button>
+      @if (!(isMobile && paymentType === 'cashapp')) {
+        <button type="button" class="btn btn-outline-info accelerator-toggle btn-sm float-right" (click)="showAccelerationSummary = false" i18n="hide-accelerator">Hide accelerator</button>
+      }
       <div class="clearfix"></div>
 
       <div class="box">
@@ -456,13 +458,18 @@
 </ng-template>
 
 <ng-template #firstSeenRow>
-  @if (!isLoadingTx && transactionTime !== -1) {
+  @if (isLoadingTx) {
+    <ng-container *ngTemplateOutlet="skeletonDetailsRow"></ng-container>
+  } @else if (transactionTime === -1) {
+    <tr>
+      <td i18n="transaction.first-seen|Transaction first seen">First seen</td>
+      <td><span class="skeleton-loader"></span></td>
+    </tr>
+  } @else {
     <tr>
       <td i18n="transaction.first-seen|Transaction first seen">First seen</td>
       <td><i><app-time kind="since" [time]="transactionTime" [fastRender]="true"></app-time></i></td>
     </tr>
-  } @else {
-    <ng-container *ngTemplateOutlet="skeletonDetailsRow"></ng-container>
   }
 </ng-template>
 
@@ -530,7 +537,7 @@
           } @else if (this.mempoolPosition.block >= 7) {
             <span [class]="(acceleratorAvailable && accelerateCtaType === 'button') ? 'etaDeepMempool d-flex justify-content-end align-items-center' : ''">
               <span i18n="transaction.eta.in-several-hours|Transaction ETA in several hours or more">In several hours (or more)</span>
-              @if (!tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration) {
+              @if (!(isMobile && paymentType === 'cashapp') && !tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration) {
                 <a [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn btn-sm accelerateDeepMempool btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
               }
             </span>
@@ -539,7 +546,7 @@
           } @else {
             <span class="eta justify-content-end" [class]="(acceleratorAvailable && accelerateCtaType === 'button') ? 'd-flex align-items-center' : ''">
               <app-time kind="until" *ngIf="(da$ | async) as da;" [time]="da.adjustedTimeAvg * (this.mempoolPosition.block + 1) + now + da.timeOffset" [fastRender]="false" [fixedRender]="true"></app-time>
-              @if (!tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration) {
+              @if (!(isMobile && paymentType === 'cashapp') && !tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration) {
                 <a [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn btn-sm accelerate btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
               }
             </span>
@@ -554,13 +561,13 @@
 
 <ng-template #gogglesRow>
   @if (!isLoadingTx) {
-    @if (((auditStatus && auditStatus.accelerated) || accelerationInfo || (tx && tx.acceleration)) || filters.length) {
+    @if (isAcceleration || filters.length) {
       <tr>
         <td class="td-width">
           <span class="goggles-icon"><app-svg-images name="goggles" width="100%" height="100%"></app-svg-images></span>
         </td>
         <td class="wrap-cell">
-          @if ((auditStatus && auditStatus.accelerated) || accelerationInfo || (tx && tx.acceleration)) {
+          @if (isAcceleration) {
             <span class="badge badge-accelerated mr-1" i18n="transaction.audit.accelerated">Accelerated</span>
           }
           <ng-container *ngFor="let filter of filters;">
@@ -606,15 +613,15 @@
   @if (!isLoadingTx) {
     @if ((cpfpInfo && hasEffectiveFeeRate) || accelerationInfo) {
       <tr>
-        @if (tx.acceleration || accelerationInfo) {
+        @if (isAcceleration) {
           <td i18n="transaction.accelerated-fee-rate|Accelerated transaction fee rate">Accelerated fee rate</td>
         } @else {
           <td i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
         }
         <td>
           <div class="effective-fee-container">
-            @if (accelerationInfo) {
-              <app-fee-rate [fee]="accelerationInfo.acceleratedFee" [weight]="accelerationInfo.effectiveVsize * 4"></app-fee-rate>
+            @if (accelerationInfo?.acceleratedFeeRate && (!tx.effectiveFeePerVsize || accelerationInfo.acceleratedFeeRate >= tx.effectiveFeePerVsize)) {
+              <app-fee-rate [fee]="accelerationInfo.acceleratedFeeRate"></app-fee-rate>
             } @else {
               <app-fee-rate [fee]="tx.effectiveFeePerVsize"></app-fee-rate>
             }
