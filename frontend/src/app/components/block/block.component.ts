@@ -365,6 +365,12 @@ export class BlockComponent implements OnInit, OnDestroy {
       for (const tx of transactions) {
         if (acceleratedInBlock[tx.txid]) {
           tx.acc = true;
+          const acceleration = acceleratedInBlock[tx.txid];
+          const boostCost = acceleration.boostCost || (acceleration.feePaid - acceleration.baseFee - acceleration.vsizeFee);
+          const acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
+          if (acceleratedFeeRate > tx.rate) {
+            tx.rate = acceleratedFeeRate;
+          }
         } else {
           tx.acc = false;
         }
