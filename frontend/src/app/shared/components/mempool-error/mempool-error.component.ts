@@ -21,6 +21,7 @@ const MempoolErrors = {
   'txid_not_in_mempool': `This transaction is not in the mempool.`,
   'waitlisted': `You are currently on the wait list. You will get notified once you are granted access.`,  
   'not_whitelisted_by_any_pool': `You are not whitelisted by any mining pool`,
+  'unauthorized': `You are not authorized to do this`,
 } as { [error: string]: string };
 
 export function isMempoolError(error: string) {
