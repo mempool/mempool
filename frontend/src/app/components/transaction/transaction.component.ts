@@ -701,7 +701,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   setIsAccelerated() {
-    console.log(this.tx.acceleration, this.accelerationInfo, this.pool, this.accelerationInfo?.pools);
     this.isAcceleration = (this.tx.acceleration || (this.accelerationInfo && this.pool && this.accelerationInfo.pools.some(pool => (pool === this.pool.id || pool?.['pool_unique_id'] === this.pool.id))));
   }
 
