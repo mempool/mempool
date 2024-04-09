@@ -345,7 +345,7 @@ export class BlockComponent implements OnInit, OnDestroy {
                 return of(null);
               })
             ),
-          this.stateService.env.ACCELERATOR === true && block.height > 819500 ? this.servicesApiService.getAccelerationHistory$({ blockHash: block.id }) : of([])
+          this.stateService.env.ACCELERATOR === true && block.height > 819500 ? this.servicesApiService.getAccelerationHistory$({ blockHeight: block.height }) : of([])
         ]);
       })
     )

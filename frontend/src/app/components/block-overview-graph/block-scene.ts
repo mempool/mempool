@@ -199,6 +199,7 @@ export default class BlockScene {
           this.txs[tx.txid].feerate = tx.rate || (this.txs[tx.txid].fee / this.txs[tx.txid].vsize);
           this.txs[tx.txid].rate = tx.rate;
           this.txs[tx.txid].dirty = true;
+          this.updateColor(this.txs[tx.txid], startTime, 50, true);
         }
       });
 

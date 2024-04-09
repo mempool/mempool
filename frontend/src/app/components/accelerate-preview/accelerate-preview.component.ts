@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnDestroy, OnChanges, SimpleChanges, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, OnChanges, SimpleChanges, HostListener, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import { Subscription, catchError, of, tap } from 'rxjs';
 import { StorageService } from '../../services/storage.service';
 import { Transaction } from '../../interfaces/electrs.interface';
@@ -43,6 +43,9 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   @Input() tx: Transaction | undefined;
   @Input() scrollEvent: boolean;
 
+  @ViewChild('cashappCTA')
+  cashappCTA: ElementRef;
+
   math = Math;
   error = '';
   showSuccess = false;
@@ -56,9 +59,11 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   defaultBid = 0;
   maxCost = 0;
   userBid = 0;
+  accelerationUUID: string;
   selectFeeRateIndex = 1;
   isMobile: boolean = window.innerWidth <= 767.98;
   user: any = undefined;
+  stickyCTA: string = 'non-stick';
 
   maxRateOptions: RateOption[] = [];
 
@@ -66,6 +71,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   paymentType: 'bitcoin' | 'cashapp' = 'bitcoin';
   cashAppSubscription: Subscription;
   conversionsSubscription: Subscription;
+  cashappSubmit: any;
   payments: any;
   showSpinner = false;
   square: any;
@@ -80,7 +86,10 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
     private cd: ChangeDetectorRef
   ) {
     if (this.stateService.ref === 'https://cash.app/') {
+      this.paymentType = 'cashapp';
       this.insertSquare();
+    } else {
+      this.paymentType = 'bitcoin';
     }
   }
 
@@ -94,21 +103,23 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   }
 
   ngOnInit() {
+    this.accelerationUUID = window.crypto.randomUUID();
     if (this.stateService.ref === 'https://cash.app/') {
       this.paymentType = 'cashapp';
-      this.stateService.ref = '';
     } else {
       this.paymentType = 'bitcoin';
     }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.scrollEvent) {
+    if (changes.scrollEvent && this.paymentType !== 'cashapp' && this.stateService.ref !== 'https://cash.app/') {
       this.scrollToPreview('acceleratePreviewAnchor', 'start');
     }
   }
 
   ngAfterViewInit() {
+    this.onScroll();
+
     if (this.paymentType === 'cashapp') {
       this.showSpinner = true;
     }
@@ -173,10 +184,15 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
             this.maxCost = this.userBid + this.estimate.mempoolBaseFee + this.estimate.vsizeFee;
 
             if (!this.error) {
-              this.scrollToPreview('acceleratePreviewAnchor', 'start');
               if (this.paymentType === 'cashapp') {
                 this.setupSquare();
-              } 
+              } else {
+                this.scrollToPreview('acceleratePreviewAnchor', 'start');
+              }
+
+              setTimeout(() => {
+                this.onScroll();
+              }, 100);
             }
           }
         }),
@@ -231,7 +247,8 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
     }
     this.accelerationSubscription = this.servicesApiService.accelerate$(
       this.tx.txid,
-      this.userBid
+      this.userBid,
+      this.accelerationUUID
     ).subscribe({
       next: () => {
         this.audioService.playSound('ascend-chime-cartoon');
@@ -301,6 +318,10 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
     
     this.conversionsSubscription = this.stateService.conversions$.subscribe(
       async (conversions) => {
+        if (this.cashAppPay) {
+          this.cashAppPay.destroy();
+        }
+
         const maxCostUsd = this.maxCost / 100_000_000 * conversions.USD;
         const paymentRequest = this.payments.paymentRequest({
           countryCode: 'US',
@@ -310,13 +331,15 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
             label: 'Total',
             pending: true,
             productUrl: `https://mempool.space/tx/${this.tx.txid}`,
-          }
+          },
+          button: { shape: 'semiround', size: 'small', theme: 'light'}
         });
         this.cashAppPay = await this.payments.cashAppPay(paymentRequest, {
           redirectURL: `https://mempool.space/tx/${this.tx.txid}`,
           referenceId: `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
+          button: { shape: 'semiround', size: 'small', theme: 'light'}
         });
-        await this.cashAppPay.attach('#cash-app-pay');
+        const renderPromise = this.cashAppPay.CashAppPayInstance.render('#cash-app-pay', { button: { theme: 'light', size: 'small', shape: 'semiround' }, manage: false });
         this.showSpinner = false;
         
         const that = this;
@@ -332,7 +355,8 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
               that.userBid,
               tokenResult.token,
               tokenResult.details.cashAppPay.cashtag,
-              tokenResult.details.cashAppPay.referenceId
+              tokenResult.details.cashAppPay.referenceId,
+              that.accelerationUUID
             ).subscribe({
               next: () => {
                 that.audioService.playSound('ascend-chime-cartoon');
@@ -351,13 +375,19 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
             });
           }
         });
+
+        this.cashappSubmit = await renderPromise;
       }
     );
   }
 
   insertSquare(): void {
     let statsUrl = 'https://sandbox.web.squarecdn.com/v1/square.js';
-    if (document.location.hostname === 'mempool-staging.tk7.mempool.space' || document.location.hostname === 'mempool.space') {
+    if (document.location.hostname === 'mempool-staging.fmt.mempool.space' ||
+        document.location.hostname === 'mempool-staging.va1.mempool.space' ||
+        document.location.hostname === 'mempool-staging.fra.mempool.space' ||
+        document.location.hostname === 'mempool-staging.tk7.mempool.space' ||
+        document.location.hostname === 'mempool.space') {
       statsUrl = 'https://web.squarecdn.com/v1/square.js';
     }
 
@@ -366,5 +396,35 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
       // @ts-ignore
       g.type='text/javascript'; g.src=statsUrl; s.parentNode.insertBefore(g, s);
     })();
+  }
+
+  submitCashappPay(): void {
+    if (this.cashappSubmit) {
+      this.cashappSubmit?.begin();
+    }
+  }
+
+  @HostListener('window:scroll', ['$event']) // for window scroll events
+  onScroll() {
+    if (this.estimate && !this.cashappCTA?.nativeElement) {
+      setTimeout(() => {
+        this.onScroll();
+      }, 200);
+      return;
+    }
+    if (!this.cashappCTA?.nativeElement || this.paymentType !== 'cashapp' || !this.isMobile) {
+      return;
+    }
+    const cta = this.cashappCTA.nativeElement;
+    const rect = cta.getBoundingClientRect();
+    const topOffset = window.innerWidth <= 572 ? 102 : 62;
+    const bottomOffset = window.innerWidth < 430 ? 50 : 56;
+    if (rect.top < topOffset) {
+      this.stickyCTA = 'sticky-top';
+    } else if (rect.top > window.innerHeight - (bottomOffset + 54)) {
+      this.stickyCTA = 'sticky-bottom';
+    } else {
+      this.stickyCTA = 'non-stick';
+    }
   }
 }

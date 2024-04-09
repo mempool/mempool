@@ -161,7 +161,7 @@ export class AddressGraphComponent implements OnChanges {
       ],
       series: [
         {
-          name: $localize`Balance:Balance`,
+          name: $localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`,
           showSymbol: false,
           symbol: 'circle',
           symbolSize: 8,

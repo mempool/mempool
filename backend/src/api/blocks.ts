@@ -29,6 +29,7 @@ import websocketHandler from './websocket-handler';
 import redisCache from './redis-cache';
 import rbfCache from './rbf-cache';
 import { calcBitsDifference } from './difficulty-adjustment';
+import AccelerationRepository from '../repositories/AccelerationRepository';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -872,6 +873,7 @@ class Blocks {
             await BlocksRepository.$deleteBlocksFrom(lastBlock.height - 10);
             await HashratesRepository.$deleteLastEntries();
             await cpfpRepository.$deleteClustersFrom(lastBlock.height - 10);
+            await AccelerationRepository.$deleteAccelerationsFrom(lastBlock.height - 10);
             this.blocks = this.blocks.slice(0, -10);
             this.updateTimerProgress(timer, `rolled back chain divergence from ${this.currentBlockHeight}`);
             for (let i = 10; i >= 0; --i) {
@@ -974,6 +976,9 @@ class Blocks {
       if (this.blocks.length > config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4) {
         this.blocks = this.blocks.slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4);
       }
+      blockSummary.transactions.forEach(tx => {
+        delete tx.acc;
+      });
       this.blockSummaries.push(blockSummary);
       if (this.blockSummaries.length > config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4) {
         this.blockSummaries = this.blockSummaries.slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4);
@@ -1117,6 +1122,7 @@ class Blocks {
           }
           return {
             txid: tx.txid,
+            time: tx.firstSeen,
             fee: tx.fee || 0,
             vsize: tx.vsize,
             value: Math.round(tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0)),

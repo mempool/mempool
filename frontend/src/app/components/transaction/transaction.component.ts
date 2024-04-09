@@ -9,7 +9,8 @@ import {
   delay,
   mergeMap,
   tap,
-  map
+  map,
+  retry
 } from 'rxjs/operators';
 import { Transaction } from '../../interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, Subject, from, throwError, combineLatest } from 'rxjs';
@@ -93,12 +94,13 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   adjustedVsize: number | null;
   pool: Pool | null;
   auditStatus: AuditStatus | null;
+  isAcceleration: boolean = false;
   filters: Filter[] = [];
   showCpfpDetails = false;
   fetchCpfp$ = new Subject<string>();
   fetchRbfHistory$ = new Subject<string>();
   fetchCachedTx$ = new Subject<string>();
-  fetchAcceleration$ = new Subject<string>();
+  fetchAcceleration$ = new Subject<number>();
   fetchMiningInfo$ = new Subject<{ hash: string, height: number, txid: string }>();
   isCached: boolean = false;
   now = Date.now();
@@ -117,6 +119,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   flowEnabled: boolean;
   tooltipPosition: { x: number, y: number };
   isMobile: boolean;
+  paymentType: 'bitcoin' | 'cashapp' = 'bitcoin';
+  firstLoad = true;
 
   featuresEnabled: boolean;
   segwitEnabled: boolean;
@@ -153,6 +157,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
+
+    if (this.acceleratorAvailable && this.stateService.ref === 'https://cash.app/') {
+      this.showAccelerationSummary = true;
+      this.paymentType = 'cashapp';
+    }
 
     this.enterpriseService.page();
 
@@ -280,9 +289,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       filter(() => this.stateService.env.ACCELERATOR === true),
       tap(() => {
         this.accelerationInfo = null;
+        this.setIsAccelerated();
       }),
-      switchMap((blockHash: string) => {
-        return this.servicesApiService.getAccelerationHistory$({ blockHash });
+      switchMap((blockHeight: number) => {
+        return this.servicesApiService.getAccelerationHistory$({ blockHeight });
       }),
       catchError(() => {
         return of(null);
@@ -290,8 +300,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     ).subscribe((accelerationHistory) => {
       for (const acceleration of accelerationHistory) {
         if (acceleration.txid === this.txId && (acceleration.status === 'completed' || acceleration.status === 'completed_provisional')) {
-          acceleration.acceleratedFee = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + acceleration.feePaid - acceleration.baseFee - acceleration.vsizeFee);
+          const boostCost = acceleration.boostCost || (acceleration.feePaid - acceleration.baseFee - acceleration.vsizeFee);
+          acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
+          acceleration.boost = boostCost;
+
           this.accelerationInfo = acceleration;
+          this.setIsAccelerated();
         }
       }
     });
@@ -312,6 +326,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             map(block => {
               return block.extras.pool;
             }),
+            retry({ count: 3, delay: 2000 }),
             catchError(() => {
               return of(null);
             })
@@ -332,18 +347,21 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
                 accelerated: isAccelerated,
               };
             }),
+            retry({ count: 3, delay: 2000 }),
             catchError(() => {
               return of(null);
             })
           ) : of(isCoinbase ? { coinbase: true } : null)
         ]);
       }),
-      catchError(() => {
+      catchError((e) => {
         return of(null);
       })
     ).subscribe(([pool, auditStatus]) => {
       this.pool = pool;
       this.auditStatus = auditStatus;
+
+      this.setIsAccelerated();
     });
 
     this.mempoolPositionSubscription = this.stateService.mempoolTxPosition$.subscribe(txPosition => {
@@ -475,7 +493,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               this.getTransactionTime();
             }
           } else {
-            this.fetchAcceleration$.next(tx.status.block_hash);
+            this.fetchAcceleration$.next(tx.status.block_height);
             this.fetchMiningInfo$.next({ hash: tx.status.block_hash, height: tx.status.block_height, txid: tx.txid });
             this.transactionTime = 0;
           }
@@ -537,7 +555,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         } else {
           this.audioService.playSound('magic');
         }
-        this.fetchAcceleration$.next(block.id);
+        this.fetchAcceleration$.next(block.height);
         this.fetchMiningInfo$.next({ hash: block.id, height: block.height, txid: this.tx.txid });
       }
     });
@@ -666,10 +684,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         relatives.reduce((prev, val) => prev + val.fee, 0);
       this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
     } else {
-      this.tx.effectiveFeePerVsize = cpfpInfo.effectiveFeePerVsize;
+      this.tx.effectiveFeePerVsize = cpfpInfo.effectiveFeePerVsize || this.tx.effectiveFeePerVsize || this.tx.feePerVsize || (this.tx.fee / (this.tx.weight / 4));
     }
     if (cpfpInfo.acceleration) {
       this.tx.acceleration = cpfpInfo.acceleration;
+      this.setIsAccelerated();
     }
 
     this.cpfpInfo = cpfpInfo;
@@ -679,6 +698,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.hasCpfp =!!(this.cpfpInfo && (this.cpfpInfo.bestDescendant || this.cpfpInfo.descendants?.length || this.cpfpInfo.ancestors?.length));
     this.hasEffectiveFeeRate = hasRelatives || (this.tx.effectiveFeePerVsize && (Math.abs(this.tx.effectiveFeePerVsize - this.tx.feePerVsize) > 0.01));
+  }
+
+  setIsAccelerated() {
+    console.log(this.tx.acceleration, this.accelerationInfo, this.pool, this.accelerationInfo?.pools);
+    this.isAcceleration = (this.tx.acceleration || (this.accelerationInfo && this.pool && this.accelerationInfo.pools.some(pool => (pool === this.pool.id || pool?.['pool_unique_id'] === this.pool.id))));
   }
 
   setFeatures(): void {
@@ -720,6 +744,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   resetTransaction() {
+    if (!this.firstLoad) {
+      this.stateService.ref = '';
+    } else {
+      this.firstLoad = false;
+    }
     this.error = undefined;
     this.tx = null;
     this.setFeatures();
@@ -742,6 +771,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.pool = null;
     this.auditStatus = null;
     document.body.scrollTo(0, 0);
+    this.isAcceleration = false;
     this.leaveTransaction();
   }
 
@@ -814,6 +844,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.stateService.ref = '';
     this.subscription.unsubscribe();
     this.fetchCpfpSubscription.unsubscribe();
     this.fetchRbfSubscription.unsubscribe();
