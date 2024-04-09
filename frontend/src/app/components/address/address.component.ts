@@ -28,6 +28,9 @@ export class AddressComponent implements OnInit, OnDestroy {
   retryLoadMore = false;
   error: any;
   mainSubscription: Subscription;
+  mempoolTxSubscription: Subscription;
+  mempoolRemovedTxSubscription: Subscription;
+  blockTxSubscription: Subscription;
   addressLoadingStatus$: Observable<number>;
   addressInfo: null | AddressInformation = null;
 
@@ -179,17 +182,17 @@ export class AddressComponent implements OnInit, OnDestroy {
         this.isLoadingAddress = false;
       });
 
-    this.stateService.mempoolTransactions$
+    this.mempoolTxSubscription = this.stateService.mempoolTransactions$
       .subscribe(tx => {
         this.addTransaction(tx);
       });
 
-    this.stateService.mempoolRemovedTransactions$
+    this.mempoolRemovedTxSubscription = this.stateService.mempoolRemovedTransactions$
       .subscribe(tx => {
         this.removeTransaction(tx);
       });
 
-    this.stateService.blockTransactions$
+    this.blockTxSubscription = this.stateService.blockTransactions$
       .subscribe((transaction) => {
         const tx = this.transactions.find((t) => t.txid === transaction.txid);
         if (tx) {
@@ -295,6 +298,9 @@ export class AddressComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.mainSubscription.unsubscribe();
+    this.mempoolTxSubscription.unsubscribe();
+    this.mempoolRemovedTxSubscription.unsubscribe();
+    this.blockTxSubscription.unsubscribe();
     this.websocketService.stopTrackingAddress();
   }
 }
