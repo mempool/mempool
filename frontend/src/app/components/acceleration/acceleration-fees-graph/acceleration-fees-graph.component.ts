@@ -48,8 +48,6 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
   formatNumber = formatNumber;
   timespan = '';
   chartInstance: any = undefined;
-
-  currency: string;
   daysAvailable: number = 0;
 
   constructor(
@@ -63,17 +61,16 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
     public stateService: StateService,
     private cd: ChangeDetectorRef,
   ) {
-    this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
-    this.radioGroupForm.controls.dateSpan.setValue('1y');
-    this.currency = 'USD';
+    this.radioGroupForm = this.formBuilder.group({ dateSpan: '1w' });
+    this.radioGroupForm.controls.dateSpan.setValue('1w');
   }
 
   ngOnInit(): void {
     if (this.widget) {
-      this.miningWindowPreference = '3m';
+      this.miningWindowPreference = '1w';
     } else {
       this.seoService.setTitle($localize`:@@bcf34abc2d9ed8f45a2f65dd464c46694e9a181e:Acceleration Fees`);
-      this.miningWindowPreference = this.miningService.getDefaultTimespan('3m');
+      this.miningWindowPreference = this.miningService.getDefaultTimespan('1w');
     }
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
