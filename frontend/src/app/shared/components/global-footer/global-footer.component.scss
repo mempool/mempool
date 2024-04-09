@@ -142,6 +142,10 @@ footer .sponsor {
   max-width: 160px;
 }
 
+footer .nowrap {
+  white-space: nowrap;
+}
+
 .explore-tagline-desktop {
   display: none;
 }
@@ -150,7 +154,7 @@ footer .sponsor {
   display: block;
 }
 
-@media (min-width: 901px) {
+@media (min-width: 951px) {
   :host-context(.ltr-layout) .language-selector {
     float: right !important;
   }
@@ -168,7 +172,7 @@ footer .sponsor {
 }
 
 .services {
-  @media (min-width: 901px) and (max-width: 1147px) {
+  @media (min-width: 951px) and (max-width: 1147px) {
     :host-context(.ltr-layout) .services .language-selector {
       float: none !important;
     }
@@ -244,7 +248,7 @@ footer .sponsor {
 
 }
 
-@media (max-width: 900px) {
+@media (max-width: 950px) {
 
   .main-logo {
     width: 220px;
