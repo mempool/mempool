@@ -10,7 +10,7 @@ import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pi
 import { Location } from '@angular/common';
 import { DifficultyAdjustment, MempoolPosition } from '../../interfaces/node-api.interface';
 import { animate, style, transition, trigger } from '@angular/animations';
-import { ThemeService } from 'src/app/services/theme.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-mempool-blocks',

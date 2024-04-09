@@ -7,7 +7,7 @@ import TxView from './tx-view';
 import { Color, Position } from './sprite-types';
 import { Price } from '../../services/price.service';
 import { StateService } from '../../services/state.service';
-import { ThemeService } from 'src/app/services/theme.service';
+import { ThemeService } from '../../services/theme.service';
 import { Subscription } from 'rxjs';
 import { defaultColorFunction, setOpacity, defaultAuditColors, defaultColors, ageColorFunction, contrastColorFunction, contrastAuditColors, contrastColors } from './utils';
 import { ActiveFilter, FilterMode, toFlags } from '../../shared/filters.utils';

@@ -4,7 +4,7 @@ import { Observable, combineLatest, Subscription } from 'rxjs';
 import { Recommendedfees } from '../../interfaces/websocket.interface';
 import { feeLevels } from '../../app.constants';
 import { map, startWith, tap } from 'rxjs/operators';
-import { ThemeService } from 'src/app/services/theme.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-fees-box',
