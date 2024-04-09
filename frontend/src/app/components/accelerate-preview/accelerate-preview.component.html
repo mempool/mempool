@@ -26,7 +26,7 @@
   </ng-container>
 
   <ng-container *ngIf="estimate else loadingEstimate">
-    <div [class]="{estimateDisabled: error}">
+    <div [class]="{estimateDisabled: error || processing || showSuccess }">
 
       <div *ngIf="user && !estimate.hasAccess">
         <div class="alert alert-mempool">You are currently on the waitlist</div>
@@ -286,7 +286,7 @@
         </div>
       </div>
 
-      @if (!hideCashApp && paymentType === 'cashapp') {
+      @if (!hideCashApp && !(error || processing || showSuccess) && paymentType === 'cashapp') {
         <div #cashappCTA class="cashapp-placeholder {{ stickyCTA }}"></div>
         <div class="d-flex justify-content-center align-items-center cashapp-cta {{ stickyCTA }}" (click)="submitCashappPay()">
           <div [style]="showSpinner ? 'opacity: 0' : 'opacity: 1'" class="p-2">Accelerate for <app-fiat [value]="maxCost" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat> with</div>
