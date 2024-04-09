@@ -175,6 +175,11 @@
                 "bundleName": "contrast",
                 "inject": false
               },
+              {
+                "input": "src/theme-wiz.scss",
+                "bundleName": "wiz",
+                "inject": false
+              },
               "node_modules/@fortawesome/fontawesome-svg-core/styles.css"
             ],
             "vendorChunk": true,

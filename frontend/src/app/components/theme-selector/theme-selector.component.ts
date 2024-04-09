@@ -10,7 +10,7 @@ import { ThemeService } from '../../services/theme.service';
 })
 export class ThemeSelectorComponent implements OnInit {
   themeForm: UntypedFormGroup;
-  themes = ['default', 'contrast'];
+  themes = ['default', 'contrast', 'wiz'];
 
   constructor(
     private formBuilder: UntypedFormBuilder,
