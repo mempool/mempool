@@ -138,9 +138,11 @@ class Server {
     }
 
     this.server = http.createServer(this.app);
-    this.serverUnixSocket = http.createServer(this.app);
     this.wss = new WebSocket.Server({ server: this.server });
-    this.wssUnixSocket = new WebSocket.Server({ server: this.serverUnixSocket });
+    if (config.MEMPOOL.UNIX_SOCKET_PATH) {
+      this.serverUnixSocket = http.createServer(this.app);
+      this.wssUnixSocket = new WebSocket.Server({ server: this.serverUnixSocket });
+    }
 
     this.setUpWebsocketHandling();
 
@@ -197,13 +199,15 @@ class Server {
       }
     });
 
-    this.serverUnixSocket.listen(config.MEMPOOL.UNIX_SOCKET_PATH, () => {
-      if (worker) {
-        logger.info(`Mempool Server worker #${process.pid} started`);
-      } else {
-        logger.notice(`Mempool Server is listening on ${config.MEMPOOL.UNIX_SOCKET_PATH}`);
-      }
-    });
+    if (this.serverUnixSocket) {
+      this.serverUnixSocket.listen(config.MEMPOOL.UNIX_SOCKET_PATH, () => {
+        if (worker) {
+          logger.info(`Mempool Server worker #${process.pid} started`);
+        } else {
+          logger.notice(`Mempool Server is listening on ${config.MEMPOOL.UNIX_SOCKET_PATH}`);
+        }
+      });
+    }
   }
 
   async runMainUpdateLoop(): Promise<void> {
@@ -357,7 +361,9 @@ class Server {
     this.server?.close();
     this.serverUnixSocket?.close();
     this.wss?.close();
-    this.wssUnixSocket?.close();
+    if (this.wssUnixSocket) {
+      this.wssUnixSocket.close();
+    }
     process.exit(code);
   }
 
