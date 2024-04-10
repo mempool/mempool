@@ -34,7 +34,7 @@
     @media (min-width: 376px) {
       margin: 0 auto 0px;
     }    
-    &:first-child{
+    &:last-child{
       display: none;
       @media (min-width: 485px) {
         display: block;
