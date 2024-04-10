@@ -1,7 +1,7 @@
 <ng-container *ngIf="{ val: network$ | async } as network">
 <header *ngIf="headerVisible" class="sticky-header">
 
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+  <nav class="navbar navbar-expand-md navbar-dark">
   <!-- Hamburger -->
   <ng-container *ngIf="servicesEnabled">
     <div *ngIf="user" class="profile_image_container" [class]="{'anon': !user.imageMd5}" (click)="hamburgerClick($event)">
