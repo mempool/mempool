@@ -537,7 +537,7 @@
           } @else if (this.mempoolPosition.block >= 7) {
             <span [class]="(acceleratorAvailable && accelerateCtaType === 'button') ? 'etaDeepMempool d-flex justify-content-end align-items-center' : ''">
               <span i18n="transaction.eta.in-several-hours|Transaction ETA in several hours or more">In several hours (or more)</span>
-              @if (!(isMobile && paymentType === 'cashapp') && !tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration) {
+              @if (!(isMobile && paymentType === 'cashapp') && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration) {
                 <a [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn btn-sm accelerateDeepMempool btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
               }
             </span>
