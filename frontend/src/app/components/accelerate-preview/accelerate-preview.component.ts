@@ -77,6 +77,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   square: any;
   cashAppPay: any;
   hideCashApp = false;
+  processingPayment = false;
 
   constructor(
     public stateService: StateService,
@@ -85,6 +86,12 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
     private audioService: AudioService,
     private cd: ChangeDetectorRef
   ) {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('cash_request_id')) {
+      this.processingPayment = true;
+      this.scrollToPreviewWithTimeout('successAlert', 'center');
+    }
+    
     if (this.stateService.ref === 'https://cash.app/') {
       this.paymentType = 'cashapp';
       this.insertSquare();
@@ -322,6 +329,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
           this.cashAppPay.destroy();
         }
 
+        const redirectHostname = document.location.hostname === 'localhost' ? 'http://localhost:4200': 'https://mempool.space';
         const maxCostUsd = this.maxCost / 100_000_000 * conversions.USD;
         const paymentRequest = this.payments.paymentRequest({
           countryCode: 'US',
@@ -330,12 +338,12 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
             amount: maxCostUsd.toString(),
             label: 'Total',
             pending: true,
-            productUrl: `https://mempool.space/tx/${this.tx.txid}`,
+            productUrl: `${redirectHostname}/tx/${this.tx.txid}`,
           },
           button: { shape: 'semiround', size: 'small', theme: 'light'}
         });
         this.cashAppPay = await this.payments.cashAppPay(paymentRequest, {
-          redirectURL: `https://mempool.space/tx/${this.tx.txid}`,
+          redirectURL: `${redirectHostname}/tx/${this.tx.txid}?acceleration=false`,
           referenceId: `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
           button: { shape: 'semiround', size: 'small', theme: 'light'}
         });
@@ -344,6 +352,8 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
         
         const that = this;
         this.cashAppPay.addEventListener('ontokenization', function (event) {
+          that.processingPayment = true;
+          that.scrollToPreviewWithTimeout('successAlert', 'center');
           const { tokenResult, error } = event.detail;
           if (error) {
             this.error = error;
@@ -361,7 +371,6 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
               next: () => {
                 that.audioService.playSound('ascend-chime-cartoon');
                 that.showSuccess = true;
-                that.scrollToPreviewWithTimeout('successAlert', 'center');
                 that.estimateSubscription.unsubscribe();
               },
               error: (response) => {

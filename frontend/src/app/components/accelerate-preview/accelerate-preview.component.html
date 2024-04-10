@@ -14,6 +14,7 @@
   </div>
 </div>
 
+@if (!processingPayment) {
 <div class="accelerate-cols">
   <ng-container *ngIf="!isMobile">
     <app-accelerate-fee-graph
@@ -306,5 +307,9 @@
   <div class="skeleton-loader"></div>
   <br>
 </ng-template>
+}
+@else if (!showSuccess && !error) {
+<div class="alert alert-info">Processing payment...</div>
+}
 
 <ng-template #acceleratedTo let-i i18n="accelerator.accelerated-to-description">If your tx is accelerated to ~{{ i | number : '1.0-0' }} sat/vB</ng-template>
