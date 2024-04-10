@@ -37,6 +37,7 @@ export class AcceleratorDashboardComponent implements OnInit {
   webGlEnabled = true;
   seen: Set<string> = new Set();
   firstLoad = true;
+  timespan: '3d' | '1w' | '1m' = '1w';
 
   graphHeight: number = 300;
   theme: ThemeService;
@@ -146,6 +147,11 @@ export class AcceleratorDashboardComponent implements OnInit {
       const feeLevelIndex = feeLevels.findIndex((feeLvl) => Math.max(1, rate) < feeLvl) - 1;
       return this.theme.theme === 'contrast' ? contrastColors[feeLevelIndex] || contrastColors[contrastColors.length - 1] : normalColors[feeLevelIndex] || normalColors[normalColors.length - 1];
     }
+  }
+
+  setTimespan(timespan): boolean {
+    this.timespan = timespan;
+    return false;
   }
 
   @HostListener('window:resize', ['$event'])

@@ -152,8 +152,8 @@ export class ServicesApiServices {
     return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/accelerator/accelerations/history`, { params: { ...params }, observe: 'response'});
   }
 
-  getAccelerationStats$(): Observable<AccelerationStats> {
-    return this.httpClient.get<AccelerationStats>(`${SERVICES_API_PREFIX}/accelerator/accelerations/stats`);
+  getAccelerationStats$(params: AccelerationHistoryParams): Observable<AccelerationStats> {
+    return this.httpClient.get<AccelerationStats>(`${SERVICES_API_PREFIX}/accelerator/accelerations/stats`, { params: { ...params } });
   }
 
   setupSquare$(): Observable<{squareAppId: string, squareLocationId: string}> {

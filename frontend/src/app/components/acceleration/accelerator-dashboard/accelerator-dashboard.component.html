@@ -22,12 +22,26 @@
     <div class="col">
       <div class="main-title">
         <span [attr.data-cy]="'acceleration-stats'" i18n="accelerator.acceleration-stats">Acceleration stats</span>&nbsp;
-        <span style="font-size: xx-small" i18n="mining.3-months">(3 months)</span>
+        @switch (timespan) {
+          @case ('1w') {
+            <span style="font-size: xx-small" i18n="mining.1-week">(1 week)</span>
+          }
+          @case ('1m') {
+            <span style="font-size: xx-small" i18n="mining.1-month">(1 month)</span>
+          }
+        }
       </div>
       <div class="card-wrapper">
         <div class="card">
           <div class="card-body more-padding">
-            <app-acceleration-stats></app-acceleration-stats>
+            <app-acceleration-stats [timespan]="timespan"></app-acceleration-stats>
+            <div class="widget-toggler">
+              <a href="" (click)="setTimespan('1w')" class="toggler-option"
+                [ngClass]="{'inactive': timespan === '1w'}"><small>1w</small></a>
+              <span style="color: #ffffff66; font-size: 8px"> | </span>
+              <a href="" (click)="setTimespan('1m')" class="toggler-option"
+              [ngClass]="{'inactive': timespan === '1m'}"><small>1m</small></a>
+            </div>
           </div>
         </div>
       </div>
@@ -59,6 +73,7 @@
               [height]="graphHeight"
               [attr.data-cy]="'acceleration-fees'"
               [widget]=true
+              [period]="timespan"
             ></app-acceleration-fees-graph>
           </div>
           <div class="mt-1"><a [attr.data-cy]="'acceleration-fees-view-more'" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
