@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { EChartsOption } from '../../../graphs/echarts';
-import { Observable, Subscription, combineLatest, fromEvent, share } from 'rxjs';
+import { Observable, Subject, Subscription, combineLatest, fromEvent, merge, share } from 'rxjs';
 import { startWith, switchMap, tap } from 'rxjs/operators';
 import { SeoService } from '../../../services/seo.service';
 import { formatNumber } from '@angular/common';
@@ -27,11 +27,12 @@ import { StateService } from '../../../services/state.service';
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
+export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDestroy {
   @Input() widget: boolean = false;
   @Input() height: number = 300;
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
+  @Input() period: '3d' | '1w' | '1m' = '1w';
   @Input() accelerations$: Observable<Acceleration[]>;
 
   miningWindowPreference: string;
@@ -47,6 +48,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
   isLoading = true;
   formatNumber = formatNumber;
   timespan = '';
+  periodSubject$: Subject<'3d' | '1w' | '1m'> = new Subject();
   chartInstance: any = undefined;
   daysAvailable: number = 0;
 
@@ -67,7 +69,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (this.widget) {
-      this.miningWindowPreference = '1w';
+      this.miningWindowPreference = this.period;
     } else {
       this.seoService.setTitle($localize`:@@bcf34abc2d9ed8f45a2f65dd464c46694e9a181e:Acceleration Fees`);
       this.miningWindowPreference = this.miningService.getDefaultTimespan('1w');
@@ -81,8 +83,12 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
       }
     });
     this.aggregatedHistory$ = combineLatest([
-      this.radioGroupForm.get('dateSpan').valueChanges.pipe(
-        startWith(this.radioGroupForm.controls.dateSpan.value),
+      merge(
+        this.radioGroupForm.get('dateSpan').valueChanges.pipe(
+          startWith(this.radioGroupForm.controls.dateSpan.value),
+        ),
+        this.periodSubject$
+      ).pipe(
         switchMap((timespan) => {
           if (!this.widget) {
             this.storageService.setValue('miningWindowPreference', timespan);
@@ -105,6 +111,12 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
     );
 
     this.aggregatedHistory$.subscribe();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.period) {
+      this.periodSubject$.next(this.period);
+    }
   }
 
   prepareChartOptions(data) {
