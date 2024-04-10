@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ThemeService } from '../../services/theme.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-theme-selector',
@@ -11,6 +12,7 @@ import { ThemeService } from '../../services/theme.service';
 export class ThemeSelectorComponent implements OnInit {
   themeForm: UntypedFormGroup;
   themes = ['default', 'contrast', 'wiz'];
+  themeSubscription: Subscription;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -22,10 +24,20 @@ export class ThemeSelectorComponent implements OnInit {
       theme: ['default']
     });
     this.themeForm.get('theme')?.setValue(this.themeService.theme);
+    // Subscribe to theme changes because two instances of this component exist
+    this.themeSubscription = this.themeService.themeChanged$.subscribe(() => {
+      if (this.themeForm.get('theme')?.value !== this.themeService.theme){
+        this.themeForm.get('theme')?.setValue(this.themeService.theme);
+      }
+    });
   }
 
   changeTheme() {
     const newTheme = this.themeForm.get('theme')?.value;
     this.themeService.apply(newTheme);
+  }
+
+  ngOnDestroy() {
+    this.themeSubscription.unsubscribe();
   }
 }
