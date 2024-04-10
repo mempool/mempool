@@ -1,0 +1,30 @@
+<head>
+  <meta charset="utf-8">
+  <title><%= ogTitle %></title>
+  <% if (data && data.canonicalPath) { %>
+    <link rel="canonical" href="<%= canonicalHost + data.canonicalPath %>" />
+  <% } else { %>
+    <link rel="canonical" href="<%= canonical %>" />
+  <% } %>
+  <meta name="description" content="The Mempool Open Source Project® - Explore the full Bitcoin ecosystem with mempool.space™"/>
+  <meta property="og:image" content="<%= ogImageUrl %>"/>
+  <meta property="og:image:type" content="image/png"/>
+  <meta property="og:image:width" content="<% if (matchedRoute.render) { %>1200<% } else { %>1000<% } %>"/>
+  <meta property="og:image:height" content="<% if (matchedRoute.render) { %>600<% } else { %>500<% } %>"/>
+  <meta property="og:title" content="<%= ogTitle %>">
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:site" content="@mempool">
+  <meta property="twitter:creator" content="@mempool">
+  <meta property="twitter:title" content="<%= ogTitle %>">
+  <meta property="twitter:description" content="Explore the full Bitcoin ecosystem with mempool.space"/>
+  <meta property="twitter:image:src" content="<%= ogImageUrl %>"/>
+  <meta property="twitter:domain" content="mempool.space">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style type="text/css">
+    body { padding: 0; margin: 0; }
+    .main { padding: 0 20px; }
+    .flag, .flex { display: flex; }
+    .flag .yes { color: green; }
+    .flag .no { color: red; }
+  </style>
+</head>

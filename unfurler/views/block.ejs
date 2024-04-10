@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en-US" dir="ltr">
+  <%- include('head'); %>
+  <body>
+    <%- include('header'); %>
+    <div class="main">
+      <h1>Block <%- data.block.height %></h1>
+      <p><a href="/block/<%= data.block.previousblockhash %>">Previous block</a> <a href="/block/<%= data.block.height + 1 %>">Next block</a></p>
+      <h2>Details</h2>
+      <table>
+        <tr>
+          <td>Height</td>
+          <td><%= data.block.height %></td>
+        </tr>
+        <tr>
+          <td>Hash</td>
+          <td><%= data.block.id %></td>
+        </tr>
+        <tr>
+          <td>Timestamp</td>
+          <td><%= (new Date(data.block.timestamp * 1000)).toISOString() %></td>
+        </tr>
+        <tr>
+          <td>Size</td>
+          <td><%= data.block.size / 1_000_000 %> MB</td>
+        </tr>
+        <tr>
+          <td>Weight</td>
+          <td><%= data.block.weight / 1_000_000 %> MWU</td>
+        </tr>
+        <% if (data.block.extras) { %>
+          <% if (data.block.extras.feeRange && data.block.extras.feeRange.length) { %>
+            <tr>
+              <td>Fee span</td>
+              <td><%= (data.block.extras.feeRange[0]).toFixed(2) %> - <%= (data.block.extras.feeRange[data.block.extras.feeRange.length - 1]).toFixed(2) %> sat/vB</td>
+            </tr>
+          <% } %>
+          <tr>
+            <td>Median fee</td>
+            <td><%= (data.block.extras.medianFee).toFixed(2) %> sat/vB</td>
+          </tr>
+          <tr>
+            <td>Total fees</td>
+            <td><%= (data.block.extras.totalFees / 100_000_000).toFixed(8) %> BTC</td>
+          </tr>
+          <tr>
+            <td>Subsidy + fees</td>
+            <td><%= (data.block.extras.reward / 100_000_000).toFixed(8) %> BTC</td>
+          </tr>
+          <% if (data.block.extras.matchRate != null) { %>
+            <tr>
+              <td>Health</td>
+              <td><%= data.block.extras.matchRate %>%</td>
+            </tr>
+          <% } %>
+          <tr>
+            <td>Miner</td>
+            <td><%= data.block.extras.pool.name || 'Unknown' %></td>
+          </tr>
+        <% } %>
+        <tr>
+          <td>Version</td>
+          <td><%= "0x" + data.block.version.toString(16) %></td>
+        </tr>
+        <tr>
+          <td>Difficulty</td>
+          <td><%= data.block.difficulty %></td>
+        </tr>
+        <tr>
+          <td>Bits</td>
+          <td><%= "0x" + data.block.bits.toString(16) %></td>
+        </tr>
+        <tr>
+          <td>Nonce</td>
+          <td><%= "0x" + data.block.nonce.toString(16) %></td>
+        </tr>
+        <tr>
+          <td>Merkle root</td>
+          <td><%= data.block.merkle_root %></td>
+        </tr>
+      </table>
+      <% if (data.transactions) { %>
+        <h2><%= data.transactions.length %> Transactions</h2>
+        <ol>
+          <% data.transactions.forEach((txid, i) => { %>
+            <li><a href="/tx/<%= txid %>"><%= txid %></a><% if (i === 0) { %> (Coinbase)<% } %></li>
+          <% }); %>
+        </ol>
+      <% } %>
+    </div>
+    <%- include('footer'); %>
+  </body>
+</html>

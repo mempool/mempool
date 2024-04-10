@@ -113,6 +113,8 @@ class Server {
   }
 
   setUpRoutes() {
+    this.app.set('view engine', 'ejs');
+
     if (puppeteerEnabled) {
       this.app.get('/unfurl/render*', async (req, res) => { return this.renderPreview(req, res) })
       this.app.get('/render*', async (req, res) => { return this.renderPreview(req, res) })
@@ -122,6 +124,7 @@ class Server {
     }
     this.app.get('/unfurl*', (req, res) => { return this.renderHTML(req, res, true) })
     this.app.get('/slurp*', (req, res) => { return this.renderHTML(req, res, false) })
+    this.app.get('/sip*', (req, res) => { return this.renderSip(req, res) })
     this.app.get('*', (req, res) => { return this.renderHTML(req, res, false) })
   }
 
@@ -370,6 +373,38 @@ class Server {
       html = html.replaceAll(this.mempoolHost, this.canonicalHost);
     }
     return html;
+  }
+
+  async renderSip(req, res): Promise<void> {
+    const start = Date.now();
+    const rawPath = req.params[0];
+    const { lang, path } = parseLanguageUrl(rawPath);
+    const matchedRoute = matchRoute(this.network, path, 'sip');
+
+    let ogImageUrl = config.SERVER.HOST + (matchedRoute.staticImg || matchedRoute.fallbackImg);
+    let ogTitle = 'The Mempool Open Source Project®';
+
+    const canonical = this.canonicalHost + rawPath;
+
+    if (matchedRoute.render) {
+      ogImageUrl = `${config.SERVER.HOST}/render/${lang || 'en'}/preview${path}`;
+      ogTitle = `${this.network ? capitalize(this.network) + ' ' : ''}${matchedRoute.networkMode !== 'mainnet' ? capitalize(matchedRoute.networkMode) + ' ' : ''}${matchedRoute.title}`;
+    }
+
+    if (matchedRoute.sip) {
+      logger.info(`sipping "${req.url}"`);
+      try {
+        const data = await matchedRoute.sip.getData(matchedRoute.params);
+        logger.info(`sip data fetched for "${req.url}" in ${Date.now() - start}ms`);
+        res.render(matchedRoute.sip.template, { canonicalHost: this.canonicalHost, canonical, ogImageUrl, ogTitle, matchedRoute, data });
+        logger.info(`sip returned "${req.url}" in ${Date.now() - start}ms`);
+      } catch (e) {
+        logger.err(`failed to sip ${req.url}: ` + (e instanceof Error ? e.message : `${e}`));
+        res.status(500).send();
+      }
+    } else {
+      return this.renderHTML(req, res, false);
+    }
   }
 }
 
