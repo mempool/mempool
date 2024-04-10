@@ -527,6 +527,7 @@
       </trans-unit>
       <trans-unit id="df89e157bacb4ab32e6ec725bf1eb176dc15201e" datatype="html">
         <source>Size in vbytes of this transaction (including unconfirmed ancestors)</source>
+        <target>Dimensione in vbyte di questa transazione (compresi gli antenati non confermati)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">49</context>
@@ -649,6 +650,7 @@
       </trans-unit>
       <trans-unit id="fad137784196a8fdc10588e27ed5d8ae95fe4e79" datatype="html">
         <source>Fees already paid by this transaction (including unconfirmed ancestors)</source>
+        <target>Commissioni già pagate per questa transazione (compresi gli antenati non confermati)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">60</context>
@@ -675,6 +677,7 @@
       </trans-unit>
       <trans-unit id="012fac6ebe9d7a2cf3edc1ec394f91eb43bd26a3" datatype="html">
         <source>Boost rate</source>
+        <target>Tasso di boost</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">98</context>
@@ -705,6 +708,7 @@
       </trans-unit>
       <trans-unit id="ece1a4cb6cadf75d497b433703265a230679f5a0" datatype="html">
         <source>Boost fee</source>
+        <target>Commissione di boost</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">106</context>
@@ -758,6 +762,7 @@
       </trans-unit>
       <trans-unit id="36b3f41abf6308a0eb7decf26e710d871865f1eb" datatype="html">
         <source>Total cost</source>
+        <target>Costo totale</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">176</context>
@@ -1074,6 +1079,7 @@
       </trans-unit>
       <trans-unit id="9310d4be621ac60b19a4d73258b25f2b411971e7" datatype="html">
         <source>Bid</source>
+        <target>Offerta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">13</context>

@@ -527,6 +527,7 @@
       </trans-unit>
       <trans-unit id="df89e157bacb4ab32e6ec725bf1eb176dc15201e" datatype="html">
         <source>Size in vbytes of this transaction (including unconfirmed ancestors)</source>
+        <target>Taille en vB de cette transaction (y compris les ancêtres non confirmés)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">49</context>
@@ -649,6 +650,7 @@
       </trans-unit>
       <trans-unit id="fad137784196a8fdc10588e27ed5d8ae95fe4e79" datatype="html">
         <source>Fees already paid by this transaction (including unconfirmed ancestors)</source>
+        <target>Frais déjà payés par cette transaction (y compris les ancêtres non confirmés)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">60</context>
@@ -758,6 +760,7 @@
       </trans-unit>
       <trans-unit id="36b3f41abf6308a0eb7decf26e710d871865f1eb" datatype="html">
         <source>Total cost</source>
+        <target>Coût total</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">176</context>
