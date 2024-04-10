@@ -14,6 +14,7 @@
   </div>
 </div>
 
+@if (!processingPayment) {
 <div class="accelerate-cols">
   <ng-container *ngIf="!isMobile">
     <app-accelerate-fee-graph
@@ -26,7 +27,7 @@
   </ng-container>
 
   <ng-container *ngIf="estimate else loadingEstimate">
-    <div [class]="{estimateDisabled: error || processing || showSuccess }">
+    <div [class]="{estimateDisabled: error}">
 
       <div *ngIf="user && !estimate.hasAccess">
         <div class="alert alert-mempool">You are currently on the waitlist</div>
@@ -286,7 +287,7 @@
         </div>
       </div>
 
-      @if (!hideCashApp && !(error || processing || showSuccess) && paymentType === 'cashapp') {
+      @if (!hideCashApp && paymentType === 'cashapp') {
         <div #cashappCTA class="cashapp-placeholder {{ stickyCTA }}"></div>
         <div class="d-flex justify-content-center align-items-center cashapp-cta {{ stickyCTA }}" (click)="submitCashappPay()">
           <div [style]="showSpinner ? 'opacity: 0' : 'opacity: 1'" class="p-2">Accelerate for <app-fiat [value]="maxCost" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat> with</div>
@@ -306,5 +307,9 @@
   <div class="skeleton-loader"></div>
   <br>
 </ng-template>
+}
+@else if (!showSuccess && !error) {
+<div class="alert alert-info">Processing payment...</div>
+}
 
 <ng-template #acceleratedTo let-i i18n="accelerator.accelerated-to-description">If your tx is accelerated to ~{{ i | number : '1.0-0' }} sat/vB</ng-template>
