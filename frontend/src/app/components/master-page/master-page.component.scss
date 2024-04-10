@@ -18,6 +18,7 @@ fa-icon {
   z-index: 100;
   min-height: 64px;
   width: 100%;
+  background-color: var(--bg);
 }
 
 li.nav-item {
@@ -179,7 +180,7 @@ nav {
   }
 }
 .navbar-dark .navbar-nav .nav-link {
-  color: #f1f1f1;
+  color: var(--icon);
 }
 
 .subdomain_logo {
