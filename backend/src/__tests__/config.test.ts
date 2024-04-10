@@ -20,7 +20,7 @@ describe('Mempool Backend Config', () => {
         BLOCKS_SUMMARIES_INDEXING: false,
         GOGGLES_INDEXING: false,
         HTTP_PORT: 8999,
-        UNIX_SOCKET_PATH: '/mempool/socket/mempool-bitcoin-mainnet',
+        UNIX_SOCKET_PATH: '',
         SPAWN_CLUSTER_PROCS: 0,
         API_URL_PREFIX: '/api/v1/',
         AUTOMATIC_BLOCK_REINDEXING: false,
