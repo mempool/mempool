@@ -9,6 +9,7 @@ interface IConfig {
     NETWORK: 'mainnet' | 'testnet' | 'signet' | 'liquid' | 'liquidtestnet';
     BACKEND: 'esplora' | 'electrum' | 'none';
     HTTP_PORT: number;
+    UNIX_SOCKET_PATH: string;
     SPAWN_CLUSTER_PROCS: number;
     API_URL_PREFIX: string;
     POLL_RATE_MS: number;
@@ -164,6 +165,7 @@ const defaults: IConfig = {
     'NETWORK': 'mainnet',
     'BACKEND': 'none',
     'HTTP_PORT': 8999,
+    'UNIX_SOCKET_PATH': '',
     'SPAWN_CLUSTER_PROCS': 0,
     'API_URL_PREFIX': '/api/v1/',
     'POLL_RATE_MS': 2000,

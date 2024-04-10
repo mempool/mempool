@@ -48,7 +48,9 @@ import aboutRoutes from './api/about.routes';
 
 class Server {
   private wss: WebSocket.Server | undefined;
+  private wssUnixSocket: WebSocket.Server | undefined;
   private server: http.Server | undefined;
+  private serverUnixSocket: http.Server | undefined;
   private app: Application;
   private currentBackendRetryInterval = 1;
   private backendRetryCount = 0;
@@ -137,6 +139,10 @@ class Server {
 
     this.server = http.createServer(this.app);
     this.wss = new WebSocket.Server({ server: this.server });
+    if (config.MEMPOOL.UNIX_SOCKET_PATH) {
+      this.serverUnixSocket = http.createServer(this.app);
+      this.wssUnixSocket = new WebSocket.Server({ server: this.serverUnixSocket });
+    }
 
     this.setUpWebsocketHandling();
 
@@ -192,6 +198,16 @@ class Server {
         logger.notice(`Mempool Server is running on port ${config.MEMPOOL.HTTP_PORT}`);
       }
     });
+
+    if (this.serverUnixSocket) {
+      this.serverUnixSocket.listen(config.MEMPOOL.UNIX_SOCKET_PATH, () => {
+        if (worker) {
+          logger.info(`Mempool Server worker #${process.pid} started`);
+        } else {
+          logger.notice(`Mempool Server is listening on ${config.MEMPOOL.UNIX_SOCKET_PATH}`);
+        }
+      });
+    }
   }
 
   async runMainUpdateLoop(): Promise<void> {
@@ -265,8 +281,12 @@ class Server {
 
   setUpWebsocketHandling(): void {
     if (this.wss) {
-      websocketHandler.setWebsocketServer(this.wss);
+      websocketHandler.addWebsocketServer(this.wss);
     }
+    if (this.wssUnixSocket) {
+      websocketHandler.addWebsocketServer(this.wssUnixSocket);
+    }
+
     if (Common.isLiquid() && config.DATABASE.ENABLED) {
       blocks.setNewBlockCallback(async () => {
         try {
@@ -337,6 +357,12 @@ class Server {
     logger.debug(`onExit for signal: ${exitEvent}`);
     if (config.DATABASE.ENABLED) {
       DB.releasePidLock();
+    }
+    this.server?.close();
+    this.serverUnixSocket?.close();
+    this.wss?.close();
+    if (this.wssUnixSocket) {
+      this.wssUnixSocket.close();
     }
     process.exit(code);
   }
