@@ -76,7 +76,7 @@
 
       &.tx {
         .fill {
-          background: #3bcc49;
+          background: var(--green);
         }
         .line {
           .fee-rate {

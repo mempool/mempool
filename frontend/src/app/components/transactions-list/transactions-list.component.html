@@ -204,7 +204,7 @@
                     <ng-template [ngIf]="vout.pegout" [ngIfElse]="defaultscriptpubkey_type">
                       <ng-container i18n="transactions-list.peg-out-to">Peg-out to <ng-container *ngTemplateOutlet="pegOutLink"></ng-container></ng-container>
                       <ng-template #pegOutLink>
-                        <a *ngIf="stateService.env.BASE_MODULE === 'liquid'; else localPegoutLink" target="_blank" style="color:#b86d12" [attr.href]="'https://mempool.space/address/' + vout.pegout.scriptpubkey_address" title="{{ vout.pegout.scriptpubkey_address }}">
+                        <a *ngIf="stateService.env.BASE_MODULE === 'liquid'; else localPegoutLink" target="_blank" style="color:var(--orange)" [attr.href]="'https://mempool.space/address/' + vout.pegout.scriptpubkey_address" title="{{ vout.pegout.scriptpubkey_address }}">
                           <app-truncate [text]="vout.pegout.scriptpubkey_address"></app-truncate>
                         </a>
                         <ng-template #localPegoutLink>

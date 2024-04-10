@@ -95,8 +95,8 @@ export class ReservesRatioComponent implements OnInit, OnChanges {
             lineStyle: {
               width: 6,
               color: [
-                [0.49, '#D81B60'],
-                [1, '#7CB342']
+                [0.49, 'var(--red)'],
+                [1, 'var(--green)']
               ]
             }
           },

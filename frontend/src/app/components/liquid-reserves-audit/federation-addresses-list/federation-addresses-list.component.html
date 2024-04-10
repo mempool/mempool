@@ -12,7 +12,7 @@
         <ng-container *ngIf="widget; else regularRows">
           <tr *ngFor="let address of addresses | slice:0:5">
             <td class="address text-left widget">
-              <a href="{{ env.MEMPOOL_WEBSITE_URL + '/address/' + address.bitcoinaddress }}" target="_blank" style="color:#b86d12">
+              <a href="{{ env.MEMPOOL_WEBSITE_URL + '/address/' + address.bitcoinaddress }}" target="_blank" style="color:var(--orange)">
                 <app-truncate [text]="address.bitcoinaddress" [lastChars]="6"></app-truncate>
               </a>
             </td>
@@ -24,7 +24,7 @@
         <ng-template #regularRows>
           <tr *ngFor="let address of addresses | slice:(page - 1) * pageSize:page * pageSize">
             <td class="address text-left">
-              <a href="{{ env.MEMPOOL_WEBSITE_URL + '/address/' + address.bitcoinaddress }}" target="_blank" style="color:#b86d12">
+              <a href="{{ env.MEMPOOL_WEBSITE_URL + '/address/' + address.bitcoinaddress }}" target="_blank" style="color:var(--orange)">
                 <app-truncate [text]="address.bitcoinaddress" [lastChars]="6"></app-truncate>
               </a>
             </td>

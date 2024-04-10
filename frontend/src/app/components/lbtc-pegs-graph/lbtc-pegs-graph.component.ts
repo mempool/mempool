@@ -137,7 +137,7 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
         splitLine: {
           lineStyle: {
             type: 'dotted',
-            color: '#ffffff66',
+            color: 'var(--transparent-fg)',
             opacity: 0.25,
           }
         }

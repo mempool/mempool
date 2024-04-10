@@ -5,7 +5,7 @@
     <div class="widget-toggler">
       <a href="" (click)="setMode('difficulty')" class="toggler-option"
         [ngClass]="{'inactive': mode === 'difficulty'}"><small i18n="statistics.average-small">difficulty</small></a>
-      <span style="color: #ffffff66; font-size: 8px"> | </span>
+      <span style="color: var(--transparent-fg); font-size: 8px"> | </span>
       <a href="" (click)="setMode('halving')" class="toggler-option"
         [ngClass]="{'inactive': mode === 'halving'}"><small i18n="statistics.median-small">halving</small></a>
     </div>

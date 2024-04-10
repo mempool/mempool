@@ -61,7 +61,7 @@
             </td>
             <td class="output text-left">
               <ng-container *ngIf="peg.bitcointxid; else redeemInProgress">
-                <a href="{{ env.MEMPOOL_WEBSITE_URL + '/tx/' + peg.bitcointxid + ':' + peg.bitcoinindex }}" target="_blank" style="color:#b86d12">
+                <a href="{{ env.MEMPOOL_WEBSITE_URL + '/tx/' + peg.bitcointxid + ':' + peg.bitcoinindex }}" target="_blank" style="color:var(--orange)">
                   <app-truncate [text]="peg.bitcointxid + ':' + peg.bitcoinindex" [lastChars]="6"></app-truncate>
                 </a>
               </ng-container>
@@ -73,7 +73,7 @@
             </td>
             <td class="address text-left">
               <ng-container *ngIf="peg.bitcoinaddress; else noRedeem">
-                <a href="{{ env.MEMPOOL_WEBSITE_URL + '/address/' + peg.bitcoinaddress }}" target="_blank" style="color:#b86d12">
+                <a href="{{ env.MEMPOOL_WEBSITE_URL + '/address/' + peg.bitcoinaddress }}" target="_blank" style="color:var(--orange)">
                   <app-truncate [text]="peg.bitcoinaddress" [lastChars]="6"></app-truncate>
                 </a>
               </ng-container>

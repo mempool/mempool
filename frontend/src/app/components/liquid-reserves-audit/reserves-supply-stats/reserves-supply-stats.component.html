@@ -11,9 +11,9 @@
   <div class="item">
     <h5 class="card-title" i18n="dashboard.btc-holdings">BTC Holdings</h5>
     <div *ngIf="(currentReserves$ | async) as currentReserves; else loadingData" class="card-text">
-      <div class="fee-text">{{ (+currentReserves.amount) / 100000000 | number: '1.2-2' }} <span style="color: #b86d12;">BTC</span></div>
+      <div class="fee-text">{{ (+currentReserves.amount) / 100000000 | number: '1.2-2' }} <span style="color: var(--orange);">BTC</span></div>
       <span class="fiat">
-        <span><ng-container i18n="shared.as-of-block">As of block</ng-container>&nbsp;<a href="{{ env.MEMPOOL_WEBSITE_URL + '/block/' + currentReserves.hash }}" target="_blank" style="color:#b86d12">{{ currentReserves.lastBlockUpdate }}</a></span>
+        <span><ng-container i18n="shared.as-of-block">As of block</ng-container>&nbsp;<a href="{{ env.MEMPOOL_WEBSITE_URL + '/block/' + currentReserves.hash }}" target="_blank" style="color:var(--orange)">{{ currentReserves.lastBlockUpdate }}</a></span>
       </span>
     </div>
   </div>
