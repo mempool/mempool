@@ -113,7 +113,7 @@ export class AddressGraphComponent implements OnChanges {
             : `${data.length} transactions`;
           const date = new Date(data[0].data[0]).toLocaleTimeString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
           const val = data.reduce((total, d) => total + d.data[2].value, 0);
-          const color = val === 0 ? '' : (val > 0 ? '#1a9436' : '#dc3545');
+          const color = val === 0 ? '' : (val > 0 ? 'var(--green)' : 'var(--red)');
           const symbol = val > 0 ? '+' : '';
           return `
             <div>

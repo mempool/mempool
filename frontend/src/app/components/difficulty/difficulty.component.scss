@@ -183,7 +183,7 @@
     fill: var(--secondary);
 
     &.behind {
-      fill: #D81B60;
+      fill: var(--red);
     }
     &.mined {
       fill: url(#diff-gradient);
@@ -208,10 +208,10 @@
 }
 
 .blocks-ahead {
-  color: #3bcc49;
+  color: var(--green);
 }
 .blocks-behind {
-  color: #D81B60;
+  color: var(--red);
 }
 
 .halving-progress {
@@ -250,5 +250,5 @@
 }
 
 .inactive {
-  color: #ffffff66;
+  color: var(--transparent-fg);
 }
