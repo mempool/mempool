@@ -656,8 +656,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.apiService
       .getTransactionTimes$([this.tx.txid])
       .subscribe((transactionTimes) => {
-        if (transactionTimes?.length) {
+        if (transactionTimes?.length && transactionTimes[0]) {
           this.transactionTime = transactionTimes[0];
+        } else {
+          setTimeout(() => {
+            this.getTransactionTime();
+          }, 2000);
         }
       });
   }

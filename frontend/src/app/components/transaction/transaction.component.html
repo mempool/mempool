@@ -460,15 +460,15 @@
 <ng-template #firstSeenRow>
   @if (isLoadingTx) {
     <ng-container *ngTemplateOutlet="skeletonDetailsRow"></ng-container>
-  } @else if (transactionTime === -1) {
+  } @else if (transactionTime > 0) {
     <tr>
       <td i18n="transaction.first-seen|Transaction first seen">First seen</td>
-      <td><span class="skeleton-loader"></span></td>
+      <td><i><app-time kind="since" [time]="transactionTime" [fastRender]="true"></app-time></i></td>
     </tr>
   } @else {
     <tr>
       <td i18n="transaction.first-seen|Transaction first seen">First seen</td>
-      <td><i><app-time kind="since" [time]="transactionTime" [fastRender]="true"></app-time></i></td>
+      <td><span class="skeleton-loader"></span></td>
     </tr>
   }
 </ng-template>
