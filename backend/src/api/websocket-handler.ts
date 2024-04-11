@@ -54,6 +54,7 @@ class WebsocketHandler {
   private socketData: { [key: string]: string } = {};
   private serializedInitData: string = '{}';
   private lastRbfSummary: ReplacementInfo[] | null = null;
+  private mempoolSequence: number = 0;
 
   constructor() { }
 
@@ -317,6 +318,7 @@ class WebsocketHandler {
               const mBlocksWithTransactions = mempoolBlocks.getMempoolBlocksWithTransactions();
               response['projected-block-transactions'] = JSON.stringify({
                 index: index,
+                sequence: this.mempoolSequence,
                 blockTransactions: (mBlocksWithTransactions[index]?.transactions || []).map(mempoolBlocks.compressTx),
               });
             } else {
@@ -602,6 +604,10 @@ class WebsocketHandler {
     const addressCache = this.makeAddressCache(newTransactions);
     const removedAddressCache = this.makeAddressCache(deletedTransactions);
 
+    if (memPool.isInSync()) {
+      this.mempoolSequence++;
+    }
+
     // TODO - Fix indentation after PR is merged
     for (const server of this.webSocketServers) {
     server.clients.forEach(async (client) => {
@@ -825,6 +831,7 @@ class WebsocketHandler {
         if (mBlockDeltas[index]) {
           response['projected-block-transactions'] = getCachedResponse(`projected-block-transactions-${index}`, {
             index: index,
+            sequence: this.mempoolSequence,
             delta: mBlockDeltas[index],
           });
         }
@@ -993,6 +1000,9 @@ class WebsocketHandler {
       return responseCache[key];
     }
 
+    if (memPool.isInSync()) {
+      this.mempoolSequence++;
+    }
 
     // TODO - Fix indentation after PR is merged
     for (const server of this.webSocketServers) {
@@ -1162,11 +1172,13 @@ class WebsocketHandler {
           if (mBlockDeltas[index].added.length > (mBlocksWithTransactions[index]?.transactions.length / 2)) {
             response['projected-block-transactions'] = getCachedResponse(`projected-block-transactions-full-${index}`, {
               index: index,
+              sequence: this.mempoolSequence,
               blockTransactions: mBlocksWithTransactions[index].transactions.map(mempoolBlocks.compressTx),
             });
           } else {
             response['projected-block-transactions'] = getCachedResponse(`projected-block-transactions-delta-${index}`, {
               index: index,
+              sequence: this.mempoolSequence,
               delta: mBlockDeltas[index],
             });
           }

@@ -96,6 +96,7 @@ export class StateService {
   env: Env;
   latestBlockHeight = -1;
   blocks: BlockExtended[] = [];
+  mempoolSequence: number;
 
   backend$ = new BehaviorSubject<'esplora' | 'electrum' | 'none'>('esplora');
   networkChanged$ = new ReplaySubject<string>(1);
