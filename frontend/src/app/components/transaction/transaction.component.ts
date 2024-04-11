@@ -673,6 +673,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.hasEffectiveFeeRate = false;
       return;
     }
+    const firstCpfp = this.cpfpInfo == null;
     // merge ancestors/descendants
     const relatives = [...(cpfpInfo.ancestors || []), ...(cpfpInfo.descendants || [])];
     if (cpfpInfo.bestDescendant && !cpfpInfo.descendants?.length) {
@@ -692,7 +693,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     if (cpfpInfo.acceleration) {
       this.tx.acceleration = cpfpInfo.acceleration;
-      this.setIsAccelerated();
+      this.setIsAccelerated(firstCpfp);
     }
 
     this.cpfpInfo = cpfpInfo;
@@ -704,8 +705,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.hasEffectiveFeeRate = hasRelatives || (this.tx.effectiveFeePerVsize && (Math.abs(this.tx.effectiveFeePerVsize - this.tx.feePerVsize) > 0.01));
   }
 
-  setIsAccelerated() {
+  setIsAccelerated(initialState: boolean = false) {
     this.isAcceleration = (this.tx.acceleration || (this.accelerationInfo && this.pool && this.accelerationInfo.pools.some(pool => (pool === this.pool.id || pool?.['pool_unique_id'] === this.pool.id))));
+    if (this.isAcceleration && initialState) {
+      this.showAccelerationSummary = false;
+    }
   }
 
   setFeatures(): void {

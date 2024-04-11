@@ -27,7 +27,7 @@
   </ng-container>
 
   <ng-container *ngIf="estimate else loadingEstimate">
-    <div [class]="{estimateDisabled: error}">
+    <div [class]="{estimateDisabled: error || showSuccess }">
 
       <div *ngIf="user && !estimate.hasAccess">
         <div class="alert alert-mempool">You are currently on the waitlist</div>
