@@ -154,6 +154,7 @@ interface IConfig {
   },
   FIAT_PRICE: {
     ENABLED: boolean;
+    PAID: boolean;
     API_KEY: string;
   },
 }
@@ -310,6 +311,7 @@ const defaults: IConfig = {
   },
   'FIAT_PRICE': {
     'ENABLED': true,
+    'PAID': false,
     'API_KEY': '',
   },
 };

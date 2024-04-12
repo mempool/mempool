@@ -39,13 +39,17 @@ const emptyRates = {
 
 class FreeCurrencyApi implements ConversionFeed {
   private API_KEY: string;
+  private apiUrlPrefix: string = `https://api.freecurrencyapi.com/v1/`;
 
-  constructor(apiKey: string) {
+  constructor(apiKey: string, paid = false) {
     this.API_KEY = apiKey;
+    if (paid) {
+      this.apiUrlPrefix = `https://api.currencyapi.com/v3/`;
+    }
   }
 
   public async $getQuota(): Promise<any> {
-    const response = await query(`https://api.freecurrencyapi.com/v1/status?apikey=${this.API_KEY}`);
+    const response = await query(`${this.apiUrlPrefix}status?apikey=${this.API_KEY}`);
     if (response && response['quotas']) {
       return response['quotas'];
     }
@@ -53,7 +57,7 @@ class FreeCurrencyApi implements ConversionFeed {
   }
 
   public async $fetchLatestConversionRates(): Promise<ConversionRates> {
-    const response = await query(`https://api.freecurrencyapi.com/v1/latest?apikey=${this.API_KEY}`);
+    const response = await query(`${this.apiUrlPrefix}latest?apikey=${this.API_KEY}`);
     if (response && response['data']) {
       return response['data'];
     }
@@ -61,7 +65,7 @@ class FreeCurrencyApi implements ConversionFeed {
   }
 
   public async $fetchConversionRates(date: string): Promise<ConversionRates> {
-    const response = await query(`https://api.freecurrencyapi.com/v1/historical?date=${date}&apikey=${this.API_KEY}`);
+    const response = await query(`${this.apiUrlPrefix}historical?date=${date}&apikey=${this.API_KEY}`);
     if (response && response['data'] && response['data'][date]) {
       return response['data'][date];
     }

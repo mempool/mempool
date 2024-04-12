@@ -151,6 +151,7 @@ __REDIS_BATCH_QUERY_BASE_SIZE__=${REDIS_BATCH_QUERY_BASE_SIZE:=5000}
 
 # FIAT_PRICE
 __FIAT_PRICE_ENABLED__=${FIAT_PRICE_ENABLED:=true}
+__FIAT_PRICE_PAID__=${FIAT_PRICE_PAID:=false}
 __FIAT_PRICE_API_KEY__=${FIAT_PRICE_API_KEY:=""}
 
 mkdir -p "${__MEMPOOL_CACHE_DIR__}"
@@ -296,6 +297,7 @@ sed -i "s!__REDIS_BATCH_QUERY_BASE_SIZE__!${__REDIS_BATCH_QUERY_BASE_SIZE__}!g" 
 
 # FIAT_PRICE
 sed -i "s!__FIAT_PRICE_ENABLED__!${__FIAT_PRICE_ENABLED__}!g" mempool-config.json
+sed -i "s!__FIAT_PRICE_PAID__!${__FIAT_PRICE_PAID__}!g" mempool-config.json
 sed -i "s!__FIAT_PRICE_API_KEY__!${__FIAT_PRICE_API_KEY__}!g" mempool-config.json
 
 node /backend/package/index.js

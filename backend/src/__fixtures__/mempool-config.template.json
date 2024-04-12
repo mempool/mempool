@@ -144,6 +144,7 @@
   },
   "FIAT_PRICE": {
     "ENABLED": true,
+    "PAID": false,
     "API_KEY": "__MEMPOOL_CURRENCY_API_KEY__"
   }
 }
