@@ -386,7 +386,7 @@
 
 <ng-template type="what-is-adjusted-vsize">
   <p>Bitcoin blocks have two independent consensus-enforced resource constraints - a 4MWU weight limit, and the 80,000 sigop limit.</p>
-  <p>Most transactions use a more of the weight limit than the sigop limit. However, some transactions use a disproportionate number of sigops compared to their weight.</p>
+  <p>Most transactions use more of the weight limit than the sigop limit. However, some transactions use a disproportionate number of sigops compared to their weight.</p>
   <p>To account for this, Bitcoin Core calculates and uses an "adjusted vsize" equal 5 times the number of sigops, or the unadjusted vsize, whichever is larger.</p>
   <p>Then, during block template construction, Bitcoin Core selects transactions in descending order of fee rate measured in satoshis per <i>adjusted vsize</i></p>
   <p>On mempool.space, effective fee rates for unconfirmed transactions are also measured in terms of satoshis per adjusted vsize, after accounting for CPFP relationships and other dependencies.</p>
