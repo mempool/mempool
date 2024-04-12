@@ -71,7 +71,7 @@ class PriceUpdater {
     this.feeds.push(new BitfinexApi());
     this.feeds.push(new GeminiApi());
 
-    this.currencyConversionFeed = new FreeCurrencyApi(config.FIAT_PRICE.API_KEY, config.FIAT_PRICE.PAID);
+    this.currencyConversionFeed = new FreeCurrencyApi();
     this.setCyclePosition();
   }
 
