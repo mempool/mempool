@@ -151,6 +151,7 @@ describe('Mempool Backend Config', () => {
 
       expect(config.FIAT_PRICE).toStrictEqual({
         ENABLED: true,
+        PAID: false,
         API_KEY: '',
       });
     });

@@ -150,6 +150,7 @@
   },
   "FIAT_PRICE": {
     "ENABLED": __FIAT_PRICE_ENABLED__,
+    "PAID": __FIAT_PRICE_PAID__,
     "API_KEY": "__FIAT_PRICE_API_KEY__"
   }
 }
