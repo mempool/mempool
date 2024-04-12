@@ -152,6 +152,7 @@
   },
   "FIAT_PRICE": {
     "ENABLED": true,
+    "PAID": false,
     "API_KEY": "your-api-key-from-freecurrencyapi.com"
   }
 }
