@@ -268,6 +268,7 @@
       </trans-unit>
       <trans-unit id="9bada74bc2b36480a6db8734d56a2b89135de590" datatype="html">
         <source>Become a Community Sponsor</source>
+        <target>成为社区赞助商</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about-sponsors.component.html</context>
           <context context-type="linenumber">4</context>
@@ -276,6 +277,7 @@
       </trans-unit>
       <trans-unit id="bef4c03ebfa29b890665fbcf6bf097b9ae29a91e" datatype="html">
         <source>Become an Enterprise Sponsor</source>
+        <target>成为企业赞助商</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about-sponsors.component.html</context>
           <context context-type="linenumber">11</context>
@@ -310,6 +312,7 @@
       </trans-unit>
       <trans-unit id="299789f4d4817ccf915f6a5b0e48c093b646b079" datatype="html">
         <source>Whale Sponsors</source>
+        <target>巨鲸赞助商</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">187</context>
@@ -326,6 +329,7 @@
       </trans-unit>
       <trans-unit id="0a441237b27eaeacbeba376cabd33921fa4bb2d6" datatype="html">
         <source>OG Sponsors ❤️</source>
+        <target>OG 赞助商 ❤️</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">213</context>
@@ -404,6 +408,7 @@
       </trans-unit>
       <trans-unit id="meta.description.about" datatype="html">
         <source>Learn more about The Mempool Open Source Project®: enterprise sponsors, individual sponsors, integrations, who contributes, FOSS licensing, and more.</source>
+        <target>了解有关 Mempool 开源项目® 的更多信息：企业赞助商、个人赞助商、集成、贡献者、FOSS 许可等。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.ts</context>
           <context context-type="linenumber">50</context>
@@ -476,6 +481,7 @@
       </trans-unit>
       <trans-unit id="f24773075af97666c0feca0e883c2585712fe597" datatype="html">
         <source>Your transaction</source>
+        <target>你的交易</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">35</context>
@@ -647,6 +653,7 @@
       </trans-unit>
       <trans-unit id="8611a038eb243bbed95bf5ff49af4129f22dc55a" datatype="html">
         <source>How much more are you willing to pay?</source>
+        <target>您愿意多付多少钱？</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">69</context>
@@ -3369,6 +3376,7 @@
       </trans-unit>
       <trans-unit id="b7dde2cf8ec2fcd328295c9c7fcc944c4d3720b6" datatype="html">
         <source>Memory Usage</source>
+        <target>内存使用量</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/clock/clock.component.html</context>
           <context context-type="linenumber">65</context>
@@ -6564,7 +6572,7 @@
       </trans-unit>
       <trans-unit id="4c3955cfe5955657297481efaf3ada8c55c75b2c" datatype="html">
         <source>Purging</source>
-        <target>吹扫中</target>
+        <target>清除中</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">276</context>
