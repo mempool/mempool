@@ -144,7 +144,6 @@ export class TrackerComponent implements OnInit, OnDestroy {
     this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
 
     if (this.acceleratorAvailable && this.stateService.ref === 'https://cash.app/') {
-      this.showAccelerationSummary = true;
       this.paymentType = 'cashapp';
     }
 

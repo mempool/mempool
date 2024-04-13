@@ -72,5 +72,35 @@
         }
       </div>
     </div>
+
+    <div class="bottom-panel">
+      @if (showAccelerationSummary) {
+        <app-accelerate-checkout *ngIf="(da$ | async) as da;" [tx]="tx" [eta]="mempoolPosition?.block >= 7 ? null : da.adjustedTimeAvg * (mempoolPosition.block + 1) + now + da.timeOffset" (close)="showAccelerationSummary = false"></app-accelerate-checkout>
+      } @else {
+        <div class="progress-icon">
+          @switch (trackerStage) {
+            @case ('waiting') {
+              <div class="spinner-border text-light" style="width: 1em; height: 1em"></div>
+            }
+            @case ('pending') {
+              <fa-icon [icon]="['fas', 'hourglass-start']" [fixedWidth]="true"></fa-icon>
+            }
+            @case ('soon') {
+              <fa-icon [icon]="['fas', 'hourglass-half']" [fixedWidth]="true"></fa-icon>
+            }
+            @case ('next') {
+              <fa-icon [icon]="['fas', 'hourglass-end']" [fixedWidth]="true"></fa-icon>
+            }
+            @case ('confirmed') {
+              <fa-icon [icon]="['fas', 'circle-check']" [fixedWidth]="true"></fa-icon>
+            }
+          }
+        </div>
+      }
+    </div>
+
+    <div class="footer-link" [routerLink]="['/tx' | relativeUrl, tx?.txid]">
+      <span>See more details <fa-icon [icon]="['fas', 'arrow-alt-circle-right']"></fa-icon></span>
+    </div>
   </div>
 </div>

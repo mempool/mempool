@@ -1,6 +1,5 @@
 .mobile-wrapper {
   width: 100%;
-  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -8,11 +7,18 @@
 
 .mobile-container {
   width: 100vw;
-  height: 100%;
+  height: 100vh;
   max-width: 600px;
   max-height: 1000px;
   box-sizing: border-box;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+
+  & > * {
+    flex-shrink: 0;
+  }
 }
 
 .blockchain-wrapper {
@@ -25,7 +31,7 @@
 }
 
 .panel {
-  background: var(--box-bg);
+  background: var(--bg);
 }
 
 .field {
@@ -72,4 +78,27 @@
   height: 100%;
   padding: 0.5rem 0.25rem;
   background-color: #653b9c;
+}
+
+.bottom-panel {
+  flex-grow: 1;
+}
+
+.progress-icon {
+  font-size: clamp(50px, 30vw, 200px);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer-link {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0.5em;
+  background: var(--primary);
+  color: white;
 }
