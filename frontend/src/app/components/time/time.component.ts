@@ -23,7 +23,7 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() time: number;
   @Input() dateString: number;
-  @Input() kind: 'plain' | 'since' | 'until' | 'span' | 'before' = 'plain';
+  @Input() kind: 'plain' | 'since' | 'until' | 'span' | 'before' | 'within' = 'plain';
   @Input() fastRender = false;
   @Input() fixedRender = false;
   @Input() relative = false;
@@ -80,6 +80,7 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
         seconds = Math.floor((+new Date() - +new Date(this.dateString || this.time * 1000)) / 1000);
         break;
       case 'until':
+      case 'within':
         seconds = (+new Date(this.time) - +new Date()) / 1000;
         break;
       default:
@@ -91,7 +92,7 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
     } else if (seconds < 60) {
       if (this.relative || this.kind === 'since') {
         return $localize`:@@date-base.just-now:Just now`;
-      } else if (this.kind === 'until') {
+      } else if (this.kind === 'until' || this.kind === 'within') {
         seconds = 60;
       }
     }
@@ -112,12 +113,12 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
       if (counter > 0) {
         let rounded;
         const roundFactor = Math.pow(10,this.fractionDigits || 0);
-        if (this.kind === 'until' && usedUnits < this.numUnits) {
+        if ((this.kind === 'until' || this.kind === 'within') && usedUnits < this.numUnits) {
           rounded = Math.floor((seconds / this.intervals[precisionUnit]) * roundFactor) / roundFactor;
         } else {
           rounded = Math.round((seconds / this.intervals[precisionUnit]) * roundFactor) / roundFactor;
         }
-        if (this.kind !== 'until' || this.numUnits === 1) {
+        if ((this.kind !== 'until' && this.kind !== 'within')|| this.numUnits === 1) {
           return this.formatTime(this.kind, precisionUnit, rounded);
         } else {
           if (!usedUnits) {
@@ -182,6 +183,29 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
             case 'hour': return $localize`:@@time-until:In ~${dateStrings.i18nHours}:DATE:`; break;
             case 'minute': return $localize`:@@time-until:In ~${dateStrings.i18nMinutes}:DATE:`; break;
             case 'second': return $localize`:@@time-until:In ~${dateStrings.i18nSeconds}:DATE:`; break;
+          }
+        }
+        break;
+      case 'within':
+        if (number === 1) {
+          switch (unit) { // singular (In ~1 day)
+            case 'year': return $localize`:@@time-within:within ~${dateStrings.i18nYear}:DATE:`; break;
+            case 'month': return $localize`:@@time-within:within ~${dateStrings.i18nMonth}:DATE:`; break;
+            case 'week': return $localize`:@@time-within:within ~${dateStrings.i18nWeek}:DATE:`; break;
+            case 'day': return $localize`:@@time-within:within ~${dateStrings.i18nDay}:DATE:`; break;
+            case 'hour': return $localize`:@@time-within:within ~${dateStrings.i18nHour}:DATE:`; break;
+            case 'minute': return $localize`:@@time-within:within ~${dateStrings.i18nMinute}:DATE:`;
+            case 'second': return $localize`:@@time-within:within ~${dateStrings.i18nSecond}:DATE:`;
+          }
+        } else {
+          switch (unit) { // plural (In ~2 days)
+            case 'year': return $localize`:@@time-within:within ~${dateStrings.i18nYears}:DATE:`; break;
+            case 'month': return $localize`:@@time-within:within ~${dateStrings.i18nMonths}:DATE:`; break;
+            case 'week': return $localize`:@@time-within:within ~${dateStrings.i18nWeeks}:DATE:`; break;
+            case 'day': return $localize`:@@time-within:within ~${dateStrings.i18nDays}:DATE:`; break;
+            case 'hour': return $localize`:@@time-within:within ~${dateStrings.i18nHours}:DATE:`; break;
+            case 'minute': return $localize`:@@time-within:within ~${dateStrings.i18nMinutes}:DATE:`; break;
+            case 'second': return $localize`:@@time-within:within ~${dateStrings.i18nSeconds}:DATE:`; break;
           }
         }
         break;
