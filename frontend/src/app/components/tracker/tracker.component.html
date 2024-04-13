@@ -3,6 +3,13 @@
     <div class="panel">
       <div class="field nav-header">
           <app-svg-images name="officialMempoolSpace" style="width: 144px; height: 36px" width="500" height="126" viewBox="0 0 500 126"></app-svg-images>
+          <div [ngSwitch]="network" class="network-label">
+            <span *ngSwitchCase="'signet'" class="network signet"><span class="name">Bitcoin Signet</span><app-svg-images name="signet" width="35" height="35" viewBox="0 0 65 65" style="display: inline-block" class="mainnet ml-2"></app-svg-images></span>
+            <span *ngSwitchCase="'testnet'" class="network testnet"><span class="name">Bitcoin Testnet</span><app-svg-images name="testnet" width="35" height="35" viewBox="0 0 65 65" style="display: inline-block" class="mainnet ml-2"></app-svg-images></span>
+            <span *ngSwitchCase="'liquid'" class="network liquid"><span class="name">Liquid</span><app-svg-images name="liquid" width="35" height="35" viewBox="0 0 125 125" style="display: inline-block" class="mainnet ml-2"></app-svg-images></span>
+            <span *ngSwitchCase="'liquidtestnet'" class="network liquidtestnet"><span class="name">Liquid Testnet</span><app-svg-images name="liquidtestnet" width="35" height="35" viewBox="0 0 125 125" style="display: inline-block" class="mainnet ml-2"></app-svg-images></span>
+            <span *ngSwitchDefault class="network mainnet"><span class="name">Bitcoin</span><app-svg-images name="bitcoin" width="35" height="35" viewBox="0 0 65 65" style="display: inline-block" class="mainnet ml-2"></app-svg-images></span>
+          </div>
       </div>
       <div class="field">
         <div class="label" i18n="shared.transaction">Transaction</div>
