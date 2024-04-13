@@ -58,7 +58,7 @@ export class AccelerationsListComponent implements OnInit {
               }
             }
             for (const acc of accelerations) {
-              acc.boost = acc.boostCost != null ? acc.boostCost : (acc.feePaid - acc.baseFee - acc.vsizeFee);
+              acc.boost = acc.boostCost != null ? acc.boostCost : acc.bidBoost;
             }
             if (this.widget) {
               return of(accelerations.slice(0, 6));
