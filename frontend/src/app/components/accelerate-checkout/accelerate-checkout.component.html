@@ -21,10 +21,14 @@
     <div class="row">
       <div class="col-sm">
         <div class="form-group form-check">
-          <input type="radio" class="form-check-input" id="wait" name="accelerate">
+          <input type="radio" class="form-check-input" id="wait" name="accelerate" checked="checked">
           <label class="form-check-label d-flex flex-column" for="wait">
             <span class="font-weight-bold">Wait</span>
-            <span class="text-muted">Settlement unlikely to occur within 24 hours</span>
+            @if (!eta) {
+              <span class="text-muted">Settlement unlikely to occur within 24 hours</span>
+            } @else {
+              <span class="text-muted">Settlement estimated to occur <app-time kind="until" [time]="eta" [fastRender]="false" [fixedRender]="true"></app-time></span>
+            }
           </label>
         </div>
       </div>
@@ -39,4 +43,5 @@
     </div>
   </form>
 
+  <span class="close-button" (click)="closeModal()">✖</span>
 </div>
