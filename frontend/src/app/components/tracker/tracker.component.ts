@@ -146,6 +146,11 @@ export class TrackerComponent implements OnInit, OnDestroy {
     if (this.acceleratorAvailable && this.stateService.ref === 'https://cash.app/') {
       this.paymentType = 'cashapp';
     }
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('cash_request_id')) {
+      this.showAccelerationSummary = true;
+    }
+    this.showAccelerationSummary = true;
 
     this.enterpriseService.page();
 

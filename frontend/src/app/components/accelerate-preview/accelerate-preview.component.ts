@@ -362,7 +362,6 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
 
             that.accelerationSubscription = that.servicesApiService.accelerateWithCashApp$(
               that.tx.txid,
-              that.userBid,
               tokenResult.token,
               tokenResult.details.cashAppPay.cashtag,
               tokenResult.details.cashAppPay.referenceId,

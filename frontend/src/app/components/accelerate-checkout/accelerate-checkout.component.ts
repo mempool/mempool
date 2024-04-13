@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, ChangeDetectorRef } from '@angular/core';
 import { Subscription, tap, of, catchError } from 'rxjs';
 import { WebsocketService } from '../../services/websocket.service';
 import { ServicesApiServices } from '../../services/services-api.service';
 import { nextRoundNumber } from '../../shared/common.utils';
 import { StateService } from '../../services/state.service';
+import { AudioService } from '../../services/audio.service';
 
 @Component({
   selector: 'app-accelerate-checkout',
@@ -13,47 +14,56 @@ import { StateService } from '../../services/state.service';
 export class AccelerateCheckout implements OnInit, OnDestroy {
   @Input() eta: number = Date.now() + 123456789;
   @Input() txid: string = '70c18d76cdb285a1b5bd87fdaae165880afa189809c30b4083ff7c0e69ee09ad';
+  @Output() close = new EventEmitter<null>();
 
   calculating = true;
   choosenOption: 'wait' | 'accelerate' = 'wait';
-  showCheckoutPage = false;
   error = '';
 
   // accelerator stuff
   square: { appId: string, locationId: string};
   accelerationUUID: string;
   estimateSubscription: Subscription;
+  maxBidBoost: number; // sats
   cost: number; // sats
 
   // square
+  loadingCashapp = false;
   cashappSubmit: any;
   payments: any;
   cashAppPay: any;
   cashAppSubscription: Subscription;
   conversionsSubscription: Subscription;
-  loadingCashapp = true;
-  processingPayment = true;
+  step: 'cta' | 'checkout' | 'processing' | 'completed' = 'completed';
 
   constructor(
     private websocketService: WebsocketService,
     private servicesApiService: ServicesApiServices,
-    private stateService: StateService
-  ) {}
+    private stateService: StateService,
+    private audioService: AudioService,
+    private cd: ChangeDetectorRef
+  ) {
+    this.accelerationUUID = window.crypto.randomUUID();
+  }
 
   ngOnInit() {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('cash_request_id')) { // Redirected from cashapp
-      this.processingPayment = true;
-      window.scrollTo(0, 0);
-    } else {
-      this.servicesApiService.setupSquare$().subscribe(ids => {
-        this.square = {
-          appId: ids.squareAppId,
-          locationId: ids.squareLocationId
-        };
-        this.estimate();
-      });
+      this.insertSquare();
+      this.setupSquare();
+      this.step = 'processing';
     }
+
+    this.servicesApiService.setupSquare$().subscribe(ids => {
+      this.square = {
+        appId: ids.squareAppId,
+        locationId: ids.squareLocationId
+      };
+      if (this.step === 'cta') {
+        this.estimate();
+      }
+    });
+
   }
 
   ngOnDestroy() {
@@ -82,9 +92,10 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             return;
           }
           // Make min extra fee at least 50% of the current tx fee
-          const minExtraCost = nextRoundNumber(Math.max(estimation.cost * 2, estimation.txSummary.effectiveFee));
+          const minExtraBoost = nextRoundNumber(Math.max(estimation.cost * 2, estimation.txSummary.effectiveFee));
           const DEFAULT_BID_RATIO = 2;
-          this.cost = minExtraCost * DEFAULT_BID_RATIO + estimation.mempoolBaseFee + estimation.vsizeFee;
+          this.maxBidBoost = minExtraBoost * DEFAULT_BID_RATIO;
+          this.cost = this.maxBidBoost * DEFAULT_BID_RATIO + estimation.mempoolBaseFee + estimation.vsizeFee;
         }
       }),
 
@@ -143,8 +154,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     }
   }
   async requestCashAppPayment() {
-    this.loadingCashapp = true;
-
     if (this.cashAppSubscription) {
       this.cashAppSubscription.unsubscribe();
     }
@@ -155,11 +164,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     this.conversionsSubscription = this.stateService.conversions$.subscribe(
       async (conversions) => {
         if (this.cashAppPay) {
-          this.cashAppPay.destroy();
+          await this.cashAppPay.destroy();
         }
 
         const redirectHostname = document.location.hostname === 'localhost' ? `http://localhost:4200`: `https://${document.location.hostname}`;
-        const costUSD = this.cost / 100_000_000 * conversions.USD;
+        const costUSD = this.step === 'processing' ? 69.69 : (this.cost / 100_000_000 * conversions.USD); // When we're redirected to this component, the payment data is already linked to the payment token, so does not matter what amonut we put in there, therefore it's 69.69
         const paymentRequest = this.payments.paymentRequest({
           countryCode: 'US',
           currencyCode: 'USD',
@@ -172,12 +181,16 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           button: { shape: 'semiround', size: 'small', theme: 'light'}
         });
         this.cashAppPay = await this.payments.cashAppPay(paymentRequest, {
-          redirectURL: `${redirectHostname}/tracker/${this.txid}?acceleration=false`,
+          redirectURL: `${redirectHostname}/tracker/${this.txid}`,
           referenceId: `accelerator-${this.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
           button: { shape: 'semiround', size: 'small', theme: 'light'}
         });
-        this.cashappSubmit = await this.cashAppPay.CashAppPayInstance.render('#cash-app-pay', { button: { theme: 'light', size: 'small', shape: 'semiround' }, manage: false });
-        
+
+        if (this.step === 'checkout') {
+          await this.cashAppPay.attach(`#cash-app-pay`, { theme: 'light', size: 'small', shape: 'semiround' })
+        }
+        this.loadingCashapp = false;
+
         const that = this;
         this.cashAppPay.addEventListener('ontokenization', function (event) {
           const { tokenResult, error } = event.detail;
@@ -186,14 +199,17 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           } else if (tokenResult.status === 'OK') {
             that.servicesApiService.accelerateWithCashApp$(
               that.txid,
-              that.cost,
               tokenResult.token,
               tokenResult.details.cashAppPay.cashtag,
               tokenResult.details.cashAppPay.referenceId,
               that.accelerationUUID
             ).subscribe({
               next: () => {
-                that.estimateSubscription.unsubscribe();
+                that.audioService.playSound('ascend-chime-cartoon');
+                that.step = 'completed';
+                setTimeout(() => {
+                  that.closeModal();
+                }, 10000);
               },
               error: (response) => {
                 if (response.status === 403 && response.error === 'not_available') {
@@ -205,33 +221,34 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             });
           }
         });
-        this.loadingCashapp = false;
       }
     );
-  }
-  submitCashappPay(): void {
-    if (this.cashappSubmit) {
-      this.cashappSubmit?.begin();
-      this.processingPayment = true;
-    }
   }
 
   /**
    * UI events
    */
   enableCheckoutPage() {
-    this.showCheckoutPage = true;
+    this.step = 'checkout';
+    this.loadingCashapp = true;
     this.insertSquare();
     this.setupSquare();
   }
   selectedOptionChanged(event) {
     this.choosenOption = event.target.id;
+    if (this.choosenOption === 'wait') {
+      this.restart();
+      this.closeModal();
+    }
   }
   restart() {
-    this.showCheckoutPage = false
+    this.step = 'cta';
     this.choosenOption = 'wait';
   }
   closeModal(): void {
+    if (this.cashAppPay) {
+      this.cashAppPay.destroy();
+    }
     this.close.emit();
   }
 }
