@@ -95,7 +95,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           const minExtraBoost = nextRoundNumber(Math.max(estimation.cost * 2, estimation.txSummary.effectiveFee));
           const DEFAULT_BID_RATIO = 2;
           this.maxBidBoost = minExtraBoost * DEFAULT_BID_RATIO;
-          this.cost = this.maxBidBoost * DEFAULT_BID_RATIO + estimation.mempoolBaseFee + estimation.vsizeFee;
+          this.cost = this.maxBidBoost + estimation.mempoolBaseFee + estimation.vsizeFee;
         }
       }),
 
