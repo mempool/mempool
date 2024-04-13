@@ -167,3 +167,7 @@
     height: 0px;
   }
 }
+
+.modal {
+  backdrop-filter: blur(10px);
+}

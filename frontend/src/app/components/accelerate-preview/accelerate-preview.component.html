@@ -287,14 +287,57 @@
         </div>
       </div>
 
-      @if (!hideCashApp && paymentType === 'cashapp') {
+      @if (!hideCashApp && paymentType === 'cashapp' && !processingPayment) {
         <div #cashappCTA class="cashapp-placeholder {{ stickyCTA }}"></div>
-        <div class="d-flex justify-content-center align-items-center cashapp-cta {{ stickyCTA }}" (click)="submitCashappPay()">
-          <div [style]="showSpinner ? 'opacity: 0' : 'opacity: 1'" class="p-2">Accelerate for <app-fiat [value]="maxCost" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat> with</div>
-          <div id="cash-app-pay" style="max-width: 320px" [style]="showSpinner ? 'opacity: 0' : 'opacity: 1'"></div>
+        <div class="d-flex justify-content-center align-items-center cashapp-cta {{ stickyCTA }}" (click)="toggleConfirmationPrompt()">
+          <div [style]="showSpinner ? 'opacity: 0; width: 0px' : 'opacity: 1'" class="p-2">
+            <span>Accelerate for <strong>an additional payment</strong> of </span>
+            <app-fiat [value]="maxCost" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat>
+          </div>
           <div *ngIf="showSpinner" class="d-flex align-items-center">
             <span class="mr-2">Loading</span>
             <div class="spinner-border text-light" style="width: 25px; height: 25px"></div>
+          </div>
+        </div>
+
+        <!-- Acceleration confirmation modal prepaid -->
+        <div class="modal fade show d-block" [style]="showConfirmationPrompt ? 'opacity: 1' : 'opacity: 0; width: 0px; height: 0px'" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Are you sure?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="toggleConfirmationPrompt()">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body d-flex flex-column justify-content-around">
+                <div class="text-center">
+                  <div class="form-group form-check" style="text-align: left;">
+                    <input type="checkbox" class="form-check-input" style="width:20px; height: 20px; margin-left: -5px" id="confirmationCheck" (change)="acceptedTOS = !acceptedTOS">
+                    <label class="form-check-label ml-4" for="confirmationCheck">
+                      <span>Yes, I understand what is Mempool Accelerator&#8482; and <strong><u>I want to pay a non refundable additional</u> </strong></span>
+                      <app-fiat [value]="maxCost" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat>
+                      <span>to accelerate this transaction. <br>See <a target="_blank" href="/terms-of-service">Terms Of Service.</a></span>
+                    </label>
+                  </div>
+                  <div class="d-flex flex-row justify-content-center mt-2 mb-2" [style]="!acceptedTOS ? 'pointer-events: none; opacity: 0.25' : ''">
+                    <div class="d-flex flex-row justify-content-center" style="background: white; border-radius: 5px;" (click)="submitCashappPay()">
+                      <button type="button" class="btn btn-sm btn-light" style="background: white"><strong>Pay now with</strong></button>
+                      <div id="cash-app-pay" style="max-width: 320px" [style]="showSpinner ? 'opacity: 0' : 'opacity: 1'"></div>
+                    </div>
+                  </div>
+                </div>
+                <hr class="w-50">
+                <div class="text-center mt-1">
+                  <span>No, I do not want to pay any extra</span>
+                  <div class="d-flex flex-row justify-content-center mt-2 mb-2">
+                    <button type="button" class="btn btn-purple btn-sm" (click)="toggleConfirmationPrompt()">Go Back</button>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+              </div>
+            </div>
           </div>
         </div>
       }

@@ -64,6 +64,8 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   isMobile: boolean = window.innerWidth <= 767.98;
   user: any = undefined;
   stickyCTA: string = 'non-stick';
+  showConfirmationPrompt = false;
+  acceptedTOS = false;
 
   maxRateOptions: RateOption[] = [];
 
@@ -347,7 +349,11 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
           referenceId: `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
           button: { shape: 'semiround', size: 'small', theme: 'light'}
         });
-        const renderPromise = this.cashAppPay.CashAppPayInstance.render('#cash-app-pay', { button: { theme: 'light', size: 'small', shape: 'semiround' }, manage: false });
+
+        let renderPromise;
+        if (!this.processingPayment) {
+          renderPromise = this.cashAppPay.CashAppPayInstance.render('#cash-app-pay', { button: { theme: 'light', size: 'small', shape: 'semiround' }, manage: false });
+        }
         this.showSpinner = false;
         
         const that = this;
@@ -385,7 +391,9 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
           }
         });
 
-        this.cashappSubmit = await renderPromise;
+        if (renderPromise) {
+          this.cashappSubmit = await renderPromise;
+        }
       }
     );
   }
@@ -434,6 +442,13 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
       this.stickyCTA = 'sticky-bottom';
     } else {
       this.stickyCTA = 'non-stick';
+    }
+  }
+
+  toggleConfirmationPrompt() {
+    this.showConfirmationPrompt = !this.showConfirmationPrompt;
+    if (!this.showConfirmationPrompt) {
+      this.acceptedTOS = false;
     }
   }
 }
