@@ -42,7 +42,7 @@
                   <app-time kind="until" *ngIf="(da$ | async) as da;" [time]="da.adjustedTimeAvg * (mempoolPosition.block + 1) + now + da.timeOffset" [fastRender]="false" [fixedRender]="true"></app-time>
                 }
                 @if (isMobile && paymentType === 'cashapp' && accelerationEligible && !tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration) {
-                  <a [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn btn-sm accelerate btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
+                  <a class="btn btn-sm accelerate btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
                 }
               </span>
             </div>
@@ -78,7 +78,7 @@
 
     <div class="bottom-panel">
       @if (showAccelerationSummary) {
-        <app-accelerate-checkout *ngIf="(da$ | async) as da;" [tx]="tx" [eta]="mempoolPosition?.block >= 7 ? null : da.adjustedTimeAvg * (mempoolPosition.block + 1) + now + da.timeOffset" (close)="showAccelerationSummary = false"></app-accelerate-checkout>
+        <app-accelerate-checkout *ngIf="(da$ | async) as da;" [txid]="tx.txid" [eta]="mempoolPosition?.block >= 7 ? null : da.adjustedTimeAvg * (mempoolPosition.block + 1) + now + da.timeOffset" (close)="showAccelerationSummary = false"></app-accelerate-checkout>
       } @else {
         @if (tx?.acceleration && !tx.status?.confirmed) {
           <div class="progress-icon">

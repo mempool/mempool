@@ -8,6 +8,7 @@ import { ClockComponent } from './components/clock/clock.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
 import { AddressGroupComponent } from './components/address-group/address-group.component';
 import { TrackerComponent } from './components/tracker/tracker.component';
+import { AccelerateCheckout } from './components/accelerate-checkout/accelerate-checkout.component';
 
 const browserWindow = window || {};
 // @ts-ignore
