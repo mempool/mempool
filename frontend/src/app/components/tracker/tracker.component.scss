@@ -43,6 +43,17 @@
   position: relative;
   box-shadow: 0 -5px 15px #000;
   z-index: 100;
+  align-items: center;
+  justify-content: space-between;
+
+  .network-label {
+    font-size: 1.4em;
+    .network {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+  }
 }
 
 .blockchain-wrapper {
