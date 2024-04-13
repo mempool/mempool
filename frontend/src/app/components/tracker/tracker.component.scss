@@ -79,6 +79,7 @@
     flex-grow: 1;
     width: 0;
     white-space: nowrap;
+    text-align: end;
   }
 }
 
@@ -109,7 +110,7 @@
 }
 
 .progress-icon {
-  font-size: clamp(50px, 30vw, 200px);
+  font-size: clamp(30px, 20vw, 150px);
   height: 100%;
   display: flex;
   align-items: center;

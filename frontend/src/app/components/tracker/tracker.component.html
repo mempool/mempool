@@ -22,25 +22,39 @@
       </div>
       <div class="explain">
         <div class="field">
-          @switch (trackerStage) {
-            @case ('waiting') {
-              <span i18n="tracker.explain.waiting">Waiting for your transaction to appear in the mempool</span>
-            }
-            @case ('pending') {
-              <span i18n="tracker.explain.pending">Your transaction is in the mempool, but it will not be confirmed for some time.</span>
-            }
-            @case ('soon') {
-              <span i18n="tracker.explain.soon">Your transaction is near the top of the mempool, and is expected to confirm soon.</span>
-            }
-            @case ('next') {
-              <span i18n="tracker.explain.next-block">Your transaction is expected to confirm in the next block</span>
-            }
-            @case ('confirmed') {
-              <span i18n="tracker.explain.confirmed">Your transaction is confirmed!</span>
+          @if (tx?.acceleration && !tx.status?.confirmed) {
+            <span i18n="tracker.explain.accelerated">Your transaction has been accelerated</span>
+          } @else {
+            @switch (trackerStage) {
+              @case ('waiting') {
+                <span i18n="tracker.explain.waiting">Waiting for your transaction to appear in the mempool</span>
+              }
+              @case ('pending') {
+                <span i18n="tracker.explain.pending">Your transaction is in the mempool, but it will not be confirmed for some time.</span>
+              }
+              @case ('soon') {
+                <span i18n="tracker.explain.soon">Your transaction is near the top of the mempool, and is expected to confirm soon.</span>
+              }
+              @case ('next') {
+                <span i18n="tracker.explain.next-block">Your transaction is expected to confirm in the next block</span>
+              }
+              @case ('confirmed') {
+                <span i18n="tracker.explain.confirmed">Your transaction is confirmed!</span>
+              }
             }
           }
         </div>
         @if (tx && !tx.status?.confirmed && mempoolPosition?.block != null) {
+          <div class="field">
+            <div class="label" i18n="transaction.first-seen|Transaction first seen">First seen</div>
+            <div class="value">
+              @if (transactionTime) {
+                <i><app-time kind="since" [time]="transactionTime" [fastRender]="true"></app-time></i>
+              } @else {
+                <span class="skeleton-loader"></span>
+              }
+            </div>
+          </div>
           <div class="field">
             <div class="label" i18n="transaction.eta|Transaction ETA">ETA</div>
             <div class="value">
@@ -57,6 +71,15 @@
             </div>
           </div>
         } @else if (tx && tx.status?.confirmed) {
+          <div class="field">
+            <div class="label" i18n="transaction.confirmed-at">Confirmed at</div>
+            <div class="value">
+              &lrm;{{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }}
+              <div class="lg-inline">
+                <i class="symbol">(<app-time kind="since" [time]="tx.status.block_time" [fastRender]="true"></app-time>)</i>
+              </div>
+            </div>
+          </div>
           <div class="field">
             <div class="label" i18n="transaction.block-height">Block height</div>
             <div class="value">
@@ -81,21 +104,25 @@
         <app-accelerate-checkout *ngIf="(da$ | async) as da;" [tx]="tx" [eta]="mempoolPosition?.block >= 7 ? null : da.adjustedTimeAvg * (mempoolPosition.block + 1) + now + da.timeOffset" (close)="showAccelerationSummary = false"></app-accelerate-checkout>
       } @else {
         <div class="progress-icon">
-          @switch (trackerStage) {
-            @case ('waiting') {
-              <div class="spinner-border text-light" style="width: 1em; height: 1em"></div>
-            }
-            @case ('pending') {
-              <fa-icon [icon]="['fas', 'hourglass-start']" [fixedWidth]="true"></fa-icon>
-            }
-            @case ('soon') {
-              <fa-icon [icon]="['fas', 'hourglass-half']" [fixedWidth]="true"></fa-icon>
-            }
-            @case ('next') {
-              <fa-icon [icon]="['fas', 'hourglass-end']" [fixedWidth]="true"></fa-icon>
-            }
-            @case ('confirmed') {
-              <fa-icon [icon]="['fas', 'circle-check']" [fixedWidth]="true"></fa-icon>
+          @if (tx?.acceleration && !tx.status?.confirmed) {
+            <fa-icon [icon]="['fas', 'wand-magic-sparkles']" [fixedWidth]="true"></fa-icon>
+          } @else {
+            @switch (trackerStage) {
+              @case ('waiting') {
+                <div class="spinner-border text-light" style="width: 1em; height: 1em"></div>
+              }
+              @case ('pending') {
+                <fa-icon [icon]="['fas', 'hourglass-start']" [fixedWidth]="true"></fa-icon>
+              }
+              @case ('soon') {
+                <fa-icon [icon]="['fas', 'hourglass-half']" [fixedWidth]="true"></fa-icon>
+              }
+              @case ('next') {
+                <fa-icon [icon]="['fas', 'hourglass-end']" [fixedWidth]="true"></fa-icon>
+              }
+              @case ('confirmed') {
+                <fa-icon [icon]="['fas', 'circle-check']" [fixedWidth]="true"></fa-icon>
+              }
             }
           }
         </div>
