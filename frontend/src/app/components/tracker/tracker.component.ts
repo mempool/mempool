@@ -150,7 +150,6 @@ export class TrackerComponent implements OnInit, OnDestroy {
     if (urlParams.get('cash_request_id')) {
       this.showAccelerationSummary = true;
     }
-    this.showAccelerationSummary = true;
 
     this.enterpriseService.page();
 

@@ -34,7 +34,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   cashAppPay: any;
   cashAppSubscription: Subscription;
   conversionsSubscription: Subscription;
-  step: 'cta' | 'checkout' | 'processing' | 'completed' = 'completed';
+  step: 'cta' | 'checkout' | 'processing' | 'completed' = 'cta';
 
   constructor(
     private websocketService: WebsocketService,
