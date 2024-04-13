@@ -1,6 +1,9 @@
 <div class="mobile-wrapper">
   <div class="mobile-container">
     <div class="panel">
+      <div class="field nav-header">
+          <app-svg-images name="officialMempoolSpace" style="width: 144px; height: 36px" width="500" height="126" viewBox="0 0 500 126"></app-svg-images>
+      </div>
       <div class="field">
         <div class="label" i18n="shared.transaction">Transaction</div>
         <div class="value">
@@ -37,7 +40,7 @@
             }
           }
         </div>
-        @if (tx && !tx.status?.confirmed && mempoolPosition) {
+        @if (tx && !tx.status?.confirmed && mempoolPosition?.block != null) {
           <div class="field">
             <div class="label" i18n="transaction.eta|Transaction ETA">ETA</div>
             <div class="value">
