@@ -70,6 +70,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   tabHidden = false;
   feeRounding = '1.0-0';
 
+  maxArrowPosition = 0;
   rightPosition = 0;
   transition = 'background 2s, right 2s, transform 1s';
 
@@ -326,6 +327,11 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     if (blocks.length) {
       blocks[blocks.length - 1].isStack = blocks[blocks.length - 1].blockVSize > this.stateService.blockVSize;
     }
+    if (this.count) {
+      this.maxArrowPosition = (Math.min(blocks.length, this.count) * (this.blockWidth + this.blockPadding)) - this.blockPadding;
+    } else {
+      this.maxArrowPosition = (Math.min(blocks.length, blocksAmount) * (this.blockWidth + this.blockPadding)) - this.blockPadding;
+    }
     return blocks;
   }
 
@@ -386,7 +392,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     } else if (this.markIndex > -1) {
       clearTimeout(this.resetTransitionTimeout);
       this.transition = 'inherit';
-      this.rightPosition = this.markIndex * (this.blockWidth + this.blockPadding) + 0.5 * this.blockWidth;
+      this.rightPosition = Math.min(this.maxArrowPosition, this.markIndex * (this.blockWidth + this.blockPadding) + 0.5 * this.blockWidth);
       this.arrowVisible = true;
 
       this.resetTransitionTimeout = window.setTimeout(() => {
@@ -436,6 +442,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
     }
+    this.rightPosition = Math.min(this.maxArrowPosition, this.rightPosition);
   }
 
   mountEmptyBlocks() {

@@ -113,13 +113,13 @@
 
 #arrow-up {
   position: relative;
-  right: 75px;
-  top: 140px;
+  right: calc(var(--block-size) * 0.6);
+  top: calc(var(--block-size) * 1.12);
   width: 0;
   height: 0;
-  border-left: 35px solid transparent;
-  border-right: 35px solid transparent;
-  border-bottom: 35px solid #FFF;
+  border-left: calc(var(--block-size) * 0.3) solid transparent;
+  border-right: calc(var(--block-size) * 0.3) solid transparent;
+  border-bottom: calc(var(--block-size) * 0.3) solid #FFF;
 }
 
 .blockLink {
