@@ -334,6 +334,10 @@ export class TrackerComponent implements OnInit, OnDestroy {
             this.setCpfpInfo(txPosition.cpfp);
           }
 
+          if (txPosition.position?.accelerated) {
+            this.tx.acceleration = true;
+          }
+
           if (txPosition.position?.block === 0) {
             this.trackerStage = 'next';
           } else if (txPosition.position?.block < 3){
