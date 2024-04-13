@@ -1,0 +1,47 @@
+<div class="container card" style="padding: 20px; background: var(--bg)">
+
+  <div class="row">
+    <div class="col-sm">
+      <h1 style="font-size: larger;">Accelerate your Bitcoin transaction?</h1>
+    </div>
+  </div>
+
+  <form class="mt-3">
+    <div class="row">
+      <div class="col-sm">
+        <div class="form-group form-check">
+          <input type="radio" class="form-check-input" id="accelerate" name="accelerate">
+          <label class="form-check-label d-flex flex-column" for="accelerate">
+            <span class="font-weight-bold">Accelerate</span>
+            <span class="text-muted">Settlement expected in 1 hour or less<br>10,000 sats ($7.00) fee</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm">
+        <div class="form-group form-check">
+          <input type="radio" class="form-check-input" id="wait" name="accelerate" checked="checked">
+          <label class="form-check-label d-flex flex-column" for="wait">
+            <span class="font-weight-bold">Wait</span>
+            @if (!eta) {
+              <span class="text-muted">Settlement unlikely to occur within 24 hours</span>
+            } @else {
+              <span class="text-muted">Settlement estimated to occur <app-time kind="until" [time]="eta" [fastRender]="false" [fixedRender]="true"></app-time></span>
+            }
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-2">
+      <div class="col-sm d-flex flex-row justify-content-center">
+        <button type="submit" class="btn btn-light w-100 rounded-pill" style="max-width: 250px">
+          <img src="/resources/mempool-accelerator-sparkles-compressed.svg" height="25" class="mr-2" style="margin-left: -33px">
+          <span>Accelerate</span>
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <span class="close-button" (click)="closeModal()">✖</span>
+</div>
