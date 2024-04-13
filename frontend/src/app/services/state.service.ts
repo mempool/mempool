@@ -192,6 +192,10 @@ export class StateService {
       }
     });
 
+    if (this.ref === 'https://cash.app/' && window.innerWidth < 850 && window.location.pathname.startsWith('/tx/')) {
+      this.router.navigate(['/tracker/' + window.location.pathname.slice(4)]);
+    }
+
     this.liveMempoolBlockTransactions$ = merge(
       this.mempoolBlockTransactions$.pipe(map(transactions => { return { transactions }; })),
       this.mempoolBlockDelta$.pipe(map(delta => { return { delta }; })),

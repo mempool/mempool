@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, Input } from '@angular/core';
 import { Subscription, tap, of, catchError } from 'rxjs';
 import { WebsocketService } from '../../services/websocket.service';
 import { ServicesApiServices } from '../../services/services-api.service';
@@ -230,5 +230,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   restart() {
     this.showCheckoutPage = false
     this.choosenOption = 'wait';
+  }
+  closeModal(): void {
+    this.close.emit();
   }
 }

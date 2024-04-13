@@ -7,6 +7,7 @@ import { MempoolBlockViewComponent } from './components/mempool-block-view/mempo
 import { ClockComponent } from './components/clock/clock.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
 import { AddressGroupComponent } from './components/address-group/address-group.component';
+import { TrackerComponent } from './components/tracker/tracker.component';
 import { AccelerateCheckout } from './components/accelerate-checkout/accelerate-checkout.component';
 
 const browserWindow = window || {};
@@ -107,12 +108,8 @@ let routes: Routes = [
     data: { preload: true },
   },
   {
-    path: 'accelerate-checkout',
-    children: [],
-    component: AccelerateCheckout,
-    data: {
-      networkSpecific: true,
-    }
+    path: 'tracker/:id',
+    component: TrackerComponent,
   },
   {
     path: 'wallet',

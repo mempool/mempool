@@ -4,7 +4,7 @@ import { NgbCollapseModule, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstra
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faClock, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
-  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft, faFastForward, faWallet, faUserClock, faWrench, faUserFriends, faQuestionCircle, faHistory, faSignOutAlt, faKey, faSuitcase, faIdCardAlt, faNetworkWired, faUserCheck, faCircleCheck, faUserCircle, faCheck, faRocket, faScaleBalanced } from '@fortawesome/free-solid-svg-icons';
+  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft, faFastForward, faWallet, faUserClock, faWrench, faUserFriends, faQuestionCircle, faHistory, faSignOutAlt, faKey, faSuitcase, faIdCardAlt, faNetworkWired, faUserCheck, faCircleCheck, faUserCircle, faCheck, faRocket, faScaleBalanced, faHourglassStart, faHourglassHalf, faHourglassEnd } from '@fortawesome/free-solid-svg-icons';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MenuComponent } from '../components/menu/menu.component';
 import { PreviewTitleComponent } from '../components/master-page-preview/preview-title.component';
@@ -50,6 +50,8 @@ import { BlockOverviewGraphComponent } from '../components/block-overview-graph/
 import { BlockOverviewTooltipComponent } from '../components/block-overview-tooltip/block-overview-tooltip.component';
 import { BlockFiltersComponent } from '../components/block-filters/block-filters.component';
 import { AddressGroupComponent } from '../components/address-group/address-group.component';
+import { TrackerComponent } from '../components/tracker/tracker.component';
+import { TrackerBarComponent } from '../components/tracker/tracker-bar.component';
 import { SearchFormComponent } from '../components/search-form/search-form.component';
 import { AddressLabelsComponent } from '../components/address-labels/address-labels.component';
 import { FooterComponent } from '../components/footer/footer.component';
@@ -157,6 +159,8 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     BlockFiltersComponent,
     TransactionsListComponent,
     AddressGroupComponent,
+    TrackerComponent,
+    TrackerBarComponent,
     SearchFormComponent,
     AddressLabelsComponent,
     FooterComponent,
@@ -291,6 +295,8 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     BlockFiltersComponent,
     TransactionsListComponent,
     AddressGroupComponent,
+    TrackerComponent,
+    TrackerBarComponent,
     SearchFormComponent,
     AddressLabelsComponent,
     FooterComponent,
@@ -410,5 +416,8 @@ export class SharedModule {
     library.addIcons(faCheck);
     library.addIcons(faRocket);
     library.addIcons(faScaleBalanced);
+    library.addIcons(faHourglassStart);
+    library.addIcons(faHourglassHalf);
+    library.addIcons(faHourglassEnd);
   }
 }
