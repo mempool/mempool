@@ -96,6 +96,7 @@ import { MempoolErrorComponent } from './components/mempool-error/mempool-error.
 import { AccelerationsListComponent } from '../components/acceleration/accelerations-list/accelerations-list.component';
 import { PendingStatsComponent } from '../components/acceleration/pending-stats/pending-stats.component';
 import { AccelerationStatsComponent } from '../components/acceleration/acceleration-stats/acceleration-stats.component';
+import { AccelerateCheckout } from '../components/accelerate-checkout/accelerate-checkout.component';
 
 import { BlockViewComponent } from '../components/block-view/block-view.component';
 import { EightBlocksComponent } from '../components/eight-blocks/eight-blocks.component';
@@ -212,6 +213,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     MempoolErrorComponent,
     AccelerationsListComponent,
     AccelerationStatsComponent,
+    AccelerateCheckout,
     PendingStatsComponent,
     HttpErrorComponent,
   ],
@@ -334,6 +336,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     MempoolErrorComponent,
     AccelerationsListComponent,
     AccelerationStatsComponent,
+    AccelerateCheckout,
     PendingStatsComponent,
     HttpErrorComponent,
 
