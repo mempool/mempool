@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, HostListener, ViewChild, ElementRef, Inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, Inject, ChangeDetectorRef, ChangeDetectionStrategy, NgZone } from '@angular/core';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import {
@@ -12,7 +12,7 @@ import {
   map
 } from 'rxjs/operators';
 import { Transaction } from '../../interfaces/electrs.interface';
-import { of, merge, Subscription, Observable, Subject, from, throwError, combineLatest } from 'rxjs';
+import { of, merge, Subscription, Observable, Subject, throwError, combineLatest } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { CacheService } from '../../services/cache.service';
 import { WebsocketService } from '../../services/websocket.service';
@@ -21,15 +21,14 @@ import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
 import { StorageService } from '../../services/storage.service';
 import { seoDescriptionNetwork } from '../../shared/common.utils';
-import { getTransactionFlags } from '../../shared/transaction.utils';
-import { Filter, toFilters, TransactionFlags } from '../../shared/filters.utils';
+import { Filter } from '../../shared/filters.utils';
 import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration } from '../../interfaces/node-api.interface';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
-import { Price, PriceService } from '../../services/price.service';
-import { isFeatureActive } from '../../bitcoin.utils';
+import { PriceService } from '../../services/price.service';
 import { ServicesApiServices } from '../../services/services-api.service';
 import { EnterpriseService } from '../../services/enterprise.service';
 import { ZONE_SERVICE } from '../../injection-tokens';
+import { TrackerStage } from './tracker-bar.component';
 
 interface Pool {
   id: number;
@@ -52,8 +51,9 @@ interface AuditStatus {
   selector: 'app-tracker',
   templateUrl: './tracker.component.html',
   styleUrls: ['./tracker.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
+export class TrackerComponent implements OnInit, OnDestroy {
   network = '';
   tx: Transaction;
   txId: string;
@@ -61,7 +61,6 @@ export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
   mempoolPosition: MempoolPosition;
   isLoadingTx = true;
   error: any = undefined;
-  errorUnblinded: any = undefined;
   loadingCachedTx = false;
   waitingForTransaction = false;
   latestBlock: BlockExtended;
@@ -72,15 +71,11 @@ export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
   fetchCachedTxSubscription: Subscription;
   fetchAccelerationSubscription: Subscription;
   txReplacedSubscription: Subscription;
-  txRbfInfoSubscription: Subscription;
   mempoolPositionSubscription: Subscription;
-  queryParamsSubscription: Subscription;
-  urlFragmentSubscription: Subscription;
   mempoolBlocksSubscription: Subscription;
   blocksSubscription: Subscription;
   miningSubscription: Subscription;
   currencyChangeSubscription: Subscription;
-  fragmentParams: URLSearchParams;
   rbfTransaction: undefined | Transaction;
   replaced: boolean = false;
   rbfReplaces: string[];
@@ -92,6 +87,7 @@ export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
   adjustedVsize: number | null;
   pool: Pool | null;
   auditStatus: AuditStatus | null;
+  isAcceleration: boolean = false;
   filters: Filter[] = [];
   showCpfpDetails = false;
   fetchCpfp$ = new Subject<string>();
@@ -102,38 +98,24 @@ export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
   isCached: boolean = false;
   now = Date.now();
   da$: Observable<DifficultyAdjustment>;
-  inputIndex: number;
-  outputIndex: number;
-  graphExpanded: boolean = false;
-  graphWidth: number = 1068;
-  graphHeight: number = 360;
-  inOutLimit: number = 150;
-  maxInOut: number = 0;
-  flowPrefSubscription: Subscription;
-  hideFlow: boolean = this.stateService.hideFlow.value;
-  overrideFlowPreference: boolean = null;
-  flowEnabled: boolean;
-  tooltipPosition: { x: number, y: number };
   isMobile: boolean;
+  paymentType: 'bitcoin' | 'cashapp' = 'bitcoin';
 
-  featuresEnabled: boolean;
-  segwitEnabled: boolean;
-  rbfEnabled: boolean;
-  taprootEnabled: boolean;
+  trackerStage: TrackerStage = 'waiting';
+
+  blockchainHeight: number = 100;
+  blockchainWidth: number = 600;
+
   hasEffectiveFeeRate: boolean;
   accelerateCtaType: 'alert' | 'button' = 'button';
   acceleratorAvailable: boolean = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
+  accelerationEligible: boolean = false;
   showAccelerationSummary = false;
   scrollIntoAccelPreview = false;
   auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
 
-  @ViewChild('graphContainer')
-  graphContainer: ElementRef;
-
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
-    private relativeUrlPipe: RelativeUrlPipe,
     private electrsApiService: ElectrsApiService,
     public stateService: StateService,
     private cacheService: CacheService,
@@ -143,14 +125,28 @@ export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
     private servicesApiService: ServicesApiServices,
     private seoService: SeoService,
     private priceService: PriceService,
-    private storageService: StorageService,
     private enterpriseService: EnterpriseService,
     private cd: ChangeDetectorRef,
+    private zone: NgZone,
     @Inject(ZONE_SERVICE) private zoneService: any,
   ) {}
 
   ngOnInit() {
+    this.onResize();
+
+    window['setStage'] = ((stage: TrackerStage) => {
+      this.zone.run(() => {
+        this.trackerStage = stage;
+        this.cd.markForCheck();
+      });
+    }).bind(this);
+
     this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
+
+    if (this.acceleratorAvailable && this.stateService.ref === 'https://cash.app/') {
+      this.showAccelerationSummary = true;
+      this.paymentType = 'cashapp';
+    }
 
     this.enterpriseService.page();
 
@@ -162,27 +158,11 @@ export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     );
 
-    this.accelerateCtaType = (this.storageService.getValue('accel-cta-type') as 'alert' | 'button') ?? 'button';
-
-    this.setFlowEnabled();
-    this.flowPrefSubscription = this.stateService.hideFlow.subscribe((hide) => {
-      this.hideFlow = !!hide;
-      this.setFlowEnabled();
-    });
-
     this.da$ = this.stateService.difficultyAdjustment$.pipe(
       tap(() => {
         this.now = Date.now();
       })
     );
-
-    this.urlFragmentSubscription = this.route.fragment.subscribe((fragment) => {
-      this.fragmentParams = new URLSearchParams(fragment || '');
-      const vin = parseInt(this.fragmentParams.get('vin'), 10);
-      const vout = parseInt(this.fragmentParams.get('vout'), 10);
-      this.inputIndex = (!isNaN(vin) && vin >= 0) ? vin : null;
-      this.outputIndex = (!isNaN(vout) && vout >= 0) ? vout : null;
-    });
 
     this.blocksSubscription = this.stateService.blocks$.subscribe((blocks) => {
       this.latestBlock = blocks[0];
@@ -252,7 +232,6 @@ export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
 
       if (!this.tx) {
         this.tx = tx;
-        this.setFeatures();
         this.isCached = true;
         if (tx.fee === undefined) {
           this.tx.fee = 0;
@@ -261,16 +240,9 @@ export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isLoadingTx = false;
         this.error = undefined;
         this.waitingForTransaction = false;
-        this.graphExpanded = false;
         this.transactionTime = tx.firstSeen || 0;
-        this.setupGraph();
 
         this.fetchRbfHistory$.next(this.tx.txid);
-        this.txRbfInfoSubscription = this.stateService.txRbfInfo$.subscribe((rbfInfo) => {
-          if (this.tx) {
-            this.rbfInfo = rbfInfo;
-          }
-        });
       }
     });
 
@@ -288,8 +260,12 @@ export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
     ).subscribe((accelerationHistory) => {
       for (const acceleration of accelerationHistory) {
         if (acceleration.txid === this.txId && (acceleration.status === 'completed' || acceleration.status === 'completed_provisional')) {
-          acceleration.acceleratedFee = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + acceleration.feePaid - acceleration.baseFee - acceleration.vsizeFee);
+          const boostCost = acceleration.boostCost || (acceleration.feePaid - acceleration.baseFee - acceleration.vsizeFee);
+          acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
+          acceleration.boost = boostCost;
+
           this.accelerationInfo = acceleration;
+          this.setIsAccelerated();
         }
       }
     });
@@ -358,6 +334,17 @@ export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
           if (txPosition.cpfp !== undefined) {
             this.setCpfpInfo(txPosition.cpfp);
           }
+
+          if (txPosition.position?.block === 0) {
+            this.trackerStage = 'next';
+          } else if (txPosition.position?.block < 3){
+            this.trackerStage = 'soon';
+          } else {
+            this.trackerStage = 'pending';
+          }
+          if (txPosition.position?.block > 0 && this.tx.weight < 4000) {
+            this.accelerationEligible = true;
+          }
         }
       } else {
         this.mempoolPosition = null;
@@ -371,27 +358,8 @@ export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
           if (urlMatch.length === 2 && urlMatch[1].length === 64) {
             const vin = parseInt(urlMatch[0], 10);
             this.txId = urlMatch[1];
-            // rewrite legacy vin syntax
-            if (!isNaN(vin)) {
-              this.fragmentParams.set('vin', vin.toString());
-              this.fragmentParams.delete('vout');
-            }
-            this.router.navigate([this.relativeUrlPipe.transform('/tx'), this.txId], {
-              queryParamsHandling: 'merge',
-              fragment: this.fragmentParams.toString(),
-            });
           } else {
             this.txId = urlMatch[0];
-            const vout = parseInt(urlMatch[1], 10);
-            if (urlMatch.length > 1 && !isNaN(vout)) {
-              // rewrite legacy vout syntax
-              this.fragmentParams.set('vout', vout.toString());
-              this.fragmentParams.delete('vin');
-              this.router.navigate([this.relativeUrlPipe.transform('/tx'), this.txId], {
-                queryParamsHandling: 'merge',
-                fragment: this.fragmentParams.toString(),
-              });
-            }
           }
           this.seoService.setTitle(
             $localize`:@@bisq.transaction.browser-title:Transaction: ${this.txId}:INTERPOLATION:`
@@ -436,7 +404,6 @@ export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
           this.seoService.clearSoft404();
 
           this.tx = tx;
-          this.setFeatures();
           this.isCached = false;
           if (tx.fee === undefined) {
             this.tx.fee = 0;
@@ -451,16 +418,16 @@ export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
           this.loadingCachedTx = false;
           this.waitingForTransaction = false;
           this.websocketService.startTrackTransaction(tx.txid);
-          this.graphExpanded = false;
-          this.setupGraph();
 
           if (!tx.status?.confirmed) {
+            this.trackerStage = 'pending';
             if (tx.firstSeen) {
               this.transactionTime = tx.firstSeen;
             } else {
               this.getTransactionTime();
             }
           } else {
+            this.trackerStage = 'confirmed';
             this.fetchAcceleration$.next(tx.status.block_hash);
             this.fetchMiningInfo$.next({ hash: tx.status.block_hash, height: tx.status.block_height, txid: tx.txid });
             this.transactionTime = 0;
@@ -498,8 +465,6 @@ export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
             })
           ).subscribe();
 
-          setTimeout(() => { this.applyFragment(); }, 0);
-
           this.cd.detectChanges();
         },
         (error) => {
@@ -517,6 +482,7 @@ export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
           block_hash: block.id,
           block_time: block.timestamp,
         };
+        this.trackerStage = 'confirmed';
         this.stateService.markBlock$.next({ blockHeight: block.height });
         if (this.tx.acceleration || (this.accelerationInfo && ['accelerating', 'completed_provisional', 'completed'].includes(this.accelerationInfo.status))) {
           this.audioService.playSound('wind-chimes-harp-ascend');
@@ -541,24 +507,6 @@ export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
       if (rbfTransaction && !this.tx) {
         this.fetchCachedTx$.next(this.txId);
       }
-    });
-
-    this.txRbfInfoSubscription = this.stateService.txRbfInfo$.subscribe((rbfInfo) => {
-      if (this.tx) {
-        this.rbfInfo = rbfInfo;
-      }
-    });
-
-    this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
-      if (params.showFlow === 'false') {
-        this.overrideFlowPreference = false;
-      } else if (params.showFlow === 'true') {
-        this.overrideFlowPreference = true;
-      } else {
-        this.overrideFlowPreference = null;
-      }
-      this.setFlowEnabled();
-      this.setGraphSize();
     });
 
     this.mempoolBlocksSubscription = this.stateService.mempoolBlocks$.subscribe((mempoolBlocks) => {
@@ -588,25 +536,6 @@ export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
         this.txInBlockIndex = 7;
       }
     });
-  }
-
-  ngAfterViewInit(): void {
-    this.setGraphSize();
-  }
-
-  dismissAccelAlert(): void {
-    this.storageService.setValue('accel-cta-type', 'button');
-    this.accelerateCtaType = 'button';
-  }
-
-  onAccelerateClicked() {
-    if (!this.txId) {
-      return;
-    }
-    this.enterpriseService.goal(8);
-    this.showAccelerationSummary = true && this.acceleratorAvailable;
-    this.scrollIntoAccelPreview = !this.scrollIntoAccelPreview;
-    return false;
   }
 
   handleLoadElectrsTransactionError(error: any): Observable<any> {
@@ -667,21 +596,6 @@ export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.hasEffectiveFeeRate = hasRelatives || (this.tx.effectiveFeePerVsize && (Math.abs(this.tx.effectiveFeePerVsize - this.tx.feePerVsize) > 0.01));
   }
 
-  setFeatures(): void {
-    if (this.tx) {
-      this.segwitEnabled = !this.tx.status.confirmed || isFeatureActive(this.stateService.network, this.tx.status.block_height, 'segwit');
-      this.taprootEnabled = !this.tx.status.confirmed || isFeatureActive(this.stateService.network, this.tx.status.block_height, 'taproot');
-      this.rbfEnabled = !this.tx.status.confirmed || isFeatureActive(this.stateService.network, this.tx.status.block_height, 'rbf');
-      this.tx.flags = getTransactionFlags(this.tx);
-      this.filters = this.tx.flags ? toFilters(this.tx.flags).filter(f => f.txPage) : [];
-    } else {
-      this.segwitEnabled = false;
-      this.taprootEnabled = false;
-      this.rbfEnabled = false;
-    }
-    this.featuresEnabled = this.segwitEnabled || this.taprootEnabled || this.rbfEnabled;
-  }
-
   isAuditAvailable(blockHeight: number): boolean {
     if (!this.auditEnabled) {
       return false;
@@ -705,10 +619,27 @@ export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
     return true;
   }
 
+  setIsAccelerated(initialState: boolean = false) {
+    this.isAcceleration = (this.tx.acceleration || (this.accelerationInfo && this.pool && this.accelerationInfo.pools.some(pool => (pool === this.pool.id || pool?.['pool_unique_id'] === this.pool.id))));
+  }
+
+  dismissAccelAlert(): void {
+    this.accelerateCtaType = 'button';
+  }
+
+  onAccelerateClicked() {
+    if (!this.txId) {
+      return;
+    }
+    this.enterpriseService.goal(8);
+    this.showAccelerationSummary = true && this.acceleratorAvailable;
+    this.scrollIntoAccelPreview = !this.scrollIntoAccelPreview;
+    return false;
+  }
+
   resetTransaction() {
     this.error = undefined;
     this.tx = null;
-    this.setFeatures();
     this.waitingForTransaction = false;
     this.isLoadingTx = true;
     this.rbfTransaction = undefined;
@@ -727,6 +658,8 @@ export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.mempoolPosition = null;
     this.pool = null;
     this.auditStatus = null;
+    this.accelerationEligible = false;
+    this.trackerStage = 'waiting';
     document.body.scrollTo(0, 0);
     this.leaveTransaction();
   }
@@ -740,63 +673,11 @@ export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
     return +(cpfpTx.fee / (cpfpTx.weight / 4)).toFixed(1);
   }
 
-  setupGraph() {
-    this.maxInOut = Math.min(this.inOutLimit, Math.max(this.tx?.vin?.length || 1, this.tx?.vout?.length + 1 || 1));
-    this.graphHeight = this.graphExpanded ? this.maxInOut * 15 : Math.min(360, this.maxInOut * 80);
-  }
-
-  toggleGraph() {
-    const showFlow = !this.flowEnabled;
-    this.stateService.hideFlow.next(!showFlow);
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { showFlow: showFlow },
-      queryParamsHandling: 'merge',
-      fragment: 'flow'
-    });
-  }
-
-  setFlowEnabled() {
-    this.flowEnabled = (this.overrideFlowPreference != null ? this.overrideFlowPreference : !this.hideFlow);
-  }
-
-  expandGraph() {
-    this.graphExpanded = true;
-    this.graphHeight = this.maxInOut * 15;
-  }
-
-  collapseGraph() {
-    this.graphExpanded = false;
-    this.graphHeight = Math.min(360, this.maxInOut * 80);
-  }
-
-  // simulate normal anchor fragment behavior
-  applyFragment(): void {
-    const anchor = Array.from(this.fragmentParams.entries()).find(([frag, value]) => value === '');
-    if (anchor?.length) {
-      if (anchor[0] === 'accelerate') {
-        setTimeout(this.onAccelerateClicked.bind(this), 100);
-      } else {
-        const anchorElement = document.getElementById(anchor[0]);
-        if (anchorElement) {
-          anchorElement.scrollIntoView();
-        }
-      }
-    }
-  }
-
   @HostListener('window:resize', ['$event'])
-  setGraphSize(): void {
+  onResize(): void {
     this.isMobile = window.innerWidth < 850;
-    if (this.graphContainer?.nativeElement && this.stateService.isBrowser) {
-      setTimeout(() => {
-        if (this.graphContainer?.nativeElement?.clientWidth) {
-          this.graphWidth = this.graphContainer.nativeElement.clientWidth;
-        } else {
-          setTimeout(() => { this.setGraphSize(); }, 1);
-        }
-      }, 1);
-    }
+    this.blockchainWidth = Math.min(600, window.innerWidth);
+    this.blockchainHeight = this.blockchainWidth / 5;
   }
 
   ngOnDestroy() {
@@ -806,10 +687,6 @@ export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fetchCachedTxSubscription.unsubscribe();
     this.fetchAccelerationSubscription.unsubscribe();
     this.txReplacedSubscription.unsubscribe();
-    this.txRbfInfoSubscription.unsubscribe();
-    this.queryParamsSubscription.unsubscribe();
-    this.flowPrefSubscription.unsubscribe();
-    this.urlFragmentSubscription.unsubscribe();
     this.mempoolBlocksSubscription.unsubscribe();
     this.mempoolPositionSubscription.unsubscribe();
     this.mempoolBlocksSubscription.unsubscribe();
