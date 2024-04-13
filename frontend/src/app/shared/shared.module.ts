@@ -51,6 +51,7 @@ import { BlockOverviewTooltipComponent } from '../components/block-overview-tool
 import { BlockFiltersComponent } from '../components/block-filters/block-filters.component';
 import { AddressGroupComponent } from '../components/address-group/address-group.component';
 import { TrackerComponent } from '../components/tracker/tracker.component';
+import { TrackerBarComponent } from '../components/tracker/tracker-bar.component';
 import { SearchFormComponent } from '../components/search-form/search-form.component';
 import { AddressLabelsComponent } from '../components/address-labels/address-labels.component';
 import { FooterComponent } from '../components/footer/footer.component';
@@ -158,6 +159,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     TransactionsListComponent,
     AddressGroupComponent,
     TrackerComponent,
+    TrackerBarComponent,
     SearchFormComponent,
     AddressLabelsComponent,
     FooterComponent,
@@ -292,6 +294,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     TransactionsListComponent,
     AddressGroupComponent,
     TrackerComponent,
+    TrackerBarComponent,
     SearchFormComponent,
     AddressLabelsComponent,
     FooterComponent,
