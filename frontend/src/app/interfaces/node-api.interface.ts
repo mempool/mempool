@@ -396,7 +396,7 @@ export interface Acceleration {
 
   acceleratedFeeRate?: number;
   boost?: number;
-
+  bidBoost?: number;
   boostCost?: number;
   boostRate?: number;
 }

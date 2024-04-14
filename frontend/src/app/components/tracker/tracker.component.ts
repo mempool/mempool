@@ -263,7 +263,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
     ).subscribe((accelerationHistory) => {
       for (const acceleration of accelerationHistory) {
         if (acceleration.txid === this.txId && (acceleration.status === 'completed' || acceleration.status === 'completed_provisional')) {
-          const boostCost = acceleration.boostCost || (acceleration.feePaid - acceleration.baseFee - acceleration.vsizeFee);
+          const boostCost = acceleration.boostCost || acceleration.bidBoost;
           acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
           acceleration.boost = boostCost;
 
