@@ -32,10 +32,10 @@
           <div class="field">
             <div class="label" i18n="transaction.first-seen|Transaction first seen">First seen</div>
             <div class="value">
-              @if (transactionTime) {
+              @if (transactionTime > 0) {
                 <i><app-time kind="since" [time]="transactionTime" [fastRender]="true"></app-time></i>
               } @else {
-                <span class="skeleton-loader"></span>
+                <span class="skeleton-loader" style="max-width: 50%;"></span>
               }
             </div>
           </div>
