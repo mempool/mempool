@@ -540,7 +540,7 @@
           } @else {
             <span class="eta justify-content-end" [class]="(acceleratorAvailable && accelerateCtaType === 'button') ? 'd-flex align-items-center' : ''">
               <app-time kind="until" *ngIf="(da$ | async) as da;" [time]="da.adjustedTimeAvg * (this.mempoolPosition.block + 1) + now + da.timeOffset" [fastRender]="false" [fixedRender]="true"></app-time>
-              @if (!tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration) {
+              @if (!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button') {
                 <a class="btn btn-sm accelerate btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
               }
             </span>
