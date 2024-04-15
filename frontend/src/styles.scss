@@ -1251,3 +1251,15 @@ app-global-footer {
   color: rgba(255, 255, 255, 0.4);
   margin-left: 5px;
 }
+
+.dropdown-menu {
+  background-color: var(--bg);
+  .dropdown-item:hover {
+    background-color: var(--active-bg);
+  }
+}
+
+.btn-secondary {
+  background-color: var(--secondary);
+  border-color: var(--secondary);
+}
