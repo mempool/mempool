@@ -62,7 +62,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         this.estimate();
       }
     });
-
   }
 
   ngOnDestroy() {
@@ -97,7 +96,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     }
   }
 
- /**
+  /**
    * Accelerator
    */
   estimate() {
@@ -173,8 +172,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.payments = window.Square.payments(this.square.appId, this.square.locationId)
       await this.requestCashAppPayment();
     } catch (e) {
-      console.error(e);
-      this.error = 'Error loading Square Payments';
+      console.debug('Error loading Square Payments', e);
       return;
     }
   }
@@ -189,7 +187,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     this.conversionsSubscription = this.stateService.conversions$.subscribe(
       async (conversions) => {
         if (this.cashAppPay) {
-          await this.cashAppPay.destroy();
+          this.cashAppPay.destroy();
         }
 
         const redirectHostname = document.location.hostname === 'localhost' ? `http://localhost:4200`: `https://${document.location.hostname}`;
@@ -231,13 +229,22 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             ).subscribe({
               next: () => {
                 that.audioService.playSound('ascend-chime-cartoon');
-                that.closeModal();
+                if (that.cashAppPay) {
+                  that.cashAppPay.destroy();
+                }
+                setTimeout(() => {
+                  that.closeModal();
+                }, 1000);
               },
               error: (response) => {
                 if (response.status === 403 && response.error === 'not_available') {
                   that.error = 'waitlisted';
                 } else {
                   that.error = response.error;
+                  setTimeout(() => {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    window.location.assign(window.location.toString().replace(`?cash_request_id=${urlParams.get('cash_request_id')}`, ``));
+                  }, 3000);
                 }
               }
             });
@@ -259,14 +266,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   selectedOptionChanged(event) {
     this.choosenOption = event.target.id;
   }
-  restart() {
-    this.step = 'cta';
-    this.choosenOption = 'wait';
-  }
   closeModal(): void {
-    if (this.cashAppPay) {
-      this.cashAppPay.destroy();
-    }
     this.close.emit();
   }
 }
