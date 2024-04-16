@@ -1,6 +1,5 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, ChangeDetectorRef, SimpleChanges } from '@angular/core';
 import { Subscription, tap, of, catchError } from 'rxjs';
-import { WebsocketService } from '../../services/websocket.service';
 import { ServicesApiServices } from '../../services/services-api.service';
 import { nextRoundNumber } from '../../shared/common.utils';
 import { StateService } from '../../services/state.service';
@@ -14,6 +13,7 @@ import { AudioService } from '../../services/audio.service';
 export class AccelerateCheckout implements OnInit, OnDestroy {
   @Input() eta: number = Date.now() + 123456789;
   @Input() txid: string = '70c18d76cdb285a1b5bd87fdaae165880afa189809c30b4083ff7c0e69ee09ad';
+  @Input() scrollEvent: boolean;
   @Output() close = new EventEmitter<null>();
 
   calculating = true;
@@ -34,10 +34,9 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   cashAppPay: any;
   cashAppSubscription: Subscription;
   conversionsSubscription: Subscription;
-  step: 'cta' | 'checkout' | 'processing' | 'completed' = 'cta';
+  step: 'cta' | 'checkout' | 'processing' = 'cta';
 
   constructor(
-    private websocketService: WebsocketService,
     private servicesApiService: ServicesApiServices,
     private stateService: StateService,
     private audioService: AudioService,
@@ -63,12 +62,37 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         this.estimate();
       }
     });
-
   }
 
   ngOnDestroy() {
     if (this.estimateSubscription) {
       this.estimateSubscription.unsubscribe();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.scrollEvent) {
+      this.scrollToPreview('acceleratePreviewAnchor', 'start');
+    }
+  }
+
+  /**
+  * Scroll to element id with or without setTimeout
+  */
+  scrollToPreviewWithTimeout(id: string, position: ScrollLogicalPosition) {
+    setTimeout(() => {
+      this.scrollToPreview(id, position);
+    }, 1000);
+  }
+  scrollToPreview(id: string, position: ScrollLogicalPosition) {
+    const acceleratePreviewAnchor = document.getElementById(id);
+    if (acceleratePreviewAnchor) {
+      this.cd.markForCheck();
+      acceleratePreviewAnchor.scrollIntoView({
+        behavior: 'smooth',
+        inline: position,
+        block: position,
+      });
     }
   }
 
@@ -148,8 +172,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.payments = window.Square.payments(this.square.appId, this.square.locationId)
       await this.requestCashAppPayment();
     } catch (e) {
-      console.error(e);
-      this.error = 'Error loading Square Payments';
+      console.debug('Error loading Square Payments', e);
       return;
     }
   }
@@ -164,7 +187,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     this.conversionsSubscription = this.stateService.conversions$.subscribe(
       async (conversions) => {
         if (this.cashAppPay) {
-          await this.cashAppPay.destroy();
+          this.cashAppPay.destroy();
         }
 
         const redirectHostname = document.location.hostname === 'localhost' ? `http://localhost:4200`: `https://${document.location.hostname}`;
@@ -206,16 +229,27 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             ).subscribe({
               next: () => {
                 that.audioService.playSound('ascend-chime-cartoon');
-                that.step = 'completed';
+                if (that.cashAppPay) {
+                  that.cashAppPay.destroy();
+                }
                 setTimeout(() => {
                   that.closeModal();
-                }, 10000);
+                  if (window.history.replaceState) {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    window.history.replaceState(null, null, window.location.toString().replace(`?cash_request_id=${urlParams.get('cash_request_id')}`, ''));
+                  }
+                }, 1000);
               },
               error: (response) => {
                 if (response.status === 403 && response.error === 'not_available') {
                   that.error = 'waitlisted';
                 } else {
                   that.error = response.error;
+                  setTimeout(() => {
+                    // Reset everything by reloading the page :D, can be improved
+                    const urlParams = new URLSearchParams(window.location.search);
+                    window.location.assign(window.location.toString().replace(`?cash_request_id=${urlParams.get('cash_request_id')}`, ``));
+                  }, 3000);
                 }
               }
             });
@@ -236,19 +270,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
   selectedOptionChanged(event) {
     this.choosenOption = event.target.id;
-    if (this.choosenOption === 'wait') {
-      this.restart();
-      this.closeModal();
-    }
-  }
-  restart() {
-    this.step = 'cta';
-    this.choosenOption = 'wait';
   }
   closeModal(): void {
-    if (this.cashAppPay) {
-      this.cashAppPay.destroy();
-    }
     this.close.emit();
   }
 }

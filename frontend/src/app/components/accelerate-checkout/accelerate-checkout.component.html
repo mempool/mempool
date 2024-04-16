@@ -1,147 +1,133 @@
-<div class="container card" style="padding: 20px; background: var(--bg)">
+<div class="container-md card w-100" style="padding: 1em; background: var(--box-bg)" id=acceleratePreviewAnchor>
 
   @if (error) {
-    <app-mempool-error [error]="error"></app-mempool-error>
-  } @else {
+    <div class="mt-2">
+      <app-mempool-error [error]="error"></app-mempool-error>
+    </div>
+  } 
 
-    @if (step === 'completed') {
-      <div class="row text-center mt-3">
-        <div class="col-sm">
-          <div class="form-group w-100">
-            <div display="d-flex flex-row justify-content-center">
-              <div class="alert alert-success">Transaction is now being accelerated!</div>
-            </div>
-          </div>
-        </div>
+  @else if (step === 'cta') {
+    <!-- Show A/B CTAs -->
+    <div class="row mb-1">
+      <div class="col-sm">
+        <h1 style="font-size: larger;">Accelerate your Bitcoin transaction?</h1>
       </div>
-    }
+    </div>
 
-    @else if (step === 'cta') {
-      <!-- Show A/B CTAs -->
-      <div class="row mb-3">
+    <form>
+      <div class="row">
         <div class="col-sm">
-          <h1 style="font-size: larger;">Accelerate your Bitcoin transaction?</h1>
-        </div>
-      </div>
-
-      <form>
-        <div class="row">
-          <div class="col-sm">
-            <div class="form-group form-check">
-              <input type="radio" class="form-check-input" id="accelerate" name="accelerate" (change)="selectedOptionChanged($event)">
-              <label class="form-check-label d-flex flex-column" for="accelerate">
-                <span class="font-weight-bold">Accelerate</span>
-                <span style="color: rgb(186, 186, 186)">Settlement expected in ~1 hour or less<br>
-                  @if (!calculating) {
-                    <app-fiat [value]="cost"></app-fiat>fee (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats|sats">sats</span></span>)
-                  } @else {
-                    <span class="estimating">Calculating cost...</span>
-                  }
-                </span>
-              </label>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm">
-            <div class="form-group form-check">
-              <input type="radio" class="form-check-input" id="wait" name="accelerate" (change)="selectedOptionChanged($event)">
-              <label class="form-check-label d-flex flex-column" for="wait">
-                <span class="font-weight-bold">Wait</span>
-                <span style="color: rgb(186, 186, 186)">Settlement expected to occur <app-time kind="within" [time]="eta" [fastRender]="false" [fixedRender]="true"></app-time></span>
-              </label>
-            </div>
-          </div>
-        </div>
-        <div class="row mt-2" [style]="choosenOption === 'wait' ? 'opacity: 0.25; pointer-events: none' : ''">
-          <div class="col-sm d-flex flex-row justify-content-center">
-            <button type="button" class="mt-1 btn btn-light rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" style="width: 200px" (click)="enableCheckoutPage()">
-              <img src="/resources/mempool-accelerator-sparkles-compressed.svg" height="20" class="mr-2" style="margin-left: -10px">
-              <span>Accelerate</span>
-            </button>
-          </div>
-        </div>
-      </form>
-    }
-    
-    @else if (step === 'checkout') {
-      <!-- Show checkout page -->
-      <div class="row mb-3 text-center">
-        <div class="col-sm">
-          <h1 style="font-size: larger;">Confirm your payment</h1>
-        </div>
-      </div>
-
-      <div class="row text-center">
-        <div class="col-sm">
-          <div class="form-group w-100">
-            Payment to mempool.space for acceleration of txid <a [routerLink]="'/tx/' + txid" target="_blank">{{ txid.substr(0, 10) }}..{{ txid.substr(-10) }}</a>
-          </div>
-        </div>
-      </div>
-
-      @if (!loadingCashapp) {
-        <div class="row text-center mt-1">
-          <div class="col-sm">
-            <div class="form-group w-100">
-              <span><u><strong>Total additional cost</strong></u><br>
-                <span style="font-size: 16px" class="d-block mt-2">
-                  Pay
-                  <strong><app-fiat [value]="cost"></app-fiat></strong>
-                  with
-                </span>
+          <div class="form-group form-check mb-2">
+            <input type="radio" class="form-check-input" id="accelerate" name="accelerate" (change)="selectedOptionChanged($event)">
+            <label class="form-check-label d-flex flex-column" for="accelerate">
+              <span class="font-weight-bold">Accelerate</span>
+              <span style="color: rgb(186, 186, 186); font-size: 14px;">Settlement expected in ~1 hour or less<br>
+                @if (!calculating) {
+                  <app-fiat [value]="cost"></app-fiat>fee (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats|sats">sats</span></span>)
+                } @else {
+                  <span class="estimating">Calculating cost...</span>
+                }
               </span>
-            </div>
-          </div>
-        </div>
-      }
-
-      <div class="row text-center mt-1">
-        <div class="col-sm">
-          <div class="form-group w-100">
-            <div id="cash-app-pay" class="d-inline-block" [style]="loadingCashapp ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
-            @if (loadingCashapp) {
-            <div display="d-flex flex-row justify-content-center">
-              <span>Loading payment method...</span>
-              <div class="ml-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
-            </div>
-            }
+            </label>
           </div>
         </div>
       </div>
+      <div class="row">
+        <div class="col-sm">
+          <div class="form-group form-check mb-2">
+            <input type="radio" class="form-check-input" id="wait" name="accelerate" (change)="selectedOptionChanged($event)">
+            <label class="form-check-label d-flex flex-column" for="wait">
+              <span class="font-weight-bold">Wait</span>
+              <span style="color: rgb(186, 186, 186); font-size: 14px;">Settlement expected to occur <app-time kind="within" [time]="eta" [fastRender]="false" [fixedRender]="true"></app-time></span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-2 mb-2" [style]="(choosenOption === 'wait' || calculating) ? 'opacity: 0.25; pointer-events: none' : ''">
+        <div class="col-sm d-flex flex-row justify-content-center">
+          <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" style="width: 200px" (click)="enableCheckoutPage()">
+            <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
+            <span>Accelerate</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  }
+    
+  @else if (step === 'checkout') {
+    <!-- Show checkout page -->
+    <div class="row mb-md-1 text-center">
+      <div class="col-sm">
+        <h1 style="font-size: larger;">Confirm your payment</h1>
+      </div>
+    </div>
 
-      <hr>
-      <div class="row mt-2 text-center">
-        <div class="col-sm d-flex flex-column">
-          <small>Changed your mind?</small>
-          <button type="button" class="mt-1 btn btn-secondary btn-sm rounded-pill align-self-center" style="width: 200px" (click)="restart(); closeModal()">Close</button>
+    <div class="row text-center">
+      <div class="col-sm">
+        <div class="form-group w-100" style="font-size: 14px">
+          Payment to mempool.space for acceleration of txid <a [routerLink]="'/tx/' + txid" target="_blank">{{ txid.substr(0, 10) }}..{{ txid.substr(-10) }}</a>
+        </div>
+      </div>
+    </div>
+
+    @if (!loadingCashapp) {
+      <div class="row text-center mt-1">
+        <div class="col-sm">
+          <div class="form-group w-100">
+            <span><u><strong>Total additional cost</strong></u><br>
+              <span style="font-size: 16px" class="d-block mt-2">
+                Pay
+                <strong><app-fiat [value]="cost"></app-fiat></strong>
+                with
+              </span>
+            </span>
+          </div>
         </div>
       </div>
     }
 
-    @else if (step === 'processing') {
-      <div class="row mb-3 text-center">
-        <div class="col-sm">
-          <h1 style="font-size: larger;">Confirm your payment</h1>
+    <div class="row text-center mt-1">
+      <div class="col-sm">
+        <div class="form-group w-100">
+          <div id="cash-app-pay" class="d-inline-block" [style]="loadingCashapp ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
+          @if (loadingCashapp) {
+          <div display="d-flex flex-row justify-content-center">
+            <span>Loading payment method...</span>
+            <div class="ml-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
+          </div>
+          }
         </div>
       </div>
+    </div>
 
-      <!-- Processing payment -->
-      <div id="cash-app-pay" class="d-inline-block" [style]="'opacity: 0; width: 0px; height: 0px; pointer-events: none;'"></div>
+    <hr>
+    <div class="row mt-2 mb-2 text-center">
+      <div class="col-sm d-flex flex-column">
+        <small>Changed your mind?</small>
+        <button type="button" class="mt-1 btn btn-secondary btn-sm rounded-pill align-self-center" style="width: 200px" (click)="step = 'cta'">Go Back</button>
+      </div>
+    </div>
+  }
 
-      <div class="row text-center mt-1">
-        <div class="col-sm">
-          <div class="form-group w-100">
-            <div display="d-flex flex-row justify-content-center">
-              <span>We are processing your payment...</span>
-              <div class="ml-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
-            </div>
+  @else if (step === 'processing') {
+    <div class="row mb-1 text-center">
+      <div class="col-sm">
+        <h1 style="font-size: larger;">Confirm your payment</h1>
+      </div>
+    </div>
+
+    <div class="row text-center mt-1">
+      <div class="col-sm">
+        <div class="form-group w-100">
+          <!-- Processing payment -->
+          <div id="cash-app-pay" class="d-inline-block" [style]="'opacity: 0; width: 0px; height: 0px; pointer-events: none;'"></div>
+          <div display="d-flex flex-row justify-content-center">
+            <span>We are processing your payment...</span>
+            <div class="ml-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
           </div>
         </div>
       </div>
-    }
-
-    <span class="close-button" (click)="closeModal()">✖</span>
+    </div>
   }
   
 </div>
