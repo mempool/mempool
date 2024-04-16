@@ -11,7 +11,7 @@ import { AudioService } from '../../services/audio.service';
   styleUrls: ['./accelerate-checkout.component.scss']
 })
 export class AccelerateCheckout implements OnInit, OnDestroy {
-  @Input() eta: number = Date.now() + 123456789;
+  @Input() eta: number | null = null;
   @Input() txid: string = '70c18d76cdb285a1b5bd87fdaae165880afa189809c30b4083ff7c0e69ee09ad';
   @Input() scrollEvent: boolean;
   @Output() close = new EventEmitter<null>();
