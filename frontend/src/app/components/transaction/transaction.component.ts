@@ -745,11 +745,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   resetTransaction() {
-    if (!this.firstLoad) {
-      this.stateService.ref = '';
-    } else {
-      this.firstLoad = false;
-    }
+    this.firstLoad = false;
     this.error = undefined;
     this.tx = null;
     this.setFeatures();
@@ -845,7 +841,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.stateService.ref = '';
     this.subscription.unsubscribe();
     this.fetchCpfpSubscription.unsubscribe();
     this.fetchRbfSubscription.unsubscribe();

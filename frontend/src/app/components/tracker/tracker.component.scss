@@ -92,6 +92,10 @@
     white-space: nowrap;
     text-align: end;
   }
+  &.narrower {
+    padding-top: 0.75em !important;
+    padding-bottom: 0.75em !important;
+  }
 }
 
 .tracker-bar {

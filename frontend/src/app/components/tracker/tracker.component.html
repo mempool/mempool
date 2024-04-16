@@ -29,7 +29,7 @@
       </div>
       <div class="data">
         @if (tx && !tx.status?.confirmed && mempoolPosition?.block != null) {
-          <div class="field">
+          <div class="field narrower mt-2">
             <div class="label" i18n="transaction.first-seen|Transaction first seen">First seen</div>
             <div class="value">
               @if (transactionTime > 0) {
@@ -39,7 +39,7 @@
               }
             </div>
           </div>
-          <div class="field">
+          <div class="field narrower">
             <div class="label" i18n="transaction.eta|Transaction ETA">ETA</div>
             <div class="value">
               <span class="justify-content-end d-flex align-items-center">
@@ -48,14 +48,14 @@
                 } @else {
                   <app-time kind="until" *ngIf="(da$ | async) as da;" [time]="da.adjustedTimeAvg * (mempoolPosition.block + 1) + now + da.timeOffset" [fastRender]="false" [fixedRender]="true"></app-time>
                 }
-                @if (isMobile && paymentType === 'cashapp' && accelerationEligible && !tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration) {
+                @if (!showAccelerationSummary && isMobile && paymentType === 'cashapp' && accelerationEligible && !tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration) {
                   <a class="btn btn-sm accelerate btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
                 }
               </span>
             </div>
           </div>
         } @else if (tx && tx.status?.confirmed) {
-          <div class="field">
+          <div class="field narrower mt-2">
             <div class="label" i18n="transaction.confirmed-at">Confirmed at</div>
             <div class="value">
               &lrm;{{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }}
@@ -64,7 +64,7 @@
               </div>
             </div>
           </div>
-          <div class="field">
+          <div class="field narrower">
             <div class="label" i18n="transaction.block-height">Block height</div>
             <div class="value">
               <span class="justify-content-end d-flex align-items-center">

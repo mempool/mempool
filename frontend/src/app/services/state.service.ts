@@ -86,7 +86,7 @@ const defaultEnv: Env = {
   providedIn: 'root'
 })
 export class StateService {
-  ref: string = '';
+  referrer: string = '';
   isBrowser: boolean = isPlatformBrowser(this.platformId);
   isMempoolSpaceBuild = window['isMempoolSpaceBuild'] ?? false;
   backend: 'esplora' | 'electrum' | 'none' = 'esplora';
@@ -164,7 +164,7 @@ export class StateService {
     private router: Router,
     private storageService: StorageService,
   ) {
-    this.ref = window.document.referrer;
+    this.referrer = window.document.referrer;
 
     const browserWindow = window || {};
     // @ts-ignore
@@ -192,7 +192,7 @@ export class StateService {
       }
     });
 
-    if (this.ref === 'https://cash.app/' && window.innerWidth < 850 && window.location.pathname.startsWith('/tx/')) {
+    if (this.referrer === 'https://cash.app/' && window.innerWidth < 850 && window.location.pathname.startsWith('/tx/')) {
       this.router.navigate(['/tracker/' + window.location.pathname.slice(4)]);
     }
 
