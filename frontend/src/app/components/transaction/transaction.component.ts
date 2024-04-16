@@ -629,6 +629,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.txId) {
       return;
     }
+
+    document.location.hash = '#accelerate';
     this.enterpriseService.goal(8);
     this.showAccelerationSummary = true && this.acceleratorAvailable;
     this.scrollIntoAccelPreview = !this.scrollIntoAccelPreview;
