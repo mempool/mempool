@@ -234,6 +234,10 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                 }
                 setTimeout(() => {
                   that.closeModal();
+                  if (window.history.replaceState) {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    window.history.replaceState(null, null, window.location.toString().replace(`?cash_request_id=${urlParams.get('cash_request_id')}`, ''));
+                  }
                 }, 1000);
               },
               error: (response) => {
@@ -242,6 +246,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                 } else {
                   that.error = response.error;
                   setTimeout(() => {
+                    // Reset everything by reloading the page :D, can be improved
                     const urlParams = new URLSearchParams(window.location.search);
                     window.location.assign(window.location.toString().replace(`?cash_request_id=${urlParams.get('cash_request_id')}`, ``));
                   }, 3000);
