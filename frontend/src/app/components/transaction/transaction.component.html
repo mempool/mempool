@@ -534,6 +534,9 @@
           } @else if (this.mempoolPosition.block >= 7) {
             <span [class]="(acceleratorAvailable && accelerateCtaType === 'button') ? 'etaDeepMempool d-flex justify-content-end align-items-center' : ''">
               <span i18n="transaction.eta.in-several-hours|Transaction ETA in several hours or more">In several hours (or more)</span>
+              @if (!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button') {
+                <a class="btn btn-sm accelerateDeepMempool btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
+              }
             </span>
           } @else if (network === 'liquid' || network === 'liquidtestnet') {
             <app-time kind="until" [time]="(60 * 1000 * this.mempoolPosition.block) + now" [fastRender]="false" [fixedRender]="true"></app-time>
