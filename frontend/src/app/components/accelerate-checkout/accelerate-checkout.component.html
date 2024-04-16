@@ -21,7 +21,7 @@
             <input type="radio" class="form-check-input" id="accelerate" name="accelerate" (change)="selectedOptionChanged($event)">
             <label class="form-check-label d-flex flex-column" for="accelerate">
               <span class="font-weight-bold">Accelerate</span>
-              <span style="color: rgb(186, 186, 186); font-size: 14px;">Settlement expected within ~1 hour (or less)<br>
+              <span style="color: rgb(186, 186, 186); font-size: 14px;">Settlement expected within ~30 minutes<br>
                 @if (!calculating) {
                   <app-fiat [value]="cost"></app-fiat>fee (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats|sats">sats</span></span>)
                 } @else {
@@ -39,10 +39,10 @@
             <label class="form-check-label d-flex flex-column" for="wait">
               <span class="font-weight-bold">Wait</span>
               @if (eta) {
-                <span style="color: rgb(186, 186, 186); font-size: 14px;">Settlement expected <app-time kind="within" [time]="eta" [fastRender]="false" [fixedRender]="true"></app-time> or less</span>
+                <span style="color: rgb(186, 186, 186); font-size: 14px;">Settlement expected <app-time kind="within" [time]="eta" [fastRender]="false" [fixedRender]="true"></app-time></span>
               } @else {
                 <span style="color: rgb(186, 186, 186); font-size: 14px;">
-                  <span>Settlement expected within several hours (or more)</span>
+                  <span>Settlement expected within several hours</span>
                 </span>
               }
             </label>
