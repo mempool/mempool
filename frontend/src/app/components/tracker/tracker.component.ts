@@ -351,6 +351,9 @@ export class TrackerComponent implements OnInit, OnDestroy {
           }
           if (txPosition.position?.block > 0 && this.tx.weight < 4000) {
             this.accelerationEligible = true;
+            if (this.acceleratorAvailable && this.paymentType === 'cashapp') {
+              this.showAccelerationSummary = true;
+            }
           }
         }
       } else {
