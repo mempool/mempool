@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 81;
+  private static currentVersion = 82;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -683,6 +683,19 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 81 && isBitcoin === true) {
       await this.$executeQuery(`UPDATE state SET string = NULL WHERE name = 'pools_json_sha'`);
       await this.updateToSchemaVersion(81);
+    }
+
+    if (databaseSchemaVersion < 82 && config.MEMPOOL.NETWORK === 'liquid') {
+      await this.$executeQuery('TRUNCATE TABLE elements_pegs');
+      await this.$executeQuery('TRUNCATE TABLE federation_txos');
+      await this.$executeQuery('SET FOREIGN_KEY_CHECKS = 0');
+      await this.$executeQuery('TRUNCATE TABLE federation_addresses');
+      await this.$executeQuery('SET FOREIGN_KEY_CHECKS = 1');
+      await this.$executeQuery(`INSERT INTO federation_addresses (bitcoinaddress) VALUES ('bc1qxvay4an52gcghxq5lavact7r6qe9l4laedsazz8fj2ee2cy47tlqff4aj4')`); // Federation change address
+      await this.$executeQuery(`INSERT INTO federation_addresses (bitcoinaddress) VALUES ('3EiAcrzq1cELXScc98KeCswGWZaPGceT1d')`); // Federation change address
+      await this.$executeQuery(`UPDATE state SET number = 0 WHERE name = 'last_elements_block';`);
+      await this.$executeQuery(`UPDATE state SET number = 0 WHERE name = 'last_bitcoin_block_audit';`);
+      await this.updateToSchemaVersion(71);
     }
   }
 
