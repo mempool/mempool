@@ -75,10 +75,6 @@ class Audit {
     let failures = 0;
     let blockIndex = 1;
     while (projectedBlocks[blockIndex] && failures < 500) {
-      if (index >= projectedBlocks[blockIndex].transactionIds.length) {
-        index = 0;
-        blockIndex++;
-      }
       const txid = projectedBlocks[blockIndex].transactionIds[index];
       const tx = mempool[txid];
       if (tx) {
@@ -102,6 +98,10 @@ class Audit {
         logger.warn('projected transaction missing from mempool cache');
       }
       index++;
+      if (index >= projectedBlocks[blockIndex].transactionIds.length) {
+        index = 0;
+        blockIndex++;
+      }
     }
 
     // mark unexpected transactions in the mined block as 'added'
