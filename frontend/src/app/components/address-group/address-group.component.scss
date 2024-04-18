@@ -1,6 +1,6 @@
 .frame {
   position: relative;
-  background: #24273e;
+  background: var(--box-bg);
   padding: 0.5rem;
   height: calc(100% + 60px);
 }
@@ -62,7 +62,7 @@
       }
     }
     &:nth-child(even) {
-      background: #181b2d;
+      background: var(--stat-box-bg);
     }
   }
 
