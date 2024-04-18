@@ -98,6 +98,6 @@ export class BlockOverviewTooltipComponent implements OnChanges {
   }
 
   getTooltipLeftPosition(): string {
-    return window.innerWidth < 392 ? '-40px' : this.tooltipPosition.x + 'px';
+    return window.innerWidth < 392 ? '-50px' : this.tooltipPosition.x + 'px';
   }
 }
