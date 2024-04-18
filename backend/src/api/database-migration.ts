@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 78;
+  private static currentVersion = 81;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -652,11 +652,6 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `prices` ADD `THB` float DEFAULT "-1"');
       await this.$executeQuery('ALTER TABLE `prices` ADD `TRY` float DEFAULT "-1"');
       await this.$executeQuery('ALTER TABLE `prices` ADD `ZAR` float DEFAULT "-1"');
-
-      await this.$executeQuery('TRUNCATE hashrates');
-      await this.$executeQuery('TRUNCATE difficulty_adjustments');
-      await this.$executeQuery(`UPDATE state SET string = NULL WHERE name = 'pools_json_sha'`);
-
       await this.updateToSchemaVersion(75);
     }
 
@@ -673,6 +668,21 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 78) {
       await this.$executeQuery('ALTER TABLE `prices` CHANGE `time` `time` datetime NOT NULL');
       await this.updateToSchemaVersion(78);
+    }
+
+    if (databaseSchemaVersion < 79 && isBitcoin === true) {
+      await this.$executeQuery('TRUNCATE hashrates');
+      await this.updateToSchemaVersion(79);
+    }
+
+    if (databaseSchemaVersion < 80 && isBitcoin === true) {
+      await this.$executeQuery('TRUNCATE difficulty_adjustments');
+      await this.updateToSchemaVersion(80);
+    }
+
+    if (databaseSchemaVersion < 81 && isBitcoin === true) {
+      await this.$executeQuery(`UPDATE state SET string = NULL WHERE name = 'pools_json_sha'`);
+      await this.updateToSchemaVersion(81);
     }
   }
 
