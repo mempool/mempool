@@ -3,7 +3,7 @@
   class="block-overview-tooltip"
   [class.clickable]="clickable"
   [style.visibility]="tx ? 'visible' : 'hidden'"
-  [style.left]="tooltipPosition.x + 'px'"
+  [style.left]="getTooltipLeftPosition()"
   [style.top]="tooltipPosition.y + 'px'"
 >
   <table class="table-fixed">

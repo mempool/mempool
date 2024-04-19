@@ -96,4 +96,8 @@ export class BlockOverviewTooltipComponent implements OnChanges {
       this.cd.markForCheck();
     }
   }
+
+  getTooltipLeftPosition(): string {
+    return window.innerWidth < 392 ? '-50px' : this.tooltipPosition.x + 'px';
+  }
 }

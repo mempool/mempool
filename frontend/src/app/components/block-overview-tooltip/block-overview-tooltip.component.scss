@@ -10,7 +10,7 @@
   padding: 10px 15px;
   text-align: left;
   min-width: 340px;
-  max-width: 340px;
+  max-width: 400px;
   pointer-events: none;
   z-index: 11;
 
@@ -41,7 +41,7 @@ th, td {
   flex-wrap: wrap;
   row-gap: 0.25em;
   margin-top: 0.2em;
-  max-width: 100%;
+  max-width: 310px;
 
   .badge {
     border-radius: 0.2rem;
