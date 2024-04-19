@@ -9127,8 +9127,7 @@ export const restApiDocsData = [
     "bidBoost": 6102,
     "pools": [
       {
-        "pool_unique_id": 111,
-        "username": "foundryusa"
+        "pool_unique_id": 111
       }
     ]
   }
