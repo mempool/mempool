@@ -9117,16 +9117,14 @@ export const restApiDocsData = [
   {
     "txid": "d7e1796d8eb4a09d4e6c174e36cfd852f1e6e6c9f7df4496339933cd32cbdd1d",
     "status": "completed",
-    "feePaid": 53239,
     "added": 1707421053,
     "lastUpdated": 1707422952,
-    "baseFee": 50000,
-    "vsizeFee": 0,
     "effectiveFee": 146,
     "effectiveVsize": 141,
     "feeDelta": 14000,
     "blockHash": "00000000000000000000482f0746d62141694b9210a813b97eb8445780a32003",
     "blockHeight": 829559,
+    "bidBoost": 6102,
     "pools": [
       {
         "pool_unique_id": 111,
