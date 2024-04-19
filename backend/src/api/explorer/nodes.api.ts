@@ -713,7 +713,9 @@ class NodesApi {
    * Update node sockets
    */
   public async $updateNodeSockets(publicKey: string, sockets: {network: string; addr: string}[]): Promise<void> {
-    const formattedSockets = (sockets.map(a => a.addr).join(',')) ?? '';
+    const uniqueAddr = [...new Set(sockets.map(a => a.addr))];
+
+    const formattedSockets = (uniqueAddr.join(',')) ?? '';
     try {
       await DB.query(`UPDATE nodes SET sockets = ? WHERE public_key = ?`, [formattedSockets, publicKey]);
     } catch (e) {
