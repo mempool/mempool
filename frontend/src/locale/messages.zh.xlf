@@ -662,6 +662,7 @@
       </trans-unit>
       <trans-unit id="4487eb902b70d33b4bb7a0828b66afec3a96fc18" datatype="html">
         <source>Choose the maximum extra transaction fee you're willing to pay to get into the next block.</source>
+        <target>选择您愿意支付的最高额外交易费以进入下一个区块。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">72</context>
