@@ -38,7 +38,7 @@
           <small *ngIf="hasAncestors" class="form-text text-muted mb-2">
             <ng-container i18n="accelerator.plus-unconfirmed-ancestors">Plus {{ estimate.txSummary.ancestorCount - 1 }} unconfirmed ancestor(s)</ng-container>
           </small>
-          <table class="table table-borderless table-border table-dark table-accelerator">
+          <table class="table table-borderless table-border table-dark table-background table-accelerator">
             <tbody>
               <tr class="group-first">
                 <td class="item" i18n="transaction.vsize|Transaction Virtual Size">Virtual size</td>
@@ -87,7 +87,7 @@
       <h5>Acceleration summary</h5>
       <div class="row mb-3">
         <div class="col">
-          <table class="table table-borderless table-border table-dark table-accelerator">
+          <table class="table table-borderless table-border table-dark table-background table-accelerator">
             <tbody>
               <!-- ESTIMATED FEE -->
               <ng-container>
