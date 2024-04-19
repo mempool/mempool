@@ -1180,8 +1180,22 @@ th {
     margin: 0;
     @media (min-width: 400px) {
       width: auto;
-      padding-left: 5px;
     }
+  }
+  .page-link {
+    background-color: var(--bg);
+    border: 1px solid var(--bg);
+  }
+  .page-link:hover {
+    background-color: var(--active-bg);
+  }
+  .page-item.active .page-link {
+    background-color: var(--tertiary);
+    border: 1px solid var(--tertiary);
+  }
+  .page-item.disabled .page-link {
+    background-color: var(--bg);
+    border: 1px solid var(--bg);
   }
 }
 
