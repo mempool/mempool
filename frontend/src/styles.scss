@@ -1268,7 +1268,7 @@ app-global-footer {
 
 .dropdown-menu {
   background-color: var(--bg);
-  .dropdown-item:hover {
+  .dropdown-item:hover, .dropdown-item:focus { 
     background-color: var(--active-bg);
   }
 }
