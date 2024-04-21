@@ -45,7 +45,10 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   markBlockSubscription: Subscription;
   txConfirmedSubscription: Subscription;
   loadingBlocks$: Observable<boolean>;
-  showMiningInfo$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  showMiningInfoSubscription: Subscription;
+  blockDisplayModeSubscription: Subscription;
+  blockDisplayMode: 'size' | 'fees';
+  blockTransformation = {};
   blockStyles = [];
   emptyBlockStyles = [];
   interval: any;
@@ -78,22 +81,15 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   ) {
   }
 
-  enabledMiningInfoIfNeeded(url) {
-    const urlParts = url.split('/');
-    const onDashboard = ['','testnet','signet','mining','acceleration'].includes(urlParts[urlParts.length - 1]);
-    if (onDashboard) { // Only update showMiningInfo if we are on the main, mining or acceleration dashboards
-      this.stateService.showMiningInfo$.next(url.includes('/mining') || url.includes('/acceleration'));
-    }
-  }
-
   ngOnInit() {
     this.dynamicBlocksAmount = Math.min(8, this.stateService.env.KEEP_BLOCKS_AMOUNT);
 
-    if (['', 'testnet', 'signet'].includes(this.stateService.network)) {
-      this.enabledMiningInfoIfNeeded(this.location.path());
-      this.location.onUrlChange((url) => this.enabledMiningInfoIfNeeded(url));
-      this.showMiningInfo$ = this.stateService.showMiningInfo$;
-    }
+    this.blockDisplayMode = this.stateService.blockDisplayMode$.value as 'size' | 'fees';
+    this.blockDisplayModeSubscription = this.stateService.blockDisplayMode$.subscribe((mode: 'size' | 'fees') => {
+      if (mode !== this.blockDisplayMode) {
+        this.applyAnimation(mode);
+      }
+    });
 
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
       this.timeLtr = !!ltr;
@@ -204,6 +200,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.networkSubscription.unsubscribe();
     this.tabHiddenSubscription.unsubscribe();
     this.markBlockSubscription.unsubscribe();
+    this.blockDisplayModeSubscription.unsubscribe();
     this.timeLtrSubscription.unsubscribe();
     clearInterval(this.interval);
   }
@@ -241,6 +238,29 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       this.arrowVisible = false;
     }
+  }
+
+  applyAnimation(mode: 'size' | 'fees') {
+    this.blockTransformation = this.timeLtr ? {
+      transform: 'scaleX(-1) rotateX(90deg)',
+      transition: 'transform 0.375s'
+    } : {
+      transform: 'rotateX(90deg)',
+      transition: 'transform 0.375s'
+    };
+    setTimeout(() => {
+      this.blockDisplayMode = mode;
+      this.blockTransformation = this.timeLtr ? {
+        transform: 'scaleX(-1)',
+        transition: 'transform 0.375s'
+      } : {
+        transition: 'transform 0.375s'
+      };
+      this.cd.markForCheck();
+      setTimeout(() => {
+        this.blockTransformation = {};
+      }, 375);
+    }, 375);
   }
 
   trackByBlocksFn(index: number, item: BlockchainBlock) {

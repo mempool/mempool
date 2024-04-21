@@ -43,7 +43,10 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   mempoolBlocks$: Observable<MempoolBlock[]>;
   difficultyAdjustments$: Observable<DifficultyAdjustment>;
   loadingBlocks$: Observable<boolean>;
-  showMiningInfo$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  showMiningInfoSubscription: Subscription;
+  blockDisplayModeSubscription: Subscription;
+  blockDisplayMode: 'size' | 'fees';
+  blockTransformation = {};
   blocksSubscription: Subscription;
 
   mempoolBlocksFull: MempoolBlock[] = [];
@@ -99,9 +102,12 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.mempoolWidth = width;
     this.widthChange.emit(this.mempoolWidth);
 
-    if (['', 'testnet', 'signet'].includes(this.stateService.network)) {
-      this.showMiningInfo$ = this.stateService.showMiningInfo$;
-    }
+    this.blockDisplayMode = this.stateService.blockDisplayMode$.value as 'size' | 'fees';
+    this.blockDisplayModeSubscription = this.stateService.blockDisplayMode$.subscribe((mode: 'size' | 'fees') => {
+      if (mode !== this.blockDisplayMode) {
+        this.applyAnimation(mode);
+      }
+    });
 
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
       this.timeLtr = !this.forceRtl && !!ltr;
@@ -262,6 +268,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.markBlocksSubscription.unsubscribe();
     this.blockSubscription.unsubscribe();
     this.networkSubscription.unsubscribe();
+    this.blockDisplayModeSubscription.unsubscribe();
     this.timeLtrSubscription.unsubscribe();
     this.chainTipSubscription.unsubscribe();
     this.keySubscription.unsubscribe();
@@ -443,6 +450,23 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
     this.rightPosition = Math.min(this.maxArrowPosition, this.rightPosition);
+  }
+
+  applyAnimation(mode: 'size' | 'fees') {
+    this.blockTransformation = {
+      transform: 'rotateX(90deg)',
+      transition: 'transform 0.375s'
+    };
+    setTimeout(() => {
+      this.blockDisplayMode = mode;
+      this.blockTransformation = {
+        transition: 'transform 0.375s'
+      };
+      this.cd.markForCheck();
+      setTimeout(() => {
+        this.blockTransformation = {};
+      }, 375);
+    }, 375);
   }
 
   mountEmptyBlocks() {
