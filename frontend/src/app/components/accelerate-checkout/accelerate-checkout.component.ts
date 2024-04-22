@@ -117,7 +117,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           }
           // Make min extra fee at least 50% of the current tx fee
           const minExtraBoost = nextRoundNumber(Math.max(estimation.cost * 2, estimation.txSummary.effectiveFee));
-          const DEFAULT_BID_RATIO = 2;
+          const DEFAULT_BID_RATIO = 1;
           this.maxBidBoost = minExtraBoost * DEFAULT_BID_RATIO;
           this.cost = this.maxBidBoost + estimation.mempoolBaseFee + estimation.vsizeFee;
         }
