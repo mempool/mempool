@@ -21,7 +21,7 @@ $primary: #007cfa;
 $secondary: #272f4e;
 $tertiary: #6225b2;
 $success: #0aab2f;
-$info: #10e0ff;
+$info: #00ddff;
 
 $h5-font-size: 1.15rem !default;
 
@@ -69,6 +69,8 @@ $dropdown-link-active-bg: $active-bg;
   --tertiary: #{$tertiary};
   --success: #{$success};
   --info: #{$info};
+  --link-color: #{$info};
+  --link-hover-color: #{$link-hover-color};
   --icon: #f1f1f1;
 
   --box-bg: #171c2a;
