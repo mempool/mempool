@@ -72,6 +72,8 @@ $dropdown-link-active-bg: $active-bg;
   --tertiary: #{$tertiary};
   --success: #{$success};
   --info: #{$info};
+  --link-color: #{$info};
+  --link-hover-color: #{$link-hover-color};
   --icon: #f1f1f1;
 
   --box-bg: #24273e;
@@ -1276,4 +1278,11 @@ app-global-footer {
 .btn-secondary {
   background-color: var(--secondary);
   border-color: var(--secondary);
+}
+
+a {
+  color: var(--link-color);
+  &:hover {
+    color: var(--link-hover-color);
+  }
 }
