@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, delay, filter, tap } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { specialBlocks } from '../../app.constants';
 import { BlockExtended } from '../../interfaces/node-api.interface';
@@ -85,10 +85,33 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.dynamicBlocksAmount = Math.min(8, this.stateService.env.KEEP_BLOCKS_AMOUNT);
 
     this.blockDisplayMode = this.stateService.blockDisplayMode$.value as 'size' | 'fees';
-    this.blockDisplayModeSubscription = this.stateService.blockDisplayMode$.subscribe((mode: 'size' | 'fees') => {
-      if (mode !== this.blockDisplayMode) {
-        this.applyAnimation(mode);
-      }
+    this.blockDisplayModeSubscription = this.stateService.blockDisplayMode$
+    .pipe(
+      filter((mode: 'size' | 'fees') => mode !== this.blockDisplayMode),
+      tap(() => {
+        this.blockTransformation = this.timeLtr ? {
+          transform: 'scaleX(-1) rotateX(90deg)',
+          transition: 'transform 0.375s'
+        } : {
+          transform: 'rotateX(90deg)',
+          transition: 'transform 0.375s'
+        };
+      }),
+      delay(375),
+      tap((mode) => {
+        this.blockDisplayMode = mode;
+        this.blockTransformation = this.timeLtr ? {
+          transform: 'scaleX(-1)',
+          transition: 'transform 0.375s'
+        } : {
+          transition: 'transform 0.375s'
+        };
+        this.cd.markForCheck();
+      }),
+      delay(375),
+    )
+    .subscribe(() => {
+      this.blockTransformation = {};
     });
 
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
@@ -238,29 +261,6 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       this.arrowVisible = false;
     }
-  }
-
-  applyAnimation(mode: 'size' | 'fees') {
-    this.blockTransformation = this.timeLtr ? {
-      transform: 'scaleX(-1) rotateX(90deg)',
-      transition: 'transform 0.375s'
-    } : {
-      transform: 'rotateX(90deg)',
-      transition: 'transform 0.375s'
-    };
-    setTimeout(() => {
-      this.blockDisplayMode = mode;
-      this.blockTransformation = this.timeLtr ? {
-        transform: 'scaleX(-1)',
-        transition: 'transform 0.375s'
-      } : {
-        transition: 'transform 0.375s'
-      };
-      this.cd.markForCheck();
-      setTimeout(() => {
-        this.blockTransformation = {};
-      }, 375);
-    }, 375);
   }
 
   trackByBlocksFn(index: number, item: BlockchainBlock) {

@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, HostListener, Input, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
-import { Subscription, Observable, of, combineLatest, BehaviorSubject } from 'rxjs';
+import { Subscription, Observable, of, combineLatest } from 'rxjs';
 import { MempoolBlock } from '../../interfaces/websocket.interface';
 import { StateService } from '../../services/state.service';
 import { Router } from '@angular/router';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { delay, filter, map, switchMap, tap } from 'rxjs/operators';
 import { feeLevels } from '../../app.constants';
 import { specialBlocks } from '../../app.constants';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
@@ -103,11 +103,28 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.widthChange.emit(this.mempoolWidth);
 
     this.blockDisplayMode = this.stateService.blockDisplayMode$.value as 'size' | 'fees';
-    this.blockDisplayModeSubscription = this.stateService.blockDisplayMode$.subscribe((mode: 'size' | 'fees') => {
-      if (mode !== this.blockDisplayMode) {
-        this.applyAnimation(mode);
-      }
-    });
+    this.blockDisplayModeSubscription = this.stateService.blockDisplayMode$
+      .pipe(
+        filter((mode: 'size' | 'fees') => mode !== this.blockDisplayMode),
+        tap(() => {
+          this.blockTransformation = {
+            transform: 'rotateX(90deg)',
+            transition: 'transform 0.375s'
+          };
+        }),
+        delay(375),
+        tap((mode) => {
+          this.blockDisplayMode = mode;
+          this.blockTransformation = {
+            transition: 'transform 0.375s'
+          };
+          this.cd.markForCheck();
+        }),
+        delay(375),
+      )
+      .subscribe(() => {
+        this.blockTransformation = {};
+      });
 
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
       this.timeLtr = !this.forceRtl && !!ltr;
@@ -450,23 +467,6 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
     this.rightPosition = Math.min(this.maxArrowPosition, this.rightPosition);
-  }
-
-  applyAnimation(mode: 'size' | 'fees') {
-    this.blockTransformation = {
-      transform: 'rotateX(90deg)',
-      transition: 'transform 0.375s'
-    };
-    setTimeout(() => {
-      this.blockDisplayMode = mode;
-      this.blockTransformation = {
-        transition: 'transform 0.375s'
-      };
-      this.cd.markForCheck();
-      setTimeout(() => {
-        this.blockTransformation = {};
-      }, 375);
-    }, 375);
   }
 
   mountEmptyBlocks() {
