@@ -9,6 +9,7 @@ import { StatusViewComponent } from './components/status-view/status-view.compon
 import { AddressGroupComponent } from './components/address-group/address-group.component';
 import { TrackerComponent } from './components/tracker/tracker.component';
 import { AccelerateCheckout } from './components/accelerate-checkout/accelerate-checkout.component';
+import { TrackerGuard } from './route-guards';
 
 const browserWindow = window || {};
 // @ts-ignore
@@ -141,14 +142,15 @@ let routes: Routes = [
     data: { preload: true },
   },
   {
+    path: 'tx/:id',
+    canMatch: [TrackerGuard],
+    runGuardsAndResolvers: 'always',
+    component: TrackerComponent,
+  },
+  {
     path: '',
     loadChildren: () => import('./master-page.module').then(m => m.MasterPageModule),
     data: { preload: true },
-  },
-  {
-    path: 'tracker',
-    data: { networkSpecific: true },
-    loadChildren: () => import('./components/tracker/tracker.module').then(m => m.TrackerModule),
   },
   {
     path: 'wallet',
