@@ -1,10 +1,10 @@
 .rbf-tooltip {
   position: fixed;
   z-index: 3;
-  background: rgba(#11131f, 0.95);
+  background: color-mix(in srgb, var(--active-bg) 95%, transparent);
   border-radius: 4px;
   box-shadow: 1px 1px 10px rgba(0,0,0,0.5);
-  color: #b1b1b1;
+  color: var(--tooltip-grey);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
