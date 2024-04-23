@@ -63,7 +63,7 @@
 .fee-span {
   font-size: 11px;
   margin-bottom: 5px;
-  color: #fff000;
+  color: var(--yellow);
 }
 
 .transaction-count {
@@ -130,7 +130,7 @@
   height: 0;
   border-left: calc(var(--block-size) * 0.3) solid transparent;
   border-right: calc(var(--block-size) * 0.3) solid transparent;
-  border-bottom: calc(var(--block-size) * 0.3) solid #FFF;
+  border-bottom: calc(var(--block-size) * 0.3) solid var(--fg);
 }
 
 .flashing {
