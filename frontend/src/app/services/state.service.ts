@@ -151,7 +151,7 @@ export class StateService {
   hideAudit: BehaviorSubject<boolean>;
   fiatCurrency$: BehaviorSubject<string>;
   rateUnits$: BehaviorSubject<string>;
-  showMiningInfo$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  blockDisplayMode$: BehaviorSubject<string> = new BehaviorSubject<string>('size');
 
   searchFocus$: Subject<boolean> = new Subject<boolean>();
   menuOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -258,6 +258,9 @@ export class StateService {
 
     const rateUnitPreference = this.storageService.getValue('rate-unit-preference');
     this.rateUnits$ = new BehaviorSubject<string>(rateUnitPreference || 'vb');
+
+    const blockDisplayModePreference = this.storageService.getValue('block-display-mode-preference');
+    this.blockDisplayMode$ = new BehaviorSubject<string>(blockDisplayModePreference || 'size');
 
     this.backend$.subscribe(backend => {
       this.backend = backend;
