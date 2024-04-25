@@ -23,6 +23,13 @@ export interface ILoadingIndicators { [name: string]: number; }
 export interface Customization {
   theme: string;
   enterprise?: string;
+  branding: {
+    name: string;
+    site_id?: number;
+    title: string;
+    img: string;
+    rounded_corner: boolean;
+  },
   dashboard: {
     widgets: {
       component: string;

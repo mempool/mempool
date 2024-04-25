@@ -19,7 +19,7 @@
   <a class="navbar-brand d-none d-md-flex" [ngClass]="{'dual-logos': subdomain}" [routerLink]="['/' | relativeUrl]" (click)="brandClick($event)">
     <ng-template [ngIf]="subdomain && enterpriseInfo">
       <div class="subdomain_container">
-        <img [src]="'/api/v1/services/enterprise/images/' + subdomain + '/logo?imageMd5=' + enterpriseInfo.imageMd5" class="subdomain_logo" [class]="{'rounded': enterpriseInfo.rounded_corner}">
+        <img [src]="enterpriseInfo.img || '/api/v1/services/enterprise/images/' + subdomain + '/logo?imageMd5=' + enterpriseInfo.imageMd5" class="subdomain_logo" [class]="{'rounded': enterpriseInfo.rounded_corner}">
       </div>
       <div class="vertical-line"></div>
     </ng-template>

@@ -1,6 +1,12 @@
 {
   "theme": "contrast",
-  "enterprise": "elsalvador",
+  "enterprise": "onbtc",
+  "branding": {
+    "name": "onbtc",
+    "title": "Oficina Nacional del Bitcoin",
+    "img": "/resources/elsalvador.svg",
+    "rounded_corner": true
+  },
   "dashboard": {
     "widgets": [
       {
