@@ -1,0 +1,32 @@
+{
+  "theme": "contrast",
+  "enterprise": "elsalvador",
+  "dashboard": {
+    "widgets": [
+      {
+        "component": "fees"
+      },
+      {
+        "component": "balance",
+        "props": {
+          "address": "32ixEdVJWo3kmvJGMTZq5jAQVZZeuwnqzo"
+        }
+      },
+      {
+        "component": "goggles"
+      },
+      {
+        "component": "address",
+        "props": {
+          "address": "32ixEdVJWo3kmvJGMTZq5jAQVZZeuwnqzo"
+        }
+      },
+      {
+        "component": "blocks"
+      },
+      {
+        "component": "transactions"
+      }
+    ]
+  }
+}

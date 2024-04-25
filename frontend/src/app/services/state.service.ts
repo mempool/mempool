@@ -20,6 +20,17 @@ export interface MarkBlockState {
 
 export interface ILoadingIndicators { [name: string]: number; }
 
+export interface Customization {
+  theme: string;
+  enterprise?: string;
+  dashboard: {
+    widgets: {
+      component: string;
+      props: { [key: string]: any };
+    }[];
+  };
+}
+
 export interface Env {
   TESTNET_ENABLED: boolean;
   SIGNET_ENABLED: boolean;
@@ -50,6 +61,7 @@ export interface Env {
   ADDITIONAL_CURRENCIES: boolean;
   GIT_COMMIT_HASH_MEMPOOL_SPACE?: string;
   PACKAGE_JSON_VERSION_MEMPOOL_SPACE?: string;
+  customize?: Customization;
 }
 
 const defaultEnv: Env = {

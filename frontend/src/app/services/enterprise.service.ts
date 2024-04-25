@@ -23,7 +23,7 @@ export class EnterpriseService {
     private stateService: StateService,
     private activatedRoute: ActivatedRoute,
   ) {
-    const subdomain = this.document.location.hostname.indexOf(this.exclusiveHostName) > -1
+    const subdomain = this.stateService.env.customize.enterprise || this.document.location.hostname.indexOf(this.exclusiveHostName) > -1
       && this.document.location.hostname.split(this.exclusiveHostName)[0] || false;
     if (subdomain && subdomain.match(/^[A-z0-9-_]+$/)) {
       this.subdomain = subdomain;
