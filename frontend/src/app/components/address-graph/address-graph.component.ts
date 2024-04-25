@@ -7,6 +7,7 @@ import { ElectrsApiService } from '../../services/electrs-api.service';
 import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
 import { Router } from '@angular/router';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { StateService } from '../../services/state.service';
 
 @Component({
   selector: 'app-address-graph',
@@ -26,8 +27,10 @@ export class AddressGraphComponent implements OnChanges {
   @Input() address: string;
   @Input() isPubkey: boolean = false;
   @Input() stats: ChainStats;
+  @Input() height: number = 200;
   @Input() right: number | string = 10;
   @Input() left: number | string = 70;
+  @Input() widget: boolean = false;
 
   data: any[] = [];
   hoverData: any[] = [];
@@ -43,6 +46,7 @@ export class AddressGraphComponent implements OnChanges {
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
+    public stateService: StateService,
     private electrsApiService: ElectrsApiService,
     private router: Router,
     private amountShortenerPipe: AmountShortenerPipe,
@@ -52,6 +56,9 @@ export class AddressGraphComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.isLoading = true;
+    if (!this.address || !this.stats) {
+      return;
+    }
     (this.isPubkey
       ? this.electrsApiService.getScriptHashSummary$((this.address.length === 66 ? '21' : '41') + this.address + 'ac')
       : this.electrsApiService.getAddressSummary$(this.address)).pipe(
