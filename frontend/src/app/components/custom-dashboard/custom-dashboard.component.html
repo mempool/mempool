@@ -233,7 +233,11 @@
           <div class="col" style="max-height: 410px">
             <div class="card graph-card">
               <div class="card-body">
-                <h5 class="card-title mb-4" i18n="dashboard.balance-history">Balance History</h5>
+                <a class="title-link" href="" [routerLink]="[('/address/' + widget.props.address) | relativeUrl]">
+                  <h5 class="card-title d-inline" i18n="dashboard.balance-history">Balance History</h5>
+                  <span>&nbsp;</span>
+                  <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
+                </a>
                 <app-address-graph [address]="widget.props.address" [addressSummary$]="addressSummary$" [period]="widget.props.period || 'all'" [stats]="address?.chain_stats" [widget]="true" [height]="graphHeight"></app-address-graph>
               </div>
             </div>
@@ -243,7 +247,11 @@
           <div class="col" style="max-height: 410px">
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title" i18n="dashboard.treasury-transactions">Treasury Transactions</h5>
+                <a class="title-link" href="" [routerLink]="[('/address/' + widget.props.address) | relativeUrl]">
+                  <h5 class="card-title d-inline" i18n="dashboard.treasury-transactions">Treasury Transactions</h5>
+                  <span>&nbsp;</span>
+                  <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
+                </a>
                 <app-address-transactions-widget [address]="widget.props.address" [addressSummary$]="addressSummary$" [addressInfo]="address"></app-address-transactions-widget>
               </div>
             </div>
