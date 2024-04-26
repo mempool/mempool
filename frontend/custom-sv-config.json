@@ -32,7 +32,10 @@
         "component": "blocks"
       },
       {
-        "component": "transactions"
+        "component": "addressTransactions",
+        "props": {
+          "address": "32ixEdVJWo3kmvJGMTZq5jAQVZZeuwnqzo"
+        }
       }
     ]
   }

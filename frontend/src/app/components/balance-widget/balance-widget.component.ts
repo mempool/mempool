@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges
 import { StateService } from '../../services/state.service';
 import { Address, AddressTxSummary } from '../../interfaces/electrs.interface';
 import { ElectrsApiService } from '../../services/electrs-api.service';
-import { catchError, of } from 'rxjs';
+import { Observable, catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-balance-widget',
@@ -13,6 +13,7 @@ import { catchError, of } from 'rxjs';
 export class BalanceWidgetComponent implements OnInit, OnChanges {
   @Input() address: string;
   @Input() addressInfo: Address;
+  @Input() addressSummary$: Observable<AddressTxSummary[]> | null;
   @Input() isPubkey: boolean = false;
 
   isLoading: boolean = true;
@@ -36,14 +37,14 @@ export class BalanceWidgetComponent implements OnInit, OnChanges {
     if (!this.address || !this.addressInfo) {
       return;
     }
-    (this.isPubkey
+    (this.addressSummary$ || (this.isPubkey
       ? this.electrsApiService.getScriptHashSummary$((this.address.length === 66 ? '21' : '41') + this.address + 'ac')
       : this.electrsApiService.getAddressSummary$(this.address)).pipe(
       catchError(e => {
         this.error = `Failed to fetch address balance history: ${e?.status || ''} ${e?.statusText || 'unknown error'}`;
         return of(null);
       }),
-    ).subscribe(addressSummary => {
+    )).subscribe(addressSummary => {
       if (addressSummary) {
         this.error = null;
         this.calculateStats(addressSummary);

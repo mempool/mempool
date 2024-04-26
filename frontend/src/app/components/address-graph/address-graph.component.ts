@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnChanges, SimpleChanges } from '@angular/core';
 import { echarts, EChartsOption } from '../../graphs/echarts';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { ChainStats } from '../../interfaces/electrs.interface';
+import { AddressTxSummary, ChainStats } from '../../interfaces/electrs.interface';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
 import { Router } from '@angular/router';
@@ -36,6 +36,7 @@ export class AddressGraphComponent implements OnChanges {
   @Input() address: string;
   @Input() isPubkey: boolean = false;
   @Input() stats: ChainStats;
+  @Input() addressSummary$: Observable<AddressTxSummary[]> | null;
   @Input() period: '1d' | '3d' | '1w' | '1m' | '6m' | '1y' | 'all' = 'all';
   @Input() height: number = 200;
   @Input() right: number | string = 10;
@@ -69,14 +70,14 @@ export class AddressGraphComponent implements OnChanges {
     if (!this.address || !this.stats) {
       return;
     }
-    (this.isPubkey
+    (this.addressSummary$ || (this.isPubkey
       ? this.electrsApiService.getScriptHashSummary$((this.address.length === 66 ? '21' : '41') + this.address + 'ac')
       : this.electrsApiService.getAddressSummary$(this.address)).pipe(
       catchError(e => {
         this.error = `Failed to fetch address balance history: ${e?.status || ''} ${e?.statusText || 'unknown error'}`;
         return of(null);
       }),
-    ).subscribe(addressSummary => {
+    )).subscribe(addressSummary => {
       if (addressSummary) {
         this.error = null;
         this.prepareChartOptions(addressSummary);

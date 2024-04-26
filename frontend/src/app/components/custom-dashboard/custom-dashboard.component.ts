@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { combineLatest, merge, Observable, of, Subject, Subscription } from 'rxjs';
-import { catchError, filter, map, scan, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { catchError, filter, map, scan, share, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended, OptimizedMempoolStats, TransactionStripped } from '../../interfaces/node-api.interface';
 import { MempoolInfo, ReplacementInfo } from '../../interfaces/websocket.interface';
 import { ApiService } from '../../services/api.service';
@@ -9,7 +9,7 @@ import { WebsocketService } from '../../services/websocket.service';
 import { SeoService } from '../../services/seo.service';
 import { ActiveFilter, FilterMode, GradientMode, toFlags } from '../../shared/filters.utils';
 import { detectWebGL } from '../../shared/graphs.utils';
-import { Address } from '../../interfaces/electrs.interface';
+import { Address, AddressTxSummary } from '../../interfaces/electrs.interface';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 
 interface MempoolBlocksData {
@@ -61,6 +61,7 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
   widgets;
 
   addressSubscription: Subscription;
+  addressSummary$: Observable<AddressTxSummary[]>;
   address: Address;
 
   goggleResolution = 82;
@@ -298,6 +299,16 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
           this.websocketService.startTrackAddress(address.address);
           this.address = address;
         });
+
+      this.addressSummary$ = (
+        addressString.match(/04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}/)
+        ? this.electrsApiService.getScriptHashSummary$((addressString.length === 66 ? '21' : '41') + addressString + 'ac')
+        : this.electrsApiService.getAddressSummary$(addressString)).pipe(
+        catchError(e => {
+          return of(null);
+        }),
+        share(),
+      );
     }
   }
 

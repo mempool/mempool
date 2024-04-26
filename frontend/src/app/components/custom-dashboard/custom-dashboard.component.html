@@ -226,7 +226,7 @@
         @case ('balance') {
           <div class="col card-wrapper">
             <div class="main-title" i18n="dashboard.treasury">Treasury</div>
-            <app-balance-widget [address]="widget.props.address" [addressInfo]="address"></app-balance-widget>
+            <app-balance-widget [address]="widget.props.address" [addressSummary$]="addressSummary$" [addressInfo]="address"></app-balance-widget>
           </div>
         }
         @case ('address') {
@@ -234,7 +234,17 @@
             <div class="card graph-card">
               <div class="card-body">
                 <h5 class="card-title mb-4" i18n="dashboard.balance-history">Balance History</h5>
-                <app-address-graph [address]="widget.props.address" [period]="widget.props.period || 'all'" [stats]="address?.chain_stats" [widget]="true" [height]="graphHeight"></app-address-graph>
+                <app-address-graph [address]="widget.props.address" [addressSummary$]="addressSummary$" [period]="widget.props.period || 'all'" [stats]="address?.chain_stats" [widget]="true" [height]="graphHeight"></app-address-graph>
+              </div>
+            </div>
+          </div>
+        }
+        @case ('addressTransactions') {
+          <div class="col" style="max-height: 410px">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title" i18n="dashboard.treasury-transactions">Treasury Transactions</h5>
+                <app-address-transactions-widget [address]="widget.props.address" [addressSummary$]="addressSummary$" [addressInfo]="address"></app-address-transactions-widget>
               </div>
             </div>
           </div>
