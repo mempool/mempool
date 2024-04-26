@@ -290,9 +290,6 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
         : this.electrsApiService.getAddress$(addressString)
       ).pipe(
           catchError((err) => {
-            // this.isLoadingAddress = false;
-            // this.error = err;
-            // this.seoService.logSoft404();
             console.log(err);
             return of(null);
           }),

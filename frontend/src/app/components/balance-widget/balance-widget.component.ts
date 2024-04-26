@@ -45,7 +45,6 @@ export class BalanceWidgetComponent implements OnInit, OnChanges {
       }),
     ).subscribe(addressSummary => {
       if (addressSummary) {
-        console.log('got address summary!');
         this.error = null;
         this.calculateStats(addressSummary);
       }
@@ -67,6 +66,5 @@ export class BalanceWidgetComponent implements OnInit, OnChanges {
     }
     this.delta7d = weekTotal;
     this.delta30d = monthTotal;
-    console.log('calculated address stats: ', weekTotal, monthTotal);
   }
 }

@@ -234,7 +234,7 @@
             <div class="card graph-card">
               <div class="card-body">
                 <h5 class="card-title mb-4" i18n="dashboard.balance-history">Balance History</h5>
-                <app-address-graph [address]="widget.props.address" [stats]="address?.chain_stats" [widget]="true" [height]="graphHeight"></app-address-graph>
+                <app-address-graph [address]="widget.props.address" [period]="widget.props.period || 'all'" [stats]="address?.chain_stats" [widget]="true" [height]="graphHeight"></app-address-graph>
               </div>
             </div>
           </div>

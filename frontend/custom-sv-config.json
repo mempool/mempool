@@ -24,7 +24,8 @@
       {
         "component": "address",
         "props": {
-          "address": "32ixEdVJWo3kmvJGMTZq5jAQVZZeuwnqzo"
+          "address": "32ixEdVJWo3kmvJGMTZq5jAQVZZeuwnqzo",
+          "period": "1m"
         }
       },
       {
