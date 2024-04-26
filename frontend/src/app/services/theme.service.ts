@@ -24,7 +24,7 @@ export class ThemeService {
   apply(theme) {
     this.theme = theme;
     if (theme !== 'default') {
-      theme === 'contrast' ? this.mempoolFeeColors = contrastMempoolFeeColors : this.mempoolFeeColors = defaultMempoolFeeColors;
+      theme === 'contrast'  || theme === 'bukele' ? this.mempoolFeeColors = contrastMempoolFeeColors : this.mempoolFeeColors = defaultMempoolFeeColors;
       try {
         if (!this.style) {
           this.style = document.createElement('link');
