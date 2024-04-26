@@ -145,7 +145,7 @@ export class AcceleratorDashboardComponent implements OnInit {
     } else {
       const rate = tx.fee / tx.vsize; // color by simple single-tx fee rate
       const feeLevelIndex = feeLevels.findIndex((feeLvl) => Math.max(1, rate) < feeLvl) - 1;
-      return this.theme.theme === 'contrast' ? contrastColors[feeLevelIndex] || contrastColors[contrastColors.length - 1] : normalColors[feeLevelIndex] || normalColors[normalColors.length - 1];
+      return this.theme.theme === 'contrast' || this.theme.theme === 'bukele' ? contrastColors[feeLevelIndex] || contrastColors[contrastColors.length - 1] : normalColors[feeLevelIndex] || normalColors[normalColors.length - 1];
     }
   }
 

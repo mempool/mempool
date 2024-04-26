@@ -69,7 +69,7 @@ export default class BlockScene {
   }
 
   setColorFunction(colorFunction: ((tx: TxView) => Color) | null): void {
-    this.theme.theme === 'contrast' ? this.getColor = colorFunction || contrastColorFunction : this.getColor = colorFunction || defaultColorFunction;
+    this.theme.theme === 'contrast' || this.theme.theme === 'bukele' ? this.getColor = colorFunction || contrastColorFunction : this.getColor = colorFunction || defaultColorFunction;
     this.updateAllColors();
   }
 
@@ -246,7 +246,7 @@ export default class BlockScene {
     this.flip = flip;
     this.vertexArray = vertexArray;
     this.highlightingEnabled = highlighting;
-    theme.theme === 'contrast' ? this.getColor = colorFunction || contrastColorFunction : this.getColor = colorFunction || defaultColorFunction;
+    theme.theme === 'contrast' || theme.theme === 'bukele' ? this.getColor = colorFunction || contrastColorFunction : this.getColor = colorFunction || defaultColorFunction;
     this.theme = theme;
 
     this.scene = {

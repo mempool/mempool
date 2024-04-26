@@ -1,9 +1,9 @@
 /* Theme */
-$bg: #1c1e4d;
-$active-bg: #313945;
+$bg: #313945;
+$active-bg: #000000;
 $hover-bg: #E5E5E5;
-$fg: #FFFFFF;
-$title-fg: #c9a892;
+$fg: #ffffff;
+$title-fg: #c19a81;
 
 $taproot: #eba814;
 $taproot-light: #d5a90a;
@@ -17,11 +17,11 @@ $gray-700: $fg;
 
 $nav-tabs-link-active-bg: $active-bg;
 
-$primary: #343992;
-$secondary: #32345e;
-$tertiary: #a08674;
+$primary: #007cfa;
+$secondary: #1c1e4d;
+$tertiary: #8c7566;
 $success: #009900;
-$info: #e4d3c8;
+$info: #dac3b4;
 
 $h5-font-size: 1.15rem !default;
 
@@ -74,14 +74,14 @@ $dropdown-link-active-bg: $active-bg;
   --skeleton-bg: #2e324e;
   --skeleton-bg-light: #5d6182;
 
-  --box-bg: #15173a;
-  --stat-box-bg: #0e0f28;
+  --box-bg: #272d37;
+  --stat-box-bg: #1c2027;
   --alert-bg: #3a1c61;
   --navbar-bg: #212121;
   --transparent-fg: #ffffffbb;
   --fade-out-box-bg-start: rgba(23, 28, 42, 0);
   --fade-out-box-bg-end: rgba(23, 28, 42, 1);
-  --opacity: 0.7;
+  --opacity: 0.57;
 
   --testnet: #1d486f;
   --signet: #6f1d5d;
@@ -103,4 +103,9 @@ $dropdown-link-active-bg: $active-bg;
   --grey: #7e7e7e;
   --tooltip-grey: #b1b1b1;
   --orange: #ff9f00;
+
+  --search-button: #645449;
+  --search-button-border: #605046;
+  --search-button-focus: #786457;
+  --search-button-shadow: #a0867480;
 }
