@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { combineLatest, merge, Observable, of, Subject, Subscription } from 'rxjs';
-import { catchError, filter, map, scan, share, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { catchError, filter, map, scan, share, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended, OptimizedMempoolStats, TransactionStripped } from '../../interfaces/node-api.interface';
 import { MempoolInfo, ReplacementInfo } from '../../interfaces/websocket.interface';
 import { ApiService } from '../../services/api.service';
@@ -61,6 +61,7 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
   widgets;
 
   addressSubscription: Subscription;
+  blockTxSubscription: Subscription;
   addressSummary$: Observable<AddressTxSummary[]>;
   address: Address;
 
@@ -294,7 +295,7 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
             console.log(err);
             return of(null);
           }),
-          filter((address) => !!address)
+          filter((address) => !!address),
         ).subscribe((address: Address) => {
           this.websocketService.startTrackAddress(address.address);
           this.address = address;
@@ -307,6 +308,46 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
         catchError(e => {
           return of(null);
         }),
+        switchMap(initial => this.stateService.blockTransactions$.pipe(
+          startWith(null),
+          scan((summary, tx) => {
+            if (tx && !summary.some(t => t.txid === tx.txid)) {
+              let value = 0;
+              let funded = 0;
+              let fundedCount = 0;
+              let spent = 0;
+              let spentCount = 0;
+              for (const vout of tx.vout) {
+                if (vout.scriptpubkey_address === addressString) {
+                  value += vout.value;
+                  funded += vout.value;
+                  fundedCount++;
+                }
+              }
+              for (const vin of tx.vin) {
+                if (vin.prevout?.scriptpubkey_address === addressString) {
+                  value -= vin.prevout?.value;
+                  spent += vin.prevout?.value;
+                  spentCount++;
+                }
+              }
+              if (this.address && this.address.address === addressString) {
+                this.address.chain_stats.tx_count++;
+                this.address.chain_stats.funded_txo_sum += funded;
+                this.address.chain_stats.funded_txo_count += fundedCount;
+                this.address.chain_stats.spent_txo_sum += spent;
+                this.address.chain_stats.spent_txo_count += spentCount;
+              }
+              summary.unshift({
+                txid: tx.txid,
+                time: tx.status?.block_time,
+                height: tx.status?.block_height,
+                value
+              });
+            }
+            return summary;
+          }, initial)
+        )),
         share(),
       );
     }

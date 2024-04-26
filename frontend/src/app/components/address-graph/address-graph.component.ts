@@ -88,7 +88,7 @@ export class AddressGraphComponent implements OnChanges {
   }
 
   prepareChartOptions(summary): void {
-    let total = (this.stats.funded_txo_sum - this.stats.spent_txo_sum); // + (summary[0]?.value || 0);
+    let total = (this.stats.funded_txo_sum - this.stats.spent_txo_sum);
     this.data = summary.map(d => {
       const balance = total;
       total -= d.value;
@@ -102,13 +102,6 @@ export class AddressGraphComponent implements OnChanges {
       this.data.push(
         {value: [now, this.stats.funded_txo_sum - this.stats.spent_txo_sum], symbol: 'none', tooltip: { show: false }}
       );
-
-        // [now, this.stats.funded_txo_sum - this.stats.spent_txo_sum, {
-        // txid: null,
-        // height: null,
-        // value: this.stats.funded_txo_sum - this.stats.spent_txo_sum,
-        // time: Math.floor(now / 1000),
-      // }]);
     }
 
     const maxValue = this.data.reduce((acc, d) => Math.max(acc, Math.abs(d[1] || d.value[1])), 0);
