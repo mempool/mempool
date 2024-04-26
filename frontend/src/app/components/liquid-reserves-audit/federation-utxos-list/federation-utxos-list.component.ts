@@ -122,8 +122,8 @@ export class FederationUtxosListComponent implements OnInit {
 
   getGradientColor(value: number): string {
     const distanceToGreen = Math.abs(4032 - value);
-    const green = 'var(--green)';
-    const red = 'var(--red)';
+    const green = '#3bcc49';
+    const red = '#dc3545';
   
     if (value < 0) {
       return red;

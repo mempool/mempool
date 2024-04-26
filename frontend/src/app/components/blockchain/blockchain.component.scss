@@ -67,9 +67,24 @@
   padding: 0;
 }
 
+.block-display-toggle {
+  color: white;
+  font-size: 0.8rem;
+  position: absolute;
+  bottom: 15.8em;
+  left: 1px;
+  transform: translateX(-50%) rotate(90deg);
+  background: none;
+  border: none;
+  outline: none;
+  margin: 0;
+  padding: 0;
+}
+
 .blockchain-wrapper.ltr-transition .blocks-wrapper,
 .blockchain-wrapper.ltr-transition .position-container,
-.blockchain-wrapper.ltr-transition .time-toggle {
+.blockchain-wrapper.ltr-transition .time-toggle,
+.blockchain-wrapper.ltr-transition .block-display-toggle {
   transition: transform 1s;
 }
 
@@ -80,6 +95,10 @@
 
   .time-toggle {
     transform: translateX(-50%) scaleX(-1);
+  }
+
+  .block-display-toggle {
+    transform: translateX(-50%) scaleX(-1) rotate(90deg);
   }
 }
 

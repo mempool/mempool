@@ -12,6 +12,7 @@
         class="text-center bitcoin-block mined-block blockchain-blocks-offset-{{ offset }}-index-{{ i }}"
         [class.offscreen]="!static && count && i >= count"
         id="bitcoin-block-{{ block.height }}" [ngStyle]="blockStyles[i]"
+        [style]="blockTransformation"
         [class.blink-bg]="isSpecial(block.height)">
         <a draggable="false" [routerLink]="[getHref(i, block) | relativeUrl]" [state]="{ data: { block: block } }"
           class="blockLink" [ngClass]="{'disabled': (this.stateService.blockScrolling$ | async)}">&nbsp;</a>
@@ -40,7 +41,7 @@
                 <app-fee-rate unitClass=""></app-fee-rate>
               </div>
             </ng-template>
-            <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-total-fees'" *ngIf="showMiningInfo$ | async; else noMiningInfo"
+            <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-total-fees'" *ngIf="blockDisplayMode === 'fees'; else noMiningInfo"
               class="block-size">
               <app-amount [satoshis]="block.extras?.totalFees ?? 0" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
             </div>

@@ -12,7 +12,7 @@ import { Price } from '../../services/price.service';
 export class AmountComponent implements OnInit, OnDestroy {
   conversions$: Observable<any>;
   currency: string;
-  viewFiat$: Observable<boolean>;
+  viewAmountMode$: Observable<'btc' | 'sats' | 'fiat'>;
   network = '';
 
   stateSubscription: Subscription;
@@ -37,7 +37,7 @@ export class AmountComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.viewFiat$ = this.stateService.viewFiat$.asObservable();
+    this.viewAmountMode$ = this.stateService.viewAmountMode$.asObservable();
     this.conversions$ = this.stateService.conversions$.asObservable();
     this.stateSubscription = this.stateService.networkChanged$.subscribe((network) => this.network = network);
   }

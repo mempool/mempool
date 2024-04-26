@@ -136,7 +136,7 @@ export class StateService {
 
   live2Chart$ = new Subject<OptimizedMempoolStats>();
 
-  viewFiat$ = new BehaviorSubject<boolean>(false);
+  viewAmountMode$: BehaviorSubject<'btc' | 'sats' | 'fiat'>;
   connectionState$ = new BehaviorSubject<0 | 1 | 2>(2);
   isTabHidden$: Observable<boolean>;
 
@@ -151,7 +151,7 @@ export class StateService {
   hideAudit: BehaviorSubject<boolean>;
   fiatCurrency$: BehaviorSubject<string>;
   rateUnits$: BehaviorSubject<string>;
-  showMiningInfo$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  blockDisplayMode$: BehaviorSubject<string>;
 
   searchFocus$: Subject<boolean> = new Subject<boolean>();
   menuOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -258,6 +258,12 @@ export class StateService {
 
     const rateUnitPreference = this.storageService.getValue('rate-unit-preference');
     this.rateUnits$ = new BehaviorSubject<string>(rateUnitPreference || 'vb');
+
+    const blockDisplayModePreference = this.storageService.getValue('block-display-mode-preference');
+    this.blockDisplayMode$ = new BehaviorSubject<string>(blockDisplayModePreference || 'size');
+
+    const viewAmountModePreference = this.storageService.getValue('view-amount-mode') as 'btc' | 'sats' | 'fiat';
+    this.viewAmountMode$ = new BehaviorSubject<'btc' | 'sats' | 'fiat'>(viewAmountModePreference || 'btc');
 
     this.backend$.subscribe(backend => {
       this.backend = backend;
