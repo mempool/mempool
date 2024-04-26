@@ -10,6 +10,7 @@ import { filter, map, tap, switchMap, shareReplay, catchError } from 'rxjs/opera
 import { BlockExtended } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { PriceService } from '../../services/price.service';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-transactions-list',
@@ -56,6 +57,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     private assetsService: AssetsService,
     private ref: ChangeDetectorRef,
     private priceService: PriceService,
+    private storageService: StorageService,
   ) { }
 
   ngOnInit(): void {
@@ -271,8 +273,11 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     if (this.network === 'liquid' || this.network === 'liquidtestnet') {
       return;
     }
-    const oldvalue = !this.stateService.viewFiat$.value;
-    this.stateService.viewFiat$.next(oldvalue);
+    const modes = ['btc', 'sats', 'fiat'];
+    const oldIndex = modes.indexOf(this.stateService.viewAmountMode$.value);
+    const newIndex = (oldIndex + 1) % modes.length;
+    this.stateService.viewAmountMode$.next(modes[newIndex] as 'btc' | 'sats' | 'fiat');
+    this.storageService.setValue('view-amount-mode', modes[newIndex]);
   }
 
   trackByFn(index: number, tx: Transaction): string {
