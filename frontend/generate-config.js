@@ -4,6 +4,7 @@ const { spawnSync } = require('child_process');
 const CONFIG_FILE_NAME = 'mempool-frontend-config.json';
 const GENERATED_CONFIG_FILE_NAME = 'src/resources/config.js';
 const GENERATED_TEMPLATE_CONFIG_FILE_NAME = 'src/resources/config.template.js';
+const GENERATED_CUSTOMIZATION_FILE_NAME = 'src/resources/customize.js';
 
 let settings = [];
 let configContent = {};
@@ -108,6 +109,23 @@ function writeConfigTemplate(path, config) {
 writeConfigTemplate(GENERATED_TEMPLATE_CONFIG_FILE_NAME, newConfigTemplate);
 
 const currentConfig = readConfig(GENERATED_CONFIG_FILE_NAME);
+
+let customConfigJs = '';
+if (configContent && configContent.CUSTOMIZATION) {
+  const customConfig = readConfig(configContent.CUSTOMIZATION);
+  if (customConfig) {
+    console.log(`Customizing frontend using ${configContent.CUSTOMIZATION}`);
+    customConfigJs = `(function (window) {
+      window.__env = window.__env || {};
+      window.__env.customize = ${customConfig};
+      }((typeof global !== 'undefined') ? global : this));
+    `;
+  } else {
+    throw new Error('Failed to load customization file');
+  }
+}
+
+writeConfig(GENERATED_CUSTOMIZATION_FILE_NAME, customConfigJs);
 
 if (currentConfig && currentConfig === newConfig) {
   console.log(`No configuration updates, skipping ${GENERATED_CONFIG_FILE_NAME} file update`);

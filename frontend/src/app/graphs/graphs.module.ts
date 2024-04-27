@@ -27,6 +27,7 @@ import { PoolRankingComponent } from '../components/pool-ranking/pool-ranking.co
 import { PoolComponent } from '../components/pool/pool.component';
 import { TelevisionComponent } from '../components/television/television.component';
 import { DashboardComponent } from '../dashboard/dashboard.component';
+import { CustomDashboardComponent } from '../components/custom-dashboard/custom-dashboard.component';
 import { MiningDashboardComponent } from '../components/mining-dashboard/mining-dashboard.component';
 import { AcceleratorDashboardComponent } from '../components/acceleration/accelerator-dashboard/accelerator-dashboard.component';
 import { HashrateChartComponent } from '../components/hashrate-chart/hashrate-chart.component';
@@ -39,6 +40,7 @@ import { CommonModule } from '@angular/common';
 @NgModule({
   declarations: [
     DashboardComponent,
+    CustomDashboardComponent,
     MempoolBlockComponent,
     AddressComponent,
 

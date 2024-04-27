@@ -1,0 +1,50 @@
+.latest-transactions {
+  width: 100%;
+  text-align: left;
+  table-layout:fixed;
+  tr, td, th {
+    border: 0px;
+    padding-top: 0.71rem !important;
+    padding-bottom: 0.75rem !important;
+  }
+  td {
+    overflow:hidden;
+    width: 25%;
+  }
+  .table-cell-satoshis {
+    display: none;
+    text-align: right;
+    @media (min-width: 576px) {
+      display: table-cell;
+    }
+    @media (min-width: 768px) {
+      display: none;
+    }
+    @media (min-width: 1100px) {
+      display: table-cell;
+    }
+  }
+  .table-cell-fiat {
+    display: none;
+    text-align: right;
+    @media (min-width: 485px) {
+      display: table-cell;
+    }
+    @media (min-width: 768px) {
+      display: none;
+    }
+    @media (min-width: 992px) {
+      display: table-cell;
+    }
+  }
+  .table-cell-date {
+    text-align: right;
+  }
+}
+.skeleton-loader-transactions {
+  max-width: 250px;
+  position: relative;
+  top: 2px;
+  margin-bottom: -3px;
+  height: 18px;
+}

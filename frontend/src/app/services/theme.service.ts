@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { defaultMempoolFeeColors, contrastMempoolFeeColors } from '../app.constants';
 import { StorageService } from './storage.service';
+import { StateService } from './state.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +15,9 @@ export class ThemeService {
 
   constructor(
     private storageService: StorageService,
+    private stateService: StateService,
   ) {
-    const theme = this.storageService.getValue('theme-preference') || 'default';
+    const theme = this.storageService.getValue('theme-preference') || this.stateService.env.customize?.theme || 'default';
     this.apply(theme);
   }
 

@@ -1,0 +1,42 @@
+{
+  "theme": "contrast",
+  "enterprise": "onbtc",
+  "branding": {
+    "name": "onbtc",
+    "title": "Oficina Nacional del Bitcoin",
+    "img": "/resources/elsalvador.svg",
+    "rounded_corner": true
+  },
+  "dashboard": {
+    "widgets": [
+      {
+        "component": "fees"
+      },
+      {
+        "component": "balance",
+        "props": {
+          "address": "32ixEdVJWo3kmvJGMTZq5jAQVZZeuwnqzo"
+        }
+      },
+      {
+        "component": "goggles"
+      },
+      {
+        "component": "address",
+        "props": {
+          "address": "32ixEdVJWo3kmvJGMTZq5jAQVZZeuwnqzo",
+          "period": "1m"
+        }
+      },
+      {
+        "component": "blocks"
+      },
+      {
+        "component": "addressTransactions",
+        "props": {
+          "address": "32ixEdVJWo3kmvJGMTZq5jAQVZZeuwnqzo"
+        }
+      }
+    ]
+  }
+}

@@ -166,6 +166,7 @@
               "src/resources",
               "src/robots.txt",
               "src/config.js",
+              "src/customize.js",
               "src/config.template.js"
             ],
             "styles": [

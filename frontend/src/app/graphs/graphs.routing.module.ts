@@ -17,9 +17,15 @@ import { StartComponent } from '../components/start/start.component';
 import { StatisticsComponent } from '../components/statistics/statistics.component';
 import { TelevisionComponent } from '../components/television/television.component';
 import { DashboardComponent } from '../dashboard/dashboard.component';
+import { CustomDashboardComponent } from '../components/custom-dashboard/custom-dashboard.component';
 import { AccelerationFeesGraphComponent } from '../components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component';
 import { AccelerationsListComponent } from '../components/acceleration/accelerations-list/accelerations-list.component';
 import { AddressComponent } from '../components/address/address.component';
+
+const browserWindow = window || {};
+// @ts-ignore
+const browserWindowEnv = browserWindow.__env || {};
+const isCustomized = browserWindowEnv?.customize;
 
 const routes: Routes = [
   {
@@ -149,7 +155,7 @@ const routes: Routes = [
         component: StartComponent,
         children: [{
           path: '',
-          component: DashboardComponent,
+          component: isCustomized ? CustomDashboardComponent : DashboardComponent,
         }]
       },
     ]
