@@ -50,8 +50,12 @@ export class SeoService {
     this.metaService.updateTag({ property: 'og:meta:ready', content: 'ready'});
   }
 
-  setEnterpriseTitle(title: string) {
-    this.baseTitle = title + ' - ' + this.baseTitle;
+  setEnterpriseTitle(title: string, override: boolean = false) {
+    if (override) {
+      this.baseTitle = title;
+    } else {
+      this.baseTitle = title + ' - ' + this.baseTitle;
+    }
     this.resetTitle();
   }
 

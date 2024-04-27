@@ -4,6 +4,7 @@
   "branding": {
     "name": "onbtc",
     "title": "Oficina Nacional del Bitcoin",
+    "header_img": "/resources/onbtc.svg",
     "img": "/resources/elsalvador.svg",
     "rounded_corner": true
   },
