@@ -3,7 +3,7 @@
     <th class="table-cell-txid" i18n="dashboard.latest-transactions.txid">TXID</th>
     <th class="table-cell-satoshis" i18n="dashboard.latest-transactions.amount">Amount</th>
     <th class="table-cell-fiat">{{ currency }}</th>
-    <th class="table-cell-date" i18n="transaction.fee|Transaction fee">Date</th>
+    <th class="table-cell-date" i18n="shared.date">Date</th>
   </thead>
   <tbody *ngIf="transactions$ | async as transactions else recentTransactionsSkeleton">
     <tr *ngFor="let transaction of transactions; let i = index;">
