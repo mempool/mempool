@@ -279,7 +279,7 @@ export class StateService {
     this.rateUnits$ = new BehaviorSubject<string>(rateUnitPreference || 'vb');
 
     const blockDisplayModePreference = this.storageService.getValue('block-display-mode-preference');
-    this.blockDisplayMode$ = new BehaviorSubject<string>(blockDisplayModePreference || 'size');
+    this.blockDisplayMode$ = new BehaviorSubject<string>(blockDisplayModePreference || 'fees');
 
     const viewAmountModePreference = this.storageService.getValue('view-amount-mode') as 'btc' | 'sats' | 'fiat';
     this.viewAmountMode$ = new BehaviorSubject<'btc' | 'sats' | 'fiat'>(viewAmountModePreference || 'btc');
