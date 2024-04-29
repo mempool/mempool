@@ -38,6 +38,8 @@ export class AddressComponent implements OnInit, OnDestroy {
   txCount = 0;
   received = 0;
   sent = 0;
+  now = Date.now() / 1000;
+  balancePeriod: 'all' | '1m' = 'all';
 
   private tempTransactions: Transaction[];
   private timeTxIndexes: number[];
@@ -174,6 +176,10 @@ export class AddressComponent implements OnInit, OnDestroy {
 
         this.transactions = this.tempTransactions;
         this.isLoadingTransactions = false;
+
+        if (!this.showBalancePeriod()) {
+          this.setBalancePeriod('all');
+        }
       },
       (error) => {
         console.log(error);
@@ -294,6 +300,18 @@ export class AddressComponent implements OnInit, OnDestroy {
     this.received = this.address.chain_stats.funded_txo_sum + this.address.mempool_stats.funded_txo_sum;
     this.sent = this.address.chain_stats.spent_txo_sum + this.address.mempool_stats.spent_txo_sum;
     this.txCount = this.address.chain_stats.tx_count + this.address.mempool_stats.tx_count;
+  }
+
+  setBalancePeriod(period: 'all' | '1m'): boolean {
+    this.balancePeriod = period;
+    return false;
+  }
+
+  showBalancePeriod(): boolean {
+    return this.transactions?.length && (
+      !this.transactions[0].status?.confirmed
+      || this.transactions[0].status.block_time > (this.now - (60 * 60 * 24 * 30))
+    );
   }
 
   ngOnDestroy() {
