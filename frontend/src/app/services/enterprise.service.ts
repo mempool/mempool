@@ -50,7 +50,7 @@ export class EnterpriseService {
     if (this.stateService.env.customize?.branding) {
       const info = this.stateService.env.customize?.branding;
       this.insertMatomo(info.site_id);
-      this.seoService.setEnterpriseTitle(info.title);
+      this.seoService.setEnterpriseTitle(info.title, true);
       this.info$.next(info);
     } else {
       this.apiService.getEnterpriseInfo$(this.subdomain).subscribe((info) => {

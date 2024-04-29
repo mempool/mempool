@@ -252,6 +252,24 @@ const networks = {
   bisq: {
     fallbackImg: '/resources/bisq/bisq-markets-preview.png',
     routes: {} // no routes supported
+  },
+  onbtc: {
+    fallbackImg: '/resources/onbtc/onbtc-preview.png',
+    routes: { // only dynamic routes supported
+      block: routes.block,
+      address: routes.address,
+      tx: routes.tx,
+      mining: {
+        title: "Mining",
+        routes: {
+          pool: routes.mining.routes.pool,
+        }
+      },
+      lightning: {
+        title: "Lightning",
+        routes: routes.lightning.routes,
+      }
+    }
   }
 };
 
