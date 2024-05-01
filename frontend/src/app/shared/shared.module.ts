@@ -112,6 +112,7 @@ import { ClockComponent } from '../components/clock/clock.component';
 import { CalculatorComponent } from '../components/calculator/calculator.component';
 import { BitcoinsatoshisPipe } from '../shared/pipes/bitcoinsatoshis.pipe';
 import { HttpErrorComponent } from '../shared/components/http-error/http-error.component';
+import { TwitterWidgetComponent } from '../components/twitter-widget/twitter-widget.component';
 
 import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-directives/weight-directives';
 
@@ -224,6 +225,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     AccelerateCheckout,
     PendingStatsComponent,
     HttpErrorComponent,
+    TwitterWidgetComponent,
   ],
   imports: [
     CommonModule,
@@ -351,6 +353,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     AccelerateCheckout,
     PendingStatsComponent,
     HttpErrorComponent,
+    TwitterWidgetComponent,
 
     MempoolBlockOverviewComponent,
     ClockchainComponent,

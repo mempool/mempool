@@ -4,7 +4,7 @@
     @for (widget of widgets; track widget.component) {
       @switch (widget.component) {
         @case ('fees') {
-          <div class="col card-wrapper">
+          <div class="col card-wrapper" [style.order]="isMobile && widget.mobileOrder || 8">
             <div class="main-title" i18n="fees-box.transaction-fees">Transaction Fees</div>
             <div class="card">
               <div class="card-body less-padding">
@@ -14,12 +14,12 @@
           </div>
         }
         @case ('difficulty') {
-          <div class="col">
+          <div class="col" [style.order]="isMobile && widget.mobileOrder || 8">
             <app-difficulty></app-difficulty>
           </div>
         }
         @case ('goggles') {
-          <div class="col">
+          <div class="col" [style.order]="isMobile && widget.mobileOrder || 8">
             <div class="card graph-card">
               <div class="card-body pl-lg-3 pr-lg-3 pl-2 pr-2">
                 <a class="title-link mb-0" style="margin-top: -2px" href="" [routerLink]="['/mempool-block/0' | relativeUrl]">
@@ -48,7 +48,7 @@
           </div>
         }
         @case ('incoming') {
-          <div class="col">
+          <div class="col" [style.order]="isMobile && widget.mobileOrder || 8">
             <div class="card graph-card">
               <div class="card-body">
                 <ng-container *ngTemplateOutlet="mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
@@ -93,7 +93,7 @@
           </ng-template>
         }
         @case ('replacements') {
-          <div class="col" style="max-height: 410px">
+          <div class="col" style="max-height: 410px" [style.order]="isMobile && widget.mobileOrder || 8">
             <div class="card">
               <div class="card-body">
                 <a class="title-link" href="" [routerLink]="['/rbf' | relativeUrl]">
@@ -140,7 +140,7 @@
           </ng-template>
         }
         @case ('blocks') {
-          <div class="col" style="max-height: 410px">
+          <div class="col" style="max-height: 410px" [style.order]="isMobile && widget.mobileOrder || 8">
             <div class="card">
               <div class="card-body">
                 <a class="title-link" href="" [routerLink]="['/blocks' | relativeUrl]">
@@ -184,7 +184,7 @@
           </ng-template>
         }
         @case ('transactions') {
-          <div class="col" style="max-height: 410px">
+          <div class="col" style="max-height: 410px" [style.order]="isMobile && widget.mobileOrder || 8">
             <div class="card">
               <div class="card-body">
                 <h5 class="card-title" i18n="dashboard.recent-transactions">Recent Transactions</h5>
@@ -224,13 +224,13 @@
           </ng-template>
         }
         @case ('balance') {
-          <div class="col card-wrapper">
+          <div class="col card-wrapper" [style.order]="isMobile && widget.mobileOrder || 8">
             <div class="main-title" i18n="dashboard.treasury">Treasury</div>
             <app-balance-widget [address]="widget.props.address" [addressSummary$]="addressSummary$" [addressInfo]="address"></app-balance-widget>
           </div>
         }
         @case ('address') {
-          <div class="col" style="max-height: 410px">
+          <div class="col" style="max-height: 410px" [style.order]="isMobile && widget.mobileOrder || 8">
             <div class="card graph-card">
               <div class="card-body">
                 <a class="title-link" href="" [routerLink]="[('/address/' + widget.props.address) | relativeUrl]">
@@ -244,7 +244,7 @@
           </div>
         }
         @case ('addressTransactions') {
-          <div class="col" style="max-height: 410px">
+          <div class="col" style="max-height: 410px" [style.order]="isMobile && widget.mobileOrder || 8">
             <div class="card">
               <div class="card-body">
                 <a class="title-link" href="" [routerLink]="[('/address/' + widget.props.address) | relativeUrl]">
@@ -253,6 +253,22 @@
                   <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
                 </a>
                 <app-address-transactions-widget [address]="widget.props.address" [addressSummary$]="addressSummary$" [addressInfo]="address"></app-address-transactions-widget>
+              </div>
+            </div>
+          </div>
+        }
+        @case ('twitter') {
+          <div class="col" style="min-height:410px" [style.order]="isMobile && widget.mobileOrder || 8">
+            <div class="card graph-card">
+              <div class="card-body pl-lg-3 pr-lg-3 pl-2 pr-2 d-flex flex-column">
+                <a class="title-link" [href]="'https://x.com/' + widget.props?.handle" target="_blank">
+                  <h5 class="card-title d-inline" i18n="dashboard.x-timeline">X Timeline</h5>
+                  <span>&nbsp;</span>
+                  <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
+                </a>
+                @defer {
+                  <app-twitter-widget [handle]="widget.props?.handle" style="flex-grow: 1"></app-twitter-widget>
+                }
               </div>
             </div>
           </div>
