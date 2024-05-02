@@ -13,7 +13,7 @@ export default class BlockScene {
   theme: ThemeService;
   orientation: string;
   flip: boolean;
-  animationDuration: number = 900;
+  animationDuration: number = 1000;
   configAnimationOffset: number | null;
   animationOffset: number;
   highlightingEnabled: boolean;
@@ -179,7 +179,7 @@ export default class BlockScene {
       removed.forEach(tx => {
         tx.destroy();
       });
-    }, 1000);
+    }, (startTime - performance.now()) + this.animationDuration + 1000);
 
     if (resetLayout) {
       add.forEach(tx => {
@@ -239,7 +239,7 @@ export default class BlockScene {
       { width: number, height: number, resolution: number, blockLimit: number, animationDuration: number, animationOffset: number,
         orientation: string, flip: boolean, vertexArray: FastVertexArray, theme: ThemeService, highlighting: boolean, colorFunction: ((tx: TxView) => Color) | null }
   ): void {
-    this.animationDuration = animationDuration || 1000;
+    this.animationDuration = animationDuration || this.animationDuration || 1000;
     this.configAnimationOffset = animationOffset;
     this.animationOffset = this.configAnimationOffset == null ? (this.width * 1.4) : this.configAnimationOffset;
     this.orientation = orientation;
