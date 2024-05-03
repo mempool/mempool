@@ -558,6 +558,10 @@ class WebsocketHandler {
 
     const latestTransactions = memPool.getLatestTransactions();
 
+    if (memPool.isInSync()) {
+      this.mempoolSequence++;
+    }
+
     const replacedTransactions: { replaced: string, by: TransactionExtended }[] = [];
     for (const tx of newTransactions) {
       if (rbfTransactions[tx.txid]) {
@@ -567,12 +571,14 @@ class WebsocketHandler {
       }
     }
     const mempoolDeltaTxids: MempoolDeltaTxids = {
+      sequence: this.mempoolSequence,
       added: newTransactions.map(tx => tx.txid),
       removed: deletedTransactions.map(tx => tx.txid),
       mined: [],
       replaced: replacedTransactions.map(replacement => ({ replaced: replacement.replaced, by: replacement.by.txid })),
     };
     const mempoolDelta: MempoolDelta = {
+      sequence: this.mempoolSequence,
       added: newTransactions,
       removed: deletedTransactions.map(tx => tx.txid),
       mined: [],
@@ -637,10 +643,6 @@ class WebsocketHandler {
     // pre-compute address transactions
     const addressCache = this.makeAddressCache(newTransactions);
     const removedAddressCache = this.makeAddressCache(deletedTransactions);
-
-    if (memPool.isInSync()) {
-      this.mempoolSequence++;
-    }
 
     // TODO - Fix indentation after PR is merged
     for (const server of this.webSocketServers) {
@@ -1034,6 +1036,10 @@ class WebsocketHandler {
 
     const mBlocksWithTransactions = mempoolBlocks.getMempoolBlocksWithTransactions();
 
+    if (memPool.isInSync()) {
+      this.mempoolSequence++;
+    }
+
     const replacedTransactions: { replaced: string, by: TransactionExtended }[] = [];
     for (const txid of Object.keys(rbfTransactions)) {
       for (const replaced of rbfTransactions[txid].replaced) {
@@ -1041,12 +1047,14 @@ class WebsocketHandler {
       }
     }
     const mempoolDeltaTxids: MempoolDeltaTxids = {
+      sequence: this.mempoolSequence,
       added: [],
       removed: [],
       mined: transactions.map(tx => tx.txid),
       replaced: replacedTransactions.map(replacement => ({ replaced: replacement.replaced, by: replacement.by.txid })),
     };
     const mempoolDelta: MempoolDelta = {
+      sequence: this.mempoolSequence,
       added: [],
       removed: [],
       mined: transactions.map(tx => tx.txid),
@@ -1059,10 +1067,6 @@ class WebsocketHandler {
         responseCache[key] = JSON.stringify(data);
       }
       return responseCache[key];
-    }
-
-    if (memPool.isInSync()) {
-      this.mempoolSequence++;
     }
 
     // TODO - Fix indentation after PR is merged

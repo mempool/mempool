@@ -72,6 +72,7 @@ export interface MempoolBlockDelta {
 }
 
 export interface MempoolDeltaTxids {
+  sequence: number,
   added: string[];
   removed: string[];
   mined: string[];
@@ -79,6 +80,7 @@ export interface MempoolDeltaTxids {
 }
 
 export interface MempoolDelta {
+  sequence: number,
   added: MempoolTransactionExtended[];
   removed: string[];
   mined: string[];
