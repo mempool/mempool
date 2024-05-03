@@ -24,6 +24,8 @@ class MiningRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty-adjustments', this.$getDifficultyAdjustments)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/reward-stats/:blockCount', this.$getRewardStats)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/fees/:interval', this.$getHistoricalBlockFees)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/exact-fees/:height', this.$getHistoricalExactBlockFees)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/exact-fees', this.$getHistoricalExactBlockFees)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/rewards/:interval', this.$getHistoricalBlockRewards)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/fee-rates/:interval', this.$getHistoricalBlockFeeRates)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/sizes-weights/:interval', this.$getHistoricalBlockSizeAndWeight)
@@ -206,6 +208,25 @@ class MiningRoutes {
   private async $getHistoricalBlockFees(req: Request, res: Response) {
     try {
       const blockFees = await mining.$getHistoricalBlockFees(req.params.interval);
+      const blockCount = await BlocksRepository.$blockCount(null, null);
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.header('X-total-count', blockCount.toString());
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      res.json(blockFees);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getHistoricalExactBlockFees(req: Request, res: Response) {
+    try {
+      const heightRegex = /^(0|[1-9]\d{0,9})$/;
+      if (req.params.height !== undefined && !heightRegex.test(req.params.height)) {
+          throw new Error('Invalid height parameter');
+      }
+
+      const blockFees = await mining.$getHistoricalExactBlockFees(req.params.height);
       const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');

@@ -51,6 +51,13 @@ class Mining {
   }
 
   /**
+   * Get historical (not averaged) block total fee
+   */
+  public async $getHistoricalExactBlockFees(height: string | null = null): Promise<any> {
+    return await BlocksRepository.$getHistoricalExactBlockFees(height);
+  }
+
+  /**
    * Get historical block rewards
    */
   public async $getHistoricalBlockRewards(interval: string | null = null): Promise<any> {

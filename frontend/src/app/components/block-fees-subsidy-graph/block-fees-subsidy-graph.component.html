@@ -1,0 +1,31 @@
+<app-indexing-progress></app-indexing-progress>
+
+<div class="full-container">
+  <div class="card-header mb-0 mb-md-4">
+    <div class="d-flex d-md-block align-items-baseline">
+      <span i18n="mining.block-fees-subsidy-subsidy">Block Fees Vs Subsidy</span>
+      <button class="btn p-0 pl-2" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
+        <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
+      </button>
+    </div>  
+
+    <div class="formRadioGroup" ngbDropdown *ngIf="(statsObservable$ | async) as stats">
+      <button class="btn btn-primary btn-sm dropdown-toggle" id="endBlockDropdown" ngbDropdownToggle>
+        {{ endBlockToSelector(radioGroupForm.get('endBlock').value) }}
+      </button>
+      <div ngbDropdownMenu class="scrollable-dropdown">
+        <button [ngClass]="{'selected': option === endBlock}" class="dropdown-item" *ngFor="let option of dropdownOptions" (click)="selectBlockSpan(option)">
+          {{ endBlockToSelector(option) }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart" *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+    (chartInit)="onChartInit($event)">
+  </div>
+  <div class="text-center loadingGraphs" *ngIf="!stateService.isBrowser || isLoading">
+    <div class="spinner-border text-light"></div>
+  </div>
+
+</div>

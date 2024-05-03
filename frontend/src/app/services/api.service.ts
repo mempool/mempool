@@ -329,6 +329,13 @@ export class ApiService {
     );
   }
 
+  getHistoricalExactBlockFees$(height: string | undefined) : Observable<any> {
+    return this.httpClient.get<any[]>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/exact-fees` +
+      (height !== undefined ? `/${height}` : ''), { observe: 'response' }
+    );
+  }
+
   getHistoricalBlockRewards$(interval: string | undefined) : Observable<any> {
     return this.httpClient.get<any[]>(
       this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/rewards` +
