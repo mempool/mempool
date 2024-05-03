@@ -1590,8 +1590,8 @@ fi
 # Bitcoin instance for Liquid Testnet #
 #######################################
 
-if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
-    echo "[*] Installing Bitcoin Liquid service"
+if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
+    echo "[*] Installing Bitcoin Liquid Testnet service"
     case $OS in
 
         FreeBSD)
