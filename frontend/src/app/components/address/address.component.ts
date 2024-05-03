@@ -173,6 +173,7 @@ export class AddressComponent implements OnInit, OnDestroy {
         });
 
         this.transactions = this.tempTransactions;
+        if (this.transactions.length === this.txCount) this.fullyLoaded = true;
         this.isLoadingTransactions = false;
       },
       (error) => {
