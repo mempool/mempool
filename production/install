@@ -1437,7 +1437,7 @@ fi
 
 if [ "${UNFURL_INSTALL}" = ON ];then
 
-    echo "[*] Insalling Unfurl source"
+    echo "[*] Installing Unfurl source"
     case $OS in
 
         FreeBSD)
