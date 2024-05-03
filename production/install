@@ -1522,7 +1522,7 @@ fi
 # Bitcoin instance for Mainnet Minfee #
 #######################################
 
-if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
+if [ "${BITCOIN_MAINNET_MINFEE_ENABLE}" = ON ];then
     echo "[*] Installing Bitcoin Minfee service"
     case $OS in
 
