@@ -633,6 +633,8 @@ zfsCreateFilesystems()
 ext4CreateDir()
 {
     mkdir -p "/backup" "${ELEMENTS_HOME}" "${BITCOIN_HOME}" "${MINFEE_HOME}" "${ELECTRS_HOME}" "${MEMPOOL_HOME}" "${MYSQL_HOME}" "${BITCOIN_ELECTRS_HOME}" "${ELEMENTS_HOME}/liquidv1" "${ELEMENTS_ELECTRS_HOME}"
+    mkdir -p /var/cache/nginx/services /var/cache/nginx/api
+    chown "${NGINX_USER}:${NGINX_GROUP}" /var/cache/nginx/services /var/cache/nginx/api
 
     # Bitcoin Mainnet
     if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
