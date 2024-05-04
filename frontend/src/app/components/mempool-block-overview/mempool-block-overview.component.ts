@@ -144,7 +144,7 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
       if (blockMined) {
         this.blockGraph.update(delta.added, delta.removed, delta.changed || [], blockMined ? this.chainDirection : this.poolDirection, blockMined);
       } else {
-        this.blockGraph.queueUpdate(delta.added, delta.removed, delta.changed || [], this.poolDirection);
+        this.blockGraph.deferredUpdate(delta.added, delta.removed, delta.changed || [], this.poolDirection);
       }
     }
 

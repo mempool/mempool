@@ -238,7 +238,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     }
   }
 
-  // collates non-urgent updates into a set of consistent pending changes
+  // collates deferred updates into a set of consistent pending changes
   queueUpdate(add: TransactionStripped[], remove: string[], change: { txid: string, rate: number | undefined, acc: boolean | undefined }[], direction: string = 'left'): void {
     for (const tx of add) {
       this.pendingUpdate.add[tx.txid] = tx;
@@ -262,9 +262,15 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     this.pendingUpdate.count++;
   }
 
+  deferredUpdate(add: TransactionStripped[], remove: string[], change: { txid: string, rate: number | undefined, acc: boolean | undefined }[], direction: string = 'left'): void {
+    this.queueUpdate(add, remove, change, direction);
+    this.applyQueuedUpdates();
+  }
+
   applyQueuedUpdates(): void {
     if (this.pendingUpdate.count && performance.now() > (this.lastUpdate + this.animationDuration)) {
-      this.update([], [], [], this.pendingUpdate?.direction);
+      this.applyUpdate(Object.values(this.pendingUpdate.add), Object.values(this.pendingUpdate.remove), Object.values(this.pendingUpdate.change), this.pendingUpdate.direction);
+      this.clearUpdateQueue();
     }
   }
 
