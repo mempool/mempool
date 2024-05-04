@@ -1,5 +1,5 @@
 .menu {
-  flex-wrap: wrap;
+  flex-grow: 1;
   padding: 0 35px;
   @media (min-width: 576px) {
     max-width: 600px;
@@ -11,6 +11,6 @@
     &.last-child {
       margin-inline-end: 0;
     }
-    margin-bottom: 5px; 
+    margin-bottom: 5px;
   }
 }
