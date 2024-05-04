@@ -6,7 +6,7 @@
     <div class="mb-3">
       <textarea formControlName="txs" class="form-control" rows="5" i18n-placeholder="transaction.test-transactions" placeholder="Comma-separated list of raw transactions"></textarea>
     </div>
-    <label for="maxfeerate" i18n="test.tx.max-fee-rate">Maximum fee rate (s/vb)</label>
+    <label for="maxfeerate" i18n="test.tx.max-fee-rate">Maximum fee rate (sat/vB)</label>
     <input type="number" class="form-control input-dark" formControlName="maxfeerate" id="maxfeerate"
         [value]="10000" placeholder="10,000 s/vb" [class]="{invalid: invalidMaxfeerate}">
     <br>
