@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, HostListener, Input, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
-import { Subscription, Observable, of, combineLatest, BehaviorSubject } from 'rxjs';
+import { Subscription, Observable, of, combineLatest } from 'rxjs';
 import { MempoolBlock } from '../../interfaces/websocket.interface';
 import { StateService } from '../../services/state.service';
 import { Router } from '@angular/router';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { delay, filter, map, switchMap, tap } from 'rxjs/operators';
 import { feeLevels } from '../../app.constants';
 import { specialBlocks } from '../../app.constants';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
@@ -43,7 +43,10 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   mempoolBlocks$: Observable<MempoolBlock[]>;
   difficultyAdjustments$: Observable<DifficultyAdjustment>;
   loadingBlocks$: Observable<boolean>;
-  showMiningInfo$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  showMiningInfoSubscription: Subscription;
+  blockDisplayModeSubscription: Subscription;
+  blockDisplayMode: 'size' | 'fees';
+  blockTransformation = {};
   blocksSubscription: Subscription;
 
   mempoolBlocksFull: MempoolBlock[] = [];
@@ -99,9 +102,29 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.mempoolWidth = width;
     this.widthChange.emit(this.mempoolWidth);
 
-    if (['', 'testnet', 'signet'].includes(this.stateService.network)) {
-      this.showMiningInfo$ = this.stateService.showMiningInfo$;
-    }
+    this.blockDisplayMode = this.stateService.blockDisplayMode$.value as 'size' | 'fees';
+    this.blockDisplayModeSubscription = this.stateService.blockDisplayMode$
+      .pipe(
+        filter((mode: 'size' | 'fees') => mode !== this.blockDisplayMode),
+        tap(() => {
+          this.blockTransformation = {
+            transform: 'rotateX(90deg)',
+            transition: 'transform 0.375s'
+          };
+        }),
+        delay(375),
+        tap((mode) => {
+          this.blockDisplayMode = mode;
+          this.blockTransformation = {
+            transition: 'transform 0.375s'
+          };
+          this.cd.markForCheck();
+        }),
+        delay(375),
+      )
+      .subscribe(() => {
+        this.blockTransformation = {};
+      });
 
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
       this.timeLtr = !this.forceRtl && !!ltr;
@@ -262,6 +285,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.markBlocksSubscription.unsubscribe();
     this.blockSubscription.unsubscribe();
     this.networkSubscription.unsubscribe();
+    this.blockDisplayModeSubscription.unsubscribe();
     this.timeLtrSubscription.unsubscribe();
     this.chainTipSubscription.unsubscribe();
     this.keySubscription.unsubscribe();

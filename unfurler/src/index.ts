@@ -50,6 +50,9 @@ class Server {
       case "bisq":
         canonical = "https://bisq.markets"
         break;
+      case "onbtc":
+        canonical = "https://bitcoin.gob.sv"
+        break;
       default:
         canonical = "https://mempool.space"
     }

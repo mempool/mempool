@@ -81,6 +81,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   mempoolBlocksSubscription: Subscription;
   blocksSubscription: Subscription;
   miningSubscription: Subscription;
+  auditSubscription: Subscription;
   currencyChangeSubscription: Subscription;
   fragmentParams: URLSearchParams;
   rbfTransaction: undefined | Transaction;
@@ -308,51 +309,57 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       filter((target) => target.txid === this.txId),
       tap(() => {
         this.pool = null;
-        this.auditStatus = null;
       }),
-      switchMap(({ hash, height, txid }) => {
+      switchMap(({ hash, height }) => {
         const foundBlock = this.cacheService.getCachedBlock(height) || null;
-        const auditAvailable = this.isAuditAvailable(height);
-        const isCoinbase = this.tx.vin.some(v => v.is_coinbase);
-        const fetchAudit = auditAvailable && !isCoinbase;
-        return combineLatest([
-          foundBlock ? of(foundBlock.extras.pool) : this.apiService.getBlock$(hash).pipe(
-            map(block => {
-              return block.extras.pool;
-            }),
-            retry({ count: 3, delay: 2000 }),
-            catchError(() => {
-              return of(null);
-            })
-          ),
-          fetchAudit ? this.apiService.getBlockAudit$(hash).pipe(
-            map(audit => {
-              const isAdded = audit.addedTxs.includes(txid);
-              const isPrioritized = audit.prioritizedTxs.includes(txid);
-              const isAccelerated = audit.acceleratedTxs.includes(txid);
-              const isConflict = audit.fullrbfTxs.includes(txid);
-              const isExpected = audit.template.some(tx => tx.txid === txid);
-              return {
-                seen: isExpected || isPrioritized || isAccelerated,
-                expected: isExpected,
-                added: isAdded,
-                prioritized: isPrioritized,
-                conflict: isConflict,
-                accelerated: isAccelerated,
-              };
-            }),
-            retry({ count: 3, delay: 2000 }),
-            catchError(() => {
-              return of(null);
-            })
-          ) : of(isCoinbase ? { coinbase: true } : null)
-        ]);
+        return foundBlock ? of(foundBlock.extras.pool) : this.apiService.getBlock$(hash).pipe(
+          map(block => block.extras.pool),
+          retry({ count: 3, delay: 2000 }),
+          catchError(() => of(null))
+        );
       }),
       catchError((e) => {
         return of(null);
       })
-    ).subscribe(([pool, auditStatus]) => {
+    ).subscribe(pool => {
       this.pool = pool;
+    });
+
+    this.auditSubscription = this.fetchMiningInfo$.pipe(
+      filter((target) => target.txid === this.txId),
+      tap(() => {
+        this.auditStatus = null;
+      }),
+      switchMap(({ hash, height, txid }) => {
+        const auditAvailable = this.isAuditAvailable(height);
+        const isCoinbase = this.tx.vin.some(v => v.is_coinbase);
+        const fetchAudit = auditAvailable && !isCoinbase;
+        return fetchAudit ? this.apiService.getBlockAudit$(hash).pipe(
+          map(audit => {
+            const isAdded = audit.addedTxs.includes(txid);
+            const isPrioritized = audit.prioritizedTxs.includes(txid);
+            const isAccelerated = audit.acceleratedTxs.includes(txid);
+            const isConflict = audit.fullrbfTxs.includes(txid);
+            const isExpected = audit.template.some(tx => tx.txid === txid);
+            return {
+              seen: isExpected || isPrioritized || isAccelerated,
+              expected: isExpected,
+              added: isAdded,
+              prioritized: isPrioritized,
+              conflict: isConflict,
+              accelerated: isAccelerated,
+            };
+          }),
+          retry({ count: 3, delay: 2000 }),
+          catchError(() => {
+            return of(null);
+          })
+        ) : of(isCoinbase ? { coinbase: true } : null);
+      }),
+      catchError((e) => {
+        return of(null);
+      })
+    ).subscribe(auditStatus => {
       this.auditStatus = auditStatus;
 
       this.setIsAccelerated();
@@ -858,6 +865,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.mempoolBlocksSubscription.unsubscribe();
     this.blocksSubscription.unsubscribe();
     this.miningSubscription?.unsubscribe();
+    this.auditSubscription?.unsubscribe();
     this.currencyChangeSubscription?.unsubscribe();
     this.leaveTransaction();
   }

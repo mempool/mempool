@@ -401,14 +401,16 @@ export class WebsocketService {
       if (response['projected-block-transactions'].index == this.trackingMempoolBlock) {
         if (response['projected-block-transactions'].blockTransactions) {
           this.stateService.mempoolSequence = response['projected-block-transactions'].sequence;
-          this.stateService.mempoolBlockTransactions$.next(response['projected-block-transactions'].blockTransactions.map(uncompressTx));
+          this.stateService.mempoolBlockUpdate$.next({
+            transactions: response['projected-block-transactions'].blockTransactions.map(uncompressTx),
+          });
         } else if (response['projected-block-transactions'].delta) {
           if (this.stateService.mempoolSequence && response['projected-block-transactions'].sequence !== this.stateService.mempoolSequence + 1) {
             this.stateService.mempoolSequence = 0;
             this.startTrackMempoolBlock(this.trackingMempoolBlock, true);
           } else {
             this.stateService.mempoolSequence = response['projected-block-transactions'].sequence;
-            this.stateService.mempoolBlockDelta$.next(uncompressDeltaChange(response['projected-block-transactions'].delta));
+            this.stateService.mempoolBlockUpdate$.next(uncompressDeltaChange(response['projected-block-transactions'].delta));
           }
         }
       }

@@ -1,7 +1,7 @@
 import { Inject, Injectable, PLATFORM_ID, LOCALE_ID } from '@angular/core';
 import { ReplaySubject, BehaviorSubject, Subject, fromEvent, Observable, merge } from 'rxjs';
 import { Transaction } from '../interfaces/electrs.interface';
-import { HealthCheckHost, IBackendInfo, MempoolBlock, MempoolBlockDelta, MempoolInfo, Recommendedfees, ReplacedTransaction, ReplacementInfo } from '../interfaces/websocket.interface';
+import { HealthCheckHost, IBackendInfo, MempoolBlock, MempoolBlockDelta, MempoolBlockUpdate, MempoolInfo, Recommendedfees, ReplacedTransaction, ReplacementInfo, isMempoolState } from '../interfaces/websocket.interface';
 import { BlockExtended, CpfpInfo, DifficultyAdjustment, MempoolPosition, OptimizedMempoolStats, RbfTree, TransactionStripped } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
@@ -19,6 +19,24 @@ export interface MarkBlockState {
 }
 
 export interface ILoadingIndicators { [name: string]: number; }
+
+export interface Customization {
+  theme: string;
+  enterprise?: string;
+  branding: {
+    name: string;
+    site_id?: number;
+    title: string;
+    img: string;
+    rounded_corner: boolean;
+  },
+  dashboard: {
+    widgets: {
+      component: string;
+      props: { [key: string]: any };
+    }[];
+  };
+}
 
 export interface Env {
   TESTNET_ENABLED: boolean;
@@ -50,6 +68,7 @@ export interface Env {
   ADDITIONAL_CURRENCIES: boolean;
   GIT_COMMIT_HASH_MEMPOOL_SPACE?: string;
   PACKAGE_JSON_VERSION_MEMPOOL_SPACE?: string;
+  customize?: Customization;
 }
 
 const defaultEnv: Env = {
@@ -108,8 +127,7 @@ export class StateService {
   bsqPrice$ = new ReplaySubject<number>(1);
   mempoolInfo$ = new ReplaySubject<MempoolInfo>(1);
   mempoolBlocks$ = new ReplaySubject<MempoolBlock[]>(1);
-  mempoolBlockTransactions$ = new Subject<TransactionStripped[]>();
-  mempoolBlockDelta$ = new Subject<MempoolBlockDelta>();
+  mempoolBlockUpdate$ = new Subject<MempoolBlockUpdate>();
   liveMempoolBlockTransactions$: Observable<{ [txid: string]: TransactionStripped}>;
   txConfirmed$ = new Subject<[string, BlockExtended]>();
   txReplaced$ = new Subject<ReplacedTransaction>();
@@ -136,7 +154,7 @@ export class StateService {
 
   live2Chart$ = new Subject<OptimizedMempoolStats>();
 
-  viewFiat$ = new BehaviorSubject<boolean>(false);
+  viewAmountMode$: BehaviorSubject<'btc' | 'sats' | 'fiat'>;
   connectionState$ = new BehaviorSubject<0 | 1 | 2>(2);
   isTabHidden$: Observable<boolean>;
 
@@ -151,7 +169,7 @@ export class StateService {
   hideAudit: BehaviorSubject<boolean>;
   fiatCurrency$: BehaviorSubject<string>;
   rateUnits$: BehaviorSubject<string>;
-  showMiningInfo$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  blockDisplayMode$: BehaviorSubject<string>;
 
   searchFocus$: Subject<boolean> = new Subject<boolean>();
   menuOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -196,25 +214,25 @@ export class StateService {
       this.router.navigate(['/tracker/' + window.location.pathname.slice(4)]);
     }
 
-    this.liveMempoolBlockTransactions$ = merge(
-      this.mempoolBlockTransactions$.pipe(map(transactions => { return { transactions }; })),
-      this.mempoolBlockDelta$.pipe(map(delta => { return { delta }; })),
-    ).pipe(scan((transactions: { [txid: string]: TransactionStripped }, change: any): { [txid: string]: TransactionStripped } => {
-      if (change.transactions) {
-        const txMap = {}
+    this.liveMempoolBlockTransactions$ = this.mempoolBlockUpdate$.pipe(scan((transactions: { [txid: string]: TransactionStripped }, change: MempoolBlockUpdate): { [txid: string]: TransactionStripped } => {
+      if (isMempoolState(change)) {
+        const txMap = {};
         change.transactions.forEach(tx => {
           txMap[tx.txid] = tx;
-        })
+        });
         return txMap;
       } else {
-        change.delta.changed.forEach(tx => {
-          transactions[tx.txid].rate = tx.rate;
-        })
-        change.delta.removed.forEach(txid => {
+        change.added.forEach(tx => {
+          transactions[tx.txid] = tx;
+        });
+        change.removed.forEach(txid => {
           delete transactions[txid];
         });
-        change.delta.added.forEach(tx => {
-          transactions[tx.txid] = tx;
+        change.changed.forEach(tx => {
+          if (transactions[tx.txid]) {
+            transactions[tx.txid].rate = tx.rate;
+            transactions[tx.txid].acc = tx.acc;
+          }
         });
         return transactions;
       }
@@ -258,6 +276,12 @@ export class StateService {
 
     const rateUnitPreference = this.storageService.getValue('rate-unit-preference');
     this.rateUnits$ = new BehaviorSubject<string>(rateUnitPreference || 'vb');
+
+    const blockDisplayModePreference = this.storageService.getValue('block-display-mode-preference');
+    this.blockDisplayMode$ = new BehaviorSubject<string>(blockDisplayModePreference || 'fees');
+
+    const viewAmountModePreference = this.storageService.getValue('view-amount-mode') as 'btc' | 'sats' | 'fiat';
+    this.viewAmountMode$ = new BehaviorSubject<'btc' | 'sats' | 'fiat'>(viewAmountModePreference || 'btc');
 
     this.backend$.subscribe(backend => {
       this.backend = backend;

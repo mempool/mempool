@@ -1,5 +1,5 @@
 <div [formGroup]="languageForm" class="text-small text-center">
-    <select formControlName="language" class="custom-select custom-select-sm form-control-secondary form-control mx-auto" style="width: 95px;" (change)="changeLanguage()">
+    <select formControlName="language" class="custom-select custom-select-sm form-control-secondary form-control mx-auto" style="width: 120px;" (change)="changeLanguage()">
         <option *ngFor="let lang of languages" [value]="lang.code">{{ lang.name }}</option>
     </select>
 </div>

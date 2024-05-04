@@ -85,6 +85,7 @@ export class ReservesRatioComponent implements OnInit, OnChanges {
         {
           type: 'gauge',
           startAngle: 180,
+          silent: true,
           endAngle: 0,
           center: ['50%', '75%'],
           radius: '100%',

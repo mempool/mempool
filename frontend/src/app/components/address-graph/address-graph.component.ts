@@ -1,12 +1,22 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnChanges, SimpleChanges } from '@angular/core';
 import { echarts, EChartsOption } from '../../graphs/echarts';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { ChainStats } from '../../interfaces/electrs.interface';
+import { AddressTxSummary, ChainStats } from '../../interfaces/electrs.interface';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
 import { Router } from '@angular/router';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { StateService } from '../../services/state.service';
+
+const periodSeconds = {
+  '1d': (60 * 60 * 24),
+  '3d': (60 * 60 * 24 * 3),
+  '1w': (60 * 60 * 24 * 7),
+  '1m': (60 * 60 * 24 * 30),
+  '6m': (60 * 60 * 24 * 180),
+  '1y': (60 * 60 * 24 * 365),
+};
 
 @Component({
   selector: 'app-address-graph',
@@ -26,8 +36,12 @@ export class AddressGraphComponent implements OnChanges {
   @Input() address: string;
   @Input() isPubkey: boolean = false;
   @Input() stats: ChainStats;
+  @Input() addressSummary$: Observable<AddressTxSummary[]> | null;
+  @Input() period: '1d' | '3d' | '1w' | '1m' | '6m' | '1y' | 'all' = 'all';
+  @Input() height: number = 200;
   @Input() right: number | string = 10;
   @Input() left: number | string = 70;
+  @Input() widget: boolean = false;
 
   data: any[] = [];
   hoverData: any[] = [];
@@ -43,6 +57,7 @@ export class AddressGraphComponent implements OnChanges {
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
+    public stateService: StateService,
     private electrsApiService: ElectrsApiService,
     private router: Router,
     private amountShortenerPipe: AmountShortenerPipe,
@@ -52,14 +67,17 @@ export class AddressGraphComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.isLoading = true;
-    (this.isPubkey
+    if (!this.address || !this.stats) {
+      return;
+    }
+    (this.addressSummary$ || (this.isPubkey
       ? this.electrsApiService.getScriptHashSummary$((this.address.length === 66 ? '21' : '41') + this.address + 'ac')
       : this.electrsApiService.getAddressSummary$(this.address)).pipe(
       catchError(e => {
         this.error = `Failed to fetch address balance history: ${e?.status || ''} ${e?.statusText || 'unknown error'}`;
         return of(null);
       }),
-    ).subscribe(addressSummary => {
+    )).subscribe(addressSummary => {
       if (addressSummary) {
         this.error = null;
         this.prepareChartOptions(addressSummary);
@@ -70,14 +88,24 @@ export class AddressGraphComponent implements OnChanges {
   }
 
   prepareChartOptions(summary): void {
-    let total = (this.stats.funded_txo_sum - this.stats.spent_txo_sum); // + (summary[0]?.value || 0);
+    let total = (this.stats.funded_txo_sum - this.stats.spent_txo_sum);
     this.data = summary.map(d => {
       const balance = total;
       total -= d.value;
       return [d.time * 1000, balance, d];
     }).reverse();
 
-    const maxValue = this.data.reduce((acc, d) => Math.max(acc, Math.abs(d[1])), 0);
+    if (this.period !== 'all') {
+      const now = Date.now();
+      const start = now - (periodSeconds[this.period] * 1000);
+      this.data = this.data.filter(d => d[0] >= start);
+      this.data.push(
+        {value: [now, this.stats.funded_txo_sum - this.stats.spent_txo_sum], symbol: 'none', tooltip: { show: false }}
+      );
+    }
+
+    const maxValue = this.data.reduce((acc, d) => Math.max(acc, Math.abs(d[1] || d.value[1])), 0);
+    const minValue = this.data.reduce((acc, d) => Math.min(acc, Math.abs(d[1] || d.value[1])), maxValue);
 
     this.chartOptions = {
       color: [
@@ -108,6 +136,9 @@ export class AddressGraphComponent implements OnChanges {
         },
         borderColor: '#000',
         formatter: function (data): string {
+          if (!data?.length || !data[0]?.data?.[2]?.txid) {
+            return '';
+          }
           const header = data.length === 1
             ? `${data[0].data[2].txid.slice(0, 6)}...${data[0].data[2].txid.slice(-6)}`
             : `${data.length} transactions`;
@@ -141,13 +172,17 @@ export class AddressGraphComponent implements OnChanges {
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: (val): string => {
-              if (maxValue > 1_000_000_000) {
+              let valSpan = maxValue - (this.period === 'all' ? 0 : minValue);
+              if (valSpan > 100_000_000_000) {
                 return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 0)} BTC`;
-              } else if (maxValue > 100_000_000) {
+              }
+              else if (valSpan > 1_000_000_000) {
+                return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 2)} BTC`;
+              } else if (valSpan > 100_000_000) {
                 return `${(val / 100_000_000).toFixed(1)} BTC`;
-              } else if (maxValue > 10_000_000) {
+              } else if (valSpan > 10_000_000) {
                 return `${(val / 100_000_000).toFixed(2)} BTC`;
-              } else if (maxValue > 1_000_000) {
+              } else if (valSpan > 1_000_000) {
                 return `${(val / 100_000_000).toFixed(3)} BTC`;
               } else {
                 return `${this.amountShortenerPipe.transform(val, 0)} sats`;
@@ -157,6 +192,7 @@ export class AddressGraphComponent implements OnChanges {
           splitLine: {
             show: false,
           },
+          min: this.period === 'all' ? 0 : 'dataMin'
         },
       ],
       series: [
