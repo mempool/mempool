@@ -1,7 +1,7 @@
 import { Inject, Injectable, PLATFORM_ID, LOCALE_ID } from '@angular/core';
 import { ReplaySubject, BehaviorSubject, Subject, fromEvent, Observable, merge } from 'rxjs';
 import { Transaction } from '../interfaces/electrs.interface';
-import { HealthCheckHost, IBackendInfo, MempoolBlock, MempoolBlockDelta, MempoolInfo, Recommendedfees, ReplacedTransaction, ReplacementInfo } from '../interfaces/websocket.interface';
+import { HealthCheckHost, IBackendInfo, MempoolBlock, MempoolBlockDelta, MempoolBlockUpdate, MempoolInfo, Recommendedfees, ReplacedTransaction, ReplacementInfo, isMempoolState } from '../interfaces/websocket.interface';
 import { BlockExtended, CpfpInfo, DifficultyAdjustment, MempoolPosition, OptimizedMempoolStats, RbfTree, TransactionStripped } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
@@ -127,8 +127,7 @@ export class StateService {
   bsqPrice$ = new ReplaySubject<number>(1);
   mempoolInfo$ = new ReplaySubject<MempoolInfo>(1);
   mempoolBlocks$ = new ReplaySubject<MempoolBlock[]>(1);
-  mempoolBlockTransactions$ = new Subject<TransactionStripped[]>();
-  mempoolBlockDelta$ = new Subject<MempoolBlockDelta>();
+  mempoolBlockUpdate$ = new Subject<MempoolBlockUpdate>();
   liveMempoolBlockTransactions$: Observable<{ [txid: string]: TransactionStripped}>;
   txConfirmed$ = new Subject<[string, BlockExtended]>();
   txReplaced$ = new Subject<ReplacedTransaction>();
@@ -215,25 +214,25 @@ export class StateService {
       this.router.navigate(['/tracker/' + window.location.pathname.slice(4)]);
     }
 
-    this.liveMempoolBlockTransactions$ = merge(
-      this.mempoolBlockTransactions$.pipe(map(transactions => { return { transactions }; })),
-      this.mempoolBlockDelta$.pipe(map(delta => { return { delta }; })),
-    ).pipe(scan((transactions: { [txid: string]: TransactionStripped }, change: any): { [txid: string]: TransactionStripped } => {
-      if (change.transactions) {
-        const txMap = {}
+    this.liveMempoolBlockTransactions$ = this.mempoolBlockUpdate$.pipe(scan((transactions: { [txid: string]: TransactionStripped }, change: MempoolBlockUpdate): { [txid: string]: TransactionStripped } => {
+      if (isMempoolState(change)) {
+        const txMap = {};
         change.transactions.forEach(tx => {
           txMap[tx.txid] = tx;
-        })
+        });
         return txMap;
       } else {
-        change.delta.changed.forEach(tx => {
-          transactions[tx.txid].rate = tx.rate;
-        })
-        change.delta.removed.forEach(txid => {
+        change.added.forEach(tx => {
+          transactions[tx.txid] = tx;
+        });
+        change.removed.forEach(txid => {
           delete transactions[txid];
         });
-        change.delta.added.forEach(tx => {
-          transactions[tx.txid] = tx;
+        change.changed.forEach(tx => {
+          if (transactions[tx.txid]) {
+            transactions[tx.txid].rate = tx.rate;
+            transactions[tx.txid].acc = tx.acc;
+          }
         });
         return transactions;
       }

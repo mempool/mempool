@@ -75,6 +75,16 @@ export interface MempoolBlockDelta {
   removed: string[];
   changed: { txid: string, rate: number, flags: number, acc: boolean }[];
 }
+export interface MempoolBlockState {
+  transactions: TransactionStripped[];
+}
+export type MempoolBlockUpdate = MempoolBlockDelta | MempoolBlockState;
+export function isMempoolState(update: MempoolBlockUpdate): update is MempoolBlockState {
+  return update['transactions'] !== undefined;
+}
+export function isMempoolDelta(update: MempoolBlockUpdate): update is MempoolBlockDelta {
+  return update['transactions'] === undefined;
+}
 
 export interface MempoolBlockDeltaCompressed {
   added: TransactionCompressed[];
