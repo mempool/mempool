@@ -9,16 +9,18 @@
       </button>
     </div>  
 
-    <div class="formRadioGroup" ngbDropdown *ngIf="(statsObservable$ | async) as stats">
-      <button class="btn btn-primary btn-sm dropdown-toggle" id="endBlockDropdown" ngbDropdownToggle>
-        {{ endBlockToSelector(radioGroupForm.get('endBlock').value) }}
-      </button>
-      <div ngbDropdownMenu class="scrollable-dropdown">
-        <button [ngClass]="{'selected': option === endBlock}" class="dropdown-item" *ngFor="let option of dropdownOptions" (click)="selectBlockSpan(option)">
-          {{ endBlockToSelector(option) }}
+    <ng-container *ngIf="(statsObservable$ | async) as stats">
+      <div class="formRadioGroup" ngbDropdown *ngIf="stats.indexedBlocksInterval.end !== -1">
+        <button class="btn btn-primary btn-sm dropdown-toggle" id="endBlockDropdown" ngbDropdownToggle>
+          Blocks {{ lowerBound }} - {{ upperBound }}
         </button>
+        <div ngbDropdownMenu class="scrollable-dropdown">
+          <button [ngClass]="{'selected': option === endBlock}" class="dropdown-item" *ngFor="let option of dropdownOptions" (click)="selectBlockSpan(option)">
+            {{ endBlockToSelector(option) }}
+          </button>
+        </div>
       </div>
-    </div>
+    </ng-container>
   </div>
 
   <div class="chart" *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions"

@@ -41,7 +41,9 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
   isLoading = true;
   formatNumber = formatNumber;
   endBlock = '';
-  blockCount = 0;
+  indexedBlocksInterval = { start: 0, end: 0 };
+  lowerBound = 0;
+  upperBound = 0;
   chartInstance: any = undefined;
   showFiat = false;
   dropdownOptions = [];
@@ -84,6 +86,10 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           return this.apiService.getHistoricalExactBlockFees$(endBlock === '' ? undefined : endBlock)
             .pipe(
               tap((response) => {
+                if (response.body.length === 0) {
+                  this.isLoading = false;
+                  return;
+                }
                 let blockReward = 50 * 100_000_000;
                 const subsidies = {};
                 for (let i = 0; i <= 33; i++) {
@@ -121,18 +127,25 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
                 this.isLoading = false;
               }),
               map((response) => {
-                this.blockCount = parseInt(response.headers.get('x-total-count'), 10);
-                if (this.radioGroupForm.controls.endBlock.value === '') this.radioGroupForm.controls.endBlock.setValue((this.blockCount - 1).toString(), { emitEvent: false });
-                this.dropdownOptions = [(this.blockCount - 1).toString()];
-                if (this.blockCount) {
-                  let i = this.blockCount - 1 - this.step;
-                  while (i >= 0) {
-                    this.dropdownOptions.push(i.toString());
-                    i -= this.step;
+                const blockCount = parseInt(response.headers.get('x-total-count'), 10);
+                const chainTip = this.stateService.latestBlockHeight;
+
+                this.indexedBlocksInterval = {
+                  start: chainTip - blockCount,
+                  end: chainTip,
+                };
+
+                if (this.radioGroupForm.controls.endBlock.value === '') this.radioGroupForm.controls.endBlock.setValue((this.indexedBlocksInterval.end).toString(), { emitEvent: false });
+                this.dropdownOptions = [(this.indexedBlocksInterval.end).toString()];
+                if (this.indexedBlocksInterval.end - this.step > this.indexedBlocksInterval.start) {
+                  let newEndBlock = this.indexedBlocksInterval.end - this.step;
+                  while (newEndBlock > this.indexedBlocksInterval.start) {
+                    this.dropdownOptions.push(newEndBlock.toString());
+                    newEndBlock -= this.step;
                   }
                 }
                 return {
-                  blockCount: this.blockCount,
+                  indexedBlocksInterval: this.indexedBlocksInterval,
                 };
               }),
             );
@@ -154,6 +167,9 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
         top: 'center'
       };
     }
+
+    this.lowerBound = data.blockHeight[0];
+    this.upperBound = data.blockHeight[data.blockHeight.length - 1];
 
     this.chartOptions = {
       title: title,
@@ -426,7 +442,10 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
   }
 
   endBlockToSelector(value: string): string {
-    if (parseInt(value, 10) > this.blockCount) value = (this.blockCount).toString();
-    return `Blocks ${Math.max(0, parseInt(value, 10) - this.step)} - ` + value;
+    let upperBound = Math.min(this.indexedBlocksInterval.end, parseInt(value, 10));
+    let lowerBound = Math.max(0, parseInt(value, 10) - this.step);
+    if (lowerBound < this.indexedBlocksInterval.start) lowerBound = this.indexedBlocksInterval.start + 1;
+    if (lowerBound > upperBound) lowerBound = upperBound;
+    return `Blocks ${lowerBound} - ${upperBound}`;
   }
 }
