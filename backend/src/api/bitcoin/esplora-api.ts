@@ -5,6 +5,7 @@ import { AbstractBitcoinApi, HealthCheckHost } from './bitcoin-api-abstract-fact
 import { IEsploraApi } from './esplora-api.interface';
 import logger from '../../logger';
 import { Common } from '../common';
+import { TestMempoolAcceptResult } from './bitcoin-api.interface';
 
 interface FailoverHost {
   host: string,
@@ -324,6 +325,10 @@ class ElectrsApi implements AbstractBitcoinApi {
   }
 
   $sendRawTransaction(rawTransaction: string): Promise<string> {
+    throw new Error('Method not implemented.');
+  }
+
+  $testMempoolAccept(rawTransactions: string[], maxfeerate?: number): Promise<TestMempoolAcceptResult[]> {
     throw new Error('Method not implemented.');
   }
 
