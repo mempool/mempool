@@ -47,7 +47,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
   chartInstance: any = undefined;
   showFiat = false;
   dropdownOptions = [];
-  step = 20000;
+  step = 10000;
   includeAccelerations = false;
 
   constructor(

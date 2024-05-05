@@ -706,7 +706,7 @@ class BlocksRepository {
       if (height !== null) {
         query += ` WHERE blocks.height <= ${height}`;
       }
-      query += ` ORDER BY blocks.height DESC LIMIT 20000`;
+      query += ` ORDER BY blocks.height DESC LIMIT 10000`;
 
       const [rows]: any = await DB.query(query);
 
