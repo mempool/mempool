@@ -27,6 +27,7 @@ export class GlobalFooterComponent implements OnInit {
   network$: Observable<string>;
   networkPaths: { [network: string]: string };
   currentNetwork = '';
+  lightningNetworks = ['', 'mainnet', 'bitcoin', 'testnet', 'signet'];
   loggedIn = false;
   urlSubscription: Subscription;
   isServicesPage = false;
