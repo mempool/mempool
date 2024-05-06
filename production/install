@@ -384,6 +384,7 @@ DEBIAN_PKG+=(libevent-dev libdb-dev libssl-dev libtool autotools-dev)
 DEBIAN_PKG+=(libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-test-dev libboost-thread-dev)
 DEBIAN_PKG+=(nodejs npm mariadb-server nginx-core python3-certbot-nginx rsync ufw)
 DEBIAN_PKG+=(geoipupdate)
+DEBIAN_PKG+=(cargo)
 DEBIAN_PKG+=(openjdk-11-jdk)
 
 DEBIAN_UNFURL_PKG=()
