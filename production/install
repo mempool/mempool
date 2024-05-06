@@ -375,9 +375,13 @@ LIQUIDTESTNET_ASSET_REGISTRY_DB_NAME=asset_registry_testnet_db
 ##### OS packages #####
 #######################
 
+# packages needed to run this script
+DEBIAN_PREREQ_PKG=()
+DEBIAN_PREREQ_PKG+=(dialog)
+
 # packages needed for mempool ecosystem
 DEBIAN_PKG=()
-DEBIAN_PKG+=(zsh vim curl screen openssl python3 dialog cron)
+DEBIAN_PKG+=(zsh vim curl screen openssl python3 cron)
 DEBIAN_PKG+=(build-essential git git-lfs clang cmake jq)
 DEBIAN_PKG+=(autotools-dev autoconf automake pkg-config bsdmainutils)
 DEBIAN_PKG+=(libevent-dev libdb-dev libssl-dev libtool autotools-dev)
@@ -390,6 +394,10 @@ DEBIAN_PKG+=(openjdk-11-jdk)
 DEBIAN_UNFURL_PKG=()
 DEBIAN_UNFURL_PKG+=(cups chromium-bsu libatk1.0 libatk-bridge2.0 libxkbcommon-dev libxcomposite-dev)
 DEBIAN_UNFURL_PKG+=(libxdamage-dev libxrandr-dev libgbm-dev libpango1.0-dev libasound-dev)
+
+# packages needed to run this script
+FREEBSD_PREREQ_PKG=()
+FREEBSD_PREREQ_PKG+=(dialog)
 
 # packages needed for mempool ecosystem
 FREEBSD_PKG=()
@@ -468,6 +476,18 @@ osPackageInstallAll()
         ;;
         Debian)
             osPackageInstall ${DEBIAN_PKG[@]}
+        ;;
+    esac
+}
+
+osPackageInstallPreReq()
+{
+    case $OS in
+        FreeBSD)
+            osPackageInstall ${FREEBSD_PREREQ_PKG[@]}
+        ;;
+        Debian)
+            osPackageInstall ${DEBIAN_PREREQ_PKG[@]}
         ;;
     esac
 }
@@ -718,6 +738,11 @@ ext4CreateDir()
     fi
 }
 
+#################################
+# Install prerequisite packages #
+#################################
+
+osPackageInstallPreReq
 
 ##### Perform sanity checks before trying anything
 
