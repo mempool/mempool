@@ -1428,6 +1428,7 @@ if [ "${BISQ_INSTALL}" = ON ];then
         ;;
 
         Debian)
+            echo "[*] Installing Bisq service file"
             osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${BISQ_HOME}/${BISQ_REPO_NAME}/seednode/bisq.service" "${DEBIAN_SERVICE_HOME}/bisq.service"
             osSudo "${ROOT_USER}" sed -i.orig "s/#Requires=bitcoin.service/Requires=bitcoin.service/" "${DEBIAN_SERVICE_HOME}/bisq.service"
             osSudo "${ROOT_USER}" sed -i.orig "s/#BindsTo=bitcoin.service/BindsTo=bitcoin.service/" "${DEBIAN_SERVICE_HOME}/bisq.service"
@@ -1439,17 +1440,19 @@ if [ "${BISQ_INSTALL}" = ON ];then
             osSudo "${ROOT_USER}" sed -i.orig "s!__BISQ_APP_NAME__!${BISQ_APP_NAME}!" "${DEBIAN_ENV_HOME}/bisq.env"
             osSudo "${ROOT_USER}" sed -i.orig "s!__BISQ_HOME__!${BISQ_HOME}!" "${DEBIAN_ENV_HOME}/bisq.env"
 
-            echo "[*] Configuring Bisq environment file with Bitcoin RPC credentials"
+            echo "[*] Configuring Bisq environment file"
             osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_P2P_HOST__/${BITCOIN_MAINNET_P2P_HOST}/" "${DEBIAN_ENV_HOME}/bisq.env"
             osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_P2P_PORT__/${BITCOIN_MAINNET_P2P_PORT}/" "${DEBIAN_ENV_HOME}/bisq.env"
             osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_HOST__/${BITCOIN_MAINNET_RPC_HOST}/" "${DEBIAN_ENV_HOME}/bisq.env"
             osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PORT__/${BITCOIN_MAINNET_RPC_PORT}/" "${DEBIAN_ENV_HOME}/bisq.env"
             osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${DEBIAN_ENV_HOME}/bisq.env"
             osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${DEBIAN_ENV_HOME}/bisq.env"
+            osSudo "${ROOT_USER}" sed -i.orig "s/BISQ_DUMP_BLOCKCHAIN=false/BISQ_DUMP_BLOCKCHAIN=true/" "${DEBIAN_ENV_HOME}/bisq.env"
+            osSudo "${ROOT_USER}" sed -i.orig "s/BISQ_DUMP_STATISTICS=false/BISQ_DUMP_STATISTICS=true/" "${DEBIAN_ENV_HOME}/bisq.env"
 
-            #echo "[*] Updating Bitcoin configuration for Bisq"
-            #osSudo "${ROOT_USER}" sed -i.orig "s/#blocknotify/blocknotify/" "${BITCOIN_HOME}/bitcoin.conf"
-            #osSudo "${BITCOIN_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 755 "${BISQ_HOME}/${BISQ_REPO_NAME}/seednode/blocknotify.sh" "${BITCOIN_HOME}/blocknotify.sh"
+            echo "[*] Updating Bitcoin configuration for Bisq"
+            osSudo "${ROOT_USER}" sed -i.orig "1iblocknotify=${BITCOIN_HOME}/blocknotify.sh %s" "${BITCOIN_HOME}/bitcoin.conf"
+            osSudo "${BITCOIN_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 755 "${BISQ_HOME}/${BISQ_REPO_NAME}/seednode/blocknotify.sh" "${BITCOIN_HOME}/blocknotify.sh"
         ;;
 
     esac
