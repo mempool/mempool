@@ -133,7 +133,7 @@
           <p>{{electrsPort}}</p>
           <p class="subtitle">SSL</p>
           <p>Enabled</p>
-          <p class="note" *ngIf="network.val !== 'signet'">Electrum RPC interface for Bitcoin Signet is <a href="/signet/docs/api/electrs">publicly available</a>. Electrum RPC interface for all other networks is available to <a href='https://mempool.space/enterprise'>sponsors</a> only—whitelisting is required.</p>
+          <p class="note" *ngIf="network.val !== 'signet' && network.val !== 'testnet4'">Electrum RPC interface for <a href="/signet/docs/api/electrs">Bitcoin Signet</a> and <a href="/testnet4/docs/api/electrs">Bitcoin Testnet4</a> is publicly available. Electrum RPC interface for all other networks is available to <a href='https://mempool.space/enterprise'>sponsors</a> only—whitelisting is required.</p>
         </div>
       </div>
     </div>

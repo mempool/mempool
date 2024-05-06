@@ -46,7 +46,7 @@
         <div class="links">
           <p class="category" i18n="footer.explore">Explore</p>
           <p><a *ngIf="env.MINING_DASHBOARD" [routerLink]="['/mining' | relativeUrl]" i18n="mining.mining-dashboard">Mining Dashboard</a></p>
-          <p><a *ngIf="env.LIGHTNING" [routerLink]="['/lightning' | relativeUrl]" i18n="master-page.lightning">Lightning Explorer</a></p>
+          <p><a *ngIf="env.LIGHTNING && lightningNetworks.includes(stateService.network)" [routerLink]="['/lightning' | relativeUrl]" i18n="master-page.lightning">Lightning Explorer</a></p>
           <p><a [routerLink]="['/blocks' | relativeUrl]" i18n="dashboard.recent-blocks">Recent Blocks</a></p>
           <p><a [routerLink]="['/tx/push' | relativeUrl]" i18n="shared.broadcast-transaction|Broadcast Transaction">Broadcast Transaction</a></p>
           <p><a [routerLink]="['/tx/test' | relativeUrl]" i18n="shared.test-transaction|Test Transaction">Test Transaction</a></p>
@@ -62,10 +62,11 @@
           <p><a [routerLink]="['/docs/faq' | relativeUrl]" i18n="faq.more-faq">More FAQs &raquo;</a></p>
         </div>
 
-        <div class="links" *ngIf="officialMempoolSpace || env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.LIQUID_TESTNET_ENABLED else toolBox" >
+        <div class="links" *ngIf="officialMempoolSpace || env.TESTNET_ENABLED || env.TESTNET4_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.LIQUID_TESTNET_ENABLED else toolBox" >
           <p class="category" i18n="footer.networks">Networks</p>
           <p *ngIf="(officialMempoolSpace || (env.BASE_MODULE === 'mempool')) && (currentNetwork !== '') && (currentNetwork !== 'mainnet')"><a [href]="networkLink('mainnet')" i18n="footer.mainnet-explorer">Mainnet Explorer</a></p>
-          <p *ngIf="(officialMempoolSpace || (env.BASE_MODULE === 'mempool')) && (currentNetwork !== 'testnet') && env.TESTNET_ENABLED"><a [href]="networkLink('testnet')" i18n="footer.testnet-explorer">Testnet Explorer</a></p>
+          <p *ngIf="(officialMempoolSpace || (env.BASE_MODULE === 'mempool')) && (currentNetwork !== 'testnet') && env.TESTNET_ENABLED"><a [href]="networkLink('testnet')" i18n="footer.testnet3-explorer">Testnet3 Explorer</a></p>
+          <p *ngIf="(officialMempoolSpace || (env.BASE_MODULE === 'mempool')) && (currentNetwork !== 'testnet4') && env.TESTNET4_ENABLED"><a [href]="networkLink('testnet4')" i18n="footer.testnet4-explorer">Testnet4 Explorer</a> <span class="badge badge-pill badge-warning beta-network" i18n="beta">beta</span></p>
           <p *ngIf="(officialMempoolSpace || (env.BASE_MODULE === 'mempool')) && (currentNetwork !== 'signet') && env.SIGNET_ENABLED"><a [href]="networkLink('signet')" i18n="footer.signet-explorer">Signet Explorer</a></p>
           <p *ngIf="(officialMempoolSpace || env.LIQUID_ENABLED) && (currentNetwork !== 'liquidtestnet')"><a [href]="networkLink('liquidtestnet')" i18n="footer.liquid-testnet-explorer">Liquid Testnet Explorer</a></p>
           <p *ngIf="(officialMempoolSpace || env.LIQUID_ENABLED) && (currentNetwork !== 'liquid')"><a [href]="networkLink('liquid')" i18n="footer.liquid-explorer">Liquid Explorer</a></p>
