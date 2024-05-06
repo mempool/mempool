@@ -347,6 +347,17 @@ class WebsocketHandler {
             }
           }
 
+          if (parsedMessage && parsedMessage['track-accelerations'] != null) {
+            if (parsedMessage['track-accelerations']) {
+              client['track-accelerations'] = true;
+              response['accelerations'] = JSON.stringify({
+                accelerations: Object.values(memPool.getAccelerations()),
+              });
+            } else {
+              client['track-accelerations'] = false;
+            }
+          }
+
           if (parsedMessage.action === 'init') {
             if (!this.socketData['blocks']?.length || !this.socketData['da'] || !this.socketData['backendInfo'] || !this.socketData['conversions']) {
               this.updateSocketData();
@@ -537,6 +548,7 @@ class WebsocketHandler {
     const vBytesPerSecond = memPool.getVBytesPerSecond();
     const rbfTransactions = Common.findRbfTransactions(newTransactions, deletedTransactions);
     const da = difficultyAdjustment.getDifficultyAdjustment();
+    const accelerations = memPool.getAccelerations();
     memPool.handleRbfTransactions(rbfTransactions);
     const rbfChanges = rbfCache.getRbfChanges();
     let rbfReplacements;
@@ -643,6 +655,12 @@ class WebsocketHandler {
     // pre-compute address transactions
     const addressCache = this.makeAddressCache(newTransactions);
     const removedAddressCache = this.makeAddressCache(deletedTransactions);
+
+    // pre-compute acceleration delta
+    const accelerationUpdate = {
+      added: accelerationDelta.map(txid => accelerations[txid]).filter(acc => acc != null),
+      removed: accelerationDelta.filter(txid => !accelerations[txid]),
+    };
 
     // TODO - Fix indentation after PR is merged
     for (const server of this.webSocketServers) {
@@ -889,6 +907,10 @@ class WebsocketHandler {
 
       if (client['track-mempool']) {
         response['mempool-transactions'] = getCachedResponse('mempool-transactions', mempoolDelta);
+      }
+
+      if (client['track-accelerations'] && (accelerationUpdate.added.length || accelerationUpdate.removed.length)) {
+        response['accelerations'] = getCachedResponse('accelerations', accelerationUpdate);
       }
 
       if (Object.keys(response).length) {
