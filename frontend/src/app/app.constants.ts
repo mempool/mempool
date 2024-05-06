@@ -189,22 +189,22 @@ export const specialBlocks = {
   '0': {
     labelEvent: 'Genesis',
     labelEventCompleted: 'The Genesis of Bitcoin',
-    networks: ['mainnet', 'testnet'],
+    networks: ['mainnet', 'testnet', 'testnet4'],
   },
   '210000': {
     labelEvent: 'Bitcoin\'s 1st Halving',
     labelEventCompleted: 'Block Subsidy has halved to 25 BTC per block',
-    networks: ['mainnet', 'testnet'],
+    networks: ['mainnet', 'testnet', 'testnet4'],
   },
   '420000': {
     labelEvent: 'Bitcoin\'s 2nd Halving',
     labelEventCompleted: 'Block Subsidy has halved to 12.5 BTC per block',
-    networks: ['mainnet', 'testnet'],
+    networks: ['mainnet', 'testnet', 'testnet4'],
   },
   '630000': {
     labelEvent: 'Bitcoin\'s 3rd Halving',
     labelEventCompleted: 'Block Subsidy has halved to 6.25 BTC per block',
-    networks: ['mainnet', 'testnet'],
+    networks: ['mainnet', 'testnet', 'testnet4'],
   },
   '709632': {
     labelEvent: 'Taproot 🌱 activation',
@@ -214,62 +214,62 @@ export const specialBlocks = {
   '840000': {
     labelEvent: 'Bitcoin\'s 4th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 3.125 BTC per block',
-    networks: ['mainnet', 'testnet'],
+    networks: ['mainnet', 'testnet', 'testnet4'],
   },
   '1050000': {
     labelEvent: 'Bitcoin\'s 5th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 1.5625 BTC per block',
-    networks: ['mainnet', 'testnet'],
+    networks: ['mainnet', 'testnet', 'testnet4'],
   },
   '1260000': {
     labelEvent: 'Bitcoin\'s 6th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 0.78125 BTC per block',
-    networks: ['mainnet', 'testnet'],
+    networks: ['mainnet', 'testnet', 'testnet4'],
   },
   '1470000': {
     labelEvent: 'Bitcoin\'s 7th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 0.390625 BTC per block',
-    networks: ['mainnet', 'testnet'],
+    networks: ['mainnet', 'testnet', 'testnet4'],
   },
   '1680000': {
     labelEvent: 'Bitcoin\'s 8th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 0.1953125 BTC per block',
-    networks: ['mainnet', 'testnet'],
+    networks: ['mainnet', 'testnet', 'testnet4'],
   },
   '1890000': {
     labelEvent: 'Bitcoin\'s 9th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 0.09765625 BTC per block',
-    networks: ['mainnet', 'testnet'],
+    networks: ['mainnet', 'testnet', 'testnet4'],
   },
   '2100000': {
     labelEvent: 'Bitcoin\'s 10th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 0.04882812 BTC per block',
-    networks: ['mainnet', 'testnet'],
+    networks: ['mainnet', 'testnet', 'testnet4'],
   },
   '2310000': {
     labelEvent: 'Bitcoin\'s 11th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 0.02441406 BTC per block',
-    networks: ['mainnet', 'testnet'],
+    networks: ['mainnet', 'testnet', 'testnet4'],
   },
   '2520000': {
     labelEvent: 'Bitcoin\'s 12th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 0.01220703 BTC per block',
-    networks: ['mainnet', 'testnet'],
+    networks: ['mainnet', 'testnet', 'testnet4'],
   },
   '2730000': {
     labelEvent: 'Bitcoin\'s 13th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 0.00610351 BTC per block',
-    networks: ['mainnet', 'testnet'],
+    networks: ['mainnet', 'testnet', 'testnet4'],
   },
   '2940000': {
     labelEvent: 'Bitcoin\'s 14th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 0.00305175 BTC per block',
-    networks: ['mainnet', 'testnet'],
+    networks: ['mainnet', 'testnet', 'testnet4'],
   },
   '3150000': {
     labelEvent: 'Bitcoin\'s 15th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 0.00152587 BTC per block',
-    networks: ['mainnet', 'testnet'],
+    networks: ['mainnet', 'testnet', 'testnet4'],
   }
 };
 

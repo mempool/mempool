@@ -40,6 +40,7 @@ export interface Customization {
 
 export interface Env {
   TESTNET_ENABLED: boolean;
+  TESTNET4_ENABLED: boolean;
   SIGNET_ENABLED: boolean;
   LIQUID_ENABLED: boolean;
   LIQUID_TESTNET_ENABLED: boolean;
@@ -73,6 +74,7 @@ export interface Env {
 
 const defaultEnv: Env = {
   'TESTNET_ENABLED': false,
+  'TESTNET4_ENABLED': false,
   'SIGNET_ENABLED': false,
   'LIQUID_ENABLED': false,
   'LIQUID_TESTNET_ENABLED': false,
@@ -298,7 +300,7 @@ export class StateService {
     // (?:preview\/)?                               optional "preview" prefix (non-capturing)
     // (testnet|signet)/                            network string (captured as networkMatches[1])
     // ($|\/)                                       network string must end or end with a slash
-    const networkMatches = url.match(/^\/(?:[a-z]{2}(?:-[A-Z]{2})?\/)?(?:preview\/)?(testnet|signet)($|\/)/);
+    const networkMatches = url.match(/^\/(?:[a-z]{2}(?:-[A-Z]{2})?\/)?(?:preview\/)?(testnet4?|signet)($|\/)/);
     switch (networkMatches && networkMatches[1]) {
       case 'signet':
         if (this.network !== 'signet') {
@@ -315,6 +317,12 @@ export class StateService {
             this.network = 'testnet';
             this.networkChanged$.next('testnet');
           }
+        }
+        return;
+      case 'testnet4':
+        if (this.network !== 'testnet4') {
+          this.network = 'testnet4';
+          this.networkChanged$.next('testnet4');
         }
         return;
       default:
@@ -365,7 +373,7 @@ export class StateService {
   }
 
   isAnyTestnet(): boolean {
-    return ['testnet', 'signet', 'liquidtestnet'].includes(this.network);
+    return ['testnet', 'testnet4', 'signet', 'liquidtestnet'].includes(this.network);
   }
 
   resetChainTip() {

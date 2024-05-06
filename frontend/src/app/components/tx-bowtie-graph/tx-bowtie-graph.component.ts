@@ -91,6 +91,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     'liquidtestnet': ['#d2d2d2', '#979797', '#d2d2d200'],
     // testnet: ['#1d486f', '#183550'],
     testnet: ['#4edf77', '#10a0af', '#4edf7700'],
+    testnet4: ['#4edf77', '#10a0af', '#4edf7700'],
     // signet: ['#6f1d5d', '#471850'],
     signet: ['#d24fc8', '#a84fd2', '#d24fc800'],
   };
