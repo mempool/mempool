@@ -135,6 +135,8 @@ describe('Mempool Backend Config', () => {
         ENABLED: false,
         AUDIT: false,
         AUDIT_START_HEIGHT: 774000,
+        STATISTICS: false,
+        STATISTICS_START_TIME: 1481932800,
         SERVERS: []
       });
 

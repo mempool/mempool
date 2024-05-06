@@ -422,6 +422,7 @@ export interface Statistic {
 
 export interface OptimizedStatistic {
   added: string;
+  count: number;
   vbytes_per_second: number;
   total_fee: number;
   mempool_byte_weight: number;

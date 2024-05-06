@@ -141,6 +141,8 @@ interface IConfig {
     ENABLED: boolean;
     AUDIT: boolean;
     AUDIT_START_HEIGHT: number;
+    STATISTICS: boolean;
+    STATISTICS_START_TIME: number | string;
     SERVERS: string[];
   },
   MEMPOOL_SERVICES: {
@@ -298,6 +300,8 @@ const defaults: IConfig = {
     'ENABLED': false,
     'AUDIT': false,
     'AUDIT_START_HEIGHT': 774000,
+    'STATISTICS': false,
+    'STATISTICS_START_TIME': 1481932800,
     'SERVERS': [],
   },
   'MEMPOOL_SERVICES': {
