@@ -384,6 +384,7 @@ DEBIAN_PKG+=(libevent-dev libdb-dev libssl-dev libtool autotools-dev)
 DEBIAN_PKG+=(libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-test-dev libboost-thread-dev)
 DEBIAN_PKG+=(nodejs npm mariadb-server nginx-core python3-certbot-nginx rsync ufw)
 DEBIAN_PKG+=(geoipupdate)
+DEBIAN_PKG+=(openjdk-11-jdk)
 
 DEBIAN_UNFURL_PKG=()
 DEBIAN_UNFURL_PKG+=(cups chromium-bsu libatk1.0 libatk-bridge2.0 libxkbcommon-dev libxcomposite-dev)
@@ -1380,9 +1381,6 @@ if [ "${BISQ_INSTALL}" = ON ];then
         Debian)
             echo "[*] Cloning Bisq top-level repo"
             osSudo "${BISQ_USER}" git clone --branch "${BISQ_REPO_BRANCH}" "${BISQ_REPO_URL}" "${BISQ_HOME}/${BISQ_REPO_NAME}"
-
-            echo "[*] Installing OpenJDK from Bisq install_java_linux.sh script"
-            osSudo "${ROOT_USER}" "${BISQ_HOME}/${BISQ_REPO_NAME}/scripts/install_java_linux.sh"
 
             echo "[*] Checking out Bisq ${BISQ_LATEST_RELEASE}"
             osSudo "${BISQ_USER}" sh -c "cd ${BISQ_HOME}/${BISQ_REPO_NAME} && git checkout ${BISQ_LATEST_RELEASE}"
