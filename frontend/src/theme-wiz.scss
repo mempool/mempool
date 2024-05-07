@@ -3,6 +3,7 @@ $bg: #11131f;
 $active-bg: #000000;
 $hover-bg: #12131e;
 $fg: #fff;
+$nav-bg: $bg;
 $title-fg: #2055e3;
 
 $taproot: #eba814;
@@ -61,6 +62,7 @@ $dropdown-link-active-bg: $active-bg;
   --active-bg: #{$active-bg};
   --hover-bg: #{$hover-bg};
   --fg: #{$fg};
+  --nav-bg: #{$nav-bg};
   --title-fg: #{$title-fg};
 
   --primary: #{$primary};
@@ -77,7 +79,6 @@ $dropdown-link-active-bg: $active-bg;
   --box-bg: #171c2a;
   --stat-box-bg: #0b1018;
   --alert-bg: #3a1c61;
-  --navbar-bg: #121212;
   --transparent-fg: #ffffffbb;
   --fade-out-box-bg-start: rgba(23, 28, 42, 0);
   --fade-out-box-bg-end: rgba(23, 28, 42, 1);

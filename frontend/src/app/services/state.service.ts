@@ -27,7 +27,9 @@ export interface Customization {
     name: string;
     site_id?: number;
     title: string;
-    img: string;
+    img?: string;
+    header_img?: string;
+    footer_img?: string;
     rounded_corner: boolean;
   },
   dashboard: {

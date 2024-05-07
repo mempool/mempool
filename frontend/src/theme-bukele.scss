@@ -1,9 +1,10 @@
 /* Theme */
-$bg: #313945;
+$bg: #11131f;
 $active-bg: #000000;
-$hover-bg: #E5E5E5;
-$fg: #ffffff;
-$title-fg: #c19a81;
+$hover-bg: #12131e;
+$fg: #d2d2d2;
+$nav-bg: #111e60;
+$title-fg: #2055e3;
 
 $taproot: #eba814;
 $taproot-light: #d5a90a;
@@ -18,10 +19,10 @@ $gray-700: $fg;
 $nav-tabs-link-active-bg: $active-bg;
 
 $primary: #007cfa;
-$secondary: #1c1e4d;
-$tertiary: #8c7566;
-$success: #009900;
-$info: #dac3b4;
+$secondary: #272f4e;
+$tertiary: #ff9900;
+$success: #0aab2f;
+$info: #00ddff;
 
 $h5-font-size: 1.15rem !default;
 
@@ -61,6 +62,7 @@ $dropdown-link-active-bg: $active-bg;
   --active-bg: #{$active-bg};
   --hover-bg: #{$hover-bg};
   --fg: #{$fg};
+  --nav-bg: #{$nav-bg};
   --title-fg: #{$title-fg};
 
   --primary: #{$primary};
@@ -70,25 +72,24 @@ $dropdown-link-active-bg: $active-bg;
   --info: #{$info};
   --link-color: #{$link-color};
   --link-hover-color: #{$link-hover-color};
-  --icon: #f1f1f1;
+  --icon: #d2d2d2;
   --skeleton-bg: #2e324e;
   --skeleton-bg-light: #5d6182;
 
-  --box-bg: #272d37;
-  --stat-box-bg: #1c2027;
+  --box-bg: #171c2a;
+  --stat-box-bg: #0b1018;
   --alert-bg: #3a1c61;
-  --navbar-bg: #212121;
   --transparent-fg: #ffffffbb;
   --fade-out-box-bg-start: rgba(23, 28, 42, 0);
   --fade-out-box-bg-end: rgba(23, 28, 42, 1);
-  --opacity: 0.57;
+  --opacity: 0.9;
 
   --testnet: #1d486f;
   --signet: #6f1d5d;
   --liquid: #116761;
   --liquidtestnet: #494a4a;
 
-  --mainnet-alt: #a08674;
+  --mainnet-alt: #9339f4;
   --testnet-alt: #183550;
   --signet-alt: #471850;
   --liquidtestnet-alt: #272e46;
@@ -104,8 +105,35 @@ $dropdown-link-active-bg: $active-bg;
   --tooltip-grey: #b1b1b1;
   --orange: #ff9f00;
 
-  --search-button: #645449;
-  --search-button-border: #605046;
-  --search-button-focus: #786457;
-  --search-button-shadow: #a0867480;
+  --search-button: #d5a90a;
+  --search-button-border: #d5a90a;
+  --search-button-focus: #eba814;
+  --search-button-shadow: #eba814;
+}
+
+.navbar {
+  --secondary: #041437;
+}
+
+.nav-item.active, .btn-purple {
+  --icon: white;
+}
+
+.btn-purple:not(:disabled):not(.disabled):active, .btn-purple:not(:disabled):not(.disabled).active, .show > .btn-purple.dropdown-toggle {
+  color: #fff;
+  background-color: var(--search-button);
+  border-color: var(--search-button-border);
+}
+
+.btn-purple:focus, .btn-purple.focus {
+  color: #fff;
+  background-color: var(--search-button-focus);
+  border-color: var(--search-button);
+  box-shadow: 0 0 0 0.2rem var(--search-button-shadow);
+}
+
+.btn-purple:hover {
+  color: #fff;
+  background-color: var(--search-button-focus);
+  border-color: var(--search-button);
 }

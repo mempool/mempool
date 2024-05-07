@@ -1,12 +1,12 @@
 {
-  "theme": "contrast",
+  "theme": "bukele",
   "enterprise": "onbtc",
   "branding": {
     "name": "onbtc",
-    "title": "Oficina Nacional del Bitcoin",
+    "title": "Bitcoin Office",
     "site_id": 19,
-    "header_img": "/resources/onbtc.svg",
-    "img": "/resources/elsalvador.svg",
+    "header_img": "/resources/onbtclogo.svg",
+    "footer_img": "/resources/onbtclogo.svg",
     "rounded_corner": true
   },
   "dashboard": {
