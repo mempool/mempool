@@ -97,6 +97,8 @@
     "ENABLED": true,
     "AUDIT": true,
     "AUDIT_START_HEIGHT": 774000,
+    "STATISTICS": true,
+    "STATISTICS_START_TIME": "24h",
     "SERVERS": [
       "node201.fmt.mempool.space",
       "node202.fmt.mempool.space",
