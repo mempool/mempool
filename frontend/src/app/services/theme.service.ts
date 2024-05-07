@@ -17,7 +17,7 @@ export class ThemeService {
     private storageService: StorageService,
     private stateService: StateService,
   ) {
-    const theme = this.storageService.getValue('theme-preference') || this.stateService.env.customize?.theme || 'default';
+    const theme = this.stateService.env.customize?.theme || this.storageService.getValue('theme-preference') || 'default';
     this.apply(theme);
   }
 
@@ -44,7 +44,9 @@ export class ThemeService {
         this.style = null;
       }
     }
-    this.storageService.setValue('theme-preference', theme);
+    if (!this.stateService.env.customize?.theme) {
+      this.storageService.setValue('theme-preference', theme);
+    }
     this.themeChanged$.next(this.theme);
   }
 }
