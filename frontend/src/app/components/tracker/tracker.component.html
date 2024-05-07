@@ -4,9 +4,7 @@
       <div class="nav-header">
         @if (enterpriseInfo?.header_img) {
           <a class="d-flex" [routerLink]="['/' | relativeUrl]">
-            <img [src]="enterpriseInfo.img" class="subdomain_logo" [class]="{'rounded': enterpriseInfo.rounded_corner}">
-            <div class="vertical-line"></div>
-            <img *ngIf="enterpriseInfo.header_img" [src]="enterpriseInfo?.header_img" alt="enterpriseInfo.title" height="36px">
+            <img *ngIf="enterpriseInfo.header_img" [src]="enterpriseInfo?.header_img" alt="enterpriseInfo.title" height="42px">
           </a>
         } @else if (enterpriseInfo?.img || enterpriseInfo?.imageMd5) {
           <a [routerLink]="['/' | relativeUrl]">
@@ -22,7 +20,7 @@
         }
 
         @if (enterpriseInfo?.header_img || (!enterpriseInfo?.img && !enterpriseInfo?.imageMd5)) {
-          <div [ngSwitch]="network" class="network-label">
+          <div [ngSwitch]="network" class="network-label" [class.hide-name]="enterpriseInfo?.header_img">
             <span *ngSwitchCase="'signet'" class="network signet"><span class="name">Bitcoin Signet</span><app-svg-images name="signet" width="35" height="35" viewBox="0 0 65 65" style="display: inline-block" class="mainnet ml-2"></app-svg-images></span>
             <span *ngSwitchCase="'testnet'" class="network testnet"><span class="name">Bitcoin Testnet3</span><app-svg-images name="testnet" width="35" height="35" viewBox="0 0 65 65" style="display: inline-block" class="mainnet ml-2"></app-svg-images></span>
             <span *ngSwitchCase="'testnet4'" class="network testnet"><span class="name">Bitcoin Testnet4</span><app-svg-images name="testnet4" width="35" height="35" viewBox="0 0 65 65" style="display: inline-block" class="mainnet ml-2"></app-svg-images></span>

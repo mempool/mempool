@@ -47,6 +47,7 @@
   max-width: 100%;
   padding: 1em;
   position: relative;
+  background: var(--nav-bg);
   box-shadow: 0 -5px 15px #000;
   z-index: 100;
   align-items: center;
@@ -58,6 +59,10 @@
       display: flex;
       flex-direction: row;
       align-items: center;
+    }
+
+    &.hide-name .name {
+      display: none;
     }
   }
 
