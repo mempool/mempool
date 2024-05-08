@@ -35,6 +35,7 @@ export interface Customization {
   dashboard: {
     widgets: {
       component: string;
+      mobileOrder?: number;
       props: { [key: string]: any };
     }[];
   };

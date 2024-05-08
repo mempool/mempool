@@ -12,19 +12,26 @@
   "dashboard": {
     "widgets": [
       {
-        "component": "fees"
+        "component": "fees",
+        "mobileOrder": 4
       },
       {
         "component": "balance",
+        "mobileOrder": 1,
         "props": {
           "address": "32ixEdVJWo3kmvJGMTZq5jAQVZZeuwnqzo"
         }
       },
       {
-        "component": "goggles"
+        "component": "twitter",
+        "mobileOrder": 5,
+        "props": {
+          "handle": "bitcoinofficesv"
+        }
       },
       {
         "component": "address",
+        "mobileOrder": 2,
         "props": {
           "address": "32ixEdVJWo3kmvJGMTZq5jAQVZZeuwnqzo",
           "period": "1m"
@@ -35,6 +42,7 @@
       },
       {
         "component": "addressTransactions",
+        "mobileOrder": 3,
         "props": {
           "address": "32ixEdVJWo3kmvJGMTZq5jAQVZZeuwnqzo"
         }

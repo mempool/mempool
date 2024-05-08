@@ -57,6 +57,7 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
   incomingGraphHeight: number = 300;
   graphHeight: number = 300;
   webGlEnabled = true;
+  isMobile: boolean = window.innerWidth <= 767.98;
 
   widgets;
 
@@ -370,5 +371,6 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
       this.goggleResolution = 86;
       this.graphHeight = 310;
     }
+    this.isMobile = window.innerWidth <= 767.98;
   }
 }
