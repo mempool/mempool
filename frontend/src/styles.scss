@@ -3,6 +3,7 @@ $bg: #1d1f31;
 $active-bg: #11131f;
 $hover-bg: #12131e;
 $fg: #fff;
+$nav-bg: $bg;
 $title-fg: #4a68b9;
 
 $taproot: #eba814;
@@ -64,6 +65,7 @@ $dropdown-link-active-bg: $active-bg;
   --active-bg: #{$active-bg};
   --hover-bg: #{$hover-bg};
   --fg: #{$fg};
+  --nav-bg: #{$nav-bg};
   --title-fg: #{$title-fg};
 
   --primary: #{$primary};
