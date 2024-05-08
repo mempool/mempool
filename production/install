@@ -387,7 +387,7 @@ DEBIAN_PKG+=(autotools-dev autoconf automake pkg-config bsdmainutils)
 DEBIAN_PKG+=(libevent-dev libdb-dev libssl-dev libtool autotools-dev)
 DEBIAN_PKG+=(libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-test-dev libboost-thread-dev)
 DEBIAN_PKG+=(nodejs npm mariadb-server nginx-core python3-certbot-nginx rsync ufw)
-DEBIAN_PKG+=(geoipupdate)
+DEBIAN_PKG+=(geoipupdate redis)
 DEBIAN_PKG+=(cargo)
 DEBIAN_PKG+=(openjdk-11-jdk)
 
@@ -1073,6 +1073,9 @@ case $OS in
         echo "[*] Installing syslog configuration"
         osSudo "${ROOT_USER}" install -c -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/linux/rsyslog.conf" /etc/rsyslog.d/10-mempool.conf
         osSudo "${ROOT_USER}" sed -i.orig -e 's/^\*\.\*;auth,authpriv\.none/*\.*;auth,authpriv\.none,local7\.none/' /etc/rsyslog.d/50-default.conf
+
+        echo "[*] Installing redis configuration"
+        osSudo "${ROOT_USER}" install -c -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/linux/redis.conf" /etc/redis/redis.conf
     ;;
 esac
 
