@@ -113,6 +113,10 @@ export class TrackerComponent implements OnInit, OnDestroy {
   scrollIntoAccelPreview = false;
   auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
 
+  enterpriseInfo: any;
+  enterpriseInfo$: Subscription;
+  officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
+
   constructor(
     private route: ActivatedRoute,
     private electrsApiService: ElectrsApiService,
@@ -151,6 +155,10 @@ export class TrackerComponent implements OnInit, OnDestroy {
     }
 
     this.enterpriseService.page();
+
+    this.enterpriseInfo$ = this.enterpriseService.info$.subscribe(info => {
+      this.enterpriseInfo = info;
+    });
 
     this.websocketService.want(['blocks', 'mempool-blocks']);
     this.stateService.networkChanged$.subscribe(
@@ -702,6 +710,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
     this.blocksSubscription.unsubscribe();
     this.miningSubscription?.unsubscribe();
     this.currencyChangeSubscription?.unsubscribe();
+    this.enterpriseInfo$?.unsubscribe();
     this.leaveTransaction();
   }
 }
