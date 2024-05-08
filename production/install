@@ -381,7 +381,7 @@ DEBIAN_PREREQ_PKG+=(dialog)
 
 # packages needed for mempool ecosystem
 DEBIAN_PKG=()
-DEBIAN_PKG+=(zsh vim curl screen openssl python3 cron)
+DEBIAN_PKG+=(zsh vim curl screen openssl python3 cron acl)
 DEBIAN_PKG+=(build-essential git git-lfs clang cmake jq)
 DEBIAN_PKG+=(autotools-dev autoconf automake pkg-config bsdmainutils)
 DEBIAN_PKG+=(libevent-dev libdb-dev libssl-dev libtool autotools-dev)
@@ -657,6 +657,12 @@ ext4CreateDir()
     mkdir -p "/backup" "${ELEMENTS_HOME}" "${BITCOIN_HOME}" "${MINFEE_HOME}" "${ELECTRS_HOME}" "${MEMPOOL_HOME}" "${MYSQL_HOME}" "${BITCOIN_ELECTRS_HOME}" "${ELEMENTS_HOME}/liquidv1" "${ELEMENTS_ELECTRS_HOME}"
     mkdir -p /var/cache/nginx/services /var/cache/nginx/api
     chown "${NGINX_USER}:${NGINX_GROUP}" /var/cache/nginx/services /var/cache/nginx/api
+
+    # create /bitcoin/socket with custom ACL for electrs unix sockets
+    mkdir -p "${BITCOIN_HOME}/socket"
+
+    # create /elements/socket with custom ACL for electrs unix sockets
+    mkdir -p "${ELEMENTS_HOME}/socket"
 
     # Bitcoin Mainnet
     if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
@@ -1909,13 +1915,25 @@ echo "[*] Setting permissions for electrs sockets"
 case $OS in
 
     FreeBSD)
+        if [ "${BITCOIN_INSTALL}" = ON ];then
         setfacl -m "user:bitcoin:full_set:f:allow,user:mempool:full_set:f:allow,user:www:full_set:f:allow,everyone@::f:allow" "${BITCOIN_HOME}/socket"
         chown "${BITCOIN_USER}:${BITCOIN_GROUP}" "${BITCOIN_HOME}/socket"
+        fi
+        if [ "${ELEMENTS_INSTALL}" = ON ];then
         setfacl -m "user:elements:full_set:f:allow,user:mempool:full_set:f:allow,user:www:full_set:f:allow,everyone@::f:allow" "${ELEMENTS_HOME}/socket"
         chown "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELEMENTS_HOME}/socket"
+        fi
     ;;
 
     Debian)
+        if [ "${BITCOIN_INSTALL}" = ON ];then
+            setfacl -m "u:bitcoin:rwx,u:mempool:rwx,u:www-data:rwx,o::rw-" "${BITCOIN_HOME}/socket"
+            chown "${BITCOIN_USER}:${BITCOIN_GROUP}" "${BITCOIN_HOME}/socket"
+        fi
+        if [ "${ELEMENTS_INSTALL}" = ON ];then
+            setfacl -m "u:elements:rwx,u:mempool:rwx,u:www-data:rwx,o::rw-" "${ELEMENTS_HOME}/socket"
+            chown "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELEMENTS_HOME}/socket"
+        fi
     ;;
 esac
 
