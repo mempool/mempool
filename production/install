@@ -1439,8 +1439,11 @@ if [ "${BISQ_INSTALL}" = ON ];then
         Debian)
             echo "[*] Installing Bisq service file"
             osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${BISQ_HOME}/${BISQ_REPO_NAME}/seednode/bisq.service" "${DEBIAN_SERVICE_HOME}/bisq.service"
-            osSudo "${ROOT_USER}" sed -i.orig "s/#Requires=bitcoin.service/Requires=bitcoin.service/" "${DEBIAN_SERVICE_HOME}/bisq.service"
-            osSudo "${ROOT_USER}" sed -i.orig "s/#BindsTo=bitcoin.service/BindsTo=bitcoin.service/" "${DEBIAN_SERVICE_HOME}/bisq.service"
+            if [ "${BITCOIN_INSTALL}" = ON ];then
+                osSudo "${ROOT_USER}" sed -i.orig "s/After=network.target/After=bitcoin.service/" "${DEBIAN_SERVICE_HOME}/bisq.service"
+                osSudo "${ROOT_USER}" sed -i.orig "s/#Requires=bitcoin.service/Requires=bitcoin.service/" "${DEBIAN_SERVICE_HOME}/bisq.service"
+                osSudo "${ROOT_USER}" sed -i.orig "s/#BindsTo=bitcoin.service/BindsTo=bitcoin.service/" "${DEBIAN_SERVICE_HOME}/bisq.service"
+            fi
             osSudo "${ROOT_USER}" sed -i.orig "s/__BISQ_REPO_NAME__/${BISQ_REPO_NAME}/" "${DEBIAN_SERVICE_HOME}/bisq.service"
             osSudo "${ROOT_USER}" sed -i.orig "s!__BISQ_HOME__!${BISQ_HOME}!" "${DEBIAN_SERVICE_HOME}/bisq.service"
 
@@ -1448,8 +1451,6 @@ if [ "${BISQ_INSTALL}" = ON ];then
             osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${BISQ_HOME}/${BISQ_REPO_NAME}/seednode/bisq.env" "${DEBIAN_ENV_HOME}/bisq.env"
             osSudo "${ROOT_USER}" sed -i.orig "s!__BISQ_APP_NAME__!${BISQ_APP_NAME}!" "${DEBIAN_ENV_HOME}/bisq.env"
             osSudo "${ROOT_USER}" sed -i.orig "s!__BISQ_HOME__!${BISQ_HOME}!" "${DEBIAN_ENV_HOME}/bisq.env"
-
-            echo "[*] Configuring Bisq environment file"
             osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_P2P_HOST__/${BITCOIN_MAINNET_P2P_HOST}/" "${DEBIAN_ENV_HOME}/bisq.env"
             osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_P2P_PORT__/${BITCOIN_MAINNET_P2P_PORT}/" "${DEBIAN_ENV_HOME}/bisq.env"
             osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_HOST__/${BITCOIN_MAINNET_RPC_HOST}/" "${DEBIAN_ENV_HOME}/bisq.env"
@@ -1459,9 +1460,11 @@ if [ "${BISQ_INSTALL}" = ON ];then
             osSudo "${ROOT_USER}" sed -i.orig "s/BISQ_DUMP_BLOCKCHAIN=false/BISQ_DUMP_BLOCKCHAIN=true/" "${DEBIAN_ENV_HOME}/bisq.env"
             osSudo "${ROOT_USER}" sed -i.orig "s/BISQ_DUMP_STATISTICS=false/BISQ_DUMP_STATISTICS=true/" "${DEBIAN_ENV_HOME}/bisq.env"
 
-            echo "[*] Updating Bitcoin configuration for Bisq"
-            osSudo "${ROOT_USER}" sed -i.orig "1iblocknotify=${BITCOIN_HOME}/blocknotify.sh %s" "${BITCOIN_HOME}/bitcoin.conf"
-            osSudo "${BITCOIN_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 755 "${BISQ_HOME}/${BISQ_REPO_NAME}/seednode/blocknotify.sh" "${BITCOIN_HOME}/blocknotify.sh"
+            if [ "${BITCOIN_INSTALL}" = ON ];then
+                echo "[*] Updating Bitcoin configuration for Bisq"
+                osSudo "${ROOT_USER}" sed -i.orig "1iblocknotify=${BITCOIN_HOME}/blocknotify.sh %s" "${BITCOIN_HOME}/bitcoin.conf"
+                osSudo "${BITCOIN_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 755 "${BISQ_HOME}/${BISQ_REPO_NAME}/seednode/blocknotify.sh" "${BITCOIN_HOME}/blocknotify.sh"
+            fi
         ;;
 
     esac
@@ -1919,12 +1922,12 @@ case $OS in
 
     FreeBSD)
         if [ "${BITCOIN_INSTALL}" = ON ];then
-        setfacl -m "user:bitcoin:full_set:f:allow,user:mempool:full_set:f:allow,user:www:full_set:f:allow,everyone@::f:allow" "${BITCOIN_HOME}/socket"
-        chown "${BITCOIN_USER}:${BITCOIN_GROUP}" "${BITCOIN_HOME}/socket"
+            setfacl -m "user:bitcoin:full_set:f:allow,user:mempool:full_set:f:allow,user:www:full_set:f:allow,everyone@::f:allow" "${BITCOIN_HOME}/socket"
+            chown "${BITCOIN_USER}:${BITCOIN_GROUP}" "${BITCOIN_HOME}/socket"
         fi
         if [ "${ELEMENTS_INSTALL}" = ON ];then
-        setfacl -m "user:elements:full_set:f:allow,user:mempool:full_set:f:allow,user:www:full_set:f:allow,everyone@::f:allow" "${ELEMENTS_HOME}/socket"
-        chown "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELEMENTS_HOME}/socket"
+            setfacl -m "user:elements:full_set:f:allow,user:mempool:full_set:f:allow,user:www:full_set:f:allow,everyone@::f:allow" "${ELEMENTS_HOME}/socket"
+            chown "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELEMENTS_HOME}/socket"
         fi
     ;;
 
