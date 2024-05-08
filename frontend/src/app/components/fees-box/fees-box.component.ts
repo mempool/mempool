@@ -16,8 +16,8 @@ export class FeesBoxComponent implements OnInit, OnDestroy {
   isLoading$: Observable<boolean>;
   recommendedFees$: Observable<Recommendedfees>;
   themeSubscription: Subscription;
-  gradient = 'linear-gradient(to right, #2e324e, #2e324e)';
-  noPriority = '#2e324e';
+  gradient = 'linear-gradient(to right, var(--skeleton-bg), var(--skeleton-bg))';
+  noPriority = 'var(--skeleton-bg)';
   fees: Recommendedfees;
 
   constructor(

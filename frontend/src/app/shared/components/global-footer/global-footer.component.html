@@ -4,13 +4,19 @@
     <div class="row main" [class]="{'services': isServicesPage}">
       <div class="col-md-12 branding mt-2">
         <div class="main-logo" [class]="{'services': isServicesPage}">
-          <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>
-          <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126"></app-svg-images>
+          @if (enterpriseInfo?.footer_img) {
+            <img [src]="enterpriseInfo?.footer_img" alt="enterpriseInfo.title" height="60px" class="mr-3">
+          } @else {
+            <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>
+            <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126"></app-svg-images>
+          }
         </div>
-        <p class="explore-tagline-mobile">
-          <ng-container i18n="@@7deec1c1520f06170e1f8e8ddfbe4532312f638f">Explore the full Bitcoin ecosystem</ng-container>
-          <ng-template [ngIf]="locale.substr(0, 2) === 'en'">&reg;</ng-template>
-        </p>
+        @if (!enterpriseInfo?.footer_img) {
+          <p class="explore-tagline-mobile">
+            <ng-container i18n="@@7deec1c1520f06170e1f8e8ddfbe4532312f638f">Explore the full Bitcoin ecosystem</ng-container>
+            <ng-template [ngIf]="locale.substr(0, 2) === 'en'">&reg;</ng-template>
+          </p>
+        }
         <div class="site-options language-selector d-flex justify-content-center align-items-center" [class]="{'services': isServicesPage}">
           <div class="selector">
             <app-language-selector></app-language-selector>
@@ -21,25 +27,31 @@
           <div class="selector">
             <app-rate-unit-selector></app-rate-unit-selector>
           </div>
-          <div class="selector d-none d-sm-flex">
-            <app-theme-selector></app-theme-selector>
-          </div>
+          @if (!env.customize?.theme) {
+            <div class="selector d-none d-sm-flex">
+              <app-theme-selector></app-theme-selector>
+            </div>
+          }
           <a *ngIf="stateService.isMempoolSpaceBuild" class="btn btn-purple sponsor d-none d-sm-flex justify-content-center" [routerLink]="['/login' | relativeUrl]">
             <span *ngIf="loggedIn" i18n="shared.my-account" class="nowrap">My Account</span>
             <span *ngIf="!loggedIn" i18n="shared.sign-in" class="nowrap">Sign In</span>
           </a>
         </div>
-        <div class="selector d-flex d-sm-none justify-content-center ml-auto mr-auto mt-0">
-          <app-theme-selector></app-theme-selector>
-        </div>
-        <a *ngIf="stateService.isMempoolSpaceBuild" class="btn btn-purple sponsor d-flex d-sm-none justify-content-center ml-auto mr-auto mt-0 mb-2" [routerLink]="['/login' | relativeUrl]">
-          <span *ngIf="loggedIn" i18n="shared.my-account" class="nowrap">My Account</span>
-          <span *ngIf="!loggedIn" i18n="shared.sign-in" class="nowrap">Sign In</span>
-        </a>
-        <p class="explore-tagline-desktop">
-          <ng-container i18n="@@7deec1c1520f06170e1f8e8ddfbe4532312f638f">Explore the full Bitcoin ecosystem</ng-container>
-          <ng-template [ngIf]="locale.substr(0, 2) === 'en'">&reg;</ng-template>
-        </p>
+        @if (!env.customize?.theme) {
+          <div class="selector d-flex d-sm-none justify-content-center ml-auto mr-auto mt-0">
+            <app-theme-selector></app-theme-selector>
+          </div>
+        }
+        @if (!enterpriseInfo?.footer_img) {
+          <a *ngIf="stateService.isMempoolSpaceBuild" class="btn btn-purple sponsor d-flex d-sm-none justify-content-center ml-auto mr-auto mt-0 mb-2" [routerLink]="['/login' | relativeUrl]">
+            <span *ngIf="loggedIn" i18n="shared.my-account" class="nowrap">My Account</span>
+            <span *ngIf="!loggedIn" i18n="shared.sign-in" class="nowrap">Sign In</span>
+          </a>
+          <p class="explore-tagline-desktop">
+            <ng-container i18n="@@7deec1c1520f06170e1f8e8ddfbe4532312f638f">Explore the full Bitcoin ecosystem</ng-container>
+            <ng-template [ngIf]="locale.substr(0, 2) === 'en'">&reg;</ng-template>
+          </p>
+        }
       </div>
     </div>
     <div class="row col-md-12 link-tree" [class]="{'services': isServicesPage}">

@@ -17,16 +17,16 @@
 
   <!-- Large screen -->
   <a class="navbar-brand d-none d-md-flex" [ngClass]="{'dual-logos': subdomain}" [routerLink]="['/' | relativeUrl]" (click)="brandClick($event)">
-    <ng-template [ngIf]="subdomain && enterpriseInfo">
-      <div class="subdomain_container">
-        <img [src]="enterpriseInfo.img || '/api/v1/services/enterprise/images/' + subdomain + '/logo?imageMd5=' + enterpriseInfo.imageMd5" class="subdomain_logo" [class]="{'rounded': enterpriseInfo.rounded_corner}">
-      </div>
-      <div class="vertical-line"></div>
-    </ng-template>
     <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
       @if (enterpriseInfo?.header_img) {
-        <img [src]="enterpriseInfo?.header_img" alt="enterpriseInfo.title" height="36px">
+        <img [src]="enterpriseInfo?.header_img" alt="enterpriseInfo.title" height="48px" class="mr-3">
       } @else {
+        <ng-template [ngIf]="subdomain && enterpriseInfo">
+          <div class="subdomain_container">
+            <img [src]="enterpriseInfo.img || '/api/v1/services/enterprise/images/' + subdomain + '/logo?imageMd5=' + enterpriseInfo.imageMd5" class="subdomain_logo" [class]="{'rounded': enterpriseInfo.rounded_corner}">
+          </div>
+          <div class="vertical-line"></div>
+        </ng-template>
         <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126" class="mempool-logo" [ngStyle]="{'opacity': connectionState.val === 2 ? 1 : 0.5 }"></app-svg-images>
         <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>
       }
@@ -38,24 +38,28 @@
   </a>
   <!-- Mobile -->
   <a class="navbar-brand d-flex d-md-none justify-content-center" [ngClass]="{'dual-logos': subdomain, 'mr-0': subdomain}" [routerLink]="['/' | relativeUrl]" (click)="brandClick($event)">
-    <ng-template [ngIf]="subdomain && enterpriseInfo">
-      <div class="subdomain_container">
-        <img [src]="enterpriseInfo.img || '/api/v1/services/enterprise/images/' + subdomain + '/logo?imageMd5=' + enterpriseInfo.imageMd5" class="subdomain_logo" [class]="{'rounded': enterpriseInfo.rounded_corner}">
-      </div>
-      <div class="vertical-line"></div>
-    </ng-template>
-    <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
-      @if (enterpriseInfo?.header_img) {
-        <img [src]="enterpriseInfo?.header_img" alt="enterpriseInfo.title" height="36px">
-      } @else {
-        <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126" class="mempool-logo" [ngStyle]="{'opacity': connectionState.val === 2 ? 1 : 0.5 }"></app-svg-images>
-        <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>
-      }
-        <div class="connection-badge">
-        <div class="badge badge-warning" *ngIf="connectionState.val === 0" i18n="master-page.offline">Offline</div>
-        <div class="badge badge-warning" *ngIf="connectionState.val === 1" i18n="master-page.reconnecting">Reconnecting...</div>
-      </div>
-    </ng-container>
+    @if (enterpriseInfo?.header_img) {
+      <img [src]="enterpriseInfo?.header_img" alt="enterpriseInfo.title" height="42px">
+    } @else {
+      <ng-template [ngIf]="subdomain && enterpriseInfo">
+        <div class="subdomain_container">
+          <img [src]="enterpriseInfo.img || '/api/v1/services/enterprise/images/' + subdomain + '/logo?imageMd5=' + enterpriseInfo.imageMd5" class="subdomain_logo" [class]="{'rounded': enterpriseInfo.rounded_corner}">
+        </div>
+        <div class="vertical-line"></div>
+      </ng-template>
+      <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
+        @if (enterpriseInfo?.header_img) {
+          <img [src]="enterpriseInfo?.header_img" alt="enterpriseInfo.title" height="36px">
+        } @else {
+          <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126" class="mempool-logo" [ngStyle]="{'opacity': connectionState.val === 2 ? 1 : 0.5 }"></app-svg-images>
+          <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>
+        }
+          <div class="connection-badge">
+          <div class="badge badge-warning" *ngIf="connectionState.val === 0" i18n="master-page.offline">Offline</div>
+          <div class="badge badge-warning" *ngIf="connectionState.val === 1" i18n="master-page.reconnecting">Reconnecting...</div>
+        </div>
+      </ng-container>
+    }
   </a>
 
   <div (window:resize)="onResize()" ngbDropdown class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.TESTNET4_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.LIQUID_TESTNET_ENABLED">
