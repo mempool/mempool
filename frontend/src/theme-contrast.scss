@@ -3,6 +3,7 @@ $bg: #11131f;
 $active-bg: #000000;
 $hover-bg: #12131e;
 $fg: #fff;
+$nav-bg: $bg;
 $title-fg: #2055e3;
 
 $taproot: #eba814;
@@ -21,7 +22,7 @@ $primary: #007cfa;
 $secondary: #272f4e;
 $tertiary: #6225b2;
 $success: #0aab2f;
-$info: #10e0ff;
+$info: #00ddff;
 
 $h5-font-size: 1.15rem !default;
 
@@ -61,7 +62,7 @@ $dropdown-link-active-bg: $active-bg;
   --active-bg: #{$active-bg};
   --hover-bg: #{$hover-bg};
   --fg: #{$fg};
-  --color-fg: #fff;
+  --nav-bg: #{$nav-bg};
   --title-fg: #{$title-fg};
 
   --primary: #{$primary};
@@ -69,15 +70,19 @@ $dropdown-link-active-bg: $active-bg;
   --tertiary: #{$tertiary};
   --success: #{$success};
   --info: #{$info};
+  --link-color: #{$link-color};
+  --link-hover-color: #{$link-hover-color};
   --icon: #f1f1f1;
+  --skeleton-bg: #2e324e;
+  --skeleton-bg-light: #5d6182;
 
   --box-bg: #171c2a;
   --stat-box-bg: #0b1018;
   --alert-bg: #3a1c61;
-  --navbar-bg: #212121;
   --transparent-fg: #ffffffbb;
   --fade-out-box-bg-start: rgba(23, 28, 42, 0);
   --fade-out-box-bg-end: rgba(23, 28, 42, 1);
+  --opacity: 0.9;
 
   --testnet: #1d486f;
   --signet: #6f1d5d;
@@ -95,8 +100,13 @@ $dropdown-link-active-bg: $active-bg;
 
   --green: #83fd00;
   --red: #ff3d00;
-  --yellow: #ffcc00;
+  --yellow: #fff000;
   --grey: #7e7e7e;
   --tooltip-grey: #b1b1b1;
   --orange: #ff9f00;
+
+  --search-button: #4d2d77;
+  --search-button-border: #472a6e;
+  --search-button-focus: #533180;
+  --search-button-shadow: #7c58ab80;
 }

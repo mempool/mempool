@@ -41,6 +41,7 @@ export class EnterpriseService {
 
   disableSubnetworks(): void {
     this.stateService.env.TESTNET_ENABLED = false;
+    this.stateService.env.TESTNET4_ENABLED = false;
     this.stateService.env.LIQUID_ENABLED = false;
     this.stateService.env.LIQUID_TESTNET_ENABLED = false;
     this.stateService.env.SIGNET_ENABLED = false;

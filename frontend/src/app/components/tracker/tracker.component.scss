@@ -40,7 +40,14 @@
 }
 
 .nav-header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  width: 100%;
+  max-width: 100%;
+  padding: 1em;
   position: relative;
+  background: var(--nav-bg);
   box-shadow: 0 -5px 15px #000;
   z-index: 100;
   align-items: center;
@@ -53,6 +60,40 @@
       flex-direction: row;
       align-items: center;
     }
+
+    &.hide-name .name {
+      display: none;
+    }
+  }
+
+  .subdomain_logo {
+    height: 35px;
+    overflow: clip;
+    max-width: 140px;
+    margin: auto;
+    align-self: center;
+    .rounded {
+      border-radius: 5px;
+    }
+  }
+
+  .subdomain_container {
+    max-width: 140px;
+    text-align: center;
+    align-self: center;
+  }
+
+  .vertical-line {
+    border-left: 1px solid #444;
+    height: 30px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 3px;
+  }
+
+  .logo-holder {
+    display: flex;
+    flex-direction: row;
   }
 }
 

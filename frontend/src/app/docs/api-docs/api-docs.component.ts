@@ -102,6 +102,8 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
           this.electrsPort = 50002; break;
         case "testnet":
           this.electrsPort = 60002; break;
+        case "testnet4":
+          this.electrsPort = 40002; break;
         case "signet":
           this.electrsPort = 60602; break;
         case "liquid":
@@ -168,6 +170,9 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
       curlResponse = code.codeSampleMainnet.curl;
     }
     if (network === 'testnet') {
+      curlResponse = code.codeSampleTestnet.curl;
+    }
+    if (network === 'testnet4') {
       curlResponse = code.codeSampleTestnet.curl;
     }
     if (network === 'signet') {

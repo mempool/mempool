@@ -1,12 +1,6 @@
 <app-indexing-progress *ngIf="!widget"></app-indexing-progress>
 
 <div [class.full-container]="!widget">
-  <div *ngIf="!widget" class="card-header mb-0 mb-md-2">
-    <div class="d-flex d-md-block align-items-baseline">
-      <span i18n="address.balance-history">Balance History</span>
-    </div>  
-  </div>
-
   <ng-container *ngIf="!error">
     <div [class]="!widget ? 'chart' : 'chart-widget'" *browserOnly [style]="{ height: widget ? ((height + 20) + 'px') : null}" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
       (chartInit)="onChartInit($event)">
