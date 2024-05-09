@@ -16,6 +16,7 @@ const agentSelector = function(_parsedURL: any) {
 interface Match {
   render: boolean;
   title: string;
+  description: string;
   fallbackImg: string;
   staticImg?: string;
   networkMode: string;
@@ -234,14 +235,18 @@ const routes = {
   },
 };
 
-const networks = {
+export const networks = {
   bitcoin: {
+    title: 'The Mempool Open Source Project®',
+    description: 'Explore the full Bitcoin ecosystem with The Mempool Open Source Project®. See the real-time status of your transactions, get network info, and more.',
     fallbackImg: '/resources/previews/mempool-space-preview.jpg',
     routes: {
       ...routes // all routes supported
     }
   },
   liquid: {
+    title: 'The Mempool Open Source Project®',
+    description: 'Explore the full Bitcoin ecosystem with The Mempool Open Source Project®. See Liquid transactions & assets, get network info, and more.',
     fallbackImg: '/resources/liquid/liquid-network-preview.png',
     routes: { // only block, address & tx routes supported
       block: routes.block,
@@ -254,6 +259,8 @@ const networks = {
     routes: {} // no routes supported
   },
   onbtc: {
+    title: 'National Bitcoin Office of El Salvador',
+    description: 'The National Bitcoin Office (ONBTC) of El Salvador under President @nayibbukele',
     fallbackImg: '/resources/onbtc/onbtc-preview.jpg',
     routes: { // only dynamic routes supported
       block: routes.block,
@@ -277,6 +284,7 @@ export function matchRoute(network: string, path: string, matchFor: string = 're
   const match: Match = {
     render: false,
     title: '',
+    description: '',
     fallbackImg: '',
     networkMode: 'mainnet'
   }
@@ -292,6 +300,8 @@ export function matchRoute(network: string, path: string, matchFor: string = 're
 
   let route = networks[network] || networks.bitcoin;
   match.fallbackImg = route.fallbackImg;
+  match.title = route.title;
+  match.description = route.description;
 
   // traverse the route tree until we run out of route or tree, or hit a renderable match
   while (!route[matchFor] && route.routes && parts.length && route.routes[parts[0]]) {
@@ -299,6 +309,9 @@ export function matchRoute(network: string, path: string, matchFor: string = 're
     parts.shift();
     if (route.fallbackImg) {
       match.fallbackImg = route.fallbackImg;
+    }
+    if (route.description) {
+      match.description = route.description;
     }
   }
 
@@ -315,7 +328,7 @@ export function matchRoute(network: string, path: string, matchFor: string = 're
   // apply the title function if present
   if (route.getTitle && typeof route.getTitle === 'function') {
     match.title = route.getTitle(parts);
-  } else {
+  } else if (route.title) {
     match.title = route.title;
   }
 
