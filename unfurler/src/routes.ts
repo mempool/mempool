@@ -254,7 +254,7 @@ const networks = {
     routes: {} // no routes supported
   },
   onbtc: {
-    fallbackImg: '/resources/sv/onbtc-preview.jpg',
+    fallbackImg: '/resources/onbtc/onbtc-preview.jpg',
     routes: { // only dynamic routes supported
       block: routes.block,
       address: routes.address,
