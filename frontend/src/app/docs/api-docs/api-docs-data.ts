@@ -1,5 +1,6 @@
-const bitcoinNetworks = ["", "testnet", "signet"];
+const bitcoinNetworks = ["", "testnet", "testnet4", "signet"];
 const liquidNetworks = ["liquid", "liquidtestnet"];
+const lightningNetworks = ["", "testnet", "signet"];
 const miningTimeIntervals = "<code>24h</code>, <code>3d</code>, <code>1w</code>, <code>1m</code>, <code>3m</code>, <code>6m</code>, <code>1y</code>, <code>2y</code>, <code>3y</code>";
 
 const emptyCodeSample = {
@@ -6513,7 +6514,7 @@ export const restApiDocsData = [
     category: "lightning",
     fragment: "lightning",
     title: "Lightning",
-    showConditions: bitcoinNetworks
+    showConditions: lightningNetworks
   },
   {
     type: "endpoint",
@@ -6525,7 +6526,7 @@ export const restApiDocsData = [
       default: "<p>Returns network-wide stats such as total number of channels and nodes, total capacity, and average/median fee figures.</p><p>Pass one of the following for <code>:interval</code>: <code>latest</code>, <code>24h</code>, <code>3d</code>, <code>1w</code>, <code>1m</code>, <code>3m</code>, <code>6m</code>, <code>1y</code>, <code>2y</code>, <code>3y</code>.</p>"
     },
     urlString: "/v1/lightning/statistics/:interval",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -6621,7 +6622,7 @@ export const restApiDocsData = [
       default: "<p>Returns Lightning nodes and channels that match a full-text, case-insensitive search <code>:query</code> across node aliases, node pubkeys, channel IDs, and short channel IDs.</p>"
     },
     urlString: "/v1/lightning/search?searchText=:query",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -6706,7 +6707,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of Lightning nodes running on clearnet in the requested <code>:country</code>, where <code>:country</code> is an ISO Alpha-2 country code.</p>"
     },
     urlString: "/v1/lightning/nodes/country/:country",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -6928,7 +6929,7 @@ export const restApiDocsData = [
       default: "<p>Returns aggregate capacity and number of clearnet nodes per country. Capacity figures are in satoshis.</p>"
     },
     urlString: "/v1/lightning/nodes/countries",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -7072,7 +7073,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of nodes hosted by a specified <code>:isp</code>, where <code>:isp</code> is an ISP's ASN.</p>"
     },
     urlString: "/v1/lightning/nodes/isp/:isp",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -7191,7 +7192,7 @@ export const restApiDocsData = [
       default: "<p>Returns aggregate capacity, number of nodes, and number of channels per ISP. Capacity figures are in satoshis.</p>"
     },
     urlString: "/v1/lightning/nodes/isp-ranking",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -7303,7 +7304,7 @@ export const restApiDocsData = [
       default: "<p>Returns two lists of the top 100 nodes: one ordered by liquidity (aggregate channel capacity) and the other ordered by connectivity (number of open channels).</p>"
     },
     urlString: "/v1/lightning/nodes/rankings",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -7426,7 +7427,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of the top 100 nodes by liquidity (aggregate channel capacity).</p>"
     },
     urlString: "/v1/lightning/nodes/rankings/liquidity",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -7623,7 +7624,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of the top 100 nodes by connectivity (number of open channels).</p>"
     },
     urlString: "/v1/lightning/nodes/rankings/connectivity",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -7819,7 +7820,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of the top 100 oldest nodes.</p>"
     },
     urlString: "/v1/lightning/nodes/rankings/age",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -8006,7 +8007,7 @@ export const restApiDocsData = [
       default: "<p>Returns details about a node with the given <code>:pubKey</code>.</p>"
     },
     urlString: "/v1/lightning/nodes/:pubKey",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -8170,7 +8171,7 @@ export const restApiDocsData = [
       default: "<p>Returns historical stats for a node with the given <code>:pubKey</code>.</p>"
     },
     urlString: "/v1/lightning/nodes/:pubKey/statistics",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -8268,7 +8269,7 @@ export const restApiDocsData = [
       default: "<p>Returns info about a Lightning channel with the given <code>:channelId</code>.</p>"
     },
     urlString: "/v1/lightning/channels/:channelId",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -8433,7 +8434,7 @@ export const restApiDocsData = [
       default: "<p>Returns channels that correspond to the given <code>:txid</code> (multiple transaction IDs can be specified).</p>"
     },
     urlString: "/v1/lightning/channels/txids?txId[]=:txid",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -8634,7 +8635,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of a node's channels given its <code>:pubKey</code>. Ten channels are returned at a time. Use <code>:index</code> for paging. <code>:channelStatus</code> can be <code>open</code>, <code>active</code>, or <code>closed</code>.</p>"
     },
     urlString: "/v1/lightning/channels?public_key=:pubKey&status=:channelStatus",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -8770,7 +8771,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of channels with corresponding node geodata.</p>"
     },
     urlString: "/v1/lightning/channels-geo",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -8878,7 +8879,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of channels with corresponding geodata for a node with the given <code>:pubKey</code>.</p>"
     },
     urlString: "/v1/lightning/channels-geo/:pubKey",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {

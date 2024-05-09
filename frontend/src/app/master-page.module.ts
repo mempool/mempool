@@ -6,6 +6,7 @@ import { SharedModule } from './shared/shared.module';
 
 import { StartComponent } from './components/start/start.component';
 import { PushTransactionComponent } from './components/push-transaction/push-transaction.component';
+import { TestTransactionsComponent } from './components/test-transactions/test-transactions.component';
 import { CalculatorComponent } from './components/calculator/calculator.component';
 import { BlocksList } from './components/blocks-list/blocks-list.component';
 import { RbfList } from './components/rbf-list/rbf-list.component';
@@ -29,6 +30,10 @@ const routes: Routes = [
       {
         path: 'tx/push',
         component: PushTransactionComponent,
+      },
+      {
+        path: 'tx/test',
+        component: TestTransactionsComponent,
       },
       {
         path: 'about',

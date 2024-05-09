@@ -1,5 +1,5 @@
 .qr-wrapper {
-  background-color: var(--fg);
+  background-color: #fff;
   padding: 10px;
   padding-bottom: 5px;
   display: inline-block;
@@ -108,4 +108,20 @@ h1 {
   .qrcode-col {
     flex-grow: 0.5;
   }
+}
+
+.widget-toggler {
+  font-size: 12px;
+  position: absolute;
+  top: -20px;
+  right: 3px;
+  text-align: right;
+}
+
+.toggler-option {
+  text-decoration: none;
+}
+
+.inactive {
+  color: var(--transparent-fg);
 }

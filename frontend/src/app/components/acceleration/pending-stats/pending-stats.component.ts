@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core
 import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { Acceleration } from '../../../interfaces/node-api.interface';
-import { ServicesApiServices } from '../../../services/services-api.service';
+import { StateService } from '../../../services/state.service';
+import { WebsocketService } from '../../../services/websocket.service';
 
 @Component({
   selector: 'app-pending-stats',
@@ -15,11 +16,12 @@ export class PendingStatsComponent implements OnInit {
   public accelerationStats$: Observable<any>;
 
   constructor(
-    private servicesApiService: ServicesApiServices,
+    private stateService: StateService,
+    private websocketService: WebsocketService,
   ) { }
 
   ngOnInit(): void {
-    this.accelerationStats$ = (this.accelerations$ || this.servicesApiService.getAccelerations$()).pipe(
+    this.accelerationStats$ = (this.accelerations$ || this.stateService.liveAccelerations$).pipe(
       switchMap(accelerations => {
         let totalAccelerations = 0;
         let totalFeeDelta = 0;

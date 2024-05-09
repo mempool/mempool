@@ -404,6 +404,10 @@ class Mempool {
 
       const newAccelerationMap: { [txid: string]: Acceleration } = {};
       for (const acceleration of newAccelerations) {
+        // skip transactions we don't know about
+        if (!this.mempoolCache[acceleration.txid]) {
+          continue;
+        }
         newAccelerationMap[acceleration.txid] = acceleration;
         if (this.accelerations[acceleration.txid] == null) {
           // new acceleration

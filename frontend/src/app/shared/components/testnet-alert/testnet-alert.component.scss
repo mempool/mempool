@@ -7,10 +7,12 @@
 
   display: flex;
   justify-content: center;
+  align-items: flex-start;
 }
 
 .message-container {
   display: flex;
+  flex-direction: column;
   margin-left: auto;
 }
 

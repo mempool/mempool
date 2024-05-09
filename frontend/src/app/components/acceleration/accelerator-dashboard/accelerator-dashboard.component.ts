@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { SeoService } from '../../../services/seo.service';
 import { OpenGraphService } from '../../../services/opengraph.service';
 import { WebsocketService } from '../../../services/websocket.service';
 import { Acceleration, BlockExtended } from '../../../interfaces/node-api.interface';
 import { StateService } from '../../../services/state.service';
-import { Observable, catchError, combineLatest, distinctUntilChanged, interval, map, of, share, startWith, switchMap, tap } from 'rxjs';
+import { Observable, Subscription, catchError, combineLatest, distinctUntilChanged, map, of, share, switchMap, tap } from 'rxjs';
 import { Color } from '../../block-overview-graph/sprite-types';
 import { hexToColor } from '../../block-overview-graph/utils';
 import TxView from '../../block-overview-graph/tx-view';
@@ -28,7 +28,7 @@ interface AccelerationBlock extends BlockExtended {
   styleUrls: ['./accelerator-dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AcceleratorDashboardComponent implements OnInit {
+export class AcceleratorDashboardComponent implements OnInit, OnDestroy {
   blocks$: Observable<AccelerationBlock[]>;
   accelerations$: Observable<Acceleration[]>;
   pendingAccelerations$: Observable<Acceleration[]>;
@@ -38,6 +38,8 @@ export class AcceleratorDashboardComponent implements OnInit {
   seen: Set<string> = new Set();
   firstLoad = true;
   timespan: '3d' | '1w' | '1m' = '1w';
+
+  accelerationDeltaSubscription: Subscription;
 
   graphHeight: number = 300;
   theme: ThemeService;
@@ -59,27 +61,28 @@ export class AcceleratorDashboardComponent implements OnInit {
   ngOnInit(): void {
     this.onResize();
     this.websocketService.want(['blocks', 'mempool-blocks', 'stats']);
+    this.websocketService.startTrackAccelerations();
 
-    this.pendingAccelerations$ = (this.stateService.isBrowser ? interval(30000) : of(null)).pipe(
-      startWith(true),
-      switchMap(() => {
-        return this.serviceApiServices.getAccelerations$().pipe(
-          catchError(() => {
-            return of([]);
-          }),
-        );
-      }),
-      tap(accelerations => {
-        if (!this.firstLoad && accelerations.some(acc => !this.seen.has(acc.txid))) {
-          this.audioService.playSound('bright-harmony');
-        }
-        for(const acc of accelerations) {
-          this.seen.add(acc.txid);
-        }
-        this.firstLoad = false;
-      }),
+    this.pendingAccelerations$ = this.stateService.liveAccelerations$.pipe(
       share(),
     );
+    this.accelerationDeltaSubscription = this.stateService.accelerations$.subscribe((delta) => {
+      if (!delta.reset) {
+        let hasNewAcceleration = false;
+        for (const acc of delta.added) {
+          if (!this.seen.has(acc.txid)) {
+            hasNewAcceleration = true;
+          }
+          this.seen.add(acc.txid);
+        }
+        for (const txid of delta.removed) {
+          this.seen.delete(txid);
+        }
+        if (hasNewAcceleration) {
+          this.audioService.playSound('bright-harmony');
+        }
+      }
+    });
 
     this.accelerations$ = this.stateService.chainTip$.pipe(
       distinctUntilChanged(),
@@ -145,13 +148,18 @@ export class AcceleratorDashboardComponent implements OnInit {
     } else {
       const rate = tx.fee / tx.vsize; // color by simple single-tx fee rate
       const feeLevelIndex = feeLevels.findIndex((feeLvl) => Math.max(1, rate) < feeLvl) - 1;
-      return this.theme.theme === 'contrast' ? contrastColors[feeLevelIndex] || contrastColors[contrastColors.length - 1] : normalColors[feeLevelIndex] || normalColors[normalColors.length - 1];
+      return this.theme.theme === 'contrast' || this.theme.theme === 'bukele' ? contrastColors[feeLevelIndex] || contrastColors[contrastColors.length - 1] : normalColors[feeLevelIndex] || normalColors[normalColors.length - 1];
     }
   }
 
   setTimespan(timespan): boolean {
     this.timespan = timespan;
     return false;
+  }
+
+  ngOnDestroy(): void {
+    this.accelerationDeltaSubscription.unsubscribe();
+    this.websocketService.stopTrackAccelerations();
   }
 
   @HostListener('window:resize', ['$event'])

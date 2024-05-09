@@ -81,7 +81,9 @@ export class SeoService {
 
   getTitle(): string {
     if (this.network === 'testnet')
-      return this.baseTitle + ' - Bitcoin Testnet';
+      return this.baseTitle + ' - Bitcoin Testnet3';
+    if (this.network === 'testnet4')
+      return this.baseTitle + ' - Bitcoin Testnet4';
     if (this.network === 'signet')
       return this.baseTitle + ' - Bitcoin Signet';
     if (this.network === 'liquid')
@@ -92,7 +94,7 @@ export class SeoService {
   }
 
   getDescription(): string {
-    if ( (this.network === 'testnet') || (this.network === 'signet') || (this.network === '') || (this.network == 'mainnet') )
+    if ( (this.network === 'testnet') || (this.network === 'testnet4') || (this.network === 'signet') || (this.network === '') || (this.network == 'mainnet') )
       return this.baseDescription + ' See the real-time status of your transactions, browse network stats, and more.';
     if ( (this.network === 'liquid') || (this.network === 'liquidtestnet') )
       return this.baseDescription + ' See Liquid transactions & assets, get network info, and more.';

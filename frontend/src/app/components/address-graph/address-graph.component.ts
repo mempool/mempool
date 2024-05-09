@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { echarts, EChartsOption } from '../../graphs/echarts';
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription, combineLatest, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AddressTxSummary, ChainStats } from '../../interfaces/electrs.interface';
 import { ElectrsApiService } from '../../services/electrs-api.service';
@@ -32,7 +32,7 @@ const periodSeconds = {
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddressGraphComponent implements OnChanges {
+export class AddressGraphComponent implements OnChanges, OnDestroy {
   @Input() address: string;
   @Input() isPubkey: boolean = false;
   @Input() stats: ChainStats;
@@ -45,6 +45,9 @@ export class AddressGraphComponent implements OnChanges {
 
   data: any[] = [];
   hoverData: any[] = [];
+
+  subscription: Subscription;
+  redraw$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -70,24 +73,38 @@ export class AddressGraphComponent implements OnChanges {
     if (!this.address || !this.stats) {
       return;
     }
-    (this.addressSummary$ || (this.isPubkey
-      ? this.electrsApiService.getScriptHashSummary$((this.address.length === 66 ? '21' : '41') + this.address + 'ac')
-      : this.electrsApiService.getAddressSummary$(this.address)).pipe(
-      catchError(e => {
-        this.error = `Failed to fetch address balance history: ${e?.status || ''} ${e?.statusText || 'unknown error'}`;
-        return of(null);
-      }),
-    )).subscribe(addressSummary => {
-      if (addressSummary) {
-        this.error = null;
-        this.prepareChartOptions(addressSummary);
+    if (changes.address || changes.isPubkey || changes.addressSummary$ || changes.stats) {
+      if (this.subscription) {
+        this.subscription.unsubscribe();
       }
-      this.isLoading = false;
-      this.cd.markForCheck();
-    });
+      this.subscription = combineLatest([
+        this.redraw$,
+        (this.addressSummary$ || (this.isPubkey
+          ? this.electrsApiService.getScriptHashSummary$((this.address.length === 66 ? '21' : '41') + this.address + 'ac')
+          : this.electrsApiService.getAddressSummary$(this.address)).pipe(
+          catchError(e => {
+            this.error = `Failed to fetch address balance history: ${e?.status || ''} ${e?.statusText || 'unknown error'}`;
+            return of(null);
+          }),
+        ))
+      ]).subscribe(([redraw, addressSummary]) => {
+        if (addressSummary) {
+          this.error = null;
+          this.prepareChartOptions(addressSummary);
+        }
+        this.isLoading = false;
+        this.cd.markForCheck();
+      });
+    } else {
+      // re-trigger subscription
+      this.redraw$.next(true);
+    }
   }
 
   prepareChartOptions(summary): void {
+    if (!summary || !this.stats) {
+      return;
+    }
     let total = (this.stats.funded_txo_sum - this.stats.spent_txo_sum);
     this.data = summary.map(d => {
       const balance = total;
@@ -104,8 +121,8 @@ export class AddressGraphComponent implements OnChanges {
       );
     }
 
-    const maxValue = this.data.reduce((acc, d) => Math.max(acc, Math.abs(d[1] || d.value[1])), 0);
-    const minValue = this.data.reduce((acc, d) => Math.min(acc, Math.abs(d[1] || d.value[1])), maxValue);
+    const maxValue = this.data.reduce((acc, d) => Math.max(acc, Math.abs(d[1] ?? d.value[1])), 0);
+    const minValue = this.data.reduce((acc, d) => Math.min(acc, Math.abs(d[1] ?? d.value[1])), maxValue);
 
     this.chartOptions = {
       color: [
@@ -228,6 +245,12 @@ export class AddressGraphComponent implements OnChanges {
     this.chartInstance = ec;
     this.chartInstance.on('showTip', this.onTooltip.bind(this));
     this.chartInstance.on('click', 'series', this.onChartClick.bind(this));
+  }
+
+  ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   isMobile() {
