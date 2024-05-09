@@ -169,6 +169,10 @@ let routes: Routes = [
         loadChildren: () => import('./previews.module').then(m => m.PreviewsModule)
       },
       {
+        path: 'testnet4',
+        loadChildren: () => import('./previews.module').then(m => m.PreviewsModule)
+      },
+      {
         path: 'signet',
         loadChildren: () => import('./previews.module').then(m => m.PreviewsModule)
       },

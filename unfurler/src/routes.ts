@@ -286,7 +286,7 @@ export function matchRoute(network: string, path: string, matchFor: string = 're
   if (parts[0] === 'preview') {
     parts.shift();
   }
-  if (['testnet', 'signet'].includes(parts[0])) {
+  if (['testnet', 'testnet4', 'signet'].includes(parts[0])) {
     match.networkMode = parts.shift() || 'mainnet';
   }
 
