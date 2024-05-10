@@ -77,7 +77,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     }
     this.isWidget = this.template === 'widget';
     this.showCount = !this.isWidget && !this.hideCount;
-    this.windowPreference = this.windowPreferenceOverride ? this.windowPreferenceOverride : this.storageService.getValue('graphWindowPreference');
+    this.windowPreference = (this.windowPreferenceOverride ? this.windowPreferenceOverride : this.storageService.getValue('graphWindowPreference')) || '2h';
     this.mempoolVsizeFeesData = this.handleNewMempoolData(this.data.concat([]));
     this.mountFeeChart();
   }
@@ -256,11 +256,17 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           const itemFormatted = [];
           let sum = 0;
           let progressPercentageText = '';
-          let countItem;
-          let items = this.inverted ? [...params].reverse() : params;
-          if (items[items.length - 1].seriesName === 'count') {
-            countItem = items.pop();
-          }
+          const unfilteredItems = this.inverted ? [...params].reverse() : params;
+          const countItem = unfilteredItems.find(p => p.seriesName === 'count');
+          const usedSeries = {};
+          const items = unfilteredItems.filter(p => {
+            if (usedSeries[p.seriesName] || p.seriesName === 'count') {
+              return false;
+            }
+            usedSeries[p.seriesName] = true;
+            return true;
+          });
+
           items.map((item: any, index: number) => {
             sum += item.value[1];
             const progressPercentage = (item.value[1] / totalValue) * 100;
