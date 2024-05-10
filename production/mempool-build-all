@@ -1,4 +1,17 @@
 #!/usr/bin/env zsh
+
+case `uname -s` in
+
+    FreeBSD)
+        DB_SOCKET=/var/run/mysql/mysql.sock
+    ;;
+
+    Linux)
+        DB_SOCKET=/run/mysqld/mysqld.sock
+    ;;
+
+esac
+
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:$HOME/bin
 HOSTNAME=$(hostname)
 LOCATION=$(hostname|cut -d . -f2)
@@ -110,6 +123,7 @@ build_backend()
         -e "s!__MEMPOOL_LIQUIDTESTNET_PASS__!${MEMPOOL_LIQUIDTESTNET_PASS}!" \
         -e "s!__MEMPOOL_BISQ_USER__!${MEMPOOL_BISQ_USER}!" \
         -e "s!__MEMPOOL_BISQ_PASS__!${MEMPOOL_BISQ_PASS}!" \
+        -e "s!__DB_SOCKET__!${DB_SOCKET}!" \
 	"mempool-config.json"
     fi
     npm install --omit=dev --omit=optional || exit 1
