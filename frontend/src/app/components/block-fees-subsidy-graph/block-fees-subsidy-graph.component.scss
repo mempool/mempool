@@ -64,13 +64,3 @@
   pointer-events: none;
   opacity: 0.5;
 }
-
-.scrollable-dropdown {
-  max-height: 500px; 
-  overflow-y: auto;
-}
-
-.selected {
-  background-color: var(--active-bg);
-  color: #fff;
-}

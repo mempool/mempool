@@ -690,52 +690,6 @@ class BlocksRepository {
   }
 
   /**
-   * Get the historical block fees
-   */
-  public async $getHistoricalExactBlockFees(height: string | null): Promise<any> {
-    try {
-      let query = `SELECT
-        blocks.height,
-        fees,
-        prices.USD
-        FROM blocks
-        JOIN blocks_prices on blocks_prices.height = blocks.height
-        JOIN prices on prices.id = blocks_prices.price_id
-      `;
-
-      if (height !== null) {
-        query += ` WHERE blocks.height <= ${height}`;
-      }
-      query += ` ORDER BY blocks.height DESC LIMIT 10000`;
-
-      const [rows]: any = await DB.query(query);
-
-      // Add accelerations data if available
-      if (config.MEMPOOL_SERVICES.ACCELERATIONS && rows.length > 0) {
-
-        let query = `
-          SELECT height, boost_cost FROM accelerations
-          WHERE height >= ${rows[rows.length - 1].height} AND height <= ${rows[0].height}
-        `;
-        const [accelerations]: any = await DB.query(query);
-        
-        for (let i = 0; i < accelerations.length; ++i) {
-          const idx = rows.findIndex((block) => block.height === accelerations[i].height);
-          if (idx !== -1) {
-            if (rows[idx].accelerations === undefined) rows[idx].accelerations = 0;
-            rows[idx].accelerations += accelerations[i].boost_cost;
-          }
-        }
-      }
-
-      return rows;
-    } catch (e) {
-      logger.err('Cannot generate exact block fees history. Reason: ' + (e instanceof Error ? e.message : e));
-      throw e;
-    }
-  }
-
-  /**
    * Get the historical averaged block rewards
    */
   public async $getHistoricalBlockRewards(div: number, interval: string | null): Promise<any> {
