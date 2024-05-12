@@ -45,7 +45,7 @@ class Mining {
    */
   public async $getHistoricalBlockFees(interval: string | null = null): Promise<any> {
     return await BlocksRepository.$getHistoricalBlockFees(
-      this.getTimeRange(interval, 5),
+      this.getTimeRange(interval),
       Common.getSqlInterval(interval)
     );
   }

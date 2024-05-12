@@ -67,14 +67,14 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
     this.seoService.setTitle($localize`:@@mining.block-fees-subsidy:Block Fees Vs Subsidy`);
     this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.block-fees-subsidy:See the mining fees earned per Bitcoin block compared to the Bitcoin block subsidy, visualized in BTC and USD over time.`);
 
-    this.miningWindowPreference = this.miningService.getDefaultTimespan('1m');
+    this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
     this.route
     .fragment
     .subscribe((fragment) => {
-      if (['1m', '3m', '6m', '1y', '2y', '3y', 'all'].indexOf(fragment) > -1) {
+      if (['24h', '3d', '1w', '1m', '3m', '6m', '1y', '2y', '3y', 'all'].indexOf(fragment) > -1) {
         this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
       }
     });
@@ -137,8 +137,8 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
     this.chartOptions = {
       title: title,
       color: [
-        'var(--orange)',
-        'var(--success)',
+        '#ff9f00',
+        '#0aab2f',
       ],
       animation: false,
       grid: {
@@ -166,7 +166,12 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
             return '';
           }
 
-          let tooltip = `Around block <b style="color: white; margin-left: 2px">${data[0].axisValue}</b><br>`;
+          let tooltip = '';
+          if (['24h', '3d'].includes(this.timespan)) {
+            tooltip += $localize`At block <b style="color: white; margin-left: 2px">${data[0].axisValue}</b><br>`;
+          } else {
+            tooltip += $localize`Around block <b style="color: white; margin-left: 2px">${data[0].axisValue}</b><br>`;
+          }
           for (let i = data.length - 1; i >= 0; i--) {
             const tick = data[i];
             if (!this.showFiat) tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data, this.locale, '1.0-3')} BTC<br>`;
