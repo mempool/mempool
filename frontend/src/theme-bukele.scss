@@ -2,8 +2,8 @@
 $bg: #11131f;
 $active-bg: #000000;
 $hover-bg: #12131e;
-$fg: #fff;
-$nav-bg: $bg;
+$fg: #d2d2d2;
+$nav-bg: #111e60;
 $title-fg: #2055e3;
 
 $taproot: #eba814;
@@ -20,7 +20,7 @@ $nav-tabs-link-active-bg: $active-bg;
 
 $primary: #007cfa;
 $secondary: #272f4e;
-$tertiary: #6225b2;
+$tertiary: #ff9900;
 $success: #0aab2f;
 $info: #00ddff;
 
@@ -72,7 +72,7 @@ $dropdown-link-active-bg: $active-bg;
   --info: #{$info};
   --link-color: #{$link-color};
   --link-hover-color: #{$link-hover-color};
-  --icon: #f1f1f1;
+  --icon: #d2d2d2;
   --skeleton-bg: #2e324e;
   --skeleton-bg-light: #5d6182;
 
@@ -82,7 +82,7 @@ $dropdown-link-active-bg: $active-bg;
   --transparent-fg: #ffffffbb;
   --fade-out-box-bg-start: rgba(23, 28, 42, 0);
   --fade-out-box-bg-end: rgba(23, 28, 42, 1);
-  --opacity: 0.57;
+  --opacity: 0.9;
 
   --testnet: #1d486f;
   --signet: #6f1d5d;
@@ -105,8 +105,35 @@ $dropdown-link-active-bg: $active-bg;
   --tooltip-grey: #b1b1b1;
   --orange: #ff9f00;
 
-  --search-button: #4d2d77;
-  --search-button-border: #472a6e;
-  --search-button-focus: #533180;
-  --search-button-shadow: #7c58ab80;
+  --search-button: #d5a90a;
+  --search-button-border: #d5a90a;
+  --search-button-focus: #eba814;
+  --search-button-shadow: #eba814;
+}
+
+.navbar {
+  --secondary: #041437;
+}
+
+.nav-item.active, .btn-purple {
+  --icon: white;
+}
+
+.btn-purple:not(:disabled):not(.disabled):active, .btn-purple:not(:disabled):not(.disabled).active, .show > .btn-purple.dropdown-toggle {
+  color: #fff;
+  background-color: var(--search-button);
+  border-color: var(--search-button-border);
+}
+
+.btn-purple:focus, .btn-purple.focus {
+  color: #fff;
+  background-color: var(--search-button-focus);
+  border-color: var(--search-button);
+  box-shadow: 0 0 0 0.2rem var(--search-button-shadow);
+}
+
+.btn-purple:hover {
+  color: #fff;
+  background-color: var(--search-button-focus);
+  border-color: var(--search-button);
 }

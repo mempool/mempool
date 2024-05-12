@@ -73,7 +73,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
     if (!this.address || !this.stats) {
       return;
     }
-    if (changes.address || changes.isPubkey || changes.addressSummary$) {
+    if (changes.address || changes.isPubkey || changes.addressSummary$ || changes.stats) {
       if (this.subscription) {
         this.subscription.unsubscribe();
       }
@@ -248,7 +248,9 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   isMobile() {
