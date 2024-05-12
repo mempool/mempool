@@ -3,6 +3,7 @@ $bg: #1d1f31;
 $active-bg: #11131f;
 $hover-bg: #12131e;
 $fg: #fff;
+$nav-bg: $bg;
 $title-fg: #4a68b9;
 
 $taproot: #eba814;
@@ -64,7 +65,7 @@ $dropdown-link-active-bg: $active-bg;
   --active-bg: #{$active-bg};
   --hover-bg: #{$hover-bg};
   --fg: #{$fg};
-  --color-fg: #ffffff;
+  --nav-bg: #{$nav-bg};
   --title-fg: #{$title-fg};
 
   --primary: #{$primary};
@@ -72,7 +73,11 @@ $dropdown-link-active-bg: $active-bg;
   --tertiary: #{$tertiary};
   --success: #{$success};
   --info: #{$info};
+  --link-color: #{$link-color};
+  --link-hover-color: #{$link-hover-color};
   --icon: #f1f1f1;
+  --skeleton-bg: #2e324e;
+  --skeleton-bg-light: #5d6182;
 
   --box-bg: #24273e;
   --stat-box-bg: #181b2d;
@@ -81,6 +86,7 @@ $dropdown-link-active-bg: $active-bg;
   --transparent-fg: #ffffff66;
   --fade-out-box-bg-start: rgba(36, 39, 62, 0);
   --fade-out-box-bg-end: rgba(36, 39, 62, 1);
+  --opacity: 0.57;
 
   --testnet: #1d486f;
   --signet: #6f1d5d;
@@ -98,10 +104,15 @@ $dropdown-link-active-bg: $active-bg;
 
   --green: #3bcc49;
   --red: #dc3545;
-  --yellow: #ffd800;
+  --yellow: #fff000;
   --grey: #6c757d;
   --tooltip-grey: #b1b1b1;
   --orange: #b86d12;
+
+  --search-button: #4d2d77;
+  --search-button-border: #472a6e;
+  --search-button-focus: #533180;
+  --search-button-shadow: #7c58ab80;
 }
 
 html, body {
@@ -171,13 +182,13 @@ main {
 }
 
 .form-control {
-  color: #fff;
+  color: var(--fg);
   background-color: var(--secondary);
   border: 1px solid rgba(17, 19, 31, 0.2);
 }
 
 .form-control:focus {
-  color: #fff;
+  color: var(--fg);
   background-color: var(--secondary);
 }
 
@@ -188,25 +199,25 @@ main {
 
 .btn-purple:not(:disabled):not(.disabled):active, .btn-purple:not(:disabled):not(.disabled).active, .show > .btn-purple.dropdown-toggle {
   color: #fff;
-  background-color: #4d2d77;
-  border-color: #472a6e;
+  background-color: var(--search-button);
+  border-color: var(--search-button-border);
 }
 
 .btn-purple:focus, .btn-purple.focus {
   color: #fff;
-  background-color: #533180;
-  border-color: #4d2d77;
-  box-shadow: 0 0 0 0.2rem rgb(124 88 171 / 50%);
+  background-color: var(--search-button-focus);
+  border-color: var(--search-button);
+  box-shadow: 0 0 0 0.2rem var(--search-button-shadow);
 }
 
 .btn-purple:hover {
   color: #fff;
-  background-color: #533180;
-  border-color: #4d2d77;
+  background-color: var(--search-button-focus);
+  border-color: var(--search-button);
 }
 
 .form-control.form-control-secondary {
-  color: var(--fg);
+  color: #fff;
   background-color: var(--secondary);
   border: 1px solid var(--secondary);
 }
@@ -229,11 +240,11 @@ main {
   position: relative;
 
   animation: progress 2s ease-in-out infinite;
-  background: #2e324e no-repeat;
+  background: var(--skeleton-bg) no-repeat;
   background-image: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0),
-    #5d6182,
+    var(--skeleton-bg-light),
     rgba(255, 255, 255, 0)
   );
   background-size: 200px 100%;
@@ -271,14 +282,14 @@ main {
 
 .progress-text {
   span {
-    color: var(--fg) !important;
+    color: #fff !important;
   }
 }
 
 .block-size, .blocks-container {
   .symbol {
     font-size: 16px;
-    color: var(--fg) !important;
+    color: #fff !important;
   }
 }
 
@@ -418,18 +429,18 @@ html:lang(ru) .card-title {
     font-size: 12px;
     font-weight: 700;
     margin-bottom: 2px;
-    color: var(--fg);
+    color: #fff;
     .total-value {
       float: right;
     }
   }
   .active {
-    color: yellow !important;
+    color: var(--yellow) !important;
     .value,
     .total-partial {
-      color: yellow !important;
+      color: var(--yellow) !important;
       .symbol {
-        color: yellow !important;
+        color: var(--yellow) !important;
       }
     }
   }
@@ -477,7 +488,7 @@ html:lang(ru) .card-title {
   .total-label {
     width: 100%;
     text-align: left;
-    color: var(--fg);
+    color: #fff;
     margin-top: 5px;
     font-size: 14px;
     span {
@@ -728,19 +739,19 @@ h1, h2, h3 {
 }
 
 .progress-mempool {
-  background: repeating-linear-gradient(to right, $secondary, $secondary 0%, $primary 0%, var(--mainnet-alt) 100%);
+  background: repeating-linear-gradient(to right, var(--secondary), var(--secondary) 0%, var(--primary) 0%, var(--mainnet-alt) 100%);
 }
 
 .progress-mempool.testnet {
-  background: repeating-linear-gradient(to right, $secondary, $secondary 0%, var(--testnet) 0%, var(--testnet-alt) 100%);
+  background: repeating-linear-gradient(to right, var(--secondary), var(--secondary) 0%, var(--testnet) 0%, var(--testnet-alt) 100%);
 }
 
 .progress-mempool.signet {
-  background: repeating-linear-gradient(to right, $secondary, $secondary 0%, var(--signet) 0%, var(--signet-alt) 100%);
+  background: repeating-linear-gradient(to right, var(--secondary), var(--secondary) 0%, var(--signet) 0%, var(--signet-alt) 100%);
 }
 
 .progress-mempool.liquid {
-  background: repeating-linear-gradient(to right, $secondary, $secondary 0%, var(--liquid) 0%, var(--testnet-alt) 100%);
+  background: repeating-linear-gradient(to right, var(--secondary), var(--secondary) 0%, var(--liquid) 0%, var(--testnet-alt) 100%);
 }
 
 .progress-dark {
@@ -752,11 +763,11 @@ h1, h2, h3 {
 }
 
 .progress-light {
-  background-color: #2e324e;
+  background-color: var(--skeleton-bg);
 }
 
 .progress.progress-health {
-  background: repeating-linear-gradient(to right, $secondary, $secondary 0%, $primary 0%, $success 100%);
+  background: repeating-linear-gradient(to right, var(--secondary), var(--secondary) 0%, var(--primary) 0%, $success 100%);
   justify-content: flex-end;
 }
 
@@ -769,7 +780,7 @@ h1, h2, h3 {
 }
 
 .alert-mempool {
-  color: var(--fg);
+  color: #fff;
   background-color: var(--tertiary);
   border-color: var(--alert-bg);
   width: 100%;
@@ -1137,7 +1148,7 @@ th {
       display: block;
       width: 100%;
       padding: 1rem 2rem;
-      color: var(--fg);
+      color: #fff;
       font-weight: bold;
       &:focus, &:hover, &:active {
         text-decoration: none;
@@ -1221,7 +1232,7 @@ th {
 }
 
 .blink-bg {
-  color: var(--fg);
+  color: #fff;
   background: repeating-linear-gradient($taproot-dark, $taproot-dark 0.163525%, $taproot-light 100%) !important;
   animation: shadowyBackground 1s infinite;
   box-shadow: -10px -15px 75px rgba($taproot, 1);
@@ -1244,7 +1255,7 @@ app-master-page, app-liquid-master-page {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding-bottom: 60px;
+  padding-bottom: 56px;
   @media (min-width: 992px) {
     padding-bottom: 0px;
   }
@@ -1268,12 +1279,36 @@ app-global-footer {
 
 .dropdown-menu {
   background-color: var(--bg);
+  color: var(--fg);
   .dropdown-item:hover, .dropdown-item:focus { 
     background-color: var(--active-bg);
+    color: var(--fg);
   }
 }
 
 .btn-secondary {
   background-color: var(--secondary);
   border-color: var(--secondary);
+}
+
+a {
+  color: var(--link-color);
+  &:hover {
+    color: var(--link-hover-color);
+  }
+}
+
+.badge-primary {
+  color: var(--fg);
+  background-color: var(--primary);
+}
+
+.badge-info {
+  background-color: var(--info);
+}
+
+.btn-primary { 
+  color: var(--fg);
+  background-color: var(--primary);
+  border-color: var(--primary);
 }

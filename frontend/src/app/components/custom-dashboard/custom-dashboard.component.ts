@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { combineLatest, merge, Observable, of, Subject, Subscription } from 'rxjs';
 import { catchError, filter, map, scan, share, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended, OptimizedMempoolStats, TransactionStripped } from '../../interfaces/node-api.interface';
@@ -57,6 +57,7 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
   incomingGraphHeight: number = 300;
   graphHeight: number = 300;
   webGlEnabled = true;
+  isMobile: boolean = window.innerWidth <= 767.98;
 
   widgets;
 
@@ -85,6 +86,7 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
     private electrsApiService: ElectrsApiService,
     private websocketService: WebsocketService,
     private seoService: SeoService,
+    private cd: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
@@ -230,8 +232,10 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
             this.stateService.live2Chart$
               .pipe(
                 scan((acc, stats) => {
+                  const now = Date.now() / 1000;
+                  const start = now - (2 * 60 * 60);
                   acc.unshift(stats);
-                  acc = acc.slice(0, 120);
+                  acc = acc.filter(p => p.added >= start);
                   return acc;
                 }, (mempoolStats || []))
               ),
@@ -283,8 +287,8 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
 
   startAddressSubscription(): void {
     if (this.stateService.env.customize && this.stateService.env.customize.dashboard.widgets.some(w => w.props?.address)) {
-      const address = this.stateService.env.customize.dashboard.widgets.find(w => w.props?.address).props.address;
-      const addressString = (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}$/.test(address)) ? address.toLowerCase() : address;
+      let addressString = this.stateService.env.customize.dashboard.widgets.find(w => w.props?.address).props.address;
+      addressString = (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}$/.test(addressString)) ? addressString.toLowerCase() : addressString;
       
       this.addressSubscription = (
         addressString.match(/04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}/)
@@ -299,6 +303,7 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
         ).subscribe((address: Address) => {
           this.websocketService.startTrackAddress(address.address);
           this.address = address;
+          this.cd.markForCheck();
         });
 
       this.addressSummary$ = (
@@ -368,5 +373,6 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
       this.goggleResolution = 86;
       this.graphHeight = 310;
     }
+    this.isMobile = window.innerWidth <= 767.98;
   }
 }

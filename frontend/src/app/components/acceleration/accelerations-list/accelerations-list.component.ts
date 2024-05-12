@@ -1,5 +1,5 @@
-import { Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef } from '@angular/core';
-import { combineLatest, BehaviorSubject, Observable, catchError, of, switchMap, tap } from 'rxjs';
+import { Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { BehaviorSubject, Observable, catchError, of, switchMap, tap } from 'rxjs';
 import { Acceleration, BlockExtended } from '../../../interfaces/node-api.interface';
 import { StateService } from '../../../services/state.service';
 import { WebsocketService } from '../../../services/websocket.service';
@@ -11,7 +11,7 @@ import { ServicesApiServices } from '../../../services/services-api.service';
   styleUrls: ['./accelerations-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AccelerationsListComponent implements OnInit {
+export class AccelerationsListComponent implements OnInit, OnDestroy {
   @Input() widget: boolean = false;
   @Input() pending: boolean = false;
   @Input() accelerations$: Observable<Acceleration[]>;
@@ -44,7 +44,10 @@ export class AccelerationsListComponent implements OnInit {
     
     this.accelerationList$ = this.pageSubject.pipe(
       switchMap((page) => {
-        const accelerationObservable$ = this.accelerations$ || (this.pending ? this.servicesApiService.getAccelerations$() : this.servicesApiService.getAccelerationHistoryObserveResponse$({ page: page }));
+        const accelerationObservable$ = this.accelerations$ || (this.pending ? this.stateService.liveAccelerations$ : this.servicesApiService.getAccelerationHistoryObserveResponse$({ page: page }));
+        if (!this.accelerations$ && this.pending) {
+          this.websocketService.ensureTrackAccelerations();
+        }
         return accelerationObservable$.pipe(
           switchMap(response => {
             let accelerations = response;
@@ -84,5 +87,9 @@ export class AccelerationsListComponent implements OnInit {
 
   trackByBlock(index: number, block: BlockExtended): number {
     return block.height;
+  }
+
+  ngOnDestroy(): void {
+    this.websocketService.stopTrackAccelerations();
   }
 }

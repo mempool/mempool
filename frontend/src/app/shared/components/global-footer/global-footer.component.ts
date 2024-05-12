@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, Inject, LOCALE_ID, HostListener } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, Inject, LOCALE_ID, HostListener, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Observable, merge, of, Subject, Subscription } from 'rxjs';
 import { tap, takeUntil } from 'rxjs/operators';
@@ -8,6 +8,7 @@ import { LanguageService } from '../../../services/language.service';
 import { NavigationService } from '../../../services/navigation.service';
 import { StorageService } from '../../../services/storage.service';
 import { WebsocketService } from '../../../services/websocket.service';
+import { EnterpriseService } from '../../../services/enterprise.service';
 
 @Component({
   selector: 'app-global-footer',
@@ -15,7 +16,7 @@ import { WebsocketService } from '../../../services/websocket.service';
   styleUrls: ['./global-footer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GlobalFooterComponent implements OnInit {
+export class GlobalFooterComponent implements OnInit, OnDestroy {
   private destroy$: Subject<any> = new Subject<any>();
   env: Env;
   officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
@@ -27,14 +28,19 @@ export class GlobalFooterComponent implements OnInit {
   network$: Observable<string>;
   networkPaths: { [network: string]: string };
   currentNetwork = '';
+  lightningNetworks = ['', 'mainnet', 'bitcoin', 'testnet', 'signet'];
   loggedIn = false;
   urlSubscription: Subscription;
   isServicesPage = false;
+
+  enterpriseInfo: any;
+  enterpriseInfo$: Subscription;
 
   constructor(
     public stateService: StateService,
     private languageService: LanguageService,
     private navigationService: NavigationService,
+    private enterpriseService: EnterpriseService,
     @Inject(LOCALE_ID) public locale: string,
     private storageService: StorageService,
     private route: ActivatedRoute,
@@ -52,6 +58,9 @@ export class GlobalFooterComponent implements OnInit {
     this.urlLanguage = this.languageService.getLanguageForUrl();
     this.navigationService.subnetPaths.subscribe((paths) => {
       this.networkPaths = paths;
+    });
+    this.enterpriseInfo$ = this.enterpriseService.info$.subscribe(info => {
+      this.enterpriseInfo = info;
     });
     this.network$ = merge(of(''), this.stateService.networkChanged$).pipe(
       tap((network: string) => {
@@ -72,11 +81,14 @@ export class GlobalFooterComponent implements OnInit {
     this.destroy$.next(true);
     this.destroy$.complete();
     this.urlSubscription.unsubscribe();
+    if (this.enterpriseInfo$) {
+      this.enterpriseInfo$.unsubscribe();
+    }
   }
 
   networkLink(network) {
     const thisNetwork = network || 'mainnet';
-    if( network === '' || network === 'mainnet' || network === 'testnet' || network === 'signet' ) {
+    if( network === '' || network === 'mainnet' || network === 'testnet' || network === 'testnet4' || network === 'signet' ) {
       return (this.env.BASE_MODULE === 'mempool' ? '' : this.env.MEMPOOL_WEBSITE_URL + this.urlLanguage) + this.networkPaths[thisNetwork] || '/';
     }
     if( network === 'liquid' || network === 'liquidtestnet' ) {

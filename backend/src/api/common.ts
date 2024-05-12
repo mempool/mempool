@@ -946,6 +946,33 @@ export class Common {
     return this.validateTransactionHex(matches[1].toLowerCase());
   }
 
+  static getTransactionsFromRequest(req: Request, limit: number = 25): string[] {
+    if (!Array.isArray(req.body) || req.body.some(hex => typeof hex !== 'string')) {
+      throw Object.assign(new Error('Invalid request body (should be an array of hexadecimal strings)'), { code: -1 });
+    }
+
+    if (limit && req.body.length > limit) {
+      throw Object.assign(new Error('Exceeded maximum of 25 transactions'), { code: -1 });
+    }
+
+    const txs = req.body;
+
+    return txs.map(rawTx => {
+      // Support both upper and lower case hex
+      // Support both txHash= Form and direct API POST
+      const reg = /^((?:[a-fA-F0-9]{2})+)$/;
+      const matches = reg.exec(rawTx);
+      if (!matches || !matches[1]) {
+        throw Object.assign(new Error('Invalid hex string'), { code: -2 });
+      }
+
+      // Guaranteed to be a hex string of multiple of 2
+      // Guaranteed to be lower case
+      // Guaranteed to pass validation (see function below)
+      return this.validateTransactionHex(matches[1].toLowerCase());
+    });
+  }
+
   private static validateTransactionHex(txhex: string): string {
     // Do not mutate txhex
 

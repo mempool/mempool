@@ -10,7 +10,7 @@ killall sh 2>/dev/null
 killall chrome 2>/dev/null
 
 # kill xorg
-killall xinit 2>/dev/null
+killall xinit Xorg 2>/dev/null
 
 # kill dbus
 killall dbus-daemon 2>/dev/null

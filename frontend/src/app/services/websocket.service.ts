@@ -33,6 +33,7 @@ export class WebsocketService {
   private isTrackingRbfSummary = false;
   private isTrackingAddress: string | false = false;
   private isTrackingAddresses: string[] | false = false;
+  private isTrackingAccelerations: boolean = false;
   private trackingMempoolBlock: number;
   private latestGitCommit = '';
   private onlineCheckTimeout: number;
@@ -131,6 +132,9 @@ export class WebsocketService {
           }
           if (this.isTrackingAddresses) {
             this.startTrackAddresses(this.isTrackingAddresses);
+          }
+          if (this.isTrackingAccelerations) {
+            this.startTrackAccelerations();
           }
           this.stateService.connectionState$.next(2);
         }
@@ -233,6 +237,24 @@ export class WebsocketService {
   stopTrackRbfSummary() {
     this.websocketSubject.next({ 'track-rbf-summary': false });
     this.isTrackingRbfSummary = false;
+  }
+
+  startTrackAccelerations() {
+    this.websocketSubject.next({ 'track-accelerations': true });
+    this.isTrackingAccelerations = true;
+  }
+
+  stopTrackAccelerations() {
+    if (this.isTrackingAccelerations) {
+      this.websocketSubject.next({ 'track-accelerations': false });
+      this.isTrackingAccelerations = false;
+    }
+  }
+
+  ensureTrackAccelerations() {
+    if (!this.isTrackingAccelerations) {
+      this.startTrackAccelerations();
+    }
   }
 
   fetchStatistics(historicalDate: string) {
@@ -401,16 +423,30 @@ export class WebsocketService {
       if (response['projected-block-transactions'].index == this.trackingMempoolBlock) {
         if (response['projected-block-transactions'].blockTransactions) {
           this.stateService.mempoolSequence = response['projected-block-transactions'].sequence;
-          this.stateService.mempoolBlockTransactions$.next(response['projected-block-transactions'].blockTransactions.map(uncompressTx));
+          this.stateService.mempoolBlockUpdate$.next({
+            transactions: response['projected-block-transactions'].blockTransactions.map(uncompressTx),
+          });
         } else if (response['projected-block-transactions'].delta) {
           if (this.stateService.mempoolSequence && response['projected-block-transactions'].sequence !== this.stateService.mempoolSequence + 1) {
             this.stateService.mempoolSequence = 0;
             this.startTrackMempoolBlock(this.trackingMempoolBlock, true);
           } else {
             this.stateService.mempoolSequence = response['projected-block-transactions'].sequence;
-            this.stateService.mempoolBlockDelta$.next(uncompressDeltaChange(response['projected-block-transactions'].delta));
+            this.stateService.mempoolBlockUpdate$.next(uncompressDeltaChange(response['projected-block-transactions'].delta));
           }
         }
+      }
+    }
+
+    if (response['accelerations']) {
+      if (response['accelerations'].accelerations) {
+        this.stateService.accelerations$.next({
+          added: response['accelerations'].accelerations,
+          removed: [],
+          reset: true,
+        });
+      } else {
+        this.stateService.accelerations$.next(response['accelerations']);
       }
     }
 

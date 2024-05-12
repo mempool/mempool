@@ -3,6 +3,7 @@
   position: -webkit-sticky;
   top: 0;
   width: 100%;
+  background-color: var(--bg);
   z-index: 100;
 }
 
@@ -18,7 +19,7 @@ fa-icon {
   z-index: 100;
   min-height: 64px;
   width: 100%;
-  background-color: var(--bg);
+  background-color: var(--nav-bg);
 }
 
 li.nav-item {
@@ -59,7 +60,7 @@ li.nav-item {
 }
 
 .navbar-nav {
-  background: var(--navbar-bg);
+  background: var(--nav-bg);
   bottom: 0;
   box-shadow: 0px 0px 15px 0px #000;
   flex-direction: row;
@@ -241,6 +242,10 @@ nav {
     margin: 20px 0px 0px -19px;
     font-size: 7px;
   }
+}
+
+.beta-network {
+  font-size: 8px;
 }
 
 .current-network-svg {

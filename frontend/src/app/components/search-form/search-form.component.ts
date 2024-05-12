@@ -179,7 +179,7 @@ export class SearchFormComponent implements OnInit {
           const lightningResults = result[1];
 
           // Do not show date and timestamp results for liquid
-          const isNetworkBitcoin = this.network === '' || this.network === 'testnet' || this.network === 'signet';
+          const isNetworkBitcoin = this.network === '' || this.network === 'testnet' || this.network === 'testnet4' || this.network === 'signet';
 
           const matchesBlockHeight = this.regexBlockheight.test(searchText) && parseInt(searchText) <= this.stateService.latestBlockHeight;
           const matchesDateTime = this.regexDate.test(searchText) && new Date(searchText).toString() !== 'Invalid Date' && new Date(searchText).getTime() <= Date.now() && isNetworkBitcoin;
