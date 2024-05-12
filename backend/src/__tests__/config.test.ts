@@ -63,6 +63,7 @@ describe('Mempool Backend Config', () => {
         REQUEST_TIMEOUT: 10000,
         FALLBACK_TIMEOUT: 5000,
         FALLBACK: [],
+        MAX_BEHIND_TIP: 2,
        });
 
       expect(config.CORE_RPC).toStrictEqual({

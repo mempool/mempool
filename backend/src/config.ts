@@ -51,6 +51,7 @@ interface IConfig {
     REQUEST_TIMEOUT: number;
     FALLBACK_TIMEOUT: number;
     FALLBACK: string[];
+    MAX_BEHIND_TIP: number;
   };
   LIGHTNING: {
     ENABLED: boolean;
@@ -208,6 +209,7 @@ const defaults: IConfig = {
     'REQUEST_TIMEOUT': 10000,
     'FALLBACK_TIMEOUT': 5000,
     'FALLBACK': [],
+    'MAX_BEHIND_TIP': 2,
   },
   'ELECTRUM': {
     'HOST': '127.0.0.1',
