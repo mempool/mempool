@@ -115,6 +115,7 @@ export class StateService {
   isMempoolSpaceBuild = window['isMempoolSpaceBuild'] ?? false;
   backend: 'esplora' | 'electrum' | 'none' = 'esplora';
   network = '';
+  lightningNetworks = ['', 'mainnet', 'bitcoin', 'testnet', 'signet'];
   lightning = false;
   blockVSize: number;
   env: Env;
@@ -368,6 +369,10 @@ export class StateService {
     const networkMatches = url.match(/\/lightning\//);
     this.lightning = !!networkMatches;
     this.lightningChanged$.next(this.lightning);
+  }
+
+  networkSupportsLightning() {
+    return this.env.LIGHTNING && this.lightningNetworks.includes(this.network);
   }
 
   getHiddenProp(){
