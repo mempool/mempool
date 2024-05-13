@@ -128,7 +128,8 @@
 
 .main-title {
   position: relative;
-  color: #ffffff91;
+  color: var(--fg);
+  opacity: var(--opacity);
   margin-top: -13px;
   font-size: 10px;
   text-transform: uppercase;
@@ -223,7 +224,7 @@
     height: 100%;
   }
   .background {
-    background: linear-gradient(to right, var(--primary), #9339f4);
+    background: linear-gradient(to right, var(--primary), var(--mainnet-alt));
     left: 0;
     right: 0;
   }

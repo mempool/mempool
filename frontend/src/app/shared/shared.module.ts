@@ -70,6 +70,7 @@ import { AddressTransactionsWidgetComponent } from '../components/address-transa
 import { RbfTimelineComponent } from '../components/rbf-timeline/rbf-timeline.component';
 import { RbfTimelineTooltipComponent } from '../components/rbf-timeline/rbf-timeline-tooltip.component';
 import { PushTransactionComponent } from '../components/push-transaction/push-transaction.component';
+import { TestTransactionsComponent } from '../components/test-transactions/test-transactions.component';
 import { AssetsFeaturedComponent } from '../components/assets/assets-featured/assets-featured.component';
 import { AssetGroupComponent } from '../components/assets/asset-group/asset-group.component';
 import { AssetCirculationComponent } from '../components/asset-circulation/asset-circulation.component';
@@ -112,6 +113,7 @@ import { ClockComponent } from '../components/clock/clock.component';
 import { CalculatorComponent } from '../components/calculator/calculator.component';
 import { BitcoinsatoshisPipe } from '../shared/pipes/bitcoinsatoshis.pipe';
 import { HttpErrorComponent } from '../shared/components/http-error/http-error.component';
+import { TwitterWidgetComponent } from '../components/twitter-widget/twitter-widget.component';
 
 import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-directives/weight-directives';
 
@@ -180,6 +182,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     RbfTimelineComponent,
     RbfTimelineTooltipComponent,
     PushTransactionComponent,
+    TestTransactionsComponent,
     AssetsNavComponent,
     AssetsFeaturedComponent,
     AssetGroupComponent,
@@ -224,6 +227,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     AccelerateCheckout,
     PendingStatsComponent,
     HttpErrorComponent,
+    TwitterWidgetComponent,
   ],
   imports: [
     CommonModule,
@@ -318,6 +322,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     RbfTimelineComponent,
     RbfTimelineTooltipComponent,
     PushTransactionComponent,
+    TestTransactionsComponent,
     AssetsNavComponent,
     AssetsFeaturedComponent,
     AssetGroupComponent,
@@ -351,6 +356,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     AccelerateCheckout,
     PendingStatsComponent,
     HttpErrorComponent,
+    TwitterWidgetComponent,
 
     MempoolBlockOverviewComponent,
     ClockchainComponent,

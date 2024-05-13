@@ -159,7 +159,7 @@
 
       &.selected {
         .shape-border {
-          background: #9339f4;
+          background: var(--mainnet-alt);
         }
       }
 
@@ -183,7 +183,7 @@
           width: calc(1em + 16px);
 
           .shape {
-            border: solid 4px #9339f4;
+            border: solid 4px var(--mainnet-alt);
           }
 
           &:hover {

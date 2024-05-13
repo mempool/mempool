@@ -231,8 +231,10 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
             this.stateService.live2Chart$
               .pipe(
                 scan((acc, stats) => {
+                  const now = Date.now() / 1000;
+                  const start = now - (2 * 60 * 60);
                   acc.unshift(stats);
-                  acc = acc.slice(0, 120);
+                  acc = acc.filter(p => p.added >= start);
                   return acc;
                 }, (mempoolStats || []))
               ),

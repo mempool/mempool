@@ -1,6 +1,6 @@
 .block-overview-tooltip {
   position: absolute;
-  background: rgba(#11131f, 0.95);
+	background: color-mix(in srgb, var(--active-bg) 95%, transparent);
   border-radius: 4px;
   box-shadow: 1px 1px 10px rgba(0,0,0,0.5);
   color: var(--tooltip-grey);
@@ -30,7 +30,7 @@ th, td {
 }
 
 .badge.badge-accelerated {
-  background-color: var(--tertiary);
+  background-color: #653b9c;
   box-shadow: #ad7de57f 0px 0px 12px -2px;
   color: white;
   animation: acceleratePulse 1s infinite;
@@ -71,7 +71,7 @@ th, td {
 }
 
 @keyframes acceleratePulse {
-  0% { background-color: var(--tertiary); box-shadow: #ad7de57f 0px 0px 12px -2px; }
+  0% { background-color: #653b9c; box-shadow: #ad7de57f 0px 0px 12px -2px; }
   50% { background-color: #8457bb; box-shadow: #ad7de5 0px 0px 18px -2px;}
-  100% { background-color: var(--tertiary); box-shadow: #ad7de57f 0px 0px 12px -2px; }
+  100% { background-color: #653b9c; box-shadow: #ad7de57f 0px 0px 12px -2px; }
 }

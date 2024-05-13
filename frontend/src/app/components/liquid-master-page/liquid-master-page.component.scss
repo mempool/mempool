@@ -4,6 +4,7 @@
   top: 0;
   width: 100%;
   z-index: 100;
+  background-color: var(--bg);
 }
 
 li.nav-item.active {
@@ -17,7 +18,7 @@ fa-icon {
 .navbar {
   z-index: 100;
   min-height: 64px;
-  background-color: var(--bg);
+  background-color: var(--nav-bg);
 }
 
 li.nav-item {
@@ -48,7 +49,7 @@ li.nav-item {
 }
 
 .navbar-nav {
-  background: var(--navbar-bg);
+  background: var(--nav-bg);
   bottom: 0;
   box-shadow: 0px 0px 15px 0px #000;
   flex-direction: row;
@@ -169,4 +170,8 @@ nav {
     margin-left: 5px;
     margin-right: 0px;
   }
+}
+
+.beta-network {
+  font-size: 8px;
 }
