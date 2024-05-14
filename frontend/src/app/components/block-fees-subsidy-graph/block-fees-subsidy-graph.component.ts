@@ -1,18 +1,19 @@
-import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Inject, Input, LOCALE_ID, NgZone, OnInit } from '@angular/core';
 import { EChartsOption } from '../../graphs/echarts';
 import { Observable } from 'rxjs';
-import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
 import { formatNumber } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { download, formatterXAxis } from '../../shared/graphs.utils';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FiatShortenerPipe } from '../../shared/pipes/fiat-shortener.pipe';
 import { FiatCurrencyPipe } from '../../shared/pipes/fiat-currency.pipe';
 import { StateService } from '../../services/state.service';
 import { MiningService } from '../../services/mining.service';
 import { StorageService } from '../../services/storage.service';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
   selector: 'app-block-fees-subsidy-graph',
@@ -41,11 +42,16 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
   };
 
   statsObservable$: Observable<any>;
+  data: any;
+  subsidies: { [key: number]: number } = {};
   isLoading = true;
   formatNumber = formatNumber;
   timespan = '';
   chartInstance: any = undefined;
   showFiat = false;
+  updateZoom = false;
+  zoomSpan = 100;
+  zoomTimeSpan = '';
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
@@ -56,11 +62,16 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
     private storageService: StorageService,
     private miningService: MiningService,
     private route: ActivatedRoute,
+    private router: Router,
+    private zone: NgZone,
     private fiatShortenerPipe: FiatShortenerPipe,
     private fiatCurrencyPipe: FiatCurrencyPipe,
+    private cd: ChangeDetectorRef,
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
     this.radioGroupForm.controls.dateSpan.setValue('1y');
+
+    this.subsidies = this.initSubsidies();
   }
 
   ngOnInit(): void {
@@ -86,27 +97,21 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           this.isLoading = true;
           this.storageService.setValue('miningWindowPreference', timespan);
           this.timespan = timespan;
+          this.zoomTimeSpan = timespan;
           this.isLoading = true;
           return this.apiService.getHistoricalBlockFees$(timespan)
             .pipe(
               tap((response) => {
-                let blockReward = 50 * 100_000_000;
-                const subsidies = {};
-                for (let i = 0; i <= 33; i++) {
-                  subsidies[i] = blockReward;
-                  blockReward = Math.floor(blockReward / 2);
-                }
-
-                const data = {
+                this.data = {
                   timestamp: response.body.map(val => val.timestamp * 1000),
                   blockHeight: response.body.map(val => val.avgHeight),
                   blockFees: response.body.map(val => val.avgFees / 100_000_000),
                   blockFeesFiat: response.body.filter(val => val['USD'] > 0).map(val => val.avgFees / 100_000_000 * val['USD']),
-                  blockSubsidy: response.body.map(val => subsidies[Math.floor(Math.min(val.avgHeight / 210000, 33))] / 100_000_000),
-                  blockSubsidyFiat: response.body.filter(val => val['USD'] > 0).map(val => subsidies[Math.floor(Math.min(val.avgHeight / 210000, 33))] / 100_000_000 * val['USD']),
+                  blockSubsidy: response.body.map(val => this.subsidies[Math.floor(Math.min(val.avgHeight / 210000, 33))] / 100_000_000),
+                  blockSubsidyFiat: response.body.filter(val => val['USD'] > 0).map(val => this.subsidies[Math.floor(Math.min(val.avgHeight / 210000, 33))] / 100_000_000 * val['USD']),
                 };
                 
-                this.prepareChartOptions(data);
+                this.prepareChartOptions();
                 this.isLoading = false;
               }),
               map((response) => {
@@ -120,9 +125,9 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
       );
   }
 
-  prepareChartOptions(data) {
+  prepareChartOptions() {
     let title: object;
-    if (data.blockFees.length === 0) {
+    if (this.data.blockFees.length === 0) {
       title = {
         textStyle: {
           color: 'grey',
@@ -165,13 +170,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           if (data.length <= 0) {
             return '';
           }
-
-          let tooltip = '';
-          if (['24h', '3d'].includes(this.timespan)) {
-            tooltip += $localize`At block <b style="color: white; margin-left: 2px">${data[0].axisValue}</b><br>`;
-          } else {
-            tooltip += $localize`Around block <b style="color: white; margin-left: 2px">${data[0].axisValue}</b><br>`;
-          }
+          let tooltip = `<b style="color: white; margin-left: 2px">${formatterXAxis(this.locale, this.zoomTimeSpan, parseInt(this.data.timestamp[data[0].dataIndex], 10))}</b><br>`;
           for (let i = data.length - 1; i >= 0; i--) {
             const tick = data[i];
             if (!this.showFiat) tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data, this.locale, '1.0-3')} BTC<br>`;
@@ -179,13 +178,18 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           }
           if (!this.showFiat) tooltip += `<div style="margin-left: 2px">${formatNumber(data.reduce((acc, val) => acc + val.data, 0), this.locale, '1.0-3')} BTC</div>`;
           else tooltip += `<div style="margin-left: 2px">${this.fiatCurrencyPipe.transform(data.reduce((acc, val) => acc + val.data, 0), null, 'USD')}</div>`;
+          if (['24h', '3d'].includes(this.zoomTimeSpan)) {
+            tooltip += `<small>` + $localize`At block <b style="color: white; margin-left: 2px">${data[0].axisValue}` + `</small>`;
+          } else {
+            tooltip += `<small>` + $localize`Around block <b style="color: white; margin-left: 2px">${data[0].axisValue}` + `</small>`;
+          }
           return tooltip;
         }.bind(this)
       },
-      xAxis: data.blockFees.length === 0 ? undefined : [
+      xAxis: this.data.blockFees.length === 0 ? undefined : [
         {
           type: 'category',
-          data: data.blockHeight,
+          data: this.data.blockHeight,
           show: false,
           axisLabel: {
             hideOverlap: true,
@@ -193,7 +197,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
         },
         {
           type: 'category',
-          data: data.timestamp,
+          data: this.data.timestamp,
           show: true,
           position: 'bottom',
           axisLabel: {
@@ -213,7 +217,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           },
         }
       ],
-      legend: data.blockFees.length === 0 ? undefined : {
+      legend: this.data.blockFees.length === 0 ? undefined : {
         data: [
           {
             name: 'Subsidy',
@@ -255,7 +259,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           'Fees': !this.showFiat,
         },
       },
-      yAxis: data.blockFees.length === 0 ? undefined : [
+      yAxis: this.data.blockFees.length === 0 ? undefined : [
         {
           type: 'value',
           axisLabel: {
@@ -287,37 +291,37 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           },
         },
       ],
-      series: data.blockFees.length === 0 ? undefined : [
+      series: this.data.blockFees.length === 0 ? undefined : [
         {
           name: 'Subsidy',
           yAxisIndex: 0,
           type: 'bar',
           stack: 'total',
-          data: data.blockSubsidy,
+          data: this.data.blockSubsidy,
         },
         {
           name: 'Fees',
           yAxisIndex: 0,
           type: 'bar',
           stack: 'total',
-          data: data.blockFees,
+          data: this.data.blockFees,
         },
         {
           name: 'Subsidy (USD)',
           yAxisIndex: 1,
           type: 'bar',
           stack: 'total',
-          data: data.blockSubsidyFiat,
+          data: this.data.blockSubsidyFiat,
         },
         {
           name: 'Fees (USD)',
           yAxisIndex: 1,
           type: 'bar',
           stack: 'total',
-          data: data.blockFeesFiat,
+          data: this.data.blockFeesFiat,
         },
       ],
-      dataZoom: data.blockFees.length === 0 ? undefined : [{
+      dataZoom: this.data.blockFees.length === 0 ? undefined : [{
         type: 'inside',
         realtime: true,
         zoomLock: true,
@@ -364,10 +368,166 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
         this.chartInstance.dispatchAction({ type: 'legendUnSelect', name: 'Fees (USD)' });
       }
     });
+
+    this.chartInstance.on('datazoom', (params) => {
+      if (params.silent || this.isLoading) {
+        return;
+      }
+      this.updateZoom = true;
+    });
+
+    this.chartInstance.on('click', (e) => {
+      this.zone.run(() => {
+        if (['24h', '3d'].includes(this.zoomTimeSpan)) {
+          const url = new RelativeUrlPipe(this.stateService).transform(`/block/${e.name}`);
+          if (e.event.event.shiftKey || e.event.event.ctrlKey || e.event.event.metaKey) {
+            window.open(url);
+          } else {
+            this.router.navigate([url]);
+          }
+        }
+      });
+    });
+  }
+
+  @HostListener('document:mouseup', ['$event'])
+  onMouseUp(event: MouseEvent) {
+    if (this.updateZoom) {
+      this.onZoom();
+      this.updateZoom = false;
+    }
   }
 
   isMobile() {
     return (window.innerWidth <= 767.98);
+  }
+
+  initSubsidies(): { [key: number]: number } {
+    let blockReward = 50 * 100_000_000;
+    const subsidies = {};
+    for (let i = 0; i <= 33; i++) {
+      subsidies[i] = blockReward;
+      blockReward = Math.floor(blockReward / 2);
+    }
+    return subsidies;
+  }
+
+  onZoom() {
+    const option = this.chartInstance.getOption();
+    const timestamps = option.xAxis[1].data;
+    const startTimestamp = timestamps[option.dataZoom[0].startValue];
+    const endTimestamp = timestamps[option.dataZoom[0].endValue];
+
+    // Avoid to fetch new data if not needed
+    if (option.dataZoom[0].end - option.dataZoom[0].start >= this.zoomSpan + 0.1
+       || this.getTimeRangeFromTimespan(Math.floor(startTimestamp / 1000), Math.floor(endTimestamp / 1000), false) as number === this.getTimeRange(this.zoomTimeSpan)
+      ) {
+      this.zoomSpan = option.dataZoom[0].end - option.dataZoom[0].start;
+      this.zoomTimeSpan = this.getTimeRangeFromTimespan(Math.floor(startTimestamp / 1000), Math.floor(endTimestamp / 1000), true) as string;
+      return;
+    }
+
+    this.isLoading = true;
+    this.cd.detectChanges();
+
+    const subscription = this.apiService.getBlockFeesFromTimespan$(Math.floor(startTimestamp / 1000), Math.floor(endTimestamp / 1000))
+    .pipe(
+      tap((response) => {
+        const startIndex = option.dataZoom[0].startValue;
+        const endIndex = option.dataZoom[0].endValue;
+        
+        // Update series with more granular data
+        const lengthBefore = this.data.timestamp.length;
+        this.data.timestamp.splice(startIndex, endIndex - startIndex, ...response.body.map(val => val.timestamp * 1000));
+        this.data.blockHeight.splice(startIndex, endIndex - startIndex, ...response.body.map(val => val.avgHeight));
+        this.data.blockFees.splice(startIndex, endIndex - startIndex, ...response.body.map(val => val.avgFees / 100_000_000));
+        this.data.blockFeesFiat.splice(startIndex, endIndex - startIndex, ...response.body.filter(val => val['USD'] > 0).map(val => val.avgFees / 100_000_000 * val['USD']));
+        this.data.blockSubsidy.splice(startIndex, endIndex - startIndex, ...response.body.map(val => this.subsidies[Math.floor(Math.min(val.avgHeight / 210000, 33))] / 100_000_000));
+        this.data.blockSubsidyFiat.splice(startIndex, endIndex - startIndex, ...response.body.filter(val => val['USD'] > 0).map(val => this.subsidies[Math.floor(Math.min(val.avgHeight / 210000, 33))] / 100_000_000 * val['USD']));
+        option.series[0].data = this.data.blockSubsidy;
+        option.series[1].data = this.data.blockFees;
+        option.series[2].data = this.data.blockSubsidyFiat;
+        option.series[3].data = this.data.blockFeesFiat;
+        option.xAxis[0].data = this.data.blockHeight;
+        option.xAxis[1].data = this.data.timestamp;
+        this.chartInstance.setOption(option, true);
+        const lengthAfter = this.data.timestamp.length;
+
+        // Update the zoom to keep the same range after the update
+        this.chartInstance.dispatchAction({
+          type: 'dataZoom',
+          startValue: startIndex,
+          endValue: endIndex + lengthAfter - lengthBefore,
+          silent: true,
+        });
+
+        // Update the chart
+        const newOption = this.chartInstance.getOption();
+        this.zoomSpan = newOption.dataZoom[0].end - newOption.dataZoom[0].start;
+        this.zoomTimeSpan = this.getTimeRangeFromTimespan(Math.floor(this.data.timestamp[newOption.dataZoom[0].startValue] / 1000), Math.floor(this.data.timestamp[newOption.dataZoom[0].endValue] / 1000), true) as string;
+        this.isLoading = false;
+      }),
+      catchError(() => {
+        const newOption = this.chartInstance.getOption();
+        this.zoomSpan = newOption.dataZoom[0].end - newOption.dataZoom[0].start;
+        this.zoomTimeSpan = this.getTimeRangeFromTimespan(Math.floor(this.data.timestamp[newOption.dataZoom[0].startValue] / 1000), Math.floor(this.data.timestamp[newOption.dataZoom[0].endValue] / 1000), true) as string;
+        this.isLoading = false;
+        this.cd.detectChanges();
+        return [];
+      })
+    ).subscribe(() => {
+      subscription.unsubscribe();
+      this.cd.detectChanges();
+    });
+  }
+
+  getTimeRange(interval: string, scale = 1): number {
+    switch (interval) {
+      case '4y': return 43200 * scale; // 12h
+      case '3y': return 43200 * scale; // 12h
+      case '2y': return 28800 * scale; // 8h
+      case '1y': return 28800 * scale; // 8h
+      case '6m': return 10800 * scale; // 3h
+      case '3m': return 7200 * scale; // 2h
+      case '1m': return 1800 * scale; // 30min
+      case '1w': return 300 * scale; // 5min
+      case '3d': return 1 * scale;
+      case '24h': return 1 * scale;
+      default: return 86400 * scale;
+    }
+  }
+
+  getTimeRangeFromTimespan(from: number, to: number, toString: boolean, scale = 1): number | string {
+    const timespan = to - from; 
+    if (toString) {
+      switch (true) {
+        case timespan >= 3600 * 24 * 365 * 4: return 'all';
+        case timespan >= 3600 * 24 * 365 * 3: return '4y';
+        case timespan >= 3600 * 24 * 365 * 2: return '3y';
+        case timespan >= 3600 * 24 * 365: return '2y';
+        case timespan >= 3600 * 24 * 30 * 6: return '1y';
+        case timespan >= 3600 * 24 * 30 * 3: return '6m';
+        case timespan >= 3600 * 24 * 30: return '3m';
+        case timespan >= 3600 * 24 * 7: return '1m';
+        case timespan >= 3600 * 24 * 3: return '1w';
+        case timespan >= 3600 * 24: return '3d';
+        default: return '24h';
+      }
+    } else {
+      switch (true) {
+        case timespan > 3600 * 24 * 365 * 4: return 86400 * scale; // 24h
+        case timespan > 3600 * 24 * 365 * 3: return 43200 * scale; // 12h
+        case timespan > 3600 * 24 * 365 * 2: return 43200 * scale; // 12h
+        case timespan > 3600 * 24 * 365: return 28800 * scale; // 8h
+        case timespan > 3600 * 24 * 30 * 6: return 28800 * scale; // 8h
+        case timespan > 3600 * 24 * 30 * 3: return 10800 * scale; // 3h
+        case timespan > 3600 * 24 * 30: return 7200 * scale; // 2h
+        case timespan > 3600 * 24 * 7: return 1800 * scale; // 30min
+        case timespan > 3600 * 24 * 3: return 300 * scale; // 5min
+        case timespan > 3600 * 24: return 1 * scale;
+        default: return 1 * scale;
+      }
+    }
   }
 
   onSaveChart() {

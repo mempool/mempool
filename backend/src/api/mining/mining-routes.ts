@@ -24,6 +24,7 @@ class MiningRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty-adjustments', this.$getDifficultyAdjustments)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/reward-stats/:blockCount', this.$getRewardStats)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/fees/:interval', this.$getHistoricalBlockFees)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/fees', this.$getBlockFeesTimespan)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/rewards/:interval', this.$getHistoricalBlockRewards)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/fee-rates/:interval', this.$getHistoricalBlockFeeRates)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/sizes-weights/:interval', this.$getHistoricalBlockSizeAndWeight)
@@ -206,6 +207,26 @@ class MiningRoutes {
   private async $getHistoricalBlockFees(req: Request, res: Response) {
     try {
       const blockFees = await mining.$getHistoricalBlockFees(req.params.interval);
+      const blockCount = await BlocksRepository.$blockCount(null, null);
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.header('X-total-count', blockCount.toString());
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      res.json(blockFees);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getBlockFeesTimespan(req: Request, res: Response) {
+    try {
+      if (!parseInt(req.query.from as string, 10) || !parseInt(req.query.to as string, 10)) {
+        throw new Error('Invalid timestamp range');
+      }
+      if (parseInt(req.query.from as string, 10) > parseInt(req.query.to as string, 10)) {
+        throw new Error('from must be less than to');
+      }
+      const blockFees = await mining.$getBlockFeesTimespan(parseInt(req.query.from as string, 10), parseInt(req.query.to as string, 10));
       const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');

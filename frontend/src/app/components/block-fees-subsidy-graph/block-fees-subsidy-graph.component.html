@@ -45,7 +45,7 @@
     </form>
   </div>
 
-  <div class="chart" *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+  <div class="chart" *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions" [style]="{opacity: isLoading ? 0.5 : 1}"
     (chartInit)="onChartInit($event)">
   </div>
   <div class="text-center loadingGraphs" *ngIf="!stateService.isBrowser || isLoading">
