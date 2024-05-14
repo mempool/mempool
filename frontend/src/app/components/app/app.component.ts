@@ -4,6 +4,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { StateService } from '../../services/state.service';
 import { OpenGraphService } from '../../services/opengraph.service';
 import { NgbTooltipConfig } from '@ng-bootstrap/ng-bootstrap';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -18,6 +19,7 @@ export class AppComponent implements OnInit {
     public router: Router,
     private stateService: StateService,
     private openGraphService: OpenGraphService,
+    private themeService: ThemeService,
     private location: Location,
     tooltipConfig: NgbTooltipConfig,
     @Inject(LOCALE_ID) private locale: string,
