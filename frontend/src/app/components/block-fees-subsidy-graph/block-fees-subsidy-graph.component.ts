@@ -390,8 +390,8 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
     });
   }
 
-  @HostListener('document:mouseup', ['$event'])
-  onMouseUp(event: MouseEvent) {
+  @HostListener('document:pointerup', ['$event'])
+  onPointerUp(event: PointerEvent) {
     if (this.updateZoom) {
       this.onZoom();
       this.updateZoom = false;
@@ -417,15 +417,6 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
     const timestamps = option.xAxis[1].data;
     const startTimestamp = timestamps[option.dataZoom[0].startValue];
     const endTimestamp = timestamps[option.dataZoom[0].endValue];
-
-    // Avoid to fetch new data if not needed
-    if (option.dataZoom[0].end - option.dataZoom[0].start >= this.zoomSpan + 0.1
-       || this.getTimeRangeFromTimespan(Math.floor(startTimestamp / 1000), Math.floor(endTimestamp / 1000), false) as number === this.getTimeRange(this.zoomTimeSpan)
-      ) {
-      this.zoomSpan = option.dataZoom[0].end - option.dataZoom[0].start;
-      this.zoomTimeSpan = this.getTimeRangeFromTimespan(Math.floor(startTimestamp / 1000), Math.floor(endTimestamp / 1000), true) as string;
-      return;
-    }
 
     this.isLoading = true;
     this.cd.detectChanges();
@@ -464,13 +455,13 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
         // Update the chart
         const newOption = this.chartInstance.getOption();
         this.zoomSpan = newOption.dataZoom[0].end - newOption.dataZoom[0].start;
-        this.zoomTimeSpan = this.getTimeRangeFromTimespan(Math.floor(this.data.timestamp[newOption.dataZoom[0].startValue] / 1000), Math.floor(this.data.timestamp[newOption.dataZoom[0].endValue] / 1000), true) as string;
+        this.zoomTimeSpan = this.getTimeRangeFromTimespan(Math.floor(this.data.timestamp[newOption.dataZoom[0].startValue] / 1000), Math.floor(this.data.timestamp[newOption.dataZoom[0].endValue] / 1000));
         this.isLoading = false;
       }),
       catchError(() => {
         const newOption = this.chartInstance.getOption();
         this.zoomSpan = newOption.dataZoom[0].end - newOption.dataZoom[0].start;
-        this.zoomTimeSpan = this.getTimeRangeFromTimespan(Math.floor(this.data.timestamp[newOption.dataZoom[0].startValue] / 1000), Math.floor(this.data.timestamp[newOption.dataZoom[0].endValue] / 1000), true) as string;
+        this.zoomTimeSpan = this.getTimeRangeFromTimespan(Math.floor(this.data.timestamp[newOption.dataZoom[0].startValue] / 1000), Math.floor(this.data.timestamp[newOption.dataZoom[0].endValue] / 1000));
         this.isLoading = false;
         this.cd.detectChanges();
         return [];
@@ -481,52 +472,20 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
     });
   }
 
-  getTimeRange(interval: string, scale = 1): number {
-    switch (interval) {
-      case '4y': return 43200 * scale; // 12h
-      case '3y': return 43200 * scale; // 12h
-      case '2y': return 28800 * scale; // 8h
-      case '1y': return 28800 * scale; // 8h
-      case '6m': return 10800 * scale; // 3h
-      case '3m': return 7200 * scale; // 2h
-      case '1m': return 1800 * scale; // 30min
-      case '1w': return 300 * scale; // 5min
-      case '3d': return 1 * scale;
-      case '24h': return 1 * scale;
-      default: return 86400 * scale;
-    }
-  }
-
-  getTimeRangeFromTimespan(from: number, to: number, toString: boolean, scale = 1): number | string {
+  getTimeRangeFromTimespan(from: number, to: number): string {
     const timespan = to - from; 
-    if (toString) {
-      switch (true) {
-        case timespan >= 3600 * 24 * 365 * 4: return 'all';
-        case timespan >= 3600 * 24 * 365 * 3: return '4y';
-        case timespan >= 3600 * 24 * 365 * 2: return '3y';
-        case timespan >= 3600 * 24 * 365: return '2y';
-        case timespan >= 3600 * 24 * 30 * 6: return '1y';
-        case timespan >= 3600 * 24 * 30 * 3: return '6m';
-        case timespan >= 3600 * 24 * 30: return '3m';
-        case timespan >= 3600 * 24 * 7: return '1m';
-        case timespan >= 3600 * 24 * 3: return '1w';
-        case timespan >= 3600 * 24: return '3d';
-        default: return '24h';
-      }
-    } else {
-      switch (true) {
-        case timespan > 3600 * 24 * 365 * 4: return 86400 * scale; // 24h
-        case timespan > 3600 * 24 * 365 * 3: return 43200 * scale; // 12h
-        case timespan > 3600 * 24 * 365 * 2: return 43200 * scale; // 12h
-        case timespan > 3600 * 24 * 365: return 28800 * scale; // 8h
-        case timespan > 3600 * 24 * 30 * 6: return 28800 * scale; // 8h
-        case timespan > 3600 * 24 * 30 * 3: return 10800 * scale; // 3h
-        case timespan > 3600 * 24 * 30: return 7200 * scale; // 2h
-        case timespan > 3600 * 24 * 7: return 1800 * scale; // 30min
-        case timespan > 3600 * 24 * 3: return 300 * scale; // 5min
-        case timespan > 3600 * 24: return 1 * scale;
-        default: return 1 * scale;
-      }
+    switch (true) {
+      case timespan >= 3600 * 24 * 365 * 4: return 'all';
+      case timespan >= 3600 * 24 * 365 * 3: return '4y';
+      case timespan >= 3600 * 24 * 365 * 2: return '3y';
+      case timespan >= 3600 * 24 * 365: return '2y';
+      case timespan >= 3600 * 24 * 30 * 6: return '1y';
+      case timespan >= 3600 * 24 * 30 * 3: return '6m';
+      case timespan >= 3600 * 24 * 30: return '3m';
+      case timespan >= 3600 * 24 * 7: return '1m';
+      case timespan >= 3600 * 24 * 3: return '1w';
+      case timespan >= 3600 * 24: return '3d';
+      default: return '24h';
     }
   }
 
