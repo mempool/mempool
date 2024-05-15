@@ -11,8 +11,9 @@ export class SeoService {
   network = '';
   baseTitle = 'mempool';
   baseDescription = 'Explore the full Bitcoin ecosystem&reg; with The Mempool Open Source Project&reg;.';
+  baseDomain = 'mempool.space';
 
-  canonicalLink: HTMLElement = document.getElementById('canonical');
+  canonicalLink: HTMLLinkElement = document.getElementById('canonical') as HTMLLinkElement;
 
   constructor(
     private titleService: Title,
@@ -21,6 +22,16 @@ export class SeoService {
     private router: Router,
     private activatedRoute: ActivatedRoute,
   ) {
+    // save original meta tags
+    this.baseDescription = metaService.getTag('name=\'description\'')?.content || this.baseDescription;
+    this.baseTitle = titleService.getTitle()?.split(' - ')?.[0] || this.baseTitle;
+    try {
+      const canonicalUrl = new URL(this.canonicalLink?.href || '');
+      this.baseDomain = canonicalUrl?.host;
+    } catch (e) {
+      // leave as default
+    }
+
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd),
@@ -72,11 +83,7 @@ export class SeoService {
   }
 
   updateCanonical(path) {
-    let domain = 'mempool.space';
-    if (this.stateService.env.BASE_MODULE === 'liquid') {
-      domain = 'liquid.network';
-    }
-    this.canonicalLink.setAttribute('href', 'https://' + domain + path);
+    this.canonicalLink.setAttribute('href', 'https://' + this.baseDomain + path);
   }
 
   getTitle(): string {
@@ -94,10 +101,7 @@ export class SeoService {
   }
 
   getDescription(): string {
-    if ( (this.network === 'testnet') || (this.network === 'testnet4') || (this.network === 'signet') || (this.network === '') || (this.network == 'mainnet') )
-      return this.baseDescription + ' See the real-time status of your transactions, browse network stats, and more.';
-    if ( (this.network === 'liquid') || (this.network === 'liquidtestnet') )
-      return this.baseDescription + ' See Liquid transactions & assets, get network info, and more.';
+    return this.baseDescription;
   }
 
   ucfirst(str: string) {

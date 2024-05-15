@@ -5,6 +5,7 @@ import { StateService } from '../../services/state.service';
 import { OpenGraphService } from '../../services/opengraph.service';
 import { NgbTooltipConfig } from '@ng-bootstrap/ng-bootstrap';
 import { ThemeService } from '../../services/theme.service';
+import { SeoService } from '../../services/seo.service';
 
 @Component({
   selector: 'app-root',
@@ -13,12 +14,11 @@ import { ThemeService } from '../../services/theme.service';
   providers: [NgbTooltipConfig]
 })
 export class AppComponent implements OnInit {
-  link: HTMLElement = document.getElementById('canonical');
-
   constructor(
     public router: Router,
     private stateService: StateService,
     private openGraphService: OpenGraphService,
+    private seoService: SeoService,
     private themeService: ThemeService,
     private location: Location,
     tooltipConfig: NgbTooltipConfig,
@@ -54,11 +54,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) {
-        let domain = 'mempool.space';
-        if (this.stateService.env.BASE_MODULE === 'liquid') {
-          domain = 'liquid.network';
-        }
-        this.link.setAttribute('href', 'https://' + domain + this.location.path());
+        this.seoService.updateCanonical(this.location.path());
       }
     });
   }
