@@ -370,7 +370,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
     });
 
     this.chartInstance.on('datazoom', (params) => {
-      if (params.silent || this.isLoading) {
+      if (params.silent || this.isLoading || ['24h', '3d'].includes(this.timespan)) {
         return;
       }
       this.updateZoom = true;
