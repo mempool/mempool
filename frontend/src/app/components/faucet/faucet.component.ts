@@ -59,6 +59,7 @@ export class FaucetComponent implements OnInit, OnDestroy {
       this.initForm(5000, 500000);
     }
 
+    this.websocketService.want(['blocks', 'mempool-blocks']);
     this.mempoolPositionSubscription = this.stateService.mempoolTxPosition$.subscribe(txPosition => {
       if (txPosition && txPosition.txid === this.txid) {
         this.stateService.markBlock$.next({
