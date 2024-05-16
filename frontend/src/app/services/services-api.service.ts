@@ -165,6 +165,6 @@ export class ServicesApiServices {
   }
 
   requestTestnet4Coins$(address: string, sats: number) {
-    return this.httpClient.get<{txid: string}>(`${SERVICES_API_PREFIX}/testnet4/faucet/request/${address}?sats=${sats}`, { responseType: 'json' });
+    return this.httpClient.get<{txid: string}>(`${SERVICES_API_PREFIX}/testnet4/faucet/request?address=${address}&sats=${sats}`, { responseType: 'json' });
   }
 }
