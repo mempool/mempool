@@ -114,6 +114,7 @@ import { CalculatorComponent } from '../components/calculator/calculator.compone
 import { BitcoinsatoshisPipe } from '../shared/pipes/bitcoinsatoshis.pipe';
 import { HttpErrorComponent } from '../shared/components/http-error/http-error.component';
 import { TwitterWidgetComponent } from '../components/twitter-widget/twitter-widget.component';
+import { FaucetComponent } from '../components/faucet/faucet.component';
 
 import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-directives/weight-directives';
 
@@ -228,6 +229,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     PendingStatsComponent,
     HttpErrorComponent,
     TwitterWidgetComponent,
+    FaucetComponent,
   ],
   imports: [
     CommonModule,

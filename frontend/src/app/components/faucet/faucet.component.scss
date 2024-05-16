@@ -1,0 +1,38 @@
+.formGroup {
+  width: 100%;
+}
+
+.input-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: flex-end;
+  row-gap: 0.5rem;
+  
+  .form-control {
+    min-width: 200px;
+  }
+
+  .button-group {
+    display: flex;
+    align-items: stretch;
+  }
+
+  #satoshis::after {
+    content: 'sats';
+    position: absolute;
+    right: 0.5em;
+    top: 0;
+    bottom: 0;
+  }
+}
+
+.faucet-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 800px;
+  margin: auto;
+}
