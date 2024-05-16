@@ -72,7 +72,6 @@ export interface Env {
   ADDITIONAL_CURRENCIES: boolean;
   GIT_COMMIT_HASH_MEMPOOL_SPACE?: string;
   PACKAGE_JSON_VERSION_MEMPOOL_SPACE?: string;
-  TESTNET4_FAUCET_ADDRESS: string;
   customize?: Customization;
 }
 
@@ -105,7 +104,6 @@ const defaultEnv: Env = {
   'ACCELERATOR': false,
   'PUBLIC_ACCELERATIONS': false,
   'ADDITIONAL_CURRENCIES': false,
-  'TESTNET4_FAUCET_ADDRESS': '',
 };
 
 @Injectable({

@@ -84,8 +84,8 @@
       }
     }
     <br>
-    <div>
-      If you no longer need your testnet4 coins, please consider sending them back to <a [routerLink]="['/address/' | relativeUrl, recycleAddress]">{{ recycleAddress }}</a> to replenish the faucet.
+    <div *ngIf="status?.address">
+      If you no longer need your testnet4 coins, please consider sending them back to <a [routerLink]="['/address/' | relativeUrl, status.address]">{{ status.address }}</a> to replenish the faucet.
     </div>
   </div>
 </div>

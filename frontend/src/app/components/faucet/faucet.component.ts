@@ -18,6 +18,7 @@ export class FaucetComponent implements OnInit, OnDestroy {
   user: any;
   loading: boolean = true;
   status: {
+    address?: string,
     access: boolean
     min: number,
     user_max: number,
@@ -26,7 +27,6 @@ export class FaucetComponent implements OnInit, OnDestroy {
   error = '';
   faucetForm: FormGroup;
   txid = '';
-  recycleAddress = this.stateService.env.TESTNET4_FAUCET_ADDRESS || 'tb1q548z58kqvwyjqwy8vc2ntmg33d7s2wyfv7ukq4';
 
   mempoolPositionSubscription: Subscription;
   confirmationSubscription: Subscription;
