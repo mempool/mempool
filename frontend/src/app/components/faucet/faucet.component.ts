@@ -43,20 +43,22 @@ export class FaucetComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.user = this.storageService.getAuth()?.user ?? null;
-    console.log(this.user);
+    this.initForm(5000, 500000);
     if (this.user) {
-      this.servicesApiService.getFaucetStatus$().subscribe(status => {
-        this.status = status;
-        this.initForm(this.status.min, this.status.user_max);
-      })
-    } else {
-      this.status = {
-        access: false,
-        min: 5000,
-        user_max: 500000,
-        user_requests: 1,
+      try {
+        this.servicesApiService.getFaucetStatus$().subscribe(status => {
+          this.status = status;
+          this.initForm(this.status.min, this.status.user_max);
+        })
+      } catch (e) {
+        if (e?.status !== 403) {
+          this.error = 'faucet_not_available';
+        }
+      } finally {
+        this.loading = false;
       }
-      this.initForm(5000, 500000);
+    } else {
+      this.loading = false;
     }
 
     this.websocketService.want(['blocks', 'mempool-blocks']);
@@ -81,7 +83,7 @@ export class FaucetComponent implements OnInit, OnDestroy {
       'address': ['', [Validators.required, Validators.pattern(getRegex('address', 'testnet4'))]],
       'satoshis': ['', [Validators.required, Validators.min(min), Validators.max(max)]]
     }, { validators: (formGroup): ValidationErrors | null => {
-      if (!this.status?.user_requests) {
+      if (this.status && !this.status?.user_requests) {
         return { customError: 'You have used the faucet too many times already! Come back later.'}
       }
       return null;

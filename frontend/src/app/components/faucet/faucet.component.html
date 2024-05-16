@@ -28,7 +28,7 @@
       <div class="alert alert-mempool d-block text-center">
         <a [routerLink]="['/tx/' | relativeUrl, txid]">{{ txid }}</a>
       </div>
-    } @else if (loading || !status) {
+    } @else if (loading) {
       <p>Waiting for faucet...</p>
       <div class="spinner-border text-light"></div>
     } @else {
@@ -49,8 +49,8 @@
               </div>
               <div class="text-danger text-left" *ngIf="invalidAmount">
                 <div *ngIf="amount?.errors?.['required']">Amount is required</div>
-                <div *ngIf="status.user_requests && amount?.errors?.['min']">Minimum is {{ amount?.errors?.['min'].min }}</div>
-                <div *ngIf="status.user_requests && amount?.errors?.['max']">Maximum is {{ amount?.errors?.['max'].max }}</div>
+                <div *ngIf="status?.user_requests && amount?.errors?.['min']">Minimum is {{ amount?.errors?.['min'].min }}</div>
+                <div *ngIf="status?.user_requests && amount?.errors?.['max']">Maximum is {{ amount?.errors?.['max'].max }}</div>
               </div>
               <div class="input-group input-group-lg mb-2">
                 <div class="input-group-prepend">
