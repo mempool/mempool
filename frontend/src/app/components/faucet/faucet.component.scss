@@ -8,14 +8,20 @@
   align-items: stretch;
   justify-content: flex-end;
   row-gap: 0.5rem;
+  gap: 0.5rem;
   
   .form-control {
-    min-width: 200px;
+    min-width: 160px;
+    flex-grow: 100;
   }
 
   .button-group {
     display: flex;
     align-items: stretch;
+  }
+
+  .submit-button, .button-group, .button-group .btn {
+    flex-grow: 1;
   }
 
   #satoshis::after {

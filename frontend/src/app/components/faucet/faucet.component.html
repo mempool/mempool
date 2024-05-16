@@ -42,7 +42,7 @@
                 </div>
                 <input type="number" class="form-control" formControlName="satoshis" id="satoshis">
                 <div class="button-group">
-                  <button type="button" class="btn btn-secondary ml-2" (click)="setAmount(5000)">5k</button>
+                  <button type="button" class="btn btn-secondary" (click)="setAmount(5000)">5k</button>
                   <button type="button" class="btn btn-secondary ml-2" (click)="setAmount(50000)">50k</button>
                   <button type="button" class="btn btn-secondary ml-2" (click)="setAmount(500000)">500k</button>
                 </div>
@@ -57,7 +57,7 @@
                   <span class="input-group-text" i18n="address">Address</span>
                 </div>
                 <input type="address" class="form-control" formControlName="address" id="address" placeholder="tb1q...">
-                <button type="submit" class="btn btn-primary submit-button ml-2" [disabled]="!status?.access || !faucetForm.valid || !faucetForm.get('address')?.dirty" i18n="testnet4.request-coins">Request Testnet4 Coins</button>
+                <button type="submit" class="btn btn-primary submit-button" [disabled]="!status?.access || !faucetForm.valid || !faucetForm.get('address')?.dirty" i18n="testnet4.request-coins">Request Testnet4 Coins</button>
               </div>
               <div class="text-danger text-left" *ngIf="invalidAddress">
                 @if (address?.errors?.['required']) {
