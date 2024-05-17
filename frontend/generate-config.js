@@ -11,6 +11,7 @@ let configContent = {};
 let gitCommitHash = '';
 let packetJsonVersion = '';
 let customConfig;
+let customConfigContent;
 
 try {
   const rawConfig = fs.readFileSync(CONFIG_FILE_NAME);
@@ -25,11 +26,16 @@ try {
 }
 
 if (configContent && configContent.CUSTOMIZATION) {
-  customConfig = readConfig(configContent.CUSTOMIZATION);
+  try {
+    customConfig = readConfig(configContent.CUSTOMIZATION);
+    customConfigContent = JSON.parse(customConfig);
+  } catch (e) {
+    console.log(`failed to load customization config from ${configContent.CUSTOMIZATION}`);
+  }
 }
 
 const baseModuleName = configContent.BASE_MODULE || 'mempool';
-const customBuildName = (customConfig && configContent.enterprise) ? ('.' + configContent.enterprise) : '';
+const customBuildName = (customConfigContent && customConfigContent.enterprise) ? ('.' + customConfigContent.enterprise) : '';
 const indexFilePath = 'src/index.' + baseModuleName + customBuildName + '.html';
 
 try {

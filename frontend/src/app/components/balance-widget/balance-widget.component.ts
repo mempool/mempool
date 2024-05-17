@@ -57,8 +57,9 @@ export class BalanceWidgetComponent implements OnInit, OnChanges {
   calculateStats(summary: AddressTxSummary[]): void {
     let weekTotal = 0;
     let monthTotal = 0;
-    const weekAgo = (Date.now() / 1000) - (60 * 60 * 24 * 7);
-    const monthAgo = (Date.now() / 1000) - (60 * 60 * 24 * 30);
+
+    const weekAgo = (new Date(new Date().setHours(0, 0, 0, 0) - (7 * 24 * 60 * 60 * 1000)).getTime()) / 1000;
+    const monthAgo = (new Date(new Date().setHours(0, 0, 0, 0) - (30 * 24 * 60 * 60 * 1000)).getTime()) / 1000;
     for (let i = 0; i < summary.length && summary[i].time >= monthAgo; i++) {
       monthTotal += summary[i].value;
       if (summary[i].time >= weekAgo) {

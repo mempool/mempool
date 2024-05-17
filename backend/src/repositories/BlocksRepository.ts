@@ -663,7 +663,7 @@ class BlocksRepository {
   /**
    * Get the historical averaged block fees
    */
-  public async $getHistoricalBlockFees(div: number, interval: string | null): Promise<any> {
+  public async $getHistoricalBlockFees(div: number, interval: string | null, timespan?: {from: number, to: number}): Promise<any> {
     try {
       let query = `SELECT
         CAST(AVG(blocks.height) as INT) as avgHeight,
@@ -677,6 +677,8 @@ class BlocksRepository {
 
       if (interval !== null) {
         query += ` WHERE blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
+      } else if (timespan) {
+        query += ` WHERE blockTimestamp BETWEEN FROM_UNIXTIME(${timespan.from}) AND FROM_UNIXTIME(${timespan.to})`;
       }
 
       query += ` GROUP BY UNIX_TIMESTAMP(blockTimestamp) DIV ${div}`;
