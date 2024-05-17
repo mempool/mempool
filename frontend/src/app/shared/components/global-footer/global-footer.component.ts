@@ -28,7 +28,6 @@ export class GlobalFooterComponent implements OnInit, OnDestroy {
   network$: Observable<string>;
   networkPaths: { [network: string]: string };
   currentNetwork = '';
-  lightningNetworks = ['', 'mainnet', 'bitcoin', 'testnet', 'signet'];
   loggedIn = false;
   urlSubscription: Subscription;
   isServicesPage = false;

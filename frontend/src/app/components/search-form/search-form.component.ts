@@ -122,7 +122,7 @@ export class SearchFormComponent implements OnInit {
           ]);
         }
         this.isTypeaheading$.next(true);
-        if (!this.stateService.env.LIGHTNING) {
+        if (!this.stateService.networkSupportsLightning()) {
           return zip(
             this.electrsApiService.getAddressesByPrefix$(text).pipe(catchError(() => of([]))),
             [{ nodes: [], channels: [] }],
