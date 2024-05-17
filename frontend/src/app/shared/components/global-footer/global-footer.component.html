@@ -32,7 +32,7 @@
               <app-theme-selector></app-theme-selector>
             </div>
           }
-          <a *ngIf="stateService.isMempoolSpaceBuild" class="btn btn-purple sponsor d-none d-sm-flex justify-content-center" [routerLink]="['/login' | relativeUrl]">
+          <a *ngIf="stateService.isMempoolSpaceBuild" class="btn btn-purple sponsor d-none d-sm-flex justify-content-center" [routerLink]="['/login']">
             <span *ngIf="loggedIn" i18n="shared.my-account" class="nowrap">My Account</span>
             <span *ngIf="!loggedIn" i18n="shared.sign-in" class="nowrap">Sign In</span>
           </a>
@@ -43,7 +43,7 @@
           </div>
         }
         @if (!enterpriseInfo?.footer_img) {
-          <a *ngIf="stateService.isMempoolSpaceBuild" class="btn btn-purple sponsor d-flex d-sm-none justify-content-center ml-auto mr-auto mt-0 mb-2" [routerLink]="['/login' | relativeUrl]">
+          <a *ngIf="stateService.isMempoolSpaceBuild" class="btn btn-purple sponsor d-flex d-sm-none justify-content-center ml-auto mr-auto mt-0 mb-2" [routerLink]="['/login']">
             <span *ngIf="loggedIn" i18n="shared.my-account" class="nowrap">My Account</span>
             <span *ngIf="!loggedIn" i18n="shared.sign-in" class="nowrap">Sign In</span>
           </a>
