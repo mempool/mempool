@@ -161,7 +161,7 @@ export class ServicesApiServices {
   }
 
   getFaucetStatus$() {
-    return this.httpClient.get<{ address?: string, access: boolean, min: number, user_max: number, user_requests: number }>(`${SERVICES_API_PREFIX}/testnet4/faucet/status`, { responseType: 'json' });
+    return this.httpClient.get<{ address?: string, min: number, max: number }>(`${SERVICES_API_PREFIX}/testnet4/faucet/status`, { responseType: 'json' });
   }
 
   requestTestnet4Coins$(address: string, sats: number) {

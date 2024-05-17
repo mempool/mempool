@@ -1,13 +1,13 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
-import { FormBuilder, FormGroup, ValidationErrors, Validators } from "@angular/forms";
-import { StorageService } from '../../services/storage.service';
-import { ServicesApiServices } from '../../services/services-api.service';
-import { AudioService } from '../../services/audio.service';
-import { StateService } from '../../services/state.service';
-import { Subscription, tap } from "rxjs";
-import { HttpErrorResponse } from "@angular/common/http";
+import { Component, OnDestroy, OnInit, ChangeDetectorRef } from "@angular/core";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { Subscription } from "rxjs";
+import { StorageService } from "../../services/storage.service";
+import { ServicesApiServices } from "../../services/services-api.service";
 import { getRegex } from "../../shared/regex.utils";
+import { StateService } from "../../services/state.service";
 import { WebsocketService } from "../../services/websocket.service";
+import { AudioService } from "../../services/audio.service";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   selector: 'app-faucet',
@@ -15,52 +15,75 @@ import { WebsocketService } from "../../services/websocket.service";
   styleUrls: ['./faucet.component.scss']
 })
 export class FaucetComponent implements OnInit, OnDestroy {
-  user: any;
-  loading: boolean = true;
+  loading = true;
+  error: string = '';
+  user: any = undefined;
+  txid: string = '';
+ 
+  faucetStatusSubscription: Subscription;
   status: {
-    address?: string,
-    access: boolean
-    min: number,
-    user_max: number,
-    user_requests: number,
+    min: number; // minimum amount to request at once (in sats)
+    max: number; // maximum amount to request at once
+    address?: string; // faucet address
   } | null = null;
-  error = '';
   faucetForm: FormGroup;
-  txid = '';
 
   mempoolPositionSubscription: Subscription;
   confirmationSubscription: Subscription;
 
   constructor(
-    private stateService: StateService,
+    private cd: ChangeDetectorRef,
     private storageService: StorageService,
     private servicesApiService: ServicesApiServices,
-    private websocketService: WebsocketService,
-    private audioService: AudioService,
     private formBuilder: FormBuilder,
+    private stateService: StateService,
+    private websocketService: WebsocketService,
+    private audioService: AudioService
   ) {
+    this.faucetForm = this.formBuilder.group({
+      'address': ['', [Validators.required, Validators.pattern(getRegex('address', 'testnet4'))]],
+      'satoshis': [0, [Validators.required, Validators.min(0), Validators.max(0)]]
+    });
   }
 
-  ngOnInit(): void {
+  ngOnDestroy() {
+    if (this.faucetStatusSubscription) {
+      this.faucetStatusSubscription.unsubscribe();
+    }
+  }
+
+  ngOnInit() {
     this.user = this.storageService.getAuth()?.user ?? null;
-    this.initForm(5000, 500000);
-    if (this.user) {
-      try {
-        this.servicesApiService.getFaucetStatus$().subscribe(status => {
-          this.status = status;
-          this.initForm(this.status.min, this.status.user_max);
-        })
-      } catch (e) {
-        if (e?.status !== 403) {
-          this.error = 'faucet_not_available';
-        }
-      } finally {
-        this.loading = false;
-      }
-    } else {
+    if (!this.user) {
       this.loading = false;
+      return;
     }
 
+    // Setup form
+    this.faucetStatusSubscription = this.servicesApiService.getFaucetStatus$().subscribe({
+      next: (status) => {
+        if (!status) {
+          this.error = 'internal_server_error';
+          return;
+        }
+        this.status = status;
+
+        this.faucetForm = this.formBuilder.group({
+          'address': ['', [Validators.required, Validators.pattern(getRegex('address', 'testnet4'))]],
+          'satoshis': [this.status.min, [Validators.required, Validators.min(this.status.min), Validators.max(this.status.max)]]
+        });
+
+        this.loading = false;
+        this.cd.markForCheck();
+      },
+      error: (response) => {
+        this.loading = false;
+        this.error = response.error;
+        this.cd.markForCheck();
+      }
+    });
+
+    // Track transaction
     this.websocketService.want(['blocks', 'mempool-blocks']);
     this.mempoolPositionSubscription = this.stateService.mempoolTxPosition$.subscribe(txPosition => {
       if (txPosition && txPosition.txid === this.txid) {
@@ -76,26 +99,6 @@ export class FaucetComponent implements OnInit, OnDestroy {
         this.stateService.markBlock$.next({ blockHeight: block.height });
       }
     });
-  }
-
-  initForm(min: number, max: number): void {
-    this.faucetForm = this.formBuilder.group({
-      'address': ['', [Validators.required, Validators.pattern(getRegex('address', 'testnet4'))]],
-      'satoshis': ['', [Validators.required, Validators.min(min), Validators.max(max)]]
-    }, { validators: (formGroup): ValidationErrors | null => {
-      if (this.status && !this.status?.user_requests) {
-        return { customError: 'You have used the faucet too many times already! Come back later.'}
-      }
-      return null;
-    }});
-    this.faucetForm.get('satoshis').setValue(min);
-    this.loading = false;
-  }
-
-  setAmount(value: number): void {
-    if (this.faucetForm) {
-      this.faucetForm.get('satoshis').setValue(value);
-    }
   }
 
   requestCoins(): void {
@@ -114,23 +117,19 @@ export class FaucetComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
-    this.stateService.markBlock$.next({});
-    this.websocketService.stopTrackingTransaction();
-    if (this.mempoolPositionSubscription) {
-      this.mempoolPositionSubscription.unsubscribe();
-    }
-    if (this.confirmationSubscription) {
-      this.confirmationSubscription.unsubscribe();
+  setAmount(value: number): void {
+    if (this.faucetForm) {
+      this.faucetForm.get('satoshis').setValue(value);
     }
   }
 
   get amount() { return this.faucetForm.get('satoshis')!; }
-  get address() { return this.faucetForm.get('address')!; }
   get invalidAmount() {
     const amount = this.faucetForm.get('satoshis')!;
     return amount?.invalid && (amount.dirty || amount.touched)
   }
+
+  get address() { return this.faucetForm.get('address')!; }
   get invalidAddress() {
     const address = this.faucetForm.get('address')!;
     return address?.invalid && (address.dirty || address.touched)
