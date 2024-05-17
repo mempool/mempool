@@ -6,7 +6,14 @@
 
   <div class="faucet-container text-center">
   
-    @if (loading) {
+    @if (txid) {
+      <div class="alert alert-success w-100 text-truncate">
+        <fa-icon [icon]="['fas', 'circle-check']"></fa-icon>
+        Sent!
+        <a class="text-primary" [href]="'/testnet4/txid/' + txid">{{ txid }}</a>
+      </div>
+    }
+    @else if (loading) {
       <p>Loading faucet...</p>
       <div class="spinner-border text-light"></div>
     } @else if (!user) {

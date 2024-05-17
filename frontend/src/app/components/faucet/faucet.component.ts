@@ -103,6 +103,7 @@ export class FaucetComponent implements OnInit, OnDestroy {
 
   requestCoins(): void {
     this.error = null;
+    this.txid = '';
     this.stateService.markBlock$.next({});
     this.servicesApiService.requestTestnet4Coins$(this.faucetForm.get('address')?.value, parseInt(this.faucetForm.get('satoshis')?.value))
     .subscribe({
@@ -110,6 +111,7 @@ export class FaucetComponent implements OnInit, OnDestroy {
         this.txid = response.txid;
         this.websocketService.startTrackTransaction(this.txid);
         this.audioService.playSound('cha-ching');
+        this.cd.markForCheck();
       }),
       error: (response: HttpErrorResponse) => {
         this.error = response.error;
