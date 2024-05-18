@@ -1,15 +1,14 @@
-import { Component, OnInit, OnDestroy, ViewChildren, QueryList, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChildren, QueryList, ChangeDetectorRef } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { switchMap, tap, throttleTime, catchError, map, shareReplay, startWith, filter } from 'rxjs/operators';
-import { Transaction, Vout } from '../../interfaces/electrs.interface';
 import { Observable, of, Subscription, asyncScheduler, EMPTY, combineLatest, forkJoin } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { SeoService } from '../../services/seo.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
-import { AccelerationInfo, BlockAudit, BlockExtended, TransactionStripped } from '../../interfaces/node-api.interface';
+import { BlockAudit, BlockExtended, TransactionStripped } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { BlockOverviewGraphComponent } from '../../components/block-overview-graph/block-overview-graph.component';
 import { detectWebGL } from '../../shared/graphs.utils';
@@ -42,23 +41,17 @@ export class BlockComponent implements OnInit, OnDestroy {
   isLoadingBlock = true;
   latestBlock: BlockExtended;
   latestBlocks: BlockExtended[] = [];
-  transactions: Transaction[];
   oobFees: number = 0;
-  isLoadingTransactions = true;
   strippedTransactions: TransactionStripped[];
   overviewTransitionDirection: string;
   isLoadingOverview = true;
   error: any;
   blockSubsidy: number;
   fees: number;
-  paginationMaxSize: number;
-  page = 1;
-  itemsPerPage: number;
-  txsLoadingStatus$: Observable<number>;
+  block$: Observable<any>;
   showDetails = false;
   showPreviousBlocklink = true;
   showNextBlocklink = true;
-  transactionsError: any = null;
   overviewError: any = null;
   webGlEnabled = true;
   auditParamEnabled: boolean = false;
@@ -69,10 +62,10 @@ export class BlockComponent implements OnInit, OnDestroy {
   isMobile = window.innerWidth <= 767.98;
   hoverTx: string;
   numMissing: number = 0;
+  paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
   numUnexpected: number = 0;
   mode: 'projected' | 'actual' = 'projected';
 
-  transactionSubscription: Subscription;
   overviewSubscription: Subscription;
   auditSubscription: Subscription;
   keyNavigationSubscription: Subscription;
@@ -82,7 +75,6 @@ export class BlockComponent implements OnInit, OnDestroy {
   queryParamsSubscription: Subscription;
   nextBlockSubscription: Subscription = undefined;
   nextBlockSummarySubscription: Subscription = undefined;
-  nextBlockTxListSubscription: Subscription = undefined;
   timeLtrSubscription: Subscription;
   timeLtr: boolean;
   childChangeSubscription: Subscription;
@@ -109,16 +101,13 @@ export class BlockComponent implements OnInit, OnDestroy {
     private cacheService: CacheService,
     private servicesApiService: ServicesApiServices,
     private cd: ChangeDetectorRef,
-    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.websocketService.want(['blocks', 'mempool-blocks']);
-    this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
     this.network = this.stateService.network;
-    this.itemsPerPage = this.stateService.env.ITEMS_PER_PAGE;
 
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
       this.timeLtr = !!ltr;
@@ -138,12 +127,6 @@ export class BlockComponent implements OnInit, OnDestroy {
         }
       });
     }
-
-    this.txsLoadingStatus$ = this.route.paramMap
-      .pipe(
-        switchMap(() => this.stateService.loadingIndicators$),
-        map((indicators) => indicators['blocktxs-' + this.blockHash] !== undefined ? indicators['blocktxs-' + this.blockHash] : 0)
-      );
 
     this.cacheBlocksSubscription = this.cacheService.loadedBlocks$.subscribe((block) => {
       this.loadedCacheBlock(block);
@@ -172,11 +155,11 @@ export class BlockComponent implements OnInit, OnDestroy {
         }
       });
 
-    const block$ = this.route.paramMap.pipe(
+    this.block$ = this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
         const blockHash: string = params.get('id') || '';
         this.block = undefined;
-        this.page = 1;
+        // this.page = 1;
         this.error = undefined;
         this.fees = undefined;
         this.oobFees = 0;
@@ -259,7 +242,6 @@ export class BlockComponent implements OnInit, OnDestroy {
           this.unsubscribeNextBlockSubscriptions();
           setTimeout(() => {
             this.nextBlockSubscription = this.apiService.getBlock$(block.previousblockhash).subscribe();
-            this.nextBlockTxListSubscription = this.electrsApiService.getBlockTransactions$(block.previousblockhash).subscribe();
             if (this.auditSupported) {
               this.apiService.getBlockAudit$(block.previousblockhash);
             }
@@ -288,9 +270,6 @@ export class BlockComponent implements OnInit, OnDestroy {
           this.fees = block.extras.reward / 100000000 - this.blockSubsidy;
         }
         this.stateService.markBlock$.next({ blockHeight: this.blockHeight });
-        this.isLoadingTransactions = true;
-        this.transactions = null;
-        this.transactionsError = null;
         this.isLoadingOverview = true;
         this.overviewError = null;
 
@@ -304,31 +283,8 @@ export class BlockComponent implements OnInit, OnDestroy {
       throttleTime(300, asyncScheduler, { leading: true, trailing: true }),
       shareReplay(1)
     );
-    this.transactionSubscription = combineLatest([block$, this.route.queryParams]).pipe(
-      tap(([_, queryParams]) => this.page = +queryParams['page'] || 1),
-      switchMap(([block, _]) => this.electrsApiService.getBlockTransactions$(block.id, (this.page - 1) * this.itemsPerPage)
-        .pipe(
-          catchError((err) => {
-            this.transactionsError = err;
-            return of([]);
-        }))
-      ),
-    )
-    .subscribe((transactions: Transaction[]) => {
-      if (this.fees === undefined && transactions[0]) {
-        this.fees = transactions[0].vout.reduce((acc: number, curr: Vout) => acc + curr.value, 0) / 100000000 - this.blockSubsidy;
-      }
-      this.transactions = transactions;
-      this.isLoadingTransactions = false;
-      this.cd.markForCheck();
-    },
-    (error) => {
-      this.error = error;
-      this.isLoadingBlock = false;
-      this.isLoadingOverview = false;
-    });
 
-    this.overviewSubscription = block$.pipe(
+    this.overviewSubscription = this.block$.pipe(
       switchMap((block) => {
         return forkJoin([
           this.apiService.getStrippedBlockTransactions$(block.id)
@@ -498,14 +454,14 @@ export class BlockComponent implements OnInit, OnDestroy {
       this.cd.markForCheck();
     });
 
-    this.oobSubscription = block$.pipe(
+    this.oobSubscription = this.block$.pipe(
       filter(() => this.stateService.env.PUBLIC_ACCELERATIONS === true && this.stateService.network === ''),
       switchMap((block) => this.apiService.getAccelerationsByHeight$(block.height)
         .pipe(
           map(accelerations => {
             return { block, accelerations };
           }),
-          catchError((err) => {
+          catchError(() => {
             return of({ block, accelerations: [] });
         }))
       ),
@@ -560,7 +516,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     if (this.priceSubscription) {
       this.priceSubscription.unsubscribe();
     }
-    this.priceSubscription = combineLatest([this.stateService.fiatCurrency$, block$]).pipe(
+    this.priceSubscription = combineLatest([this.stateService.fiatCurrency$, this.block$]).pipe(
       switchMap(([currency, block]) => {
         return this.priceService.getBlockPrice$(block.timestamp, true, currency).pipe(
           tap((price) => {
@@ -577,9 +533,8 @@ export class BlockComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.stateService.markBlock$.next({});
-    this.transactionSubscription?.unsubscribe();
     this.overviewSubscription?.unsubscribe();
     this.auditSubscription?.unsubscribe();
     this.keyNavigationSubscription?.unsubscribe();
@@ -595,34 +550,22 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.oobSubscription?.unsubscribe();
   }
 
-  unsubscribeNextBlockSubscriptions() {
+  unsubscribeNextBlockSubscriptions(): void {
     if (this.nextBlockSubscription !== undefined) {
       this.nextBlockSubscription.unsubscribe();
     }
     if (this.nextBlockSummarySubscription !== undefined) {
       this.nextBlockSummarySubscription.unsubscribe();
     }
-    if (this.nextBlockTxListSubscription !== undefined) {
-      this.nextBlockTxListSubscription.unsubscribe();
-    }
   }
 
   // TODO - Refactor this.fees/this.reward for liquid because it is not
   // used anymore on Bitcoin networks (we use block.extras directly)
-  setBlockSubsidy() {
+  setBlockSubsidy(): void {
     this.blockSubsidy = 0;
   }
 
-  pageChange(page: number, target: HTMLElement) {
-    const start = (page - 1) * this.itemsPerPage;
-    this.isLoadingTransactions = true;
-    this.transactions = null;
-    this.transactionsError = null;
-    target.scrollIntoView(); // works for chrome
-    this.router.navigate([], { queryParams: { page: page }, queryParamsHandling: 'merge' });
-  }
-
-  toggleShowDetails() {
+  toggleShowDetails(): void {
     if (this.showDetails) {
       this.showDetails = false;
       this.router.navigate([], {
@@ -654,7 +597,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     return this.block && this.block.height > 681393 && (new Date().getTime() / 1000) < 1628640000;
   }
 
-  navigateToPreviousBlock() {
+  navigateToPreviousBlock(): void  {
     if (!this.block) {
       return;
     }
@@ -663,13 +606,13 @@ export class BlockComponent implements OnInit, OnDestroy {
       block ? block.id : this.block.previousblockhash], { state: { data: { block, blockHeight: this.nextBlockHeight - 2 } } });
   }
 
-  navigateToNextBlock() {
+  navigateToNextBlock(): void  {
     const block = this.latestBlocks.find((b) => b.height === this.nextBlockHeight);
     this.router.navigate([this.relativeUrlPipe.transform('/block/'),
       block ? block.id : this.nextBlockHeight], { state: { data: { block, blockHeight: this.nextBlockHeight } } });
   }
 
-  setNextAndPreviousBlockLink(){
+  setNextAndPreviousBlockLink(): void {
     if (this.latestBlock) {
       if (!this.blockHeight){
         this.showPreviousBlocklink = false;
@@ -701,11 +644,12 @@ export class BlockComponent implements OnInit, OnDestroy {
     }
   }
 
-  onResize(event: any): void {
-    const isMobile = event.target.innerWidth <= 767.98;
+  onResize(event: Event): void {
+    const target = event.target as Window;
+    const isMobile = target.innerWidth <= 767.98;
     const changed = isMobile !== this.isMobile;
     this.isMobile = isMobile;
-    this.paginationMaxSize = event.target.innerWidth < 670 ? 3 : 5;
+    this.paginationMaxSize = target.innerWidth < 670 ? 3 : 5;
 
     if (changed) {
       this.changeMode(this.mode);
@@ -747,11 +691,11 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.stateService.hideAudit.next(this.auditModeEnabled);
 
     this.route.queryParams.subscribe(params => {
-      let queryParams = { ...params };
+      const queryParams = { ...params };
       delete queryParams['audit'];
 
       let newUrl = this.router.url.split('?')[0];
-      let queryString = new URLSearchParams(queryParams).toString();
+      const queryString = new URLSearchParams(queryParams).toString();
       if (queryString) {
         newUrl += '?' + queryString;
       }
@@ -827,6 +771,12 @@ export class BlockComponent implements OnInit, OnDestroy {
     if (this.block && block.height === this.block.height && block.id !== this.block.id) {
       this.block.stale = true;
       this.block.canonical = block.id;
+    }
+  }
+
+  updateBlockReward(blockReward: number): void {
+    if (this.fees === undefined) {
+       this.fees = blockReward;
     }
   }
 }
