@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from "@angular/core";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 
 const MempoolErrors = {
+  'bad_request': `Your request was not valid. Please try again.`,
   'internal_server_error': `Something went wrong, please try again later`,
   'acceleration_duplicated': `This transaction has already been accelerated.`,
   'acceleration_outbid': `Your fee delta is too low.`,
@@ -26,6 +27,8 @@ const MempoolErrors = {
   'faucet_not_available': `The faucet is not available right now. Try again later.`,
   'faucet_maximum_reached': `You are not allowed to request more coins`,
   'faucet_address_not_allowed': `You cannot use this address`,
+  'faucet_below_minimum': `Requested amount is too small`,
+  'faucet_above_maximum': `Requested amount is too high`,
 } as { [error: string]: string };
 
 export function isMempoolError(error: string) {
