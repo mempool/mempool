@@ -41,7 +41,7 @@
     }
 
     @if (!loading) {
-      <form [formGroup]="faucetForm" class="formGroup" (submit)="requestCoins()" [style]="(error || !this.user) ? 'opacity: 0.3' : ''">
+      <form [formGroup]="faucetForm" class="formGroup" (submit)="requestCoins()" [style]="(error || !this.user) ? 'opacity: 0.3; pointer-events: none' : ''">
         <div class="row">
           <div class="col">
             <div class="form-group mb-0">

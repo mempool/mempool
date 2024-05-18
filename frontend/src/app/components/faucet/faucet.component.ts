@@ -47,8 +47,13 @@ export class FaucetComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.faucetStatusSubscription) {
-      this.faucetStatusSubscription.unsubscribe();
+    this.stateService.markBlock$.next({});
+    this.websocketService.stopTrackingTransaction();
+    if (this.mempoolPositionSubscription) {
+      this.mempoolPositionSubscription.unsubscribe();
+    }
+    if (this.confirmationSubscription) {
+      this.confirmationSubscription.unsubscribe();
     }
   }
 
