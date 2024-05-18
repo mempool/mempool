@@ -18,20 +18,22 @@
       <div class="spinner-border text-light"></div>
     } @else if (!user) {
       <!-- User not logged in -->
-      <div class="alert alert-mempool d-block text-center pb-2 w-100">
-        <span class="mb-2">To limit abuse,&nbsp;</span>
-        <a routerLink="/login" [queryParams]="{'redirectTo': '/testnet4/faucet'}">authenticate&nbsp;</a>
-        <span class="mr-2">or</span>
-        <app-twitter-login customClass="btn" width="220px" redirectTo="/testnet4/faucet" buttonString="Sign up with Twitter"></app-twitter-login>
+      <div class="alert alert-mempool d-block text-center w-100">
+        <div class="d-inline align-middle">
+          <span>To limit abuse,&nbsp;</span>
+          <a routerLink="/login" [queryParams]="{'redirectTo': '/testnet4/faucet'}">authenticate&nbsp;</a>
+          <span class="mr-2">or</span>
+        </div>
+        <app-twitter-login customClass="btn btn-sm" width="220px" redirectTo="/testnet4/faucet" buttonString="Sign up with Twitter"></app-twitter-login>
       </div>
     }
     @else if (error === 'not_available') {
       <!-- User logged in but not a paid user or did not link its Twitter account -->
-      <div class="alert alert-mempool d-block text-center pb-2 w-100">
-        <span class="mb-2">To limit abuse,&nbsp;</span>
-        <a routerLink="/sponsor" [queryParams]="{'redirectTo': '/testnet4/faucet'}">become a sponsor&nbsp;</a>
-        <span class="mr-2">or</span>
-        <app-twitter-login customClass="btn" width="220px" redirectTo="/testnet4/faucet" buttonString="Link your Twitter"></app-twitter-login>
+      <div class="alert alert-mempool d-block text-center w-100">
+        <div class="d-inline align-middle">
+          <span class="mb-2 mr-2">To limit abuse</span>
+        </div>
+        <app-twitter-login customClass="btn btn-sm" width="180px" redirectTo="/testnet4/faucet" buttonString="Link your Twitter"></app-twitter-login>
       </div>
     }
     
@@ -71,6 +73,7 @@
               <div class="text-danger text-left" *ngIf="invalidAddress">
                 <div *ngIf="address?.errors?.['required']">Address is required</div>
                 <div *ngIf="address?.errors?.['pattern']">Must be a valid testnet4 address</div>
+                <div *ngIf="address?.errors?.['forbiddenAddress']">You cannot use this address</div>
               </div>
             </div>
           </div>

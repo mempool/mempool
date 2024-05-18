@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ChangeDetectorRef } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from "@angular/forms";
 import { Subscription } from "rxjs";
 import { StorageService } from "../../services/storage.service";
 import { ServicesApiServices } from "../../services/services-api.service";
@@ -74,8 +74,14 @@ export class FaucetComponent implements OnInit, OnDestroy {
         }
         this.status = status;
 
+        const notFaucetAddressValidator = (faucetAddress: string): ValidatorFn => {
+          return (control: AbstractControl): ValidationErrors | null => {
+            const forbidden = control.value === faucetAddress;
+            return forbidden ? { forbiddenAddress: { value: control.value } } : null;
+          };
+        }
         this.faucetForm = this.formBuilder.group({
-          'address': ['', [Validators.required, Validators.pattern(getRegex('address', 'testnet4'))]],
+          'address': ['', [Validators.required, Validators.pattern(getRegex('address', 'testnet4')), notFaucetAddressValidator(this.status.address)]],
           'satoshis': [this.status.min, [Validators.required, Validators.min(this.status.min), Validators.max(this.status.max)]]
         });
 

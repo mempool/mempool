@@ -25,6 +25,7 @@ const MempoolErrors = {
   'faucet_too_soon': `You cannot request any more coins right now. Try again later.`,
   'faucet_not_available': `The faucet is not available right now. Try again later.`,
   'faucet_maximum_reached': `You are not allowed to request more coins`,
+  'faucet_address_not_allowed': `You cannot use this address`,
 } as { [error: string]: string };
 
 export function isMempoolError(error: string) {
