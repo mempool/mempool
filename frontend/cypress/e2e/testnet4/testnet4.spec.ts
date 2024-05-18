@@ -2,7 +2,7 @@ import { emitMempoolInfo } from '../../support/websocket';
 
 const baseModule = Cypress.env('BASE_MODULE');
 
-describe('Testnet', () => {
+describe('Testnet4', () => {
   beforeEach(() => {
     cy.intercept('/api/block-height/*').as('block-height');
     cy.intercept('/api/block/*').as('block');
@@ -13,7 +13,7 @@ describe('Testnet', () => {
   if (baseModule === 'mempool') {
 
     it('loads the dashboard', () => {
-      cy.visit('/testnet');
+      cy.visit('/testnet4');
       cy.waitForSkeletonGone();
     });
 
@@ -25,7 +25,7 @@ describe('Testnet', () => {
 
     it.skip('loads the dashboard with the skeleton blocks', () => {
       cy.mockMempoolSocket();
-      cy.visit('/testnet');
+      cy.visit('/testnet4');
       cy.get(':nth-child(1) > #bitcoin-block-0').should('be.visible');
       cy.get(':nth-child(2) > #bitcoin-block-0').should('be.visible');
       cy.get(':nth-child(3) > #bitcoin-block-0').should('be.visible');
@@ -45,7 +45,7 @@ describe('Testnet', () => {
     });
 
     it('loads the pools screen', () => {
-      cy.visit('/testnet');
+      cy.visit('/testnet4');
       cy.waitForSkeletonGone();
       cy.get('#btn-pools').click().then(() => {
         cy.wait(1000);
@@ -53,7 +53,7 @@ describe('Testnet', () => {
     });
 
     it('loads the graphs screen', () => {
-      cy.visit('/testnet');
+      cy.visit('/testnet4');
       cy.waitForSkeletonGone();
       cy.get('#btn-graphs').click().then(() => {
         cy.wait(1000);
@@ -63,7 +63,7 @@ describe('Testnet', () => {
     describe('tv mode', () => {
       it('loads the tv screen - desktop', () => {
         cy.viewport('macbook-16');
-        cy.visit('/testnet/graphs');
+        cy.visit('/testnet4/graphs');
         cy.waitForSkeletonGone();
         cy.get('#btn-tv').click().then(() => {
           cy.wait(1000);
@@ -73,7 +73,7 @@ describe('Testnet', () => {
       });
 
       it('loads the tv screen - mobile', () => {
-        cy.visit('/testnet/graphs');
+        cy.visit('/testnet4/graphs');
         cy.waitForSkeletonGone();
         cy.get('#btn-tv').click().then(() => {
           cy.viewport('iphone-6');
@@ -85,7 +85,7 @@ describe('Testnet', () => {
 
 
     it('loads the api screen', () => {
-      cy.visit('/testnet');
+      cy.visit('/testnet4');
       cy.waitForSkeletonGone();
       cy.get('#btn-docs').click().then(() => {
         cy.wait(1000);
@@ -94,13 +94,13 @@ describe('Testnet', () => {
 
     describe('blocks', () => {
       it('shows empty blocks properly', () => {
-        cy.visit('/testnet/block/0');
+        cy.visit('/testnet4/block/0');
         cy.waitForSkeletonGone();
         cy.get('h2').invoke('text').should('equal', '1 transaction');
       });
 
       it('expands and collapses the block details', () => {
-        cy.visit('/testnet/block/0');
+        cy.visit('/testnet4/block/0');
         cy.waitForSkeletonGone();
         cy.get('.btn.btn-outline-info').click().then(() => {
           cy.get('#details').should('be.visible');
@@ -112,15 +112,15 @@ describe('Testnet', () => {
       });
 
       it('shows blocks with no pagination', () => {
-        cy.visit('/testnet/block/000000000000002f8ce27716e74ecc7ad9f7b5101fed12d09e28bb721b9460ea');
+        cy.visit('/testnet4/block/000000000066e8b6cc78a93f8989587f5819624bae2eb1c05f535cadded19f99');
         cy.waitForSkeletonGone();
-        cy.get('h2').invoke('text').should('equal', '11 transactions');
+        cy.get('h2').invoke('text').should('equal', '18 transactions');
         cy.get('ul.pagination').first().children().should('have.length', 5);
       });
 
       it('supports pagination on the block screen', () => {
         // 48 txs
-        cy.visit('/testnet/block/000000000000002ca3878ebd98b313a1c2d531f2e70a6575d232ca7564dea7a9');
+        cy.visit('/testnet4/block/000000000000006982d53f8273bdff21dafc380c292eabc669b5ab6d732311c3');
         cy.waitForSkeletonGone();
         cy.get('.header-bg.box > a').invoke('text').then((text1) => {
           cy.get('.active + li').first().click().then(() => {
