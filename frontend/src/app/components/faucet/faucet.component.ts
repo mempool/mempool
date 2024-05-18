@@ -25,6 +25,7 @@ export class FaucetComponent implements OnInit, OnDestroy {
     min: number; // minimum amount to request at once (in sats)
     max: number; // maximum amount to request at once
     address?: string; // faucet address
+    code: 'ok' | 'faucet_not_available' | 'faucet_maximum_reached' | 'faucet_too_soon';
   } | null = null;
   faucetForm: FormGroup;
 
@@ -77,6 +78,10 @@ export class FaucetComponent implements OnInit, OnDestroy {
           'address': ['', [Validators.required, Validators.pattern(getRegex('address', 'testnet4'))]],
           'satoshis': [this.status.min, [Validators.required, Validators.min(this.status.min), Validators.max(this.status.max)]]
         });
+
+        if (this.status.code !== 'ok') {
+          this.error = this.status.code;
+        }
 
         this.loading = false;
         this.cd.markForCheck();
