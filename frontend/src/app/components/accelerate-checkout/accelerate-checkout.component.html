@@ -23,7 +23,7 @@
               <span class="font-weight-bold">Accelerate</span>
               <span style="color: rgb(186, 186, 186); font-size: 14px;">Confirmation expected within ~30 minutes<br>
                 @if (!calculating) {
-                  <app-fiat [value]="cost"></app-fiat>fee (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats|sats">sats</span></span>)
+                  <app-fiat [value]="cost"></app-fiat>fee (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
                 } @else {
                   <span class="estimating">Calculating cost...</span>
                 }

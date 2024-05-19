@@ -1,0 +1,52 @@
+{
+  "theme": "bukele",
+  "enterprise": "onbtc",
+  "branding": {
+    "name": "onbtc",
+    "title": "Bitcoin Office",
+    "site_id": 19,
+    "header_img": "/resources/onbtclogo.svg",
+    "footer_img": "/resources/onbtclogo.svg",
+    "rounded_corner": true
+  },
+  "dashboard": {
+    "widgets": [
+      {
+        "component": "fees",
+        "mobileOrder": 4
+      },
+      {
+        "component": "balance",
+        "mobileOrder": 1,
+        "props": {
+          "address": "32ixEdVJWo3kmvJGMTZq5jAQVZZeuwnqzo"
+        }
+      },
+      {
+        "component": "twitter",
+        "mobileOrder": 5,
+        "props": {
+          "handle": "nayibbukele"
+        }
+      },
+      {
+        "component": "address",
+        "mobileOrder": 2,
+        "props": {
+          "address": "32ixEdVJWo3kmvJGMTZq5jAQVZZeuwnqzo",
+          "period": "1m"
+        }
+      },
+      {
+        "component": "blocks"
+      },
+      {
+        "component": "addressTransactions",
+        "mobileOrder": 3,
+        "props": {
+          "address": "32ixEdVJWo3kmvJGMTZq5jAQVZZeuwnqzo"
+        }
+      }
+    ]
+  }
+}

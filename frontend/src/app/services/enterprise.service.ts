@@ -23,7 +23,7 @@ export class EnterpriseService {
     private stateService: StateService,
     private activatedRoute: ActivatedRoute,
   ) {
-    const subdomain = this.document.location.hostname.indexOf(this.exclusiveHostName) > -1
+    const subdomain = this.stateService.env.customize?.enterprise || this.document.location.hostname.indexOf(this.exclusiveHostName) > -1
       && this.document.location.hostname.split(this.exclusiveHostName)[0] || false;
     if (subdomain && subdomain.match(/^[A-z0-9-_]+$/)) {
       this.subdomain = subdomain;
@@ -41,22 +41,30 @@ export class EnterpriseService {
 
   disableSubnetworks(): void {
     this.stateService.env.TESTNET_ENABLED = false;
+    this.stateService.env.TESTNET4_ENABLED = false;
     this.stateService.env.LIQUID_ENABLED = false;
     this.stateService.env.LIQUID_TESTNET_ENABLED = false;
     this.stateService.env.SIGNET_ENABLED = false;
   }
 
   fetchSubdomainInfo(): void {
-    this.apiService.getEnterpriseInfo$(this.subdomain).subscribe((info) => {
+    if (this.stateService.env.customize?.branding) {
+      const info = this.stateService.env.customize?.branding;
       this.insertMatomo(info.site_id);
-      this.seoService.setEnterpriseTitle(info.title);
+      this.seoService.setEnterpriseTitle(info.title, true);
       this.info$.next(info);
-    },
-    (error) => {
-      if (error.status === 404) {
-        window.location.href = 'https://mempool.space' + window.location.pathname;
-      }
-    });
+    } else {
+      this.apiService.getEnterpriseInfo$(this.subdomain).subscribe((info) => {
+        this.insertMatomo(info.site_id);
+        this.seoService.setEnterpriseTitle(info.title);
+        this.info$.next(info);
+      },
+      (error) => {
+        if (error.status === 404) {
+          window.location.href = 'https://mempool.space' + window.location.pathname;
+        }
+      });
+    }
   }
 
   insertMatomo(siteId?: number): void {

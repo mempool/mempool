@@ -839,8 +839,11 @@ class Blocks {
       } else {
         this.currentBlockHeight++;
         logger.debug(`New block found (#${this.currentBlockHeight})!`);
-        this.updateTimerProgress(timer, `getting orphaned blocks for ${this.currentBlockHeight}`);
-        await chainTips.updateOrphanedBlocks();
+        // skip updating the orphan block cache if we've fallen behind the chain tip
+        if (this.currentBlockHeight >= blockHeightTip - 2) {
+          this.updateTimerProgress(timer, `getting orphaned blocks for ${this.currentBlockHeight}`);
+          await chainTips.updateOrphanedBlocks();
+        }
       }
 
       this.updateTimerProgress(timer, `getting block data for ${this.currentBlockHeight}`);

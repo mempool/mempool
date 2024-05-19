@@ -9,6 +9,7 @@ const networkModules = {
     subnets: [
       { name: 'mainnet', path: '' },
       { name: 'testnet', path: '/testnet' },
+      { name: 'testnet4', path: '/testnet4' },
       { name: 'signet', path: '/signet' },
     ],
   },
@@ -68,7 +69,7 @@ export class NavigationService {
       }
       if (route.url?.length) {
         path = [path, ...route.url.map(segment => segment.path).filter(path => {
-          return path.length && !['testnet', 'signet'].includes(path);
+          return path.length && !['testnet', 'testnet4', 'signet'].includes(path);
         })].join('/');
       }
       route = route.firstChild;

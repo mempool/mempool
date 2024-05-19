@@ -66,7 +66,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
     if (!this.data) {
       return;
     }
-    this.windowPreference = this.windowPreferenceOverride ? this.windowPreferenceOverride : this.storageService.getValue('graphWindowPreference');
+    this.windowPreference = (this.windowPreferenceOverride ? this.windowPreferenceOverride : this.storageService.getValue('graphWindowPreference')) || '2h';
     const windowSize = Math.max(10, Math.floor(this.data.series[0].length / 8));
     this.MA = this.calculateMA(this.data.series[0], windowSize);
     if (this.outlierCappingEnabled === true) {
@@ -216,22 +216,19 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
           type: 'line',
         },
         formatter: (params: any) => {
-          const axisValueLabel: string = formatterXAxis(this.locale, this.windowPreference, params[0].axisValue);
+          const bestItem = params.reduce((best, item) => {
+            return (item.seriesName === 'data' && (!best || best.value[1] < item.value[1])) ? item : best;
+          }, null);
+          const axisValueLabel: string = formatterXAxis(this.locale, this.windowPreference, bestItem.axisValue);
           const colorSpan = (color: string) => `<span class="indicator" style="background-color: ` + color + `"></span>`;
           let itemFormatted = '<div class="title">' + axisValueLabel + '</div>';
-          params.map((item: any, index: number) => {
-
-            //Do no include MA in tooltip legend!
-            if (item.seriesName !== 'MA') {
-              if (index < 26) {
-                itemFormatted += `<div class="item">
-                  <div class="indicator-container">${colorSpan(item.color)}</div>
+          if (bestItem) {
+            itemFormatted += `<div class="item">
+                  <div class="indicator-container">${colorSpan(bestItem.color)}</div>
                   <div class="grow"></div>
-                  <div class="value">${formatNumber(item.value[1], this.locale, '1.0-0')}<span class="symbol">vB/s</span></div>
+                  <div class="value">${formatNumber(bestItem.value[1], this.locale, '1.0-0')}<span class="symbol">vB/s</span></div>
                 </div>`;
-              }
-            }
-          });
+          }
           return `<div class="tx-wrapper-tooltip-chart ${(this.template === 'advanced') ? 'tx-wrapper-tooltip-chart-advanced' : ''}" 
                   style="width: ${(this.windowPreference === '2h' || this.template === 'widget') ? '125px' : '215px'}">${itemFormatted}</div>`;
         }

@@ -1,0 +1,6 @@
+<a href="#" (click)="twitterLogin()"
+  [class]="(disabled ? 'disabled': '') + (customClass ? customClass : 'w-100 btn mt-1 d-flex justify-content-center align-items-center')"
+  style="background-color: #1DA1F2" [style]="width ? 'width: ' + width : ''">
+  <img src="./resources/twitter.svg" height="25" style="padding: 2px" [alt]="buttonString + ' with Twitter'" />
+  <span class="ml-2 text-light align-middle">{{ buttonString }}</span>
+</a>

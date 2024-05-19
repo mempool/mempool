@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
-import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators,
-  PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights, RbfTree, BlockAudit, Acceleration, AccelerationHistoryParams, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume, AccelerationInfo } from '../interfaces/node-api.interface';
+import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators, PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights,
+  RbfTree, BlockAudit, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume, AccelerationInfo, TestMempoolAcceptResult } from '../interfaces/node-api.interface';
 import { BehaviorSubject, Observable, catchError, filter, map, of, shareReplay, take, tap } from 'rxjs';
 import { StateService } from './state.service';
 import { Transaction } from '../interfaces/electrs.interface';
@@ -238,6 +238,10 @@ export class ApiService {
     return this.httpClient.post<any>(this.apiBaseUrl + this.apiBasePath + '/api/tx', hexPayload, { responseType: 'text' as 'json'});
   }
 
+  testTransactions$(rawTxs: string[], maxfeerate?: number): Observable<TestMempoolAcceptResult[]> {
+    return this.httpClient.post<TestMempoolAcceptResult[]>(this.apiBaseUrl + this.apiBasePath + `/api/txs/test${maxfeerate != null ? '?maxfeerate=' + maxfeerate.toFixed(8) : ''}`, rawTxs);
+  }
+
   getTransactionStatus$(txid: string): Observable<any> {
     return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + '/api/tx/' + txid + '/status');
   }
@@ -326,6 +330,12 @@ export class ApiService {
     return this.httpClient.get<any[]>(
       this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/fees` +
       (interval !== undefined ? `/${interval}` : ''), { observe: 'response' }
+    );
+  }
+
+  getBlockFeesFromTimespan$(from: number, to: number): Observable<any> {
+    return this.httpClient.get<any[]>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/fees?from=${from}&to=${to}`, { observe: 'response' }
     );
   }
 

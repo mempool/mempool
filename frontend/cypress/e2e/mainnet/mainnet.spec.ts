@@ -112,8 +112,8 @@ describe('Mainnet', () => {
     it('check op_return coinbase tooltip', () => {
       cy.visit('/block/00000000000000000003c5f542bed265319c6cf64238cf1f1bb9bca3ebf686d2');
       cy.waitForSkeletonGone();
-      cy.get('div > a > .badge').first().trigger('onmouseover');
-      cy.get('div > a > .badge').first().trigger('mouseenter');
+      cy.get('tbody > :nth-child(2) > :nth-child(1) > a').first().trigger('onmouseover');
+      cy.get('tbody > :nth-child(2) > :nth-child(1) > a').first().trigger('mouseenter');
       cy.get('.tooltip-inner').should('be.visible');
     });
 
@@ -339,7 +339,7 @@ describe('Mainnet', () => {
       cy.visit('/');
       cy.waitForSkeletonGone();
 
-      cy.changeNetwork('testnet');
+      cy.changeNetwork('testnet4');
       cy.changeNetwork('signet');
       cy.changeNetwork('mainnet');
     });

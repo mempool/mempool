@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { defaultMempoolFeeColors, contrastMempoolFeeColors } from '../app.constants';
 import { StorageService } from './storage.service';
+import { StateService } from './state.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,15 +15,16 @@ export class ThemeService {
 
   constructor(
     private storageService: StorageService,
+    private stateService: StateService,
   ) {
-    const theme = this.storageService.getValue('theme-preference') || 'default';
+    const theme = this.stateService.env.customize?.theme || this.storageService.getValue('theme-preference') || 'default';
     this.apply(theme);
   }
 
   apply(theme) {
     this.theme = theme;
     if (theme !== 'default') {
-      theme === 'contrast' ? this.mempoolFeeColors = contrastMempoolFeeColors : this.mempoolFeeColors = defaultMempoolFeeColors;
+      theme === 'contrast'  || theme === 'bukele' ? this.mempoolFeeColors = contrastMempoolFeeColors : this.mempoolFeeColors = defaultMempoolFeeColors;
       try {
         if (!this.style) {
           this.style = document.createElement('link');
@@ -42,7 +44,9 @@ export class ThemeService {
         this.style = null;
       }
     }
-    this.storageService.setValue('theme-preference', theme);
+    if (!this.stateService.env.customize?.theme) {
+      this.storageService.setValue('theme-preference', theme);
+    }
     this.themeChanged$.next(this.theme);
   }
 }

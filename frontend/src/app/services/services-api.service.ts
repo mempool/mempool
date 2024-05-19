@@ -159,4 +159,12 @@ export class ServicesApiServices {
   setupSquare$(): Observable<{squareAppId: string, squareLocationId: string}> {
     return this.httpClient.get<{squareAppId: string, squareLocationId: string}>(`${SERVICES_API_PREFIX}/square/setup`);
   }
+
+  getFaucetStatus$() {
+    return this.httpClient.get<{ address?: string, min: number, max: number, code: 'ok' | 'faucet_not_available' | 'faucet_maximum_reached' | 'faucet_too_soon'}>(`${SERVICES_API_PREFIX}/testnet4/faucet/status`, { responseType: 'json' });
+  }
+
+  requestTestnet4Coins$(address: string, sats: number) {
+    return this.httpClient.get<{txid: string}>(`${SERVICES_API_PREFIX}/testnet4/faucet/request?address=${address}&sats=${sats}`, { responseType: 'json' });
+  }
 }

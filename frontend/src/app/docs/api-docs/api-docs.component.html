@@ -133,7 +133,7 @@
           <p>{{electrsPort}}</p>
           <p class="subtitle">SSL</p>
           <p>Enabled</p>
-          <p class="note" *ngIf="network.val !== 'signet'">Electrum RPC interface for Bitcoin Signet is <a href="/signet/docs/api/electrs">publicly available</a>. Electrum RPC interface for all other networks is available to <a href='https://mempool.space/enterprise'>sponsors</a> only—whitelisting is required.</p>
+          <p class="note" *ngIf="network.val !== 'signet' && network.val !== 'testnet4'">Electrum RPC interface for <a href="/signet/docs/api/electrs">Bitcoin Signet</a> and <a href="/testnet4/docs/api/electrs">Bitcoin Testnet4</a> is publicly available. Electrum RPC interface for all other networks is available to <a href='https://mempool.space/enterprise'>sponsors</a> only—whitelisting is required.</p>
         </div>
       </div>
     </div>
@@ -238,7 +238,7 @@
 </ng-template>
 
 <ng-template type="why-empty-blocks">
-  <p>When a new block is found, mining pools send miners a block template with no transactions so they can start searching for the next block as soon as possible. They send a block template full of transactions right afterward, but a full block template is a bigger data transfer and takes slightly longer to reach miners.</p><p>In this intervening time, which is usually no more than 1-2 seconds, miners sometimes get lucky and find a new block using the empty block template.</p>
+  <p>When a new block is found, mining pools send miners a block template with no transactions so they can begin doing useful work as soon as possible. The pool will then send a block template full of transactions right afterward, and the miners will usually have it in under a second.</p><p>Miners sometimes get lucky and find the empty block in the interim period before having the full template however the reason is often that some hardware continues working on older templates after receiving updates.</p><p>Contrary to common belief, sending clean=true to the miner does not necessarily mean that they stop doing old jobs, just that they discard the work once completed. In the case of empty blocks this would just result in the miner throwing away a valid block that not only would have rewarded the miner, but added PoW to the Bitcoin's blockchain.</p>
 </ng-template>
 
 <ng-template type="why-block-timestamps-dont-always-increase">
