@@ -1933,11 +1933,11 @@ case $OS in
 
     Debian)
         if [ "${BITCOIN_INSTALL}" = ON ];then
-            setfacl -m "u:bitcoin:rwx,u:mempool:rwx,u:www-data:rwx,o::rw-" "${BITCOIN_HOME}/socket"
+            setfacl -Rdm "u:bitcoin:rwx,u:mempool:rwx,u:www-data:rwx,o::rw-" "${BITCOIN_HOME}/socket"
             chown "${BITCOIN_USER}:${BITCOIN_GROUP}" "${BITCOIN_HOME}/socket"
         fi
         if [ "${ELEMENTS_INSTALL}" = ON ];then
-            setfacl -m "u:elements:rwx,u:mempool:rwx,u:www-data:rwx,o::rw-" "${ELEMENTS_HOME}/socket"
+            setfacl -Rdm "u:elements:rwx,u:mempool:rwx,u:www-data:rwx,o::rw-" "${ELEMENTS_HOME}/socket"
             chown "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELEMENTS_HOME}/socket"
         fi
     ;;
