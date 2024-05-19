@@ -23,6 +23,9 @@
   .submit-button, .button-group, .button-group .btn {
     flex-grow: 1;
   }
+  .submit-button:disabled {
+    pointer-events: none;
+  }
 
   #satoshis::after {
     content: 'sats';
@@ -41,4 +44,9 @@
   width: 100%;
   max-width: 800px;
   margin: auto;
+}
+
+.invalid {
+  border-width: 1px;
+  border-color: var(--red);
 }

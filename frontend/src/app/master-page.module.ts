@@ -105,19 +105,21 @@ if (window['__env']?.OFFICIAL_MEMPOOL_SPACE) {
     data: { networks: ['bitcoin', 'liquid'] },
     component: ServerStatusComponent
   });
-  routes[0].children.push({
-    path: 'faucet',
-    canActivate: [(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-      return state.url.startsWith('/testnet4/');
-    }],
-    component: StartComponent,
-    data: { preload: true, networkSpecific: true },
-    children: [{
-      path: '',
-      data: { networks: ['bitcoin'] },
-      component: FaucetComponent,
-    }]
-  })
+  if (window['isMempoolSpaceBuild']) {
+    routes[0].children.push({
+      path: 'faucet',
+      canActivate: [(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+        return state.url.startsWith('/testnet4/');
+      }],
+      component: StartComponent,
+      data: { preload: true, networkSpecific: true },
+      children: [{
+        path: '',
+        data: { networks: ['bitcoin'] },
+        component: FaucetComponent,
+      }]
+    })
+  }
 }
 
 @NgModule({
