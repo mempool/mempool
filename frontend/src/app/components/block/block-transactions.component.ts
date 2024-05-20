@@ -58,9 +58,11 @@ export class BlockTransactionsComponent implements OnInit, OnDestroy {
           this.blockReward.emit(blockReward);
         }
         this.unsubscribeNextBlockSubscriptions();
-        setTimeout(() => {
-          this.nextBlockTxListSubscription = this.electrsApiService.getBlockTransactions$(this.previousBlockHash).subscribe();
-        }, 100);
+        if (this.previousBlockHash) {
+          setTimeout(() => {
+            this.nextBlockTxListSubscription = this.electrsApiService.getBlockTransactions$(this.previousBlockHash).subscribe();
+          }, 100);
+        }
       })
     );
 

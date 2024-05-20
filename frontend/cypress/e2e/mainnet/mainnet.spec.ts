@@ -103,6 +103,7 @@ describe('Mainnet', () => {
 
     it('check op_return tx tooltip', () => {
       cy.visit('/block/00000000000000000003c5f542bed265319c6cf64238cf1f1bb9bca3ebf686d2');
+      cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
       cy.waitForSkeletonGone();
       cy.get('tbody > :nth-child(2) > :nth-child(1) > a').first().trigger('onmouseover');
       cy.get('tbody > :nth-child(2) > :nth-child(1) > a').first().trigger('mouseenter');
@@ -111,6 +112,7 @@ describe('Mainnet', () => {
 
     it('check op_return coinbase tooltip', () => {
       cy.visit('/block/00000000000000000003c5f542bed265319c6cf64238cf1f1bb9bca3ebf686d2');
+      cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
       cy.waitForSkeletonGone();
       cy.get('tbody > :nth-child(2) > :nth-child(1) > a').first().trigger('onmouseover');
       cy.get('tbody > :nth-child(2) > :nth-child(1) > a').first().trigger('mouseenter');
@@ -283,6 +285,7 @@ describe('Mainnet', () => {
         it('loads genesis block and keypress arrow right', () => {
           cy.viewport('macbook-16');
           cy.visit('/block/0');
+          cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
           cy.waitForSkeletonGone();
           cy.waitForPageIdle();
 
@@ -295,6 +298,7 @@ describe('Mainnet', () => {
         it('loads genesis block and keypress arrow left', () => {
           cy.viewport('macbook-16');
           cy.visit('/block/0');
+          cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
           cy.waitForSkeletonGone();
           cy.waitForPageIdle();
 
@@ -323,6 +327,7 @@ describe('Mainnet', () => {
         it('loads genesis block and click on the arrow left', () => {
           cy.viewport('macbook-16');
           cy.visit('/block/0');
+          cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
           cy.waitForSkeletonGone();
           cy.waitForPageIdle();
           cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
@@ -439,6 +444,7 @@ describe('Mainnet', () => {
     describe('blocks', () => {
       it('shows empty blocks properly', () => {
         cy.visit('/block/0000000000000000000bd14f744ef2e006e61c32214670de7eb891a5732ee775');
+        cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
         cy.waitForSkeletonGone();
         cy.waitForPageIdle();
         cy.get('h2').invoke('text').should('equal', '1 transaction');
@@ -446,6 +452,7 @@ describe('Mainnet', () => {
 
       it('expands and collapses the block details', () => {
         cy.visit('/block/0');
+        cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
         cy.waitForSkeletonGone();
         cy.waitForPageIdle();
         cy.get('.btn.btn-outline-info').click().then(() => {
@@ -458,6 +465,7 @@ describe('Mainnet', () => {
       });
       it('shows blocks with no pagination', () => {
         cy.visit('/block/00000000000000000001ba40caf1ad4cec0ceb77692662315c151953bfd7c4c4');
+        cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
         cy.waitForSkeletonGone();
         cy.waitForPageIdle();
         cy.get('.block-tx-title h2').invoke('text').should('equal', '19 transactions');
@@ -467,6 +475,7 @@ describe('Mainnet', () => {
       it('supports pagination on the block screen', () => {
         // 41 txs
         cy.visit('/block/00000000000000000009f9b7b0f63ad50053ad12ec3b7f5ca951332f134f83d8');
+        cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
         cy.waitForSkeletonGone();
         cy.get('.pagination-container a').invoke('text').then((text1) => {
           cy.get('.active + li').first().click().then(() => {
@@ -482,6 +491,7 @@ describe('Mainnet', () => {
       it('shows blocks pagination with 5 pages (desktop)', () => {
         cy.viewport(760, 800);
         cy.visit('/block/000000000000000000049281946d26fcba7d99fdabc1feac524bc3a7003d69b3').then(() => {
+          cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
           cy.waitForSkeletonGone();
           cy.waitForPageIdle();
         });
@@ -493,6 +503,7 @@ describe('Mainnet', () => {
       it('shows blocks pagination with 3 pages (mobile)', () => {
         cy.viewport(669, 800);
         cy.visit('/block/000000000000000000049281946d26fcba7d99fdabc1feac524bc3a7003d69b3').then(() => {
+          cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
           cy.waitForSkeletonGone();
           cy.waitForPageIdle();
         });

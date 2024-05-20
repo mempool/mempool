@@ -95,12 +95,14 @@ describe('Testnet4', () => {
     describe('blocks', () => {
       it('shows empty blocks properly', () => {
         cy.visit('/testnet4/block/0');
+        cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
         cy.waitForSkeletonGone();
         cy.get('h2').invoke('text').should('equal', '1 transaction');
       });
 
       it('expands and collapses the block details', () => {
         cy.visit('/testnet4/block/0');
+        cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
         cy.waitForSkeletonGone();
         cy.get('.btn.btn-outline-info').click().then(() => {
           cy.get('#details').should('be.visible');
@@ -113,6 +115,7 @@ describe('Testnet4', () => {
 
       it('shows blocks with no pagination', () => {
         cy.visit('/testnet4/block/000000000066e8b6cc78a93f8989587f5819624bae2eb1c05f535cadded19f99');
+        cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
         cy.waitForSkeletonGone();
         cy.get('h2').invoke('text').should('equal', '18 transactions');
         cy.get('ul.pagination').first().children().should('have.length', 5);
@@ -121,6 +124,7 @@ describe('Testnet4', () => {
       it('supports pagination on the block screen', () => {
         // 48 txs
         cy.visit('/testnet4/block/000000000000006982d53f8273bdff21dafc380c292eabc669b5ab6d732311c3');
+        cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
         cy.waitForSkeletonGone();
         cy.get('.header-bg.box > a').invoke('text').then((text1) => {
           cy.get('.active + li').first().click().then(() => {
