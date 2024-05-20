@@ -238,7 +238,7 @@
 </ng-template>
 
 <ng-template type="why-empty-blocks">
-  <p>When a new block is found, mining pools send miners a block template with no transactions so they can begin doing useful work as soon as possible. The pool will then send a block template full of transactions right afterward, and the miners will usually have it in under a second.</p><p>Miners sometimes get lucky and find the empty block in the interim period before having the full template however the reason is often that some hardware continues working on older templates after receiving updates.</p><p>Contrary to common belief, sending clean=true to the miner does not necessarily mean that they stop doing old jobs, just that they discard the work once completed. In the case of empty blocks this would just result in the miner throwing away a valid block that not only would have rewarded the miner, but added PoW to the Bitcoin's blockchain.</p>
+  <p>When a new block is found, mining pools often send miners new block templates prior to fully validating the new block, often before they've even received the new block. During this time, it is not possible to select transactions for the next block as a pool isn't sure which transactions conflict with transactions already mined.</p><p>While empty blocks do not add additional transactions to the blockchain, they do contribute to the overall security of transactions already in the chain.</p>
 </ng-template>
 
 <ng-template type="why-block-timestamps-dont-always-increase">
