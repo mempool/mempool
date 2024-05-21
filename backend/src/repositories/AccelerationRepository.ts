@@ -244,6 +244,8 @@ class AccelerationRepository {
     let count = 0;
     try {
       while (!done) {
+        // don't DDoS the services backend
+        Common.sleep$(500 + (Math.random() * 1000));
         const accelerations = await accelerationApi.$fetchAccelerationHistory(page);
         page++;
         if (!accelerations?.length) {
@@ -309,7 +311,7 @@ class AccelerationRepository {
           pools: acc.pools.map(pool => pool.pool_unique_id),
         }))
         for (const acc of accelerations) {
-          if (blockTxs[acc.txid]) {
+          if (blockTxs[acc.txid] && acc.pools.some(pool => pool.pool_unique_id === block.extras.pool.id)) {
             const tx = blockTxs[acc.txid];
             const accelerationInfo = accelerationCosts.getAccelerationInfo(tx, boostRate, transactions);
             accelerationInfo.cost = Math.max(0, Math.min(acc.feeDelta, accelerationInfo.cost));
