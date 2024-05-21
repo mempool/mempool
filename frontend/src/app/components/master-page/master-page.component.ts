@@ -27,7 +27,6 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   subdomain = '';
   networkPaths: { [network: string]: string };
   networkPaths$: Observable<Record<string, string>>;
-  lightningNetworks = ['', 'mainnet', 'bitcoin', 'testnet', 'signet'];
   footerVisible = true;
   user: any = undefined;
   servicesEnabled = false;

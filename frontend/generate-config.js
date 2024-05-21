@@ -10,6 +10,8 @@ let settings = [];
 let configContent = {};
 let gitCommitHash = '';
 let packetJsonVersion = '';
+let customConfig;
+let customConfigContent;
 
 try {
   const rawConfig = fs.readFileSync(CONFIG_FILE_NAME);
@@ -23,7 +25,18 @@ try {
   }
 }
 
-const indexFilePath = configContent.BASE_MODULE ? 'src/index.' + configContent.BASE_MODULE + '.html' : 'src/index.mempool.html';
+if (configContent && configContent.CUSTOMIZATION) {
+  try {
+    customConfig = readConfig(configContent.CUSTOMIZATION);
+    customConfigContent = JSON.parse(customConfig);
+  } catch (e) {
+    console.log(`failed to load customization config from ${configContent.CUSTOMIZATION}`);
+  }
+}
+
+const baseModuleName = configContent.BASE_MODULE || 'mempool';
+const customBuildName = (customConfigContent && customConfigContent.enterprise) ? ('.' + customConfigContent.enterprise) : '';
+const indexFilePath = 'src/index.' + baseModuleName + customBuildName + '.html';
 
 try {
   fs.copyFileSync(indexFilePath, 'src/index.html');
@@ -111,20 +124,14 @@ writeConfigTemplate(GENERATED_TEMPLATE_CONFIG_FILE_NAME, newConfigTemplate);
 const currentConfig = readConfig(GENERATED_CONFIG_FILE_NAME);
 
 let customConfigJs = '';
-if (configContent && configContent.CUSTOMIZATION) {
-  const customConfig = readConfig(configContent.CUSTOMIZATION);
-  if (customConfig) {
-    console.log(`Customizing frontend using ${configContent.CUSTOMIZATION}`);
-    customConfigJs = `(function (window) {
-      window.__env = window.__env || {};
-      window.__env.customize = ${customConfig};
-      }((typeof global !== 'undefined') ? global : this));
-    `;
-  } else {
-    throw new Error('Failed to load customization file');
-  }
+if (customConfig) {
+  console.log(`Customizing frontend using ${configContent.CUSTOMIZATION}`);
+  customConfigJs = `(function (window) {
+    window.__env = window.__env || {};
+    window.__env.customize = ${customConfig};
+    }((typeof global !== 'undefined') ? global : this));
+  `;
 }
-
 writeConfig(GENERATED_CUSTOMIZATION_FILE_NAME, customConfigJs);
 
 if (currentConfig && currentConfig === newConfig) {

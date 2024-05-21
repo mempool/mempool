@@ -112,7 +112,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
         ),
         this.refreshChannels$
           .pipe(
-            filter(() => this.stateService.env.LIGHTNING),
+            filter(() => this.stateService.networkSupportsLightning()),
             switchMap((txIds) => this.apiService.getChannelByTxIds$(txIds)),
             catchError((error) => {
               // handle 404
@@ -248,7 +248,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       if (txIds.length && !this.cached) {
         this.refreshOutspends$.next(txIds);
       }
-      if (this.stateService.env.LIGHTNING) {
+      if (this.stateService.networkSupportsLightning()) {
         const txIds = this.transactions.filter((tx) => !tx._channels).map((tx) => tx.txid);
         if (txIds.length) {
           this.refreshChannels$.next(txIds);

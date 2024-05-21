@@ -152,11 +152,6 @@ for repo in $backend_repos;do
     update_repo "${repo}"
 done
 
-# build unfurlers
-for repo in $frontend_repos;do
-    build_unfurler "${repo}"
-done
-
 # build backends
 for repo in $backend_repos;do
     build_backend "${repo}"
@@ -170,6 +165,11 @@ done
 # ship frontend dist folders to public_html
 for target in $frontend_repos;do
     ship_frontend "${target}"
+done
+
+# build unfurlers
+for repo in $frontend_repos;do
+    build_unfurler "${repo}"
 done
 
 # notify everyone

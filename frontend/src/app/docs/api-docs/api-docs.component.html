@@ -238,7 +238,7 @@
 </ng-template>
 
 <ng-template type="why-empty-blocks">
-  <p>When a new block is found, mining pools send miners a block template with no transactions so they can start searching for the next block as soon as possible. They send a block template full of transactions right afterward, but a full block template is a bigger data transfer and takes slightly longer to reach miners.</p><p>In this intervening time, which is usually no more than 1-2 seconds, miners sometimes get lucky and find a new block using the empty block template.</p>
+  <p>When a new block is found, mining pools often send miners new block templates prior to fully validating the new block, often before they've even received the new block. During this time, it is not possible to select transactions for the next block as a pool isn't sure which transactions conflict with transactions already mined.</p><p>While empty blocks do not add additional transactions to the blockchain, they do contribute to the overall security of transactions already in the chain.</p>
 </ng-template>
 
 <ng-template type="why-block-timestamps-dont-always-increase">

@@ -333,6 +333,12 @@ export class ApiService {
     );
   }
 
+  getBlockFeesFromTimespan$(from: number, to: number): Observable<any> {
+    return this.httpClient.get<any[]>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/fees?from=${from}&to=${to}`, { observe: 'response' }
+    );
+  }
+
   getHistoricalBlockRewards$(interval: string | undefined) : Observable<any> {
     return this.httpClient.get<any[]>(
       this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/rewards` +
