@@ -41,7 +41,7 @@ export class FaucetComponent implements OnInit, OnDestroy {
     private websocketService: WebsocketService,
     private audioService: AudioService
   ) {
-    this.initForm(1000, 500_000, null);
+    this.initForm(5000, 500_000, null);
   }
 
   ngOnDestroy() {
@@ -93,7 +93,7 @@ export class FaucetComponent implements OnInit, OnDestroy {
         this.status = status;
         if (this.status.code !== 'ok') {
           this.error = this.status.code;
-          this.updateForm(this.status.min ?? 1000, this.status.max ?? 500_000, this.status.address);
+          this.updateForm(this.status.min ?? 5000, this.status.max ?? 500_000, this.status.address);
           return;
         }
         // update the form with the proper validation parameters
@@ -156,12 +156,15 @@ export class FaucetComponent implements OnInit, OnDestroy {
     } else {
       this.faucetForm.get('address').setValidators([Validators.required, Validators.pattern(getRegex('address', 'testnet4')), this.getNotFaucetAddressValidator(faucetAddress)]);
       this.faucetForm.get('satoshis').setValidators([Validators.required, Validators.min(min), Validators.max(max)]);
+      this.faucetForm.get('satoshis').updateValueAndValidity();
+      this.faucetForm.get('satoshis').markAsDirty();
     }
   }
 
   setAmount(value: number): void {
     if (this.faucetForm) {
       this.faucetForm.get('satoshis').setValue(value);
+      this.faucetForm.get('satoshis').updateValueAndValidity();
       this.faucetForm.get('satoshis').markAsDirty();
     }
   }
