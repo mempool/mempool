@@ -755,4 +755,10 @@ export class BlockComponent implements OnInit, OnDestroy {
       this.block.canonical = block.id;
     }
   }
+
+  updateBlockReward(blockReward: number): void {
+    if (this.fees === undefined) {
+       this.fees = blockReward;
+    }
+  }
 }
