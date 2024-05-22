@@ -12,6 +12,7 @@ import { PriceService } from './services/price.service';
 import { EnterpriseService } from './services/enterprise.service';
 import { WebsocketService } from './services/websocket.service';
 import { AudioService } from './services/audio.service';
+import { PreloadService } from './services/preload.service';
 import { SeoService } from './services/seo.service';
 import { OpenGraphService } from './services/opengraph.service';
 import { ZoneService } from './services/zone-shim.service';
@@ -46,6 +47,7 @@ const providers = [
   CapAddressPipe,
   AppPreloadingStrategy,
   ServicesApiServices,
+  PreloadService,
   { provide: HTTP_INTERCEPTORS, useClass: HttpCacheInterceptor, multi: true },
   { provide: ZONE_SERVICE, useClass: ZoneService },
 ];

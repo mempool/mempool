@@ -1,0 +1,37 @@
+.block-tx-title {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  margin-top: -15px;
+  position: relative;
+  @media (min-width: 550px) {
+    margin-top: 1rem;
+    flex-direction: row;
+  }
+  h2 {
+    line-height: 1;
+    margin: 0;
+    position: relative;
+    padding-bottom: 10px;
+    @media (min-width: 550px) {
+      padding-bottom: 0px;
+      align-self: end;
+    }
+  }
+}
+
+.tx-skeleton {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  .header-bg {
+    &:first-child {
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    &:nth-child(2) {
+      .row {
+        height: 107px;
+      }
+    }
+  }
+}
