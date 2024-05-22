@@ -16,6 +16,7 @@ import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { PriceService, Price } from '../../services/price.service';
 import { CacheService } from '../../services/cache.service';
 import { ServicesApiServices } from '../../services/services-api.service';
+import { PreloadService } from '../../services/preload.service';
 
 @Component({
   selector: 'app-block',
@@ -67,14 +68,11 @@ export class BlockComponent implements OnInit, OnDestroy {
   mode: 'projected' | 'actual' = 'projected';
 
   overviewSubscription: Subscription;
-  auditSubscription: Subscription;
   keyNavigationSubscription: Subscription;
   blocksSubscription: Subscription;
   cacheBlocksSubscription: Subscription;
   networkChangedSubscription: Subscription;
   queryParamsSubscription: Subscription;
-  nextBlockSubscription: Subscription = undefined;
-  nextBlockSummarySubscription: Subscription = undefined;
   timeLtrSubscription: Subscription;
   timeLtr: boolean;
   childChangeSubscription: Subscription;
@@ -101,6 +99,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     private cacheService: CacheService,
     private servicesApiService: ServicesApiServices,
     private cd: ChangeDetectorRef,
+    private preloadService: PreloadService,
   ) {
     this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
   }
@@ -159,7 +158,6 @@ export class BlockComponent implements OnInit, OnDestroy {
       switchMap((params: ParamMap) => {
         const blockHash: string = params.get('id') || '';
         this.block = undefined;
-        // this.page = 1;
         this.error = undefined;
         this.fees = undefined;
         this.oobFees = 0;
@@ -237,15 +235,11 @@ export class BlockComponent implements OnInit, OnDestroy {
         }
       }),
       tap((block: BlockExtended) => {
-        if (block.height > 0) {
-          // Preload previous block summary (execute the http query so the response will be cached)
-          this.unsubscribeNextBlockSubscriptions();
-          setTimeout(() => {
-            this.nextBlockSubscription = this.apiService.getBlock$(block.previousblockhash).subscribe();
-            if (this.auditSupported) {
-              this.apiService.getBlockAudit$(block.previousblockhash);
-            }
-          }, 100);
+        if (block.previousblockhash) {
+          this.preloadService.block$.next(block.previousblockhash);
+          if (this.auditSupported) {
+            this.preloadService.blockAudit$.next(block.previousblockhash);
+          }
         }
         this.updateAuditAvailableFromBlockHeight(block.height);
         this.block = block;
@@ -536,27 +530,15 @@ export class BlockComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.stateService.markBlock$.next({});
     this.overviewSubscription?.unsubscribe();
-    this.auditSubscription?.unsubscribe();
     this.keyNavigationSubscription?.unsubscribe();
     this.blocksSubscription?.unsubscribe();
     this.cacheBlocksSubscription?.unsubscribe();
     this.networkChangedSubscription?.unsubscribe();
     this.queryParamsSubscription?.unsubscribe();
     this.timeLtrSubscription?.unsubscribe();
-    this.auditSubscription?.unsubscribe();
-    this.unsubscribeNextBlockSubscriptions();
     this.childChangeSubscription?.unsubscribe();
     this.priceSubscription?.unsubscribe();
     this.oobSubscription?.unsubscribe();
-  }
-
-  unsubscribeNextBlockSubscriptions(): void {
-    if (this.nextBlockSubscription !== undefined) {
-      this.nextBlockSubscription.unsubscribe();
-    }
-    if (this.nextBlockSummarySubscription !== undefined) {
-      this.nextBlockSummarySubscription.unsubscribe();
-    }
   }
 
   // TODO - Refactor this.fees/this.reward for liquid because it is not
@@ -771,12 +753,6 @@ export class BlockComponent implements OnInit, OnDestroy {
     if (this.block && block.height === this.block.height && block.id !== this.block.id) {
       this.block.stale = true;
       this.block.canonical = block.id;
-    }
-  }
-
-  updateBlockReward(blockReward: number): void {
-    if (this.fees === undefined) {
-       this.fees = blockReward;
     }
   }
 }

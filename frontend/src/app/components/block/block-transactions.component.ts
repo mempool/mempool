@@ -4,6 +4,7 @@ import { Transaction, Vout } from '../../interfaces/electrs.interface';
 import { Observable, Subscription, catchError, combineLatest, map, of, startWith, switchMap, tap } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
+import { PreloadService } from '../../services/preload.service';
 
 @Component({
   selector: 'app-block-transactions',
@@ -11,14 +12,13 @@ import { ElectrsApiService } from '../../services/electrs-api.service';
   styleUrl: './block-transactions.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BlockTransactionsComponent implements OnInit, OnDestroy {
+export class BlockTransactionsComponent implements OnInit {
   @Input() txCount: number;
   @Input() timestamp: number;
   @Input() blockHash: string;
   @Input() previousBlockHash: string;
   @Input() block$: Observable<any>;
   @Input() paginationMaxSize: number;
-  @Output() blockReward = new EventEmitter<number>();
 
   itemsPerPage = this.stateService.env.ITEMS_PER_PAGE;
   page = 1;
@@ -50,20 +50,6 @@ export class BlockTransactionsComponent implements OnInit, OnDestroy {
             return of([]);
         }))
       ),
-    )
-    .pipe(
-      tap((transactions: Transaction[]) => {
-        if (transactions && transactions[0] && transactions[0].vin[0].is_coinbase) {
-          const blockReward = transactions[0].vout.reduce((acc: number, curr: Vout) => acc + curr.value, 0) / 100000000;
-          this.blockReward.emit(blockReward);
-        }
-        this.unsubscribeNextBlockSubscriptions();
-        if (this.previousBlockHash) {
-          setTimeout(() => {
-            this.nextBlockTxListSubscription = this.electrsApiService.getBlockTransactions$(this.previousBlockHash).subscribe();
-          }, 100);
-        }
-      })
     );
 
     this.txsLoadingStatus$ = this.route.paramMap
@@ -76,15 +62,5 @@ export class BlockTransactionsComponent implements OnInit, OnDestroy {
   pageChange(page: number, target: HTMLElement): void {
     target.scrollIntoView(); // works for chrome
     this.router.navigate([], { queryParams: { page: page }, queryParamsHandling: 'merge' });
-  }
-
-  unsubscribeNextBlockSubscriptions(): void {
-    if (this.nextBlockTxListSubscription !== undefined) {
-      this.nextBlockTxListSubscription.unsubscribe();
-    }
-  }
-
-  ngOnDestroy(): void {
-    this.unsubscribeNextBlockSubscriptions();
   }
 }
