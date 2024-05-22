@@ -156,6 +156,7 @@ export class FaucetComponent implements OnInit, OnDestroy {
     } else {
       this.faucetForm.get('address').setValidators([Validators.required, Validators.pattern(getRegex('address', 'testnet4')), this.getNotFaucetAddressValidator(faucetAddress)]);
       this.faucetForm.get('satoshis').setValidators([Validators.required, Validators.min(min), Validators.max(max)]);
+      this.faucetForm.get('satoshis').setValue(Math.max(min, this.faucetForm.get('satoshis').value));
       this.faucetForm.get('satoshis').updateValueAndValidity();
       this.faucetForm.get('satoshis').markAsDirty();
     }
