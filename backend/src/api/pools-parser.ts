@@ -52,6 +52,28 @@ class PoolsParser {
         continue;
       }
 
+      // One of the two fields 'addresses' or 'regexes' must be a non-empty array
+      if (!pool.addresses && !pool.regexes) {
+        logger.err(`Mining pool ${pool.name} must have at least one of the fields 'addresses' or 'regexes'. Skipping.`);
+        continue;
+      }
+      
+      pool.addresses = pool.addresses || [];
+      pool.regexes = pool.regexes || [];
+      
+      if (pool.addresses.length === 0 && pool.regexes.length === 0) {
+        logger.err(`Mining pool ${pool.name} has no 'addresses' nor 'regexes' defined. Skipping.`);
+        continue;
+      }
+      
+      if (pool.addresses.length === 0) {
+        logger.warn(`Mining pool ${pool.name} has no 'addresses' defined.`);
+      }
+      
+      if (pool.regexes.length === 0) {
+        logger.warn(`Mining pool ${pool.name} has no 'regexes' defined.`);
+      }      
+
       const poolDB = await PoolsRepository.$getPoolByUniqueId(pool.id, false);
       if (!poolDB) {
         // New mining pool
