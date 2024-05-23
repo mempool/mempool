@@ -32,8 +32,8 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
   @Input() template: ('widget' | 'advanced') = 'widget';
   @Input() windowPreferenceOverride: string;
   @Input() outlierCappingEnabled: boolean = false;
+  @Input() isLoading: boolean;
 
-  isLoading = true;
   mempoolStatsChartOption: EChartsOption = {};
   mempoolStatsChartInitOption = {
     renderer: 'svg'
@@ -52,8 +52,6 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
   ) { }
 
   ngOnInit() {
-    this.isLoading = true;
-
     this.rateUnitSub = this.stateService.rateUnits$.subscribe(rateUnits => {
       this.weightMode = rateUnits === 'wu';
       if (this.data) {
@@ -79,7 +77,6 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
     if (!this.data) {
       return; 
     }
-    this.isLoading = false;
   }
 
   /**

@@ -77,14 +77,14 @@
 
   <div [class]="!widget ? '' : 'pb-0'" class="container pb-lg-0">
     <div [class]="widget ? 'chart-widget' : 'chart'" *browserOnly [style]="{ height: widget ? (height + 'px') : null}" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
-      (chartInit)="onChartInit($event)">
+      (chartInit)="onChartInit($event)" [style]="{opacity: isLoading ? 0.5 : 1}">
     </div>
 
     <div class="text-center loadingGraphs" *ngIf="!stateService.isBrowser || isLoading">
       <div class="spinner-border text-light"></div>
     </div>
 
-    <table *ngIf="widget === false" class="table table-borderless text-center pools-table">
+    <table *ngIf="widget === false" class="table table-borderless text-center pools-table" [style]="{opacity: isLoading ? 0.5 : 1}">
       <thead>
         <tr>
           <th class="d-none d-md-table-cell" i18n="mining.rank">Rank</th>

@@ -98,7 +98,6 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           this.storageService.setValue('miningWindowPreference', timespan);
           this.timespan = timespan;
           this.zoomTimeSpan = timespan;
-          this.isLoading = true;
           return this.apiService.getHistoricalBlockFees$(timespan)
             .pipe(
               tap((response) => {

@@ -46,7 +46,7 @@
   </div>
 
   <div [class.chart]="!widget" [class.chart-widget]="widget" *browserOnly [style]="{ height: widget ? ((height + 20) + 'px') : null}" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
-    (chartInit)="onChartInit($event)">
+    (chartInit)="onChartInit($event)" [style]="{opacity: isLoading ? 0.5 : 1}">
   </div>
   <div class="text-center loadingGraphs" *ngIf="!stateService.isBrowser || isLoading">
     <div class="spinner-border text-light"></div>

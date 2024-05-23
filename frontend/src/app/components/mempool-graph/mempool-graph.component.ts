@@ -35,8 +35,8 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   @Input() template: ('widget' | 'advanced') = 'widget';
   @Input() showZoom = true;
   @Input() windowPreferenceOverride: string;
+  @Input() isLoading: boolean;
 
-  isLoading = true;
   mempoolVsizeFeesData: any;
   mempoolVsizeFeesOptions: EChartsOption;
   mempoolVsizeFeesInitOptions = {
@@ -65,7 +65,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-    this.isLoading = true;
     this.inverted = this.storageService.getValue('inverted-graph') === 'true';
     this.isWidget = this.template === 'widget';
     this.showCount = !this.isWidget && !this.hideCount;
@@ -86,7 +85,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     if (!this.data) {
       return;
     }
-    this.isLoading = false;
   }
 
   onChartReady(myChart: any) {
