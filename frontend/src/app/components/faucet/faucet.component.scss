@@ -24,7 +24,7 @@
     flex-grow: 1;
   }
   .submit-button:disabled {
-    pointer-events: none;
+    cursor: not-allowed;
   }
 
   #satoshis::after {

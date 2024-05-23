@@ -41,10 +41,7 @@ export class FaucetComponent implements OnInit, OnDestroy {
     private websocketService: WebsocketService,
     private audioService: AudioService
   ) {
-    this.faucetForm = this.formBuilder.group({
-      'address': ['', [Validators.required, Validators.pattern(getRegex('address', 'testnet4'))]],
-      'satoshis': [0, [Validators.required, Validators.min(0), Validators.max(0)]]
-    });
+    this.initForm(5000, 500_000, null);
   }
 
   ngOnDestroy() {
@@ -66,38 +63,7 @@ export class FaucetComponent implements OnInit, OnDestroy {
     }
 
     // Setup form
-    this.faucetStatusSubscription = this.servicesApiService.getFaucetStatus$().subscribe({
-      next: (status) => {
-        if (!status) {
-          this.error = 'internal_server_error';
-          return;
-        }
-        this.status = status;
-
-        const notFaucetAddressValidator = (faucetAddress: string): ValidatorFn => {
-          return (control: AbstractControl): ValidationErrors | null => {
-            const forbidden = control.value === faucetAddress;
-            return forbidden ? { forbiddenAddress: { value: control.value } } : null;
-          };
-        }
-        this.faucetForm = this.formBuilder.group({
-          'address': ['', [Validators.required, Validators.pattern(getRegex('address', 'testnet4')), notFaucetAddressValidator(this.status.address)]],
-          'satoshis': [this.status.min, [Validators.required, Validators.min(this.status.min), Validators.max(this.status.max)]]
-        });
-
-        if (this.status.code !== 'ok') {
-          this.error = this.status.code;
-        }
-
-        this.loading = false;
-        this.cd.markForCheck();
-      },
-      error: (response) => {
-        this.loading = false;
-        this.error = response.error;
-        this.cd.markForCheck();
-      }
-    });
+    this.updateFaucetStatus();
 
     // Track transaction
     this.websocketService.want(['blocks', 'mempool-blocks']);
@@ -117,7 +83,34 @@ export class FaucetComponent implements OnInit, OnDestroy {
     });
   }
 
+  updateFaucetStatus(): void {
+    this.servicesApiService.getFaucetStatus$().subscribe({
+      next: (status) => {
+        if (!status) {
+          this.error = 'internal_server_error';
+          return;
+        }
+        this.status = status;
+        if (this.status.code !== 'ok') {
+          this.error = this.status.code;
+          this.updateForm(this.status.min ?? 5000, this.status.max ?? 500_000, this.status.address);
+          return;
+        }
+        // update the form with the proper validation parameters
+        this.updateForm(this.status.min, this.status.max, this.status.address);
+      },
+      error: (response) => {
+        this.loading = false;
+        this.error = response.error;
+        this.cd.markForCheck();
+      }
+    });
+  }
+
   requestCoins(): void {
+    if (this.isDisabled()) {
+      return;
+    }
     this.error = null;
     this.txid = '';
     this.stateService.markBlock$.next({});
@@ -127,6 +120,7 @@ export class FaucetComponent implements OnInit, OnDestroy {
         this.txid = response.txid;
         this.websocketService.startTrackTransaction(this.txid);
         this.audioService.playSound('cha-ching');
+        this.updateFaucetStatus();
         this.cd.markForCheck();
       }),
       error: (response: HttpErrorResponse) => {
@@ -135,9 +129,44 @@ export class FaucetComponent implements OnInit, OnDestroy {
     });
   }
 
+  isDisabled(): boolean {
+    return !(this.user && this.status?.code === 'ok' && !this.error);
+  }
+
+  getNotFaucetAddressValidator(faucetAddress: string): ValidatorFn {
+    return faucetAddress ? (control: AbstractControl): ValidationErrors | null => {
+      const forbidden = control.value === faucetAddress;
+      return forbidden ? { forbiddenAddress: { value: control.value } } : null;
+    }: () => null;
+  }
+
+  initForm(min: number, max: number, faucetAddress: string): void {
+    this.faucetForm = this.formBuilder.group({
+      'address': ['', [Validators.required, Validators.pattern(getRegex('address', 'testnet4')), this.getNotFaucetAddressValidator(faucetAddress)]],
+      'satoshis': [min, [Validators.required, Validators.min(min), Validators.max(max)]]
+    });
+
+    this.loading = false;
+    this.cd.markForCheck();
+  }
+
+  updateForm(min, max, faucetAddress: string): void {
+    if (!this.faucetForm) {
+      this.initForm(min, max, faucetAddress);
+    } else {
+      this.faucetForm.get('address').setValidators([Validators.required, Validators.pattern(getRegex('address', 'testnet4')), this.getNotFaucetAddressValidator(faucetAddress)]);
+      this.faucetForm.get('satoshis').setValidators([Validators.required, Validators.min(min), Validators.max(max)]);
+      this.faucetForm.get('satoshis').setValue(Math.max(min, this.faucetForm.get('satoshis').value));
+      this.faucetForm.get('satoshis').updateValueAndValidity();
+      this.faucetForm.get('satoshis').markAsDirty();
+    }
+  }
+
   setAmount(value: number): void {
     if (this.faucetForm) {
       this.faucetForm.get('satoshis').setValue(value);
+      this.faucetForm.get('satoshis').updateValueAndValidity();
+      this.faucetForm.get('satoshis').markAsDirty();
     }
   }
 

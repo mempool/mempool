@@ -13,16 +13,16 @@
         <a class="text-primary" [href]="'/testnet4/tx/' + txid">{{ txid }}</a>
       </div>
     }
-    @else if (loading) {
+    @if (loading) {
       <p>Loading faucet...</p>
       <div class="spinner-border text-light"></div>
     } @else if (!user) {
       <!-- User not logged in -->
       <div class="alert alert-mempool d-block text-center w-100">
         <div class="d-inline align-middle">
-          <span>To limit abuse,&nbsp;</span>
-          <a routerLink="/login" [queryParams]="{'redirectTo': '/testnet4/faucet'}">authenticate&nbsp;</a>
-          <span class="mr-2">or</span>
+          <span>To use the faucet, please&nbsp;</span>
+          <a routerLink="/login" [queryParams]="{'redirectTo': '/testnet4/faucet'}">login</a>
+          <span class="mr-2">&nbsp;or</span>
         </div>
         <app-twitter-login customClass="btn btn-sm" width="220px" redirectTo="/testnet4/faucet" buttonString="Sign up with Twitter"></app-twitter-login>
       </div>
@@ -31,19 +31,18 @@
       <!-- User logged in but not a paid user or did not link its Twitter account -->
       <div class="alert alert-mempool d-block text-center w-100">
         <div class="d-inline align-middle">
-          <span class="mb-2 mr-2">To limit abuse</span>
+          <span class="mb-2 mr-2">To use the faucet, please</span>
         </div>
         <app-twitter-login customClass="btn btn-sm" width="180px" redirectTo="/testnet4/faucet" buttonString="Link your Twitter"></app-twitter-login>
       </div>
     }
-    
     @else if (error) {
       <!-- User can request -->
       <app-mempool-error class="w-100" [error]="error"></app-mempool-error>
     }
 
     @if (!loading) {
-      <form [formGroup]="faucetForm" class="formGroup" (submit)="requestCoins()" [style]="(error || !this.user) ? 'opacity: 0.3; pointer-events: none' : ''">
+      <form [formGroup]="faucetForm" class="formGroup" (submit)="requestCoins()">
         <div class="row">
           <div class="col">
             <div class="form-group mb-0">
@@ -68,7 +67,7 @@
                   <span class="input-group-text" i18n="address">Address</span>
                 </div>
                 <input type="text" class="form-control" [class]="{invalid: invalidAddress}" formControlName="address" id="address" placeholder="tb1q...">
-                <button type="submit" class="btn btn-primary submit-button" [disabled]="!faucetForm.valid || !faucetForm.get('address')?.dirty" i18n="testnet4.request-coins">Request Testnet4 Coins</button>
+                <button type="submit" class="btn btn-primary submit-button" [disabled]="!faucetForm.valid || !faucetForm.get('address')?.dirty || isDisabled()" i18n="testnet4.request-coins">Request Testnet4 Coins</button>
               </div>
               <div class="text-danger text-left" *ngIf="invalidAddress">
                 <div *ngIf="address?.errors?.['required']">Address is required</div>
@@ -83,7 +82,7 @@
 
     <!-- Send back coins -->
     @if (status?.address) {  
-      <div class="mt-2 alert alert-info w-100">If you no longer need your testnet4 coins, please consider <a class="text-primary" [routerLink]="['/address/' | relativeUrl, status.address]"><u>sending them back</u></a> to replenish the faucet.</div>
+      <div class="mt-4 alert alert-info w-100">If you no longer need your testnet4 coins, please consider <a class="text-primary" [routerLink]="['/address/' | relativeUrl, status.address]"><u>sending them back</u></a> to replenish the faucet.</div>
     }
 
   </div>
