@@ -21,7 +21,7 @@
               </a>
             </div>
             <div class="btn-toggle-rows" name="radioBasic">
-              <div class="btn-group btn-group-toggle" [class]="{'disabled': isLoading}">
+              <div class="btn-group btn-group-toggle">
                 <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '2h'">
                   <input type="radio" [value]="'2h'" [routerLink]="['/graphs' | relativeUrl]" fragment="2h" formControlName="dateSpan"> 2H
                   (LIVE)
@@ -40,7 +40,7 @@
                   <input type="radio" [value]="'3m'" [routerLink]="['/graphs' | relativeUrl]" fragment="3m" formControlName="dateSpan"> 3M
                 </label>
               </div>
-              <div class="btn-group btn-group-toggle" [class]="{'disabled': isLoading}">
+              <div class="btn-group btn-group-toggle">
                 <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '6m'">
                   <input type="radio" [value]="'6m'" [routerLink]="['/graphs' | relativeUrl]" fragment="6m" formControlName="dateSpan"> 6M
                 </label>
