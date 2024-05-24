@@ -8,6 +8,7 @@ import priceUpdater from './tasks/price-updater';
 import PricesRepository from './repositories/PricesRepository';
 import config from './config';
 import auditReplicator from './replication/AuditReplication';
+import statisticsReplicator from './replication/StatisticsReplication';
 import AccelerationRepository from './repositories/AccelerationRepository';
 
 export interface CoreIndex {
@@ -188,6 +189,7 @@ class Indexer {
       await blocks.$generateCPFPDatabase();
       await blocks.$generateAuditStats();
       await auditReplicator.$sync();
+      await statisticsReplicator.$sync();
       await AccelerationRepository.$indexPastAccelerations();
       // do not wait for classify blocks to finish
       blocks.$classifyBlocks();
