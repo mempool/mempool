@@ -1,5 +1,5 @@
 <div class="echarts" *browserOnly echarts [initOpts]="mempoolStatsChartInitOption" [options]="mempoolStatsChartOption" (chartRendered)="rendered()"
-  (chartInit)="onChartInit($event)">
+  (chartInit)="onChartInit($event)" [style]="{opacity: isLoading ? 0.5 : 1}">
 </div>
 <div class="text-center loadingGraphs" *ngIf="!stateService.isBrowser || isLoading">
   <div class="spinner-border text-light"></div>

@@ -40,7 +40,7 @@
     </div>  
     <form [formGroup]="radioGroupForm" class="formRadioGroup"
       *ngIf="!widget && (miningStatsObservable$ | async) as stats">
-      <div class="btn-group btn-group-toggle" name="radioBasic" [class]="{'disabled': isLoading}">
+      <div class="btn-group btn-group-toggle" name="radioBasic">
         <label class="btn btn-primary btn-sm" *ngIf="stats.totalBlockCount >= 144" [class.active]="radioGroupForm.get('dateSpan').value === '24h'">
           <input type="radio" [value]="'24h'" fragment="24h" [routerLink]="['/graphs/mining/pools' | relativeUrl]" [attr.data-cy]="'24h'" formControlName="dateSpan"> 24h
         </label>
@@ -77,14 +77,14 @@
 
   <div [class]="!widget ? '' : 'pb-0'" class="container pb-lg-0">
     <div [class]="widget ? 'chart-widget' : 'chart'" *browserOnly [style]="{ height: widget ? (height + 'px') : null}" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
-      (chartInit)="onChartInit($event)">
+      (chartInit)="onChartInit($event)" [style]="{opacity: isLoading ? 0.5 : 1}">
     </div>
 
     <div class="text-center loadingGraphs" *ngIf="!stateService.isBrowser || isLoading">
       <div class="spinner-border text-light"></div>
     </div>
 
-    <table *ngIf="widget === false" class="table table-borderless text-center pools-table">
+    <table *ngIf="widget === false" class="table table-borderless text-center pools-table" [style]="{opacity: isLoading ? 0.5 : 1}">
       <thead>
         <tr>
           <th class="d-none d-md-table-cell" i18n="mining.rank">Rank</th>
