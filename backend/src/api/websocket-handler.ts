@@ -820,6 +820,7 @@ class WebsocketHandler {
             position: {
               ...mempoolTx.position,
               accelerated: mempoolTx.acceleration || undefined,
+              acceleratedBy: mempoolTx.acceleratedBy || undefined,
             }
           };
           if (!mempoolTx.cpfpChecked && !mempoolTx.acceleration) {
@@ -858,6 +859,7 @@ class WebsocketHandler {
             txInfo.position = {
               ...mempoolTx.position,
               accelerated: mempoolTx.acceleration || undefined,
+              acceleratedBy: mempoolTx.acceleratedBy || undefined,
             };
             if (!mempoolTx.cpfpChecked) {
               calculateCpfp(mempoolTx, newMempool);
@@ -1134,6 +1136,7 @@ class WebsocketHandler {
               position: {
                 ...mempoolTx.position,
                 accelerated: mempoolTx.acceleration || undefined,
+                acceleratedBy: mempoolTx.acceleratedBy || undefined,
               }
             });
           }
@@ -1153,6 +1156,7 @@ class WebsocketHandler {
                   ...mempoolTx.position,
                 },
                 accelerated: mempoolTx.acceleration || undefined,
+                acceleratedBy: mempoolTx.acceleratedBy || undefined,
               };
             }
           }
