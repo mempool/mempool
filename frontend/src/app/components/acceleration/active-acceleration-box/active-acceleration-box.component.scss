@@ -1,0 +1,9 @@
+.td-width {
+	width: 150px;
+	min-width: 150px;
+
+	@media (max-width: 768px) {
+	  width: 175px;
+	  min-width: 175px;
+	}
+}
