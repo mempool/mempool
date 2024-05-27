@@ -106,10 +106,10 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
                   blockHeight: response.body.map(val => val.avgHeight),
                   blockFees: response.body.map(val => val.avgFees / 100_000_000),
                   blockFeesFiat: response.body.filter(val => val['USD'] > 0).map(val => val.avgFees / 100_000_000 * val['USD']),
-                  blockFeesPercent: response.body.filter(val => val.avgFees + this.subsidies[Math.floor(Math.min(val.avgHeight / 210000, 33))] > 0).map(val => val.avgFees / (val.avgFees + this.subsidies[Math.floor(Math.min(val.avgHeight / 210000, 33))]) * 100),
-                  blockSubsidy: response.body.map(val => this.subsidies[Math.floor(Math.min(val.avgHeight / 210000, 33))] / 100_000_000),
-                  blockSubsidyFiat: response.body.filter(val => val['USD'] > 0).map(val => this.subsidies[Math.floor(Math.min(val.avgHeight / 210000, 33))] / 100_000_000 * val['USD']),
-                  blockSubsidyPercent: response.body.filter(val => val.avgFees + this.subsidies[Math.floor(Math.min(val.avgHeight / 210000, 33))] > 0).map(val => this.subsidies[Math.floor(Math.min(val.avgHeight / 210000, 33))] / (val.avgFees + this.subsidies[Math.floor(Math.min(val.avgHeight / 210000, 33))]) * 100),
+                  blockFeesPercent: response.body.map(val => val.avgFees / (val.avgFees + this.subsidyAt(val.avgHeight)) * 100),
+                  blockSubsidy: response.body.map(val => this.subsidyAt(val.avgHeight) / 100_000_000),
+                  blockSubsidyFiat: response.body.filter(val => val['USD'] > 0).map(val => this.subsidyAt(val.avgHeight) / 100_000_000 * val['USD']),
+                  blockSubsidyPercent: response.body.map(val => this.subsidyAt(val.avgHeight) / (val.avgFees + this.subsidyAt(val.avgHeight)) * 100),
                 };
                 
                 this.prepareChartOptions();
@@ -463,6 +463,10 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
     return subsidies;
   }
 
+  subsidyAt(height: number): number {
+    return this.subsidies[Math.floor(Math.min(height / 210000, 33))];
+  }
+
   onZoom() {
     const option = this.chartInstance.getOption();
     const timestamps = option.xAxis[1].data;
@@ -484,10 +488,10 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
         this.data.blockHeight.splice(startIndex, endIndex - startIndex, ...response.body.map(val => val.avgHeight));
         this.data.blockFees.splice(startIndex, endIndex - startIndex, ...response.body.map(val => val.avgFees / 100_000_000));
         this.data.blockFeesFiat.splice(startIndex, endIndex - startIndex, ...response.body.filter(val => val['USD'] > 0).map(val => val.avgFees / 100_000_000 * val['USD']));
-        this.data.blockFeesPercent.splice(startIndex, endIndex - startIndex, ...response.body.filter(val => val.avgFees + this.subsidies[Math.floor(Math.min(val.avgHeight / 210000, 33))] > 0).map(val => val.avgFees / (val.avgFees + this.subsidies[Math.floor(Math.min(val.avgHeight / 210000, 33))]) * 100));
-        this.data.blockSubsidy.splice(startIndex, endIndex - startIndex, ...response.body.map(val => this.subsidies[Math.floor(Math.min(val.avgHeight / 210000, 33))] / 100_000_000));
-        this.data.blockSubsidyFiat.splice(startIndex, endIndex - startIndex, ...response.body.filter(val => val['USD'] > 0).map(val => this.subsidies[Math.floor(Math.min(val.avgHeight / 210000, 33))] / 100_000_000 * val['USD']));
-        this.data.blockSubsidyPercent.splice(startIndex, endIndex - startIndex, ...response.body.filter(val => val.avgFees + this.subsidies[Math.floor(Math.min(val.avgHeight / 210000, 33))] > 0).map(val => this.subsidies[Math.floor(Math.min(val.avgHeight / 210000, 33))] / (val.avgFees + this.subsidies[Math.floor(Math.min(val.avgHeight / 210000, 33))]) * 100));
+        this.data.blockFeesPercent.splice(startIndex, endIndex - startIndex, ...response.body.map(val => val.avgFees / (val.avgFees + this.subsidyAt(val.avgHeight)) * 100));
+        this.data.blockSubsidy.splice(startIndex, endIndex - startIndex, ...response.body.map(val => this.subsidyAt(val.avgHeight) / 100_000_000));
+        this.data.blockSubsidyFiat.splice(startIndex, endIndex - startIndex, ...response.body.filter(val => val['USD'] > 0).map(val => this.subsidyAt(val.avgHeight) / 100_000_000 * val['USD']));
+        this.data.blockSubsidyPercent.splice(startIndex, endIndex - startIndex, ...response.body.map(val => this.subsidyAt(val.avgHeight) / (val.avgFees + this.subsidyAt(val.avgHeight)) * 100));
         option.series[0].data = this.data.blockSubsidy;
         option.series[1].data = this.data.blockFees;
         option.series[2].data = this.data.blockSubsidyFiat;
