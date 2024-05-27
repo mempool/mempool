@@ -396,6 +396,10 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
     this.chartInstance = ec;
 
     this.chartInstance.on('legendselectchanged', (params) => {
+      if (this.isLoading) {
+        return;
+      }
+
       let mode: 'normal' | 'fiat' | 'percentage';
       if (params.name.includes('USD')) {
         mode = 'fiat';
