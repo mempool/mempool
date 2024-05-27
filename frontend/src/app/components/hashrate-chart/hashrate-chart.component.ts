@@ -349,7 +349,9 @@ export class HashrateChartComponent implements OnInit {
               const selectedPowerOfTen: any = selectPowerOfTen(val);
               const newVal = Math.round(val / selectedPowerOfTen.divider);
               return `${newVal} ${selectedPowerOfTen.unit}H/s`;
-            }
+            },
+            showMinLabel: false,
+            showMaxLabel: false,
           },
           splitLine: {
             lineStyle: {
@@ -381,7 +383,9 @@ export class HashrateChartComponent implements OnInit {
               const selectedPowerOfTen: any = selectPowerOfTen(val);
               const newVal = Math.round(val / selectedPowerOfTen.divider);
               return `${newVal} ${selectedPowerOfTen.unit}`;
-            }
+            },
+            showMinLabel: false,
+            showMaxLabel: false,
           },
           splitLine: {
             show: false,
