@@ -6,6 +6,7 @@ import config from '../config';
 import { Worker } from 'worker_threads';
 import path from 'path';
 import mempool from './mempool';
+import { Acceleration } from './services/acceleration';
 
 const MAX_UINT32 = Math.pow(2, 32) - 1;
 
@@ -333,7 +334,7 @@ class MempoolBlocks {
     }
   }
 
-  private processBlockTemplates(mempool: { [txid: string]: MempoolTransactionExtended }, blocks: string[][], blockWeights: number[] | null, rates: [string, number][], clusters: string[][], candidates: GbtCandidates | undefined, accelerations, accelerationPool, saveResults): MempoolBlockWithTransactions[] {
+  private processBlockTemplates(mempool: { [txid: string]: MempoolTransactionExtended }, blocks: string[][], blockWeights: number[] | null, rates: [string, number][], clusters: string[][], candidates: GbtCandidates | undefined, accelerations: { [txid: string]: Acceleration }, accelerationPool, saveResults): MempoolBlockWithTransactions[] {
     for (const txid of Object.keys(candidates?.txs ?? mempool)) {
       if (txid in mempool) {
         mempool[txid].cpfpDirty = false;
@@ -396,7 +397,7 @@ class MempoolBlocks {
       }
     }
 
-    const isAccelerated : { [txid: string]: boolean } = {};
+    const isAcceleratedBy : { [txid: string]: number[] | false } = {};
 
     const sizeLimit = (config.MEMPOOL.BLOCK_WEIGHT_UNITS / 4) * 1.2;
     // update this thread's mempool with the results
@@ -427,17 +428,19 @@ class MempoolBlocks {
           };
 
           const acceleration = accelerations[txid];
-          if (isAccelerated[txid] || (acceleration && (!accelerationPool || acceleration.pools.includes(accelerationPool)))) {
+          if (isAcceleratedBy[txid] || (acceleration && (!accelerationPool || acceleration.pools.includes(accelerationPool)))) {
             if (!mempoolTx.acceleration) {
               mempoolTx.cpfpDirty = true;
             }
             mempoolTx.acceleration = true;
+            mempoolTx.acceleratedBy = isAcceleratedBy[txid] || acceleration?.pools;
             for (const ancestor of mempoolTx.ancestors || []) {
               if (!mempool[ancestor.txid].acceleration) {
                 mempool[ancestor.txid].cpfpDirty = true;
               }
               mempool[ancestor.txid].acceleration = true;
-              isAccelerated[ancestor.txid] = true;
+              mempool[ancestor.txid].acceleratedBy = mempoolTx.acceleratedBy;
+              isAcceleratedBy[ancestor.txid] = mempoolTx.acceleratedBy;
             }
           } else {
             if (mempoolTx.acceleration) {

@@ -160,7 +160,8 @@ class BitcoinRoutes {
           effectiveFeePerVsize: tx.effectiveFeePerVsize || null,
           sigops: tx.sigops,
           adjustedVsize: tx.adjustedVsize,
-          acceleration: tx.acceleration
+          acceleration: tx.acceleration,
+          acceleratedBy: tx.acceleratedBy || undefined,
         });
         return;
       }

@@ -32,6 +32,7 @@ import { isFeatureActive } from '../../bitcoin.utils';
 import { ServicesApiServices } from '../../services/services-api.service';
 import { EnterpriseService } from '../../services/enterprise.service';
 import { ZONE_SERVICE } from '../../injection-tokens';
+import { MiningService, MiningStats } from '../../services/mining.service';
 
 interface Pool {
   id: number;
@@ -98,6 +99,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   isAcceleration: boolean = false;
   filters: Filter[] = [];
   showCpfpDetails = false;
+  miningStats: MiningStats;
   fetchCpfp$ = new Subject<string>();
   fetchRbfHistory$ = new Subject<string>();
   fetchCachedTx$ = new Subject<string>();
@@ -151,6 +153,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     private priceService: PriceService,
     private storageService: StorageService,
     private enterpriseService: EnterpriseService,
+    private miningService: MiningService,
     private cd: ChangeDetectorRef,
     @Inject(ZONE_SERVICE) private zoneService: any,
   ) {}
@@ -696,6 +699,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     if (cpfpInfo.acceleration) {
       this.tx.acceleration = cpfpInfo.acceleration;
+      this.tx.acceleratedBy = cpfpInfo.acceleratedBy;
       this.setIsAccelerated(firstCpfp);
     }
 
@@ -712,6 +716,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isAcceleration = (this.tx.acceleration || (this.accelerationInfo && this.pool && this.accelerationInfo.pools.some(pool => (pool === this.pool.id || pool?.['pool_unique_id'] === this.pool.id))));
     if (this.isAcceleration && initialState) {
       this.showAccelerationSummary = false;
+    }
+    if (this.isAcceleration) {
+      // this immediately returns cached stats if we fetched them recently
+      this.miningService.getMiningStats('1w').subscribe(stats => {
+        this.miningStats = stats;
+      });
     }
   }
 
@@ -788,6 +798,20 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   roundToOneDecimal(cpfpTx: any): number {
     return +(cpfpTx.fee / (cpfpTx.weight / 4)).toFixed(1);
+  }
+
+  getUnacceleratedFeeRate(tx: Transaction, accelerated: boolean): number {
+    if (accelerated) {
+      let ancestorVsize = tx.weight / 4;
+      let ancestorFee = tx.fee;
+      for (const ancestor of tx.ancestors || []) {
+        ancestorVsize += (ancestor.weight / 4);
+        ancestorFee += ancestor.fee;
+      }
+      return Math.min(tx.fee / (tx.weight / 4), (ancestorFee / ancestorVsize));
+    } else {
+      return tx.effectiveFeePerVsize;
+    }
   }
 
   setupGraph() {

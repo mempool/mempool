@@ -419,7 +419,11 @@
 <ng-template #detailsRight>
   <ng-container *ngTemplateOutlet="feeRow"></ng-container>
   <ng-container *ngTemplateOutlet="feeRateRow"></ng-container>
-  <ng-container *ngTemplateOutlet="effectiveRateRow"></ng-container>
+  @if (!isLoadingTx && !tx?.status?.confirmed && ((cpfpInfo && hasEffectiveFeeRate) || accelerationInfo)) {
+    <ng-container *ngTemplateOutlet="acceleratingRow"></ng-container>
+  } @else {
+    <ng-container *ngTemplateOutlet="effectiveRateRow"></ng-container>
+  }
   @if (tx?.status?.confirmed) {
     <ng-container *ngTemplateOutlet="minerRow"></ng-container>
   }
@@ -636,6 +640,15 @@
   } @else {
     <ng-container *ngTemplateOutlet="skeletonDetailsRow"></ng-container>
   }
+</ng-template>
+
+<ng-template #acceleratingRow>
+  <tr>
+    <td rowspan="2" colspan="2" style="padding: 0;">
+      <app-active-acceleration-box [tx]="tx" [accelerationInfo]="accelerationInfo" [miningStats]="miningStats"></app-active-acceleration-box>
+    </td>
+  </tr>
+  <tr></tr>
 </ng-template>
 
 <ng-template #minerRow>

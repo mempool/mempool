@@ -347,6 +347,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
 
           if (txPosition.position?.accelerated) {
             this.tx.acceleration = true;
+            this.tx.acceleratedBy = txPosition.position?.acceleratedBy;
           }
 
           if (txPosition.position?.block === 0) {
@@ -602,6 +603,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
     }
     if (cpfpInfo.acceleration) {
       this.tx.acceleration = cpfpInfo.acceleration;
+      this.tx.acceleratedBy = cpfpInfo.acceleratedBy;
     }
 
     this.cpfpInfo = cpfpInfo;

@@ -4,6 +4,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { TransactionComponent } from './transaction.component';
 import { SharedModule } from '../../shared/shared.module';
 import { TxBowtieModule } from '../tx-bowtie-graph/tx-bowtie.module';
+import { GraphsModule } from '../../graphs/graphs.module';
 
 const routes: Routes = [
   {
@@ -30,6 +31,7 @@ export class TransactionRoutingModule { }
     CommonModule,
     TransactionRoutingModule,
     SharedModule,
+    GraphsModule,
     TxBowtieModule,
   ],
   declarations: [
