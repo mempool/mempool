@@ -48,7 +48,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
   formatNumber = formatNumber;
   timespan = '';
   chartInstance: any = undefined;
-  showFiat = false;
+  displayMode: 'normal' | 'fiat' | 'percentage' = 'normal';
   updateZoom = false;
   zoomSpan = 100;
   zoomTimeSpan = '';
@@ -106,8 +106,10 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
                   blockHeight: response.body.map(val => val.avgHeight),
                   blockFees: response.body.map(val => val.avgFees / 100_000_000),
                   blockFeesFiat: response.body.filter(val => val['USD'] > 0).map(val => val.avgFees / 100_000_000 * val['USD']),
-                  blockSubsidy: response.body.map(val => this.subsidies[Math.floor(Math.min(val.avgHeight / 210000, 33))] / 100_000_000),
-                  blockSubsidyFiat: response.body.filter(val => val['USD'] > 0).map(val => this.subsidies[Math.floor(Math.min(val.avgHeight / 210000, 33))] / 100_000_000 * val['USD']),
+                  blockFeesPercent: response.body.map(val => val.avgFees / (val.avgFees + this.subsidyAt(val.avgHeight)) * 100),
+                  blockSubsidy: response.body.map(val => this.subsidyAt(val.avgHeight) / 100_000_000),
+                  blockSubsidyFiat: response.body.filter(val => val['USD'] > 0).map(val => this.subsidyAt(val.avgHeight) / 100_000_000 * val['USD']),
+                  blockSubsidyPercent: response.body.map(val => this.subsidyAt(val.avgHeight) / (val.avgFees + this.subsidyAt(val.avgHeight)) * 100),
                 };
                 
                 this.prepareChartOptions();
@@ -157,9 +159,9 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
         axisPointer: {
           type: 'line'
         },
-        backgroundColor: 'color-mix(in srgb, var(--active-bg) 95%, transparent)',
+        backgroundColor: 'rgba(17, 19, 31, 1)',
         borderRadius: 4,
-        shadowColor: 'color-mix(in srgb, var(--active-bg) 95%, transparent)',
+        shadowColor: 'rgba(0, 0, 0, 0.5)',
         textStyle: {
           color: 'var(--tooltip-grey)',
           align: 'left',
@@ -172,11 +174,13 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           let tooltip = `<b style="color: white; margin-left: 2px">${formatterXAxis(this.locale, this.zoomTimeSpan, parseInt(this.data.timestamp[data[0].dataIndex], 10))}</b><br>`;
           for (let i = data.length - 1; i >= 0; i--) {
             const tick = data[i];
-            if (!this.showFiat) tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data, this.locale, '1.0-3')} BTC<br>`;
-            else tooltip += `${tick.marker} ${tick.seriesName}: ${this.fiatCurrencyPipe.transform(tick.data, null, 'USD') }<br>`;
+            tooltip += `${tick.marker} ${tick.seriesName.split(' ')[0]}: `;
+            if (this.displayMode === 'normal') tooltip += `${formatNumber(tick.data, this.locale, '1.0-3')} BTC<br>`;
+            else if (this.displayMode === 'fiat') tooltip += `${this.fiatCurrencyPipe.transform(tick.data, null, 'USD') }<br>`;
+            else tooltip += `${formatNumber(tick.data, this.locale, '1.0-2')}%<br>`;
           }
-          if (!this.showFiat) tooltip += `<div style="margin-left: 2px">${formatNumber(data.reduce((acc, val) => acc + val.data, 0), this.locale, '1.0-3')} BTC</div>`;
-          else tooltip += `<div style="margin-left: 2px">${this.fiatCurrencyPipe.transform(data.reduce((acc, val) => acc + val.data, 0), null, 'USD')}</div>`;
+          if (this.displayMode === 'normal') tooltip += `<div style="margin-left: 2px">${formatNumber(data.reduce((acc, val) => acc + val.data, 0), this.locale, '1.0-3')} BTC</div>`;
+          else if (this.displayMode === 'fiat') tooltip += `<div style="margin-left: 2px">${this.fiatCurrencyPipe.transform(data.reduce((acc, val) => acc + val.data, 0), null, 'USD')}</div>`;
           if (['24h', '3d'].includes(this.zoomTimeSpan)) {
             tooltip += `<small>` + $localize`At block <b style="color: white; margin-left: 2px">${data[0].axisValue}` + `</small>`;
           } else {
@@ -250,12 +254,30 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
             },
             icon: 'roundRect',
           },
+          {
+            name: 'Subsidy (%)',
+            inactiveColor: 'var(--grey)',
+            textStyle: {
+              color: 'white',
+            },
+            icon: 'roundRect',
+          },
+          {
+            name: 'Fees (%)',
+            inactiveColor: 'var(--grey)',
+            textStyle: {
+              color: 'white',
+            },
+            icon: 'roundRect',
+          },
         ],
         selected: {
-          'Subsidy (USD)': this.showFiat,
-          'Fees (USD)': this.showFiat,
-          'Subsidy': !this.showFiat,
-          'Fees': !this.showFiat,
+          'Subsidy (USD)': this.displayMode === 'fiat',
+          'Fees (USD)': this.displayMode === 'fiat',
+          'Subsidy': this.displayMode === 'normal',
+          'Fees': this.displayMode === 'normal',
+          'Subsidy (%)': this.displayMode === 'percentage',
+          'Fees (%)': this.displayMode === 'percentage',
         },
       },
       yAxis: this.data.blockFees.length === 0 ? undefined : [
@@ -264,10 +286,15 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           axisLabel: {
             color: 'var(--grey)',
             formatter: (val) => {
-              return `${val} BTC`;
+              return `${val}${this.displayMode === 'percentage' ? '%' : ' BTC'}`;
             }
           },
           min: 0,
+          max: (value) => {
+            if (this.displayMode === 'percentage') {
+              return 100;
+            }
+          },
           splitLine: {
             lineStyle: {
               type: 'dotted',
@@ -295,6 +322,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           name: 'Subsidy',
           yAxisIndex: 0,
           type: 'bar',
+          barWidth: '90%',
           stack: 'total',
           data: this.data.blockSubsidy,
         },
@@ -302,6 +330,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           name: 'Fees',
           yAxisIndex: 0,
           type: 'bar',
+          barWidth: '90%',
           stack: 'total',
           data: this.data.blockFees,
         },
@@ -309,6 +338,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           name: 'Subsidy (USD)',
           yAxisIndex: 1,
           type: 'bar',
+          barWidth: '90%',
           stack: 'total',
           data: this.data.blockSubsidyFiat,
         },
@@ -316,8 +346,25 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           name: 'Fees (USD)',
           yAxisIndex: 1,
           type: 'bar',
+          barWidth: '90%',
           stack: 'total',
           data: this.data.blockFeesFiat,
+        },
+        {
+          name: 'Subsidy (%)',
+          yAxisIndex: 0,
+          type: 'bar',
+          barWidth: '90%',
+          stack: 'total',
+          data: this.data.blockSubsidyPercent,
+        },
+        {
+          name: 'Fees (%)',
+          yAxisIndex: 0,
+          type: 'bar',
+          barWidth: '90%',
+          stack: 'total',
+          data: this.data.blockFeesPercent,
         },
       ],
       dataZoom: this.data.blockFees.length === 0 ? undefined : [{
@@ -349,22 +396,31 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
     this.chartInstance = ec;
 
     this.chartInstance.on('legendselectchanged', (params) => {
-      const isFiat = params.name.includes('USD');
-      if (isFiat === this.showFiat) return;
+      if (this.isLoading) {
+        return;
+      }
+
+      let mode: 'normal' | 'fiat' | 'percentage';
+      if (params.name.includes('USD')) {
+        mode = 'fiat';
+      } else if (params.name.includes('%')) {
+        mode = 'percentage';
+      } else {
+        mode = 'normal';
+      }
+
+      if (this.displayMode === mode) return;
 
       const isActivation = params.selected[params.name];
-      if (isFiat === isActivation) {
-        this.showFiat = true;
-        this.chartInstance.dispatchAction({ type: 'legendUnSelect', name: 'Subsidy' });
-        this.chartInstance.dispatchAction({ type: 'legendUnSelect', name: 'Fees' });
-        this.chartInstance.dispatchAction({ type: 'legendSelect',   name: 'Subsidy (USD)' });
-        this.chartInstance.dispatchAction({ type: 'legendSelect',   name: 'Fees (USD)' });
-      } else {
-        this.showFiat = false;
-        this.chartInstance.dispatchAction({ type: 'legendSelect',   name: 'Subsidy' });
-        this.chartInstance.dispatchAction({ type: 'legendSelect',   name: 'Fees' });
-        this.chartInstance.dispatchAction({ type: 'legendUnSelect', name: 'Subsidy (USD)' });
-        this.chartInstance.dispatchAction({ type: 'legendUnSelect', name: 'Fees (USD)' });
+
+      if (isActivation) {
+        this.displayMode = mode;
+        this.chartInstance.dispatchAction({ type: this.displayMode === 'normal' ? 'legendSelect' : 'legendUnSelect', name: 'Subsidy' });
+        this.chartInstance.dispatchAction({ type: this.displayMode === 'normal' ? 'legendSelect' : 'legendUnSelect', name: 'Fees' });
+        this.chartInstance.dispatchAction({ type: this.displayMode === 'fiat' ? 'legendSelect' : 'legendUnSelect', name: 'Subsidy (USD)' });
+        this.chartInstance.dispatchAction({ type: this.displayMode === 'fiat' ? 'legendSelect' : 'legendUnSelect', name: 'Fees (USD)' });
+        this.chartInstance.dispatchAction({ type: this.displayMode === 'percentage' ? 'legendSelect' : 'legendUnSelect', name: 'Subsidy (%)' });
+        this.chartInstance.dispatchAction({ type: this.displayMode === 'percentage' ? 'legendSelect' : 'legendUnSelect', name: 'Fees (%)' });
       }
     });
 
@@ -411,6 +467,10 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
     return subsidies;
   }
 
+  subsidyAt(height: number): number {
+    return this.subsidies[Math.floor(Math.min(height / 210000, 33))];
+  }
+
   onZoom() {
     const option = this.chartInstance.getOption();
     const timestamps = option.xAxis[1].data;
@@ -432,12 +492,16 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
         this.data.blockHeight.splice(startIndex, endIndex - startIndex, ...response.body.map(val => val.avgHeight));
         this.data.blockFees.splice(startIndex, endIndex - startIndex, ...response.body.map(val => val.avgFees / 100_000_000));
         this.data.blockFeesFiat.splice(startIndex, endIndex - startIndex, ...response.body.filter(val => val['USD'] > 0).map(val => val.avgFees / 100_000_000 * val['USD']));
-        this.data.blockSubsidy.splice(startIndex, endIndex - startIndex, ...response.body.map(val => this.subsidies[Math.floor(Math.min(val.avgHeight / 210000, 33))] / 100_000_000));
-        this.data.blockSubsidyFiat.splice(startIndex, endIndex - startIndex, ...response.body.filter(val => val['USD'] > 0).map(val => this.subsidies[Math.floor(Math.min(val.avgHeight / 210000, 33))] / 100_000_000 * val['USD']));
+        this.data.blockFeesPercent.splice(startIndex, endIndex - startIndex, ...response.body.map(val => val.avgFees / (val.avgFees + this.subsidyAt(val.avgHeight)) * 100));
+        this.data.blockSubsidy.splice(startIndex, endIndex - startIndex, ...response.body.map(val => this.subsidyAt(val.avgHeight) / 100_000_000));
+        this.data.blockSubsidyFiat.splice(startIndex, endIndex - startIndex, ...response.body.filter(val => val['USD'] > 0).map(val => this.subsidyAt(val.avgHeight) / 100_000_000 * val['USD']));
+        this.data.blockSubsidyPercent.splice(startIndex, endIndex - startIndex, ...response.body.map(val => this.subsidyAt(val.avgHeight) / (val.avgFees + this.subsidyAt(val.avgHeight)) * 100));
         option.series[0].data = this.data.blockSubsidy;
         option.series[1].data = this.data.blockFees;
         option.series[2].data = this.data.blockSubsidyFiat;
         option.series[3].data = this.data.blockFeesFiat;
+        option.series[4].data = this.data.blockSubsidyPercent;
+        option.series[5].data = this.data.blockFeesPercent;
         option.xAxis[0].data = this.data.blockHeight;
         option.xAxis[1].data = this.data.timestamp;
         this.chartInstance.setOption(option, true);
