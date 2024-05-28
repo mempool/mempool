@@ -419,7 +419,7 @@
 <ng-template #detailsRight>
   <ng-container *ngTemplateOutlet="feeRow"></ng-container>
   <ng-container *ngTemplateOutlet="feeRateRow"></ng-container>
-  @if (!isLoadingTx && !tx?.status?.confirmed && ((cpfpInfo && hasEffectiveFeeRate) || accelerationInfo)) {
+  @if (!isLoadingTx && !tx?.status?.confirmed && isAcceleration && ((cpfpInfo && hasEffectiveFeeRate) || accelerationInfo)) {
     <ng-container *ngTemplateOutlet="acceleratingRow"></ng-container>
   } @else {
     <ng-container *ngTemplateOutlet="effectiveRateRow"></ng-container>
