@@ -76,8 +76,8 @@
   </div>
 
   <div [class]="!widget ? '' : 'pb-0'" class="container pb-lg-0">
-    <div [class]="widget ? 'chart-widget' : 'chart'" *browserOnly [style]="{ height: widget ? (height + 'px') : null}" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
-      (chartInit)="onChartInit($event)" [style]="{opacity: isLoading ? 0.5 : 1}">
+    <div [class]="widget ? 'chart-widget' : 'chart'" *browserOnly [style]="{ height: widget ? (height + 'px') : null, opacity: isLoading ? 0.5 : 1 }" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+      (chartInit)="onChartInit($event)">
     </div>
 
     <div class="text-center loadingGraphs" *ngIf="!stateService.isBrowser || isLoading">
