@@ -195,12 +195,17 @@ export class SearchFormComponent implements OnInit {
           const matchesTxId = this.regexTransaction.test(searchText) && !this.regexBlockhash.test(searchText);
           const matchesBlockHash = this.regexBlockhash.test(searchText);
           const matchesAddress = !matchesTxId && this.regexAddress.test(searchText);
+          const publicKey = matchesAddress && searchText.startsWith('0');
           const otherNetworks = findOtherNetworks(searchText, this.network as any || 'mainnet', this.env);
           const liquidAsset = this.assets ? (this.assets[searchText] || []) : [];
           const pools = this.pools.filter(pool => pool["name"].toLowerCase().startsWith(searchText.toLowerCase())).slice(0, 10);
           
           if (matchesDateTime && searchText.indexOf('/') !== -1) {
             searchText = searchText.replace(/\//g, '-');
+          }
+
+          if (publicKey) {
+            otherNetworks.length = 0;
           }
 
           return {
@@ -212,6 +217,7 @@ export class SearchFormComponent implements OnInit {
             txId: matchesTxId,
             blockHash: matchesBlockHash,
             address: matchesAddress,
+            publicKey: publicKey,
             addresses: matchesAddress && addressPrefixSearchResults.length === 1 && searchText === addressPrefixSearchResults[0] ? [] : addressPrefixSearchResults, // If there is only one address and it matches the search text, don't show it in the dropdown
             otherNetworks: otherNetworks,
             nodes: lightningResults.nodes,
