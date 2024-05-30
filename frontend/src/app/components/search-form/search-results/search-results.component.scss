@@ -22,3 +22,7 @@
 .inactive {
   opacity: 0.2;
 }
+
+.active {
+  background-color: var(--active-bg);
+}

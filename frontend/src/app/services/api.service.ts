@@ -253,7 +253,8 @@ export class ApiService {
     )
     .pipe(
       map((response) => {
-        response.body.pools.forEach((pool) => {
+        const pools = interval !== undefined ? response.body.pools : response.body;
+        pools.forEach((pool) => {
           if (pool.poolUniqueId === 0) {
             pool.name = $localize`:@@e5d8bb389c702588877f039d72178f219453a72d:Unknown`;
           }
