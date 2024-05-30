@@ -9,10 +9,11 @@ import {
   delay,
   mergeMap,
   tap,
-  map
+  map,
+  startWith
 } from 'rxjs/operators';
 import { Transaction } from '../../interfaces/electrs.interface';
-import { of, merge, Subscription, Observable, Subject, throwError, combineLatest } from 'rxjs';
+import { of, merge, Subscription, Observable, Subject, throwError, combineLatest, BehaviorSubject } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { CacheService } from '../../services/cache.service';
 import { WebsocketService } from '../../services/websocket.service';
@@ -21,12 +22,15 @@ import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
 import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { Filter } from '../../shared/filters.utils';
-import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration } from '../../interfaces/node-api.interface';
+import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration, AccelerationPosition } from '../../interfaces/node-api.interface';
 import { PriceService } from '../../services/price.service';
 import { ServicesApiServices } from '../../services/services-api.service';
 import { EnterpriseService } from '../../services/enterprise.service';
 import { ZONE_SERVICE } from '../../injection-tokens';
 import { TrackerStage } from './tracker-bar.component';
+import { MiningService, MiningStats } from '../../services/mining.service';
+import { ETA, EtaService } from '../../services/eta.service';
+import { getUnacceleratedFeeRate } from '../../shared/transaction.utils';
 
 interface Pool {
   id: number;
@@ -57,6 +61,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
   txId: string;
   txInBlockIndex: number;
   mempoolPosition: MempoolPosition;
+  accelerationPositions: AccelerationPosition[];
   isLoadingTx = true;
   error: any = undefined;
   loadingCachedTx = false;
@@ -89,11 +94,15 @@ export class TrackerComponent implements OnInit, OnDestroy {
   isAcceleration: boolean = false;
   filters: Filter[] = [];
   showCpfpDetails = false;
+  miningStats: MiningStats;
   fetchCpfp$ = new Subject<string>();
   fetchRbfHistory$ = new Subject<string>();
   fetchCachedTx$ = new Subject<string>();
   fetchAcceleration$ = new Subject<string>();
   fetchMiningInfo$ = new Subject<{ hash: string, height: number, txid: string }>();
+  txChanged$ = new BehaviorSubject<boolean>(false); // triggered whenever this.tx changes (long term, we should refactor to make this.tx an observable itself)
+  isAccelerated$ = new BehaviorSubject<boolean>(false); // refactor this to make isAccelerated an observable itself
+  ETA$: Observable<ETA | null>;
   isCached: boolean = false;
   now = Date.now();
   da$: Observable<DifficultyAdjustment>;
@@ -122,6 +131,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private electrsApiService: ElectrsApiService,
     public stateService: StateService,
+    private etaService: EtaService,
     private cacheService: CacheService,
     private websocketService: WebsocketService,
     private audioService: AudioService,
@@ -130,6 +140,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
     private seoService: SeoService,
     private priceService: PriceService,
     private enterpriseService: EnterpriseService,
+    private miningService: MiningService,
     private cd: ChangeDetectorRef,
     private zone: NgZone,
     @Inject(ZONE_SERVICE) private zoneService: any,
@@ -273,6 +284,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
         this.transactionTime = tx.firstSeen || 0;
 
         this.fetchRbfHistory$.next(this.tx.txid);
+        this.txChanged$.next(true);
       }
     });
 
@@ -354,10 +366,14 @@ export class TrackerComponent implements OnInit, OnDestroy {
       this.now = Date.now();
       if (txPosition && txPosition.txid === this.txId && txPosition.position) {
         this.mempoolPosition = txPosition.position;
+        this.accelerationPositions = txPosition.accelerationPositions;
         if (this.tx && !this.tx.status.confirmed) {
+          const txFeePerVSize = getUnacceleratedFeeRate(this.tx, this.tx.acceleration || this.mempoolPosition?.accelerated);
           this.stateService.markBlock$.next({
             txid: txPosition.txid,
-            mempoolPosition: this.mempoolPosition
+            txFeePerVSize,
+            mempoolPosition: this.mempoolPosition,
+            accelerationPositions: this.accelerationPositions,
           });
           this.txInBlockIndex = this.mempoolPosition.block;
 
@@ -372,13 +388,8 @@ export class TrackerComponent implements OnInit, OnDestroy {
 
           if (this.replaced) {
             this.trackerStage = 'replaced';
-          } else if (txPosition.position?.block === 0) {
-            this.trackerStage = 'next';
-          } else if (txPosition.position?.block < 3){
-            this.trackerStage = 'soon';
-          } else {
-            this.trackerStage = 'pending';
           }
+
           if (txPosition.position?.block > 0 && this.tx.weight < 4000) {
             this.accelerationEligible = true;
             if (this.acceleratorAvailable && this.paymentType === 'cashapp') {
@@ -388,6 +399,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
         }
       } else {
         this.mempoolPosition = null;
+        this.accelerationPositions = null;
       }
     });
 
@@ -453,6 +465,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
             this.adjustedVsize = Math.max(this.tx.weight / 4, this.sigops * 5);
           }
           this.tx.feePerVsize = tx.fee / (tx.weight / 4);
+          this.txChanged$.next(true);
           this.isLoadingTx = false;
           this.error = undefined;
           this.loadingCachedTx = false;
@@ -479,11 +492,13 @@ export class TrackerComponent implements OnInit, OnDestroy {
             });
             this.fetchCpfp$.next(this.tx.txid);
           } else {
+            const txFeePerVSize = getUnacceleratedFeeRate(this.tx, this.tx.acceleration || this.mempoolPosition?.accelerated);
             if (tx.cpfpChecked) {
               this.stateService.markBlock$.next({
                 txid: tx.txid,
-                txFeePerVSize: tx.effectiveFeePerVsize,
+                txFeePerVSize,
                 mempoolPosition: this.mempoolPosition,
+                accelerationPositions: this.accelerationPositions,
               });
               this.setCpfpInfo({
                 ancestors: tx.ancestors,
@@ -522,6 +537,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
           block_hash: block.id,
           block_time: block.timestamp,
         };
+        this.txChanged$.next(true);
         this.trackerStage = 'confirmed';
         this.stateService.markBlock$.next({ blockHeight: block.height });
         if (this.tx.acceleration || (this.accelerationInfo && ['accelerating', 'completed_provisional', 'completed'].includes(this.accelerationInfo.status))) {
@@ -580,6 +596,38 @@ export class TrackerComponent implements OnInit, OnDestroy {
         this.txInBlockIndex = 7;
       }
     });
+
+    this.ETA$ = combineLatest([
+      this.stateService.mempoolTxPosition$.pipe(startWith(null)),
+      this.stateService.mempoolBlocks$.pipe(startWith(null)),
+      this.stateService.difficultyAdjustment$.pipe(startWith(null)),
+      this.isAccelerated$,
+      this.txChanged$,
+    ]).pipe(
+      map(([position, mempoolBlocks, da, isAccelerated]) => {
+        return this.etaService.calculateETA(
+          this.network,
+          this.tx,
+          mempoolBlocks,
+          position,
+          da,
+          this.miningStats,
+          isAccelerated,
+          this.accelerationPositions,
+        );
+      }),
+      tap(eta => {
+        if (this.replaced) {
+          this.trackerStage = 'replaced'
+        } else if (eta?.blocks === 0) {
+          this.trackerStage = 'next';
+        } else if (eta?.blocks < 3){
+          this.trackerStage = 'soon';
+        } else {
+          this.trackerStage = 'pending';
+        }
+      })
+    )
   }
 
   handleLoadElectrsTransactionError(error: any): Observable<any> {
@@ -610,6 +658,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
       this.hasEffectiveFeeRate = false;
       return;
     }
+    const firstCpfp = this.cpfpInfo == null;
     // merge ancestors/descendants
     const relatives = [...(cpfpInfo.ancestors || []), ...(cpfpInfo.descendants || [])];
     if (cpfpInfo.bestDescendant && !cpfpInfo.descendants?.length) {
@@ -625,12 +674,14 @@ export class TrackerComponent implements OnInit, OnDestroy {
         relatives.reduce((prev, val) => prev + val.fee, 0);
       this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
     } else {
-      this.tx.effectiveFeePerVsize = cpfpInfo.effectiveFeePerVsize;
+      this.tx.effectiveFeePerVsize = cpfpInfo.effectiveFeePerVsize || this.tx.effectiveFeePerVsize || this.tx.feePerVsize || (this.tx.fee / (this.tx.weight / 4));
     }
     if (cpfpInfo.acceleration) {
       this.tx.acceleration = cpfpInfo.acceleration;
       this.tx.acceleratedBy = cpfpInfo.acceleratedBy;
+      this.setIsAccelerated(firstCpfp);
     }
+    this.txChanged$.next(true);
 
     this.cpfpInfo = cpfpInfo;
     if (this.cpfpInfo.adjustedVsize && this.cpfpInfo.sigops != null) {
@@ -666,6 +717,14 @@ export class TrackerComponent implements OnInit, OnDestroy {
 
   setIsAccelerated(initialState: boolean = false) {
     this.isAcceleration = (this.tx.acceleration || (this.accelerationInfo && this.pool && this.accelerationInfo.pools.some(pool => (pool === this.pool.id))));
+    if (this.isAcceleration) {
+      // this immediately returns cached stats if we fetched them recently
+      this.miningService.getMiningStats('1w').subscribe(stats => {
+        this.miningStats = stats;
+        this.isAccelerated$.next(this.isAcceleration); // hack to trigger recalculation of ETA without adding another source observable
+      });
+    }
+    this.isAccelerated$.next(this.isAcceleration);
   }
 
   dismissAccelAlert(): void {
@@ -685,6 +744,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
   resetTransaction() {
     this.error = undefined;
     this.tx = null;
+    this.txChanged$.next(true);
     this.waitingForTransaction = false;
     this.isLoadingTx = true;
     this.rbfTransaction = undefined;
@@ -704,6 +764,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
     this.mempoolPosition = null;
     this.pool = null;
     this.auditStatus = null;
+    this.accelerationPositions = null;
     this.accelerationEligible = false;
     this.trackerStage = 'waiting';
     document.body.scrollTo(0, 0);

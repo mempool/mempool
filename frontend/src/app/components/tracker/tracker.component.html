@@ -54,7 +54,7 @@
         </div>
       }
       <div class="data">
-        @if (tx && !tx.status?.confirmed && mempoolPosition?.block != null) {
+        @if (tx && !tx.status?.confirmed) {
           <div class="field narrower mt-2">
             <div class="label" i18n="transaction.first-seen|Transaction first seen">First seen</div>
             <div class="value">
@@ -68,16 +68,21 @@
           <div class="field narrower">
             <div class="label" i18n="transaction.eta|Transaction ETA">ETA</div>
             <div class="value">
-              <span class="justify-content-end d-flex align-items-center">
-                @if (mempoolPosition?.block >= 7) {
-                  <span i18n="transaction.eta.in-several-hours|Transaction ETA in several hours or more">In several hours (or more)</span>
-                } @else {
-                  <app-time kind="until" *ngIf="(da$ | async) as da;" [time]="da.adjustedTimeAvg * (mempoolPosition.block + 1) + now + da.timeOffset" [fastRender]="false" [fixedRender]="true"></app-time>
-                }
-                @if (!showAccelerationSummary && isMobile && paymentType === 'cashapp' && accelerationEligible && !tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration) {
-                  <a class="btn btn-sm accelerate btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
-                }
-              </span>
+              <ng-container *ngIf="(ETA$ | async) as eta; else etaSkeleton">
+                <span class="justify-content-end d-flex align-items-center">
+                  @if (eta.blocks >= 7) {
+                    <span i18n="transaction.eta.in-several-hours|Transaction ETA in several hours or more">In several hours (or more)</span>
+                  } @else {
+                    <app-time kind="until" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time>
+                  }
+                  @if (!showAccelerationSummary && isMobile && paymentType === 'cashapp' && accelerationEligible && !tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration) {
+                    <a class="btn btn-sm accelerate btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
+                  }
+                </span>
+              </ng-container>
+              <ng-template #etaSkeleton>
+                <span class="skeleton-loader"></span>
+              </ng-template>
             </div>
           </div>
         } @else if (tx && tx.status?.confirmed) {
