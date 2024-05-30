@@ -252,7 +252,7 @@ export interface MempoolPosition {
 }
 
 export interface AccelerationPosition extends MempoolPosition {
-  pool: string;
+  poolId: number;
   offset?: number;
 }
 

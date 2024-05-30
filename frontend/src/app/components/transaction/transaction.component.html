@@ -533,25 +533,28 @@
       <tr>
         <td class="td-width align-items-center align-middle" i18n="transaction.eta|Transaction ETA">ETA</td>
         <td>
-          @if (this.mempoolPosition?.block == null) {
+          <ng-container *ngIf="(ETA$ | async) as eta; else etaSkeleton">
+            @if (eta.blocks >= 7) {
+              <span [class]="(!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button') ? 'etaDeepMempool d-flex justify-content-end align-items-center' : ''">
+                <span i18n="transaction.eta.in-several-hours|Transaction ETA in several hours or more">In several hours (or more)</span>
+                @if (!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button') {
+                  <a class="btn btn-sm accelerateDeepMempool btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
+                }
+              </span>
+            } @else if (network === 'liquid' || network === 'liquidtestnet') {
+              <app-time kind="until" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time>
+            } @else {
+              <span class="eta justify-content-end" [class]="(acceleratorAvailable && accelerateCtaType === 'button') ? 'd-flex align-items-center' : ''">
+                <app-time kind="until" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time>
+                @if (!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button') {
+                  <a class="btn btn-sm accelerate btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
+                }
+              </span>
+            }
+          </ng-container>
+          <ng-template #etaSkeleton>
             <span class="skeleton-loader"></span>
-          } @else if (this.mempoolPosition.block >= 7) {
-            <span [class]="(acceleratorAvailable && accelerateCtaType === 'button') ? 'etaDeepMempool d-flex justify-content-end align-items-center' : ''">
-              <span i18n="transaction.eta.in-several-hours|Transaction ETA in several hours or more">In several hours (or more)</span>
-              @if (!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button') {
-                <a class="btn btn-sm accelerateDeepMempool btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
-              }
-            </span>
-          } @else if (network === 'liquid' || network === 'liquidtestnet') {
-            <app-time kind="until" [time]="(60 * 1000 * this.mempoolPosition.block) + now" [fastRender]="false" [fixedRender]="true"></app-time>
-          } @else {
-            <span class="eta justify-content-end" [class]="(acceleratorAvailable && accelerateCtaType === 'button') ? 'd-flex align-items-center' : ''">
-              <app-time kind="until" *ngIf="(da$ | async) as da;" [time]="da.adjustedTimeAvg * (this.mempoolPosition.block + 1) + now + da.timeOffset" [fastRender]="false" [fixedRender]="true"></app-time>
-              @if (!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button') {
-                <a class="btn btn-sm accelerate btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
-              }
-            </span>
-          }
+          </ng-template>
         </td>
       </tr>
     }
