@@ -78,17 +78,17 @@ export class ActiveAccelerationBox implements OnChanges {
       if (!pool) {
         continue;
       }
-      totalAcceleratedHashrate += parseFloat(pool.lastEstimatedHashrate);
+      totalAcceleratedHashrate += pool.lastEstimatedHashrate;
     }
-    this.acceleratedByPercentage = ((totalAcceleratedHashrate / parseFloat(this.miningStats.lastEstimatedHashrate)) * 100).toFixed(1) + '%';
+    this.acceleratedByPercentage = ((totalAcceleratedHashrate / this.miningStats.lastEstimatedHashrate) * 100).toFixed(1) + '%';
     data.push(getDataItem(
       totalAcceleratedHashrate,
       'var(--mainnet-alt)',
       `${this.acceleratedByPercentage} accelerating`,
     ) as PieSeriesOption);
-    const notAcceleratedByPercentage = ((1 - (totalAcceleratedHashrate / parseFloat(this.miningStats.lastEstimatedHashrate))) * 100).toFixed(1) + '%';
+    const notAcceleratedByPercentage = ((1 - (totalAcceleratedHashrate / this.miningStats.lastEstimatedHashrate)) * 100).toFixed(1) + '%';
     data.push(getDataItem(
-      (parseFloat(this.miningStats.lastEstimatedHashrate) - totalAcceleratedHashrate),
+      (this.miningStats.lastEstimatedHashrate - totalAcceleratedHashrate),
       'rgba(127, 127, 127, 0.3)',
       `${notAcceleratedByPercentage} not accelerating`,
     ) as PieSeriesOption);
