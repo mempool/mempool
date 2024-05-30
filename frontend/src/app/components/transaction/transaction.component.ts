@@ -380,7 +380,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.txInBlockIndex = this.mempoolPosition.block;
 
           if (txPosition.cpfp !== undefined) {
+            if (txPosition.position.acceleratedBy) {
+              txPosition.cpfp.acceleratedBy = txPosition.position.acceleratedBy;
+            }
             this.setCpfpInfo(txPosition.cpfp);
+          } else if ((this.tx?.acceleration && txPosition.position.acceleratedBy)) {
+            this.tx.acceleratedBy = txPosition.position.acceleratedBy;
           }
         }
       } else {
