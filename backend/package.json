@@ -47,7 +47,7 @@
     "crypto-js": "~4.2.0",
     "express": "~4.19.2",
     "maxmind": "~4.3.11",
-    "mysql2": "~3.9.7",
+    "mysql2": "~3.9.8",
     "rust-gbt": "file:./rust-gbt",
     "redis": "^4.6.6",
     "socks-proxy-agent": "~7.0.0",
