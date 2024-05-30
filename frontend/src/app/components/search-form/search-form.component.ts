@@ -198,7 +198,7 @@ export class SearchFormComponent implements OnInit {
           const publicKey = matchesAddress && searchText.startsWith('0');
           const otherNetworks = findOtherNetworks(searchText, this.network as any || 'mainnet', this.env);
           const liquidAsset = this.assets ? (this.assets[searchText] || []) : [];
-          const pools = this.pools.filter(pool => pool["name"].toLowerCase().startsWith(searchText.toLowerCase())).slice(0, 10);
+          const pools = this.pools.filter(pool => pool["name"].toLowerCase().includes(searchText.toLowerCase())).slice(0, 10);
           
           if (matchesDateTime && searchText.indexOf('/') !== -1) {
             searchText = searchText.replace(/\//g, '-');
