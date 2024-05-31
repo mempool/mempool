@@ -1,9 +1,50 @@
 .td-width {
-	width: 150px;
-	min-width: 150px;
+  width: 150px;
+  min-width: 150px;
 
-	@media (max-width: 768px) {
-	  width: 175px;
-	  min-width: 175px;
-	}
+  @media (max-width: 768px) {
+    width: 175px;
+    min-width: 175px;
+  }
+}
+
+.field-label {
+  @media (max-width: 849px) {
+    text-align: left;    
+  }
+  @media (max-width: 649px) {
+    width: auto;
+    min-width: auto;
+  }
+}
+
+.field-value {
+  @media (max-width: 849px) {
+    width: 100%;
+  }
+
+  .hashrate-label {
+    @media (max-width: 420px) {
+      display: none;
+    }
+  }
+}
+
+.pie-chart {
+  width: 100%;
+  vertical-align: middle;
+  text-align: center;
+
+  .chart-container {
+    width: 72px;
+    height: 100%;
+    margin-left: auto;
+  }
+
+  @media (max-width: 850px) {
+    width: 150px;
+  }
+  @media (max-width: 420px) {
+    padding-left: 0;
+  }
 }
