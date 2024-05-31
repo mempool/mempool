@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { echarts, EChartsOption } from '../../graphs/echarts';
-import { BehaviorSubject, Observable, combineLatest, of, timer } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription, combineLatest, of } from 'rxjs';
 import { catchError, distinctUntilChanged, filter, map, share, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended, PoolStat } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
@@ -28,6 +28,7 @@ export class PoolComponent implements OnInit {
   gfg = true;
 
   formatNumber = formatNumber;
+  slugSubscription: Subscription;
   poolStats$: Observable<PoolStat>;
   blocks$: Observable<BlockExtended[]>;
   oobFees$: Observable<AccelerationTotal[]>;
@@ -56,38 +57,24 @@ export class PoolComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.poolStats$ = this.route.params.pipe(map((params) => params.slug))
+    this.slugSubscription = this.route.params.pipe(map((params) => params.slug)).subscribe((slug) => {
+      this.isLoading = true;
+      this.blocks = [];
+      this.chartOptions = {};  
+      this.slug = slug;
+      this.initializeObservables();
+    });
+  }
+
+  initializeObservables(): void {
+    this.poolStats$ = this.apiService.getPoolHashrate$(this.slug)
       .pipe(
-        switchMap((slug: any) => {
-          this.isLoading = true;
-          this.slug = slug;
-          return this.apiService.getPoolHashrate$(this.slug)
-            .pipe(
-              switchMap((data) => {
-                this.isLoading = false;
-                const hashrate = data.map(val => [val.timestamp * 1000, val.avgHashrate]);
-                const share = data.map(val => [val.timestamp * 1000, val.share * 100]);
-                this.prepareChartOptions(hashrate, share);
-                return [slug];
-              }),
-              catchError(() => {
-                this.isLoading = false;
-                this.seoService.logSoft404();
-                return of([slug]);
-              })
-            );
-        }),
-        switchMap((slug) => {
-          return this.apiService.getPoolStats$(slug).pipe(
-            catchError(() => {
-              this.isLoading = false;
-              this.seoService.logSoft404();
-              return of(null);
-            })
-          );
-        }),
-        tap(() => {
-          this.loadMoreSubject.next(this.blocks[0]?.height);
+        switchMap((data) => {
+          this.isLoading = false;
+          const hashrate = data.map(val => [val.timestamp * 1000, val.avgHashrate]);
+          const share = data.map(val => [val.timestamp * 1000, val.share * 100]);
+          this.prepareChartOptions(hashrate, share);
+          return this.apiService.getPoolStats$(this.slug);
         }),
         map((poolStats) => {
           this.seoService.setTitle(poolStats.pool.name);
@@ -101,7 +88,12 @@ export class PoolComponent implements OnInit {
           return Object.assign({
             logo: `/resources/mining-pools/` + poolStats.pool.slug + '.svg'
           }, poolStats);
-        })
+        }),
+        catchError(() => {
+          this.isLoading = false;
+          this.seoService.logSoft404();
+          return of(null);
+        }),
       );
 
     this.blocks$ = this.loadMoreSubject
@@ -327,5 +319,9 @@ export class PoolComponent implements OnInit {
 
   trackByBlock(index: number, block: BlockExtended) {
     return block.height;
+  }
+
+  ngOnDestroy(): void {
+    this.slugSubscription.unsubscribe();
   }
 }
