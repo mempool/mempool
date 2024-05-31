@@ -28,6 +28,10 @@ export class SearchResultsComponent implements OnChanges {
     this.activeIdx = 0;
     if (this.results) {
       this.resultsFlattened = [...(this.results.hashQuickMatch ? [this.results.searchText] : []), ...this.results.addresses, ...this.results.pools, ...this.results.nodes, ...this.results.channels, ...this.results.otherNetworks];
+      // If searchText is a public key corresponding to a node, select it by default
+      if (this.results.publicKey && this.results.nodes.length > 0) {
+        this.activeIdx = 1;
+      }
     }
   }
 
