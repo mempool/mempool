@@ -1,8 +1,8 @@
 <table>
   <tbody>
     <tr>
-      <td class="td-width" i18n="transaction.accelerated-to-feerate|Accelerated to feerate">Accelerated to</td>
-      <td>
+      <td class="td-width field-label" i18n="transaction.accelerated-to-feerate|Accelerated to feerate">Accelerated to</td>
+      <td class="field-value">
         <div class="effective-fee-container">
           @if (accelerationInfo?.acceleratedFeeRate && (!tx.effectiveFeePerVsize || accelerationInfo.acceleratedFeeRate >= tx.effectiveFeePerVsize)) {
             <app-fee-rate [fee]="accelerationInfo.acceleratedFeeRate"></app-fee-rate>
@@ -11,24 +11,30 @@
           }
         </div>
       </td>
-      <td rowspan="2" *ngIf="tx && (tx.acceleratedBy || accelerationInfo) && miningStats" class="text-right" style="width: 100%;">
-        <div class="chart-container" style="width: 100px; margin-left:auto;">
-          <div
-            echarts
-            *browserOnly
-            class="chart"
-            [initOpts]="chartInitOptions"
-            [options]="chartOptions"
-            style="height: 72px"
-            (chartInit)="onChartInit($event)"
-          ></div>
+      <td class="pie-chart" rowspan="2">
+        <div class="chart-container">
+          @if (tx && (tx.acceleratedBy || accelerationInfo) && miningStats) {
+            <div
+              echarts
+              *browserOnly
+              class="chart"
+              [initOpts]="chartInitOptions"
+              [options]="chartOptions"
+              style="height: 72px; width: 72px;"
+              (chartInit)="onChartInit($event)"
+            ></div>
+          } @else {
+            <div class="chart-loading">
+              <div class="spinner-border text-light"></div>
+            </div>
+          }
         </div>
       </td>
     </tr>
     <tr>
-      <td class="td-width" i18n="transaction.accelerated-by-hashrate|Accelerated to hashrate">Accelerated by</td>
-      <td *ngIf="acceleratedByPercentage">
-        {{ acceleratedByPercentage }} <span class="symbol">of hashrate</span>
+      <td class="td-width field-label" i18n="transaction.accelerated-by-hashrate|Accelerated to hashrate">Accelerated by</td>
+      <td class="field-value" *ngIf="acceleratedByPercentage">
+        {{ acceleratedByPercentage }} <span class="symbol hashrate-label">of hashrate</span>
       </td>
     </tr>
   </tbody>
