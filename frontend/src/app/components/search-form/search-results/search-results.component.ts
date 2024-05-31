@@ -27,7 +27,7 @@ export class SearchResultsComponent implements OnChanges {
   ngOnChanges() {
     this.activeIdx = 0;
     if (this.results) {
-      this.resultsFlattened = [...(this.results.hashQuickMatch ? [this.results.searchText] : []), ...this.results.otherNetworks, ...this.results.addresses, ...this.results.nodes, ...this.results.channels];
+      this.resultsFlattened = [...(this.results.hashQuickMatch ? [this.results.searchText] : []), ...this.results.otherNetworks, ...this.results.addresses, ...this.results.nodes, ...this.results.channels, ...this.results.pools];
     }
   }
 

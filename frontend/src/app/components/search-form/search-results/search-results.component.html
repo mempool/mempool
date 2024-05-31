@@ -1,4 +1,4 @@
-<div class="dropdown-menu show" *ngIf="results" [hidden]="!results.hashQuickMatch && !results.otherNetworks.length && !results.addresses.length && !results.nodes.length && !results.channels.length && !results.liquidAsset.length">
+<div class="dropdown-menu show" *ngIf="results" [hidden]="!results.hashQuickMatch && !results.otherNetworks.length && !results.addresses.length && !results.nodes.length && !results.channels.length && !results.liquidAsset.length && !results.pools.length">
   <ng-template [ngIf]="results.blockHeight">
     <div class="card-title" i18n="search.bitcoin-block-height">{{ networkName }} Block Height</div>
     <button (click)="clickItem(0)" [class.active]="0 === activeIdx" type="button" role="option" class="dropdown-item">
@@ -64,6 +64,14 @@
     <ng-template ngFor [ngForOf]="results.channels" let-channel let-i="index">
       <button (click)="clickItem(results.hashQuickMatch + results.otherNetworks.length + results.addresses.length + results.nodes.length + i)" [class.inactive]="channel.status === 2"  [class.active]="results.hashQuickMatch + results.otherNetworks.length + results.addresses.length + results.nodes.length + i === activeIdx" type="button" role="option" class="dropdown-item">
         <ngb-highlight [result]="channel.short_id" [term]="results.searchText"></ngb-highlight> &nbsp;<span class="symbol">{{ channel.id }}</span>
+      </button>
+    </ng-template>
+  </ng-template>
+  <ng-template [ngIf]="results.pools.length">
+    <div class="card-title" i18n="search.mining-pools">Mining Pools</div>
+    <ng-template ngFor [ngForOf]="results.pools" let-pool let-i="index">
+      <button (click)="clickItem(results.hashQuickMatch + results.otherNetworks.length + results.addresses.length + results.nodes.length + results.channels.length + i)" [class.active]="results.hashQuickMatch + results.otherNetworks.length + results.addresses.length + results.nodes.length + results.channels.length + i === activeIdx" [class.inactive]="!pool.active" type="button" role="option" class="dropdown-item">
+        <ngb-highlight [result]="pool.name" [term]="results.searchText"></ngb-highlight>
       </button>
     </ng-template>
   </ng-template>
