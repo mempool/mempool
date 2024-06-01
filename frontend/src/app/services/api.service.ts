@@ -403,9 +403,13 @@ export class ApiService {
     return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/channels/txids/', { params });
   }
 
-  lightningSearch$(searchText: string): Observable<any[]> {
+  lightningSearch$(searchText: string): Observable<{ nodes: any[], channels: any[] }> {
     let params = new HttpParams().set('searchText', searchText);
-    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/search', { params });
+    // Don't request the backend if searchText is less than 3 characters
+    if (searchText.length < 3) {
+      return of({ nodes: [], channels: [] });
+    }
+    return this.httpClient.get<{ nodes: any[], channels: any[] }>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/search', { params });
   }
 
   getNodesPerIsp(): Observable<any> {
