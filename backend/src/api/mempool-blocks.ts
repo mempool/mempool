@@ -24,15 +24,6 @@ class MempoolBlocks {
 
   private pools: { [id: number]: PoolTag } = {};
 
-  constructor() {
-    PoolsRepository.$getPools().then(allPools => {
-      this.pools = {};
-      for (const pool of allPools) {
-        this.pools[pool.uniqueId] = pool;
-      }
-    });
-  }
-
   public getMempoolBlocks(): MempoolBlock[] {
     return this.mempoolBlocks.map((block) => {
       return {
@@ -52,6 +43,14 @@ class MempoolBlocks {
 
   public getMempoolBlockDeltas(): MempoolBlockDelta[] {
     return this.mempoolBlockDeltas;
+  }
+
+  public async updatePools$(): Promise<void> {
+    const allPools = await PoolsRepository.$getPools();
+    this.pools = {};
+    for (const pool of allPools) {
+      this.pools[pool.uniqueId] = pool;
+    }
   }
 
   private calculateMempoolDeltas(prevBlocks: MempoolBlockWithTransactions[], mempoolBlocks: MempoolBlockWithTransactions[]): MempoolBlockDelta[] {
