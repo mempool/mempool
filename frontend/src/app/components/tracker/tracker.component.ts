@@ -220,7 +220,23 @@ export class TrackerComponent implements OnInit, OnDestroy {
       this.rbfInfo = rbfResponse?.replacements;
       this.rbfReplaces = rbfResponse?.replaces || null;
       if (this.rbfInfo) {
+        // link to the latest pending version
         this.latestReplacement = this.rbfInfo.tx.txid;
+        // or traverse the rbf tree to find a confirmed version
+        if (this.rbfInfo.mined) {
+          const stack = [this.rbfInfo];
+          let found = false;
+          while (stack.length && !found) {
+            const top = stack.pop();
+            if (top?.tx.mined) {
+              found = true;
+              this.latestReplacement = top.tx.txid;
+              break;
+            } else {
+              stack.push(...top.replaces);
+            }
+          }
+        }
       }
     });
 
