@@ -33,6 +33,10 @@ const routes: Routes = [
         component: PushTransactionComponent,
       },
       {
+        path: 'pushtx',
+        component: PushTransactionComponent,
+      },
+      {
         path: 'tx/test',
         component: TestTransactionsComponent,
       },
