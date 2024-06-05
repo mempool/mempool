@@ -182,6 +182,8 @@ export class AddressComponent implements OnInit, OnDestroy {
 
         if (!this.showBalancePeriod()) {
           this.setBalancePeriod('all');
+        } else {
+          this.setBalancePeriod('1m');
         }
       },
       (error) => {
