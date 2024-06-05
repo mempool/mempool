@@ -46,6 +46,10 @@ class MempoolBlocks {
   }
 
   public async updatePools$(): Promise<void> {
+    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
+      this.pools = {};
+      return;
+    }
     const allPools = await PoolsRepository.$getPools();
     this.pools = {};
     for (const pool of allPools) {
