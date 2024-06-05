@@ -233,6 +233,10 @@ const routes = {
     title: "Trademark Policy",
     fallbackImg: '/resources/previews/trademark-policy.jpg',
   },
+  research: {
+    title: "Mempool Research",
+    fallbackImg: '/resources/previews/research.jpg',
+  },
 };
 
 export const networks = {
