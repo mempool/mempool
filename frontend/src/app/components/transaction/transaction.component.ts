@@ -13,7 +13,7 @@ import {
   retry
 } from 'rxjs/operators';
 import { Transaction } from '../../interfaces/electrs.interface';
-import { of, merge, Subscription, Observable, Subject, from, throwError, combineLatest } from 'rxjs';
+import { of, merge, Subscription, Observable, Subject, from, throwError } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { CacheService } from '../../services/cache.service';
 import { WebsocketService } from '../../services/websocket.service';
@@ -23,11 +23,11 @@ import { SeoService } from '../../services/seo.service';
 import { StorageService } from '../../services/storage.service';
 import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { getTransactionFlags } from '../../shared/transaction.utils';
-import { Filter, toFilters, TransactionFlags } from '../../shared/filters.utils';
-import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration } from '../../interfaces/node-api.interface';
+import { Filter, toFilters } from '../../shared/filters.utils';
+import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration, AccelerationPosition } from '../../interfaces/node-api.interface';
 import { LiquidUnblinding } from './liquid-ublinding';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
-import { Price, PriceService } from '../../services/price.service';
+import { PriceService } from '../../services/price.service';
 import { isFeatureActive } from '../../bitcoin.utils';
 import { ServicesApiServices } from '../../services/services-api.service';
 import { EnterpriseService } from '../../services/enterprise.service';
@@ -62,6 +62,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   txId: string;
   txInBlockIndex: number;
   mempoolPosition: MempoolPosition;
+  accelerationPositions: AccelerationPosition[];
   isLoadingTx = true;
   error: any = undefined;
   errorUnblinded: any = undefined;
@@ -372,10 +373,14 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.now = Date.now();
       if (txPosition && txPosition.txid === this.txId && txPosition.position) {
         this.mempoolPosition = txPosition.position;
+        this.accelerationPositions = txPosition.accelerationPositions;
         if (this.tx && !this.tx.status.confirmed) {
+          const txFeePerVSize = this.getUnacceleratedFeeRate(this.tx, this.tx.acceleration || this.mempoolPosition?.accelerated);
           this.stateService.markBlock$.next({
             txid: txPosition.txid,
-            mempoolPosition: this.mempoolPosition
+            txFeePerVSize,
+            mempoolPosition: this.mempoolPosition,
+            accelerationPositions: this.accelerationPositions,
           });
           this.txInBlockIndex = this.mempoolPosition.block;
 
@@ -390,6 +395,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       } else {
         this.mempoolPosition = null;
+        this.accelerationPositions = null;
       }
     });
 
@@ -513,11 +519,13 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             });
             this.fetchCpfp$.next(this.tx.txid);
           } else {
+            const txFeePerVSize = this.getUnacceleratedFeeRate(this.tx, this.tx.acceleration || this.mempoolPosition?.accelerated);
             if (tx.cpfpChecked) {
               this.stateService.markBlock$.next({
                 txid: tx.txid,
-                txFeePerVSize: tx.effectiveFeePerVsize,
+                txFeePerVSize,
                 mempoolPosition: this.mempoolPosition,
+                accelerationPositions: this.accelerationPositions,
               });
               this.setCpfpInfo({
                 ancestors: tx.ancestors,
@@ -791,6 +799,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.mempoolPosition = null;
     this.pool = null;
     this.auditStatus = null;
+    this.accelerationPositions = null;
     document.body.scrollTo(0, 0);
     this.isAcceleration = false;
     this.leaveTransaction();
