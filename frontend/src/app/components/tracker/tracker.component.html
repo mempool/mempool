@@ -43,9 +43,16 @@
         <app-clockchain [height]="blockchainHeight" [width]="blockchainWidth" mode="none"></app-clockchain>
       </div>
     <div class="panel">
-      <div class="tracker-bar">
-        <app-tracker-bar [stage]="trackerStage"></app-tracker-bar>
-      </div>
+      @if (replaced) {
+        <div class="alert-replaced" role="alert">
+          <span i18n="transaction.rbf.replacement|RBF replacement">This transaction has been replaced by:</span>
+          <app-truncate [text]="latestReplacement" [lastChars]="12" [link]="['/tracker/' | relativeUrl, latestReplacement]"></app-truncate>
+        </div>
+      } @else {
+        <div class="tracker-bar">
+          <app-tracker-bar [stage]="trackerStage"></app-tracker-bar>
+        </div>
+      }
       <div class="data">
         @if (tx && !tx.status?.confirmed && mempoolPosition?.block != null) {
           <div class="field narrower mt-2">
@@ -142,6 +149,12 @@
                 <fa-icon [icon]="['fas', 'circle-check']" [fixedWidth]="true"></fa-icon>
               </div>
               <span class="explainer" i18n="tracker.explain.confirmed">Your transaction is confirmed!</span>
+            }
+            @case ('replaced') {
+              <div class="progress-icon">
+                <fa-icon [icon]="['fas', 'timeline']" [fixedWidth]="true"></fa-icon>
+              </div>
+              <span class="explainer" i18n="tracker.explain.replaced">Your transaction has been replaced by a newer version!</span>
             }
           }
         }

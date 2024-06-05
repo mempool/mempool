@@ -76,6 +76,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
   currencyChangeSubscription: Subscription;
   rbfTransaction: undefined | Transaction;
   replaced: boolean = false;
+  latestReplacement: string;
   rbfReplaces: string[];
   rbfInfo: RbfTree;
   cpfpInfo: CpfpInfo | null;
@@ -218,6 +219,25 @@ export class TrackerComponent implements OnInit, OnDestroy {
     ).subscribe((rbfResponse) => {
       this.rbfInfo = rbfResponse?.replacements;
       this.rbfReplaces = rbfResponse?.replaces || null;
+      if (this.rbfInfo) {
+        // link to the latest pending version
+        this.latestReplacement = this.rbfInfo.tx.txid;
+        // or traverse the rbf tree to find a confirmed version
+        if (this.rbfInfo.mined) {
+          const stack = [this.rbfInfo];
+          let found = false;
+          while (stack.length && !found) {
+            const top = stack.pop();
+            if (top?.tx.mined) {
+              found = true;
+              this.latestReplacement = top.tx.txid;
+              break;
+            } else {
+              stack.push(...top.replaces);
+            }
+          }
+        }
+      }
     });
 
     this.fetchCachedTxSubscription = this.fetchCachedTx$
@@ -350,7 +370,9 @@ export class TrackerComponent implements OnInit, OnDestroy {
             this.tx.acceleratedBy = txPosition.position?.acceleratedBy;
           }
 
-          if (txPosition.position?.block === 0) {
+          if (this.replaced) {
+            this.trackerStage = 'replaced';
+          } else if (txPosition.position?.block === 0) {
             this.trackerStage = 'next';
           } else if (txPosition.position?.block < 3){
             this.trackerStage = 'soon';
@@ -520,6 +542,10 @@ export class TrackerComponent implements OnInit, OnDestroy {
       }
       this.rbfTransaction = rbfTransaction;
       this.replaced = true;
+      this.trackerStage = 'replaced';
+      if (!this.rbfInfo) {
+        this.latestReplacement = this.rbfTransaction.txid;
+      }
       this.stateService.markBlock$.next({});
 
       if (rbfTransaction && !this.tx) {
@@ -663,6 +689,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
     this.isLoadingTx = true;
     this.rbfTransaction = undefined;
     this.replaced = false;
+    this.latestReplacement = '';
     this.transactionTime = -1;
     this.cpfpInfo = null;
     this.adjustedVsize = null;
