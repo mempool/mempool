@@ -48,6 +48,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   transactionsLength: number = 0;
   inputRowLimit: number = 12;
   outputRowLimit: number = 12;
+  showFullScript: { [vinIndex: number]: boolean } = {};
 
   constructor(
     public stateService: StateService,
@@ -300,7 +301,9 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   toggleDetails(): void {
     if (this.showDetails$.value === true) {
       this.showDetails$.next(false);
+      this.showFullScript = {};
     } else {
+      this.showFullScript = this.transactions[0] ? this.transactions[0].vin.reduce((acc, _, i) => ({...acc, [i]: false}), {}) : {};
       this.showDetails$.next(true);
     }
   }
@@ -350,6 +353,10 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       limit = tx.vout.length;
     }
     return limit;
+  }
+
+  toggleShowFullScript(vinIndex: number): void {
+    this.showFullScript[vinIndex] = !this.showFullScript[vinIndex];
   }
 
   ngOnDestroy(): void {
