@@ -682,6 +682,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
+    this.miningService.getMiningStats('1w').subscribe(stats => {
+      this.miningStats = stats;
+    });
+
     document.location.hash = '#accelerate';
     this.enterpriseService.goal(8);
     this.showAccelerationSummary = true && this.acceleratorAvailable;

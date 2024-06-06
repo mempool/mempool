@@ -116,38 +116,52 @@ export class EtaService {
       if (!accelerationPositions) {
         return null;
       }
-
-      /**
-       *  **Define parameters**
-            - Let $\{C_i\}$ be the set of pools.
-            - $P(C_i)$ is the probability that a random block belongs to pool $C_i$.
-            - $N(C_i)$ is the number of blocks that need to be mined before a block by pool $C_i$ contains the given transaction.
-            - $H(n)$ is the proportion of hashrate for which the transaction is in mempool block ≤ $n$
-            - $S(n)$ is the probability of the transaction being mined in block $n$
-              - by definition, $S(max) = 1$ , where $max$ is the maximum depth of the transaction in any mempool, and therefore $S(n>max) = 0$
-            - $Q$ is the expected number of blocks before the transaction is confirmed
-            - $E$ is the expected time before the transaction is confirmed
-          **Overall expected confirmation time**
-            - $S(i) = H(i) \times (1 - \sum_{j=0}^{i-1} S(j))$
-              - the probability of mining a block including the transaction at this depth, multiplied by the probability that it hasn't already been mined at an earlier depth.
-            - $Q = \sum_{i=0}^{max} S(i) \times (i+1)$
-              - number of blocks, weighted by the probability that the block includes the transaction
-            - $E = Q \times T$
-              - expected number of blocks, multiplied by the avg time per block
-       */
       const pools: { [id: number]: SinglePoolStats } = {};
       for (const pool of miningStats.pools) {
         pools[pool.poolUniqueId] = pool;
       }
       const unacceleratedPosition = this.mempoolPositionFromFees(getUnacceleratedFeeRate(tx, true), mempoolBlocks);
-      const positions = [unacceleratedPosition, ...accelerationPositions];
-      const max = unacceleratedPosition.block; // by definition, assuming no negative fee deltas or out of band txs
+      let totalAcceleratedHashrate = accelerationPositions.reduce((total, pos) => total + (pools[pos.poolId].lastEstimatedHashrate), 0);
+      const shares = [
+        {
+          block: unacceleratedPosition.block,
+          hashrateShare: (1 - (totalAcceleratedHashrate / miningStats.lastEstimatedHashrate)),
+        },
+        ...accelerationPositions.map(pos => ({
+          block: pos.block,
+          hashrateShare: ((pools[pos.poolId].lastEstimatedHashrate) / miningStats.lastEstimatedHashrate)
+        }))
+      ];
+      return this.calculateETAFromShares(shares, da);
+    }
+  }
+
+  /**
+   *
+      - Let $\{C_i\}$ be the set of pools.
+      - $P(C_i)$ is the probability that a random block belongs to pool $C_i$.
+      - $N(C_i)$ is the number of blocks that need to be mined before a block by pool $C_i$ contains the given transaction.
+      - $H(n)$ is the proportion of hashrate for which the transaction is in mempool block ≤ $n$
+      - $S(n)$ is the probability of the transaction being mined in block $n$
+        - by definition, $S(max) = 1$ , where $max$ is the maximum depth of the transaction in any mempool, and therefore $S(n>max) = 0$
+      - $Q$ is the expected number of blocks before the transaction is confirmed
+      - $E$ is the expected time before the transaction is confirmed
+
+      - $S(i) = H(i) \times (1 - \sum_{j=0}^{i-1} S(j))$
+        - the probability of mining a block including the transaction at this depth, multiplied by the probability that it hasn't already been mined at an earlier depth.
+      - $Q = \sum_{i=0}^{max} S(i) \times (i+1)$
+        - number of blocks, weighted by the probability that the block includes the transaction
+      - $E = Q \times T$
+        - expected number of blocks, multiplied by the avg time per block
+    */
+  calculateETAFromShares(shares: { block: number, hashrateShare: number }[], da: DifficultyAdjustment, now: number = Date.now()): ETA {
+      const max = shares.reduce((max, share) => Math.max(max, share.block), 0);
 
       let tailProb = 0;
       let Q = 0;
       for (let i = 0; i < max; i++) {
         // find H_i
-        const H = accelerationPositions.reduce((total, pos) => total + (pos.block <= i ? pools[pos.poolId].lastEstimatedHashrate : 0), 0) / miningStats.lastEstimatedHashrate;
+        const H = shares.reduce((total, share) => total + (share.block <= i ? share.hashrateShare : 0), 0);
         // find S_i
         let S = H * (1 - tailProb);
         // accumulate sum (S_i x i)
@@ -165,6 +179,5 @@ export class EtaService {
         wait: eta,
         blocks: Math.ceil(eta / da.adjustedTimeAvg),
       }
-    }
   }
 }

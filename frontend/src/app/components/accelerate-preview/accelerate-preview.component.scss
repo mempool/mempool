@@ -107,6 +107,11 @@
   margin-top: 1em;
 }
 
+.col.pie {
+  flex-grow: 0;
+  padding: 0 1em;
+}
+
 .item {
   white-space: initial;
 }
