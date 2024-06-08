@@ -26,7 +26,7 @@
               <app-amount [satoshis]="utxo.amount" [noFiat]="true" [forceBtc]="true"></app-amount>
             </td>
             <td class="timestamp text-left widget">
-              <app-time kind="since" [time]="utxo.blocktime"></app-time>
+              <app-time kind="since" [time]="utxo.blocktime" [showTooltip]="true"></app-time>
             </td>
           </tr>
         </ng-container>

@@ -450,7 +450,7 @@
     @if (transactionTime > 0) {
       <tr>
         <td i18n="transaction.confirmed|Transaction Confirmed state">Confirmed</td>
-        <td><app-time kind="span" [time]="tx.status.block_time - transactionTime" [fastRender]="true" [relative]="true"></app-time></td>
+        <td><app-time kind="span" [time]="tx.status.block_time" [fastRender]="true" [showTooltip]="true"></app-time></td>
       </tr>
     }
   } @else {
@@ -464,7 +464,7 @@
   } @else if (transactionTime > 0) {
     <tr>
       <td i18n="transaction.first-seen|Transaction first seen">First seen</td>
-      <td><i><app-time kind="since" [time]="transactionTime" [fastRender]="true"></app-time></i></td>
+      <td><i><app-time kind="since" [time]="transactionTime" [fastRender]="true" [showTooltip]="true"></app-time></i></td>
     </tr>
   } @else {
     <tr>

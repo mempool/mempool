@@ -27,6 +27,7 @@ import { ShortenStringPipe } from './shared/pipes/shorten-string-pipe/shorten-st
 import { CapAddressPipe } from './shared/pipes/cap-address-pipe/cap-address-pipe';
 import { AppPreloadingStrategy } from './app.preloading-strategy';
 import { ServicesApiServices } from './services/services-api.service';
+import { DatePipe } from '@angular/common';
 
 const providers = [
   ElectrsApiService,
@@ -45,6 +46,7 @@ const providers = [
   FiatShortenerPipe,
   FiatCurrencyPipe,
   CapAddressPipe,
+  DatePipe,
   AppPreloadingStrategy,
   ServicesApiServices,
   PreloadService,

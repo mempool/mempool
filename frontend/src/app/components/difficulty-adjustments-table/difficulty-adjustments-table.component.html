@@ -14,7 +14,7 @@
           <a [routerLink]="['/block' | relativeUrl, diffChange.height]">{{ diffChange.height }}</a>
         </td>
         <td class="date text-left">
-          <app-time kind="since" [time]="diffChange.timestamp" [fastRender]="true" [precision]="1"></app-time>
+          <app-time kind="since" [time]="diffChange.timestamp" [fastRender]="true" [precision]="1" [showTooltip]="true"></app-time>
         </td>
         <td class="text-right">{{ diffChange.difficultyShorten }}</td>
         <td class="text-right" [style]="diffChange.change >= 0 ? 'color: #42B747' : 'color: #B74242'">

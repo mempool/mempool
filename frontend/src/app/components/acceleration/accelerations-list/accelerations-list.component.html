@@ -35,7 +35,7 @@
               {{ (acceleration.feeDelta) | number }} <span class="symbol" i18n="shared.sat|sat">sat</span>
             </td>
             <td class="time text-right">
-              <app-time kind="since" [time]="acceleration.added" [fastRender]="true"></app-time>
+              <app-time kind="since" [time]="acceleration.added" [fastRender]="true" [showTooltip]="true"></app-time>
             </td>
           </ng-container>
           <ng-container *ngIf="!pending">
@@ -55,7 +55,7 @@
               <span *ngIf="acceleration.status.includes('failed')" class="badge badge-danger" i18n="accelerator.canceled">Failed <span *ngIf="acceleration.status === 'failed_provisional'">🔄</span></span>
             </td>
             <td class="date text-right" *ngIf="!this.widget">
-              <app-time kind="since" [time]="acceleration.added" [fastRender]="true"></app-time>
+              <app-time kind="since" [time]="acceleration.added" [fastRender]="true" [showTooltip]="true"></app-time>
             </td>
           </ng-container>
         </tr>
