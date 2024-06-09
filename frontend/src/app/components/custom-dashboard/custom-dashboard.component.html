@@ -158,7 +158,7 @@
                   <tbody *ngIf="blocks$ | async as blocks; else blocksSkeleton">
                     <tr *ngFor="let block of blocks; let i = index; trackBy: trackByBlock">
                       <td class="table-cell-height" ><a [routerLink]="['/block' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
-                      <td class="table-cell-mined" ><app-time kind="since" [time]="block.timestamp" [fastRender]="true"></app-time></td>
+                      <td class="table-cell-mined" ><app-time kind="since" [time]="block.timestamp" [fastRender]="true" [showTooltip]="true"></app-time></td>
                       <td class="table-cell-transaction-count">{{ block.tx_count | number }}</td>
                       <td class="table-cell-size">
                         <div class="progress">

@@ -59,7 +59,7 @@
             <div class="label" i18n="transaction.first-seen|Transaction first seen">First seen</div>
             <div class="value">
               @if (transactionTime > 0) {
-                <i><app-time kind="since" [time]="transactionTime" [fastRender]="true"></app-time></i>
+                <i><app-time kind="since" [time]="transactionTime" [fastRender]="true" [showTooltip]="true"></app-time></i>
               } @else {
                 <span class="skeleton-loader" style="max-width: 50%;"></span>
               }
@@ -86,7 +86,7 @@
             <div class="value">
               &lrm;{{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }}
               <div class="lg-inline">
-                <i class="symbol">(<app-time kind="since" [time]="tx.status.block_time" [fastRender]="true"></app-time>)</i>
+                <i class="symbol">(<app-time kind="since" [time]="tx.status.block_time" [fastRender]="true" [showTooltip]="true"></app-time>)</i>
               </div>
             </div>
           </div>

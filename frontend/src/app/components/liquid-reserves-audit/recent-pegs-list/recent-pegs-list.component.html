@@ -31,7 +31,7 @@
               </ng-container>
             </td>
             <td class="timestamp text-left widget">
-              <app-time kind="since" [time]="peg.blocktime"></app-time>
+              <app-time kind="since" [time]="peg.blocktime" [showTooltip]="true"></app-time>
             </td>
             <td class="amount text-right widget" [ngClass]="{'credit': peg.amount > 0, 'debit': peg.amount < 0, 'glow-effect': peg.amount < 0 && peg.bitcoinaddress && !peg.bitcointxid}">
               <app-amount [satoshis]="peg.amount" [noFiat]="true" [forceBtc]="true" [addPlus]="true"></app-amount>

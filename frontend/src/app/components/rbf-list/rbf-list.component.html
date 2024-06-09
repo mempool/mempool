@@ -23,7 +23,7 @@
             <span *ngIf="tree.mined" class="badge badge-success" i18n="transaction.rbf.mined">Mined</span>
             <span *ngIf="tree.fullRbf" class="badge badge-info" i18n="transaction.full-rbf">Full RBF</span>
           </span>
-          <app-time kind="since" [time]="tree.time"></app-time>
+          <app-time kind="since" [time]="tree.time" [showTooltip]="true"></app-time>
         </p>
         <div class="timeline-wrapper" [class.mined]="tree.mined">
           <app-rbf-timeline [replacements]="tree"></app-rbf-timeline>

@@ -1,15 +1,17 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, ChangeDetectorRef, OnChanges } from '@angular/core';
 import { StateService } from '../../services/state.service';
 import { dates } from '../../shared/i18n/dates';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-time',
-  template: `{{ text }}`,
+  templateUrl: './time.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TimeComponent implements OnInit, OnChanges, OnDestroy {
   interval: number;
   text: string;
+  tooltip: string;
   precisionThresholds = {
     year: 100,
     month: 18,
@@ -26,6 +28,7 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
   @Input() kind: 'plain' | 'since' | 'until' | 'span' | 'before' | 'within' = 'plain';
   @Input() fastRender = false;
   @Input() fixedRender = false;
+  @Input() showTooltip = false;
   @Input() relative = false;
   @Input() precision: number = 0;
   @Input() numUnits: number = 1;
@@ -36,6 +39,7 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private ref: ChangeDetectorRef,
     private stateService: StateService,
+    private datePipe: DatePipe,
   ) {
       this.intervals = {
         year: 31536000,
@@ -78,13 +82,20 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
     switch (this.kind) {
       case 'since':
         seconds = Math.floor((+new Date() - +new Date(this.dateString || this.time * 1000)) / 1000);
+        this.tooltip = this.datePipe.transform(new Date(this.dateString || this.time * 1000), 'yyyy-MM-dd HH:mm');
         break;
       case 'until':
       case 'within':
         seconds = (+new Date(this.time) - +new Date()) / 1000;
+        this.tooltip = this.datePipe.transform(new Date(this.time), 'yyyy-MM-dd HH:mm');
         break;
       default:
         seconds = Math.floor(this.time);
+        this.tooltip = '';
+    }
+
+    if (!this.showTooltip || this.relative) {
+      this.tooltip = '';
     }
 
     if (seconds < 1 && this.kind === 'span') {
