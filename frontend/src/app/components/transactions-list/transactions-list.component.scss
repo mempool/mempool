@@ -172,42 +172,7 @@ h2 {
 }
 
 .vin-witness {
-	.witness-item.accordioned {
-		max-height: 300px;
-		overflow: hidden;
-	}
-
-	input:checked + .witness-item.accordioned {
-		max-height: none;
-	}
-
-	.witness-toggle {
-		display: flex;
-		flex-direction: row;
-		align-items: flex-start;
-		justify-content: space-between;
-		margin-bottom: 1em;
-
-		.show-all {
-			display: inline;
-		}
-		.show-less {
-			display: none;
-		}
-		.ellipsis {
-			visibility: visible;
-		}
-	}
-
-	input:checked ~ .witness-toggle {
-		.show-all {
-			display: none;
-		}
-		.show-less {
-			display: inline;
-		}
-		.ellipsis {
-			visibility: hidden;
-		}
+	.witness-item {
+		overflow: hidden;	
 	}
 }
