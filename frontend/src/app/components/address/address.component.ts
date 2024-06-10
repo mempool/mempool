@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { switchMap, filter, catchError, map, tap } from 'rxjs/operators';
-import { Address, ScriptHash, Transaction } from '../../interfaces/electrs.interface';
+import { Address, ChainStats, Transaction } from '../../interfaces/electrs.interface';
 import { WebsocketService } from '../../services/websocket.service';
 import { StateService } from '../../services/state.service';
 import { AudioService } from '../../services/audio.service';
@@ -11,6 +11,78 @@ import { of, merge, Subscription, Observable } from 'rxjs';
 import { SeoService } from '../../services/seo.service';
 import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { AddressInformation } from '../../interfaces/node-api.interface';
+
+class AddressStats implements ChainStats {
+  address: string;
+  scriptpubkey?: string;
+  funded_txo_count: number;
+  funded_txo_sum: number;
+  spent_txo_count: number;
+  spent_txo_sum: number;
+  tx_count: number;
+
+  constructor (stats: ChainStats, address: string, scriptpubkey?: string) {
+    Object.assign(this, stats);
+    this.address = address;
+    this.scriptpubkey = scriptpubkey;
+  }
+
+  public addTx(tx: Transaction): void {
+    for (const vin of tx.vin) {
+      if (vin.prevout?.scriptpubkey_address === this.address || (this.scriptpubkey === vin.prevout?.scriptpubkey)) {
+        this.spendTxo(vin.prevout.value);
+      }
+    }
+    for (const vout of tx.vout) {
+      if (vout.scriptpubkey_address === this.address || (this.scriptpubkey === vout.scriptpubkey)) {
+        this.fundTxo(vout.value);
+      }
+    }
+    this.tx_count++;
+  }
+
+  public removeTx(tx: Transaction): void {
+    for (const vin of tx.vin) {
+      if (vin.prevout?.scriptpubkey_address === this.address || (this.scriptpubkey === vin.prevout?.scriptpubkey)) {
+        this.unspendTxo(vin.prevout.value);
+      }
+    }
+    for (const vout of tx.vout) {
+      if (vout.scriptpubkey_address === this.address || (this.scriptpubkey === vout.scriptpubkey)) {
+        this.unfundTxo(vout.value);
+      }
+    }
+    this.tx_count--;
+  }
+
+  private fundTxo(value: number): void {
+    this.funded_txo_sum += value;
+    this.funded_txo_count++;
+  }
+
+  private unfundTxo(value: number): void {
+    this.funded_txo_sum -= value;
+    this.funded_txo_count--;
+  }
+
+  private spendTxo(value: number): void {
+    this.spent_txo_sum += value;
+    this.spent_txo_count++;
+  }
+
+  private unspendTxo(value: number): void {
+    this.spent_txo_sum -= value;
+    this.spent_txo_count--;
+  }
+
+  get balance(): number {
+    return this.funded_txo_sum - this.spent_txo_sum;
+  }
+
+  get utxos(): number {
+    return this.funded_txo_count - this.spent_txo_count;
+  }
+}
 
 @Component({
   selector: 'app-address',
@@ -35,9 +107,9 @@ export class AddressComponent implements OnInit, OnDestroy {
   addressInfo: null | AddressInformation = null;
 
   fullyLoaded = false;
-  txCount = 0;
-  received = 0;
-  sent = 0;
+  chainStats: AddressStats;
+  mempoolStats: AddressStats;
+
   now = Date.now() / 1000;
   balancePeriod: 'all' | '1m' = 'all';
 
@@ -55,7 +127,7 @@ export class AddressComponent implements OnInit, OnDestroy {
     private seoService: SeoService,
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.websocketService.want(['blocks']);
 
@@ -175,7 +247,7 @@ export class AddressComponent implements OnInit, OnDestroy {
         });
 
         this.transactions = this.tempTransactions;
-        if (this.transactions.length === this.txCount) {
+        if (this.transactions.length === (this.mempoolStats.tx_count + this.chainStats.tx_count)) {
           this.fullyLoaded = true;
         }
         this.isLoadingTransactions = false;
@@ -196,11 +268,13 @@ export class AddressComponent implements OnInit, OnDestroy {
     this.mempoolTxSubscription = this.stateService.mempoolTransactions$
       .subscribe(tx => {
         this.addTransaction(tx);
+        this.mempoolStats.addTx(tx);
       });
 
     this.mempoolRemovedTxSubscription = this.stateService.mempoolRemovedTransactions$
       .subscribe(tx => {
         this.removeTransaction(tx);
+        this.mempoolStats.removeTx(tx);
       });
 
     this.blockTxSubscription = this.stateService.blockTransactions$
@@ -209,12 +283,14 @@ export class AddressComponent implements OnInit, OnDestroy {
         if (tx) {
           tx.status = transaction.status;
           this.transactions = this.transactions.slice();
+          this.mempoolStats.removeTx(transaction);
           this.audioService.playSound('magic');
         } else {
           if (this.addTransaction(transaction, false)) {
             this.audioService.playSound('magic');
           }
         }
+        this.chainStats.addTx(transaction);
       });
   }
 
@@ -225,7 +301,6 @@ export class AddressComponent implements OnInit, OnDestroy {
 
     this.transactions.unshift(transaction);
     this.transactions = this.transactions.slice();
-    this.txCount++;
 
     if (playSound) {
       if (transaction.vout.some((vout) => vout?.scriptpubkey_address === this.address.address)) {
@@ -234,17 +309,6 @@ export class AddressComponent implements OnInit, OnDestroy {
         this.audioService.playSound('chime');
       }
     }
-
-    transaction.vin.forEach((vin) => {
-      if (vin?.prevout?.scriptpubkey_address === this.address.address) {
-        this.sent += vin.prevout.value;
-      }
-    });
-    transaction.vout.forEach((vout) => {
-      if (vout?.scriptpubkey_address === this.address.address) {
-        this.received += vout.value;
-      }
-    });
 
     return true;
   }
@@ -257,23 +321,11 @@ export class AddressComponent implements OnInit, OnDestroy {
 
     this.transactions.splice(index, 1);
     this.transactions = this.transactions.slice();
-    this.txCount--;
-
-    transaction.vin.forEach((vin) => {
-      if (vin?.prevout?.scriptpubkey_address === this.address.address) {
-        this.sent -= vin.prevout.value;
-      }
-    });
-    transaction.vout.forEach((vout) => {
-      if (vout?.scriptpubkey_address === this.address.address) {
-        this.received -= vout.value;
-      }
-    });
 
     return true;
   }
 
-  loadMore() {
+  loadMore(): void {
     if (this.isLoadingTransactions || this.fullyLoaded) {
       return;
     }
@@ -301,10 +353,9 @@ export class AddressComponent implements OnInit, OnDestroy {
       });
   }
 
-  updateChainStats() {
-    this.received = this.address.chain_stats.funded_txo_sum + this.address.mempool_stats.funded_txo_sum;
-    this.sent = this.address.chain_stats.spent_txo_sum + this.address.mempool_stats.spent_txo_sum;
-    this.txCount = this.address.chain_stats.tx_count + this.address.mempool_stats.tx_count;
+  updateChainStats(): void {
+    this.chainStats = new AddressStats(this.address.chain_stats, this.address.address);
+    this.mempoolStats = new AddressStats(this.address.mempool_stats, this.address.address);
   }
 
   setBalancePeriod(period: 'all' | '1m'): boolean {
@@ -319,7 +370,7 @@ export class AddressComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.mainSubscription.unsubscribe();
     this.mempoolTxSubscription.unsubscribe();
     this.mempoolRemovedTxSubscription.unsubscribe();

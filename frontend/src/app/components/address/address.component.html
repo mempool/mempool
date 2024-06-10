@@ -28,16 +28,16 @@
               <ng-template [ngIf]="!address.electrum">
                 <tr>
                   <td i18n="address.total-received">Total received</td>
-                  <td *ngIf="address.chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="received" [noFiat]="true"></app-amount></td>
+                  <td *ngIf="address.chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="chainStats.funded_txo_sum + mempoolStats.funded_txo_sum" [noFiat]="true"></app-amount></td>
                 </tr>
                 <tr>
                   <td i18n="address.total-sent">Total sent</td>
-                  <td *ngIf="address.chain_stats.spent_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="sent" [noFiat]="true"></app-amount></td>
+                  <td *ngIf="address.chain_stats.spent_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="chainStats.spent_txo_sum + mempoolStats.spent_txo_sum" [noFiat]="true"></app-amount></td>
                 </tr>
               </ng-template>
               <tr>
                 <td i18n="address.balance">Balance</td>
-                <td *ngIf="address.chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="received - sent" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="received - sent"></app-fiat></span></td>
+                <td *ngIf="address.chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="chainStats.balance + mempoolStats.balance" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="chainStats.balance + mempoolStats.balance"></app-fiat></span></td>
               </tr>
             </tbody>
           </table>
@@ -76,8 +76,8 @@
     <div class="title-tx">
       <h2 class="text-left">
         <ng-template [ngIf]="!transactions?.length">&nbsp;</ng-template>
-        <ng-template i18n="X of X Address Transaction" [ngIf]="transactions?.length === 1">{{ (transactions?.length | number) || '?' }} of {{ txCount | number }} transaction</ng-template>
-        <ng-template i18n="X of X Address Transactions (Plural)" [ngIf]="transactions?.length > 1">{{ (transactions?.length | number) || '?' }} of {{ txCount | number }} transactions</ng-template>
+        <ng-template i18n="X of X Address Transaction" [ngIf]="transactions?.length === 1">{{ (transactions?.length | number) || '?' }} of {{ mempoolStats.tx_count + chainStats.tx_count | number }} transaction</ng-template>
+        <ng-template i18n="X of X Address Transactions (Plural)" [ngIf]="transactions?.length > 1">{{ (transactions?.length | number) || '?' }} of {{ mempoolStats.tx_count + chainStats.tx_count | number }} transactions</ng-template>
       </h2>
     </div>
 
