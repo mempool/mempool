@@ -1,8 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { switchMap, filter, catchError, map, tap } from 'rxjs/operators';
-import { Address, ChainStats, Transaction } from '../../interfaces/electrs.interface';
+import { Address, ChainStats, Transaction, Vin, Vout } from '../../interfaces/electrs.interface';
 import { WebsocketService } from '../../services/websocket.service';
 import { StateService } from '../../services/state.service';
 import { AudioService } from '../../services/audio.service';
@@ -79,6 +79,10 @@ class AddressStats implements ChainStats {
     return this.funded_txo_sum - this.spent_txo_sum;
   }
 
+  get volume(): number {
+    return this.funded_txo_sum + this.spent_txo_sum;
+  }
+
   get utxos(): number {
     return this.funded_txo_count - this.spent_txo_count;
   }
@@ -91,6 +95,8 @@ class AddressStats implements ChainStats {
 })
 export class AddressComponent implements OnInit, OnDestroy {
   network = '';
+
+  isMobile: boolean;
 
   address: Address;
   addressString: string;
@@ -109,6 +115,10 @@ export class AddressComponent implements OnInit, OnDestroy {
   fullyLoaded = false;
   chainStats: AddressStats;
   mempoolStats: AddressStats;
+
+  exampleChannel?: any;
+  exampleVin?: Vin;
+  exampleVout?: Vout;
 
   now = Date.now() / 1000;
   balancePeriod: 'all' | '1m' = 'all';
@@ -147,6 +157,9 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.isLoadingTransactions = true;
           this.transactions = null;
           this.addressInfo = null;
+          this.exampleChannel = null;
+          this.exampleVin = null;
+          this.exampleVout = null;
           document.body.scrollTo(0, 0);
           this.addressString = params.get('id') || '';
           if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}$/.test(this.addressString)) {
@@ -251,6 +264,18 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.fullyLoaded = true;
         }
         this.isLoadingTransactions = false;
+
+        for (const tx of this.transactions) {
+          if (!this.exampleVin) {
+            this.exampleVin = tx.vin.find(v => v.prevout?.scriptpubkey_address === this.address.address);
+          }
+          if (!this.exampleVout) {
+            this.exampleVout = tx.vout.find(v => v.scriptpubkey_address === this.address.address);
+          }
+          if (this.exampleVin && this.exampleVout) {
+            break;
+          }
+        }
 
         if (!this.showBalancePeriod()) {
           this.setBalancePeriod('all');
@@ -368,6 +393,11 @@ export class AddressComponent implements OnInit, OnDestroy {
       !this.transactions[0].status?.confirmed
       || this.transactions[0].status.block_time > (this.now - (60 * 60 * 24 * 30))
     );
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(): void {
+    this.isMobile = window.innerWidth < 768;
   }
 
   ngOnDestroy(): void {

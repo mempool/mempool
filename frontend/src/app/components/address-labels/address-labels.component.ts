@@ -15,6 +15,7 @@ export class AddressLabelsComponent implements OnChanges {
   @Input() vin: Vin;
   @Input() vout: Vout;
   @Input() channel: any;
+  @Input() class: string = '';
 
   label?: string;
 

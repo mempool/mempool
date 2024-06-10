@@ -25,7 +25,7 @@
   tr td {
     &:last-child {
       text-align: right;
-      @media (min-width: 576px) {
+      @media (min-width: 768px) {
         text-align: left;
       }
     }

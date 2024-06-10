@@ -14,40 +14,39 @@
     <div class="box">
 
       <div class="row">
-        <div class="col-md">
-          <table class="table table-borderless table-striped address-table">
-            <tbody>
-              <tr *ngIf="addressInfo && addressInfo.unconfidential">
-                <td i18n="address.unconfidential">Unconfidential</td>
-                <td>
-                  <app-truncate [text]="addressInfo.unconfidential" [lastChars]="8" [link]="['/address/' | relativeUrl, addressInfo.unconfidential]">
-                    <app-clipboard [text]="addressInfo.unconfidential"></app-clipboard>
-                  </app-truncate>
-                </td>
-              </tr>
-              <ng-template [ngIf]="!address.electrum">
-                <tr>
-                  <td i18n="address.total-received">Total received</td>
-                  <td *ngIf="address.chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="chainStats.funded_txo_sum + mempoolStats.funded_txo_sum" [noFiat]="true"></app-amount></td>
-                </tr>
-                <tr>
-                  <td i18n="address.total-sent">Total sent</td>
-                  <td *ngIf="address.chain_stats.spent_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="chainStats.spent_txo_sum + mempoolStats.spent_txo_sum" [noFiat]="true"></app-amount></td>
-                </tr>
-              </ng-template>
-              <tr>
-                <td i18n="address.balance">Balance</td>
-                <td *ngIf="address.chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="chainStats.balance + mempoolStats.balance" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="chainStats.balance + mempoolStats.balance"></app-fiat></span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="w-100 d-block d-md-none"></div>
-        <div class="col-md qrcode-col">
-          <div class="qr-wrapper">
-            <app-qrcode [data]="address.address"></app-qrcode>
+        @if (isMobile) {
+          <div class="col-sm">
+            <table class="table table-borderless table-striped">
+              <tbody>
+                <ng-container *ngTemplateOutlet="balanceRow"></ng-container>
+                <ng-container *ngTemplateOutlet="pendingBalanceRow"></ng-container>
+                <ng-container *ngTemplateOutlet="utxoRow"></ng-container>
+                <ng-container *ngTemplateOutlet="pendingUtxoRow"></ng-container>
+                <ng-container *ngTemplateOutlet="volumeRow"></ng-container>
+                <ng-container *ngTemplateOutlet="typeRow"></ng-container>
+              </tbody>
+            </table>
           </div>
-        </div>
+        } @else {
+          <div class="col-sm">
+            <table class="table table-borderless table-striped">
+              <tbody>
+                <ng-container *ngTemplateOutlet="balanceRow"></ng-container>
+                <ng-container *ngTemplateOutlet="utxoRow"></ng-container>
+                <ng-container *ngTemplateOutlet="volumeRow"></ng-container>
+              </tbody>
+            </table>
+          </div>
+          <div class="col-sm">
+            <table class="table table-borderless table-striped">
+              <tbody>
+                <ng-container *ngTemplateOutlet="pendingBalanceRow"></ng-container>
+                <ng-container *ngTemplateOutlet="pendingUtxoRow"></ng-container>
+                <ng-container *ngTemplateOutlet="typeRow"></ng-container>
+              </tbody>
+            </table>
+          </div>
+        }
       </div>
     </div>
 
@@ -181,4 +180,58 @@
   <div class="header-bg box" style="padding: 10px; margin-bottom: 10px;">
     <span class="skeleton-loader"></span>
   </div>
+</ng-template>
+
+
+<ng-template #balanceRow>
+  <tr>
+    <td i18n="address.balance">Balance</td>
+    <td *ngIf="chainStats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="chainStats.balance" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="chainStats.balance"></app-fiat></span></td>
+  </tr>
+</ng-template>
+
+<ng-template #pendingBalanceRow>
+  <tr>
+    <td i18n="address.pending" class="font-italic">pending</td>
+    <td *ngIf="mempoolStats.funded_txo_sum !== undefined; else confidentialTd" class="font-italic"><app-amount [satoshis]="mempoolStats.balance" [noFiat]="true" [addPlus]="true"></app-amount> <span class="fiat"><app-fiat [value]="mempoolStats.balance"></app-fiat></span></td>
+  </tr>
+</ng-template>
+
+<ng-template #utxoRow>
+  <tr>
+    <td i18n="address.unspent_txos">Unspent TXOs</td>
+    <td>{{ chainStats.utxos }}</td>
+  </tr>
+</ng-template>
+
+<ng-template #pendingUtxoRow>
+  <tr>
+    <td i18n="address.pending" class="font-italic">pending</td>
+    <td class="font-italic">{{ mempoolStats.utxos > 0 ? '+' : ''}}{{ mempoolStats.utxos }}</td>
+  </tr>
+</ng-template>
+
+<ng-template #volumeRow>
+  <tr>
+    <td i18n="address.volume">Volume</td>
+    <td><app-amount [satoshis]="chainStats.volume + mempoolStats.volume"></app-amount></td>
+  </tr>
+</ng-template>
+
+<ng-template #typeRow>
+  <tr>
+    <td i18n="address.type">Type</td>
+    <td><app-address-type [vout]="exampleVout || exampleVin?.prevout || null"></app-address-type><app-address-labels [channel]="exampleChannel" [vin]="exampleVin" [vout]="exampleVout" class="ml-1"></app-address-labels></td>
+  </tr>
+</ng-template>
+
+<ng-template #liquidRow>
+  <tr *ngIf="addressInfo && addressInfo.unconfidential">
+    <td i18n="address.unconfidential">Unconfidential</td>
+    <td>
+      <app-truncate [text]="addressInfo.unconfidential" [lastChars]="8" [link]="['/address/' | relativeUrl, addressInfo.unconfidential]">
+        <app-clipboard [text]="addressInfo.unconfidential"></app-clipboard>
+      </app-truncate>
+    </td>
+  </tr>
 </ng-template>
