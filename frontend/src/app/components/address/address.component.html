@@ -4,6 +4,12 @@
     <div class="tx-link">
       <app-truncate [text]="addressString" [lastChars]="8" [link]="['/address/' | relativeUrl, addressString]">
         <app-clipboard [text]="addressString"></app-clipboard>
+        <span style="position: relative; cursor: pointer" (mouseover)="showQR = true" (mouseout)="showQR = false" (click)="showQR = !showQR">
+          <fa-icon [icon]="['fas', 'qrcode']" [fixedWidth]="true"></fa-icon>
+          <div class="qr-wrapper" [hidden]="!showQR">
+            <app-qrcode [size]="200" [data]="addressString"></app-qrcode>
+          </div>
+        </span>
       </app-truncate>
     </div>
   </div>

@@ -1,16 +1,14 @@
 .qr-wrapper {
+  position: absolute;
+  top: 30px;
+  right: 0px;
+  border: solid 10px var(--active-bg);
+  border-radius: 5px;
   background-color: #fff;
   padding: 10px;
   padding-bottom: 5px;
-  display: inline-block;
-}
-
-.qrcode-col {
-  margin: 20px auto 10px;
-  text-align: center;
-  @media (min-width: 992px){
-    margin: 0px auto 0px;
-  }
+  display: block;
+  z-index: 99;
 }
 
 .fiat {
@@ -103,10 +101,6 @@ h1 {
     tr td:last-child {
       width: 80%;
     }
-  }
-
-  .qrcode-col {
-    flex-grow: 0.5;
   }
 }
 

@@ -97,6 +97,7 @@ export class AddressComponent implements OnInit, OnDestroy {
   network = '';
 
   isMobile: boolean;
+  showQR: boolean = false;
 
   address: Address;
   addressString: string;
@@ -140,6 +141,8 @@ export class AddressComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.websocketService.want(['blocks']);
+
+    this.onResize();
 
     this.addressLoadingStatus$ = this.route.paramMap
       .pipe(
