@@ -198,21 +198,21 @@
 
 <ng-template #pendingBalanceRow>
   <tr>
-    <td i18n="address.pending" class="font-italic">pending</td>
+    <td i18n="address.unconfirmed-balance" class="font-italic">unconfirmed balance</td>
     <td *ngIf="mempoolStats.funded_txo_sum !== undefined; else confidentialTd" class="font-italic"><app-amount [satoshis]="mempoolStats.balance" [noFiat]="true" [addPlus]="true"></app-amount> <span class="fiat"><app-fiat [value]="mempoolStats.balance"></app-fiat></span></td>
   </tr>
 </ng-template>
 
 <ng-template #utxoRow>
   <tr>
-    <td i18n="address.unspent_txos">Unspent TXOs</td>
+    <td i18n="address.utxos" i18n-ngbTooltip="unspent-transaction-outputs" ngbTooltip="unspent transaction outputs">UTXOs</td>
     <td>{{ chainStats.utxos }}</td>
   </tr>
 </ng-template>
 
 <ng-template #pendingUtxoRow>
   <tr>
-    <td i18n="address.pending" class="font-italic">pending</td>
+    <td i18n="address.unconfirmed-utxos" class="font-italic">unconfirmed UTXOs</td>
     <td class="font-italic">{{ mempoolStats.utxos > 0 ? '+' : ''}}{{ mempoolStats.utxos }}</td>
   </tr>
 </ng-template>
