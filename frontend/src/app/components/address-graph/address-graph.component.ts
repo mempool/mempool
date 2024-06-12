@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, NgZone, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { echarts, EChartsOption } from '../../graphs/echarts';
 import { BehaviorSubject, Observable, Subscription, combineLatest, of } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
@@ -75,7 +75,8 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
     private relativeUrlPipe: RelativeUrlPipe,
     private priceService: PriceService,
     private fiatCurrencyPipe: FiatCurrencyPipe,
-    private fiatShortenerPipe: FiatShortenerPipe
+    private fiatShortenerPipe: FiatShortenerPipe,
+    private zone: NgZone,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -386,7 +387,14 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
 
   onChartClick(e) {
     if (this.hoverData?.length && this.hoverData[0]?.[2]?.txid) {
-      this.router.navigate([this.relativeUrlPipe.transform('/tx/'), this.hoverData[0][2].txid]);
+      this.zone.run(() => { 
+        const url = this.relativeUrlPipe.transform(`/tx/${this.hoverData[0][2].txid}`);
+        if (e.event.event.shiftKey || e.event.event.ctrlKey || e.event.event.metaKey) {
+          window.open(url);
+        } else {
+          this.router.navigate([url]);
+        }
+      });
     }
   }
 
