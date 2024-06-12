@@ -58,7 +58,7 @@ export class AddressTransactionsWidgetComponent implements OnInit, OnChanges, On
         return summary?.slice(0, 6);
       }),
       switchMap(txs => {
-        return (zip(txs.map(tx => this.priceService.getBlockPrice$(tx.time, true, this.currency).pipe(
+        return (zip(txs.map(tx => this.priceService.getBlockPrice$(tx.time, txs.length < 3, this.currency).pipe(
           map(price => {
             return {
               ...tx,
