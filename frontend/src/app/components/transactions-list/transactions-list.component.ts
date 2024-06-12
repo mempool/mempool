@@ -150,7 +150,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       this.transactions.forEach((tx) => {
         if (!this.blockTime) {
           if (tx.status.block_time) {
-            this.priceService.getBlockPrice$(tx.status.block_time, confirmedTxs < 10, this.currency).pipe(
+            this.priceService.getBlockPrice$(tx.status.block_time, confirmedTxs < 3, this.currency).pipe(
               tap((price) => tx['price'] = price),
             ).subscribe();
           }
@@ -235,7 +235,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
         }
 
         if (!this.blockTime && tx.status.block_time && this.currency) {
-          this.priceService.getBlockPrice$(tx.status.block_time, confirmedTxs < 10, this.currency).pipe(
+          this.priceService.getBlockPrice$(tx.status.block_time, confirmedTxs < 3, this.currency).pipe(
             tap((price) => tx['price'] = price),
           ).subscribe();
         }

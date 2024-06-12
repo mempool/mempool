@@ -1,13 +1,16 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { echarts, EChartsOption } from '../../graphs/echarts';
 import { BehaviorSubject, Observable, Subscription, combineLatest, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { AddressTxSummary, ChainStats } from '../../interfaces/electrs.interface';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
 import { Router } from '@angular/router';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from '../../services/state.service';
+import { PriceService } from '../../services/price.service';
+import { FiatCurrencyPipe } from '../../shared/pipes/fiat-currency.pipe';
+import { FiatShortenerPipe } from '../../shared/pipes/fiat-shortener.pipe';
 
 const periodSeconds = {
   '1d': (60 * 60 * 24),
@@ -45,6 +48,8 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
 
   data: any[] = [];
   hoverData: any[] = [];
+  showFiat = false;
+  conversions: any;
 
   subscription: Subscription;
   redraw$: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -66,6 +71,9 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
     private amountShortenerPipe: AmountShortenerPipe,
     private cd: ChangeDetectorRef,
     private relativeUrlPipe: RelativeUrlPipe,
+    private priceService: PriceService,
+    private fiatCurrencyPipe: FiatCurrencyPipe,
+    private fiatShortenerPipe: FiatShortenerPipe
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -86,10 +94,12 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
             this.error = `Failed to fetch address balance history: ${e?.status || ''} ${e?.statusText || 'unknown error'}`;
             return of(null);
           }),
-        ))
-      ]).subscribe(([redraw, addressSummary]) => {
+        )),
+        this.stateService.conversions$
+      ]).subscribe(([redraw, addressSummary, conversions]) => {
         if (addressSummary) {
           this.error = null;
+          this.conversions = conversions;
           this.prepareChartOptions(addressSummary);
         }
         this.isLoading = false;
@@ -101,15 +111,36 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
     }
   }
 
-  prepareChartOptions(summary): void {
+  prepareChartOptions(summary: AddressTxSummary[]) {
     if (!summary || !this.stats) {
       return;
     }
+
+    this.priceService.getPriceByBulk$(summary.map(d => d.time), 'USD').pipe(
+      tap((prices) => {
+        if (prices.length !== summary.length) {
+          summary = summary.map(item => ({ ...item, price: 0 }));
+        } else {
+          summary = summary.map((item, index) => {
+            let price = 0;
+            if (prices[index].price) {
+              price = prices[index].price['USD'];
+            } else if (this.conversions['USD']) {
+              price = this.conversions['USD'];
+            }
+            return { ...item, price: price }
+          });
+        }
+      })
+    ).subscribe();
+    
     let total = (this.stats.funded_txo_sum - this.stats.spent_txo_sum);
     this.data = summary.map(d => {
       const balance = total;
+      const fiatValue = balance * d.price / 100_000_000;
       total -= d.value;
-      return [d.time * 1000, balance, d];
+      d.fiatValue = d.value * d.price / 100_000_000;
+      return [d.time * 1000, balance, d, fiatValue];
     }).reverse();
 
     if (this.period !== 'all') {
@@ -130,6 +161,10 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
           { offset: 0, color: '#FDD835' },
           { offset: 1, color: '#FB8C00' },
         ]),
+        new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color: '#4CAF50' },
+          { offset: 1, color: '#1B5E20' },
+        ]),
       ],
       animation: false,
       grid: {
@@ -137,6 +172,34 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         bottom: 20,
         right: this.right,
         left: this.left,
+      },
+      legend: {
+        data: [
+          {
+            name: $localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`,
+            inactiveColor: 'var(--grey)',
+            textStyle: {
+              color: 'white',
+            },
+            icon: 'roundRect',
+          },
+          {
+            name: 'Fiat',
+            inactiveColor: 'var(--grey)',
+            textStyle: {
+              color: 'white',
+            },
+            icon: 'roundRect',
+          }
+        ],
+        selected: {
+          'Balance': !this.showFiat,
+          'Fiat': this.showFiat
+        },
+        selectedMode: 'single',
+        formatter: function (name) {
+          return name === 'Fiat' ? 'USD' : 'BTC';
+        }
       },
       tooltip: {
         show: !this.isMobile(),
@@ -160,19 +223,35 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
             ? `${data[0].data[2].txid.slice(0, 6)}...${data[0].data[2].txid.slice(-6)}`
             : `${data.length} transactions`;
           const date = new Date(data[0].data[0]).toLocaleTimeString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
-          const val = data.reduce((total, d) => total + d.data[2].value, 0);
-          const color = val === 0 ? '' : (val > 0 ? 'var(--green)' : 'var(--red)');
-          const symbol = val > 0 ? '+' : '';
-          return `
-            <div>
-              <span><b>${header}</b></span>
-              <div style="text-align: right;">
-                <span style="color: ${color}">${symbol} ${(val / 100_000_000).toFixed(8)} BTC</span><br>
-                <span>${(data[0].data[1] / 100_000_000).toFixed(8)} BTC</span>
+          if (this.showFiat) {
+            const val = data.reduce((total, d) => total + d.data[2].fiatValue, 0);
+            const color = val === 0 ? '' : (val > 0 ? 'var(--green)' : 'var(--red)');
+            const symbol = val > 0 ? '+' : '';
+            return `
+              <div>
+                <span><b>${header}</b></span>
+                <div style="text-align: right;">
+                  <span style="color: ${color}">${symbol} ${this.fiatCurrencyPipe.transform(val, null, 'USD')}</span><br>
+                  <span>${this.fiatCurrencyPipe.transform(data[0].data[1], null, 'USD')}</span>
+                </div>
+                <span>${date}</span>
               </div>
-              <span>${date}</span>
-            </div>
-          `;
+            `;
+          } else {
+            const val = data.reduce((total, d) => total + d.data[2].value, 0);
+            const color = val === 0 ? '' : (val > 0 ? 'var(--green)' : 'var(--red)');
+            const symbol = val > 0 ? '+' : '';
+            return `
+              <div>
+                <span><b>${header}</b></span>
+                <div style="text-align: right;">
+                  <span style="color: ${color}">${symbol} ${(val / 100_000_000).toFixed(8)} BTC</span><br>
+                  <span>${(data[0].data[1] / 100_000_000).toFixed(8)} BTC</span>
+                </div>
+                <span>${date}</span>
+              </div>
+            `;
+          }
         }.bind(this)
       },
       xAxis: {
@@ -211,14 +290,44 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
           },
           min: this.period === 'all' ? 0 : 'dataMin'
         },
+        {
+          type: 'value',
+          position: 'left',
+          axisLabel: {
+            color: 'rgb(110, 112, 121)',
+            formatter: function(val) {
+              return this.fiatShortenerPipe.transform(val, null, 'USD');
+            }.bind(this)
+          },
+          splitLine: {
+            show: false,
+          },
+          min: this.period === 'all' ? 0 : 'dataMin'
+        },
       ],
       series: [
         {
           name: $localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`,
+          yAxisIndex: 0,
           showSymbol: false,
           symbol: 'circle',
           symbolSize: 8,
-          data: this.data,
+          data: this.data.map(d => [d[0], d[1], d[2]]),
+          areaStyle: {
+            opacity: 0.5,
+          },
+          triggerLineEvent: true,
+          type: 'line',
+          smooth: false,
+          step: 'end'
+        }, 
+        {
+          name: 'Fiat',
+          yAxisIndex: 1,
+          showSymbol: false,
+          symbol: 'circle',
+          symbolSize: 8,
+          data: this.data.map(d => [d[0], d[3], d[2]]),
           areaStyle: {
             opacity: 0.5,
           },
@@ -241,10 +350,15 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
     this.hoverData = (e?.dataByCoordSys?.[0]?.dataByAxis?.[0]?.seriesDataIndices || []).map(indices => this.data[indices.dataIndex]);
   }
 
+  onLegendSelectChanged(e) {
+    this.showFiat = e.name === 'Fiat';
+  }
+
   onChartInit(ec) {
     this.chartInstance = ec;
     this.chartInstance.on('showTip', this.onTooltip.bind(this));
     this.chartInstance.on('click', 'series', this.onChartClick.bind(this));
+    this.chartInstance.on('legendselectchanged', this.onLegendSelectChanged.bind(this));
   }
 
   ngOnDestroy(): void {

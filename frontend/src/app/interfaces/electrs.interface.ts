@@ -156,6 +156,8 @@ export interface AddressTxSummary {
   value: number;
   height: number;
   time: number;
+  price?: number;
+  fiatValue?: number;
 }
 
 export interface ChainStats {
