@@ -50,6 +50,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
   hoverData: any[] = [];
   showFiat = false;
   conversions: any;
+  allowZoom: boolean = false;
 
   subscription: Subscription;
   redraw$: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -100,6 +101,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         if (addressSummary) {
           this.error = null;
           this.conversions = conversions;
+          this.allowZoom = addressSummary.length > 100 && !this.widget;
           this.prepareChartOptions(addressSummary);
         }
         this.isLoading = false;
@@ -169,7 +171,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
       animation: false,
       grid: {
         top: 20,
-        bottom: 20,
+        bottom: this.allowZoom ? 65 : 20,
         right: this.right,
         left: this.left,
       },
@@ -337,6 +339,28 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
           step: 'end'
         }
       ],
+      dataZoom: this.allowZoom ? [{
+        type: 'inside',
+        realtime: true,
+        zoomLock: true,
+        maxSpan: 100,
+        minSpan: 5,
+        moveOnMouseMove: false,
+      }, {
+        showDetail: false,
+        show: true,
+        type: 'slider',
+        brushSelect: false,
+        realtime: true,
+        left: this.left,
+        right: this.right,
+        selectedDataBackground: {
+          lineStyle: {
+            color: '#fff',
+            opacity: 0.45,
+          },
+        },
+      }] : undefined
     };
   }
 
