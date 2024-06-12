@@ -220,14 +220,14 @@
 <ng-template #volumeRow>
   <tr>
     <td i18n="address.volume">Volume</td>
-    <td><app-amount [satoshis]="chainStats.volume + mempoolStats.volume"></app-amount></td>
+    <td *ngIf="chainStats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="chainStats.volume + mempoolStats.volume"></app-amount></td>
   </tr>
 </ng-template>
 
 <ng-template #typeRow>
   <tr>
     <td i18n="address.type">Type</td>
-    <td><app-address-type [vout]="exampleVout || exampleVin?.prevout || null"></app-address-type><app-address-labels [channel]="exampleChannel" [vin]="exampleVin" [vout]="exampleVout" class="ml-1"></app-address-labels></td>
+    <td><app-address-type [address]="addressTypeInfo"></app-address-type><app-address-labels [channel]="exampleChannel" [address]="addressTypeInfo" class="ml-1"></app-address-labels></td>
   </tr>
 </ng-template>
 

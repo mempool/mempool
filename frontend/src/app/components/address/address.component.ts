@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { switchMap, filter, catchError, map, tap } from 'rxjs/operators';
-import { Address, ChainStats, Transaction, Vin, Vout } from '../../interfaces/electrs.interface';
+import { Address, ChainStats, Transaction, Vin } from '../../interfaces/electrs.interface';
 import { WebsocketService } from '../../services/websocket.service';
 import { StateService } from '../../services/state.service';
 import { AudioService } from '../../services/audio.service';
@@ -11,6 +11,7 @@ import { of, merge, Subscription, Observable } from 'rxjs';
 import { SeoService } from '../../services/seo.service';
 import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { AddressInformation } from '../../interfaces/node-api.interface';
+import { AddressTypeInfo } from '../../shared/address-utils';
 
 class AddressStats implements ChainStats {
   address: string;
@@ -112,14 +113,13 @@ export class AddressComponent implements OnInit, OnDestroy {
   blockTxSubscription: Subscription;
   addressLoadingStatus$: Observable<number>;
   addressInfo: null | AddressInformation = null;
+  addressTypeInfo: null | AddressTypeInfo;
 
   fullyLoaded = false;
   chainStats: AddressStats;
   mempoolStats: AddressStats;
 
   exampleChannel?: any;
-  exampleVin?: Vin;
-  exampleVout?: Vout;
 
   now = Date.now() / 1000;
   balancePeriod: 'all' | '1m' = 'all';
@@ -161,8 +161,6 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.transactions = null;
           this.addressInfo = null;
           this.exampleChannel = null;
-          this.exampleVin = null;
-          this.exampleVout = null;
           document.body.scrollTo(0, 0);
           this.addressString = params.get('id') || '';
           if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}$/.test(this.addressString)) {
@@ -170,6 +168,8 @@ export class AddressComponent implements OnInit, OnDestroy {
           }
           this.seoService.setTitle($localize`:@@address.component.browser-title:Address: ${this.addressString}:INTERPOLATION:`);
           this.seoService.setDescription($localize`:@@meta.description.bitcoin.address:See mempool transactions, confirmed transactions, balance, and more for ${this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'}${seoDescriptionNetwork(this.stateService.network)} address ${this.addressString}:INTERPOLATION:.`);
+
+          this.addressTypeInfo = new AddressTypeInfo(this.stateService.network || 'mainnet', this.addressString);
 
           return merge(
             of(true),
@@ -268,17 +268,13 @@ export class AddressComponent implements OnInit, OnDestroy {
         }
         this.isLoadingTransactions = false;
 
+        let addressVin: Vin[] = [];
         for (const tx of this.transactions) {
-          if (!this.exampleVin) {
-            this.exampleVin = tx.vin.find(v => v.prevout?.scriptpubkey_address === this.address.address);
-          }
-          if (!this.exampleVout) {
-            this.exampleVout = tx.vout.find(v => v.scriptpubkey_address === this.address.address);
-          }
-          if (this.exampleVin && this.exampleVout) {
-            break;
-          }
+          addressVin = addressVin.concat(tx.vin.filter(v => v.prevout?.scriptpubkey_address === this.address.address));
         }
+        this.addressTypeInfo.processInputs(addressVin);
+        // hack to trigger change detection
+        this.addressTypeInfo = this.addressTypeInfo.clone();
 
         if (!this.showBalancePeriod()) {
           this.setBalancePeriod('all');

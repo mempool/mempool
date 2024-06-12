@@ -1,4 +1,4 @@
-@switch (vout?.scriptpubkey_type || null) {
+@switch (address.type || null) {
   @case ('fee') {
     <span i18n="address.fee">fee</span>
   }
@@ -24,6 +24,6 @@
     <span>unknown</span>
   }
   @default {
-    <span>{{ vout.scriptpubkey_type.toUpperCase() }}</span>
+    <span>{{ address.type.toUpperCase() }}</span>
   }
 }

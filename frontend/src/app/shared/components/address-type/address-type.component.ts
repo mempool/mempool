@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Vout } from '../../../interfaces/electrs.interface';
+import { AddressTypeInfo } from '../../address-utils';
 
 @Component({
   selector: 'app-address-type',
@@ -7,5 +7,5 @@ import { Vout } from '../../../interfaces/electrs.interface';
   styleUrls: []
 })
 export class AddressTypeComponent {
-  @Input() vout: Vout;
+  @Input() address: AddressTypeInfo;
 }
