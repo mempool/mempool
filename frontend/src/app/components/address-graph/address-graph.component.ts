@@ -49,9 +49,11 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
   data: any[] = [];
   fiatData: any[] = [];
   hoverData: any[] = [];
-  showFiat = false;
   conversions: any;
   allowZoom: boolean = false;
+  initialRight = this.right;
+  initialLeft = this.left;
+  selected = { [$localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`]: true, 'Fiat': false };
 
   subscription: Subscription;
   redraw$: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -101,13 +103,15 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         this.stateService.conversions$
       ]).pipe(
         switchMap(([redraw, addressSummary, conversions]) => {
+          this.conversions = conversions;
           if (addressSummary) {
-            return this.priceService.getPriceByBulk$(addressSummary.map(d => d.time), 'USD').pipe(
+            let extendedSummary = this.extendSummary(addressSummary);
+            return this.priceService.getPriceByBulk$(extendedSummary.map(d => d.time), 'USD').pipe(
               tap((prices) => {
-                if (prices.length !== addressSummary.length) {
-                  addressSummary = addressSummary.map(item => ({ ...item, price: 0 }));
+                if (prices.length !== extendedSummary.length) {
+                  extendedSummary = extendedSummary.map(item => ({ ...item, price: 0 }));
                 } else {
-                  addressSummary = addressSummary.map((item, index) => {
+                  extendedSummary = extendedSummary.map((item, index) => {
                     let price = 0;
                     if (prices[index].price) {
                       price = prices[index].price['USD'];
@@ -118,7 +122,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
                   });
                 }
               }),
-              map(() => [redraw, addressSummary, conversions])
+              map(() => [redraw, extendedSummary, conversions])
             )
           } else {
             return of([redraw, addressSummary, conversions]);
@@ -127,7 +131,6 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
       ).subscribe(([redraw, addressSummary, conversions]) => {
         if (addressSummary) {
           this.error = null;
-          this.conversions = conversions;
           this.allowZoom = addressSummary.length > 100 && !this.widget;
           this.prepareChartOptions(addressSummary);
         }
@@ -150,7 +153,6 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         const balance = total;
         const fiatBalance = total * d.price / 100_000_000;
         total -= d.value;
-        d.fiatValue = d.value * d.price / 100_000_000;
         return {
             time: d.time * 1000,
             balance,
@@ -159,21 +161,18 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         };
     }).reverse();
     
-    this.data = processData.map(({ time, balance, d }) => [time, balance, d]);
-    this.fiatData = processData.map(({ time, fiatBalance, d }) => [time, fiatBalance, d]);
+    this.data = processData.filter(({ d }) => d.txid !== undefined).map(({ time, balance, d }) => [time, balance, d]);
+    this.fiatData = processData.map(({ time, fiatBalance, balance, d }) => [time, fiatBalance, d, balance]);
 
+    const now = Date.now();
     if (this.period !== 'all') {
-      const now = Date.now();
       const start = now - (periodSeconds[this.period] * 1000);
       this.data = this.data.filter(d => d[0] >= start);
       this.fiatData = this.fiatData.filter(d => d[0] >= start);
-      this.data.push(
-        {value: [now, this.stats.funded_txo_sum - this.stats.spent_txo_sum], symbol: 'none', tooltip: { show: false }}
-      );
-      this.fiatData.push(
-        {value: [now, this.fiatData[this.fiatData.length - 1][1]], symbol: 'none', tooltip: { show: false }}
-      );
     }
+    this.data.push(
+      {value: [now, this.stats.funded_txo_sum - this.stats.spent_txo_sum], symbol: 'none', tooltip: { show: false }}
+    );
 
     const maxValue = this.data.reduce((acc, d) => Math.max(acc, Math.abs(d[1] ?? d.value[1])), 0);
     const minValue = this.data.reduce((acc, d) => Math.min(acc, Math.abs(d[1] ?? d.value[1])), maxValue);
@@ -215,11 +214,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
             icon: 'roundRect',
           }
         ],
-        selected: {
-          'Balance': !this.showFiat,
-          'Fiat': this.showFiat
-        },
-        selectedMode: 'single',
+        selected: this.selected,
         formatter: function (name) {
           return name === 'Fiat' ? 'USD' : 'BTC';
         }
@@ -238,43 +233,64 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
           align: 'left',
         },
         borderColor: '#000',
-        formatter: function (data): string {
-          if (!data?.length || !data[0]?.data?.[2]?.txid) {
+        formatter: function (data) {
+          const btcData = data.filter(d => d.seriesName !== 'Fiat');
+          const fiatData = data.filter(d => d.seriesName === 'Fiat');
+          data = btcData.length ? btcData : fiatData;
+          if ((!btcData.length || !btcData[0]?.data?.[2]?.txid) && !fiatData.length) {
             return '';
           }
-          const header = data.length === 1
+          let tooltip = '<div>';
+
+          const hasTx = data[0].data[2].txid;
+          if (hasTx) {
+            const header = data.length === 1
             ? `${data[0].data[2].txid.slice(0, 6)}...${data[0].data[2].txid.slice(-6)}`
             : `${data.length} transactions`;
-          const date = new Date(data[0].data[0]).toLocaleTimeString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
-          if (this.showFiat) {
-            const val = data.reduce((total, d) => total + d.data[2].fiatValue, 0);
-            const color = val === 0 ? '' : (val > 0 ? 'var(--green)' : 'var(--red)');
-            const symbol = val > 0 ? '+' : '';
-            return `
-              <div>
-                <span><b>${header}</b></span>
-                <div style="text-align: right;">
-                  <span style="color: ${color}">${symbol} ${this.fiatCurrencyPipe.transform(val, null, 'USD')}</span><br>
-                  <span>${this.fiatCurrencyPipe.transform(data[0].data[1], null, 'USD')}</span>
-                </div>
-                <span>${date}</span>
-              </div>
-            `;
-          } else {
-            const val = data.reduce((total, d) => total + d.data[2].value, 0);
-            const color = val === 0 ? '' : (val > 0 ? 'var(--green)' : 'var(--red)');
-            const symbol = val > 0 ? '+' : '';
-            return `
-              <div>
-                <span><b>${header}</b></span>
-                <div style="text-align: right;">
-                  <span style="color: ${color}">${symbol} ${(val / 100_000_000).toFixed(8)} BTC</span><br>
-                  <span>${(data[0].data[1] / 100_000_000).toFixed(8)} BTC</span>
-                </div>
-                <span>${date}</span>
-              </div>
-            `;
+            tooltip += `<span><b>${header}</b></span>`;
           }
+          
+          const date = new Date(data[0].data[0]).toLocaleTimeString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
+          
+          tooltip += `<div>
+            <div style="text-align: right;">`;
+          
+          const formatBTC = (val, decimal) => (val / 100_000_000).toFixed(decimal);
+          const formatFiat = (val) => this.fiatCurrencyPipe.transform(val, null, 'USD');
+          
+          const btcVal = btcData.reduce((total, d) => total + d.data[2].value, 0);
+          const fiatVal = fiatData.reduce((total, d) => total + d.data[2].value * d.data[2].price / 100_000_000, 0);
+          const btcColor = btcVal === 0 ? '' : (btcVal > 0 ? 'var(--green)' : 'var(--red)');
+          const fiatColor = fiatVal === 0 ? '' : (fiatVal > 0 ? 'var(--green)' : 'var(--red)');
+          const btcSymbol = btcVal > 0 ? '+' : '';
+          const fiatSymbol = fiatVal > 0 ? '+' : '';
+
+          if (btcData.length && fiatData.length) {
+            tooltip += `<div style="display: flex; justify-content: space-between; color: ${btcColor}">
+              <span style="text-align: left; margin-right: 10px;">${btcSymbol} ${formatBTC(btcVal, 4)} BTC</span>
+              <span style="text-align: right;">${fiatSymbol} ${formatFiat(fiatVal)}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="text-align: left; margin-right: 10px;">${formatBTC(btcData[0].data[1], 4)} BTC</span>
+              <span style="text-align: right;">${formatFiat(fiatData[0].data[1])}</span>
+            </div>`;
+          } else if (btcData.length) {
+            tooltip += `<span style="color: ${btcColor}">${btcSymbol} ${formatBTC(btcVal, 8)} BTC</span><br>
+              <span>${formatBTC(data[0].data[1], 8)} BTC</span>`;
+          } else {
+            if (this.selected[$localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`]) {
+              tooltip += `<div style="display: flex; justify-content: space-between;">
+                <span style="text-align: left; margin-right: 10px;">${formatBTC(data[0].data[3], 4)} BTC</span>
+                <span style="text-align: right;">${formatFiat(data[0].data[1])}</span>
+              </div>`;
+            } else {
+              tooltip += `${hasTx ? `<span style="color: ${fiatColor}">${fiatSymbol} ${formatFiat(fiatVal)}</span><br>` : ''}
+              <span>${formatFiat(data[0].data[1])}</span>`;
+            }
+          }
+
+          tooltip += `</div><span>${date}</span></div>`;
+          return tooltip;
         }.bind(this)
       },
       xAxis: {
@@ -315,7 +331,6 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         },
         {
           type: 'value',
-          position: 'left',
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: function(val) {
@@ -403,7 +418,30 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
   }
 
   onLegendSelectChanged(e) {
-    this.showFiat = e.name === 'Fiat';
+    this.selected = e.selected;
+    this.right = this.selected['Fiat'] ? +this.initialRight + 40 : this.initialRight;
+    this.left = this.selected[$localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`] ? this.initialLeft : +this.initialLeft - 40;
+
+    this.chartOptions = {
+      grid: {
+        right: this.right,
+        left: this.left,
+      },
+      legend: {
+        selected: this.selected,
+      },
+      dataZoom: this.allowZoom ? [{
+        left: this.left,
+        right: this.right,
+      }, {
+        left: this.left,
+        right: this.right,
+      }] : undefined
+    };
+    
+    if (this.chartInstance) {
+      this.chartInstance.setOption(this.chartOptions);
+    }
   }
 
   onChartInit(ec) {
@@ -421,5 +459,28 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
 
   isMobile() {
     return (window.innerWidth <= 767.98);
+  }
+
+  extendSummary(summary) {
+    let extendedSummary = summary.slice();
+
+    // Add a point at today's date to make the graph end at the current time
+    extendedSummary.unshift({ time: Date.now() / 1000, value: 0 });
+    extendedSummary.reverse();
+    
+    let oneHour = 60 * 60;
+    // Fill gaps longer than interval
+    for (let i = 0; i < extendedSummary.length - 1; i++) {
+      let hours = Math.floor((extendedSummary[i + 1].time - extendedSummary[i].time) / oneHour);      
+      if (hours > 1) {
+        for (let j = 1; j < hours; j++) {
+          let newTime = extendedSummary[i].time + oneHour * j;
+          extendedSummary.splice(i + j, 0, { time: newTime, value: 0 });
+        }
+        i += hours - 1;
+      }
+    }
+  
+    return extendedSummary.reverse();
   }
 }
