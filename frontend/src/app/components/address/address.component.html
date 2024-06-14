@@ -28,23 +28,31 @@
                 <ng-container *ngTemplateOutlet="pendingBalanceRow"></ng-container>
                 <ng-container *ngTemplateOutlet="utxoRow"></ng-container>
                 <ng-container *ngTemplateOutlet="pendingUtxoRow"></ng-container>
-                <ng-container *ngTemplateOutlet="volumeRow"></ng-container>
+                @if (network === 'liquid' || network === 'liquidtestnet') {
+                  <ng-container *ngTemplateOutlet="liquidRow"></ng-container>
+                } @else {
+                  <ng-container *ngTemplateOutlet="volumeRow"></ng-container>
+                }
                 <ng-container *ngTemplateOutlet="typeRow"></ng-container>
               </tbody>
             </table>
           </div>
         } @else {
           <div class="col-sm">
-            <table class="table table-borderless table-striped">
+            <table class="table table-borderless table-striped table-fixed">
               <tbody>
                 <ng-container *ngTemplateOutlet="balanceRow"></ng-container>
                 <ng-container *ngTemplateOutlet="utxoRow"></ng-container>
-                <ng-container *ngTemplateOutlet="volumeRow"></ng-container>
+                @if (network === 'liquid' || network === 'liquidtestnet') {
+                  <ng-container *ngTemplateOutlet="liquidRow"></ng-container>
+                } @else {
+                  <ng-container *ngTemplateOutlet="volumeRow"></ng-container>
+                }
               </tbody>
             </table>
           </div>
           <div class="col-sm">
-            <table class="table table-borderless table-striped">
+            <table class="table table-borderless table-striped table-fixed">
               <tbody>
                 <ng-container *ngTemplateOutlet="pendingBalanceRow"></ng-container>
                 <ng-container *ngTemplateOutlet="pendingUtxoRow"></ng-container>
@@ -227,7 +235,7 @@
 <ng-template #typeRow>
   <tr>
     <td i18n="address.type">Type</td>
-    <td><app-address-type [address]="addressTypeInfo"></app-address-type><app-address-labels [channel]="exampleChannel" [address]="addressTypeInfo" class="ml-1"></app-address-labels></td>
+    <td class="wrap-cell"><app-address-type [address]="addressTypeInfo"></app-address-type><app-address-labels [channel]="exampleChannel" [address]="addressTypeInfo" class="ml-1"></app-address-labels></td>
   </tr>
 </ng-template>
 
@@ -235,7 +243,7 @@
   <tr *ngIf="addressInfo && addressInfo.unconfidential">
     <td i18n="address.unconfidential">Unconfidential</td>
     <td>
-      <app-truncate [text]="addressInfo.unconfidential" [lastChars]="8" [link]="['/address/' | relativeUrl, addressInfo.unconfidential]">
+      <app-truncate [text]="addressInfo.unconfidential" [lastChars]="8" [textAlign]="isMobile ? 'end' : 'start'" [link]="['/address/' | relativeUrl, addressInfo.unconfidential]">
         <app-clipboard [text]="addressInfo.unconfidential"></app-clipboard>
       </app-truncate>
     </td>
