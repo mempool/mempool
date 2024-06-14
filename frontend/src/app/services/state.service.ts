@@ -43,6 +43,7 @@ export interface Customization {
 }
 
 export interface Env {
+  MAINNET_ENABLED: boolean;
   TESTNET_ENABLED: boolean;
   TESTNET4_ENABLED: boolean;
   SIGNET_ENABLED: boolean;
@@ -52,6 +53,7 @@ export interface Env {
   KEEP_BLOCKS_AMOUNT: number;
   OFFICIAL_MEMPOOL_SPACE: boolean;
   BASE_MODULE: string;
+  DEFAULT_NETWORK: string;
   NGINX_PROTOCOL?: string;
   NGINX_HOSTNAME?: string;
   NGINX_PORT?: string;
@@ -77,12 +79,14 @@ export interface Env {
 }
 
 const defaultEnv: Env = {
+  'MAINNET_ENABLED': true,
   'TESTNET_ENABLED': false,
   'TESTNET4_ENABLED': false,
   'SIGNET_ENABLED': false,
   'LIQUID_ENABLED': false,
   'LIQUID_TESTNET_ENABLED': false,
   'BASE_MODULE': 'mempool',
+  'DEFAULT_NETWORK': '',
   'ITEMS_PER_PAGE': 10,
   'KEEP_BLOCKS_AMOUNT': 8,
   'OFFICIAL_MEMPOOL_SPACE': false,
@@ -201,6 +205,8 @@ export class StateService {
     if (defaultEnv.BASE_MODULE !== 'mempool') {
       this.env.MINING_DASHBOARD = false;
     }
+
+    this.network = this.env.DEFAULT_NETWORK;
 
     if (this.isBrowser) {
       this.setNetworkBasedonUrl(window.location.pathname);
@@ -357,8 +363,8 @@ export class StateService {
             this.networkChanged$.next(this.env.BASE_MODULE);
           }
         } else if (this.network !== '') {
-          this.network = '';
-          this.networkChanged$.next('');
+          this.network = this.env.DEFAULT_NETWORK;
+          this.networkChanged$.next(this.env.DEFAULT_NETWORK);
         }
     }
   }
