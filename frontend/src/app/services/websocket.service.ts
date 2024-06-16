@@ -55,7 +55,7 @@ export class WebsocketService {
         .pipe(take(1))
         .subscribe((response) => this.handleResponse(response));
     } else {
-      this.network = this.stateService.network === this.stateService.env.DEFAULT_NETWORK ? '' : this.stateService.network;
+      this.network = this.stateService.network === this.stateService.env.ROOT_NETWORK ? '' : this.stateService.network;
       this.websocketSubject = webSocket<WebsocketResponse>(this.webSocketUrl.replace('{network}', this.network ? '/' + this.network : ''));
 
       const { response: theInitData } = this.transferState.get<any>(initData, null) || {};
@@ -75,7 +75,7 @@ export class WebsocketService {
         if (network === this.network) {
           return;
         }
-        this.network = network === this.stateService.env.DEFAULT_NETWORK ? '' : network;
+        this.network = network === this.stateService.env.ROOT_NETWORK ? '' : network;
         clearTimeout(this.onlineCheckTimeout);
         clearTimeout(this.onlineCheckTimeoutTwo);
 

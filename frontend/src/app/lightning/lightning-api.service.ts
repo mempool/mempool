@@ -23,7 +23,7 @@ export class LightningApiService {
     }
     this.apiBasePath = ''; // assume mainnet by default
     this.stateService.networkChanged$.subscribe((network) => {
-      this.apiBasePath = network && network !== this.stateService.env.DEFAULT_NETWORK ? '/' + network : '';
+      this.apiBasePath = network && network !== this.stateService.env.ROOT_NETWORK ? '/' + network : '';
     });
   }
 

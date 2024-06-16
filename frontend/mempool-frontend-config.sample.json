@@ -13,7 +13,7 @@
   "BLOCK_WEIGHT_UNITS": 4000000,
   "MEMPOOL_BLOCKS_AMOUNT": 8,
   "BASE_MODULE": "mempool",
-  "DEFAULT_NETWORK": "",
+  "ROOT_NETWORK": "",
   "MEMPOOL_WEBSITE_URL": "https://mempool.space",
   "LIQUID_WEBSITE_URL": "https://liquid.network",
   "MINING_DASHBOARD": true,

@@ -12,7 +12,7 @@ export class RelativeUrlPipe implements PipeTransform {
 
   transform(value: string, swapNetwork?: string): string {
     let network = swapNetwork || this.stateService.network;
-    if (network === 'mainnet' || network === this.stateService.env.DEFAULT_NETWORK) { 
+    if (network === 'mainnet' || network === this.stateService.env.ROOT_NETWORK) { 
       network = '';
     }
     if (this.stateService.env.BASE_MODULE === 'liquid' && network === 'liquidtestnet') {
