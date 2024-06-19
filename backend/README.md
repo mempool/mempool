@@ -181,7 +181,7 @@ Create a new wallet, if needed:
    bitcoin-cli -regtest createwallet test
    ```
 
-Load wallet (this command may take a while if you have lot of UTXOs):
+Load wallet (this command may take a while if you have a lot of UTXOs):
    ```
    bitcoin-cli -regtest loadwallet test
    ```
@@ -233,9 +233,9 @@ By default, mining pools will be not automatically updated regularly (`config.ME
 
 To manually update your mining pools, you can use the `--update-pools` command line flag when you run the nodejs backend. For example `npm run start --update-pools`. This will trigger the mining pools update and automatically re-index appropriate blocks.
 
-You can enabled the automatic mining pools update by settings `config.MEMPOOL.AUTOMATIC_BLOCK_REINDEXING` to `true` in your `mempool-config.json`.
+You can enable the automatic mining pools update by settings `config.MEMPOOL.AUTOMATIC_BLOCK_REINDEXING` to `true` in your `mempool-config.json`.
 
-When a `coinbase tag` or `coinbase address` change is detected, all blocks tagged to the `unknown` mining pools (starting from height 130635) will be deleted from the `blocks` table. Additionaly, all blocks which were tagged to the pool which has been updated will also be deleted from the `blocks` table. Of course, those blocks will be automatically reindexed.
+When a `coinbase tag` or `coinbase address` change is detected, all blocks tagged to the `unknown` mining pools (starting from height 130635) will be deleted from the `blocks` table. Additionally, all blocks which were tagged to the pool which has been updated will also be deleted from the `blocks` table. Of course, those blocks will be automatically reindexed.
 
 ### Re-index tables
 
