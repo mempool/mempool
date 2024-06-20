@@ -311,7 +311,7 @@ class AccelerationRepository {
           pools: acc.pools,
         }))
         for (const acc of accelerations) {
-          if (blockTxs[acc.txid] && acc.pools.some(pool => pool === block.extras.pool.id)) {
+          if (blockTxs[acc.txid] && acc.pools.includes(block.extras.pool.id)) {
             const tx = blockTxs[acc.txid];
             const accelerationInfo = accelerationCosts.getAccelerationInfo(tx, boostRate, transactions);
             accelerationInfo.cost = Math.max(0, Math.min(acc.feeDelta, accelerationInfo.cost));
