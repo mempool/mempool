@@ -22,7 +22,7 @@
       <div class="row">
         @if (isMobile) {
           <div class="col-sm">
-            <table class="table table-borderless table-striped">
+            <table class="table table-borderless table-striped address-table">
               <tbody>
                 <ng-container *ngTemplateOutlet="balanceRow"></ng-container>
                 <ng-container *ngTemplateOutlet="pendingBalanceRow"></ng-container>
@@ -39,7 +39,7 @@
           </div>
         } @else {
           <div class="col-sm">
-            <table class="table table-borderless table-striped table-fixed">
+            <table class="table table-borderless table-striped table-fixed address-table">
               <tbody>
                 <ng-container *ngTemplateOutlet="balanceRow"></ng-container>
                 <ng-container *ngTemplateOutlet="utxoRow"></ng-container>
@@ -52,7 +52,7 @@
             </table>
           </div>
           <div class="col-sm">
-            <table class="table table-borderless table-striped table-fixed">
+            <table class="table table-borderless table-striped table-fixed address-table">
               <tbody>
                 <ng-container *ngTemplateOutlet="pendingBalanceRow"></ng-container>
                 <ng-container *ngTemplateOutlet="pendingUtxoRow"></ng-container>
