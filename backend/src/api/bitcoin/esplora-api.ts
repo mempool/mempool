@@ -94,12 +94,12 @@ class FailoverRouter {
         );
         if (result) {
           const height = result.data;
-          this.maxHeight = Math.max(height || 0, ...this.hosts.map(host => (!(host.unreachable || host.timedOut || host.outOfSync) ? host.latestHeight || 0 : 0)));
+          host.latestHeight = height;
+          this.maxHeight = Math.max(height || 0, ...this.hosts.map(h => (!(h.unreachable || h.timedOut || h.outOfSync) ? h.latestHeight || 0 : 0)));
           const rtt = result.config['meta'].rtt;
           host.rtts.unshift(rtt);
           host.rtts.slice(0, 5);
           host.rtt = host.rtts.reduce((acc, l) => acc + l, 0) / host.rtts.length;
-          host.latestHeight = height;
           if (height == null || isNaN(height) || (this.maxHeight - height > this.maxSlippage)) {
             host.outOfSync = true;
           } else {
@@ -127,7 +127,6 @@ class FailoverRouter {
       host.checked = true;
       host.lastChecked = Date.now();
 
-      // switch if the current host is out of sync or significantly slower than the next best alternative
       const rankOrder = this.sortHosts();
       // switch if the current host is out of sync or significantly slower than the next best alternative
       if (this.activeHost.outOfSync || this.activeHost.unreachable || (this.activeHost !== rankOrder[0] && rankOrder[0].preferred) || (!this.activeHost.preferred && this.activeHost.rtt > (rankOrder[0].rtt * 2) + 50)) {
@@ -185,7 +184,6 @@ class FailoverRouter {
 
   // depose the active host and choose the next best replacement
   private electHost(): void {
-    this.activeHost.outOfSync = true;
     this.activeHost.failures = 0;
     const rankOrder = this.sortHosts();
     this.activeHost = rankOrder[0];
@@ -196,6 +194,7 @@ class FailoverRouter {
     host.failures++;
     if (host.failures > 5 && this.multihost) {
       logger.warn(`🚨🚨🚨 Too many esplora failures on ${this.activeHost.host}, falling back to next best alternative 🚨🚨🚨`);
+      this.activeHost.unreachable = true;
       this.electHost();
       return this.activeHost;
     } else {
