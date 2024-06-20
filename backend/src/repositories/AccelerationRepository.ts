@@ -308,10 +308,10 @@ class AccelerationRepository {
         }
         const accelerationSummaries = accelerations.map(acc => ({
           ...acc,
-          pools: acc.pools.map(pool => pool.pool_unique_id),
+          pools: acc.pools,
         }))
         for (const acc of accelerations) {
-          if (blockTxs[acc.txid] && acc.pools.some(pool => pool.pool_unique_id === block.extras.pool.id)) {
+          if (blockTxs[acc.txid] && acc.pools.some(pool => pool === block.extras.pool.id)) {
             const tx = blockTxs[acc.txid];
             const accelerationInfo = accelerationCosts.getAccelerationInfo(tx, boostRate, transactions);
             accelerationInfo.cost = Math.max(0, Math.min(acc.feeDelta, accelerationInfo.cost));

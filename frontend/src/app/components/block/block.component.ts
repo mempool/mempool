@@ -313,7 +313,7 @@ export class BlockComponent implements OnInit, OnDestroy {
 
       const acceleratedInBlock = {};
       for (const acc of accelerations) {
-        if (acc.pools?.some(pool => pool === this.block?.extras?.pool.id || pool?.['pool_unique_id'] === this.block?.extras?.pool.id)) {
+        if (acc.pools?.some(pool => pool === this.block?.extras?.pool.id)) {
           acceleratedInBlock[acc.txid] = acc;
         }
       }
