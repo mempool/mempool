@@ -87,6 +87,7 @@ import { ChangeComponent } from '../components/change/change.component';
 import { SatsComponent } from './components/sats/sats.component';
 import { BtcComponent } from './components/btc/btc.component';
 import { FeeRateComponent } from './components/fee-rate/fee-rate.component';
+import { AddressTypeComponent } from './components/address-type/address-type.component';
 import { TruncateComponent } from './components/truncate/truncate.component';
 import { SearchResultsComponent } from '../components/search-form/search-results/search-results.component';
 import { TimestampComponent } from './components/timestamp/timestamp.component';
@@ -202,6 +203,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     SatsComponent,
     BtcComponent,
     FeeRateComponent,
+    AddressTypeComponent,
     TruncateComponent,
     SearchResultsComponent,
     TimestampComponent,
@@ -343,6 +345,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     SatsComponent,
     BtcComponent,
     FeeRateComponent,
+    AddressTypeComponent,
     TruncateComponent,
     SearchResultsComponent,
     TimestampComponent,

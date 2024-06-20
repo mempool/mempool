@@ -96,10 +96,16 @@ export class AcceleratorDashboardComponent implements OnInit, OnDestroy {
       share(),
     );
 
-    this.minedAccelerations$ = this.accelerations$.pipe(
-      map(accelerations => {
-        return accelerations.filter(acc => ['completed_provisional', 'completed'].includes(acc.status));
-      })
+    this.minedAccelerations$ = this.stateService.chainTip$.pipe(
+      distinctUntilChanged(),
+      switchMap(() => {
+        return this.serviceApiServices.getAccelerationHistory$({ status: 'completed', pageLength: 6 }).pipe(
+          catchError(() => {
+            return of([]);
+          }),
+        );
+      }),
+      share(),
     );
 
     this.blocks$ = combineLatest([
