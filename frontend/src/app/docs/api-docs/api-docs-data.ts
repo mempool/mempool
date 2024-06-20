@@ -9126,11 +9126,7 @@ export const restApiDocsData = [
     "blockHash": "00000000000000000000482f0746d62141694b9210a813b97eb8445780a32003",
     "blockHeight": 829559,
     "bidBoost": 6102,
-    "pools": [
-      {
-        "pool_unique_id": 111
-      }
-    ]
+    "pools": [111]
   }
 ]`,
         },
