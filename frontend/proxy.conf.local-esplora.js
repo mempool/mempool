@@ -87,6 +87,7 @@ PROXY_CONFIG.push(...[
     proxyTimeout: 30000,
     pathRewrite: {
       "^/api/v1/services/accelerator": ""
+    },
   },
   */
   {
