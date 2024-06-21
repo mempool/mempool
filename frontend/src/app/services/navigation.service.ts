@@ -1,32 +1,31 @@
 import { Injectable } from '@angular/core';
-import { Router, ActivatedRoute, NavigationEnd, ActivatedRouteSnapshot } from '@angular/router';
+import { Router, NavigationEnd, ActivatedRouteSnapshot } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { StateService } from './state.service';
-
-const networkModules = {
-  bitcoin: {
-    subnets: [
-      { name: 'mainnet', path: '' },
-      { name: 'testnet', path: '/testnet' },
-      { name: 'testnet4', path: '/testnet4' },
-      { name: 'signet', path: '/signet' },
-    ],
-  },
-  liquid: {
-    subnets: [
-      { name: 'liquid', path: '' },
-      { name: 'liquidtestnet', path: '/testnet' },
-    ],
-  }
-};
-const networks = Object.keys(networkModules);
 
 @Injectable({
   providedIn: 'root'
 })
 export class NavigationService {
   subnetPaths = new BehaviorSubject<Record<string,string>>({});
+  networkModules = {
+    bitcoin: {
+      subnets: [
+        { name: 'mainnet', path: '' },
+        { name: 'testnet', path: this.stateService.env.ROOT_NETWORK === 'testnet' ? '/' : '/testnet' },
+        { name: 'testnet4', path: this.stateService.env.ROOT_NETWORK === 'testnet4' ? '/' : '/testnet4' },
+        { name: 'signet', path: this.stateService.env.ROOT_NETWORK === 'signet' ? '/' : '/signet' },
+      ],
+    },
+    liquid: {
+      subnets: [
+        { name: 'liquid', path: '' },
+        { name: 'liquidtestnet', path: '/testnet' },
+      ],
+    }
+  };
+  networks = Object.keys(this.networkModules);
 
   constructor(
     private stateService: StateService,
@@ -46,11 +45,11 @@ export class NavigationService {
     const networkPaths = {};
     let route = root;
     // traverse the router state tree until all network paths are set, or we reach the end of the tree
-    while (!networks.reduce((acc, network) => acc && !!networkPaths[network], true) && route) {
+    while (!this.networks.reduce((acc, network) => acc && !!networkPaths[network], true) && route) {
       // 'networkSpecific' paths may correspond to valid routes on other networks, but aren't directly compatible
       // (e.g. we shouldn't link a mainnet transaction page to the same txid on testnet or liquid)
       if (route.data?.networkSpecific) {
-        networks.forEach(network => {
+        this.networks.forEach(network => {
           if (networkPaths[network] == null) {
             networkPaths[network] = path;
           }
@@ -59,7 +58,7 @@ export class NavigationService {
       // null or empty networks list is shorthand for "compatible with every network"
       if (route.data?.networks?.length) {
         // if the list is non-empty, only those networks are compatible
-        networks.forEach(network => {
+        this.networks.forEach(network => {
           if (!route.data.networks.includes(network)) {
             if (networkPaths[network] == null) {
               networkPaths[network] = path;
@@ -76,7 +75,7 @@ export class NavigationService {
     }
 
     const subnetPaths = {};
-    Object.entries(networkModules).forEach(([key, network]) => {
+    Object.entries(this.networkModules).forEach(([key, network]) => {
       network.subnets.forEach(subnet => {
         subnetPaths[subnet.name] = subnet.path + (networkPaths[key] != null ? networkPaths[key] : path);
       });

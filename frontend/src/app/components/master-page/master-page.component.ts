@@ -31,6 +31,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   user: any = undefined;
   servicesEnabled = false;
   menuOpen = false;
+  isDropdownVisible: boolean;
   
   enterpriseInfo: any;
   enterpriseInfo$: Subscription;
@@ -74,19 +75,27 @@ export class MasterPageComponent implements OnInit, OnDestroy {
 
     const isServicesPage = this.router.url.includes('/services/');
     this.menuOpen = isServicesPage && !this.isSmallScreen();
+    this.setDropdownVisibility();
   }
 
-  ngOnDestroy() {
-    if (this.enterpriseInfo$) {
-      this.enterpriseInfo$.unsubscribe();
-    }
+  setDropdownVisibility(): void {
+    const networks = [
+      this.env.TESTNET_ENABLED,
+      this.env.TESTNET4_ENABLED,
+      this.env.SIGNET_ENABLED,
+      this.env.LIQUID_ENABLED,
+      this.env.LIQUID_TESTNET_ENABLED,
+      this.env.MAINNET_ENABLED,
+    ];
+    const enabledNetworksCount = networks.filter((networkEnabled) => networkEnabled).length;
+    this.isDropdownVisible = enabledNetworksCount > 1;
   }
 
   collapse(): void {
     this.navCollapsed = !this.navCollapsed;
   }
 
-  isSmallScreen() {
+  isSmallScreen(): boolean {
     return window.innerWidth <= 767.98;
   }
 
@@ -117,4 +126,11 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   menuToggled(isOpen: boolean): void {
     this.menuOpen = isOpen;
   }
+
+  ngOnDestroy(): void {
+    if (this.enterpriseInfo$) {
+      this.enterpriseInfo$.unsubscribe();
+    }
+  }
+
 }
