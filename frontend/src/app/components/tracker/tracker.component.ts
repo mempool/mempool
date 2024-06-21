@@ -130,6 +130,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
     private seoService: SeoService,
     private priceService: PriceService,
     private enterpriseService: EnterpriseService,
+    private router: Router,
     private cd: ChangeDetectorRef,
     private zone: NgZone,
     @Inject(ZONE_SERVICE) private zoneService: any,

@@ -161,7 +161,11 @@
       }
     </div>
 
-    <div class="footer-link" [routerLink]="['/tx' | relativeUrl, tx?.txid]">
+    <div class="footer-link"
+      [routerLink]="['/tx' | relativeUrl, tx?.txid]"
+      [queryParams]="{ mode: 'details' }"
+      queryParamsHandling="merge"
+    >
       <span>See more details <fa-icon [icon]="['fas', 'arrow-alt-circle-right']"></fa-icon></span>
     </div>
   </div>
