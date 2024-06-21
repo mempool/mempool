@@ -16,6 +16,7 @@ fi
 
 # Runtime overrides - read env vars defined in docker compose
 
+__MAINNET_ENABLED__=${MAINNET_ENABLED:=true}
 __TESTNET_ENABLED__=${TESTNET_ENABLED:=false}
 __SIGNET_ENABLED__=${SIGNET_ENABLED:=false}
 __LIQUID_ENABLED__=${LIQUID_ENABLED:=false}
@@ -28,6 +29,7 @@ __NGINX_PORT__=${NGINX_PORT:=8999}
 __BLOCK_WEIGHT_UNITS__=${BLOCK_WEIGHT_UNITS:=4000000}
 __MEMPOOL_BLOCKS_AMOUNT__=${MEMPOOL_BLOCKS_AMOUNT:=8}
 __BASE_MODULE__=${BASE_MODULE:=mempool}
+__ROOT_NETWORK__=${ROOT_NETWORK:=}
 __MEMPOOL_WEBSITE_URL__=${MEMPOOL_WEBSITE_URL:=https://mempool.space}
 __LIQUID_WEBSITE_URL__=${LIQUID_WEBSITE_URL:=https://liquid.network}
 __MINING_DASHBOARD__=${MINING_DASHBOARD:=true}
@@ -42,6 +44,7 @@ __HISTORICAL_PRICE__=${HISTORICAL_PRICE:=true}
 __ADDITIONAL_CURRENCIES__=${ADDITIONAL_CURRENCIES:=false}
 
 # Export as environment variables to be used by envsubst
+export __MAINNET_ENABLED__
 export __TESTNET_ENABLED__
 export __SIGNET_ENABLED__
 export __LIQUID_ENABLED__
@@ -54,6 +57,7 @@ export __NGINX_PORT__
 export __BLOCK_WEIGHT_UNITS__
 export __MEMPOOL_BLOCKS_AMOUNT__
 export __BASE_MODULE__
+export __ROOT_NETWORK__
 export __MEMPOOL_WEBSITE_URL__
 export __LIQUID_WEBSITE_URL__
 export __MINING_DASHBOARD__
