@@ -206,8 +206,6 @@ export class StateService {
       this.env.MINING_DASHBOARD = false;
     }
 
-    this.network = this.env.ROOT_NETWORK;
-
     if (this.isBrowser) {
       this.setNetworkBasedonUrl(window.location.pathname);
       this.setLightningBasedonUrl(window.location.pathname);
@@ -331,7 +329,12 @@ export class StateService {
     // (?:preview\/)?                               optional "preview" prefix (non-capturing)
     // (testnet|signet)/                            network string (captured as networkMatches[1])
     // ($|\/)                                       network string must end or end with a slash
-    const networkMatches = url.match(/^\/(?:[a-z]{2}(?:-[A-Z]{2})?\/)?(?:preview\/)?(testnet4?|signet)($|\/)/);
+    let networkMatches: object = url.match(/^\/(?:[a-z]{2}(?:-[A-Z]{2})?\/)?(?:preview\/)?(testnet4?|signet)($|\/)/);
+
+    if (!networkMatches && this.env.ROOT_NETWORK) {
+      networkMatches = { 1: this.env.ROOT_NETWORK };
+    }
+
     switch (networkMatches && networkMatches[1]) {
       case 'signet':
         if (this.network !== 'signet') {
@@ -363,8 +366,8 @@ export class StateService {
             this.networkChanged$.next(this.env.BASE_MODULE);
           }
         } else if (this.network !== '') {
-          this.network = this.env.ROOT_NETWORK;
-          this.networkChanged$.next(this.env.ROOT_NETWORK);
+          this.network = '';
+          this.networkChanged$.next('');
         }
     }
   }
