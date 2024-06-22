@@ -237,7 +237,7 @@
 
 <ng-template #balanceRow>
   <tr>
-    <td i18n="address.balance">Balance</td>
+    <td i18n="address.confirmed-balance">Confirmed balance</td>
     <td *ngIf="chainStats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="chainStats.balance" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="chainStats.balance"></app-fiat></span></td>
   </tr>
 </ng-template>
@@ -251,7 +251,7 @@
 
 <ng-template #utxoRow>
   <tr>
-    <td i18n="address.utxos" i18n-ngbTooltip="unspent-transaction-outputs" ngbTooltip="unspent transaction outputs">UTXOs</td>
+    <td i18n="address.confirmed-utxos" i18n-ngbTooltip="unspent-transaction-outputs" ngbTooltip="unspent transaction outputs">Confirmed UTXOs</td>
     <td>{{ chainStats.utxos }}</td>
   </tr>
 </ng-template>
