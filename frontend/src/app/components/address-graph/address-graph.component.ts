@@ -168,7 +168,8 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
     if (this.period !== 'all') {
       const start = now - (periodSeconds[this.period] * 1000);
       this.data = this.data.filter(d => d[0] >= start);
-      this.fiatData = this.fiatData.filter(d => d[0] >= start);
+      const startFiat = this.data[0]?.[0] ?? start; // Make sure USD data starts at the same time as BTC data
+      this.fiatData = this.fiatData.filter(d => d[0] >= startFiat);
     }
     this.data.push(
       {value: [now, this.stats.funded_txo_sum - this.stats.spent_txo_sum], symbol: 'none', tooltip: { show: false }}
