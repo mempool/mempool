@@ -9,13 +9,13 @@
 
   <ng-container *ngIf="(hosts$ | async) as hosts">
     <div class="status-panel">
-      <table class="status-table table table-fixed table-borderless table-striped" *ngIf="(tip$ | async) as tip">
+      <table class="status-table table table-borderless table-striped" *ngIf="(tip$ | async) as tip">
         <tbody>
           <tr>
             <th class="rank"></th>
             <th class="flag"></th>
             <th class="host">Host</th>
-            <th class="updated">Last checked</th>
+            <th class="updated">Updated</th>
             <th class="rtt only-small">RTT</th>
             <th class="rtt only-large">RTT</th>
             <th class="height">Height</th>
