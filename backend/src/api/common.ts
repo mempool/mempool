@@ -904,9 +904,10 @@ export class Common {
     let medianFee = 0;
     let medianWeight = 0;
 
-    // calculate the "medianFee" as the average fee rate of the middle 10000 weight units of transactions
-    const leftBound = 1995000;
-    const rightBound = 2005000;
+    // calculate the "medianFee" as the average fee rate of the middle 0.25% weight units of transactions
+    const halfWidth = config.MEMPOOL.BLOCK_WEIGHT_UNITS / 800;
+    const leftBound = Math.floor((config.MEMPOOL.BLOCK_WEIGHT_UNITS / 2) - halfWidth);
+    const rightBound = Math.ceil((config.MEMPOOL.BLOCK_WEIGHT_UNITS / 2) + halfWidth);
     for (let i = 0; i < sortedTxs.length && weightCount < rightBound; i++) {
       const left = weightCount;
       const right = weightCount + sortedTxs[i].weight;
