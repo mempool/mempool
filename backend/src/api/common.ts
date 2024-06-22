@@ -258,9 +258,15 @@ export class Common {
     let opreturnCount = 0;
     for (const vout of tx.vout) {
       // scriptpubkey
-      if (['unknown', 'provably_unspendable', 'empty'].includes(vout.scriptpubkey_type)) {
+      if (['nonstandard', 'provably_unspendable', 'empty'].includes(vout.scriptpubkey_type)) {
         // (non-standard output type)
         return true;
+      } else if (vout.scriptpubkey_type === 'unknown') {
+        // undefined segwit version/length combinations are actually standard in outputs
+        // https://github.com/bitcoin/bitcoin/blob/2c79abc7ad4850e9e3ba32a04c530155cda7f980/src/script/interpreter.cpp#L1950-L1951
+        if (vout.scriptpubkey.startsWith('00') || !this.isWitnessProgram(vout.scriptpubkey)) {
+          return true;
+        }
       } else if (vout.scriptpubkey_type === 'multisig') {
         if (!DEFAULT_PERMIT_BAREMULTISIG) {
           // bare-multisig
@@ -305,6 +311,27 @@ export class Common {
 
     // TODO: non-mandatory-script-verify-flag
 
+    return false;
+  }
+
+  // A witness program is any valid scriptpubkey that consists of a 1-byte push opcode
+  // followed by a data push between 2 and 40 bytes.
+  // https://github.com/bitcoin/bitcoin/blob/2c79abc7ad4850e9e3ba32a04c530155cda7f980/src/script/script.cpp#L224-L240
+  static isWitnessProgram(scriptpubkey: string): false | { version: number, program: string } {
+    if (scriptpubkey.length < 8 || scriptpubkey.length > 84) {
+      return false;
+    }
+    const version = parseInt(scriptpubkey.slice(0,2), 16);
+    if (version !== 0 && version < 0x51 || version > 0x60) {
+        return false;
+    }
+    const push = parseInt(scriptpubkey.slice(2,4), 16);
+    if (push + 2 === (scriptpubkey.length / 2)) {
+      return {
+        version: version ? version - 0x50 : 0,
+        program: scriptpubkey.slice(4),
+      };
+    }
     return false;
   }
 
