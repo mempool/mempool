@@ -3,13 +3,13 @@
     <h1 i18n="shared.address">Address</h1>
     <div class="tx-link">
       <app-truncate [text]="addressString" [lastChars]="8" [link]="['/address/' | relativeUrl, addressString]">
-        <app-clipboard [text]="addressString" [size]="isMobile ? 'large' : 'normal'"></app-clipboard>
-        <span style="position: relative; cursor: pointer" (mouseover)="showQR = true" (mouseout)="showQR = false" (pointerdown)="showQR = true">
+        <span class="qrSpan" (mouseover)="showQR = true" (mouseout)="showQR = false" (pointerdown)="showQR = true">
           <fa-icon [icon]="['fas', 'qrcode']" [fixedWidth]="true" [style.font-size]="isMobile ? '18px' : '12px'"></fa-icon>
           <div class="qr-wrapper" [hidden]="!showQR">
             <app-qrcode [size]="200" [data]="addressString"></app-qrcode>
           </div>
         </span>
+        <app-clipboard [text]="addressString" [size]="isMobile ? 'large' : 'normal'"></app-clipboard>
       </app-truncate>
     </div>
   </div>
@@ -244,7 +244,7 @@
 
 <ng-template #pendingBalanceRow>
   <tr>
-    <td i18n="address.unconfirmed-balance" class="font-italic">unconfirmed balance</td>
+    <td i18n="address.unconfirmed-balance" class="font-italic">Unconfirmed balance</td>
     <td *ngIf="mempoolStats.funded_txo_sum !== undefined; else confidentialTd" class="font-italic"><app-amount [satoshis]="mempoolStats.balance" [noFiat]="true" [addPlus]="true"></app-amount> <span class="fiat"><app-fiat [value]="mempoolStats.balance"></app-fiat></span></td>
   </tr>
 </ng-template>
@@ -258,22 +258,27 @@
 
 <ng-template #pendingUtxoRow>
   <tr>
-    <td i18n="address.unconfirmed-utxos" class="font-italic">unconfirmed UTXOs</td>
+    <td i18n="address.unconfirmed-utxos" class="font-italic">Unconfirmed UTXOs</td>
     <td class="font-italic">{{ mempoolStats.utxos > 0 ? '+' : ''}}{{ mempoolStats.utxos }}</td>
   </tr>
 </ng-template>
 
 <ng-template #volumeRow>
   <tr>
-    <td i18n="address.volume">Volume</td>
-    <td *ngIf="chainStats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="chainStats.volume + mempoolStats.volume"></app-amount></td>
+    <td i18n="address.total-received">Total received</td>
+    <td *ngIf="chainStats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="chainStats.totalReceived"></app-amount></td>
   </tr>
 </ng-template>
 
 <ng-template #typeRow>
   <tr>
     <td i18n="address.type">Type</td>
-    <td class="wrap-cell"><app-address-type [address]="addressTypeInfo"></app-address-type><app-address-labels [channel]="exampleChannel" [address]="addressTypeInfo" class="ml-1"></app-address-labels></td>
+    <td class="wrap-cell">
+      <span placement="bottom" class="badge badge-primary">
+        <app-address-type [address]="addressTypeInfo"></app-address-type>
+      </span>
+      <app-address-labels [channel]="exampleChannel" [address]="addressTypeInfo" class="ml-1"></app-address-labels>
+    </td>
   </tr>
 </ng-template>
 
