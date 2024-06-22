@@ -1300,7 +1300,7 @@ class WebsocketHandler {
   // and zips it together into a valid JSON object
   private serializeResponse(response): string {
     return '{'
-        + Object.keys(response).map(key => `"${key}": ${response[key]}`).join(', ')
+        + Object.keys(response).filter(key => response[key] != null).map(key => `"${key}": ${response[key]}`).join(', ')
         + '}';
   }
 
