@@ -156,6 +156,7 @@ export interface AddressTxSummary {
   value: number;
   height: number;
   time: number;
+  price?: number;
 }
 
 export interface ChainStats {
