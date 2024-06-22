@@ -152,7 +152,7 @@ pub fn gbt(
 
             if blocks.len() < (max_blocks - 1)
                 && ((block_weight + (4 * next_tx.ancestor_sigop_adjusted_vsize())
-                    >= max_block_weight)
+                    >= max_block_weight - 4_000)
                     || (block_sigops + next_tx.ancestor_sigops() > BLOCK_SIGOPS))
             {
                 // hold this package in an overflow list while we check for smaller options
@@ -205,7 +205,7 @@ pub fn gbt(
 
         // this block is full
         let exceeded_package_tries =
-            failures > 1000 && block_weight > (max_block_weight - BLOCK_RESERVED_WEIGHT);
+            failures > 1000 && block_weight > (max_block_weight - 4_000 - BLOCK_RESERVED_WEIGHT);
         let queue_is_empty = mempool_stack.is_empty() && modified.is_empty();
         if (exceeded_package_tries || queue_is_empty) && blocks.len() < (max_blocks - 1) {
             // finalize this block
