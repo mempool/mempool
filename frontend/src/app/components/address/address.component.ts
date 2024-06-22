@@ -80,8 +80,8 @@ class AddressStats implements ChainStats {
     return this.funded_txo_sum - this.spent_txo_sum;
   }
 
-  get volume(): number {
-    return this.funded_txo_sum + this.spent_txo_sum;
+  get totalReceived(): number {
+    return this.funded_txo_sum;
   }
 
   get utxos(): number {

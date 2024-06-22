@@ -11,6 +11,12 @@
   z-index: 99;
 }
 
+.qrSpan {
+  position: relative;
+  cursor: pointer;
+  padding-left: 0.4rem;
+}
+
 .fiat {
   display: block;
   @media (min-width: 992px){
