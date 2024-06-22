@@ -132,25 +132,63 @@
 
     <div class="box">
       <div class="row">
-        <div class="col">
-          <table class="table table-borderless table-striped">
-            <tbody>
-              <tr>
-                <td colspan="2"><span class="skeleton-loader"></span></td>
-              </tr>
-              <tr>
-                <td colspan="2"><span class="skeleton-loader"></span></td>
-              </tr>
-              <tr>
-                <td colspan="2"><span class="skeleton-loader"></span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="w-100 d-block d-md-none"></div>
-        <div class="col">
-
-        </div>
+        @if (isMobile) {
+          <div class="col-sm">
+            <table class="table table-borderless table-striped">
+              <tbody>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <div class="col-sm">
+            <table class="table table-borderless table-striped table-fixed">
+              <tbody>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="col-sm">
+            <table class="table table-borderless table-striped table-fixed">
+              <tbody>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        }
       </div>
     </div>
 
