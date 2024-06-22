@@ -1,14 +1,14 @@
 import { Env } from '../services/state.service';
 
 // all base58 characters
-const BASE58_CHARS = `[a-km-zA-HJ-NP-Z1-9]`;
+export const BASE58_CHARS = `[a-km-zA-HJ-NP-Z1-9]`;
 
 // all bech32 characters (after the separator)
-const BECH32_CHARS_LW = `[ac-hj-np-z02-9]`;
+export const BECH32_CHARS_LW = `[ac-hj-np-z02-9]`;
 const BECH32_CHARS_UP = `[AC-HJ-NP-Z02-9]`;
 
 // Hex characters
-const HEX_CHARS = `[a-fA-F0-9]`;
+export const HEX_CHARS = `[a-fA-F0-9]`;
 
 // A regex to say "A single 0 OR any number with no leading zeroes"
 // Capped at 9 digits so as to not be confused with lightning channel IDs (which are around 17 digits)

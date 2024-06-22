@@ -31,10 +31,7 @@ export interface AccelerationHistory {
   feeDelta: number,
   blockHash: string,
   blockHeight: number,
-  pools: {
-    pool_unique_id: number,
-    username: string,
-  }[],
+  pools: number[];
 };
 
 class AccelerationApi {

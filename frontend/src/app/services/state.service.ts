@@ -43,6 +43,7 @@ export interface Customization {
 }
 
 export interface Env {
+  MAINNET_ENABLED: boolean;
   TESTNET_ENABLED: boolean;
   TESTNET4_ENABLED: boolean;
   SIGNET_ENABLED: boolean;
@@ -52,6 +53,7 @@ export interface Env {
   KEEP_BLOCKS_AMOUNT: number;
   OFFICIAL_MEMPOOL_SPACE: boolean;
   BASE_MODULE: string;
+  ROOT_NETWORK: string;
   NGINX_PROTOCOL?: string;
   NGINX_HOSTNAME?: string;
   NGINX_PORT?: string;
@@ -77,12 +79,14 @@ export interface Env {
 }
 
 const defaultEnv: Env = {
+  'MAINNET_ENABLED': true,
   'TESTNET_ENABLED': false,
   'TESTNET4_ENABLED': false,
   'SIGNET_ENABLED': false,
   'LIQUID_ENABLED': false,
   'LIQUID_TESTNET_ENABLED': false,
   'BASE_MODULE': 'mempool',
+  'ROOT_NETWORK': '',
   'ITEMS_PER_PAGE': 10,
   'KEEP_BLOCKS_AMOUNT': 8,
   'OFFICIAL_MEMPOOL_SPACE': false,
@@ -325,7 +329,12 @@ export class StateService {
     // (?:preview\/)?                               optional "preview" prefix (non-capturing)
     // (testnet|signet)/                            network string (captured as networkMatches[1])
     // ($|\/)                                       network string must end or end with a slash
-    const networkMatches = url.match(/^\/(?:[a-z]{2}(?:-[A-Z]{2})?\/)?(?:preview\/)?(testnet4?|signet)($|\/)/);
+    let networkMatches: object = url.match(/^\/(?:[a-z]{2}(?:-[A-Z]{2})?\/)?(?:preview\/)?(testnet4?|signet)($|\/)/);
+
+    if (!networkMatches && this.env.ROOT_NETWORK) {
+      networkMatches = { 1: this.env.ROOT_NETWORK };
+    }
+
     switch (networkMatches && networkMatches[1]) {
       case 'signet':
         if (this.network !== 'signet') {

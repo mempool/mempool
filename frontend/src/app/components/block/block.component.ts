@@ -8,7 +8,7 @@ import { StateService } from '../../services/state.service';
 import { SeoService } from '../../services/seo.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
-import { BlockAudit, BlockExtended, TransactionStripped } from '../../interfaces/node-api.interface';
+import { Acceleration, BlockAudit, BlockExtended, TransactionStripped } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { BlockOverviewGraphComponent } from '../../components/block-overview-graph/block-overview-graph.component';
 import { detectWebGL } from '../../shared/graphs.utils';
@@ -44,6 +44,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   latestBlocks: BlockExtended[] = [];
   oobFees: number = 0;
   strippedTransactions: TransactionStripped[];
+  accelerations: Acceleration[];
   overviewTransitionDirection: string;
   isLoadingOverview = true;
   error: any;
@@ -68,6 +69,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   mode: 'projected' | 'actual' = 'projected';
 
   overviewSubscription: Subscription;
+  accelerationsSubscription: Subscription;
   keyNavigationSubscription: Subscription;
   blocksSubscription: Subscription;
   cacheBlocksSubscription: Subscription;
@@ -183,6 +185,9 @@ export class BlockComponent implements OnInit, OnDestroy {
         } else {
           this.isLoadingBlock = true;
           this.isLoadingOverview = true;
+          this.strippedTransactions = undefined;
+          this.blockAudit = undefined;
+          this.accelerations = undefined;
 
           let blockInCache: BlockExtended;
           if (isBlockHeight) {
@@ -294,158 +299,36 @@ export class BlockComponent implements OnInit, OnDestroy {
                 this.overviewError = err;
                 return of(null);
               })
-            ),
-          this.stateService.env.ACCELERATOR === true && block.height > 819500
-            ? this.servicesApiService.getAccelerationHistory$({ blockHeight: block.height })
-              .pipe(catchError(() => {
-                return of([]);
-              }))
-            : of([])
+            )
         ]);
       })
     )
-    .subscribe(([transactions, blockAudit, accelerations]) => {
+    .subscribe(([transactions, blockAudit]) => {
       if (transactions) {
         this.strippedTransactions = transactions;
       } else {
         this.strippedTransactions = [];
       }
+      this.blockAudit = blockAudit;
 
-      const acceleratedInBlock = {};
-      for (const acc of accelerations) {
-        if (acc.pools?.some(pool => pool === this.block?.extras?.pool.id || pool?.['pool_unique_id'] === this.block?.extras?.pool.id)) {
-          acceleratedInBlock[acc.txid] = acc;
-        }
-      }
-      for (const tx of transactions) {
-        if (acceleratedInBlock[tx.txid]) {
-          tx.acc = true;
-          const acceleration = acceleratedInBlock[tx.txid];
-          const boostCost = acceleration.boostCost || acceleration.bidBoost;
-          const acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
-          if (acceleratedFeeRate > tx.rate) {
-            tx.rate = acceleratedFeeRate;
-          }
-        } else {
-          tx.acc = false;
-        }
-      }
-
-      this.blockAudit = null;
-      if (transactions && blockAudit) {
-        const inTemplate = {};
-        const inBlock = {};
-        const isAdded = {};
-        const isPrioritized = {};
-        const isCensored = {};
-        const isMissing = {};
-        const isSelected = {};
-        const isFresh = {};
-        const isSigop = {};
-        const isRbf = {};
-        const isAccelerated = {};
-        this.numMissing = 0;
-        this.numUnexpected = 0;
-
-        if (blockAudit?.template) {
-          for (const tx of blockAudit.template) {
-            inTemplate[tx.txid] = true;
-            if (tx.acc) {
-              isAccelerated[tx.txid] = true;
-            }
-          }
-          for (const tx of transactions) {
-            inBlock[tx.txid] = true;
-          }
-          for (const txid of blockAudit.addedTxs) {
-            isAdded[txid] = true;
-          }
-          for (const txid of blockAudit.prioritizedTxs || []) {
-            isPrioritized[txid] = true;
-          }
-          for (const txid of blockAudit.missingTxs) {
-            isCensored[txid] = true;
-          }
-          for (const txid of blockAudit.freshTxs || []) {
-            isFresh[txid] = true;
-          }
-          for (const txid of blockAudit.sigopTxs || []) {
-            isSigop[txid] = true;
-          }
-          for (const txid of blockAudit.fullrbfTxs || []) {
-            isRbf[txid] = true;
-          }
-          for (const txid of blockAudit.acceleratedTxs || []) {
-            isAccelerated[txid] = true;
-          }
-          // set transaction statuses
-          for (const tx of blockAudit.template) {
-            tx.context = 'projected';
-            if (isCensored[tx.txid]) {
-              tx.status = 'censored';
-            } else if (inBlock[tx.txid]) {
-              tx.status = 'found';
-            } else {
-              if (isFresh[tx.txid]) {
-                if (tx.rate - (tx.fee / tx.vsize) >= 0.1) {
-                  tx.status = 'freshcpfp';
-                } else {
-                  tx.status = 'fresh';
-                }
-              } else if (isSigop[tx.txid]) {
-                tx.status = 'sigop';
-              } else if (isRbf[tx.txid]) {
-                tx.status = 'rbf';
-              } else {
-                tx.status = 'missing';
-              }
-              isMissing[tx.txid] = true;
-              this.numMissing++;
-            }
-            if (isAccelerated[tx.txid]) {
-              tx.status = 'accelerated';
-            }
-          }
-          for (const [index, tx] of transactions.entries()) {
-            tx.context = 'actual';
-            if (index === 0) {
-              tx.status = null;
-            } else if (isAdded[tx.txid]) {
-              tx.status = 'added';
-            } else if (isPrioritized[tx.txid]) {
-              tx.status = 'prioritized';
-            } else if (inTemplate[tx.txid]) {
-              tx.status = 'found';
-            } else if (isRbf[tx.txid]) {
-              tx.status = 'rbf';
-            } else {
-              tx.status = 'selected';
-              isSelected[tx.txid] = true;
-              this.numUnexpected++;
-            }
-            if (isAccelerated[tx.txid]) {
-              tx.status = 'accelerated';
-            }
-          }
-          for (const tx of transactions) {
-            inBlock[tx.txid] = true;
-          }
-
-          blockAudit.feeDelta = blockAudit.expectedFees > 0 ? (blockAudit.expectedFees - (this.block?.extras.totalFees + this.oobFees)) / blockAudit.expectedFees : 0;
-          blockAudit.weightDelta = blockAudit.expectedWeight > 0 ? (blockAudit.expectedWeight - this.block?.weight) / blockAudit.expectedWeight : 0;
-          blockAudit.txDelta = blockAudit.template.length > 0 ? (blockAudit.template.length - this.block?.tx_count) / blockAudit.template.length : 0;
-          this.blockAudit = blockAudit;
-          this.setAuditAvailable(true);
-        } else {
-          this.setAuditAvailable(false);
-        }
-      } else {
-        this.setAuditAvailable(false);
-      }
-
+      this.setupBlockAudit();
       this.isLoadingOverview = false;
-      this.setupBlockGraphs();
-      this.cd.markForCheck();
+    });
+
+    this.accelerationsSubscription = this.block$.pipe(
+      switchMap((block) => {
+        return this.stateService.env.ACCELERATOR === true && block.height > 819500
+          ? this.servicesApiService.getAccelerationHistory$({ blockHeight: block.height })
+            .pipe(catchError(() => {
+              return of([]);
+            }))
+          : of([]);
+      })
+    ).subscribe((accelerations) => {
+      this.accelerations = accelerations;
+      if (accelerations.length) {
+        this.setupBlockAudit();
+      }
     });
 
     this.oobSubscription = this.block$.pipe(
@@ -607,6 +490,147 @@ export class BlockComponent implements OnInit, OnDestroy {
         this.showNextBlocklink = true;
       }
     }
+  }
+
+  setupBlockAudit(): void {
+    const transactions = this.strippedTransactions || [];
+    const blockAudit = this.blockAudit;
+    const accelerations = this.accelerations || [];
+
+    const acceleratedInBlock = {};
+    for (const acc of accelerations) {
+      if (acc.pools?.some(pool => pool === this.block?.extras?.pool.id)) {
+        acceleratedInBlock[acc.txid] = acc;
+      }
+    }
+
+    for (const tx of transactions) {
+      if (acceleratedInBlock[tx.txid]) {
+        tx.acc = true;
+        const acceleration = acceleratedInBlock[tx.txid];
+        const boostCost = acceleration.boostCost || acceleration.bidBoost;
+        const acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
+        if (acceleratedFeeRate > tx.rate) {
+          tx.rate = acceleratedFeeRate;
+        }
+      } else {
+        tx.acc = false;
+      }
+    }
+
+    if (transactions && blockAudit) {
+      const inTemplate = {};
+      const inBlock = {};
+      const isAdded = {};
+      const isPrioritized = {};
+      const isCensored = {};
+      const isMissing = {};
+      const isSelected = {};
+      const isFresh = {};
+      const isSigop = {};
+      const isRbf = {};
+      const isAccelerated = {};
+      this.numMissing = 0;
+      this.numUnexpected = 0;
+
+      if (blockAudit?.template) {
+        for (const tx of blockAudit.template) {
+          inTemplate[tx.txid] = true;
+          if (tx.acc) {
+            isAccelerated[tx.txid] = true;
+          }
+        }
+        for (const tx of transactions) {
+          inBlock[tx.txid] = true;
+        }
+        for (const txid of blockAudit.addedTxs) {
+          isAdded[txid] = true;
+        }
+        for (const txid of blockAudit.prioritizedTxs || []) {
+          isPrioritized[txid] = true;
+        }
+        for (const txid of blockAudit.missingTxs) {
+          isCensored[txid] = true;
+        }
+        for (const txid of blockAudit.freshTxs || []) {
+          isFresh[txid] = true;
+        }
+        for (const txid of blockAudit.sigopTxs || []) {
+          isSigop[txid] = true;
+        }
+        for (const txid of blockAudit.fullrbfTxs || []) {
+          isRbf[txid] = true;
+        }
+        for (const txid of blockAudit.acceleratedTxs || []) {
+          isAccelerated[txid] = true;
+        }
+        // set transaction statuses
+        for (const tx of blockAudit.template) {
+          tx.context = 'projected';
+          if (isCensored[tx.txid]) {
+            tx.status = 'censored';
+          } else if (inBlock[tx.txid]) {
+            tx.status = 'found';
+          } else {
+            if (isFresh[tx.txid]) {
+              if (tx.rate - (tx.fee / tx.vsize) >= 0.1) {
+                tx.status = 'freshcpfp';
+              } else {
+                tx.status = 'fresh';
+              }
+            } else if (isSigop[tx.txid]) {
+              tx.status = 'sigop';
+            } else if (isRbf[tx.txid]) {
+              tx.status = 'rbf';
+            } else {
+              tx.status = 'missing';
+            }
+            isMissing[tx.txid] = true;
+            this.numMissing++;
+          }
+          if (isAccelerated[tx.txid]) {
+            tx.status = 'accelerated';
+          }
+        }
+        for (const [index, tx] of transactions.entries()) {
+          tx.context = 'actual';
+          if (index === 0) {
+            tx.status = null;
+          } else if (isAdded[tx.txid]) {
+            tx.status = 'added';
+          } else if (isPrioritized[tx.txid]) {
+            tx.status = 'prioritized';
+          } else if (inTemplate[tx.txid]) {
+            tx.status = 'found';
+          } else if (isRbf[tx.txid]) {
+            tx.status = 'rbf';
+          } else {
+            tx.status = 'selected';
+            isSelected[tx.txid] = true;
+            this.numUnexpected++;
+          }
+          if (isAccelerated[tx.txid]) {
+            tx.status = 'accelerated';
+          }
+        }
+        for (const tx of transactions) {
+          inBlock[tx.txid] = true;
+        }
+
+        blockAudit.feeDelta = blockAudit.expectedFees > 0 ? (blockAudit.expectedFees - (this.block?.extras.totalFees + this.oobFees)) / blockAudit.expectedFees : 0;
+        blockAudit.weightDelta = blockAudit.expectedWeight > 0 ? (blockAudit.expectedWeight - this.block?.weight) / blockAudit.expectedWeight : 0;
+        blockAudit.txDelta = blockAudit.template.length > 0 ? (blockAudit.template.length - this.block?.tx_count) / blockAudit.template.length : 0;
+        this.blockAudit = blockAudit;
+        this.setAuditAvailable(true);
+      } else {
+        this.setAuditAvailable(false);
+      }
+    } else {
+      this.setAuditAvailable(false);
+    }
+
+    this.setupBlockGraphs();
+    this.cd.markForCheck();
   }
 
   setupBlockGraphs(): void {

@@ -8,11 +8,9 @@ use crate::{
     GbtResult, ThreadTransactionsMap, thread_acceleration::ThreadAcceleration,
 };
 
-const MAX_BLOCK_WEIGHT_UNITS: u32 = 4_000_000 - 4_000;
 const BLOCK_SIGOPS: u32 = 80_000;
 const BLOCK_RESERVED_WEIGHT: u32 = 4_000;
 const BLOCK_RESERVED_SIGOPS: u32 = 400;
-const MAX_BLOCKS: usize = 8;
 
 type AuditPool = Vec<Option<ManuallyDrop<AuditTransaction>>>;
 type ModifiedQueue = PriorityQueue<u32, TxPriority, U32HasherState>;
@@ -53,7 +51,13 @@ impl Ord for TxPriority {
 // TODO: Make gbt smaller to fix these lints.
 #[allow(clippy::too_many_lines)]
 #[allow(clippy::cognitive_complexity)]
-pub fn gbt(mempool: &mut ThreadTransactionsMap, accelerations: &[ThreadAcceleration], max_uid: usize) -> GbtResult {
+pub fn gbt(
+    mempool: &mut ThreadTransactionsMap,
+    accelerations: &[ThreadAcceleration],
+    max_uid: usize,
+    max_block_weight: u32,
+    max_blocks: usize,
+) -> GbtResult {
     let mut indexed_accelerations = Vec::with_capacity(max_uid + 1);
     indexed_accelerations.resize(max_uid + 1, None);
     for acceleration in accelerations {
@@ -146,9 +150,9 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap, accelerations: &[ThreadAccelerat
                 modified.pop();
             }
 
-            if blocks.len() < (MAX_BLOCKS - 1)
+            if blocks.len() < (max_blocks - 1)
                 && ((block_weight + (4 * next_tx.ancestor_sigop_adjusted_vsize())
-                    >= MAX_BLOCK_WEIGHT_UNITS)
+                    >= max_block_weight - 4_000)
                     || (block_sigops + next_tx.ancestor_sigops() > BLOCK_SIGOPS))
             {
                 // hold this package in an overflow list while we check for smaller options
@@ -201,9 +205,9 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap, accelerations: &[ThreadAccelerat
 
         // this block is full
         let exceeded_package_tries =
-            failures > 1000 && block_weight > (MAX_BLOCK_WEIGHT_UNITS - BLOCK_RESERVED_WEIGHT);
+            failures > 1000 && block_weight > (max_block_weight - 4_000 - BLOCK_RESERVED_WEIGHT);
         let queue_is_empty = mempool_stack.is_empty() && modified.is_empty();
-        if (exceeded_package_tries || queue_is_empty) && blocks.len() < (MAX_BLOCKS - 1) {
+        if (exceeded_package_tries || queue_is_empty) && blocks.len() < (max_blocks - 1) {
             // finalize this block
             if transactions.is_empty() {
                 info!("trying to push an empty block! breaking loop! mempool {:#?} | modified {:#?} | overflow {:#?}", mempool_stack.len(), modified.len(), overflow.len());
