@@ -155,7 +155,7 @@ class RedisCache {
     const toAdd = this.cacheQueue.slice(0, this.txFlushLimit);
     try {
       const msetData = toAdd.map(tx => {
-        const minified: any = { ...tx };
+        const minified: any = structuredClone(tx);
         delete minified.hex;
         for (const vin of minified.vin) {
           delete vin.inner_redeemscript_asm;
