@@ -375,6 +375,14 @@ main {
   background-color: var(--stat-box-bg);
 }
 
+.dual-col-striped tbody tr:nth-of-type(odd) td:not(.spacer) {
+  background-color: var(--stat-box-bg);
+}
+
+.dual-col-striped tbody tr td.spacer {
+  width: 30px;
+}
+
 .bordertop {
   border-top: 1px solid #4c4c4c;
 }
