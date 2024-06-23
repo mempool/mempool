@@ -196,7 +196,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         right: this.right,
         left: this.left,
       },
-      legend: {
+      legend: !this.stateService.isAnyTestnet() ? {
         data: [
           {
             name: $localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`,
@@ -219,7 +219,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         formatter: function (name) {
           return name === 'Fiat' ? 'USD' : 'BTC';
         }
-      },
+      } : undefined,
       tooltip: {
         show: !this.isMobile(),
         trigger: 'axis',
@@ -359,7 +359,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
           type: 'line',
           smooth: false,
           step: 'end'
-        }, 
+        }, !this.stateService.isAnyTestnet() ?
         {
           name: 'Fiat',
           yAxisIndex: 1,
@@ -374,7 +374,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
           type: 'line',
           smooth: false,
           step: 'end'
-        }
+        } : undefined
       ],
       dataZoom: this.allowZoom ? [{
         type: 'inside',
