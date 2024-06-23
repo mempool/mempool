@@ -294,7 +294,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         return this.servicesApiService.getAccelerationHistory$({ blockHeight });
       }),
       catchError(() => {
-        return of(null);
+        return of([]);
       })
     ).subscribe((accelerationHistory) => {
       for (const acceleration of accelerationHistory) {
