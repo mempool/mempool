@@ -96,8 +96,6 @@ import { ToggleComponent } from './components/toggle/toggle.component';
 import { GeolocationComponent } from '../shared/components/geolocation/geolocation.component';
 import { TestnetAlertComponent } from './components/testnet-alert/testnet-alert.component';
 import { GlobalFooterComponent } from './components/global-footer/global-footer.component';
-import { AcceleratePreviewComponent } from '../components/accelerate-preview/accelerate-preview.component';
-import { AccelerateFeeGraphComponent } from '../components/accelerate-preview/accelerate-fee-graph.component';
 import { MempoolErrorComponent } from './components/mempool-error/mempool-error.component';
 import { AccelerationsListComponent } from '../components/acceleration/accelerations-list/accelerations-list.component';
 import { PendingStatsComponent } from '../components/acceleration/pending-stats/pending-stats.component';
@@ -212,8 +210,6 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     GeolocationComponent,
     TestnetAlertComponent,
     GlobalFooterComponent,
-    AcceleratePreviewComponent,
-    AccelerateFeeGraphComponent,
     CalculatorComponent,
     BitcoinsatoshisPipe,
     BlockViewComponent,
@@ -355,8 +351,6 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     TestnetAlertComponent,
     PreviewTitleComponent,
     GlobalFooterComponent,
-    AcceleratePreviewComponent,
-    AccelerateFeeGraphComponent,
     MempoolErrorComponent,
     AccelerationsListComponent,
     AccelerationStatsComponent,

@@ -1,3 +1,6 @@
+@if (chartOnly) {
+  <ng-container *ngTemplateOutlet="pieChart"></ng-container>
+} @else {
 <table>
   <tbody>
     <tr>
@@ -12,23 +15,7 @@
         </div>
       </td>
       <td class="pie-chart" rowspan="2">
-        <div class="chart-container">
-          @if (tx && (tx.acceleratedBy || accelerationInfo) && miningStats) {
-            <div
-              echarts
-              *browserOnly
-              class="chart"
-              [initOpts]="chartInitOptions"
-              [options]="chartOptions"
-              style="height: 72px; width: 72px;"
-              (chartInit)="onChartInit($event)"
-            ></div>
-          } @else {
-            <div class="chart-loading">
-              <div class="spinner-border text-light"></div>
-            </div>
-          }
-        </div>
+        <ng-container *ngTemplateOutlet="pieChart"></ng-container>
       </td>
     </tr>
     <tr>
@@ -39,3 +26,24 @@
     </tr>
   </tbody>
 </table>
+}
+
+<ng-template #pieChart>
+  <div class="chart-container">
+    @if (chartOptions && miningStats) {
+      <div
+        echarts
+        *browserOnly
+        class="chart"
+        [initOpts]="chartInitOptions"
+        [options]="chartOptions"
+        style="height: 72px; width: 72px;"
+        (chartInit)="onChartInit($event)"
+      ></div>
+    } @else {
+      <div class="chart-loading">
+        <div class="spinner-border text-light"></div>
+      </div>
+    }
+  </div>
+</ng-template>

@@ -443,3 +443,17 @@ export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replac
 
   return flags;
 }
+
+export function getUnacceleratedFeeRate(tx: Transaction, accelerated: boolean): number {
+  if (accelerated) {
+    let ancestorVsize = tx.weight / 4;
+    let ancestorFee = tx.fee;
+    for (const ancestor of tx.ancestors || []) {
+      ancestorVsize += (ancestor.weight / 4);
+      ancestorFee += ancestor.fee;
+    }
+    return Math.min(tx.fee / (tx.weight / 4), (ancestorFee / ancestorVsize));
+  } else {
+    return tx.effectiveFeePerVsize;
+  }
+}

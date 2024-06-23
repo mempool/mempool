@@ -6,6 +6,9 @@ import { nextRoundNumber } from '../../shared/common.utils';
 import { ServicesApiServices } from '../../services/services-api.service';
 import { AudioService } from '../../services/audio.service';
 import { StateService } from '../../services/state.service';
+import { MiningStats } from '../../services/mining.service';
+import { EtaService } from '../../services/eta.service';
+import { DifficultyAdjustment, MempoolPosition, SinglePoolStats } from '../../interfaces/node-api.interface';
 
 export type AccelerationEstimate = {
   txSummary: TxSummary;
@@ -40,7 +43,9 @@ export const MAX_BID_RATIO = 4;
   styleUrls: ['accelerate-preview.component.scss']
 })
 export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges {
-  @Input() tx: Transaction | undefined;
+  @Input() tx: Transaction;
+  @Input() mempoolPosition: MempoolPosition;
+  @Input() miningStats: MiningStats;
   @Input() scrollEvent: boolean;
 
   math = Math;
@@ -48,7 +53,12 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   showSuccess = false;
   estimateSubscription: Subscription;
   accelerationSubscription: Subscription;
+  difficultySubscription: Subscription;
+  da: DifficultyAdjustment;
   estimate: any;
+  hashratePercentage?: number;
+  ETA?: number;
+  acceleratedETA?: number;
   hasAncestors: boolean = false;
   minExtraCost = 0;
   minBidAllowed = 0;
@@ -67,6 +77,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
     public stateService: StateService,
     private servicesApiService: ServicesApiServices,
     private storageService: StorageService,
+    private etaService: EtaService,
     private audioService: AudioService,
     private cd: ChangeDetectorRef
   ) {
@@ -76,15 +87,23 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
     if (this.estimateSubscription) {
       this.estimateSubscription.unsubscribe();
     }
+    this.difficultySubscription.unsubscribe();
   }
 
   ngOnInit() {
     this.accelerationUUID = window.crypto.randomUUID();
+    this.difficultySubscription = this.stateService.difficultyAdjustment$.subscribe(da => {
+      this.da = da;
+      this.updateETA();
+    })
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.scrollEvent) {
       this.scrollToPreview('acceleratePreviewAnchor', 'start');
+    }
+    if (changes.miningStats || changes.mempoolPosition) {
+      this.updateETA();
     }
   }
 
@@ -112,6 +131,8 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
               this.scrollToPreviewWithTimeout('mempoolError', 'center');
             }
           }
+
+          this.updateETA();
 
           this.hasAncestors = this.estimate.txSummary.ancestorCount > 1;
           
@@ -155,6 +176,36 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
         return of(null);
       })
     ).subscribe();
+  }
+
+  updateETA(): void {
+    if (!this.mempoolPosition || !this.estimate?.pools?.length || !this.miningStats || !this.da) {
+      this.hashratePercentage = undefined;
+      this.ETA = undefined;
+      this.acceleratedETA = undefined;
+      return;
+    }
+    const pools: { [id: number]: SinglePoolStats } = {};
+    for (const pool of this.miningStats.pools) {
+      pools[pool.poolUniqueId] = pool;
+    }
+
+    let totalAcceleratedHashrate = 0;
+    for (const poolId of this.estimate.pools) {
+      const pool = pools[poolId];
+      if (!pool) {
+        continue;
+      }
+      totalAcceleratedHashrate += pool.lastEstimatedHashrate;
+    }
+    const acceleratingHashrateFraction = (totalAcceleratedHashrate / this.miningStats.lastEstimatedHashrate)
+    this.hashratePercentage = acceleratingHashrateFraction * 100;
+
+    this.ETA = Date.now() + this.da.timeAvg * this.mempoolPosition.block;
+    this.acceleratedETA = this.etaService.calculateETAFromShares([
+      { block: this.mempoolPosition.block, hashrateShare: (1 - acceleratingHashrateFraction) }, 
+      { block: 0, hashrateShare: acceleratingHashrateFraction },
+    ], this.da).time;
   }
 
   /**

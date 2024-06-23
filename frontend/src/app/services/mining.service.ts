@@ -12,7 +12,7 @@ export interface MiningUnits {
 }
 
 export interface MiningStats {
-  lastEstimatedHashrate: string;
+  lastEstimatedHashrate: number;
   blockCount: number;
   totalEmptyBlock: number;
   totalEmptyBlockRatio: string;
@@ -111,7 +111,7 @@ export class MiningService {
     const poolsStats = stats.pools.map((poolStat) => {
       return {
         share: parseFloat((poolStat.blockCount / stats.blockCount * 100).toFixed(2)),
-        lastEstimatedHashrate: (poolStat.blockCount / stats.blockCount * stats.lastEstimatedHashrate / hashrateDivider).toFixed(2),
+        lastEstimatedHashrate: poolStat.blockCount / stats.blockCount * stats.lastEstimatedHashrate / hashrateDivider,
         emptyBlockRatio: (poolStat.emptyBlocks / poolStat.blockCount * 100).toFixed(2),
         logo: `/resources/mining-pools/` + poolStat.slug + '.svg',
         ...poolStat
@@ -119,7 +119,7 @@ export class MiningService {
     });
 
     return {
-      lastEstimatedHashrate: (stats.lastEstimatedHashrate / hashrateDivider).toFixed(2),
+      lastEstimatedHashrate: stats.lastEstimatedHashrate / hashrateDivider,
       blockCount: stats.blockCount,
       totalEmptyBlock: totalEmptyBlock,
       totalEmptyBlockRatio: totalEmptyBlockRatio,

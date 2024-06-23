@@ -15,10 +15,12 @@ export class ActiveAccelerationBox implements OnChanges {
   @Input() tx: Transaction;
   @Input() accelerationInfo: Acceleration;
   @Input() miningStats: MiningStats;
+  @Input() pools: number[];
+  @Input() chartOnly: boolean = false;
 
   acceleratedByPercentage: string = '';
 
-  chartOptions: EChartsOption = {};
+  chartOptions: EChartsOption;
   chartInitOptions = {
     renderer: 'svg',
   };
@@ -28,12 +30,13 @@ export class ActiveAccelerationBox implements OnChanges {
   constructor() {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.tx && (this.tx.acceleratedBy || this.accelerationInfo) && this.miningStats) {
-      this.prepareChartOptions();
+    const pools = this.pools || this.accelerationInfo?.pools || this.tx.acceleratedBy;
+    if (pools && this.miningStats) {
+      this.prepareChartOptions(pools);
     }
   }
 
-  getChartData() {
+  getChartData(poolList: number[]) {
     const data: object[] = [];
     const pools: { [id: number]: SinglePoolStats } = {};
     for (const pool of this.miningStats.pools) {
@@ -73,22 +76,22 @@ export class ActiveAccelerationBox implements OnChanges {
     });
 
     let totalAcceleratedHashrate = 0;
-    for (const poolId of (this.accelerationInfo?.pools || this.tx.acceleratedBy || [])) {
+    for (const poolId of poolList || []) {
       const pool = pools[poolId];
       if (!pool) {
         continue;
       }
-      totalAcceleratedHashrate += parseFloat(pool.lastEstimatedHashrate);
+      totalAcceleratedHashrate += pool.lastEstimatedHashrate;
     }
-    this.acceleratedByPercentage = ((totalAcceleratedHashrate / parseFloat(this.miningStats.lastEstimatedHashrate)) * 100).toFixed(1) + '%';
+    this.acceleratedByPercentage = ((totalAcceleratedHashrate / this.miningStats.lastEstimatedHashrate) * 100).toFixed(1) + '%';
     data.push(getDataItem(
       totalAcceleratedHashrate,
       'var(--mainnet-alt)',
       `${this.acceleratedByPercentage} accelerating`,
     ) as PieSeriesOption);
-    const notAcceleratedByPercentage = ((1 - (totalAcceleratedHashrate / parseFloat(this.miningStats.lastEstimatedHashrate))) * 100).toFixed(1) + '%';
+    const notAcceleratedByPercentage = ((1 - (totalAcceleratedHashrate / this.miningStats.lastEstimatedHashrate)) * 100).toFixed(1) + '%';
     data.push(getDataItem(
-      (parseFloat(this.miningStats.lastEstimatedHashrate) - totalAcceleratedHashrate),
+      (this.miningStats.lastEstimatedHashrate - totalAcceleratedHashrate),
       'rgba(127, 127, 127, 0.3)',
       `${notAcceleratedByPercentage} not accelerating`,
     ) as PieSeriesOption);
@@ -96,7 +99,7 @@ export class ActiveAccelerationBox implements OnChanges {
     return data;
   }
 
-  prepareChartOptions() {
+  prepareChartOptions(pools: number[]) {
     this.chartOptions = {
       animation: false,
       grid: {
@@ -113,7 +116,7 @@ export class ActiveAccelerationBox implements OnChanges {
         {
           type: 'pie',
           radius: '100%',
-          data: this.getChartData(),
+          data: this.getChartData(pools),
         }
       ]
     };

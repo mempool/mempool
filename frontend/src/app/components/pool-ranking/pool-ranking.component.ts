@@ -163,7 +163,7 @@ export class PoolRankingComponent implements OnInit {
             const i = pool.blockCount.toString();
             if (this.miningWindowPreference === '24h') {
               return `<b style="color: white">${pool.name} (${pool.share}%)</b><br>` +
-                pool.lastEstimatedHashrate.toString() + ' ' + miningStats.miningUnits.hashrateUnit +
+                pool.lastEstimatedHashrate.toFixed(2) + ' ' + miningStats.miningUnits.hashrateUnit +
                 `<br>` + $localize`${ i }:INTERPOLATION: blocks`;
             } else {
               return `<b style="color: white">${pool.name} (${pool.share}%)</b><br>` +
@@ -291,7 +291,7 @@ export class PoolRankingComponent implements OnInit {
    */
   getEmptyMiningStat(): MiningStats {
     return {
-      lastEstimatedHashrate: 'Error',
+      lastEstimatedHashrate: 0,
       blockCount: 0,
       totalEmptyBlock: 0,
       totalEmptyBlockRatio: '',

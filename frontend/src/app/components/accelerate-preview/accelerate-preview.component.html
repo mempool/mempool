@@ -65,10 +65,21 @@
         </div>
       </div>
       <br>
+      <h5 *ngIf="estimate?.pools?.length" i18n="accelerator.how-much-faster">How much faster?</h5>
+      <div class="row">
+        <div class="col">
+          <small class="form-text text-muted mb-2" i18n="accelerator.hashrate-percentage-description">Your transaction will be prioritized by up to {{ hashratePercentage | number : '1.1-1' }}% of miners.</small>
+          <small class="form-text text-muted mb-2" i18n="accelerator.time-estimate-description">This will reduce your expected waiting time until the first confirmation to <app-time kind="within" [time]="acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time></small>
+        </div>
+        <div class="col pie">
+          <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true"></app-active-acceleration-box>
+        </div>
+      </div>
+      <br>
       <h5 i18n="accelerator.pay-how-much">How much more are you willing to pay?</h5>
       <div class="row">
         <div class="col">
-          <small class="form-text text-muted mb-2" i18n="accelerator.transaction-fee-description">Choose the maximum extra transaction fee you're willing to pay to get into the next block.</small>
+          <small class="form-text text-muted mb-2" i18n="accelerator.transaction-fee-description">Choose the maximum extra transaction fee you're willing to pay.</small>
           <div class="form-group">
             <div class="fee-card">
               <div class="d-flex mb-0">

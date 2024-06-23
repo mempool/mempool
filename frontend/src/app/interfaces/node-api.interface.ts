@@ -140,7 +140,7 @@ export interface SinglePoolStats {
   emptyBlocks: number;
   rank: number;
   share: number;
-  lastEstimatedHashrate: string;
+  lastEstimatedHashrate: number;
   emptyBlockRatio: string;
   logo: string;
   slug: string;
@@ -252,7 +252,7 @@ export interface MempoolPosition {
 }
 
 export interface AccelerationPosition extends MempoolPosition {
-  pool: string;
+  poolId: number;
   offset?: number;
 }
 
