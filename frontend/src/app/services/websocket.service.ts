@@ -72,7 +72,7 @@ export class WebsocketService {
       }
 
       this.stateService.networkChanged$.subscribe((network) => {
-        if (network === this.network) {
+        if (network === this.network || (this.network === '' && network === this.stateService.env.ROOT_NETWORK)) {
           return;
         }
         this.network = network === this.stateService.env.ROOT_NETWORK ? '' : network;
