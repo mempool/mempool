@@ -27,6 +27,7 @@ class RedisCache {
   private rbfCacheQueue: { type: string, txid: string, value: any }[] = [];
   private rbfRemoveQueue: { type: string, txid: string }[] = [];
   private txFlushLimit: number = 10000;
+  private ignoreBlocksCache = false;
 
   constructor() {
     if (config.REDIS.ENABLED) {
@@ -341,9 +342,7 @@ class RedisCache {
       return;
     }
     logger.info('Restoring mempool and blocks data from Redis cache');
-    // Load block data
-    const loadedBlocks = await this.$getBlocks();
-    const loadedBlockSummaries = await this.$getBlockSummaries();
+
     // Load mempool
     const loadedMempool = await this.$getMempool();
     this.inflateLoadedTxs(loadedMempool);
@@ -352,9 +351,14 @@ class RedisCache {
     const rbfTrees = await this.$getRbfEntries('tree');
     const rbfExpirations = await this.$getRbfEntries('exp');
 
-    // Set loaded data
-    blocks.setBlocks(loadedBlocks || []);
-    blocks.setBlockSummaries(loadedBlockSummaries || []);
+    // Load & set block data
+    if (!this.ignoreBlocksCache) {
+      const loadedBlocks = await this.$getBlocks();
+      const loadedBlockSummaries = await this.$getBlockSummaries();
+      blocks.setBlocks(loadedBlocks || []);
+      blocks.setBlockSummaries(loadedBlockSummaries || []);
+    }
+    // Set other data
     await memPool.$setMempool(loadedMempool);
     await rbfCache.load({
       txs: rbfTxs,
@@ -410,6 +414,10 @@ class RedisCache {
       await processValues(keys);
     }
     return result;
+  }
+
+  public setIgnoreBlocksCache(): void {
+    this.ignoreBlocksCache = true;
   }
 }
 

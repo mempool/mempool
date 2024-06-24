@@ -7,6 +7,7 @@ import diskCache from './disk-cache';
 import mining from './mining/mining';
 import transactionUtils from './transaction-utils';
 import BlocksRepository from '../repositories/BlocksRepository';
+import redisCache from './redis-cache';
 
 class PoolsParser {
   miningPools: any[] = [];
@@ -45,6 +46,7 @@ class PoolsParser {
     // We also need to wipe the backend cache to make sure we don't serve blocks with
     // the wrong mining pool (usually happen with unknown blocks)
     diskCache.setIgnoreBlocksCache();
+    redisCache.setIgnoreBlocksCache();
 
     await this.$insertUnknownPool();
 
