@@ -105,7 +105,7 @@
             <img width="25" height="25" src="{{ pool.logo }}" [alt]="pool.name + ' mining pool logo'" onError="this.onerror=null; this.src = '/resources/mining-pools/default.svg'">
           </td>
           <td class="pool-name"><a [routerLink]="[('/mining/pool/' + pool.slug) | relativeUrl]">{{ pool.name }}</a></td>
-          <td class="" *ngIf="this.miningWindowPreference === '24h'">{{ pool.lastEstimatedHashrate }} {{
+          <td class="" *ngIf="this.miningWindowPreference === '24h'">{{ pool.lastEstimatedHashrate | number: '1.2-2' }} {{
             miningStats.miningUnits.hashrateUnit }}</td>
           <td class="d-flex justify-content-center">
             {{ pool.blockCount }}<span class="d-none d-md-table-cell">&nbsp;({{ pool.share }}%)</span>
@@ -136,7 +136,7 @@
           <td class="d-none d-md-table-cell"></td>
           <td class="text-right"></td>
           <td class=""><b i18n="mining.all-miners">All miners</b></td>
-          <td class="" *ngIf="this.miningWindowPreference === '24h'"><b>{{ miningStats.lastEstimatedHashrate}} {{
+          <td class="" *ngIf="this.miningWindowPreference === '24h'"><b>{{ miningStats.lastEstimatedHashrate | number: '1.2-2' }} {{
               miningStats.miningUnits.hashrateUnit }}</b></td>
           <td class=""><b>{{ miningStats.blockCount }}</b></td>
           <td *ngIf="auditAvailable"></td>
