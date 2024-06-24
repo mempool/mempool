@@ -352,6 +352,11 @@ class ElectrsApi implements AbstractBitcoinApi {
     return this.failoverRouter.$post<IEsploraApi.Outspend[]>('/internal/txs/outspends/by-outpoint', outpoints.map(out => `${out.txid}:${out.vout}`), 'json');
   }
 
+  async $getCoinbaseTx(blockhash: string): Promise<IEsploraApi.Transaction> {
+    const txid = await this.failoverRouter.$get<string>(`/block/${blockhash}/txid/0`);
+    return this.failoverRouter.$get<IEsploraApi.Transaction>('/tx/' + txid);
+  }
+
   public startHealthChecks(): void {
     this.failoverRouter.startHealthChecks();
   }

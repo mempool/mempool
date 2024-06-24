@@ -287,6 +287,7 @@ export interface BlockExtension {
   coinbaseRaw: string;
   orphans: OrphanedBlock[] | null;
   coinbaseAddress: string | null;
+  coinbaseAddresses: string[] | null;
   coinbaseSignature: string | null;
   coinbaseSignatureAscii: string | null;
   virtualSize: number;
