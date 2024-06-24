@@ -1,4 +1,5 @@
 import { Transaction, Vin } from './interfaces/electrs.interface';
+import { Hash } from './shared/sha256';
 
 const P2SH_P2WPKH_COST = 21 * 4; // the WU cost for the non-witness part of P2SH-P2WPKH
 const P2SH_P2WSH_COST  = 35 * 4; // the WU cost for the non-witness part of P2SH-P2WSH
@@ -292,8 +293,8 @@ export async function calcScriptHash$(script: string): Promise<string> {
     throw new Error('script is not a valid hex string');
   }
   const buf = Uint8Array.from(script.match(/.{2}/g).map((byte) => parseInt(byte, 16)));
-  const hashBuffer = await crypto.subtle.digest('SHA-256', buf);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hash = new Hash().update(buf).digest();
+  const hashArray = Array.from(new Uint8Array(hash));
   return hashArray
     .map((bytes) => bytes.toString(16).padStart(2, '0'))
     .join('');
