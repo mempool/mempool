@@ -40,7 +40,7 @@ interface DatabaseBlock {
   avgFeeRate: number;
   coinbaseRaw: string;
   coinbaseAddress: string;
-  coinbaseAddresses: string[];
+  coinbaseAddresses: string;
   coinbaseSignature: string;
   coinbaseSignatureAscii: string;
   avgTxSize: number;
@@ -163,7 +163,7 @@ class BlocksRepository {
         block.mediantime,
         block.extras.header,
         block.extras.coinbaseAddress,
-        block.extras.coinbaseAddresses,
+        block.extras.coinbaseAddresses ? JSON.stringify(block.extras.coinbaseAddresses) : null,
         truncatedCoinbaseSignature,
         block.extras.utxoSetSize,
         block.extras.utxoSetChange,
@@ -1040,7 +1040,7 @@ class BlocksRepository {
     extras.avgFeeRate = dbBlk.avgFeeRate;
     extras.coinbaseRaw = dbBlk.coinbaseRaw;
     extras.coinbaseAddress = dbBlk.coinbaseAddress;
-    extras.coinbaseAddresses = dbBlk.coinbaseAddresses;
+    extras.coinbaseAddresses = dbBlk.coinbaseAddresses ? JSON.parse(dbBlk.coinbaseAddresses) : [];
     extras.coinbaseSignature = dbBlk.coinbaseSignature;
     extras.coinbaseSignatureAscii = dbBlk.coinbaseSignatureAscii;
     extras.avgTxSize = dbBlk.avgTxSize;

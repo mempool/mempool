@@ -295,7 +295,7 @@ class Blocks {
     extras.virtualSize = block.weight / 4.0;
     if (coinbaseTx?.vout.length > 0) {
       extras.coinbaseAddress = coinbaseTx.vout[0].scriptpubkey_address ?? null;
-      extras.coinbaseAddresses = [...new Set<string>(...coinbaseTx.vout.map(v => v.scriptpubkey_address).filter(a => a) as string[])];
+      extras.coinbaseAddresses = [...new Set<string>(coinbaseTx.vout.map(v => v.scriptpubkey_address).filter(a => a) as string[])];
       extras.coinbaseSignature = coinbaseTx.vout[0].scriptpubkey_asm ?? null;
       extras.coinbaseSignatureAscii = transactionUtils.hex2ascii(coinbaseTx.vin[0].scriptsig) ?? null;
     } else {
