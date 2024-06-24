@@ -165,8 +165,16 @@ class BitcoinApi implements AbstractBitcoinApi {
     const mp = mempool.getMempool();
     for (const tx in mp) {
       for (const vout of mp[tx].vout) {
-        if (vout.scriptpubkey_address.indexOf(prefix) === 0) {
+        if (vout.scriptpubkey_address?.indexOf(prefix) === 0) {
           found[vout.scriptpubkey_address] = '';
+          if (Object.keys(found).length >= 10) {
+            return Object.keys(found);
+          }
+        }
+      }
+      for (const vin of mp[tx].vin) {
+        if (vin.prevout?.scriptpubkey_address?.indexOf(prefix) === 0) {
+          found[vin.prevout?.scriptpubkey_address] = '';
           if (Object.keys(found).length >= 10) {
             return Object.keys(found);
           }
