@@ -295,10 +295,12 @@ class Blocks {
     extras.virtualSize = block.weight / 4.0;
     if (coinbaseTx?.vout.length > 0) {
       extras.coinbaseAddress = coinbaseTx.vout[0].scriptpubkey_address ?? null;
+      extras.coinbaseAddresses = [...new Set<string>(coinbaseTx.vout.map(v => v.scriptpubkey_address).filter(a => a) as string[])];
       extras.coinbaseSignature = coinbaseTx.vout[0].scriptpubkey_asm ?? null;
       extras.coinbaseSignatureAscii = transactionUtils.hex2ascii(coinbaseTx.vin[0].scriptsig) ?? null;
     } else {
       extras.coinbaseAddress = null;
+      extras.coinbaseAddresses = null;
       extras.coinbaseSignature = null;
       extras.coinbaseSignatureAscii = null;
     }
@@ -688,6 +690,52 @@ class Blocks {
     }
 
     this.classifyingBlocks = false;
+  }
+
+  /**
+   * [INDEXING] Index missing coinbase addresses for all blocks
+   */
+  public async $indexCoinbaseAddresses(): Promise<void> {
+    try {
+      // Get all indexed block hash
+      const unindexedBlocks = await blocksRepository.$getBlocksWithoutCoinbaseAddresses();
+
+      if (!unindexedBlocks?.length) {
+        return;
+      }
+
+      logger.info(`Indexing missing coinbase addresses for ${unindexedBlocks.length} blocks`);
+
+      // Logging
+      let count = 0;
+      let countThisRun = 0;
+      let timer = Date.now() / 1000;
+      const startedAt = Date.now() / 1000;
+      for (const { height, hash } of unindexedBlocks) {
+        // Logging
+        const elapsedSeconds = (Date.now() / 1000) - timer;
+        if (elapsedSeconds > 5) {
+          const runningFor = (Date.now() / 1000) - startedAt;
+          const blockPerSeconds = countThisRun / elapsedSeconds;
+          const progress = Math.round(count / unindexedBlocks.length * 10000) / 100;
+          logger.debug(`Indexing coinbase addresses for #${height} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${count}/${unindexedBlocks.length} (${progress}%) | elapsed: ${runningFor.toFixed(2)} seconds`);
+          timer = Date.now() / 1000;
+          countThisRun = 0;
+        }
+
+        const coinbaseTx = await bitcoinApi.$getCoinbaseTx(hash);
+        const addresses = new Set<string>(coinbaseTx.vout.map(v => v.scriptpubkey_address).filter(a => a));
+        await blocksRepository.$saveCoinbaseAddresses(hash, [...addresses]);
+
+        // Logging
+        count++;
+        countThisRun++;
+      }
+      logger.notice(`coinbase addresses indexing completed: indexed ${count} blocks`);
+    } catch (e) {
+      logger.err(`coinbase addresses indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`);
+      throw e;
+    }
   }
 
   /**
@@ -1259,6 +1307,7 @@ class Blocks {
         utxoset_size: block.extras.utxoSetSize ?? null,
         coinbase_raw: block.extras.coinbaseRaw ?? null,
         coinbase_address: block.extras.coinbaseAddress ?? null,
+        coinbase_addresses: block.extras.coinbaseAddresses ?? null,
         coinbase_signature: block.extras.coinbaseSignature ?? null,
         coinbase_signature_ascii: block.extras.coinbaseSignatureAscii ?? null,
         pool_slug: block.extras.pool.slug ?? null,

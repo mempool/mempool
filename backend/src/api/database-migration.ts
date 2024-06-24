@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 79;
+  private static currentVersion = 80;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -685,6 +685,11 @@ class DatabaseMigration {
         WHERE name = 'last_acceleration_block'
       `);
       await this.updateToSchemaVersion(79);
+    }
+
+    if (databaseSchemaVersion < 80) {
+      await this.$executeQuery('ALTER TABLE `blocks` ADD coinbase_addresses JSON DEFAULT NULL');
+      await this.updateToSchemaVersion(80);
     }
   }
 

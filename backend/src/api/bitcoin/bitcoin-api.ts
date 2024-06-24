@@ -238,6 +238,11 @@ class BitcoinApi implements AbstractBitcoinApi {
     return outspends;
   }
 
+  async $getCoinbaseTx(blockhash: string): Promise<IEsploraApi.Transaction> {
+    const txids = await this.$getTxIdsForBlock(blockhash);
+    return this.$getRawTransaction(txids[0]);
+  }
+
   $getEstimatedHashrate(blockHeight: number): Promise<number> {
     // 120 is the default block span in Core
     return this.bitcoindClient.getNetworkHashPs(120, blockHeight);
