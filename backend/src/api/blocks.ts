@@ -372,8 +372,7 @@ class Blocks {
       }
     }
 
-    const asciiScriptSig = transactionUtils.hex2ascii(txMinerInfo.vin[0].scriptsig);
-    const addresses = txMinerInfo.vout.map((vout) => vout.scriptpubkey_address).filter((address) => address);
+    const addresses = txMinerInfo.vout.map((vout) => vout.scriptpubkey_address).filter(address => address) as string[];
 
     let pools: PoolTag[] = [];
     if (config.DATABASE.ENABLED === true) {
@@ -382,26 +381,9 @@ class Blocks {
       pools = poolsParser.miningPools;
     }
 
-    for (let i = 0; i < pools.length; ++i) {
-      if (addresses.length) {
-        const poolAddresses: string[] = typeof pools[i].addresses === 'string' ?
-          JSON.parse(pools[i].addresses) : pools[i].addresses;
-        for (let y = 0; y < poolAddresses.length; y++) {
-          if (addresses.indexOf(poolAddresses[y]) !== -1) {
-            return pools[i];
-          }
-        }
-      }
-
-      const regexes: string[] = typeof pools[i].regexes === 'string' ?
-        JSON.parse(pools[i].regexes) : pools[i].regexes;
-      for (let y = 0; y < regexes.length; ++y) {
-        const regex = new RegExp(regexes[y], 'i');
-        const match = asciiScriptSig.match(regex);
-        if (match !== null) {
-          return pools[i];
-        }
-      }
+    const pool = poolsParser.matchBlockMiner(txMinerInfo.vin[0].scriptsig, addresses || [], pools);
+    if (pool) {
+      return pool;
     }
 
     if (config.DATABASE.ENABLED === true) {
