@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, OnDestroy, OnChanges, SimpleChanges, HostListener, ChangeDetectorRef } from '@angular/core';
-import { Subscription, catchError, of, tap } from 'rxjs';
+import { Observable, Subscription, catchError, of, tap } from 'rxjs';
 import { StorageService } from '../../services/storage.service';
 import { Transaction } from '../../interfaces/electrs.interface';
 import { nextRoundNumber } from '../../shared/common.utils';
@@ -8,7 +8,6 @@ import { AudioService } from '../../services/audio.service';
 import { StateService } from '../../services/state.service';
 import { MiningStats } from '../../services/mining.service';
 import { EtaService } from '../../services/eta.service';
-import { DifficultyAdjustment, MempoolPosition, SinglePoolStats } from '../../interfaces/node-api.interface';
 
 export type AccelerationEstimate = {
   txSummary: TxSummary;
@@ -19,6 +18,7 @@ export type AccelerationEstimate = {
   cost: number;
   mempoolBaseFee: number;
   vsizeFee: number;
+  pools: number[]
 }
 export type TxSummary = {
   txid: string; // txid of the current transaction
@@ -44,7 +44,6 @@ export const MAX_BID_RATIO = 4;
 })
 export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges {
   @Input() tx: Transaction;
-  @Input() mempoolPosition: MempoolPosition;
   @Input() miningStats: MiningStats;
   @Input() scrollEvent: boolean;
 
@@ -54,11 +53,8 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   estimateSubscription: Subscription;
   accelerationSubscription: Subscription;
   difficultySubscription: Subscription;
-  da: DifficultyAdjustment;
   estimate: any;
-  hashratePercentage?: number;
-  ETA?: number;
-  acceleratedETA?: number;
+  etaInfo$: Observable<{ hashratePercentage: number, ETA: number, acceleratedETA: number }>;
   hasAncestors: boolean = false;
   minExtraCost = 0;
   minBidAllowed = 0;
@@ -87,27 +83,19 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
     if (this.estimateSubscription) {
       this.estimateSubscription.unsubscribe();
     }
-    this.difficultySubscription.unsubscribe();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.accelerationUUID = window.crypto.randomUUID();
-    this.difficultySubscription = this.stateService.difficultyAdjustment$.subscribe(da => {
-      this.da = da;
-      this.updateETA();
-    })
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.scrollEvent) {
       this.scrollToPreview('acceleratePreviewAnchor', 'start');
     }
-    if (changes.miningStats || changes.mempoolPosition) {
-      this.updateETA();
-    }
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.user = this.storageService.getAuth()?.user ?? null;
 
     this.estimateSubscription = this.servicesApiService.estimate$(this.tx.txid).pipe(
@@ -132,7 +120,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
             }
           }
 
-          this.updateETA();
+          this.etaInfo$ = this.etaService.getProjectedEtaObservable(this.estimate, this.miningStats);
 
           this.hasAncestors = this.estimate.txSummary.ancestorCount > 1;
           
@@ -178,40 +166,10 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
     ).subscribe();
   }
 
-  updateETA(): void {
-    if (!this.mempoolPosition || !this.estimate?.pools?.length || !this.miningStats || !this.da) {
-      this.hashratePercentage = undefined;
-      this.ETA = undefined;
-      this.acceleratedETA = undefined;
-      return;
-    }
-    const pools: { [id: number]: SinglePoolStats } = {};
-    for (const pool of this.miningStats.pools) {
-      pools[pool.poolUniqueId] = pool;
-    }
-
-    let totalAcceleratedHashrate = 0;
-    for (const poolId of this.estimate.pools) {
-      const pool = pools[poolId];
-      if (!pool) {
-        continue;
-      }
-      totalAcceleratedHashrate += pool.lastEstimatedHashrate;
-    }
-    const acceleratingHashrateFraction = (totalAcceleratedHashrate / this.miningStats.lastEstimatedHashrate)
-    this.hashratePercentage = acceleratingHashrateFraction * 100;
-
-    this.ETA = Date.now() + this.da.timeAvg * this.mempoolPosition.block;
-    this.acceleratedETA = this.etaService.calculateETAFromShares([
-      { block: this.mempoolPosition.block, hashrateShare: (1 - acceleratingHashrateFraction) }, 
-      { block: 0, hashrateShare: acceleratingHashrateFraction },
-    ], this.da).time;
-  }
-
   /**
    * User changed his bid
    */
-  setUserBid({ fee, index }: { fee: number, index: number}) {
+  setUserBid({ fee, index }: { fee: number, index: number}): void {
     if (this.estimate) {
       this.selectFeeRateIndex = index;
       this.userBid = Math.max(0, fee);
@@ -222,12 +180,12 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   /**
    * Scroll to element id with or without setTimeout
    */
-  scrollToPreviewWithTimeout(id: string, position: ScrollLogicalPosition) {
+  scrollToPreviewWithTimeout(id: string, position: ScrollLogicalPosition): void {
     setTimeout(() => {
       this.scrollToPreview(id, position);
     }, 100);
   }
-  scrollToPreview(id: string, position: ScrollLogicalPosition) {
+  scrollToPreview(id: string, position: ScrollLogicalPosition): void {
     const acceleratePreviewAnchor = document.getElementById(id);
     if (acceleratePreviewAnchor) {
       this.cd.markForCheck();
@@ -242,7 +200,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   /**
    * Send acceleration request
    */
-  accelerate() {
+  accelerate(): void {
     if (this.accelerationSubscription) {
       this.accelerationSubscription.unsubscribe();
     }
@@ -268,7 +226,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
     });
   }
 
-  isLoggedIn() {
+  isLoggedIn(): boolean {
     const auth = this.storageService.getAuth();
     return auth !== null;
   }
@@ -280,7 +238,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
 
 
   @HostListener('window:scroll', ['$event']) // for window scroll events
-  onScroll() {
+  onScroll(): void {
     if (this.estimate) {
       setTimeout(() => {
         this.onScroll();

@@ -1,9 +1,11 @@
 import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, ChangeDetectorRef, SimpleChanges } from '@angular/core';
-import { Subscription, tap, of, catchError } from 'rxjs';
+import { Subscription, tap, of, catchError, Observable } from 'rxjs';
 import { ServicesApiServices } from '../../services/services-api.service';
 import { nextRoundNumber } from '../../shared/common.utils';
 import { StateService } from '../../services/state.service';
 import { AudioService } from '../../services/audio.service';
+import { AccelerationEstimate } from '../accelerate-preview/accelerate-preview.component';
+import { EtaService } from '../../services/eta.service';
 
 @Component({
   selector: 'app-accelerate-checkout',
@@ -24,8 +26,10 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   square: { appId: string, locationId: string};
   accelerationUUID: string;
   estimateSubscription: Subscription;
+  estimate: AccelerationEstimate;
   maxBidBoost: number; // sats
   cost: number; // sats
+  etaInfo$: Observable<{ hashratePercentage: number, ETA: number, acceleratedETA: number }>;
 
   // square
   loadingCashapp = false;
@@ -39,6 +43,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   constructor(
     private servicesApiService: ServicesApiServices,
     private stateService: StateService,
+    private etaService: EtaService,
     private audioService: AudioService,
     private cd: ChangeDetectorRef
   ) {
@@ -59,7 +64,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         locationId: ids.squareLocationId
       };
       if (this.step === 'cta') {
-        this.estimate();
+        this.fetchEstimate();
       }
     });
   }
@@ -99,7 +104,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   /**
    * Accelerator
    */
-  estimate() {
+  fetchEstimate() {
     if (this.estimateSubscription) {
       this.estimateSubscription.unsubscribe();
     }
@@ -110,16 +115,17 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         if (response.status === 204) {
           this.error = `cannot_accelerate_tx`;
         } else {
-          const estimation = response.body;
-          if (!estimation) {
+          this.estimate = response.body;
+          if (!this.estimate) {
             this.error = `cannot_accelerate_tx`;
             return;
           }
           // Make min extra fee at least 50% of the current tx fee
-          const minExtraBoost = nextRoundNumber(Math.max(estimation.cost * 2, estimation.txSummary.effectiveFee));
+          const minExtraBoost = nextRoundNumber(Math.max(this.estimate.cost * 2, this.estimate.txSummary.effectiveFee));
           const DEFAULT_BID_RATIO = 1.5;
           this.maxBidBoost = minExtraBoost * DEFAULT_BID_RATIO;
-          this.cost = this.maxBidBoost + estimation.mempoolBaseFee + estimation.vsizeFee;
+          this.cost = this.maxBidBoost + this.estimate.mempoolBaseFee + this.estimate.vsizeFee;
+          this.etaInfo$ = this.etaService.getProjectedEtaObservable(this.estimate);
         }
       }),
 
