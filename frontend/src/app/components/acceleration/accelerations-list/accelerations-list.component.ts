@@ -1,10 +1,11 @@
-import { Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, catchError, of, switchMap, tap } from 'rxjs';
+import { Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef, OnDestroy, Inject, LOCALE_ID } from '@angular/core';
+import { BehaviorSubject, Observable, Subscription, catchError, of, switchMap, tap, throttleTime } from 'rxjs';
 import { Acceleration, BlockExtended } from '../../../interfaces/node-api.interface';
 import { StateService } from '../../../services/state.service';
 import { WebsocketService } from '../../../services/websocket.service';
 import { ServicesApiServices } from '../../../services/services-api.service';
 import { SeoService } from '../../../services/seo.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-accelerations-list',
@@ -26,6 +27,9 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
   maxSize = window.innerWidth <= 767.98 ? 3 : 5;
   skeletonLines: number[] = [];
   pageSubject: BehaviorSubject<number> = new BehaviorSubject(this.page);
+  keyNavigationSubscription: Subscription;
+  dir: 'rtl' | 'ltr' = 'ltr';
+  paramSubscription: Subscription;
 
   constructor(
     private servicesApiService: ServicesApiServices,
@@ -33,7 +37,13 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
     public stateService: StateService,
     private cd: ChangeDetectorRef,
     private seoService: SeoService,
+    private route: ActivatedRoute,
+    private router: Router,
+    @Inject(LOCALE_ID) private locale: string,
   ) {
+    if (this.locale.startsWith('ar') || this.locale.startsWith('fa') || this.locale.startsWith('he')) {
+      this.dir = 'rtl';
+    }
   }
 
   ngOnInit(): void {
@@ -45,6 +55,13 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
     this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
     this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
     
+    this.paramSubscription = this.route.params.pipe(
+      tap(params => {
+        this.page = +params['page'] || 1;
+        this.pageSubject.next(this.page);
+      })
+    ).subscribe();
+
     this.accelerationList$ = this.pageSubject.pipe(
       switchMap((page) => {
         this.isLoading = true;
@@ -83,10 +100,30 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
         );
       })
     );
+
+    this.keyNavigationSubscription = this.stateService.keyNavigation$.pipe(
+      tap((event) => {
+        const prevKey = this.dir === 'ltr' ? 'ArrowLeft' : 'ArrowRight';
+        const nextKey = this.dir === 'ltr' ? 'ArrowRight' : 'ArrowLeft';
+        if (event.key === prevKey && this.page > 1) {
+          this.page--;
+          this.isLoading = true;
+          this.cd.markForCheck();
+        }
+        if (event.key === nextKey && this.page * 15 < this.accelerationCount) {
+          this.page++;
+          this.isLoading = true;
+          this.cd.markForCheck();
+        }
+      }),
+      throttleTime(1000, undefined, { leading: true, trailing: true }),
+    ).subscribe(() => {
+      this.pageChange(this.page);
+    });
   }
 
   pageChange(page: number): void {
-    this.pageSubject.next(page);
+    this.router.navigate(['acceleration', 'list', page]);
   }
 
   trackByBlock(index: number, block: BlockExtended): number {
@@ -95,5 +132,7 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.websocketService.stopTrackAccelerations();
+    this.paramSubscription?.unsubscribe();
+    this.keyNavigationSubscription?.unsubscribe();
   }
 }
