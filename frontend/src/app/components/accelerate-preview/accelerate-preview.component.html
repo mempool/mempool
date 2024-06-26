@@ -140,7 +140,7 @@
                     <span class="fiat ml-1"><app-fiat [value]="estimate.mempoolBaseFee"></app-fiat></span>
                   </td>
                 </tr>
-              <tr class="info group-last">
+              <tr class="info group-last" *ngIf="estimate.vsizeFee">
                 <td class="info">
                   <i><small i18n="accelerator.tx-size-surcharge">Transaction Size Surcharge</small></i>
                 </td>
