@@ -4,6 +4,7 @@ import { Acceleration, BlockExtended } from '../../../interfaces/node-api.interf
 import { StateService } from '../../../services/state.service';
 import { WebsocketService } from '../../../services/websocket.service';
 import { ServicesApiServices } from '../../../services/services-api.service';
+import { SeoService } from '../../../services/seo.service';
 
 @Component({
   selector: 'app-accelerations-list',
@@ -31,12 +32,14 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
     private websocketService: WebsocketService,
     public stateService: StateService,
     private cd: ChangeDetectorRef,
+    private seoService: SeoService,
   ) {
   }
 
   ngOnInit(): void {
     if (!this.widget) {
       this.websocketService.want(['blocks']);
+      this.seoService.setTitle($localize`:@@02573b6980a2d611b4361a2595a4447e390058cd:Accelerations`);
     }
 
     this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
