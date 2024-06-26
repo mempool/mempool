@@ -73,12 +73,11 @@ export class BlocksList implements OnInit {
         this.seoService.setDescription($localize`:@@meta.description.bitcoin.blocks:See the most recent Bitcoin${seoDescriptionNetwork(this.stateService.network)} blocks along with basic stats such as block height, block reward, block size, and more.`);
       }
 
-      this.blocksCountInitializedSubscription = combineLatest([this.blocksCountInitialized$, this.route.queryParams]).pipe(
+      this.blocksCountInitializedSubscription = combineLatest([this.blocksCountInitialized$, this.route.params]).pipe(
         filter(([blocksCountInitialized, _]) => blocksCountInitialized),
         tap(([_, params]) => {
           this.page = +params['page'] || 1;
           this.page === 1 ? this.fromHeightSubject.next(undefined) : this.fromHeightSubject.next((this.blocksCount - 1) - (this.page - 1) * 15);
-          this.cd.markForCheck();
         })
       ).subscribe();
 
@@ -181,7 +180,7 @@ export class BlocksList implements OnInit {
   }
 
   pageChange(page: number): void {
-    this.router.navigate([], { queryParams: { page: page } });
+    this.router.navigate(['blocks', page]);
   }
 
   trackByBlock(index: number, block: BlockExtended): number {
