@@ -32,56 +32,56 @@
         <div class="alert alert-mempool">You are currently on the waitlist</div>
       </div>
 
-      <h5 i18n="accelerator.your-transaction">Your transaction</h5>
-      <div class="row">
-        <div class="col">
-          <small *ngIf="hasAncestors" class="form-text text-muted mb-2">
-            <ng-container i18n="accelerator.plus-unconfirmed-ancestors">Plus {{ estimate.txSummary.ancestorCount - 1 }} unconfirmed ancestor(s)</ng-container>
-          </small>
-          <table class="table table-borderless table-border table-dark table-background table-accelerator">
-            <tbody>
-              <tr class="group-first">
-                <td class="item" i18n="transaction.vsize|Transaction Virtual Size">Virtual size</td>
-                <td style="text-align: end;" [innerHTML]="'&lrm;' + (estimate.txSummary.effectiveVsize | vbytes: 2)"></td>
-              </tr>
-              <tr class="info">
-                <td class="info" colspan=3>
-                  <i><small i18n="accelerator.transaction-vbytes-size-description">Size in vbytes of this transaction (including unconfirmed ancestors)</small></i>
-                </td>
-              </tr>
-              <tr>
-                <td class="item" i18n="accelerator.in-band-fees">In-band fees</td>
-                <td style="text-align: end;">
-                  {{ estimate.txSummary.effectiveFee | number : '1.0-0' }} <span class="symbol" i18n="shared.sats">sats</span>
-                </td>
-              </tr>
-              <tr class="info group-last">
-                <td class="info" colspan=3>
-                  <i><small i18n="accelerator.fees-already-paid-description">Fees already paid by this transaction (including unconfirmed ancestors)</small></i>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+      <ng-template [ngIf]="showDetails">
+        <h5 i18n="accelerator.your-transaction">Your transaction</h5>
+        <div class="row">
+          <div class="col">
+            <small *ngIf="hasAncestors" class="form-text text-muted mb-2">
+              <ng-container i18n="accelerator.plus-unconfirmed-ancestors">Plus {{ estimate.txSummary.ancestorCount - 1 }} unconfirmed ancestor(s)</ng-container>
+            </small>
+            <table class="table table-borderless table-border table-dark table-background table-accelerator">
+              <tbody>
+                <tr class="group-first">
+                  <td class="item" i18n="transaction.vsize|Transaction Virtual Size">Virtual size</td>
+                  <td style="text-align: end;" [innerHTML]="'&lrm;' + (estimate.txSummary.effectiveVsize | vbytes: 2)"></td>
+                </tr>
+                <tr class="info">
+                  <td class="info" colspan=3>
+                    <i><small i18n="accelerator.transaction-vbytes-size-description">Size in vbytes of this transaction (including unconfirmed ancestors)</small></i>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="item" i18n="accelerator.in-band-fees">In-band fees</td>
+                  <td style="text-align: end;">
+                    {{ estimate.txSummary.effectiveFee | number : '1.0-0' }} <span class="symbol" i18n="shared.sats">sats</span>
+                  </td>
+                </tr>
+                <tr class="info group-last">
+                  <td class="info" colspan=3>
+                    <i><small i18n="accelerator.fees-already-paid-description">Fees already paid by this transaction (including unconfirmed ancestors)</small></i>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
-      <br>
+        <br>
+      </ng-template>
       <h5 *ngIf="estimate?.pools?.length" i18n="accelerator.how-much-faster">How much faster?</h5>
       <div class="row">
         <div class="col">
           <ng-container *ngIf="(etaInfo$ | async) as etaInfo; else loadingEstimate">
-            <small class="form-text text-muted mb-2" i18n="accelerator.hashrate-percentage-description">Your transaction will be prioritized by up to {{ etaInfo.hashratePercentage | number : '1.1-1' }}% of miners.</small>
-            <small class="form-text text-muted mb-2" i18n="accelerator.time-estimate-description">This will reduce your expected waiting time until the first confirmation to <app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time></small>
+            <small class="form-text text-muted mb-2" i18n="accelerator.hashrate-percentage-description">Your transaction will be prioritized by up to <strong>{{ etaInfo.hashratePercentage | number : '1.1-1' }}%</strong> of miners.</small>
+            <small class="form-text text-muted mb-2" i18n="accelerator.time-estimate-description">This will reduce your expected waiting time until the first confirmation to <strong><app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time></strong></small>
           </ng-container>
         </div>
         <div class="col pie">
           <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true"></app-active-acceleration-box>
         </div>
       </div>
-      <br>
-      <h5 i18n="accelerator.pay-how-much">How much more are you willing to pay?</h5>
+
       <div class="row">
         <div class="col">
-          <small class="form-text text-muted mb-2" i18n="accelerator.transaction-fee-description">Choose the maximum extra transaction fee you're willing to pay.</small>
           <div class="form-group">
             <div class="fee-card">
               <div class="d-flex mb-0">
@@ -97,13 +97,13 @@
         </div>
       </div>
   
-      <h5>Acceleration summary</h5>
+      <h5>Summary</h5>
       <div class="row mb-3">
         <div class="col">
           <table class="table table-borderless table-border table-dark table-background table-accelerator">
             <tbody>
               <!-- ESTIMATED FEE -->
-              <ng-container>
+              <ng-template [ngIf]="showDetails">
                 <tr class="group-first">
                   <td class="item" i18n="accelerator.next-block-rate">Next block market rate</td>
                   <td class="amt" style="font-size: 16px">
@@ -123,24 +123,23 @@
                     <span class="fiat ml-1"><app-fiat [value]="math.max(0, estimate.nextBlockFee - estimate.txSummary.effectiveFee)"></app-fiat></span>
                   </td>
                 </tr>
-              </ng-container>
-  
-              <!-- MEMPOOL BASE FEE -->
-              <tr>
-                <td class="item" i18n="accelerator.mempool-accelerator-fees">Mempool Accelerator™ fees</td>
-              </tr>
-              <tr class="info">
-                <td class="info">
-                  <i><small i18n="accelerator.service-fee">Accelerator Service Fee</small></i>
-                </td>
-                <td class="amt">
-                  +{{ estimate.mempoolBaseFee | number }}
-                </td>
-                <td class="units">
-                  <span class="symbol" i18n="shared.sats">sats</span>
-                  <span class="fiat ml-1"><app-fiat [value]="estimate.mempoolBaseFee"></app-fiat></span>
-                </td>
-              </tr>
+                
+                <!-- MEMPOOL BASE FEE -->
+                <tr>
+                  <td class="item" i18n="accelerator.mempool-accelerator-fees">Mempool Accelerator™ fees</td>
+                </tr>
+                <tr class="info">
+                  <td class="info">
+                    <i><small i18n="accelerator.service-fee">Accelerator Service Fee</small></i>
+                  </td>
+                  <td class="amt">
+                    +{{ estimate.mempoolBaseFee | number }}
+                  </td>
+                  <td class="units">
+                    <span class="symbol" i18n="shared.sats">sats</span>
+                    <span class="fiat ml-1"><app-fiat [value]="estimate.mempoolBaseFee"></app-fiat></span>
+                  </td>
+                </tr>
               <tr class="info group-last">
                 <td class="info">
                   <i><small i18n="accelerator.tx-size-surcharge">Transaction Size Surcharge</small></i>
@@ -153,13 +152,13 @@
                   <span class="fiat ml-1"><app-fiat [value]="estimate.vsizeFee"></app-fiat></span>
                 </td>
               </tr>
-
+            </ng-template>
               
               <!-- NEXT BLOCK ESTIMATE -->
               <ng-container>
-                <tr class="group-first" style="border-top: 1px dashed grey; border-collapse: collapse;">
+                <tr class="group-first">
                   <td class="item">
-                    <b style="background-color: #5E35B1" class="p-1 pl-0" i18n="accelerator.estimated-cost">Estimated acceleration cost</b>
+                    <b style="background-color: #5E35B1" class="p-1 pl-0" i18n="accelerator.estimated-cost">Estimated acceleration cost</b> ~{{ estimate.targetFeeRate | number : '1.0-0' }} sat/vB
                   </td>
                   <td class="amt">
                     <span style="background-color: #5E35B1" class="p-1 pl-0">
@@ -171,18 +170,13 @@
                     <span class="fiat ml-1"><app-fiat [value]="estimate.cost + estimate.mempoolBaseFee + estimate.vsizeFee"></app-fiat></span>
                   </td>
                 </tr>
-                <tr class="info group-last" style="border-bottom: 1px solid lightgrey">
-                  <td class="info" colspan=3>
-                    <i><small><ng-container *ngTemplateOutlet="acceleratedTo; context: {$implicit: estimate.targetFeeRate }"></ng-container></small></i>
-                  </td>
-                </tr>
               </ng-container>
 
               <!-- MAX COST -->
               <ng-container>
                 <tr class="group-first">
                   <td class="item">
-                    <b style="background-color: var(--primary);" class="p-1 pl-0" i18n="accelerator.maximum-cost">Maximum acceleration cost</b>
+                    <b style="background-color: var(--primary);" class="p-1 pl-0" i18n="accelerator.maximum-cost">Maximum acceleration cost</b> 
                   </td>
                   <td class="amt">
                     <span style="background-color: var(--primary)" class="p-1 pl-0">
@@ -194,11 +188,6 @@
                     <span class="fiat ml-1">
                       <app-fiat [value]="maxCost" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat>
                     </span>
-                  </td>
-                </tr>
-                <tr class="info group-last">
-                  <td class="info" colspan=3>
-                    <i><small><ng-container *ngTemplateOutlet="acceleratedTo; context: {$implicit: (estimate.txSummary.effectiveFee + userBid) / estimate.txSummary.effectiveVsize }"></ng-container></small></i>
                   </td>
                 </tr>
               </ng-container>
@@ -218,7 +207,11 @@
                   </td>
                 </tr>
               </ng-container>
-
+              <tr>
+                <td colspan="3">
+                  <div style="border-top: 1px dashed grey; margin-top: 10px;"></div>
+                </td>
+              </tr>
               <!-- LOGIN CTA -->
               <ng-container *ngIf="stateService.isMempoolSpaceBuild && !isLoggedIn()">
                 <tr class="group-first group-last" style="border-top: 1px dashed grey">
@@ -230,7 +223,7 @@
                 </tr>
               </ng-container>
               <ng-container *ngIf="!stateService.isMempoolSpaceBuild">
-                <tr class="group-first group-last" style="border-top: 1px dashed grey">
+                <tr class="group-first group-last">
                   <td class="item"></td>
                   <td class="amt"></td>
                   <td class="units d-flex">
@@ -259,5 +252,3 @@
   <div class="skeleton-loader"></div>
   <br>
 </ng-template>
-
-<ng-template #acceleratedTo let-i i18n="accelerator.accelerated-to-description">If your tx is accelerated to ~{{ i | number : '1.0-0' }} sat/vB</ng-template>
