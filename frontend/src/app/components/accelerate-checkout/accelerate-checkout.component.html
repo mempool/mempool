@@ -58,12 +58,24 @@
         </div>
       </div>
     </form>
-  }
-    
-  @else if (step === 'checkout') {
-    <!-- Show checkout page -->
+  
+  } @else if (step === 'paymentMethod') {
     <div class="row mb-md-1 text-center">
       <div class="col-sm">
+        <h1 style="font-size: larger;">Select your payment method</h1>
+      </div>
+    </div>
+    <div class="pt-2 d-flex justify-content-around">
+      @if (cashappEnabled) {
+        <img class="paymentMethod" src="/resources/cash-app.svg" height=55 (click)="selectPaymentMethod('cashapp')">
+      }
+      <img class="paymentMethod" src="/resources/btcpay.svg" height=55 (click)="selectPaymentMethod('btcpay')">
+    </div>
+
+  } @else if (step === 'checkout') {
+    <!-- Show checkout page -->
+    <div class="row mb-md-1 text-center">
+      <div class="col-sm" id="confirm-payment-title">
         <h1 style="font-size: larger;">Confirm your payment</h1>
       </div>
     </div>
@@ -76,35 +88,39 @@
       </div>
     </div>
 
-    @if (!loadingCashapp) {
+    @if (paymentMethod === 'cashapp') {
+      @if (!loadingCashapp) {
+        <div class="row text-center mt-1">
+          <div class="col-sm">
+            <div class="form-group w-100">
+              <span><u><strong>Total additional cost</strong></u><br>
+                <span style="font-size: 16px" class="d-block mt-2">
+                  Pay
+                  <strong><app-fiat [value]="cost"></app-fiat></strong>
+                  with
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+      }
+
       <div class="row text-center mt-1">
         <div class="col-sm">
           <div class="form-group w-100">
-            <span><u><strong>Total additional cost</strong></u><br>
-              <span style="font-size: 16px" class="d-block mt-2">
-                Pay
-                <strong><app-fiat [value]="cost"></app-fiat></strong>
-                with
-              </span>
-            </span>
+            <div id="cash-app-pay" class="d-inline-block" [style]="loadingCashapp ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
+            @if (loadingCashapp) {
+            <div display="d-flex flex-row justify-content-center">
+              <span>Loading payment method...</span>
+              <div class="ml-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
+            </div>
+            }
           </div>
         </div>
       </div>
+    } @else if (paymentMethod === 'btcpay' && invoice?.btcpayInvoiceId) {
+      <app-bitcoin-invoice [invoiceId]="invoice.btcpayInvoiceId" (completed)="closeModal(2000)"></app-bitcoin-invoice>
     }
-
-    <div class="row text-center mt-1">
-      <div class="col-sm">
-        <div class="form-group w-100">
-          <div id="cash-app-pay" class="d-inline-block" [style]="loadingCashapp ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
-          @if (loadingCashapp) {
-          <div display="d-flex flex-row justify-content-center">
-            <span>Loading payment method...</span>
-            <div class="ml-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
-          </div>
-          }
-        </div>
-      </div>
-    </div>
 
     <hr>
     <div class="row mt-2 mb-2 text-center">
@@ -118,7 +134,7 @@
   @else if (step === 'processing') {
     <div class="row mb-1 text-center">
       <div class="col-sm">
-        <h1 style="font-size: larger;">Confirm your payment</h1>
+        <h1 style="font-size: larger;">Confirming your payment</h1>
       </div>
     </div>
 

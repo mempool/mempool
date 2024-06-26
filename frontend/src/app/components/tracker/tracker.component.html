@@ -75,7 +75,7 @@
                   } @else {
                     <app-time kind="until" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time>
                   }
-                  @if (!showAccelerationSummary && isMobile && paymentType === 'cashapp' && accelerationEligible && !tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration) {
+                  @if (!showAccelerationSummary && isMobile && !tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration) {
                     <a class="btn btn-sm accelerate btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
                   }
                 </span>
@@ -116,7 +116,7 @@
 
     <div class="bottom-panel">
       @if (showAccelerationSummary && !accelerationFlowCompleted) {
-        <app-accelerate-checkout *ngIf="(da$ | async) as da;" [txid]="tx.txid" [eta]="mempoolPosition?.block >= 7 ? null : da.adjustedTimeAvg * (mempoolPosition.block + 1) + now + da.timeOffset" (close)="accelerationFlowCompleted = true" [scrollEvent]="scrollIntoAccelPreview" class="h-100 w-100"></app-accelerate-checkout>
+        <app-accelerate-checkout *ngIf="(da$ | async) as da;" [cashappEnabled]="accelerationEligible" [txid]="tx.txid" [eta]="mempoolPosition?.block >= 7 ? null : da.adjustedTimeAvg * (mempoolPosition.block + 1) + now + da.timeOffset" (close)="accelerationFlowCompleted = true" [scrollEvent]="scrollIntoAccelPreview" class="h-100 w-100"></app-accelerate-checkout>
       } @else {
         @if (tx?.acceleration && !tx.status?.confirmed) {
           <div class="progress-icon">
