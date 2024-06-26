@@ -128,4 +128,8 @@ export class ActiveAccelerationBox implements OnChanges {
     }
     this.chartInstance = ec;
   }
+
+  isMobile() {
+    return window.innerWidth <= 767.98;
+  }
 }

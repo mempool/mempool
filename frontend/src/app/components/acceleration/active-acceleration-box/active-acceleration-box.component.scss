@@ -16,11 +16,18 @@
     width: auto;
     min-width: auto;
   }
+  &.mobile {
+    width: 100%;
+  }
 }
 
 .field-value {
   @media (max-width: 849px) {
     width: 100%;
+  }
+
+  &.mobile {
+    width: auto;
   }
 
   .hashrate-label {
