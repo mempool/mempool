@@ -44,6 +44,7 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
     
     this.accelerationList$ = this.pageSubject.pipe(
       switchMap((page) => {
+        this.isLoading = true;
         const accelerationObservable$ = this.accelerations$ || (this.pending ? this.stateService.liveAccelerations$ : this.servicesApiService.getAccelerationHistoryObserveResponse$({ page: page }));
         if (!this.accelerations$ && this.pending) {
           this.websocketService.ensureTrackAccelerations();
