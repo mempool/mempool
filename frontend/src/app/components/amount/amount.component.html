@@ -1,4 +1,4 @@
-<ng-container *ngIf="!noFiat && (viewAmountMode$ | async) === 'fiat' && (conversions$ | async) as conversions; else viewFiatVin">
+<ng-container *ngIf="!noFiat && ignoreViewMode === false && (viewAmountMode$ | async) === 'fiat' && (conversions$ | async) as conversions; else viewFiatVin">
   <span class="fiat" *ngIf="blockConversion; else noblockconversion">
     {{ addPlus && satoshis >= 0 ? '+' : '' }}{{
       (
@@ -21,7 +21,7 @@
     <span i18n="shared.confidential">Confidential</span>
   </ng-template>
   <ng-template #default>
-    @if ((viewAmountMode$ | async) === 'btc' || (viewAmountMode$ | async) === 'fiat') {
+    @if ((viewAmountMode$ | async) === 'btc' || (viewAmountMode$ | async) === 'fiat' || ignoreViewMode === true) {
       &lrm;{{ addPlus && satoshis >= 0 ? '+' : '' }}{{ satoshis / 100000000 | number : digitsInfo }}
       <span class="symbol">
         <ng-container *ngTemplateOutlet="prefix"></ng-container>BTC
