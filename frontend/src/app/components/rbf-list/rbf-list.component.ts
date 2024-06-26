@@ -38,6 +38,7 @@ export class RbfList implements OnInit, OnDestroy {
       this.fullRbf = (fragment === 'fullrbf');
       this.websocketService.startTrackRbf(this.fullRbf ? 'fullRbf' : 'all');
       this.nextRbfSubject.next(null);
+      this.isLoading = true;
     });
 
     this.rbfTrees$ = merge(
