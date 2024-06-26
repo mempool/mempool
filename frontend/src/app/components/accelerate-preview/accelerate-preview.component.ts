@@ -46,6 +46,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   @Input() tx: Transaction;
   @Input() miningStats: MiningStats;
   @Input() scrollEvent: boolean;
+  @Input() showDetails: boolean;
 
   math = Math;
   error = '';

@@ -80,10 +80,12 @@
       <div class="title float-left">
         <h2 i18n="transaction.accelerate|Accelerate button label">Accelerate</h2>
       </div>
+      <button type="button" class="btn btn-outline-info flow-toggle btn-sm float-right" (click)="showAccelerationDetails = !showAccelerationDetails" i18n="transaction.details|Transaction Details">Details</button>
+
       <div class="clearfix"></div>
 
       <div class="box">
-        <app-accelerate-preview [tx]="tx" [miningStats]="miningStats" [scrollEvent]="scrollIntoAccelPreview"></app-accelerate-preview>
+        <app-accelerate-preview [tx]="tx" [miningStats]="miningStats" [scrollEvent]="scrollIntoAccelPreview" [showDetails]="showAccelerationDetails"></app-accelerate-preview>
       </div>
     </ng-container>
 
