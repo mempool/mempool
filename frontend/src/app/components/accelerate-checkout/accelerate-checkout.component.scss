@@ -7,3 +7,11 @@
 .estimating {
   color: var(--green)
 }
+
+.paymentMethod {
+  padding: 10px;
+  background-color: var(--secondary);
+  border-radius: 15px;
+  border: 2px solid var(--bg);
+  cursor: pointer;
+}

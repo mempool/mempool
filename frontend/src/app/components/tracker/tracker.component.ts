@@ -107,7 +107,6 @@ export class TrackerComponent implements OnInit, OnDestroy {
   now = Date.now();
   da$: Observable<DifficultyAdjustment>;
   isMobile: boolean;
-  paymentType: 'bitcoin' | 'cashapp' = 'bitcoin';
 
   trackerStage: TrackerStage = 'waiting';
 
@@ -158,9 +157,6 @@ export class TrackerComponent implements OnInit, OnDestroy {
 
     this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
 
-    if (this.acceleratorAvailable && this.stateService.referrer === 'https://cash.app/') {
-      this.paymentType = 'cashapp';
-    }
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('cash_request_id')) {
       this.showAccelerationSummary = true;
@@ -390,11 +386,9 @@ export class TrackerComponent implements OnInit, OnDestroy {
             this.trackerStage = 'replaced';
           }
 
+          this.showAccelerationSummary = true;
           if (txPosition.position?.block > 0 && this.tx.weight < 4000) {
             this.accelerationEligible = true;
-            if (this.acceleratorAvailable && this.paymentType === 'cashapp') {
-              this.showAccelerationSummary = true;
-            }
           }
         }
       } else {

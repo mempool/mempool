@@ -115,6 +115,7 @@ import { HttpErrorComponent } from '../shared/components/http-error/http-error.c
 import { TwitterWidgetComponent } from '../components/twitter-widget/twitter-widget.component';
 import { FaucetComponent } from '../components/faucet/faucet.component';
 import { TwitterLogin } from '../components/twitter-login/twitter-login.component';
+import { BitcoinInvoiceComponent } from '../components/bitcoin-invoice/bitcoin-invoice.component';
 
 import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-directives/weight-directives';
 
@@ -230,6 +231,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     TwitterWidgetComponent,
     FaucetComponent,
     TwitterLogin,
+    BitcoinInvoiceComponent,
   ],
   imports: [
     CommonModule,
@@ -359,6 +361,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     HttpErrorComponent,
     TwitterWidgetComponent,
     TwitterLogin,
+    BitcoinInvoiceComponent,
 
     MempoolBlockOverviewComponent,
     ClockchainComponent,

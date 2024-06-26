@@ -16,11 +16,15 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   @Input() eta: number | null = null;
   @Input() txid: string = '70c18d76cdb285a1b5bd87fdaae165880afa189809c30b4083ff7c0e69ee09ad';
   @Input() scrollEvent: boolean;
+  @Input() cashappEnabled: boolean;
   @Output() close = new EventEmitter<null>();
 
   calculating = true;
   choosenOption: 'wait' | 'accelerate' = 'wait';
   error = '';
+
+  step: 'paymentMethod' | 'cta' | 'checkout' | 'processing' = 'cta';
+  paymentMethod: 'cashapp' | 'btcpay';
 
   // accelerator stuff
   square: { appId: string, locationId: string};
@@ -38,7 +42,10 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   cashAppPay: any;
   cashAppSubscription: Subscription;
   conversionsSubscription: Subscription;
-  step: 'cta' | 'checkout' | 'processing' = 'cta';
+  
+  // btcpay
+  loadingBtcpayInvoice = false;
+  invoice = undefined;
 
   constructor(
     private servicesApiService: ServicesApiServices,
@@ -77,19 +84,19 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.scrollEvent) {
-      this.scrollToPreview('acceleratePreviewAnchor', 'start');
+      this.scrollToElement('acceleratePreviewAnchor', 'start');
     }
   }
 
   /**
   * Scroll to element id with or without setTimeout
   */
-  scrollToPreviewWithTimeout(id: string, position: ScrollLogicalPosition) {
+  scrollToElementWithTimeout(id: string, position: ScrollLogicalPosition, timeout: number = 1000) {
     setTimeout(() => {
-      this.scrollToPreview(id, position);
-    }, 1000);
+      this.scrollToElement(id, position);
+    }, timeout);
   }
-  scrollToPreview(id: string, position: ScrollLogicalPosition) {
+  scrollToElement(id: string, position: ScrollLogicalPosition) {
     const acceleratePreviewAnchor = document.getElementById(id);
     if (acceleratePreviewAnchor) {
       this.cd.markForCheck();
@@ -111,7 +118,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     this.calculating = true;
     this.estimateSubscription = this.servicesApiService.estimate$(this.txid).pipe(
       tap((response) => {
-        this.calculating = false;
         if (response.status === 204) {
           this.error = `cannot_accelerate_tx`;
         } else {
@@ -126,6 +132,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           this.maxBidBoost = minExtraBoost * DEFAULT_BID_RATIO;
           this.cost = this.maxBidBoost + this.estimate.mempoolBaseFee + this.estimate.vsizeFee;
           this.etaInfo$ = this.etaService.getProjectedEtaObservable(this.estimate);
+          this.calculating = false;
+          this.cd.markForCheck();
         }
       }),
 
@@ -266,18 +274,47 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   /**
+   * BTCPay
+   */
+  async requestBTCPayInvoice() {
+    this.servicesApiService.generateBTCPayAcceleratorInvoice$(this.txid).subscribe({
+      next: (response) => {
+        this.invoice = response;
+        this.cd.markForCheck();
+        this.scrollToElementWithTimeout('acceleratePreviewAnchor', 'start', 500);
+      },
+      error: (response) => {
+        console.log(response);
+      }
+    });
+  }
+
+  /**
    * UI events
    */
   enableCheckoutPage() {
+    this.step = 'paymentMethod';
+  }
+  selectPaymentMethod(paymentMethod: 'cashapp' | 'btcpay') {
     this.step = 'checkout';
-    this.loadingCashapp = true;
-    this.insertSquare();
-    this.setupSquare();
+    this.paymentMethod = paymentMethod;
+    if (paymentMethod === 'cashapp') {
+      this.loadingCashapp = true;
+      this.insertSquare();
+      this.setupSquare();
+    } else if (paymentMethod === 'btcpay') {
+      this.loadingBtcpayInvoice = true;
+      this.requestBTCPayInvoice();
+    }
   }
   selectedOptionChanged(event) {
     this.choosenOption = event.target.id;
   }
-  closeModal(): void {
-    this.close.emit();
+  closeModal(timeout: number = 0): void {
+    setTimeout(() => {
+      this.step = 'processing';
+      this.cd.markForCheck();
+      this.close.emit();
+    }, timeout);
   }
 }

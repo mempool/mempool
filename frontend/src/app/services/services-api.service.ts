@@ -167,4 +167,19 @@ export class ServicesApiServices {
   requestTestnet4Coins$(address: string, sats: number) {
     return this.httpClient.get<{txid: string}>(`${SERVICES_API_PREFIX}/testnet4/faucet/request?address=${address}&sats=${sats}`, { responseType: 'json' });
   }
+
+  generateBTCPayAcceleratorInvoice$(txid: string): Observable<any> {
+    const params = {
+      product: txid
+    };
+    return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/payments/bitcoin`, params);
+  }
+
+  retreiveInvoice$(invoiceId: string): Observable<any[]> {
+    return this.httpClient.get<any[]>(`${SERVICES_API_PREFIX}/payments/bitcoin/invoice?id=${invoiceId}`);
+  }
+
+  getPaymentStatus$(orderId: string): Observable<any[]> {
+    return this.httpClient.get<any[]>(`${SERVICES_API_PREFIX}/payments/bitcoin/check?order_id=${orderId}`);
+  }
 }
