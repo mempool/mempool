@@ -85,15 +85,16 @@ export class BlocksList implements OnInit {
       this.keyNavigationSubscription = this.stateService.keyNavigation$
       .pipe(
         tap((event) => {
-          this.isLoading = true;
           const prevKey = this.dir === 'ltr' ? 'ArrowLeft' : 'ArrowRight';
           const nextKey = this.dir === 'ltr' ? 'ArrowRight' : 'ArrowLeft';
           if (event.key === prevKey && this.page > 1) {
             this.page--;
+            this.isLoading = true;
             this.cd.markForCheck();
           }
           if (event.key === nextKey && this.page * 15 < this.blocksCount) {
             this.page++;
+            this.isLoading = true;
             this.cd.markForCheck();
           }
         }),
@@ -118,6 +119,7 @@ export class BlocksList implements OnInit {
                 if (this.blocksCount === undefined) {
                   this.blocksCount = blocks[0].height + 1;
                   this.blocksCountInitialized$.next(true);
+                  this.blocksCountInitialized$.complete();
                 }
                 this.isLoading = false;
                 this.lastBlockHeight = Math.max(...blocks.map(o => o.height));

@@ -76,15 +76,16 @@ export class RecentPegsListComponent implements OnInit {
       this.keyNavigationSubscription = this.stateService.keyNavigation$
       .pipe(
         tap((event) => {
-          this.isLoading = true;
           const prevKey = this.dir === 'ltr' ? 'ArrowLeft' : 'ArrowRight';
           const nextKey = this.dir === 'ltr' ? 'ArrowRight' : 'ArrowLeft';
           if (event.key === prevKey && this.page > 1) {
             this.page--;
+            this.isLoading = true;
             this.cd.markForCheck();
           }
           if (event.key === nextKey && this.page < this.pegsCount / this.pageSize) {
             this.page++;
+            this.isLoading = true;
             this.cd.markForCheck();
           }
         }),
