@@ -60,9 +60,13 @@ const routes: Routes = [
         ]
       },
       {
-        path: 'acceleration/list',
+        path: 'acceleration/list/:page',
         data: { networks: ['bitcoin'] },
         component: AccelerationsListComponent,
+      },
+      {
+        path: 'acceleration/list',
+        redirectTo: 'acceleration/list/1',
       },
       {
         path: 'mempool-block/:id',
