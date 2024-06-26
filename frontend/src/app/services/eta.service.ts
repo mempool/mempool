@@ -26,7 +26,7 @@ export class EtaService {
 
   getProjectedEtaObservable(estimate: AccelerationEstimate, miningStats?: MiningStats): Observable<{ hashratePercentage: number, ETA: number, acceleratedETA: number }> {
     return combineLatest([
-      this.stateService.mempoolTxPosition$.pipe(map(p => p.position)),
+      this.stateService.mempoolTxPosition$.pipe(map(p => p?.position)),
       this.stateService.difficultyAdjustment$,
       miningStats ? of(miningStats) : this.miningService.getMiningStats('1w'),
     ]).pipe(

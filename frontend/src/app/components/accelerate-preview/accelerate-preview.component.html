@@ -68,7 +68,7 @@
       <h5 *ngIf="estimate?.pools?.length" i18n="accelerator.how-much-faster">How much faster?</h5>
       <div class="row">
         <div class="col">
-          <ng-container *ngIf="(etaInfo$ | async) as etaInfo">
+          <ng-container *ngIf="(etaInfo$ | async) as etaInfo; else loadingEstimate">
             <small class="form-text text-muted mb-2" i18n="accelerator.hashrate-percentage-description">Your transaction will be prioritized by up to {{ etaInfo.hashratePercentage | number : '1.1-1' }}% of miners.</small>
             <small class="form-text text-muted mb-2" i18n="accelerator.time-estimate-description">This will reduce your expected waiting time until the first confirmation to <app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time></small>
           </ng-container>
