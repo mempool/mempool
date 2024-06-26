@@ -98,7 +98,7 @@
       </div>
   
       <h5>Summary</h5>
-      <div class="row mb-3">
+      <div class="row">
         <div class="col">
           <table class="table table-borderless table-border table-dark table-background table-accelerator">
             <tbody>
@@ -128,7 +128,7 @@
                 <tr>
                   <td class="item" i18n="accelerator.mempool-accelerator-fees">Mempool Accelerator™ fees</td>
                 </tr>
-                <tr class="info">
+                <tr class="info" [class.group-last]="!estimate.vsizeFee" [class.dashed-bottom]="!estimate.vsizeFee">
                   <td class="info">
                     <i><small i18n="accelerator.service-fee">Accelerator Service Fee</small></i>
                   </td>
@@ -140,7 +140,7 @@
                     <span class="fiat ml-1"><app-fiat [value]="estimate.mempoolBaseFee"></app-fiat></span>
                   </td>
                 </tr>
-              <tr class="info group-last" *ngIf="estimate.vsizeFee">
+              <tr class="info group-last dashed-bottom" *ngIf="estimate.vsizeFee">
                 <td class="info">
                   <i><small i18n="accelerator.tx-size-surcharge">Transaction Size Surcharge</small></i>
                 </td>
@@ -174,7 +174,7 @@
 
               <!-- MAX COST -->
               <ng-container>
-                <tr class="group-first">
+                <tr class="group-first" [class.group-last]="!isLoggedIn() || estimate.userBalance >= maxCost">
                   <td class="item">
                     <b style="background-color: var(--primary);" class="p-1 pl-0" i18n="accelerator.maximum-cost">Maximum acceleration cost</b> 
                   </td>
@@ -186,7 +186,7 @@
                   <td class="units">
                     <span class="symbol" i18n="shared.sats">sats</span>
                     <span class="fiat ml-1">
-                      <app-fiat [value]="maxCost" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat>
+                      <app-fiat [value]="maxCost" [colorClass]="isLoggedIn() && estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat>
                     </span>
                   </td>
                 </tr>
@@ -194,7 +194,7 @@
   
               <!-- USER BALANCE -->
               <ng-container *ngIf="isLoggedIn() && estimate.userBalance < maxCost">
-                <tr class="group-first group-last" style="border-top: 1px dashed grey">
+                <tr class="group-first group-last dashed-top">
                   <td class="item" i18n="accelerator.available-balance">Available balance</td>
                   <td class="amt">
                     {{ estimate.userBalance | number }}
@@ -207,27 +207,21 @@
                   </td>
                 </tr>
               </ng-container>
-              <tr>
-                <td colspan="3">
-                  <div style="border-top: 1px dashed grey; margin-top: 10px;"></div>
-                </td>
-              </tr>
-              <!-- LOGIN CTA -->
-              <ng-container *ngIf="stateService.isMempoolSpaceBuild && !isLoggedIn()">
+              <ng-container *ngIf="user && estimate?.hasAccess || !isLoggedIn()">
                 <tr class="group-first group-last" style="border-top: 1px dashed grey">
                   <td class="item"></td>
-                  <td class="amt"></td>
-                  <td class="units d-flex">
-                    <a [routerLink]="['/login']" [queryParams]="{redirectTo: '/tx/' + tx.txid + '#accelerate'}" class="btn btn-purple flex-grow-1" i18n="shared.sign-in">Sign In</a>
-                  </td>
-                </tr>
-              </ng-container>
-              <ng-container *ngIf="!stateService.isMempoolSpaceBuild">
-                <tr class="group-first group-last">
-                  <td class="item"></td>
-                  <td class="amt"></td>
-                  <td class="units d-flex">
-                    <a [href]="'https://mempool.space/tx/' + tx.txid + '#accelerate'" class="btn btn-purple flex-grow-1" i18n="accelerator.accelerate-on-mempoolspace">Accelerate on mempool.space</a>
+                  <td colspan="2">
+                    <div class="d-flex">
+                      @if (isLoggedIn()) {
+                        @if (user && estimate.hasAccess) {
+                          <button class="btn btn-sm btn-primary btn-success flex-grow-1" style="width: 150px" (click)="accelerate()" i18n="transaction.accelerate|Accelerate button label">Accelerate</button>
+                        }
+                      } @else if (stateService.isMempoolSpaceBuild) {
+                        <a [routerLink]="['/login']" [queryParams]="{redirectTo: '/tx/' + tx.txid + '#accelerate'}" class="btn btn-purple flex-grow-1" i18n="shared.sign-in">Sign In</a>
+                      } @else {
+                        <a [href]="'https://mempool.space/tx/' + tx.txid + '#accelerate'" class="btn btn-purple flex-grow-1" i18n="accelerator.accelerate-on-mempoolspace">Accelerate on mempool.space</a>
+                      }
+                    </div>
                   </td>
                 </tr>
               </ng-container>
@@ -235,15 +229,6 @@
           </table>
         </div>
       </div>
-  
-      <div class="row mb-3" *ngIf="isLoggedIn()">
-        <div class="col">
-          <div class="d-flex justify-content-end" *ngIf="user && estimate.hasAccess">
-            <button class="btn btn-sm btn-primary btn-success" style="width: 150px" (click)="accelerate()" i18n="transaction.accelerate|Accelerate button label">Accelerate</button>
-          </div>
-        </div>
-      </div>
-  
     </div>
   </ng-container>
 </div>
