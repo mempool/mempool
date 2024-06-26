@@ -72,10 +72,16 @@
         padding-top: 0.75rem;
       }
     }
-    &.group-last {
+    &.group-last, &:last-child {
       td {
         padding-bottom: 0.75rem;
       }
+    }
+    &.dashed-top {
+      border-top: 1px dashed grey;
+    }
+    &.dashed-bottom {
+      border-bottom: 1px dashed grey
     }
   }
   td {
