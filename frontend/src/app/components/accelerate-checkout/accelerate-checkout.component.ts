@@ -24,7 +24,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   @Output() close = new EventEmitter<null>();
 
   calculating = true;
-  choosenOption: 'wait' | 'accelerate';
+  choosenOption: 'wait' | 'accel';
   error = '';
 
   step: 'paymentMethod' | 'cta' | 'checkout' | 'processing' = 'cta';
