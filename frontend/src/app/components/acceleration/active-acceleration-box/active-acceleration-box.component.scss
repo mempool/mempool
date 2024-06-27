@@ -55,3 +55,10 @@
     padding-left: 0;
   }
 }
+
+::ng-deep .chart {
+  overflow: visible;
+  & > div, & > div > svg {
+    overflow: visible !important;
+  }
+}
