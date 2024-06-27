@@ -18,7 +18,7 @@
       <div class="row">
         <div class="col-md">
           <div class="form-group form-check mb-2">
-            <input type="radio" [checked]="choosenOption === 'wait'"  class="form-check-input" id="wait" name="accelerate" (change)="selectedOptionChanged($event)">
+            <input type="radio" [checked]="choosenOption === 'wait'"  class="form-check-input" id="wait" name="accel" (change)="selectedOptionChanged($event)">
             <label class="form-check-label d-flex flex-column" for="wait">
               <span class="font-weight-bold">Wait</span>
               @if (eta.blocks < 7) {
@@ -33,8 +33,8 @@
         </div>
         <div class="col-md">
           <div class="form-group form-check mb-2">
-            <input type="radio" [checked]="choosenOption === 'accelerate'" class="form-check-input" id="accelerate" name="accelerate" (change)="selectedOptionChanged($event)">
-            <label class="form-check-label d-flex flex-column" for="accelerate">
+            <input type="radio" [checked]="choosenOption === 'accel'" class="form-check-input" id="accel" name="accel" (change)="selectedOptionChanged($event)">
+            <label class="form-check-label d-flex flex-column" for="accel">
               <span class="font-weight-bold">Accelerate</span>
               <span style="color: rgb(186, 186, 186); font-size: 14px;" *ngIf="(etaInfo$ | async) as etaInfo">Confirmation expected <app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time><br>
                 @if (!calculating) {
@@ -51,7 +51,7 @@
           <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true"></app-active-acceleration-box>
         </div>
       </div>
-      <div class="row mt-2 mb-2" [style]="(choosenOption !== 'accelerate' || calculating) ? 'opacity: 0.25; pointer-events: none' : ''">
+      <div class="row mt-2 mb-2" [style]="(choosenOption !== 'accel' || calculating) ? 'opacity: 0.25; pointer-events: none' : ''">
         <div class="col-sm d-flex flex-row justify-content-center">
           <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" style="width: 200px" (click)="enableCheckoutPage()">
             <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
