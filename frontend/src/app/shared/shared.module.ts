@@ -50,8 +50,6 @@ import { BlockOverviewGraphComponent } from '../components/block-overview-graph/
 import { BlockOverviewTooltipComponent } from '../components/block-overview-tooltip/block-overview-tooltip.component';
 import { BlockFiltersComponent } from '../components/block-filters/block-filters.component';
 import { AddressGroupComponent } from '../components/address-group/address-group.component';
-import { TrackerComponent } from '../components/tracker/tracker.component';
-import { TrackerBarComponent } from '../components/tracker/tracker-bar.component';
 import { SearchFormComponent } from '../components/search-form/search-form.component';
 import { AddressLabelsComponent } from '../components/address-labels/address-labels.component';
 import { FooterComponent } from '../components/footer/footer.component';
@@ -100,7 +98,6 @@ import { MempoolErrorComponent } from './components/mempool-error/mempool-error.
 import { AccelerationsListComponent } from '../components/acceleration/accelerations-list/accelerations-list.component';
 import { PendingStatsComponent } from '../components/acceleration/pending-stats/pending-stats.component';
 import { AccelerationStatsComponent } from '../components/acceleration/acceleration-stats/acceleration-stats.component';
-import { AccelerateCheckout } from '../components/accelerate-checkout/accelerate-checkout.component';
 
 import { BlockViewComponent } from '../components/block-view/block-view.component';
 import { EightBlocksComponent } from '../components/eight-blocks/eight-blocks.component';
@@ -165,8 +162,6 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     BlockFiltersComponent,
     TransactionsListComponent,
     AddressGroupComponent,
-    TrackerComponent,
-    TrackerBarComponent,
     SearchFormComponent,
     AddressLabelsComponent,
     FooterComponent,
@@ -225,7 +220,6 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     MempoolErrorComponent,
     AccelerationsListComponent,
     AccelerationStatsComponent,
-    AccelerateCheckout,
     PendingStatsComponent,
     HttpErrorComponent,
     TwitterWidgetComponent,
@@ -307,8 +301,6 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     BlockFiltersComponent,
     TransactionsListComponent,
     AddressGroupComponent,
-    TrackerComponent,
-    TrackerBarComponent,
     SearchFormComponent,
     AddressLabelsComponent,
     FooterComponent,
@@ -356,7 +348,6 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     MempoolErrorComponent,
     AccelerationsListComponent,
     AccelerationStatsComponent,
-    AccelerateCheckout,
     PendingStatsComponent,
     HttpErrorComponent,
     TwitterWidgetComponent,

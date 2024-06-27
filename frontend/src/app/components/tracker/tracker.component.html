@@ -116,7 +116,9 @@
 
     <div class="bottom-panel">
       @if (showAccelerationSummary && !accelerationFlowCompleted) {
-        <app-accelerate-checkout *ngIf="(da$ | async) as da;" [cashappEnabled]="accelerationEligible" [txid]="tx.txid" [eta]="mempoolPosition?.block >= 7 ? null : da.adjustedTimeAvg * (mempoolPosition.block + 1) + now + da.timeOffset" (close)="accelerationFlowCompleted = true" [scrollEvent]="scrollIntoAccelPreview" class="h-100 w-100"></app-accelerate-checkout>
+        <ng-container *ngIf="(ETA$ | async) as eta;">
+          <app-accelerate-checkout *ngIf="(da$ | async) as da;" [cashappEnabled]="accelerationEligible" [tx]="tx" [miningStats]="miningStats" [eta]="eta" [isTracker]="true" (close)="accelerationFlowCompleted = true" [scrollEvent]="scrollIntoAccelPreview" class="h-100 w-100"></app-accelerate-checkout>
+        </ng-container>
       } @else {
         @if (tx?.acceleration && !tx.status?.confirmed) {
           <div class="progress-icon">

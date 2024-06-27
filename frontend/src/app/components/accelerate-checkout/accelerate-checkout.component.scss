@@ -15,3 +15,13 @@
   border: 2px solid var(--bg);
   cursor: pointer;
 }
+
+.default-slot:not(:only-child) {
+  display: none;
+}
+
+.pie {
+  display: flex;
+  align-items: center;
+  max-width: 330px;
+}
