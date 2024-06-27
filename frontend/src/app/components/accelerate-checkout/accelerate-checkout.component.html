@@ -1,66 +1,306 @@
-<div class="box card w-100" style="padding: 1em; background: var(--box-bg)" id=acceleratePreviewAnchor>
+<div class="box card w-100" style="background: var(--box-bg)" id=acceleratePreviewAnchor>
 
   @if (error) {
     <div class="mt-2">
       <app-mempool-error [error]="error"></app-mempool-error>
     </div>
   } 
-
-  @else if (step === 'cta') {
-    <!-- Show A/B CTAs -->
-    <div class="row mb-1">
-      <div class="col-sm">
-        <h1 style="font-size: larger;"><ng-content select="[slot='cta-title']"></ng-content><span class="default-slot">Accelerate your Bitcoin transaction?</span></h1>
-      </div>
-    </div>
-
-    <form>
-      <div class="row">
-        <div class="col-md">
-          <div class="form-group form-check mb-2">
-            <input type="radio" [checked]="choosenOption === 'wait'"  class="form-check-input" id="wait" name="accel" (change)="selectedOptionChanged($event)">
-            <label class="form-check-label d-flex flex-column" for="wait">
-              <span class="font-weight-bold">Wait</span>
-              @if (eta.blocks < 7) {
-                <span style="color: rgb(186, 186, 186); font-size: 14px;">Confirmation expected <app-time kind="within" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time></span>
-              } @else {
-                <span style="color: rgb(186, 186, 186); font-size: 14px;">
-                  <span>Confirmation expected within several hours</span>
-                </span>
-              }
-            </label>
+  @else if (step === 'quote') {
+    @if (!simpleMode) {
+      <span id="successAlert" class="m-0 p-0 d-block" style="height: 1px;"></span>
+      <div class="row" *ngIf="showSuccess">
+        <div class="col">
+          <div class="alert alert-success">
+            Transaction has now been <a class="alert-link" routerLink="/services/accelerator/history">submitted</a> to mining pools for acceleration.
           </div>
         </div>
-        <div class="col-md">
-          <div class="form-group form-check mb-2">
-            <input type="radio" [checked]="choosenOption === 'accel'" class="form-check-input" id="accel" name="accel" (change)="selectedOptionChanged($event)">
-            <label class="form-check-label d-flex flex-column" for="accel">
-              <span class="font-weight-bold">Accelerate</span>
-              <span style="color: rgb(186, 186, 186); font-size: 14px;" *ngIf="(etaInfo$ | async) as etaInfo">Confirmation expected <app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time><br>
-                @if (!calculating) {
-                  <app-fiat [value]="cost"></app-fiat>fee (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
+      </div>
+
+      <span id="mempoolError" class="m-0 p-0 d-block" style="height: 1px;"></span>
+      <div class="row" *ngIf="error">
+        <div class="col">
+          <app-mempool-error [error]="error" [alertClass]="error === 'waitlisted' ? 'alert-mempool' : 'alert-danger'"></app-mempool-error>
+        </div>
+      </div>
+
+      <div class="accelerate-cols">
+        <ng-container *ngIf="!isMobile">
+          <app-accelerate-fee-graph
+            [tx]="tx"
+            [estimate]="estimate"
+            [showEstimate]="isLoggedIn()"
+            [maxRateOptions]="maxRateOptions"
+            [maxRateIndex]="selectFeeRateIndex"
+            (setUserBid)="setUserBid($event)"
+          ></app-accelerate-fee-graph>
+        </ng-container>
+
+        <ng-container *ngIf="estimate else loadingEstimate">
+          <div [class]="{estimateDisabled: error || showSuccess }">
+
+            <div *ngIf="user && !estimate.hasAccess">
+              <div class="alert alert-mempool">You are currently on the waitlist</div>
+            </div>
+
+            @if (showDetails) {
+              <h5 i18n="accelerator.your-transaction">Your transaction</h5>
+              <div class="row">
+                <div class="col">
+                  <small *ngIf="hasAncestors" class="form-text text-muted mb-2">
+                    <ng-container i18n="accelerator.plus-unconfirmed-ancestors">Plus {{ estimate.txSummary.ancestorCount - 1 }} unconfirmed ancestor(s)</ng-container>
+                  </small>
+                  <table class="table table-borderless table-border table-dark table-background table-accelerator">
+                    <tbody>
+                      <tr class="group-first">
+                        <td class="item" i18n="transaction.vsize|Transaction Virtual Size">Virtual size</td>
+                        <td style="text-align: end;" [innerHTML]="'&lrm;' + (estimate.txSummary.effectiveVsize | vbytes: 2)"></td>
+                      </tr>
+                      <tr class="info">
+                        <td class="info" colspan=3>
+                          <i><small i18n="accelerator.transaction-vbytes-size-description">Size in vbytes of this transaction (including unconfirmed ancestors)</small></i>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="item" i18n="accelerator.in-band-fees">In-band fees</td>
+                        <td style="text-align: end;">
+                          {{ estimate.txSummary.effectiveFee | number : '1.0-0' }} <span class="symbol" i18n="shared.sats">sats</span>
+                        </td>
+                      </tr>
+                      <tr class="info group-last">
+                        <td class="info" colspan=3>
+                          <i><small i18n="accelerator.fees-already-paid-description">Fees already paid by this transaction (including unconfirmed ancestors)</small></i>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <br>
+            }
+            <h5 *ngIf="estimate?.pools?.length" i18n="accelerator.how-much-faster">How much faster?</h5>
+            <div class="row">
+              <div class="col">
+                <ng-container *ngIf="(etaInfo$ | async) as etaInfo; else loadingEstimate">
+                  <small class="form-text text-muted mb-2" i18n="accelerator.hashrate-percentage-description">Your transaction will be prioritized by up to <strong>{{ etaInfo.hashratePercentage | number : '1.1-1' }}%</strong> of miners.</small>
+                  <small class="form-text text-muted mb-2" i18n="accelerator.time-estimate-description">This will reduce your expected waiting time until the first confirmation to <strong><app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time></strong></small>
+                </ng-container>
+              </div>
+              <div class="col pie">
+                <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true"></app-active-acceleration-box>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <div class="fee-card">
+                    <div class="d-flex mb-0">
+                      <ng-container *ngFor="let option of maxRateOptions">
+                        <button type="button" class="btn btn-primary flex-grow-1 btn-border btn-sm feerate" [class]="{active: selectFeeRateIndex === option.index}" (click)="setUserBid(option)">
+                          <span class="fee">{{ option.fee + estimate.mempoolBaseFee + estimate.vsizeFee | number }} <span class="symbol" i18n="shared.sats">sats</span></span>
+                          <span class="rate">~<app-fee-rate [fee]="option.rate" rounding="1.0-0"></app-fee-rate></span>
+                        </button>
+                      </ng-container>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        
+            <h5>Summary</h5>
+            <div class="row">
+              <div class="col">
+                <table class="table table-borderless table-border table-dark table-background table-accelerator">
+                  <tbody>
+                    <!-- ESTIMATED FEE -->
+                    <ng-container *ngIf="showDetails">
+                      <tr class="group-first">
+                        <td class="item" i18n="accelerator.next-block-rate">Next block market rate</td>
+                        <td class="amt" style="font-size: 16px">
+                          {{ estimate.targetFeeRate | number : '1.0-0' }}
+                        </td>
+                        <td class="units"><span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
+                      </tr>
+                      <tr class="info">
+                        <td class="info">
+                          <i><small i18n="accelerator.estimated-extra-fee-required">Estimated extra fee required</small></i>
+                        </td>
+                        <td class="amt">
+                          {{ math.max(0, estimate.nextBlockFee - estimate.txSummary.effectiveFee) | number }}
+                        </td>
+                        <td class="units">
+                          <span class="symbol" i18n="shared.sats">sats</span>
+                          <span class="fiat ml-1"><app-fiat [value]="math.max(0, estimate.nextBlockFee - estimate.txSummary.effectiveFee)"></app-fiat></span>
+                        </td>
+                      </tr>
+        
+                      <!-- MEMPOOL BASE FEE -->
+                      <tr>
+                        <td class="item" i18n="accelerator.mempool-accelerator-fees">Mempool Accelerator™ fees</td>
+                      </tr>
+                      <tr class="info" [class.group-last]="!estimate.vsizeFee" [class.dashed-bottom]="!estimate.vsizeFee">
+                        <td class="info">
+                          <i><small i18n="accelerator.service-fee">Accelerator Service Fee</small></i>
+                        </td>
+                        <td class="amt">
+                          +{{ estimate.mempoolBaseFee | number }}
+                        </td>
+                        <td class="units">
+                          <span class="symbol" i18n="shared.sats">sats</span>
+                          <span class="fiat ml-1"><app-fiat [value]="estimate.mempoolBaseFee"></app-fiat></span>
+                        </td>
+                      </tr>
+                      <tr class="info group-last dashed-bottom" *ngIf="estimate.vsizeFee">
+                        <td class="info">
+                          <i><small i18n="accelerator.tx-size-surcharge">Transaction Size Surcharge</small></i>
+                        </td>
+                        <td class="amt">
+                          +{{ estimate.vsizeFee | number }}
+                        </td>
+                        <td class="units">
+                          <span class="symbol" i18n="shared.sats">sats</span>
+                          <span class="fiat ml-1"><app-fiat [value]="estimate.vsizeFee"></app-fiat></span>
+                        </td>
+                      </tr>
+                    </ng-container>
+
+                    
+                    <!-- NEXT BLOCK ESTIMATE -->
+                    <ng-container *ngIf="isLoggedIn()">
+                      <tr class="group-first">
+                        <td class="item">
+                          <b style="background-color: #5E35B1" class="p-1 pl-0" i18n="accelerator.estimated-cost">Estimated acceleration cost</b> ~{{ estimate.targetFeeRate | number : '1.0-0' }} sat/vB
+                        </td>
+                        <td class="amt">
+                          <span style="background-color: #5E35B1" class="p-1 pl-0">
+                            {{ estimate.cost + estimate.mempoolBaseFee + estimate.vsizeFee | number }}
+                          </span>
+                        </td>
+                        <td class="units">
+                          <span class="symbol" i18n="shared.sats">sats</span>
+                          <span class="fiat ml-1"><app-fiat [value]="estimate.cost + estimate.mempoolBaseFee + estimate.vsizeFee"></app-fiat></span>
+                        </td>
+                      </tr>
+                    </ng-container>
+
+                    <!-- MAX COST -->
+                    <ng-container>
+                      <tr class="group-first" [class.group-last]="!isLoggedIn() || estimate.userBalance >= cost">
+                        <td class="item">
+                          @if (isLoggedIn()) {
+                            <b style="background-color: var(--primary);" class="p-1 pl-0" i18n="accelerator.maximum-cost">Maximum acceleration cost</b>
+                          } @else {
+                            <b style="background-color: var(--primary);" class="p-1 pl-0" i18n="accelerator.cost">Acceleration cost</b>
+                          }
+                        </td>
+                        <td class="amt">
+                          <span style="background-color: var(--primary)" class="p-1 pl-0">
+                            {{ cost | number }}
+                          </span>
+                        </td>
+                        <td class="units">
+                          <span class="symbol" i18n="shared.sats">sats</span>
+                          <span class="fiat ml-1">
+                            <app-fiat [value]="cost" [colorClass]="isLoggedIn() && estimate.userBalance < cost ? 'red-color' : 'green-color'"></app-fiat>
+                          </span>
+                        </td>
+                      </tr>
+                    </ng-container>
+        
+                    <!-- USER BALANCE -->
+                    <ng-container *ngIf="isLoggedIn() && estimate.userBalance < cost">
+                      <tr class="group-first group-last dashed-top">
+                        <td class="item" i18n="accelerator.available-balance">Available balance</td>
+                        <td class="amt">
+                          {{ estimate.userBalance | number }}
+                        </td>
+                        <td class="units">
+                          <span class="symbol" i18n="shared.sats">sats</span>
+                          <span class="fiat ml-1">
+                            <app-fiat [value]="estimate.userBalance" [colorClass]="estimate.userBalance < cost ? 'red-color' : 'green-color'"></app-fiat>
+                          </span>
+                        </td>
+                      </tr>
+                    </ng-container>
+
+                    <tr class="group-first group-last" style="border-top: 1px dashed grey">
+                      <td class="item"></td>
+                      <td colspan="2">
+                        <div class="d-flex">
+                          <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" style="width: 200px" (click)="accelerate()">
+                            <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
+                            <span>Accelerate</span>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+      <ng-template #loadingEstimate>
+        <div class="skeleton-loader"></div>
+        <br>
+      </ng-template>
+    }
+    @else {
+      <!-- Show A/B CTAs -->
+      <div class="row mb-1">
+        <div class="col-sm">
+          <h1 style="font-size: larger;"><ng-content select="[slot='cta-title']"></ng-content><span class="default-slot">Accelerate your Bitcoin transaction?</span></h1>
+        </div>
+      </div>
+
+      <form>
+        <div class="row">
+          <div class="col-md">
+            <div class="form-group form-check mb-2">
+              <input type="radio" [checked]="choosenOption === 'wait'"  class="form-check-input" id="wait" name="accel" (change)="selectedOptionChanged($event)">
+              <label class="form-check-label d-flex flex-column" for="wait">
+                <span class="font-weight-bold">Wait</span>
+                @if (eta.blocks < 7) {
+                  <span style="color: rgb(186, 186, 186); font-size: 14px;">Confirmation expected <app-time kind="within" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time></span>
                 } @else {
-                  <span class="estimating">Calculating cost...</span>
+                  <span style="color: rgb(186, 186, 186); font-size: 14px;">
+                    <span>Confirmation expected within several hours</span>
+                  </span>
                 }
-              </span>
-            </label>
+              </label>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="form-group form-check mb-2">
+              <input type="radio" [checked]="choosenOption === 'accel'" class="form-check-input" id="accel" name="accel" (change)="selectedOptionChanged($event)">
+              <label class="form-check-label d-flex flex-column" for="accel">
+                <span class="font-weight-bold">Accelerate</span>
+                <span style="color: rgb(186, 186, 186); font-size: 14px;" *ngIf="(etaInfo$ | async) as etaInfo">Confirmation expected <app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time><br>
+                  @if (!calculating) {
+                    <app-fiat [value]="cost"></app-fiat>fee (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
+                  } @else {
+                    <span class="estimating">Calculating cost...</span>
+                  }
+                </span>
+              </label>
+            </div>
+          </div>
+          <div class="col-md pie d-none d-lg-flex" *ngIf="estimate && !forceMobile">
+            <small class="form-text text-muted mb-2" i18n="accelerator.hashrate-percentage-description" *ngIf="(etaInfo$ | async) as etaInfo">Your transaction will be prioritized by up to {{ etaInfo.hashratePercentage | number : '1.1-1' }}% of miners.</small>
+            <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true"></app-active-acceleration-box>
           </div>
         </div>
-        <div class="col-md pie d-none d-lg-flex" *ngIf="estimate && !isTracker">
-          <small class="form-text text-muted mb-2" i18n="accelerator.hashrate-percentage-description" *ngIf="(etaInfo$ | async) as etaInfo">Your transaction will be prioritized by up to {{ etaInfo.hashratePercentage | number : '1.1-1' }}% of miners.</small>
-          <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true"></app-active-acceleration-box>
+        <div class="row mt-2 mb-2" [style]="(choosenOption !== 'accel' || calculating) ? 'opacity: 0.25; pointer-events: none' : ''">
+          <div class="col-sm d-flex flex-row justify-content-center">
+            <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" style="width: 200px" (click)="enableCheckoutPage()">
+              <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
+              <span>Accelerate</span>
+            </button>
+          </div>
         </div>
-      </div>
-      <div class="row mt-2 mb-2" [style]="(choosenOption !== 'accel' || calculating) ? 'opacity: 0.25; pointer-events: none' : ''">
-        <div class="col-sm d-flex flex-row justify-content-center">
-          <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" style="width: 200px" (click)="enableCheckoutPage()">
-            <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
-            <span>Accelerate</span>
-          </button>
-        </div>
-      </div>
-    </form>
-  
+      </form>
+    }
   } @else if (step === 'paymentMethod') {
     <div class="row text-center">
       <div class="col-sm">
@@ -82,7 +322,7 @@
     <hr>
     <div class="row mt-2 mb-2 text-center">
       <div class="col-sm d-flex flex-column">
-        <button type="button" class="mt-1 btn btn-secondary btn-sm rounded-pill align-self-center" style="width: 200px" (click)="step = 'cta'">Go Back</button>
+        <button type="button" class="mt-1 btn btn-secondary btn-sm rounded-pill align-self-center" style="width: 200px" (click)="step = 'quote'">Go Back</button>
       </div>
     </div>
 

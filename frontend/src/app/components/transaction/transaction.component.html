@@ -84,17 +84,11 @@
 
       <div class="clearfix"></div>
 
-      @if (isLoggedIn()) {
-        <div class="box">
-          <app-accelerate-preview [tx]="tx" [miningStats]="miningStats" [scrollEvent]="scrollIntoAccelPreview" [showDetails]="showAccelerationDetails"></app-accelerate-preview>
-        </div>
-      } @else {
-        <ng-container *ngIf="(ETA$ | async) as eta;">
-          <app-accelerate-checkout *ngIf="(da$ | async) as da;" [cashappEnabled]="accelerationEligible" [tx]="tx" [eta]="eta" [miningStats]="miningStats" (close)="showAccelerationSummary = false" [scrollEvent]="scrollIntoAccelPreview" class="h-100 w-100">
-            <span slot="cta-title">Urgent transaction? Get it confirmed faster.</span>
-          </app-accelerate-checkout>
-        </ng-container>
-      }
+      <ng-container *ngIf="(ETA$ | async) as eta;">
+        <app-accelerate-checkout *ngIf="(da$ | async) as da;" [cashappEnabled]="accelerationEligible" [tx]="tx" [eta]="eta" [miningStats]="miningStats" (close)="showAccelerationSummary = false" [scrollEvent]="scrollIntoAccelPreview" class="h-100 w-100">
+          <span slot="cta-title">Urgent transaction? Get it confirmed faster.</span>
+        </app-accelerate-checkout>
+      </ng-container>
     </ng-container>
 
     <ng-template [ngIf]="showCpfpDetails">

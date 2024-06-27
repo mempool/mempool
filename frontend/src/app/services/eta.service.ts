@@ -5,7 +5,7 @@ import { MempoolBlock } from '../interfaces/websocket.interface';
 import { Transaction } from '../interfaces/electrs.interface';
 import { MiningService, MiningStats } from './mining.service';
 import { getUnacceleratedFeeRate } from '../shared/transaction.utils';
-import { AccelerationEstimate } from '../components/accelerate-preview/accelerate-preview.component';
+import { AccelerationEstimate } from '../components/accelerate-checkout/accelerate-checkout.component';
 import { Observable, combineLatest, map, of, share, shareReplay, tap } from 'rxjs';
 
 export interface ETA {

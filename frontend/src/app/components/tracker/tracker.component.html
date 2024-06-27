@@ -117,7 +117,7 @@
     <div class="bottom-panel">
       @if (showAccelerationSummary && !accelerationFlowCompleted) {
         <ng-container *ngIf="(ETA$ | async) as eta;">
-          <app-accelerate-checkout *ngIf="(da$ | async) as da;" [cashappEnabled]="accelerationEligible" [tx]="tx" [miningStats]="miningStats" [eta]="eta" [isTracker]="true" (close)="accelerationFlowCompleted = true" [scrollEvent]="scrollIntoAccelPreview" class="h-100 w-100"></app-accelerate-checkout>
+          <app-accelerate-checkout *ngIf="(da$ | async) as da;" [cashappEnabled]="accelerationEligible" [tx]="tx" [miningStats]="miningStats" [eta]="eta" [forceMobile]="true" (close)="accelerationFlowCompleted = true" [scrollEvent]="scrollIntoAccelPreview" class="h-100 w-100"></app-accelerate-checkout>
         </ng-container>
       } @else {
         @if (tx?.acceleration && !tx.status?.confirmed) {

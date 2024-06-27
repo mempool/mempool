@@ -1,13 +1,42 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, ChangeDetectorRef, SimpleChanges } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, ChangeDetectorRef, SimpleChanges, HostListener } from '@angular/core';
 import { Subscription, tap, of, catchError, Observable } from 'rxjs';
 import { ServicesApiServices } from '../../services/services-api.service';
 import { nextRoundNumber } from '../../shared/common.utils';
 import { StateService } from '../../services/state.service';
 import { AudioService } from '../../services/audio.service';
-import { AccelerationEstimate } from '../accelerate-preview/accelerate-preview.component';
 import { ETA, EtaService } from '../../services/eta.service';
 import { Transaction } from '../../interfaces/electrs.interface';
 import { MiningStats } from '../../services/mining.service';
+import { StorageService } from '../../services/storage.service';
+
+export type AccelerationEstimate = {
+  hasAccess: boolean;
+  txSummary: TxSummary;
+  nextBlockFee: number;
+  targetFeeRate: number;
+  userBalance: number;
+  enoughBalance: boolean;
+  cost: number;
+  mempoolBaseFee: number;
+  vsizeFee: number;
+  pools: number[]
+}
+export type TxSummary = {
+  txid: string; // txid of the current transaction
+  effectiveVsize: number; // Total vsize of the dependency tree
+  effectiveFee: number;  // Total fee of the dependency tree in sats
+  ancestorCount: number; // Number of ancestors
+}
+
+export interface RateOption {
+  fee: number;
+  rate: number;
+  index: number;
+}
+
+export const MIN_BID_RATIO = 1;
+export const DEFAULT_BID_RATIO = 2;
+export const MAX_BID_RATIO = 4;
 
 @Component({
   selector: 'app-accelerate-checkout',
@@ -20,24 +49,43 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   @Input() eta: ETA;
   @Input() scrollEvent: boolean;
   @Input() cashappEnabled: boolean;
-  @Input() isTracker: boolean = false;
+  @Input() showDetails: boolean;
+  @Input() advancedEnabled: boolean = false;
+  @Input() forceMobile: boolean = false;
+  @Output() changeMode = new EventEmitter<boolean>();
   @Output() close = new EventEmitter<null>();
 
   calculating = true;
   choosenOption: 'wait' | 'accel';
   error = '';
+  math = Math;
+  isMobile: boolean = window.innerWidth <= 767.98;
 
-  step: 'paymentMethod' | 'cta' | 'checkout' | 'processing' = 'cta';
+  step: 'quote' | 'paymentMethod' | 'checkout' | 'processing' = 'quote';
+  simpleMode: boolean = true;
   paymentMethod: 'cashapp' | 'btcpay';
+
+  user: any = undefined;
 
   // accelerator stuff
   square: { appId: string, locationId: string};
   accelerationUUID: string;
+  accelerationSubscription: Subscription;
+  difficultySubscription: Subscription;
   estimateSubscription: Subscription;
   estimate: AccelerationEstimate;
   maxBidBoost: number; // sats
   cost: number; // sats
   etaInfo$: Observable<{ hashratePercentage: number, ETA: number, acceleratedETA: number }>;
+  showSuccess = false;
+  hasAncestors: boolean = false;
+  minExtraCost = 0;
+  minBidAllowed = 0;
+  maxBidAllowed = 0;
+  defaultBid = 0;
+  userBid = 0;
+  selectFeeRateIndex = 1;
+  maxRateOptions: RateOption[] = [];
 
   // square
   loadingCashapp = false;
@@ -52,8 +100,9 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   invoice = undefined;
 
   constructor(
+    public stateService: StateService,
     private servicesApiService: ServicesApiServices,
-    private stateService: StateService,
+    private storageService: StorageService,
     private etaService: EtaService,
     private audioService: AudioService,
     private cd: ChangeDetectorRef
@@ -62,6 +111,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.user = this.storageService.getAuth()?.user ?? null;
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('cash_request_id')) { // Redirected from cashapp
       this.insertSquare();
@@ -74,7 +124,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         appId: ids.squareAppId,
         locationId: ids.squareLocationId
       };
-      if (this.step === 'cta') {
+      if (this.step === 'quote') {
         this.fetchEstimate();
       }
     });
@@ -95,7 +145,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   /**
   * Scroll to element id with or without setTimeout
   */
-  scrollToElementWithTimeout(id: string, position: ScrollLogicalPosition, timeout: number = 1000) {
+  scrollToElementWithTimeout(id: string, position: ScrollLogicalPosition, timeout: number = 1000): void {
     setTimeout(() => {
       this.scrollToElement(id, position);
     }, timeout);
@@ -130,22 +180,98 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             this.error = `cannot_accelerate_tx`;
             return;
           }
+          if (this.estimate.hasAccess === true && this.estimate.userBalance <= 0) {
+            if (this.isLoggedIn()) {
+              this.error = `not_enough_balance`;
+            }
+          }
+          this.hasAncestors = this.estimate.txSummary.ancestorCount > 1;
+          this.etaInfo$ = this.etaService.getProjectedEtaObservable(this.estimate, this.miningStats);
+
           // Make min extra fee at least 50% of the current tx fee
-          const minExtraBoost = nextRoundNumber(Math.max(this.estimate.cost * 2, this.estimate.txSummary.effectiveFee));
-          const DEFAULT_BID_RATIO = 1.5;
-          this.maxBidBoost = minExtraBoost * DEFAULT_BID_RATIO;
-          this.cost = this.maxBidBoost + this.estimate.mempoolBaseFee + this.estimate.vsizeFee;
-          this.etaInfo$ = this.etaService.getProjectedEtaObservable(this.estimate);
+          this.minExtraCost = nextRoundNumber(Math.max(this.estimate.cost * 2, this.estimate.txSummary.effectiveFee));
+
+          this.maxRateOptions = [1, 2, 4].map((multiplier, index) => {
+            return {
+              fee: this.minExtraCost * multiplier,
+              rate: (this.estimate.txSummary.effectiveFee + (this.minExtraCost * multiplier)) / this.estimate.txSummary.effectiveVsize,
+              index,
+            };
+          });
+
+          this.minBidAllowed = this.minExtraCost * MIN_BID_RATIO;
+          this.defaultBid = this.minExtraCost * DEFAULT_BID_RATIO;
+          this.maxBidAllowed = this.minExtraCost * MAX_BID_RATIO;
+
+          this.userBid = this.defaultBid;
+          if (this.userBid < this.minBidAllowed) {
+            this.userBid = this.minBidAllowed;
+          } else if (this.userBid > this.maxBidAllowed) {
+            this.userBid = this.maxBidAllowed;
+          }
+          this.cost = this.userBid + this.estimate.mempoolBaseFee + this.estimate.vsizeFee;
+
           this.calculating = false;
           this.cd.markForCheck();
         }
       }),
 
       catchError((response) => {
+        this.estimate = undefined;
         this.error = `cannot_accelerate_tx`;
+        this.estimateSubscription.unsubscribe();
         return of(null);
       })
     ).subscribe();
+  }
+
+  /**
+   * User changed his bid
+   */
+  setUserBid({ fee, index }: { fee: number, index: number}): void {
+    if (this.estimate) {
+      this.selectFeeRateIndex = index;
+      this.userBid = Math.max(0, fee);
+      this.cost = this.userBid + this.estimate.mempoolBaseFee + this.estimate.vsizeFee;
+    }
+  }
+
+  /**
+   * Advanced mode acceleration button clicked
+   */
+  accelerate(): void {
+    if (this.isLoggedIn()) {
+      this.accelerateWithMempoolAccount();
+    } else {
+      this.step = 'paymentMethod';
+    }
+  }
+
+  /**
+   * Account-based acceleration request
+   */
+  accelerateWithMempoolAccount(): void {
+    if (this.accelerationSubscription) {
+      this.accelerationSubscription.unsubscribe();
+    }
+    this.accelerationSubscription = this.servicesApiService.accelerate$(
+      this.tx.txid,
+      this.userBid,
+      this.accelerationUUID
+    ).subscribe({
+      next: () => {
+        this.audioService.playSound('ascend-chime-cartoon');
+        this.showSuccess = true;
+        this.estimateSubscription.unsubscribe();
+      },
+      error: (response) => {
+        if (response.status === 403 && response.error === 'not_available') {
+          this.error = 'waitlisted';
+        } else {
+          this.error = response.error;
+        }
+      }
+    });
   }
 
   /**
@@ -320,5 +446,15 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.cd.markForCheck();
       this.close.emit();
     }, timeout);
+  }
+
+  isLoggedIn(): boolean {
+    const auth = this.storageService.getAuth();
+    return auth !== null;
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(): void {
+    this.isMobile = window.innerWidth <= 767.98;
   }
 }

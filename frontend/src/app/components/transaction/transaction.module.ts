@@ -5,9 +5,8 @@ import { TransactionComponent } from './transaction.component';
 import { SharedModule } from '../../shared/shared.module';
 import { TxBowtieModule } from '../tx-bowtie-graph/tx-bowtie.module';
 import { GraphsModule } from '../../graphs/graphs.module';
-import { AcceleratePreviewComponent } from '../accelerate-preview/accelerate-preview.component';
 import { AccelerateCheckout } from '../accelerate-checkout/accelerate-checkout.component';
-import { AccelerateFeeGraphComponent } from '../accelerate-preview/accelerate-fee-graph.component';
+import { AccelerateFeeGraphComponent } from '../accelerate-checkout/accelerate-fee-graph.component';
 import { TrackerComponent } from '../tracker/tracker.component';
 import { TrackerBarComponent } from '../tracker/tracker-bar.component';
 
@@ -43,7 +42,6 @@ export class TransactionRoutingModule { }
     TransactionComponent,
     TrackerComponent,
     TrackerBarComponent,
-    AcceleratePreviewComponent,
     AccelerateCheckout,
     AccelerateFeeGraphComponent,
   ]
