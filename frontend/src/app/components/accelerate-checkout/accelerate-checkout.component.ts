@@ -9,6 +9,8 @@ import { Transaction } from '../../interfaces/electrs.interface';
 import { MiningStats } from '../../services/mining.service';
 import { StorageService } from '../../services/storage.service';
 
+export type PaymentMethod = 'balance' | 'bitcoin' | 'cashapp';
+
 export type AccelerationEstimate = {
   hasAccess: boolean;
   txSummary: TxSummary;
@@ -19,7 +21,8 @@ export type AccelerationEstimate = {
   cost: number;
   mempoolBaseFee: number;
   vsizeFee: number;
-  pools: number[]
+  pools: number[];
+  availablePaymentMethods: PaymentMethod[];
 }
 export type TxSummary = {
   txid: string; // txid of the current transaction
