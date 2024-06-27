@@ -140,6 +140,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   showAccelerationSummary = false;
   showAccelerationDetails = false;
   scrollIntoAccelPreview = false;
+  accelerationEligible = false;
   auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
 
   @ViewChild('graphContainer')
@@ -397,6 +398,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           } else if ((this.tx?.acceleration && txPosition.position.acceleratedBy)) {
             this.tx.acceleratedBy = txPosition.position.acceleratedBy;
           }
+          this.accelerationEligible = txPosition?.position?.block > 0 && this.tx?.weight < 4000;
         }
       } else {
         this.mempoolPosition = null;
@@ -908,6 +910,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }, 1);
     }
+  }
+
+  isLoggedIn(): boolean {
+    const auth = this.storageService.getAuth();
+    return auth !== null;
   }
 
   ngOnDestroy() {

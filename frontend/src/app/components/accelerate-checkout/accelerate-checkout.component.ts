@@ -5,7 +5,9 @@ import { nextRoundNumber } from '../../shared/common.utils';
 import { StateService } from '../../services/state.service';
 import { AudioService } from '../../services/audio.service';
 import { AccelerationEstimate } from '../accelerate-preview/accelerate-preview.component';
-import { EtaService } from '../../services/eta.service';
+import { ETA, EtaService } from '../../services/eta.service';
+import { Transaction } from '../../interfaces/electrs.interface';
+import { MiningStats } from '../../services/mining.service';
 
 @Component({
   selector: 'app-accelerate-checkout',
@@ -13,10 +15,12 @@ import { EtaService } from '../../services/eta.service';
   styleUrls: ['./accelerate-checkout.component.scss']
 })
 export class AccelerateCheckout implements OnInit, OnDestroy {
-  @Input() eta: number | null = null;
-  @Input() txid: string = '70c18d76cdb285a1b5bd87fdaae165880afa189809c30b4083ff7c0e69ee09ad';
+  @Input() tx: Transaction;
+  @Input() miningStats: MiningStats;
+  @Input() eta: ETA;
   @Input() scrollEvent: boolean;
   @Input() cashappEnabled: boolean;
+  @Input() isTracker: boolean = false;
   @Output() close = new EventEmitter<null>();
 
   calculating = true;
@@ -116,7 +120,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.estimateSubscription.unsubscribe();
     }
     this.calculating = true;
-    this.estimateSubscription = this.servicesApiService.estimate$(this.txid).pipe(
+    this.estimateSubscription = this.servicesApiService.estimate$(this.tx.txid).pipe(
       tap((response) => {
         if (response.status === 204) {
           this.error = `cannot_accelerate_tx`;
@@ -213,13 +217,13 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             amount: costUSD.toString(),
             label: 'Total',
             pending: true,
-            productUrl: `${redirectHostname}/tracker/${this.txid}`,
+            productUrl: `${redirectHostname}/tracker/${this.tx.txid}`,
           },
           button: { shape: 'semiround', size: 'small', theme: 'light'}
         });
         this.cashAppPay = await this.payments.cashAppPay(paymentRequest, {
-          redirectURL: `${redirectHostname}/tracker/${this.txid}`,
-          referenceId: `accelerator-${this.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
+          redirectURL: `${redirectHostname}/tracker/${this.tx.txid}`,
+          referenceId: `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
           button: { shape: 'semiround', size: 'small', theme: 'light'}
         });
 
@@ -235,7 +239,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             this.error = error;
           } else if (tokenResult.status === 'OK') {
             that.servicesApiService.accelerateWithCashApp$(
-              that.txid,
+              that.tx.txid,
               tokenResult.token,
               tokenResult.details.cashAppPay.cashtag,
               tokenResult.details.cashAppPay.referenceId,
@@ -277,7 +281,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
    * BTCPay
    */
   async requestBTCPayInvoice() {
-    this.servicesApiService.generateBTCPayAcceleratorInvoice$(this.txid).subscribe({
+    this.servicesApiService.generateBTCPayAcceleratorInvoice$(this.tx.txid).subscribe({
       next: (response) => {
         this.invoice = response;
         this.cd.markForCheck();

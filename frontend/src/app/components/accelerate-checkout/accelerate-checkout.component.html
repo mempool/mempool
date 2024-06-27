@@ -1,4 +1,4 @@
-<div class="container-md card w-100" style="padding: 1em; background: var(--box-bg)" id=acceleratePreviewAnchor>
+<div class="box card w-100" style="padding: 1em; background: var(--box-bg)" id=acceleratePreviewAnchor>
 
   @if (error) {
     <div class="mt-2">
@@ -10,18 +10,33 @@
     <!-- Show A/B CTAs -->
     <div class="row mb-1">
       <div class="col-sm">
-        <h1 style="font-size: larger;">Accelerate your Bitcoin transaction?</h1>
+        <h1 style="font-size: larger;"><ng-content select="[slot='cta-title']"></ng-content><span class="default-slot">Accelerate your Bitcoin transaction?</span></h1>
       </div>
     </div>
 
     <form>
-      <div class="row">
-        <div class="col-sm">
+      <div class="row" *ngIf="(etaInfo$ | async) as etaInfo">
+        <div class="col-md">
+          <div class="form-group form-check mb-2">
+            <input type="radio" class="form-check-input" id="wait" name="accelerate" (change)="selectedOptionChanged($event)">
+            <label class="form-check-label d-flex flex-column" for="wait">
+              <span class="font-weight-bold">Wait</span>
+              @if (eta.blocks < 7) {
+                <span style="color: rgb(186, 186, 186); font-size: 14px;">Confirmation expected <app-time kind="within" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time></span>
+              } @else {
+                <span style="color: rgb(186, 186, 186); font-size: 14px;">
+                  <span>Confirmation expected within several hours</span>
+                </span>
+              }
+            </label>
+          </div>
+        </div>
+        <div class="col-md">
           <div class="form-group form-check mb-2">
             <input type="radio" class="form-check-input" id="accelerate" name="accelerate" (change)="selectedOptionChanged($event)">
             <label class="form-check-label d-flex flex-column" for="accelerate">
               <span class="font-weight-bold">Accelerate</span>
-              <span style="color: rgb(186, 186, 186); font-size: 14px;" *ngIf="(etaInfo$ | async) as etaInfo">Confirmation expected <app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time><br>
+              <span style="color: rgb(186, 186, 186); font-size: 14px;">Confirmation expected <app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time><br>
                 @if (!calculating) {
                   <app-fiat [value]="cost"></app-fiat>fee (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
                 } @else {
@@ -31,22 +46,9 @@
             </label>
           </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="col-sm">
-          <div class="form-group form-check mb-2">
-            <input type="radio" class="form-check-input" id="wait" name="accelerate" (change)="selectedOptionChanged($event)">
-            <label class="form-check-label d-flex flex-column" for="wait">
-              <span class="font-weight-bold">Wait</span>
-              @if (eta) {
-                <span style="color: rgb(186, 186, 186); font-size: 14px;">Confirmation expected <app-time kind="within" [time]="eta" [fastRender]="false" [fixedRender]="true"></app-time></span>
-              } @else {
-                <span style="color: rgb(186, 186, 186); font-size: 14px;">
-                  <span>Settlement expected within several hours</span>
-                </span>
-              }
-            </label>
-          </div>
+        <div class="col-md pie d-none d-lg-flex" *ngIf="estimate && !isTracker">
+          <small class="form-text text-muted mb-2" i18n="accelerator.hashrate-percentage-description">Your transaction will be prioritized by up to {{ etaInfo.hashratePercentage | number : '1.1-1' }}% of miners.</small>
+          <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true"></app-active-acceleration-box>
         </div>
       </div>
       <div class="row mt-2 mb-2" [style]="(choosenOption === 'wait' || calculating) ? 'opacity: 0.25; pointer-events: none' : ''">
@@ -62,7 +64,7 @@
   } @else if (step === 'paymentMethod') {
     <div class="row mb-md-1 text-center">
       <div class="col-sm">
-        <h1 style="font-size: larger;">Select your payment method</h1>
+        <h1 style="font-size: larger;"><ng-content select="[slot='payment-title']"></ng-content><span class="default-slot">Select your payment method</span></h1>
       </div>
     </div>
     <div class="pt-2 d-flex justify-content-around">
@@ -76,14 +78,14 @@
     <!-- Show checkout page -->
     <div class="row mb-md-1 text-center">
       <div class="col-sm" id="confirm-payment-title">
-        <h1 style="font-size: larger;">Confirm your payment</h1>
+        <h1 style="font-size: larger;"><ng-content select="[slot='checkout-title']"></ng-content><span class="default-slot">Confirm your payment</span></h1>
       </div>
     </div>
 
     <div class="row text-center">
       <div class="col-sm">
         <div class="form-group w-100" style="font-size: 14px">
-          Payment to mempool.space for acceleration of txid <a [routerLink]="'/tx/' + txid" target="_blank">{{ txid.substr(0, 10) }}..{{ txid.substr(-10) }}</a>
+          Payment to mempool.space for acceleration of txid <a [routerLink]="'/tx/' + tx.txid" target="_blank">{{ tx.txid.substr(0, 10) }}..{{ tx.txid.substr(-10) }}</a>
         </div>
       </div>
     </div>
@@ -134,7 +136,7 @@
   @else if (step === 'processing') {
     <div class="row mb-1 text-center">
       <div class="col-sm">
-        <h1 style="font-size: larger;">Confirming your payment</h1>
+        <h1 style="font-size: larger;"><ng-content select="[slot='processing-title']"></ng-content><span class="default-slot">Confirming your payment</span></h1>
       </div>
     </div>
 
