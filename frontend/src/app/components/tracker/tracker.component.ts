@@ -116,7 +116,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
 
   hasEffectiveFeeRate: boolean;
   accelerateCtaType: 'alert' | 'button' = 'button';
-  acceleratorAvailable: boolean = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
+  acceleratorAvailable: boolean = this.stateService.env.ACCELERATOR && this.stateService.network === '';
   accelerationEligible: boolean = false;
   showAccelerationSummary = false;
   accelerationFlowCompleted = false;
