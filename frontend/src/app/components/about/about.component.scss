@@ -156,6 +156,12 @@
         }
         img, svg {
           margin: 40px 29px 10px;
+          &.image.coldcard {
+            border-radius: 0;
+            width: auto;
+            max-height: 50px;
+            margin: 40px 29px 14px 29px;
+          }
         }
       }
     }
