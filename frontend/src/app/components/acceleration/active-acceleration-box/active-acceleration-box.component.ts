@@ -66,10 +66,11 @@ export class ActiveAccelerationBox implements OnChanges {
     const totalAcceleratedHashrate = acceleratingPools.reduce((total, pool) => total + pools[pool].lastEstimatedHashrate, 0);
     acceleratingPools.forEach((poolId, index) => {
       const pool = pools[poolId];
+      const poolShare = ((pool.lastEstimatedHashrate / this.miningStats.lastEstimatedHashrate) * 100).toFixed(1);
       data.push(getDataItem(
         pool.lastEstimatedHashrate,
         toRGB(lighten({ r: 147, g: 57, b: 244 }, index * .08)),
-        `${((pool.lastEstimatedHashrate / this.miningStats.lastEstimatedHashrate) * 100).toFixed(1)}% ${pool.name} accelerating`,
+        `<b style="color: white">${pool.name} (${poolShare}%)</b>`,
         true,
       ) as PieSeriesOption);
     })
@@ -78,7 +79,7 @@ export class ActiveAccelerationBox implements OnChanges {
     data.push(getDataItem(
       (this.miningStats.lastEstimatedHashrate - totalAcceleratedHashrate),
       'rgba(127, 127, 127, 0.3)',
-      `${notAcceleratedByPercentage} not accelerating`,
+      `not accelerating (${notAcceleratedByPercentage})`,
       false,
     ) as PieSeriesOption);
 
