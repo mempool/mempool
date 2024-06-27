@@ -29,6 +29,7 @@ const MempoolErrors = {
   'faucet_address_not_allowed': `You cannot use this address`,
   'faucet_below_minimum': `Requested amount is too small`,
   'faucet_above_maximum': `Requested amount is too high`,
+  'payment_method_not_allowed': `You are not allowed to use this payment method`,
 } as { [error: string]: string };
 
 export function isMempoolError(error: string) {
