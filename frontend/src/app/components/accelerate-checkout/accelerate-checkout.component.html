@@ -15,10 +15,10 @@
     </div>
 
     <form>
-      <div class="row" *ngIf="(etaInfo$ | async) as etaInfo">
+      <div class="row">
         <div class="col-md">
           <div class="form-group form-check mb-2">
-            <input type="radio" class="form-check-input" id="wait" name="accelerate" (change)="selectedOptionChanged($event)">
+            <input type="radio" [checked]="choosenOption === 'wait'"  class="form-check-input" id="wait" name="accelerate" (change)="selectedOptionChanged($event)">
             <label class="form-check-label d-flex flex-column" for="wait">
               <span class="font-weight-bold">Wait</span>
               @if (eta.blocks < 7) {
@@ -33,10 +33,10 @@
         </div>
         <div class="col-md">
           <div class="form-group form-check mb-2">
-            <input type="radio" class="form-check-input" id="accelerate" name="accelerate" (change)="selectedOptionChanged($event)">
+            <input type="radio" [checked]="choosenOption === 'accelerate'" class="form-check-input" id="accelerate" name="accelerate" (change)="selectedOptionChanged($event)">
             <label class="form-check-label d-flex flex-column" for="accelerate">
               <span class="font-weight-bold">Accelerate</span>
-              <span style="color: rgb(186, 186, 186); font-size: 14px;">Confirmation expected <app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time><br>
+              <span style="color: rgb(186, 186, 186); font-size: 14px;" *ngIf="(etaInfo$ | async) as etaInfo">Confirmation expected <app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time><br>
                 @if (!calculating) {
                   <app-fiat [value]="cost"></app-fiat>fee (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
                 } @else {
@@ -47,11 +47,11 @@
           </div>
         </div>
         <div class="col-md pie d-none d-lg-flex" *ngIf="estimate && !isTracker">
-          <small class="form-text text-muted mb-2" i18n="accelerator.hashrate-percentage-description">Your transaction will be prioritized by up to {{ etaInfo.hashratePercentage | number : '1.1-1' }}% of miners.</small>
+          <small class="form-text text-muted mb-2" i18n="accelerator.hashrate-percentage-description" *ngIf="(etaInfo$ | async) as etaInfo">Your transaction will be prioritized by up to {{ etaInfo.hashratePercentage | number : '1.1-1' }}% of miners.</small>
           <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true"></app-active-acceleration-box>
         </div>
       </div>
-      <div class="row mt-2 mb-2" [style]="(choosenOption === 'wait' || calculating) ? 'opacity: 0.25; pointer-events: none' : ''">
+      <div class="row mt-2 mb-2" [style]="(choosenOption !== 'accelerate' || calculating) ? 'opacity: 0.25; pointer-events: none' : ''">
         <div class="col-sm d-flex flex-row justify-content-center">
           <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" style="width: 200px" (click)="enableCheckoutPage()">
             <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
@@ -62,16 +62,28 @@
     </form>
   
   } @else if (step === 'paymentMethod') {
-    <div class="row mb-md-1 text-center">
+    <div class="row text-center">
       <div class="col-sm">
-        <h1 style="font-size: larger;"><ng-content select="[slot='payment-title']"></ng-content><span class="default-slot">Select your payment method</span></h1>
+        <h1 class="mb-2" style="font-size: larger;"><ng-content select="[slot='payment-title']"></ng-content><span class="default-slot">Select your payment method</span></h1>
       </div>
     </div>
-    <div class="pt-2 d-flex justify-content-around">
+    <div class="row text-center">
+      <div class="col-sm">
+        <app-fiat [value]="cost"></app-fiat> (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
+      </div>
+    </div>
+    <div class="pt-2 d-flex justify-content-center position-relative">
       @if (cashappEnabled) {
-        <img class="paymentMethod" src="/resources/cash-app.svg" height=55 (click)="selectPaymentMethod('cashapp')">
+        <img class="paymentMethod mx-2" src="/resources/cash-app.svg" height=55 (click)="selectPaymentMethod('cashapp')">
       }
-      <img class="paymentMethod" src="/resources/btcpay.svg" height=55 (click)="selectPaymentMethod('btcpay')">
+      <img class="paymentMethod mx-2" src="/resources/btcpay.svg" height=55 (click)="selectPaymentMethod('btcpay')">
+    </div>
+
+    <hr>
+    <div class="row mt-2 mb-2 text-center">
+      <div class="col-sm d-flex flex-column">
+        <button type="button" class="mt-1 btn btn-secondary btn-sm rounded-pill align-self-center" style="width: 200px" (click)="step = 'cta'">Go Back</button>
+      </div>
     </div>
 
   } @else if (step === 'checkout') {
@@ -127,8 +139,7 @@
     <hr>
     <div class="row mt-2 mb-2 text-center">
       <div class="col-sm d-flex flex-column">
-        <small>Changed your mind?</small>
-        <button type="button" class="mt-1 btn btn-secondary btn-sm rounded-pill align-self-center" style="width: 200px" (click)="step = 'cta'">Go Back</button>
+        <button type="button" class="mt-1 btn btn-secondary btn-sm rounded-pill align-self-center" style="width: 200px" (click)="step = 'paymentMethod'">Go Back</button>
       </div>
     </div>
   }

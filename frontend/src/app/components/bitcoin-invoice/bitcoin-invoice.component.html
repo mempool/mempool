@@ -46,7 +46,7 @@
 
     </ng-template>
 
-    <ng-template [ngIf]="paymentForm.get('method')?.value === 'lightning' && invoice">
+    <ng-template [ngIf]="paymentForm.get('method')?.value === 'lightning' && invoice && invoice.addresses.BTC_LightningLike">
 
         <div class="qr-wrapper">
           <a [href]="bypassSecurityTrustUrl('lightning:' + invoice.addresses.BTC_LightningLike)" target="_blank">

@@ -6,7 +6,7 @@ import { Transaction } from '../interfaces/electrs.interface';
 import { MiningService, MiningStats } from './mining.service';
 import { getUnacceleratedFeeRate } from '../shared/transaction.utils';
 import { AccelerationEstimate } from '../components/accelerate-preview/accelerate-preview.component';
-import { Observable, combineLatest, map, of } from 'rxjs';
+import { Observable, combineLatest, map, of, share, shareReplay, tap } from 'rxjs';
 
 export interface ETA {
   now: number, // time at which calculation performed
@@ -61,7 +61,8 @@ export class EtaService {
             { block: 0, hashrateShare: acceleratingHashrateFraction },
           ], da).time,
         };
-      })
+      }),
+      shareReplay()
     );
   }
 
