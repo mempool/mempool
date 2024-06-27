@@ -10,6 +10,11 @@ import { AccelerateFeeGraphComponent } from '../accelerate-preview/accelerate-fe
 
 const routes: Routes = [
   {
+    path: '',
+    redirectTo: '/',
+    pathMatch: 'full',
+  },
+  {
     path: ':id',
     component: TransactionComponent,
     data: {
