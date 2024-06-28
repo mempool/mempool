@@ -284,7 +284,7 @@ yarn add @mempool/liquid.js`;
     const headersString = code.headers ? ` -H "${code.headers}"` : ``;
     
     if (this.env.BASE_MODULE === 'mempool') {
-      if (this.network === 'main' || this.network === '') {
+      if (this.network === 'main' || this.network === '' || this.network === this.env.ROOT_NETWORK) {
         if (this.method === 'POST') {
           return `curl${headersString} -X POST -sSLd "${text}"`;
         }
@@ -296,7 +296,7 @@ yarn add @mempool/liquid.js`;
       return `curl${headersString} -sSL "${this.hostname}/${this.network}${text}"`;
     } else if (this.env.BASE_MODULE === 'liquid') {
       if (this.method === 'POST') {
-        if (this.network !== 'liquid') {
+        if (this.network !== 'liquid' || this.network === this.env.ROOT_NETWORK) {
           text = text.replace('/api', `/${this.network}/api`);
         }
         return `curl${headersString} -X POST -sSLd "${text}"`;
