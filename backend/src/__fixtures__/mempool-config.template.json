@@ -1,4 +1,14 @@
 {
+  "NETWORKS": {
+    "TESTNET": {
+      "ENABLED": true,
+      "WEIGHT": "__NETWORKS_TESTNET_WEIGHT__"
+    },
+    "MAINNET": {
+      "ENABLED": true,
+      "WEIGHT": "__NETWORKS_MAINNET_WEIGHT__"
+    }
+  },
   "MEMPOOL": {
     "ENABLED": true,
     "OFFICIAL": false,

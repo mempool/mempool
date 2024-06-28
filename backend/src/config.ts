@@ -160,6 +160,16 @@ interface IConfig {
     PAID: boolean;
     API_KEY: string;
   },
+  NETWORKS: {
+    MAINNET: {
+      ENABLED: boolean;
+      WEIGHT: 'foo';
+    },
+    TESTNET: {
+      ENABLED: boolean;
+      WEIGHT: 'bar'
+    }
+  };
 }
 
 const defaults: IConfig = {
@@ -320,6 +330,16 @@ const defaults: IConfig = {
     'PAID': false,
     'API_KEY': '',
   },
+  'NETWORKS': {
+    'MAINNET': {
+      'ENABLED': true,
+      'WEIGHT': 'foo',
+    },
+    'TESTNET': {
+      'ENABLED': false,
+      'WEIGHT': 'bar'
+    }
+  }
 };
 
 class Config implements IConfig {
@@ -341,6 +361,7 @@ class Config implements IConfig {
   MEMPOOL_SERVICES: IConfig['MEMPOOL_SERVICES'];
   REDIS: IConfig['REDIS'];
   FIAT_PRICE: IConfig['FIAT_PRICE'];
+  NETWORKS: IConfig['NETWORKS'];
 
   constructor() {
     const configs = this.merge(configFromFile, defaults);
@@ -362,6 +383,7 @@ class Config implements IConfig {
     this.MEMPOOL_SERVICES = configs.MEMPOOL_SERVICES;
     this.REDIS = configs.REDIS;
     this.FIAT_PRICE = configs.FIAT_PRICE;
+    this.NETWORKS = configs.NETWORKS;
   }
 
   merge = (...objects: object[]): IConfig => {

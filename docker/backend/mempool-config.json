@@ -155,5 +155,15 @@
     "ENABLED": __FIAT_PRICE_ENABLED__,
     "PAID": __FIAT_PRICE_PAID__,
     "API_KEY": "__FIAT_PRICE_API_KEY__"
+  },
+  "NETWORKS": {
+    "MAINNET": {
+      "ENABLED": __NETWORKS_MAINNET_ENABLED__,
+      "WEIGHT": "__NETWORKS_MAINNET_WEIGHT__,"
+    },
+    "TESTNET": {
+      "ENABLED": __NETWORKS_TESTNET_ENABLED__,
+      "WEIGHT": "__NETWORKS_TESTNET_WEIGHT__"
+    }
   }
 }

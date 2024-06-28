@@ -157,6 +157,17 @@ describe('Mempool Backend Config', () => {
         PAID: false,
         API_KEY: '',
       });
+
+      expect(config.NETWORKS).toStrictEqual({
+        MAINNET: {
+          ENABLED: true,
+          WEIGHT: 'foo'
+        },
+        TESTNET: {
+          ENABLED: false,
+          WEIGHT: 'bar'
+        }
+      })
     });
   });
 
@@ -190,6 +201,8 @@ describe('Mempool Backend Config', () => {
       expect(config.MEMPOOL_SERVICES).toStrictEqual(fixture.MEMPOOL_SERVICES);
 
       expect(config.REDIS).toStrictEqual(fixture.REDIS);
+      
+      expect(config.NETWORKS).toStrictEqual(fixture.NETWORKS);
     });
   });
 
@@ -197,6 +210,22 @@ describe('Mempool Backend Config', () => {
     jest.isolateModules(() => {
       const startSh = fs.readFileSync(`${__dirname}/../../../docker/backend/start.sh`, 'utf-8');
       const fixture = JSON.parse(fs.readFileSync(`${__dirname}/../__fixtures__/mempool-config.template.json`, 'utf8'));
+      
+      function generateKeys(obj, prefix = '') {
+        let keys: string[] = [];
+      
+        for (const key in obj) {
+          if (obj.hasOwnProperty(key)) {
+            const newPrefix = prefix ? `${prefix}_${key}` : key;
+            if (typeof obj[key] === 'object' && obj[key] !== null) {
+              keys = keys.concat(generateKeys(obj[key], newPrefix));
+            } else {
+              keys.push(`${newPrefix}`);
+            }
+          }
+        }
+        return keys;
+      }
 
       function parseJson(jsonObj, root?) {
         for (const [key, value] of Object.entries(jsonObj)) {
@@ -205,6 +234,31 @@ describe('Mempool Backend Config', () => {
             if (process.env.CI) {
               console.log('skipping check for MEMPOOL_HTTP_PORT');
             }
+            continue;
+          }
+
+          if (root === 'NETWORKS') {
+            const keys = generateKeys(value);
+            keys.forEach(item => {
+              const replaceStr = `__${root}_${key}_${item}__`;
+              const envVarStr = `${root}_${key}_${item}`;
+
+              let defaultEntry = replaceStr + '=' + '\\${' + envVarStr + ':=(.*)' + '}';
+              if (process.env.CI) {
+               console.log(`looking for ${defaultEntry} in the start.sh script`);
+              }
+
+             const re = new RegExp(defaultEntry);
+             expect(startSh).toMatch(re);
+
+             const sedStr = 'sed -i "s!' + replaceStr + '!${' + replaceStr + '}!g" mempool-config.json';
+             if (process.env.CI) {
+               console.log(`looking for ${sedStr} in the start.sh script`);
+             }
+             expect(startSh).toContain(sedStr);
+
+
+            });
             continue;
           }
 
@@ -263,6 +317,8 @@ describe('Mempool Backend Config', () => {
                 // numbers, arrays and booleans won't be enclosed by quotes
                 const replaceStr = `${root ? '__' + root + '_' : '__'}${key}__`;
                 expect(dockerJson).toContain(`"${key}": ${replaceStr}`);
+                break;
+              } else if (typeof value === 'object') {
                 break;
               } else {
                 //Check for top level config keys
