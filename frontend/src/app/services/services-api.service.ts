@@ -168,9 +168,10 @@ export class ServicesApiServices {
     return this.httpClient.get<{txid: string}>(`${SERVICES_API_PREFIX}/testnet4/faucet/request?address=${address}&sats=${sats}`, { responseType: 'json' });
   }
 
-  generateBTCPayAcceleratorInvoice$(txid: string): Observable<any> {
+  generateBTCPayAcceleratorInvoice$(txid: string, sats: number): Observable<any> {
     const params = {
-      product: txid
+      product: txid,
+      amount: sats,
     };
     return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/payments/bitcoin`, params);
   }

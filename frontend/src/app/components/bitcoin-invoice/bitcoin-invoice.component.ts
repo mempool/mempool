@@ -14,6 +14,7 @@ import { ServicesApiServices } from '../../services/services-api.service';
 export class BitcoinInvoiceComponent implements OnInit, OnDestroy {
   @Input() invoiceId: string;
   @Input() redirect = true;
+  @Input() minimal = false;
   @Output() completed = new EventEmitter();
 
   paymentForm: FormGroup;

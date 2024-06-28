@@ -1,12 +1,14 @@
 <div class="wrapper">
 
-  <span *ngIf="paymentStatus === 3" class="valid-feedback d-block mt-5">
-    Payment successful. You can close this page.
-  </span>
-  
-  <span *ngIf="paymentStatus === 4" class="valid-feedback d-block mt-5">
-    A transaction <a [href]="'/tx/' + invoice.cryptoInfo[0].payments[0].id.split('-')[0]">has been detected in the mempool</a> fully paying for this invoice. Waiting for on-chain confirmation.
-  </span>
+  @if (!minimal) {
+    <span *ngIf="paymentStatus === 3" class="valid-feedback d-block mt-5">
+      Payment successful. You can close this page.
+    </span>
+
+    <span *ngIf="paymentStatus === 4" class="valid-feedback d-block mt-5">
+      A transaction <a [href]="'/tx/' + invoice.cryptoInfo[0].payments[0].id.split('-')[0]">has been detected in the mempool</a> fully paying for this invoice. Waiting for on-chain confirmation.
+    </span>
+  }
 
   <div *ngIf="paymentStatus === 2">
     
@@ -30,25 +32,27 @@
 
     <ng-template [ngIf]="paymentForm.get('method')?.value === 'chain' && invoice">
 
-        <div class="qr-wrapper">
+        <div class="qr-wrapper" [class.mt-0]="minimal">
           <a [href]="bypassSecurityTrustUrl('bitcoin:' + invoice.addresses.BTC + '?amount=' + invoice.amount)" target="_blank">
               <app-qrcode imageUrl="/resources/bitcoin-logo.png" [size]="200" [data]="'bitcoin:' + invoice.addresses.BTC + '?amount=' + invoice.amount"></app-qrcode>
           </a>
         </div>
-        
+
         <div class="input-group input-group-sm info-group">
           <input type="text" class="form-control input-dark" readonly [value]="invoice.addresses.BTC">
           <div class="input-group-append">
               <button class="btn btn-outline-secondary" type="button" ><app-clipboard [text]="invoice.addresses.BTC"></app-clipboard></button>
           </div>
         </div>
-        <p>{{ invoice.amount }} <span class="symbol">BTC</span></p>
+        @if (!minimal) {
+          <p>{{ invoice.amount }} <span class="symbol">BTC</span></p>
+        }
 
     </ng-template>
 
     <ng-template [ngIf]="paymentForm.get('method')?.value === 'lightning' && invoice && invoice.addresses.BTC_LightningLike">
 
-        <div class="qr-wrapper">
+        <div class="qr-wrapper" [class.mt-0]="minimal">
           <a [href]="bypassSecurityTrustUrl('lightning:' + invoice.addresses.BTC_LightningLike)" target="_blank">
               <app-qrcode imageUrl="/resources/bitcoin-logo.png" [size]="200" [data]="invoice.addresses.BTC_LightningLike.toUpperCase()"></app-qrcode>
           </a>
@@ -61,13 +65,15 @@
           </div>
         </div>
 
-        <p>{{ invoice.amount * 100_000_000 }} <span class="symbol">sats</span></p>
+        @if (!minimal) {
+          <p>{{ invoice.amount * 100_000_000 }} <span class="symbol">sats</span></p>
+        }
 
     </ng-template>
 
     <ng-template [ngIf]="invoice && (paymentForm.get('method')?.value === 'lbtc' || paymentForm.get('method')?.value === 'tlbtc')">
 
-        <div class="qr-wrapper">
+        <div class="qr-wrapper" [class.mt-0]="minimal">
           <a [href]="bypassSecurityTrustUrl('liquidnetwork:' + invoice.addresses.LBTC + '?amount=' + invoice.amount + '&assetid=6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d')" target="_blank">
               <app-qrcode imageUrl="/resources/liquid-bitcoin.png" [size]="200" [data]="'liquidnetwork:' + invoice.addresses.LBTC + '?amount=' + invoice.amount + '&assetid=6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d'"></app-qrcode>
           </a>
@@ -79,11 +85,15 @@
               <button class="btn btn-outline-secondary" type="button" ><app-clipboard [text]="invoice.addresses.LBTC"></app-clipboard></button>
           </div>
         </div>
-        <p>{{ invoice.amount }} <span class="symbol">BTC</span></p>
+        @if (!minimal) {
+          <p>{{ invoice.amount }} <span class="symbol">BTC</span></p>
+        }
 
     </ng-template>
 
-    <p>Waiting for transaction... </p>
-    <div class="spinner-border text-light"></div>
+    @if (!minimal) {
+      <p>Waiting for transaction... </p>
+      <div class="spinner-border text-light"></div>
+    }
   </div>
 </div>

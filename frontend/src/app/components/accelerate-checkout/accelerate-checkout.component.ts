@@ -41,6 +41,8 @@ export const MIN_BID_RATIO = 1;
 export const DEFAULT_BID_RATIO = 2;
 export const MAX_BID_RATIO = 4;
 
+type CheckoutStep = 'quote' | 'summary' | 'checkout' | 'cashapp' | 'processing';
+
 @Component({
   selector: 'app-accelerate-checkout',
   templateUrl: './accelerate-checkout.component.html',
@@ -51,9 +53,9 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   @Input() miningStats: MiningStats;
   @Input() eta: ETA;
   @Input() scrollEvent: boolean;
-  @Input() cashappEnabled: boolean;
-  @Input() showDetails: boolean;
+  @Input() cashappEnabled: boolean = true;
   @Input() advancedEnabled: boolean = false;
+  @Input() forceSummary: boolean = false;
   @Input() forceMobile: boolean = false;
   @Output() changeMode = new EventEmitter<boolean>();
   @Output() close = new EventEmitter<null>();
@@ -64,8 +66,9 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   math = Math;
   isMobile: boolean = window.innerWidth <= 767.98;
 
-  step: 'quote' | 'paymentMethod' | 'checkout' | 'processing' = 'quote';
+  private _step: CheckoutStep = 'summary';
   simpleMode: boolean = true;
+  showDetails: boolean = false;
   paymentMethod: 'cashapp' | 'btcpay';
 
   user: any = undefined;
@@ -117,9 +120,13 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     this.user = this.storageService.getAuth()?.user ?? null;
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('cash_request_id')) { // Redirected from cashapp
+      this.moveToStep('processing');
       this.insertSquare();
       this.setupSquare();
-      this.step = 'processing';
+    } else if (this.isLoggedIn() || this.forceSummary) {
+      this.moveToStep('summary');
+    } else {
+      this.moveToStep('checkout');
     }
 
     this.servicesApiService.setupSquare$().subscribe(ids => {
@@ -127,9 +134,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         appId: ids.squareAppId,
         locationId: ids.squareLocationId
       };
-      if (this.step === 'quote') {
-        this.fetchEstimate();
-      }
     });
   }
 
@@ -142,6 +146,21 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.scrollEvent) {
       this.scrollToElement('acceleratePreviewAnchor', 'start');
+    }
+  }
+
+  moveToStep(step: CheckoutStep) {
+    this._step = step;
+    if (!this.estimate && ['quote', 'summary', 'checkout'].includes(this.step)) {
+      this.fetchEstimate();
+    }
+    if (this._step === 'checkout' && this.canPayWithBitcoin) {
+      this.loadingBtcpayInvoice = true;
+      this.requestBTCPayInvoice();
+    } else if (this._step === 'cashapp' && this.cashappEnabled) {
+      this.loadingCashapp = true;
+      this.insertSquare();
+      this.setupSquare();
     }
   }
 
@@ -214,6 +233,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           }
           this.cost = this.userBid + this.estimate.mempoolBaseFee + this.estimate.vsizeFee;
 
+          if (this.canPayWithBitcoin && !this.loadingBtcpayInvoice) {
+            this.loadingBtcpayInvoice = true;
+            this.requestBTCPayInvoice();
+          }
+
           this.calculating = false;
           this.cd.markForCheck();
         }
@@ -244,9 +268,13 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
    */
   accelerate(): void {
     if (this.isLoggedIn()) {
-      this.accelerateWithMempoolAccount();
+      if (this.step !== 'summary') {
+        this.moveToStep('summary');
+      } else {
+        this.accelerateWithMempoolAccount();
+      }
     } else {
-      this.step = 'paymentMethod';
+      this.moveToStep('checkout');
     }
   }
 
@@ -356,7 +384,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           button: { shape: 'semiround', size: 'small', theme: 'light'}
         });
 
-        if (this.step === 'checkout') {
+        if (this.step === 'cashapp') {
           await this.cashAppPay.attach(`#cash-app-pay`, { theme: 'light', size: 'small', shape: 'semiround' })
         }
         this.loadingCashapp = false;
@@ -410,7 +438,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
    * BTCPay
    */
   async requestBTCPayInvoice() {
-    this.servicesApiService.generateBTCPayAcceleratorInvoice$(this.tx.txid).subscribe({
+    this.servicesApiService.generateBTCPayAcceleratorInvoice$(this.tx.txid, this.userBid).subscribe({
       next: (response) => {
         this.invoice = response;
         this.cd.markForCheck();
@@ -425,27 +453,12 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   /**
    * UI events
    */
-  enableCheckoutPage() {
-    this.step = 'paymentMethod';
-  }
-  selectPaymentMethod(paymentMethod: 'cashapp' | 'btcpay') {
-    this.step = 'checkout';
-    this.paymentMethod = paymentMethod;
-    if (paymentMethod === 'cashapp') {
-      this.loadingCashapp = true;
-      this.insertSquare();
-      this.setupSquare();
-    } else if (paymentMethod === 'btcpay') {
-      this.loadingBtcpayInvoice = true;
-      this.requestBTCPayInvoice();
-    }
-  }
   selectedOptionChanged(event) {
     this.choosenOption = event.target.id;
   }
   closeModal(timeout: number = 0): void {
     setTimeout(() => {
-      this.step = 'processing';
+      this._step = 'processing';
       this.cd.markForCheck();
       this.close.emit();
     }, timeout);
@@ -454,6 +467,26 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   isLoggedIn(): boolean {
     const auth = this.storageService.getAuth();
     return auth !== null;
+  }
+
+  get step() {
+    return this._step;
+  }
+
+  get canPayWithBitcoin() {
+    return this.estimate?.availablePaymentMethods?.includes('bitcoin');
+  }
+
+  get canPayWithCashapp() {
+    return this.cashappEnabled && this.estimate?.availablePaymentMethods?.includes('bitcoin');
+  }
+
+  get canPayWithBalance() {
+    return this.isLoggedIn() && this.estimate?.availablePaymentMethods?.includes('balance');
+  }
+
+  get showSummary() {
+    return this.canPayWithBalance || this.forceSummary;
   }
 
   @HostListener('window:resize', ['$event'])

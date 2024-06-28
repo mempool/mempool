@@ -80,12 +80,11 @@
       <div class="title float-left">
         <h2 i18n="transaction.accelerate|Accelerate button label">Accelerate</h2>
       </div>
-      <button type="button" class="btn btn-outline-info flow-toggle btn-sm float-right" (click)="showAccelerationDetails = !showAccelerationDetails" i18n="transaction.details|Transaction Details">Details</button>
 
       <div class="clearfix"></div>
 
       <ng-container *ngIf="(ETA$ | async) as eta;">
-        <app-accelerate-checkout *ngIf="(da$ | async) as da;" [cashappEnabled]="accelerationEligible" [tx]="tx" [eta]="eta" [miningStats]="miningStats" (close)="showAccelerationSummary = false" [scrollEvent]="scrollIntoAccelPreview" class="h-100 w-100">
+        <app-accelerate-checkout *ngIf="(da$ | async) as da;" [cashappEnabled]="accelerationEligible" [advancedEnabled]="true" [tx]="tx" [eta]="eta" [miningStats]="miningStats" (close)="showAccelerationSummary = false" [scrollEvent]="scrollIntoAccelPreview" class="h-100 w-100">
           <span slot="cta-title">Urgent transaction? Get it confirmed faster.</span>
         </app-accelerate-checkout>
       </ng-container>
