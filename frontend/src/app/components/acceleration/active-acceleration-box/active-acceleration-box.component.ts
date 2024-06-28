@@ -28,6 +28,7 @@ export class ActiveAccelerationBox implements OnChanges {
   @Input() miningStats: MiningStats;
   @Input() pools: number[];
   @Input() chartOnly: boolean = false;
+  @Input() chartPositionLeft: boolean = false;
 
   acceleratedByPercentage: string = '';
 
@@ -131,9 +132,5 @@ export class ActiveAccelerationBox implements OnChanges {
       return;
     }
     this.chartInstance = ec;
-  }
-
-  isMobile() {
-    return window.innerWidth <= 767.98;
   }
 }
