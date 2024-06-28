@@ -233,7 +233,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           }
           this.cost = this.userBid + this.estimate.mempoolBaseFee + this.estimate.vsizeFee;
 
-          if (this.canPayWithBitcoin && !this.loadingBtcpayInvoice) {
+          if (this.step === 'checkout' && this.canPayWithBitcoin && !this.loadingBtcpayInvoice) {
             this.loadingBtcpayInvoice = true;
             this.requestBTCPayInvoice();
           }
