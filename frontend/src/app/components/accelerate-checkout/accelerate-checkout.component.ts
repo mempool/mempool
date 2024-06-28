@@ -294,6 +294,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         this.audioService.playSound('ascend-chime-cartoon');
         this.showSuccess = true;
         this.estimateSubscription.unsubscribe();
+        this.closeModal(2000);
       },
       error: (response) => {
         if (response.status === 403 && response.error === 'not_available') {

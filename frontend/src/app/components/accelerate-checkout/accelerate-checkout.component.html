@@ -1,27 +1,21 @@
 <div class="box card w-100" style="background: var(--box-bg)" id=acceleratePreviewAnchor>
 
-  @if (error) {
-    <div class="mt-2">
-      <app-mempool-error [error]="error"></app-mempool-error>
-    </div>
-  } 
-  @else if (step === 'quote') {
-    <span id="successAlert" class="m-0 p-0 d-block" style="height: 1px;"></span>
-    <div class="row" *ngIf="showSuccess">
-      <div class="col">
-        <div class="alert alert-success">
-          Transaction has now been <a class="alert-link" routerLink="/services/accelerator/history">submitted</a> to mining pools for acceleration.
-        </div>
+  <div class="row mt-2" *ngIf="showSuccess">
+    <div class="col">
+      <div class="alert alert-success">
+        Transaction has now been <a class="alert-link" routerLink="/services/accelerator/history">submitted</a> to mining pools for acceleration.
       </div>
     </div>
+  </div>
 
-    <span id="mempoolError" class="m-0 p-0 d-block" style="height: 1px;"></span>
-    <div class="row" *ngIf="error">
+  @if (error) {
+    <div class="row mt-2">
       <div class="col">
         <app-mempool-error [error]="error" [alertClass]="error === 'waitlisted' ? 'alert-mempool' : 'alert-danger'"></app-mempool-error>
       </div>
     </div>
-
+  }
+  @else if (step === 'quote') {
     <div class="accelerate-cols">
       <ng-container *ngIf="!isMobile">
         <app-accelerate-fee-graph
