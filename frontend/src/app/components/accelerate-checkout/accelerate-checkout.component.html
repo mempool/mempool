@@ -219,12 +219,12 @@
                     <td class="item"></td>
                     <td colspan="2">
                       <div class="d-flex">
-                        @if (isLoggedIn()) {
+                        @if (isLoggedIn() || canPayWithBitcoin || canPayWithCashapp) {
                           <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" [class.estimateDisabled]="!canPay" style="width: 200px" (click)="accelerate()">
                             <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
                             <span>Accelerate</span>
                           </button>
-                        } @else if (!canPayWithBitcoin && !canPayWithCashapp) {
+                        } @else {
                           <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center estimateDisabled" style="width: 200px">
                             <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
                             <span>Coming soon</span>
