@@ -65,9 +65,7 @@ export class BitcoinInvoiceComponent implements OnInit, OnDestroy {
             this.paymentStatusSubscription = this.apiService.retreiveInvoice$(invoiceId).pipe(
               tap((invoice: any) => {
                 this.invoice = invoice;
-                this.invoice.amount = invoice.btcDue ?? (invoice.cryptoInfo.length ? parseFloat(invoice.cryptoInfo[0].totalDue) : 0) ?? 0;
-
-                if (this.invoice.amount > 0) {
+                if (this.invoice.btcDue > 0) {
                   this.paymentStatus = 2;
                 } else {
                   this.paymentStatus = 4;
