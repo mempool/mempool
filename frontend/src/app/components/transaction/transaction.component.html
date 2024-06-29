@@ -84,7 +84,7 @@
       <div class="clearfix"></div>
 
       <ng-container *ngIf="(ETA$ | async) as eta;">
-        <app-accelerate-checkout *ngIf="(da$ | async) as da;" [cashappEnabled]="accelerationEligible" [advancedEnabled]="true" [tx]="tx" [eta]="eta" [miningStats]="miningStats" [scrollEvent]="scrollIntoAccelPreview" class="h-100 w-100">
+        <app-accelerate-checkout *ngIf="(da$ | async) as da;" [cashappEnabled]="accelerationEligible" [advancedEnabled]="true" [tx]="tx" [eta]="eta" [miningStats]="miningStats" class="h-100 w-100">
           <span slot="cta-title">Urgent transaction? Get it confirmed faster.</span>
         </app-accelerate-checkout>
       </ng-container>
