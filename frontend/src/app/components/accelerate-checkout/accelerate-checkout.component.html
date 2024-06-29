@@ -32,7 +32,7 @@
         <div [class]="{estimateDisabled: error || showSuccess }">
           <button class="btn btn-sm btn-outline-info float-right" (click)="showDetails = !showDetails">Details</button>
 
-          <div *ngIf="user && !estimate.hasAccess" style="margin-right: 5em;">
+          <div *ngIf="isLoggedIn() && !estimate.hasAccess" style="margin-right: 5em;">
             <div class="alert alert-mempool mr-6">You are currently on the waitlist</div>
           </div>
 
@@ -224,7 +224,7 @@
                             <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
                             <span>Accelerate</span>
                           </button>
-                        } @else {
+                        } @else if (!canPayWithBitcoin && !canPayWithCashapp) {
                           <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center estimateDisabled" style="width: 200px">
                             <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
                             <span>Coming soon</span>
@@ -253,6 +253,10 @@
         <div class="col-sm">
           <h1 style="font-size: larger;"><ng-content select="[slot='cta-title']"></ng-content><span class="default-slot">Accelerate your Bitcoin transaction?</span></h1>
         </div>
+      </div>
+
+      <div *ngIf="isLoggedIn() && !estimate.hasAccess">
+        <div class="alert alert-mempool mr-6">You are currently on the waitlist for Mempool Accelerator&trade;</div>
       </div>
 
       <form [class]="{estimateDisabled: error || showSuccess }">
@@ -292,12 +296,19 @@
             <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true"></app-active-acceleration-box>
           </div>
         </div>
-        <div class="row mt-2 mb-2" [style]="(choosenOption !== 'accel' || calculating) ? 'opacity: 0.25; pointer-events: none' : ''">
+        <div class="row mt-2 mb-2">
           <div class="col-sm d-flex flex-row justify-content-center">
-            <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" style="width: 200px" (click)="accelerate()">
-              <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
-              <span>Accelerate</span>
-            </button>
+            @if (isLoggedIn()) {
+              <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" [class.estimateDisabled]="!canPay || choosenOption !== 'accel' || calculating" style="width: 200px" (click)="accelerate()">
+                <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
+                <span>Accelerate</span>
+              </button>
+            } @else if (!canPayWithBitcoin && !canPayWithCashapp) {
+              <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center estimateDisabled" style="width: 200px">
+                <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
+                <span>Coming soon</span>
+              </button>
+            }
           </div>
         </div>
       </form>
