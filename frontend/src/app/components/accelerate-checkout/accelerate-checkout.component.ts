@@ -41,7 +41,7 @@ export const MIN_BID_RATIO = 1;
 export const DEFAULT_BID_RATIO = 2;
 export const MAX_BID_RATIO = 4;
 
-type CheckoutStep = 'quote' | 'summary' | 'checkout' | 'cashapp' | 'processing';
+type CheckoutStep = 'quote' | 'summary' | 'checkout' | 'cashapp' | 'processing' | 'paid';
 
 @Component({
   selector: 'app-accelerate-checkout',
@@ -58,7 +58,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   @Input() forceSummary: boolean = false;
   @Input() forceMobile: boolean = false;
   @Output() changeMode = new EventEmitter<boolean>();
-  @Output() close = new EventEmitter<null>();
 
   calculating = true;
   choosenOption: 'wait' | 'accel';
@@ -294,7 +293,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         this.audioService.playSound('ascend-chime-cartoon');
         this.showSuccess = true;
         this.estimateSubscription.unsubscribe();
-        this.closeModal(2000);
+        this.moveToStep('paid')
       },
       error: (response) => {
         if (response.status === 403 && response.error === 'not_available') {
@@ -409,7 +408,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                   that.cashAppPay.destroy();
                 }
                 setTimeout(() => {
-                  that.closeModal();
+                  this.moveToStep('paid');
                   if (window.history.replaceState) {
                     const urlParams = new URLSearchParams(window.location.search);
                     window.history.replaceState(null, null, window.location.toString().replace(`?cash_request_id=${urlParams.get('cash_request_id')}`, ''));
@@ -456,13 +455,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
    */
   selectedOptionChanged(event) {
     this.choosenOption = event.target.id;
-  }
-  closeModal(timeout: number = 0): void {
-    setTimeout(() => {
-      this._step = 'processing';
-      this.cd.markForCheck();
-      this.close.emit();
-    }, timeout);
   }
 
   isLoggedIn(): boolean {

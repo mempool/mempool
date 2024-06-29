@@ -240,119 +240,141 @@
     </ng-template>
   }
   @else if (step === 'summary') {
-    <!-- Show A/B CTAs -->
-    <div class="row mb-1">
-      <div class="col-sm">
-        <h1 style="font-size: larger;"><ng-content select="[slot='cta-title']"></ng-content><span class="default-slot">Accelerate your Bitcoin transaction?</span></h1>
+    <ng-container *ngIf="estimate && (etaInfo$ | async) as etaInfo; else loadingSummary">
+      <!-- Show A/B CTAs -->
+      <div class="row mb-1">
+        <div class="col-sm">
+          <h1 style="font-size: larger;"><ng-content select="[slot='cta-title']"></ng-content><span class="default-slot">Accelerate your Bitcoin transaction?</span></h1>
+        </div>
       </div>
-    </div>
 
-    <form>
+      <form>
+        <div class="row">
+          <div class="col-md">
+            <div class="form-group form-check mb-2">
+              <input type="radio" [checked]="choosenOption === 'wait'"  class="form-check-input" id="wait" name="accel" (change)="selectedOptionChanged($event)">
+              <label class="form-check-label d-flex flex-column" for="wait">
+                <span class="font-weight-bold">Wait</span>
+                @if (eta.blocks < 7) {
+                  <span class="checkout-text">Confirmation expected <app-time kind="within" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time></span>
+                } @else {
+                  <span class="checkout-text">
+                    <span>Confirmation expected within several hours</span>
+                  </span>
+                }
+              </label>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="form-group form-check mb-2">
+              <input type="radio" [checked]="choosenOption === 'accel'" class="form-check-input" id="accel" name="accel" (change)="selectedOptionChanged($event)">
+              <label class="form-check-label d-flex flex-column" for="accel">
+                <span><b>Accelerate</b> to ~{{ ((userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }} sat/vB <button *ngIf="advancedEnabled && isLoggedIn()" class="btn btn-sm btn-accelerate btn-small-height ml-3" i18n="accelerator.customize" (click)="moveToStep('quote')">customize</button></span>
+                <span class="checkout-text">Confirmation expected <app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time><br>
+                  @if (!calculating) {
+                    <app-fiat [value]="cost"></app-fiat>fee (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
+                  } @else {
+                    <span class="estimating">Calculating cost...</span>
+                  }
+                </span>
+              </label>
+            </div>
+          </div>
+          <div class="col-md pie d-none d-lg-flex" *ngIf="!forceMobile">
+            <small class="form-text text-muted mb-2" i18n="accelerator.hashrate-percentage-description">Your transaction will be prioritized by up to {{ etaInfo.hashratePercentage | number : '1.1-1' }}% of miners.</small>
+            <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true"></app-active-acceleration-box>
+          </div>
+        </div>
+        <div class="row mt-2 mb-2" [style]="(choosenOption !== 'accel' || calculating) ? 'opacity: 0.25; pointer-events: none' : ''">
+          <div class="col-sm d-flex flex-row justify-content-center">
+            <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" style="width: 200px" (click)="accelerate()">
+              <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
+              <span>Accelerate</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </ng-container>
+    <ng-template #loadingSummary>
       <div class="row">
         <div class="col-md">
-          <div class="form-group form-check mb-2">
-            <input type="radio" [checked]="choosenOption === 'wait'"  class="form-check-input" id="wait" name="accel" (change)="selectedOptionChanged($event)">
-            <label class="form-check-label d-flex flex-column" for="wait">
-              <span class="font-weight-bold">Wait</span>
-              @if (eta.blocks < 7) {
-                <span class="checkout-text">Confirmation expected <app-time kind="within" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time></span>
-              } @else {
-                <span class="checkout-text">
-                  <span>Confirmation expected within several hours</span>
-                </span>
-              }
-            </label>
+          <div class="d-flex flex-row justify-content-center align-items-center">
+            <div class="m-4 spinner-border text-light" style="width: 25px; height: 25px"></div>
           </div>
         </div>
+      </div>
+    </ng-template>
+  } @else if (step === 'checkout') {
+    <ng-container *ngIf="estimate && (etaInfo$ | async) as etaInfo; else loadingCheckout">
+      <div class="row">
         <div class="col-md">
-          <div class="form-group form-check mb-2" *ngIf="estimate">
-            <input type="radio" [checked]="choosenOption === 'accel'" class="form-check-input" id="accel" name="accel" (change)="selectedOptionChanged($event)">
-            <label class="form-check-label d-flex flex-column" for="accel">
-              <span><b>Accelerate</b> to ~{{ ((userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }} sat/vB <button *ngIf="advancedEnabled && isLoggedIn()" class="btn btn-sm btn-accelerate btn-small-height ml-3" i18n="accelerator.customize" (click)="moveToStep('quote')">customize</button></span>
-              <span class="checkout-text" *ngIf="(etaInfo$ | async) as etaInfo">Confirmation expected <app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time><br>
-                @if (!calculating) {
-                  <app-fiat [value]="cost"></app-fiat>fee (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
-                } @else {
-                  <span class="estimating">Calculating cost...</span>
-                }
-              </span>
-            </label>
+          <div class="d-flex flex-column">
+            <span><b>Accelerate</b> to ~{{ ((userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }} sat/vB <button *ngIf="advancedEnabled && isLoggedIn()" class="btn btn-sm btn-accelerate btn-small-height ml-3" i18n="accelerator.customize" (click)="moveToStep('quote')">customize</button></span>
+            <span class="checkout-text">
+              @if (!calculating) {
+                For an additional <app-fiat [value]="cost"></app-fiat> (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
+              } @else {
+                <span class="estimating">Calculating cost...</span>
+              }
+            </span>
+            <span class="checkout-text" *ngIf="(etaInfo$ | async) as etaInfo">
+              Reducing expected confirmation time to <app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time>
+            </span>
           </div>
         </div>
-        <div class="col-md pie d-none d-lg-flex" *ngIf="estimate && !forceMobile">
+        <div class="col-md pie d-none d-md-flex" *ngIf="!forceMobile">
           <small class="form-text text-muted mb-2" i18n="accelerator.hashrate-percentage-description" *ngIf="(etaInfo$ | async) as etaInfo">Your transaction will be prioritized by up to {{ etaInfo.hashratePercentage | number : '1.1-1' }}% of miners.</small>
           <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true"></app-active-acceleration-box>
         </div>
       </div>
-      <div class="row mt-2 mb-2" [style]="(choosenOption !== 'accel' || calculating) ? 'opacity: 0.25; pointer-events: none' : ''">
-        <div class="col-sm d-flex flex-row justify-content-center">
-          <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" style="width: 200px" (click)="accelerate()">
+      @if (canPayWithBalance || !(canPayWithBitcoin || canPayWithCashapp)) {
+        <div class="d-flex justify-content-center">
+          <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" [class.estimateDisabled]="!canPayWithBalance" style="width: 200px" (click)="accelerate()">
             <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
             <span>Accelerate</span>
           </button>
         </div>
-      </div>
-    </form>
-  } @else if (step === 'checkout') {
-    <div class="row">
-      <div class="col-md">
-        <div class="d-flex flex-column" *ngIf="estimate">
-          <span><b>Accelerate</b> to ~{{ ((userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }} sat/vB <button *ngIf="advancedEnabled && isLoggedIn()" class="btn btn-sm btn-accelerate btn-small-height ml-3" i18n="accelerator.customize" (click)="moveToStep('quote')">customize</button></span>
-          <span class="checkout-text">
-            @if (!calculating) {
-              For an additional <app-fiat [value]="cost"></app-fiat> (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
-            } @else {
-              <span class="estimating">Calculating cost...</span>
-            }
-          </span>
-          <span class="checkout-text" *ngIf="(etaInfo$ | async) as etaInfo">
-            Reducing expected confirmation time to <app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time>
-          </span>
-        </div>
-      </div>
-      <div class="col-md pie d-none d-md-flex" *ngIf="estimate && !forceMobile">
-        <small class="form-text text-muted mb-2" i18n="accelerator.hashrate-percentage-description" *ngIf="(etaInfo$ | async) as etaInfo">Your transaction will be prioritized by up to {{ etaInfo.hashratePercentage | number : '1.1-1' }}% of miners.</small>
-        <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true"></app-active-acceleration-box>
-      </div>
-    </div>
-    @if (canPayWithBalance || !(canPayWithBitcoin || canPayWithCashapp)) {
-      <div class="d-flex justify-content-center">
-        <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" [class.estimateDisabled]="!canPayWithBalance" style="width: 200px" (click)="accelerate()">
-          <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
-          <span>Accelerate</span>
-        </button>
-      </div>
-    } @else {
-      <div class="payment-area mt-2 p-2">
-        <div class="row text-center justify-content-center mx-2" style="font-size: 14px;">
-          <p>Payment to mempool.space for acceleration of txid <a [routerLink]="'/tx/' + tx.txid" target="_blank"> {{ tx.txid.substr(0, 10) }}..{{ tx.txid.substr(-10) }}</a></p>
-        </div>
-        <div class="row">
-          @if (canPayWithBitcoin) {
-            <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
-              @if (invoice) {
-                <p>Pay <span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span></p>
-                <app-bitcoin-invoice style="width: 100%;" [invoiceId]="invoice.btcpayInvoiceId" [minimal]="true" (completed)="closeModal(2000)"></app-bitcoin-invoice>
-              } @else {
-                <span>Loading invoice...</span>
-                <div class="m-4 spinner-border text-light" style="width: 25px; height: 25px"></div>
+      } @else {
+        <div class="payment-area mt-2 p-2">
+          <div class="row text-center justify-content-center mx-2" style="font-size: 14px;">
+            <p>Payment to mempool.space for acceleration of txid <a [routerLink]="'/tx/' + tx.txid" target="_blank"> {{ tx.txid.substr(0, 10) }}..{{ tx.txid.substr(-10) }}</a></p>
+          </div>
+          <div class="row">
+            @if (canPayWithBitcoin) {
+              <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
+                @if (invoice) {
+                  <p>Pay <span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span></p>
+                  <app-bitcoin-invoice style="width: 100%;" [invoiceId]="invoice.btcpayInvoiceId" [minimal]="true" (completed)="moveToStep('paid')"></app-bitcoin-invoice>
+                } @else {
+                  <span>Loading invoice...</span>
+                  <div class="m-4 spinner-border text-light" style="width: 25px; height: 25px"></div>
+                }
+              </div>
+              @if (canPayWithCashapp) {
+                <div class="col-sm text-center flex-grow-0  d-flex flex-column justify-content-center align-items-center">
+                  <p class="text-nowrap">&mdash;<span i18n="or">OR</span>&mdash;</p>
+                </div>
               }
-            </div>
-            @if (canPayWithCashapp) {
-              <div class="col-sm text-center flex-grow-0  d-flex flex-column justify-content-center align-items-center">
-                <p class="text-nowrap">&mdash;<span i18n="or">OR</span>&mdash;</p>
+            }
+            @if (cashappEnabled) {
+              <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
+                <p>Pay <app-fiat [value]="cost"></app-fiat> with</p>
+                <img class="paymentMethod mx-2" src="/resources/cash-app.svg" height=55 (click)="moveToStep('cashapp')">
               </div>
             }
-          }
-          @if (cashappEnabled) {
-            <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
-              <p>Pay <app-fiat [value]="cost"></app-fiat> with</p>
-              <img class="paymentMethod mx-2" src="/resources/cash-app.svg" height=55 (click)="moveToStep('cashapp')">
-            </div>
-          }
+          </div>
+        </div>
+      }
+    </ng-container>
+    <ng-template #loadingCheckout>
+      <div class="row">
+        <div class="col-md">
+          <div class="d-flex flex-row justify-content-center align-items-center">
+            <div class="m-4 spinner-border text-light" style="width: 25px; height: 25px"></div>
+          </div>
         </div>
       </div>
-    }
+    </ng-template>
     @if (showSummary) {
       <div class="row mt-2 mb-2 text-center">
         <div class="col-sm d-flex flex-column">
@@ -413,7 +435,6 @@
       </div>
     </div>
   }
-
   @else if (step === 'processing') {
     <div class="row mb-1 text-center">
       <div class="col-sm">
@@ -430,6 +451,22 @@
             <span>We are processing your payment...</span>
             <div class="ml-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
           </div>
+        </div>
+      </div>
+    </div>
+  }
+  @else if (step === 'paid') {
+    <div class="row mb-1 text-center">
+      <div class="col-sm">
+        <h1 style="font-size: larger;"><ng-content select="[slot='accelerating-title']"></ng-content><span class="default-slot">Accelerating your transaction</span></h1>
+      </div>
+    </div>
+
+    <div class="row text-center mt-1">
+      <div class="col-sm">
+        <div class="d-flex flex-row justify-content-center align-items-center">
+          <p>Confirming your acceleration with our mining pool partners...</p>
+          <div class="ml-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
         </div>
       </div>
     </div>

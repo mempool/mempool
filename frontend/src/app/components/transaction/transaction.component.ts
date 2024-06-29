@@ -767,8 +767,14 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   setIsAccelerated(initialState: boolean = false) {
     this.isAcceleration = (this.tx.acceleration || (this.accelerationInfo && this.pool && this.accelerationInfo.pools.some(pool => (pool === this.pool.id))));
-    if (this.isAcceleration && initialState) {
-      this.showAccelerationSummary = false;
+    if (this.isAcceleration) {
+      if (initialState) {
+        this.showAccelerationSummary = false;
+      } else if (this.showAccelerationSummary) {
+        setTimeout(() => {
+          this.showAccelerationSummary = false;
+        }, 2000);
+      }
     }
     if (this.isAcceleration) {
       // this immediately returns cached stats if we fetched them recently

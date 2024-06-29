@@ -386,6 +386,10 @@ export class TrackerComponent implements OnInit, OnDestroy {
             if (txPosition.position?.block > 0 && this.tx.weight < 4000) {
               this.accelerationEligible = true;
             }
+          } else if (this.showAccelerationSummary) {
+            setTimeout(() => {
+              this.accelerationFlowCompleted = true;
+            }, 2000);
           }
         }
       } else {
