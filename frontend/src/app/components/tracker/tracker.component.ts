@@ -381,9 +381,11 @@ export class TrackerComponent implements OnInit, OnDestroy {
             this.trackerStage = 'replaced';
           }
 
-          this.showAccelerationSummary = true;
-          if (txPosition.position?.block > 0 && this.tx.weight < 4000) {
-            this.accelerationEligible = true;
+          if (!this.mempoolPosition.accelerated) {
+            this.showAccelerationSummary = true;
+            if (txPosition.position?.block > 0 && this.tx.weight < 4000) {
+              this.accelerationEligible = true;
+            }
           }
         }
       } else {
