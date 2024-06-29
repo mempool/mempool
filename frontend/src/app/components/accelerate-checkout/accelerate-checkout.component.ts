@@ -232,6 +232,10 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           }
           this.cost = this.userBid + this.estimate.mempoolBaseFee + this.estimate.vsizeFee;
 
+          if (!this.canPay && this.advancedEnabled && this.step !== 'quote') {
+            this.moveToStep('quote');
+          }
+
           if (this.step === 'checkout' && this.canPayWithBitcoin && !this.loadingBtcpayInvoice) {
             this.loadingBtcpayInvoice = true;
             this.requestBTCPayInvoice();
@@ -266,14 +270,16 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
    * Advanced mode acceleration button clicked
    */
   accelerate(): void {
-    if (this.isLoggedIn()) {
-      if (this.step !== 'summary') {
-        this.moveToStep('summary');
+    if (this.canPay) {
+      if (this.isLoggedIn()) {
+        if (this.step !== 'summary') {
+          this.moveToStep('summary');
+        } else {
+          this.accelerateWithMempoolAccount();
+        }
       } else {
-        this.accelerateWithMempoolAccount();
+        this.moveToStep('checkout');
       }
-    } else {
-      this.moveToStep('checkout');
     }
   }
 
@@ -471,11 +477,15 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   get canPayWithCashapp() {
-    return this.cashappEnabled && this.estimate?.availablePaymentMethods?.includes('bitcoin');
+    return this.cashappEnabled && this.estimate?.availablePaymentMethods?.includes('cashapp');
   }
 
   get canPayWithBalance() {
-    return this.isLoggedIn() && this.estimate?.availablePaymentMethods?.includes('balance');
+    return this.isLoggedIn() && this.estimate?.availablePaymentMethods?.includes('balance') && this.estimate?.hasAccess;
+  }
+
+  get canPay() {
+    return this.canPayWithBalance || this.canPayWithBitcoin || this.canPayWithCashapp;
   }
 
   get showSummary() {
