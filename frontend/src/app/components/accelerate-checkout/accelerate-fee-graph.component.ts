@@ -48,7 +48,6 @@ export class AccelerateFeeGraphComponent implements OnInit, OnChanges {
     const maxRate = Math.max(...this.maxRateOptions.map(option => option.rate));
     const baseRate = this.estimate.txSummary.effectiveFee / this.estimate.txSummary.effectiveVsize;
     const baseHeight = baseRate / maxRate;
-    console.log(maxRate, baseRate, baseHeight);
     const bars: GraphBar[] = this.maxRateOptions.slice().reverse().map(option => {
       return {
         rate: option.rate,
