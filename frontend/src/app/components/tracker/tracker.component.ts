@@ -63,8 +63,9 @@ export class TrackerComponent implements OnInit, OnDestroy {
   mempoolPosition: MempoolPosition;
   accelerationPositions: AccelerationPosition[];
   isLoadingTx = true;
-  error: any = undefined;
   loadingCachedTx = false;
+  loadingPosition = true;
+  error: any = undefined;
   waitingForTransaction = false;
   latestBlock: BlockExtended;
   transactionTime = -1;
@@ -147,13 +148,6 @@ export class TrackerComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.onResize();
-
-    window['setStage'] = ((stage: TrackerStage) => {
-      this.zone.run(() => {
-        this.trackerStage = stage;
-        this.cd.markForCheck();
-      });
-    }).bind(this);
 
     this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
 
@@ -361,6 +355,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
     this.mempoolPositionSubscription = this.stateService.mempoolTxPosition$.subscribe(txPosition => {
       this.now = Date.now();
       if (txPosition && txPosition.txid === this.txId && txPosition.position) {
+        this.loadingPosition = false;
         this.mempoolPosition = txPosition.position;
         this.accelerationPositions = txPosition.accelerationPositions;
         if (this.tx && !this.tx.status.confirmed) {
@@ -443,6 +438,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
       ))
       .subscribe((tx: Transaction) => {
           if (!tx) {
+            this.loadingPosition = false;
             this.fetchCachedTx$.next(this.txId);
             this.seoService.logSoft404();
             return;
@@ -475,6 +471,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
             }
           } else {
             this.trackerStage = 'confirmed';
+            this.loadingPosition = false;
             this.fetchAcceleration$.next(tx.status.block_hash);
             this.fetchMiningInfo$.next({ hash: tx.status.block_hash, height: tx.status.block_height, txid: tx.txid });
             this.transactionTime = 0;
@@ -735,12 +732,17 @@ export class TrackerComponent implements OnInit, OnDestroy {
     return false;
   }
 
+  get isLoading(): boolean {
+    return this.isLoadingTx || this.loadingCachedTx || this.loadingPosition;
+  }
+
   resetTransaction() {
     this.error = undefined;
     this.tx = null;
     this.txChanged$.next(true);
     this.waitingForTransaction = false;
     this.isLoadingTx = true;
+    this.loadingPosition = true;
     this.rbfTransaction = undefined;
     this.replaced = false;
     this.latestReplacement = '';

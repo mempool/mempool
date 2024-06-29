@@ -335,7 +335,7 @@
                 <app-bitcoin-invoice style="width: 100%;" [invoiceId]="invoice.btcpayInvoiceId" [minimal]="true" (completed)="closeModal(2000)"></app-bitcoin-invoice>
               } @else {
                 <span>Loading invoice...</span>
-                <div class="ml-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
+                <div class="m-4 spinner-border text-light" style="width: 25px; height: 25px"></div>
               }
             </div>
             @if (canPayWithCashapp) {

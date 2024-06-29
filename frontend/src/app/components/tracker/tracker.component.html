@@ -115,7 +115,12 @@
     </div>
 
     <div class="bottom-panel">
-      @if (showAccelerationSummary && !accelerationFlowCompleted) {
+      @if (isLoading) {
+        <div class="progress-icon">
+          <div class="spinner-border text-light" style="width: 1em; height: 1em"></div>
+        </div>
+        <span class="explainer">&nbsp;</span>
+      } @else if (showAccelerationSummary && !accelerationFlowCompleted) {
         <ng-container *ngIf="(ETA$ | async) as eta;">
           <app-accelerate-checkout *ngIf="(da$ | async) as da;" [forceSummary]="true" [cashappEnabled]="accelerationEligible" [advancedEnabled]="false" [forceMobile]="true" [tx]="tx" [miningStats]="miningStats" [eta]="eta" (close)="accelerationFlowCompleted = true" [scrollEvent]="scrollIntoAccelPreview" class="h-100 w-100"></app-accelerate-checkout>
         </ng-container>
