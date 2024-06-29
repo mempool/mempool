@@ -170,6 +170,15 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.enterpriseService.page();
 
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('cash_request_id')) {
+      this.showAccelerationSummary = true;
+    }
+
+    this.miningService.getMiningStats('1w').subscribe(stats => {
+      this.miningStats = stats;
+    });
+
     this.websocketService.want(['blocks', 'mempool-blocks']);
     this.stateService.networkChanged$.subscribe(
       (network) => {
@@ -398,7 +407,22 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           } else if ((this.tx?.acceleration && txPosition.position.acceleratedBy)) {
             this.tx.acceleratedBy = txPosition.position.acceleratedBy;
           }
-          this.accelerationEligible = txPosition?.position?.block > 0 && this.tx?.weight < 4000;
+
+          if (!this.mempoolPosition.accelerated) {
+            if (!this.showAccelerationSummary) {
+              this.showAccelerationSummary = true;
+              this.miningService.getMiningStats('1w').subscribe(stats => {
+                this.miningStats = stats;
+              });
+            }
+            if (txPosition.position?.block > 0 && this.tx.weight < 4000) {
+              this.accelerationEligible = true;
+            }
+          } else if (this.showAccelerationSummary) {
+            setTimeout(() => {
+              this.showAccelerationSummary = false;
+            }, 2000);
+          }
         }
       } else {
         this.mempoolPosition = null;
@@ -682,10 +706,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.txId) {
       return;
     }
-
-    this.miningService.getMiningStats('1w').subscribe(stats => {
-      this.miningStats = stats;
-    });
 
     document.location.hash = '#accelerate';
     this.enterpriseService.goal(8);

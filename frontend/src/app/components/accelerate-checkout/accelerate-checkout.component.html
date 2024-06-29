@@ -107,25 +107,49 @@
                 <tbody>
                   <!-- ESTIMATED FEE -->
                   <ng-container *ngIf="showDetails">
-                    <tr class="group-first">
-                      <td class="item" i18n="accelerator.next-block-rate">Next block market rate</td>
-                      <td class="amt" style="font-size: 16px">
-                        {{ estimate.targetFeeRate | number : '1.0-0' }}
-                      </td>
-                      <td class="units"><span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
-                    </tr>
-                    <tr class="info">
-                      <td class="info">
-                        <i><small i18n="accelerator.estimated-extra-fee-required">Estimated extra fee required</small></i>
-                      </td>
-                      <td class="amt">
-                        {{ math.max(0, estimate.nextBlockFee - estimate.txSummary.effectiveFee) | number }}
-                      </td>
-                      <td class="units">
-                        <span class="symbol" i18n="shared.sats">sats</span>
-                        <span class="fiat ml-1"><app-fiat [value]="math.max(0, estimate.nextBlockFee - estimate.txSummary.effectiveFee)"></app-fiat></span>
-                      </td>
-                    </tr>
+                    @if (isLoggedIn()) {
+                      <tr class="group-first">
+                        <td class="item" i18n="accelerator.next-block-rate">Next block market rate</td>
+                        <td class="amt" style="font-size: 16px">
+                          {{ estimate.targetFeeRate | number : '1.0-0' }}
+                        </td>
+                        <td class="units"><span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
+                      </tr>
+                      <tr class="info">
+                        <td class="info">
+                          <i><small i18n="accelerator.estimated-extra-fee-required">Estimated extra fee required</small></i>
+                        </td>
+                        <td class="amt">
+                          {{ math.max(0, estimate.nextBlockFee - estimate.txSummary.effectiveFee) | number }}
+                        </td>
+                        <td class="units">
+                          <span class="symbol" i18n="shared.sats">sats</span>
+                          <span class="fiat ml-1"><app-fiat [value]="math.max(0, estimate.nextBlockFee - estimate.txSummary.effectiveFee)"></app-fiat></span>
+                        </td>
+                      </tr>
+                    }
+                    @else {
+                      <!-- TARGET FEE -->
+                      <tr class="group-first">
+                        <td class="item" i18n="accelerator.target-rate">Target rate</td>
+                        <td class="amt" style="font-size: 16px">
+                          {{ maxRateOptions[selectFeeRateIndex].rate | number : '1.0-0' }}
+                        </td>
+                        <td class="units"><span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
+                      </tr>
+                      <tr class="info">
+                        <td class="info">
+                          <i><small i18n="accelerator.extra-fee-required">Extra fee required</small></i>
+                        </td>
+                        <td class="amt">
+                          {{ maxRateOptions[selectFeeRateIndex].fee | number }}
+                        </td>
+                        <td class="units">
+                          <span class="symbol" i18n="shared.sats">sats</span>
+                          <span class="fiat ml-1"><app-fiat [value]="maxRateOptions[selectFeeRateIndex].fee"></app-fiat></span>
+                        </td>
+                      </tr>
+                    }
 
                     <!-- MEMPOOL BASE FEE -->
                     <tr>
@@ -219,17 +243,10 @@
                     <td class="item"></td>
                     <td colspan="2">
                       <div class="d-flex">
-                        @if (isLoggedIn() || canPayWithBitcoin || canPayWithCashapp) {
-                          <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" [class.estimateDisabled]="!canPay" style="width: 200px" (click)="accelerate()">
-                            <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
-                            <span>Accelerate</span>
-                          </button>
-                        } @else {
-                          <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center estimateDisabled" style="width: 200px">
-                            <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
-                            <span>Coming soon</span>
-                          </button>
-                        }
+                        <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" style="width: 200px" (click)="moveToStep('summary')">
+                          <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
+                          <span>Continue</span>
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -280,7 +297,7 @@
             <div class="form-group form-check mb-2">
               <input type="radio" [checked]="choosenOption === 'accel'" class="form-check-input" id="accel" name="accel" (change)="selectedOptionChanged($event)">
               <label class="form-check-label d-flex flex-column" for="accel">
-                <span><b>Accelerate</b> to ~{{ ((userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }} sat/vB <button *ngIf="advancedEnabled && isLoggedIn()" class="btn btn-sm btn-accelerate btn-small-height ml-3" i18n="accelerator.customize" (click)="moveToStep('quote')">customize</button></span>
+                <span><b>Accelerate</b> to ~{{ ((userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }} sat/vB <button class="btn btn-sm btn-accelerate btn-small-height ml-3" i18n="accelerator.customize" (click)="moveToStep('quote')">customize</button></span>
                 <span class="checkout-text">Confirmation expected <app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time><br>
                   @if (!calculating) {
                     <app-fiat [value]="cost"></app-fiat>fee (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
@@ -393,13 +410,11 @@
         </div>
       </div>
     </ng-template>
-    @if (showSummary) {
-      <div class="row mt-2 mb-2 text-center">
-        <div class="col-sm d-flex flex-column">
-          <button type="button" class="mt-1 btn btn-secondary btn-sm rounded-pill align-self-center" style="width: 200px" (click)="moveToStep('summary')">Go Back</button>
-        </div>
+    <div class="row mt-2 mb-2 text-center">
+      <div class="col-sm d-flex flex-column">
+        <button type="button" class="mt-1 btn btn-secondary btn-sm rounded-pill align-self-center" style="width: 200px" (click)="moveToStep('summary')">Go Back</button>
       </div>
-    }
+    </div>
   } @else if (step === 'cashapp') {
     <!-- Show checkout page -->
     <div class="row mb-md-1 text-center">

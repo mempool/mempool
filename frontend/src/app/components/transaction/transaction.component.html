@@ -547,11 +547,8 @@
             } @else if (network === 'liquid' || network === 'liquidtestnet') {
               <app-time kind="until" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time>
             } @else {
-              <span class="eta justify-content-end" [class]="(acceleratorAvailable && accelerateCtaType === 'button') ? 'd-flex align-items-center' : ''">
+              <span class="eta justify-content-end">
                 <app-time kind="until" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time>
-                @if (!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button') {
-                  <a class="btn btn-sm accelerate btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
-                }
               </span>
             }
           </ng-container>

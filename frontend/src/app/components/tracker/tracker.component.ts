@@ -151,6 +151,10 @@ export class TrackerComponent implements OnInit, OnDestroy {
 
     this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
 
+    this.miningService.getMiningStats('1w').subscribe(stats => {
+      this.miningStats = stats;
+    });
+
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('cash_request_id')) {
       this.showAccelerationSummary = true;
@@ -382,7 +386,12 @@ export class TrackerComponent implements OnInit, OnDestroy {
           }
 
           if (!this.mempoolPosition.accelerated) {
-            this.showAccelerationSummary = true;
+            if (!this.showAccelerationSummary) {
+              this.showAccelerationSummary = true;
+              this.miningService.getMiningStats('1w').subscribe(stats => {
+                this.miningStats = stats;
+              });
+            }
             if (txPosition.position?.block > 0 && this.tx.weight < 4000) {
               this.accelerationEligible = true;
             }

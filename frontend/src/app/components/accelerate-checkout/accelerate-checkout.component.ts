@@ -55,7 +55,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   @Input() scrollEvent: boolean;
   @Input() cashappEnabled: boolean = true;
   @Input() advancedEnabled: boolean = false;
-  @Input() forceSummary: boolean = false;
   @Input() forceMobile: boolean = false;
   @Output() changeMode = new EventEmitter<boolean>();
 
@@ -122,10 +121,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.moveToStep('processing');
       this.insertSquare();
       this.setupSquare();
-    } else if (this.isLoggedIn() || this.forceSummary) {
-      this.moveToStep('summary');
     } else {
-      this.moveToStep('checkout');
+      this.moveToStep('summary');
     }
 
     this.servicesApiService.setupSquare$().subscribe(ids => {
@@ -232,10 +229,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           }
           this.cost = this.userBid + this.estimate.mempoolBaseFee + this.estimate.vsizeFee;
 
-          if (!this.canPay && this.advancedEnabled && this.step !== 'quote') {
-            this.moveToStep('quote');
-          }
-
           if (this.step === 'checkout' && this.canPayWithBitcoin && !this.loadingBtcpayInvoice) {
             this.loadingBtcpayInvoice = true;
             this.requestBTCPayInvoice();
@@ -272,11 +265,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   accelerate(): void {
     if (this.canPay) {
       if (this.isLoggedIn()) {
-        if (this.step !== 'summary') {
-          this.moveToStep('summary');
-        } else {
-          this.accelerateWithMempoolAccount();
-        }
+        this.accelerateWithMempoolAccount();
       } else {
         this.moveToStep('checkout');
       }
@@ -486,10 +475,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
   get canPay() {
     return this.canPayWithBalance || this.canPayWithBitcoin || this.canPayWithCashapp;
-  }
-
-  get showSummary() {
-    return this.canPayWithBalance || this.forceSummary;
   }
 
   @HostListener('window:resize', ['$event'])
