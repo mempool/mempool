@@ -357,8 +357,10 @@
                   <p>Pay <span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span></p>
                   <app-bitcoin-invoice style="width: 100%;" [invoiceId]="invoice.btcpayInvoiceId" [minimal]="true" (completed)="moveToStep('paid')"></app-bitcoin-invoice>
                 } @else {
-                  <span>Loading invoice...</span>
-                  <div class="m-4 spinner-border text-light" style="width: 25px; height: 25px"></div>
+                  <p>Loading invoice...</p>
+                  <div class="d-flex align-items-center justify-content-center" style="width: 100%; height: 292px;">
+                    <div class="m-4 spinner-border text-light" style="width: 25px; height: 25px"></div>
+                  </div>
                 }
               </div>
               @if (canPayWithCashapp) {
