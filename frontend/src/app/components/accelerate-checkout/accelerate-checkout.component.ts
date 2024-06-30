@@ -52,6 +52,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   @Input() tx: Transaction;
   @Input() miningStats: MiningStats;
   @Input() eta: ETA;
+  @Input() scrollEvent: boolean;
   @Input() cashappEnabled: boolean = true;
   @Input() advancedEnabled: boolean = false;
   @Input() forceMobile: boolean = false;
@@ -138,6 +139,12 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     }
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.scrollEvent && this.scrollEvent) {
+      this.scrollToElement('acceleratePreviewAnchor', 'start');
+    }
+  }
+
   moveToStep(step: CheckoutStep) {
     this._step = step;
     if (!this.estimate && ['quote', 'summary', 'checkout'].includes(this.step)) {
@@ -150,6 +157,26 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.loadingCashapp = true;
       this.insertSquare();
       this.setupSquare();
+    }
+  }
+
+  /**
+  * Scroll to element id with or without setTimeout
+  */
+  scrollToElementWithTimeout(id: string, position: ScrollLogicalPosition, timeout: number = 1000): void {
+    setTimeout(() => {
+      this.scrollToElement(id, position);
+    }, timeout);
+  }
+  scrollToElement(id: string, position: ScrollLogicalPosition) {
+    const acceleratePreviewAnchor = document.getElementById(id);
+    if (acceleratePreviewAnchor) {
+      this.cd.markForCheck();
+      acceleratePreviewAnchor.scrollIntoView({
+        behavior: 'smooth',
+        inline: position,
+        block: position,
+      });
     }
   }
 
@@ -410,6 +437,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       next: (response) => {
         this.invoice = response;
         this.cd.markForCheck();
+        this.scrollToElementWithTimeout('acceleratePreviewAnchor', 'start', 500);
       },
       error: (response) => {
         console.log(response);

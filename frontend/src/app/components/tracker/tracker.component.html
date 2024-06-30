@@ -75,9 +75,9 @@
                   } @else {
                     <app-time kind="until" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time>
                   }
-                  @if (!showAccelerationSummary && isMobile && !tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration) {
+                  <!-- @if (!showAccelerationSummary && isMobile && !tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration) {
                     <a class="btn btn-sm accelerate btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
-                  }
+                  } -->
                 </span>
               </ng-container>
               <ng-template #etaSkeleton>
@@ -122,7 +122,7 @@
         <span class="explainer">&nbsp;</span>
       } @else if (showAccelerationSummary && !accelerationFlowCompleted) {
         <ng-container *ngIf="(ETA$ | async) as eta;">
-          <app-accelerate-checkout *ngIf="(da$ | async) as da;" [cashappEnabled]="accelerationEligible" [advancedEnabled]="false" [forceMobile]="true" [tx]="tx" [miningStats]="miningStats" [eta]="eta" class="h-100 w-100"></app-accelerate-checkout>
+          <app-accelerate-checkout *ngIf="(da$ | async) as da;" [cashappEnabled]="accelerationEligible" [advancedEnabled]="false" [forceMobile]="true" [tx]="tx" [miningStats]="miningStats" [eta]="eta" [scrollEvent]="scrollIntoAccelPreview" class="h-100 w-100"></app-accelerate-checkout>
         </ng-container>
       } @else {
         @if (tx?.acceleration && !tx.status?.confirmed) {

@@ -743,7 +743,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
     }
     this.enterpriseService.goal(8);
     this.showAccelerationSummary = true && this.acceleratorAvailable;
-    this.scrollIntoAccelPreview = !this.scrollIntoAccelPreview;
+    this.scrollIntoAccelPreview = true;
     return false;
   }
 
