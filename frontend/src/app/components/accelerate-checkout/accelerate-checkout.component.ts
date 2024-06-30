@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, ChangeDetectorRef, SimpleChanges, HostListener } from '@angular/core';
-import { Subscription, tap, of, catchError, Observable } from 'rxjs';
+import { Subscription, tap, of, catchError, Observable, switchMap } from 'rxjs';
 import { ServicesApiServices } from '../../services/services-api.service';
 import { nextRoundNumber } from '../../shared/common.utils';
 import { StateService } from '../../services/state.service';
@@ -443,15 +443,20 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
    * BTCPay
    */
   async requestBTCPayInvoice() {
-    this.servicesApiService.generateBTCPayAcceleratorInvoice$(this.tx.txid, this.userBid).subscribe({
-      next: (response) => {
-        this.invoice = response;
+    this.servicesApiService.generateBTCPayAcceleratorInvoice$(this.tx.txid, this.userBid).pipe(
+      switchMap(response => {
+        return this.servicesApiService.retreiveInvoice$(response.btcpayInvoiceId);
+      }),
+      catchError(error => {
+        console.log(error);
+        return of(null);
+      })
+    ).subscribe((invoice) => {
+        this.invoice = invoice;
         this.cd.markForCheck();
-        this.scrollToElementWithTimeout('acceleratePreviewAnchor', 'start', 500);
-      },
-      error: (response) => {
-        console.log(response);
-      }
+        if (invoice) {
+          this.scrollToElementWithTimeout('acceleratePreviewAnchor', 'start', 500);
+        }
     });
   }
 

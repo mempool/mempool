@@ -77,7 +77,7 @@ export class BitcoinInvoiceComponent implements OnInit, OnChanges, OnDestroy {
       if (this.paymentStatusSubscription) {
         this.paymentStatusSubscription.unsubscribe();
       }
-      this.paymentStatusSubscription = ((this.invoice && (this.invoice.btcpayInvoiceId || this.invoice.id) === invoiceId) ? of(this.invoice) : this.apiService.retreiveInvoice$(invoiceId)).pipe(
+      this.paymentStatusSubscription = ((this.invoice && this.invoice.id === invoiceId) ? of(this.invoice) : this.apiService.retreiveInvoice$(invoiceId)).pipe(
         tap((invoice: any) => {
           this.loadedInvoice = invoice;
           if (this.loadedInvoice.btcDue > 0) {
