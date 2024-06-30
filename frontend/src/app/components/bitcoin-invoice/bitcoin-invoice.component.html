@@ -14,7 +14,7 @@
     
     <form [formGroup]="paymentForm">
 
-      <div class="form-group">
+      <div *ngIf="availableMethods.length > 1" class="form-group">
         <div class="btn-group btn-group-toggle" data-toggle="buttons">
           <!-- <label *ngIf="invoice.addresses.BTC" class="btn btn-primary" [ngClass]="{'active': paymentForm.get('method')?.value === 'chain'}">
             <input type="radio" value="chain" formControlName="method"> <fa-icon [icon]="['fas', 'link']" [fixedWidth]="true" title="Onchain"></fa-icon>
@@ -54,7 +54,7 @@
 
         <div class="qr-wrapper" [class.mt-0]="minimal">
           <a [href]="bypassSecurityTrustUrl('lightning:' + invoice.addresses.BTC_LightningLike)" target="_blank">
-              <app-qrcode imageUrl="/resources/bitcoin-logo.png" [size]="200" [data]="invoice.addresses.BTC_LightningLike.toUpperCase()"></app-qrcode>
+              <app-qrcode imageUrl="/resources/lightning-logo.png" [size]="200" [data]="invoice.addresses.BTC_LightningLike.toUpperCase()"></app-qrcode>
           </a>
         </div>
 

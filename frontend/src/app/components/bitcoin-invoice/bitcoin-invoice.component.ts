@@ -87,6 +87,10 @@ export class BitcoinInvoiceComponent implements OnInit, OnDestroy {
       ).subscribe();
   }
 
+  get availableMethods(): string[] {
+    return Object.keys(this.invoice?.addresses || {}).filter(k => k === 'BTC_LightningLike');
+  }
+
   bypassSecurityTrustUrl(text: string): SafeUrl {
     return this.sanitizer.bypassSecurityTrustUrl(text);
   }
