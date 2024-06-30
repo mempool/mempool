@@ -33,8 +33,8 @@
     <ng-template [ngIf]="paymentForm.get('method')?.value === 'chain' && invoice">
 
         <div class="qr-wrapper" [class.mt-0]="minimal">
-          <a [href]="bypassSecurityTrustUrl('bitcoin:' + invoice.addresses.BTC + '?amount=' + invoice.amount)" target="_blank">
-              <app-qrcode imageUrl="/resources/bitcoin-logo.png" [size]="200" [data]="'bitcoin:' + invoice.addresses.BTC + '?amount=' + invoice.amount"></app-qrcode>
+          <a [href]="bypassSecurityTrustUrl('bitcoin:' + invoice.addresses.BTC + '?amount=' + invoice.btcDue)" target="_blank">
+              <app-qrcode imageUrl="/resources/bitcoin-logo.png" [size]="200" [data]="'bitcoin:' + invoice.addresses.BTC + '?amount=' + invoice.btcDue"></app-qrcode>
           </a>
         </div>
 
@@ -45,7 +45,7 @@
           </div>
         </div>
         @if (!minimal) {
-          <p>{{ invoice.amount }} <span class="symbol">BTC</span></p>
+          <p>{{ invoice.btcDue | number: '1.0-8' }} <span class="symbol">BTC</span></p>
         }
 
     </ng-template>
@@ -66,7 +66,7 @@
         </div>
 
         @if (!minimal) {
-          <p>{{ invoice.amount * 100_000_000 }} <span class="symbol">sats</span></p>
+          <p>{{ invoice.btcDue * 100_000_000 | number: '1.0-0' }} <span class="symbol">sats</span></p>
         }
 
     </ng-template>
@@ -74,8 +74,8 @@
     <ng-template [ngIf]="invoice && (paymentForm.get('method')?.value === 'lbtc' || paymentForm.get('method')?.value === 'tlbtc')">
 
         <div class="qr-wrapper" [class.mt-0]="minimal">
-          <a [href]="bypassSecurityTrustUrl('liquidnetwork:' + invoice.addresses.LBTC + '?amount=' + invoice.amount + '&assetid=6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d')" target="_blank">
-              <app-qrcode imageUrl="/resources/liquid-bitcoin.png" [size]="200" [data]="'liquidnetwork:' + invoice.addresses.LBTC + '?amount=' + invoice.amount + '&assetid=6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d'"></app-qrcode>
+          <a [href]="bypassSecurityTrustUrl('liquidnetwork:' + invoice.addresses.LBTC + '?amount=' + invoice.btcDue + '&assetid=6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d')" target="_blank">
+              <app-qrcode imageUrl="/resources/liquid-bitcoin.png" [size]="200" [data]="'liquidnetwork:' + invoice.addresses.LBTC + '?amount=' + invoice.btcDue + '&assetid=6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d'"></app-qrcode>
           </a>
         </div>
         <br>
@@ -86,7 +86,7 @@
           </div>
         </div>
         @if (!minimal) {
-          <p>{{ invoice.amount }} <span class="symbol">BTC</span></p>
+          <p>{{ invoice.btcDue | number: '1.0-8' }} <span class="symbol">BTC</span></p>
         }
 
     </ng-template>
