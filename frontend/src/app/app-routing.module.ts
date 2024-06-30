@@ -146,8 +146,9 @@ let routes: Routes = [
     data: { preload: true },
   },
   {
-    path: 'tracker/:id',
-    component: TrackerComponent,
+    path: 'tracker',
+    data: { networkSpecific: true },
+    loadChildren: () => import('./components/tracker/tracker.module').then(m => m.TrackerModule),
   },
   {
     path: 'wallet',
