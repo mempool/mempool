@@ -177,9 +177,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.showAccelerationSummary = true;
     }
 
-    this.miningService.getMiningStats('1w').subscribe(stats => {
-      this.miningStats = stats;
-    });
+    if (!this.stateService.isLiquid) {
+      this.miningService.getMiningStats('1w').subscribe(stats => {
+        this.miningStats = stats;
+      });
+    }
 
     this.websocketService.want(['blocks', 'mempool-blocks']);
     this.stateService.networkChanged$.subscribe(
@@ -410,20 +412,22 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             this.tx.acceleratedBy = txPosition.position.acceleratedBy;
           }
 
-          if (!this.mempoolPosition.accelerated) {
-            if (!this.accelerationFlowCompleted && !this.showAccelerationSummary) {
-              this.showAccelerationSummary = true;
-              this.miningService.getMiningStats('1w').subscribe(stats => {
-                this.miningStats = stats;
-              });
+          if (this.stateService.network === '') {
+            if (!this.mempoolPosition.accelerated) {
+              if (!this.accelerationFlowCompleted && !this.showAccelerationSummary) {
+                this.showAccelerationSummary = true;
+                this.miningService.getMiningStats('1w').subscribe(stats => {
+                  this.miningStats = stats;
+                });
+              }
+              if (txPosition.position?.block > 0 && this.tx.weight < 4000) {
+                this.accelerationEligible = true;
+              }
+            } else if (this.showAccelerationSummary) {
+              setTimeout(() => {
+                this.closeAccelerator();
+              }, 2000);
             }
-            if (txPosition.position?.block > 0 && this.tx.weight < 4000) {
-              this.accelerationEligible = true;
-            }
-          } else if (this.showAccelerationSummary) {
-            setTimeout(() => {
-              this.closeAccelerator();
-            }, 2000);
           }
         }
       } else {
