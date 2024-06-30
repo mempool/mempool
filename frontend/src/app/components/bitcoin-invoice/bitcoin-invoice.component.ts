@@ -1,8 +1,8 @@
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription, timer } from 'rxjs';
+import { Subscription, of, timer } from 'rxjs';
 import { retry, switchMap, tap } from 'rxjs/operators';
 import { ServicesApiServices } from '../../services/services-api.service';
 
@@ -11,7 +11,8 @@ import { ServicesApiServices } from '../../services/services-api.service';
   templateUrl: './bitcoin-invoice.component.html',
   styleUrls: ['./bitcoin-invoice.component.scss']
 })
-export class BitcoinInvoiceComponent implements OnInit, OnDestroy {
+export class BitcoinInvoiceComponent implements OnInit, OnChanges, OnDestroy {
+  @Input() invoice;
   @Input() invoiceId: string;
   @Input() redirect = true;
   @Input() minimal = false;
@@ -20,7 +21,7 @@ export class BitcoinInvoiceComponent implements OnInit, OnDestroy {
   paymentForm: FormGroup;
   requestSubscription: Subscription | undefined;
   paymentStatusSubscription: Subscription | undefined;
-  invoice: any;
+  loadedInvoice: any;
   paymentStatus = 1; // 1 - Waiting for invoice | 2 - Pending payment | 3 - Payment completed
   paramMapSubscription: Subscription | undefined;
   invoiceSubscription: Subscription | undefined;
@@ -60,35 +61,47 @@ export class BitcoinInvoiceComponent implements OnInit, OnDestroy {
     this.paramMapSubscription = this.activatedRoute.paramMap
       .pipe(
         tap((paramMap) => {
-          const invoiceId = paramMap.get('invoiceId') ?? this.invoiceId;
-          if (invoiceId) {
-            this.paymentStatusSubscription = this.apiService.retreiveInvoice$(invoiceId).pipe(
-              tap((invoice: any) => {
-                this.invoice = invoice;
-                if (this.invoice.btcDue > 0) {
-                  this.paymentStatus = 2;
-                } else {
-                  this.paymentStatus = 4;
-                }
-              }),
-              switchMap(() => this.apiService.getPaymentStatus$(this.invoice.id)
-                .pipe(
-                  retry({ delay: () => timer(2000)})
-                )
-              ),
-            ).subscribe({
-              next: ((result) => {
-                this.paymentStatus = 3;
-                this.completed.emit();
-              }),
-            });
-          }
+          this.fetchInvoice(paramMap.get('invoiceId') ?? this.invoiceId);
         })
       ).subscribe();
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if ((changes.invoice || changes.invoiceId) && this.invoiceId) {
+      this.fetchInvoice(this.invoiceId);
+    }
+  }
+
+  fetchInvoice(invoiceId: string): void {
+    if (invoiceId) {
+      if (this.paymentStatusSubscription) {
+        this.paymentStatusSubscription.unsubscribe();
+      }
+      this.paymentStatusSubscription = ((this.invoice && (this.invoice.btcpayInvoiceId || this.invoice.id) === invoiceId) ? of(this.invoice) : this.apiService.retreiveInvoice$(invoiceId)).pipe(
+        tap((invoice: any) => {
+          this.loadedInvoice = invoice;
+          if (this.loadedInvoice.btcDue > 0) {
+            this.paymentStatus = 2;
+          } else {
+            this.paymentStatus = 4;
+          }
+        }),
+        switchMap(() => this.apiService.getPaymentStatus$(this.loadedInvoice.id)
+          .pipe(
+            retry({ delay: () => timer(2000)})
+          )
+        ),
+      ).subscribe({
+        next: ((result) => {
+          this.paymentStatus = 3;
+          this.completed.emit();
+        }),
+      });
+    }
+  }
+
   get availableMethods(): string[] {
-    return Object.keys(this.invoice?.addresses || {}).filter(k => k === 'BTC_LightningLike');
+    return Object.keys(this.loadedInvoice?.addresses || {}).filter(k => k === 'BTC_LightningLike');
   }
 
   bypassSecurityTrustUrl(text: string): SafeUrl {
