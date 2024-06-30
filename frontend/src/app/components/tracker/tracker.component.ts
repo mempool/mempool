@@ -779,7 +779,6 @@ export class TrackerComponent implements OnInit, OnDestroy {
     this.auditStatus = null;
     this.accelerationPositions = null;
     this.accelerationEligible = false;
-    this.accelerationFlowCompleted = false;
     this.trackerStage = 'waiting';
     document.body.scrollTo(0, 0);
     this.leaveTransaction();

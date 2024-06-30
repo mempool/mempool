@@ -269,7 +269,7 @@
       @if (!noCTA) {
         <div class="row mb-1">
           <div class="col-sm">
-            <h1 style="font-size: larger;"><ng-content select="[slot='cta-title']"></ng-content><span class="default-slot">Accelerate your Bitcoin transaction?</span></h1>
+            <h1 style="font-size: larger;"><ng-content select="[slot='cta-title']"></ng-content><span class="default-slot">Transaction stuck?</span></h1>
           </div>
         </div>
       }
@@ -284,7 +284,7 @@
             <div class="form-group form-check mb-2">
               <input type="checkbox" [checked]="armed" class="form-check-input" id="accel" name="accel" (change)="armed = !armed">
               <label class="form-check-label d-flex flex-column" for="accel">
-                <span><b>Accelerate</b> to ~{{ ((userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }} sat/vB <button class="btn btn-sm btn-accelerate btn-small-height ml-3" i18n="accelerator.customize" (click)="moveToStep('quote')">customize</button></span>
+                <span><b>Accelerate</b> to ~{{ ((userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }} sat/vB <button *ngIf="advancedEnabled" class="btn btn-sm btn-outline-info btn-small-height ml-3" i18n="accelerator.customize" (click)="moveToStep('quote')">customize</button></span>
                 <span class="checkout-text">Confirmation expected <app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time><br>
                   @if (!calculating) {
                     <app-fiat [value]="cost"></app-fiat>fee (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
@@ -327,7 +327,7 @@
       <div class="row">
         <div class="col-md">
           <div class="d-flex flex-column">
-            <span><b>Accelerate</b> to ~{{ ((userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }} sat/vB <button *ngIf="advancedEnabled && isLoggedIn()" class="btn btn-sm btn-accelerate btn-small-height ml-3" i18n="accelerator.customize" (click)="moveToStep('quote')">customize</button></span>
+            <span><b>Accelerate</b> to ~{{ ((userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }} sat/vB <button *ngIf="advancedEnabled" class="btn btn-sm btn-outline-info btn-small-height ml-3" i18n="accelerator.customize" (click)="moveToStep('quote')">customize</button></span>
             <span class="checkout-text">
               @if (!calculating) {
                 For an additional <app-fiat [value]="cost"></app-fiat> (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)

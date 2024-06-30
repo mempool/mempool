@@ -421,8 +421,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             }
           } else if (this.showAccelerationSummary) {
             setTimeout(() => {
-              this.accelerationFlowCompleted = true;
-              this.showAccelerationSummary = false;
+              this.closeAccelerator();
             }, 2000);
           }
         }
@@ -712,7 +711,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     document.location.hash = '#accelerate';
     this.enterpriseService.goal(8);
     this.accelerationFlowCompleted = false;
-    this.showAccelerationSummary = true && this.acceleratorAvailable;
+    this.showAccelerationSummary = this.acceleratorAvailable;
     this.scrollIntoAccelPreview = true;
     return false;
   }
@@ -796,8 +795,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.showAccelerationSummary = false;
       } else if (this.showAccelerationSummary) {
         setTimeout(() => {
-          this.accelerationFlowCompleted = true;
-          this.showAccelerationSummary = false;
+          this.closeAccelerator();
         }, 2000);
       }
     }
@@ -870,7 +868,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.showCpfpDetails = false;
     this.accelerationInfo = null;
     this.accelerationEligible = false;
-    this.accelerationFlowCompleted = false;
     this.txInBlockIndex = null;
     this.mempoolPosition = null;
     this.pool = null;
@@ -885,6 +882,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   leaveTransaction() {
     this.websocketService.stopTrackingTransaction();
     this.stateService.markBlock$.next({});
+  }
+
+  closeAccelerator(): void {
+    this.accelerationFlowCompleted = true;
+    this.showAccelerationSummary = false;
   }
 
   roundToOneDecimal(cpfpTx: any): number {
