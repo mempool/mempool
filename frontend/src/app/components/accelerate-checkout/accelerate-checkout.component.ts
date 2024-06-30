@@ -460,6 +460,12 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     });
   }
 
+  bitcoinPaymentCompleted(): void {
+    this.audioService.playSound('ascend-chime-cartoon');
+    this.estimateSubscription.unsubscribe();
+    this.moveToStep('paid')
+  }
+
   isLoggedIn(): boolean {
     const auth = this.storageService.getAuth();
     return auth !== null;
