@@ -386,18 +386,19 @@ export class TrackerComponent implements OnInit, OnDestroy {
           }
 
           if (!this.mempoolPosition.accelerated) {
-            if (!this.showAccelerationSummary) {
+            if (!this.accelerationFlowCompleted && !this.showAccelerationSummary && this.mempoolPosition.block > 0) {
               this.showAccelerationSummary = true;
               this.miningService.getMiningStats('1w').subscribe(stats => {
                 this.miningStats = stats;
               });
             }
-            if (txPosition.position?.block > 0 && this.tx.weight < 4000) {
+            if (txPosition.position?.block > 0) {
               this.accelerationEligible = true;
             }
           } else if (this.showAccelerationSummary) {
             setTimeout(() => {
               this.accelerationFlowCompleted = true;
+              this.showAccelerationSummary = false;
             }, 2000);
           }
         }
@@ -742,6 +743,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
       return;
     }
     this.enterpriseService.goal(8);
+    this.accelerationFlowCompleted = false;
     this.showAccelerationSummary = true && this.acceleratorAvailable;
     this.scrollIntoAccelPreview = true;
     return false;
@@ -777,6 +779,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
     this.auditStatus = null;
     this.accelerationPositions = null;
     this.accelerationEligible = false;
+    this.accelerationFlowCompleted = false;
     this.trackerStage = 'waiting';
     document.body.scrollTo(0, 0);
     this.leaveTransaction();

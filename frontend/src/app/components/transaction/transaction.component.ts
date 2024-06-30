@@ -139,6 +139,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   acceleratorAvailable: boolean = this.stateService.env.ACCELERATOR && this.stateService.network === '';
   showAccelerationSummary = false;
   showAccelerationDetails = false;
+  accelerationFlowCompleted = false;
   scrollIntoAccelPreview = false;
   accelerationEligible = false;
   auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
@@ -409,7 +410,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           }
 
           if (!this.mempoolPosition.accelerated) {
-            if (!this.showAccelerationSummary) {
+            if (!this.accelerationFlowCompleted && !this.showAccelerationSummary) {
               this.showAccelerationSummary = true;
               this.miningService.getMiningStats('1w').subscribe(stats => {
                 this.miningStats = stats;
@@ -420,6 +421,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             }
           } else if (this.showAccelerationSummary) {
             setTimeout(() => {
+              this.accelerationFlowCompleted = true;
               this.showAccelerationSummary = false;
             }, 2000);
           }
@@ -709,6 +711,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
     document.location.hash = '#accelerate';
     this.enterpriseService.goal(8);
+    this.accelerationFlowCompleted = false;
     this.showAccelerationSummary = true && this.acceleratorAvailable;
     this.scrollIntoAccelPreview = true;
     return false;
@@ -789,9 +792,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isAcceleration = (this.tx.acceleration || (this.accelerationInfo && this.pool && this.accelerationInfo.pools.some(pool => (pool === this.pool.id))));
     if (this.isAcceleration) {
       if (initialState) {
+        this.accelerationFlowCompleted = true;
         this.showAccelerationSummary = false;
       } else if (this.showAccelerationSummary) {
         setTimeout(() => {
+          this.accelerationFlowCompleted = true;
           this.showAccelerationSummary = false;
         }, 2000);
       }
@@ -864,6 +869,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.filters = [];
     this.showCpfpDetails = false;
     this.accelerationInfo = null;
+    this.accelerationEligible = false;
+    this.accelerationFlowCompleted = false;
     this.txInBlockIndex = null;
     this.mempoolPosition = null;
     this.pool = null;

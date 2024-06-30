@@ -391,7 +391,7 @@
                 </div>
               }
             }
-            @if (cashappEnabled) {
+            @if (canPayWithCashapp) {
               <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
                 <p>Pay <app-fiat [value]="cost"></app-fiat> with</p>
                 <img class="paymentMethod mx-2" src="/resources/cash-app.svg" height=55 (click)="moveToStep('cashapp')">

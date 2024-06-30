@@ -466,7 +466,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   get canPayWithCashapp() {
-    return this.cashappEnabled && this.estimate?.availablePaymentMethods?.includes('cashapp');
+    return this.cashappEnabled && this.estimate?.availablePaymentMethods?.includes('cashapp') && this.cost < 400000;
   }
 
   get canPayWithBalance() {
