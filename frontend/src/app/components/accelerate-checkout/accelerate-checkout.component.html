@@ -73,8 +73,8 @@
           <div class="row">
             <div class="col">
               <ng-container *ngIf="(etaInfo$ | async) as etaInfo; else loadingEstimate">
-                <small class="form-text text-muted mb-2" i18n="accelerator.hashrate-percentage-description">Your transaction will be prioritized by up to <strong>{{ etaInfo.hashratePercentage | number : '1.1-1' }}%</strong> of miners.</small>
-                <small class="form-text text-muted mb-2" i18n="accelerator.time-estimate-description">This will reduce your expected waiting time until the first confirmation to <strong><app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time></strong></small>
+                <small class="form-text checkout-text mb-2" i18n="accelerator.hashrate-percentage-description">Your transaction will be prioritized by up to <strong>{{ etaInfo.hashratePercentage | number : '1.1-1' }}%</strong> of miners.</small>
+                <small class="form-text checkout-text mb-2" i18n="accelerator.time-estimate-description">This will reduce your expected waiting time until the first confirmation to <strong><app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time></strong></small>
               </ng-container>
             </div>
             <div class="col pie">
@@ -299,7 +299,7 @@
             </div>
           </div>
           <div class="pie d-none d-lg-flex" *ngIf="!forceMobile">
-            <small class="form-text text-muted mb-2" i18n="accelerator.hashrate-percentage-description">Your transaction will be prioritized by up to {{ etaInfo.hashratePercentage | number : '1.1-1' }}% of miners.</small>
+            <small class="form-text checkout-text mb-2" i18n="accelerator.hashrate-percentage-description">Your transaction will be prioritized by up to {{ etaInfo.hashratePercentage | number : '1.1-1' }}% of miners.</small>
             <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true"></app-active-acceleration-box>
           </div>
           <ng-container *ngTemplateOutlet="accelerateButton"></ng-container>
@@ -334,7 +334,7 @@
           </div>
         </div>
         <div class="col-md pie d-none d-md-flex" *ngIf="!forceMobile">
-          <small class="form-text text-muted mb-2" i18n="accelerator.hashrate-percentage-description" *ngIf="(etaInfo$ | async) as etaInfo">Your transaction will be prioritized by up to {{ etaInfo.hashratePercentage | number : '1.1-1' }}% of miners.</small>
+          <small class="form-text checkout-text mb-2" i18n="accelerator.hashrate-percentage-description" *ngIf="(etaInfo$ | async) as etaInfo">Your transaction will be prioritized by up to {{ etaInfo.hashratePercentage | number : '1.1-1' }}% of miners.</small>
           <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true"></app-active-acceleration-box>
         </div>
       </div>
