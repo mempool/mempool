@@ -292,7 +292,7 @@ export class Common {
         dustSize += getVarIntLength(dustSize);
         // add value size
         dustSize += 8;
-        if (['v0_p2wpkh', 'v0_p2wsh', 'v1_p2tr'].includes(vout.scriptpubkey_type)) {
+        if (Common.isWitnessProgram(vout.scriptpubkey)) {
           dustSize += 67;
         } else {
           dustSize += 148;
