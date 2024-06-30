@@ -455,9 +455,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     ).subscribe((invoice) => {
         this.invoice = invoice;
         this.cd.markForCheck();
-        if (invoice) {
-          this.scrollToElementWithTimeout('acceleratePreviewAnchor', 'start', 500);
-        }
     });
   }
 
