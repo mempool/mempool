@@ -84,9 +84,17 @@
       <div class="clearfix"></div>
 
       <ng-container *ngIf="(ETA$ | async) as eta;">
-        <app-accelerate-checkout *ngIf="(da$ | async) as da;" [cashappEnabled]="accelerationEligible" [advancedEnabled]="true" [tx]="tx" [eta]="eta" [miningStats]="miningStats" [scrollEvent]="scrollIntoAccelPreview" class="h-100 w-100">
-          <span slot="cta-title">Mempool Accelerator&trade; fixes this.</span>
-        </app-accelerate-checkout>
+        <app-accelerate-checkout
+          *ngIf="(da$ | async) as da;"
+          [cashappEnabled]="accelerationEligible"
+          [advancedEnabled]="true"
+          [tx]="tx"
+          [eta]="eta"
+          [miningStats]="miningStats"
+          [scrollEvent]="scrollIntoAccelPreview"
+          [noCTA]="true"
+          class="h-100 w-100"
+        ></app-accelerate-checkout>
       </ng-container>
     </ng-container>
 

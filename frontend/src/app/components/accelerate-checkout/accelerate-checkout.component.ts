@@ -56,10 +56,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   @Input() cashappEnabled: boolean = true;
   @Input() advancedEnabled: boolean = false;
   @Input() forceMobile: boolean = false;
+  @Input() noCTA: boolean = false;
   @Output() changeMode = new EventEmitter<boolean>();
 
   calculating = true;
-  choosenOption: 'wait' | 'accel';
+  armed = false;
   error = '';
   math = Math;
   isMobile: boolean = window.innerWidth <= 767.98;
@@ -443,13 +444,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         console.log(response);
       }
     });
-  }
-
-  /**
-   * UI events
-   */
-  selectedOptionChanged(event) {
-    this.choosenOption = event.target.id;
   }
 
   isLoggedIn(): boolean {

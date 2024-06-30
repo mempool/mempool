@@ -266,36 +266,23 @@
   @else if (step === 'summary') {
     <ng-container *ngIf="estimate && (etaInfo$ | async) as etaInfo; else loadingSummary">
       <!-- Show A/B CTAs -->
-      <div class="row mb-1">
-        <div class="col-sm">
-          <h1 style="font-size: larger;"><ng-content select="[slot='cta-title']"></ng-content><span class="default-slot">Accelerate your Bitcoin transaction?</span></h1>
+      @if (!noCTA) {
+        <div class="row mb-1">
+          <div class="col-sm">
+            <h1 style="font-size: larger;"><ng-content select="[slot='cta-title']"></ng-content><span class="default-slot">Accelerate your Bitcoin transaction?</span></h1>
+          </div>
         </div>
-      </div>
+      }
 
       <div *ngIf="isLoggedIn() && !estimate.hasAccess">
         <div class="alert alert-mempool mr-6">You are currently on the waitlist for Mempool Accelerator&trade;</div>
       </div>
 
       <form [class]="{estimateDisabled: error || showSuccess }">
-        <div class="row">
-          <div class="col-md">
+        <div class="row summary-row">
+          <div>
             <div class="form-group form-check mb-2">
-              <input type="radio" [checked]="choosenOption === 'wait'"  class="form-check-input" id="wait" name="accel" (change)="selectedOptionChanged($event)">
-              <label class="form-check-label d-flex flex-column" for="wait">
-                <span class="font-weight-bold">Wait</span>
-                @if (eta.blocks < 7) {
-                  <span class="checkout-text">Confirmation expected <app-time kind="within" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time></span>
-                } @else {
-                  <span class="checkout-text">
-                    <span>Confirmation expected within several hours</span>
-                  </span>
-                }
-              </label>
-            </div>
-          </div>
-          <div class="col-md">
-            <div class="form-group form-check mb-2">
-              <input type="radio" [checked]="choosenOption === 'accel'" class="form-check-input" id="accel" name="accel" (change)="selectedOptionChanged($event)">
+              <input type="checkbox" [checked]="armed" class="form-check-input" id="accel" name="accel" (change)="armed = !armed">
               <label class="form-check-label d-flex flex-column" for="accel">
                 <span><b>Accelerate</b> to ~{{ ((userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }} sat/vB <button class="btn btn-sm btn-accelerate btn-small-height ml-3" i18n="accelerator.customize" (click)="moveToStep('quote')">customize</button></span>
                 <span class="checkout-text">Confirmation expected <app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time><br>
@@ -308,25 +295,21 @@
               </label>
             </div>
           </div>
-          <div class="col-md pie d-none d-lg-flex" *ngIf="!forceMobile">
+          <div class="pie d-none d-lg-flex" *ngIf="!forceMobile">
             <small class="form-text text-muted mb-2" i18n="accelerator.hashrate-percentage-description">Your transaction will be prioritized by up to {{ etaInfo.hashratePercentage | number : '1.1-1' }}% of miners.</small>
             <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true"></app-active-acceleration-box>
           </div>
-        </div>
-        <div class="row mt-2 mb-2">
-          <div class="col-sm d-flex flex-row justify-content-center">
-            @if (isLoggedIn() || canPayWithBitcoin || canPayWithCashapp) {
-              <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" [class.estimateDisabled]="!canPay || choosenOption !== 'accel' || calculating" style="width: 200px" (click)="accelerate()">
-                <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
-                <span>Accelerate</span>
-              </button>
-            } @else {
-              <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center estimateDisabled" style="width: 200px">
-                <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
-                <span>Coming soon</span>
-              </button>
-            }
-          </div>
+          @if (isLoggedIn() || canPayWithBitcoin || canPayWithCashapp) {
+            <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" [class.estimateDisabled]="!canPay || !armed || calculating" style="width: 200px" (click)="accelerate()">
+              <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
+              <span>Accelerate</span>
+            </button>
+          } @else {
+            <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center estimateDisabled" style="width: 200px">
+              <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
+              <span>Coming soon</span>
+            </button>
+          }
         </div>
       </form>
     </ng-container>
