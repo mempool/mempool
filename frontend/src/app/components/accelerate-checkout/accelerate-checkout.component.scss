@@ -59,7 +59,11 @@
   box-shadow: none !important;
 }
 
-.estimateDisabled {
+.grayOut {
+  opacity: 0.5;
+}
+
+.disabled {
   opacity: 0.5;
   pointer-events: none;
 }
@@ -184,4 +188,23 @@
   @media (max-width: 640px) {
     flex-direction: column;
   }
+}
+
+@keyframes box-shake {
+  0% { transform: rotate(0deg); }
+  10% { transform: rotate(-8deg); }
+  20% { transform: rotate(8deg); }
+  30% { transform: rotate(-8deg); }
+  40% { transform: rotate(8deg); }
+  50% { transform: rotate(-8deg); }
+  60% { transform: rotate(8deg); }
+  70% { transform: rotate(-8deg); }
+  80% { transform: rotate(8deg); }
+  90% { transform: rotate(-8deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.error-shake {
+  box-shadow: 0 0 10px 2px var(--danger);
+  animation: box-shake 1.5s ease-in-out;
 }

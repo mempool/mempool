@@ -63,6 +63,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
   calculating = true;
   armed = false;
+  misfire = false;
   error = '';
   math = Math;
   isMobile: boolean = window.innerWidth <= 767.98;
@@ -149,6 +150,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
   moveToStep(step: CheckoutStep) {
     this._step = step;
+    this.misfire = false;
     if (!this.estimate && ['quote', 'summary', 'checkout'].includes(this.step)) {
       this.fetchEstimate();
     }
@@ -266,11 +268,16 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
    * Advanced mode acceleration button clicked
    */
   accelerate(): void {
-    if (this.canPay) {
-      if (this.isLoggedIn()) {
-        this.accelerateWithMempoolAccount();
+    if (this.canPay && !this.calculating) {
+      if ((!this.armed && this.step === 'summary')) {
+        this.misfire = true;
       } else {
-        this.moveToStep('checkout');
+        if (this.isLoggedIn()) {
+          this.accelerateWithMempoolAccount();
+        } else {
+          this.armed = true;
+          this.moveToStep('checkout');
+        }
       }
     }
   }

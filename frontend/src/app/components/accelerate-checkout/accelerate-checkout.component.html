@@ -29,7 +29,7 @@
       </ng-container>
 
       <ng-container *ngIf="estimate else loadingEstimate">
-        <div [class]="{estimateDisabled: error || showSuccess }">
+        <div [class.disabled]="error || showSuccess">
           <div *ngIf="isLoggedIn() && !estimate.hasAccess" style="margin-right: 5em;">
             <div class="alert alert-mempool mr-6">You are currently on the waitlist</div>
           </div>
@@ -280,12 +280,12 @@
         <div class="alert alert-mempool mr-6">You are currently on the waitlist for Mempool Accelerator&trade;</div>
       </div>
 
-      <form [class]="{estimateDisabled: error || showSuccess }">
+      <form [class.disabled]="error || showSuccess">
         <div class="row summary-row">
           <div>
             <div class="form-group form-check mb-2">
               <div class="float-right"><ng-container *ngTemplateOutlet="customizeButton"></ng-container></div>
-              <input type="checkbox" [checked]="armed" class="form-check-input" id="accel" name="accel" (change)="armed = !armed">
+              <input type="checkbox" [checked]="armed" class="form-check-input" [class.error-shake]="misfire" id="accel" name="accel" (change)="armed = !armed; misfire = false">
               <label class="form-check-label d-flex flex-column" for="accel">
                 <span><b>Accelerate</b> to ~{{ ((userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }} sat/vB</span>
                 <span class="checkout-text">Confirmation expected <app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time><br>
@@ -339,14 +339,14 @@
         </div>
       </div>
       @if (canPayWithBalance || !(canPayWithBitcoin || canPayWithCashapp)) {
-        <div class="d-flex justify-content-center" [class]="{estimateDisabled: !canPayWithBalance || error || showSuccess }">
+        <div class="d-flex justify-content-center" [class.grayOut]="!canPayWithBalance || error || showSuccess">
           <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" style="width: 200px" (click)="accelerate()">
             <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
             <span>Accelerate</span>
           </button>
         </div>
       } @else {
-        <div class="payment-area mt-2 p-2"[class]="{estimateDisabled: error || showSuccess }">
+        <div class="payment-area mt-2 p-2" [class.disabled]="error || showSuccess">
           <div class="row text-center justify-content-center mx-2" style="font-size: 14px;">
             <p>Payment to mempool.space for acceleration of txid <a [routerLink]="'/tx/' + tx.txid" target="_blank"> {{ tx.txid.substr(0, 10) }}..{{ tx.txid.substr(-10) }}</a></p>
           </div>
@@ -490,12 +490,12 @@
 
 <ng-template #accelerateButton>
   @if (isLoggedIn() || canPayWithBitcoin || canPayWithCashapp) {
-    <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" [class.estimateDisabled]="!canPay || (!armed && step === 'summary') || calculating" style="width: 200px" (click)="accelerate()">
+    <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" [class.grayOut]="!canPay || (!armed && step === 'summary') || calculating" style="width: 200px" (click)="accelerate()">
       <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
       <span>Accelerate</span>
     </button>
   } @else {
-    <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center estimateDisabled" style="width: 200px">
+    <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center disabled" style="width: 200px">
       <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
       <span>Coming soon</span>
     </button>
