@@ -56,7 +56,9 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   @Input() cashappEnabled: boolean = true;
   @Input() advancedEnabled: boolean = false;
   @Input() forceMobile: boolean = false;
+  @Input() showDetails: boolean = false;
   @Input() noCTA: boolean = false;
+  @Output() hasDetails = new EventEmitter<boolean>();
   @Output() changeMode = new EventEmitter<boolean>();
 
   calculating = true;
@@ -67,7 +69,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
   private _step: CheckoutStep = 'summary';
   simpleMode: boolean = true;
-  showDetails: boolean = false;
   paymentMethod: 'cashapp' | 'btcpay';
 
   user: any = undefined;
@@ -159,6 +160,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.insertSquare();
       this.setupSquare();
     }
+    this.hasDetails.emit(this._step === 'quote');
   }
 
   /**

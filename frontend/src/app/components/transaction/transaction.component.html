@@ -82,6 +82,7 @@
       </div>
 
       <button type="button" class="btn btn-outline-info flow-toggle btn-sm float-right" (click)="closeAccelerator()" i18n="hide-diagram">Hide accelerator</button>
+      <button *ngIf="hasAccelerationDetails" class="btn btn-sm btn-outline-info float-right ml-2" (click)="showAccelerationDetails = !showAccelerationDetails">Details</button>
 
       <div class="clearfix"></div>
 
@@ -94,7 +95,9 @@
           [eta]="eta"
           [miningStats]="miningStats"
           [scrollEvent]="scrollIntoAccelPreview"
+          [showDetails]="showAccelerationDetails"
           [noCTA]="true"
+          (hasDetails)="setHasAccelerationDetails($event)"
           class="h-100 w-100"
         ></app-accelerate-checkout>
       </ng-container>

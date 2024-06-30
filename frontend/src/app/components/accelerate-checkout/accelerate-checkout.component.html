@@ -30,8 +30,6 @@
 
       <ng-container *ngIf="estimate else loadingEstimate">
         <div [class]="{estimateDisabled: error || showSuccess }">
-          <button class="btn btn-sm btn-outline-info float-right" (click)="showDetails = !showDetails">Details</button>
-
           <div *ngIf="isLoggedIn() && !estimate.hasAccess" style="margin-right: 5em;">
             <div class="alert alert-mempool mr-6">You are currently on the waitlist</div>
           </div>
@@ -243,10 +241,7 @@
                     <td class="item"></td>
                     <td colspan="2">
                       <div class="d-flex">
-                        <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" style="width: 200px" (click)="moveToStep('summary')">
-                          <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
-                          <span>Continue</span>
-                        </button>
+                        <ng-container *ngTemplateOutlet="accelerateButton"></ng-container>
                       </div>
                     </td>
                   </tr>
@@ -256,6 +251,13 @@
           </div>
         </div>
       </ng-container>
+    </div>
+
+    <hr>
+    <div class="row mt-2 mb-2 text-center">
+      <div class="col-sm d-flex flex-column">
+        <button type="button" class="mt-1 btn btn-secondary btn-sm rounded-pill align-self-center" style="width: 200px" (click)="moveToStep('summary')">Go Back</button>
+      </div>
     </div>
 
     <ng-template #loadingEstimate>
@@ -282,9 +284,10 @@
         <div class="row summary-row">
           <div>
             <div class="form-group form-check mb-2">
+              <div class="float-right"><ng-container *ngTemplateOutlet="customizeButton"></ng-container></div>
               <input type="checkbox" [checked]="armed" class="form-check-input" id="accel" name="accel" (change)="armed = !armed">
               <label class="form-check-label d-flex flex-column" for="accel">
-                <span><b>Accelerate</b> to ~{{ ((userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }} sat/vB <button *ngIf="advancedEnabled" class="btn btn-sm btn-outline-info btn-small-height ml-3" i18n="accelerator.customize" (click)="moveToStep('quote')">customize</button></span>
+                <span><b>Accelerate</b> to ~{{ ((userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }} sat/vB</span>
                 <span class="checkout-text">Confirmation expected <app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time><br>
                   @if (!calculating) {
                     <app-fiat [value]="cost"></app-fiat>fee (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
@@ -299,17 +302,7 @@
             <small class="form-text text-muted mb-2" i18n="accelerator.hashrate-percentage-description">Your transaction will be prioritized by up to {{ etaInfo.hashratePercentage | number : '1.1-1' }}% of miners.</small>
             <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true"></app-active-acceleration-box>
           </div>
-          @if (isLoggedIn() || canPayWithBitcoin || canPayWithCashapp) {
-            <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" [class.estimateDisabled]="!canPay || !armed || calculating" style="width: 200px" (click)="accelerate()">
-              <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
-              <span>Accelerate</span>
-            </button>
-          } @else {
-            <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center estimateDisabled" style="width: 200px">
-              <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
-              <span>Coming soon</span>
-            </button>
-          }
+          <ng-container *ngTemplateOutlet="accelerateButton"></ng-container>
         </div>
       </form>
     </ng-container>
@@ -327,7 +320,7 @@
       <div class="row">
         <div class="col-md">
           <div class="d-flex flex-column">
-            <span><b>Accelerate</b> to ~{{ ((userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }} sat/vB <button *ngIf="advancedEnabled" class="btn btn-sm btn-outline-info btn-small-height ml-3" i18n="accelerator.customize" (click)="moveToStep('quote')">customize</button></span>
+            <span><b>Accelerate</b> to ~{{ ((userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }} sat/vB</span>
             <span class="checkout-text">
               @if (!calculating) {
                 For an additional <app-fiat [value]="cost"></app-fiat> (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
@@ -393,6 +386,8 @@
         </div>
       </div>
     </ng-template>
+
+    <hr>
     <div class="row mt-2 mb-2 text-center">
       <div class="col-sm d-flex flex-column">
         <button type="button" class="mt-1 btn btn-secondary btn-sm rounded-pill align-self-center" style="width: 200px" (click)="moveToStep('summary')">Go Back</button>
@@ -488,3 +483,21 @@
     </div>
   }
 </div>
+
+<ng-template #customizeButton>
+  <button type="button" *ngIf="advancedEnabled" class="btn btn-sm btn-outline-info btn-small-height ml-3" (click)="moveToStep('quote')" i18n="accelerator.customize">customize</button>
+</ng-template>
+
+<ng-template #accelerateButton>
+  @if (isLoggedIn() || canPayWithBitcoin || canPayWithCashapp) {
+    <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" [class.estimateDisabled]="!canPay || (!armed && step === 'summary') || calculating" style="width: 200px" (click)="accelerate()">
+      <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
+      <span>Accelerate</span>
+    </button>
+  } @else {
+    <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center estimateDisabled" style="width: 200px">
+      <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
+      <span>Coming soon</span>
+    </button>
+  }
+</ng-template>

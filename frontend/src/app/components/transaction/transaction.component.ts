@@ -139,6 +139,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   acceleratorAvailable: boolean = this.stateService.env.ACCELERATOR && this.stateService.network === '';
   showAccelerationSummary = false;
   showAccelerationDetails = false;
+  hasAccelerationDetails = false;
   accelerationFlowCompleted = false;
   scrollIntoAccelPreview = false;
   accelerationEligible = false;
@@ -866,6 +867,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.rbfReplaces = [];
     this.filters = [];
     this.showCpfpDetails = false;
+    this.showAccelerationDetails = false;
     this.accelerationInfo = null;
     this.accelerationEligible = false;
     this.txInBlockIndex = null;
@@ -932,6 +934,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         anchorElement.scrollIntoView();
       }
     }
+  }
+
+  setHasAccelerationDetails(hasDetails: boolean): void {
+    this.hasAccelerationDetails = hasDetails;
   }
 
   @HostListener('window:resize', ['$event'])
