@@ -22,7 +22,7 @@ export type AccelerationEstimate = {
   mempoolBaseFee: number;
   vsizeFee: number;
   pools: number[];
-  availablePaymentMethods: PaymentMethod[];
+  availablePaymentMethods: {[method: string]: {min: number, max: number}};
 }
 export type TxSummary = {
   txid: string; // txid of the current transaction
@@ -100,6 +100,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   cashAppPay: any;
   cashAppSubscription: Subscription;
   conversionsSubscription: Subscription;
+  conversions: any;
   
   // btcpay
   loadingBtcpayInvoice = false;
@@ -133,6 +134,12 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         locationId: ids.squareLocationId
       };
     });
+
+    this.conversionsSubscription = this.stateService.conversions$.subscribe(
+      async (conversions) => {
+        this.conversions = conversions;
+      }
+    );
   }
 
   ngOnDestroy() {
@@ -350,6 +357,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     
     this.conversionsSubscription = this.stateService.conversions$.subscribe(
       async (conversions) => {
+        this.conversions = conversions;
         if (this.cashAppPay) {
           this.cashAppPay.destroy();
         }
@@ -464,15 +472,33 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   get canPayWithBitcoin() {
-    return this.estimate?.availablePaymentMethods?.includes('bitcoin');
+    const paymentMethod = this.estimate?.availablePaymentMethods?.bitcoin;
+    return paymentMethod && this.cost >= paymentMethod.min && this.cost <= paymentMethod.max;
   }
 
   get canPayWithCashapp() {
-    return this.cashappEnabled && this.estimate?.availablePaymentMethods?.includes('cashapp') && this.cost < 400000 && this.stateService.referrer === 'https://cash.app/';
+    if (!this.cashappEnabled || !this.conversions || this.stateService.referrer !== 'https://cash.app/') {
+      return false;
+    }
+
+    const paymentMethod = this.estimate?.availablePaymentMethods?.cashapp;
+    if (paymentMethod) {
+      const costUSD = (this.cost / 100_000_000 * this.conversions.USD);
+      if (costUSD >= paymentMethod.min && costUSD <= paymentMethod.max) {
+        return true;
+      }
+    }
+    
+    return false;
   }
 
   get canPayWithBalance() {
-    return this.isLoggedIn() && this.estimate?.availablePaymentMethods?.includes('balance') && this.estimate?.hasAccess;
+    if (!this.isLoggedIn() || !this.estimate?.hasAccess) {
+      return false;
+    }
+    
+    const paymentMethod = this.estimate?.availablePaymentMethods?.balance;
+    return paymentMethod && this.cost >= paymentMethod.min && this.cost <= paymentMethod.max;
   }
 
   get canPay() {
