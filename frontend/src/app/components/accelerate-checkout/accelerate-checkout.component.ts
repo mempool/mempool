@@ -62,8 +62,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   @Output() changeMode = new EventEmitter<boolean>();
 
   calculating = true;
-  armed = false;
-  misfire = false;
+  selectedOption: 'wait' | 'accel';
   error = '';
   math = Math;
   isMobile: boolean = window.innerWidth <= 767.98;
@@ -150,7 +149,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
   moveToStep(step: CheckoutStep) {
     this._step = step;
-    this.misfire = false;
     if (!this.estimate && ['quote', 'summary', 'checkout'].includes(this.step)) {
       this.fetchEstimate();
     }
@@ -266,27 +264,12 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   /**
-   * Advanced mode acceleration button clicked
-   */
-  accelerate(): void {
-    if (this.canPay && !this.calculating) {
-      if ((!this.armed && this.step === 'summary')) {
-        this.misfire = true;
-      } else {
-        if (this.isLoggedIn()) {
-          this.accelerateWithMempoolAccount();
-        } else {
-          this.armed = true;
-          this.moveToStep('checkout');
-        }
-      }
-    }
-  }
-
-  /**
    * Account-based acceleration request
    */
   accelerateWithMempoolAccount(): void {
+    if (!this.canPay || this.calculating) {
+      return;
+    }
     if (this.accelerationSubscription) {
       this.accelerationSubscription.unsubscribe();
     }
@@ -467,6 +450,13 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   isLoggedIn(): boolean {
     const auth = this.storageService.getAuth();
     return auth !== null;
+  }
+
+  /**
+   * UI events
+   */
+  selectedOptionChanged(event) {
+    this.selectedOption = event.target.id;
   }
 
   get step() {

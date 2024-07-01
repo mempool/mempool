@@ -24,8 +24,8 @@ import { SeoService } from '../../services/seo.service';
 import { StorageService } from '../../services/storage.service';
 import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { getTransactionFlags, getUnacceleratedFeeRate } from '../../shared/transaction.utils';
-import { Filter, toFilters } from '../../shared/filters.utils';
-import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration, AccelerationPosition, SinglePoolStats } from '../../interfaces/node-api.interface';
+import { Filter, TransactionFlags, toFilters } from '../../shared/filters.utils';
+import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration, AccelerationPosition } from '../../interfaces/node-api.interface';
 import { LiquidUnblinding } from './liquid-ublinding';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { PriceService } from '../../services/price.service';
@@ -137,12 +137,14 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   hasEffectiveFeeRate: boolean;
   accelerateCtaType: 'alert' | 'button' = 'button';
   acceleratorAvailable: boolean = this.stateService.env.ACCELERATOR && this.stateService.network === '';
-  showAccelerationSummary = false;
+  eligibleForAcceleration: boolean = false;
+  forceAccelerationSummary = false;
+  hideAccelerationSummary = false;
+  accelerationFlowCompleted = false;
   showAccelerationDetails = false;
   hasAccelerationDetails = false;
-  accelerationFlowCompleted = false;
   scrollIntoAccelPreview = false;
-  accelerationEligible = false;
+  cashappEligible = false;
   auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
 
   @ViewChild('graphContainer')
@@ -173,11 +175,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.enterpriseService.page();
 
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('cash_request_id')) {
-      this.showAccelerationSummary = true;
-    }
+    this.forceAccelerationSummary = !!urlParams.get('cash_request_id');
 
-    if (!this.stateService.isLiquid) {
+    this.hideAccelerationSummary = this.storageService.getValue('hide-accelerator-pref') == 'true';
+
+    if (!this.stateService.isLiquid()) {
       this.miningService.getMiningStats('1w').subscribe(stats => {
         this.miningStats = stats;
       });
@@ -414,18 +416,17 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
           if (this.stateService.network === '') {
             if (!this.mempoolPosition.accelerated) {
-              if (!this.accelerationFlowCompleted && !this.showAccelerationSummary) {
-                this.showAccelerationSummary = true;
+              if (!this.accelerationFlowCompleted && !this.hideAccelerationSummary && !this.showAccelerationSummary) {
                 this.miningService.getMiningStats('1w').subscribe(stats => {
                   this.miningStats = stats;
                 });
               }
               if (txPosition.position?.block > 0 && this.tx.weight < 4000) {
-                this.accelerationEligible = true;
+                this.cashappEligible = true;
               }
             } else if (this.showAccelerationSummary) {
               setTimeout(() => {
-                this.closeAccelerator();
+                this.accelerationFlowCompleted = true;
               }, 2000);
             }
           }
@@ -715,8 +716,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
     document.location.hash = '#accelerate';
     this.enterpriseService.goal(8);
-    this.accelerationFlowCompleted = false;
-    this.showAccelerationSummary = this.acceleratorAvailable;
+    this.openAccelerator();
     this.scrollIntoAccelPreview = true;
     return false;
   }
@@ -778,7 +778,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     if (!this.isAcceleration && this.fragmentParams.has('accelerate')) {
-      this.onAccelerateClicked();
+      this.forceAccelerationSummary = true;
     }
 
     this.txChanged$.next(true);
@@ -797,10 +797,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.isAcceleration) {
       if (initialState) {
         this.accelerationFlowCompleted = true;
-        this.showAccelerationSummary = false;
       } else if (this.showAccelerationSummary) {
         setTimeout(() => {
-          this.closeAccelerator();
+          this.accelerationFlowCompleted = true;
         }, 2000);
       }
     }
@@ -821,12 +820,23 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.rbfEnabled = !this.tx.status.confirmed || isFeatureActive(this.stateService.network, this.tx.status.block_height, 'rbf');
       this.tx.flags = getTransactionFlags(this.tx);
       this.filters = this.tx.flags ? toFilters(this.tx.flags).filter(f => f.txPage) : [];
+      this.checkAccelerationEligibility();
     } else {
       this.segwitEnabled = false;
       this.taprootEnabled = false;
       this.rbfEnabled = false;
     }
     this.featuresEnabled = this.segwitEnabled || this.taprootEnabled || this.rbfEnabled;
+  }
+
+  checkAccelerationEligibility() {
+    if (this.tx && this.tx.flags) {
+      const replaceableInputs = (this.tx.flags & (TransactionFlags.sighash_none | TransactionFlags.sighash_acp)) > 0n;
+      const highSigop = (this.tx.sigops * 20) > this.tx.weight;
+      this.eligibleForAcceleration = !replaceableInputs && !highSigop;
+    } else {
+      this.eligibleForAcceleration = false;
+    }
   }
 
   isAuditAvailable(blockHeight: number): boolean {
@@ -873,7 +883,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.showCpfpDetails = false;
     this.showAccelerationDetails = false;
     this.accelerationInfo = null;
-    this.accelerationEligible = false;
+    this.cashappEligible = false;
     this.txInBlockIndex = null;
     this.mempoolPosition = null;
     this.pool = null;
@@ -882,17 +892,13 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     document.body.scrollTo(0, 0);
     this.isAcceleration = false;
     this.isAccelerated$.next(this.isAcceleration);
+    this.eligibleForAcceleration = false;
     this.leaveTransaction();
   }
 
   leaveTransaction() {
     this.websocketService.stopTrackingTransaction();
     this.stateService.markBlock$.next({});
-  }
-
-  closeAccelerator(): void {
-    this.accelerationFlowCompleted = true;
-    this.showAccelerationSummary = false;
   }
 
   roundToOneDecimal(cpfpTx: any): number {
@@ -961,6 +967,32 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoggedIn(): boolean {
     const auth = this.storageService.getAuth();
     return auth !== null;
+  }
+
+  closeAccelerator(): void {
+    document.location.hash = '';
+    this.hideAccelerationSummary = true;
+    this.forceAccelerationSummary = false;
+    this.storageService.setValue('hide-accelerator-pref', 'true');
+  }
+
+  openAccelerator(): void {
+    this.accelerationFlowCompleted = false;
+    this.hideAccelerationSummary = false;
+    this.storageService.setValue('hide-accelerator-pref', 'false');
+  }
+
+  get showAccelerationSummary(): boolean {
+    return (
+      this.tx
+      && !this.tx.acceleration
+      && this.acceleratorAvailable
+      && this.eligibleForAcceleration
+      && (
+        (!this.hideAccelerationSummary && !this.accelerationFlowCompleted)
+        || this.forceAccelerationSummary
+      )
+    );
   }
 
   ngOnDestroy() {
