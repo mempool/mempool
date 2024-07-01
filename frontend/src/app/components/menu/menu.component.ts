@@ -61,12 +61,18 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.loggedOut.emit(true);
       if (this.stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE) {
         this.userMenuGroups$ = this.servicesApiServices.getUserMenuGroups$();
-        this.router.navigateByUrl('/');
+        if (window.location.toString().includes('services')) {
+          this.router.navigateByUrl('/login');
+        }
       }
     });
   }
 
   onLinkClick(link) {
+    if (link === 'logout') {
+      this.toggleMenu(false);
+      return;
+    }
     if (!this.isServicesPage || this.isSmallScreen()) {
       this.toggleMenu(false);
     }
