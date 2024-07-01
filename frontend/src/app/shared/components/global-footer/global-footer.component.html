@@ -33,8 +33,8 @@
             </div>
           }
           <a *ngIf="stateService.isMempoolSpaceBuild" class="btn btn-purple sponsor d-none d-sm-flex justify-content-center" [routerLink]="['/login']">
-            <span *ngIf="loggedIn" i18n="shared.my-account" class="nowrap">My Account</span>
-            <span *ngIf="!loggedIn" i18n="shared.sign-in" class="nowrap">Sign In</span>
+            <span *ngIf="user" i18n="shared.my-account" class="nowrap">My Account</span>
+            <span *ngIf="!user" i18n="shared.sign-in" class="nowrap">Sign In</span>
           </a>
         </div>
         @if (!env.customize?.theme) {
@@ -44,8 +44,8 @@
         }
         @if (!enterpriseInfo?.footer_img) {
           <a *ngIf="stateService.isMempoolSpaceBuild" class="btn btn-purple sponsor d-flex d-sm-none justify-content-center ml-auto mr-auto mt-0 mb-2" [routerLink]="['/login']">
-            <span *ngIf="loggedIn" i18n="shared.my-account" class="nowrap">My Account</span>
-            <span *ngIf="!loggedIn" i18n="shared.sign-in" class="nowrap">Sign In</span>
+            <span *ngIf="user" i18n="shared.my-account" class="nowrap">My Account</span>
+            <span *ngIf="!user" i18n="shared.sign-in" class="nowrap">Sign In</span>
           </a>
           <p class="explore-tagline-desktop">
             <ng-container i18n="@@7deec1c1520f06170e1f8e8ddfbe4532312f638f">Explore the full Bitcoin ecosystem</ng-container>

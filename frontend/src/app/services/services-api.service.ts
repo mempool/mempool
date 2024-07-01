@@ -1,6 +1,6 @@
 import { Router, NavigationStart } from '@angular/router';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { StateService } from './state.service';
 import { StorageService } from './storage.service';
 import { MenuGroup } from '../interfaces/services.interface';
