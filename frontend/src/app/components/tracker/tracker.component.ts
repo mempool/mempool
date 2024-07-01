@@ -21,7 +21,7 @@ import { AudioService } from '../../services/audio.service';
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
 import { seoDescriptionNetwork } from '../../shared/common.utils';
-import { Filter } from '../../shared/filters.utils';
+import { Filter, TransactionFlags } from '../../shared/filters.utils';
 import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration, AccelerationPosition } from '../../interfaces/node-api.interface';
 import { PriceService } from '../../services/price.service';
 import { ServicesApiServices } from '../../services/services-api.service';
@@ -30,7 +30,7 @@ import { ZONE_SERVICE } from '../../injection-tokens';
 import { TrackerStage } from './tracker-bar.component';
 import { MiningService, MiningStats } from '../../services/mining.service';
 import { ETA, EtaService } from '../../services/eta.service';
-import { getUnacceleratedFeeRate } from '../../shared/transaction.utils';
+import { getTransactionFlags, getUnacceleratedFeeRate } from '../../shared/transaction.utils';
 
 interface Pool {
   id: number;
@@ -117,8 +117,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
   hasEffectiveFeeRate: boolean;
   accelerateCtaType: 'alert' | 'button' = 'button';
   acceleratorAvailable: boolean = this.stateService.env.ACCELERATOR && this.stateService.network === '';
-  accelerationEligible: boolean = false;
-  showAccelerationSummary = false;
+  eligibleForAcceleration: boolean = false;
   accelerationFlowCompleted = false;
   scrollIntoAccelPreview = false;
   auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
@@ -154,11 +153,6 @@ export class TrackerComponent implements OnInit, OnDestroy {
     this.miningService.getMiningStats('1w').subscribe(stats => {
       this.miningStats = stats;
     });
-
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('cash_request_id')) {
-      this.showAccelerationSummary = true;
-    }
 
     this.enterpriseService.page();
 
@@ -267,6 +261,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
 
       if (!this.tx) {
         this.tx = tx;
+        this.checkAccelerationEligibility();
         this.isCached = true;
         if (tx.fee === undefined) {
           this.tx.fee = 0;
@@ -385,20 +380,9 @@ export class TrackerComponent implements OnInit, OnDestroy {
             this.trackerStage = 'replaced';
           }
 
-          if (!this.mempoolPosition.accelerated) {
-            if (!this.accelerationFlowCompleted && !this.showAccelerationSummary && this.mempoolPosition.block > 0) {
-              this.showAccelerationSummary = true;
-              this.miningService.getMiningStats('1w').subscribe(stats => {
-                this.miningStats = stats;
-              });
-            }
-            if (txPosition.position?.block > 0) {
-              this.accelerationEligible = true;
-            }
-          } else if (this.showAccelerationSummary) {
+          if (this.mempoolPosition.accelerated && this.showAccelerationSummary) {
             setTimeout(() => {
               this.accelerationFlowCompleted = true;
-              this.showAccelerationSummary = false;
             }, 2000);
           }
         }
@@ -462,6 +446,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
           this.seoService.clearSoft404();
 
           this.tx = tx;
+          this.checkAccelerationEligibility();
           this.isCached = false;
           if (tx.fee === undefined) {
             this.tx.fee = 0;
@@ -744,13 +729,38 @@ export class TrackerComponent implements OnInit, OnDestroy {
     }
     this.enterpriseService.goal(8);
     this.accelerationFlowCompleted = false;
-    this.showAccelerationSummary = true && this.acceleratorAvailable;
-    this.scrollIntoAccelPreview = true;
+    if (this.showAccelerationSummary) {
+      this.scrollIntoAccelPreview = true;
+    }
     return false;
   }
 
   get isLoading(): boolean {
     return this.isLoadingTx || this.loadingCachedTx || this.loadingPosition;
+  }
+
+  checkAccelerationEligibility() {
+    if (this.tx) {
+      this.tx.flags = getTransactionFlags(this.tx);
+      const replaceableInputs = (this.tx.flags & (TransactionFlags.sighash_none | TransactionFlags.sighash_acp)) > 0n;
+      this.eligibleForAcceleration = !replaceableInputs;
+    } else {
+      this.eligibleForAcceleration = false;
+    }
+  }
+
+  get cashappEligible(): boolean {
+    return this.mempoolPosition?.block > 0;
+  }
+
+  get showAccelerationSummary(): boolean {
+    return (
+      this.tx
+      && !this.tx.acceleration
+      && this.acceleratorAvailable
+      && this.eligibleForAcceleration
+      && !this.accelerationFlowCompleted
+    );
   }
 
   resetTransaction() {
@@ -778,7 +788,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
     this.pool = null;
     this.auditStatus = null;
     this.accelerationPositions = null;
-    this.accelerationEligible = false;
+    this.eligibleForAcceleration = false;
     this.trackerStage = 'waiting';
     document.body.scrollTo(0, 0);
     this.leaveTransaction();

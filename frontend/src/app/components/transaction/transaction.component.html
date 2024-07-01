@@ -147,7 +147,7 @@
       <ng-container *ngIf="(ETA$ | async) as eta;">
         <app-accelerate-checkout
           *ngIf="(da$ | async) as da;"
-          [cashappEnabled]="accelerationEligible"
+          [cashappEnabled]="cashappEligible"
           [advancedEnabled]="true"
           [tx]="tx"
           [eta]="eta"
