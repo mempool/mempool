@@ -1,6 +1,6 @@
 import '@angular/localize/init';
 import { ScriptInfo } from './script.utils';
-import { Vin } from '../interfaces/electrs.interface';
+import { Vin, Vout } from '../interfaces/electrs.interface';
 import { BECH32_CHARS_LW, BASE58_CHARS, HEX_CHARS } from './regex.utils';
 
 export type AddressType = 'fee'
@@ -127,7 +127,7 @@ export class AddressTypeInfo {
   isMultisig?: { m: number, n: number };
   tapscript?: boolean;
 
-  constructor (network: string, address: string, type?: AddressType, vin?: Vin[]) {
+  constructor (network: string, address: string, type?: AddressType, vin?: Vin[], vout?: Vout) {
     this.network = network;
     this.address = address;
     this.scripts = new Map();
@@ -137,6 +137,9 @@ export class AddressTypeInfo {
       this.type = detectAddressType(address, network);
     }
     this.processInputs(vin);
+    if (vout) {
+      this.processOutput(vout);
+    }
   }
 
   public clone(): AddressTypeInfo {
@@ -180,8 +183,21 @@ export class AddressTypeInfo {
           }
         }
       }
+    } else if (this.type === 'multisig') {
+      if (vin.length) {
+        const v = vin[0];
+        this.processScript(new ScriptInfo('scriptpubkey', v.prevout.scriptpubkey, v.prevout.scriptpubkey_asm));
+      }
     }
-    // and there's nothing more to learn from processing inputs for non-scripthash types
+    // and there's nothing more to learn from processing inputs for other types
+  }
+
+  public processOutput(output: Vout): void {
+    if (this.type === 'multisig') {
+      if (!this.scripts.size) {
+        this.processScript(new ScriptInfo('scriptpubkey', output.scriptpubkey, output.scriptpubkey_asm));
+      }
+    }
   }
 
   private processScript(script: ScriptInfo): void {
