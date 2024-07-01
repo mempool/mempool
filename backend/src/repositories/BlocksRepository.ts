@@ -5,7 +5,7 @@ import logger from '../logger';
 import { Common } from '../api/common';
 import PoolsRepository from './PoolsRepository';
 import HashratesRepository from './HashratesRepository';
-import { RowDataPacket, escape } from 'mysql2';
+import { RowDataPacket } from 'mysql2';
 import BlocksSummariesRepository from './BlocksSummariesRepository';
 import DifficultyAdjustmentsRepository from './DifficultyAdjustmentsRepository';
 import bitcoinClient from '../api/bitcoin/bitcoin-client';
@@ -532,7 +532,7 @@ class BlocksRepository {
         return null;
       }
 
-      return await this.formatDbBlockIntoExtendedBlock(rows[0] as DatabaseBlock);  
+      return await this.formatDbBlockIntoExtendedBlock(rows[0] as DatabaseBlock);
     } catch (e) {
       logger.err(`Cannot get indexed block ${height}. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
@@ -997,6 +997,25 @@ class BlocksRepository {
       );
     } catch (e) {
       logger.err(`Cannot update block coinbase addresses. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Save pool
+   * 
+   * @param id
+   * @param poolId
+   */
+  public async $savePool(id: string, poolId: number): Promise<void> {
+    try {
+      await DB.query(`
+        UPDATE blocks SET pool_id = ?
+        WHERE hash = ?`,
+        [poolId, id]
+      );
+    } catch (e) {
+      logger.err(`Cannot update block pool. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
