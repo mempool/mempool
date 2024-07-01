@@ -47,9 +47,6 @@ class Server {
       case "liquid":
         canonical = "https://liquid.network"
         break;
-      case "bisq":
-        canonical = "https://bisq.markets"
-        break;
       case "onbtc":
         canonical = "https://bitcoin.gob.sv"
         break;
