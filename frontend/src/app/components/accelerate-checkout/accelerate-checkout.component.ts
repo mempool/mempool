@@ -62,6 +62,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   @Output() changeMode = new EventEmitter<boolean>();
 
   calculating = true;
+  selectedOption: 'wait' | 'accel';
   error = '';
   math = Math;
   isMobile: boolean = window.innerWidth <= 767.98;
@@ -449,6 +450,13 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   isLoggedIn(): boolean {
     const auth = this.storageService.getAuth();
     return auth !== null;
+  }
+
+  /**
+   * UI events
+   */
+  selectedOptionChanged(event) {
+    this.selectedOption = event.target.id;
   }
 
   get step() {
