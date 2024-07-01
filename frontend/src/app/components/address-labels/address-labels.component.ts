@@ -33,6 +33,8 @@ export class AddressLabelsComponent implements OnChanges {
       this.handleAddress();
     } else if (this.vin) {
       this.handleVin();
+    } else if (this.vout) {
+      this.handleVout();
     }
   }
 
@@ -54,6 +56,16 @@ export class AddressLabelsComponent implements OnChanges {
 
   handleVin() {
     const address = new AddressTypeInfo(this.network || 'mainnet', this.vin.prevout?.scriptpubkey_address, this.vin.prevout?.scriptpubkey_type as AddressType, [this.vin])
+    if (address?.scripts.size) {
+      const script = address?.scripts.values().next().value;
+      if (script.template?.label) {
+        this.label = script.template.label;
+      }
+    }
+  }
+
+  handleVout() {
+    const address = new AddressTypeInfo(this.network || 'mainnet', this.vout.scriptpubkey_address, this.vout.scriptpubkey_type as AddressType, undefined, this.vout);
     if (address?.scripts.size) {
       const script = address?.scripts.values().next().value;
       if (script.template?.label) {
