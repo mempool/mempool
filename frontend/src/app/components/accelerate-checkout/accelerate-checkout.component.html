@@ -31,7 +31,7 @@
       <ng-container *ngIf="estimate else loadingEstimate">
         <div [class.disabled]="error || showSuccess">
           <div *ngIf="isLoggedIn() && !estimate.hasAccess" style="margin-right: 5em;">
-            <div class="alert alert-mempool mr-6">You are currently on the waitlist</div>
+            <div class="alert alert-mempool mr-6">You are currently on the waitlist for Mempool Accelerator&trade;</div>
           </div>
 
           @if (showDetails) {
@@ -98,7 +98,7 @@
             </div>
           </div>
 
-          <h5>Summary</h5>
+          <h5 i18n="accelerator.summary-title">Summary</h5>
           <div class="row">
             <div class="col">
               <table class="table table-borderless table-border table-dark table-background table-accelerator">
@@ -271,7 +271,7 @@
       @if (!noCTA) {
         <div class="row mb-1">
           <div class="col-sm">
-            <h1 style="font-size: larger;"><ng-content select="[slot='cta-title']"></ng-content><span class="default-slot">Accelerate your Bitcoin transaction?</span></h1>
+            <h1 style="font-size: larger;"><ng-content select="[slot='cta-title']"></ng-content><span class="default-slot" i18n="accelerator.accelerate-your-transaction">Accelerate your Bitcoin transaction?</span></h1>
           </div>
         </div>
       }
@@ -344,7 +344,7 @@
       <div class="row">
         <div class="col-md">
           <div class="d-flex flex-column">
-            <span><b>Accelerate</b> to ~{{ ((userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }} sat/vB</span>
+            <span><ng-container *ngTemplateOutlet="accelerateTo; context: {$implicit:(userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize}"></ng-container></span>
             <span class="checkout-text">
               @if (!calculating) {
                 For an additional <app-fiat [value]="cost"></app-fiat> (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
@@ -513,7 +513,7 @@
 </div>
 
 <ng-template #accelerateOption let-etaInfo="etaInfo">
-  <span><b>Accelerate</b> to ~{{ ((userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }} sat/vB <ng-container *ngTemplateOutlet="customizeButton"></ng-container></span>
+  <span><ng-container *ngTemplateOutlet="accelerateTo; context: {$implicit:(userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize}"></ng-container> <ng-container *ngTemplateOutlet="customizeButton"></ng-container></span>
   <span class="checkout-text">Confirmation expected <app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time><br>
     @if (!calculating) {
       <app-fiat [value]="cost"></app-fiat>fee (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
@@ -526,6 +526,8 @@
 <ng-template #customizeButton>
   <button type="button" *ngIf="advancedEnabled" class="btn btn-sm btn-outline-info btn-small-height ml-2" (click)="moveToStep('quote')" i18n="accelerator.customize">customize</button>
 </ng-template>
+
+<ng-template #accelerateTo let-x i18n="accelerator.accelerate-to-x">Accelerate to ~{{ x | number : '1.0-0' }} sat/vB</ng-template>
 
 <ng-template #accelerateButton>
   @if (isLoggedIn() || canPayWithBitcoin || canPayWithCashapp) {

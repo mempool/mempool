@@ -53,7 +53,7 @@ export class AccelerateFeeGraphComponent implements OnInit, OnChanges {
         rate: option.rate,
         style: this.getStyle(option.rate, maxRate, baseHeight),
         class: 'max',
-        label: this.showEstimate ? $localize`maximum` : $localize`accelerated`,
+        label: this.showEstimate ? $localize`maximum` : $localize`:@@25fbf6e80a945703c906a5a7d8c92e8729c7ab21:accelerated`,
         active: option.index === this.maxRateIndex,
         rateIndex: option.index,
         fee: option.fee,
