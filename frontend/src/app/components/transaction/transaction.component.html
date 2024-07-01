@@ -74,38 +74,9 @@
 
   <ng-template [ngIf]="!isLoadingTx && !error">
 
-    <!-- Accelerator -->
-    <ng-container *ngIf="!tx?.status?.confirmed && showAccelerationSummary">
-      <br>
-      <div class="title float-left">
-        <h2 i18n="transaction.accelerate|Accelerate button label">Accelerate</h2>
-      </div>
-
-      <button type="button" class="btn btn-outline-info flow-toggle btn-sm float-right" (click)="closeAccelerator()" i18n="hide-diagram">Hide accelerator</button>
-      <button *ngIf="hasAccelerationDetails" class="btn btn-sm btn-outline-info float-right ml-2" (click)="showAccelerationDetails = !showAccelerationDetails">Details</button>
-
-      <div class="clearfix"></div>
-
-      <ng-container *ngIf="(ETA$ | async) as eta;">
-        <app-accelerate-checkout
-          *ngIf="(da$ | async) as da;"
-          [cashappEnabled]="accelerationEligible"
-          [advancedEnabled]="true"
-          [tx]="tx"
-          [eta]="eta"
-          [miningStats]="miningStats"
-          [scrollEvent]="scrollIntoAccelPreview"
-          [showDetails]="showAccelerationDetails"
-          [noCTA]="true"
-          (hasDetails)="setHasAccelerationDetails($event)"
-          class="h-100 w-100"
-        ></app-accelerate-checkout>
-      </ng-container>
-    </ng-container>
-
+    <!-- CPFP Details -->
     <ng-template [ngIf]="showCpfpDetails">
       <br>
-
       <h2 class="text-left">CPFP <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true" size="xs"></fa-icon></h2>
       <div class="box cpfp-details">
         <table class="table table-fixed table-borderless table-striped">
@@ -160,6 +131,35 @@
         </table>
       </div>
     </ng-template>
+
+    <!-- Accelerator -->
+    <ng-container *ngIf="!tx?.status?.confirmed && showAccelerationSummary">
+      <br>
+      <div class="title float-left">
+        <h2 i18n="transaction.accelerate|Accelerate button label">Accelerate</h2>
+      </div>
+
+      <button type="button" class="btn btn-outline-info accelerator-toggle btn-sm float-right" (click)="closeAccelerator()" i18n="hide-diagram">Hide accelerator</button>
+      <button *ngIf="hasAccelerationDetails" class="btn btn-sm btn-outline-info details-button float-right ml-2" (click)="showAccelerationDetails = !showAccelerationDetails">Details</button>
+
+      <div class="clearfix"></div>
+
+      <ng-container *ngIf="(ETA$ | async) as eta;">
+        <app-accelerate-checkout
+          *ngIf="(da$ | async) as da;"
+          [cashappEnabled]="cashappEligible"
+          [advancedEnabled]="true"
+          [tx]="tx"
+          [eta]="eta"
+          [miningStats]="miningStats"
+          [scrollEvent]="scrollIntoAccelPreview"
+          [showDetails]="showAccelerationDetails"
+          [noCTA]="true"
+          (hasDetails)="setHasAccelerationDetails($event)"
+          class="h-100 w-100"
+        ></app-accelerate-checkout>
+      </ng-container>
+    </ng-container>
 
     <br>
 
@@ -551,18 +551,18 @@
         <td>
           <ng-container *ngIf="(ETA$ | async) as eta; else etaSkeleton">
             @if (eta.blocks >= 7) {
-              <span [class]="(!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !showAccelerationSummary) ? 'etaDeepMempool d-flex justify-content-end align-items-center' : ''">
+              <span [class]="(!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !showAccelerationSummary && eligibleForAcceleration) ? 'etaDeepMempool d-flex justify-content-end align-items-center' : ''">
                 <span i18n="transaction.eta.in-several-hours|Transaction ETA in several hours or more">In several hours (or more)</span>
-                @if (!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !showAccelerationSummary) {
+                @if (!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !showAccelerationSummary && eligibleForAcceleration) {
                   <a class="btn btn-sm accelerateDeepMempool btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
                 }
               </span>
             } @else if (network === 'liquid' || network === 'liquidtestnet') {
               <app-time kind="until" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time>
             } @else {
-              <span [class]="(!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !showAccelerationSummary) ? 'etaDeepMempool d-flex justify-content-end align-items-center' : ''">
+              <span [class]="(!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !showAccelerationSummary && eligibleForAcceleration) ? 'etaDeepMempool d-flex justify-content-end align-items-center' : ''">
                 <app-time kind="until" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time>
-                @if (!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !showAccelerationSummary) {
+                @if (!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !showAccelerationSummary && eligibleForAcceleration) {
                   <a class="btn btn-sm accelerateDeepMempool btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
                 }
               </span>
