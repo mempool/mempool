@@ -832,7 +832,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   checkAccelerationEligibility() {
     if (this.tx && this.tx.flags) {
       const replaceableInputs = (this.tx.flags & (TransactionFlags.sighash_none | TransactionFlags.sighash_acp)) > 0n;
-      this.eligibleForAcceleration = !replaceableInputs;
+      const highSigop = (this.tx.sigops * 20) > this.tx.weight;
+      this.eligibleForAcceleration = !replaceableInputs && !highSigop;
     } else {
       this.eligibleForAcceleration = false;
     }

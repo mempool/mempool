@@ -743,7 +743,8 @@ export class TrackerComponent implements OnInit, OnDestroy {
     if (this.tx) {
       this.tx.flags = getTransactionFlags(this.tx);
       const replaceableInputs = (this.tx.flags & (TransactionFlags.sighash_none | TransactionFlags.sighash_acp)) > 0n;
-      this.eligibleForAcceleration = !replaceableInputs;
+      const highSigop = (this.tx.sigops * 20) > this.tx.weight;
+      this.eligibleForAcceleration = !replaceableInputs && !highSigop;
     } else {
       this.eligibleForAcceleration = false;
     }
