@@ -120,6 +120,10 @@ export class ServicesApiServices {
     return this.httpClient.post(`${SERVICES_API_PREFIX}/auth/logout`, {});
   }
 
+  getJWT$() {
+    return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/auth/getJWT`);
+  }
+
   getServicesBackendInfo$(): Observable<IBackendInfo> {
     return this.httpClient.get<IBackendInfo>(`${SERVICES_API_PREFIX}/version`);
   }
