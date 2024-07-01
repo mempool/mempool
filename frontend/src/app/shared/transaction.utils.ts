@@ -335,19 +335,21 @@ export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replac
       case 'v0_p2wpkh': flags |= TransactionFlags.p2wpkh; break;
       case 'v0_p2wsh': flags |= TransactionFlags.p2wsh; break;
       case 'v1_p2tr': {
-        if (!vin.witness?.length) {
-          throw new Error('Taproot input missing witness data');
-        }
         flags |= TransactionFlags.p2tr;
-        // in taproot, if the last witness item begins with 0x50, it's an annex
-        const hasAnnex = vin.witness?.[vin.witness.length - 1].startsWith('50');
-        // script spends have more than one witness item, not counting the annex (if present)
-        if (vin.witness.length > (hasAnnex ? 2 : 1)) {
-          // the script itself is the second-to-last witness item, not counting the annex
-          const asm = vin.inner_witnessscript_asm;
-          // inscriptions smuggle data within an 'OP_0 OP_IF ... OP_ENDIF' envelope
-          if (asm?.includes('OP_0 OP_IF')) {
-            flags |= TransactionFlags.inscription;
+        // every valid taproot input has at least one witness item, however transactions
+        // created before taproot activation don't need to have any witness data
+        // (see https://mempool.space/tx/b10c007c60e14f9d087e0291d4d0c7869697c6681d979c6639dbd960792b4d41)
+        if (vin.witness?.length) {
+          // in taproot, if the last witness item begins with 0x50, it's an annex
+          const hasAnnex = vin.witness?.[vin.witness.length - 1].startsWith('50');
+          // script spends have more than one witness item, not counting the annex (if present)
+          if (vin.witness.length > (hasAnnex ? 2 : 1)) {
+            // the script itself is the second-to-last witness item, not counting the annex
+            const asm = vin.inner_witnessscript_asm;
+            // inscriptions smuggle data within an 'OP_0 OP_IF ... OP_ENDIF' envelope
+            if (asm?.includes('OP_0 OP_IF')) {
+              flags |= TransactionFlags.inscription;
+            }
           }
         }
       } break;
