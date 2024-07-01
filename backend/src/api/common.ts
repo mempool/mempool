@@ -460,11 +460,10 @@ export class Common {
           case 'v0_p2wpkh': flags |= TransactionFlags.p2wpkh; break;
           case 'v0_p2wsh': flags |= TransactionFlags.p2wsh; break;
           case 'v1_p2tr': {
-            if (!vin.witness?.length) {
-              throw new Error('Taproot input missing witness data');
-            }
             flags |= TransactionFlags.p2tr;
-            flags = Common.isInscription(vin, flags);
+            if (vin.witness?.length) {
+              flags = Common.isInscription(vin, flags);
+            }
           } break;
         }
       } else {
