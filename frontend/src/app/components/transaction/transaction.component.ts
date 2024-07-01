@@ -24,8 +24,8 @@ import { SeoService } from '../../services/seo.service';
 import { StorageService } from '../../services/storage.service';
 import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { getTransactionFlags, getUnacceleratedFeeRate } from '../../shared/transaction.utils';
-import { Filter, toFilters } from '../../shared/filters.utils';
-import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration, AccelerationPosition, SinglePoolStats } from '../../interfaces/node-api.interface';
+import { Filter, TransactionFlags, toFilters } from '../../shared/filters.utils';
+import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration, AccelerationPosition } from '../../interfaces/node-api.interface';
 import { LiquidUnblinding } from './liquid-ublinding';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { PriceService } from '../../services/price.service';
@@ -137,13 +137,14 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   hasEffectiveFeeRate: boolean;
   accelerateCtaType: 'alert' | 'button' = 'button';
   acceleratorAvailable: boolean = this.stateService.env.ACCELERATOR && this.stateService.network === '';
+  eligibleForAcceleration: boolean = false;
   forceAccelerationSummary = false;
   hideAccelerationSummary = false;
   accelerationFlowCompleted = false;
   showAccelerationDetails = false;
   hasAccelerationDetails = false;
   scrollIntoAccelPreview = false;
-  accelerationEligible = false;
+  cashappEligible = false;
   auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
 
   @ViewChild('graphContainer')
@@ -421,7 +422,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
                 });
               }
               if (txPosition.position?.block > 0 && this.tx.weight < 4000) {
-                this.accelerationEligible = true;
+                this.cashappEligible = true;
               }
             } else if (this.showAccelerationSummary) {
               setTimeout(() => {
@@ -819,12 +820,23 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.rbfEnabled = !this.tx.status.confirmed || isFeatureActive(this.stateService.network, this.tx.status.block_height, 'rbf');
       this.tx.flags = getTransactionFlags(this.tx);
       this.filters = this.tx.flags ? toFilters(this.tx.flags).filter(f => f.txPage) : [];
+      this.checkAccelerationEligibility();
     } else {
       this.segwitEnabled = false;
       this.taprootEnabled = false;
       this.rbfEnabled = false;
     }
     this.featuresEnabled = this.segwitEnabled || this.taprootEnabled || this.rbfEnabled;
+  }
+
+  checkAccelerationEligibility() {
+    if (this.tx && this.tx.flags) {
+      const replaceableInputs = (this.tx.flags & (TransactionFlags.sighash_none | TransactionFlags.sighash_acp)) > 0n;
+      const highSigop = (this.tx.sigops * 20) > this.tx.weight;
+      this.eligibleForAcceleration = !replaceableInputs && !highSigop;
+    } else {
+      this.eligibleForAcceleration = false;
+    }
   }
 
   isAuditAvailable(blockHeight: number): boolean {
@@ -871,7 +883,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.showCpfpDetails = false;
     this.showAccelerationDetails = false;
     this.accelerationInfo = null;
-    this.accelerationEligible = false;
+    this.cashappEligible = false;
     this.txInBlockIndex = null;
     this.mempoolPosition = null;
     this.pool = null;
@@ -880,6 +892,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     document.body.scrollTo(0, 0);
     this.isAcceleration = false;
     this.isAccelerated$.next(this.isAcceleration);
+    this.eligibleForAcceleration = false;
     this.leaveTransaction();
   }
 
@@ -974,6 +987,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.tx
       && !this.tx.acceleration
       && this.acceleratorAvailable
+      && this.eligibleForAcceleration
       && (
         (!this.hideAccelerationSummary && !this.accelerationFlowCompleted)
         || this.forceAccelerationSummary
