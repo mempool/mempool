@@ -84,9 +84,13 @@ const routes: Routes = [
         ]
       },
       {
-        path: 'audit/pegs',
+        path: 'audit/pegs/:page',
         data: { networks: ['liquid'] },
         component: RecentPegsListComponent,
+      },
+      {
+        path: 'audit/pegs',
+        redirectTo: 'audit/pegs/1'
       },
       {
         path: 'assets',

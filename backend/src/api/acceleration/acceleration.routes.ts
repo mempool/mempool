@@ -14,6 +14,7 @@ class AccelerationRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/accelerations/history', this.$getAcceleratorAccelerationsHistory.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/accelerations/history/aggregated', this.$getAcceleratorAccelerationsHistoryAggregated.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/accelerations/stats', this.$getAcceleratorAccelerationsStats.bind(this))
+      .post(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/estimate', this.$getAcceleratorEstimate.bind(this))
     ;
   }
 
@@ -61,6 +62,20 @@ class AccelerationRoutes {
       response.data.pipe(res);
     } catch (e) {
       logger.err(`Unable to get acceleration stats from ${url} in $getAcceleratorAccelerationsStats(), ${e}`, this.tag);
+      res.status(500).end();
+    }
+  }
+
+  private async $getAcceleratorEstimate(req: Request, res: Response): Promise<void> {
+    const url = `${config.MEMPOOL_SERVICES.API}/${req.originalUrl.replace('/api/v1/services/', '')}`;
+    try {
+      const response = await axios.post(url, req.body, { responseType: 'stream', timeout: 10000 });
+      for (const key in response.headers) {
+        res.setHeader(key, response.headers[key]);
+      }
+      response.data.pipe(res);
+    } catch (e) {
+      logger.err(`Unable to get acceleration estimate from ${url} in $getAcceleratorEstimate(), ${e}`, this.tag);
       res.status(500).end();
     }
   }

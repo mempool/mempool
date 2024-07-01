@@ -136,9 +136,13 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   taprootEnabled: boolean;
   hasEffectiveFeeRate: boolean;
   accelerateCtaType: 'alert' | 'button' = 'button';
-  acceleratorAvailable: boolean = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
+  acceleratorAvailable: boolean = this.stateService.env.ACCELERATOR && this.stateService.network === '';
   showAccelerationSummary = false;
+  showAccelerationDetails = false;
+  hasAccelerationDetails = false;
+  accelerationFlowCompleted = false;
   scrollIntoAccelPreview = false;
+  accelerationEligible = false;
   auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
 
   @ViewChild('graphContainer')
@@ -166,15 +170,24 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
-
     this.enterpriseService.page();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('cash_request_id')) {
+      this.showAccelerationSummary = true;
+    }
+
+    if (!this.stateService.isLiquid) {
+      this.miningService.getMiningStats('1w').subscribe(stats => {
+        this.miningStats = stats;
+      });
+    }
 
     this.websocketService.want(['blocks', 'mempool-blocks']);
     this.stateService.networkChanged$.subscribe(
       (network) => {
         this.network = network;
-        this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
+        this.acceleratorAvailable = this.stateService.env.ACCELERATOR && this.stateService.network === '';
       }
     );
 
@@ -397,6 +410,24 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             this.setCpfpInfo(txPosition.cpfp);
           } else if ((this.tx?.acceleration && txPosition.position.acceleratedBy)) {
             this.tx.acceleratedBy = txPosition.position.acceleratedBy;
+          }
+
+          if (this.stateService.network === '') {
+            if (!this.mempoolPosition.accelerated) {
+              if (!this.accelerationFlowCompleted && !this.showAccelerationSummary) {
+                this.showAccelerationSummary = true;
+                this.miningService.getMiningStats('1w').subscribe(stats => {
+                  this.miningStats = stats;
+                });
+              }
+              if (txPosition.position?.block > 0 && this.tx.weight < 4000) {
+                this.accelerationEligible = true;
+              }
+            } else if (this.showAccelerationSummary) {
+              setTimeout(() => {
+                this.closeAccelerator();
+              }, 2000);
+            }
           }
         }
       } else {
@@ -682,14 +713,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.miningService.getMiningStats('1w').subscribe(stats => {
-      this.miningStats = stats;
-    });
-
     document.location.hash = '#accelerate';
     this.enterpriseService.goal(8);
-    this.showAccelerationSummary = true && this.acceleratorAvailable;
-    this.scrollIntoAccelPreview = !this.scrollIntoAccelPreview;
+    this.accelerationFlowCompleted = false;
+    this.showAccelerationSummary = this.acceleratorAvailable;
+    this.scrollIntoAccelPreview = true;
     return false;
   }
 
@@ -748,6 +776,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.tx.acceleratedBy = cpfpInfo.acceleratedBy;
       this.setIsAccelerated(firstCpfp);
     }
+
+    if (!this.isAcceleration && this.fragmentParams.has('accelerate')) {
+      this.onAccelerateClicked();
+    }
+
     this.txChanged$.next(true);
 
     this.cpfpInfo = cpfpInfo;
@@ -761,8 +794,15 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   setIsAccelerated(initialState: boolean = false) {
     this.isAcceleration = (this.tx.acceleration || (this.accelerationInfo && this.pool && this.accelerationInfo.pools.some(pool => (pool === this.pool.id))));
-    if (this.isAcceleration && initialState) {
-      this.showAccelerationSummary = false;
+    if (this.isAcceleration) {
+      if (initialState) {
+        this.accelerationFlowCompleted = true;
+        this.showAccelerationSummary = false;
+      } else if (this.showAccelerationSummary) {
+        setTimeout(() => {
+          this.closeAccelerator();
+        }, 2000);
+      }
     }
     if (this.isAcceleration) {
       // this immediately returns cached stats if we fetched them recently
@@ -831,7 +871,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.rbfReplaces = [];
     this.filters = [];
     this.showCpfpDetails = false;
+    this.showAccelerationDetails = false;
     this.accelerationInfo = null;
+    this.accelerationEligible = false;
     this.txInBlockIndex = null;
     this.mempoolPosition = null;
     this.pool = null;
@@ -846,6 +888,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   leaveTransaction() {
     this.websocketService.stopTrackingTransaction();
     this.stateService.markBlock$.next({});
+  }
+
+  closeAccelerator(): void {
+    this.accelerationFlowCompleted = true;
+    this.showAccelerationSummary = false;
   }
 
   roundToOneDecimal(cpfpTx: any): number {
@@ -885,16 +932,16 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   // simulate normal anchor fragment behavior
   applyFragment(): void {
     const anchor = Array.from(this.fragmentParams.entries()).find(([frag, value]) => value === '');
-    if (anchor?.length) {
-      if (anchor[0] === 'accelerate') {
-        setTimeout(this.onAccelerateClicked.bind(this), 100);
-      } else {
-        const anchorElement = document.getElementById(anchor[0]);
-        if (anchorElement) {
-          anchorElement.scrollIntoView();
-        }
+    if (anchor?.length && anchor[0] !== 'accelerate') {
+      const anchorElement = document.getElementById(anchor[0]);
+      if (anchorElement) {
+        anchorElement.scrollIntoView();
       }
     }
+  }
+
+  setHasAccelerationDetails(hasDetails: boolean): void {
+    this.hasAccelerationDetails = hasDetails;
   }
 
   @HostListener('window:resize', ['$event'])
@@ -909,6 +956,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }, 1);
     }
+  }
+
+  isLoggedIn(): boolean {
+    const auth = this.storageService.getAuth();
+    return auth !== null;
   }
 
   ngOnDestroy() {

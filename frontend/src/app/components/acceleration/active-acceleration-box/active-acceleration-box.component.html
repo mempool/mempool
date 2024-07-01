@@ -4,8 +4,11 @@
 <table>
   <tbody>
     <tr>
-      <td class="td-width field-label" i18n="transaction.accelerated-to-feerate|Accelerated to feerate">Accelerated to</td>
-      <td class="field-value">
+      <td class="td-width field-label" [class]="chartPositionLeft ? 'chart-left' : ''" i18n="transaction.accelerated-to-feerate|Accelerated to feerate">Accelerated to</td>
+      <td class="pie-chart" rowspan="2" *ngIf="chartPositionLeft">
+        <ng-container *ngTemplateOutlet="pieChart"></ng-container>
+      </td>
+      <td class="field-value" [class]="chartPositionLeft ? 'chart-left' : ''">
         <div class="effective-fee-container">
           @if (accelerationInfo?.acceleratedFeeRate && (!tx.effectiveFeePerVsize || accelerationInfo.acceleratedFeeRate >= tx.effectiveFeePerVsize)) {
             <app-fee-rate [fee]="accelerationInfo.acceleratedFeeRate"></app-fee-rate>
@@ -14,7 +17,7 @@
           }
         </div>
       </td>
-      <td class="pie-chart" rowspan="2">
+      <td class="pie-chart" rowspan="2" *ngIf="!chartPositionLeft">
         <ng-container *ngTemplateOutlet="pieChart"></ng-container>
       </td>
     </tr>

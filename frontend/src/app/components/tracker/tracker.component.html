@@ -75,9 +75,9 @@
                   } @else {
                     <app-time kind="until" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time>
                   }
-                  @if (!showAccelerationSummary && isMobile && paymentType === 'cashapp' && accelerationEligible && !tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration) {
+                  <!-- @if (!showAccelerationSummary && isMobile && !tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration) {
                     <a class="btn btn-sm accelerate btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
-                  }
+                  } -->
                 </span>
               </ng-container>
               <ng-template #etaSkeleton>
@@ -115,8 +115,15 @@
     </div>
 
     <div class="bottom-panel">
-      @if (showAccelerationSummary && !accelerationFlowCompleted) {
-        <app-accelerate-checkout *ngIf="(da$ | async) as da;" [txid]="tx.txid" [eta]="mempoolPosition?.block >= 7 ? null : da.adjustedTimeAvg * (mempoolPosition.block + 1) + now + da.timeOffset" (close)="accelerationFlowCompleted = true" [scrollEvent]="scrollIntoAccelPreview" class="h-100 w-100"></app-accelerate-checkout>
+      @if (isLoading) {
+        <div class="progress-icon">
+          <div class="spinner-border text-light" style="width: 1em; height: 1em"></div>
+        </div>
+        <span class="explainer">&nbsp;</span>
+      } @else if (showAccelerationSummary) {
+        <ng-container *ngIf="(ETA$ | async) as eta;">
+          <app-accelerate-checkout *ngIf="(da$ | async) as da;" [cashappEnabled]="accelerationEligible" [advancedEnabled]="false" [forceMobile]="true" [tx]="tx" [miningStats]="miningStats" [eta]="eta" [scrollEvent]="scrollIntoAccelPreview" class="h-100 w-100"></app-accelerate-checkout>
+        </ng-container>
       } @else {
         @if (tx?.acceleration && !tx.status?.confirmed) {
           <div class="progress-icon">

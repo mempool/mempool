@@ -706,7 +706,7 @@ class Blocks {
         }
 
         const coinbaseTx = await bitcoinApi.$getCoinbaseTx(hash);
-        const addresses = new Set<string>(coinbaseTx.vout.map(v => v.scriptpubkey_address).filter(a => a));
+        const addresses = new Set<string>(coinbaseTx.vout.map(v => v.scriptpubkey_address).filter(a => a) as string[]);
         await blocksRepository.$saveCoinbaseAddresses(hash, [...addresses]);
 
         // Logging

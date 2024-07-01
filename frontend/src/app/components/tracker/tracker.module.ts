@@ -1,22 +1,17 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
-import { TransactionComponent } from './transaction.component';
 import { SharedModule } from '../../shared/shared.module';
 import { TxBowtieModule } from '../tx-bowtie-graph/tx-bowtie.module';
 import { GraphsModule } from '../../graphs/graphs.module';
-import { AccelerateCheckout } from '../accelerate-checkout/accelerate-checkout.component';
-import { AccelerateFeeGraphComponent } from '../accelerate-checkout/accelerate-fee-graph.component';
+import { TrackerComponent } from '../tracker/tracker.component';
+import { TrackerBarComponent } from '../tracker/tracker-bar.component';
+import { TransactionModule } from '../transaction/transaction.module';
 
 const routes: Routes = [
   {
-    path: '',
-    redirectTo: '/',
-    pathMatch: 'full',
-  },
-  {
     path: ':id',
-    component: TransactionComponent,
+    component: TrackerComponent,
     data: {
       ogImage: true
     }
@@ -31,28 +26,23 @@ const routes: Routes = [
     RouterModule
   ]
 })
-export class TransactionRoutingModule { }
+export class TrackerRoutingModule { }
 
 @NgModule({
   imports: [
     CommonModule,
-    TransactionRoutingModule,
+    TrackerRoutingModule,
+    TransactionModule,
     SharedModule,
     GraphsModule,
     TxBowtieModule,
   ],
   declarations: [
-    TransactionComponent,
-    AccelerateCheckout,
-    AccelerateFeeGraphComponent,
-  ],
-  exports: [
-    TransactionComponent,
-    AccelerateCheckout,
-    AccelerateFeeGraphComponent,
+    TrackerComponent,
+    TrackerBarComponent,
   ]
 })
-export class TransactionModule { }
+export class TrackerModule { }
 
 
 

@@ -71,19 +71,24 @@ export function calcSegwitFeeGains(tx: Transaction) {
     }
 
     if (isP2tr) {
-      if (vin.witness.length === 1) {
-        // key path spend
-        // we don't know if this was a multisig or single sig (the goal of taproot :)),
-        // so calculate fee savings by comparing to the cheapest single sig input type: P2WPKH and say "saved at least ...%"
-        // the witness size of P2WPKH is 1 (stack size) + 1 (size) + 72 (low s signature) + 1 (size) + 33 (pubkey) = 108 WU
-        // the witness size of key path P2TR is 1 (stack size) + 1 (size) + 64 (signature) = 66 WU
-        realizedTaprootGains += 42;
-      } else {
-        // script path spend
-        // complex scripts with multiple spending paths can often be made around 2x to 3x smaller with the Taproot script tree
-        // because only the hash of the alternative spending path has the be in the witness data, not the entire script,
-        // but only assumptions can be made because the scripts themselves are unknown (again, the goal of taproot :))
-        // TODO maybe add some complex scripts that are specified somewhere, so that size is known, such as lightning scripts
+      // every valid taproot input has at least one witness item, however transactions
+      // created before taproot activation don't need to have any witness data
+      // (see https://mempool.space/tx/b10c007c60e14f9d087e0291d4d0c7869697c6681d979c6639dbd960792b4d41)
+      if (vin.witness?.length) {
+        if (vin.witness.length === 1) {
+          // key path spend
+          // we don't know if this was a multisig or single sig (the goal of taproot :)),
+          // so calculate fee savings by comparing to the cheapest single sig input type: P2WPKH and say "saved at least ...%"
+          // the witness size of P2WPKH is 1 (stack size) + 1 (size) + 72 (low s signature) + 1 (size) + 33 (pubkey) = 108 WU
+          // the witness size of key path P2TR is 1 (stack size) + 1 (size) + 64 (signature) = 66 WU
+          realizedTaprootGains += 42;
+        } else {
+          // script path spend
+          // complex scripts with multiple spending paths can often be made around 2x to 3x smaller with the Taproot script tree
+          // because only the hash of the alternative spending path has the be in the witness data, not the entire script,
+          // but only assumptions can be made because the scripts themselves are unknown (again, the goal of taproot :))
+          // TODO maybe add some complex scripts that are specified somewhere, so that size is known, such as lightning scripts
+        }
       }
     } else {
       const script = isP2shP2Wsh || isP2wsh ? vin.inner_witnessscript_asm : vin.inner_redeemscript_asm;

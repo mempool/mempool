@@ -3,8 +3,10 @@ import { AccelerationPosition, CpfpInfo, DifficultyAdjustment, MempoolPosition, 
 import { StateService } from './state.service';
 import { MempoolBlock } from '../interfaces/websocket.interface';
 import { Transaction } from '../interfaces/electrs.interface';
-import { MiningStats } from './mining.service';
+import { MiningService, MiningStats } from './mining.service';
 import { getUnacceleratedFeeRate } from '../shared/transaction.utils';
+import { AccelerationEstimate } from '../components/accelerate-checkout/accelerate-checkout.component';
+import { Observable, combineLatest, map, of, share, shareReplay, tap } from 'rxjs';
 
 export interface ETA {
   now: number, // time at which calculation performed
@@ -19,7 +21,50 @@ export interface ETA {
 export class EtaService {
   constructor(
     private stateService: StateService,
+    private miningService: MiningService,
   ) { }
+
+  getProjectedEtaObservable(estimate: AccelerationEstimate, miningStats?: MiningStats): Observable<{ hashratePercentage: number, ETA: number, acceleratedETA: number }> {
+    return combineLatest([
+      this.stateService.mempoolTxPosition$.pipe(map(p => p?.position)),
+      this.stateService.difficultyAdjustment$,
+      miningStats ? of(miningStats) : this.miningService.getMiningStats('1w'),
+    ]).pipe(
+      map(([mempoolPosition, da, miningStats]) => {
+        if (!mempoolPosition || !estimate?.pools?.length || !miningStats || !da) {
+          return {
+            hashratePercentage: undefined,
+            ETA: undefined,
+            acceleratedETA: undefined,
+          };
+        }
+        const pools: { [id: number]: SinglePoolStats } = {};
+        for (const pool of miningStats.pools) {
+          pools[pool.poolUniqueId] = pool;
+        }
+
+        let totalAcceleratedHashrate = 0;
+        for (const poolId of estimate.pools) {
+          const pool = pools[poolId];
+          if (!pool) {
+            continue;
+          }
+          totalAcceleratedHashrate += pool.lastEstimatedHashrate;
+        }
+        const acceleratingHashrateFraction = (totalAcceleratedHashrate / miningStats.lastEstimatedHashrate);
+
+        return {
+          hashratePercentage: acceleratingHashrateFraction * 100,
+          ETA: Date.now() + da.timeAvg * mempoolPosition.block,
+          acceleratedETA: this.calculateETAFromShares([
+            { block: mempoolPosition.block, hashrateShare: (1 - acceleratingHashrateFraction) },
+            { block: 0, hashrateShare: acceleratingHashrateFraction },
+          ], da).time,
+        };
+      }),
+      shareReplay()
+    );
+  }
 
   mempoolPositionFromFees(feerate: number, mempoolBlocks: MempoolBlock[]): MempoolPosition {
     for (let txInBlockIndex = 0; txInBlockIndex < mempoolBlocks.length; txInBlockIndex++) {
@@ -41,7 +86,7 @@ export class EtaService {
           return {
             block: txInBlockIndex,
             vsize: (1 - feePosition) * blockedFilledPercentage * this.stateService.blockVSize,
-          }
+          };
         }
       }
       if (feerate >= block.feeRange[block.feeRange.length - 1]) {
@@ -49,14 +94,14 @@ export class EtaService {
         return {
           block: txInBlockIndex,
           vsize: 0,
-        }
+        };
       }
     }
     // at the very back of the last block
     return {
       block: mempoolBlocks.length - 1,
       vsize: mempoolBlocks[mempoolBlocks.length - 1].blockVSize,
-    }
+    };
   }
 
   calculateETA(
@@ -88,7 +133,7 @@ export class EtaService {
         time: now + (60_000 * (mempoolPosition.block + 1)),
         wait: (60_000 * (mempoolPosition.block + 1)),
         blocks: mempoolPosition.block + 1,
-      }
+      };
     }
 
     // difficulty adjustment estimate is required to know avg block time on non-Liquid networks
@@ -104,7 +149,7 @@ export class EtaService {
         time: wait + now + da.timeOffset,
         wait,
         blocks,
-      }
+      };
     } else {
       // accelerated transactions
 
@@ -121,7 +166,7 @@ export class EtaService {
         pools[pool.poolUniqueId] = pool;
       }
       const unacceleratedPosition = this.mempoolPositionFromFees(getUnacceleratedFeeRate(tx, true), mempoolBlocks);
-      let totalAcceleratedHashrate = accelerationPositions.reduce((total, pos) => total + (pools[pos.poolId].lastEstimatedHashrate), 0);
+      const totalAcceleratedHashrate = accelerationPositions.reduce((total, pos) => total + (pools[pos.poolId].lastEstimatedHashrate), 0);
       const shares = [
         {
           block: unacceleratedPosition.block,
@@ -163,7 +208,7 @@ export class EtaService {
         // find H_i
         const H = shares.reduce((total, share) => total + (share.block <= i ? share.hashrateShare : 0), 0);
         // find S_i
-        let S = H * (1 - tailProb);
+        const S = H * (1 - tailProb);
         // accumulate sum (S_i x i)
         Q += (S * (i + 1));
         // accumulate sum (S_j)
@@ -178,6 +223,6 @@ export class EtaService {
         time: eta + now + da.timeOffset,
         wait: eta,
         blocks: Math.ceil(eta / da.adjustedTimeAvg),
-      }
+      };
   }
 }

@@ -16,11 +16,18 @@
     width: auto;
     min-width: auto;
   }
+  &.chart-left {
+    width: 100%;
+  }
 }
 
 .field-value {
   @media (max-width: 849px) {
     width: 100%;
+  }
+
+  &.chart-left {
+    width: auto;
   }
 
   .hashrate-label {
@@ -46,5 +53,12 @@
   }
   @media (max-width: 420px) {
     padding-left: 0;
+  }
+}
+
+::ng-deep .chart {
+  overflow: visible;
+  & > div, & > div > svg {
+    overflow: visible !important;
   }
 }

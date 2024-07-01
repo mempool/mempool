@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { ReplaySubject, merge, Subscription, of } from 'rxjs';
 import { tap, switchMap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
-import { AccelerationEstimate, RateOption } from './accelerate-preview.component';
+import { AccelerationEstimate, RateOption } from './accelerate-checkout.component';
 
 interface GraphBar {
   rate: number;
@@ -25,6 +25,7 @@ interface GraphBar {
 export class AccelerateFeeGraphComponent implements OnInit, OnChanges {
   @Input() tx: Transaction;
   @Input() estimate: AccelerationEstimate;
+  @Input() showEstimate = false;
   @Input() maxRateOptions: RateOption[] = [];
   @Input() maxRateIndex: number = 0;
   @Output() setUserBid = new EventEmitter<{ fee: number, index: number }>();
@@ -52,7 +53,7 @@ export class AccelerateFeeGraphComponent implements OnInit, OnChanges {
         rate: option.rate,
         style: this.getStyle(option.rate, maxRate, baseHeight),
         class: 'max',
-        label: $localize`maximum`,
+        label: this.showEstimate ? $localize`maximum` : $localize`accelerated`,
         active: option.index === this.maxRateIndex,
         rateIndex: option.index,
         fee: option.fee,

@@ -78,6 +78,10 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   calculate() {
+    if (!this.time) {
+      return;
+    }
+
     let seconds: number;
     switch (this.kind) {
       case 'since':
