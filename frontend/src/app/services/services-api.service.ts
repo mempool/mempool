@@ -1,6 +1,6 @@
 import { Router, NavigationStart } from '@angular/router';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { StateService } from './state.service';
 import { StorageService } from './storage.service';
 import { MenuGroup } from '../interfaces/services.interface';
@@ -118,6 +118,10 @@ export class ServicesApiServices {
 
     localStorage.removeItem('auth');
     return this.httpClient.post(`${SERVICES_API_PREFIX}/auth/logout`, {});
+  }
+
+  getJWT$() {
+    return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/auth/getJWT`);
   }
 
   getServicesBackendInfo$(): Observable<IBackendInfo> {

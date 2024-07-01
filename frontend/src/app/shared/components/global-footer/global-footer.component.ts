@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, Inject, LOCALE_ID, HostListener, OnDestroy } from '@angular/core';
+import { Input, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnChanges, SimpleChanges, Inject, LOCALE_ID, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Observable, merge, of, Subject, Subscription } from 'rxjs';
 import { tap, takeUntil } from 'rxjs/operators';
@@ -16,7 +16,9 @@ import { EnterpriseService } from '../../../services/enterprise.service';
   styleUrls: ['./global-footer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GlobalFooterComponent implements OnInit, OnDestroy {
+export class GlobalFooterComponent implements OnInit, OnDestroy, OnChanges {
+  @Input() user: any = undefined;
+
   private destroy$: Subject<any> = new Subject<any>();
   env: Env;
   officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
@@ -29,7 +31,6 @@ export class GlobalFooterComponent implements OnInit, OnDestroy {
   network$: Observable<string>;
   networkPaths: { [network: string]: string };
   currentNetwork = '';
-  loggedIn = false;
   urlSubscription: Subscription;
   isServicesPage = false;
 
@@ -72,9 +73,15 @@ export class GlobalFooterComponent implements OnInit, OnDestroy {
     });
 
     this.urlSubscription = this.route.url.subscribe((url) => {
-      this.loggedIn = this.storageService.getAuth() !== null;
+      this.user = this.storageService.getAuth();
       this.cd.markForCheck();
     })
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.user) {
+      this.user = this.storageService.getAuth();
+    }
   }
 
   ngOnDestroy(): void {

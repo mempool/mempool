@@ -7,7 +7,7 @@ import { AudioService } from '../../services/audio.service';
 import { ETA, EtaService } from '../../services/eta.service';
 import { Transaction } from '../../interfaces/electrs.interface';
 import { MiningStats } from '../../services/mining.service';
-import { StorageService } from '../../services/storage.service';
+import { IAuth, AuthServiceMempool } from '../../services/auth.service';
 
 export type PaymentMethod = 'balance' | 'bitcoin' | 'cashapp';
 
@@ -71,7 +71,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   simpleMode: boolean = true;
   paymentMethod: 'cashapp' | 'btcpay';
 
-  user: any = undefined;
+  authSubscription$: Subscription;
+  auth: IAuth | null = null;
 
   // accelerator stuff
   square: { appId: string, locationId: string};
@@ -109,16 +110,22 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   constructor(
     public stateService: StateService,
     private servicesApiService: ServicesApiServices,
-    private storageService: StorageService,
     private etaService: EtaService,
     private audioService: AudioService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private authService: AuthServiceMempool
   ) {
     this.accelerationUUID = window.crypto.randomUUID();
   }
 
   ngOnInit() {
-    this.user = this.storageService.getAuth()?.user ?? null;
+    this.authSubscription$ = this.authService.getAuth$().subscribe((auth) => {
+      this.auth = auth;
+      this.estimate = null;
+      this.moveToStep('summary');
+    });
+    this.authService.refreshAuth$().subscribe();
+
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('cash_request_id')) { // Redirected from cashapp
       this.moveToStep('processing');
@@ -145,6 +152,9 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.estimateSubscription) {
       this.estimateSubscription.unsubscribe();
+    }
+    if (this.authSubscription$) {
+      this.authSubscription$.unsubscribe();
     }
   }
 
@@ -456,8 +466,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   isLoggedIn(): boolean {
-    const auth = this.storageService.getAuth();
-    return auth !== null;
+    return this.auth !== null;
   }
 
   /**
