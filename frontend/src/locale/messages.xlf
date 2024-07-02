@@ -707,6 +707,14 @@
         </context-group>
         <note priority="1" from="description">accelerator.accelerate-your-transaction</note>
       </trans-unit>
+      <trans-unit id="eb70970e7741aca891aa54ff4651b050a60b1690" datatype="html">
+        <source>Wait</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
+          <context context-type="linenumber">290</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.wait</note>
+      </trans-unit>
       <trans-unit id="f6a46cd5ca2087712a145f2c680e2aad5f926eaf" datatype="html">
         <source>Confirmation expected</source>
         <context-group purpose="location">
@@ -750,7 +758,32 @@
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">367,368</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
+          <context context-type="linenumber">435</context>
+        </context-group>
         <note priority="1" from="description">accelerator.payment-to-mempool-space</note>
+      </trans-unit>
+      <trans-unit id="65fd4251d8ddfe4017d4d83f8cec6f5a80d89289" datatype="html">
+        <source>Pay</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
+          <context context-type="linenumber">383</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
+          <context context-type="linenumber">400</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
+          <context context-type="linenumber">446</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
+          <context context-type="linenumber">550</context>
+        </context-group>
+        <note priority="1" from="description">Pay button label</note>
+        <note priority="1" from="meaning">transaction.pay</note>
       </trans-unit>
       <trans-unit id="13eacf4307fbadcc4ba552641200cdc36997a62c" datatype="html">
         <source>Loading invoice...</source>
@@ -767,6 +800,70 @@
           <context context-type="linenumber">394</context>
         </context-group>
         <note priority="1" from="description">or</note>
+      </trans-unit>
+      <trans-unit id="d5380b83d01211f764e7dc17f115cbe2c306793f" datatype="html">
+        <source>Confirm your payment</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
+          <context context-type="linenumber">428</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.confirm-your-payment</note>
+      </trans-unit>
+      <trans-unit id="23e85f2bac1f2bf2a36125a7cc9232e47d773bca" datatype="html">
+        <source>Total additional cost</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
+          <context context-type="linenumber">444</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.total-additional-cost</note>
+      </trans-unit>
+      <trans-unit id="ada15d0099ccf0a54d598a658d7a5d9f95af8fc6" datatype="html">
+        <source>with</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
+          <context context-type="linenumber">448</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.pay-with</note>
+      </trans-unit>
+      <trans-unit id="c427d1fcbff172397bf8f6fb154e3144f099afdc" datatype="html">
+        <source>Loading payment method...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
+          <context context-type="linenumber">462</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.loading-payment-method</note>
+      </trans-unit>
+      <trans-unit id="72ca62832f62c0aeb0c0675d2ac6aa7043ee840d" datatype="html">
+        <source>Confirming your payment</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
+          <context context-type="linenumber">480</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.confirming-your-payment</note>
+      </trans-unit>
+      <trans-unit id="8c8cbda9c5ddde6a4898a80aef46199c946c8895" datatype="html">
+        <source>We are processing your payment...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
+          <context context-type="linenumber">490</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.payment-processing</note>
+      </trans-unit>
+      <trans-unit id="ea3197c44781ecca4f2adbf7bff229574f192983" datatype="html">
+        <source>Accelerating your transaction</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
+          <context context-type="linenumber">500</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.accelerating-your-transaction</note>
+      </trans-unit>
+      <trans-unit id="2279bfb8531701cc176ff6b266c3fa0df3983bce" datatype="html">
+        <source>Confirming your acceleration with our mining pool partners...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
+          <context context-type="linenumber">507</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.confirming-acceleration-with-miners</note>
       </trans-unit>
       <trans-unit id="746506272a06b85cba0efc14907940df4bafdf96" datatype="html">
         <source>Calculating cost...</source>
@@ -812,15 +909,6 @@
         </context-group>
         <note priority="1" from="description">Accelerate button label</note>
         <note priority="1" from="meaning">transaction.accelerate</note>
-      </trans-unit>
-      <trans-unit id="65fd4251d8ddfe4017d4d83f8cec6f5a80d89289" datatype="html">
-        <source>Pay</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">550</context>
-        </context-group>
-        <note priority="1" from="description">Pay button label</note>
-        <note priority="1" from="meaning">transaction.pay</note>
       </trans-unit>
       <trans-unit id="cae178cb66733552da9e3baefc1949a18af63ee0" datatype="html">
         <source>Your transaction will be prioritized by up to <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="1&apos; }}"/>%<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> of miners.</source>
@@ -902,6 +990,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">87</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tracker/tracker-bar.component.html</context>
+          <context context-type="linenumber">8</context>
         </context-group>
       </trans-unit>
       <trans-unit id="bcf34abc2d9ed8f45a2f65dd464c46694e9a181e" datatype="html">
@@ -1226,6 +1318,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">53</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tracker/tracker-bar.component.html</context>
+          <context context-type="linenumber">4</context>
         </context-group>
         <note priority="1" from="description">accelerator.pending</note>
       </trans-unit>
@@ -2516,6 +2612,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">32</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tracker/tracker-bar.component.html</context>
+          <context context-type="linenumber">10</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
@@ -6267,6 +6367,22 @@
           <context context-type="linenumber">269</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="cef1d79eace5eb4d2243fad36730e3e65c757bee" datatype="html">
+        <source>Sent</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tracker/tracker-bar.component.html</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.sent-state</note>
+      </trans-unit>
+      <trans-unit id="6092bb2a5d8d9aca468a0007bc1af1c21e8f454c" datatype="html">
+        <source>Soon</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tracker/tracker-bar.component.html</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.soon</note>
+      </trans-unit>
       <trans-unit id="0094b97dd052620710f173e7aedf6807a1eba1f5" datatype="html">
         <source>This transaction has been replaced by:</source>
         <context-group purpose="location">
@@ -6377,6 +6493,14 @@
           <context context-type="linenumber">169</context>
         </context-group>
         <note priority="1" from="description">tracker.explain.replaced</note>
+      </trans-unit>
+      <trans-unit id="2514309d0421b09a70cf9bf5d59bcc1b82dbec31" datatype="html">
+        <source>See more details</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tracker/tracker.component.html</context>
+          <context context-type="linenumber">177</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.show-more-details</note>
       </trans-unit>
       <trans-unit id="bisq.transaction.browser-title" datatype="html">
         <source>Transaction: <x id="INTERPOLATION" equiv-text="this.txId"/></source>

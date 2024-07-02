@@ -287,7 +287,7 @@
               <div class="form-group form-check mb-2">
                 <input type="radio" [checked]="selectedOption === 'wait'"  class="form-check-input" id="wait" name="accel" (change)="selectedOptionChanged($event)">
                 <label class="form-check-label d-flex flex-column" for="wait">
-                  <span class="font-weight-bold">Wait</span>
+                  <span class="font-weight-bold" i18n="accelerator.wait">Wait</span>
                   @if (eta.blocks < 7) {
                     <span class="checkout-text"><ng-container i18n="accelerator.confirmation-expected">Confirmation expected</ng-container>&nbsp;<app-time kind="within" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time></span>
                   } @else {
@@ -380,7 +380,7 @@
             @if (canPayWithBitcoin) {
               <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
                 @if (invoice) {
-                  <p>Pay <span><small style="font-family: monospace;">{{ ((invoice.btcDue * 100_000_000) || cost) | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span></p>
+                  <p><ng-container i18n="transaction.pay|Pay button label">Pay</ng-container>&nbsp;<span><small style="font-family: monospace;">{{ ((invoice.btcDue * 100_000_000) || cost) | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span></p>
                   <app-bitcoin-invoice style="width: 100%;" [invoice]="invoice" [invoiceId]="invoice.id" [minimal]="true" (completed)="bitcoinPaymentCompleted()"></app-bitcoin-invoice>
                 } @else {
                   <p i18n="accelerator.loading-invoice">Loading invoice...</p>
@@ -397,7 +397,7 @@
             }
             @if (canPayWithCashapp) {
               <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
-                <p>Pay <app-fiat [value]="cost"></app-fiat> with</p>
+                <p><ng-container i18n="transaction.pay|Pay button label">Pay</ng-container>&nbsp;<app-fiat [value]="cost"></app-fiat> with</p>
                 <img class="paymentMethod mx-2" src="/resources/cash-app.svg" height=55 (click)="moveToStep('cashapp')">
               </div>
             }
@@ -425,14 +425,14 @@
     <!-- Show checkout page -->
     <div class="row mb-md-1 text-center">
       <div class="col-sm" id="confirm-payment-title">
-        <h1 style="font-size: larger;"><ng-content select="[slot='checkout-title']"></ng-content><span class="default-slot">Confirm your payment</span></h1>
+        <h1 style="font-size: larger;"><ng-content select="[slot='checkout-title']"></ng-content><span class="default-slot" i18n="accelerator.confirm-your-payment">Confirm your payment</span></h1>
       </div>
     </div>
 
     <div class="row text-center">
       <div class="col-sm">
         <div class="form-group w-100" style="font-size: 14px">
-          Payment to mempool.space for acceleration of txid <a [routerLink]="'/tx/' + tx.txid" target="_blank">{{ tx.txid.substr(0, 10) }}..{{ tx.txid.substr(-10) }}</a>
+          <ng-container i18n="accelerator.payment-to-mempool-space">Payment to mempool.space for acceleration of txid <a [routerLink]="'/tx/' + tx.txid" target="_blank">{{ tx.txid.substr(0, 10) }}..{{ tx.txid.substr(-10) }}</a></ng-container>
         </div>
       </div>
     </div>
@@ -441,11 +441,11 @@
       <div class="row text-center mt-1">
         <div class="col-sm">
           <div class="form-group w-100">
-            <span><u><strong>Total additional cost</strong></u><br>
+            <span><u><strong i18n="accelerator.total-additional-cost">Total additional cost</strong></u><br>
               <span style="font-size: 16px" class="d-block mt-2">
-                Pay
+                <ng-container i18n="transaction.pay|Pay button label">Pay</ng-container>
                 <strong><app-fiat [value]="cost"></app-fiat></strong>
-                with
+                <ng-container i18n="accelerator.pay-with">with</ng-container>
               </span>
             </span>
           </div>
@@ -459,7 +459,7 @@
           <div id="cash-app-pay" class="d-inline-block" [style]="loadingCashapp ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
           @if (loadingCashapp) {
           <div display="d-flex flex-row justify-content-center">
-            <span>Loading payment method...</span>
+            <span i18n="accelerator.loading-payment-method">Loading payment method...</span>
             <div class="ml-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
           </div>
           }
@@ -477,7 +477,7 @@
   @else if (step === 'processing') {
     <div class="row mb-1 text-center">
       <div class="col-sm">
-        <h1 style="font-size: larger;"><ng-content select="[slot='processing-title']"></ng-content><span class="default-slot">Confirming your payment</span></h1>
+        <h1 style="font-size: larger;"><ng-content select="[slot='processing-title']"></ng-content><span class="default-slot" i18n="accelerator.confirming-your-payment">Confirming your payment</span></h1>
       </div>
     </div>
 
@@ -487,7 +487,7 @@
           <!-- Processing payment -->
           <div id="cash-app-pay" class="d-inline-block" [style]="'opacity: 0; width: 0px; height: 0px; pointer-events: none;'"></div>
           <div display="d-flex flex-row justify-content-center">
-            <span>We are processing your payment...</span>
+            <span i18n="accelerator.payment-processing">We are processing your payment...</span>
             <div class="ml-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
           </div>
         </div>
@@ -497,14 +497,14 @@
   @else if (step === 'paid') {
     <div class="row mb-1 text-center">
       <div class="col-sm">
-        <h1 style="font-size: larger;"><ng-content select="[slot='accelerating-title']"></ng-content><span class="default-slot">Accelerating your transaction</span></h1>
+        <h1 style="font-size: larger;"><ng-content select="[slot='accelerating-title']"></ng-content><span class="default-slot" i18n="accelerator.accelerating-your-transaction">Accelerating your transaction</span></h1>
       </div>
     </div>
 
     <div class="row text-center mt-1">
       <div class="col-sm">
         <div class="d-flex flex-row justify-content-center align-items-center">
-          <span>Confirming your acceleration with our mining pool partners...</span>
+          <span i18n="accelerator.confirming-acceleration-with-miners">Confirming your acceleration with our mining pool partners...</span>
           <div class="ml-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
         </div>
       </div>
