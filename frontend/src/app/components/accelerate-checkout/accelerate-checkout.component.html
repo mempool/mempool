@@ -73,7 +73,7 @@
           <div class="row">
             <div class="col">
               <ng-container *ngIf="(etaInfo$ | async) as etaInfo; else loadingEstimate">
-                <small class="form-text checkout-text mb-2" i18n="accelerator.hashrate-percentage-description">Your transaction will be prioritized by up to <strong>{{ etaInfo.hashratePercentage | number : '1.1-1' }}%</strong> of miners.</small>
+                <small class="form-text checkout-text mb-2"><ng-container *ngTemplateOutlet="prioritizedBy; context: {$implicit:etaInfo.hashratePercentage}"></ng-container></small>
                 <small class="form-text checkout-text mb-2" i18n="accelerator.time-estimate-description">This will reduce your expected waiting time until the first confirmation to <strong><app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time></strong></small>
               </ng-container>
             </div>
@@ -289,7 +289,7 @@
                 <label class="form-check-label d-flex flex-column" for="wait">
                   <span class="font-weight-bold">Wait</span>
                   @if (eta.blocks < 7) {
-                    <span class="checkout-text">Confirmation expected <app-time kind="within" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time></span>
+                    <span class="checkout-text" i18n="accelerator.confirmation-expected">Confirmation expected <app-time kind="within" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time></span>
                   } @else {
                     <span class="checkout-text">
                       <span i18n="accelerator.confirmation-expected-within-hours">Confirmation expected within several hours</span>
@@ -322,7 +322,7 @@
               </div>
             </div>
             <div class="pie d-none d-lg-flex">
-              <small class="form-text checkout-text mb-2" i18n="accelerator.hashrate-percentage-description">Your transaction will be prioritized by up to {{ etaInfo.hashratePercentage | number : '1.1-1' }}% of miners.</small>
+              <small class="form-text checkout-text mb-2"><ng-container *ngTemplateOutlet="prioritizedBy; context: {$implicit:etaInfo.hashratePercentage}"></ng-container></small>
               <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true"></app-active-acceleration-box>
             </div>
             <ng-container *ngTemplateOutlet="accelerateButton"></ng-container>
@@ -347,24 +347,24 @@
             <span><ng-container *ngTemplateOutlet="accelerateTo; context: {$implicit:(userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize}"></ng-container></span>
             <span class="checkout-text">
               @if (!calculating) {
-                For an additional <app-fiat [value]="cost"></app-fiat> (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
+                <ng-container i18n="accelerator.for-an-additional-cost">For an additional</ng-container> <app-fiat [value]="cost"></app-fiat> (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
               } @else {
                 <span class="estimating">Calculating cost...</span>
               }
             </span>
             <span class="checkout-text" *ngIf="(etaInfo$ | async) as etaInfo">
-              Reducing expected confirmation time to <app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time>
+              <ng-container i18n="accelerator.reducing-expected-confirmation-time">Reducing expected confirmation time to <app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time></ng-container>
             </span>
           </div>
         </div>
         <div class="col-md pie d-none d-md-flex" *ngIf="!forceMobile">
-          <small class="form-text checkout-text mb-2" i18n="accelerator.hashrate-percentage-description" *ngIf="(etaInfo$ | async) as etaInfo">Your transaction will be prioritized by up to {{ etaInfo.hashratePercentage | number : '1.1-1' }}% of miners.</small>
+          <small class="form-text checkout-text mb-2" i18n="accelerator.hashrate-percentage-description" *ngIf="(etaInfo$ | async) as etaInfo"><ng-container *ngTemplateOutlet="prioritizedBy; context: {$implicit:etaInfo.hashratePercentage}"></ng-container></small>
           <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true"></app-active-acceleration-box>
         </div>
       </div>
       <div class="payment-area mt-2 p-2" [class.disabled]="error || showSuccess" style="font-size: 14px;">
         <div class="row text-center justify-content-center mx-2">
-          <p>Payment to mempool.space for acceleration of txid <a [routerLink]="'/tx/' + tx.txid" target="_blank"> {{ tx.txid.substr(0, 10) }}..{{ tx.txid.substr(-10) }}</a></p>
+          <p i18n="accelerator.payment-to-mempool-space">Payment to mempool.space for acceleration of txid <a [routerLink]="'/tx/' + tx.txid" target="_blank">{{ tx.txid.substr(0, 10) }}..{{ tx.txid.substr(-10) }}</a></p>
         </div>
         @if (canPayWithBalance || !(canPayWithBitcoin || canPayWithCashapp)) {
           <div class="row">
@@ -383,7 +383,7 @@
                   <p>Pay <span><small style="font-family: monospace;">{{ ((invoice.btcDue * 100_000_000) || cost) | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span></p>
                   <app-bitcoin-invoice style="width: 100%;" [invoice]="invoice" [invoiceId]="invoice.id" [minimal]="true" (completed)="bitcoinPaymentCompleted()"></app-bitcoin-invoice>
                 } @else {
-                  <p>Loading invoice...</p>
+                  <p i18n="accelerator.loading-invoice">Loading invoice...</p>
                   <div class="d-flex align-items-center justify-content-center" style="width: 100%; height: 292px;">
                     <div class="m-4 spinner-border text-light" style="width: 25px; height: 25px"></div>
                   </div>
@@ -516,7 +516,7 @@
   <span><ng-container *ngTemplateOutlet="accelerateTo; context: {$implicit:(userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize}"></ng-container> <ng-container *ngTemplateOutlet="customizeButton"></ng-container></span>
   <span class="checkout-text">Confirmation expected <app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time><br>
     @if (!calculating) {
-      <app-fiat [value]="cost"></app-fiat>fee (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
+      <app-fiat [value]="cost"></app-fiat> (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
     } @else {
       <span class="estimating" i18n="accelerator.calculating-cost">Calculating cost...</span>
     }
@@ -556,3 +556,5 @@
     </button>
   }
 </ng-template>
+
+<ng-template #prioritizedBy let-i i18n="accelerator.hashrate-percentage-description">Your transaction will be prioritized by up to <strong>{{ i | number : '1.1-1' }}%</strong> of miners.</ng-template>

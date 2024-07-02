@@ -558,14 +558,6 @@
         </context-group>
         <note priority="1" from="description">accelerator.how-much-faster</note>
       </trans-unit>
-      <trans-unit id="d5e02d655834140c67217985af30b22b4b831aa8" datatype="html">
-        <source>Your transaction will be prioritized by up to <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="rcentage | number : &apos;1.1-1&apos; }}"/>%<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> of miners.</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">76</context>
-        </context-group>
-        <note priority="1" from="description">accelerator.hashrate-percentage-description</note>
-      </trans-unit>
       <trans-unit id="d1a62bdb732f1efbfdc8af6fbb4349b89015b5e5" datatype="html">
         <source>This will reduce your expected waiting time until the first confirmation to <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="START_TAG_APP_TIME" ctype="x-app_time" equiv-text="n&quot; [time]=&quot;etaInfo.acceleratedETA&quot; [fastRender]=&quot;false&quot; [fixedRender]=&quot;true&quot;&gt;"/><x id="CLOSE_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;/strong&gt;&lt;/s"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/small&gt;"/></source>
         <context-group purpose="location">
@@ -699,6 +691,14 @@
         </context-group>
         <note priority="1" from="description">accelerator.accelerate-your-transaction</note>
       </trans-unit>
+      <trans-unit id="8537f3e6139e9066da8f697e874ded8fcb71d9c4" datatype="html">
+        <source>Confirmation expected <x id="START_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;app-time kind=&quot;within&quot; [time]=&quot;eta.time&quot; [fastRender]=&quot;false&quot; [fixedRender]=&quot;true&quot;&gt;"/><x id="CLOSE_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;/span&gt;"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
+          <context context-type="linenumber">292,293</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.confirmation-expected</note>
+      </trans-unit>
       <trans-unit id="3f27230dc33770f71a7b0d9249c3c712b116b582" datatype="html">
         <source>Confirmation expected within several hours</source>
         <context-group purpose="location">
@@ -707,17 +707,46 @@
         </context-group>
         <note priority="1" from="description">accelerator.confirmation-expected-within-hours</note>
       </trans-unit>
-      <trans-unit id="d1a7c51db4237fc7799b1c104283ec5202f03c7d" datatype="html">
-        <source>Your transaction will be prioritized by up to <x id="INTERPOLATION" equiv-text="{{ etaInfo.hashratePercentage | number : &apos;1.1-1&apos; }}"/>% of miners.</source>
+      <trans-unit id="fd1ab7f68416a5ce64f04f588c8b808d7bba9624" datatype="html">
+        <source>For an additional</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">325</context>
+          <context context-type="linenumber">350</context>
         </context-group>
+        <note priority="1" from="description">accelerator.for-an-additional-cost</note>
+      </trans-unit>
+      <trans-unit id="b0cd496dc7758e691f57213379a47f0a043010ac" datatype="html">
+        <source>Reducing expected confirmation time to <x id="START_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;app-time kind=&quot;within&quot; [time]=&quot;etaInfo.acceleratedETA&quot; [fastRender]=&quot;false&quot; [fixedRender]=&quot;true&quot;&gt;"/><x id="CLOSE_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;/ng-contain"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">361</context>
+          <context context-type="linenumber">356,357</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.reducing-expected-confirmation-time</note>
+      </trans-unit>
+      <trans-unit id="4540d059d33541229fb7fbdae17bfa16c47d49d3" datatype="html">
+        <source><x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-contain"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/small&gt;"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
+          <context context-type="linenumber">361,362</context>
         </context-group>
         <note priority="1" from="description">accelerator.hashrate-percentage-description</note>
+      </trans-unit>
+      <trans-unit id="b62e50ad8bdbb107a2ec978648faf36e9f91c3c1" datatype="html">
+        <source>Payment to mempool.space for acceleration of txid <x id="START_LINK" ctype="x-a" equiv-text="&lt;a [routerLink]=&quot;&apos;/tx/&apos; + tx.txid&quot; target=&quot;_blank&quot;&gt;"/><x id="INTERPOLATION" equiv-text="tr(0, 10) }}"/>..<x id="INTERPOLATION_1" equiv-text="{{ tx.txid.substr(-10) }}"/><x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/p&gt;
+        &lt;/d"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
+          <context context-type="linenumber">367,368</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.payment-to-mempool-space</note>
+      </trans-unit>
+      <trans-unit id="13eacf4307fbadcc4ba552641200cdc36997a62c" datatype="html">
+        <source>Loading invoice...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
+          <context context-type="linenumber">386</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.loading-invoice</note>
       </trans-unit>
       <trans-unit id="63f5d0ec23e3cf4abf6d5221107633c90d8d4a15" datatype="html">
         <source>OR</source>
@@ -780,6 +809,14 @@
         </context-group>
         <note priority="1" from="description">Pay button label</note>
         <note priority="1" from="meaning">transaction.pay</note>
+      </trans-unit>
+      <trans-unit id="cae178cb66733552da9e3baefc1949a18af63ee0" datatype="html">
+        <source>Your transaction will be prioritized by up to <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="1&apos; }}"/>%<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> of miners.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
+          <context context-type="linenumber">560</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.hashrate-percentage-description</note>
       </trans-unit>
       <trans-unit id="83b8b9dd1ed416447cf8438460a37b0ddeb2677c" datatype="html">
         <source>sat</source>
