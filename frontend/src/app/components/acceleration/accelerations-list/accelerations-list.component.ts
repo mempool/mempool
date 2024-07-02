@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef, OnDestroy, Inject, LOCALE_ID } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription, catchError, of, switchMap, tap, throttleTime } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription, catchError, filter, of, switchMap, tap, throttleTime } from 'rxjs';
 import { Acceleration, BlockExtended } from '../../../interfaces/node-api.interface';
 import { StateService } from '../../../services/state.service';
 import { WebsocketService } from '../../../services/websocket.service';
@@ -58,11 +58,12 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
         })
       ).subscribe();
 
+      const prevKey = this.dir === 'ltr' ? 'ArrowLeft' : 'ArrowRight';
+      const nextKey = this.dir === 'ltr' ? 'ArrowRight' : 'ArrowLeft';
 
       this.keyNavigationSubscription = this.stateService.keyNavigation$.pipe(
+        filter((event) => event.key === prevKey || event.key === nextKey),
         tap((event) => {
-          const prevKey = this.dir === 'ltr' ? 'ArrowLeft' : 'ArrowRight';
-          const nextKey = this.dir === 'ltr' ? 'ArrowRight' : 'ArrowLeft';
           if (event.key === prevKey && this.page > 1) {
             this.page--;
             this.isLoading = true;
