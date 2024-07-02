@@ -44,7 +44,10 @@ export class AuthServiceMempool {
         map((user) => {
           return user;
         }),
-        catchError(() => of(null)),
+        catchError(() => {
+          this.setAuth(null);
+          return of(null);
+        }),
       );
   }
 
