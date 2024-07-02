@@ -120,10 +120,14 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.authSubscription$ = this.authService.getAuth$().subscribe((auth) => {
-      this.auth = auth;
-      this.estimate = null;
-      this.error = null;
-      this.moveToStep('summary');
+      if (this.auth?.user?.userId !== auth?.user?.userId) {
+        this.auth = auth;
+        this.estimate = null;
+        this.error = null;
+        this.moveToStep('summary');
+      } else {
+        this.auth = auth;
+      }
     });
     this.authService.refreshAuth$().subscribe();
 
