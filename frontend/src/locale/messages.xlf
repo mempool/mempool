@@ -2442,17 +2442,14 @@
           <context context-type="linenumber">6</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block-health-graph/block-health-graph.component.ts</context>
+          <context context-type="linenumber">63</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">27</context>
         </context-group>
         <note priority="1" from="description">mining.blocks-health</note>
-      </trans-unit>
-      <trans-unit id="d7d5fcf50179ad70c938491c517efb82de2c8146" datatype="html">
-        <source>Block Health</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block-health-graph/block-health-graph.component.ts</context>
-          <context context-type="linenumber">63</context>
-        </context-group>
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.block-health" datatype="html">
         <source>See Bitcoin block health visualized over time. Block health is a measure of how many expected transactions were included in an actual mined block. Expected transactions are determined using Mempool&apos;s re-implementation of Bitcoin Core&apos;s transaction selection algorithm.</source>
