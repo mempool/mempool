@@ -174,7 +174,7 @@
     </div>
 
     <div class="footer-link" [routerLink]="['/tx' | relativeUrl, tx?.txid]">
-      <span>See more details <fa-icon [icon]="['fas', 'arrow-alt-circle-right']"></fa-icon></span>
+      <span><ng-container i18n="accelerator.show-more-details">See more details</ng-container>&nbsp;<fa-icon [icon]="['fas', 'arrow-alt-circle-right']"></fa-icon></span>
     </div>
   </div>
 </div>

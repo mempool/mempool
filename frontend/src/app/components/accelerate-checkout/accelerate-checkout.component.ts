@@ -122,6 +122,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     this.authSubscription$ = this.authService.getAuth$().subscribe((auth) => {
       this.auth = auth;
       this.estimate = null;
+      this.error = null;
       this.moveToStep('summary');
     });
     this.authService.refreshAuth$().subscribe();

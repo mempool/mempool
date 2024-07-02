@@ -24,7 +24,7 @@
     <tr>
       <td class="td-width field-label" i18n="transaction.accelerated-by-hashrate|Accelerated to hashrate">Accelerated by</td>
       <td class="field-value" *ngIf="acceleratedByPercentage">
-        {{ acceleratedByPercentage }} <span class="symbol hashrate-label">of hashrate</span>
+        <ng-container i18n="accelerator.x-of-hash-rate">{{ acceleratedByPercentage }} <span class="symbol hashrate-label">of hashrate</span></ng-container>
       </td>
     </tr>
   </tbody>
