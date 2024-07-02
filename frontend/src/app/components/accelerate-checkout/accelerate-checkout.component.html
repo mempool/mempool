@@ -373,7 +373,7 @@
               <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
                 @if (invoice) {
                   <p><ng-container i18n="transaction.pay|Pay button label">Pay</ng-container>&nbsp;<span><small style="font-family: monospace;">{{ ((invoice.btcDue * 100_000_000) || cost) | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span></p>
-                  <app-bitcoin-invoice style="width: 100%;" [invoice]="invoice" [invoiceId]="invoice.btcpayInvoiceId" [minimal]="true" (completed)="bitcoinPaymentCompleted()"></app-bitcoin-invoice>
+                  <app-bitcoin-invoice style="width: 100%;" [invoiceId]="invoice.btcpayInvoiceId" [minimal]="true" (completed)="bitcoinPaymentCompleted()"></app-bitcoin-invoice>
                 } @else {
                   <p i18n="accelerator.loading-invoice">Loading invoice...</p>
                   <div class="d-flex align-items-center justify-content-center" style="width: 100%; height: 292px;">
