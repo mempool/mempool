@@ -144,13 +144,13 @@ describe('Mainnet', () => {
         });
       });
 
-      ['BC1PQYQSZQ', 'bc1PqYqSzQ'].forEach((searchTerm) => {
+      ['BC1PQYQS', 'bc1PqYqS'].forEach((searchTerm) => {
         it(`allows searching for partial case insensitive bech32m addresses: ${searchTerm}`, () => {
           cy.visit('/');
           cy.get('.search-box-container > .form-control').type(searchTerm).then(() => {
-            cy.get('app-search-results button.dropdown-item').should('have.length', 1);
+            cy.get('app-search-results button.dropdown-item').should('have.length', 10);
             cy.get('app-search-results button.dropdown-item.active').click().then(() => {
-              cy.url().should('include', '/address/bc1pqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqsyjer9e');
+              cy.url().should('include', '/address/bc1pqyqs26fs4gnyw4aqttyjqa5ta7075zzfjftyz98qa8vdr49dh7fqm2zkv3');
               cy.waitForSkeletonGone();
               cy.get('.text-center').should('not.have.text', 'Invalid Bitcoin address');
             });
@@ -158,13 +158,13 @@ describe('Mainnet', () => {
         });
       });
 
-      ['BC1Q000375VXCU', 'bC1q000375vXcU'].forEach((searchTerm) => {
+      ['BC1Q0003', 'bC1q0003'].forEach((searchTerm) => {
         it(`allows searching for partial case insensitive bech32 addresses: ${searchTerm}`, () => {
           cy.visit('/');
           cy.get('.search-box-container > .form-control').type(searchTerm).then(() => {
-            cy.get('app-search-results button.dropdown-item').should('have.length', 1);
+            cy.get('app-search-results button.dropdown-item').should('have.length', 10);
             cy.get('app-search-results button.dropdown-item.active').click().then(() => {
-              cy.url().should('include', '/address/bc1q000375vxcuf5v04lmwy22vy2thvhqkxghgq7dy');
+              cy.url().should('include', '/address/bc1q000303cgr9zazthut63kdktwtatfe206um8nyh');
               cy.waitForSkeletonGone();
               cy.get('.text-center').should('not.have.text', 'Invalid Bitcoin address');
             });
