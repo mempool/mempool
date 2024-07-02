@@ -256,7 +256,7 @@
     <hr>
     <div class="row mt-2 mb-2 text-center">
       <div class="col-sm d-flex flex-column">
-        <button type="button" class="mt-1 btn btn-secondary btn-sm rounded-pill align-self-center" style="width: 200px" (click)="moveToStep('summary')">Go Back</button>
+        <button type="button" class="mt-1 btn btn-secondary btn-sm rounded-pill align-self-center" style="width: 200px" (click)="moveToStep('summary')" i18n="go-back">Go back</button>
       </div>
     </div>
 
@@ -289,7 +289,7 @@
                 <label class="form-check-label d-flex flex-column" for="wait">
                   <span class="font-weight-bold">Wait</span>
                   @if (eta.blocks < 7) {
-                    <span class="checkout-text" i18n="accelerator.confirmation-expected">Confirmation expected <app-time kind="within" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time></span>
+                    <span class="checkout-text"><ng-container i18n="accelerator.confirmation-expected">Confirmation expected</ng-container>&nbsp;<app-time kind="within" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time></span>
                   } @else {
                     <span class="checkout-text">
                       <span i18n="accelerator.confirmation-expected-within-hours">Confirmation expected within several hours</span>
@@ -358,7 +358,7 @@
           </div>
         </div>
         <div class="col-md pie d-none d-md-flex" *ngIf="!forceMobile">
-          <small class="form-text checkout-text mb-2" i18n="accelerator.hashrate-percentage-description" *ngIf="(etaInfo$ | async) as etaInfo"><ng-container *ngTemplateOutlet="prioritizedBy; context: {$implicit:etaInfo.hashratePercentage}"></ng-container></small>
+          <small class="form-text checkout-text mb-2" *ngIf="(etaInfo$ | async) as etaInfo"><ng-container *ngTemplateOutlet="prioritizedBy; context: {$implicit:etaInfo.hashratePercentage}"></ng-container></small>
           <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true"></app-active-acceleration-box>
         </div>
       </div>
@@ -418,7 +418,7 @@
     <hr>
     <div class="row mt-2 mb-2 text-center">
       <div class="col-sm d-flex flex-column">
-        <button type="button" class="mt-1 btn btn-secondary btn-sm rounded-pill align-self-center" style="width: 200px" (click)="moveToStep('summary')">Go Back</button>
+        <button type="button" class="mt-1 btn btn-secondary btn-sm rounded-pill align-self-center" style="width: 200px" (click)="moveToStep('summary')" i18n="go-back">Go back</button>
       </div>
     </div>
   } @else if (step === 'cashapp') {
@@ -470,7 +470,7 @@
     <hr>
     <div class="row mt-2 mb-2 text-center">
       <div class="col-sm d-flex flex-column">
-        <button type="button" class="mt-1 btn btn-secondary btn-sm rounded-pill align-self-center" style="width: 200px" (click)="moveToStep('checkout')">Go Back</button>
+        <button type="button" class="mt-1 btn btn-secondary btn-sm rounded-pill align-self-center" style="width: 200px" (click)="moveToStep('checkout')" i18n="go-back">Go back</button>
       </div>
     </div>
   }
@@ -514,7 +514,7 @@
 
 <ng-template #accelerateOption let-etaInfo="etaInfo">
   <span><ng-container *ngTemplateOutlet="accelerateTo; context: {$implicit:(userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize}"></ng-container> <ng-container *ngTemplateOutlet="customizeButton"></ng-container></span>
-  <span class="checkout-text">Confirmation expected <app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time><br>
+  <span class="checkout-text"><ng-container i18n="accelerator.confirmation-expected">Confirmation expected</ng-container>&nbsp;<app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time><br>
     @if (!calculating) {
       <app-fiat [value]="cost"></app-fiat> (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
     } @else {
