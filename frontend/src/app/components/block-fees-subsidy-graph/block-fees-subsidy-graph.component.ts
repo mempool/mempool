@@ -182,9 +182,9 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           if (this.displayMode === 'normal') tooltip += `<div style="margin-left: 2px">${formatNumber(data.reduce((acc, val) => acc + val.data, 0), this.locale, '1.0-3')} BTC</div>`;
           else if (this.displayMode === 'fiat') tooltip += `<div style="margin-left: 2px">${this.fiatCurrencyPipe.transform(data.reduce((acc, val) => acc + val.data, 0), null, 'USD')}</div>`;
           if (['24h', '3d'].includes(this.zoomTimeSpan)) {
-            tooltip += `<small>` + $localize`At block <b style="color: white; margin-left: 2px">${data[0].axisValue}` + `</small>`;
+            tooltip += `<small>` + $localize`At block ${'<b style="color: white; margin-left: 2px">' + data[0].axisValue}` + `</small>`;
           } else {
-            tooltip += `<small>` + $localize`Around block <b style="color: white; margin-left: 2px">${data[0].axisValue}` + `</small>`;
+            tooltip += `<small>` + $localize`Around block ${'<b style="color: white; margin-left: 2px">' + data[0].axisValue}` + `</small>`;
           }
           return tooltip;
         }.bind(this)

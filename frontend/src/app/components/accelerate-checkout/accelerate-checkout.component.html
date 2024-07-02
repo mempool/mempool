@@ -292,7 +292,7 @@
                     <span class="checkout-text">Confirmation expected <app-time kind="within" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time></span>
                   } @else {
                     <span class="checkout-text">
-                      <span>Confirmation expected within several hours</span>
+                      <span i18n="accelerator.confirmation-expected-within-hours">Confirmation expected within several hours</span>
                     </span>
                   }
                 </label>
@@ -518,7 +518,7 @@
     @if (!calculating) {
       <app-fiat [value]="cost"></app-fiat>fee (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
     } @else {
-      <span class="estimating">Calculating cost...</span>
+      <span class="estimating" i18n="accelerator.calculating-cost">Calculating cost...</span>
     }
   </span>
 </ng-template>
@@ -533,7 +533,7 @@
   @if (isLoggedIn() || canPayWithBitcoin || canPayWithCashapp) {
     <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" [class.disabled]="!canPay || calculating || (!advancedEnabled && selectedOption !== 'accel')" style="width: 200px" (click)="moveToStep('checkout')">
       <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
-      <span>Accelerate</span>
+      <span i18n="transaction.accelerate|Accelerate button label">Accelerate</span>
     </button>
   } @else {
     <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center disabled" style="width: 200px">
@@ -547,7 +547,7 @@
   @if (isLoggedIn()) {
     <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" [class.disabled]="!canPay || calculating" style="width: 200px" (click)="accelerateWithMempoolAccount()">
       <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
-      <span>Pay</span>
+      <span i18n="transaction.pay|Pay button label">Pay</span>
     </button>
   } @else {
     <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center disabled" style="width: 200px">
