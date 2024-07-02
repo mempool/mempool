@@ -503,16 +503,19 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   get canPayWithBalance() {
-    if (!this.isLoggedIn() || !this.estimate?.hasAccess) {
+    if (!this.hasAccessToBalanceMode) {
       return false;
     }
-    
     const paymentMethod = this.estimate?.availablePaymentMethods?.balance;
     return paymentMethod && this.cost >= paymentMethod.min && this.cost <= paymentMethod.max;
   }
 
   get canPay() {
     return this.canPayWithBalance || this.canPayWithBitcoin || this.canPayWithCashapp;
+  }
+
+  get hasAccessToBalanceMode() {
+    return this.isLoggedIn() && this.estimate?.hasAccess;
   }
 
   @HostListener('window:resize', ['$event'])

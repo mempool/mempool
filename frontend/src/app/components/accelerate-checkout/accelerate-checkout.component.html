@@ -21,7 +21,7 @@
         <app-accelerate-fee-graph
           [tx]="tx"
           [estimate]="estimate"
-          [showEstimate]="isLoggedIn()"
+          [showEstimate]="hasAccessToBalanceMode"
           [maxRateOptions]="maxRateOptions"
           [maxRateIndex]="selectFeeRateIndex"
           (setUserBid)="setUserBid($event)"
@@ -30,10 +30,6 @@
 
       <ng-container *ngIf="estimate else loadingEstimate">
         <div [class.disabled]="error || showSuccess">
-          <div *ngIf="isLoggedIn() && !estimate.hasAccess" style="margin-right: 5em;">
-            <div class="alert alert-mempool mr-6">You are currently on the waitlist for Mempool Accelerator&trade;</div>
-          </div>
-
           @if (showDetails) {
             <h5 i18n="accelerator.your-transaction">Your transaction</h5>
             <div class="row">
@@ -105,7 +101,7 @@
                 <tbody>
                   <!-- ESTIMATED FEE -->
                   <ng-container *ngIf="showDetails">
-                    @if (isLoggedIn()) {
+                    @if (hasAccessToBalanceMode) {
                       <tr class="group-first">
                         <td class="item" i18n="accelerator.next-block-rate">Next block market rate</td>
                         <td class="amt" style="font-size: 16px">
@@ -180,7 +176,7 @@
                   </ng-container>
 
                   <!-- NEXT BLOCK ESTIMATE -->
-                  <ng-container *ngIf="isLoggedIn()">
+                  <ng-container *ngIf="hasAccessToBalanceMode">
                     <tr class="group-first">
                       <td class="item">
                         <b style="background-color: #5E35B1" class="p-1 pl-0" i18n="accelerator.estimated-cost">Estimated acceleration cost</b> ~{{ estimate.targetFeeRate | number : '1.0-0' }} sat/vB
@@ -201,7 +197,7 @@
                   <ng-container>
                     <tr class="group-first group-last">
                       <td class="item">
-                        @if (isLoggedIn()) {
+                        @if (hasAccessToBalanceMode) {
                           <b style="background-color: var(--primary);" class="p-1 pl-0" i18n="accelerator.maximum-cost">Maximum acceleration cost</b>
                         } @else {
                           <b style="background-color: var(--primary);" class="p-1 pl-0" i18n="accelerator.cost">Acceleration cost</b>
@@ -215,14 +211,14 @@
                       <td class="units">
                         <span class="symbol" i18n="shared.sats">sats</span>
                         <span class="fiat ml-1">
-                          <app-fiat [value]="cost" [colorClass]="isLoggedIn() && estimate.userBalance < cost ? 'red-color' : 'green-color'"></app-fiat>
+                          <app-fiat [value]="cost" [colorClass]="hasAccessToBalanceMode && estimate.userBalance < cost ? 'red-color' : 'green-color'"></app-fiat>
                         </span>
                       </td>
                     </tr>
                   </ng-container>
 
                   <!-- USER BALANCE -->
-                  <ng-container *ngIf="isLoggedIn() && estimate.userBalance < cost">
+                  <ng-container *ngIf="hasAccessToBalanceMode && estimate.userBalance < cost">
                     <tr class="group-first group-last dashed-top">
                       <td class="item" i18n="accelerator.available-balance">Available balance</td>
                       <td class="amt">
@@ -275,10 +271,6 @@
           </div>
         </div>
       }
-
-      <div *ngIf="isLoggedIn() && !estimate.hasAccess">
-        <div class="alert alert-mempool mr-6">You are currently on the waitlist for Mempool Accelerator&trade;</div>
-      </div>
 
       @if (!advancedEnabled) {
         <form [class.disabled]="error || showSuccess">
@@ -530,7 +522,7 @@
 <ng-template #accelerateTo let-x i18n="accelerator.accelerate-to-x">Accelerate to ~{{ x | number : '1.0-0' }} sat/vB</ng-template>
 
 <ng-template #accelerateButton>
-  @if (isLoggedIn() || canPayWithBitcoin || canPayWithCashapp) {
+  @if (canPayWithBalance || canPayWithBitcoin || canPayWithCashapp) {
     <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" [class.disabled]="!canPay || calculating || (!advancedEnabled && selectedOption !== 'accel')" style="width: 200px" (click)="moveToStep('checkout')">
       <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
       <span i18n="transaction.accelerate|Accelerate button label">Accelerate</span>
@@ -544,7 +536,7 @@
 </ng-template>
 
 <ng-template #accountPayButton>
-  @if (isLoggedIn()) {
+  @if (hasAccessToBalanceMode) {
     <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" [class.disabled]="!canPay || calculating" style="width: 200px" (click)="accelerateWithMempoolAccount()">
       <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
       <span i18n="transaction.pay|Pay button label">Pay</span>
