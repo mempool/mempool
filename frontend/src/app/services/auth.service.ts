@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { map, Observable, ReplaySubject, switchMap, tap } from 'rxjs';
+import { catchError, map, Observable, of, ReplaySubject, switchMap, tap } from 'rxjs';
 import { ServicesApiServices } from './services-api.service';
 
 export interface IAuth {
@@ -43,7 +43,8 @@ export class AuthServiceMempool {
         }),
         map((user) => {
           return user;
-        })
+        }),
+        catchError(() => of(null)),
       );
   }
 
