@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef, OnDestroy, Inject, LOCALE_ID } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription, catchError, of, switchMap, tap, throttleTime } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription, catchError, filter, of, switchMap, tap, throttleTime } from 'rxjs';
 import { Acceleration, BlockExtended } from '../../../interfaces/node-api.interface';
 import { StateService } from '../../../services/state.service';
 import { WebsocketService } from '../../../services/websocket.service';
@@ -50,17 +50,39 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
     if (!this.widget) {
       this.websocketService.want(['blocks']);
       this.seoService.setTitle($localize`:@@02573b6980a2d611b4361a2595a4447e390058cd:Accelerations`);
+
+      this.paramSubscription = this.route.params.pipe(
+        tap(params => {
+          this.page = +params['page'] || 1;
+          this.pageSubject.next(this.page);
+        })
+      ).subscribe();
+
+      const prevKey = this.dir === 'ltr' ? 'ArrowLeft' : 'ArrowRight';
+      const nextKey = this.dir === 'ltr' ? 'ArrowRight' : 'ArrowLeft';
+
+      this.keyNavigationSubscription = this.stateService.keyNavigation$.pipe(
+        filter((event) => event.key === prevKey || event.key === nextKey),
+        tap((event) => {
+          if (event.key === prevKey && this.page > 1) {
+            this.page--;
+            this.isLoading = true;
+            this.cd.markForCheck();
+          }
+          if (event.key === nextKey && this.page * 15 < this.accelerationCount) {
+            this.page++;
+            this.isLoading = true;
+            this.cd.markForCheck();
+          }
+        }),
+        throttleTime(1000, undefined, { leading: true, trailing: true }),
+      ).subscribe(() => {
+        this.pageChange(this.page);
+      });
     }
 
     this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
     this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
-    
-    this.paramSubscription = this.route.params.pipe(
-      tap(params => {
-        this.page = +params['page'] || 1;
-        this.pageSubject.next(this.page);
-      })
-    ).subscribe();
 
     this.accelerationList$ = this.pageSubject.pipe(
       switchMap((page) => {
@@ -100,26 +122,6 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
         );
       })
     );
-
-    this.keyNavigationSubscription = this.stateService.keyNavigation$.pipe(
-      tap((event) => {
-        const prevKey = this.dir === 'ltr' ? 'ArrowLeft' : 'ArrowRight';
-        const nextKey = this.dir === 'ltr' ? 'ArrowRight' : 'ArrowLeft';
-        if (event.key === prevKey && this.page > 1) {
-          this.page--;
-          this.isLoading = true;
-          this.cd.markForCheck();
-        }
-        if (event.key === nextKey && this.page * 15 < this.accelerationCount) {
-          this.page++;
-          this.isLoading = true;
-          this.cd.markForCheck();
-        }
-      }),
-      throttleTime(1000, undefined, { leading: true, trailing: true }),
-    ).subscribe(() => {
-      this.pageChange(this.page);
-    });
   }
 
   pageChange(page: number): void {
