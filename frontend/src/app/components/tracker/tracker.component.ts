@@ -757,6 +757,8 @@ export class TrackerComponent implements OnInit, OnDestroy {
   get showAccelerationSummary(): boolean {
     return (
       this.tx
+      && !this.replaced
+      && !this.isCached
       && !this.tx.acceleration
       && this.acceleratorAvailable
       && this.eligibleForAcceleration
