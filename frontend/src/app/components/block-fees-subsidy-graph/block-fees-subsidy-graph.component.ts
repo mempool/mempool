@@ -75,7 +75,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`:@@mining.block-fees-subsidy:Block Fees Vs Subsidy`);
+    this.seoService.setTitle($localize`:@@41545303ec98792b738d6237adbd1f3b54a22196:Block Fees Vs Subsidy`);
     this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.block-fees-subsidy:See the mining fees earned per Bitcoin block compared to the Bitcoin block subsidy, visualized in BTC and USD over time.`);
 
     this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
