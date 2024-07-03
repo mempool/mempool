@@ -32,7 +32,7 @@ export class TestTransactionsComponent implements OnInit {
       maxfeerate: ['', Validators.min(0)]
     });
 
-    this.seoService.setTitle($localize`:@@meta.title.test-txs:Test Transactions`);
+    this.seoService.setTitle($localize`:@@f74d6f23e06c5a75d95a994017c00191c162ba9f:Test Transactions`);
     this.ogService.setManualOgImage('tx-push.jpg');
   }
 
