@@ -125,8 +125,8 @@
     <!-- Accelerator -->
     <ng-container *ngIf="!tx?.status?.confirmed && showAccelerationSummary && (ETA$ | async) as eta;">
       <br>
-      <div class="title float-left">
-        <h2 i18n="transaction.accelerate|Accelerate button label">Accelerate</h2>
+      <div class="title float-left mb-1">
+        <h2><app-svg-images name="accelerator" height="45px"></app-svg-images></h2>
       </div>
 
       <button type="button" class="btn btn-outline-info accelerator-toggle btn-sm float-right" (click)="closeAccelerator()" i18n="accelerator.hide">Hide accelerator</button>
