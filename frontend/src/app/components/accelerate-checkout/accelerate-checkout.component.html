@@ -306,7 +306,7 @@
             </div>
             <div class="pie d-none d-lg-flex">
               <small class="form-text checkout-text mb-2"><ng-container *ngTemplateOutlet="prioritizedBy; context: {$implicit:etaInfo.hashratePercentage}"></ng-container></small>
-              <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true"></app-active-acceleration-box>
+              <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true" class="ml-2"></app-active-acceleration-box>
             </div>
             <ng-container *ngTemplateOutlet="accelerateButton"></ng-container>
           </div>
