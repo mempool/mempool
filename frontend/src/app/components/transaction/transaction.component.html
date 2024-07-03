@@ -6,16 +6,6 @@
       <app-truncate [text]="rbfTransaction.txid" [lastChars]="12" [link]="['/tx/' | relativeUrl, rbfTransaction.txid]"></app-truncate>
     </div>
 
-    <!-- <div *ngIf="tx && acceleratorAvailable && accelerateCtaType === 'alert' && !tx.status.confirmed && !tx.acceleration" class="alert alert-dismissible alert-purple" role="alert">
-      <div>
-        <a class="btn btn-sm blink-bg" (click)="onAccelerateClicked()">Accelerate</a>
-        <span class="align-middle">this transaction using Mempool Accelerator &trade;</span>
-      </div>
-      <button type="button" class="close" aria-label="Close" (click)="dismissAccelAlert()">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div> -->
-
     <ng-container *ngIf="!rbfTransaction || rbfTransaction?.size || tx">
       <h1 i18n="shared.transaction">Transaction</h1>
 
@@ -133,7 +123,7 @@
     </ng-template>
 
     <!-- Accelerator -->
-    <ng-container *ngIf="!tx?.status?.confirmed && showAccelerationSummary">
+    <ng-container *ngIf="!tx?.status?.confirmed && showAccelerationSummary && (ETA$ | async) as eta;">
       <br>
       <div class="title float-left">
         <h2 i18n="transaction.accelerate|Accelerate button label">Accelerate</h2>
@@ -144,21 +134,19 @@
 
       <div class="clearfix"></div>
 
-      <ng-container *ngIf="(ETA$ | async) as eta;">
-        <app-accelerate-checkout
-          *ngIf="(da$ | async) as da;"
-          [cashappEnabled]="cashappEligible"
-          [advancedEnabled]="true"
-          [tx]="tx"
-          [eta]="eta"
-          [miningStats]="miningStats"
-          [scrollEvent]="scrollIntoAccelPreview"
-          [showDetails]="showAccelerationDetails"
-          [noCTA]="true"
-          (hasDetails)="setHasAccelerationDetails($event)"
-          class="h-100 w-100"
-        ></app-accelerate-checkout>
-      </ng-container>
+      <app-accelerate-checkout
+        *ngIf="(da$ | async) as da;"
+        [cashappEnabled]="cashappEligible"
+        [advancedEnabled]="true"
+        [tx]="tx"
+        [eta]="eta"
+        [miningStats]="miningStats"
+        [scrollEvent]="scrollIntoAccelPreview"
+        [showDetails]="showAccelerationDetails"
+        [noCTA]="true"
+        (hasDetails)="setHasAccelerationDetails($event)"
+        class="h-100 w-100"
+      ></app-accelerate-checkout>
     </ng-container>
 
     <br>
@@ -598,8 +586,6 @@
         </td>
       </tr>
     }
-  } @else {
-    <ng-container *ngTemplateOutlet="skeletonDetailsRow"></ng-container>
   }
 </ng-template>
 
