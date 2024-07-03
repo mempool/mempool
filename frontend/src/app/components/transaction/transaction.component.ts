@@ -424,10 +424,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               if (txPosition.position?.block > 0 && this.tx.weight < 4000) {
                 this.cashappEligible = true;
               }
-            } else if (this.showAccelerationSummary) {
-              setTimeout(() => {
-                this.accelerationFlowCompleted = true;
-              }, 2000);
             }
           }
         }
@@ -797,10 +793,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.isAcceleration) {
       if (initialState) {
         this.accelerationFlowCompleted = true;
-      } else if (this.showAccelerationSummary) {
-        setTimeout(() => {
-          this.accelerationFlowCompleted = true;
-        }, 2000);
       }
     }
     if (this.isAcceleration) {
@@ -969,6 +961,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     return auth !== null;
   }
 
+  onAccelerationCompleted(): void {
+    document.location.hash = '';
+    this.accelerationFlowCompleted = true;
+    this.forceAccelerationSummary = false;
+  }
+
   closeAccelerator(): void {
     document.location.hash = '';
     this.hideAccelerationSummary = true;
@@ -987,7 +985,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.tx
       && !this.replaced
       && !this.isCached
-      && !this.tx.acceleration
       && this.acceleratorAvailable
       && this.eligibleForAcceleration
       && (

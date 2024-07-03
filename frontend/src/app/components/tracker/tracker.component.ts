@@ -715,6 +715,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
         this.miningStats = stats;
         this.isAccelerated$.next(this.isAcceleration); // hack to trigger recalculation of ETA without adding another source observable
       });
+      this.accelerationFlowCompleted = true;
     }
     this.isAccelerated$.next(this.isAcceleration);
   }
@@ -759,7 +760,6 @@ export class TrackerComponent implements OnInit, OnDestroy {
       this.tx
       && !this.replaced
       && !this.isCached
-      && !this.tx.acceleration
       && this.acceleratorAvailable
       && this.eligibleForAcceleration
       && !this.accelerationFlowCompleted

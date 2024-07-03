@@ -139,12 +139,14 @@
         [cashappEnabled]="cashappEligible"
         [advancedEnabled]="true"
         [tx]="tx"
+        [accelerating]="isAcceleration"
         [eta]="eta"
         [miningStats]="miningStats"
         [scrollEvent]="scrollIntoAccelPreview"
         [showDetails]="showAccelerationDetails"
         [noCTA]="true"
         (hasDetails)="setHasAccelerationDetails($event)"
+        (completed)="onAccelerationCompleted()"
         class="h-100 w-100"
       ></app-accelerate-checkout>
     </ng-container>

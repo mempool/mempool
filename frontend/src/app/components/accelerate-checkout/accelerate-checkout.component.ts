@@ -41,7 +41,7 @@ export const MIN_BID_RATIO = 1;
 export const DEFAULT_BID_RATIO = 2;
 export const MAX_BID_RATIO = 4;
 
-type CheckoutStep = 'quote' | 'summary' | 'checkout' | 'cashapp' | 'processing' | 'paid';
+type CheckoutStep = 'quote' | 'summary' | 'checkout' | 'cashapp' | 'processing' | 'paid' | 'success';
 
 @Component({
   selector: 'app-accelerate-checkout',
@@ -50,6 +50,7 @@ type CheckoutStep = 'quote' | 'summary' | 'checkout' | 'cashapp' | 'processing' 
 })
 export class AccelerateCheckout implements OnInit, OnDestroy {
   @Input() tx: Transaction;
+  @Input() accelerating: boolean = false;
   @Input() miningStats: MiningStats;
   @Input() eta: ETA;
   @Input() scrollEvent: boolean;
@@ -58,6 +59,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   @Input() forceMobile: boolean = false;
   @Input() showDetails: boolean = false;
   @Input() noCTA: boolean = false;
+  @Output() completed = new EventEmitter<boolean>();
   @Output() hasDetails = new EventEmitter<boolean>();
   @Output() changeMode = new EventEmitter<boolean>();
 
@@ -167,6 +169,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     if (changes.scrollEvent && this.scrollEvent) {
       this.scrollToElement('acceleratePreviewAnchor', 'start');
     }
+    if (changes.accelerating) {
+      if ((this.step === 'processing' || this.step === 'paid') && this.accelerating) {
+        this.moveToStep('success');
+      }
+    }
   }
 
   moveToStep(step: CheckoutStep) {
@@ -184,6 +191,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.setupSquare();
     }
     this.hasDetails.emit(this._step === 'quote');
+  }
+
+  closeModal(): void {
+    this.completed.emit(true);
+    this.moveToStep('summary');
   }
 
   /**
