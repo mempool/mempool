@@ -177,7 +177,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     const urlParams = new URLSearchParams(window.location.search);
     this.forceAccelerationSummary = !!urlParams.get('cash_request_id');
 
-    this.hideAccelerationSummary = this.storageService.getValue('hide-accelerator-pref') == 'true';
+    this.hideAccelerationSummary = this.stateService.isMempoolSpaceBuild ? this.storageService.getValue('hide-accelerator-pref') == 'true' : true;
 
     if (!this.stateService.isLiquid()) {
       this.miningService.getMiningStats('1w').subscribe(stats => {
