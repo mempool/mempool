@@ -461,6 +461,7 @@
       </trans-unit>
       <trans-unit id="df89e157bacb4ab32e6ec725bf1eb176dc15201e" datatype="html">
         <source>Size in vbytes of this transaction (including unconfirmed ancestors)</source>
+        <target>この取引のvbytesサイズ（未承認の親取引を含む）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">48</context>
@@ -595,6 +596,7 @@
       </trans-unit>
       <trans-unit id="fad137784196a8fdc10588e27ed5d8ae95fe4e79" datatype="html">
         <source>Fees already paid by this transaction (including unconfirmed ancestors)</source>
+        <target>この取引ですでに支払われた手数料（未承認の親取引を含む）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">59</context>
@@ -603,6 +605,7 @@
       </trans-unit>
       <trans-unit id="4169a885bc1747a38344bae64e6926c6d7d7ec43" datatype="html">
         <source>How much faster?</source>
+        <target>どれくらい速くなる?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">68</context>
@@ -611,6 +614,7 @@
       </trans-unit>
       <trans-unit id="d1a62bdb732f1efbfdc8af6fbb4349b89015b5e5" datatype="html">
         <source>This will reduce your expected waiting time until the first confirmation to <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="START_TAG_APP_TIME" ctype="x-app_time" equiv-text="n&quot; [time]=&quot;etaInfo.acceleratedETA&quot; [fastRender]=&quot;false&quot; [fixedRender]=&quot;true&quot;&gt;"/><x id="CLOSE_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;/strong&gt;&lt;/s"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/small&gt;"/></source>
+        <target>これにより、お待ちいただく予想時間が<x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="START_TAG_APP_TIME" ctype="x-app_time" equiv-text="n&quot; [time]=&quot;etaInfo.acceleratedETA&quot; [fastRender]=&quot;false&quot; [fixedRender]=&quot;true&quot;&gt;"/><x id="CLOSE_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;/strong&gt;&lt;/s"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/small&gt;"/>まで短縮されます</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">73,74</context>
@@ -619,6 +623,7 @@
       </trans-unit>
       <trans-unit id="a8233de047500bf0f0d9f9f1712ddb071501a283" datatype="html">
         <source>Summary</source>
+        <target>まとめ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">97</context>
@@ -667,6 +672,7 @@
       </trans-unit>
       <trans-unit id="6c37b6a6f9e5ec98367ed744afa4b36800aa79ce" datatype="html">
         <source>Target rate</source>
+        <target>目標レート</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">128</context>
@@ -675,6 +681,7 @@
       </trans-unit>
       <trans-unit id="e26d365629446e476b5d437e343b5b02b49adea2" datatype="html">
         <source>Extra fee required</source>
+        <target>追加手数料が必要</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">136</context>
@@ -728,6 +735,7 @@
       </trans-unit>
       <trans-unit id="990d4cedae650a7a1b53887cfde7ed363e362bb2" datatype="html">
         <source>Acceleration cost</source>
+        <target>高速化コスト</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">203</context>
@@ -745,6 +753,7 @@
       </trans-unit>
       <trans-unit id="a67aec1c4d47cdf3a4442a19e616def78fd77388" datatype="html">
         <source>Go back</source>
+        <target>戻る</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">255</context>
@@ -761,6 +770,7 @@
       </trans-unit>
       <trans-unit id="7d89e94e98140d07d5c2bb12d6166b8b74506eb0" datatype="html">
         <source>Accelerate your Bitcoin transaction?</source>
+        <target>ビットコイン取引を高速化しますか?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">270</context>
@@ -769,6 +779,7 @@
       </trans-unit>
       <trans-unit id="eb70970e7741aca891aa54ff4651b050a60b1690" datatype="html">
         <source>Wait</source>
+        <target>お待ちください</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">282</context>
@@ -777,6 +788,7 @@
       </trans-unit>
       <trans-unit id="f6a46cd5ca2087712a145f2c680e2aad5f926eaf" datatype="html">
         <source>Confirmation expected</source>
+        <target>承認予想時間</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">284</context>
@@ -789,6 +801,7 @@
       </trans-unit>
       <trans-unit id="4adc5f10d717fbcfc9834dcf5eb203c1156db4d7" datatype="html">
         <source>Confirmation not expected any time soon</source>
+        <target>承認されるまで結構待つかも…</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">287</context>
@@ -797,6 +810,7 @@
       </trans-unit>
       <trans-unit id="fd1ab7f68416a5ce64f04f588c8b808d7bba9624" datatype="html">
         <source>For an additional</source>
+        <target>追加で</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">342</context>
@@ -805,6 +819,7 @@
       </trans-unit>
       <trans-unit id="b0cd496dc7758e691f57213379a47f0a043010ac" datatype="html">
         <source>Reducing expected confirmation time to <x id="START_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;app-time kind=&quot;within&quot; [time]=&quot;etaInfo.acceleratedETA&quot; [fastRender]=&quot;false&quot; [fixedRender]=&quot;true&quot;&gt;"/><x id="CLOSE_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;/ng-contain"/></source>
+        <target>予想される承認時間を <x id="START_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;app-time kind=&quot;within&quot; [time]=&quot;etaInfo.acceleratedETA&quot; [fastRender]=&quot;false&quot; [fixedRender]=&quot;true&quot;&gt;"/><x id="CLOSE_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;/ng-contain"/> に短縮</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">348,349</context>
@@ -813,6 +828,7 @@
       </trans-unit>
       <trans-unit id="b62e50ad8bdbb107a2ec978648faf36e9f91c3c1" datatype="html">
         <source>Payment to mempool.space for acceleration of txid <x id="START_LINK" ctype="x-a" equiv-text="&lt;a [routerLink]=&quot;'/tx/' + tx.txid&quot; target=&quot;_blank&quot;&gt;"/><x id="INTERPOLATION" equiv-text="tr(0, 10) }}"/>..<x id="INTERPOLATION_1" equiv-text="{{ tx.txid.substr(-10) }}"/><x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/p&gt;         &lt;/d"/></source>
+        <target>txid <x id="START_LINK" ctype="x-a" equiv-text="&lt;a [routerLink]=&quot;'/tx/' + tx.txid&quot; target=&quot;_blank&quot;&gt;"/><x id="INTERPOLATION" equiv-text="tr(0, 10) }}"/>..<x id="INTERPOLATION_1" equiv-text="{{ tx.txid.substr(-10) }}"/><x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/p&gt;         &lt;/d"/> の高速化のための mempool.space への支払い</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">359,360</context>
@@ -825,6 +841,7 @@
       </trans-unit>
       <trans-unit id="65fd4251d8ddfe4017d4d83f8cec6f5a80d89289" datatype="html">
         <source>Pay</source>
+        <target>お支払い</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">375</context>
@@ -846,6 +863,7 @@
       </trans-unit>
       <trans-unit id="13eacf4307fbadcc4ba552641200cdc36997a62c" datatype="html">
         <source>Loading invoice...</source>
+        <target>インボイスを読み込んでいます...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">378</context>
@@ -854,6 +872,7 @@
       </trans-unit>
       <trans-unit id="63f5d0ec23e3cf4abf6d5221107633c90d8d4a15" datatype="html">
         <source>OR</source>
+        <target>または</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">386</context>
@@ -862,6 +881,7 @@
       </trans-unit>
       <trans-unit id="d5380b83d01211f764e7dc17f115cbe2c306793f" datatype="html">
         <source>Confirm your payment</source>
+        <target>お支払いの確認</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">420</context>
@@ -870,6 +890,7 @@
       </trans-unit>
       <trans-unit id="23e85f2bac1f2bf2a36125a7cc9232e47d773bca" datatype="html">
         <source>Total additional cost</source>
+        <target>合計追加費用</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">436</context>
@@ -878,6 +899,7 @@
       </trans-unit>
       <trans-unit id="ada15d0099ccf0a54d598a658d7a5d9f95af8fc6" datatype="html">
         <source>with</source>
+        <target>方法</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">440</context>
@@ -886,6 +908,7 @@
       </trans-unit>
       <trans-unit id="c427d1fcbff172397bf8f6fb154e3144f099afdc" datatype="html">
         <source>Loading payment method...</source>
+        <target>支払い方法を読み込んでいます...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">454</context>
@@ -894,6 +917,7 @@
       </trans-unit>
       <trans-unit id="72ca62832f62c0aeb0c0675d2ac6aa7043ee840d" datatype="html">
         <source>Confirming your payment</source>
+        <target>お支払いの確認中</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">472</context>
@@ -902,6 +926,7 @@
       </trans-unit>
       <trans-unit id="8c8cbda9c5ddde6a4898a80aef46199c946c8895" datatype="html">
         <source>We are processing your payment...</source>
+        <target>お支払いを処理中です...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">482</context>
@@ -910,6 +935,7 @@
       </trans-unit>
       <trans-unit id="ea3197c44781ecca4f2adbf7bff229574f192983" datatype="html">
         <source>Accelerating your transaction</source>
+        <target>取引を高速化中</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">492</context>
@@ -918,6 +944,7 @@
       </trans-unit>
       <trans-unit id="2279bfb8531701cc176ff6b266c3fa0df3983bce" datatype="html">
         <source>Confirming your acceleration with our mining pool partners...</source>
+        <target>マイニングプールのパートナーとの高速化条件を交渉しています...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">499</context>
@@ -926,6 +953,7 @@
       </trans-unit>
       <trans-unit id="746506272a06b85cba0efc14907940df4bafdf96" datatype="html">
         <source>Calculating cost...</source>
+        <target>費用を計算しています...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">513</context>
@@ -934,6 +962,7 @@
       </trans-unit>
       <trans-unit id="484e154f1b26e67760d10baa8dddb2c69ddb1990" datatype="html">
         <source>customize</source>
+        <target>カスタマイズ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">519</context>
@@ -942,6 +971,7 @@
       </trans-unit>
       <trans-unit id="fc60844faa5ea496fe8b8cfb7620b2bfc733c90b" datatype="html">
         <source>Accelerate to ~<x id="INTERPOLATION" equiv-text="{{ x | number : '1.0-0' }}"/> sat/vB</source>
+        <target>~<x id="INTERPOLATION" equiv-text="{{ x | number : '1.0-0' }}"/> sat/vB まで高速化</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">522</context>
@@ -972,6 +1002,7 @@
       </trans-unit>
       <trans-unit id="cae178cb66733552da9e3baefc1949a18af63ee0" datatype="html">
         <source>Your transaction will be prioritized by up to <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="1' }}"/>%<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> of miners.</source>
+        <target>あなたの取引は、最大 <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="1' }}"/>%<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> のマイナーによって優先されます。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">552</context>
@@ -1199,6 +1230,7 @@
       </trans-unit>
       <trans-unit id="cf2ec414465d65ab24b354663d94d051a67e26e9" datatype="html">
         <source>Total vSize</source>
+        <target>合計 Vsize</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-stats/acceleration-stats.component.html</context>
           <context context-type="linenumber">20</context>
@@ -1219,6 +1251,7 @@
       </trans-unit>
       <trans-unit id="d932577b535f10c9b3e25aaa430220bb09efc171" datatype="html">
         <source> of blocks</source>
+        <target>ブロック容積率</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-stats/acceleration-stats.component.html</context>
           <context context-type="linenumber">23</context>
@@ -1319,6 +1352,7 @@
       </trans-unit>
       <trans-unit id="9310d4be621ac60b19a4d73258b25f2b411971e7" datatype="html">
         <source>Bid</source>
+        <target>入札</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">13</context>
@@ -1463,6 +1497,7 @@
       </trans-unit>
       <trans-unit id="d1c71eabdf119de5aa1d75ea1a8f93a9215dd8ea" datatype="html">
         <source>(1 week)</source>
+        <target>（1週間）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">27</context>
@@ -1471,6 +1506,7 @@
       </trans-unit>
       <trans-unit id="0efb19c3388cbcc9f3cd257f389843f9ad2a1f31" datatype="html">
         <source>(1 month)</source>
+        <target>（1ヶ月）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">30</context>
@@ -1525,6 +1561,7 @@
       </trans-unit>
       <trans-unit id="6bb1e9770b5c27f172ae67754ba316fe455a9821" datatype="html">
         <source>Accelerated to</source>
+        <target>高速化結果</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/active-acceleration-box/active-acceleration-box.component.html</context>
           <context context-type="linenumber">7</context>
@@ -1534,6 +1571,7 @@
       </trans-unit>
       <trans-unit id="2c2a527d090d5d030fc130a243135dbc6ba276f0" datatype="html">
         <source>Accelerated by</source>
+        <target>高速化の際</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/active-acceleration-box/active-acceleration-box.component.html</context>
           <context context-type="linenumber">25</context>
@@ -1543,6 +1581,7 @@
       </trans-unit>
       <trans-unit id="3af3e9a4c4d8135f386b2fc59233884ae8fc57fb" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ acceleratedByPercentage }}"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;symbol hashrate-label&quot;&gt;"/>of hashrate<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target><x id="INTERPOLATION" equiv-text="{{ acceleratedByPercentage }}"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;symbol hashrate-label&quot;&gt;"/>マイニングハッシュ力を使用<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/active-acceleration-box/active-acceleration-box.component.html</context>
           <context context-type="linenumber">27</context>
@@ -1573,6 +1612,7 @@
       </trans-unit>
       <trans-unit id="5538e35f9f610af0d1c70fcc7919a93191a810ca" datatype="html">
         <source> of block</source>
+        <target>ブロック容積率</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/pending-stats/pending-stats.component.html</context>
           <context context-type="linenumber">23</context>
@@ -1865,6 +1905,7 @@
       </trans-unit>
       <trans-unit id="8754c2dbc855d18ee90ffff136caedfd64f71e83" datatype="html">
         <source>all</source>
+        <target>全て</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">84</context>
@@ -1873,6 +1914,7 @@
       </trans-unit>
       <trans-unit id="6e9a3395f190e740778f523253e1fd6c53259622" datatype="html">
         <source>recent</source>
+        <target>直近</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">87</context>
@@ -1881,6 +1923,7 @@
       </trans-unit>
       <trans-unit id="0a4ec18d2eb002662ee1c390be17000eace08818" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="of {{ mempoolStats.tx_count + chainStats.tx_cou"/> of <x id="INTERPOLATION_1" equiv-text="{{ mempoolStats.tx_count + chainStats.tx_count | number }}"/> transaction</source>
+        <target><x id="INTERPOLATION" equiv-text="of {{ mempoolStats.tx_count + chainStats.tx_cou"/> / <x id="INTERPOLATION_1" equiv-text="{{ mempoolStats.tx_count + chainStats.tx_count | number }}"/> 取引</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">101</context>
@@ -1889,6 +1932,7 @@
       </trans-unit>
       <trans-unit id="b2e947b5b892e2d2c5d216b1a198b8bf40da45eb" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="of {{ mempoolStats.tx_count + chainStats.tx_count | numb"/> of <x id="INTERPOLATION_1" equiv-text="{{ mempoolStats.tx_count + chainStats.tx_count | number }}"/> transactions</source>
+        <target><x id="INTERPOLATION" equiv-text="of {{ mempoolStats.tx_count + chainStats.tx_count | numb"/> / <x id="INTERPOLATION_1" equiv-text="{{ mempoolStats.tx_count + chainStats.tx_count | number }}"/> 取引</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">102</context>
@@ -1919,6 +1963,7 @@
       </trans-unit>
       <trans-unit id="88b90b0e9c946e7f151c040b0eb68850498fd5cf" datatype="html">
         <source>Confirmed balance</source>
+        <target>承認済み残高</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">247</context>
@@ -1927,6 +1972,7 @@
       </trans-unit>
       <trans-unit id="8211b4be0291a035cd67aeb84782c9e87d4daca3" datatype="html">
         <source>Unconfirmed balance</source>
+        <target>未承認残高</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">252</context>
@@ -1935,6 +1981,7 @@
       </trans-unit>
       <trans-unit id="c7daf1b7c126095c054f2d3728ae790b0ceef33a" datatype="html">
         <source>Confirmed UTXOs</source>
+        <target>承認済み UTXO</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">257</context>
@@ -1943,6 +1990,7 @@
       </trans-unit>
       <trans-unit id="928915f31e05788ae07a353761e10e5992b2b58c" datatype="html">
         <source>Unconfirmed UTXOs</source>
+        <target>未承認 UTXO</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">262</context>
@@ -2328,6 +2376,7 @@
       </trans-unit>
       <trans-unit id="8072922a37fcba13275c2aaed6efb408454cf943" datatype="html">
         <source>Change (7d)</source>
+        <target>変化（7日）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/balance-widget/balance-widget.component.html</context>
           <context context-type="linenumber">14</context>
@@ -2340,6 +2389,7 @@
       </trans-unit>
       <trans-unit id="00b2f0e8008ca3c1240f29cec13a5a1ebea14dd9" datatype="html">
         <source>Change (30d)</source>
+        <target>変更 (30日)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/balance-widget/balance-widget.component.html</context>
           <context context-type="linenumber">23</context>
@@ -2464,6 +2514,7 @@
       </trans-unit>
       <trans-unit id="41545303ec98792b738d6237adbd1f3b54a22196" datatype="html">
         <source>Block Fees Vs Subsidy</source>
+        <target>ブロック手数料と新規発行コイン</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fees-subsidy-graph/block-fees-subsidy-graph.component.html</context>
           <context context-type="linenumber">6</context>
@@ -2480,6 +2531,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.block-fees-subsidy" datatype="html">
         <source>See the mining fees earned per Bitcoin block compared to the Bitcoin block subsidy, visualized in BTC and USD over time.</source>
+        <target>時間の経過に伴う、BTC と USD で視覚化された、ビットコイン ブロックごとに獲得されたマイニング手数料と新規発行枚数を確認します。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fees-subsidy-graph/block-fees-subsidy-graph.component.ts</context>
           <context context-type="linenumber">79</context>
@@ -2487,6 +2539,7 @@
       </trans-unit>
       <trans-unit id="8538305450922736186" datatype="html">
         <source>At block <x id="PH" equiv-text="'&lt;b style=&quot;color: white; margin-left: 2px&quot;&gt;' + data[0].axisValue"/></source>
+        <target>ブロック <x id="PH" equiv-text="'&lt;b style=&quot;color: white; margin-left: 2px&quot;&gt;' + data[0].axisValue"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fees-subsidy-graph/block-fees-subsidy-graph.component.ts</context>
           <context context-type="linenumber">185</context>
@@ -2494,6 +2547,7 @@
       </trans-unit>
       <trans-unit id="8807945662832318286" datatype="html">
         <source>Around block <x id="PH" equiv-text="'&lt;b style=&quot;color: white; margin-left: 2px&quot;&gt;' + data[0].axisValue"/></source>
+        <target>ブロック <x id="PH" equiv-text="'&lt;b style=&quot;color: white; margin-left: 2px&quot;&gt;' + data[0].axisValue"/> 付近</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fees-subsidy-graph/block-fees-subsidy-graph.component.ts</context>
           <context context-type="linenumber">187</context>
@@ -2566,6 +2620,7 @@
       </trans-unit>
       <trans-unit id="4cfabb48965febabe67eb491a3b7e58555d3d52a" datatype="html">
         <source>Classic</source>
+        <target>クラシック</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-filters/block-filters.component.html</context>
           <context context-type="linenumber">33</context>
@@ -3312,6 +3367,7 @@
       </trans-unit>
       <trans-unit id="27387c2af5dcaf343a548feba821515f5dc00faa" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="transaction&lt;/ng-template&gt;     &lt;ng-template #transactionsPlural let-i i18n=&quot;shared.transacti"/> transaction</source>
+        <target><x id="INTERPOLATION" equiv-text="transaction&lt;/ng-template&gt;     &lt;ng-template #transactionsPlural let-i i18n=&quot;shared.transacti"/> 取引</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block-transactions.component.html</context>
           <context context-type="linenumber">4</context>
@@ -3332,6 +3388,7 @@
       </trans-unit>
       <trans-unit id="14779b0ce4cbc4d975a35a8fe074426228a324f3" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="transactions&lt;/ng-template&gt;   &lt;/h2&gt;   &lt;ngb-pagination class=&quot;pagination-container float-ri"/> transactions</source>
+        <target><x id="INTERPOLATION" equiv-text="transactions&lt;/ng-template&gt;   &lt;/h2&gt;   &lt;ngb-pagination class=&quot;pagination-container float-ri"/> 取引</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block-transactions.component.html</context>
           <context context-type="linenumber">5</context>
@@ -4229,6 +4286,7 @@
       </trans-unit>
       <trans-unit id="6728a64d6346c29f1b87f19160f6d1c70ca7e894" datatype="html">
         <source>Treasury</source>
+        <target>財務</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/custom-dashboard/custom-dashboard.component.html</context>
           <context context-type="linenumber">228</context>
@@ -4237,6 +4295,7 @@
       </trans-unit>
       <trans-unit id="6aff623d92cd45f847fe6e8de9452647ffe50984" datatype="html">
         <source>Treasury Transactions</source>
+        <target>財務取引</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/custom-dashboard/custom-dashboard.component.html</context>
           <context context-type="linenumber">251</context>
@@ -4245,6 +4304,7 @@
       </trans-unit>
       <trans-unit id="d5912dcb5ff6c43e081fd2544956d19d39e8fa36" datatype="html">
         <source>X Timeline</source>
+        <target>X タイムライン</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/custom-dashboard/custom-dashboard.component.html</context>
           <context context-type="linenumber">265</context>
@@ -4592,6 +4652,7 @@
       </trans-unit>
       <trans-unit id="f563861ed63d1c6ceffeaf29e8823bb47ed3a0eb" datatype="html">
         <source>Testnet4 Faucet</source>
+        <target>テストネット4 フォーセット</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/faucet/faucet.component.html</context>
           <context context-type="linenumber">4</context>
@@ -4600,6 +4661,7 @@
       </trans-unit>
       <trans-unit id="615ba6c4511a36f93c225c725935fdbf16f162a5" datatype="html">
         <source>Amount (sats)</source>
+        <target>金額（sats）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/faucet/faucet.component.html</context>
           <context context-type="linenumber">51</context>
@@ -4608,6 +4670,7 @@
       </trans-unit>
       <trans-unit id="2183c5be8b7f219129fdbd07ed2dd14d67fd1711" datatype="html">
         <source>Request Testnet4 Coins</source>
+        <target>テストネット4 コインをリクエスト</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/faucet/faucet.component.html</context>
           <context context-type="linenumber">70</context>
@@ -5357,6 +5420,7 @@
       </trans-unit>
       <trans-unit id="52b32e9a8be459e6539a9b9214c2a17b23206a6c" datatype="html">
         <source>Number of times that the Federation's BTC holdings fall below 95% of the total L-BTC supply</source>
+        <target>Liquid連盟のBTC保有量がL-BTC総供給量の95%を下回った回数</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/reserves-ratio-stats/reserves-ratio-stats.component.html</context>
           <context context-type="linenumber">6</context>
@@ -5465,6 +5529,7 @@
       </trans-unit>
       <trans-unit id="ac13afbf96df2d6e9e666c1fe98d75fc6b2242e7" datatype="html">
         <source>Faucet</source>
+        <target>フォーセット</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">106</context>
@@ -6272,6 +6337,7 @@
       </trans-unit>
       <trans-unit id="fe5317c6c60dd7e0e86f04d22f566f67cf04d404" datatype="html">
         <source>Mining Pools</source>
+        <target>マイニングプール</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
           <context context-type="linenumber">47</context>
@@ -6412,6 +6478,7 @@
       </trans-unit>
       <trans-unit id="f74d6f23e06c5a75d95a994017c00191c162ba9f" datatype="html">
         <source>Test Transactions</source>
+        <target>お試しの取引</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/test-transactions/test-transactions.component.html</context>
           <context context-type="linenumber">2</context>
@@ -6429,6 +6496,7 @@
       </trans-unit>
       <trans-unit id="fec63564786cefc0ca1c650527fdfd859aff4b76" datatype="html">
         <source>Raw hex</source>
+        <target>生の16進数</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/test-transactions/test-transactions.component.html</context>
           <context context-type="linenumber">5</context>
@@ -6437,6 +6505,7 @@
       </trans-unit>
       <trans-unit id="48e4b0c012de5020053ecb26e9ac0d35a1f60688" datatype="html">
         <source>Comma-separated list of raw transactions</source>
+        <target>カンマ区切りの生の取引のリスト</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/test-transactions/test-transactions.component.html</context>
           <context context-type="linenumber">7</context>
@@ -6445,6 +6514,7 @@
       </trans-unit>
       <trans-unit id="ea22e5fb229522f3faa5e87dbf0c5f56ddc234fb" datatype="html">
         <source>Maximum fee rate (sat/vB)</source>
+        <target>最大手数料レート（sat/vB）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/test-transactions/test-transactions.component.html</context>
           <context context-type="linenumber">9</context>
@@ -6453,6 +6523,7 @@
       </trans-unit>
       <trans-unit id="b92fb7ca717f99e787cec47dcf1b6f72ba26d685" datatype="html">
         <source>Allowed?</source>
+        <target>許可済み？</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/test-transactions/test-transactions.component.html</context>
           <context context-type="linenumber">23</context>
@@ -6461,6 +6532,7 @@
       </trans-unit>
       <trans-unit id="975c3b9c864754453576ced3f18d75ed39638c70" datatype="html">
         <source>Rejection reason</source>
+        <target>拒否理由</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/test-transactions/test-transactions.component.html</context>
           <context context-type="linenumber">26</context>
@@ -6605,6 +6677,7 @@
       </trans-unit>
       <trans-unit id="time-within" datatype="html">
         <source>within ~<x id="DATE" equiv-text="dateStrings.i18nYear"/></source>
+        <target>~<x id="DATE" equiv-text="dateStrings.i18nYear"/> 以内</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
           <context context-type="linenumber">207</context>
@@ -6784,6 +6857,7 @@
       </trans-unit>
       <trans-unit id="cef1d79eace5eb4d2243fad36730e3e65c757bee" datatype="html">
         <source>Sent</source>
+        <target>送信済み</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker-bar.component.html</context>
           <context context-type="linenumber">2</context>
@@ -6792,6 +6866,7 @@
       </trans-unit>
       <trans-unit id="6092bb2a5d8d9aca468a0007bc1af1c21e8f454c" datatype="html">
         <source>Soon</source>
+        <target>間も無く</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker-bar.component.html</context>
           <context context-type="linenumber">6</context>
@@ -6828,6 +6903,7 @@
       </trans-unit>
       <trans-unit id="dbd3edcb9583d2d5a624f70b4593d785858b6130" datatype="html">
         <source>Not any time soon</source>
+        <target>結構待つかも…</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker.component.html</context>
           <context context-type="linenumber">74</context>
@@ -6841,6 +6917,7 @@
       </trans-unit>
       <trans-unit id="a42474c92670ab75cb387cf44c03b0a4ce0a641a" datatype="html">
         <source>Confirmed at</source>
+        <target>承認時刻</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker.component.html</context>
           <context context-type="linenumber">90</context>
@@ -6849,6 +6926,7 @@
       </trans-unit>
       <trans-unit id="55b16cd277b9b5de63abe14b475737c753a37b97" datatype="html">
         <source>Block height</source>
+        <target>ブロック高</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker.component.html</context>
           <context context-type="linenumber">99</context>
@@ -6857,6 +6935,7 @@
       </trans-unit>
       <trans-unit id="03e7c662ce1c813603ff17d0906e15d256a35a70" datatype="html">
         <source>Your transaction has been accelerated</source>
+        <target>取引が高速化されました</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker.component.html</context>
           <context context-type="linenumber">132</context>
@@ -6865,6 +6944,7 @@
       </trans-unit>
       <trans-unit id="52a68ca949dfcdeaaea81bec4d597256b8ad42b5" datatype="html">
         <source>Waiting for your transaction to appear in the mempool</source>
+        <target>mempoolに取引が表示されるのを待っています...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker.component.html</context>
           <context context-type="linenumber">139</context>
@@ -6873,6 +6953,7 @@
       </trans-unit>
       <trans-unit id="5ad21d21f3e26ddfe0abeed499db5d5c0bd0e325" datatype="html">
         <source>Your transaction is in the mempool, but it will not be confirmed for some time.</source>
+        <target>取引はmempoolにありますが、しばらくは承認されません。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker.component.html</context>
           <context context-type="linenumber">145</context>
@@ -6881,6 +6962,7 @@
       </trans-unit>
       <trans-unit id="809118722b27889f5424609d1779f356bcef2cc2" datatype="html">
         <source>Your transaction is near the top of the mempool, and is expected to confirm soon.</source>
+        <target>あなたの取引はmempoolの上位近くにあり、すぐに承認される予定です。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker.component.html</context>
           <context context-type="linenumber">151</context>
@@ -6889,6 +6971,7 @@
       </trans-unit>
       <trans-unit id="ee76deb7716e90b79e557394b1d256079b7ec24e" datatype="html">
         <source>Your transaction is expected to confirm in the next block</source>
+        <target>あなたの取引は次のブロックで承認される予定です</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker.component.html</context>
           <context context-type="linenumber">157</context>
@@ -6897,6 +6980,7 @@
       </trans-unit>
       <trans-unit id="a44868b873e4831ee081cd3507a514557293b8e6" datatype="html">
         <source>Your transaction is confirmed!</source>
+        <target>取引が承認されました!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker.component.html</context>
           <context context-type="linenumber">163</context>
@@ -6905,6 +6989,7 @@
       </trans-unit>
       <trans-unit id="8cfdee58beb2e3306741988c554d1f2562c42b30" datatype="html">
         <source>Your transaction has been replaced by a newer version!</source>
+        <target>取引は新しいバージョンに置き換えられました。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker.component.html</context>
           <context context-type="linenumber">169</context>
@@ -6913,6 +6998,7 @@
       </trans-unit>
       <trans-unit id="2514309d0421b09a70cf9bf5d59bcc1b82dbec31" datatype="html">
         <source>See more details</source>
+        <target>詳細を見る</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker.component.html</context>
           <context context-type="linenumber">177</context>
@@ -6998,6 +7084,7 @@
       </trans-unit>
       <trans-unit id="ec972116b4da9e2c5bc0e6e6586061d60cd13e56" datatype="html">
         <source>Hide accelerator</source>
+        <target>高速化画面を非表示</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">132</context>
@@ -9516,6 +9603,7 @@
       </trans-unit>
       <trans-unit id="2da938f28079d0d1ba372c5290b1bb1c18cf077c" datatype="html">
         <source>fee</source>
+        <target>手数料</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/address-type/address-type.component.html</context>
           <context context-type="linenumber">3</context>
@@ -9524,6 +9612,7 @@
       </trans-unit>
       <trans-unit id="fcb99e36a9158520fcf478c949fb704912aa3d4b" datatype="html">
         <source>empty</source>
+        <target>空</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/address-type/address-type.component.html</context>
           <context context-type="linenumber">6</context>
@@ -9532,6 +9621,7 @@
       </trans-unit>
       <trans-unit id="6d5788756fcb0b8fc937226ff60bf1bd12a8e464" datatype="html">
         <source>provably unspendable</source>
+        <target>使用不可能</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/address-type/address-type.component.html</context>
           <context context-type="linenumber">18</context>
@@ -9540,6 +9630,7 @@
       </trans-unit>
       <trans-unit id="40966c5744cc46092c2ae9dee1957e15c1faef4d" datatype="html">
         <source>bare multisig</source>
+        <target>生マルチシグ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/address-type/address-type.component.html</context>
           <context context-type="linenumber">21</context>
@@ -9624,6 +9715,7 @@
       </trans-unit>
       <trans-unit id="51a5e241afdecf2cae3acb567d9fed560a817382" datatype="html">
         <source>Test Transaction</source>
+        <target>お試しの取引</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">64</context>
@@ -9705,6 +9797,7 @@
       </trans-unit>
       <trans-unit id="692f6e6f4f6afc7f48b8194ab03e1d2155650f00" datatype="html">
         <source>Research</source>
+        <target>研究</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">75</context>
@@ -9731,6 +9824,7 @@
       </trans-unit>
       <trans-unit id="7dcdb8435f1421b5ad5920a77278d498691faef2" datatype="html">
         <source>Testnet3 Explorer</source>
+        <target>テストネット3エクスプローラー</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">81</context>
@@ -9739,6 +9833,7 @@
       </trans-unit>
       <trans-unit id="46a03052a962e6b21651effc05391e2a4e26946a" datatype="html">
         <source>Testnet4 Explorer</source>
+        <target>テストネット4エクスプローラー</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">82</context>
@@ -9850,6 +9945,7 @@
       </trans-unit>
       <trans-unit id="52a5264f8dcf69b24e496d0a37fbcdd688c54353" datatype="html">
         <source>Testnet3 is deprecated, and will soon be replaced by <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;/testnet4&quot;&gt;"/>Testnet4<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
+        <target>テストネット3は非推奨となり、まもなく <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;/testnet4&quot;&gt;"/>テストネット4<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> に置き換えられます。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/testnet-alert/testnet-alert.component.html</context>
           <context context-type="linenumber">6</context>
@@ -9858,6 +9954,7 @@
       </trans-unit>
       <trans-unit id="893cb386c7625a411278d5893552adb7558f0d54" datatype="html">
         <source>Testnet4 is not yet finalized, and may be reset at anytime.</source>
+        <target>「テストネット4」はまだ完成しておらず、いつでもリセットされる可能性があります。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/testnet-alert/testnet-alert.component.html</context>
           <context context-type="linenumber">9</context>
@@ -9866,6 +9963,7 @@
       </trans-unit>
       <trans-unit id="6052761358428332094" datatype="html">
         <source>Batch payment</source>
+        <target>おまとめ送金</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/filters.utils.ts</context>
           <context context-type="linenumber">108</context>
@@ -10025,6 +10123,7 @@
       </trans-unit>
       <trans-unit id="address-label.multisig" datatype="html">
         <source>Multisig <x id="multisigM" equiv-text="m"/> of <x id="multisigN" equiv-text="n"/></source>
+        <target><x id="multisigM" equiv-text="m"/> / <x id="multisigN" equiv-text="n"/> のマルチシグ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/script.utils.ts</context>
           <context context-type="linenumber">168</context>

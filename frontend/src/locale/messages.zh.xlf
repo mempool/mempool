@@ -4641,7 +4641,7 @@
       </trans-unit>
       <trans-unit id="f563861ed63d1c6ceffeaf29e8823bb47ed3a0eb" datatype="html">
         <source>Testnet4 Faucet</source>
-        <target>Testnet4 水龙头</target>
+        <target>Testnet4 龙头</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/faucet/faucet.component.html</context>
           <context context-type="linenumber">4</context>
