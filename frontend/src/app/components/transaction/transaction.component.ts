@@ -146,6 +146,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   scrollIntoAccelPreview = false;
   cashappEligible = false;
   auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
+  isMempoolSpaceBuild = this.stateService.isMempoolSpaceBuild;
 
   @ViewChild('graphContainer')
   graphContainer: ElementRef;
