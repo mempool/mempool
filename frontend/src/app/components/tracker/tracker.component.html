@@ -122,7 +122,18 @@
         <span class="explainer">&nbsp;</span>
       } @else if (showAccelerationSummary) {
         <ng-container *ngIf="(ETA$ | async) as eta;">
-          <app-accelerate-checkout *ngIf="(da$ | async) as da;" [cashappEnabled]="cashappEligible" [advancedEnabled]="false" [forceMobile]="true" [tx]="tx" [miningStats]="miningStats" [eta]="eta" [scrollEvent]="scrollIntoAccelPreview" class="h-100 w-100"></app-accelerate-checkout>
+          <app-accelerate-checkout
+            *ngIf="(da$ | async) as da;"
+            [cashappEnabled]="cashappEligible"
+            [advancedEnabled]="false"
+            [forceMobile]="true"
+            [tx]="tx"
+            [accelerating]="isAcceleration"
+            [miningStats]="miningStats"
+            [eta]="eta"
+            [scrollEvent]="scrollIntoAccelPreview"
+            class="h-100 w-100"
+          ></app-accelerate-checkout>
         </ng-container>
       } @else {
         @if (tx?.acceleration && !tx.status?.confirmed) {
