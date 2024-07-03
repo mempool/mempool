@@ -13,7 +13,6 @@ import { ServicesApiServices } from '../../services/services-api.service';
 })
 export class BitcoinInvoiceComponent implements OnInit, OnChanges, OnDestroy {
   @Input() invoice;
-  @Input() invoiceId: string;
   @Input() redirect = true;
   @Input() minimal = false;
   @Output() completed = new EventEmitter();
@@ -21,7 +20,6 @@ export class BitcoinInvoiceComponent implements OnInit, OnChanges, OnDestroy {
   paymentForm: FormGroup;
   requestSubscription: Subscription | undefined;
   paymentStatusSubscription: Subscription | undefined;
-  loadedInvoice: any;
   paymentStatus = 1; // 1 - Waiting for invoice | 2 - Pending payment | 3 - Payment completed
   paramMapSubscription: Subscription | undefined;
   invoiceSubscription: Subscription | undefined;
@@ -53,55 +51,37 @@ export class BitcoinInvoiceComponent implements OnInit, OnChanges, OnDestroy {
     this.paymentForm = this.formBuilder.group({
       'method': 'lightning'
     });
-
-    /**
-     * If the invoice is passed in the url, fetch it and display btcpay payment
-     * Otherwise get a new invoice
-     */
-    this.paramMapSubscription = this.activatedRoute.paramMap
-      .pipe(
-        tap((paramMap) => {
-          this.fetchInvoice(paramMap.get('invoiceId') ?? this.invoiceId);
-        })
-      ).subscribe();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ((changes.invoice || changes.invoiceId) && this.invoiceId) {
-      this.fetchInvoice(this.invoiceId);
+    if (changes.invoice) {
+      this.watchInvoice();
     }
   }
 
-  fetchInvoice(invoiceId: string): void {
-    if (invoiceId) {
-      if (this.paymentStatusSubscription) {
-        this.paymentStatusSubscription.unsubscribe();
-      }
-      this.paymentStatusSubscription = ((this.invoice && this.invoice.id === invoiceId) ? of(this.invoice) : this.apiService.retreiveInvoice$(invoiceId)).pipe(
-        tap((invoice: any) => {
-          this.loadedInvoice = invoice;
-          if (this.loadedInvoice.btcDue > 0) {
-            this.paymentStatus = 2;
-          } else {
-            this.paymentStatus = 4;
-          }
-        }),
-        switchMap(() => this.apiService.getPaymentStatus$(this.loadedInvoice.id)
-          .pipe(
-            retry({ delay: () => timer(2000)})
-          )
-        ),
-      ).subscribe({
-        next: ((result) => {
-          this.paymentStatus = 3;
-          this.completed.emit();
-        }),
-      });
+  watchInvoice(): void {
+    if (this.paymentStatusSubscription) {
+      this.paymentStatusSubscription.unsubscribe();
     }
+    if (!this.invoice) {
+      this.paymentStatus = 1;
+      return;
+    }
+    if (this.invoice.btcDue > 0) {
+      this.paymentStatus = 2;
+    } else {
+      this.paymentStatus = 4;
+    }
+    this.paymentStatusSubscription = this.apiService.getPaymentStatus$(this.invoice.btcpayInvoiceId).pipe(
+      retry({ delay: () => timer(2000)})
+    ).subscribe((result) => {
+      this.paymentStatus = 3;
+      this.completed.emit();
+    });
   }
 
   get availableMethods(): string[] {
-    return Object.keys(this.loadedInvoice?.addresses || {}).filter(k => k === 'BTC_LightningLike');
+    return Object.keys(this.invoice?.addresses || {}).filter(k => k === 'BTC_LightningLike');
   }
 
   bypassSecurityTrustUrl(text: string): SafeUrl {
