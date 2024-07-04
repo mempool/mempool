@@ -353,6 +353,9 @@ class MempoolBlocks {
     for (const txid of Object.keys(candidates?.txs ?? mempool)) {
       if (txid in mempool) {
         mempool[txid].cpfpDirty = false;
+        mempool[txid].ancestors = [];
+        mempool[txid].descendants = [];
+        mempool[txid].bestDescendant = null;
       }
     }
     for (const [txid, rate] of rates) {
