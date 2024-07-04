@@ -81,11 +81,13 @@ export class BlocksList implements OnInit {
         })
       ).subscribe();
 
+      const prevKey = this.dir === 'ltr' ? 'ArrowLeft' : 'ArrowRight';
+      const nextKey = this.dir === 'ltr' ? 'ArrowRight' : 'ArrowLeft';
+
       this.keyNavigationSubscription = this.stateService.keyNavigation$
       .pipe(
+        filter((event) => event.key === prevKey || event.key === nextKey),
         tap((event) => {
-          const prevKey = this.dir === 'ltr' ? 'ArrowLeft' : 'ArrowRight';
-          const nextKey = this.dir === 'ltr' ? 'ArrowRight' : 'ArrowLeft';
           if (event.key === prevKey && this.page > 1) {
             this.page--;
             this.isLoading = true;
