@@ -51,6 +51,7 @@ interface AuditStatus {
   accelerated?: boolean;
   conflict?: boolean;
   coinbase?: boolean;
+  firstSeen?: number;
 }
 
 @Component({
@@ -325,7 +326,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           const boostCost = acceleration.boostCost || acceleration.bidBoost;
           acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
           acceleration.boost = boostCost;
-
+          this.tx.acceleratedAt = acceleration.added;
           this.accelerationInfo = acceleration;
           this.setIsAccelerated();
         }
@@ -368,6 +369,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             const isAccelerated = audit.acceleratedTxs.includes(txid);
             const isConflict = audit.fullrbfTxs.includes(txid);
             const isExpected = audit.template.some(tx => tx.txid === txid);
+            const firstSeen = audit.template.find(tx => tx.txid === txid)?.time;
             return {
               seen: isExpected || isPrioritized || isAccelerated,
               expected: isExpected,
@@ -375,6 +377,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               prioritized: isPrioritized,
               conflict: isConflict,
               accelerated: isAccelerated,
+              firstSeen,
             };
           }),
           retry({ count: 3, delay: 2000 }),
@@ -388,6 +391,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       })
     ).subscribe(auditStatus => {
       this.auditStatus = auditStatus;
+      if (this.auditStatus?.firstSeen) {
+        this.transactionTime = this.auditStatus.firstSeen;
+      }
       this.setIsAccelerated();
     });
 
@@ -771,6 +777,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     if (cpfpInfo.acceleration) {
       this.tx.acceleration = cpfpInfo.acceleration;
       this.tx.acceleratedBy = cpfpInfo.acceleratedBy;
+      this.tx.acceleratedAt = cpfpInfo.acceleratedAt;
       this.setIsAccelerated(firstCpfp);
     }
 
