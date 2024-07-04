@@ -9,6 +9,7 @@ import { WebsocketService } from '../../services/websocket.service';
 })
 export class GraphsComponent implements OnInit {
   flexWrap = false;
+  isMainnet = this.stateService.isMainnet();
 
   constructor(
     public stateService: StateService,
