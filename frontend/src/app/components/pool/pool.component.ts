@@ -9,6 +9,7 @@ import { StateService } from '../../services/state.service';
 import { selectPowerOfTen } from '../../bitcoin.utils';
 import { formatNumber } from '@angular/common';
 import { SeoService } from '../../services/seo.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 interface AccelerationTotal {
   cost: number,
@@ -33,6 +34,7 @@ export class PoolComponent implements OnInit {
   blocks$: Observable<BlockExtended[]>;
   oobFees$: Observable<AccelerationTotal[]>;
   isLoading = true;
+  error: HttpErrorResponse | null = null;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -104,6 +106,10 @@ export class PoolComponent implements OnInit {
             return [];
           }
           return this.apiService.getPoolBlocks$(this.slug, this.blocks[this.blocks.length - 1]?.height);
+        }),
+        catchError((err) => {
+          this.error = err;
+          return of([]);
         }),
         tap((newBlocks) => {
           this.blocks = this.blocks.concat(newBlocks);

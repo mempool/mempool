@@ -1,6 +1,6 @@
 <app-indexing-progress></app-indexing-progress>
 
-<div class="container-xl">
+<div class="container-xl" *ngIf="!error; else errorTemplate">
 
   <!-- Pool overview -->
   <div *ngIf="poolStats$ | async as poolStats; else loadingMain">
@@ -459,4 +459,11 @@
 
 <ng-template #emptyTd>
   <td class="text-center"></td>
+</ng-template>
+
+<ng-template #errorTemplate>
+  <br>
+  <app-http-error [error]="error">
+    <span i18n="pool.error.loading-pool-data">Error loading pool data.</span>
+  </app-http-error>
 </ng-template>
