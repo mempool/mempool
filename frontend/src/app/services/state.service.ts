@@ -410,6 +410,10 @@ export class StateService {
     return this.network === 'liquid' || this.network === 'liquidtestnet';
   }
 
+  isMainnet(): boolean {
+    return this.env.ROOT_NETWORK === '' && this.network === '';
+  }
+
   isAnyTestnet(): boolean {
     return ['testnet', 'testnet4', 'signet', 'liquidtestnet'].includes(this.network);
   }
