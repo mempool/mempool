@@ -189,3 +189,10 @@
     flex-direction: column;
   }
 }
+
+.btn-error {
+  position: absolute;
+  right: 0;
+  font-size: 12px;
+  color: var(--red);
+}

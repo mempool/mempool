@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 
-const MempoolErrors = {
+export const MempoolErrors = {
   'bad_request': `Your request was not valid. Please try again.`,
   'internal_server_error': `Something went wrong, please try again later`,
   'acceleration_duplicated': `This transaction has already been accelerated.`,
@@ -44,6 +44,7 @@ export function isMempoolError(error: string) {
 export class MempoolErrorComponent implements OnInit {
   @Input() error: string;
   @Input() alertClass = 'alert-danger';
+  @Input() textOnly = false;
   errorContent: SafeHtml;
 
   constructor(private sanitizer: DomSanitizer) { }

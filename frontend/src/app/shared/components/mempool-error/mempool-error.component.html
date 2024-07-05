@@ -1,2 +1,7 @@
-<div class="alert" [class]="alertClass" [innerHTML]="errorContent">
-</div>
+@if (!textOnly) {
+  <div class="alert" [class]="alertClass" [innerHTML]="errorContent">
+  </div>
+} @else {
+  <span [class]="alertClass" [innerHTML]="errorContent">
+  </span>
+}
