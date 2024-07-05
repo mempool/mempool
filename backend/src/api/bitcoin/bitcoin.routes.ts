@@ -162,6 +162,7 @@ class BitcoinRoutes {
           adjustedVsize: tx.adjustedVsize,
           acceleration: tx.acceleration,
           acceleratedBy: tx.acceleratedBy || undefined,
+          acceleratedAt: tx.acceleratedAt || undefined,
         });
         return;
       }

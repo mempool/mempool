@@ -6176,10 +6176,10 @@ export const restApiDocsData = [
     type: "endpoint",
     category: "transactions",
     httpRequestMethod: "GET",
-    fragment: "get-transaction-rbf-history",
-    title: "GET Transaction RBF History",
+    fragment: "get-transaction-rbf-timeline",
+    title: "GET Transaction RBF Timeline",
     description: {
-      default: "Returns the RBF tree history of a transaction."
+      default: "Returns the RBF tree timeline of a transaction."
     },
     urlString: "v1/tx/:txId/rbf",
     showConditions: bitcoinNetworks,

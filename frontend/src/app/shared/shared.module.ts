@@ -66,6 +66,7 @@ import { DifficultyMiningComponent } from '../components/difficulty-mining/diffi
 import { BalanceWidgetComponent } from '../components/balance-widget/balance-widget.component';
 import { AddressTransactionsWidgetComponent } from '../components/address-transactions-widget/address-transactions-widget.component';
 import { RbfTimelineComponent } from '../components/rbf-timeline/rbf-timeline.component';
+import { AccelerationTimelineComponent } from '../components/acceleration-timeline/acceleration-timeline.component';
 import { RbfTimelineTooltipComponent } from '../components/rbf-timeline/rbf-timeline-tooltip.component';
 import { PushTransactionComponent } from '../components/push-transaction/push-transaction.component';
 import { TestTransactionsComponent } from '../components/test-transactions/test-transactions.component';
@@ -177,6 +178,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     BalanceWidgetComponent,
     AddressTransactionsWidgetComponent,
     RbfTimelineComponent,
+    AccelerationTimelineComponent,
     RbfTimelineTooltipComponent,
     PushTransactionComponent,
     TestTransactionsComponent,
@@ -316,6 +318,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     BalanceWidgetComponent,
     AddressTransactionsWidgetComponent,
     RbfTimelineComponent,
+    AccelerationTimelineComponent,
     RbfTimelineTooltipComponent,
     PushTransactionComponent,
     TestTransactionsComponent,

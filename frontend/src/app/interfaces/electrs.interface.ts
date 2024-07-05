@@ -21,6 +21,7 @@ export interface Transaction {
   cpfpChecked?: boolean;
   acceleration?: boolean;
   acceleratedBy?: number[];
+  acceleratedAt?: number;
   deleteAfter?: number;
   _unblinded?: any;
   _deduced?: boolean;

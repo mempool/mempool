@@ -30,6 +30,7 @@ export interface CpfpInfo {
   adjustedVsize?: number;
   acceleration?: boolean;
   acceleratedBy?: number[];
+  acceleratedAt?: number;
 }
 
 export interface RbfInfo {

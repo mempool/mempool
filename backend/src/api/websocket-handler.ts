@@ -822,6 +822,7 @@ class WebsocketHandler {
               ...mempoolTx.position,
               accelerated: mempoolTx.acceleration || undefined,
               acceleratedBy: mempoolTx.acceleratedBy || undefined,
+              acceleratedAt: mempoolTx.acceleratedAt || undefined,
             },
             accelerationPositions: memPool.getAccelerationPositions(mempoolTx.txid),
           };
@@ -862,6 +863,7 @@ class WebsocketHandler {
               ...mempoolTx.position,
               accelerated: mempoolTx.acceleration || undefined,
               acceleratedBy: mempoolTx.acceleratedBy || undefined,
+              acceleratedAt: mempoolTx.acceleratedAt || undefined,
             };
             if (!mempoolTx.cpfpChecked) {
               calculateCpfp(mempoolTx, newMempool);
@@ -1139,6 +1141,7 @@ class WebsocketHandler {
                 ...mempoolTx.position,
                 accelerated: mempoolTx.acceleration || undefined,
                 acceleratedBy: mempoolTx.acceleratedBy || undefined,
+                acceleratedAt: mempoolTx.acceleratedAt || undefined,
               },
               accelerationPositions: memPool.getAccelerationPositions(mempoolTx.txid),
             });
@@ -1160,6 +1163,7 @@ class WebsocketHandler {
                 },
                 accelerated: mempoolTx.acceleration || undefined,
                 acceleratedBy: mempoolTx.acceleratedBy || undefined,
+                acceleratedAt: mempoolTx.acceleratedAt || undefined,
               };
             }
           }

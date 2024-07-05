@@ -326,7 +326,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           const boostCost = acceleration.boostCost || acceleration.bidBoost;
           acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
           acceleration.boost = boostCost;
-
+          this.tx.acceleratedAt = acceleration.added;
           this.accelerationInfo = acceleration;
           this.setIsAccelerated();
         }
@@ -777,6 +777,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     if (cpfpInfo.acceleration) {
       this.tx.acceleration = cpfpInfo.acceleration;
       this.tx.acceleratedBy = cpfpInfo.acceleratedBy;
+      this.tx.acceleratedAt = cpfpInfo.acceleratedAt;
       this.setIsAccelerated(firstCpfp);
     }
 
