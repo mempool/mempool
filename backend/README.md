@@ -229,11 +229,11 @@ Generate block at regular interval (every 10 seconds in this example):
 
 ### Mining pools update
 
-By default, mining pools will be not automatically updated regularly (`config.MEMPOOL.AUTOMATIC_BLOCK_REINDEXING` is set to `false`). 
+By default, mining pools will be not automatically updated regularly (`config.MEMPOOL.AUTOMATIC_POOLS_UPDATE` is set to `false`). 
 
 To manually update your mining pools, you can use the `--update-pools` command line flag when you run the nodejs backend. For example `npm run start --update-pools`. This will trigger the mining pools update and automatically re-index appropriate blocks.
 
-You can enable the automatic mining pools update by settings `config.MEMPOOL.AUTOMATIC_BLOCK_REINDEXING` to `true` in your `mempool-config.json`.
+You can enable the automatic mining pools update by settings `config.MEMPOOL.AUTOMATIC_POOLS_UPDATE` to `true` in your `mempool-config.json`.
 
 When a `coinbase tag` or `coinbase address` change is detected, pool assignments for all relevant blocks (tagged to that pool or the `unknown` mining pool, starting from height 130635) are updated using the new criteria.
 

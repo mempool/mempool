@@ -13,6 +13,7 @@
     "INDEXING_BLOCKS_AMOUNT": -1,
     "BLOCKS_SUMMARIES_INDEXING": true,
     "GOGGLES_INDEXING": true,
+    "AUTOMATIC_POOLS_UPDATE": true,
     "AUDIT": true,
     "CPFP_INDEXING": true,
     "RUST_GBT": true,
