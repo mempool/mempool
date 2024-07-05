@@ -146,6 +146,7 @@
         [noCTA]="true"
         (hasDetails)="setHasAccelerationDetails($event)"
         (completed)="onAccelerationCompleted()"
+        (unavailable)="eligibleForAcceleration = false"
         class="h-100 w-100"
       ></app-accelerate-checkout>
     </ng-container>
