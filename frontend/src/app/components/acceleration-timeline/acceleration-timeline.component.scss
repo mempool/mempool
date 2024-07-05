@@ -145,6 +145,12 @@
           transition: background-color 300ms, border 300ms;
         }
 
+        &.waiting {
+          .shape {
+            background: var(--grey);
+          }
+        }
+
         &.sent-selected {
           .shape {
             background: var(--primary);
@@ -166,6 +172,12 @@
 
       .status {
         margin-top: -64px;
+
+        .badge.badge-waiting {
+          opacity: 0.5;
+          background-color: var(--grey);
+          color: white;
+        }
         
         .badge.badge-accelerated {
           background-color: var(--tertiary);

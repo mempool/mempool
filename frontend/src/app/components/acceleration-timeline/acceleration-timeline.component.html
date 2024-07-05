@@ -39,10 +39,10 @@
       <div class="node" [id]="'accelerated'">
         <div class="seen-to-acc left" [class.loading]="!tx.acceleration && !tx.status.confirmed"></div>
         <div class="acc-to-confirmed right" [class.loading]="tx.acceleration && !tx.status.confirmed"></div>
-        <a class="shape-border" [class.accelerated-selected]="tx.acceleration && !tx.status.confirmed">
+        <a class="shape-border" [class.accelerated-selected]="tx.acceleration && !tx.status.confirmed" [class.waiting]="!tx.acceleration && !tx.status.confirmed ? 'waiting' : ''">
           <div class="shape"></div>
         </a>
-        <div class="status" [style]="!tx.acceleration && !tx.status.confirmed ? 'opacity: 0.5' : ''"><span class="badge badge-accelerated">Accelerated</span></div>
+        <div class="status"><span class="badge" [class]="tx.status.confirmed || tx.acceleration ? 'badge-accelerated' : 'badge-waiting'">Accelerated</span></div>
         <div class="time">
           <app-time *ngIf="acceleratedAt" kind="since" [time]="acceleratedAt"></app-time>
         </div>
@@ -52,10 +52,10 @@
       </div>
       <div class="node" [id]="'confirmed'" [class.mined]="tx.status.confirmed">
         <div class="acc-to-confirmed left" [class.loading]="tx.acceleration && !tx.status.confirmed"></div>
-        <a class="shape-border" [class.mined-selected]="tx.status.confirmed">
+        <a class="shape-border" [class.mined-selected]="tx.status.confirmed" [class.waiting]="!tx.status.confirmed ? 'waiting' : ''">
           <div class="shape"></div>
         </a>
-        <div class="status" [style]="!tx.status.confirmed ? 'opacity: 0.5' : ''"><span class="badge badge-success">Mined</span></div>
+        <div class="status"><span class="badge" [class]="tx.status.confirmed ? 'badge-success' : 'badge-waiting'">Mined</span></div>
         <div class="time">
           @if (tx.status.block_time) {
             <app-time kind="since" [time]="tx.status.block_time"></app-time>
