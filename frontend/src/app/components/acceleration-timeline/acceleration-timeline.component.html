@@ -28,7 +28,7 @@
         <a class="shape-border" [class.sent-selected]="!tx.status.confirmed && !tx.acceleration">
           <div class="shape"></div>
         </a>
-        <div class="status"><span class="badge badge-primary">Sent</span></div>
+        <div class="status"><span class="badge badge-primary" i18n="accelerator.sent-state">Sent</span></div>
         <div class="time">
           <app-time *ngIf="transactionTime > 0" kind="since" [time]="transactionTime"></app-time>
         </div>
@@ -42,7 +42,7 @@
         <a class="shape-border" [class.accelerated-selected]="tx.acceleration && !tx.status.confirmed" [class.waiting]="!tx.acceleration && !tx.status.confirmed ? 'waiting' : ''">
           <div class="shape"></div>
         </a>
-        <div class="status"><span class="badge" [class]="tx.status.confirmed || tx.acceleration ? 'badge-accelerated' : 'badge-waiting'">Accelerated</span></div>
+        <div class="status"><span class="badge" [class]="tx.status.confirmed || tx.acceleration ? 'badge-accelerated' : 'badge-waiting'" i18n="transaction.audit.accelerated">Accelerated</span></div>
         <div class="time">
           <app-time *ngIf="acceleratedAt" kind="since" [time]="acceleratedAt"></app-time>
         </div>
@@ -55,7 +55,7 @@
         <a class="shape-border" [class.mined-selected]="tx.status.confirmed" [class.waiting]="!tx.status.confirmed ? 'waiting' : ''">
           <div class="shape"></div>
         </a>
-        <div class="status"><span class="badge" [class]="tx.status.confirmed ? 'badge-success' : 'badge-waiting'">Mined</span></div>
+        <div class="status"><span class="badge" [class]="tx.status.confirmed ? 'badge-success' : 'badge-waiting'" i18n="transaction.rbf.mined">Mined</span></div>
         <div class="time">
           @if (tx.status.block_time) {
             <app-time kind="since" [time]="tx.status.block_time"></app-time>
