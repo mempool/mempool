@@ -301,6 +301,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         this.estimate = undefined;
         this.quoteError = `cannot_accelerate_tx`;
         this.estimateSubscription.unsubscribe();
+        if (this.step === 'summary') {
+          this.unavailable.emit(true);
+        } else {
+          this.accelerateError = 'cannot_accelerate_tx';
+        }
         return of(null);
       })
     ).subscribe();
