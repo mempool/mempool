@@ -8,6 +8,7 @@
     "SPAWN_CLUSTER_PROCS": 0,
     "API_URL_PREFIX": "/api/v1/",
     "INDEXING_BLOCKS_AMOUNT": -1,
+    "AUTOMATIC_POOLS_UPDATE": true,
     "AUDIT": true,
     "RUST_GBT": true,
     "POLL_RATE_MS": 1000,
