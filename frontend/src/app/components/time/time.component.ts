@@ -78,7 +78,7 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   calculate() {
-    if (!this.time) {
+    if (this.time == null) {
       return;
     }
 
