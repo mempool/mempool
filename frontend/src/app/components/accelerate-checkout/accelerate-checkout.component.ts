@@ -77,6 +77,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   private _step: CheckoutStep = 'summary';
   simpleMode: boolean = true;
   paymentMethod: 'cashapp' | 'btcpay';
+  timeoutTimer: any;
 
   authSubscription$: Subscription;
   auth: IAuth | null = null;
@@ -187,6 +188,9 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
   moveToStep(step: CheckoutStep) {
     this._step = step;
+    if (this.timeoutTimer) {
+      clearTimeout(this.timeoutTimer);
+    }
     if (!this.estimate && ['quote', 'summary', 'checkout'].includes(this.step)) {
       this.fetchEstimate();
     }
@@ -199,6 +203,13 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.loadingCashapp = true;
       this.insertSquare();
       this.setupSquare();
+    } else if (this._step === 'paid') {
+      this.timePaid = Date.now();
+      this.timeoutTimer = setTimeout(() => {
+        if (this.step === 'paid') {
+          this.accelerateError = 'internal_server_error';
+        }
+      }, 120000)
     }
     this.hasDetails.emit(this._step === 'quote');
   }
@@ -593,6 +604,10 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
   get hasAccessToBalanceMode() {
     return this.isLoggedIn() && this.estimate?.hasAccess;
+  }
+
+  get timeSincePaid(): number {
+    return Date.now() - this.timePaid;
   }
 
   @HostListener('window:resize', ['$event'])
