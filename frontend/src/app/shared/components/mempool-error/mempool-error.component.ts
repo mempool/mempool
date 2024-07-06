@@ -4,6 +4,7 @@ import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 export const MempoolErrors = {
   'bad_request': `Your request was not valid. Please try again.`,
   'internal_server_error': `Something went wrong, please try again later`,
+  'temporarily_unavailable': `Acceleration temporarily unavailable`,
   'acceleration_duplicated': `This transaction has already been accelerated.`,
   'acceleration_outbid': `Your fee delta is too low.`,
   'cannot_accelerate_tx': `Cannot accelerate this transaction.`,

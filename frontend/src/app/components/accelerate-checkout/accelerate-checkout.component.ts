@@ -23,6 +23,7 @@ export type AccelerationEstimate = {
   vsizeFee: number;
   pools: number[];
   availablePaymentMethods: {[method: string]: {min: number, max: number}};
+  unavailable?: boolean;
 }
 export type TxSummary = {
   txid: string; // txid of the current transaction
@@ -258,6 +259,9 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             if (this.isLoggedIn()) {
               this.quoteError = `not_enough_balance`;
             }
+          }
+          if (this.estimate.unavailable) {
+            this.quoteError = `temporarily_unavailable`;
           }
           this.hasAncestors = this.estimate.txSummary.ancestorCount > 1;
           this.etaInfo$ = this.etaService.getProjectedEtaObservable(this.estimate, this.miningStats);
