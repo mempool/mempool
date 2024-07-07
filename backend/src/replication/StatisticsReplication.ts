@@ -123,7 +123,7 @@ class StatisticsReplication {
       };
 
       const intervals = [              // [start,               end,                 label ]
-                                          [now - day,           now - 60,            '24h']       , // from 24 hours ago to now = 1 minute granularity
+                                          [now - day + 600,     now - 60,            '24h']       , // from 24 hours ago to now = 1 minute granularity
         startTime < now - day ?           [now - day * 7,       now - day,           '1w' ] : null, // from 1 week ago to 24 hours ago = 5 minutes granularity
         startTime < now - day * 7 ?       [now - day * 30,      now - day * 7,       '1m' ] : null, // from 1 month ago to 1 week ago = 30 minutes granularity
         startTime < now - day * 30 ?      [now - day * 90,      now - day * 30,      '3m' ] : null, // from 3 months ago to 1 month ago = 2 hours granularity
@@ -170,15 +170,24 @@ class StatisticsReplication {
         return new Set<number>();
       }
       
-      const roundedTimesAlreadyHere = new Set(rows.map(row => this.roundToNearestStep(row.added, step)));
-      const missingTimes = new Set(timeSteps.filter(time => !roundedTimesAlreadyHere.has(time)));
+      const roundedTimesAlreadyHere: number[] = Array.from(new Set(rows.map(row => this.roundToNearestStep(row.added, step))));
+
+      const missingTimes = timeSteps.filter(time => !roundedTimesAlreadyHere.includes(time)).filter((time, i, arr) => {
+        // Remove outsiders
+        if (i === 0) {
+          return arr[i + 1] === time + step
+        } else if (i === arr.length - 1) {
+          return arr[i - 1] === time - step;
+        }
+        return (arr[i + 1] === time + step) && (arr[i - 1] === time - step)
+      });
 
       // Don't bother fetching if very few rows are missing
-      if (missingTimes.size < timeSteps.length * 0.005) {
+      if (missingTimes.length < timeSteps.length * 0.01) {
         return new Set();
       }
 
-      return missingTimes;
+      return new Set(missingTimes);
     } catch (e: any) {
       logger.err(`Cannot fetch missing statistics times from db. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
