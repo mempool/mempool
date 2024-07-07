@@ -11,9 +11,14 @@ export class AccelerationTimelineComponent implements OnInit, OnChanges {
   @Input() transactionTime: number;
   @Input() tx: Transaction;
   @Input() eta: ETA;
-  @Input() isAcceleration: boolean;
+  // A mined transaction has standard ETA and accelerated ETA undefined
+  // A transaction in mempool has either standardETA defined (if accelerated) or acceleratedETA defined (if not accelerated yet)
+  @Input() standardETA: number;
+  @Input() acceleratedETA: number;
 
   acceleratedAt: number;
+  now: number;
+  accelerateRatio: number;
 
   constructor() {}
 
@@ -22,6 +27,15 @@ export class AccelerationTimelineComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes): void {
+    this.now = Math.floor(new Date().getTime() / 1000);
+    if (changes?.eta?.currentValue || changes?.standardETA?.currentValue || changes?.acceleratedETA?.currentValue) {
+      if (changes?.eta?.currentValue) {
+        if (changes?.acceleratedETA?.currentValue) {
+          this.accelerateRatio = Math.floor((Math.floor(changes.eta.currentValue.time / 1000) - this.now) / (Math.floor(changes.acceleratedETA.currentValue / 1000) - this.now));
+        } else if (changes?.standardETA?.currentValue) {
+          this.accelerateRatio = Math.floor((Math.floor(changes.standardETA.currentValue / 1000) - this.now) / (Math.floor(changes.eta.currentValue.time / 1000) - this.now));
+        }
+      }
+    }
   }
-
 }

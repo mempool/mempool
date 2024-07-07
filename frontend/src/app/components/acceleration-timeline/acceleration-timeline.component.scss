@@ -84,10 +84,6 @@
       background: var(--primary);
       border-radius: 5px;
 
-      &.loading {
-        animation: standardPulse 1s infinite;
-      }
-
       &.left {
         right: 50%;
       }
@@ -118,6 +114,26 @@
         left: 50%;
       }
     }
+
+    .corner-up {
+      position: absolute;
+      left: -5px;
+      left: 48.5%;
+      height: 86px;
+      border-left: solid 10px var(--primary);
+      border-bottom: solid 10px var(--primary);
+      border-bottom-right-radius: 10px;
+      // horrible css:
+      @media (max-width: 1030px) {
+        left: 48%; 
+      }
+      @media (max-width: 850px) {
+        left: 47%;
+      }
+      @media (max-width: 700px) {
+        left: 46%;
+      }
+    }
     
   }
 
@@ -142,18 +158,15 @@
           height: 100%;
           border-radius: 50%;
           background: white;
+          &.accelerating {
+            animation: acceleratePulse 1s infinite;
+          }
           transition: background-color 300ms, border 300ms;
         }
 
         &.waiting {
           .shape {
             background: var(--grey);
-          }
-        }
-
-        &.sent-selected {
-          .shape {
-            background: var(--primary);
           }
         }
 
@@ -190,6 +203,30 @@
         font-size: 12px;
         line-height: 16px;
         white-space: nowrap;
+
+        &.sm-margin {
+          @media (max-width: 650px) {
+            margin-left: 20px;
+          }
+        }
+      }
+    }
+
+    .connector {
+      position: relative;
+      height: 10px;
+    
+      .corner-down {
+        position: absolute;
+        @media (max-width: 650px) {
+          width: 223px;
+        }
+        width: 290px;
+        height: 90px;
+        bottom: 50%;
+        border-left: solid 10px var(--primary);
+        border-bottom: solid 10px var(--primary);
+        border-bottom-left-radius: 10px;
       }
     }
   }
@@ -201,9 +238,8 @@
   100% { background-color: var(--tertiary) }
 }
 
-@keyframes standardPulse {
-  0% { background-color: var(--primary) }
-  50% { background-color: var(--secondary) }
-  100% { background-color: var(--primary) }
-  
+@keyframes textPulse {
+  0% { color: var(--tertiary) }
+  50% { color: var(--mainnet-alt) }
+  100% { color: var(--tertiary) }
 }

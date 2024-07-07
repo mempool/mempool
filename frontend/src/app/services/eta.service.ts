@@ -225,4 +225,58 @@ export class EtaService {
         blocks: Math.ceil(eta / da.adjustedTimeAvg),
       };
   }
+
+  calculateUnacceleratedETA(
+    tx: Transaction,
+    mempoolBlocks: MempoolBlock[],
+    da: DifficultyAdjustment,
+    cpfpInfo: CpfpInfo | null,
+  ): ETA | null {
+    if (!tx || !mempoolBlocks) {
+      return null;
+    }
+    const now = Date.now();
+
+    // use known projected position, or fall back to feerate-based estimate
+    const mempoolPosition = this.mempoolPositionFromFees(this.getFeeRateFromCpfpInfo(tx, cpfpInfo), mempoolBlocks);
+    if (!mempoolPosition) {
+      return null;
+    }
+
+    // difficulty adjustment estimate is required to know avg block time on non-Liquid networks
+    if (!da) {
+      return null;
+    }
+
+    const blocks = mempoolPosition.block + 1;
+    const wait = da.adjustedTimeAvg * (mempoolPosition.block + 1);
+    return {
+      now,
+      time: wait + now + da.timeOffset,
+      wait,
+      blocks,
+    };
+  }
+
+
+  getFeeRateFromCpfpInfo(tx: Transaction, cpfpInfo: CpfpInfo | null): number {
+    if (!cpfpInfo) {
+      return tx.fee / (tx.weight / 4);
+    }
+
+    const relatives = [...(cpfpInfo.ancestors || []), ...(cpfpInfo.descendants || [])];
+    if (cpfpInfo.bestDescendant && !cpfpInfo.descendants?.length) {
+      relatives.push(cpfpInfo.bestDescendant);
+    }
+
+    if (!!relatives.length) {
+      const totalWeight = tx.weight + relatives.reduce((prev, val) => prev + val.weight, 0);
+      const totalFees = tx.fee + relatives.reduce((prev, val) => prev + val.fee, 0);
+
+      return totalFees / (totalWeight / 4);
+    }
+
+    return tx.fee / (tx.weight / 4);
+
+  }
 }
