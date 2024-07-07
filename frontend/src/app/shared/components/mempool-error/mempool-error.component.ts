@@ -1,5 +1,5 @@
-import { Component, Input, OnInit } from "@angular/core";
-import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
+import { AfterViewInit, Component, Input, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 export const MempoolErrors = {
   'bad_request': `Your request was not valid. Please try again.`,
@@ -16,7 +16,7 @@ export const MempoolErrors = {
   'mempool_rejected_raw_tx': `Our mempool rejected this transaction`,
   'no_mining_pool_available': `No mining pool available at the moment`,
   'not_available': `You current subscription does not allow you to access this feature.`,
-  'not_enough_balance': `Your balance is too low. Please <a style="color:#105fb0" href="/services/accelerator/overview">top up your account</a>.`,
+  'not_enough_balance': ``,
   'not_verified': `You must verify your account to use this feature.`,
   'recommended_fees_not_available': `Recommended fees are not available right now.`,
   'too_many_relatives': `This transaction has too many relatives.`,
@@ -42,13 +42,24 @@ export function isMempoolError(error: string) {
   selector: 'app-mempool-error',
   templateUrl: './mempool-error.component.html'
 })
-export class MempoolErrorComponent implements OnInit {
+export class MempoolErrorComponent implements OnInit, AfterViewInit {
+  @ViewChild('lowBalance') lowBalance!: TemplateRef<any>;
   @Input() error: string;
   @Input() alertClass = 'alert-danger';
   @Input() textOnly = false;
   errorContent: SafeHtml;
 
-  constructor(private sanitizer: DomSanitizer) { }
+  constructor(
+    private sanitizer: DomSanitizer,
+    private viewContainerRef: ViewContainerRef,
+  ) { }
+
+  ngAfterViewInit(): void {
+    // Special hack for the i18n string with a href link inside
+    const view = this.viewContainerRef.createEmbeddedView(this.lowBalance);
+    const rawHtml = view.rootNodes.map(node => node.outerHTML).join('');
+    MempoolErrors['not_enough_balance'] = rawHtml;
+  }
 
   ngOnInit(): void {
     if (Object.keys(MempoolErrors).includes(this.error)) {

@@ -354,7 +354,7 @@
         </div>
         <div class="col-md pie d-none d-md-flex" *ngIf="!forceMobile">
           <small class="form-text checkout-text mb-2" *ngIf="(etaInfo$ | async) as etaInfo"><ng-container *ngTemplateOutlet="prioritizedBy; context: {$implicit:etaInfo.hashratePercentage}"></ng-container></small>
-          <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true"></app-active-acceleration-box>
+          <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true" class="ml-2"></app-active-acceleration-box>
         </div>
       </div>
       <div class="payment-area mt-2 p-2" style="font-size: 14px;">
@@ -364,7 +364,7 @@
         @if (canPayWithBalance || !(canPayWithBitcoin || canPayWithCashapp)) {
           <div class="row">
             <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
-              <p>Your account will be debited no more than <span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span></p>
+              <p><ng-container i18n="accelerator.your-account-will-be-debited">Your account will be debited no more than</ng-container>&nbsp;<small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></p>
               <div class="d-flex justify-content-center" [class.grayOut]="!canPayWithBalance || quoteError || accelerateError || showSuccess">
                 <ng-container *ngTemplateOutlet="accountPayButton"></ng-container>
               </div>

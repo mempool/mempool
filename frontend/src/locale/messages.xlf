@@ -784,6 +784,14 @@
         </context-group>
         <note priority="1" from="description">accelerator.payment-to-mempool-space</note>
       </trans-unit>
+      <trans-unit id="9ebf5e1f1759ac5a81805ee901d02d1c14cab033" datatype="html">
+        <source>Your account will be debited no more than</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
+          <context context-type="linenumber">367</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.your-account-will-be-debited</note>
+      </trans-unit>
       <trans-unit id="65fd4251d8ddfe4017d4d83f8cec6f5a80d89289" datatype="html">
         <source>Pay</source>
         <context-group purpose="location">
@@ -3849,10 +3857,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/custom-dashboard/custom-dashboard.component.html</context>
           <context context-type="linenumber">8</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">6</context>
         </context-group>
         <note priority="1" from="description">fees-box.transaction-fees</note>
       </trans-unit>
@@ -7193,6 +7197,14 @@
         <note priority="1" from="description">TX Fee Rating is Warning</note>
         <note priority="1" from="meaning">tx-fee-rating.overpaid.warning</note>
       </trans-unit>
+      <trans-unit id="fd8be8e739148473816af99cd0d7979a4a31ca9e" datatype="html">
+        <source>Error:<x id="START_TAG_APP_MEMPOOL_ERROR" ctype="x-app_mempool_error" equiv-text="&lt;app-mempool-error [error]=&quot;&apos;not_enough_balance&apos;&quot; [textOnly]=&quot;true&quot; alertClass=&quot;&quot;&gt;"/><x id="CLOSE_TAG_APP_MEMPOOL_ERROR" ctype="x-app_mempool_error" equiv-text="&lt;/div&gt;"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">6,7</context>
+        </context-group>
+        <note priority="1" from="description">fees-box.transaction-fees</note>
+      </trans-unit>
       <trans-unit id="2d70cb7985eaebe99c35bcdfa7dc49b2662c345b" datatype="html">
         <source>Liquid Federation Holdings</source>
         <context-group purpose="location">
@@ -9246,6 +9258,14 @@
         </context-group>
         <note priority="1" from="description">Third-party Licenses</note>
         <note priority="1" from="meaning">shared.trademark-policy</note>
+      </trans-unit>
+      <trans-unit id="2ce73c0cba7f66b5e34608ad3075844899017b24" datatype="html">
+        <source>Your balance is too low. Please <x id="START_LINK" ctype="x-a" equiv-text="&lt;a style=&quot;color:#105fb0&quot; href=&quot;/services/accelerator/overview&quot;&gt;"/>top up your account<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/mempool-error/mempool-error.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.low-balance</note>
       </trans-unit>
       <trans-unit id="64dd13424d9486cf3d680d934987ec685bac0b3d" datatype="html">
         <source>This is a test network. Coins have no value.</source>
