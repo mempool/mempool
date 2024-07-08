@@ -20,7 +20,7 @@
 </ng-template>
 
 <ng-template #loading>
-  <div class="text-center mb-4" class="tx-skeleton">
+  <div class="tx-skeleton">
     <ng-container *ngIf="(txsLoadingStatus$ | async) as txsLoadingStatus; else headerLoader">
       <div class="header-bg box">
         <div class="progress progress-dark" style="margin: 4px; height: 14px;">
