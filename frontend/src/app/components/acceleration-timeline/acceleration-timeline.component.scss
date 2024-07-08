@@ -1,7 +1,7 @@
 .acceleration-timeline {
   position: relative;
   width: 100%;
-  padding: 1em 0;
+  padding: 0.5em 0 1em;
 
   &::after, &::before {
     content: '';
@@ -69,6 +69,15 @@
       font-size: 12px;
       line-height: 16px;
       white-space: nowrap;
+
+      .compare {
+        font-style: italic;
+        color: var(--mainnet-alt);
+        font-weight: 600;
+        @media (max-width: 600px) {
+          display: none;
+        }
+      }
     }
   }
 
@@ -83,10 +92,6 @@
       transform: translateY(-50%);
       background: var(--primary);
       border-radius: 5px;
-
-      &.loading {
-        animation: standardPulse 1s infinite;
-      }
 
       &.left {
         right: 50%;
@@ -118,7 +123,28 @@
         left: 50%;
       }
     }
-    
+
+    .connector {
+      position: absolute;
+      height: 88px;
+      width: 10px;
+      left: -5px;
+      top: -73px;
+      transform: translateX(120%);
+      background: var(--tertiary);
+
+      &.down {
+        border-top-left-radius: 10px; 
+      }
+
+      &.up {
+        border-top-right-radius: 10px; 
+      }
+
+      &.loading {
+        animation: acceleratePulse 1s infinite;
+      }
+    }
   }
 
   .nodes {
@@ -134,20 +160,20 @@
         transform: translateY(-50%);
         border-radius: 50%;
         padding: 2px;
-        background: transparent;
-        transition: background-color 300ms, padding 300ms;
 
         .shape {
           width: 100%;
           height: 100%;
           border-radius: 50%;
           background: white;
-          transition: background-color 300ms, border 300ms;
+          &.accelerating {
+            animation: acceleratePulse 1s infinite;
+          }
         }
 
-        &.sent-selected {
+        &.waiting {
           .shape {
-            background: var(--primary);
+            background: var(--grey);
           }
         }
 
@@ -166,6 +192,12 @@
 
       .status {
         margin-top: -64px;
+
+        .badge.badge-waiting {
+          opacity: 0.5;
+          background-color: var(--grey);
+          color: white;
+        }
         
         .badge.badge-accelerated {
           background-color: var(--tertiary);
@@ -187,11 +219,4 @@
   0% { background-color: var(--tertiary) }
   50% { background-color: var(--mainnet-alt) }
   100% { background-color: var(--tertiary) }
-}
-
-@keyframes standardPulse {
-  0% { background-color: var(--primary) }
-  50% { background-color: var(--secondary) }
-  100% { background-color: var(--primary) }
-  
 }
