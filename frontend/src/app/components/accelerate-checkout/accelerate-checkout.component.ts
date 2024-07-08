@@ -23,6 +23,10 @@ export type AccelerationEstimate = {
   vsizeFee: number;
   pools: number[];
   availablePaymentMethods: {[method: string]: {min: number, max: number}};
+  unavailable?: boolean;
+  options: { // recommended bid options
+    fee: number; // recommended userBid in sats
+  }[];
 }
 export type TxSummary = {
   txid: string; // txid of the current transaction
@@ -59,19 +63,25 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   @Input() forceMobile: boolean = false;
   @Input() showDetails: boolean = false;
   @Input() noCTA: boolean = false;
+  @Output() unavailable = new EventEmitter<boolean>();
   @Output() completed = new EventEmitter<boolean>();
   @Output() hasDetails = new EventEmitter<boolean>();
   @Output() changeMode = new EventEmitter<boolean>();
 
   calculating = true;
   selectedOption: 'wait' | 'accel';
-  error = '';
+  cantPayReason = '';
+  quoteError = ''; // error fetching estimate or initial data
+  accelerateError = ''; // error executing acceleration
+  btcpayInvoiceFailed = false;
+  timePaid: number = 0; // time acceleration requested
   math = Math;
   isMobile: boolean = window.innerWidth <= 767.98;
 
   private _step: CheckoutStep = 'summary';
   simpleMode: boolean = true;
   paymentMethod: 'cashapp' | 'btcpay';
+  timeoutTimer: any;
 
   authSubscription$: Subscription;
   auth: IAuth | null = null;
@@ -98,6 +108,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
   // square
   loadingCashapp = false;
+  cashappError = false;
   cashappSubmit: any;
   payments: any;
   cashAppPay: any;
@@ -125,7 +136,10 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       if (this.auth?.user?.userId !== auth?.user?.userId) {
         this.auth = auth;
         this.estimate = null;
-        this.error = null;
+        this.quoteError = null;
+        this.accelerateError = null;
+        this.timePaid = 0;
+        this.btcpayInvoiceFailed = false;
         this.moveToStep('summary');
       } else {
         this.auth = auth;
@@ -178,10 +192,14 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
   moveToStep(step: CheckoutStep) {
     this._step = step;
+    if (this.timeoutTimer) {
+      clearTimeout(this.timeoutTimer);
+    }
     if (!this.estimate && ['quote', 'summary', 'checkout'].includes(this.step)) {
       this.fetchEstimate();
     }
     if (this._step === 'checkout' && this.canPayWithBitcoin) {
+      this.btcpayInvoiceFailed = false;
       this.loadingBtcpayInvoice = true;
       this.invoice = null;
       this.requestBTCPayInvoice();
@@ -189,6 +207,13 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.loadingCashapp = true;
       this.insertSquare();
       this.setupSquare();
+    } else if (this._step === 'paid') {
+      this.timePaid = Date.now();
+      this.timeoutTimer = setTimeout(() => {
+        if (this.step === 'paid') {
+          this.accelerateError = 'internal_server_error';
+        }
+      }, 120000)
     }
     this.hasDetails.emit(this._step === 'quote');
   }
@@ -226,46 +251,46 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.estimateSubscription.unsubscribe();
     }
     this.calculating = true;
+    this.quoteError = null;
+    this.accelerateError = null;
     this.estimateSubscription = this.servicesApiService.estimate$(this.tx.txid).pipe(
       tap((response) => {
         if (response.status === 204) {
-          this.error = `cannot_accelerate_tx`;
+          this.quoteError = `cannot_accelerate_tx`;
+          if (this.step === 'summary') {
+            this.unavailable.emit(true);
+          }
         } else {
           this.estimate = response.body;
           if (!this.estimate) {
-            this.error = `cannot_accelerate_tx`;
+            this.quoteError = `cannot_accelerate_tx`;
+            if (this.step === 'summary') {
+              this.unavailable.emit(true);
+            }
             return;
           }
           if (this.estimate.hasAccess === true && this.estimate.userBalance <= 0) {
             if (this.isLoggedIn()) {
-              this.error = `not_enough_balance`;
+              this.quoteError = `not_enough_balance`;
             }
+          }
+          if (this.estimate.unavailable) {
+            this.quoteError = `temporarily_unavailable`;
           }
           this.hasAncestors = this.estimate.txSummary.ancestorCount > 1;
           this.etaInfo$ = this.etaService.getProjectedEtaObservable(this.estimate, this.miningStats);
 
-          // Make min extra fee at least 50% of the current tx fee
-          this.minExtraCost = nextRoundNumber(Math.max(this.estimate.cost * 2, this.estimate.txSummary.effectiveFee));
+          this.maxRateOptions = this.estimate.options.map((option, index) => ({
+            fee: option.fee,
+            rate: (this.estimate.txSummary.effectiveFee + option.fee) / this.estimate.txSummary.effectiveVsize,
+            index
+          }));
 
-          this.maxRateOptions = [1, 2, 4].map((multiplier, index) => {
-            return {
-              fee: this.minExtraCost * multiplier,
-              rate: (this.estimate.txSummary.effectiveFee + (this.minExtraCost * multiplier)) / this.estimate.txSummary.effectiveVsize,
-              index,
-            };
-          });
-
-          this.minBidAllowed = this.minExtraCost * MIN_BID_RATIO;
-          this.defaultBid = this.minExtraCost * DEFAULT_BID_RATIO;
-          this.maxBidAllowed = this.minExtraCost * MAX_BID_RATIO;
-
+          this.defaultBid = this.maxRateOptions[1].fee;
           this.userBid = this.defaultBid;
-          if (this.userBid < this.minBidAllowed) {
-            this.userBid = this.minBidAllowed;
-          } else if (this.userBid > this.maxBidAllowed) {
-            this.userBid = this.maxBidAllowed;
-          }
           this.cost = this.userBid + this.estimate.mempoolBaseFee + this.estimate.vsizeFee;
+
+          this.validateChoice();
 
           if (this.step === 'checkout' && this.canPayWithBitcoin && !this.loadingBtcpayInvoice) {
             this.loadingBtcpayInvoice = true;
@@ -279,11 +304,30 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
       catchError((response) => {
         this.estimate = undefined;
-        this.error = `cannot_accelerate_tx`;
+        this.quoteError = `cannot_accelerate_tx`;
         this.estimateSubscription.unsubscribe();
+        if (this.step === 'summary') {
+          this.unavailable.emit(true);
+        } else {
+          this.accelerateError = 'cannot_accelerate_tx';
+        }
         return of(null);
       })
     ).subscribe();
+  }
+
+  validateChoice(): void {
+    if (!this.canPay) {
+      if (this.estimate?.availablePaymentMethods?.balance) {
+        if (this.cost >= this.estimate?.userBalance) {
+          this.cantPayReason = 'not_enough_balance';
+        }
+      } else {
+        this.cantPayReason = 'cannot_accelerate_tx';
+      }
+    } else {
+      this.cantPayReason = '';
+    }
   }
 
   /**
@@ -319,11 +363,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         this.moveToStep('paid')
       },
       error: (response) => {
-        if (response.status === 403 && response.error === 'not_available') {
-          this.error = 'waitlisted';
-        } else {
-          this.error = response.error;
-        }
+        this.accelerateError = response.error;
       }
     });
   }
@@ -371,6 +411,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       await this.requestCashAppPayment();
     } catch (e) {
       console.debug('Error loading Square Payments', e);
+      this.cashappError = true;
       return;
     }
   }
@@ -417,7 +458,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         this.cashAppPay.addEventListener('ontokenization', function (event) {
           const { tokenResult, error } = event.detail;
           if (error) {
-            this.error = error;
+            this.accelerateError = error;
           } else if (tokenResult.status === 'OK') {
             that.servicesApiService.accelerateWithCashApp$(
               that.tx.txid,
@@ -440,10 +481,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                 }, 1000);
               },
               error: (response) => {
-                if (response.status === 403 && response.error === 'not_available') {
-                  that.error = 'waitlisted';
-                } else {
-                  that.error = response.error;
+                that.accelerateError = response.error;
+                if (!(response.status === 403 && response.error === 'not_available')) {
                   setTimeout(() => {
                     // Reset everything by reloading the page :D, can be improved
                     const urlParams = new URLSearchParams(window.location.search);
@@ -468,6 +507,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       }),
       catchError(error => {
         console.log(error);
+        this.btcpayInvoiceFailed = true;
         return of(null);
       })
     ).subscribe((invoice) => {
@@ -497,6 +537,32 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     return this._step;
   }
 
+  get paymentMethods() {
+    return Object.keys(this.estimate?.availablePaymentMethods || {});
+  }
+
+  get couldPayWithBitcoin() {
+    return !!this.estimate?.availablePaymentMethods?.bitcoin;
+  }
+
+  get couldPayWithCashapp() {
+    if (!this.cashappEnabled || this.stateService.referrer !== 'https://cash.app/') {
+      return false;
+    }
+    return !!this.estimate?.availablePaymentMethods?.cashapp;
+  }
+
+  get couldPayWithBalance() {
+    if (!this.hasAccessToBalanceMode) {
+      return false;
+    }
+    return !!this.estimate?.availablePaymentMethods?.balance;
+  }
+
+  get couldPay() {
+    return this.couldPayWithBalance || this.couldPayWithBitcoin || this.couldPayWithCashapp;
+  }
+
   get canPayWithBitcoin() {
     const paymentMethod = this.estimate?.availablePaymentMethods?.bitcoin;
     return paymentMethod && this.cost >= paymentMethod.min && this.cost <= paymentMethod.max;
@@ -523,7 +589,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       return false;
     }
     const paymentMethod = this.estimate?.availablePaymentMethods?.balance;
-    return paymentMethod && this.cost >= paymentMethod.min && this.cost <= paymentMethod.max;
+    return paymentMethod && this.cost >= paymentMethod.min && this.cost <= paymentMethod.max && this.cost <= this.estimate?.userBalance;
   }
 
   get canPay() {
@@ -532,6 +598,10 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
   get hasAccessToBalanceMode() {
     return this.isLoggedIn() && this.estimate?.hasAccess;
+  }
+
+  get timeSincePaid(): number {
+    return Date.now() - this.timePaid;
   }
 
   @HostListener('window:resize', ['$event'])

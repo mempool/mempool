@@ -80,7 +80,7 @@ export class ActiveAccelerationBox implements OnChanges {
     data.push(getDataItem(
       (this.miningStats.lastEstimatedHashrate - totalAcceleratedHashrate),
       'rgba(127, 127, 127, 0.3)',
-      `not accelerating (${notAcceleratedByPercentage})`,
+      $localize`not accelerating` + ` (${notAcceleratedByPercentage})`,
       false,
     ) as PieSeriesOption);
 

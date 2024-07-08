@@ -167,6 +167,12 @@
 	}
 }
 
+@media (max-width: 767px){
+  .hide-on-mobile {
+    display: none;
+  }
+}
+
 .effective-fee-rating {
   @media (max-width: 767px){
     margin-right: 0px !important;

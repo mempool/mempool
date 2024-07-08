@@ -1,12 +1,24 @@
 <div class="box card w-100" style="background: var(--box-bg)" id=acceleratePreviewAnchor>
-  @if (error) {
-    <div class="row mt-2">
-      <div class="col">
-        <app-mempool-error [error]="error" [alertClass]="error === 'waitlisted' ? 'alert-mempool' : 'alert-danger'"></app-mempool-error>
+  @if (accelerateError) {
+    <div class="row mb-1 text-center">
+      <div class="col-sm">
+        <h1 style="font-size: larger;">Sorry, something went wrong!</h1>
       </div>
     </div>
-  }
-  @else if (step === 'quote') {
+    <div class="row text-center mt-1">
+      <div class="col-sm">
+        <div class="d-flex flex-row justify-content-center align-items-center">
+          <span i18n="accelerator.error-failed-to-accelerate">We were not able to accelerate this transaction. Please try again later.</span>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <div class="row mt-2 mb-2 text-center">
+      <div class="col-sm d-flex flex-column">
+        <button type="button" class="mt-1 btn btn-secondary btn-sm rounded-pill align-self-center" style="width: 200px" (click)="closeModal()" i18n="close">Close</button>
+      </div>
+    </div>
+  } @else if (step === 'quote') {
     <div class="accelerate-cols">
       <ng-container *ngIf="!isMobile">
         <app-accelerate-fee-graph
@@ -20,7 +32,7 @@
       </ng-container>
 
       <ng-container *ngIf="estimate else loadingEstimate">
-        <div [class.disabled]="error || showSuccess">
+        <div>
           @if (showDetails) {
             <h5 i18n="accelerator.your-transaction">Your transaction</h5>
             <div class="row">
@@ -264,7 +276,7 @@
       }
 
       @if (!advancedEnabled) {
-        <form [class.disabled]="error || showSuccess">
+        <form>
           <div class="row">
             <div class="col-md">
               <div class="form-group form-check mb-2">
@@ -295,7 +307,7 @@
           </div>
         </form>
       } @else {
-        <div [class.disabled]="error || showSuccess">
+        <div>
           <div class="row summary-row">
             <div>
               <div class="mb-2">
@@ -342,18 +354,18 @@
         </div>
         <div class="col-md pie d-none d-md-flex" *ngIf="!forceMobile">
           <small class="form-text checkout-text mb-2" *ngIf="(etaInfo$ | async) as etaInfo"><ng-container *ngTemplateOutlet="prioritizedBy; context: {$implicit:etaInfo.hashratePercentage}"></ng-container></small>
-          <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true"></app-active-acceleration-box>
+          <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true" class="ml-2"></app-active-acceleration-box>
         </div>
       </div>
-      <div class="payment-area mt-2 p-2" [class.disabled]="error || showSuccess" style="font-size: 14px;">
+      <div class="payment-area mt-2 p-2" style="font-size: 14px;">
         <div class="row text-center justify-content-center mx-2">
           <p i18n="accelerator.payment-to-mempool-space">Payment to mempool.space for acceleration of txid <a [routerLink]="'/tx/' + tx.txid" target="_blank">{{ tx.txid.substr(0, 10) }}..{{ tx.txid.substr(-10) }}</a></p>
         </div>
         @if (canPayWithBalance || !(canPayWithBitcoin || canPayWithCashapp)) {
           <div class="row">
             <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
-              <p>Your account will be debited no more than <span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span></p>
-              <div class="d-flex justify-content-center" [class.grayOut]="!canPayWithBalance || error || showSuccess">
+              <p><ng-container i18n="accelerator.your-account-will-be-debited">Your account will be debited no more than</ng-container>&nbsp;<small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></p>
+              <div class="d-flex justify-content-center" [class.grayOut]="!canPayWithBalance || quoteError || accelerateError || showSuccess">
                 <ng-container *ngTemplateOutlet="accountPayButton"></ng-container>
               </div>
             </div>
@@ -365,6 +377,11 @@
                 @if (invoice) {
                   <p><ng-container i18n="transaction.pay|Pay button label">Pay</ng-container>&nbsp;<span><small style="font-family: monospace;">{{ ((invoice.btcDue * 100_000_000) || cost) | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span></p>
                   <app-bitcoin-invoice style="width: 100%;" [invoice]="invoice" [minimal]="true" (completed)="bitcoinPaymentCompleted()"></app-bitcoin-invoice>
+                } @else if (btcpayInvoiceFailed) {
+                  <p i18n="accelerator.failed-to-load-invoice">Failed to load invoice</p>
+                  <div class="d-flex flex-column align-items-center justify-content-center" style="width: 100%; height: 292px;">
+                    <fa-icon style="font-size: 24px; color: var(--red)" [icon]="['fas', 'circle-xmark']"></fa-icon>
+                  </div>
                 } @else {
                   <p i18n="accelerator.loading-invoice">Loading invoice...</p>
                   <div class="d-flex align-items-center justify-content-center" style="width: 100%; height: 292px;">
@@ -486,9 +503,12 @@
 
     <div class="row text-center mt-1">
       <div class="col-sm">
-        <div class="d-flex flex-row justify-content-center align-items-center">
+        <div class="d-flex flex-row flex-column justify-content-center align-items-center">
           <span i18n="accelerator.confirming-acceleration-with-miners">Confirming your acceleration with our mining pool partners...</span>
-          <div class="ml-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
+          @if (timeSincePaid > 20000) {
+            <span i18n="accelerator.confirming-acceleration-with-miners">...sorry, this is taking longer than expected...</span>
+          }
+          <div class="m-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
         </div>
       </div>
     </div>
@@ -532,16 +552,21 @@
 <ng-template #accelerateTo let-x i18n="accelerator.accelerate-to-x">Accelerate to ~{{ x | number : '1.0-0' }} sat/vB</ng-template>
 
 <ng-template #accelerateButton>
-  @if (canPayWithBalance || canPayWithBitcoin || canPayWithCashapp) {
-    <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" [class.disabled]="!canPay || calculating || (!advancedEnabled && selectedOption !== 'accel')" style="width: 200px" (click)="moveToStep('checkout')">
-      <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
-      <span i18n="transaction.accelerate|Accelerate button label">Accelerate</span>
-    </button>
-  } @else {
+  @if (!couldPay && !quoteError && !(estimate?.availablePaymentMethods.bitcoin || estimate?.availablePaymentMethods.balance)) {
     <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center disabled" style="width: 200px">
       <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
       <span>Coming soon</span>
     </button>
+  } @else {
+    <div class="position-relative">
+      <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" [class.disabled]="!canPay || quoteError || cantPayReason || calculating || (!advancedEnabled && selectedOption !== 'accel')" style="width: 200px" (click)="moveToStep('checkout')">
+        <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
+        <span i18n="transaction.accelerate|Accelerate button label">Accelerate</span>
+      </button>
+      @if (quoteError || cantPayReason) {
+        <div class="btn-error-wrapper"><span class="btn-error"><app-mempool-error [error]="quoteError || cantPayReason" [textOnly]="true" alertClass=""></app-mempool-error></span></div>
+      }
+    </div>
   }
 </ng-template>
 

@@ -132,6 +132,7 @@
             [miningStats]="miningStats"
             [eta]="eta"
             [scrollEvent]="scrollIntoAccelPreview"
+            (unavailable)="eligibleForAcceleration = false"
             class="h-100 w-100"
           ></app-accelerate-checkout>
         </ng-container>

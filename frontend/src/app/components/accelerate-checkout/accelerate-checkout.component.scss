@@ -189,3 +189,17 @@
     flex-direction: column;
   }
 }
+
+.btn-error {
+  position: absolute;
+  right: 0;
+  font-size: 12px;
+  color: var(--red);
+  text-align: center;
+  width: 200px;
+  white-space: normal;
+}
+
+.btn-error-wrapper {
+  height: 26px;
+}
