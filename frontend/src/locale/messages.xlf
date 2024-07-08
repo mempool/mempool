@@ -3858,6 +3858,10 @@
           <context context-type="sourcefile">src/app/components/custom-dashboard/custom-dashboard.component.html</context>
           <context context-type="linenumber">8</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
         <note priority="1" from="description">fees-box.transaction-fees</note>
       </trans-unit>
       <trans-unit id="9dfdbeb922d811d7b7b3fecd48360a059e52aaba" datatype="html">
@@ -7197,14 +7201,6 @@
         <note priority="1" from="description">TX Fee Rating is Warning</note>
         <note priority="1" from="meaning">tx-fee-rating.overpaid.warning</note>
       </trans-unit>
-      <trans-unit id="fd8be8e739148473816af99cd0d7979a4a31ca9e" datatype="html">
-        <source>Error:<x id="START_TAG_APP_MEMPOOL_ERROR" ctype="x-app_mempool_error" equiv-text="&lt;app-mempool-error [error]=&quot;&apos;not_enough_balance&apos;&quot; [textOnly]=&quot;true&quot; alertClass=&quot;&quot;&gt;"/><x id="CLOSE_TAG_APP_MEMPOOL_ERROR" ctype="x-app_mempool_error" equiv-text="&lt;/div&gt;"/></source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">6,7</context>
-        </context-group>
-        <note priority="1" from="description">fees-box.transaction-fees</note>
-      </trans-unit>
       <trans-unit id="2d70cb7985eaebe99c35bcdfa7dc49b2662c345b" datatype="html">
         <source>Liquid Federation Holdings</source>
         <context-group purpose="location">
@@ -9259,8 +9255,8 @@
         <note priority="1" from="description">Third-party Licenses</note>
         <note priority="1" from="meaning">shared.trademark-policy</note>
       </trans-unit>
-      <trans-unit id="2ce73c0cba7f66b5e34608ad3075844899017b24" datatype="html">
-        <source>Your balance is too low. Please <x id="START_LINK" ctype="x-a" equiv-text="&lt;a style=&quot;color:#105fb0&quot; href=&quot;/services/accelerator/overview&quot;&gt;"/>top up your account<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.</source>
+      <trans-unit id="ba7f0c6fdfa0ab7afc59e9384bca0265d23fb018" datatype="html">
+        <source>Your balance is too low.<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br/&gt;"/>Please <x id="START_LINK" ctype="x-a" equiv-text="&lt;a style=&quot;color:#105fb0&quot; href=&quot;/services/accelerator/overview&quot;&gt;"/>top up your account<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/mempool-error/mempool-error.component.html</context>
           <context context-type="linenumber">9</context>
