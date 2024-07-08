@@ -60,9 +60,10 @@
           </ng-container>
         </div>
         <div class="animated" [class]="markHeight === block.height ? 'hide' : 'show'" *ngIf="block.extras?.pool != undefined && showPools">
-          <a [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-pool'" class="badge badge-primary"
-            [routerLink]="[('/mining/pool/' + block.extras.pool.slug) | relativeUrl]">
-            {{ block.extras.pool.name}}</a>
+          <a [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-pool'" class="badge" [routerLink]="[('/mining/pool/' + block.extras.pool.slug) | relativeUrl]">
+            <img class="pool-logo" [src]="'/resources/mining-pools/' + block.extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'"> 
+            {{ block.extras.pool.name}}
+          </a>
         </div>
       </div>
     </ng-container>

@@ -157,6 +157,15 @@
   position: relative;
   top: 15px;
   z-index: 101;
+  color: #FFF;
+}
+
+.pool-logo {
+  width: 15px;
+  height: 15px;
+  position: relative;
+  top: -1px;
+  margin-right: 2px;
 }
 
 .animated {
@@ -164,6 +173,7 @@
 }
 .show {
   opacity: 1;
+  white-space: nowrap;
 }
 .hide {
   opacity: 0.4;
