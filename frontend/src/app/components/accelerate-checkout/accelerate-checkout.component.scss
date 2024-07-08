@@ -195,5 +195,11 @@
   right: 0;
   font-size: 12px;
   color: var(--red);
-  white-space: nowrap;
+  text-align: center;
+  width: 200px;
+  white-space: normal;
+}
+
+.btn-error-wrapper {
+  height: 26px;
 }
