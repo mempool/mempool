@@ -65,6 +65,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   txId: string;
   txInBlockIndex: number;
   mempoolPosition: MempoolPosition;
+  gotInitialPosition = false;
   accelerationPositions: AccelerationPosition[];
   isLoadingTx = true;
   error: any = undefined;
@@ -112,6 +113,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   txChanged$ = new BehaviorSubject<boolean>(false); // triggered whenever this.tx changes (long term, we should refactor to make this.tx an observable itself)
   isAccelerated$ = new BehaviorSubject<boolean>(false); // refactor this to make isAccelerated an observable itself
   ETA$: Observable<ETA | null>;
+  standardETA$: Observable<ETA | null>;
   isCached: boolean = false;
   now = Date.now();
   da$: Observable<DifficultyAdjustment>;
@@ -431,9 +433,13 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               if (txPosition.position?.block > 0 && this.tx.weight < 4000) {
                 this.cashappEligible = true;
               }
+              if (!this.gotInitialPosition && txPosition.position?.block === 0 && txPosition.position?.vsize < 750_000) {
+                this.accelerationFlowCompleted = true;
+              }
             }
           }
         }
+        this.gotInitialPosition = true;
       } else {
         this.mempoolPosition = null;
         this.accelerationPositions = null;
@@ -809,6 +815,21 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.miningStats = stats;
         this.isAccelerated$.next(this.isAcceleration); // hack to trigger recalculation of ETA without adding another source observable
       });
+      if (!this.tx.status?.confirmed) {
+        this.standardETA$ = combineLatest([
+          this.stateService.mempoolBlocks$.pipe(startWith(null)),
+          this.stateService.difficultyAdjustment$.pipe(startWith(null)),
+        ]).pipe(
+          map(([mempoolBlocks, da]) => {
+            return this.etaService.calculateUnacceleratedETA(
+              this.tx,
+              mempoolBlocks,
+              da,
+              this.cpfpInfo,
+            );
+          })
+        )
+      }
     }
     this.isAccelerated$.next(this.isAcceleration);
   }
@@ -864,6 +885,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   resetTransaction() {
     this.firstLoad = false;
+    this.gotInitialPosition = false;
     this.error = undefined;
     this.tx = null;
     this.txChanged$.next(true);
