@@ -65,6 +65,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   txId: string;
   txInBlockIndex: number;
   mempoolPosition: MempoolPosition;
+  gotInitialPosition = false;
   accelerationPositions: AccelerationPosition[];
   isLoadingTx = true;
   error: any = undefined;
@@ -432,9 +433,13 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               if (txPosition.position?.block > 0 && this.tx.weight < 4000) {
                 this.cashappEligible = true;
               }
+              if (!this.gotInitialPosition && txPosition.position?.block === 0 && txPosition.position?.vsize < 750_000) {
+                this.accelerationFlowCompleted = true;
+              }
             }
           }
         }
+        this.gotInitialPosition = true;
       } else {
         this.mempoolPosition = null;
         this.accelerationPositions = null;
@@ -880,6 +885,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   resetTransaction() {
     this.firstLoad = false;
+    this.gotInitialPosition = false;
     this.error = undefined;
     this.tx = null;
     this.txChanged$.next(true);
