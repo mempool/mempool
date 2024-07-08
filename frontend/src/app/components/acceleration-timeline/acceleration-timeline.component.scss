@@ -123,28 +123,6 @@
         left: 50%;
       }
     }
-
-    .connector {
-      position: absolute;
-      height: 88px;
-      width: 10px;
-      left: -5px;
-      top: -73px;
-      transform: translateX(120%);
-      background: var(--tertiary);
-
-      &.down {
-        border-top-left-radius: 10px; 
-      }
-
-      &.up {
-        border-top-right-radius: 10px; 
-      }
-
-      &.loading {
-        animation: acceleratePulse 1s infinite;
-      }
-    }
   }
 
   .nodes {
@@ -159,34 +137,59 @@
         margin-bottom: -8px;
         transform: translateY(-50%);
         border-radius: 50%;
-        padding: 2px;
-
+        cursor: pointer;
+        padding: 4px;
+        background: transparent;
+        transition: background-color 300ms, padding 300ms;
+    
         .shape {
+          position: relative;
           width: 100%;
           height: 100%;
           border-radius: 50%;
           background: white;
-          &.accelerating {
-            animation: acceleratePulse 1s infinite;
-          }
+          transition: background-color 300ms, border 300ms;
+          z-index: 1;
         }
-
+    
         &.waiting {
           .shape {
             background: var(--grey);
           }
         }
-
-        &.accelerated-selected {
-          .shape {
-            background: var(--tertiary);
+    
+        .connector {
+          position: absolute;
+          height: 88px;
+          width: 10px;
+          left: -5px;
+          top: -73px;
+          transform: translateX(120%);
+          background: var(--tertiary);
+    
+          &.down {
+            border-top-left-radius: 10px;
+          }
+    
+          &.up {
+            border-top-right-radius: 10px;
+          }
+    
+          &.loading {
+            animation: acceleratePulse 1s infinite;
           }
         }
+      }
+    
+      &.accelerated {
+        .shape-border {
+          animation: acceleratePulse 1s infinite;
+        }
+      }
 
-        &.mined-selected {
-          .shape {
-            background: var(--success);
-          }
+      &.selected {
+        .shape-border {
+          background: var(--mainnet-alt);
         }
       }
 
@@ -198,7 +201,7 @@
           background-color: var(--grey);
           color: white;
         }
-        
+
         .badge.badge-accelerated {
           background-color: var(--tertiary);
           color: white;
