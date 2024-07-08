@@ -564,7 +564,7 @@
         <span i18n="transaction.accelerate|Accelerate button label">Accelerate</span>
       </button>
       @if (quoteError || cantPayReason) {
-        <span class="btn-error"><app-mempool-error [error]="quoteError || cantPayReason" [textOnly]="true" alertClass=""></app-mempool-error></span>
+        <div class="btn-error-wrapper"><span class="btn-error"><app-mempool-error [error]="quoteError || cantPayReason" [textOnly]="true" alertClass=""></app-mempool-error></span></div>
       }
     </div>
   }
