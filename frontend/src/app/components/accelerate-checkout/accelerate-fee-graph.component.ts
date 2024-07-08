@@ -1,20 +1,16 @@
-import { Component, OnInit, Input, Output, OnChanges, EventEmitter, HostListener, Inject, LOCALE_ID } from '@angular/core';
-import { StateService } from '../../services/state.service';
-import { Outspend, Transaction, Vin, Vout } from '../../interfaces/electrs.interface';
-import { Router } from '@angular/router';
-import { ReplaySubject, merge, Subscription, of } from 'rxjs';
-import { tap, switchMap } from 'rxjs/operators';
-import { ApiService } from '../../services/api.service';
+import { Component, Input, Output, OnChanges, EventEmitter, HostListener, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Transaction } from '../../interfaces/electrs.interface';
 import { AccelerationEstimate, RateOption } from './accelerate-checkout.component';
 
 interface GraphBar {
   rate: number;
-  style: any;
+  style?: Record<string,string>;
   class: 'tx' | 'target' | 'max';
   label: string;
   active?: boolean;
   rateIndex?: number;
   fee?: number;
+  height?: number;
 }
 
 @Component({
@@ -22,7 +18,7 @@ interface GraphBar {
   templateUrl: './accelerate-fee-graph.component.html',
   styleUrls: ['./accelerate-fee-graph.component.scss'],
 })
-export class AccelerateFeeGraphComponent implements OnInit, OnChanges {
+export class AccelerateFeeGraphComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   @Input() tx: Transaction;
   @Input() estimate: AccelerationEstimate;
   @Input() showEstimate = false;
@@ -30,11 +26,35 @@ export class AccelerateFeeGraphComponent implements OnInit, OnChanges {
   @Input() maxRateIndex: number = 0;
   @Output() setUserBid = new EventEmitter<{ fee: number, index: number }>();
 
+  @ViewChild('feeGraph')
+  container: ElementRef<HTMLDivElement>;
+  height: number;
+  observer: ResizeObserver;
+  stopResizeLoop = false;
+
   bars: GraphBar[] = [];
   tooltipPosition = { x: 0, y: 0 };
 
+  constructor(
+    private cd: ChangeDetectorRef,
+  ) {}
+
   ngOnInit(): void {
     this.initGraph();
+  }
+
+  ngAfterViewInit(): void {
+    if (ResizeObserver) {
+      this.observer = new ResizeObserver(entries => {
+        for (const entry of entries) {
+          this.height = entry.contentRect.height;
+          this.initGraph();
+        }
+      });
+      this.observer.observe(this.container.nativeElement);
+    } else {
+      this.startResizeFallbackLoop();
+    }
   }
 
   ngOnChanges(): void {
@@ -45,44 +65,61 @@ export class AccelerateFeeGraphComponent implements OnInit, OnChanges {
     if (!this.tx || !this.estimate) {
       return;
     }
+    const hasNextBlockRate = (this.estimate.nextBlockFee > this.estimate.txSummary.effectiveFee);
+    const numBars = hasNextBlockRate ? 4 : 3;
     const maxRate = Math.max(...this.maxRateOptions.map(option => option.rate));
     const baseRate = this.estimate.txSummary.effectiveFee / this.estimate.txSummary.effectiveVsize;
-    const baseHeight = baseRate / maxRate;
-    const bars: GraphBar[] = this.maxRateOptions.slice().reverse().map(option => {
-      return {
-        rate: option.rate,
-        style: this.getStyle(option.rate, maxRate, baseHeight),
-        class: 'max',
-        label: this.showEstimate ? $localize`maximum` : $localize`:@@25fbf6e80a945703c906a5a7d8c92e8729c7ab21:accelerated`,
-        active: option.index === this.maxRateIndex,
-        rateIndex: option.index,
-        fee: option.fee,
-      }
-    });
-    if (this.estimate.nextBlockFee > this.estimate.txSummary.effectiveFee) {
+    let baseHeight = Math.max(this.height - (numBars * 30), this.height * (baseRate / maxRate));
+    const bars: GraphBar[] = [];
+    let lastHeight = 0;
+    if (hasNextBlockRate) {
+      lastHeight = Math.max(lastHeight + 30, (this.height * ((this.estimate.targetFeeRate - baseRate) / maxRate)));
       bars.push({
         rate: this.estimate.targetFeeRate,
-        style: this.getStyle(this.estimate.targetFeeRate, maxRate, baseHeight),
+        height: lastHeight,
         class: 'target',
         label: $localize`:@@bdf0e930eb22431140a2eaeacd809cc5f8ebd38c:Next Block`.toLowerCase(),
         fee: this.estimate.nextBlockFee - this.estimate.txSummary.effectiveFee
       });
     }
+    this.maxRateOptions.forEach((option, index) => {
+      lastHeight = Math.max(lastHeight + 30, (this.height * ((option.rate - baseRate) / maxRate)));
+      bars.push({
+        rate: option.rate,
+        height: lastHeight,
+        class: 'max',
+        label: this.showEstimate ? $localize`maximum` : $localize`:@@25fbf6e80a945703c906a5a7d8c92e8729c7ab21:accelerated`,
+        active: option.index === this.maxRateIndex,
+        rateIndex: option.index,
+        fee: option.fee,
+      })
+    })
+
+    bars.reverse();
+
+    baseHeight = this.height - lastHeight;
+
+    for (const bar of bars) {
+      bar.style = this.getStyle(bar.height, baseHeight);
+    }
+
     bars.push({
       rate: baseRate,
-      style: this.getStyle(baseRate, maxRate, 0),
+      style: this.getStyle(baseHeight, 0),
+      height: baseHeight,
       class: 'tx',
       label: '',
       fee: this.estimate.txSummary.effectiveFee,
     });
+
     this.bars = bars;
+    this.cd.detectChanges();
   }
 
-  getStyle(rate, maxRate, base) {
-    const top = (rate / maxRate);
+  getStyle(height: number, base: number): Record<string,string> {
     return {
-      height: `${(top - base) * 100}%`,
-      bottom: base ? `${base * 100}%` : '0',
+      height: `${height}px`,
+      bottom: base ? `${base}px` : '0',
     }
   }
 
@@ -95,5 +132,21 @@ export class AccelerateFeeGraphComponent implements OnInit, OnChanges {
   @HostListener('pointermove', ['$event'])
   onPointerMove(event) {
     this.tooltipPosition = { x: event.offsetX, y: event.offsetY };
+  }
+
+  startResizeFallbackLoop(): void {
+    if (this.stopResizeLoop) {
+      return;
+    }
+    requestAnimationFrame(() => {
+      this.height = this.container?.nativeElement?.clientHeight || 0;
+      this.initGraph();
+      this.startResizeFallbackLoop();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.stopResizeLoop = true;
+    this.observer.disconnect();
   }
 }
