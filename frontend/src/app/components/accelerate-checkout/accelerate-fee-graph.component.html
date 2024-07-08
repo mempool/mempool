@@ -1,4 +1,4 @@
-<div class="fee-graph" *ngIf="tx && estimate">
+<div class="fee-graph" *ngIf="tx && estimate" #feeGraph>
   <div class="column">
     <ng-container *ngFor="let bar of bars">
       <div class="bar {{ bar.class }}" [class.active]="bar.active" [style]="bar.style" (click)="onClick($event, bar);">
