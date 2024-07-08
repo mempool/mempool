@@ -71,7 +71,7 @@
           <div class="interval">
             <div class="interval-time">
               @if (eta) {
-                ~<app-time [time]="eta?.wait / 1000"></app-time> <span *ngIf="accelerateRatio > 1" class="compare"> ({{ accelerateRatio }}x faster)</span>
+                ~<app-time [time]="eta?.wait / 1000"></app-time> <!-- <span *ngIf="accelerateRatio > 1" class="compare"> ({{ accelerateRatio }}x faster)</span> -->
                 }
             </div>
           </div>
@@ -106,7 +106,8 @@
           <div class="node-spacer"></div>
           <div class="interval">
             <div class="interval-time">
-                ~<app-time [time]="standardETA / 1000 - now"></app-time>
+                <!-- ~<app-time [time]="standardETA / 1000 - now"></app-time> -->
+                -
             </div>
           </div>
           <div class="node-spacer"></div>
