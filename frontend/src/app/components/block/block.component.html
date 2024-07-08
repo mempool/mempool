@@ -183,6 +183,7 @@
         <td *ngIf="stateService.env.MINING_DASHBOARD">
           <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]" class="badge"
             [class]="block.extras.pool.slug === 'unknown' ? 'badge-secondary' : 'badge-primary'">
+            <img class="pool-logo" [src]="'/resources/mining-pools/' + block.extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'">
             {{ block.extras.pool.name }}
           </a>
         </td>
