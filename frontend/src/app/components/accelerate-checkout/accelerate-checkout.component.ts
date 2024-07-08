@@ -24,6 +24,9 @@ export type AccelerationEstimate = {
   pools: number[];
   availablePaymentMethods: {[method: string]: {min: number, max: number}};
   unavailable?: boolean;
+  options: { // recommended bid options
+    fee: number; // recommended userBid in sats
+  }[];
 }
 export type TxSummary = {
   txid: string; // txid of the current transaction
@@ -277,27 +280,14 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           this.hasAncestors = this.estimate.txSummary.ancestorCount > 1;
           this.etaInfo$ = this.etaService.getProjectedEtaObservable(this.estimate, this.miningStats);
 
-          // Make min extra fee at least 50% of the current tx fee
-          this.minExtraCost = nextRoundNumber(Math.max(this.estimate.cost * 2, this.estimate.txSummary.effectiveFee));
+          this.maxRateOptions = this.estimate.options.map((option, index) => ({
+            fee: option.fee,
+            rate: (this.estimate.txSummary.effectiveFee + option.fee) / this.estimate.txSummary.effectiveVsize,
+            index
+          }));
 
-          this.maxRateOptions = [1, 2, 4].map((multiplier, index) => {
-            return {
-              fee: this.minExtraCost * multiplier,
-              rate: (this.estimate.txSummary.effectiveFee + (this.minExtraCost * multiplier)) / this.estimate.txSummary.effectiveVsize,
-              index,
-            };
-          });
-
-          this.minBidAllowed = this.minExtraCost * MIN_BID_RATIO;
-          this.defaultBid = this.minExtraCost * DEFAULT_BID_RATIO;
-          this.maxBidAllowed = this.minExtraCost * MAX_BID_RATIO;
-
+          this.defaultBid = this.maxRateOptions[1].fee;
           this.userBid = this.defaultBid;
-          if (this.userBid < this.minBidAllowed) {
-            this.userBid = this.minBidAllowed;
-          } else if (this.userBid > this.maxBidAllowed) {
-            this.userBid = this.maxBidAllowed;
-          }
           this.cost = this.userBid + this.estimate.mempoolBaseFee + this.estimate.vsizeFee;
 
           this.validateChoice();
