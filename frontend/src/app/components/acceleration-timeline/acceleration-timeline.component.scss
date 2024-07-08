@@ -1,7 +1,7 @@
 .acceleration-timeline {
   position: relative;
   width: 100%;
-  padding: 1em 0;
+  padding: 0.5em 0 1em;
 
   &::after, &::before {
     content: '';
@@ -69,6 +69,15 @@
       font-size: 12px;
       line-height: 16px;
       white-space: nowrap;
+
+      .compare {
+        font-style: italic;
+        color: var(--mainnet-alt);
+        font-weight: 600;
+        @media (max-width: 600px) {
+          display: none;
+        }
+      }
     }
   }
 
@@ -115,26 +124,27 @@
       }
     }
 
-    .corner-up {
+    .connector {
       position: absolute;
+      height: 88px;
+      width: 10px;
       left: -5px;
-      left: 48.5%;
-      height: 86px;
-      border-left: solid 10px var(--primary);
-      border-bottom: solid 10px var(--primary);
-      border-bottom-right-radius: 10px;
-      // horrible css:
-      @media (max-width: 1030px) {
-        left: 48%; 
+      top: -73px;
+      transform: translateX(120%);
+      background: var(--tertiary);
+
+      &.down {
+        border-top-left-radius: 10px; 
       }
-      @media (max-width: 850px) {
-        left: 47%;
+
+      &.up {
+        border-top-right-radius: 10px; 
       }
-      @media (max-width: 700px) {
-        left: 46%;
+
+      &.loading {
+        animation: acceleratePulse 1s infinite;
       }
     }
-    
   }
 
   .nodes {
@@ -150,8 +160,6 @@
         transform: translateY(-50%);
         border-radius: 50%;
         padding: 2px;
-        background: transparent;
-        transition: background-color 300ms, padding 300ms;
 
         .shape {
           width: 100%;
@@ -161,7 +169,6 @@
           &.accelerating {
             animation: acceleratePulse 1s infinite;
           }
-          transition: background-color 300ms, border 300ms;
         }
 
         &.waiting {
@@ -203,30 +210,6 @@
         font-size: 12px;
         line-height: 16px;
         white-space: nowrap;
-
-        &.sm-margin {
-          @media (max-width: 650px) {
-            margin-left: 20px;
-          }
-        }
-      }
-    }
-
-    .connector {
-      position: relative;
-      height: 10px;
-    
-      .corner-down {
-        position: absolute;
-        @media (max-width: 650px) {
-          width: 223px;
-        }
-        width: 290px;
-        height: 90px;
-        bottom: 50%;
-        border-left: solid 10px var(--primary);
-        border-bottom: solid 10px var(--primary);
-        border-bottom-left-radius: 10px;
       }
     }
   }
@@ -236,10 +219,4 @@
   0% { background-color: var(--tertiary) }
   50% { background-color: var(--mainnet-alt) }
   100% { background-color: var(--tertiary) }
-}
-
-@keyframes textPulse {
-  0% { color: var(--tertiary) }
-  50% { color: var(--mainnet-alt) }
-  100% { color: var(--tertiary) }
 }

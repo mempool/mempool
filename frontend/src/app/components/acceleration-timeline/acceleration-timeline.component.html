@@ -20,9 +20,9 @@
       <div class="nodes">
         <div class="node" [id]="'first-seen'">
           <div class="seen-to-acc right"></div>
-          <a class="shape-border">
+          <div class="shape-border">
             <div class="shape"></div>
-          </a>
+          </div>
           <div class="status"><span class="badge badge-primary" i18n="transaction.first-seen|Transaction first seen">First seen</span></div>
           <div class="time">
             <app-time *ngIf="transactionTime > 0" kind="since" [time]="transactionTime"></app-time>
@@ -34,9 +34,9 @@
         <div class="node" [id]="'accelerated'">
           <div class="seen-to-acc left"></div>
           <div class="acc-to-confirmed right"></div>
-          <a class="shape-border">
+          <div class="shape-border">
             <div class="shape"></div>
-          </a>
+          </div>
           <div class="status"><span class="badge badge-accelerated" i18n="transaction.audit.accelerated">Accelerated</span></div>
           <div class="time">
             <app-time *ngIf="acceleratedAt" kind="since" [time]="acceleratedAt"></app-time>
@@ -47,10 +47,9 @@
         </div>
         <div class="node mined" [id]="'confirmed'" >
           <div class="acc-to-confirmed left" ></div>
-          <a class="shape-border mined-selected">
+          <div class="shape-border mined-selected">
             <div class="shape"></div>
-          </a>
-          <div class="status"><span class="badge badge-success" i18n="transaction.rbf.mined">Mined</span></div>
+          </div>
           <div class="time">
             <app-time kind="since" [time]="tx.status.block_time"></app-time>
           </div>
@@ -60,94 +59,41 @@
   </div>
 </div>
 } @else if (acceleratedETA) { <!-- Not yet accelerated; to be shown only in acceleration checkout -->
-<div class="acceleration-timeline">
-  <div class="timeline-wrapper">
-    <div class="timeline">
-      <div class="intervals">
-        <div class="node-spacer"></div>
-        <div class="interval">
-          <div class="interval-time">
-            <app-time [time]="now - transactionTime"></app-time>
-          </div>
-        </div>
-        <div class="node-spacer"></div>
-        <div class="interval">
-          <div class="interval-time">
-            ~<app-time [time]="acceleratedETA / 1000 - now"></app-time>
-          </div>
-        </div>
-        <div class="node-spacer"></div>
-      </div>
-      <div class="nodes">
-        <div class="node" [id]="'first-seen'">
-          <div class="seen-to-acc right"></div>
-          <a class="shape-border">
-            <div class="shape"></div>
-          </a>
-          <div class="status"><span class="badge badge-primary" i18n="transaction.first-seen|Transaction first seen">First seen</span></div>
-          <div class="time">
-            <app-time *ngIf="transactionTime > 0" kind="since" [time]="transactionTime"></app-time>
-          </div>
-        </div>
-        <div class="interval-spacer">
-          <div class="seen-to-acc"></div>
-        </div>
-        <div class="node" [id]="'accelerated'">
-          <div class="seen-to-acc left"></div>
-          <div class="acc-to-confirmed right"></div>
-          <a class="shape-border waiting">
-            <div class="shape accelerating"></div>
-          </a>
-          <div class="status"><span class="badge badge-waiting" i18n="transaction.audit.accelerated">Accelerated</span></div>
-          <div class="time">
-            <span i18n="date.now">Now</span>
-          </div>
-        </div>
-        <div class="interval-spacer">
-          <div class="acc-to-confirmed"></div>
-        </div>
-        <div class="node" [id]="'confirmed'">
-          <div class="acc-to-confirmed left"></div>
-          <div class="corner-up"></div>
-          <a class="shape-border waiting">
-            <div class="shape"></div>
-          </a>
-          <div class="status"><span class="badge badge-waiting" i18n="transaction.rbf.mined">Mined</span></div>
-        </div>
-      </div>
-    </div>
-    <div class="timeline">
-      <div class="intervals">
-        <div class="node-spacer"></div>
-        <div class="interval-spacer"></div>
-        <div class="node-spacer"></div>
-        <div class="interval">
-          <div class="interval-time">
-            ~<app-time [time]="eta.time / 1000 - now"></app-time> <span *ngIf="accelerateRatio > 1" style="font-style: italic; color: var(--transparent-fg);"> ({{ accelerateRatio }}x slower)</span>
-          </div>
-        </div>
-        <div class="node-spacer"></div>
-      </div>
-      <div class="nodes">
-        <div class="node-spacer"></div>
-        <div class="interval-spacer"></div>
-        <div class="node-spacer">
-          <div class="connector"><div class="corner-down"></div></div>
-          <div class="seen-to-acc right"></div>
-        </div>
-        <div class="interval-spacer">
-          <div class="seen-to-acc"></div>
-        </div>
-        <div class="node" [id]="'confirmed'">
-          <div class="seen-to-acc left"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-} @else if (standardETA) { <!-- Accelerated, to be mined -->
+} @else if (standardETA) { <!-- Accelerated -->
   <div class="acceleration-timeline box">
     <div class="timeline-wrapper">
+      <div class="timeline">
+        <div class="intervals">
+          <div class="node-spacer"></div>
+          <div class="interval-spacer"></div>
+          <div class="node-spacer"></div>
+          <div class="interval">
+            <div class="interval-time">
+              @if (eta) {
+                ~<app-time [time]="eta?.wait / 1000"></app-time> <span *ngIf="accelerateRatio > 1" class="compare"> ({{ accelerateRatio }}x faster)</span>
+                }
+            </div>
+          </div>
+          <div class="node-spacer"></div>
+        </div>
+        <div class="nodes">
+          <div class="node-spacer"></div>
+          <div class="interval-spacer"></div>
+          <div class="node">
+            <div class="acc-to-confirmed loading right"></div>
+          </div>
+          <div class="interval-spacer">
+            <div class="acc-to-confirmed loading"></div>
+          </div>
+          <div class="node" [id]="'confirmed'">
+            <div class="acc-to-confirmed loading left"></div>
+            <div class="shape-border waiting">
+              <div class="shape animate"></div>
+            </div>
+            <div class="status"><span class="badge badge-waiting" i18n="transaction.rbf.mined">Mined</span></div>
+          </div>
+        </div>
+      </div>
       <div class="timeline">
         <div class="intervals">
           <div class="node-spacer"></div>
@@ -159,9 +105,7 @@
           <div class="node-spacer"></div>
           <div class="interval">
             <div class="interval-time">
-              @if (eta) {
-                ~<app-time [time]="eta?.wait / 1000"></app-time>
-                }
+                ~<app-time [time]="standardETA / 1000 - now"></app-time>
             </div>
           </div>
           <div class="node-spacer"></div>
@@ -169,9 +113,9 @@
         <div class="nodes">
           <div class="node" [id]="'first-seen'">
             <div class="seen-to-acc right"></div>
-            <a class="shape-border">
+            <div class="shape-border">
               <div class="shape"></div>
-            </a>
+            </div>
             <div class="status"><span class="badge badge-primary" i18n="transaction.first-seen|Transaction first seen">First seen</span></div>
             <div class="time">
               <app-time *ngIf="transactionTime > 0" kind="since" [time]="transactionTime"></app-time>
@@ -182,52 +126,23 @@
           </div>
           <div class="node" [id]="'accelerated'">
             <div class="seen-to-acc left"></div>
-            <div class="acc-to-confirmed right loading"></div>
-            <a class="shape-border accelerated-selected">
-              <div class="shape accelerating"></div>
-            </a>
-            <div class="status"><span class="badge badge-accelerated" i18n="transaction.audit.accelerated">Accelerated</span></div>
-            <div class="time sm-margin">
-              <app-time *ngIf="acceleratedAt" kind="since" [time]="acceleratedAt"></app-time>
-            </div>
-          </div>
-          <div class="interval-spacer">
-            <div class="acc-to-confirmed loading"></div>
-          </div>
-          <div class="node" [id]="'confirmed'">
-            <div class="acc-to-confirmed left loading"></div>
-            <div class="corner-up"></div>
-            <a class="shape-border waiting">
-              <div class="shape"></div>
-            </a>
-            <div class="status"><span class="badge badge-waiting" i18n="transaction.rbf.mined">Mined</span></div>
-          </div>
-        </div>
-      </div>
-      <div class="timeline">
-        <div class="intervals">
-          <div class="node-spacer"></div>
-          <div class="interval-spacer"></div>
-          <div class="node-spacer"></div>
-          <div class="interval">
-            <div class="interval-time">
-              ~<app-time [time]="standardETA / 1000 - now"></app-time> <span *ngIf="accelerateRatio > 1" style="font-style: italic; color: var(--transparent-fg);"> ({{ accelerateRatio }}x slower)</span>
-            </div>
-          </div>
-          <div class="node-spacer"></div>
-        </div>
-        <div class="nodes">
-          <div class="node-spacer"></div>
-          <div class="interval-spacer"></div>
-          <div class="node-spacer">
-            <div class="connector"><div class="corner-down"></div></div>
             <div class="seen-to-acc right"></div>
+            <div  class="shape-border accelerated-selected">
+              <div class="shape accelerating"></div>
+              <div class="connector down loading"></div>
+            </div>
+            <div class="time" style="margin-top: 3px;">
+              <span i18n="transaction.audit.accelerated">Accelerated</span>&nbsp;<app-time *ngIf="acceleratedAt" kind="since" [time]="acceleratedAt"></app-time>
+            </div>
           </div>
           <div class="interval-spacer">
             <div class="seen-to-acc"></div>
           </div>
           <div class="node" [id]="'confirmed'">
             <div class="seen-to-acc left"></div>
+            <div class="shape-border waiting">
+              <div class="shape"></div>
+            </div>
           </div>
         </div>
       </div>
