@@ -81,13 +81,13 @@
           <div class="node-spacer"></div>
           <div class="interval-spacer"></div>
           <div class="node">
-            <div class="acc-to-confirmed loading right"></div>
+            <div class="acc-to-confirmed right go-faster"></div>
           </div>
           <div class="interval-spacer">
-            <div class="acc-to-confirmed loading"></div>
+            <!-- <div class="acc-to-confirmed go-faster loading"></div> -->
           </div>
           <div class="node" [id]="'confirmed'">
-            <div class="acc-to-confirmed loading left"></div>
+            <div class="acc-to-confirmed left go-faster"></div>
             <div class="shape-border waiting">
               <div class="shape animate"></div>
             </div>
@@ -129,8 +129,8 @@
             <div class="seen-to-acc left"></div>
             <div class="seen-to-acc right"></div>
             <div  class="shape-border accelerated-selected">
-              <div class="shape accelerating"></div>
               <div class="connector down loading"></div>
+              <div class="shape accelerating position-relative"></div>
             </div>
             <div class="time" style="margin-top: 3px;">
               <span i18n="transaction.audit.accelerated">Accelerated</span>&nbsp;<app-time *ngIf="acceleratedAt" kind="since" [time]="acceleratedAt"></app-time>
