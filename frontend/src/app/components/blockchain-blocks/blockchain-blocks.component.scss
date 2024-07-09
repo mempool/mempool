@@ -125,12 +125,12 @@
 #arrow-up {
   position: relative;
   left: calc(var(--block-size) * 0.6);
-  top: calc(var(--block-size) * 1.12);
+  top: calc(var(--block-size) * 1.28);
   width: 0;
   height: 0;
-  border-left: calc(var(--block-size) * 0.3) solid transparent;
-  border-right: calc(var(--block-size) * 0.3) solid transparent;
-  border-bottom: calc(var(--block-size) * 0.3) solid var(--fg);
+  border-left: calc(var(--block-size) * 0.2) solid transparent;
+  border-right: calc(var(--block-size) * 0.2) solid transparent;
+  border-bottom: calc(var(--block-size) * 0.2) solid var(--fg);
 }
 
 .flashing {
@@ -170,14 +170,7 @@
 
 .animated {
   transition: all 0.15s ease-in-out;
-}
-.show {
-  opacity: 1;
   white-space: nowrap;
-}
-.hide {
-  opacity: 0.4;
-  pointer-events : none;
 }
 
 .time-ltr {
