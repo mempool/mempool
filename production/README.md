@@ -8,7 +8,7 @@ You can also have the mempool.space team run a highly-performant and highly-avai
 
 ### Server Hardware
 
-Mempool v2 is powered by [blockstream/electrs](https://github.com/Blockstream/electrs), which is a beast. 
+Mempool v3 is powered by [mempool/electrs](https://github.com/mempool/electrs), which is a beast. 
 
 I recommend a beefy server:
 
