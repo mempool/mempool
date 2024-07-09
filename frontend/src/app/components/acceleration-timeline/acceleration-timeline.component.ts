@@ -28,14 +28,16 @@ export class AccelerationTimelineComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes): void {
     this.now = Math.floor(new Date().getTime() / 1000);
-    if (changes?.eta?.currentValue || changes?.standardETA?.currentValue || changes?.acceleratedETA?.currentValue) {
-      if (changes?.eta?.currentValue) {
-        if (changes?.acceleratedETA?.currentValue) {
-          this.accelerateRatio = Math.floor((Math.floor(changes.eta.currentValue.time / 1000) - this.now) / (Math.floor(changes.acceleratedETA.currentValue / 1000) - this.now));
-        } else if (changes?.standardETA?.currentValue) {
-          this.accelerateRatio = Math.floor((Math.floor(changes.standardETA.currentValue / 1000) - this.now) / (Math.floor(changes.eta.currentValue.time / 1000) - this.now));
-        }
-      }
-    }
+    // Hide standard ETA while we don't have a proper standard ETA calculation, see https://github.com/mempool/mempool/issues/65
+    
+    // if (changes?.eta?.currentValue || changes?.standardETA?.currentValue || changes?.acceleratedETA?.currentValue) {
+    //   if (changes?.eta?.currentValue) {
+    //     if (changes?.acceleratedETA?.currentValue) {
+    //       this.accelerateRatio = Math.floor((Math.floor(changes.eta.currentValue.time / 1000) - this.now) / (Math.floor(changes.acceleratedETA.currentValue / 1000) - this.now));
+    //     } else if (changes?.standardETA?.currentValue) {
+    //       this.accelerateRatio = Math.floor((Math.floor(changes.standardETA.currentValue / 1000) - this.now) / (Math.floor(changes.eta.currentValue.time / 1000) - this.now));
+    //     }
+    //   }
+    // }
   }
 }
