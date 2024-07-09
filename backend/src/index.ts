@@ -333,7 +333,9 @@ class Server {
     if (config.MEMPOOL_SERVICES.ACCELERATIONS) {
       accelerationRoutes.initRoutes(this.app);
     }
-    aboutRoutes.initRoutes(this.app);
+    if (!config.MEMPOOL.OFFICIAL) {
+      aboutRoutes.initRoutes(this.app);
+    }
   }
 
   healthCheck(): void {
