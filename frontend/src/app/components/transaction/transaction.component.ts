@@ -336,7 +336,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.miningSubscription = this.fetchMiningInfo$.pipe(
-      filter((target) => target.txid === this.txId),
+      filter((target) => target.txid === this.txId && !this.pool),
       tap(() => {
         this.pool = null;
       }),
@@ -614,6 +614,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           block_hash: block.id,
           block_time: block.timestamp,
         };
+        this.pool = block.extras.pool;
         this.txChanged$.next(true);
         this.stateService.markBlock$.next({ blockHeight: block.height });
         if (this.tx.acceleration || (this.accelerationInfo && ['accelerating', 'completed_provisional', 'completed'].includes(this.accelerationInfo.status))) {
