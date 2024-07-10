@@ -295,6 +295,7 @@ export class BlockComponent implements OnInit, OnDestroy {
             ),
           !this.isAuditAvailableFromBlockHeight(block.height) ? of(null) : this.apiService.getBlockAudit$(block.id)
             .pipe(
+              tap(() => this.cacheService.setBlockAuditLoaded(block.id)),
               catchError((err) => {
                 this.overviewError = err;
                 return of(null);

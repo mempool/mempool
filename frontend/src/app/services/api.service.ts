@@ -8,6 +8,7 @@ import { Transaction } from '../interfaces/electrs.interface';
 import { Conversion } from './price.service';
 import { StorageService } from './storage.service';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
+import { TxAuditStatus } from '../components/transaction/transaction.component';
 
 @Injectable({
   providedIn: 'root'
@@ -371,6 +372,12 @@ export class ApiService {
   getBlockAudit$(hash: string) : Observable<BlockAudit> {
     return this.httpClient.get<BlockAudit>(
       this.apiBaseUrl + this.apiBasePath + `/api/v1/block/${hash}/audit-summary`
+    );
+  }
+
+  getBlockTxAudit$(hash: string, txid: string) : Observable<TxAuditStatus> {
+    return this.httpClient.get<TxAuditStatus>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/block/${hash}/tx/${txid}/audit`
     );
   }
 
