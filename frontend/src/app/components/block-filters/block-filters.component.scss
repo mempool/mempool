@@ -33,6 +33,7 @@
 
   .menu-toggle {
     width: 3em;
+    min-width: 3em;
     height: 1.8em;
     padding: 0px 1px;
     opacity: 0;
@@ -42,6 +43,7 @@
     border: none;
     border-radius: 0.35em;
     pointer-events: all;
+    align-self: normal;
   }
 
   .filter-menu {
