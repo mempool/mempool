@@ -132,6 +132,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   tooltipPosition: { x: number, y: number };
   isMobile: boolean;
   firstLoad = true;
+  waitingForAccelerationInfo: boolean = false;
 
   featuresEnabled: boolean;
   segwitEnabled: boolean;
@@ -338,6 +339,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           acceleration.boost = boostCost;
           this.tx.acceleratedAt = acceleration.added;
           this.accelerationInfo = acceleration;
+          this.waitingForAccelerationInfo = false;
           this.setIsAccelerated();
         }
       }
@@ -616,6 +618,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.stateService.txConfirmed$.subscribe(([txConfirmed, block]) => {
       if (txConfirmed && this.tx && !this.tx.status.confirmed && txConfirmed === this.tx.txid) {
+        if (this.tx.acceleration) {
+          this.waitingForAccelerationInfo = true;
+        }
         this.tx.status = {
           confirmed: true,
           block_height: block.height,
@@ -812,7 +817,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   setIsAccelerated(initialState: boolean = false) {
-    this.isAcceleration = (this.tx.acceleration || (this.accelerationInfo && this.pool && this.accelerationInfo.pools.some(pool => (pool === this.pool.id))));
+    this.isAcceleration = ((this.tx.acceleration && (!this.tx.status.confirmed || this.waitingForAccelerationInfo)) || (this.accelerationInfo && this.pool && this.accelerationInfo.pools.some(pool => (pool === this.pool.id))));
     if (this.isAcceleration) {
       if (initialState) {
         this.accelerationFlowCompleted = true;
