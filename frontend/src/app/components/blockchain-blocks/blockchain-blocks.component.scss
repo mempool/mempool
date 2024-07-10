@@ -123,14 +123,20 @@
 }
 
 #arrow-up {
-  position: relative;
-  left: calc(var(--block-size) * 0.6);
-  top: calc(var(--block-size) * 1.28);
+  position: absolute;
+  left: calc(var(--block-size) * 0.3);
+  top: calc(var(--block-size) * 1);
   width: 0;
   height: 0;
   border-left: calc(var(--block-size) * 0.2) solid transparent;
   border-right: calc(var(--block-size) * 0.2) solid transparent;
   border-bottom: calc(var(--block-size) * 0.2) solid var(--fg);
+  opacity: 0;
+  transition: opacity 500ms;
+
+  &.arrow-visible {
+    opacity: 1;
+  }
 }
 
 .flashing {
@@ -158,6 +164,14 @@
   top: 15px;
   z-index: 101;
   color: #FFF;
+
+  &.animate {
+    transition: transform 500ms;
+  }
+
+  &.selectedBlock {
+    transform: translateY(20px);
+  }
 }
 
 .pool-logo {

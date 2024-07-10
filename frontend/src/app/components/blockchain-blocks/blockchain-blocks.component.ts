@@ -5,6 +5,7 @@ import { specialBlocks } from '../../app.constants';
 import { BlockExtended } from '../../interfaces/node-api.interface';
 import { Location } from '@angular/common';
 import { CacheService } from '../../services/cache.service';
+import { nextTick } from 'process';
 
 interface BlockchainBlock extends BlockExtended {
   placeholder?: boolean;
@@ -58,6 +59,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   arrowLeftPx = 30;
   blocksFilled = false;
   arrowTransition = '1s';
+  animatePoolTag = false;
   timeLtrSubscription: Subscription;
   timeLtr: boolean;
 
@@ -186,6 +188,9 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
       .subscribe((state) => {
         this.markHeight = undefined;
         if (state.blockHeight !== undefined) {
+          nextTick(() => {
+            this.animatePoolTag = true;
+          });
           this.markHeight = state.blockHeight;
         }
         this.moveArrowToPosition(false);

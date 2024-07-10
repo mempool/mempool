@@ -114,12 +114,12 @@
 #arrow-up {
   position: relative;
   right: calc(var(--block-size) * 0.6);
-  top: calc(var(--block-size) * 1.20);
+  top: calc(var(--block-size) * 1);
   width: 0;
   height: 0;
-  border-left: calc(var(--block-size) * 0.3) solid transparent;
-  border-right: calc(var(--block-size) * 0.3) solid transparent;
-  border-bottom: calc(var(--block-size) * 0.3) solid var(--fg);
+  border-left: calc(var(--block-size) * 0.2) solid transparent;
+  border-right: calc(var(--block-size) * 0.2) solid transparent;
+  border-bottom: calc(var(--block-size) * 0.2) solid var(--fg);
 }
 
 .blockLink {
