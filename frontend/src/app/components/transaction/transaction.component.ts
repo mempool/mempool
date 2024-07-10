@@ -317,11 +317,19 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.setIsAccelerated();
       }),
       switchMap((blockHeight: number) => {
-        return this.servicesApiService.getAccelerationHistory$({ blockHeight });
+        return this.servicesApiService.getAccelerationHistory$({ blockHeight }).pipe(
+          switchMap((accelerationHistory: Acceleration[]) => {
+            if (this.tx.acceleration && !accelerationHistory.length) { // If the just mined transaction was accelerated, but services backend did not return any acceleration data, retry
+              return throwError('retry');
+            }
+            return of(accelerationHistory);
+          }),
+          retry({ count: 3, delay: 2000 }),
+          catchError(() => {
+            return of([]);
+          })
+        );
       }),
-      catchError(() => {
-        return of([]);
-      })
     ).subscribe((accelerationHistory) => {
       for (const acceleration of accelerationHistory) {
         if (acceleration.txid === this.txId && (acceleration.status === 'completed' || acceleration.status === 'completed_provisional')) {
