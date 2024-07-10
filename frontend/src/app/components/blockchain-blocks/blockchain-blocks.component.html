@@ -60,12 +60,11 @@
           </ng-container>
         </div>
         <div class="animated" *ngIf="block.extras?.pool != undefined && showPools">
-          <a [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-pool'" class="badge" [class.animate]="animatePoolTag" [class.selectedBlock]="markHeight === block.height" [routerLink]="[('/mining/pool/' + block.extras.pool.slug) | relativeUrl]">
+          <a [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-pool'" class="badge" [routerLink]="[('/mining/pool/' + block.extras.pool.slug) | relativeUrl]">
             <img class="pool-logo" [src]="'/resources/mining-pools/' + block.extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'"> 
             {{ block.extras.pool.name}}
           </a>
         </div>
-        <div [class.arrow-visible]="markHeight === block.height" id="arrow-up"></div>
       </div>
     </ng-container>
     <ng-template #placeholderBlock>
@@ -86,6 +85,8 @@
       </ng-container>
     </ng-template>
   </div>
+  <div [hidden]="!arrowVisible" id="arrow-up" [style.transition]="arrowTransition"
+    [ngStyle]="{'left': arrowLeftPx + 8 + 'px' }"></div>
 </div>
 
 <ng-template #loadingBlocksTemplate>
