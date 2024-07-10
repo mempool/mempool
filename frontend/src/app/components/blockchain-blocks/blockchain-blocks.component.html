@@ -61,7 +61,7 @@
         </div>
         <div class="animated" *ngIf="block.extras?.pool != undefined && showPools">
           <a [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-pool'" class="badge" [routerLink]="[('/mining/pool/' + block.extras.pool.slug) | relativeUrl]">
-            <img class="pool-logo" [src]="'/resources/mining-pools/' + block.extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'"> 
+            <app-pool-logo [pool]="block.extras.pool" style="position: relative; top: -1px; margin-right: 2px;"></app-pool-logo>
             {{ block.extras.pool.name}}
           </a>
         </div>

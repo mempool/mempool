@@ -5,8 +5,7 @@
   <!-- Pool overview -->
   <div *ngIf="poolStats$ | async as poolStats; else loadingMain">
     <div style="display:flex" class="mb-3">
-      <img width="50" height="50" src="{{ poolStats['logo'] }}" [alt]="poolStats.pool.name + ' mining pool logo'"
-        onError="this.onerror=null; this.src = '/resources/mining-pools/default.svg'" class="mr-3">
+      <app-pool-logo [pool]="poolStats.pool" [width]="50" [height]="50" class="mr-3"></app-pool-logo>
       <h1 class="m-0 pt-1 pt-md-0">{{ poolStats.pool.name }}</h1>
     </div>
 
