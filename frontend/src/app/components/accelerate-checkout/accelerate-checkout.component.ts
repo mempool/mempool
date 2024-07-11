@@ -551,7 +551,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   get couldPayWithCashapp() {
-    if (!this.cashappEnabled || this.stateService.referrer !== 'https://cash.app/') {
+    if (!this.cashappEnabled) {
       return false;
     }
     return !!this.estimate?.availablePaymentMethods?.cashapp;
@@ -574,7 +574,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   get canPayWithCashapp() {
-    if (!this.cashappEnabled || !this.conversions || this.stateService.referrer !== 'https://cash.app/') {
+    if (!this.cashappEnabled || !this.conversions) {
       return false;
     }
 
