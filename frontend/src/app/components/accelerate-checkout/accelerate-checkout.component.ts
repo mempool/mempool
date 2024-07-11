@@ -8,7 +8,7 @@ import { ETA, EtaService } from '../../services/eta.service';
 import { Transaction } from '../../interfaces/electrs.interface';
 import { MiningStats } from '../../services/mining.service';
 import { IAuth, AuthServiceMempool } from '../../services/auth.service';
-import { EnterpriseService } from 'src/app/services/enterprise.service';
+import { EnterpriseService } from '../../services/enterprise.service';
 
 export type PaymentMethod = 'balance' | 'bitcoin' | 'cashapp';
 
