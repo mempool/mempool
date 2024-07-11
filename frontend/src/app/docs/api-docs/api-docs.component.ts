@@ -33,6 +33,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
   showMobileEnterpriseUpsell: boolean = true;
   timeLtrSubscription: Subscription;
   timeLtr: boolean = this.stateService.timeLtr.value;
+  isMempoolSpaceBuild = this.stateService.isMempoolSpaceBuild;
 
   @ViewChildren(FaqTemplateDirective) faqTemplates: QueryList<FaqTemplateDirective>;
   dict = {};
