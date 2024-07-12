@@ -228,13 +228,6 @@
         font-size: 12px;
         line-height: 16px;
         white-space: nowrap;
-        &.accelerating {
-          margin-top: -164px;
-          font-style: italic;
-          @media (max-width: 768px) {
-            margin-left: -50px;
-          }
-        }
       }
     }
   }
