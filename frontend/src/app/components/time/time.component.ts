@@ -35,6 +35,7 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
   @Input() units: string[] = ['year', 'month', 'week', 'day', 'hour', 'minute', 'second'];
   @Input() minUnit: 'year' | 'month' | 'week' | 'day' | 'hour' | 'minute' | 'second' = 'second';
   @Input() fractionDigits: number = 0;
+  @Input() lowercaseStart = false;
 
   constructor(
     private ref: ChangeDetectorRef,
@@ -106,6 +107,9 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
       return $localize`:@@date-base.immediately:Immediately`;
     } else if (seconds < 60) {
       if (this.relative || this.kind === 'since') {
+        if (this.lowercaseStart) {
+          return $localize`:@@date-base.just-now:Just now`.charAt(0).toLowerCase() + $localize`:@@date-base.just-now:Just now`.slice(1);
+        }
         return $localize`:@@date-base.just-now:Just now`;
       } else if (this.kind === 'until' || this.kind === 'within') {
         seconds = 60;

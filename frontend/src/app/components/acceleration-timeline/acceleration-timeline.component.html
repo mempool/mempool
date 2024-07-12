@@ -39,7 +39,7 @@
           </div>
           <div class="status"><span class="badge badge-accelerated" i18n="transaction.audit.accelerated">Accelerated</span></div>
           <div class="time">
-            <app-time *ngIf="acceleratedAt" kind="since" [time]="acceleratedAt"></app-time>
+            <app-time *ngIf="acceleratedAt" kind="since" [time]="acceleratedAt" [lowercaseStart]="true"></app-time>
           </div>
         </div>
         <div class="interval-spacer">
