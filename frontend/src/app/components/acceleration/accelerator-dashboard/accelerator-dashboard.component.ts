@@ -99,7 +99,7 @@ export class AcceleratorDashboardComponent implements OnInit, OnDestroy {
     this.minedAccelerations$ = this.stateService.chainTip$.pipe(
       distinctUntilChanged(),
       switchMap(() => {
-        return this.serviceApiServices.getAccelerationHistory$({ status: 'completed', pageLength: 6 }).pipe(
+        return this.serviceApiServices.getAccelerationHistory$({ status: 'completed_provisional,completed', pageLength: 6 }).pipe(
           catchError(() => {
             return of([]);
           }),
