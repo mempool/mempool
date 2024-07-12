@@ -20,7 +20,6 @@ export class CacheService {
   network: string;
   blockHashCache: { [hash: string]: BlockExtended } = {};
   blockCache: { [height: number]: BlockExtended } = {};
-  blockAuditLoaded: { [hash: string]: boolean } = {};
   blockLoading: { [height: number]: boolean } = {};
   copiesInBlockQueue: { [height: number]: number } = {};
   blockPriorities: number[] = [];
@@ -98,10 +97,6 @@ export class CacheService {
     }
   }
 
-  async setBlockAuditLoaded(hash: string) {
-    this.blockAuditLoaded[hash] = true;
-  }
-
   // increase the priority of a block, to delay removal
   bumpBlockPriority(height) {
     this.blockPriorities.push(height);
@@ -129,7 +124,7 @@ export class CacheService {
   resetBlockCache() {
     this.blockHashCache = {};
     this.blockCache = {};
-    this.blockAuditLoaded = {};
+    this.apiService.blockAuditLoaded = {};
     this.blockLoading = {};
     this.copiesInBlockQueue = {};
     this.blockPriorities = [];
@@ -137,9 +132,5 @@ export class CacheService {
 
   getCachedBlock(height) {
     return this.blockCache[height];
-  }
-
-  getBlockAuditLoaded(hash) {
-    return this.blockAuditLoaded[hash];
   }
 }

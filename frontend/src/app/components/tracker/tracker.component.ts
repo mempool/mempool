@@ -322,7 +322,6 @@ export class TrackerComponent implements OnInit, OnDestroy {
             })
           ),
           fetchAudit ? this.apiService.getBlockAudit$(hash).pipe(
-            tap((blockAudit) => this.cacheService.setBlockAuditLoaded(hash)),
             map(audit => {
               const isAdded = audit.addedTxs.includes(txid);
               const isPrioritized = audit.prioritizedTxs.includes(txid);

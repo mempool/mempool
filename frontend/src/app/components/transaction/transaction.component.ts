@@ -366,7 +366,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         const fetchAudit = auditAvailable && !isCoinbase;
         if (fetchAudit) {
         // If block audit is already cached, use it to get transaction audit
-          const blockAuditLoaded = this.cacheService.getBlockAuditLoaded(hash);
+          const blockAuditLoaded = this.apiService.getBlockAuditLoaded(hash);
           if (blockAuditLoaded) {
             return this.apiService.getBlockAudit$(hash).pipe(
               map(audit => {
