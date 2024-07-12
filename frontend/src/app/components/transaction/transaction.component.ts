@@ -42,7 +42,7 @@ interface Pool {
   slug: string;
 }
 
-interface AuditStatus {
+export interface TxAuditStatus {
   seen?: boolean;
   expected?: boolean;
   added?: boolean;
@@ -100,7 +100,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   sigops: number | null;
   adjustedVsize: number | null;
   pool: Pool | null;
-  auditStatus: AuditStatus | null;
+  auditStatus: TxAuditStatus | null;
   isAcceleration: boolean = false;
   filters: Filter[] = [];
   showCpfpDetails = false;
@@ -374,33 +374,41 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         const auditAvailable = this.isAuditAvailable(height);
         const isCoinbase = this.tx.vin.some(v => v.is_coinbase);
         const fetchAudit = auditAvailable && !isCoinbase;
-        return fetchAudit ? this.apiService.getBlockAudit$(hash).pipe(
-          map(audit => {
-            const isAdded = audit.addedTxs.includes(txid);
-            const isPrioritized = audit.prioritizedTxs.includes(txid);
-            const isAccelerated = audit.acceleratedTxs.includes(txid);
-            const isConflict = audit.fullrbfTxs.includes(txid);
-            const isExpected = audit.template.some(tx => tx.txid === txid);
-            const firstSeen = audit.template.find(tx => tx.txid === txid)?.time;
-            return {
-              seen: isExpected || isPrioritized || isAccelerated,
-              expected: isExpected,
-              added: isAdded,
-              prioritized: isPrioritized,
-              conflict: isConflict,
-              accelerated: isAccelerated,
-              firstSeen,
-            };
-          }),
-          retry({ count: 3, delay: 2000 }),
-          catchError(() => {
-            return of(null);
-          })
-        ) : of(isCoinbase ? { coinbase: true } : null);
+        if (fetchAudit) {
+        // If block audit is already cached, use it to get transaction audit
+          const blockAuditLoaded = this.apiService.getBlockAuditLoaded(hash);
+          if (blockAuditLoaded) {
+            return this.apiService.getBlockAudit$(hash).pipe(
+              map(audit => {
+                const isAdded = audit.addedTxs.includes(txid);
+                const isPrioritized = audit.prioritizedTxs.includes(txid);
+                const isAccelerated = audit.acceleratedTxs.includes(txid);
+                const isConflict = audit.fullrbfTxs.includes(txid);
+                const isExpected = audit.template.some(tx => tx.txid === txid);
+                const firstSeen = audit.template.find(tx => tx.txid === txid)?.time;
+                return {
+                  seen: isExpected || isPrioritized || isAccelerated,
+                  expected: isExpected,
+                  added: isAdded,
+                  prioritized: isPrioritized,
+                  conflict: isConflict,
+                  accelerated: isAccelerated,
+                  firstSeen,
+                };
+              })
+            )
+          } else {
+            return this.apiService.getBlockTxAudit$(hash, txid).pipe(
+              retry({ count: 3, delay: 2000 }),
+              catchError(() => {
+                return of(null);
+              })
+            )
+          }
+        } else {
+          return of(isCoinbase ? { coinbase: true } : null);
+        }
       }),
-      catchError((e) => {
-        return of(null);
-      })
     ).subscribe(auditStatus => {
       this.auditStatus = auditStatus;
       if (this.auditStatus?.firstSeen) {

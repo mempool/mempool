@@ -2,7 +2,7 @@ import config from '../config';
 import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import logger from '../logger';
 import memPool from './mempool';
-import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionMinerInfo, CpfpSummary, MempoolTransactionExtended, TransactionClassified, BlockAudit } from '../mempool.interfaces';
+import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionMinerInfo, CpfpSummary, MempoolTransactionExtended, TransactionClassified, BlockAudit, TransactionAudit } from '../mempool.interfaces';
 import { Common } from './common';
 import diskCache from './disk-cache';
 import transactionUtils from './transaction-utils';
@@ -1354,6 +1354,14 @@ class Blocks {
   public async $getBlockAuditSummary(hash: string): Promise<BlockAudit | null> {
     if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) {
       return BlocksAuditsRepository.$getBlockAudit(hash);
+    } else {
+      return null;
+    }
+  }
+
+  public async $getBlockTxAuditSummary(hash: string, txid: string): Promise<TransactionAudit | null> {
+    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) {
+      return BlocksAuditsRepository.$getBlockTxAudit(hash, txid);
     } else {
       return null;
     }

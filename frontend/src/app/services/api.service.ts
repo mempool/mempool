@@ -8,6 +8,7 @@ import { Transaction } from '../interfaces/electrs.interface';
 import { Conversion } from './price.service';
 import { StorageService } from './storage.service';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
+import { TxAuditStatus } from '../components/transaction/transaction.component';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,7 @@ export class ApiService {
   private apiBasePath: string; // network path is /testnet, etc. or '' for mainnet
 
   private requestCache = new Map<string, { subject: BehaviorSubject<any>, expiry: number }>;
+  public blockAuditLoaded: { [hash: string]: boolean } = {};
 
   constructor(
     private httpClient: HttpClient,
@@ -369,8 +371,15 @@ export class ApiService {
   }
 
   getBlockAudit$(hash: string) : Observable<BlockAudit> {
+    this.setBlockAuditLoaded(hash);
     return this.httpClient.get<BlockAudit>(
       this.apiBaseUrl + this.apiBasePath + `/api/v1/block/${hash}/audit-summary`
+    );
+  }
+
+  getBlockTxAudit$(hash: string, txid: string) : Observable<TxAuditStatus> {
+    return this.httpClient.get<TxAuditStatus>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/block/${hash}/tx/${txid}/audit`
     );
   }
 
@@ -525,5 +534,14 @@ export class ApiService {
     return this.httpClient.get<{ cost: number, count: number }>(
       this.apiBaseUrl + this.apiBasePath + '/api/v1/accelerations/total' + (queryString?.length ? '?' + queryString : '')
     );
+  }
+
+  // Cache methods
+  async setBlockAuditLoaded(hash: string) {
+    this.blockAuditLoaded[hash] = true;
+  }
+
+  getBlockAuditLoaded(hash) {
+    return this.blockAuditLoaded[hash];
   }
 }
