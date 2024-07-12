@@ -9017,14 +9017,85 @@ export const restApiDocsData = [
     "effectiveFee": 154,
     "ancestorCount": 1
   },
-  "cost": 3850,
-  "targetFeeRate": 26,
-  "nextBlockFee": 4004,
-  "userBalance": 99900000,
-  "mempoolBaseFee": 40000,
-  "vsizeFee": 50000,
-  "hasAccess": true
+  "cost": 1386,
+  "targetFeeRate": 10,
+  "nextBlockFee": 1540,
+  "userBalance": 0,
+  "mempoolBaseFee": 50000,
+  "vsizeFee": 0,
+  "pools": [
+    111,
+    102,
+    112,
+    142,
+    115
+  ],
+  "options": [
+    {
+      "fee": 1500
+    },
+    {
+      "fee": 3000
+    },
+    {
+      "fee": 12500
+    }
+  ],
+  "hasAccess": false,
+  "availablePaymentMethods": {
+    "bitcoin": {
+      "enabled": true,
+      "min": 1000,
+      "max": 10000000
+    },
+    "cashapp": {
+      "enabled": true,
+      "min": 10,
+      "max": 200
+    }
+  },
+  "unavailable": false
 }`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: "endpoint",
+    category: "accelerator-public",
+    httpRequestMethod: "POST",
+    fragment: "accelerator-get-invoice",
+    title: "POST Generate Acceleration Invoice",
+    description: {
+      default: "<p>Request a LN invoice to accelerate a transaction.</p>"
+    },
+    urlString: "/v1/services/payments/bitcoin",
+    showConditions: [""],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/payments/bitcoin`, //custom interpolation technique handled in replaceCurlPlaceholder()
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ["product=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&amount=12500"],
+          headers: "",
+          response: `[
+  {
+    "btcpayInvoiceId": "4Ww53d7VgSa596jmCFufe7",
+    "btcDue": "0.000625",
+    "addresses": {
+      "BTC": "bc1qcvqx2kr5mktd7gvym0atrrx0sn27mwv5kkghl3m78kegndm5t8ksvcqpja",
+      "BTC_LNURLPAY": null,
+      "BTC_LightningLike": "lnbc625u1pngl0wzpp56j7cqghsw2y5q7vdu9shmpxgpzsx4pqra4wcm9vdnvqegutplk2qdxj2pskjepqw3hjqnt9d4cx7mmvypqkxcm9d3jhyct5daezq2z0wfjx2u3qf9zr5grpvd3k2mr9wfshg6t0dckk2ef3xdjkyc3e8ymrxv3nxumkxvf4vvungwfcxqen2dmxxcmngepj8q6kzce5xyengdfjxq6nqvpnx9jkzdnyvdjrxefevgexgcej8yknzdejxqmrjd3jx5mrgdpj9ycqzpuxqrpr5sp58593dzj2uauaj3afa7x47qeam8k9yyqrh9qasj2ssdzstew6qv3q9qxpqysgqj8qshfkxmj0gfkly5xfydysvsx55uhnc6fgpw66uf6hl8leu07454axe2kq0q788yysg8guel2r36d6f75546nkhmdcmec4mmlft8dsq62rnsj"
+    }
+  }
+]`,
         },
       }
     }
@@ -9119,14 +9190,18 @@ export const restApiDocsData = [
     "txid": "d7e1796d8eb4a09d4e6c174e36cfd852f1e6e6c9f7df4496339933cd32cbdd1d",
     "status": "completed",
     "added": 1707421053,
-    "lastUpdated": 1707422952,
+    "lastUpdated": 1719134667,
     "effectiveFee": 146,
     "effectiveVsize": 141,
     "feeDelta": 14000,
     "blockHash": "00000000000000000000482f0746d62141694b9210a813b97eb8445780a32003",
     "blockHeight": 829559,
-    "bidBoost": 6102,
-    "pools": [111]
+    "bidBoost": 3239,
+    "boostVersion": "v1",
+    "pools": [
+      111
+    ],
+    "minedByPoolUniqueId": 111
   }
 ]`,
         },
@@ -9229,7 +9304,7 @@ export const restApiDocsData = [
     category: "accelerator-private",
     httpRequestMethod: "POST",
     fragment: "accelerator-accelerate",
-    title: "POST Accelerate A Transaction",
+    title: "POST Accelerate A Transaction (Pro)",
     description: {
       default: "<p>Sends a request to accelerate a transaction.</p>"
     },
