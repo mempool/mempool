@@ -45,8 +45,8 @@
     </form>
   </div>
 
-  <div [class.chart]="!widget" [class.chart-widget]="widget" *browserOnly [style]="{ height: widget ? ((height + 20) + 'px') : null}" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
-    (chartInit)="onChartInit($event)" [style]="{opacity: isLoading ? 0.5 : 1}">
+  <div [class.chart]="!widget" [class.chart-widget]="widget" *browserOnly [style]="{ height: widget ? ((height + 20) + 'px') : null, opacity: isLoading ? 0.5 : 1 }" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+    (chartInit)="onChartInit($event)">
   </div>
   <div class="text-center loadingGraphs" *ngIf="!stateService.isBrowser || isLoading">
     <div class="spinner-border text-light"></div>
