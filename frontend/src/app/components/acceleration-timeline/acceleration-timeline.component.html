@@ -95,12 +95,10 @@
           } @else if (!tx.status.confirmed) {
           <div>
             <app-fee-rate [fee]="tx.effectiveFeePerVsize" [unitStyle]="{ display: 'block', marginTop: '-0.5em'}"></app-fee-rate>
+          </div>    
+          <div class="time accelerating">
+            <span i18n="transaction.audit.accelerated">Accelerated</span>&nbsp;<app-time *ngIf="acceleratedAt" kind="since" [time]="acceleratedAt"></app-time>
           </div>
-            @if (now - acceleratedAt > 60) {
-            <div class="time" style="margin-top: -164px; font-style: italic;">
-              <app-time *ngIf="acceleratedAt" kind="since" [time]="acceleratedAt"></app-time>
-            </div>
-            }
           } @else {
           <div style="margin-top: 36px;">
             <span class="skeleton-loader" style="max-width: 50px"></span>
