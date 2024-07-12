@@ -167,7 +167,7 @@
         <h2 id="acceleration-timeline" i18n="transaction.acceleration-timeline|Acceleration Timeline">Acceleration Timeline</h2>
       </div>
       <div class="clearfix"></div>
-      <app-acceleration-timeline [transactionTime]="transactionTime" [tx]="tx" [eta]="(ETA$ | async)" [standardETA]="(standardETA$ | async)?.time"></app-acceleration-timeline>
+      <app-acceleration-timeline [transactionTime]="transactionTime" [tx]="tx" [accelerationInfo]="accelerationInfo" [eta]="(ETA$ | async)" [standardETA]="(standardETA$ | async)?.time"></app-acceleration-timeline>
       <br>
     </ng-container>
 
@@ -640,7 +640,9 @@
         <td>
           <div class="effective-fee-container">
             @if (accelerationInfo?.acceleratedFeeRate && (!tx.effectiveFeePerVsize || accelerationInfo.acceleratedFeeRate >= tx.effectiveFeePerVsize || tx.acceleration)) {
-              <app-fee-rate [fee]="accelerationInfo.acceleratedFeeRate"></app-fee-rate>
+              @if (tx.effectiveFeePerVsize) { <!-- Avoid briefly displaying a wrong accelerated fee rate while loading -->
+                <app-fee-rate [fee]="accelerationInfo.acceleratedFeeRate"></app-fee-rate>
+              }
             } @else {
               <app-fee-rate [fee]="tx.effectiveFeePerVsize"></app-fee-rate>
             }

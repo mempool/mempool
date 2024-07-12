@@ -1,6 +1,41 @@
-@if (tx.status.confirmed) {
-<div class="acceleration-timeline box">
+<div class="acceleration-timeline box" [class.lower-padding]="!tx.status.confirmed">
   <div class="timeline-wrapper">
+    @if (!tx.status.confirmed) {
+    <div class="timeline">
+      <div class="intervals">
+        <div class="node-spacer"></div>
+        <div class="interval-spacer"></div>
+        <div class="node-spacer"></div>
+        <div class="interval">
+          <div class="interval-time">
+            @if (eta) {
+              ~<app-time [time]="eta?.wait / 1000"></app-time> <!-- <span *ngIf="accelerateRatio > 1" class="compare"> ({{ accelerateRatio }}x faster)</span> -->
+              }
+          </div>
+        </div>
+        <div class="node-spacer"></div>
+      </div>
+      <div class="nodes">
+        <div class="node-spacer"></div>
+        <div class="interval-spacer"></div>
+        <div class="node">
+          <div class="acc-to-confirmed right go-faster"></div>
+        </div>
+        <div class="interval-spacer">
+        </div>
+        <div class="node" [id]="'confirmed'">
+          <div class="acc-to-confirmed left go-faster"></div>
+          <div class="shape-border waiting">
+            <div class="shape animate"></div>
+          </div>
+          <!-- <div>
+            <span class="symbol">< </span><app-fee-rate [fee]="tx.effectiveFeePerVsize" [unitStyle]="{ display: 'block', marginTop: '-0.5em'}"></app-fee-rate>
+          </div> -->
+          <div class="status"><span class="badge badge-waiting" i18n="transaction.rbf.mined">Mined</span></div>
+        </div>
+      </div>
+    </div>
+    }
     <div class="timeline">
       <div class="intervals">
         <div class="node-spacer"></div>
@@ -12,7 +47,13 @@
         <div class="node-spacer"></div>
         <div class="interval">
           <div class="interval-time">
-            <app-time [time]="tx.status.block_time - acceleratedAt"></app-time>
+            @if (tx.status.confirmed) {
+              <div class="interval-time">
+                <app-time [time]="tx.status.block_time - acceleratedAt"></app-time>
+              </div>
+            } @else if (standardETA && !tx.status.confirmed) {
+              <!-- ~<app-time [time]="standardETA / 1000 - now"></app-time> -->
+            }
           </div>
         </div>
         <div class="node-spacer"></div>
@@ -24,129 +65,90 @@
             <div class="shape"></div>
           </div>
           <div class="status"><span class="badge badge-primary" i18n="transaction.first-seen|Transaction first seen">First seen</span></div>
-          <div class="time">
-            <app-time *ngIf="transactionTime > 0" kind="since" [time]="transactionTime"></app-time>
+          <div style="margin-top: 33px;">
+            <app-fee-rate [fee]="tx.feePerVsize" [unitStyle]="{ display: 'block', marginTop: '-0.5em'}"></app-fee-rate>
           </div>
         </div>
         <div class="interval-spacer">
           <div class="seen-to-acc"></div>
         </div>
-        <div class="node" [id]="'accelerated'">
+        <div class="node" [class.accelerated]="!tx.status.confirmed" [id]="'accelerated'">
           <div class="seen-to-acc left"></div>
-          <div class="acc-to-confirmed right"></div>
-          <div class="shape-border">
+          @if (tx.status.confirmed) {
+            <div class="acc-to-confirmed right"></div>
+          } @else {
+          <div class="seen-to-acc right"></div>
+          }
+          <div  class="shape-border">
             <div class="shape"></div>
+            @if (!tx.status.confirmed) {
+            <div class="connector down loading"></div>
+            }
           </div>
-          <div class="status"><span class="badge badge-accelerated" i18n="transaction.audit.accelerated">Accelerated</span></div>
-          <div class="time">
-            <app-time *ngIf="acceleratedAt" kind="since" [time]="acceleratedAt"></app-time>
+          @if (tx.status.confirmed) {
+            <div class="status"><span class="badge badge-accelerated" i18n="transaction.audit.accelerated">Accelerated</span></div>
+          }
+          @if (tx.status.confirmed && accelerationInfo) {
+          <div style="margin-top: 33px;">
+            <app-fee-rate [fee]="accelerationInfo.effectiveFee + accelerationInfo.feeDelta" [weight]="accelerationInfo.effectiveVsize * 4" [unitStyle]="{ display: 'block', marginTop: '-0.5em'}"></app-fee-rate>
           </div>
+          } @else if (!tx.status.confirmed) {
+          <div>
+            <app-fee-rate [fee]="tx.effectiveFeePerVsize" [unitStyle]="{ display: 'block', marginTop: '-0.5em'}"></app-fee-rate>
+          </div>
+            @if (now - acceleratedAt > 60) {
+            <div class="time" style="margin-top: -164px; font-style: italic;">
+              <app-time *ngIf="acceleratedAt" kind="since" [time]="acceleratedAt"></app-time>
+            </div>
+            }
+          } @else {
+          <div style="margin-top: 36px;">
+            <span class="skeleton-loader" style="max-width: 50px"></span>
+          </div>
+          }
         </div>
         <div class="interval-spacer">
+          @if (tx.status.confirmed) {
           <div class="acc-to-confirmed"></div>
+          } @else {
+          <div class="seen-to-acc"></div>
+          }
         </div>
-        <div class="node selected" [id]="'confirmed'">
-          <div class="acc-to-confirmed left" ></div>
-          <div class="shape-border">
+        <div class="node" [class.selected]="tx.status.confirmed" [id]="'confirmed'">
+          @if (tx.status.confirmed) {
+          <div class="acc-to-confirmed left"></div>
+          } @else {
+          <div class="seen-to-acc left"></div>
+          }
+          <div class="shape-border" [class.waiting]="!tx.status.confirmed">
             <div class="shape"></div>
           </div>
-          <div class="status"><span class="badge badge-success" i18n="transaction.rbf.mined">Mined</span></div>
-          <div class="time">
-            <app-time kind="since" [time]="tx.status.block_time"></app-time>
+          @if (tx.status.confirmed) {
+            <div class="status"><span class="badge badge-success" i18n="transaction.rbf.mined">Mined</span></div>
+          }
+          @if (tx.status.confirmed && accelerationInfo) {
+            <div style="margin-top: 33px;">
+            @if (accelerationInfo?.acceleratedFeeRate && (!tx.effectiveFeePerVsize || accelerationInfo.acceleratedFeeRate >= tx.effectiveFeePerVsize || tx.acceleration)) {
+              @if (!tx.effectiveFeePerVsize) { <!-- Avoid briefly displaying a wrong accelerated fee rate while loading -->
+                <span class="skeleton-loader" style="max-width: 50px;"></span>
+              } @else {
+                <app-fee-rate [fee]="accelerationInfo.acceleratedFeeRate" [unitStyle]="{ display: 'block', marginTop: '-0.5em'}"></app-fee-rate>
+              }
+            } @else {
+              <app-fee-rate [fee]="tx.effectiveFeePerVsize" [unitStyle]="{ display: 'block', marginTop: '-0.5em'}"></app-fee-rate>
+            }
+            </div>
+          } @else if (!tx.status.confirmed) {
+          <!-- <div>
+            <app-fee-rate [fee]="tx.feePerVsize" [unitStyle]="{ display: 'block', marginTop: '-0.5em'}"></app-fee-rate>
+          </div> -->
+          } @else {
+          <div style="margin-top: 36px;">
+            <span class="skeleton-loader" style="max-width: 50px"></span>
           </div>
+          }
         </div>
-      </div>  
+      </div>
     </div>
   </div>
 </div>
-} @else if (acceleratedETA) { <!-- Not yet accelerated; to be shown only in acceleration checkout -->
-} @else if (standardETA) { <!-- Accelerated -->
-  <div class="acceleration-timeline box lower-padding">
-    <div class="timeline-wrapper">
-      <div class="timeline">
-        <div class="intervals">
-          <div class="node-spacer"></div>
-          <div class="interval-spacer"></div>
-          <div class="node-spacer"></div>
-          <div class="interval">
-            <div class="interval-time">
-              @if (eta) {
-                ~<app-time [time]="eta?.wait / 1000"></app-time> <!-- <span *ngIf="accelerateRatio > 1" class="compare"> ({{ accelerateRatio }}x faster)</span> -->
-                }
-            </div>
-          </div>
-          <div class="node-spacer"></div>
-        </div>
-        <div class="nodes">
-          <div class="node-spacer"></div>
-          <div class="interval-spacer"></div>
-          <div class="node">
-            <div class="acc-to-confirmed right go-faster"></div>
-          </div>
-          <div class="interval-spacer">
-          </div>
-          <div class="node" [id]="'confirmed'">
-            <div class="acc-to-confirmed left go-faster"></div>
-            <div class="shape-border waiting">
-              <div class="shape animate"></div>
-            </div>
-            <div class="status"><span class="badge badge-waiting" i18n="transaction.rbf.mined">Mined</span></div>
-          </div>
-        </div>
-      </div>
-      <div class="timeline">
-        <div class="intervals">
-          <div class="node-spacer"></div>
-          <div class="interval">
-            <div class="interval-time">
-              <app-time [time]="acceleratedAt - transactionTime"></app-time>
-            </div>
-          </div>
-          <div class="node-spacer"></div>
-          <div class="interval">
-            <div class="interval-time">
-                <!-- ~<app-time [time]="standardETA / 1000 - now"></app-time> -->
-                -
-            </div>
-          </div>
-          <div class="node-spacer"></div>
-        </div>
-        <div class="nodes">
-          <div class="node" [id]="'first-seen'">
-            <div class="seen-to-acc right"></div>
-            <div class="shape-border">
-              <div class="shape"></div>
-            </div>
-            <div class="status"><span class="badge badge-primary" i18n="transaction.first-seen|Transaction first seen">First seen</span></div>
-            <div class="time">
-              <app-time *ngIf="transactionTime > 0" kind="since" [time]="transactionTime"></app-time>
-            </div>
-          </div>
-          <div class="interval-spacer">
-            <div class="seen-to-acc"></div>
-          </div>
-          <div class="node accelerated" [id]="'accelerated'">
-            <div class="seen-to-acc left"></div>
-            <div class="seen-to-acc right"></div>
-            <div  class="shape-border">
-              <div class="shape"></div>
-              <div class="connector down loading"></div>
-            </div>
-            <div class="time" style="margin-top: 3px;">
-              <span i18n="transaction.audit.accelerated">Accelerated</span>&nbsp;<app-time *ngIf="acceleratedAt" kind="since" [time]="acceleratedAt"></app-time>
-            </div>
-          </div>
-          <div class="interval-spacer">
-            <div class="seen-to-acc"></div>
-          </div>
-          <div class="node" [id]="'confirmed'">
-            <div class="seen-to-acc left"></div>
-            <div class="shape-border waiting">
-              <div class="shape"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-}
