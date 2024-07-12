@@ -32,7 +32,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
   @Input() height: number = 300;
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
-  @Input() period: '3d' | '1w' | '1m' = '1w';
+  @Input() period: '24h' | '3d' | '1w' | '1m' | 'all' = '1w';
   @Input() accelerations$: Observable<Acceleration[]>;
 
   miningWindowPreference: string;
@@ -48,7 +48,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
   isLoading = true;
   formatNumber = formatNumber;
   timespan = '';
-  periodSubject$: Subject<'3d' | '1w' | '1m'> = new Subject();
+  periodSubject$: Subject<'24h' | '3d' | '1w' | '1m' | 'all'> = new Subject();
   chartInstance: any = undefined;
   daysAvailable: number = 0;
 
@@ -78,7 +78,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
     
     this.route.fragment.subscribe((fragment) => {
-      if (['24h', '3d', '1w', '1m', '3m'].indexOf(fragment) > -1) {
+      if (['24h', '3d', '1w', '1m', '3m', 'all'].indexOf(fragment) > -1) {
         this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
       }
     });
