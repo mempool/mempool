@@ -1,7 +1,6 @@
 import { Component, Input, OnInit, OnChanges } from '@angular/core';
 import { ETA } from '../../services/eta.service';
 import { Transaction } from '../../interfaces/electrs.interface';
-import { Acceleration } from '../../interfaces/node-api.interface';
 
 @Component({
   selector: 'app-acceleration-timeline',
@@ -11,7 +10,6 @@ import { Acceleration } from '../../interfaces/node-api.interface';
 export class AccelerationTimelineComponent implements OnInit, OnChanges {
   @Input() transactionTime: number;
   @Input() tx: Transaction;
-  @Input() accelerationInfo: Acceleration;
   @Input() eta: ETA;
   // A mined transaction has standard ETA and accelerated ETA undefined
   // A transaction in mempool has either standardETA defined (if accelerated) or acceleratedETA defined (if not accelerated yet)
