@@ -50,7 +50,7 @@ const routes: Routes = [
       },
       {
         path: 'acceleration',
-        data: { networks: ['bitcoin'] },
+        data: { networks: ['bitcoin'], networkSpecific: true, onlySubnet: [''] },
         component: StartComponent,
         children: [
           {
@@ -61,7 +61,7 @@ const routes: Routes = [
       },
       {
         path: 'acceleration/list/:page',
-        data: { networks: ['bitcoin'] },
+        data: { networks: ['bitcoin'], networkSpecific: true, onlySubnet: [''] },
         component: AccelerationsListComponent,
       },
       {
@@ -140,7 +140,7 @@ const routes: Routes = [
           },
           {
             path: 'acceleration/fees',
-            data: { networks: ['bitcoin'] },
+            data: { networks: ['bitcoin'], networkSpecific: true, onlySubnet: [''] },
             component: AccelerationFeesGraphComponent,
           },
           {
