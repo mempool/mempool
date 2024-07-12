@@ -297,6 +297,14 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
           this.validateChoice();
 
+          if (!this.couldPay) {
+            this.quoteError = `cannot_accelerate_tx`;
+            if (this.step === 'summary') {
+              this.unavailable.emit(true);
+            }
+            return;
+          }
+
           if (this.step === 'checkout' && this.canPayWithBitcoin && !this.loadingBtcpayInvoice) {
             this.loadingBtcpayInvoice = true;
             this.requestBTCPayInvoice();
