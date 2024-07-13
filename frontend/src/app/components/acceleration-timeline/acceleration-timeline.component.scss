@@ -209,7 +209,7 @@
       }
 
       .status {
-        margin-top: -64px;
+        margin-top: -66px;
 
         .badge.badge-waiting {
           opacity: 0.5;
@@ -224,10 +224,20 @@
       }
 
       .time {
-        margin-top: 33px;
+        margin-top: 32px;
         font-size: 12px;
         line-height: 16px;
         white-space: nowrap;
+
+        &.offset-left {
+          @media (max-width: 650px) {
+            margin-left: -20px;
+          }
+        }
+
+        &.no-margin {
+          margin-top: 0px;
+        }
       }
     }
   }
