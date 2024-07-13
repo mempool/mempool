@@ -42,7 +42,7 @@ interface Pool {
   slug: string;
 }
 
-interface AuditStatus {
+export interface TxAuditStatus {
   seen?: boolean;
   expected?: boolean;
   added?: boolean;
@@ -65,6 +65,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   txId: string;
   txInBlockIndex: number;
   mempoolPosition: MempoolPosition;
+  gotInitialPosition = false;
   accelerationPositions: AccelerationPosition[];
   isLoadingTx = true;
   error: any = undefined;
@@ -99,7 +100,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   sigops: number | null;
   adjustedVsize: number | null;
   pool: Pool | null;
-  auditStatus: AuditStatus | null;
+  auditStatus: TxAuditStatus | null;
   isAcceleration: boolean = false;
   filters: Filter[] = [];
   showCpfpDetails = false;
@@ -112,6 +113,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   txChanged$ = new BehaviorSubject<boolean>(false); // triggered whenever this.tx changes (long term, we should refactor to make this.tx an observable itself)
   isAccelerated$ = new BehaviorSubject<boolean>(false); // refactor this to make isAccelerated an observable itself
   ETA$: Observable<ETA | null>;
+  standardETA$: Observable<ETA | null>;
   isCached: boolean = false;
   now = Date.now();
   da$: Observable<DifficultyAdjustment>;
@@ -130,6 +132,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   tooltipPosition: { x: number, y: number };
   isMobile: boolean;
   firstLoad = true;
+  waitingForAccelerationInfo: boolean = false;
 
   featuresEnabled: boolean;
   segwitEnabled: boolean;
@@ -315,11 +318,19 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.setIsAccelerated();
       }),
       switchMap((blockHeight: number) => {
-        return this.servicesApiService.getAccelerationHistory$({ blockHeight });
+        return this.servicesApiService.getAccelerationHistory$({ blockHeight }).pipe(
+          switchMap((accelerationHistory: Acceleration[]) => {
+            if (this.tx.acceleration && !accelerationHistory.length) { // If the just mined transaction was accelerated, but services backend did not return any acceleration data, retry
+              return throwError('retry');
+            }
+            return of(accelerationHistory);
+          }),
+          retry({ count: 3, delay: 2000 }),
+          catchError(() => {
+            return of([]);
+          })
+        );
       }),
-      catchError(() => {
-        return of([]);
-      })
     ).subscribe((accelerationHistory) => {
       for (const acceleration of accelerationHistory) {
         if (acceleration.txid === this.txId && (acceleration.status === 'completed' || acceleration.status === 'completed_provisional')) {
@@ -328,13 +339,14 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           acceleration.boost = boostCost;
           this.tx.acceleratedAt = acceleration.added;
           this.accelerationInfo = acceleration;
+          this.waitingForAccelerationInfo = false;
           this.setIsAccelerated();
         }
       }
     });
 
     this.miningSubscription = this.fetchMiningInfo$.pipe(
-      filter((target) => target.txid === this.txId),
+      filter((target) => target.txid === this.txId && !this.pool),
       tap(() => {
         this.pool = null;
       }),
@@ -362,33 +374,41 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         const auditAvailable = this.isAuditAvailable(height);
         const isCoinbase = this.tx.vin.some(v => v.is_coinbase);
         const fetchAudit = auditAvailable && !isCoinbase;
-        return fetchAudit ? this.apiService.getBlockAudit$(hash).pipe(
-          map(audit => {
-            const isAdded = audit.addedTxs.includes(txid);
-            const isPrioritized = audit.prioritizedTxs.includes(txid);
-            const isAccelerated = audit.acceleratedTxs.includes(txid);
-            const isConflict = audit.fullrbfTxs.includes(txid);
-            const isExpected = audit.template.some(tx => tx.txid === txid);
-            const firstSeen = audit.template.find(tx => tx.txid === txid)?.time;
-            return {
-              seen: isExpected || isPrioritized || isAccelerated,
-              expected: isExpected,
-              added: isAdded,
-              prioritized: isPrioritized,
-              conflict: isConflict,
-              accelerated: isAccelerated,
-              firstSeen,
-            };
-          }),
-          retry({ count: 3, delay: 2000 }),
-          catchError(() => {
-            return of(null);
-          })
-        ) : of(isCoinbase ? { coinbase: true } : null);
+        if (fetchAudit) {
+        // If block audit is already cached, use it to get transaction audit
+          const blockAuditLoaded = this.apiService.getBlockAuditLoaded(hash);
+          if (blockAuditLoaded) {
+            return this.apiService.getBlockAudit$(hash).pipe(
+              map(audit => {
+                const isAdded = audit.addedTxs.includes(txid);
+                const isPrioritized = audit.prioritizedTxs.includes(txid);
+                const isAccelerated = audit.acceleratedTxs.includes(txid);
+                const isConflict = audit.fullrbfTxs.includes(txid);
+                const isExpected = audit.template.some(tx => tx.txid === txid);
+                const firstSeen = audit.template.find(tx => tx.txid === txid)?.time;
+                return {
+                  seen: isExpected || isPrioritized || isAccelerated,
+                  expected: isExpected,
+                  added: isAdded,
+                  prioritized: isPrioritized,
+                  conflict: isConflict,
+                  accelerated: isAccelerated,
+                  firstSeen,
+                };
+              })
+            )
+          } else {
+            return this.apiService.getBlockTxAudit$(hash, txid).pipe(
+              retry({ count: 3, delay: 2000 }),
+              catchError(() => {
+                return of(null);
+              })
+            )
+          }
+        } else {
+          return of(isCoinbase ? { coinbase: true } : null);
+        }
       }),
-      catchError((e) => {
-        return of(null);
-      })
     ).subscribe(auditStatus => {
       this.auditStatus = auditStatus;
       if (this.auditStatus?.firstSeen) {
@@ -431,9 +451,13 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               if (txPosition.position?.block > 0 && this.tx.weight < 4000) {
                 this.cashappEligible = true;
               }
+              if (!this.gotInitialPosition && txPosition.position?.block === 0 && txPosition.position?.vsize < 750_000) {
+                this.accelerationFlowCompleted = true;
+              }
             }
           }
         }
+        this.gotInitialPosition = true;
       } else {
         this.mempoolPosition = null;
         this.accelerationPositions = null;
@@ -602,12 +626,16 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.stateService.txConfirmed$.subscribe(([txConfirmed, block]) => {
       if (txConfirmed && this.tx && !this.tx.status.confirmed && txConfirmed === this.tx.txid) {
+        if (this.tx.acceleration) {
+          this.waitingForAccelerationInfo = true;
+        }
         this.tx.status = {
           confirmed: true,
           block_height: block.height,
           block_hash: block.id,
           block_time: block.timestamp,
         };
+        this.pool = block.extras.pool;
         this.txChanged$.next(true);
         this.stateService.markBlock$.next({ blockHeight: block.height });
         if (this.tx.acceleration || (this.accelerationInfo && ['accelerating', 'completed_provisional', 'completed'].includes(this.accelerationInfo.status))) {
@@ -718,7 +746,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     document.location.hash = '#accelerate';
-    this.enterpriseService.goal(8);
     this.openAccelerator();
     this.scrollIntoAccelPreview = true;
     return false;
@@ -797,7 +824,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   setIsAccelerated(initialState: boolean = false) {
-    this.isAcceleration = (this.tx.acceleration || (this.accelerationInfo && this.pool && this.accelerationInfo.pools.some(pool => (pool === this.pool.id))));
+    this.isAcceleration = ((this.tx.acceleration && (!this.tx.status.confirmed || this.waitingForAccelerationInfo)) || (this.accelerationInfo && this.pool && this.accelerationInfo.pools.some(pool => (pool === this.pool.id))));
     if (this.isAcceleration) {
       if (initialState) {
         this.accelerationFlowCompleted = true;
@@ -809,6 +836,21 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.miningStats = stats;
         this.isAccelerated$.next(this.isAcceleration); // hack to trigger recalculation of ETA without adding another source observable
       });
+      if (!this.tx.status?.confirmed) {
+        this.standardETA$ = combineLatest([
+          this.stateService.mempoolBlocks$.pipe(startWith(null)),
+          this.stateService.difficultyAdjustment$.pipe(startWith(null)),
+        ]).pipe(
+          map(([mempoolBlocks, da]) => {
+            return this.etaService.calculateUnacceleratedETA(
+              this.tx,
+              mempoolBlocks,
+              da,
+              this.cpfpInfo,
+            );
+          })
+        )
+      }
     }
     this.isAccelerated$.next(this.isAcceleration);
   }
@@ -864,6 +906,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   resetTransaction() {
     this.firstLoad = false;
+    this.gotInitialPosition = false;
     this.error = undefined;
     this.tx = null;
     this.txChanged$.next(true);

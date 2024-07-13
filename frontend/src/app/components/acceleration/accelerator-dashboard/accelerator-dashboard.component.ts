@@ -37,7 +37,7 @@ export class AcceleratorDashboardComponent implements OnInit, OnDestroy {
   webGlEnabled = true;
   seen: Set<string> = new Set();
   firstLoad = true;
-  timespan: '3d' | '1w' | '1m' = '1w';
+  timespan: '24h' | '3d' | '1w' | '1m' | 'all' = '1w';
 
   accelerationDeltaSubscription: Subscription;
 
@@ -99,7 +99,7 @@ export class AcceleratorDashboardComponent implements OnInit, OnDestroy {
     this.minedAccelerations$ = this.stateService.chainTip$.pipe(
       distinctUntilChanged(),
       switchMap(() => {
-        return this.serviceApiServices.getAccelerationHistory$({ status: 'completed', pageLength: 6 }).pipe(
+        return this.serviceApiServices.getAccelerationHistory$({ status: 'completed_provisional,completed', pageLength: 6 }).pipe(
           catchError(() => {
             return of([]);
           }),

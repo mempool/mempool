@@ -728,7 +728,6 @@ export class TrackerComponent implements OnInit, OnDestroy {
     if (!this.txId) {
       return;
     }
-    this.enterpriseService.goal(8);
     this.accelerationFlowCompleted = false;
     if (this.showAccelerationSummary) {
       this.scrollIntoAccelPreview = true;

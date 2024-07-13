@@ -42,6 +42,19 @@ export interface BlockAudit {
   matchRate: number,
   expectedFees?: number,
   expectedWeight?: number,
+  template?: any[];
+}
+
+export interface TransactionAudit {
+  seen?: boolean;
+  expected?: boolean;
+  added?: boolean;
+  prioritized?: boolean;
+  delayed?: number;
+  accelerated?: boolean;
+  conflict?: boolean;
+  coinbase?: boolean;
+  firstSeen?: number;
 }
 
 export interface AuditScore {

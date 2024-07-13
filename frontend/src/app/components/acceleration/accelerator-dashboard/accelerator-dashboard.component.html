@@ -23,11 +23,17 @@
       <div class="main-title">
         <span [attr.data-cy]="'acceleration-stats'" i18n="accelerator.acceleration-stats">Acceleration stats</span>&nbsp;
         @switch (timespan) {
+          @case ('24h') {
+            <span style="font-size: xx-small" i18n="mining.1-day">(1 day)</span>
+          }
           @case ('1w') {
             <span style="font-size: xx-small" i18n="mining.1-week">(1 week)</span>
           }
           @case ('1m') {
             <span style="font-size: xx-small" i18n="mining.1-month">(1 month)</span>
+          }
+          @case ('all') {
+            <span style="font-size: xx-small" i18n="mining.all-time">(all time)</span>
           }
         }
       </div>
@@ -36,11 +42,17 @@
           <div class="card-body more-padding">
             <app-acceleration-stats [timespan]="timespan"></app-acceleration-stats>
             <div class="widget-toggler">
+              <a href="" (click)="setTimespan('24h')" class="toggler-option"
+                [ngClass]="{'inactive': timespan === '24h'}"><small>24h</small></a>
+              <span style="color: #ffffff66; font-size: 8px"> | </span>
               <a href="" (click)="setTimespan('1w')" class="toggler-option"
                 [ngClass]="{'inactive': timespan === '1w'}"><small>1w</small></a>
               <span style="color: #ffffff66; font-size: 8px"> | </span>
               <a href="" (click)="setTimespan('1m')" class="toggler-option"
               [ngClass]="{'inactive': timespan === '1m'}"><small>1m</small></a>
+              <span style="color: #ffffff66; font-size: 8px"> | </span>
+              <a href="" (click)="setTimespan('all')" class="toggler-option"
+              [ngClass]="{'inactive': timespan === 'all'}"><small>all</small></a>
             </div>
           </div>
         </div>

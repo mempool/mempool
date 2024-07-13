@@ -181,8 +181,8 @@
       <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
         <td i18n="block.miner">Miner</td>
         <td *ngIf="stateService.env.MINING_DASHBOARD">
-          <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]" class="badge"
-            [class]="block.extras.pool.slug === 'unknown' ? 'badge-secondary' : 'badge-primary'">
+          <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]" class="badge" style="color: #FFF;padding:0;">
+            <img class="pool-logo" [src]="'/resources/mining-pools/' + block.extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'">
             {{ block.extras.pool.name }}
           </a>
         </td>
@@ -411,7 +411,7 @@
         <td class="text-wrap">
           <app-amount [satoshis]="block.extras.totalFees" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
           <span *ngIf="oobFees" class="oobFees" i18n-ngbTooltip="Acceleration Fees" ngbTooltip="Acceleration fees paid out-of-band">
-             <app-amount [satoshis]="oobFees" digitsInfo="1.2-8" [noFiat]="true" [addPlus]="true"></app-amount>
+             <app-amount [satoshis]="oobFees" digitsInfo="1.8-8" [noFiat]="true" [addPlus]="true"></app-amount>
           </span>
           <span *ngIf="blockAudit.feeDelta" class="difference" [class.positive]="blockAudit.feeDelta <= 0" [class.negative]="blockAudit.feeDelta > 0">
             {{ blockAudit.feeDelta < 0 ? '+' : '' }}{{ (-blockAudit.feeDelta * 100) | amountShortener: 2 }}%

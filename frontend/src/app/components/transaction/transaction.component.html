@@ -153,21 +153,21 @@
 
     <br>
 
-    <ng-container *ngIf="transactionTime && (tx.acceleration || isAcceleration)">
-      <div class="title float-left">
-        <h2 id="acceleration-timeline" i18n="transaction.acceleration-timeline|Acceleration Timeline">Acceleration Timeline</h2>
-      </div>
-      <div class="clearfix"></div>
-      <app-acceleration-timeline [transactionTime]="transactionTime" [tx]="tx" [eta]="(ETA$ | async)"></app-acceleration-timeline>
-      <br>
-    </ng-container>
-
     <ng-container *ngIf="rbfInfo">
       <div class="title float-left">
         <h2 id="rbf" i18n="transaction.rbf-history|RBF Timeline">RBF Timeline</h2>
       </div>
       <div class="clearfix"></div>
       <app-rbf-timeline [txid]="txId" [replacements]="rbfInfo"></app-rbf-timeline>
+      <br>
+    </ng-container>
+
+    <ng-container *ngIf="transactionTime && isAcceleration">
+      <div class="title float-left">
+        <h2 id="acceleration-timeline" i18n="transaction.acceleration-timeline|Acceleration Timeline">Acceleration Timeline</h2>
+      </div>
+      <div class="clearfix"></div>
+      <app-acceleration-timeline [transactionTime]="transactionTime" [tx]="tx" [eta]="(ETA$ | async)" [standardETA]="(standardETA$ | async)?.time"></app-acceleration-timeline>
       <br>
     </ng-container>
 
@@ -449,7 +449,7 @@
     <tr>
       <td i18n="block.timestamp">Timestamp</td>
       <td>
-        &lrm;{{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }}
+        &lrm;{{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm:ss' }}
         <div class="lg-inline">
           <i class="symbol">(<app-time kind="since" [time]="tx.status.block_time" [fastRender]="true"></app-time>)</i>
         </div>
@@ -639,7 +639,7 @@
         }
         <td>
           <div class="effective-fee-container">
-            @if (accelerationInfo?.acceleratedFeeRate && (!tx.effectiveFeePerVsize || accelerationInfo.acceleratedFeeRate >= tx.effectiveFeePerVsize)) {
+            @if (accelerationInfo?.acceleratedFeeRate && (!tx.effectiveFeePerVsize || accelerationInfo.acceleratedFeeRate >= tx.effectiveFeePerVsize || tx.acceleration)) {
               <app-fee-rate [fee]="accelerationInfo.acceleratedFeeRate"></app-fee-rate>
             } @else {
               <app-fee-rate [fee]="tx.effectiveFeePerVsize"></app-fee-rate>
@@ -676,9 +676,9 @@
         <td class="td-width" i18n="block.miner">Miner</td>
         @if (pool) {
           <td class="wrap-cell">
-            <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, pool.slug]" class="badge mr-1"
-              [class]="pool.slug === 'unknown' ? 'badge-secondary' : 'badge-primary'">
-              {{ pool.name }}
+            <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, pool.slug]" class="badge" style="color: #FFF;padding:0;">
+              <img class="pool-logo" [src]="'/resources/mining-pools/' + pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + pool.name + ' mining pool'">
+              {{ pool.name  }}
             </a>
           </td>
         } @else {

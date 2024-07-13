@@ -2,7 +2,7 @@
   @if (accelerateError) {
     <div class="row mb-1 text-center">
       <div class="col-sm">
-        <h1 style="font-size: larger;">Sorry, something went wrong!</h1>
+        <h1 style="font-size: larger;" i18n="accelerator.sorry-error-title">Sorry, something went wrong!</h1>
       </div>
     </div>
     <div class="row text-center mt-1">
@@ -552,22 +552,15 @@
 <ng-template #accelerateTo let-x i18n="accelerator.accelerate-to-x">Accelerate to ~{{ x | number : '1.0-0' }} sat/vB</ng-template>
 
 <ng-template #accelerateButton>
-  @if (!couldPay && !quoteError && !(estimate?.availablePaymentMethods.bitcoin || estimate?.availablePaymentMethods.balance)) {
-    <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center disabled" style="width: 200px">
+  <div class="position-relative">
+    <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" [class.disabled]="!canPay || quoteError || cantPayReason || calculating || (!advancedEnabled && selectedOption !== 'accel')" style="width: 200px" (click)="moveToStep('checkout')">
       <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
-      <span>Coming soon</span>
+      <span i18n="transaction.accelerate|Accelerate button label">Accelerate</span>
     </button>
-  } @else {
-    <div class="position-relative">
-      <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" [class.disabled]="!canPay || quoteError || cantPayReason || calculating || (!advancedEnabled && selectedOption !== 'accel')" style="width: 200px" (click)="moveToStep('checkout')">
-        <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
-        <span i18n="transaction.accelerate|Accelerate button label">Accelerate</span>
-      </button>
-      @if (quoteError || cantPayReason) {
-        <div class="btn-error-wrapper"><span class="btn-error"><app-mempool-error [error]="quoteError || cantPayReason" [textOnly]="true" alertClass=""></app-mempool-error></span></div>
-      }
-    </div>
-  }
+    @if (quoteError || cantPayReason) {
+      <div class="btn-error-wrapper"><span class="btn-error"><app-mempool-error [error]="quoteError || cantPayReason" [textOnly]="true" alertClass=""></app-mempool-error></span></div>
+    }
+  </div>
 </ng-template>
 
 <ng-template #accountPayButton>

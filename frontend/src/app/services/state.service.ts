@@ -75,6 +75,7 @@ export interface Env {
   ADDITIONAL_CURRENCIES: boolean;
   GIT_COMMIT_HASH_MEMPOOL_SPACE?: string;
   PACKAGE_JSON_VERSION_MEMPOOL_SPACE?: string;
+  SERVICES_API?: string;
   customize?: Customization;
 }
 
@@ -109,6 +110,7 @@ const defaultEnv: Env = {
   'ACCELERATOR': false,
   'PUBLIC_ACCELERATIONS': false,
   'ADDITIONAL_CURRENCIES': false,
+  'SERVICES_API': 'https://mempool.space/api/v1/services',
 };
 
 @Injectable({

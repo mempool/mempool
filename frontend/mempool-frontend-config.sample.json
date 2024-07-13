@@ -25,5 +25,6 @@
   "HISTORICAL_PRICE": true,
   "ADDITIONAL_CURRENCIES": false,
   "ACCELERATOR": false,
-  "PUBLIC_ACCELERATIONS": false
+  "PUBLIC_ACCELERATIONS": false,
+  "SERVICES_API": "https://mempool.space/api/v1/services"
 }

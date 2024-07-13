@@ -125,12 +125,12 @@
 #arrow-up {
   position: relative;
   left: calc(var(--block-size) * 0.6);
-  top: calc(var(--block-size) * 1.12);
+  top: calc(var(--block-size) * 1.28);
   width: 0;
   height: 0;
-  border-left: calc(var(--block-size) * 0.3) solid transparent;
-  border-right: calc(var(--block-size) * 0.3) solid transparent;
-  border-bottom: calc(var(--block-size) * 0.3) solid var(--fg);
+  border-left: calc(var(--block-size) * 0.2) solid transparent;
+  border-right: calc(var(--block-size) * 0.2) solid transparent;
+  border-bottom: calc(var(--block-size) * 0.2) solid var(--fg);
 }
 
 .flashing {
@@ -157,17 +157,20 @@
   position: relative;
   top: 15px;
   z-index: 101;
+  color: #FFF;
+}
+
+.pool-logo {
+  width: 15px;
+  height: 15px;
+  position: relative;
+  top: -1px;
+  margin-right: 2px;
 }
 
 .animated {
   transition: all 0.15s ease-in-out;
-}
-.show {
-  opacity: 1;
-}
-.hide {
-  opacity: 0.4;
-  pointer-events : none;
+  white-space: nowrap;
 }
 
 .time-ltr {

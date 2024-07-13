@@ -75,9 +75,6 @@
                   } @else {
                     <app-time kind="until" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time>
                   }
-                  <!-- @if (!showAccelerationSummary && isMobile && !tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration) {
-                    <a class="btn btn-sm accelerate btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
-                  } -->
                 </span>
               </ng-container>
               <ng-template #etaSkeleton>

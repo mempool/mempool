@@ -8,6 +8,7 @@ import { ETA, EtaService } from '../../services/eta.service';
 import { Transaction } from '../../interfaces/electrs.interface';
 import { MiningStats } from '../../services/mining.service';
 import { IAuth, AuthServiceMempool } from '../../services/auth.service';
+import { EnterpriseService } from '../../services/enterprise.service';
 
 export type PaymentMethod = 'balance' | 'bitcoin' | 'cashapp';
 
@@ -126,7 +127,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     private etaService: EtaService,
     private audioService: AudioService,
     private cd: ChangeDetectorRef,
-    private authService: AuthServiceMempool
+    private authService: AuthServiceMempool,
+    private enterpriseService: EnterpriseService,
   ) {
     this.accelerationUUID = window.crypto.randomUUID();
   }
@@ -197,6 +199,9 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     }
     if (!this.estimate && ['quote', 'summary', 'checkout'].includes(this.step)) {
       this.fetchEstimate();
+    }
+    if (this._step === 'checkout') {
+      this.enterpriseService.goal(8);
     }
     if (this._step === 'checkout' && this.canPayWithBitcoin) {
       this.btcpayInvoiceFailed = false;
@@ -291,6 +296,14 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           this.cost = this.userBid + this.estimate.mempoolBaseFee + this.estimate.vsizeFee;
 
           this.validateChoice();
+
+          if (!this.couldPay) {
+            this.quoteError = `cannot_accelerate_tx`;
+            if (this.step === 'summary') {
+              this.unavailable.emit(true);
+            }
+            return;
+          }
 
           if (this.step === 'checkout' && this.canPayWithBitcoin && !this.loadingBtcpayInvoice) {
             this.loadingBtcpayInvoice = true;
@@ -546,7 +559,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   get couldPayWithCashapp() {
-    if (!this.cashappEnabled || this.stateService.referrer !== 'https://cash.app/') {
+    if (!this.cashappEnabled) {
       return false;
     }
     return !!this.estimate?.availablePaymentMethods?.cashapp;
@@ -569,7 +582,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   get canPayWithCashapp() {
-    if (!this.cashappEnabled || !this.conversions || this.stateService.referrer !== 'https://cash.app/') {
+    if (!this.cashappEnabled || !this.conversions) {
       return false;
     }
 
