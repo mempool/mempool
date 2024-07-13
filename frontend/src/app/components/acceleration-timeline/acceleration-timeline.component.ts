@@ -19,15 +19,22 @@ export class AccelerationTimelineComponent implements OnInit, OnChanges {
   acceleratedAt: number;
   now: number;
   accelerateRatio: number;
+  useAbsoluteTime: boolean = false;
 
   constructor() {}
 
   ngOnInit(): void {
     this.acceleratedAt = this.tx.acceleratedAt ?? new Date().getTime() / 1000;
+    this.now = Math.floor(new Date().getTime() / 1000);
+    this.useAbsoluteTime = this.tx.status.block_time < this.now - 7 * 24 * 3600;
+
+    window.setInterval(() => {
+      this.now = Math.floor(new Date().getTime() / 1000);
+      this.useAbsoluteTime = this.tx.status.block_time < this.now - 7 * 24 * 3600;
+    }, 60000);
   }
 
   ngOnChanges(changes): void {
-    this.now = Math.floor(new Date().getTime() / 1000);
     // Hide standard ETA while we don't have a proper standard ETA calculation, see https://github.com/mempool/mempool/issues/65
     
     // if (changes?.eta?.currentValue || changes?.standardETA?.currentValue || changes?.acceleratedETA?.currentValue) {
