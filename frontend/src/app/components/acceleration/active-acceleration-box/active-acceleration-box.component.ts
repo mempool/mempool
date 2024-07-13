@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input, Output, OnChanges, SimpleChanges, EventEmitter } from '@angular/core';
 import { Transaction } from '../../../interfaces/electrs.interface';
 import { Acceleration, SinglePoolStats } from '../../../interfaces/node-api.interface';
 import { EChartsOption, PieSeriesOption } from '../../../graphs/echarts';
@@ -27,8 +27,10 @@ export class ActiveAccelerationBox implements OnChanges {
   @Input() accelerationInfo: Acceleration;
   @Input() miningStats: MiningStats;
   @Input() pools: number[];
+  @Input() hasCpfp: boolean = false;
   @Input() chartOnly: boolean = false;
   @Input() chartPositionLeft: boolean = false;
+  @Output() toggleCpfp = new EventEmitter();
 
   acceleratedByPercentage: string = '';
 
@@ -132,5 +134,9 @@ export class ActiveAccelerationBox implements OnChanges {
       return;
     }
     this.chartInstance = ec;
+  }
+
+  onToggleCpfp(): void {
+    this.toggleCpfp.emit();
   }
 }
