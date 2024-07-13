@@ -34,7 +34,12 @@
             <li class="nav-item d-flex justify-content-start align-items-center menu-click">
               <fa-icon class="menu-click" [icon]="['fas', item.faIcon]" [fixedWidth]="true"></fa-icon>
               <button *ngIf="item.link === 'logout'" class="btn nav-link menu-click" role="tab" (click)="logout()">{{ item.title }}</button>
-              <a *ngIf="item.title !== 'Logout'" class="nav-link menu-click" [routerLink]="[item.link]" role="tab">{{ item.title }}</a>
+              <a *ngIf="item.title !== 'Logout'" class="nav-link menu-click" [routerLink]="[item.link]" role="tab">
+                {{ item.title }}
+                @if (item.isExternal === true) {
+                  <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="margin-left: 5px; font-size: 13px; color: lightgray"></fa-icon>
+                }
+              </a>
             </li>
           </ul>
         </div>

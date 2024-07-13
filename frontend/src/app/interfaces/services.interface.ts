@@ -5,6 +5,7 @@ export type MenuItem = {
   i18n: string;
   faIcon: IconName;
   link: string;
+  isExternal?: boolean;
 };
 export type MenuGroup = {
   title: string;
