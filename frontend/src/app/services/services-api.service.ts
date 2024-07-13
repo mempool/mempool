@@ -181,7 +181,7 @@ export class ServicesApiServices {
     return this.httpClient.get<any[]>(`${this.stateService.env.SERVICES_API}/payments/bitcoin/invoice?id=${invoiceId}`);
   }
 
-  getPaymentStatus$(orderId: string): Observable<any[]> {
-    return this.httpClient.get<any[]>(`${this.stateService.env.SERVICES_API}/payments/bitcoin/check?order_id=${orderId}`);
+  getPaymentStatus$(orderId: string): Observable<any> {
+    return this.httpClient.get<any>(`${this.stateService.env.SERVICES_API}/payments/bitcoin/check?order_id=${orderId}`, { observe: 'response' });
   }
 }
