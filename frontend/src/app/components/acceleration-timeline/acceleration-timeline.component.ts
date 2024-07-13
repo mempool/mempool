@@ -20,6 +20,7 @@ export class AccelerationTimelineComponent implements OnInit, OnChanges {
   now: number;
   accelerateRatio: number;
   useAbsoluteTime: boolean = false;
+  interval: number;
 
   constructor() {}
 
@@ -28,7 +29,7 @@ export class AccelerationTimelineComponent implements OnInit, OnChanges {
     this.now = Math.floor(new Date().getTime() / 1000);
     this.useAbsoluteTime = this.tx.status.block_time < this.now - 7 * 24 * 3600;
 
-    window.setInterval(() => {
+    this.interval = window.setInterval(() => {
       this.now = Math.floor(new Date().getTime() / 1000);
       this.useAbsoluteTime = this.tx.status.block_time < this.now - 7 * 24 * 3600;
     }, 60000);
@@ -46,5 +47,9 @@ export class AccelerationTimelineComponent implements OnInit, OnChanges {
     //     }
     //   }
     // }
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.interval);
   }
 }
