@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, NgZone, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { EChartsOption } from '../../../graphs/echarts';
 import { Observable, Subject, Subscription, combineLatest, fromEvent, merge, share } from 'rxjs';
 import { startWith, switchMap, tap } from 'rxjs/operators';
@@ -8,10 +8,11 @@ import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { download, formatterXAxis, formatterXAxisLabel, formatterXAxisTimeCategory } from '../../../shared/graphs.utils';
 import { StorageService } from '../../../services/storage.service';
 import { MiningService } from '../../../services/mining.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Acceleration } from '../../../interfaces/node-api.interface';
 import { ServicesApiServices } from '../../../services/services-api.service';
 import { StateService } from '../../../services/state.service';
+import { RelativeUrlPipe } from '../../../shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
   selector: 'app-acceleration-fees-graph',
@@ -62,6 +63,8 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
     private route: ActivatedRoute,
     public stateService: StateService,
     private cd: ChangeDetectorRef,
+    private router: Router,
+    private zone: NgZone,
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1w' });
     this.radioGroupForm.controls.dateSpan.setValue('1w');
@@ -294,6 +297,19 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
 
   onChartInit(ec) {
     this.chartInstance = ec;
+
+    this.chartInstance.on('click', (e) => {
+      this.zone.run(() => {
+        if (['24h', '3d'].includes(this.timespan)) {
+          const url = new RelativeUrlPipe(this.stateService).transform(`/block/${e.data[2]}`);
+          if (e.event.event.shiftKey || e.event.event.ctrlKey || e.event.event.metaKey) {
+            window.open(url);
+          } else {
+            this.router.navigate([url]);
+          }
+        }
+      });
+    });
   }
 
   isMobile() {
