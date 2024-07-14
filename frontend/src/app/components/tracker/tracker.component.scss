@@ -166,7 +166,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
 
   .explainer {
     margin: 0 1em;
@@ -176,6 +176,15 @@
 
 .progress-icon {
   font-size: clamp(30px, 20vw, 150px);
+}
+
+.status-panel {
+  &.small-status {
+    min-height: 180px;
+    .progress-icon {
+      font-size: clamp(20px, 13vw, 100px);
+    }
+  }
 }
 
 .footer-link {

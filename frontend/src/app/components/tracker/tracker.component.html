@@ -117,68 +117,71 @@
           <div class="spinner-border text-light" style="width: 1em; height: 1em"></div>
         </div>
         <span class="explainer">&nbsp;</span>
-      } @else if (showAccelerationSummary) {
-        <ng-container *ngIf="(ETA$ | async) as eta;">
-          <app-accelerate-checkout
-            *ngIf="(da$ | async) as da;"
-            [cashappEnabled]="cashappEligible"
-            [advancedEnabled]="false"
-            [forceMobile]="true"
-            [tx]="tx"
-            [accelerating]="isAcceleration"
-            [miningStats]="miningStats"
-            [eta]="eta"
-            [scrollEvent]="scrollIntoAccelPreview"
-            (unavailable)="eligibleForAcceleration = false"
-            class="h-100 w-100"
-          ></app-accelerate-checkout>
-        </ng-container>
       } @else {
-        @if (tx?.acceleration && !tx.status?.confirmed) {
-          <div class="progress-icon">
-            <fa-icon [icon]="['fas', 'wand-magic-sparkles']" [fixedWidth]="true"></fa-icon>
-          </div>
-          <span class="explainer" i18n="tracker.explain.accelerated">Your transaction has been accelerated</span>
-        } @else {
-          @switch (trackerStage) {
-            @case ('waiting') {
-              <div class="progress-icon">
-                <div class="spinner-border text-light" style="width: 1em; height: 1em"></div>
-              </div>
-              <span class="explainer" i18n="tracker.explain.waiting">Waiting for your transaction to appear in the mempool</span>
-            }
-            @case ('pending') {
-              <div class="progress-icon">
-                <fa-icon [icon]="['fas', 'hourglass-start']" [fixedWidth]="true"></fa-icon>
-              </div>
-              <span class="explainer" i18n="tracker.explain.pending">Your transaction is in the mempool, but it will not be confirmed for some time.</span>
-            }
-            @case ('soon') {
-              <div class="progress-icon">
-                <fa-icon [icon]="['fas', 'hourglass-half']" [fixedWidth]="true"></fa-icon>
-              </div>
-              <span class="explainer" i18n="tracker.explain.soon">Your transaction is near the top of the mempool, and is expected to confirm soon.</span>
-            }
-            @case ('next') {
-              <div class="progress-icon">
-                <fa-icon [icon]="['fas', 'hourglass-end']" [fixedWidth]="true"></fa-icon>
-              </div>
-              <span class="explainer" i18n="tracker.explain.next-block">Your transaction is expected to confirm in the next block</span>
-            }
-            @case ('confirmed') {
-              <div class="progress-icon">
-                <fa-icon [icon]="['fas', 'circle-check']" [fixedWidth]="true"></fa-icon>
-              </div>
-              <span class="explainer" i18n="tracker.explain.confirmed">Your transaction is confirmed!</span>
-            }
-            @case ('replaced') {
-              <div class="progress-icon">
-                <fa-icon [icon]="['fas', 'timeline']" [fixedWidth]="true"></fa-icon>
-              </div>
-              <span class="explainer" i18n="tracker.explain.replaced">Your transaction has been replaced by a newer version!</span>
+        @if (!tx.status?.confirmed && showAccelerationSummary) {
+          <ng-container *ngIf="(ETA$ | async) as eta;">
+            <app-accelerate-checkout
+              *ngIf="(da$ | async) as da;"
+              [cashappEnabled]="cashappEligible"
+              [advancedEnabled]="false"
+              [forceMobile]="true"
+              [tx]="tx"
+              [accelerating]="isAcceleration"
+              [miningStats]="miningStats"
+              [eta]="eta"
+              [scrollEvent]="scrollIntoAccelPreview"
+              (unavailable)="eligibleForAcceleration = false"
+              class="w-100"
+            ></app-accelerate-checkout>
+          </ng-container>
+        }
+        <div class="status-panel d-flex flex-column h-100 w-100 justify-content-center align-items-center" [class.small-status]="!tx.status?.confirmed && showAccelerationSummary">
+          @if (tx?.acceleration && !tx.status?.confirmed) {
+            <div class="progress-icon">
+              <fa-icon [icon]="['fas', 'wand-magic-sparkles']" [fixedWidth]="true"></fa-icon>
+            </div>
+            <span class="explainer" i18n="tracker.explain.accelerated">Your transaction has been accelerated</span>
+          } @else {
+            @switch (trackerStage) {
+              @case ('waiting') {
+                <div class="progress-icon">
+                  <div class="spinner-border text-light" style="width: 1em; height: 1em"></div>
+                </div>
+                <span class="explainer" i18n="tracker.explain.waiting">Waiting for your transaction to appear in the mempool</span>
+              }
+              @case ('pending') {
+                <div class="progress-icon">
+                  <fa-icon [icon]="['fas', 'hourglass-start']" [fixedWidth]="true"></fa-icon>
+                </div>
+                <span class="explainer" i18n="tracker.explain.pending">Your transaction is in the mempool, but it will not be confirmed for some time.</span>
+              }
+              @case ('soon') {
+                <div class="progress-icon">
+                  <fa-icon [icon]="['fas', 'hourglass-half']" [fixedWidth]="true"></fa-icon>
+                </div>
+                <span class="explainer" i18n="tracker.explain.soon">Your transaction is near the top of the mempool, and is expected to confirm soon.</span>
+              }
+              @case ('next') {
+                <div class="progress-icon">
+                  <fa-icon [icon]="['fas', 'hourglass-end']" [fixedWidth]="true"></fa-icon>
+                </div>
+                <span class="explainer" i18n="tracker.explain.next-block">Your transaction is expected to confirm in the next block</span>
+              }
+              @case ('confirmed') {
+                <div class="progress-icon">
+                  <fa-icon [icon]="['fas', 'circle-check']" [fixedWidth]="true"></fa-icon>
+                </div>
+                <span class="explainer" i18n="tracker.explain.confirmed">Your transaction is confirmed!</span>
+              }
+              @case ('replaced') {
+                <div class="progress-icon">
+                  <fa-icon [icon]="['fas', 'timeline']" [fixedWidth]="true"></fa-icon>
+                </div>
+                <span class="explainer" i18n="tracker.explain.replaced">Your transaction has been replaced by a newer version!</span>
+              }
             }
           }
-        }
+        </div>
       }
     </div>
 
