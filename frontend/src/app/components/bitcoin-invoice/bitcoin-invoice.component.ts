@@ -74,7 +74,10 @@ export class BitcoinInvoiceComponent implements OnInit, OnChanges, OnDestroy {
     }
     this.paymentStatusSubscription = this.apiService.getPaymentStatus$(this.invoice.btcpayInvoiceId).pipe(
       retry({ delay: () => timer(2000)})
-    ).subscribe((result) => {
+    ).subscribe((response) => {
+      if (response.status === 204 || response.status === 404) {
+        return;
+      }
       this.paymentStatus = 3;
       this.completed.emit();
     });
