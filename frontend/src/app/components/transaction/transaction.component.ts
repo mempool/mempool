@@ -133,6 +133,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   isMobile: boolean;
   firstLoad = true;
   waitingForAccelerationInfo: boolean = false;
+  isLoadingFirstSeen = false;
 
   featuresEnabled: boolean;
   segwitEnabled: boolean;
@@ -763,8 +764,16 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getTransactionTime() {
+    this.isLoadingFirstSeen = true;
     this.apiService
       .getTransactionTimes$([this.tx.txid])
+      .pipe(
+        retry({ count: 2, delay: 2000 }),
+        catchError(() => {
+          this.isLoadingFirstSeen = false;
+          return throwError(() => new Error(''));
+        })
+      )
       .subscribe((transactionTimes) => {
         if (transactionTimes?.length && transactionTimes[0]) {
           this.transactionTime = transactionTimes[0];

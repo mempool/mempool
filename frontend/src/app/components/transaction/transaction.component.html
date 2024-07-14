@@ -481,7 +481,7 @@
       <td i18n="transaction.first-seen|Transaction first seen">First seen</td>
       <td><i><app-time kind="since" [time]="transactionTime" [fastRender]="true" [showTooltip]="true"></app-time></i></td>
     </tr>
-  } @else {
+  } @else if (isLoadingFirstSeen) {
     <tr>
       <td i18n="transaction.first-seen|Transaction first seen">First seen</td>
       <td><span class="skeleton-loader"></span></td>
