@@ -596,6 +596,9 @@ export class TrackerComponent implements OnInit, OnDestroy {
       this.isAccelerated$,
       this.txChanged$,
     ]).pipe(
+      filter(([position, mempoolBlocks, da, isAccelerated]) => {
+        return this.tx && !this.tx?.status?.confirmed && position && this.tx.txid === position.txid;
+      }),
       map(([position, mempoolBlocks, da, isAccelerated]) => {
         return this.etaService.calculateETA(
           this.network,
