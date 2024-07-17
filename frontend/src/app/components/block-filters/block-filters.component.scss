@@ -32,16 +32,18 @@
   }
 
   .menu-toggle {
-    width: 2em;
-    height: 2em;
+    width: 3em;
+    min-width: 3em;
+    height: 1.8em;
     padding: 0px 1px;
     opacity: 0;
     cursor: pointer;
     color: white;
     background: none;
-    border: solid 2px white;
+    border: none;
     border-radius: 0.35em;
     pointer-events: all;
+    align-self: normal;
   }
 
   .filter-menu {

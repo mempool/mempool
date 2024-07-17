@@ -23,7 +23,7 @@ describe('Mempool Backend Config', () => {
         UNIX_SOCKET_PATH: '',
         SPAWN_CLUSTER_PROCS: 0,
         API_URL_PREFIX: '/api/v1/',
-        AUTOMATIC_BLOCK_REINDEXING: false,
+        AUTOMATIC_POOLS_UPDATE: false,
         POLL_RATE_MS: 2000,
         CACHE_DIR: './cache',
         CACHE_ENABLED: true,
@@ -63,6 +63,7 @@ describe('Mempool Backend Config', () => {
         REQUEST_TIMEOUT: 10000,
         FALLBACK_TIMEOUT: 5000,
         FALLBACK: [],
+        MAX_BEHIND_TIP: 2,
        });
 
       expect(config.CORE_RPC).toStrictEqual({

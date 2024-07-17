@@ -1,9 +1,11 @@
-import { Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, catchError, of, switchMap, tap } from 'rxjs';
+import { Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef, OnDestroy, Inject, LOCALE_ID } from '@angular/core';
+import { BehaviorSubject, Observable, Subscription, catchError, filter, of, switchMap, tap, throttleTime } from 'rxjs';
 import { Acceleration, BlockExtended } from '../../../interfaces/node-api.interface';
 import { StateService } from '../../../services/state.service';
 import { WebsocketService } from '../../../services/websocket.service';
 import { ServicesApiServices } from '../../../services/services-api.service';
+import { SeoService } from '../../../services/seo.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-accelerations-list',
@@ -25,25 +27,66 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
   maxSize = window.innerWidth <= 767.98 ? 3 : 5;
   skeletonLines: number[] = [];
   pageSubject: BehaviorSubject<number> = new BehaviorSubject(this.page);
+  keyNavigationSubscription: Subscription;
+  dir: 'rtl' | 'ltr' = 'ltr';
+  paramSubscription: Subscription;
 
   constructor(
     private servicesApiService: ServicesApiServices,
     private websocketService: WebsocketService,
     public stateService: StateService,
     private cd: ChangeDetectorRef,
+    private seoService: SeoService,
+    private route: ActivatedRoute,
+    private router: Router,
+    @Inject(LOCALE_ID) private locale: string,
   ) {
+    if (this.locale.startsWith('ar') || this.locale.startsWith('fa') || this.locale.startsWith('he')) {
+      this.dir = 'rtl';
+    }
   }
 
   ngOnInit(): void {
     if (!this.widget) {
       this.websocketService.want(['blocks']);
+      this.seoService.setTitle($localize`:@@02573b6980a2d611b4361a2595a4447e390058cd:Accelerations`);
+
+      this.paramSubscription = this.route.params.pipe(
+        tap(params => {
+          this.page = +params['page'] || 1;
+          this.pageSubject.next(this.page);
+        })
+      ).subscribe();
+
+      const prevKey = this.dir === 'ltr' ? 'ArrowLeft' : 'ArrowRight';
+      const nextKey = this.dir === 'ltr' ? 'ArrowRight' : 'ArrowLeft';
+
+      this.keyNavigationSubscription = this.stateService.keyNavigation$.pipe(
+        filter((event) => event.key === prevKey || event.key === nextKey),
+        tap((event) => {
+          if (event.key === prevKey && this.page > 1) {
+            this.page--;
+            this.isLoading = true;
+            this.cd.markForCheck();
+          }
+          if (event.key === nextKey && this.page * 15 < this.accelerationCount) {
+            this.page++;
+            this.isLoading = true;
+            this.cd.markForCheck();
+          }
+        }),
+        throttleTime(1000, undefined, { leading: true, trailing: true }),
+      ).subscribe(() => {
+        this.pageChange(this.page);
+      });
     }
 
     this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
     this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
-    
+
     this.accelerationList$ = this.pageSubject.pipe(
       switchMap((page) => {
+        this.isLoading = true;
         const accelerationObservable$ = this.accelerations$ || (this.pending ? this.stateService.liveAccelerations$ : this.servicesApiService.getAccelerationHistoryObserveResponse$({ page: page }));
         if (!this.accelerations$ && this.pending) {
           this.websocketService.ensureTrackAccelerations();
@@ -82,7 +125,7 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
   }
 
   pageChange(page: number): void {
-    this.pageSubject.next(page);
+    this.router.navigate(['acceleration', 'list', page]);
   }
 
   trackByBlock(index: number, block: BlockExtended): number {
@@ -91,5 +134,7 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.websocketService.stopTrackAccelerations();
+    this.paramSubscription?.unsubscribe();
+    this.keyNavigationSubscription?.unsubscribe();
   }
 }

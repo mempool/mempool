@@ -3,7 +3,7 @@ import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from '../../graphs/echarts';
 import { merge, Observable } from 'rxjs';
-import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
+import { map, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 import { SeoService } from '../../services/seo.service';
 import { StorageService } from '../..//services/storage.service';
 import { MiningService, MiningStats } from '../../services/mining.service';
@@ -107,7 +107,7 @@ export class PoolRankingComponent implements OnInit {
           this.isLoading = false;
           this.prepareChartOptions(data);
         }),
-        share()
+        shareReplay(1)
       );
   }
 
@@ -163,7 +163,7 @@ export class PoolRankingComponent implements OnInit {
             const i = pool.blockCount.toString();
             if (this.miningWindowPreference === '24h') {
               return `<b style="color: white">${pool.name} (${pool.share}%)</b><br>` +
-                pool.lastEstimatedHashrate.toString() + ' ' + miningStats.miningUnits.hashrateUnit +
+                pool.lastEstimatedHashrate.toFixed(2) + ' ' + miningStats.miningUnits.hashrateUnit +
                 `<br>` + $localize`${ i }:INTERPOLATION: blocks`;
             } else {
               return `<b style="color: white">${pool.name} (${pool.share}%)</b><br>` +
@@ -291,7 +291,7 @@ export class PoolRankingComponent implements OnInit {
    */
   getEmptyMiningStat(): MiningStats {
     return {
-      lastEstimatedHashrate: 'Error',
+      lastEstimatedHashrate: 0,
       blockCount: 0,
       totalEmptyBlock: 0,
       totalEmptyBlockRatio: '',

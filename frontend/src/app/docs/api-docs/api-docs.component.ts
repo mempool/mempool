@@ -33,6 +33,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
   showMobileEnterpriseUpsell: boolean = true;
   timeLtrSubscription: Subscription;
   timeLtr: boolean = this.stateService.timeLtr.value;
+  isMempoolSpaceBuild = this.stateService.isMempoolSpaceBuild;
 
   @ViewChildren(FaqTemplateDirective) faqTemplates: QueryList<FaqTemplateDirective>;
   dict = {};
@@ -72,7 +73,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
     this.auditEnabled = this.env.AUDIT;
     this.network$ = merge(of(''), this.stateService.networkChanged$).pipe(
       tap((network: string) => {
-        if (this.env.BASE_MODULE === 'mempool' && network !== '') {
+        if (this.env.BASE_MODULE === 'mempool' && network !== '' && this.env.ROOT_NETWORK === '') {
           this.baseNetworkUrl = `/${network}`;
         } else if (this.env.BASE_MODULE === 'liquid') {
           if (!['', 'liquid'].includes(network)) {
@@ -193,6 +194,10 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
       if (!['', 'liquid'].includes(network)) {
         curlNetwork = `/${network}`;
       }
+    }
+
+    if (network === this.env.ROOT_NETWORK) {
+      curlNetwork = '';
     }
 
     let text = code.codeTemplate.curl;

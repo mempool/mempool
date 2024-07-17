@@ -1,4 +1,4 @@
-<div class="fee-graph" *ngIf="tx && estimate">
+<div class="fee-graph" *ngIf="tx && estimate" #feeGraph>
   <div class="column">
     <ng-container *ngFor="let bar of bars">
       <div class="bar {{ bar.class }}" [class.active]="bar.active" [style]="bar.style" (click)="onClick($event, bar);">
@@ -12,7 +12,7 @@
           </p>
         </div>
         <div class="spacer"></div>
-        <span class="fee">{{ bar.class === 'tx' ? '' : '+' }} {{ bar.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span></span>
+        <span class="fee">{{ bar.class === 'tx' ? '' : '+' }}{{ bar.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span></span>
         <div class="spacer"></div>
         <div class="spacer"></div>
       </div>

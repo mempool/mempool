@@ -105,7 +105,7 @@ export const TransactionFilters: { [key: string]: Filter } = {
     /* heuristics */
     coinjoin: { key: 'coinjoin', label: $localize`Coinjoin`, flag: TransactionFlags.coinjoin, important: true, tooltip: true, txPage: true, },
     consolidation: { key: 'consolidation', label: $localize`Consolidation`, flag: TransactionFlags.consolidation, tooltip: true, txPage: true, },
-    batch_payout: { key: 'batch_payout', label: 'Batch payment', flag: TransactionFlags.batch_payout, tooltip: true, txPage: true, },
+    batch_payout: { key: 'batch_payout', label: $localize`Batch payment`, flag: TransactionFlags.batch_payout, tooltip: true, txPage: true, },
     /* sighash */
     sighash_all: { key: 'sighash_all', label: 'sighash_all', flag: TransactionFlags.sighash_all },
     sighash_none: { key: 'sighash_none', label: 'sighash_none', flag: TransactionFlags.sighash_none, tooltip: true },

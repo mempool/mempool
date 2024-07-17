@@ -50,7 +50,7 @@ const routes: Routes = [
       },
       {
         path: 'acceleration',
-        data: { networks: ['bitcoin'] },
+        data: { networks: ['bitcoin'], networkSpecific: true, onlySubnet: [''] },
         component: StartComponent,
         children: [
           {
@@ -60,9 +60,13 @@ const routes: Routes = [
         ]
       },
       {
-        path: 'acceleration/list',
-        data: { networks: ['bitcoin'] },
+        path: 'acceleration/list/:page',
+        data: { networks: ['bitcoin'], networkSpecific: true, onlySubnet: [''] },
         component: AccelerationsListComponent,
+      },
+      {
+        path: 'acceleration/list',
+        redirectTo: 'acceleration/list/1',
       },
       {
         path: 'mempool-block/:id',
@@ -136,7 +140,7 @@ const routes: Routes = [
           },
           {
             path: 'acceleration/fees',
-            data: { networks: ['bitcoin'] },
+            data: { networks: ['bitcoin'], networkSpecific: true, onlySubnet: [''] },
             component: AccelerationFeesGraphComponent,
           },
           {

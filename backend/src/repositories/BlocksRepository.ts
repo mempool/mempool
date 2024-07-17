@@ -5,7 +5,7 @@ import logger from '../logger';
 import { Common } from '../api/common';
 import PoolsRepository from './PoolsRepository';
 import HashratesRepository from './HashratesRepository';
-import { RowDataPacket, escape } from 'mysql2';
+import { RowDataPacket } from 'mysql2';
 import BlocksSummariesRepository from './BlocksSummariesRepository';
 import DifficultyAdjustmentsRepository from './DifficultyAdjustmentsRepository';
 import bitcoinClient from '../api/bitcoin/bitcoin-client';
@@ -40,6 +40,7 @@ interface DatabaseBlock {
   avgFeeRate: number;
   coinbaseRaw: string;
   coinbaseAddress: string;
+  coinbaseAddresses: string;
   coinbaseSignature: string;
   coinbaseSignatureAscii: string;
   avgTxSize: number;
@@ -82,6 +83,7 @@ const BLOCK_DB_FIELDS = `
   blocks.avg_fee_rate AS avgFeeRate,
   blocks.coinbase_raw AS coinbaseRaw,
   blocks.coinbase_address AS coinbaseAddress,
+  blocks.coinbase_addresses AS coinbaseAddresses,
   blocks.coinbase_signature AS coinbaseSignature,
   blocks.coinbase_signature_ascii AS coinbaseSignatureAscii,
   blocks.avg_tx_size AS avgTxSize,
@@ -114,7 +116,7 @@ class BlocksRepository {
         pool_id,            fees,                fee_span,          median_fee,
         reward,             version,             bits,              nonce,
         merkle_root,        previous_block_hash, avg_fee,           avg_fee_rate,
-        median_timestamp,   header,              coinbase_address,
+        median_timestamp,   header,              coinbase_address,  coinbase_addresses,
         coinbase_signature, utxoset_size,        utxoset_change,    avg_tx_size,
         total_inputs,       total_outputs,       total_input_amt,   total_output_amt,
         fee_percentiles,    segwit_total_txs,    segwit_total_size, segwit_total_weight,
@@ -125,7 +127,7 @@ class BlocksRepository {
         ?, ?, ?, ?,
         ?, ?, ?, ?,
         ?, ?, ?, ?,
-        FROM_UNIXTIME(?), ?, ?,
+        FROM_UNIXTIME(?), ?, ?, ?,
         ?, ?, ?, ?,
         ?, ?, ?, ?,
         ?, ?, ?, ?,
@@ -161,6 +163,7 @@ class BlocksRepository {
         block.mediantime,
         block.extras.header,
         block.extras.coinbaseAddress,
+        block.extras.coinbaseAddresses ? JSON.stringify(block.extras.coinbaseAddresses) : null,
         truncatedCoinbaseSignature,
         block.extras.utxoSetSize,
         block.extras.utxoSetChange,
@@ -529,7 +532,7 @@ class BlocksRepository {
         return null;
       }
 
-      return await this.formatDbBlockIntoExtendedBlock(rows[0] as DatabaseBlock);  
+      return await this.formatDbBlockIntoExtendedBlock(rows[0] as DatabaseBlock);
     } catch (e) {
       logger.err(`Cannot get indexed block ${height}. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
@@ -923,6 +926,25 @@ class BlocksRepository {
   }
 
   /**
+   * Get all indexed blocks with missing coinbase addresses
+   */
+  public async $getBlocksWithoutCoinbaseAddresses(): Promise<any> {
+    try {
+      const [blocks] = await DB.query(`
+        SELECT height, hash, coinbase_addresses
+        FROM blocks
+        WHERE coinbase_addresses IS NULL AND
+          coinbase_address IS NOT NULL
+        ORDER BY height DESC
+      `);
+      return blocks;
+    } catch (e) {
+      logger.err(`Cannot get blocks with missing coinbase addresses. Reason: ` + (e instanceof Error ? e.message : e));
+      return [];
+    }
+  }
+
+  /**
    * Save indexed median fee to avoid recomputing it later
    * 
    * @param id 
@@ -956,6 +978,44 @@ class BlocksRepository {
       );
     } catch (e) {
       logger.err(`Cannot update block fee stats. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Save coinbase addresses
+   * 
+   * @param id
+   * @param addresses
+   */
+  public async $saveCoinbaseAddresses(id: string, addresses: string[]): Promise<void> {
+    try {
+      await DB.query(`
+        UPDATE blocks SET coinbase_addresses = ?
+        WHERE hash = ?`,
+        [JSON.stringify(addresses), id]
+      );
+    } catch (e) {
+      logger.err(`Cannot update block coinbase addresses. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Save pool
+   * 
+   * @param id
+   * @param poolId
+   */
+  public async $savePool(id: string, poolId: number): Promise<void> {
+    try {
+      await DB.query(`
+        UPDATE blocks SET pool_id = ?
+        WHERE hash = ?`,
+        [poolId, id]
+      );
+    } catch (e) {
+      logger.err(`Cannot update block pool. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -999,6 +1059,7 @@ class BlocksRepository {
     extras.avgFeeRate = dbBlk.avgFeeRate;
     extras.coinbaseRaw = dbBlk.coinbaseRaw;
     extras.coinbaseAddress = dbBlk.coinbaseAddress;
+    extras.coinbaseAddresses = dbBlk.coinbaseAddresses ? JSON.parse(dbBlk.coinbaseAddresses) : [];
     extras.coinbaseSignature = dbBlk.coinbaseSignature;
     extras.coinbaseSignatureAscii = dbBlk.coinbaseSignatureAscii;
     extras.avgTxSize = dbBlk.avgTxSize;

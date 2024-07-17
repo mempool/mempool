@@ -249,4 +249,75 @@ export class PriceService {
       );
     }
   }
+
+  getPriceByBulk$(timestamps: number[], currency: string): Observable<Price[]> {
+    if (this.stateService.env.BASE_MODULE !== 'mempool' || !this.stateService.env.HISTORICAL_PRICE) {
+      return of([]);
+    }
+
+    const now = new Date().getTime() / 1000;
+
+    if (!this.priceObservable$ || (this.priceObservable$ && (now - this.lastPriceHistoryUpdate > 3600 || currency !== this.lastQueriedHistoricalCurrency || this.networkChangedSinceLastQuery))) {
+      this.priceObservable$ = this.apiService.getHistoricalPrice$(undefined, currency).pipe(shareReplay());
+      this.lastPriceHistoryUpdate = new Date().getTime() / 1000;
+      this.lastQueriedHistoricalCurrency = currency;
+      this.networkChangedSinceLastQuery = false;
+    }
+
+    return this.priceObservable$.pipe(
+      map((conversion) => {
+        if (!conversion) {
+          return undefined;
+        }
+
+        const historicalPrice = {
+          prices: {},
+          exchangeRates: conversion.exchangeRates,
+        };
+        for (const price of conversion.prices) {
+          historicalPrice.prices[price.time] = this.stateService.env.ADDITIONAL_CURRENCIES ? {
+            USD: price.USD, EUR: price.EUR, GBP: price.GBP, CAD: price.CAD, CHF: price.CHF, AUD: price.AUD, 
+            JPY: price.JPY, BGN: price.BGN, BRL: price.BRL, CNY: price.CNY, CZK: price.CZK, DKK: price.DKK,
+            HKD: price.HKD, HRK: price.HRK, HUF: price.HUF, IDR: price.IDR, ILS: price.ILS, INR: price.INR,
+            ISK: price.ISK, KRW: price.KRW, MXN: price.MXN, MYR: price.MYR, NOK: price.NOK, NZD: price.NZD,
+            PHP: price.PHP, PLN: price.PLN, RON: price.RON, RUB: price.RUB, SEK: price.SEK, SGD: price.SGD,
+            THB: price.THB, TRY: price.TRY, ZAR: price.ZAR
+          } : {
+            USD: price.USD, EUR: price.EUR, GBP: price.GBP, CAD: price.CAD, CHF: price.CHF, AUD: price.AUD, JPY: price.JPY
+          };
+        }
+        
+        const priceTimestamps = Object.keys(historicalPrice.prices).map(Number);
+        priceTimestamps.push(Number.MAX_SAFE_INTEGER);
+        priceTimestamps.sort((a, b) => b - a);
+
+        const prices: Price[] = [];
+
+        for (const timestamp of timestamps) {
+          let left = 0;
+          let right = priceTimestamps.length - 1;
+          let match = -1;
+
+          // Binary search to find the closest larger element
+          while (left <= right) {
+            const mid = Math.floor((left + right) / 2);
+            if (priceTimestamps[mid] > timestamp) {
+              match = mid;
+              left = mid + 1;
+            } else {
+              right = mid - 1;
+            }
+          }
+
+          if (match !== -1) {
+            const priceTimestamp = priceTimestamps[match];
+            prices.push({
+              price: historicalPrice.prices[priceTimestamp],
+              exchangeRates: historicalPrice.exchangeRates,
+            });
+          }
+        }
+        return prices;
+      }));
+  }
 }

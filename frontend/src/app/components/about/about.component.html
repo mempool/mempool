@@ -53,13 +53,26 @@
         <span>Spiral</span>
       </a>
       <a href="https://foundrydigital.com/" target="_blank" title="Foundry">
-        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="-10 -10 100 100" class="image">
-          <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-            <g transform="translate(-186.000000, -2316.000000)">
-              <g transform="translate(186.000000, 2316.000000)">
-                <rect id="" fill="#023D32" x="-10" y="-10" width="100" height="100" rx="8"></rect>
-                <path d="M61.6666667,9.16666667 L61.6666667,17.0041667 L46.2625,17.0041667 C46.2625,17.0041667 44.1666667,16.6666667 44.1666667,18.3333333 L44.1666667,25.8025 L61.6666667,25.8025 L61.6666667,34.7391667 L44.1666667,34.7391667 L44.1666667,70.5575 L31.7825,70.5575 L31.7825,35 L19.1666667,35 L19.1666667,25.595 L31.6666667,25.595 L31.6666667,17.5 C31.6666667,17.5 32.5,9.16666667 40.4166667,9.16666667 L61.6666667,9.16666667 Z" id="Fill-1" fill="#86E2A0"></path>
-              </g>
+        <svg xmlns="http://www.w3.org/2000/svg" id="b" data-name="Layer 2" style="zoom: 1;" width="32" height="76" viewBox="0 0 32 76">
+          <defs>
+            <style>
+              .d {
+                fill: #fff;
+              }
+
+              .e {
+                fill: #ff8200;
+              }
+            </style>
+          </defs>
+          <g id="c" data-name="b">
+            <circle class="e" cx="24" cy="32" r="8" />
+            <circle class="e" cx="24" cy="56" r="8" />
+            <circle class="e" cx="8" cy="68" r="8" />
+            <g>
+              <circle class="d" cx="24" cy="8" r="8" />
+              <circle class="d" cx="8" cy="20" r="8" />
+              <circle class="d" cx="8" cy="44" r="8" />
             </g>
           </g>
         </svg>
@@ -188,8 +201,8 @@
         <div class="wrapper">
           <ng-container>
             <ng-template ngFor let-sponsor [ngForOf]="profiles.whales">
-              <a [href]="'https://twitter.com/' + sponsor.username" target="_blank" rel="sponsored" [title]="sponsor.username">
-                <img class="image" [src]="'/api/v1/services/account/images/' + sponsor.username + '/md5=' + sponsor.imageMd5" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
+              <a [href]="'https://x.com/' + sponsor.username" target="_blank" rel="sponsored" [title]="sponsor.username">
+                <img class="image" [src]="'/api/v1/services/account/images/' + sponsor.username + '/md5=' + sponsor.imageMd5" onError="this.src = '/resources/profile/grumpy.svg'; this.className = 'image unknown'"/>
               </a>
             </ng-template>
           </ng-container>
@@ -200,8 +213,8 @@
         <h3 i18n="about.sponsors.withHeart">Chad Sponsors</h3>
         <div class="wrapper">
           <ng-template ngFor let-sponsor [ngForOf]="profiles.chads">
-            <a [href]="'https://twitter.com/' + sponsor.username" target="_blank" rel="sponsored" [title]="sponsor.username">
-              <img class="image" [src]="'/api/v1/services/account/images/' + sponsor.username + '/md5=' + sponsor.imageMd5" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
+            <a [href]="'https://x.com/' + sponsor.username" target="_blank" rel="sponsored" [title]="sponsor.username">
+              <img class="image" [src]="'/api/v1/services/account/images/' + sponsor.username + '/md5=' + sponsor.imageMd5" onError="this.src = '/resources/profile/grumpy.svg'; this.className = 'image unknown'"/>
             </a>
           </ng-template>
         </div>
@@ -213,8 +226,8 @@
     <h3 i18n="about.sponsors.withHeart">OG Sponsors ❤️</h3>
     <div class="wrapper">
       <ng-container *ngIf="ogs$ | async as ogs; else loadingSponsors">
-        <a *ngFor="let ogSponsor of ogs" [href]="'https://twitter.com/' + ogSponsor.handle" target="_blank" rel="sponsored" [title]="ogSponsor.handle">
-          <img class="image" [src]="'/api/v1/donations/images/' + ogSponsor.handle" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
+        <a *ngFor="let ogSponsor of ogs" [href]="'https://x.com/' + ogSponsor.handle" target="_blank" rel="sponsored" [title]="ogSponsor.handle">
+          <img class="image" [src]="'/api/v1/donations/images/' + ogSponsor.handle" onError="this.src = '/resources/profile/grumpy.svg'; this.className = 'image unknown'"/>
         </a>
       </ng-container>
     </div>
@@ -259,21 +272,9 @@
         <img class="image" src="/resources/profile/bisq_network.png" />
         <span>Bisq</span>
       </a>
-      <a href="https://github.com/BlueWallet/BlueWallet" target="_blank" title="BlueWallet">
-        <img class="image" src="/resources/profile/bluewallet.png" />
-        <span>BlueWallet</span>
-      </a>
-      <a href="https://github.com/muun/apollo" target="_blank" title="Muun Wallet">
-        <img class="image" src="/resources/profile/muun.png" />
-        <span>Muun</span>
-      </a>
       <a href="https://github.com/spesmilo/electrum" target="_blank" title="Electrum Wallet">
         <img class="image" src="/resources/profile/electrum.png" />
         <span>Electrum</span>
-      </a>
-      <a href="https://github.com/cryptoadvance/specter-desktop" target="_blank" title="Specter Wallet">
-        <img class="image" src="/resources/profile/specter.png" />
-        <span>Specter</span>
       </a>
       <a href="https://github.com/sparrowwallet/sparrow" target="_blank" title="Sparrow Wallet">
         <img class="image" src="/resources/profile/sparrow.png" />
@@ -283,21 +284,37 @@
         <img class="image not-rounded" src="/resources/profile/phoenix.svg" />
         <span>Phoenix</span>
       </a>
-      <a href="https://github.com/lnbits/lnbits-legend" target="_blank" title="LNbits">
-        <img class="image" src="/resources/profile/lnbits.svg" />
-        <span>LNBits</span>
+      <a href="http://github.com/COLDCARD" target="_blank" title="COLDCARD">
+        <img class="image coldcard" src="/resources/profile/coldcard.png" />
+        <span>COLDCARD</span>
       </a>
-      <a href="https://github.com/layer2tech/mercury-wallet" target="_blank" title="Mercury Wallet">
-        <img class="image" src="/resources/profile/mercury.svg" />
-        <span>Mercury</span>
+      <a href="https://github.com/ZeusLN/zeus" target="_blank" title="ZEUS">
+        <img class="image" src="/resources/profile/zeus.png" />
+        <span>ZEUS</span>
+      </a>
+      <a href="https://github.com/MutinyWallet" target="_blank" title="Mutiny">
+        <img class="image not-rounded" src="/resources/profile/mutiny.svg" />
+        <span>Mutiny</span>
       </a>
       <a href="https://github.com/hsjoberg/blixt-wallet" target="_blank" title="Blixt Wallet">
         <img class="image" src="/resources/profile/blixt.png" />
         <span>Blixt</span>
       </a>
-      <a href="https://github.com/ZeusLN/zeus" target="_blank" title="ZEUS">
-        <img class="image" src="/resources/profile/zeus.png" />
-        <span>ZEUS</span>
+      <a href="https://github.com/nunchuk-io" target="_blank" title="Nunchuck">
+        <img class="image" src="/resources/profile/nunchuk.svg" />
+        <span>Nunchuk</span>
+      </a>
+      <a href="https://github.com/BlueWallet/BlueWallet" target="_blank" title="BlueWallet">
+        <img class="image" src="/resources/profile/bluewallet.png" />
+        <span>BlueWallet</span>
+      </a>
+      <a href="https://github.com/BoltzExchange" target="_blank" title="Boltz">
+        <img class="image" src="/resources/profile/boltz.svg" />
+        <span>Boltz</span>
+      </a>
+      <a href="https://github.com/lnbits/lnbits-legend" target="_blank" title="LNbits">
+        <img class="image" src="/resources/profile/lnbits.svg" />
+        <span>LNBits</span>
       </a>
       <a href="https://github.com/vulpemventures/marina" target="_blank" title="Marina Wallet">
         <img class="image" src="/resources/profile/marina.svg" />
@@ -307,13 +324,9 @@
         <img class="image" src="/resources/profile/schildbach.svg" />
         <span>Schildbach</span>
       </a>
-      <a href="https://github.com/nunchuk-io" target="_blank" title="Nunchuck">
-        <img class="image" src="/resources/profile/nunchuk.svg" />
-        <span>Nunchuk</span>
-      </a>
-      <a href="https://github.com/bitcoin-s/bitcoin-s" target="_blank" title="bitcoin-s">
-        <img class="image" src="/resources/profile/bitcoin-s.svg" />
-        <span>bitcoin-s</span>
+      <a href="https://github.com/cryptoadvance/specter-desktop" target="_blank" title="Specter Wallet">
+        <img class="image" src="/resources/profile/specter.png" />
+        <span>Specter</span>
       </a>
       <a href="https://github.com/EdgeApp" target="_blank" title="Edge">
         <img class="image not-rounded" src="/resources/profile/edge.svg" />
@@ -323,13 +336,13 @@
         <img class="image" src="/resources/profile/galoy.svg" />
         <span>Galoy</span>
       </a>
-      <a href="https://github.com/BoltzExchange" target="_blank" title="Boltz">
-        <img class="image" src="/resources/profile/boltz.svg" />
-        <span>Boltz</span>
+      <a href="https://github.com/muun/apollo" target="_blank" title="Muun Wallet">
+        <img class="image" src="/resources/profile/muun.png" />
+        <span>Muun</span>
       </a>
-      <a href="https://github.com/MutinyWallet" target="_blank" title="Mutiny">
-        <img class="image not-rounded" src="/resources/profile/mutiny.svg" />
-        <span>Mutiny</span>
+      <a href="https://github.com/bitcoin-s/bitcoin-s" target="_blank" title="bitcoin-s">
+        <img class="image" src="/resources/profile/bitcoin-s.svg" />
+        <span>bitcoin-s</span>
       </a>
     </div>
   </div>
@@ -354,8 +367,8 @@
       <h3 i18n="about.translators">Project Translators</h3>
       <div class="wrapper">
         <ng-template ngFor let-translator [ngForOf]="translators">
-          <a [href]="'https://twitter.com/' + translator.value" target="_blank" [title]="translator.key">
-            <img class="image" [src]="'/api/v1/translators/images/' + translator.value" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
+          <a [href]="'https://x.com/' + translator.value" target="_blank" [title]="translator.key">
+            <img class="image" [src]="'/api/v1/translators/images/' + translator.value" onError="this.src = '/resources/profile/grumpy.svg'; this.className = 'image unknown'"/>
           </a>
         </ng-template>
       </div>
@@ -369,7 +382,7 @@
       <div class="wrapper">
         <ng-template ngFor let-contributor [ngForOf]="contributors.regular">
           <a [href]="'https://github.com/' + contributor.name" target="_blank" [title]="contributor.name">
-            <img class="image" [src]="'/api/v1/contributors/images/' + contributor.id" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
+            <img class="image" [src]="'/api/v1/contributors/images/' + contributor.id" onError="this.src = '/resources/profile/grumpy.svg'; this.className = 'image unknown'"/>
             <span>{{ contributor.name }}</span>
           </a>
         </ng-template>
@@ -381,7 +394,7 @@
       <div class="wrapper">
         <ng-template ngFor let-contributor [ngForOf]="contributors.core">
           <a [href]="'https://github.com/' + contributor.name" target="_blank" [title]="contributor.name" [class]="'project-member-avatar'">
-            <img class="image" [src]="'/api/v1/contributors/images/' + contributor.id" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
+            <img class="image" [src]="'/api/v1/contributors/images/' + contributor.id" onError="this.src = '/resources/profile/grumpy.svg'; this.className = 'image unknown'"/>
             <span>{{ contributor.name }}</span>
           </a>
         </ng-template>
@@ -392,11 +405,11 @@
   <div class="maintainers" id="project-maintainers">
     <h3 i18n="about.maintainers">Project Maintainers</h3>
     <div class="wrapper">
-        <a href="https://twitter.com/softsimon_" target="_blank" title="softsimon">
+        <a href="https://x.com/softsimon_" target="_blank" title="softsimon">
           <img class="image" src="/resources/profile/softsimon.jpg" />
           <span>softsimon</span>
         </a>
-        <a href="https://twitter.com/wiz" target="_blank" title="wiz">
+        <a href="https://x.com/wiz" target="_blank" title="wiz">
           <img class="image" src="/resources/profile/wiz.png" />
           <span>wiz</span>
         </a>

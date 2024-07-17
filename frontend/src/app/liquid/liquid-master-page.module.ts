@@ -35,8 +35,12 @@ const routes: Routes = [
         loadChildren: () => import('../components/about/about.module').then(m => m.AboutModule),
       },
       {
-        path: 'blocks',
+        path: 'blocks/:page',
         component: BlocksList,
+      },
+      {
+        path: 'blocks',
+        redirectTo: 'blocks/1',
       },
       {
         path: 'terms-of-service',
@@ -84,9 +88,13 @@ const routes: Routes = [
         ]
       },
       {
-        path: 'audit/pegs',
+        path: 'audit/pegs/:page',
         data: { networks: ['liquid'] },
         component: RecentPegsListComponent,
+      },
+      {
+        path: 'audit/pegs',
+        redirectTo: 'audit/pegs/1'
       },
       {
         path: 'assets',

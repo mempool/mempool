@@ -166,7 +166,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
 
   .explainer {
     margin: 0 1em;
@@ -178,6 +178,15 @@
   font-size: clamp(30px, 20vw, 150px);
 }
 
+.status-panel {
+  &.small-status {
+    min-height: 180px;
+    .progress-icon {
+      font-size: clamp(20px, 13vw, 100px);
+    }
+  }
+}
+
 .footer-link {
   display: flex;
   flex-direction: row;
@@ -187,4 +196,12 @@
   padding: 0.5em;
   background: var(--primary);
   color: white;
+  cursor: pointer;
+}
+
+.alert-replaced {
+  background: var(--danger);
+  margin: 1em 0.5em;
+  padding: 0.5em;
+  border-radius: 0.5em;
 }

@@ -1,8 +1,14 @@
+@if (chartOnly) {
+  <ng-container *ngTemplateOutlet="pieChart"></ng-container>
+} @else {
 <table>
   <tbody>
     <tr>
-      <td class="td-width" i18n="transaction.accelerated-to-feerate|Accelerated to feerate">Accelerated to</td>
-      <td>
+      <td class="td-width field-label" [class]="chartPositionLeft ? 'chart-left' : ''" i18n="transaction.accelerated-to-feerate|Accelerated to feerate">Accelerated to</td>
+      <td class="pie-chart" rowspan="2" *ngIf="chartPositionLeft">
+        <ng-container *ngTemplateOutlet="pieChart"></ng-container>
+      </td>
+      <td class="field-value" [class]="chartPositionLeft ? 'chart-left' : ''">
         <div class="effective-fee-container">
           @if (accelerationInfo?.acceleratedFeeRate && (!tx.effectiveFeePerVsize || accelerationInfo.acceleratedFeeRate >= tx.effectiveFeePerVsize)) {
             <app-fee-rate [fee]="accelerationInfo.acceleratedFeeRate"></app-fee-rate>
@@ -11,25 +17,50 @@
           }
         </div>
       </td>
-      <td rowspan="2" *ngIf="tx && (tx.acceleratedBy || accelerationInfo) && miningStats" class="text-right" style="width: 100%;">
-        <div class="chart-container" style="width: 100px; margin-left:auto;">
-          <div
-            echarts
-            *browserOnly
-            class="chart"
-            [initOpts]="chartInitOptions"
-            [options]="chartOptions"
-            style="height: 72px"
-            (chartInit)="onChartInit($event)"
-          ></div>
+      <td class="pie-chart" rowspan="2" *ngIf="!chartPositionLeft">
+        <div class="d-flex justify-content-between align-items-start">
+          @if (hasCpfp) {
+            <button type="button" class="btn btn-outline-info btn-sm btn-small-height float-right mt-0" (click)="onToggleCpfp()">CPFP <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></button>
+          }
+          <ng-container *ngTemplateOutlet="pieChart"></ng-container>
         </div>
       </td>
     </tr>
     <tr>
-      <td class="td-width" i18n="transaction.accelerated-by-hashrate|Accelerated to hashrate">Accelerated by</td>
-      <td *ngIf="acceleratedByPercentage">
-        {{ acceleratedByPercentage }} <span class="symbol">of hashrate</span>
+      <td class="td-width field-label" i18n="transaction.accelerated-by-hashrate|Accelerated to hashrate">Accelerated by</td>
+      <td class="field-value" *ngIf="acceleratedByPercentage">
+        <ng-container i18n="accelerator.x-of-hash-rate">{{ acceleratedByPercentage }} <span class="symbol hashrate-label">of hashrate</span></ng-container>
       </td>
     </tr>
+    @if (hasCpfp && chartPositionLeft) {
+      <tr>
+        <td colspan="3" class="pt-0">
+          <div class="d-flex justify-content-end align-items-start">
+            <button type="button" class="btn btn-outline-info btn-sm btn-small-height float-right mt-0" (click)="onToggleCpfp()">CPFP <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></button>
+          </div>
+        </td>
+      </tr>
+    }
   </tbody>
 </table>
+}
+
+<ng-template #pieChart>
+  <div class="chart-container">
+    @if (chartOptions && miningStats) {
+      <div
+        echarts
+        *browserOnly
+        class="chart"
+        [initOpts]="chartInitOptions"
+        [options]="chartOptions"
+        style="height: 72px; width: 72px;"
+        (chartInit)="onChartInit($event)"
+      ></div>
+    } @else {
+      <div class="chart-loading">
+        <div class="spinner-border text-light"></div>
+      </div>
+    }
+  </div>
+</ng-template>

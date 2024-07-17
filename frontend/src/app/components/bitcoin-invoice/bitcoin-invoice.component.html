@@ -1,0 +1,99 @@
+<div class="wrapper">
+
+  @if (!minimal) {
+    <span *ngIf="paymentStatus === 3" class="valid-feedback d-block mt-5">
+      Payment successful. You can close this page.
+    </span>
+
+    <span *ngIf="paymentStatus === 4" class="valid-feedback d-block mt-5">
+      A transaction <a [href]="'/tx/' + invoice.cryptoInfo[0].payments[0].id.split('-')[0]">has been detected in the mempool</a> fully paying for this invoice. Waiting for on-chain confirmation.
+    </span>
+  }
+
+  <div *ngIf="paymentStatus === 2">
+    
+    <form [formGroup]="paymentForm">
+
+      <div *ngIf="availableMethods.length > 1" class="form-group">
+        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+          <!-- <label *ngIf="invoice.addresses.BTC" class="btn btn-primary" [ngClass]="{'active': paymentForm.get('method')?.value === 'chain'}">
+            <input type="radio" value="chain" formControlName="method"> <fa-icon [icon]="['fas', 'link']" [fixedWidth]="true" title="Onchain"></fa-icon>
+          </label> -->
+          <label *ngIf="invoice.addresses.BTC_LightningLike" class="btn btn-primary" [ngClass]="{'active': paymentForm.get('method')?.value === 'lightning'}">
+            <input type="radio" value="lightning" formControlName="method"> <fa-icon [icon]="['fas', 'bolt']" [fixedWidth]="true" title="Lightning"></fa-icon>
+          </label>
+          <!-- <label *ngIf="invoice.addresses.LBTC" class="btn btn-primary" [ngClass]="{'active': paymentForm.get('method')?.value === 'lbtc'}">
+            <input type="radio" value="lbtc" formControlName="method"> <fa-icon [icon]="['fas', 'tint']" [fixedWidth]="true" title="Liquid Bitcoin"></fa-icon>
+          </label> -->
+        </div>
+      </div>
+
+    </form>
+
+    <ng-template [ngIf]="paymentForm.get('method')?.value === 'chain' && invoice">
+
+        <div class="qr-wrapper" [class.mt-0]="minimal">
+          <a [href]="bypassSecurityTrustUrl('bitcoin:' + invoice.addresses.BTC + '?amount=' + invoice.btcDue)" target="_blank">
+              <app-qrcode imageUrl="/resources/bitcoin-logo.png" [size]="200" [data]="'bitcoin:' + invoice.addresses.BTC + '?amount=' + invoice.btcDue"></app-qrcode>
+          </a>
+        </div>
+
+        <div class="input-group input-group-sm info-group">
+          <input type="text" class="form-control input-dark" readonly [value]="invoice.addresses.BTC">
+          <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="button" ><app-clipboard [text]="invoice.addresses.BTC"></app-clipboard></button>
+          </div>
+        </div>
+        @if (!minimal) {
+          <p>{{ invoice.btcDue | number: '1.0-8' }} <span class="symbol">BTC</span></p>
+        }
+
+    </ng-template>
+
+    <ng-template [ngIf]="paymentForm.get('method')?.value === 'lightning' && invoice && invoice.addresses.BTC_LightningLike">
+
+        <div class="qr-wrapper" [class.mt-0]="minimal">
+          <a [href]="bypassSecurityTrustUrl('lightning:' + invoice.addresses.BTC_LightningLike)" target="_blank">
+              <app-qrcode imageUrl="/resources/lightning-logo.png" [size]="200" [data]="invoice.addresses.BTC_LightningLike.toUpperCase()"></app-qrcode>
+          </a>
+        </div>
+
+        <div class="input-group input-group-sm info-group">
+          <input type="text" class="form-control input-dark" readonly [value]="invoice.addresses.BTC_LightningLike">
+          <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="button"><app-clipboard [text]="invoice.addresses.BTC_LightningLike"></app-clipboard></button>
+          </div>
+        </div>
+
+        @if (!minimal) {
+          <p>{{ invoice.btcDue * 100_000_000 | number: '1.0-0' }} <span class="symbol">sats</span></p>
+        }
+
+    </ng-template>
+
+    <ng-template [ngIf]="invoice && (paymentForm.get('method')?.value === 'lbtc' || paymentForm.get('method')?.value === 'tlbtc')">
+
+        <div class="qr-wrapper" [class.mt-0]="minimal">
+          <a [href]="bypassSecurityTrustUrl('liquidnetwork:' + invoice.addresses.LBTC + '?amount=' + invoice.btcDue + '&assetid=6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d')" target="_blank">
+              <app-qrcode imageUrl="/resources/liquid-bitcoin.png" [size]="200" [data]="'liquidnetwork:' + invoice.addresses.LBTC + '?amount=' + invoice.btcDue + '&assetid=6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d'"></app-qrcode>
+          </a>
+        </div>
+        <br>
+        <div class="input-group input-group-sm info-group">
+          <input type="text" class="form-control input-dark" readonly [value]="invoice.addresses.LBTC" />
+          <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="button" ><app-clipboard [text]="invoice.addresses.LBTC"></app-clipboard></button>
+          </div>
+        </div>
+        @if (!minimal) {
+          <p>{{ invoice.btcDue | number: '1.0-8' }} <span class="symbol">BTC</span></p>
+        }
+
+    </ng-template>
+
+    @if (!minimal) {
+      <p>Waiting for transaction... </p>
+      <div class="spinner-border text-light"></div>
+    }
+  </div>
+</div>

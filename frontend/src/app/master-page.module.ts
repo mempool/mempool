@@ -33,6 +33,10 @@ const routes: Routes = [
         component: PushTransactionComponent,
       },
       {
+        path: 'pushtx',
+        component: PushTransactionComponent,
+      },
+      {
         path: 'tx/test',
         component: TestTransactionsComponent,
       },
@@ -41,8 +45,12 @@ const routes: Routes = [
         loadChildren: () => import('./components/about/about.module').then(m => m.AboutModule),
       },
       {
-        path: 'blocks',
+        path: 'blocks/:page',
         component: BlocksList,
+      },
+      {
+        path: 'blocks',
+        redirectTo: 'blocks/1',
       },
       {
         path: 'rbf',

@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRe
 import { Subscription, Observable, of, combineLatest } from 'rxjs';
 import { MempoolBlock } from '../../interfaces/websocket.interface';
 import { StateService } from '../../services/state.service';
+import { EtaService } from '../../services/eta.service';
 import { Router } from '@angular/router';
 import { delay, filter, map, switchMap, tap } from 'rxjs/operators';
 import { feeLevels } from '../../app.constants';
@@ -89,6 +90,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private router: Router,
     public stateService: StateService,
+    private etaService: EtaService,
     private themeService: ThemeService,
     private cd: ChangeDetectorRef,
     private relativeUrlPipe: RelativeUrlPipe,
@@ -410,7 +412,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   calculateTransactionPosition() {
-    if ((!this.txPosition && !this.txFeePerVSize && (this.markIndex === undefined || this.markIndex === -1)) || !this.mempoolBlocks) {
+    if ((!this.txPosition && !this.txFeePerVSize && (this.markIndex === undefined || this.markIndex === -1)) || !this.mempoolBlocks?.length) {
       this.arrowVisible = false;
       return;
     } else if (this.markIndex > -1) {
@@ -437,34 +439,9 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
         this.rightPosition = positionOfBlock + positionInBlock;
       }
     } else {
-      let found = false;
-      for (let txInBlockIndex = 0; txInBlockIndex < this.mempoolBlocks.length && !found; txInBlockIndex++) {
-        const block = this.mempoolBlocks[txInBlockIndex];
-        for (let i = 0; i < block.feeRange.length - 1 && !found; i++) {
-          if (this.txFeePerVSize < block.feeRange[i + 1] && this.txFeePerVSize >= block.feeRange[i]) {
-            const feeRangeIndex = i;
-            const feeRangeChunkSize = 1 / (block.feeRange.length - 1);
-
-            const txFee = this.txFeePerVSize - block.feeRange[i];
-            const max = block.feeRange[i + 1] - block.feeRange[i];
-            const blockLocation = txFee / max;
-
-            const chunkPositionOffset = blockLocation * feeRangeChunkSize;
-            const feePosition = feeRangeChunkSize * feeRangeIndex + chunkPositionOffset;
-
-            const blockedFilledPercentage = (block.blockVSize > this.stateService.blockVSize ? this.stateService.blockVSize : block.blockVSize) / this.stateService.blockVSize;
-            const arrowRightPosition = txInBlockIndex * (this.blockWidth + this.blockPadding)
-              + ((1 - feePosition) * blockedFilledPercentage * this.blockWidth);
-
-            this.rightPosition = arrowRightPosition;
-            found = true;
-          }
-        }
-        if (this.txFeePerVSize >= block.feeRange[block.feeRange.length - 1]) {
-          this.rightPosition = txInBlockIndex * (this.blockWidth + this.blockPadding);
-          found = true;
-        }
-      }
+      const estimatedPosition = this.etaService.mempoolPositionFromFees(this.txFeePerVSize, this.mempoolBlocks);
+      this.rightPosition = estimatedPosition.block * (this.blockWidth + this.blockPadding)
+        + ((estimatedPosition.vsize / this.stateService.blockVSize) * this.blockWidth)
     }
     this.rightPosition = Math.min(this.maxArrowPosition, this.rightPosition);
   }

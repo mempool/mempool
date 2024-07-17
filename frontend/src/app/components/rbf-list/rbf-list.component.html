@@ -15,7 +15,7 @@
 
   <div class="clearfix"></div>
 
-  <div class="rbf-trees" style="min-height: 295px">
+  <div class="rbf-trees" [ngStyle]="{ 'min-height': '295px', 'opacity': isLoading ? '0.75' : '1' }">
     <ng-container *ngIf="rbfTrees$ | async as trees">
       <div *ngFor="let tree of trees" class="tree">
         <p class="info">
@@ -23,7 +23,7 @@
             <span *ngIf="tree.mined" class="badge badge-success" i18n="transaction.rbf.mined">Mined</span>
             <span *ngIf="tree.fullRbf" class="badge badge-info" i18n="transaction.full-rbf">Full RBF</span>
           </span>
-          <app-time kind="since" [time]="tree.time"></app-time>
+          <app-time kind="since" [time]="tree.time" [showTooltip]="true"></app-time>
         </p>
         <div class="timeline-wrapper" [class.mined]="tree.mined">
           <app-rbf-timeline [replacements]="tree"></app-rbf-timeline>

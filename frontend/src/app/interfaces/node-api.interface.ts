@@ -30,6 +30,7 @@ export interface CpfpInfo {
   adjustedVsize?: number;
   acceleration?: boolean;
   acceleratedBy?: number[];
+  acceleratedAt?: number;
 }
 
 export interface RbfInfo {
@@ -140,7 +141,7 @@ export interface SinglePoolStats {
   emptyBlocks: number;
   rank: number;
   share: number;
-  lastEstimatedHashrate: string;
+  lastEstimatedHashrate: number;
   emptyBlockRatio: string;
   logo: string;
   slug: string;
@@ -249,6 +250,11 @@ export interface MempoolPosition {
   vsize: number,
   accelerated?: boolean,
   acceleratedBy?: number[],
+}
+
+export interface AccelerationPosition extends MempoolPosition {
+  poolId: number;
+  offset?: number;
 }
 
 export interface RewardStats {
@@ -405,7 +411,7 @@ export interface Acceleration {
 }
 
 export interface AccelerationHistoryParams {
-  status?: string;
+  status?: string; // Single status or comma separated list of status
   timeframe?: string;
   poolUniqueId?: number;
   blockHash?: string;

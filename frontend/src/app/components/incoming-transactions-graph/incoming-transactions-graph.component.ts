@@ -249,12 +249,13 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
         }
       ],
       yAxis: {
-        max: (value) => {
-          if (!this.outlierCappingEnabled || value.max < this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER) {
-            return undefined;
-          } else {
-            return Math.round(this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER);
+        max: (value): number => {
+          let cappedMax = value.max;
+          if (this.outlierCappingEnabled && value.max >= (this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER)) {
+            cappedMax = Math.round(this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER);
           }
+          // always show the clearing rate line, plus a small margin
+          return Math.max(1800, cappedMax);
         },
         type: 'value',
         axisLabel: {

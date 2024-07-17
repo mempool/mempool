@@ -21,6 +21,7 @@ export interface Transaction {
   cpfpChecked?: boolean;
   acceleration?: boolean;
   acceleratedBy?: number[];
+  acceleratedAt?: number;
   deleteAfter?: number;
   _unblinded?: any;
   _deduced?: boolean;
@@ -156,6 +157,7 @@ export interface AddressTxSummary {
   value: number;
   height: number;
   time: number;
+  price?: number;
 }
 
 export interface ChainStats {

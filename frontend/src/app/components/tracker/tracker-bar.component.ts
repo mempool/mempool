@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 
-export type TrackerStage = 'waiting' | 'pending' | 'soon' | 'next' | 'confirmed';
+export type TrackerStage = 'waiting' | 'pending' | 'soon' | 'next' | 'confirmed' | 'replaced';
 
 @Component({
   selector: 'app-tracker-bar',

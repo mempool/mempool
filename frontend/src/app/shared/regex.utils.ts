@@ -1,14 +1,14 @@
 import { Env } from '../services/state.service';
 
 // all base58 characters
-const BASE58_CHARS = `[a-km-zA-HJ-NP-Z1-9]`;
+export const BASE58_CHARS = `[a-km-zA-HJ-NP-Z1-9]`;
 
 // all bech32 characters (after the separator)
-const BECH32_CHARS_LW = `[ac-hj-np-z02-9]`;
+export const BECH32_CHARS_LW = `[ac-hj-np-z02-9]`;
 const BECH32_CHARS_UP = `[AC-HJ-NP-Z02-9]`;
 
 // Hex characters
-const HEX_CHARS = `[a-fA-F0-9]`;
+export const HEX_CHARS = `[a-fA-F0-9]`;
 
 // A regex to say "A single 0 OR any number with no leading zeroes"
 // Capped at 9 digits so as to not be confused with lightning channel IDs (which are around 17 digits)
@@ -41,11 +41,11 @@ const ADDRESS_CHARS: {
     bech32: `(?:`
         + `bc1` // Starts with bc1
         + BECH32_CHARS_LW
-        + `{20,100}` // As per bech32, 6 char checksum is minimum
+        + `{6,100}` // As per bech32, 6 char checksum is minimum
       + `|`
         + `BC1` // All upper case version
         + BECH32_CHARS_UP
-        + `{20,100}`
+        + `{6,100}`
       + `)`,
   },
   testnet: {
@@ -55,11 +55,11 @@ const ADDRESS_CHARS: {
     bech32: `(?:`
         + `tb1` // Starts with tb1
         + BECH32_CHARS_LW
-        + `{20,100}` // As per bech32, 6 char checksum is minimum
+        + `{6,100}` // As per bech32, 6 char checksum is minimum
       + `|`
         + `TB1` // All upper case version
         + BECH32_CHARS_UP
-        + `{20,100}`
+        + `{6,100}`
       + `)`,
   },
   testnet4: {
@@ -69,11 +69,11 @@ const ADDRESS_CHARS: {
     bech32: `(?:`
         + `tb1` // Starts with tb1
         + BECH32_CHARS_LW
-        + `{20,100}` // As per bech32, 6 char checksum is minimum
+        + `{6,100}` // As per bech32, 6 char checksum is minimum
       + `|`
         + `TB1` // All upper case version
         + BECH32_CHARS_UP
-        + `{20,100}`
+        + `{6,100}`
       + `)`,
   },
   signet: {
@@ -83,11 +83,11 @@ const ADDRESS_CHARS: {
     bech32: `(?:`
         + `tb1` // Starts with tb1
         + BECH32_CHARS_LW
-        + `{20,100}`
+        + `{6,100}`
       + `|`
         + `TB1` // All upper case version
         + BECH32_CHARS_UP
-        + `{20,100}`
+        + `{6,100}`
       + `)`,
   },
   liquid: {
@@ -105,7 +105,7 @@ const ADDRESS_CHARS: {
           + `lq1`
         + `)`
         + BECH32_CHARS_LW // blech32 and bech32 are the same alphabet and protocol, different checksums.
-        + `{20,100}`
+        + `{6,100}`
       + `|`
         + `(?:` // Same as above but all upper case
           + `EX1`
@@ -113,7 +113,7 @@ const ADDRESS_CHARS: {
           + `LQ1`
         + `)`
         + BECH32_CHARS_UP
-        + `{20,100}`
+        + `{6,100}`
       + `)`,
   },
   liquidtestnet: {
@@ -127,7 +127,7 @@ const ADDRESS_CHARS: {
           + `tlq1` // TODO: does this exist?
         + `)`
         + BECH32_CHARS_LW // blech32 and bech32 are the same alphabet and protocol, different checksums.
-        + `{20,100}`
+        + `{6,100}`
       + `|`
         + `(?:` // Same as above but all upper case
           + `TEX1`
@@ -135,7 +135,7 @@ const ADDRESS_CHARS: {
           + `TLQ1`
         + `)`
         + BECH32_CHARS_UP
-        + `{20,100}`
+        + `{6,100}`
       + `)`,
   },
 }

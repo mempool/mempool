@@ -1,7 +1,7 @@
 import blocks from '../api/blocks';
 import DB from '../database';
 import logger from '../logger';
-import { BlockAudit, AuditScore } from '../mempool.interfaces';
+import { BlockAudit, AuditScore, TransactionAudit } from '../mempool.interfaces';
 
 class BlocksAuditRepositories {
   public async $saveAudit(audit: BlockAudit): Promise<void> {
@@ -94,6 +94,41 @@ class BlocksAuditRepositories {
       return null;
     } catch (e: any) {
       logger.err(`Cannot fetch block audit from db. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  public async $getBlockTxAudit(hash: string, txid: string): Promise<TransactionAudit | null> {
+    try {
+      const blockAudit = await this.$getBlockAudit(hash);
+      
+      if (blockAudit) {
+        const isAdded = blockAudit.addedTxs.includes(txid);
+        const isPrioritized = blockAudit.prioritizedTxs.includes(txid);
+        const isAccelerated = blockAudit.acceleratedTxs.includes(txid);
+        const isConflict = blockAudit.fullrbfTxs.includes(txid);
+        let isExpected = false;
+        let firstSeen = undefined;
+        blockAudit.template?.forEach(tx => {
+          if (tx.txid === txid) {
+            isExpected = true;
+            firstSeen = tx.time;
+          }
+        });
+
+        return {
+          seen: isExpected || isPrioritized || isAccelerated,
+          expected: isExpected,
+          added: isAdded,
+          prioritized: isPrioritized,
+          conflict: isConflict,
+          accelerated: isAccelerated,
+          firstSeen,
+        }
+      }
+      return null;
+    } catch (e: any) {
+      logger.err(`Cannot fetch block transaction audit from db. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }

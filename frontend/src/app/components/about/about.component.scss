@@ -10,9 +10,6 @@
     margin: 25px;
     line-height: 32px;
   }
-  .unknown {
-    border: 1px solid #b4b4b4;
-  }
 
   .image.not-rounded {
     border-radius: 0;
@@ -159,6 +156,12 @@
         }
         img, svg {
           margin: 40px 29px 10px;
+          &.image.coldcard {
+            border-radius: 0;
+            width: auto;
+            max-height: 50px;
+            margin: 40px 29px 14px 29px;
+          }
         }
       }
     }

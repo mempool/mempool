@@ -23,14 +23,23 @@
 
       <ng-container *ngIf="userMenuGroups$ | async as menuGroups">
         <div class="menu-click" *ngFor="let group of menuGroups" style="height: max-content;">
-          <h6 class="d-flex justify-content-between align-items-center mt-4 mb-2 text-uppercase menu-click">
-            <span class="menu-click">{{ group.title }}</span>
-          </h6>
+          @if (menuGroups.length > 1) {
+            <h6 class="d-flex justify-content-between align-items-center mt-4 mb-2 text-uppercase menu-click">
+              <span class="menu-click">{{ group.title }}</span>
+            </h6>
+          } @else {
+            <span class="d-block mt-2"></span>
+          }
           <ul class="nav flex-column menu-click" *ngFor="let item of group.items" (click)="onLinkClick(item.link)">
             <li class="nav-item d-flex justify-content-start align-items-center menu-click">
               <fa-icon class="menu-click" [icon]="['fas', item.faIcon]" [fixedWidth]="true"></fa-icon>
               <button *ngIf="item.link === 'logout'" class="btn nav-link menu-click" role="tab" (click)="logout()">{{ item.title }}</button>
-              <a *ngIf="item.title !== 'Logout'" class="nav-link menu-click" [routerLink]="[item.link]" role="tab">{{ item.title }}</a>
+              <a *ngIf="item.title !== 'Logout'" class="nav-link menu-click" [routerLink]="[item.link]" role="tab">
+                {{ item.title }}
+                @if (item.isExternal === true) {
+                  <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="margin-left: 5px; font-size: 13px; color: lightgray"></fa-icon>
+                }
+              </a>
             </li>
           </ul>
         </div>

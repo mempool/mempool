@@ -5,6 +5,7 @@ import { StorageService } from '../../services/storage.service';
 import { Router, NavigationStart } from '@angular/router';
 import { StateService } from '../../services/state.service';
 import { IUser, ServicesApiServices } from '../../services/services-api.service';
+import { AuthServiceMempool } from '../../services/auth.service';
 
 @Component({
   selector: 'app-menu',
@@ -26,7 +27,8 @@ export class MenuComponent implements OnInit, OnDestroy {
     private servicesApiServices: ServicesApiServices,
     private storageService: StorageService,
     private router: Router,
-    private stateService: StateService
+    private stateService: StateService,
+    private authService: AuthServiceMempool
   ) {}
 
   ngOnInit(): void {
@@ -61,12 +63,19 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.loggedOut.emit(true);
       if (this.stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE) {
         this.userMenuGroups$ = this.servicesApiServices.getUserMenuGroups$();
-        this.router.navigateByUrl('/');
+        this.authService.logout();
+        if (window.location.toString().includes('services')) {
+          this.router.navigateByUrl('/login');
+        }
       }
     });
   }
 
   onLinkClick(link) {
+    if (link === 'logout') {
+      this.toggleMenu(false);
+      return;
+    }
     if (!this.isServicesPage || this.isSmallScreen()) {
       this.toggleMenu(false);
     }

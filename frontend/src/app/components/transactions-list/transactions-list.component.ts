@@ -48,6 +48,8 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   transactionsLength: number = 0;
   inputRowLimit: number = 12;
   outputRowLimit: number = 12;
+  showFullScript: { [vinIndex: number]: boolean } = {};
+  showFullWitness: { [vinIndex: number]: { [witnessIndex: number]: boolean } } = {};
 
   constructor(
     public stateService: StateService,
@@ -148,7 +150,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       this.transactions.forEach((tx) => {
         if (!this.blockTime) {
           if (tx.status.block_time) {
-            this.priceService.getBlockPrice$(tx.status.block_time, confirmedTxs < 10, this.currency).pipe(
+            this.priceService.getBlockPrice$(tx.status.block_time, confirmedTxs < 3, this.currency).pipe(
               tap((price) => tx['price'] = price),
             ).subscribe();
           }
@@ -233,7 +235,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
         }
 
         if (!this.blockTime && tx.status.block_time && this.currency) {
-          this.priceService.getBlockPrice$(tx.status.block_time, confirmedTxs < 10, this.currency).pipe(
+          this.priceService.getBlockPrice$(tx.status.block_time, confirmedTxs < 3, this.currency).pipe(
             tap((price) => tx['price'] = price),
           ).subscribe();
         }
@@ -300,7 +302,17 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   toggleDetails(): void {
     if (this.showDetails$.value === true) {
       this.showDetails$.next(false);
+      this.showFullScript = {};
+      this.showFullWitness = {};
     } else {
+      this.showFullScript = this.transactions[0] ? this.transactions[0].vin.reduce((acc, _, i) => ({...acc, [i]: false}), {}) : {};
+      this.showFullWitness = this.transactions[0] ? this.transactions[0].vin.reduce((acc, vin, vinIndex) => {
+        acc[vinIndex] = vin.witness ? vin.witness.reduce((witnessAcc, _, witnessIndex) => {
+          witnessAcc[witnessIndex] = false;
+          return witnessAcc;
+        }, {}) : {};
+        return acc;
+      }, {}) : {};
       this.showDetails$.next(true);
     }
   }
@@ -350,6 +362,14 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       limit = tx.vout.length;
     }
     return limit;
+  }
+
+  toggleShowFullScript(vinIndex: number): void {
+    this.showFullScript[vinIndex] = !this.showFullScript[vinIndex];
+  }
+
+  toggleShowFullWitness(vinIndex: number, witnessIndex: number): void {
+    this.showFullWitness[vinIndex][witnessIndex] = !this.showFullWitness[vinIndex][witnessIndex];
   }
 
   ngOnDestroy(): void {

@@ -1,9 +1,20 @@
-import { Component, ChangeDetectionStrategy, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input, Output, OnChanges, SimpleChanges, EventEmitter } from '@angular/core';
 import { Transaction } from '../../../interfaces/electrs.interface';
 import { Acceleration, SinglePoolStats } from '../../../interfaces/node-api.interface';
 import { EChartsOption, PieSeriesOption } from '../../../graphs/echarts';
 import { MiningStats } from '../../../services/mining.service';
 
+function lighten(color, p): { r, g, b } {
+  return {
+    r: color.r + ((255 - color.r) * p),
+    g: color.g + ((255 - color.g) * p),
+    b: color.b + ((255 - color.b) * p),
+  };
+}
+
+function toRGB({r,g,b}): string {
+  return `rgb(${r},${g},${b})`;
+}
 
 @Component({
   selector: 'app-active-acceleration-box',
@@ -15,10 +26,15 @@ export class ActiveAccelerationBox implements OnChanges {
   @Input() tx: Transaction;
   @Input() accelerationInfo: Acceleration;
   @Input() miningStats: MiningStats;
+  @Input() pools: number[];
+  @Input() hasCpfp: boolean = false;
+  @Input() chartOnly: boolean = false;
+  @Input() chartPositionLeft: boolean = false;
+  @Output() toggleCpfp = new EventEmitter();
 
   acceleratedByPercentage: string = '';
 
-  chartOptions: EChartsOption = {};
+  chartOptions: EChartsOption;
   chartInitOptions = {
     renderer: 'svg',
   };
@@ -28,75 +44,52 @@ export class ActiveAccelerationBox implements OnChanges {
   constructor() {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.tx && (this.tx.acceleratedBy || this.accelerationInfo) && this.miningStats) {
-      this.prepareChartOptions();
+    const pools = this.pools || this.accelerationInfo?.pools || this.tx.acceleratedBy;
+    if (pools && this.miningStats) {
+      this.prepareChartOptions(pools);
     }
   }
 
-  getChartData() {
+  getChartData(poolList: number[]) {
     const data: object[] = [];
     const pools: { [id: number]: SinglePoolStats } = {};
     for (const pool of this.miningStats.pools) {
       pools[pool.poolUniqueId] = pool;
     }
 
-    const getDataItem = (value, color, tooltip) => ({
+    const getDataItem = (value, color, tooltip, emphasis) => ({
       value,
+      name: tooltip,
       itemStyle: {
         color,
-        borderColor: 'rgba(0,0,0,0)',
-        borderWidth: 1,
       },
-      avoidLabelOverlap: false,
-      label: {
-        show: false,
-      },
-      labelLine: {
-        show: false
-      },
-      emphasis: {
-        disabled: true,
-      },
-      tooltip: {
-        show: true,
-        backgroundColor: 'rgba(17, 19, 31, 1)',
-        borderRadius: 4,
-        shadowColor: 'rgba(0, 0, 0, 0.5)',
-        textStyle: {
-          color: 'var(--tooltip-grey)',
-        },
-        borderColor: '#000',
-        formatter: () => {
-          return tooltip;
-        }
-      }
     });
 
-    let totalAcceleratedHashrate = 0;
-    for (const poolId of (this.accelerationInfo?.pools || this.tx.acceleratedBy || [])) {
+    const acceleratingPools = (poolList || []).filter(id => pools[id]).sort((a,b) => pools[a].lastEstimatedHashrate - pools[b].lastEstimatedHashrate);
+    const totalAcceleratedHashrate = acceleratingPools.reduce((total, pool) => total + pools[pool].lastEstimatedHashrate, 0);
+    acceleratingPools.forEach((poolId, index) => {
       const pool = pools[poolId];
-      if (!pool) {
-        continue;
-      }
-      totalAcceleratedHashrate += parseFloat(pool.lastEstimatedHashrate);
-    }
-    this.acceleratedByPercentage = ((totalAcceleratedHashrate / parseFloat(this.miningStats.lastEstimatedHashrate)) * 100).toFixed(1) + '%';
+      const poolShare = ((pool.lastEstimatedHashrate / this.miningStats.lastEstimatedHashrate) * 100).toFixed(1);
+      data.push(getDataItem(
+        pool.lastEstimatedHashrate,
+        toRGB(lighten({ r: 147, g: 57, b: 244 }, index * .08)),
+        `<b style="color: white">${pool.name} (${poolShare}%)</b>`,
+        true,
+      ) as PieSeriesOption);
+    })
+    this.acceleratedByPercentage = ((totalAcceleratedHashrate / this.miningStats.lastEstimatedHashrate) * 100).toFixed(1) + '%';
+    const notAcceleratedByPercentage = ((1 - (totalAcceleratedHashrate / this.miningStats.lastEstimatedHashrate)) * 100).toFixed(1) + '%';
     data.push(getDataItem(
-      totalAcceleratedHashrate,
-      'var(--tertiary)',
-      `${this.acceleratedByPercentage} accelerating`,
-    ) as PieSeriesOption);
-    const notAcceleratedByPercentage = ((1 - (totalAcceleratedHashrate / parseFloat(this.miningStats.lastEstimatedHashrate))) * 100).toFixed(1) + '%';
-    data.push(getDataItem(
-      (parseFloat(this.miningStats.lastEstimatedHashrate) - totalAcceleratedHashrate),
+      (this.miningStats.lastEstimatedHashrate - totalAcceleratedHashrate),
       'rgba(127, 127, 127, 0.3)',
-      `${notAcceleratedByPercentage} not accelerating`,
+      $localize`not accelerating` + ` (${notAcceleratedByPercentage})`,
+      false,
     ) as PieSeriesOption);
 
     return data;
   }
 
-  prepareChartOptions() {
+  prepareChartOptions(pools: number[]) {
     this.chartOptions = {
       animation: false,
       grid: {
@@ -108,12 +101,29 @@ export class ActiveAccelerationBox implements OnChanges {
       tooltip: {
         show: true,
         trigger: 'item',
+        backgroundColor: 'rgba(17, 19, 31, 1)',
+        borderRadius: 4,
+        shadowColor: 'rgba(0, 0, 0, 0.5)',
+        textStyle: {
+          color: 'var(--tooltip-grey)',
+        },
+        borderColor: '#000',
+        formatter: (item) => {
+          return item.name;
+        }
       },
       series: [
         {
           type: 'pie',
           radius: '100%',
-          data: this.getChartData(),
+          label: {
+            show: false
+          },
+          labelLine: {
+            show: false
+          },
+          animationDuration: 0,
+          data: this.getChartData(pools),
         }
       ]
     };
@@ -124,5 +134,9 @@ export class ActiveAccelerationBox implements OnChanges {
       return;
     }
     this.chartInstance = ec;
+  }
+
+  onToggleCpfp(): void {
+    this.toggleCpfp.emit();
   }
 }

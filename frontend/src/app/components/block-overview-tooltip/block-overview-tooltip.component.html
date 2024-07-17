@@ -50,7 +50,7 @@
       </tr>
       <tr *ngIf="hasEffectiveRate && effectiveRate != null">
         <td *ngIf="!this.acceleration" class="label" i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
-        <td *ngIf="this.acceleration" class="label" i18n="transaction.effective-fee-rate|Effective transaction fee rate">Accelerated fee rate</td>
+        <td *ngIf="this.acceleration" class="label" i18n="transaction.accelerated-fee-rate|Accelerated transaction fee rate">Accelerated fee rate</td>
         <td class="value">
           <app-fee-rate [fee]="effectiveRate"></app-fee-rate>
         </td>

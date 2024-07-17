@@ -147,9 +147,15 @@ export function isNonStandard(tx: Transaction): boolean {
   let opreturnCount = 0;
   for (const vout of tx.vout) {
     // scriptpubkey
-    if (['unknown', 'provably_unspendable', 'empty'].includes(vout.scriptpubkey_type)) {
+    if (['nonstandard', 'provably_unspendable', 'empty'].includes(vout.scriptpubkey_type)) {
       // (non-standard output type)
       return true;
+    } else if (vout.scriptpubkey_type === 'unknown') {
+      // undefined segwit version/length combinations are actually standard in outputs
+      // https://github.com/bitcoin/bitcoin/blob/2c79abc7ad4850e9e3ba32a04c530155cda7f980/src/script/interpreter.cpp#L1950-L1951
+      if (vout.scriptpubkey.startsWith('00') || !isWitnessProgram(vout.scriptpubkey)) {
+        return true;
+      }
     } else if (vout.scriptpubkey_type === 'multisig') {
       if (!DEFAULT_PERMIT_BAREMULTISIG) {
         // bare-multisig
@@ -175,7 +181,7 @@ export function isNonStandard(tx: Transaction): boolean {
       dustSize += getVarIntLength(dustSize);
       // add value size
       dustSize += 8;
-      if (['v0_p2wpkh', 'v0_p2wsh', 'v1_p2tr'].includes(vout.scriptpubkey_type)) {
+      if (isWitnessProgram(vout.scriptpubkey)) {
         dustSize += 67;
       } else {
         dustSize += 148;
@@ -194,6 +200,27 @@ export function isNonStandard(tx: Transaction): boolean {
 
   // TODO: non-mandatory-script-verify-flag
 
+  return false;
+}
+
+// A witness program is any valid scriptpubkey that consists of a 1-byte push opcode
+// followed by a data push between 2 and 40 bytes.
+// https://github.com/bitcoin/bitcoin/blob/2c79abc7ad4850e9e3ba32a04c530155cda7f980/src/script/script.cpp#L224-L240
+function isWitnessProgram(scriptpubkey: string): false | { version: number, program: string } {
+  if (scriptpubkey.length < 8 || scriptpubkey.length > 84) {
+    return false;
+  }
+  const version = parseInt(scriptpubkey.slice(0,2), 16);
+  if (version !== 0 && version < 0x51 || version > 0x60) {
+      return false;
+  }
+  const push = parseInt(scriptpubkey.slice(2,4), 16);
+  if (push + 2 === (scriptpubkey.length / 2)) {
+    return {
+      version: version ? version - 0x50 : 0,
+      program: scriptpubkey.slice(4),
+    };
+  }
   return false;
 }
 
@@ -308,19 +335,21 @@ export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replac
       case 'v0_p2wpkh': flags |= TransactionFlags.p2wpkh; break;
       case 'v0_p2wsh': flags |= TransactionFlags.p2wsh; break;
       case 'v1_p2tr': {
-        if (!vin.witness?.length) {
-          throw new Error('Taproot input missing witness data');
-        }
         flags |= TransactionFlags.p2tr;
-        // in taproot, if the last witness item begins with 0x50, it's an annex
-        const hasAnnex = vin.witness?.[vin.witness.length - 1].startsWith('50');
-        // script spends have more than one witness item, not counting the annex (if present)
-        if (vin.witness.length > (hasAnnex ? 2 : 1)) {
-          // the script itself is the second-to-last witness item, not counting the annex
-          const asm = vin.inner_witnessscript_asm;
-          // inscriptions smuggle data within an 'OP_0 OP_IF ... OP_ENDIF' envelope
-          if (asm?.includes('OP_0 OP_IF')) {
-            flags |= TransactionFlags.inscription;
+        // every valid taproot input has at least one witness item, however transactions
+        // created before taproot activation don't need to have any witness data
+        // (see https://mempool.space/tx/b10c007c60e14f9d087e0291d4d0c7869697c6681d979c6639dbd960792b4d41)
+        if (vin.witness?.length) {
+          // in taproot, if the last witness item begins with 0x50, it's an annex
+          const hasAnnex = vin.witness?.[vin.witness.length - 1].startsWith('50');
+          // script spends have more than one witness item, not counting the annex (if present)
+          if (vin.witness.length > (hasAnnex ? 2 : 1)) {
+            // the script itself is the second-to-last witness item, not counting the annex
+            const asm = vin.inner_witnessscript_asm;
+            // inscriptions smuggle data within an 'OP_0 OP_IF ... OP_ENDIF' envelope
+            if (asm?.includes('OP_0 OP_IF')) {
+              flags |= TransactionFlags.inscription;
+            }
           }
         }
       } break;
@@ -415,4 +444,18 @@ export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replac
   }
 
   return flags;
+}
+
+export function getUnacceleratedFeeRate(tx: Transaction, accelerated: boolean): number {
+  if (accelerated) {
+    let ancestorVsize = tx.weight / 4;
+    let ancestorFee = tx.fee;
+    for (const ancestor of tx.ancestors || []) {
+      ancestorVsize += (ancestor.weight / 4);
+      ancestorFee += ancestor.fee;
+    }
+    return Math.min(tx.fee / (tx.weight / 4), (ancestorFee / ancestorVsize));
+  } else {
+    return tx.effectiveFeePerVsize;
+  }
 }

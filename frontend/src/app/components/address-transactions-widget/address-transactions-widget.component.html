@@ -14,7 +14,7 @@
       </td>
       <td class="table-cell-satoshis"><app-amount [satoshis]="transaction.value" digitsInfo="1.2-4" [noFiat]="true"></app-amount></td>
       <td class="table-cell-fiat" ><app-fiat [value]="transaction.value" [blockConversion]="transaction.price" digitsInfo="1.0-0"></app-fiat></td>
-      <td class="table-cell-date"><app-time kind="since" [time]="transaction.time" [fastRender]="true"></app-time></td>
+      <td class="table-cell-date"><app-time kind="since" [time]="transaction.time" [fastRender]="true" [showTooltip]="true"></app-time></td>
     </tr>
   </tbody>
   <div class="">&nbsp;</div>

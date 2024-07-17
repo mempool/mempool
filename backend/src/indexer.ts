@@ -182,6 +182,7 @@ class Indexer {
       }
 
       this.runSingleTask('blocksPrices');
+      await blocks.$indexCoinbaseAddresses();
       await mining.$indexDifficultyAdjustments();
       await mining.$generateNetworkHashrateHistory();
       await mining.$generatePoolHashrateHistory();

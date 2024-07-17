@@ -167,6 +167,12 @@
 	}
 }
 
+@media (max-width: 767px){
+  .hide-on-mobile {
+    display: none;
+  }
+}
+
 .effective-fee-rating {
   @media (max-width: 767px){
     margin-right: 0px !important;
@@ -177,7 +183,7 @@
   h2 {
     line-height: 1;
     margin: 0;
-    padding-bottom: 10px;
+    padding-bottom: 5px;
   }
 }
 
@@ -196,6 +202,11 @@
     margin-top: 0px;
     margin-bottom: 0px;
 	}
+}
+
+.accelerator-toggle, .details-button {
+  position: relative;
+  bottom: -13px;
 }
 
 .subtitle-block {
@@ -300,7 +311,6 @@
 
 .accelerateDeepMempool {
   align-self: auto;
-  margin-top: 3px;
   margin-left: auto;
   background-color: var(--tertiary);
   @media (max-width: 995px) {
@@ -313,5 +323,13 @@
 
 .goggles-icon {
   display: block;
-  width: 2.2em;
+  width: 2.7em;
+}
+
+.pool-logo {
+  width: 15px;
+  height: 15px;
+  position: relative;
+  top: -1px;
+  margin-right: 2px;
 }
