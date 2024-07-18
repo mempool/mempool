@@ -32,6 +32,7 @@ export function calculateCpfp(tx: MempoolTransactionExtended, mempool: { [txid: 
       descendants: tx.descendants || [],
       effectiveFeePerVsize: tx.effectiveFeePerVsize || tx.adjustedFeePerVsize || tx.feePerVsize,
       sigops: tx.sigops,
+      fee: tx.fee,
       adjustedVsize: tx.adjustedVsize,
       acceleration: tx.acceleration
     };
@@ -70,6 +71,7 @@ export function calculateCpfp(tx: MempoolTransactionExtended, mempool: { [txid: 
     descendants: tx.descendants || [],
     effectiveFeePerVsize: tx.effectiveFeePerVsize || tx.adjustedFeePerVsize || tx.feePerVsize,
     sigops: tx.sigops,
+    fee: tx.fee,
     adjustedVsize: tx.adjustedVsize,
     acceleration: tx.acceleration
   };
