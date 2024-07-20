@@ -6,7 +6,7 @@ import { Acceleration } from './acceleration/acceleration';
 const CPFP_UPDATE_INTERVAL = 60_000; // update CPFP info at most once per 60s per transaction
 const MAX_CLUSTER_ITERATIONS = 100;
 
-export function calculateFastBlockCpfp(height: number, transactions: TransactionExtended[], saveRelatives: boolean = false): CpfpSummary {
+export function calculateFastBlockCpfp(height: number, transactions: MempoolTransactionExtended[], saveRelatives: boolean = false): CpfpSummary {
   const clusters: CpfpCluster[] = []; // list of all cpfp clusters in this block
   const clusterMap: { [txid: string]: CpfpCluster } = {}; // map transactions to their cpfp cluster
   let clusterTxs: TransactionExtended[] = []; // working list of elements of the current cluster
@@ -93,6 +93,7 @@ export function calculateFastBlockCpfp(height: number, transactions: Transaction
   return {
     transactions,
     clusters,
+    version: 1,
   };
 }
 
@@ -159,6 +160,7 @@ export function calculateGoodBlockCpfp(height: number, transactions: MempoolTran
   return {
     transactions: transactions.map(tx => txMap[tx.txid]),
     clusters: clusterArray,
+    version: 2,
   };
 }
 

@@ -385,8 +385,9 @@ export interface CpfpCluster {
 }
 
 export interface CpfpSummary {
-  transactions: TransactionExtended[];
+  transactions: MempoolTransactionExtended[];
   clusters: CpfpCluster[];
+  version: number;
 }
 
 export interface Statistic {
