@@ -521,6 +521,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     if (transactions && blockAudit) {
       const inTemplate = {};
       const inBlock = {};
+      const isUnseen = {};
       const isAdded = {};
       const isPrioritized = {};
       const isCensored = {};
@@ -542,6 +543,9 @@ export class BlockComponent implements OnInit, OnDestroy {
         }
         for (const tx of transactions) {
           inBlock[tx.txid] = true;
+        }
+        for (const txid of blockAudit.unseenTxs || []) {
+          isUnseen[txid] = true;
         }
         for (const txid of blockAudit.addedTxs) {
           isAdded[txid] = true;
@@ -592,18 +596,23 @@ export class BlockComponent implements OnInit, OnDestroy {
             tx.status = 'accelerated';
           }
         }
-        for (const [index, tx] of transactions.entries()) {
+        let anySeen = false;
+        for (let index = transactions.length - 1; index >= 0; index--) {
+          const tx = transactions[index];
           tx.context = 'actual';
           if (index === 0) {
             tx.status = null;
-          } else if (isAdded[tx.txid]) {
-            tx.status = 'added';
           } else if (isPrioritized[tx.txid]) {
             tx.status = 'prioritized';
+          } else if (isAdded[tx.txid] && (blockAudit.version === 0 || isUnseen[tx.txid])) {
+            tx.status = 'added';
           } else if (inTemplate[tx.txid]) {
+            anySeen = true;
             tx.status = 'found';
           } else if (isRbf[tx.txid]) {
             tx.status = 'rbf';
+          } else if (isUnseen[tx.txid] && anySeen) {
+            tx.status = 'added';
           } else {
             tx.status = 'selected';
             isSelected[tx.txid] = true;
