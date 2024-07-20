@@ -695,7 +695,7 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 81) {
       await this.$executeQuery('ALTER TABLE `blocks_audits` ADD version INT NOT NULL DEFAULT 0');
       await this.$executeQuery('ALTER TABLE `blocks_audits` ADD INDEX `version` (`version`)');
-      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD seen_txs JSON DEFAULT "[]"');
+      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD unseen_txs JSON DEFAULT "[]"');
       await this.updateToSchemaVersion(81);
     }
   }
