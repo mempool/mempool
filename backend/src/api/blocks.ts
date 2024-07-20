@@ -32,6 +32,7 @@ import { calcBitsDifference } from './difficulty-adjustment';
 import AccelerationRepository from '../repositories/AccelerationRepository';
 import { calculateFastBlockCpfp, calculateGoodBlockCpfp } from './cpfp';
 import mempool from './mempool';
+import CpfpRepository from '../repositories/CpfpRepository';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -569,8 +570,11 @@ class Blocks {
     const blockchainInfo = await bitcoinClient.getBlockchainInfo();
     const currentBlockHeight = blockchainInfo.blocks;
 
-    const unclassifiedBlocksList = await BlocksSummariesRepository.$getSummariesWithVersion(0);
-    const unclassifiedTemplatesList = await BlocksSummariesRepository.$getTemplatesWithVersion(0);
+    const targetSummaryVersion: number = 1;
+    const targetTemplateVersion: number = 1;
+
+    const unclassifiedBlocksList = await BlocksSummariesRepository.$getSummariesBelowVersion(targetSummaryVersion);
+    const unclassifiedTemplatesList = await BlocksSummariesRepository.$getTemplatesBelowVersion(targetTemplateVersion);
 
     // nothing to do
     if (!unclassifiedBlocksList?.length && !unclassifiedTemplatesList?.length) {
@@ -612,7 +616,15 @@ class Blocks {
           const cpfpSummary = calculateGoodBlockCpfp(height, txs, []);
           // classify
           const { transactions: classifiedTxs } = this.summarizeBlockTransactions(blockHash, cpfpSummary.transactions);
-          await BlocksSummariesRepository.$saveTransactions(height, blockHash, classifiedTxs, 1);
+          await BlocksSummariesRepository.$saveTransactions(height, blockHash, classifiedTxs, 2);
+          if (unclassifiedBlocks[height].version < 2 && targetSummaryVersion === 2) {
+            const cpfpClusters = await CpfpRepository.$getClustersAt(height);
+            if (!cpfpRepository.compareClusters(cpfpClusters, cpfpSummary.clusters)) {
+              // CPFP clusters changed - update the compact_cpfp tables
+              await CpfpRepository.$deleteClustersAt(height);
+              await this.$saveCpfp(blockHash, height, cpfpSummary);
+            }
+          }
           await Common.sleep$(250);
         }
         if (unclassifiedTemplates[height]) {
