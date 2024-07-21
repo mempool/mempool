@@ -160,6 +160,7 @@ class BitcoinRoutes {
           descendants: tx.descendants || null,
           effectiveFeePerVsize: tx.effectiveFeePerVsize || null,
           sigops: tx.sigops,
+          fee: tx.fee,
           adjustedVsize: tx.adjustedVsize,
           acceleration: tx.acceleration,
           acceleratedBy: tx.acceleratedBy || undefined,

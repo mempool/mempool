@@ -175,6 +175,7 @@ export function calculateMempoolTxCpfp(tx: MempoolTransactionExtended, mempool: 
       descendants: tx.descendants || [],
       effectiveFeePerVsize: tx.effectiveFeePerVsize || tx.adjustedFeePerVsize || tx.feePerVsize,
       sigops: tx.sigops,
+      fee: tx.fee,
       adjustedVsize: tx.adjustedVsize,
       acceleration: tx.acceleration
     };
@@ -213,6 +214,7 @@ export function calculateMempoolTxCpfp(tx: MempoolTransactionExtended, mempool: 
     descendants: tx.descendants || [],
     effectiveFeePerVsize: tx.effectiveFeePerVsize || tx.adjustedFeePerVsize || tx.feePerVsize,
     sigops: tx.sigops,
+    fee: tx.fee,
     adjustedVsize: tx.adjustedVsize,
     acceleration: tx.acceleration
   };
