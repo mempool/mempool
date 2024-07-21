@@ -11,8 +11,7 @@
 .paymentMethod {
   padding: 10px;
   background-color: var(--secondary);
-  border-radius: 15px;
-  border: 2px solid var(--bg);
+  border-radius: 10px;
   cursor: pointer;
 }
 
@@ -202,4 +201,19 @@
 
 .btn-error-wrapper {
   height: 26px;
+}
+
+.apple-pay-button {
+    display: inline-block;
+    -webkit-appearance: -apple-pay-button;
+    -apple-pay-button-type: plain; /* Use any supported button type. */
+}
+.apple-pay-button-black {
+    -apple-pay-button-style: black;
+}
+.apple-pay-button-white {
+    -apple-pay-button-style: white;
+}
+.apple-pay-button-white-with-line {
+    -apple-pay-button-style: white-outline;
 }
