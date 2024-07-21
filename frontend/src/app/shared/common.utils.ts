@@ -182,3 +182,16 @@ export function uncompressDeltaChange(delta: MempoolBlockDeltaCompressed): Mempo
     }))
   };
 }
+
+export function simpleRandomUUID(): string {
+  const hexDigits = '0123456789abcdef';
+  const uuidLengths = [8, 4, 4, 4, 12];
+  let uuid = '';
+  for (const length of uuidLengths) {
+      for (let i = 0; i < length; i++) {
+          uuid += hexDigits[Math.floor(Math.random() * 16)];
+      }
+      uuid += '-';
+  }
+  return uuid.slice(0, -1);
+}
