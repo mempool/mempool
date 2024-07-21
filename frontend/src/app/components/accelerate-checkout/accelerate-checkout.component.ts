@@ -60,7 +60,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   @Input() eta: ETA;
   @Input() scrollEvent: boolean;
   @Input() cashappEnabled: boolean = true;
-  @Input() applePayEnabled: boolean = true;
+  @Input() applePayEnabled: boolean = false;
   @Input() advancedEnabled: boolean = false;
   @Input() forceMobile: boolean = false;
   @Input() showDetails: boolean = false;
@@ -133,6 +133,12 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     private enterpriseService: EnterpriseService,
   ) {
     this.accelerationUUID = window.crypto.randomUUID();
+
+    // Check if Apple Pay available
+    // @ts-ignore https://developer.apple.com/documentation/apple_pay_on_the_web/apple_pay_js_api/checking_for_apple_pay_availability#overview
+    if (window.ApplePaySession) {
+      this.applePayEnabled = true;
+    }
   }
 
   ngOnInit() {
