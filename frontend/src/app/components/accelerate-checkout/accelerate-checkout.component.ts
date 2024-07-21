@@ -429,7 +429,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     try {
       //@ts-ignore
       this.payments = window.Square.payments(this.square.appId, this.square.locationId)
-      if (this._step === 'cashapp') {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (this._step === 'cashapp' || urlParams.get('cash_request_id')) {
         await this.requestCashAppPayment();
       } else if (this._step === 'applepay') {
         await this.requestApplePayPayment();
