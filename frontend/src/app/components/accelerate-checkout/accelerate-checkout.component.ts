@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, ChangeDetectorRef, SimpleChanges, HostListener } from '@angular/core';
 import { Subscription, tap, of, catchError, Observable, switchMap } from 'rxjs';
 import { ServicesApiServices } from '../../services/services-api.service';
-import { nextRoundNumber, simpleRandomUUID } from '../../shared/common.utils';
+import { nextRoundNumber, insecureRandomUUID } from '../../shared/common.utils';
 import { StateService } from '../../services/state.service';
 import { AudioService } from '../../services/audio.service';
 import { ETA, EtaService } from '../../services/eta.service';
@@ -130,7 +130,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     private authService: AuthServiceMempool,
     private enterpriseService: EnterpriseService,
   ) {
-    this.accelerationUUID = simpleRandomUUID();
+    this.accelerationUUID = insecureRandomUUID();
   }
 
   ngOnInit() {

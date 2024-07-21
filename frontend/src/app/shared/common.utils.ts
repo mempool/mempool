@@ -183,7 +183,7 @@ export function uncompressDeltaChange(delta: MempoolBlockDeltaCompressed): Mempo
   };
 }
 
-export function simpleRandomUUID(): string {
+export function insecureRandomUUID(): string {
   const hexDigits = '0123456789abcdef';
   const uuidLengths = [8, 4, 4, 4, 12];
   let uuid = '';
