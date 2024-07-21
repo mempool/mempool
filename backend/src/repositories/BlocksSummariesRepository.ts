@@ -114,6 +114,43 @@ class BlocksSummariesRepository {
     return [];
   }
 
+  public async $getSummariesBelowVersion(version: number): Promise<{ height: number, id: string, version: number }[]> {
+    try {
+      const [rows]: any[] = await DB.query(`
+        SELECT
+          height,
+          id,
+          version
+        FROM blocks_summaries
+        WHERE version < ?
+        ORDER BY height DESC;`, [version]);
+      return rows;
+    } catch (e) {
+      logger.err(`Cannot get block summaries below version. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+
+    return [];
+  }
+
+  public async $getTemplatesBelowVersion(version: number): Promise<{ height: number, id: string, version: number }[]> {
+    try {
+      const [rows]: any[] = await DB.query(`
+        SELECT
+          blocks_summaries.height as height,
+          blocks_templates.id as id,
+          blocks_templates.version as version
+        FROM blocks_templates
+        JOIN blocks_summaries ON blocks_templates.id = blocks_summaries.id
+        WHERE blocks_templates.version < ?
+        ORDER BY height DESC;`, [version]);
+      return rows;
+    } catch (e) {
+      logger.err(`Cannot get block summaries below version. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+
+    return [];
+  }
+
   /**
    * Get the fee percentiles if the block has already been indexed, [] otherwise
    * 
