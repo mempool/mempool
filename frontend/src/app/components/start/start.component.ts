@@ -234,7 +234,7 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.minScrollWidth = 40 + (8 * this.blockWidth) + (this.pageWidth * 2);
 
     if (firstVisibleBlock != null) {
-      this.scrollToBlock(firstVisibleBlock, offset);
+      this.scrollToBlock(firstVisibleBlock, offset + (this.isMobile ? this.blockWidth : 0));
     } else {
       this.updatePages();
     }
