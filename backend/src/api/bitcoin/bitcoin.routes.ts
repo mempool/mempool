@@ -19,7 +19,7 @@ import bitcoinClient from './bitcoin-client';
 import difficultyAdjustment from '../difficulty-adjustment';
 import transactionRepository from '../../repositories/TransactionRepository';
 import rbfCache from '../rbf-cache';
-import { calculateCpfp } from '../cpfp';
+import { calculateMempoolTxCpfp } from '../cpfp';
 
 class BitcoinRoutes {
   public initRoutes(app: Application) {
@@ -160,6 +160,7 @@ class BitcoinRoutes {
           descendants: tx.descendants || null,
           effectiveFeePerVsize: tx.effectiveFeePerVsize || null,
           sigops: tx.sigops,
+          fee: tx.fee,
           adjustedVsize: tx.adjustedVsize,
           acceleration: tx.acceleration,
           acceleratedBy: tx.acceleratedBy || undefined,
@@ -168,7 +169,7 @@ class BitcoinRoutes {
         return;
       }
 
-      const cpfpInfo = calculateCpfp(tx, mempool.getMempool());
+      const cpfpInfo = calculateMempoolTxCpfp(tx, mempool.getMempool());
 
       res.json(cpfpInfo);
       return;

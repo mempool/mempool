@@ -1,4 +1,4 @@
-import { AccelerationInfo, makeBlockTemplate } from '../api/acceleration/acceleration';
+import { AccelerationInfo } from '../api/acceleration/acceleration';
 import { RowDataPacket } from 'mysql2';
 import DB from '../database';
 import logger from '../logger';
@@ -11,6 +11,7 @@ import accelerationCosts from '../api/acceleration/acceleration';
 import bitcoinApi from '../api/bitcoin/bitcoin-api-factory';
 import transactionUtils from '../api/transaction-utils';
 import { BlockExtended, MempoolTransactionExtended } from '../mempool.interfaces';
+import { makeBlockTemplate } from '../api/mini-miner';
 
 export interface PublicAcceleration {
   txid: string,

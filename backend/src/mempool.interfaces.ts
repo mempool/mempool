@@ -223,6 +223,7 @@ export interface CpfpInfo {
   sigops?: number;
   adjustedVsize?: number,
   acceleration?: boolean,
+  fee?: number;
 }
 
 export interface TransactionStripped {
