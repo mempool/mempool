@@ -141,7 +141,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   taprootEnabled: boolean;
   hasEffectiveFeeRate: boolean;
   accelerateCtaType: 'alert' | 'button' = 'button';
-  acceleratorAvailable: boolean = this.stateService.env.ACCELERATOR && this.stateService.network === '';
+  acceleratorAvailable: boolean = this.stateService.env.ACCELERATOR_BUTTON && this.stateService.network === '';
   eligibleForAcceleration: boolean = false;
   forceAccelerationSummary = false;
   hideAccelerationSummary = false;
@@ -195,7 +195,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.stateService.networkChanged$.subscribe(
       (network) => {
         this.network = network;
-        this.acceleratorAvailable = this.stateService.env.ACCELERATOR && this.stateService.network === '';
+        this.acceleratorAvailable = this.stateService.env.ACCELERATOR_BUTTON && this.stateService.network === '';
       }
     );
 
