@@ -679,6 +679,13 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     return !!this.estimate?.availablePaymentMethods?.cashapp;
   }
 
+  get couldPayWithApplePay() {
+    if (!this.applePayEnabled) {
+      return false;
+    }
+    return !!this.estimate?.availablePaymentMethods?.applePay;
+  }
+
   get couldPayWithBalance() {
     if (!this.hasAccessToBalanceMode) {
       return false;
@@ -687,7 +694,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   get couldPay() {
-    return this.couldPayWithBalance || this.couldPayWithBitcoin || this.couldPayWithCashapp;
+    return this.couldPayWithBalance || this.couldPayWithBitcoin || this.couldPayWithCashapp || this.couldPayWithApplePay;
   }
 
   get canPayWithBitcoin() {
@@ -707,7 +714,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         return true;
       }
     }
-    
+
     return false;
   }
 
@@ -723,7 +730,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         return true;
       }
     }
-    
+
     return false;
   }
 
@@ -736,7 +743,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   get canPay() {
-    return this.canPayWithBalance || this.canPayWithBitcoin || this.canPayWithCashapp;
+    return this.canPayWithBalance || this.canPayWithBitcoin || this.canPayWithCashapp || this.canPayWithApplePay;
   }
 
   get hasAccessToBalanceMode() {
