@@ -12,7 +12,7 @@
   padding-bottom: 0px;
 }
 .container-xl.legacy {
-  max-width: 1140px;
+  max-width: 1200px;
 }
 .container-xl.widget-container {
   min-height: 335px;
@@ -72,8 +72,24 @@ tr, td, th {
 
 .block {
   width: 15%;
+  @media (max-width: 900px) {
+    display: none;
+  }
+}
+
+.pool {
+  width: 15%;
+  
   @media (max-width: 700px) {
     display: none;
+  }
+
+  .pool-logo {
+    width: 22px;
+    height: 22px;
+    position: relative;
+    top: -1px;
+    margin-right: 2px;
   }
 }
 

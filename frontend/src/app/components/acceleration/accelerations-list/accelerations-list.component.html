@@ -16,6 +16,7 @@
         <ng-container *ngIf="!pending">
           <th class="fee text-right" i18n="transaction.bid-boost|Bid Boost">Bid Boost</th>
           <th class="block text-right" i18n="shared.block-title">Block</th>
+          <th class="pool text-right" i18n="mining.pool-name" *ngIf="!this.widget">Pool</th>
           <th class="status text-right" i18n="transaction.status|Transaction Status">Status</th>
           <th class="date text-right" i18n="accelerator.requested" *ngIf="!this.widget">Requested</th>
         </ng-container>
@@ -48,6 +49,16 @@
             <td class="block text-right">
               <a *ngIf="acceleration.blockHeight" [routerLink]="['/block' | relativeUrl, acceleration.blockHeight]">{{ acceleration.blockHeight }}</a>
               <span *ngIf="!acceleration.blockHeight">~</span>
+            </td>
+            <td class="pool text-right" *ngIf="!this.widget">
+              @if (acceleration.minedByPoolUniqueId && pools[acceleration.minedByPoolUniqueId]) {
+                <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, pools[acceleration.minedByPoolUniqueId].slug]" class="badge" style="color: #FFF;padding:0;">
+                  <img class="pool-logo" [src]="'/resources/mining-pools/' + pools[acceleration.minedByPoolUniqueId].slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + pools[acceleration.minedByPoolUniqueId].name + ' mining pool'">
+                  {{ pools[acceleration.minedByPoolUniqueId].name }}
+                </a>
+              } @else {
+                ~
+              }
             </td>
             <td class="status text-right">
               <span *ngIf="acceleration.status === 'accelerating'" class="badge badge-warning" i18n="accelerator.pending">Pending</span>

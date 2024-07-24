@@ -1,11 +1,12 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef, OnDestroy, Inject, LOCALE_ID } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription, catchError, filter, of, switchMap, tap, throttleTime } from 'rxjs';
-import { Acceleration, BlockExtended } from '../../../interfaces/node-api.interface';
+import { Acceleration, BlockExtended, SinglePoolStats } from '../../../interfaces/node-api.interface';
 import { StateService } from '../../../services/state.service';
 import { WebsocketService } from '../../../services/websocket.service';
 import { ServicesApiServices } from '../../../services/services-api.service';
 import { SeoService } from '../../../services/seo.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MiningService } from '../../../services/mining.service';
 
 @Component({
   selector: 'app-accelerations-list',
@@ -30,11 +31,13 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
   keyNavigationSubscription: Subscription;
   dir: 'rtl' | 'ltr' = 'ltr';
   paramSubscription: Subscription;
+  pools: { [id: number]: SinglePoolStats } = {};
 
   constructor(
     private servicesApiService: ServicesApiServices,
     private websocketService: WebsocketService,
     public stateService: StateService,
+    private miningService: MiningService,
     private cd: ChangeDetectorRef,
     private seoService: SeoService,
     private route: ActivatedRoute,
@@ -78,6 +81,12 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
         throttleTime(1000, undefined, { leading: true, trailing: true }),
       ).subscribe(() => {
         this.pageChange(this.page);
+      });
+
+      this.miningService.getMiningStats('1m').subscribe(stats => {
+        for (const pool of stats.pools) {
+          this.pools[pool.poolUniqueId] = pool;
+        }
       });
     }
 
