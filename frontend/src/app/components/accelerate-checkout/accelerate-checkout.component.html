@@ -395,16 +395,18 @@
                 </div>
               }
             }
-            <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
-              <p><ng-container i18n="transaction.pay|Pay button label">Pay</ng-container>&nbsp;<app-fiat [value]="cost"></app-fiat> with</p>
-              @if (canPayWithCashapp) {
-                <img class="paymentMethod mx-2" style="width: 200px" src="/resources/cash-app.svg" height=55 (click)="moveToStep('cashapp')">
-              }
-              @if (canPayWithApplePay) {
-                @if (canPayWithCashapp) { <hr class="w-25 mt-2 mb-2"> }
-                <img style="cursor: pointer;" src="/resources/apple-pay.svg" height=55 (click)="moveToStep('applepay')">
-              }
-            </div>
+            @if (canPayWithCashapp || canPayWithApplePay) {
+              <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
+                <p><ng-container i18n="transaction.pay|Pay button label">Pay</ng-container>&nbsp;<app-fiat [value]="cost"></app-fiat> with</p>
+                @if (canPayWithCashapp) {
+                  <img class="paymentMethod mx-2" style="width: 200px" src="/resources/cash-app.svg" height=55 (click)="moveToStep('cashapp')">
+                }
+                @if (canPayWithApplePay) {
+                  @if (canPayWithCashapp) { <hr class="w-25 mt-2 mb-2"> }
+                  <img style="cursor: pointer;" src="/resources/apple-pay.svg" height=55 (click)="moveToStep('applepay')">
+                }
+              </div>
+            }
           </div>
         }
       </div>
