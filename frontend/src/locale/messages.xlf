@@ -2042,13 +2042,13 @@
         </context-group>
         <note priority="1" from="description">address.confirmed-balance</note>
       </trans-unit>
-      <trans-unit id="8211b4be0291a035cd67aeb84782c9e87d4daca3" datatype="html">
-        <source>Unconfirmed balance</source>
+      <trans-unit id="1275889180d1a1e7cac7b5ad2a738b374288125a" datatype="html">
+        <source>Pending balance</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">252</context>
         </context-group>
-        <note priority="1" from="description">address.unconfirmed-balance</note>
+        <note priority="1" from="description">address.pending-balance</note>
       </trans-unit>
       <trans-unit id="c7daf1b7c126095c054f2d3728ae790b0ceef33a" datatype="html">
         <source>Confirmed UTXOs</source>
@@ -2058,13 +2058,13 @@
         </context-group>
         <note priority="1" from="description">address.confirmed-utxos</note>
       </trans-unit>
-      <trans-unit id="928915f31e05788ae07a353761e10e5992b2b58c" datatype="html">
-        <source>Unconfirmed UTXOs</source>
+      <trans-unit id="ba986bd9e2848d2ef7329394ec87b7f4eaf61118" datatype="html">
+        <source>Pending UTXOs</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">262</context>
         </context-group>
-        <note priority="1" from="description">address.unconfirmed-utxos</note>
+        <note priority="1" from="description">address.pending-utxos</note>
       </trans-unit>
       <trans-unit id="f61c6867295f3b53d23557021f2f4e0aa1d0b8fc" datatype="html">
         <source>Type</source>
@@ -6640,7 +6640,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.ts</context>
-          <context context-type="linenumber">498</context>
+          <context context-type="linenumber">499</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.transaction" datatype="html">
@@ -6655,7 +6655,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.ts</context>
-          <context context-type="linenumber">502</context>
+          <context context-type="linenumber">503</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7e06b8dd9f29261827018351cd71efe1c87839de" datatype="html">
