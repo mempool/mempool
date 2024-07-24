@@ -137,6 +137,10 @@ export class ServicesApiServices {
     return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/cashapp`, { txInput: txInput, token: token, cashtag: cashtag, referenceId: referenceId, accelerationUUID: accelerationUUID });
   }
 
+  accelerateWithApplePay$(txInput: string, token: string, cardTag: string, referenceId: string, accelerationUUID: string) {
+    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/applePay`, { txInput: txInput, cardTag: cardTag, token: token, referenceId: referenceId, accelerationUUID: accelerationUUID });
+  }
+
   getAccelerations$(): Observable<Acceleration[]> {
     return this.httpClient.get<Acceleration[]>(`${this.stateService.env.SERVICES_API}/accelerator/accelerations`);
   }
