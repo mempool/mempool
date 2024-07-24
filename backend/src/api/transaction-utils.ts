@@ -103,7 +103,7 @@ class TransactionUtils {
     }
     const feePerVbytes = (transaction.fee || 0) / (transaction.weight / 4);
     const transactionExtended: TransactionExtended = Object.assign({
-      vsize: Math.round(transaction.weight / 4),
+      vsize: transaction.weight / 4,
       feePerVsize: feePerVbytes,
       effectiveFeePerVsize: feePerVbytes,
     }, transaction);
@@ -123,7 +123,7 @@ class TransactionUtils {
     const adjustedFeePerVsize = (transaction.fee || 0) / adjustedVsize;
     const transactionExtended: MempoolTransactionExtended = Object.assign(transaction, {
       order: this.txidToOrdering(transaction.txid),
-      vsize: Math.round(transaction.weight / 4),
+      vsize,
       adjustedVsize,
       sigops,
       feePerVsize: feePerVbytes,

@@ -9,6 +9,7 @@ heat()
 
 heatURLs=(
        '/api/v1/fees/recommended'
+       '/api/v1/accelerations'
 )
 
 while true

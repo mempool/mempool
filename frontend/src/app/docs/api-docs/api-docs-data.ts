@@ -8993,7 +8993,7 @@ export const restApiDocsData = [
     fragment: "accelerator-estimate",
     title: "POST Calculate Estimated Costs",
     description: {
-      default: "<p>Returns estimated costs to accelerate a transaction. Optionally set the <code>api_key</code> header to get customized estimation.</p>"
+      default: "<p>Returns estimated costs to accelerate a transaction. Optionally set the <code>X-Mempool-Auth</code> header to get customized estimation.</p>"
     },
     urlString: "/v1/services/accelerator/estimate",
     showConditions: [""],
@@ -9009,7 +9009,7 @@ export const restApiDocsData = [
           esModule: [],
           commonJS: [],
           curl: ["txInput=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29"],
-          headers: "api_key: stacksats",
+          headers: "X-Mempool-Auth: stacksats",
           response: `{
   "txSummary": {
     "txid": "ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29",
@@ -9240,7 +9240,7 @@ export const restApiDocsData = [
           esModule: [],
           commonJS: [],
           curl: [],
-          headers: "api_key: stacksats",
+          headers: "X-Mempool-Auth: stacksats",
           response: `[
   {
     "type": "Bitcoin",
@@ -9288,7 +9288,7 @@ export const restApiDocsData = [
           esModule: [],
           commonJS: [],
           curl: [],
-          headers: "api_key: stacksats",
+          headers: "X-Mempool-Auth: stacksats",
           response: `{
   "balance": 99900000,
   "hold": 101829,
@@ -9322,7 +9322,7 @@ export const restApiDocsData = [
           esModule: [],
           commonJS: [],
           curl: ["txInput=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&userBid=21000000"],
-          headers: "api_key: stacksats",
+          headers: "X-Mempool-Auth: stacksats",
           response: `HTTP/1.1 200 OK`,
         },
       }
@@ -9352,7 +9352,7 @@ export const restApiDocsData = [
           esModule: [],
           commonJS: [],
           curl: [],
-          headers: "api_key: stacksats",
+          headers: "X-Mempool-Auth: stacksats",
           response: `[
   {
     "id": 89,

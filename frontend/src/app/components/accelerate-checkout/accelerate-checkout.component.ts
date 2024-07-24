@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, ChangeDetectorRef, SimpleChanges, HostListener } from '@angular/core';
 import { Subscription, tap, of, catchError, Observable, switchMap } from 'rxjs';
 import { ServicesApiServices } from '../../services/services-api.service';
-import { md5, nextRoundNumber } from '../../shared/common.utils';
+import { md5, nextRoundNumber, insecureRandomUUID } from '../../shared/common.utils';
 import { StateService } from '../../services/state.service';
 import { AudioService } from '../../services/audio.service';
 import { ETA, EtaService } from '../../services/eta.service';
@@ -9,6 +9,7 @@ import { Transaction } from '../../interfaces/electrs.interface';
 import { MiningStats } from '../../services/mining.service';
 import { IAuth, AuthServiceMempool } from '../../services/auth.service';
 import { EnterpriseService } from '../../services/enterprise.service';
+import { ApiService } from '../../services/api.service';
 
 export type PaymentMethod = 'balance' | 'bitcoin' | 'cashapp';
 
@@ -125,6 +126,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
   constructor(
     public stateService: StateService,
+    private apiService: ApiService,
     private servicesApiService: ServicesApiServices,
     private etaService: EtaService,
     private audioService: AudioService,
@@ -132,7 +134,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     private authService: AuthServiceMempool,
     private enterpriseService: EnterpriseService,
   ) {
-    this.accelerationUUID = window.crypto.randomUUID();
+    this.accelerationUUID = insecureRandomUUID();
 
     // Check if Apple Pay available
     // @ts-ignore https://developer.apple.com/documentation/apple_pay_on_the_web/apple_pay_js_api/checking_for_apple_pay_availability#overview
@@ -384,10 +386,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.accelerationUUID
     ).subscribe({
       next: () => {
+        this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
         this.audioService.playSound('ascend-chime-cartoon');
         this.showSuccess = true;
         this.estimateSubscription.unsubscribe();
-        this.moveToStep('paid')
+        this.moveToStep('paid');
       },
       error: (response) => {
         this.accelerateError = response.error;
@@ -590,6 +593,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               this.accelerationUUID
             ).subscribe({
               next: () => {
+                this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
                 this.audioService.playSound('ascend-chime-cartoon');
                 if (this.cashAppPay) {
                   this.cashAppPay.destroy();
@@ -639,9 +643,10 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   bitcoinPaymentCompleted(): void {
+    this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
     this.audioService.playSound('ascend-chime-cartoon');
     this.estimateSubscription.unsubscribe();
-    this.moveToStep('paid')
+    this.moveToStep('paid');
   }
 
   isLoggedIn(): boolean {

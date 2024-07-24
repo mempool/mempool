@@ -88,6 +88,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   blocksSubscription: Subscription;
   miningSubscription: Subscription;
   auditSubscription: Subscription;
+  txConfirmedSubscription: Subscription;
   currencyChangeSubscription: Subscription;
   fragmentParams: URLSearchParams;
   rbfTransaction: undefined | Transaction;
@@ -141,7 +142,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   taprootEnabled: boolean;
   hasEffectiveFeeRate: boolean;
   accelerateCtaType: 'alert' | 'button' = 'button';
-  acceleratorAvailable: boolean = this.stateService.env.ACCELERATOR && this.stateService.network === '';
+  acceleratorAvailable: boolean = this.stateService.env.ACCELERATOR_BUTTON && this.stateService.network === '';
   eligibleForAcceleration: boolean = false;
   forceAccelerationSummary = false;
   hideAccelerationSummary = false;
@@ -195,7 +196,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.stateService.networkChanged$.subscribe(
       (network) => {
         this.network = network;
-        this.acceleratorAvailable = this.stateService.env.ACCELERATOR && this.stateService.network === '';
+        this.acceleratorAvailable = this.stateService.env.ACCELERATOR_BUTTON && this.stateService.network === '';
       }
     );
 
@@ -599,7 +600,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
                 bestDescendant: tx.bestDescendant,
               });
               const hasRelatives = !!(tx.ancestors?.length || tx.bestDescendant);
-              this.hasEffectiveFeeRate = hasRelatives || (tx.effectiveFeePerVsize && (Math.abs(tx.effectiveFeePerVsize - tx.feePerVsize) > 0.01));
+              this.hasEffectiveFeeRate = hasRelatives || (tx.effectiveFeePerVsize && (Math.abs(tx.effectiveFeePerVsize - tx.feePerVsize) >= 0.1));
             } else {
               this.fetchCpfp$.next(this.tx.txid);
             }
@@ -625,7 +626,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       );
 
-    this.stateService.txConfirmed$.subscribe(([txConfirmed, block]) => {
+    this.txConfirmedSubscription = this.stateService.txConfirmed$.subscribe(([txConfirmed, block]) => {
       if (txConfirmed && this.tx && !this.tx.status.confirmed && txConfirmed === this.tx.txid) {
         if (this.tx.acceleration) {
           this.waitingForAccelerationInfo = true;
@@ -1070,6 +1071,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.blocksSubscription.unsubscribe();
     this.miningSubscription?.unsubscribe();
     this.auditSubscription?.unsubscribe();
+    this.txConfirmedSubscription?.unsubscribe();
     this.currencyChangeSubscription?.unsubscribe();
     this.leaveTransaction();
   }

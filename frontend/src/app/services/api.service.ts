@@ -536,6 +536,10 @@ export class ApiService {
     );
   }
 
+  logAccelerationRequest$(txid: string): Observable<any> {
+    return this.httpClient.post(this.apiBaseUrl + this.apiBasePath + '/api/v1/acceleration/request/' + txid, '');
+  }
+
   // Cache methods
   async setBlockAuditLoaded(hash: string) {
     this.blockAuditLoaded[hash] = true;
