@@ -1521,6 +1521,10 @@
           <context context-type="linenumber">53</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
+          <context context-type="linenumber">252</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker-bar.component.html</context>
           <context context-type="linenumber">4</context>
         </context-group>
@@ -2041,14 +2045,6 @@
           <context context-type="linenumber">247</context>
         </context-group>
         <note priority="1" from="description">address.confirmed-balance</note>
-      </trans-unit>
-      <trans-unit id="1275889180d1a1e7cac7b5ad2a738b374288125a" datatype="html">
-        <source>Pending balance</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">252</context>
-        </context-group>
-        <note priority="1" from="description">address.pending-balance</note>
       </trans-unit>
       <trans-unit id="c7daf1b7c126095c054f2d3728ae790b0ceef33a" datatype="html">
         <source>Confirmed UTXOs</source>
