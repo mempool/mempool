@@ -9,6 +9,7 @@ import { Transaction } from '../../interfaces/electrs.interface';
 import { MiningStats } from '../../services/mining.service';
 import { IAuth, AuthServiceMempool } from '../../services/auth.service';
 import { EnterpriseService } from '../../services/enterprise.service';
+import { ApiService } from '../../services/api.service';
 
 export type PaymentMethod = 'balance' | 'bitcoin' | 'cashapp';
 
@@ -123,6 +124,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
   constructor(
     public stateService: StateService,
+    private apiService: ApiService,
     private servicesApiService: ServicesApiServices,
     private etaService: EtaService,
     private audioService: AudioService,
@@ -370,10 +372,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.accelerationUUID
     ).subscribe({
       next: () => {
+        this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
         this.audioService.playSound('ascend-chime-cartoon');
         this.showSuccess = true;
         this.estimateSubscription.unsubscribe();
-        this.moveToStep('paid')
+        this.moveToStep('paid');
       },
       error: (response) => {
         this.accelerateError = response.error;
@@ -481,6 +484,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               that.accelerationUUID
             ).subscribe({
               next: () => {
+                this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
                 that.audioService.playSound('ascend-chime-cartoon');
                 if (that.cashAppPay) {
                   that.cashAppPay.destroy();
@@ -530,9 +534,10 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   bitcoinPaymentCompleted(): void {
+    this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
     this.audioService.playSound('ascend-chime-cartoon');
     this.estimateSubscription.unsubscribe();
-    this.moveToStep('paid')
+    this.moveToStep('paid');
   }
 
   isLoggedIn(): boolean {

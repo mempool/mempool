@@ -396,10 +396,6 @@ class Mempool {
   }
 
   public $updateAccelerations(newAccelerations: Acceleration[]): string[] {
-    if (!config.MEMPOOL_SERVICES.ACCELERATIONS) {
-      return [];
-    }
-
     try {
       const changed: string[] = [];
 

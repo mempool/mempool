@@ -213,6 +213,15 @@ class AccelerationRepository {
         this.$saveAcceleration(accelerationInfo, block, block.extras.pool.id, successfulAccelerations);
       }
     }
+    let anyConfirmed = false;
+    for (const acc of accelerations) {
+      if (blockTxs[acc.txid]) {
+        anyConfirmed = true;
+      }
+    }
+    if (anyConfirmed) {
+      accelerationApi.accelerationConfirmed();
+    }
     const lastSyncedHeight = await this.$getLastSyncedHeight();
     // if we've missed any blocks, let the indexer catch up from the last synced height on the next run
     if (block.height === lastSyncedHeight + 1) {
