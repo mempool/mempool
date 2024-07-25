@@ -255,6 +255,10 @@ class BitcoinApi implements AbstractBitcoinApi {
     return this.$getRawTransaction(txids[0]);
   }
 
+  async $getAddressTransactionSummary(address: string): Promise<IEsploraApi.AddressTxSummary[]> {
+    throw new Error('Method getAddressTransactionSummary not supported by the Bitcoin RPC API.');
+  }
+
   $getEstimatedHashrate(blockHeight: number): Promise<number> {
     // 120 is the default block span in Core
     return this.bitcoindClient.getNetworkHashPs(120, blockHeight);
