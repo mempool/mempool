@@ -408,6 +408,7 @@ export interface Acceleration {
   bidBoost?: number;
   boostCost?: number;
   boostRate?: number;
+  minedByPoolUniqueId?: number;
 }
 
 export interface AccelerationHistoryParams {

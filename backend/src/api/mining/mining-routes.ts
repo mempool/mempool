@@ -9,6 +9,7 @@ import bitcoinClient from '../bitcoin/bitcoin-client';
 import mining from "./mining";
 import PricesRepository from '../../repositories/PricesRepository';
 import AccelerationRepository from '../../repositories/AccelerationRepository';
+import accelerationApi from '../services/acceleration';
 
 class MiningRoutes {
   public initRoutes(app: Application) {
@@ -41,6 +42,8 @@ class MiningRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'accelerations/block/:height', this.$getAccelerationsByHeight)
       .get(config.MEMPOOL.API_URL_PREFIX + 'accelerations/recent/:interval', this.$getRecentAccelerations)
       .get(config.MEMPOOL.API_URL_PREFIX + 'accelerations/total', this.$getAccelerationTotals)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'accelerations', this.$getActiveAccelerations)
+      .post(config.MEMPOOL.API_URL_PREFIX + 'acceleration/request/:txid', this.$requestAcceleration)
     ;
   }
 
@@ -441,6 +444,37 @@ class MiningRoutes {
         return;
       }
       res.status(200).send(await AccelerationRepository.$getAccelerationTotals(<string>req.query.pool, <string>req.query.interval));
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getActiveAccelerations(req: Request, res: Response): Promise<void> {
+    try {
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      if (!config.MEMPOOL_SERVICES.ACCELERATIONS || ['testnet', 'signet', 'liquidtestnet', 'liquid'].includes(config.MEMPOOL.NETWORK)) {
+        res.status(400).send('Acceleration data is not available.');
+        return;
+      }
+      res.status(200).send(accelerationApi.accelerations || []);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $requestAcceleration(req: Request, res: Response): Promise<void> {
+    if (config.MEMPOOL_SERVICES.ACCELERATIONS || config.MEMPOOL.OFFICIAL) {
+      res.status(405).send('not available.');
+      return;
+    }
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Cache-control', 'private, no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+    res.setHeader('expires', -1);
+    try {
+      accelerationApi.accelerationRequested(req.params.txid);
+      res.status(200).send('ok');
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

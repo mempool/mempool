@@ -303,7 +303,6 @@ export class SearchFormComponent implements OnInit {
           (error) => { console.log(error); this.isSearching = false; }
         );
       } else {
-        this.searchResults.searchButtonClick();
         this.isSearching = false;
       }
     }
