@@ -417,6 +417,7 @@
       </trans-unit>
       <trans-unit id="1b47ebb11a7dbffd196a704d2325c5c73aea81e6" datatype="html">
         <source>Sorry, something went wrong!</source>
+        <target>申し訳ございません。問題が発生しました。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">5</context>
@@ -425,6 +426,7 @@
       </trans-unit>
       <trans-unit id="49b619d43af81067bfcbf7ba4036876a620e9bd8" datatype="html">
         <source>We were not able to accelerate this transaction. Please try again later.</source>
+        <target>この取引を高速化できませんでした。しばらくしてからもう一度お試しください。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">11</context>
@@ -433,6 +435,7 @@
       </trans-unit>
       <trans-unit id="f4e529ae5ffd73001d1ff4bbdeeb0a72e342e5c8" datatype="html">
         <source>Close</source>
+        <target>閉じる</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">18</context>
@@ -869,6 +872,7 @@
       </trans-unit>
       <trans-unit id="9ebf5e1f1759ac5a81805ee901d02d1c14cab033" datatype="html">
         <source>Your account will be debited no more than</source>
+        <target>最大で口座から引き落とされる金額は</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">367</context>
@@ -899,6 +903,7 @@
       </trans-unit>
       <trans-unit id="3da51e8df074e97a3479c4b2a6d1655529267544" datatype="html">
         <source>Failed to load invoice</source>
+        <target>インボイスの読み込みに失敗しました</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">381</context>
@@ -997,6 +1002,7 @@
       </trans-unit>
       <trans-unit id="d005740e3435cf7e0aad9a67d179ec3b3065205e" datatype="html">
         <source>...sorry, this is taking longer than expected...</source>
+        <target>...申し訳ありませんが、予想よりも時間がかかっています...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">509</context>
@@ -1005,6 +1011,7 @@
       </trans-unit>
       <trans-unit id="afdff27fa38ec3386a7b9bb1b3ff113ed5d7e411" datatype="html">
         <source>Your transaction is being accelerated!</source>
+        <target>取引を高速化中です!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">518</context>
@@ -1013,6 +1020,7 @@
       </trans-unit>
       <trans-unit id="f3b21cdfcc35a76e171f3bfd9c3daecbe065b159" datatype="html">
         <source>Your transaction has been accepted for acceleration by our mining pool partners.</source>
+        <target>取引はマイニング プール パートナーによって高速化の承諾がされました。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">524</context>
@@ -1145,6 +1153,7 @@
       </trans-unit>
       <trans-unit id="1158292946432597388" datatype="html">
         <source>accelerated</source>
+        <target>高速化済み</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-fee-graph.component.ts</context>
           <context context-type="linenumber">91</context>
@@ -1705,6 +1714,7 @@
       </trans-unit>
       <trans-unit id="9467c16588ee9f97dfa4f1dd9c96a02d6dc6e008" datatype="html">
         <source>(1 day)</source>
+        <target>（1日）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">27</context>
@@ -1731,6 +1741,7 @@
       </trans-unit>
       <trans-unit id="9d202e68dd5064ae2e3d01073267b4db63b16c40" datatype="html">
         <source>(all time)</source>
+        <target>(全期間)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">36</context>
@@ -1814,6 +1825,7 @@
       </trans-unit>
       <trans-unit id="4231517605576357140" datatype="html">
         <source>not accelerating</source>
+        <target>高速化してない</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/active-acceleration-box/active-acceleration-box.component.ts</context>
           <context context-type="linenumber">85</context>
@@ -2185,6 +2197,7 @@
       </trans-unit>
       <trans-unit id="9eb81e2576ffe4e8fb0a303e203040b6ab23cc22" datatype="html">
         <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="There are too many transactions on this address, more than your backend can handle. See more on &lt;"/>There are too many transactions on this address, more than your backend can handle. See more on <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;/docs/faq#address-lookup-issues&quot;&gt;"/>setting up a stronger backend<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.<x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/><x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> Consider viewing this address on the official Mempool website instead: </source>
+        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="There are too many transactions on this address, more than your backend can handle. See more on &lt;"/>このアドレスには、バックエンドが処理できる以上のトランザクションの数があります。詳細については、<x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;/docs/faq#address-lookup-issues&quot;&gt;"/>より強力なバックエンドの設定<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>をご覧ください。<x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/><x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/>代わりに、公式 Mempool サイトでこのアドレスを表示することを検討してください。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">204,207</context>
@@ -2211,6 +2224,7 @@
       </trans-unit>
       <trans-unit id="ba986bd9e2848d2ef7329394ec87b7f4eaf61118" datatype="html">
         <source>Pending UTXOs</source>
+        <target>承認待ちUTXO</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">262</context>
@@ -3926,6 +3940,7 @@
       </trans-unit>
       <trans-unit id="56ad2f3895f350abdd3cee2d95498deb8819afac" datatype="html">
         <source>Error loading block data.</source>
+        <target>ブロックデータを読み込み中にエラーが発生しました。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">367</context>
@@ -6153,6 +6168,7 @@
       </trans-unit>
       <trans-unit id="09c61c6c6f04877fbce3db88fa0f20cd046ed9b1" datatype="html">
         <source>Error loading pool data.</source>
+        <target>プールデータを読み込み中にエラーが発生しました。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">467</context>
@@ -7213,6 +7229,7 @@
       </trans-unit>
       <trans-unit id="25fb8afb8c76ae5e793717751d9463001c1e9c01" datatype="html">
         <source>RBF Timeline</source>
+        <target>RBF タイムライン</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">158</context>
@@ -7222,6 +7239,7 @@
       </trans-unit>
       <trans-unit id="24588a1469c694836138a72f0e665eb4793c35dc" datatype="html">
         <source>Acceleration Timeline</source>
+        <target>高速化タイムライン</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">167</context>
@@ -10064,6 +10082,7 @@
       </trans-unit>
       <trans-unit id="ba7f0c6fdfa0ab7afc59e9384bca0265d23fb018" datatype="html">
         <source>Your balance is too low.<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br/&gt;"/>Please <x id="START_LINK" ctype="x-a" equiv-text="&lt;a class=&quot;top-up-link&quot; href=&quot;/services/accelerator/overview&quot;&gt;"/>top up your account<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.</source>
+        <target>残高が低すぎます。<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br/&gt;"/>アカウントに<x id="START_LINK" ctype="x-a" equiv-text="&lt;a class=&quot;top-up-link&quot; href=&quot;/services/accelerator/overview&quot;&gt;"/>入金してください<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/mempool-error/mempool-error.component.html</context>
           <context context-type="linenumber">9</context>
