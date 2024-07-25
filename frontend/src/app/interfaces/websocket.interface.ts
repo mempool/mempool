@@ -36,6 +36,7 @@ export interface WebsocketResponse {
   'track-rbf'?: string;
   'track-rbf-summary'?: boolean;
   'track-accelerations'?: boolean;
+  'track-wallet'?: string;
   'watch-mempool'?: boolean;
   'refresh-blocks'?: boolean;
 }

@@ -62,8 +62,10 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
   widgets;
 
   addressSubscription: Subscription;
+  walletSubscription: Subscription;
   blockTxSubscription: Subscription;
   addressSummary$: Observable<AddressTxSummary[]>;
+  walletSummary$: Observable<AddressTxSummary[]>;
   address: Address;
 
   goggleResolution = 82;
@@ -106,6 +108,10 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
       this.addressSubscription.unsubscribe();
       this.websocketService.stopTrackingAddress();
       this.address = null;
+    }
+    if (this.walletSubscription) {
+      this.walletSubscription.unsubscribe();
+      this.websocketService.stopTrackingWallet();
     }
     this.destroy$.next(1);
     this.destroy$.complete();
@@ -260,6 +266,7 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
     });
 
     this.startAddressSubscription();
+    this.startWalletSubscription();
   }
 
   handleNewMempoolData(mempoolStats: OptimizedMempoolStats[]) {
@@ -356,6 +363,51 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
         share(),
       );
     }
+  }
+
+  startWalletSubscription(): void {
+    if (this.stateService.env.customize && this.stateService.env.customize.dashboard.widgets.some(w => w.props?.wallet)) {
+      const walletName = this.stateService.env.customize.dashboard.widgets.find(w => w.props?.wallet).props.wallet;
+      this.websocketService.startTrackingWallet(walletName);
+
+      this.walletSummary$ = this.apiService.getWallet$(walletName).pipe(
+        catchError(e => {
+          return of(null);
+        }),
+        map((walletTransactions) => {
+          const transactions = Object.values(walletTransactions).flatMap(wallet => wallet.transactions);
+          return this.deduplicateWalletTransactions(transactions);
+        }),
+        switchMap(initial => this.stateService.walletTransactions$.pipe(
+          startWith(null),
+          scan((summary, walletTransactions) => {
+            if (walletTransactions) {
+              const transactions: AddressTxSummary[] = [...summary, ...Object.values(walletTransactions).flat()];
+              return this.deduplicateWalletTransactions(transactions);
+            }
+            return summary;
+          }, initial)
+        )),
+        share(),
+      );
+    }
+  }
+
+  deduplicateWalletTransactions(walletTransactions: AddressTxSummary[]): AddressTxSummary[] {
+    const transactions = new Map<string, AddressTxSummary>();
+    for (const tx of walletTransactions) {
+      if (transactions.has(tx.txid)) {
+        transactions.get(tx.txid).value += tx.value;
+      } else {
+        transactions.set(tx.txid, tx);
+      }
+    }
+    return Array.from(transactions.values()).sort((a, b) => {
+      if (a.height === b.height) {
+        return b.tx_position - a.tx_position;
+      }
+      return b.height - a.height;
+    });
   }
 
   @HostListener('window:resize', ['$event'])
