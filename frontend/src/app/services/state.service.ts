@@ -171,7 +171,7 @@ export class StateService {
   mempoolRemovedTransactions$ = new Subject<Transaction>();
   multiAddressTransactions$ = new Subject<{ [address: string]: { mempool: Transaction[], confirmed: Transaction[], removed: Transaction[] }}>();
   blockTransactions$ = new Subject<Transaction>();
-  walletTransactions$ = new Subject<Transaction[]>();
+  walletTransactions$ = new Subject<Record<string, AddressTxSummary[]>>();
   isLoadingWebSocket$ = new ReplaySubject<boolean>(1);
   isLoadingMempool$ = new BehaviorSubject<boolean>(true);
   vbytesPerSecond$ = new ReplaySubject<number>(1);
