@@ -453,6 +453,7 @@ class MempoolBlocks {
             mempoolTx.acceleration = true;
             mempoolTx.acceleratedBy = isAcceleratedBy[txid] || acceleration?.pools;
             mempoolTx.acceleratedAt = acceleration?.added;
+            mempoolTx.feeDelta = acceleration?.feeDelta;
             for (const ancestor of mempoolTx.ancestors || []) {
               if (!mempool[ancestor.txid].acceleration) {
                 mempool[ancestor.txid].cpfpDirty = true;
@@ -460,6 +461,7 @@ class MempoolBlocks {
               mempool[ancestor.txid].acceleration = true;
               mempool[ancestor.txid].acceleratedBy = mempoolTx.acceleratedBy;
               mempool[ancestor.txid].acceleratedAt = mempoolTx.acceleratedAt;
+              mempool[ancestor.txid].feeDelta = mempoolTx.feeDelta;
               isAcceleratedBy[ancestor.txid] = mempoolTx.acceleratedBy;
             }
           } else {

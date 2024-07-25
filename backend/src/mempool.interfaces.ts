@@ -126,6 +126,7 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
   acceleration?: boolean;
   acceleratedBy?: number[];
   acceleratedAt?: number;
+  feeDelta?: number;
   replacement?: boolean;
   uid?: number;
   flags?: number;
@@ -449,7 +450,7 @@ export interface OptimizedStatistic {
 
 export interface TxTrackingInfo {
   replacedBy?: string,
-  position?: { block: number, vsize: number, accelerated?: boolean, acceleratedBy?: number[], acceleratedAt?: number },
+  position?: { block: number, vsize: number, accelerated?: boolean, acceleratedBy?: number[], acceleratedAt?: number, feeDelta?: number },
   cpfp?: {
     ancestors?: Ancestor[],
     bestDescendant?: Ancestor | null,
@@ -462,6 +463,7 @@ export interface TxTrackingInfo {
   accelerated?: boolean,
   acceleratedBy?: number[],
   acceleratedAt?: number,
+  feeDelta?: number,
   confirmed?: boolean
 }
 
