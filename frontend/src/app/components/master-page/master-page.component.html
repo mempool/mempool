@@ -19,7 +19,7 @@
   <a class="navbar-brand d-none d-md-flex" [ngClass]="{'dual-logos': subdomain}" [routerLink]="['/' | relativeUrl]" (click)="brandClick($event)">
     <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
       @if (enterpriseInfo?.header_img) {
-        <img [src]="enterpriseInfo?.header_img" alt="enterpriseInfo.title" height="48px" class="mr-3">
+        <img [src]="enterpriseInfo?.header_img" [alt]="enterpriseInfo.title" height="48px" class="mr-3">
       } @else {
         <ng-template [ngIf]="subdomain && enterpriseInfo">
           <div class="subdomain_container">
@@ -39,7 +39,7 @@
   <!-- Mobile -->
   <a class="navbar-brand d-flex d-md-none justify-content-center" [ngClass]="{'dual-logos': subdomain, 'mr-0': subdomain}" [routerLink]="['/' | relativeUrl]" (click)="brandClick($event)">
     @if (enterpriseInfo?.header_img) {
-      <img [src]="enterpriseInfo?.header_img" alt="enterpriseInfo.title" height="42px">
+      <img [src]="enterpriseInfo?.header_img" [alt]="enterpriseInfo.title" height="42px">
     } @else {
       <ng-template [ngIf]="subdomain && enterpriseInfo">
         <div class="subdomain_container">
@@ -49,7 +49,7 @@
       </ng-template>
       <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
         @if (enterpriseInfo?.header_img) {
-          <img [src]="enterpriseInfo?.header_img" alt="enterpriseInfo.title" height="36px">
+          <img [src]="enterpriseInfo?.header_img" [alt]="enterpriseInfo.title" height="36px">
         } @else {
           <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126" class="mempool-logo" [ngStyle]="{'opacity': connectionState.val === 2 ? 1 : 0.5 }"></app-svg-images>
           <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>

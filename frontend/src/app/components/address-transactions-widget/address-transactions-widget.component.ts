@@ -43,7 +43,7 @@ export class AddressTransactionsWidgetComponent implements OnInit, OnChanges, On
 
   startAddressSubscription(): void {
     this.isLoading = true;
-    if (!this.address || !this.addressInfo) {
+    if (!this.addressSummary$ && (!this.address || !this.addressInfo)) {
       return;
     }
     this.transactions$ = (this.addressSummary$ || (this.isPubkey
@@ -55,7 +55,7 @@ export class AddressTransactionsWidgetComponent implements OnInit, OnChanges, On
       })
     )).pipe(
       map(summary => {
-        return summary?.slice(0, 6);
+        return summary?.filter(tx => Math.abs(tx.value) >= 1000000)?.slice(0, 6);
       }),
       switchMap(txs => {
         return (zip(txs.map(tx => this.priceService.getBlockPrice$(tx.time, txs.length < 3, this.currency).pipe(
@@ -68,6 +68,12 @@ export class AddressTransactionsWidgetComponent implements OnInit, OnChanges, On
         ))));
       })
     );
+
+  }
+
+  getAmountDigits(value: number): string {
+    const decimals = Math.max(0, 4 - Math.ceil(Math.log10(Math.abs(value / 100_000_000))));
+    return `1.${decimals}-${decimals}`;
   }
 
   ngOnDestroy(): void {
