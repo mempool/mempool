@@ -229,6 +229,25 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.latestBlock = blocks[0];
     });
 
+    this.transactionTimesSubscription = this.transactionTimes$.pipe(
+      tap(() => {
+        this.isLoadingFirstSeen = true;
+      }),
+      switchMap((txid) => this.apiService.getTransactionTimes$([txid]).pipe(
+        retry({ count: 2, delay: 2000 }),
+        // Try again until we either get a valid response, or the transaction is confirmed
+        repeat({ delay: 2000 }),
+        filter((transactionTimes) => transactionTimes?.length && transactionTimes[0] > 0 && !this.tx.status?.confirmed),
+        take(1),
+      )),
+    )
+    .subscribe((transactionTimes) => {
+      this.isLoadingFirstSeen = false;
+      if (transactionTimes?.length && transactionTimes[0]) {
+        this.transactionTime = transactionTimes[0];
+      }
+    });
+
     this.fetchCpfpSubscription = this.fetchCpfp$
       .pipe(
         switchMap((txId) =>
@@ -733,26 +752,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.accelerationPositions,
         );
       })
-    )
-
-    this.transactionTimesSubscription = this.transactionTimes$.pipe(
-      tap(() => {
-        this.isLoadingFirstSeen = true;
-      }),
-      switchMap((txid) => this.apiService.getTransactionTimes$([txid]).pipe(
-        retry({ count: 2, delay: 2000 }),
-        // Try again until we either get a valid response, or the transaction is confirmed
-        repeat({ delay: 2000 }),
-        filter((transactionTimes) => transactionTimes?.length && transactionTimes[0] > 0 && !this.tx.status?.confirmed),
-        take(1),
-      )),
-    )
-    .subscribe((transactionTimes) => {
-      this.isLoadingFirstSeen = false;
-      if (transactionTimes?.length && transactionTimes[0]) {
-        this.transactionTime = transactionTimes[0];
-      }
-    });
+    );
   }
 
   ngAfterViewInit(): void {
