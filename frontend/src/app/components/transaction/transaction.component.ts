@@ -11,7 +11,9 @@ import {
   tap,
   map,
   retry,
-  startWith
+  startWith,
+  repeat,
+  take
 } from 'rxjs/operators';
 import { Transaction } from '../../interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, Subject, from, throwError, combineLatest, BehaviorSubject } from 'rxjs';
@@ -76,6 +78,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   transactionTime = -1;
   subscription: Subscription;
   fetchCpfpSubscription: Subscription;
+  transactionTimesSubscription: Subscription;
   fetchRbfSubscription: Subscription;
   fetchCachedTxSubscription: Subscription;
   fetchAccelerationSubscription: Subscription;
@@ -107,6 +110,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   showCpfpDetails = false;
   miningStats: MiningStats;
   fetchCpfp$ = new Subject<string>();
+  transactionTimes$ = new Subject<string>();
   fetchRbfHistory$ = new Subject<string>();
   fetchCachedTx$ = new Subject<string>();
   fetchAcceleration$ = new Subject<number>();
@@ -224,6 +228,25 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.blocksSubscription = this.stateService.blocks$.subscribe((blocks) => {
       this.latestBlock = blocks[0];
+    });
+
+    this.transactionTimesSubscription = this.transactionTimes$.pipe(
+      tap(() => {
+        this.isLoadingFirstSeen = true;
+      }),
+      switchMap((txid) => this.apiService.getTransactionTimes$([txid]).pipe(
+        retry({ count: 2, delay: 2000 }),
+        // Try again until we either get a valid response, or the transaction is confirmed
+        repeat({ delay: 2000 }),
+        filter((transactionTimes) => transactionTimes?.length && transactionTimes[0] > 0 && !this.tx.status?.confirmed),
+        take(1),
+      )),
+    )
+    .subscribe((transactionTimes) => {
+      this.isLoadingFirstSeen = false;
+      if (transactionTimes?.length && transactionTimes[0]) {
+        this.transactionTime = transactionTimes[0];
+      }
     });
 
     this.fetchCpfpSubscription = this.fetchCpfp$
@@ -573,7 +596,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             if (tx.firstSeen) {
               this.transactionTime = tx.firstSeen;
             } else {
-              this.getTransactionTime();
+              this.transactionTimes$.next(tx.txid);
             }
           } else {
             this.fetchAcceleration$.next(tx.status.block_height);
@@ -730,7 +753,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.accelerationPositions,
         );
       })
-    )
+    );
   }
 
   ngAfterViewInit(): void {
@@ -762,28 +785,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.seoService.logSoft404();
     this.isLoadingTx = false;
     return of(false);
-  }
-
-  getTransactionTime() {
-    this.isLoadingFirstSeen = true;
-    this.apiService
-      .getTransactionTimes$([this.tx.txid])
-      .pipe(
-        retry({ count: 2, delay: 2000 }),
-        catchError(() => {
-          this.isLoadingFirstSeen = false;
-          return throwError(() => new Error(''));
-        })
-      )
-      .subscribe((transactionTimes) => {
-        if (transactionTimes?.length && transactionTimes[0]) {
-          this.transactionTime = transactionTimes[0];
-        } else {
-          setTimeout(() => {
-            this.getTransactionTime();
-          }, 2000);
-        }
-      });
   }
 
   setCpfpInfo(cpfpInfo: CpfpInfo): void {
@@ -1058,6 +1059,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this.subscription.unsubscribe();
     this.fetchCpfpSubscription.unsubscribe();
+    this.transactionTimesSubscription.unsubscribe();
     this.fetchRbfSubscription.unsubscribe();
     this.fetchCachedTxSubscription.unsubscribe();
     this.fetchAccelerationSubscription.unsubscribe();
