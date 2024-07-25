@@ -90,7 +90,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   auth: IAuth | null = null;
 
   // accelerator stuff
-  square: { appId: string, locationId: string};
   accelerationUUID: string;
   accelerationSubscription: Subscription;
   difficultySubscription: Subscription;
@@ -113,7 +112,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   loadingCashapp = false;
   loadingApplePay = false;
   loadingGooglePay = false;
-  cashappError = false;
   cashappSubmit: any;
   payments: any;
   cashAppPay: any;
@@ -169,13 +167,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     } else {
       this.moveToStep('summary');
     }
-
-    this.servicesApiService.setupSquare$().subscribe(ids => {
-      this.square = {
-        appId: ids.squareAppId,
-        locationId: ids.squareLocationId
-      };
-    });
 
     this.conversionsSubscription = this.stateService.conversions$.subscribe(
       async (conversions) => {
@@ -443,20 +434,27 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
   async initSquare(): Promise<void> {
     try {
-      //@ts-ignore
-      this.payments = window.Square.payments(this.square.appId, this.square.locationId)
-      const urlParams = new URLSearchParams(window.location.search);
-      if (this._step === 'cashapp' || urlParams.get('cash_request_id')) {
-        await this.requestCashAppPayment();
-      } else if (this._step === 'applepay') {
-        await this.requestApplePayPayment();
-      } else if (this._step === 'googlepay') {
-        await this.requestGooglePayPayment();
-      }
+      this.servicesApiService.setupSquare$().subscribe({
+        next: async (ids) => {
+          //@ts-ignore
+          this.payments = window.Square.payments(ids.squareAppId, ids.squareLocationId)
+          const urlParams = new URLSearchParams(window.location.search);
+          if (this._step === 'cashapp' || urlParams.get('cash_request_id')) {
+            await this.requestCashAppPayment();
+          } else if (this._step === 'applepay') {
+            await this.requestApplePayPayment();
+          } else if (this._step === 'googlepay') {
+            await this.requestGooglePayPayment();
+          }
+        },
+        error: () => {
+          console.debug('Error loading Square Payments');
+          this.accelerateError = 'cannot_setup_square';
+        }
+      });            
     } catch (e) {
       console.debug('Error loading Square Payments', e);
-      this.cashappError = true;
-      return;
+      this.accelerateError = 'cannot_setup_square';
     }
   }
 
