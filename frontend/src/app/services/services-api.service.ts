@@ -118,6 +118,9 @@ export class ServicesApiServices {
   }
 
   getJWT$() {
+    if (!this.stateService.env.OFFICIAL_MEMPOOL_SPACE) {
+      return of(null);
+    }
     return this.httpClient.get<any>(`${this.stateService.env.SERVICES_API}/auth/getJWT`);
   }
 
