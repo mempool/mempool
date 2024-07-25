@@ -47,7 +47,7 @@ export const MIN_BID_RATIO = 1;
 export const DEFAULT_BID_RATIO = 2;
 export const MAX_BID_RATIO = 4;
 
-type CheckoutStep = 'quote' | 'summary' | 'checkout' | 'cashapp' | 'applepay' | 'processing' | 'paid' | 'success';
+type CheckoutStep = 'quote' | 'summary' | 'checkout' | 'cashapp' | 'applepay' | 'googlepay' | 'processing' | 'paid' | 'success';
 
 @Component({
   selector: 'app-accelerate-checkout',
@@ -62,6 +62,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   @Input() scrollEvent: boolean;
   @Input() cashappEnabled: boolean = true;
   @Input() applePayEnabled: boolean = false;
+  @Input() googlePayEnabled: boolean = true;
   @Input() advancedEnabled: boolean = false;
   @Input() forceMobile: boolean = false;
   @Input() showDetails: boolean = false;
@@ -83,7 +84,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
   private _step: CheckoutStep = 'summary';
   simpleMode: boolean = true;
-  paymentMethod: 'cashapp' | 'btcpay';
   timeoutTimer: any;
 
   authSubscription$: Subscription;
@@ -112,11 +112,13 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   // square
   loadingCashapp = false;
   loadingApplePay = false;
+  loadingGooglePay = false;
   cashappError = false;
   cashappSubmit: any;
   payments: any;
   cashAppPay: any;
   applePay: any;
+  googlePay: any;
   conversionsSubscription: Subscription;
   conversions: any;
   
@@ -225,6 +227,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.scrollToElementWithTimeout('confirm-title', 'center', 100);
     } else if (this._step === 'applepay' && this.applePayEnabled) {
       this.loadingApplePay = true;
+      this.insertSquare();
+      this.setupSquare();
+      this.scrollToElementWithTimeout('confirm-title', 'center', 100);
+    } else if (this._step === 'googlepay' && this.googlePayEnabled) {
+      this.loadingGooglePay = true;
       this.insertSquare();
       this.setupSquare();
       this.scrollToElementWithTimeout('confirm-title', 'center', 100);
@@ -443,6 +450,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         await this.requestCashAppPayment();
       } else if (this._step === 'applepay') {
         await this.requestApplePayPayment();
+      } else if (this._step === 'googlepay') {
+        await this.requestGooglePayPayment();
       }
     } catch (e) {
       console.debug('Error loading Square Payments', e);
@@ -542,6 +551,92 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   /**
+   * GOOGLE PAY
+   */
+  async requestGooglePayPayment() {
+    if (this.conversionsSubscription) {
+      this.conversionsSubscription.unsubscribe();
+    }
+    
+    this.conversionsSubscription = this.stateService.conversions$.subscribe(
+      async (conversions) => {
+        this.conversions = conversions;
+        if (this.googlePay) {
+          this.googlePay.destroy();
+        }
+
+        const costUSD = this.cost / 100_000_000 * conversions.USD;
+        const paymentRequest = this.payments.paymentRequest({
+          countryCode: 'US',
+          currencyCode: 'USD',
+          total: {
+            amount: costUSD.toFixed(2),
+            label: 'Total'
+          }
+        });
+        this.googlePay = await this.payments.googlePay(paymentRequest , {
+          referenceId: `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
+        });
+
+        await this.googlePay.attach(`#google-pay-button`, {
+          buttonType: 'pay',
+          onClick: (e) => { console.log(e, 'hi') }
+        });
+        this.loadingGooglePay = false;
+
+        document.getElementById('google-pay-button').addEventListener('click', async event => {
+          event.preventDefault();
+          const tokenResult = await this.googlePay.tokenize();
+          if (tokenResult?.status === 'OK') {
+            const card = tokenResult.details?.card;
+            if (!card || !card.brand || !card.expMonth || !card.expYear || !card.last4) {
+              console.error(`Cannot retreive payment card details`);
+              this.accelerateError = 'apple_pay_no_card_details';
+              return;
+            }
+            const cardTag = md5(`${card.brand}${card.expMonth}${card.expYear}${card.last4}`.toLowerCase());
+            this.servicesApiService.accelerateWithGooglePay$(
+              this.tx.txid,
+              tokenResult.token,
+              cardTag,
+              `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
+              this.accelerationUUID
+            ).subscribe({
+              next: () => {
+                this.audioService.playSound('ascend-chime-cartoon');
+                if (this.googlePay) {
+                  this.googlePay.destroy();
+                }
+                setTimeout(() => {
+                  this.moveToStep('paid');
+                }, 1000);
+              },
+              error: (response) => {
+                this.accelerateError = response.error;
+                if (!(response.status === 403 && response.error === 'not_available')) {
+                  setTimeout(() => {
+                    // Reset everything by reloading the page :D, can be improved
+                    const urlParams = new URLSearchParams(window.location.search);
+                    window.location.assign(window.location.toString().replace(`?cash_request_id=${urlParams.get('cash_request_id')}`, ``));
+                  }, 3000);
+                }
+              }
+            });
+          } else {
+            let errorMessage = `Tokenization failed with status: ${tokenResult.status}`;
+            if (tokenResult.errors) {
+              errorMessage += ` and errors: ${JSON.stringify(
+                tokenResult.errors,
+              )}`;
+            }
+            throw new Error(errorMessage);
+          }          
+        });
+      }
+    );
+  }
+
+  /**
    * CASHAPP
    */
   async requestCashAppPayment() {
@@ -566,18 +661,14 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             label: 'Total',
             pending: true,
             productUrl: `${redirectHostname}/tracker/${this.tx.txid}`,
-          },
-          button: { shape: 'semiround', size: 'small', theme: 'light'}
+          }
         });
         this.cashAppPay = await this.payments.cashAppPay(paymentRequest, {
           redirectURL: `${redirectHostname}/tracker/${this.tx.txid}`,
-          referenceId: `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
-          button: { shape: 'semiround', size: 'small', theme: 'light'}
+          referenceId: `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`
         });
 
-        if (this.step === 'cashapp') {
-          await this.cashAppPay.attach(`#cash-app-pay`, { theme: 'light', size: 'small', shape: 'semiround' })
-        }
+        await this.cashAppPay.attach(`#cash-app-pay`, { theme: 'light', size: 'small', shape: 'semiround' })
         this.loadingCashapp = false;
 
         this.cashAppPay.addEventListener('ontokenization', event => {
@@ -686,6 +777,13 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     return !!this.estimate?.availablePaymentMethods?.applePay;
   }
 
+  get couldPayWithGooglePay() {
+    if (!this.googlePayEnabled) {
+      return false;
+    }
+    return !!this.estimate?.availablePaymentMethods?.googlePay;
+  }
+
   get couldPayWithBalance() {
     if (!this.hasAccessToBalanceMode) {
       return false;
@@ -724,6 +822,22 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     }
 
     const paymentMethod = this.estimate?.availablePaymentMethods?.applePay;
+    if (paymentMethod) {
+      const costUSD = (this.cost / 100_000_000 * this.conversions.USD);
+      if (costUSD >= paymentMethod.min && costUSD <= paymentMethod.max) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  get canPayWithGooglePay() {
+    if (!this.googlePayEnabled || !this.conversions) {
+      return false;
+    }
+
+    const paymentMethod = this.estimate?.availablePaymentMethods?.googlePay;
     if (paymentMethod) {
       const costUSD = (this.cost / 100_000_000 * this.conversions.USD);
       if (costUSD >= paymentMethod.min && costUSD <= paymentMethod.max) {
