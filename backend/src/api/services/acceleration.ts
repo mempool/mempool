@@ -37,6 +37,7 @@ export interface AccelerationHistory {
 };
 
 class AccelerationApi {
+  private onDemandPollingEnabled = !config.MEMPOOL_SERVICES.ACCELERATIONS;
   private apiPath = config.MEMPOOL.OFFICIAL ? (config.MEMPOOL_SERVICES.API + '/accelerator/accelerations') : (config.EXTERNAL_DATA_SERVER.MEMPOOL_API + '/accelerations');
   private _accelerations: Acceleration[] | null = null;
   private lastPoll = 0;
@@ -52,7 +53,9 @@ class AccelerationApi {
   }
 
   public accelerationRequested(txid: string): void {
-    this.myAccelerations[txid] = { status: 'requested', added: Date.now() };
+    if (this.onDemandPollingEnabled) {
+      this.myAccelerations[txid] = { status: 'requested', added: Date.now() };
+    }
   }
 
   public accelerationConfirmed(): void {
@@ -70,7 +73,7 @@ class AccelerationApi {
   }
 
   public async $updateAccelerations(): Promise<Acceleration[] | null> {
-    if (config.MEMPOOL_SERVICES.ACCELERATIONS) {
+    if (!this.onDemandPollingEnabled) {
       const accelerations = await this.$fetchAccelerations();
       if (accelerations) {
         this._accelerations = accelerations;
