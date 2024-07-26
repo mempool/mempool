@@ -2607,6 +2607,7 @@
       </trans-unit>
       <trans-unit id="8072922a37fcba13275c2aaed6efb408454cf943" datatype="html">
         <source>Change (7d)</source>
+        <target>变化 (7天)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/balance-widget/balance-widget.component.html</context>
           <context context-type="linenumber">14</context>
@@ -2619,6 +2620,7 @@
       </trans-unit>
       <trans-unit id="00b2f0e8008ca3c1240f29cec13a5a1ebea14dd9" datatype="html">
         <source>Change (30d)</source>
+        <target>变化 (30天)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/balance-widget/balance-widget.component.html</context>
           <context context-type="linenumber">23</context>
@@ -2741,6 +2743,7 @@
       </trans-unit>
       <trans-unit id="41545303ec98792b738d6237adbd1f3b54a22196" datatype="html">
         <source>Block Fees Vs Subsidy</source>
+        <target>区块费用与补贴</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fees-subsidy-graph/block-fees-subsidy-graph.component.html</context>
           <context context-type="linenumber">6</context>
@@ -2764,6 +2767,7 @@
       </trans-unit>
       <trans-unit id="8538305450922736186" datatype="html">
         <source>At block <x id="PH" equiv-text="'&lt;b style=&quot;color: white; margin-left: 2px&quot;&gt;' + data[0].axisValue"/></source>
+        <target>在区块<x id="PH" equiv-text="'&lt;b style=&quot;color: white; margin-left: 2px&quot;&gt;' + data[0].axisValue"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fees-subsidy-graph/block-fees-subsidy-graph.component.ts</context>
           <context context-type="linenumber">185</context>
@@ -2771,6 +2775,7 @@
       </trans-unit>
       <trans-unit id="8807945662832318286" datatype="html">
         <source>Around block <x id="PH" equiv-text="'&lt;b style=&quot;color: white; margin-left: 2px&quot;&gt;' + data[0].axisValue"/></source>
+        <target>区块周围<x id="PH" equiv-text="'&lt;b style=&quot;color: white; margin-left: 2px&quot;&gt;' + data[0].axisValue"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fees-subsidy-graph/block-fees-subsidy-graph.component.ts</context>
           <context context-type="linenumber">187</context>
@@ -10086,6 +10091,7 @@
       </trans-unit>
       <trans-unit id="6052761358428332094" datatype="html">
         <source>Batch payment</source>
+        <target>批次付款</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/filters.utils.ts</context>
           <context context-type="linenumber">108</context>
@@ -10101,6 +10107,7 @@
       </trans-unit>
       <trans-unit id="7779249123661446825" datatype="html">
         <source>Behavior</source>
+        <target>行为</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/filters.utils.ts</context>
           <context context-type="linenumber">120</context>
@@ -10108,6 +10115,7 @@
       </trans-unit>
       <trans-unit id="6290595884142884507" datatype="html">
         <source>Heuristics</source>
+        <target>启发式</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/filters.utils.ts</context>
           <context context-type="linenumber">122</context>
