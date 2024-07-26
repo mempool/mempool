@@ -165,6 +165,7 @@ class BitcoinRoutes {
           acceleration: tx.acceleration,
           acceleratedBy: tx.acceleratedBy || undefined,
           acceleratedAt: tx.acceleratedAt || undefined,
+          feeDelta: tx.feeDelta || undefined,
         });
         return;
       }

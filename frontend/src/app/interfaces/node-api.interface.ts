@@ -31,6 +31,7 @@ export interface CpfpInfo {
   acceleration?: boolean;
   acceleratedBy?: number[];
   acceleratedAt?: number;
+  feeDelta?: number;
 }
 
 export interface RbfInfo {
