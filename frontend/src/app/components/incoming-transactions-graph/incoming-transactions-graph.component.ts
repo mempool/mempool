@@ -17,7 +17,7 @@ const OUTLIERS_MEDIAN_MULTIPLIER = 4;
       position: absolute;
       top: 50%;
       left: calc(50% - 16px);
-      z-index: 100;
+      z-index: 99;
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
