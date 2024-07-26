@@ -20,7 +20,7 @@
         </td>
       </tr>
       <tr *ngIf="accelerationInfo.fee">
-        <td class="label" i18n="transaction.fee">Fee</td>
+        <td class="label" i18n="transaction.fee|Transaction fee">Fee</td>
         <td class="value">{{ accelerationInfo.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span></td>
       </tr>
       <tr *ngIf="accelerationInfo.bidBoost >= 0 || accelerationInfo.feeDelta">
@@ -45,7 +45,7 @@
         }
       </tr>
       <tr *ngIf="['accelerated', 'mined'].includes(accelerationInfo.status) && hasPoolsData()">
-        <td class="label" i18n="transaction.accelerated-by-pool|Accelerated by pool">Accelerated by</td>
+        <td class="label" i18n="transaction.accelerated-by-hashrate|Accelerated to hashrate">Accelerated by</td>
         <td class="value" *ngIf="accelerationInfo.pools">
           <ng-container *ngFor="let pool of accelerationInfo.pools">
             <img *ngIf="accelerationInfo.poolsData[pool]" 
