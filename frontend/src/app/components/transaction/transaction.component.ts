@@ -518,6 +518,13 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               });
             }
           }
+          if (window.innerWidth <= 767.98) {
+            this.router.navigate([this.relativeUrlPipe.transform('/tx'), this.txId], {
+              queryParamsHandling: 'merge',
+              preserveFragment: true,
+              queryParams: { mode: 'details' },
+            });
+          }
           this.seoService.setTitle(
             $localize`:@@bisq.transaction.browser-title:Transaction: ${this.txId}:INTERPOLATION:`
           );

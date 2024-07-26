@@ -142,10 +142,10 @@ let routes: Routes = [
     data: { preload: true },
   },
   {
-    path: 'tx/:id',
+    path: 'tx',
     canMatch: [TrackerGuard],
     runGuardsAndResolvers: 'always',
-    component: TrackerComponent,
+    loadChildren: () => import('./components/tracker/tracker.module').then(m => m.TrackerModule),
   },
   {
     path: '',

@@ -31,6 +31,8 @@ import { TrackerStage } from './tracker-bar.component';
 import { MiningService, MiningStats } from '../../services/mining.service';
 import { ETA, EtaService } from '../../services/eta.service';
 import { getTransactionFlags, getUnacceleratedFeeRate } from '../../shared/transaction.utils';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+
 
 interface Pool {
   id: number;
