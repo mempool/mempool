@@ -575,7 +575,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
         await this.googlePay.attach(`#google-pay-button`, {
           buttonType: 'pay',
-          onClick: (e) => { console.log(e); }
+          buttonSizeMode: 'fill',
         });
         this.loadingGooglePay = false;
 
@@ -664,7 +664,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           referenceId: `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`
         });
 
-        await this.cashAppPay.attach(`#cash-app-pay`, { theme: 'light', size: 'small', shape: 'semiround' });
+        await this.cashAppPay.attach(`#cash-app-pay`, { theme: 'dark' });
         this.loadingCashapp = false;
 
         this.cashAppPay.addEventListener('ontokenization', event => {

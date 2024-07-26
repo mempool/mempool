@@ -402,12 +402,16 @@
                   <img class="paymentMethod mx-2" style="width: 200px" src="/resources/cash-app.svg" height=55 (click)="moveToStep('cashapp')">
                 }
                 @if (canPayWithApplePay) {
-                  @if (canPayWithCashapp) { <hr class="w-25 mt-2 mb-2"> }
-                  <img style="cursor: pointer;" src="/resources/apple-pay.svg" height=55 (click)="moveToStep('applepay')">
+                  @if (canPayWithCashapp) { <span class="mt-1 mb-1"></span> }
+                  <div class="paymentMethod mx-2" style="width: 200px; height: 55px">
+                  <img src="/resources/apple-pay.png" height=37 (click)="moveToStep('applepay')">
+                  </div>
                 }
                 @if (canPayWithGooglePay) {
-                  @if (canPayWithCashapp || canPayWithApplePay) { <hr class="w-25 mt-2 mb-2"> }
-                  <img style="cursor: pointer;" src="/resources/google-pay.png" height=55 (click)="moveToStep('googlepay')">
+                  @if (canPayWithCashapp || canPayWithApplePay) { <span class="mt-1 mb-1"></span> }
+                  <div class="paymentMethod mx-2" style="width: 200px; height: 55px">
+                    <img src="/resources/google-pay.png" height=37 (click)="moveToStep('googlepay')">
+                  </div>
                 }
               </div>
             }
@@ -467,11 +471,11 @@
       <div class="col-sm">
         <div class="form-group w-100">
           @if (step === 'applepay') {
-            <div id="apple-pay-button" class="apple-pay-button apple-pay-button-white" [style]="loadingApplePay ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
+            <div id="apple-pay-button" class="apple-pay-button apple-pay-button-black" style="height: 50px"  [style]="loadingApplePay ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
           } @else if (step === 'cashapp') {          
-            <div id="cash-app-pay" class="d-inline-block" [style]="loadingCashapp ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
+            <div id="cash-app-pay" class="d-inline-block" style="height: 50px" [style]="loadingCashapp ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
           } @else if (step === 'googlepay') {
-            <div id="google-pay-button" class="d-inline-block" [style]="loadingGooglePay ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
+            <div id="google-pay-button" class="d-inline-block" style="height: 50px" [style]="loadingGooglePay ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
           }
           @if (loadingCashapp || loadingApplePay || loadingGooglePay) {
           <div display="d-flex flex-row justify-content-center">
