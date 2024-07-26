@@ -83,9 +83,9 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
         this.pageChange(this.page);
       });
 
-      this.miningService.getMiningStats('1m').subscribe(stats => {
-        for (const pool of stats.pools) {
-          this.pools[pool.poolUniqueId] = pool;
+      this.miningService.getPools().subscribe(pools => {
+        for (const pool of pools) {
+          this.pools[pool.unique_id] = pool;
         }
       });
     }

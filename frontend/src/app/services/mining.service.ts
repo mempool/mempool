@@ -31,6 +31,7 @@ export class MiningService {
       data: MiningStats;
     }
   } = {};
+  poolsData: SinglePoolStats[] = [];
 
   constructor(
     private stateService: StateService,
@@ -57,7 +58,19 @@ export class MiningService {
       );
     }
   }
-
+  
+  /** 
+   * Get names and slugs of all pools
+   */
+  public getPools(): Observable<any[]> {
+    return this.poolsData.length ? of(this.poolsData) : this.apiService.listPools$(undefined).pipe(
+      map(response => {
+        this.poolsData = response.body;
+        return this.poolsData;
+      })
+    );
+    
+  }
   /**
    * Set the hashrate power of ten we want to display
    */
