@@ -68,6 +68,7 @@ import { AddressTransactionsWidgetComponent } from '../components/address-transa
 import { RbfTimelineComponent } from '../components/rbf-timeline/rbf-timeline.component';
 import { AccelerationTimelineComponent } from '../components/acceleration-timeline/acceleration-timeline.component';
 import { RbfTimelineTooltipComponent } from '../components/rbf-timeline/rbf-timeline-tooltip.component';
+import { AccelerationTimelineTooltipComponent } from '../components/acceleration-timeline/acceleration-timeline-tooltip.component';
 import { PushTransactionComponent } from '../components/push-transaction/push-transaction.component';
 import { TestTransactionsComponent } from '../components/test-transactions/test-transactions.component';
 import { AssetsFeaturedComponent } from '../components/assets/assets-featured/assets-featured.component';
@@ -180,6 +181,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     RbfTimelineComponent,
     AccelerationTimelineComponent,
     RbfTimelineTooltipComponent,
+    AccelerationTimelineTooltipComponent,
     PushTransactionComponent,
     TestTransactionsComponent,
     AssetsNavComponent,
@@ -320,6 +322,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     RbfTimelineComponent,
     AccelerationTimelineComponent,
     RbfTimelineTooltipComponent,
+    AccelerationTimelineTooltipComponent,
     PushTransactionComponent,
     TestTransactionsComponent,
     AssetsNavComponent,

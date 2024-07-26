@@ -22,6 +22,7 @@ export interface Transaction {
   acceleration?: boolean;
   acceleratedBy?: number[];
   acceleratedAt?: number;
+  feeDelta?: number;
   deleteAfter?: number;
   _unblinded?: any;
   _deduced?: boolean;

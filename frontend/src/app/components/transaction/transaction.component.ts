@@ -823,6 +823,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.tx.acceleration = cpfpInfo.acceleration;
       this.tx.acceleratedBy = cpfpInfo.acceleratedBy;
       this.tx.acceleratedAt = cpfpInfo.acceleratedAt;
+      this.tx.feeDelta = cpfpInfo.feeDelta;
       this.setIsAccelerated(firstCpfp);
     }
 

@@ -1,6 +1,8 @@
-import { Component, Input, OnInit, OnChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, HostListener } from '@angular/core';
 import { ETA } from '../../services/eta.service';
 import { Transaction } from '../../interfaces/electrs.interface';
+import { Acceleration, SinglePoolStats } from '../../interfaces/node-api.interface';
+import { MiningService } from '../../services/mining.service';
 
 @Component({
   selector: 'app-acceleration-timeline',
@@ -10,6 +12,7 @@ import { Transaction } from '../../interfaces/electrs.interface';
 export class AccelerationTimelineComponent implements OnInit, OnChanges {
   @Input() transactionTime: number;
   @Input() tx: Transaction;
+  @Input() accelerationInfo: Acceleration;
   @Input() eta: ETA;
   // A mined transaction has standard ETA and accelerated ETA undefined
   // A transaction in mempool has either standardETA defined (if accelerated) or acceleratedETA defined (if not accelerated yet)
@@ -22,12 +25,24 @@ export class AccelerationTimelineComponent implements OnInit, OnChanges {
   useAbsoluteTime: boolean = false;
   interval: number;
 
-  constructor() {}
+  tooltipPosition = null;
+  hoverInfo: any = null;
+  poolsData: { [id: number]: SinglePoolStats } = {};
+
+  constructor(
+    private miningService: MiningService,
+  ) {}
 
   ngOnInit(): void {
     this.acceleratedAt = this.tx.acceleratedAt ?? new Date().getTime() / 1000;
     this.now = Math.floor(new Date().getTime() / 1000);
     this.useAbsoluteTime = this.tx.status.block_time < this.now - 7 * 24 * 3600;
+
+    this.miningService.getPools().subscribe(pools => {
+      for (const pool of pools) {
+        this.poolsData[pool.unique_id] = pool;
+      }
+    });
 
     this.interval = window.setInterval(() => {
       this.now = Math.floor(new Date().getTime() / 1000);
@@ -51,5 +66,43 @@ export class AccelerationTimelineComponent implements OnInit, OnChanges {
 
   ngOnDestroy(): void {
     clearInterval(this.interval);
+  }
+  
+  onHover(event, status: string): void {
+    if (status === 'seen') {
+      this.hoverInfo = {
+        status,
+        fee: this.tx.fee,
+        weight: this.tx.weight
+      };
+    } else if (status === 'accelerated') {
+      this.hoverInfo = {
+        status,
+        fee: this.accelerationInfo?.effectiveFee || this.tx.fee,
+        weight: this.tx.weight,
+        feeDelta: this.accelerationInfo?.feeDelta || this.tx.feeDelta,
+        pools: this.tx.acceleratedBy || this.accelerationInfo?.pools,
+        poolsData: this.poolsData
+      };
+    } else if (status === 'mined') {
+      this.hoverInfo = {
+        status,
+        fee: this.accelerationInfo?.effectiveFee,
+        weight: this.tx.weight,
+        bidBoost: this.accelerationInfo?.bidBoost,
+        minedByPoolUniqueId: this.accelerationInfo?.minedByPoolUniqueId,
+        pools: this.tx.acceleratedBy || this.accelerationInfo?.pools,
+        poolsData: this.poolsData
+      };
+    }
+  }
+
+  onBlur(event): void {
+    this.hoverInfo = null;
+  }
+
+  @HostListener('pointermove', ['$event'])
+  onPointerMove(event) {
+    this.tooltipPosition = { x: event.clientX, y: event.clientY };
   }
 }
