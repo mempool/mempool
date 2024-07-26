@@ -152,9 +152,16 @@
         margin-bottom: -8px;
         transform: translateY(-50%);
         border-radius: 50%;
-        cursor: pointer;
         padding: 4px;
         background: transparent;
+        transition: background-color 300ms, padding 300ms;
+
+        &.hovering {
+          cursor: pointer;
+          &:hover {
+            padding: 0px;
+          }
+        }
     
         .shape {
           position: relative;
