@@ -1,7 +1,8 @@
+/* eslint-disable no-console */
 import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, ChangeDetectorRef, SimpleChanges, HostListener } from '@angular/core';
 import { Subscription, tap, of, catchError, Observable, switchMap } from 'rxjs';
 import { ServicesApiServices } from '../../services/services-api.service';
-import { md5, nextRoundNumber, insecureRandomUUID } from '../../shared/common.utils';
+import { md5, insecureRandomUUID } from '../../shared/common.utils';
 import { StateService } from '../../services/state.service';
 import { AudioService } from '../../services/audio.service';
 import { ETA, EtaService } from '../../services/eta.service';
@@ -11,7 +12,7 @@ import { IAuth, AuthServiceMempool } from '../../services/auth.service';
 import { EnterpriseService } from '../../services/enterprise.service';
 import { ApiService } from '../../services/api.service';
 
-export type PaymentMethod = 'balance' | 'bitcoin' | 'cashapp' | 'applepay' | 'googlepay';
+export type PaymentMethod = 'balance' | 'bitcoin' | 'cashapp' | 'applePay' | 'googlePay';
 
 export type AccelerationEstimate = {
   hasAccess: boolean;
@@ -112,14 +113,13 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   loadingCashapp = false;
   loadingApplePay = false;
   loadingGooglePay = false;
-  cashappSubmit: any;
   payments: any;
   cashAppPay: any;
   applePay: any;
   googlePay: any;
   conversionsSubscription: Subscription;
-  conversions: any;
-  
+  conversions: Record<string, number>;
+
   // btcpay
   loadingBtcpayInvoice = false;
   invoice = undefined;
@@ -137,13 +137,13 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     this.accelerationUUID = insecureRandomUUID();
 
     // Check if Apple Pay available
-    // @ts-ignore https://developer.apple.com/documentation/apple_pay_on_the_web/apple_pay_js_api/checking_for_apple_pay_availability#overview
-    if (window.ApplePaySession) {
+    // https://developer.apple.com/documentation/apple_pay_on_the_web/apple_pay_js_api/checking_for_apple_pay_availability#overview
+    if (window['ApplePaySession']) {
       this.applePayEnabled = true;
     }
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.authSubscription$ = this.authService.getAuth$().subscribe((auth) => {
       if (this.auth?.user?.userId !== auth?.user?.userId) {
         this.auth = auth;
@@ -175,7 +175,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.estimateSubscription) {
       this.estimateSubscription.unsubscribe();
     }
@@ -195,7 +195,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     }
   }
 
-  moveToStep(step: CheckoutStep) {
+  moveToStep(step: CheckoutStep): void {
     this._step = step;
     if (this.timeoutTimer) {
       clearTimeout(this.timeoutTimer);
@@ -232,7 +232,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         if (this.step === 'paid') {
           this.accelerateError = 'internal_server_error';
         }
-      }, 120000)
+      }, 120000);
     }
     this.hasDetails.emit(this._step === 'quote');
   }
@@ -250,7 +250,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.scrollToElement(id, position);
     }, timeout);
   }
-  scrollToElement(id: string, position: ScrollLogicalPosition) {
+  scrollToElement(id: string, position: ScrollLogicalPosition): void {
     const acceleratePreviewAnchor = document.getElementById(id);
     if (acceleratePreviewAnchor) {
       this.cd.markForCheck();
@@ -265,7 +265,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   /**
    * Accelerator
    */
-  fetchEstimate() {
+  fetchEstimate(): void {
     if (this.estimateSubscription) {
       this.estimateSubscription.unsubscribe();
     }
@@ -329,7 +329,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         }
       }),
 
-      catchError((response) => {
+      catchError(() => {
         this.estimate = undefined;
         this.quoteError = `cannot_accelerate_tx`;
         this.estimateSubscription.unsubscribe();
@@ -400,8 +400,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
    * Square
    */
   insertSquare(): void {
-    //@ts-ignore
-    if (window.Square) {
+    if (window['Square']) {
       return;
     }
     let statsUrl = 'https://sandbox.web.squarecdn.com/v1/square.js';
@@ -413,19 +412,17 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       statsUrl = 'https://web.squarecdn.com/v1/square.js';
     }
 
-    (function() {
+    (function(): void {
       const d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-      // @ts-ignore
       g.type='text/javascript'; g.src=statsUrl; s.parentNode.insertBefore(g, s);
     })();
   }
-  setupSquare() {
-    const init = () => {
+  setupSquare(): void {
+    const init = (): void => {
       this.initSquare();
     };
 
-    //@ts-ignore
-    if (!window.Square) {
+    if (!window['Square']) {
       console.debug('Square.js failed to load properly. Retrying in 1 second.');
       setTimeout(init, 1000);
     } else {
@@ -436,8 +433,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     try {
       this.servicesApiService.setupSquare$().subscribe({
         next: async (ids) => {
-          //@ts-ignore
-          this.payments = window.Square.payments(ids.squareAppId, ids.squareLocationId)
+          this.payments = window['Square'].payments(ids.squareAppId, ids.squareLocationId);
           const urlParams = new URLSearchParams(window.location.search);
           if (this._step === 'cashapp' || urlParams.get('cash_request_id')) {
             await this.requestCashAppPayment();
@@ -451,7 +447,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           console.debug('Error loading Square Payments');
           this.accelerateError = 'cannot_setup_square';
         }
-      });            
+      });
     } catch (e) {
       console.debug('Error loading Square Payments', e);
       this.accelerateError = 'cannot_setup_square';
@@ -461,11 +457,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   /**
    * APPLE PAY
    */
-  async requestApplePayPayment() {
+  async requestApplePayPayment(): Promise<void> {
     if (this.conversionsSubscription) {
       this.conversionsSubscription.unsubscribe();
     }
-    
+
     this.conversionsSubscription = this.stateService.conversions$.subscribe(
       async (conversions) => {
         this.conversions = conversions;
@@ -552,11 +548,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   /**
    * GOOGLE PAY
    */
-  async requestGooglePayPayment() {
+  async requestGooglePayPayment(): Promise<void> {
     if (this.conversionsSubscription) {
       this.conversionsSubscription.unsubscribe();
     }
-    
+
     this.conversionsSubscription = this.stateService.conversions$.subscribe(
       async (conversions) => {
         this.conversions = conversions;
@@ -579,7 +575,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
         await this.googlePay.attach(`#google-pay-button`, {
           buttonType: 'pay',
-          onClick: (e) => { console.log(e, 'hi') }
+          onClick: (e) => { console.log(e); }
         });
         this.loadingGooglePay = false;
 
@@ -630,7 +626,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               )}`;
             }
             throw new Error(errorMessage);
-          }          
+          }
         });
       }
     );
@@ -639,11 +635,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   /**
    * CASHAPP
    */
-  async requestCashAppPayment() {
+  async requestCashAppPayment(): Promise<void> {
     if (this.conversionsSubscription) {
       this.conversionsSubscription.unsubscribe();
     }
-    
+
     this.conversionsSubscription = this.stateService.conversions$.subscribe(
       async (conversions) => {
         this.conversions = conversions;
@@ -668,7 +664,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           referenceId: `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`
         });
 
-        await this.cashAppPay.attach(`#cash-app-pay`, { theme: 'light', size: 'small', shape: 'semiround' })
+        await this.cashAppPay.attach(`#cash-app-pay`, { theme: 'light', size: 'small', shape: 'semiround' });
         this.loadingCashapp = false;
 
         this.cashAppPay.addEventListener('ontokenization', event => {
@@ -717,7 +713,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   /**
    * BTCPay
    */
-  async requestBTCPayInvoice() {
+  async requestBTCPayInvoice(): Promise<void> {
     this.servicesApiService.generateBTCPayAcceleratorInvoice$(this.tx.txid, this.userBid).pipe(
       switchMap(response => {
         return this.servicesApiService.retreiveInvoice$(response.btcpayInvoiceId);
@@ -747,60 +743,60 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   /**
    * UI events
    */
-  selectedOptionChanged(event) {
+  selectedOptionChanged(event): void {
     this.selectedOption = event.target.id;
   }
 
-  get step() {
+  get step(): CheckoutStep {
     return this._step;
   }
 
-  get paymentMethods() {
-    return Object.keys(this.estimate?.availablePaymentMethods || {});
+  get paymentMethods(): PaymentMethod[] {
+    return Object.keys(this.estimate?.availablePaymentMethods || {}) as PaymentMethod[];
   }
 
-  get couldPayWithBitcoin() {
+  get couldPayWithBitcoin(): boolean {
     return !!this.estimate?.availablePaymentMethods?.bitcoin;
   }
 
-  get couldPayWithCashapp() {
+  get couldPayWithCashapp(): boolean {
     if (!this.cashappEnabled) {
       return false;
     }
     return !!this.estimate?.availablePaymentMethods?.cashapp;
   }
 
-  get couldPayWithApplePay() {
+  get couldPayWithApplePay(): boolean {
     if (!this.applePayEnabled) {
       return false;
     }
     return !!this.estimate?.availablePaymentMethods?.applePay;
   }
 
-  get couldPayWithGooglePay() {
+  get couldPayWithGooglePay(): boolean {
     if (!this.googlePayEnabled) {
       return false;
     }
     return !!this.estimate?.availablePaymentMethods?.googlePay;
   }
 
-  get couldPayWithBalance() {
+  get couldPayWithBalance(): boolean {
     if (!this.hasAccessToBalanceMode) {
       return false;
     }
     return !!this.estimate?.availablePaymentMethods?.balance;
   }
 
-  get couldPay() {
+  get couldPay(): boolean {
     return this.couldPayWithBalance || this.couldPayWithBitcoin || this.couldPayWithCashapp || this.couldPayWithApplePay || this.couldPayWithGooglePay;
   }
 
-  get canPayWithBitcoin() {
+  get canPayWithBitcoin(): boolean {
     const paymentMethod = this.estimate?.availablePaymentMethods?.bitcoin;
     return paymentMethod && this.cost >= paymentMethod.min && this.cost <= paymentMethod.max;
   }
 
-  get canPayWithCashapp() {
+  get canPayWithCashapp(): boolean {
     if (!this.cashappEnabled || !this.conversions) {
       return false;
     }
@@ -816,7 +812,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     return false;
   }
 
-  get canPayWithApplePay() {
+  get canPayWithApplePay(): boolean {
     if (!this.applePayEnabled || !this.conversions) {
       return false;
     }
@@ -832,7 +828,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     return false;
   }
 
-  get canPayWithGooglePay() {
+  get canPayWithGooglePay(): boolean {
     if (!this.googlePayEnabled || !this.conversions) {
       return false;
     }
@@ -848,7 +844,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     return false;
   }
 
-  get canPayWithBalance() {
+  get canPayWithBalance(): boolean {
     if (!this.hasAccessToBalanceMode) {
       return false;
     }
@@ -856,11 +852,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     return paymentMethod && this.cost >= paymentMethod.min && this.cost <= paymentMethod.max && this.cost <= this.estimate?.userBalance;
   }
 
-  get canPay() {
+  get canPay(): boolean {
     return this.canPayWithBalance || this.canPayWithBitcoin || this.canPayWithCashapp || this.canPayWithApplePay || this.canPayWithGooglePay;
   }
 
-  get hasAccessToBalanceMode() {
+  get hasAccessToBalanceMode(): boolean {
     return this.isLoggedIn() && this.estimate?.hasAccess;
   }
 

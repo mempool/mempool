@@ -138,7 +138,7 @@ export class StateService {
   blocksSubject$ = new BehaviorSubject<BlockExtended[]>([]);
   blocks$: Observable<BlockExtended[]>;
   transactions$ = new BehaviorSubject<TransactionStripped[]>(null);
-  conversions$ = new ReplaySubject<any>(1);
+  conversions$ = new ReplaySubject<Record<string, number>>(1);
   bsqPrice$ = new ReplaySubject<number>(1);
   mempoolInfo$ = new ReplaySubject<MempoolInfo>(1);
   mempoolBlocks$ = new ReplaySubject<MempoolBlock[]>(1);
