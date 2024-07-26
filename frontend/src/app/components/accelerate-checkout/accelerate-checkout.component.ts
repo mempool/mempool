@@ -11,7 +11,7 @@ import { IAuth, AuthServiceMempool } from '../../services/auth.service';
 import { EnterpriseService } from '../../services/enterprise.service';
 import { ApiService } from '../../services/api.service';
 
-export type PaymentMethod = 'balance' | 'bitcoin' | 'cashapp';
+export type PaymentMethod = 'balance' | 'bitcoin' | 'cashapp' | 'applepay' | 'googlepay';
 
 export type AccelerationEstimate = {
   hasAccess: boolean;
@@ -24,7 +24,7 @@ export type AccelerationEstimate = {
   mempoolBaseFee: number;
   vsizeFee: number;
   pools: number[];
-  availablePaymentMethods: {[method: string]: {min: number, max: number}};
+  availablePaymentMethods: Record<PaymentMethod, {min: number, max: number}>;
   unavailable?: boolean;
   options: { // recommended bid options
     fee: number; // recommended userBid in sats
@@ -512,6 +512,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                 this.accelerationUUID
               ).subscribe({
                 next: () => {
+                  this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
                   this.audioService.playSound('ascend-chime-cartoon');
                   if (this.applePay) {
                     this.applePay.destroy();
@@ -601,6 +602,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               this.accelerationUUID
             ).subscribe({
               next: () => {
+                this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
                 this.audioService.playSound('ascend-chime-cartoon');
                 if (this.googlePay) {
                   this.googlePay.destroy();
@@ -790,7 +792,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   get couldPay() {
-    return this.couldPayWithBalance || this.couldPayWithBitcoin || this.couldPayWithCashapp || this.couldPayWithApplePay;
+    return this.couldPayWithBalance || this.couldPayWithBitcoin || this.couldPayWithCashapp || this.couldPayWithApplePay || this.couldPayWithGooglePay;
   }
 
   get canPayWithBitcoin() {
@@ -855,7 +857,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   get canPay() {
-    return this.canPayWithBalance || this.canPayWithBitcoin || this.canPayWithCashapp || this.canPayWithApplePay;
+    return this.canPayWithBalance || this.canPayWithBitcoin || this.canPayWithCashapp || this.canPayWithApplePay || this.canPayWithGooglePay;
   }
 
   get hasAccessToBalanceMode() {
