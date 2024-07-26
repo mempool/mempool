@@ -7,7 +7,7 @@ export interface WebsocketResponse {
   backend?: 'esplora' | 'electrum' | 'none';
   block?: BlockExtended;
   blocks?: BlockExtended[];
-  conversions?: any;
+  conversions?: Record<string, number>;
   txConfirmed?: string;
   historicalDate?: string;
   mempoolInfo?: MempoolInfo;
