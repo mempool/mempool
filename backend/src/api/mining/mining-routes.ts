@@ -465,10 +465,6 @@ class MiningRoutes {
   }
 
   private async $requestAcceleration(req: Request, res: Response): Promise<void> {
-    if (config.MEMPOOL_SERVICES.ACCELERATIONS || config.MEMPOOL.OFFICIAL) {
-      res.status(405).send('not available.');
-      return;
-    }
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Cache-control', 'private, no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
     res.setHeader('expires', -1);

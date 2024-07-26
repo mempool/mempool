@@ -118,6 +118,9 @@ export class ServicesApiServices {
   }
 
   getJWT$() {
+    if (!this.stateService.env.OFFICIAL_MEMPOOL_SPACE) {
+      return of(null);
+    }
     return this.httpClient.get<any>(`${this.stateService.env.SERVICES_API}/auth/getJWT`);
   }
 
@@ -139,6 +142,10 @@ export class ServicesApiServices {
 
   accelerateWithApplePay$(txInput: string, token: string, cardTag: string, referenceId: string, accelerationUUID: string) {
     return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/applePay`, { txInput: txInput, cardTag: cardTag, token: token, referenceId: referenceId, accelerationUUID: accelerationUUID });
+  }
+
+  accelerateWithGooglePay$(txInput: string, token: string, cardTag: string, referenceId: string, accelerationUUID: string) {
+    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/googlePay`, { txInput: txInput, cardTag: cardTag, token: token, referenceId: referenceId, accelerationUUID: accelerationUUID });
   }
 
   getAccelerations$(): Observable<Acceleration[]> {
