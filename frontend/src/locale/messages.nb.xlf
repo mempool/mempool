@@ -426,7 +426,7 @@
       </trans-unit>
       <trans-unit id="49b619d43af81067bfcbf7ba4036876a620e9bd8" datatype="html">
         <source>We were not able to accelerate this transaction. Please try again later.</source>
-        <target>Vi klarte ikke å fremskynde denne transaksjonen. Prøv igjen senere.</target>
+        <target>Vi klarte ikke å akselerere denne transaksjonen. Prøv igjen senere.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">11</context>
