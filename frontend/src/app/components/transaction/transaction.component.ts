@@ -844,7 +844,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     if (this.isAcceleration) {
       // this immediately returns cached stats if we fetched them recently
-      this.miningService.getMiningStats('1w').subscribe(stats => {
+      this.miningService.getMiningStats('1m').subscribe(stats => {
         this.miningStats = stats;
         this.isAccelerated$.next(this.isAcceleration); // hack to trigger recalculation of ETA without adding another source observable
       });
