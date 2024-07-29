@@ -417,6 +417,7 @@
       </trans-unit>
       <trans-unit id="1b47ebb11a7dbffd196a704d2325c5c73aea81e6" datatype="html">
         <source>Sorry, something went wrong!</source>
+        <target>Вибачте, щось пішло не так!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">5</context>
@@ -425,6 +426,7 @@
       </trans-unit>
       <trans-unit id="49b619d43af81067bfcbf7ba4036876a620e9bd8" datatype="html">
         <source>We were not able to accelerate this transaction. Please try again later.</source>
+        <target>Нам не вдалось пришвидшити цю транзакцію. Будь ласка, спробуйте пізніше.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">11</context>
@@ -433,6 +435,7 @@
       </trans-unit>
       <trans-unit id="f4e529ae5ffd73001d1ff4bbdeeb0a72e342e5c8" datatype="html">
         <source>Close</source>
+        <target>Закрити</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">18</context>
@@ -489,6 +492,7 @@
       </trans-unit>
       <trans-unit id="df89e157bacb4ab32e6ec725bf1eb176dc15201e" datatype="html">
         <source>Size in vbytes of this transaction (including unconfirmed ancestors)</source>
+        <target>Розмір у vbyte цієї транзакції (включно з непідтвердженими предками)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">51</context>
@@ -623,6 +627,7 @@
       </trans-unit>
       <trans-unit id="fad137784196a8fdc10588e27ed5d8ae95fe4e79" datatype="html">
         <source>Fees already paid by this transaction (including unconfirmed ancestors)</source>
+        <target>Комісії для цієї транзакції вже були оплачені (включно з непідтвердженими предками)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">62</context>
@@ -631,6 +636,7 @@
       </trans-unit>
       <trans-unit id="4169a885bc1747a38344bae64e6926c6d7d7ec43" datatype="html">
         <source>How much faster?</source>
+        <target>Наскільки швидше?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">71</context>

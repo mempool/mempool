@@ -416,6 +416,7 @@
       </trans-unit>
       <trans-unit id="1b47ebb11a7dbffd196a704d2325c5c73aea81e6" datatype="html">
         <source>Sorry, something went wrong!</source>
+        <target>Pardon, bir şeyler yanlış gitti. </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">5</context>
@@ -432,6 +433,7 @@
       </trans-unit>
       <trans-unit id="f4e529ae5ffd73001d1ff4bbdeeb0a72e342e5c8" datatype="html">
         <source>Close</source>
+        <target>Kapat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">18</context>
@@ -628,6 +630,7 @@
       </trans-unit>
       <trans-unit id="4169a885bc1747a38344bae64e6926c6d7d7ec43" datatype="html">
         <source>How much faster?</source>
+        <target>Ne kadar daha hızlı?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">71</context>
@@ -644,6 +647,7 @@
       </trans-unit>
       <trans-unit id="a8233de047500bf0f0d9f9f1712ddb071501a283" datatype="html">
         <source>Summary</source>
+        <target>Özet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">100</context>
@@ -683,6 +687,7 @@
       </trans-unit>
       <trans-unit id="c2836a2964adf9e369ee0a1ce67f991cf2aa435d" datatype="html">
         <source>Estimated extra fee required</source>
+        <target>Gereken tahmini ekstra ücret</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">117</context>
@@ -691,6 +696,7 @@
       </trans-unit>
       <trans-unit id="6c37b6a6f9e5ec98367ed744afa4b36800aa79ce" datatype="html">
         <source>Target rate</source>
+        <target>Hedef ücret</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">131</context>
@@ -699,6 +705,7 @@
       </trans-unit>
       <trans-unit id="e26d365629446e476b5d437e343b5b02b49adea2" datatype="html">
         <source>Extra fee required</source>
+        <target>Gerekli ekstra ücret</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">139</context>
@@ -752,6 +759,7 @@
       </trans-unit>
       <trans-unit id="990d4cedae650a7a1b53887cfde7ed363e362bb2" datatype="html">
         <source>Acceleration cost</source>
+        <target>Hızlandırma maliyeti</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">206</context>
@@ -769,6 +777,7 @@
       </trans-unit>
       <trans-unit id="a67aec1c4d47cdf3a4442a19e616def78fd77388" datatype="html">
         <source>Go back</source>
+        <target>Geri dön</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">258</context>
@@ -785,6 +794,7 @@
       </trans-unit>
       <trans-unit id="7d89e94e98140d07d5c2bb12d6166b8b74506eb0" datatype="html">
         <source>Accelerate your Bitcoin transaction?</source>
+        <target>Bitcoin işlemini hızlandır?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">273</context>
@@ -793,6 +803,7 @@
       </trans-unit>
       <trans-unit id="eb70970e7741aca891aa54ff4651b050a60b1690" datatype="html">
         <source>Wait</source>
+        <target>Bekle</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">285</context>
@@ -801,6 +812,7 @@
       </trans-unit>
       <trans-unit id="f6a46cd5ca2087712a145f2c680e2aad5f926eaf" datatype="html">
         <source>Confirmation expected</source>
+        <target>Konfirmasyon bekleniyor</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">287</context>
@@ -813,6 +825,7 @@
       </trans-unit>
       <trans-unit id="4adc5f10d717fbcfc9834dcf5eb203c1156db4d7" datatype="html">
         <source>Confirmation not expected any time soon</source>
+        <target>Konfirmasyonun yakın zamanda gerçekleşmesi beklenmiyor</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">290</context>
@@ -821,6 +834,7 @@
       </trans-unit>
       <trans-unit id="fd1ab7f68416a5ce64f04f588c8b808d7bba9624" datatype="html">
         <source>For an additional</source>
+        <target>Kadar ekstra karşılığında</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">345</context>
@@ -849,6 +863,7 @@
       </trans-unit>
       <trans-unit id="9ebf5e1f1759ac5a81805ee901d02d1c14cab033" datatype="html">
         <source>Your account will be debited no more than</source>
+        <target>Hesabın ödemen günün üstünde olmayacak</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">367</context>
@@ -857,6 +872,7 @@
       </trans-unit>
       <trans-unit id="65fd4251d8ddfe4017d4d83f8cec6f5a80d89289" datatype="html">
         <source>Pay</source>
+        <target>Öde</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">378</context>
@@ -878,6 +894,7 @@
       </trans-unit>
       <trans-unit id="3da51e8df074e97a3479c4b2a6d1655529267544" datatype="html">
         <source>Failed to load invoice</source>
+        <target>Faturanın yüklenmesi başarısız oldu</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">381</context>
@@ -886,6 +903,7 @@
       </trans-unit>
       <trans-unit id="13eacf4307fbadcc4ba552641200cdc36997a62c" datatype="html">
         <source>Loading invoice...</source>
+        <target>Fatura yükleniyor...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">386</context>
@@ -894,6 +912,7 @@
       </trans-unit>
       <trans-unit id="63f5d0ec23e3cf4abf6d5221107633c90d8d4a15" datatype="html">
         <source>OR</source>
+        <target>Veya</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">394</context>
@@ -902,6 +921,7 @@
       </trans-unit>
       <trans-unit id="d5380b83d01211f764e7dc17f115cbe2c306793f" datatype="html">
         <source>Confirm your payment</source>
+        <target>Ödemeni onayla </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">428</context>
@@ -910,6 +930,7 @@
       </trans-unit>
       <trans-unit id="23e85f2bac1f2bf2a36125a7cc9232e47d773bca" datatype="html">
         <source>Total additional cost</source>
+        <target>Toplam ekstra ücret</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">444</context>
@@ -918,6 +939,7 @@
       </trans-unit>
       <trans-unit id="ada15d0099ccf0a54d598a658d7a5d9f95af8fc6" datatype="html">
         <source>with</source>
+        <target>ile</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">448</context>
@@ -926,6 +948,7 @@
       </trans-unit>
       <trans-unit id="c427d1fcbff172397bf8f6fb154e3144f099afdc" datatype="html">
         <source>Loading payment method...</source>
+        <target>Ödeme metodu yükleniyor...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">462</context>
@@ -934,6 +957,7 @@
       </trans-unit>
       <trans-unit id="72ca62832f62c0aeb0c0675d2ac6aa7043ee840d" datatype="html">
         <source>Confirming your payment</source>
+        <target>Ödemen onaylanıyor</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">480</context>
@@ -942,6 +966,7 @@
       </trans-unit>
       <trans-unit id="8c8cbda9c5ddde6a4898a80aef46199c946c8895" datatype="html">
         <source>We are processing your payment...</source>
+        <target>Ödemeni işliyoruz...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">490</context>
@@ -950,6 +975,7 @@
       </trans-unit>
       <trans-unit id="ea3197c44781ecca4f2adbf7bff229574f192983" datatype="html">
         <source>Accelerating your transaction</source>
+        <target>İşlemin hızlandırılıyor</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">500</context>
@@ -958,6 +984,7 @@
       </trans-unit>
       <trans-unit id="2279bfb8531701cc176ff6b266c3fa0df3983bce" datatype="html">
         <source>Confirming your acceleration with our mining pool partners...</source>
+        <target>Hızlandırma işlemin madencilik partnerlerimizce onaylanıyor...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">507</context>
@@ -966,6 +993,7 @@
       </trans-unit>
       <trans-unit id="d005740e3435cf7e0aad9a67d179ec3b3065205e" datatype="html">
         <source>...sorry, this is taking longer than expected...</source>
+        <target>...özür dileriz, beklediğimizden uzun sürüyor...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">509</context>
@@ -974,6 +1002,7 @@
       </trans-unit>
       <trans-unit id="afdff27fa38ec3386a7b9bb1b3ff113ed5d7e411" datatype="html">
         <source>Your transaction is being accelerated!</source>
+        <target>İşlemin hızlandırılıyor!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">518</context>
@@ -982,6 +1011,7 @@
       </trans-unit>
       <trans-unit id="f3b21cdfcc35a76e171f3bfd9c3daecbe065b159" datatype="html">
         <source>Your transaction has been accepted for acceleration by our mining pool partners.</source>
+        <target>Hızlandırma isteğin maden havuzu partnerlerimizce kabul edildi. </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">524</context>
@@ -990,6 +1020,7 @@
       </trans-unit>
       <trans-unit id="746506272a06b85cba0efc14907940df4bafdf96" datatype="html">
         <source>Calculating cost...</source>
+        <target>Ücretler hesaplanıyor...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">543</context>
@@ -998,6 +1029,7 @@
       </trans-unit>
       <trans-unit id="484e154f1b26e67760d10baa8dddb2c69ddb1990" datatype="html">
         <source>customize</source>
+        <target>özelleştir</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">549</context>
@@ -1006,6 +1038,7 @@
       </trans-unit>
       <trans-unit id="fc60844faa5ea496fe8b8cfb7620b2bfc733c90b" datatype="html">
         <source>Accelerate to ~<x id="INTERPOLATION" equiv-text="{{ x | number : '1.0-0' }}"/> sat/vB</source>
+        <target>~<x id="INTERPOLATION" equiv-text="{{ x | number : '1.0-0' }}"/> sat/vB ücrete hızlandırılıyor</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">552</context>
@@ -1032,6 +1065,7 @@
       </trans-unit>
       <trans-unit id="cae178cb66733552da9e3baefc1949a18af63ee0" datatype="html">
         <source>Your transaction will be prioritized by up to <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="1' }}"/>%<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> of miners.</source>
+        <target>İşleminin, madencilerin <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="1' }}"/>% <x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/>'ü tarafında önceliklendirilecek</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">580</context>
@@ -1110,6 +1144,7 @@
       </trans-unit>
       <trans-unit id="1158292946432597388" datatype="html">
         <source>accelerated</source>
+        <target>hızlandırldı</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-fee-graph.component.ts</context>
           <context context-type="linenumber">91</context>
@@ -1399,6 +1434,7 @@
       </trans-unit>
       <trans-unit id="cf2ec414465d65ab24b354663d94d051a67e26e9" datatype="html">
         <source>Total vSize</source>
+        <target>Toplam vSize</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-stats/acceleration-stats.component.html</context>
           <context context-type="linenumber">20</context>
@@ -1419,6 +1455,7 @@
       </trans-unit>
       <trans-unit id="d932577b535f10c9b3e25aaa430220bb09efc171" datatype="html">
         <source> of blocks</source>
+        <target>blok</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-stats/acceleration-stats.component.html</context>
           <context context-type="linenumber">23</context>
@@ -1668,6 +1705,7 @@
       </trans-unit>
       <trans-unit id="9467c16588ee9f97dfa4f1dd9c96a02d6dc6e008" datatype="html">
         <source>(1 day)</source>
+        <target>(1 gün)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">27</context>
@@ -1676,6 +1714,7 @@
       </trans-unit>
       <trans-unit id="d1c71eabdf119de5aa1d75ea1a8f93a9215dd8ea" datatype="html">
         <source>(1 week)</source>
+        <target>(1 hafta)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">30</context>
@@ -1684,6 +1723,7 @@
       </trans-unit>
       <trans-unit id="0efb19c3388cbcc9f3cd257f389843f9ad2a1f31" datatype="html">
         <source>(1 month)</source>
+        <target>(1 ay)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">33</context>
@@ -1692,6 +1732,7 @@
       </trans-unit>
       <trans-unit id="9d202e68dd5064ae2e3d01073267b4db63b16c40" datatype="html">
         <source>(all time)</source>
+        <target>(tüm zamanlar)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">36</context>

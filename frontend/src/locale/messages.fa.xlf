@@ -1074,6 +1074,7 @@
       </trans-unit>
       <trans-unit id="cae178cb66733552da9e3baefc1949a18af63ee0" datatype="html">
         <source>Your transaction will be prioritized by up to <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="1' }}"/>%<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> of miners.</source>
+        <target>تراکنش ما تا <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="1' }}"/> درصد <x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> استخراج‌کننده‌ها اولویت داده می‌شود. </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">580</context>
@@ -1740,6 +1741,7 @@
       </trans-unit>
       <trans-unit id="9d202e68dd5064ae2e3d01073267b4db63b16c40" datatype="html">
         <source>(all time)</source>
+        <target>(همه)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">36</context>
@@ -1794,6 +1796,7 @@
       </trans-unit>
       <trans-unit id="6bb1e9770b5c27f172ae67754ba316fe455a9821" datatype="html">
         <source>Accelerated to</source>
+        <target>شتاب‌دهی‌شده به</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/active-acceleration-box/active-acceleration-box.component.html</context>
           <context context-type="linenumber">7</context>
@@ -7344,6 +7347,7 @@
       </trans-unit>
       <trans-unit id="53d5fe49e4a07a663eb2f26ceeb76afceef86334" datatype="html">
         <source>Not seen in Mempool</source>
+        <target>در mempool.space دیده نشده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">524</context>
@@ -7353,6 +7357,7 @@
       </trans-unit>
       <trans-unit id="500acb5f67d1f175e1d5dd666c7b15c66611e411" datatype="html">
         <source>This transaction may have been added out-of-band</source>
+        <target>احتمالا این تراکنش خارج از شبکه به دست استخراج‌کننده رسیده است</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">527</context>
@@ -9820,7 +9825,7 @@
       </trans-unit>
       <trans-unit id="692f6e6f4f6afc7f48b8194ab03e1d2155650f00" datatype="html">
         <source>Research</source>
-        <target>تحقیقات ممپول</target>
+        <target>ممپول پژوهی</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">75</context>

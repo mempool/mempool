@@ -425,6 +425,7 @@
       </trans-unit>
       <trans-unit id="f4e529ae5ffd73001d1ff4bbdeeb0a72e342e5c8" datatype="html">
         <source>Close</source>
+        <target>Đóng</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">18</context>
@@ -437,6 +438,7 @@
       </trans-unit>
       <trans-unit id="f24773075af97666c0feca0e883c2585712fe597" datatype="html">
         <source>Your transaction</source>
+        <target>Giao dịch của bạn</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">37</context>
@@ -754,6 +756,7 @@
       </trans-unit>
       <trans-unit id="a67aec1c4d47cdf3a4442a19e616def78fd77388" datatype="html">
         <source>Go back</source>
+        <target>Quay lại</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">258</context>
@@ -778,6 +781,7 @@
       </trans-unit>
       <trans-unit id="eb70970e7741aca891aa54ff4651b050a60b1690" datatype="html">
         <source>Wait</source>
+        <target>Đợi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">285</context>
@@ -842,6 +846,7 @@
       </trans-unit>
       <trans-unit id="65fd4251d8ddfe4017d4d83f8cec6f5a80d89289" datatype="html">
         <source>Pay</source>
+        <target>Thanh toán</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">378</context>
@@ -863,6 +868,7 @@
       </trans-unit>
       <trans-unit id="3da51e8df074e97a3479c4b2a6d1655529267544" datatype="html">
         <source>Failed to load invoice</source>
+        <target>Không thể tải hoá đơn</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">381</context>
@@ -871,6 +877,7 @@
       </trans-unit>
       <trans-unit id="13eacf4307fbadcc4ba552641200cdc36997a62c" datatype="html">
         <source>Loading invoice...</source>
+        <target>Đang tải hoá đơn...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">386</context>
@@ -887,6 +894,7 @@
       </trans-unit>
       <trans-unit id="d5380b83d01211f764e7dc17f115cbe2c306793f" datatype="html">
         <source>Confirm your payment</source>
+        <target>Xác nhận khoản thanh toán của bạn</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">428</context>
@@ -895,6 +903,7 @@
       </trans-unit>
       <trans-unit id="23e85f2bac1f2bf2a36125a7cc9232e47d773bca" datatype="html">
         <source>Total additional cost</source>
+        <target>Tổng chi phí tăng thêm</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">444</context>
@@ -903,6 +912,7 @@
       </trans-unit>
       <trans-unit id="ada15d0099ccf0a54d598a658d7a5d9f95af8fc6" datatype="html">
         <source>with</source>
+        <target>với</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">448</context>
@@ -911,6 +921,7 @@
       </trans-unit>
       <trans-unit id="c427d1fcbff172397bf8f6fb154e3144f099afdc" datatype="html">
         <source>Loading payment method...</source>
+        <target>Đang tải phương thức thanh toán...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">462</context>
