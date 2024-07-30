@@ -2315,7 +2315,7 @@
       </trans-unit>
       <trans-unit id="c5b2c0d65b8fd12ebf8c0d79f562703776fc954e" datatype="html">
         <source>Pegged in</source>
-        <target>锁定</target>
+        <target>转入</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">37</context>
@@ -2325,7 +2325,7 @@
       </trans-unit>
       <trans-unit id="8f5d6ce525a24b049fee47f9b2d8447cca97ccc8" datatype="html">
         <source>Pegged out</source>
-        <target>解锁</target>
+        <target>转出</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">41</context>
@@ -2378,7 +2378,7 @@
       </trans-unit>
       <trans-unit id="d2a84740e76b7220516a9f10644e4b3bdabdb833" datatype="html">
         <source>Peg In/Out and Burn Transactions</source>
-        <target>锁定/解锁与销毁交易</target>
+        <target>转入/转出与销毁交易</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">79</context>
@@ -5358,7 +5358,7 @@
       </trans-unit>
       <trans-unit id="4e3a7555e83abb62ac42d78275cf01b81793cd92" datatype="html">
         <source>Related Peg-In</source>
-        <target>相关Peg-In</target>
+        <target>相关转入</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component.html</context>
           <context context-type="linenumber">11</context>
@@ -5446,7 +5446,7 @@
       </trans-unit>
       <trans-unit id="a8b0889ea1b41888f1e247f2731cc9322198ca04" datatype="html">
         <source>Recent Peg-In / Out's</source>
-        <target>最近的 Peg-In / Out's</target>
+        <target>最近的转入与转出</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-list/recent-pegs-list.component.html</context>
           <context context-type="linenumber">4</context>
@@ -5485,7 +5485,7 @@
       </trans-unit>
       <trans-unit id="2e37a2401f3cb55f2b0c108f77c28bb9738f09e0" datatype="html">
         <source>Peg out in progress...</source>
-        <target>Peg out 进行中</target>
+        <target>转出进行中</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-list/recent-pegs-list.component.html</context>
           <context context-type="linenumber">70</context>
@@ -5494,7 +5494,7 @@
       </trans-unit>
       <trans-unit id="92b8788842b6cced2a7dad59e5fa1803daff1ca2" datatype="html">
         <source>24h Peg-In Volume</source>
-        <target>24 小时Peg-in量</target>
+        <target>24个小时转入量</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-stats/recent-pegs-stats.component.html</context>
           <context context-type="linenumber">12</context>
@@ -5512,7 +5512,7 @@
       </trans-unit>
       <trans-unit id="544fb5f2a64924b4b9d7d2bc25b8925492bd6d64" datatype="html">
         <source>24h Peg-Out Volume</source>
-        <target>24 小时转出侧链交易量</target>
+        <target>24个小时转出侧链交易量</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-stats/recent-pegs-stats.component.html</context>
           <context context-type="linenumber">18</context>
@@ -7480,7 +7480,7 @@
       </trans-unit>
       <trans-unit id="5de25175982d51c72d25bd79933e7b412d51e343" datatype="html">
         <source>Peg-in</source>
-        <target>锁定</target>
+        <target>转入</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">56</context>
@@ -7572,7 +7572,7 @@
       </trans-unit>
       <trans-unit id="9fb28e77d5963f2275397f2f9cee54f32942aeeb" datatype="html">
         <source>Peg-out to <x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-contain"/></source>
-        <target>解锁至<x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-contain"/></target>
+        <target>转出至<x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-contain"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">225,226</context>

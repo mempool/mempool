@@ -1074,7 +1074,7 @@
       </trans-unit>
       <trans-unit id="cae178cb66733552da9e3baefc1949a18af63ee0" datatype="html">
         <source>Your transaction will be prioritized by up to <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="1' }}"/>%<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> of miners.</source>
-        <target>تراکنش ما تا <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="1' }}"/> درصد <x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> استخراج‌کننده‌ها اولویت داده می‌شود. </target>
+        <target>تراکنش شما در <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="1' }}"/> درصد <x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> استخراج‌کننده‌ها اولویت داده می‌شود. </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">580</context>
@@ -1806,6 +1806,7 @@
       </trans-unit>
       <trans-unit id="2c2a527d090d5d030fc130a243135dbc6ba276f0" datatype="html">
         <source>Accelerated by</source>
+        <target>شتاب‌دهی‌شده توسط</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/active-acceleration-box/active-acceleration-box.component.html</context>
           <context context-type="linenumber">30</context>
@@ -1824,6 +1825,7 @@
       </trans-unit>
       <trans-unit id="4231517605576357140" datatype="html">
         <source>not accelerating</source>
+        <target>شتاب‌دهی نشده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/active-acceleration-box/active-acceleration-box.component.ts</context>
           <context context-type="linenumber">85</context>
@@ -1853,6 +1855,7 @@
       </trans-unit>
       <trans-unit id="5538e35f9f610af0d1c70fcc7919a93191a810ca" datatype="html">
         <source> of block</source>
+        <target> از بلاک</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/pending-stats/pending-stats.component.html</context>
           <context context-type="linenumber">23</context>
@@ -2145,6 +2148,7 @@
       </trans-unit>
       <trans-unit id="8754c2dbc855d18ee90ffff136caedfd64f71e83" datatype="html">
         <source>all</source>
+        <target>همه</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">84</context>
@@ -2153,6 +2157,7 @@
       </trans-unit>
       <trans-unit id="6e9a3395f190e740778f523253e1fd6c53259622" datatype="html">
         <source>recent</source>
+        <target>اخیر</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">87</context>
@@ -2192,6 +2197,7 @@
       </trans-unit>
       <trans-unit id="9eb81e2576ffe4e8fb0a303e203040b6ab23cc22" datatype="html">
         <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="There are too many transactions on this address, more than your backend can handle. See more on &lt;"/>There are too many transactions on this address, more than your backend can handle. See more on <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;/docs/faq#address-lookup-issues&quot;&gt;"/>setting up a stronger backend<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.<x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/><x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> Consider viewing this address on the official Mempool website instead: </source>
+        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="There are too many transactions on this address, more than your backend can handle. See more on &lt;"/> این آدرس تعداد زیادی تراکنش دارد. بیشتر از حدی که پیکربندی سیستم شما بتواند آن را پردازش کند. برای راه‌اندازی سیستم قوی‌تر <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;/docs/faq#address-lookup-issues&quot;&gt;"/>اینجا<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> را ببینید. <x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/><x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> همچنین می‌توانید این آدرس را در سایت ممپول مشاهده کنید:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">204,207</context>
@@ -2209,6 +2215,7 @@
       </trans-unit>
       <trans-unit id="c7daf1b7c126095c054f2d3728ae790b0ceef33a" datatype="html">
         <source>Confirmed UTXOs</source>
+        <target>UTXO‌های تأییدشده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">257</context>
@@ -2217,6 +2224,7 @@
       </trans-unit>
       <trans-unit id="ba986bd9e2848d2ef7329394ec87b7f4eaf61118" datatype="html">
         <source>Pending UTXOs</source>
+        <target>UTXOهای در انتظار</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">262</context>
@@ -2807,7 +2815,7 @@
       </trans-unit>
       <trans-unit id="180092a6b8a6151a05f4a7552a2fb75fd159dfa8" datatype="html">
         <source>Match</source>
-        <target>همتا</target>
+        <target>پالایش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-filters/block-filters.component.html</context>
           <context context-type="linenumber">19</context>
@@ -2820,6 +2828,7 @@
       </trans-unit>
       <trans-unit id="16d449549ab7bc61caf3d636372a4a56b5870383" datatype="html">
         <source>Any</source>
+        <target>هر کدام</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-filters/block-filters.component.html</context>
           <context context-type="linenumber">25</context>
@@ -2828,6 +2837,7 @@
       </trans-unit>
       <trans-unit id="360b9f5c32209001518dbd1dc512f25291473b79" datatype="html">
         <source>Tint</source>
+        <target>سایه‌روشن</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-filters/block-filters.component.html</context>
           <context context-type="linenumber">30</context>
@@ -2836,6 +2846,7 @@
       </trans-unit>
       <trans-unit id="4cfabb48965febabe67eb491a3b7e58555d3d52a" datatype="html">
         <source>Classic</source>
+        <target>کلاسیک</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-filters/block-filters.component.html</context>
           <context context-type="linenumber">33</context>
@@ -2848,6 +2859,7 @@
       </trans-unit>
       <trans-unit id="2e6be334a2152f179a557167f98ce4459ff9a2f9" datatype="html">
         <source>Age</source>
+        <target>بر اساس قدمت</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-filters/block-filters.component.html</context>
           <context context-type="linenumber">36</context>
@@ -2937,6 +2949,7 @@
       </trans-unit>
       <trans-unit id="f13653cd063e5c83ac884349e4657d68d804126e" datatype="html">
         <source>Your browser does not support this feature.</source>
+        <target>مرورگر شما این ویژگی را پشتیبانی نمی‌کند.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-graph/block-overview-graph.component.html</context>
           <context context-type="linenumber">21</context>
@@ -3930,6 +3943,7 @@
       </trans-unit>
       <trans-unit id="958d4960ca7a46c7893e7b81ce7465872bb5a44f" datatype="html">
         <source>Acceleration fees paid out-of-band</source>
+        <target>کارمزدهای شتاب‌دهی پرداخت‌شدهٔ خارج از شبکه</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">413</context>
@@ -5339,6 +5353,7 @@
       </trans-unit>
       <trans-unit id="1c6520aeea2eb946269acab0a2863162b8311e7d" datatype="html">
         <source>Dust</source>
+        <target>گرد و خاک</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component.html</context>
           <context context-type="linenumber">15</context>
@@ -5425,6 +5440,7 @@
       </trans-unit>
       <trans-unit id="4dbfcaee1d2f0308bd20b3b6b6655ba1e04330dc" datatype="html">
         <source>BTC Address</source>
+        <target>آدرس BTC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-list/recent-pegs-list.component.html</context>
           <context context-type="linenumber">16</context>
@@ -5871,6 +5887,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.pool-ranking" datatype="html">
         <source>See the top Bitcoin mining pools ranked by number of blocks mined, over your desired timeframe.</source>
+        <target>دیدن برترین استخرهای استخراج،‌ رتبه‌بندی‌شده بر اساس تعداد بلاک‌های استخراج‌شده در طول دورهٔ زمان مورد نظر شما.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">60</context>
@@ -5898,6 +5915,7 @@
       </trans-unit>
       <trans-unit id="3666195172774554282" datatype="html">
         <source>Other (<x id="PH" equiv-text="percentage"/>)</source>
+        <target>دیگر (<x id="PH" equiv-text="percentage"/>)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">186</context>
@@ -6068,6 +6086,7 @@
       </trans-unit>
       <trans-unit id="c34fb298028c4e1089bdfc36c8324086fe8c0527" datatype="html">
         <source>Out-of-band Fees (1w)</source>
+        <target>کارمزدهای خارج از شبکه (1 هفته)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">143</context>
@@ -6548,6 +6567,7 @@
       </trans-unit>
       <trans-unit id="fec63564786cefc0ca1c650527fdfd859aff4b76" datatype="html">
         <source>Raw hex</source>
+        <target>به صورت Hex</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/test-transactions/test-transactions.component.html</context>
           <context context-type="linenumber">5</context>
@@ -7305,6 +7325,7 @@
       </trans-unit>
       <trans-unit id="bbd31e1edb0c089cca11d3d718b6588f3496e9e1" datatype="html">
         <source>This transaction was projected to be included in the block</source>
+        <target>پیش‌بینی می‌شد این تراکنش در بلاک قرار بگیرد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">520</context>
@@ -7313,6 +7334,7 @@
       </trans-unit>
       <trans-unit id="e75410f8ab03085a3dbecf82de6acd9679fefb75" datatype="html">
         <source>Expected in Block</source>
+        <target>پیش‌بینی‌شده در بلاک</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">520</context>
@@ -7330,6 +7352,7 @@
       </trans-unit>
       <trans-unit id="08c516e1fe345b4ae1fcae5fd4e5a0cd22e646dd" datatype="html">
         <source>Seen in Mempool</source>
+        <target>در mempool.space دیده شده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">522</context>
@@ -7339,6 +7362,7 @@
       </trans-unit>
       <trans-unit id="5f79b588d43d16312a9a2e6df1e76922ffe3c45d" datatype="html">
         <source>This transaction was missing from our mempool prior to mining</source>
+        <target>این تراکنش قبل از تأیید در ممپول ما وجود نداشت</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">524</context>
@@ -7366,6 +7390,7 @@
       </trans-unit>
       <trans-unit id="0badd8c91194cb72dd79e12955d4ed4b43a7cf41" datatype="html">
         <source>This transaction may have been prioritized out-of-band</source>
+        <target>احتمالا این تراکنش خارج از شبکه اولویت داده شده است</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">530</context>
@@ -7374,6 +7399,7 @@
       </trans-unit>
       <trans-unit id="7ef1a8a56ad5696e527a8da06a13661f883ad6b2" datatype="html">
         <source>This transaction conflicted with another version in our mempool</source>
+        <target>این تراکنش متناقض با نگارش دیگری از آن در ممپول ما است</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">533</context>
@@ -7751,6 +7777,7 @@
       </trans-unit>
       <trans-unit id="2d70cb7985eaebe99c35bcdfa7dc49b2662c345b" datatype="html">
         <source>Liquid Federation Holdings</source>
+        <target>دارایی‌های فدراسیون لیکوئید</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">165</context>
@@ -9463,6 +9490,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.nodes-per-isp" datatype="html">
         <source>Browse the top 100 ISPs hosting Lightning nodes along with stats like total number of nodes per ISP, aggregate BTC capacity per ISP, and more</source>
+        <target>کاوش در 100 ارائه‌کننده اینترنت برتر گره‌های لایتنینگ، به همراه آمارهایی مانند مجموع تعداد گره‌ها بر اساس ارائه‌کننده اینترنت، مجموع ظرفیت بیت‌کوین بر اساس ارائه‌کننده اینترنت و آمارهای بیشتر</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
           <context context-type="linenumber">54</context>
@@ -9610,7 +9638,7 @@
       </trans-unit>
       <trans-unit id="4034215342842066505" datatype="html">
         <source>Top lightning nodes</source>
-        <target>بالاترین گره‌های لایتنینگ</target>
+        <target>برترین گره‌های لایتنینگ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-rankings-dashboard/nodes-rankings-dashboard.component.ts</context>
           <context context-type="linenumber">22</context>
@@ -9618,6 +9646,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.rankings-dashboard" datatype="html">
         <source>See the top Lightning network nodes ranked by liquidity, connectivity, and age.</source>
+        <target>دیدن گره‌های لایتنینگ برتر، رتبه‌بندی‌شده بر اساس نقدینگی، وضعیت اتصال و عمر.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-rankings-dashboard/nodes-rankings-dashboard.component.ts</context>
           <context context-type="linenumber">23</context>
@@ -9625,6 +9654,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.stats-chart" datatype="html">
         <source>See the capacity of the Lightning network visualized over time in terms of the number of open channels and total bitcoin capacity.</source>
+        <target>دیدن ظرفیت شبکهٔ لایتنینگ تصویرسازی شده در طول زمان بر اساس تعداد کانال‌های باز و مجموع ظرفیت بیت‌کوین.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
           <context context-type="linenumber">71</context>
@@ -9650,6 +9680,7 @@
       </trans-unit>
       <trans-unit id="6d5788756fcb0b8fc937226ff60bf1bd12a8e464" datatype="html">
         <source>provably unspendable</source>
+        <target>خرج‌نشدنی</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/address-type/address-type.component.html</context>
           <context context-type="linenumber">18</context>
@@ -10023,6 +10054,7 @@
       </trans-unit>
       <trans-unit id="6290595884142884507" datatype="html">
         <source>Heuristics</source>
+        <target>مکاشفات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/filters.utils.ts</context>
           <context context-type="linenumber">122</context>
