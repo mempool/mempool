@@ -31,7 +31,7 @@
           <td style="color: #905cf4;" class="value">{{ accelerationInfo.bidBoost | number }} <span class="symbol" i18n="shared.sat|sat">sat</span></td>
         }
       </tr>
-      <tr *ngIf="accelerationInfo.fee && accelerationInfo.weight && (accelerationInfo.feeDelta || accelerationInfo.bidBoost)">
+      <tr *ngIf="accelerationInfo.fee && accelerationInfo.weight">
         @if (accelerationInfo.status === 'seen') {
           <td class="label" i18n="transaction.fee-rate">Fee rate</td>
           <td class="value"><app-fee-rate [fee]="accelerationInfo.fee" [weight]="accelerationInfo.weight"></app-fee-rate></td>
