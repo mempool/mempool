@@ -17,6 +17,7 @@ export interface Transaction {
   feePerVsize?: number;
   effectiveFeePerVsize?: number;
   ancestors?: Ancestor[];
+  descendants?: Ancestor[];
   bestDescendant?: BestDescendant | null;
   cpfpChecked?: boolean;
   acceleration?: boolean;
