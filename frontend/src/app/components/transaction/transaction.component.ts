@@ -622,8 +622,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
                 ancestors: tx.ancestors,
                 bestDescendant: tx.bestDescendant,
               });
-              const hasRelatives = !!(tx.ancestors?.length || tx.bestDescendant);
-              this.hasEffectiveFeeRate = hasRelatives || (tx.effectiveFeePerVsize && (Math.abs(tx.effectiveFeePerVsize - tx.feePerVsize) >= 0.1));
+              const hasRelatives = !!(tx.ancestors?.length || tx.bestDescendant || tx.descendants);
+              this.hasEffectiveFeeRate = hasRelatives || (tx.effectiveFeePerVsize && tx.effectiveFeePerVsize !== (this.tx.fee / (this.tx.weight / 4)) && tx.effectiveFeePerVsize !== (tx.fee / Math.ceil(tx.weight / 4)));
             } else {
               this.fetchCpfp$.next(this.tx.txid);
             }
@@ -831,8 +831,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.sigops = this.cpfpInfo.sigops;
       this.adjustedVsize = this.cpfpInfo.adjustedVsize;
     }
-    this.hasCpfp =!!(this.cpfpInfo && (this.cpfpInfo.bestDescendant || this.cpfpInfo.descendants?.length || this.cpfpInfo.ancestors?.length));
-    this.hasEffectiveFeeRate = hasRelatives || (this.tx.effectiveFeePerVsize && (Math.abs(this.tx.effectiveFeePerVsize - this.tx.feePerVsize) > 0.01));
+    this.hasCpfp =!!(this.cpfpInfo && relatives.length);
+    this.hasEffectiveFeeRate = hasRelatives || (this.tx.effectiveFeePerVsize && this.tx.effectiveFeePerVsize !== (this.tx.fee / (this.tx.weight / 4)) && this.tx.effectiveFeePerVsize !== (this.tx.fee / Math.ceil(this.tx.weight / 4)));
   }
 
   setIsAccelerated(initialState: boolean = false) {
