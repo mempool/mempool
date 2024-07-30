@@ -1439,6 +1439,7 @@
       </trans-unit>
       <trans-unit id="cf2ec414465d65ab24b354663d94d051a67e26e9" datatype="html">
         <source>Total vSize</source>
+        <target>إجمالي v-size</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-stats/acceleration-stats.component.html</context>
           <context context-type="linenumber">20</context>
@@ -1459,6 +1460,7 @@
       </trans-unit>
       <trans-unit id="d932577b535f10c9b3e25aaa430220bb09efc171" datatype="html">
         <source> of blocks</source>
+        <target> من الكتل</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-stats/acceleration-stats.component.html</context>
           <context context-type="linenumber">23</context>
@@ -1467,6 +1469,7 @@
       </trans-unit>
       <trans-unit id="02573b6980a2d611b4361a2595a4447e390058cd" datatype="html">
         <source>Accelerations</source>
+        <target>التسارعات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">2</context>
@@ -1558,6 +1561,7 @@
       </trans-unit>
       <trans-unit id="9310d4be621ac60b19a4d73258b25f2b411971e7" datatype="html">
         <source>Bid</source>
+        <target>عطاء</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">13</context>
@@ -1566,6 +1570,7 @@
       </trans-unit>
       <trans-unit id="dac1da772be9797ce39c7364d0e01373e4955ed1" datatype="html">
         <source>Requested</source>
+        <target>مطلوب</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">14</context>
@@ -1578,6 +1583,7 @@
       </trans-unit>
       <trans-unit id="57cde27765d527a0d9195212fa5a7ce06408c827" datatype="html">
         <source>Bid Boost</source>
+        <target>تعزيز العطاءات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">17</context>
@@ -1604,6 +1610,7 @@
       </trans-unit>
       <trans-unit id="aa28c3afcb8b1a556fc1e1842e48a57f24fd643f" datatype="html">
         <source>Status</source>
+        <target>حال</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">19</context>
@@ -1629,6 +1636,7 @@
       </trans-unit>
       <trans-unit id="e6a27066251ca1e04c5be86ad758380856df2506" datatype="html">
         <source>Pending</source>
+        <target>قيد الانتظار</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">53</context>
@@ -1645,6 +1653,7 @@
       </trans-unit>
       <trans-unit id="9362dc86738f282259d3ef3789b7824dbfd19202" datatype="html">
         <source>Completed <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span *ngIf=&quot;acceleration.status === 'completed_provisional'&quot;&gt;"/>🔄<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>اكتمل <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span *ngIf=&quot;acceleration.status === 'completed_provisional'&quot;&gt;"/> 🔄<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">54,55</context>
@@ -1652,6 +1661,7 @@
       </trans-unit>
       <trans-unit id="7131ba3d0dee65d36dc5de582917a4fc826e73d0" datatype="html">
         <source>Failed <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span *ngIf=&quot;acceleration.status === 'failed_provisional'&quot;&gt;"/>🔄<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>فشل <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span *ngIf=&quot;acceleration.status === 'failed_provisional'&quot;&gt;"/>🔄<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">55,56</context>
@@ -1660,6 +1670,7 @@
       </trans-unit>
       <trans-unit id="805f27b06c3c2b919234b3bcf3d0f5abe445d922" datatype="html">
         <source>There are no active accelerations</source>
+        <target>لا توجد تسارعات نشطة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">96</context>
@@ -1668,6 +1679,7 @@
       </trans-unit>
       <trans-unit id="0c2d0d4986aed63c43d3d39a37d5039a55ddf9d0" datatype="html">
         <source>There are no recent accelerations</source>
+        <target>لا توجد تسارعات الأخيرة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">97</context>
@@ -1676,6 +1688,7 @@
       </trans-unit>
       <trans-unit id="e51c45c636401f8bb3bd8cfd1ed5a3c9810c5fa8" datatype="html">
         <source>Active Accelerations</source>
+        <target>التسارعات النشطة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">10</context>
@@ -1688,6 +1701,7 @@
       </trans-unit>
       <trans-unit id="41a9456b7e195dfc4df3d67b09940bda160882af" datatype="html">
         <source>Acceleration stats</source>
+        <target>إحصائيات التسارع</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">24</context>
@@ -1696,6 +1710,7 @@
       </trans-unit>
       <trans-unit id="9467c16588ee9f97dfa4f1dd9c96a02d6dc6e008" datatype="html">
         <source>(1 day)</source>
+        <target>(يوم 1)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">27</context>
@@ -1704,6 +1719,7 @@
       </trans-unit>
       <trans-unit id="d1c71eabdf119de5aa1d75ea1a8f93a9215dd8ea" datatype="html">
         <source>(1 week)</source>
+        <target>(أسبوع 1)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">30</context>
@@ -1712,6 +1728,7 @@
       </trans-unit>
       <trans-unit id="0efb19c3388cbcc9f3cd257f389843f9ad2a1f31" datatype="html">
         <source>(1 month)</source>
+        <target>(شهر 1)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">33</context>
@@ -1720,6 +1737,7 @@
       </trans-unit>
       <trans-unit id="9d202e68dd5064ae2e3d01073267b4db63b16c40" datatype="html">
         <source>(all time)</source>
+        <target>(كل الزمان)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">36</context>
@@ -1753,6 +1771,7 @@
       </trans-unit>
       <trans-unit id="f0ae1220633178276128371f3965fb53d63581d4" datatype="html">
         <source>Recent Accelerations</source>
+        <target>التسارعات الأخيرة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">113</context>
@@ -1761,6 +1780,7 @@
       </trans-unit>
       <trans-unit id="6b867dc61c6a92f3229f1950f9f2d414790cce95" datatype="html">
         <source>Accelerator Dashboard</source>
+        <target>لوحة تحكم المسرع</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.ts</context>
           <context context-type="linenumber">57</context>
@@ -1772,6 +1792,7 @@
       </trans-unit>
       <trans-unit id="6bb1e9770b5c27f172ae67754ba316fe455a9821" datatype="html">
         <source>Accelerated to</source>
+        <target>تسارع إلى</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/active-acceleration-box/active-acceleration-box.component.html</context>
           <context context-type="linenumber">7</context>
@@ -1781,6 +1802,7 @@
       </trans-unit>
       <trans-unit id="2c2a527d090d5d030fc130a243135dbc6ba276f0" datatype="html">
         <source>Accelerated by</source>
+        <target>تسارع بــ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/active-acceleration-box/active-acceleration-box.component.html</context>
           <context context-type="linenumber">30</context>
@@ -1798,6 +1820,7 @@
       </trans-unit>
       <trans-unit id="4231517605576357140" datatype="html">
         <source>not accelerating</source>
+        <target>لا يتسارع</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/active-acceleration-box/active-acceleration-box.component.ts</context>
           <context context-type="linenumber">85</context>
@@ -1805,6 +1828,7 @@
       </trans-unit>
       <trans-unit id="3590f5c3ef2810f637316edb8aaa86b8e907f152" datatype="html">
         <source>pending</source>
+        <target>قيد الانتظار</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/pending-stats/pending-stats.component.html</context>
           <context context-type="linenumber">7</context>
@@ -1813,6 +1837,7 @@
       </trans-unit>
       <trans-unit id="841f2a74ae5095e6e37f5749f3cc1851cf36a420" datatype="html">
         <source>Avg Max Bid</source>
+        <target>متوسط عرض السعر الأقصى</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/pending-stats/pending-stats.component.html</context>
           <context context-type="linenumber">11</context>
@@ -1825,6 +1850,7 @@
       </trans-unit>
       <trans-unit id="5538e35f9f610af0d1c70fcc7919a93191a810ca" datatype="html">
         <source> of block</source>
+        <target> من الكتلة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/pending-stats/pending-stats.component.html</context>
           <context context-type="linenumber">23</context>
@@ -1865,6 +1891,7 @@
       </trans-unit>
       <trans-unit id="b45214d1bf328d07f0aea939dfc197f5c59f421b" datatype="html">
         <source>Balances</source>
+        <target>أرصدة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-group/address-group.component.html</context>
           <context context-type="linenumber">4</context>
@@ -1873,6 +1900,7 @@
       </trans-unit>
       <trans-unit id="d04d5b5d13ac9acf9750f1807f0227eeee98b247" datatype="html">
         <source>Total</source>
+        <target>المجموع</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-group/address-group.component.html</context>
           <context context-type="linenumber">9</context>
@@ -2090,6 +2118,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.address" datatype="html">
         <source>See mempool transactions, confirmed transactions, balance, and more for <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> address <x id="INTERPOLATION" equiv-text="this.addressString"/>.</source>
+        <target>راجع معاملات mempool والمعاملات المؤكدة والرصيد والمزيد لعنوان &lt;x id=&quot;PH&quot; equiv-text=&quot;this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'&quot;/&gt;&lt;x id=&quot;PH_1&quot; equiv-text=&quot;seoDescriptionNetwork(this.stateService.network)&quot;/&gt; &lt;span class='notranslate'&gt;&lt;x id=&quot;INTERPOLATION&quot; equiv-text=&quot;this.addressString&quot;/&gt;&lt;/ فترة&gt;.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address-preview.component.ts</context>
           <context context-type="linenumber">72</context>
@@ -2101,6 +2130,7 @@
       </trans-unit>
       <trans-unit id="7b2e0a6bafe35c5cd10e55846d89397df0bff128" datatype="html">
         <source>Balance History</source>
+        <target>تاريخ الرصيد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">79</context>
@@ -2113,6 +2143,7 @@
       </trans-unit>
       <trans-unit id="8754c2dbc855d18ee90ffff136caedfd64f71e83" datatype="html">
         <source>all</source>
+        <target>الجميع</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">84</context>
@@ -2121,6 +2152,7 @@
       </trans-unit>
       <trans-unit id="6e9a3395f190e740778f523253e1fd6c53259622" datatype="html">
         <source>recent</source>
+        <target>مؤخرًا</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">87</context>
@@ -2129,6 +2161,7 @@
       </trans-unit>
       <trans-unit id="0a4ec18d2eb002662ee1c390be17000eace08818" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="of {{ mempoolStats.tx_count + chainStats.tx_cou"/> of <x id="INTERPOLATION_1" equiv-text="{{ mempoolStats.tx_count + chainStats.tx_count | number }}"/> transaction</source>
+        <target><x id="INTERPOLATION" equiv-text="of {{ mempoolStats.tx_count + chainStats.tx_cou"/> من المعاملة <x id="INTERPOLATION_1" equiv-text="{{ mempoolStats.tx_count + chainStats.tx_count | number }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">101</context>
@@ -2137,6 +2170,7 @@
       </trans-unit>
       <trans-unit id="b2e947b5b892e2d2c5d216b1a198b8bf40da45eb" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="of {{ mempoolStats.tx_count + chainStats.tx_count | numb"/> of <x id="INTERPOLATION_1" equiv-text="{{ mempoolStats.tx_count + chainStats.tx_count | number }}"/> transactions</source>
+        <target><x id="INTERPOLATION" equiv-text="of {{ mempoolStats.tx_count + chainStats.tx_count | numb"/> من المعاملات <x id="INTERPOLATION_1" equiv-text="{{ mempoolStats.tx_count + chainStats.tx_count | number }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">102</context>
