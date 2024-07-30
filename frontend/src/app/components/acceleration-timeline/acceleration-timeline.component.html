@@ -96,7 +96,7 @@
             @if (useAbsoluteTime) {
             <span>{{ acceleratedAt * 1000 | date }}</span>
             } @else {
-            <app-time kind="since" [time]="acceleratedAt" [lowercaseStart]="true"></app-time>
+            <app-time kind="since" [time]="acceleratedAt" [lowercaseStart]="!tx.status.confirmed"></app-time>
             }
           </div>
         </div>
