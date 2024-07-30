@@ -89,7 +89,7 @@
           @if (tx.status.confirmed) {
             <div class="status"><span class="badge badge-accelerated" i18n="transaction.audit.accelerated">Accelerated</span></div>
           }
-          <div class="time offset-left" [class.no-margin]="!tx.status.confirmed">
+          <div class="time" [class.no-margin]="!tx.status.confirmed" [class.offset-left]="!tx.status.confirmed">
             @if (!tx.status.confirmed) {
             <span i18n="transaction.audit.accelerated">Accelerated</span>{{ "" }} 
             }
