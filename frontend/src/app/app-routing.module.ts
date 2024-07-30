@@ -215,10 +215,6 @@ let routes: Routes = [
     loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
     data: { preload: true },
   },
-  {
-    path: '**',
-    redirectTo: ''
-  },
 ];
 
 if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
@@ -303,11 +299,14 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
       loadChildren: () => import('./liquid/liquid-graphs.module').then(m => m.LiquidGraphsModule),
       data: { preload: true },
     },
-    {
-      path: '**',
-      redirectTo: ''
-    },
   ];
+}
+
+if (!window['isMempoolSpaceBuild']) {
+  routes.push({
+    path: '**',
+    redirectTo: ''
+  });
 }
 
 @NgModule({
