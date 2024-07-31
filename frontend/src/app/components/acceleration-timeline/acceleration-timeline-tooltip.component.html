@@ -50,7 +50,7 @@
           <ng-container *ngFor="let pool of accelerationInfo.pools">
             <img *ngIf="accelerationInfo.poolsData[pool]" 
               class="pool-logo" 
-              [class.highlight]="pool === accelerationInfo?.minedByPoolUniqueId"
+              [style.opacity]="accelerationInfo?.minedByPoolUniqueId && pool !== accelerationInfo?.minedByPoolUniqueId ? '0.3' : '1'"
               [src]="'/resources/mining-pools/' + accelerationInfo.poolsData[pool].slug + '.svg'" 
               onError="this.src = '/resources/mining-pools/default.svg'" 
               [alt]="'Logo of ' + pool.name + ' mining pool'">
