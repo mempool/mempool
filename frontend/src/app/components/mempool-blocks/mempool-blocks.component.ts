@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, HostListener, Input, OnChanges, SimpleChanges, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
-import { Subscription, Observable, of, combineLatest } from 'rxjs';
+import { Subscription, Observable, of, combineLatest, throwError } from 'rxjs';
 import { MempoolBlock } from '../../interfaces/websocket.interface';
 import { StateService } from '../../services/state.service';
 import { EtaService } from '../../services/eta.service';
 import { Router } from '@angular/router';
-import { delay, filter, map, switchMap, tap } from 'rxjs/operators';
+import { delay, filter, map, retryWhen, switchMap, take, tap } from 'rxjs/operators';
 import { feeLevels } from '../../app.constants';
 import { specialBlocks } from '../../app.constants';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
@@ -12,6 +12,8 @@ import { Location } from '@angular/common';
 import { DifficultyAdjustment, MempoolPosition } from '../../interfaces/node-api.interface';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { ThemeService } from '../../services/theme.service';
+import { CacheService } from '../../services/cache.service';
+import { colorFromRetarget } from '../../shared/common.utils';
 
 @Component({
   selector: 'app-mempool-blocks',
@@ -93,6 +95,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private router: Router,
     public stateService: StateService,
+    public cacheService: CacheService,
     private etaService: EtaService,
     private themeService: ThemeService,
     private cd: ChangeDetectorRef,
@@ -387,6 +390,37 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.mempoolBlocksFull.forEach((block, i) => this.mempoolBlockStyles.push(this.getStyleForMempoolBlock(block, i)));
   }
 
+  isDA(height: number): boolean {
+    if (this.chainTip === -1) {
+      return false;
+    }
+    const isDA = height % 2016 === 0 && this.stateService.network === '';
+    if (isDA && !this.cacheService.daCache[height]) {
+      this.cacheService.daCache[height] = { adjustment: 0 };
+      this.difficultyAdjustments$.pipe(
+        filter(da => !!da),
+        switchMap(da => {
+          const mempoolBlocksAvailable = this.chainTip && this.mempoolBlockStyles[height - this.chainTip - 1];
+          return mempoolBlocksAvailable ? of(da) : throwError(() => new Error());
+        }),
+        retryWhen(errors =>
+          errors.pipe(
+            delay(100),
+            take(3)
+          )
+        ),
+        tap(da => {
+          const adjustment = parseFloat((1 + da.difficultyChange / 100).toFixed(4));
+          if (adjustment !== this.cacheService.daCache[height].adjustment) {
+            this.cacheService.daCache[height].adjustment = adjustment;
+            this.mempoolBlockStyles[height - this.chainTip - 1].background = colorFromRetarget(adjustment);
+          }
+        })
+      ).subscribe();
+    }
+    return isDA;
+  }
+
   getStyleForMempoolBlock(mempoolBlock: MempoolBlock, index: number) {
     const emptyBackgroundSpacePercentage = Math.max(100 - mempoolBlock.blockVSize / this.stateService.blockVSize * 100, 0);
     const usedBlockSpace = 100 - emptyBackgroundSpacePercentage;
@@ -410,7 +444,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
     return {
       'right': this.containerOffset + index * this.blockOffset + 'px',
-      'background': backgroundGradients.join(',') + ')'
+      'background': this.isDA(mempoolBlock.height) ? colorFromRetarget(this.cacheService.daCache[mempoolBlock.height]?.adjustment || 1) : backgroundGradients.join(',') + ')'
     };
   }
 

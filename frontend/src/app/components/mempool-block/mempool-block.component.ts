@@ -9,6 +9,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { SeoService } from '../../services/seo.service';
 import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { WebsocketService } from '../../services/websocket.service';
+import { CacheService } from '../../services/cache.service';
 
 @Component({
   selector: 'app-mempool-block',
@@ -30,6 +31,7 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
     public stateService: StateService,
     private seoService: SeoService,
     private websocketService: WebsocketService,
+    public cacheService: CacheService,
     private cd: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {
