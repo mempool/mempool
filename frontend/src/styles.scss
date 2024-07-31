@@ -954,6 +954,26 @@ th {
     direction: ltr !important;
   }
 
+  .fee-graph {
+    @extend .fee-graph;
+    margin-left: 5em !important;
+  }
+
+  .acceleration-timeline {
+    @extend .acceleration-timeline;
+    direction: ltr !important;
+
+    .interval {
+      @extend .interval;
+      direction: rtl !important;
+    }
+
+    .time {
+      @extend .time;
+      direction: rtl !important;
+    }
+  }
+
   .table th {
     text-align: right;
   }
@@ -969,6 +989,10 @@ th {
 
   .mr-1 {
       @extend .ml-1;
+  }
+
+  .mr-2 {
+    @extend .ml-2;
   }
 
   .float-left {
