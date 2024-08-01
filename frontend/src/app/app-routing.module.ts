@@ -9,6 +9,7 @@ import { StatusViewComponent } from './components/status-view/status-view.compon
 import { AddressGroupComponent } from './components/address-group/address-group.component';
 import { TrackerComponent } from './components/tracker/tracker.component';
 import { AccelerateCheckout } from './components/accelerate-checkout/accelerate-checkout.component';
+import { TrackerGuard } from './route-guards';
 
 const browserWindow = window || {};
 // @ts-ignore
@@ -141,14 +142,15 @@ let routes: Routes = [
     data: { preload: true },
   },
   {
+    path: 'tx',
+    canMatch: [TrackerGuard],
+    runGuardsAndResolvers: 'always',
+    loadChildren: () => import('./components/tracker/tracker.module').then(m => m.TrackerModule),
+  },
+  {
     path: '',
     loadChildren: () => import('./master-page.module').then(m => m.MasterPageModule),
     data: { preload: true },
-  },
-  {
-    path: 'tracker',
-    data: { networkSpecific: true },
-    loadChildren: () => import('./components/tracker/tracker.module').then(m => m.TrackerModule),
   },
   {
     path: 'wallet',
@@ -212,10 +214,6 @@ let routes: Routes = [
     path: '',
     loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
     data: { preload: true },
-  },
-  {
-    path: '**',
-    redirectTo: ''
   },
 ];
 
@@ -301,11 +299,14 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
       loadChildren: () => import('./liquid/liquid-graphs.module').then(m => m.LiquidGraphsModule),
       data: { preload: true },
     },
-    {
-      path: '**',
-      redirectTo: ''
-    },
   ];
+}
+
+if (!window['isMempoolSpaceBuild']) {
+  routes.push({
+    path: '**',
+    redirectTo: ''
+  });
 }
 
 @NgModule({
