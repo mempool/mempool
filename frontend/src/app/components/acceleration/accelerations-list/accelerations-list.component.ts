@@ -50,6 +50,12 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.miningService.getPools().subscribe(pools => {
+      for (const pool of pools) {
+        this.pools[pool.unique_id] = pool;
+      }
+    });
+
     if (!this.widget) {
       this.websocketService.want(['blocks']);
       this.seoService.setTitle($localize`:@@02573b6980a2d611b4361a2595a4447e390058cd:Accelerations`);
@@ -81,12 +87,6 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
         throttleTime(1000, undefined, { leading: true, trailing: true }),
       ).subscribe(() => {
         this.pageChange(this.page);
-      });
-
-      this.miningService.getPools().subscribe(pools => {
-        for (const pool of pools) {
-          this.pools[pool.unique_id] = pool;
-        }
       });
     }
 
