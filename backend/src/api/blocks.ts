@@ -33,6 +33,7 @@ import AccelerationRepository from '../repositories/AccelerationRepository';
 import { calculateFastBlockCpfp, calculateGoodBlockCpfp } from './cpfp';
 import mempool from './mempool';
 import CpfpRepository from '../repositories/CpfpRepository';
+import accelerationApi from './services/acceleration';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -904,7 +905,12 @@ class Blocks {
         }
       }
 
-      const cpfpSummary: CpfpSummary = calculateGoodBlockCpfp(block.height, transactions, Object.values(mempool.getAccelerations()).map(a => ({ txid: a.txid, max_bid: a.feeDelta })));
+      let accelerations = Object.values(mempool.getAccelerations());
+      if (accelerations?.length > 0) {
+        const pool = await this.$findBlockMiner(transactionUtils.stripCoinbaseTransaction(transactions[0]));
+        accelerations = accelerations.filter(a => a.pools.includes(pool.uniqueId));
+      }
+      const cpfpSummary: CpfpSummary = calculateGoodBlockCpfp(block.height, transactions, accelerations.map(a => ({ txid: a.txid, max_bid: a.feeDelta })));
       const blockExtended: BlockExtended = await this.$getBlockExtended(block, cpfpSummary.transactions);
       const blockSummary: BlockSummary = this.summarizeBlockTransactions(block.id, cpfpSummary.transactions);
       this.updateTimerProgress(timer, `got block data for ${this.currentBlockHeight}`);

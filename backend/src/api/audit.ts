@@ -21,6 +21,7 @@ class Audit {
     const accelerated: string[] = []; // prioritized by the mempool accelerator
     const isCensored = {}; // missing, without excuse
     const isDisplaced = {};
+    const isAccelerated = {};
     let displacedWeight = 0;
     let matchedWeight = 0;
     let projectedWeight = 0;
@@ -33,6 +34,7 @@ class Audit {
       inBlock[tx.txid] = tx;
       if (mempool[tx.txid] && mempool[tx.txid].acceleration) {
         accelerated.push(tx.txid);
+        isAccelerated[tx.txid] = true;
       }
     }
     // coinbase is always expected
@@ -143,7 +145,8 @@ class Audit {
       // so exclude from the analysis.
       if ((blockTx.effectiveFeePerVsize || 0) < lastEffectiveRate) {
         prioritized.push(blockTx.txid);
-      } else {
+        // accelerated txs may or may not have their prioritized fee rate applied, so don't use them as a reference
+      } else if (!isAccelerated[blockTx.txid]) {
         lastEffectiveRate = blockTx.effectiveFeePerVsize || 0;
       }
     }
