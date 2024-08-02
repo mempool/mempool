@@ -62,8 +62,8 @@
             </td>
             <td class="status text-right">
               <span *ngIf="acceleration.status === 'accelerating'" class="badge badge-warning" i18n="accelerator.pending">Pending</span>
-              <span *ngIf="acceleration.status.includes('completed') && acceleration.minedByPoolUniqueId && pools[acceleration.minedByPoolUniqueId]" class="badge badge-success" i18n="accelerator.completed">Completed <span *ngIf="acceleration.status === 'completed_provisional'">⌛</span></span>
-              <span *ngIf="acceleration.status.includes('completed') && (!acceleration.minedByPoolUniqueId || !pools[acceleration.minedByPoolUniqueId])" class="badge badge-success" i18n="accelerator.mined">Mined <span *ngIf="acceleration.status === 'completed_provisional'">⌛</span></span>
+              <span *ngIf="acceleration.status.includes('completed') && acceleration.minedByPoolUniqueId && pools[acceleration.minedByPoolUniqueId]" class="badge badge-success"><ng-container i18n="accelerator.completed">Completed</ng-container> <span *ngIf="acceleration.status === 'completed_provisional'">⌛</span></span>
+              <span *ngIf="acceleration.status.includes('completed') && (!acceleration.minedByPoolUniqueId || !pools[acceleration.minedByPoolUniqueId])" class="badge badge-success"><ng-container i18n="transaction.rbf.mined">Mined</ng-container> <span *ngIf="acceleration.status === 'completed_provisional'">⌛</span></span>
               <span *ngIf="acceleration.status.includes('failed')" class="badge badge-danger" i18n="accelerator.canceled">Failed <span *ngIf="acceleration.status === 'failed_provisional'">⌛</span></span>
             </td>
             <td class="date text-right" *ngIf="!this.widget">
