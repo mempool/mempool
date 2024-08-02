@@ -423,8 +423,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     };
 
     if (!window['Square']) {
-      console.debug('Square.js failed to load properly. Retrying in 1 second.');
-      setTimeout(this.setupSquare.bind(this), 1000);
+      console.debug('Square.js failed to load properly. Retrying.');
+      setTimeout(this.setupSquare.bind(this), 100);
     } else {
       init();
     }
