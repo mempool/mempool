@@ -523,6 +523,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               queryParamsHandling: 'merge',
               preserveFragment: true,
               queryParams: { mode: 'details' },
+              replaceUrl: true,
             });
           }
           this.seoService.setTitle(
