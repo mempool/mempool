@@ -27,6 +27,7 @@ export class NavigationService {
     }
   };
   networks = Object.keys(this.networkModules);
+  initialLoad = true;
 
   constructor(
     private stateService: StateService,
@@ -40,6 +41,10 @@ export class NavigationService {
       if (this.enforceSubnetRestrictions(state)) {
         this.updateSubnetPaths(state);
       }
+      if (this.initialLoad) {
+        this.initialLoad = false;
+      }
+      this.updateSubnetPaths(state);
     });
   }
 
@@ -97,5 +102,9 @@ export class NavigationService {
       });
     });
     this.subnetPaths.next(subnetPaths);
+  }
+
+  isInitialLoad(): boolean {
+    return this.initialLoad;
   }
 }

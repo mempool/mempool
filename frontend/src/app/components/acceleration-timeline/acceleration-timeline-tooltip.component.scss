@@ -32,21 +32,4 @@
     top: -1px;
     margin-right: 3px;
   }
-  
-  .highlight {
-    filter: drop-shadow(0 0 5px #905cf4);
-    animation: pulse 1s infinite;
-  }
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-  }
 }
