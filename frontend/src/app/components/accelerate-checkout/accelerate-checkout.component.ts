@@ -204,6 +204,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.fetchEstimate();
     }
     if (this._step === 'checkout') {
+      this.insertSquare();
       this.enterpriseService.goal(8);
     }
     if (this._step === 'checkout' && this.canPayWithBitcoin) {
@@ -213,17 +214,14 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.requestBTCPayInvoice();
     } else if (this._step === 'cashapp' && this.cashappEnabled) {
       this.loadingCashapp = true;
-      this.insertSquare();
       this.setupSquare();
       this.scrollToElementWithTimeout('confirm-title', 'center', 100);
     } else if (this._step === 'applepay' && this.applePayEnabled) {
       this.loadingApplePay = true;
-      this.insertSquare();
       this.setupSquare();
       this.scrollToElementWithTimeout('confirm-title', 'center', 100);
     } else if (this._step === 'googlepay' && this.googlePayEnabled) {
       this.loadingGooglePay = true;
-      this.insertSquare();
       this.setupSquare();
       this.scrollToElementWithTimeout('confirm-title', 'center', 100);
     } else if (this._step === 'paid') {
@@ -409,7 +407,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         document.location.hostname === 'mempool-staging.fra.mempool.space' ||
         document.location.hostname === 'mempool-staging.tk7.mempool.space' ||
         document.location.hostname === 'mempool.space') {
-      statsUrl = 'https://web.squarecdn.com/v1/square.js';
+      statsUrl = '/square/v1/square.js';
     }
 
     (function(): void {
