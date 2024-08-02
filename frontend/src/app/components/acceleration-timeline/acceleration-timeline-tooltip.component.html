@@ -33,7 +33,7 @@
       </tr>
       <tr *ngIf="accelerationInfo.fee && accelerationInfo.weight">
         @if (accelerationInfo.status === 'seen') {
-          <td class="label" i18n="transaction.fee-rate">Fee rate</td>
+          <td class="label" i18n="transaction.fee-rate|Transaction fee rate">Fee rate</td>
           <td class="value"><app-fee-rate [fee]="accelerationInfo.fee" [weight]="accelerationInfo.weight"></app-fee-rate></td>
         } @else if (accelerationInfo.status === 'accelerated' || accelerationInfo.status === 'mined') {
           <td class="label" i18n="transaction.accelerated-fee-rate|Accelerated transaction fee rate">Accelerated fee rate</td>
