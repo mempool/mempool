@@ -32,6 +32,7 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
   dir: 'rtl' | 'ltr' = 'ltr';
   paramSubscription: Subscription;
   pools: { [id: number]: SinglePoolStats } = {};
+  nonEmptyAccelerations: boolean = true;
 
   constructor(
     private servicesApiService: ServicesApiServices,
@@ -115,6 +116,7 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
             for (const acc of accelerations) {
               acc.boost = acc.boostCost != null ? acc.boostCost : acc.bidBoost;
             }
+            this.nonEmptyAccelerations = accelerations.length > 0;
             if (this.widget) {
               return of(accelerations.slice(0, 6));
             } else {
