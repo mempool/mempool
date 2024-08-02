@@ -603,7 +603,11 @@ export class BlockComponent implements OnInit, OnDestroy {
           if (index === 0) {
             tx.status = null;
           } else if (isPrioritized[tx.txid]) {
-            tx.status = 'prioritized';
+            if (isAdded[tx.txid] || (blockAudit.version > 0 && isUnseen[tx.txid])) {
+              tx.status = 'added_prioritized';
+            } else {
+              tx.status = 'prioritized';
+            }
           } else if (isAdded[tx.txid] && (blockAudit.version === 0 || isUnseen[tx.txid])) {
             tx.status = 'added';
           } else if (inTemplate[tx.txid]) {
