@@ -407,7 +407,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         document.location.hostname === 'mempool-staging.fra.mempool.space' ||
         document.location.hostname === 'mempool-staging.tk7.mempool.space' ||
         document.location.hostname === 'mempool.space') {
-      statsUrl = '/square/v1/square/js';
+      statsUrl = '/square/v1/square.js';
     }
 
     (function(): void {
