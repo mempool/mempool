@@ -61,7 +61,7 @@
               @if (transactionTime > 0) {
                 <i><app-time kind="since" [time]="transactionTime" [fastRender]="true" [showTooltip]="true"></app-time></i>
               } @else {
-                <span class="skeleton-loader" style="max-width: 50%;"></span>
+                <span class="skeleton-loader" style="max-width: 200px;"></span>
               }
             </div>
           </div>
@@ -78,7 +78,7 @@
                 </span>
               </ng-container>
               <ng-template #etaSkeleton>
-                <span class="skeleton-loader"></span>
+                <span class="skeleton-loader" style="max-width: 200px;"></span>
               </ng-template>
             </div>
           </div>
