@@ -411,10 +411,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
                 const isConflict = audit.fullrbfTxs.includes(txid);
                 const isExpected = audit.template.some(tx => tx.txid === txid);
                 const firstSeen = audit.template.find(tx => tx.txid === txid)?.time;
+                const wasSeen = audit.version === 1 ? !audit.unseenTxs.includes(txid) : (isExpected || isPrioritized || isAccelerated);
                 return {
-                  seen: isExpected || isPrioritized || isAccelerated,
+                  seen: wasSeen,
                   expected: isExpected,
-                  added: isAdded,
+                  added: isAdded && (audit.version === 0 || !wasSeen),
                   prioritized: isPrioritized,
                   conflict: isConflict,
                   accelerated: isAccelerated,

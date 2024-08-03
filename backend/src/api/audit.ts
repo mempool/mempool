@@ -6,20 +6,22 @@ import rbfCache from './rbf-cache';
 const PROPAGATION_MARGIN = 180; // in seconds, time since a transaction is first seen after which it is assumed to have propagated to all miners
 
 class Audit {
-  auditBlock(transactions: MempoolTransactionExtended[], projectedBlocks: MempoolBlockWithTransactions[], mempool: { [txId: string]: MempoolTransactionExtended }, useAccelerations: boolean = false)
-   : { censored: string[], added: string[], prioritized: string[], fresh: string[], sigop: string[], fullrbf: string[], accelerated: string[], score: number, similarity: number } {
+  auditBlock(height: number, transactions: MempoolTransactionExtended[], projectedBlocks: MempoolBlockWithTransactions[], mempool: { [txId: string]: MempoolTransactionExtended })
+   : { unseen: string[], censored: string[], added: string[], prioritized: string[], fresh: string[], sigop: string[], fullrbf: string[], accelerated: string[], score: number, similarity: number } {
     if (!projectedBlocks?.[0]?.transactionIds || !mempool) {
-      return { censored: [], added: [], prioritized: [], fresh: [], sigop: [], fullrbf: [], accelerated: [], score: 1, similarity: 1 };
+      return { unseen: [], censored: [], added: [], prioritized: [], fresh: [], sigop: [], fullrbf: [], accelerated: [], score: 1, similarity: 1 };
     }
 
     const matches: string[] = []; // present in both mined block and template
     const added: string[] = []; // present in mined block, not in template
-    const prioritized: string[] = [] // present in the mined block, not in the template, but further down in the mempool
+    const unseen: string[] = []; // present in the mined block, not in our mempool
+    const prioritized: string[] = []; // higher in the block than would be expected by in-band feerate alone
     const fresh: string[] = []; // missing, but firstSeen or lastBoosted within PROPAGATION_MARGIN
     const rbf: string[] = []; // either missing or present, and either part of a full-rbf replacement, or a conflict with the mined block
     const accelerated: string[] = []; // prioritized by the mempool accelerator
     const isCensored = {}; // missing, without excuse
     const isDisplaced = {};
+    const isAccelerated = {};
     let displacedWeight = 0;
     let matchedWeight = 0;
     let projectedWeight = 0;
@@ -32,6 +34,7 @@ class Audit {
       inBlock[tx.txid] = tx;
       if (mempool[tx.txid] && mempool[tx.txid].acceleration) {
         accelerated.push(tx.txid);
+        isAccelerated[tx.txid] = true;
       }
     }
     // coinbase is always expected
@@ -113,16 +116,39 @@ class Audit {
       } else {
         if (rbfCache.has(tx.txid)) {
           rbf.push(tx.txid);
-        } else if (!isDisplaced[tx.txid]) {
+          if (!mempool[tx.txid] && !rbfCache.getReplacedBy(tx.txid)) {
+            unseen.push(tx.txid);
+          }
+        } else {
           if (mempool[tx.txid]) {
-            prioritized.push(tx.txid);
+            if (isDisplaced[tx.txid]) {
+              added.push(tx.txid);
+            }
           } else {
-            added.push(tx.txid);
+            unseen.push(tx.txid);
           }
         }
         overflowWeight += tx.weight;
       }
       totalWeight += tx.weight;
+    }
+
+
+    // identify "prioritized" transactions
+    let lastEffectiveRate = 0;
+    // Iterate over the mined template from bottom to top (excluding the coinbase)
+    // Transactions should appear in ascending order of mining priority.
+    for (let i = transactions.length - 1; i > 0; i--) {
+      const blockTx = transactions[i];
+      // If a tx has a lower in-band effective fee rate than the previous tx,
+      // it must have been prioritized out-of-band (in order to have a higher mining priority)
+      // so exclude from the analysis.
+      if ((blockTx.effectiveFeePerVsize || 0) < lastEffectiveRate) {
+        prioritized.push(blockTx.txid);
+        // accelerated txs may or may not have their prioritized fee rate applied, so don't use them as a reference
+      } else if (!isAccelerated[blockTx.txid]) {
+        lastEffectiveRate = blockTx.effectiveFeePerVsize || 0;
+      }
     }
 
     // transactions missing from near the end of our template are probably not being censored
@@ -165,6 +191,7 @@ class Audit {
     const similarity = projectedWeight ? matchedWeight / projectedWeight : 1;
 
     return {
+      unseen,
       censored: Object.keys(isCensored),
       added,
       prioritized,

@@ -29,9 +29,11 @@ export interface PoolStats extends PoolInfo {
 }
 
 export interface BlockAudit {
+  version: number,
   time: number,
   height: number,
   hash: string,
+  unseenTxs: string[],
   missingTxs: string[],
   freshTxs: string[],
   sigopTxs: string[],
@@ -383,8 +385,9 @@ export interface CpfpCluster {
 }
 
 export interface CpfpSummary {
-  transactions: TransactionExtended[];
+  transactions: MempoolTransactionExtended[];
   clusters: CpfpCluster[];
+  version: number;
 }
 
 export interface Statistic {

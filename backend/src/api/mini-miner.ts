@@ -337,7 +337,7 @@ export function makeBlockTemplate(candidates: MempoolTransactionExtended[], acce
   let failures = 0;
   while (mempoolArray.length || modified.length) {
     // skip invalid transactions
-    while (mempoolArray[0].used || mempoolArray[0].modified) {
+    while (mempoolArray[0]?.used || mempoolArray[0]?.modified) {
       mempoolArray.shift();
     }
 
