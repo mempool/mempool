@@ -470,7 +470,7 @@ class MiningRoutes {
     res.setHeader('expires', -1);
     try {
       accelerationApi.accelerationRequested(req.params.txid);
-      res.status(200).send('ok');
+      res.status(200).send();
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
