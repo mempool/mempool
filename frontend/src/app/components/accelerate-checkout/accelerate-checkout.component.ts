@@ -805,7 +805,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   get canPayWithCashapp(): boolean {
-    if (!this.cashappEnabled || !this.conversions) {
+    if (!this.cashappEnabled || !this.conversions || (!this.isProdDomain && !isDevMode())) {
       return false;
     }
 
@@ -821,7 +821,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   get canPayWithApplePay(): boolean {
-    if (!this.applePayEnabled || !this.conversions) {
+    if (!this.applePayEnabled || !this.conversions || (!this.isProdDomain && !isDevMode())) {
       return false;
     }
 
@@ -837,7 +837,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   get canPayWithGooglePay(): boolean {
-    if (!this.googlePayEnabled || !this.conversions) {
+    if (!this.googlePayEnabled || !this.conversions || (!this.isProdDomain && !isDevMode())) {
       return false;
     }
 
