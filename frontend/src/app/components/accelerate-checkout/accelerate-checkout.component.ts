@@ -11,6 +11,7 @@ import { MiningStats } from '../../services/mining.service';
 import { IAuth, AuthServiceMempool } from '../../services/auth.service';
 import { EnterpriseService } from '../../services/enterprise.service';
 import { ApiService } from '../../services/api.service';
+import { isDevMode } from '@angular/core';
 
 export type PaymentMethod = 'balance' | 'bitcoin' | 'cashapp' | 'applePay' | 'googlePay';
 
@@ -82,6 +83,13 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   timePaid: number = 0; // time acceleration requested
   math = Math;
   isMobile: boolean = window.innerWidth <= 767.98;
+  isProdDomain = ['mempool.space',
+    'mempool-staging.va1.mempool.space',
+    'mempool-staging.fmt.mempool.space',
+    'mempool-staging.fra.mempool.space',
+    'mempool-staging.tk7.mempool.space',
+    'mempool-staging.sg1.mempool.space'
+   ].indexOf(document.location.hostname) > -1;
 
   private _step: CheckoutStep = 'summary';
   simpleMode: boolean = true;
@@ -398,15 +406,14 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
    * Square
    */
   insertSquare(): void {
+    if (!this.isProdDomain && !isDevMode()) {
+      return;
+    }
     if (window['Square']) {
       return;
     }
     let statsUrl = 'https://sandbox.web.squarecdn.com/v1/square.js';
-    if (document.location.hostname === 'mempool-staging.fmt.mempool.space' ||
-        document.location.hostname === 'mempool-staging.va1.mempool.space' ||
-        document.location.hostname === 'mempool-staging.fra.mempool.space' ||
-        document.location.hostname === 'mempool-staging.tk7.mempool.space' ||
-        document.location.hostname === 'mempool.space') {
+    if (this.isProdDomain) {
       statsUrl = '/square/v1/square.js';
     }
 
@@ -416,6 +423,9 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     })();
   }
   setupSquare(): void {
+    if (!this.isProdDomain && !isDevMode()) {
+      return;
+    }
     const init = (): void => {
       this.initSquare();
     };
