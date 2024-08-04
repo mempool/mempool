@@ -118,7 +118,7 @@
         </div>
         <span class="explainer">&nbsp;</span>
       } @else {
-        @if (!tx.status?.confirmed && showAccelerationSummary) {
+        @if (tx && !tx.status?.confirmed && showAccelerationSummary) {
           <ng-container *ngIf="(ETA$ | async) as eta;">
             <app-accelerate-checkout
               *ngIf="(da$ | async) as da;"
@@ -135,7 +135,7 @@
             ></app-accelerate-checkout>
           </ng-container>
         }
-        <div class="status-panel d-flex flex-column h-100 w-100 justify-content-center align-items-center" [class.small-status]="!tx.status?.confirmed && showAccelerationSummary">
+        <div class="status-panel d-flex flex-column h-100 w-100 justify-content-center align-items-center" [class.small-status]="tx && !tx.status?.confirmed && showAccelerationSummary">
           @if (tx?.acceleration && !tx.status?.confirmed) {
             <div class="progress-icon">
               <fa-icon [icon]="['fas', 'wand-magic-sparkles']" [fixedWidth]="true"></fa-icon>
@@ -186,7 +186,7 @@
     </div>
 
     <div class="footer-link"
-      [routerLink]="['/tx' | relativeUrl, tx?.txid]"
+      [routerLink]="['/tx' | relativeUrl, tx?.txid || txId]"
       [queryParams]="{ mode: 'details' }"
       queryParamsHandling="merge"
     >
