@@ -608,9 +608,9 @@
       <td class="td-width" i18n="transaction.fee|Transaction fee">Fee</td>
       <td>{{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> 
         @if (accelerationInfo?.bidBoost) {
-          <span class="oobFees"> +{{ accelerationInfo.bidBoost | number }} </span><span class="symbol" i18n="shared.sat|sat">sat</span>
+          <span class="oobFees" i18n-ngbTooltip="Acceleration Fees" ngbTooltip="Acceleration fees paid out-of-band"> +{{ accelerationInfo.bidBoost | number }} </span><span class="symbol" i18n="shared.sat|sat">sat</span>
         } @else if (tx.feeDelta) {
-          <span class="oobFees"> +{{ tx.feeDelta | number }} </span><span class="symbol" i18n="shared.sat|sat">sat</span>
+          <span class="oobFees" i18n-ngbTooltip="Acceleration Fees" ngbTooltip="Acceleration fees paid out-of-band"> +{{ tx.feeDelta | number }} </span><span class="symbol" i18n="shared.sat|sat">sat</span>
         }
         <span class="fiat"><app-fiat [blockConversion]="tx.price" [value]="tx.fee + (accelerationInfo?.bidBoost || tx.feeDelta || 0)"></app-fiat></span>
       </td>
