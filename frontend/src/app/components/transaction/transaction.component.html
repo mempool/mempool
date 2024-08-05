@@ -125,7 +125,7 @@
     </ng-template>
 
     <!-- Accelerator -->
-    <ng-container *ngIf="!tx?.status?.confirmed && showAccelerationSummary && (ETA$ | async) as eta;">
+    <ng-container *ngIf="!tx?.status?.confirmed && showAccelerationSummary && isAcceleration === false && (ETA$ | async) as eta;">
       <br>
       <div class="title float-left mb-1">
         <h2><a [href]="[ isMempoolSpaceBuild ? '/accelerator' : 'https://mempool.space/accelerator']" [target]="isMempoolSpaceBuild ? '' : 'blank'"><app-svg-images name="accelerator" [height]="isMobile ? '35px' : '45px'"></app-svg-images></a></h2>
