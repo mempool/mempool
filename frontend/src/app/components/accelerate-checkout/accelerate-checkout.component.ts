@@ -664,11 +664,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             amount: costUSD.toFixed(2),
             label: 'Total',
             pending: true,
-            productUrl: `${redirectHostname}/tracker/${this.tx.txid}`,
+            productUrl: `${redirectHostname}/tx/${this.tx.txid}`,
           }
         });
         this.cashAppPay = await this.payments.cashAppPay(paymentRequest, {
-          redirectURL: `${redirectHostname}/tracker/${this.tx.txid}`,
+          redirectURL: `${redirectHostname}/tx/${this.tx.txid}`,
           referenceId: `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`
         });
 
