@@ -31,6 +31,7 @@ export class MiningService {
       data: MiningStats;
     }
   } = {};
+  network: string;
   poolsData: SinglePoolStats[] = [];
 
   constructor(
@@ -44,7 +45,7 @@ export class MiningService {
    */
   public getMiningStats(interval: string): Observable<MiningStats> {
     // returned cached data fetched within the last 5 minutes
-    if (this.cache[interval] && this.cache[interval].lastUpdated > (Date.now() - (5 * 60000))) {
+    if (this.cache[interval] && this.cache[interval].lastUpdated > (Date.now() - (5 * 60000)) && this.network === this.stateService.network) {
       return of(this.cache[interval].data);
     } else {
       return this.apiService.listPools$(interval).pipe(
@@ -54,6 +55,7 @@ export class MiningService {
             lastUpdated: Date.now(),
             data: stats,
           };
+          this.network = this.stateService.network;
         })
       );
     }
