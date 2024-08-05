@@ -649,9 +649,9 @@
         <td>
           <div class="effective-fee-container">
             @if (accelerationInfo?.acceleratedFeeRate && (!tx.effectiveFeePerVsize || accelerationInfo.acceleratedFeeRate >= tx.effectiveFeePerVsize || tx.acceleration)) {
-              <app-fee-rate [fee]="accelerationInfo.acceleratedFeeRate"></app-fee-rate>
+              <app-fee-rate [class.oobFees]="isAcceleration" [fee]="accelerationInfo.acceleratedFeeRate"></app-fee-rate>
             } @else {
-              <app-fee-rate [fee]="tx.effectiveFeePerVsize"></app-fee-rate>
+              <app-fee-rate [class.oobFees]="isAcceleration" [fee]="tx.effectiveFeePerVsize"></app-fee-rate>
             }
 
             @if (tx?.status?.confirmed && !tx.acceleration && !accelerationInfo && tx.fee && tx.effectiveFeePerVsize) {
