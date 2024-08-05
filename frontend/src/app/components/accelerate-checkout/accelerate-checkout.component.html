@@ -403,14 +403,14 @@
                 }
                 @if (canPayWithApplePay) {
                   @if (canPayWithCashapp) { <span class="mt-1 mb-1"></span> }
-                  <div class="paymentMethod mx-2" style="width: 200px; height: 55px">
-                  <img src="/resources/apple-pay.png" height=37 (click)="moveToStep('applepay')">
+                  <div class="paymentMethod mx-2" style="width: 200px; height: 55px" (click)="moveToStep('applepay')">
+                    <img src="/resources/apple-pay.png" height=37>
                   </div>
                 }
                 @if (canPayWithGooglePay) {
                   @if (canPayWithCashapp || canPayWithApplePay) { <span class="mt-1 mb-1"></span> }
-                  <div class="paymentMethod mx-2" style="width: 200px; height: 55px">
-                    <img src="/resources/google-pay.png" height=37 (click)="moveToStep('googlepay')">
+                  <div class="paymentMethod mx-2" style="width: 200px; height: 55px" (click)="moveToStep('googlepay')">
+                    <img src="/resources/google-pay.png" height=37>
                   </div>
                 }
               </div>
