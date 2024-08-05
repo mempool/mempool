@@ -227,10 +227,6 @@ export class StateService {
       }
     });
 
-    if (this.referrer === 'https://cash.app/' && window.innerWidth < 850 && window.location.pathname.startsWith('/tx/')) {
-      this.router.navigate(['/tracker/' + window.location.pathname.slice(4)]);
-    }
-
     this.liveMempoolBlockTransactions$ = this.mempoolBlockUpdate$.pipe(scan((transactions: { [txid: string]: TransactionStripped }, change: MempoolBlockUpdate): { [txid: string]: TransactionStripped } => {
       if (isMempoolState(change)) {
         const txMap = {};
