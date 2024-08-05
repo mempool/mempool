@@ -253,6 +253,8 @@ export interface MempoolPosition {
   vsize: number,
   accelerated?: boolean,
   acceleratedBy?: number[],
+  acceleratedAt?: number,
+  feeDelta?: number,
 }
 
 export interface AccelerationPosition extends MempoolPosition {

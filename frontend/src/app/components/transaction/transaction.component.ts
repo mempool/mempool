@@ -462,9 +462,23 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             if (txPosition.position.acceleratedBy) {
               txPosition.cpfp.acceleratedBy = txPosition.position.acceleratedBy;
             }
+            if (txPosition.position.acceleratedAt) {
+              txPosition.cpfp.acceleratedAt = txPosition.position.acceleratedAt;
+            }
+            if (txPosition.position.feeDelta) {
+              txPosition.cpfp.feeDelta = txPosition.position.feeDelta;
+            }
             this.setCpfpInfo(txPosition.cpfp);
-          } else if ((this.tx?.acceleration && txPosition.position.acceleratedBy)) {
-            this.tx.acceleratedBy = txPosition.position.acceleratedBy;
+          } else if ((this.tx?.acceleration)) {
+            if (txPosition.position.acceleratedBy) {
+              this.tx.acceleratedBy = txPosition.position.acceleratedBy;
+            }
+            if (txPosition.position.acceleratedAt) {
+              this.tx.acceleratedAt = txPosition.position.acceleratedAt;
+            }
+            if (txPosition.position.feeDelta) {
+              this.tx.feeDelta = txPosition.position.feeDelta;
+            }
           }
 
           if (this.stateService.network === '') {
