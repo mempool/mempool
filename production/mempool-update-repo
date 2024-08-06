@@ -1,0 +1,1 @@
+cd ~/mempool && git pull origin master && cd ~/mempool.space && git stash && git pull origin master && git stash pop ; exit
