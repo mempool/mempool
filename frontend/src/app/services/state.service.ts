@@ -210,6 +210,10 @@ export class StateService {
       this.env.MINING_DASHBOARD = false;
     }
 
+    if (document.location.hostname === 'mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion') {
+      this.env.SERVICES_API = 'http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion/api/v1/services';
+    }
+
     if (this.isBrowser) {
       this.setNetworkBasedonUrl(window.location.pathname);
       this.setLightningBasedonUrl(window.location.pathname);
