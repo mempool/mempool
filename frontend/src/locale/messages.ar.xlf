@@ -671,7 +671,7 @@
       </trans-unit>
       <trans-unit id="d2eb45d1cd8cd146b7cb0223ab97a4b03b614060" datatype="html">
         <source>sat/vB</source>
-        <target>ساتوشي/بايت</target>
+        <target>sat/vB</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">113</context>
@@ -1082,7 +1082,7 @@
       </trans-unit>
       <trans-unit id="83b8b9dd1ed416447cf8438460a37b0ddeb2677c" datatype="html">
         <source>sat</source>
-        <target>ساتوشي</target>
+        <target>sat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-fee-graph.component.html</context>
           <context context-type="linenumber">15</context>
@@ -6438,7 +6438,7 @@
       </trans-unit>
       <trans-unit id="31443c29cb161e8aa661eb5035f675746ef95b45" datatype="html">
         <source>sats/tx</source>
-        <target>ساتوشي/عملية</target>
+        <target>sats/عملية</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">33</context>
@@ -7867,7 +7867,7 @@
       </trans-unit>
       <trans-unit id="60601e02e7c1f6c4dbabd0ef0bb8946003db8dec" datatype="html">
         <source>Only ~<x id="INTERPOLATION" equiv-text="{{ medianFeeNeeded | feeRounding }}"/> sat/vB was needed to get into this block</source>
-        <target>كان مطلوب حوالي <x id="INTERPOLATION" equiv-text="{{ medianFeeNeeded | feeRounding }}"/> ساتوشي/بايت فقط لاضافة هذه المعاملة الى هذه الكتلة</target>
+        <target>كان مطلوب حوالي <x id="INTERPOLATION" equiv-text="{{ medianFeeNeeded | feeRounding }}"/> sat/vB فقط لاضافة هذه المعاملة الى هذه الكتلة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>

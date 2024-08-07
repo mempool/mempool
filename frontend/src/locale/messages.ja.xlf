@@ -1393,6 +1393,7 @@
       </trans-unit>
       <trans-unit id="c3aaae1073e33c932a5c98f98c3520645c0e3a93" datatype="html">
         <source>Out-of-band fees</source>
+        <target>ネットワーク外手数料</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline-tooltip.component.html</context>
           <context context-type="linenumber">27</context>
@@ -1792,6 +1793,7 @@
       </trans-unit>
       <trans-unit id="a7c328c4773db932ff14a1954e15e43dca58e7b7" datatype="html">
         <source>Completed</source>
+        <target>終了</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">65</context>
@@ -1800,6 +1802,7 @@
       </trans-unit>
       <trans-unit id="64b582e0d8e3a28331a14d2a1017fa5d6ffb8d93" datatype="html">
         <source>Failed</source>
+        <target>失敗</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">67</context>
