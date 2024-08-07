@@ -12,6 +12,7 @@ import { Location } from '@angular/common';
 import { DifficultyAdjustment, MempoolPosition } from '../../interfaces/node-api.interface';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { ThemeService } from '../../services/theme.service';
+import { CacheService } from '../../services/cache.service';
 
 @Component({
   selector: 'app-mempool-blocks',
@@ -90,6 +91,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private router: Router,
     public stateService: StateService,
+    public cacheService: CacheService,
     private etaService: EtaService,
     private themeService: ThemeService,
     private cd: ChangeDetectorRef,
@@ -400,8 +402,54 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
     return {
       'right': this.containerOffset + index * this.blockOffset + 'px',
-      'background': backgroundGradients.join(',') + ')'
+      'background': this.isDA(mempoolBlock.height) ? this.colorFromDA(this.cacheService.daCache[mempoolBlock.height] || 1) : backgroundGradients.join(',') + ')'
     };
+  }
+
+  isDA(height: number): boolean {
+    if (this.chainTip === -1 || !height) {
+      return false;
+    }
+    const isDA = height % 10 === 0 && this.stateService.network === '';
+    if (isDA && !this.cacheService.daCache[height]) {
+      this.cacheService.daCache[height] = 1;
+      this.difficultyAdjustments$.pipe(
+        filter((da) => 
+          !!da 
+          && parseFloat((1 + da.difficultyChange / 100).toFixed(4)) !== this.cacheService.daCache[height]
+          && this.chainTip > 0
+          && this.mempoolBlockStyles[height - this.chainTip]
+        ),
+        tap((da) => {
+          const adjustment = parseFloat((1 + da.difficultyChange / 100).toFixed(4));
+          this.cacheService.daCache[height] = adjustment;
+          this.mempoolBlockStyles[height - this.chainTip - 1].background = this.colorFromDA(adjustment);
+        })
+      ).subscribe();
+    }
+    return isDA;
+  }
+
+  colorFromDA(da: number): string {
+    const minDA = 0.95;
+    const maxDA = 1.05;
+    const midDA = 1;
+
+    const red = { r: 220, g: 53, b: 69 };
+    const grey = { r: 108, g: 117, b: 125 };
+    const green = { r: 59, g: 204, b: 73 };
+
+    const interpolateColor = (color1, color2, ratio) => {
+      ratio = Math.min(1, Math.max(0, ratio));
+      const r = Math.round(color1.r + ratio * (color2.r - color1.r));
+      const g = Math.round(color1.g + ratio * (color2.g - color1.g));
+      const b = Math.round(color1.b + ratio * (color2.b - color1.b));
+      return `rgba(${r}, ${g}, ${b}, 0.7)`;
+    }
+
+    return da <= midDA ?
+      interpolateColor(red, grey, (da - minDA) / (midDA - minDA)) : 
+      interpolateColor(grey, green, (da - midDA) / (maxDA - midDA));
   }
 
   getStyleForMempoolEmptyBlock(index: number) {

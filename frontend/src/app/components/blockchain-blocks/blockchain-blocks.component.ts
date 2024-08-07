@@ -339,15 +339,37 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   isDA(height: number): boolean {
     const isDA = height % 2016 === 0 && this.stateService.network === '';
     if (isDA && !this.cacheService.daCache[height]) {
-      this.cacheService.daCache[height] = 1;
       this.apiService.getDifficultyAdjustmentByHeight$(height).pipe(
         filter((da) => !!da),
         tap((da) => {
           this.cacheService.daCache[height] = da.adjustment;
+          this.blockStyles[this.height - height].background = this.colorFromDA(da.adjustment);
         })
       ).subscribe();
     }
     return isDA;
+  }
+
+  colorFromDA(da: number): string {
+    const minDA = 0.95;
+    const maxDA = 1.05;
+    const midDA = 1;
+
+    const red = { r: 220, g: 53, b: 69 };
+    const grey = { r: 108, g: 117, b: 125 };
+    const green = { r: 59, g: 204, b: 73 };
+
+    const interpolateColor = (color1, color2, ratio) => {
+      ratio = Math.min(1, Math.max(0, ratio));
+      const r = Math.round(color1.r + ratio * (color2.r - color1.r));
+      const g = Math.round(color1.g + ratio * (color2.g - color1.g));
+      const b = Math.round(color1.b + ratio * (color2.b - color1.b));
+      return `rgba(${r}, ${g}, ${b}, 0.7)`;
+    }
+
+    return da <= midDA ?
+      interpolateColor(red, grey, (da - minDA) / (midDA - minDA)) : 
+      interpolateColor(grey, green, (da - midDA) / (maxDA - midDA));
   }
 
   getStyleForBlock(block: BlockchainBlock, index: number, animateEnterFrom: number = 0) {
@@ -365,7 +387,8 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
     return {
       left: addLeft + this.blockOffset * index + 'px',
-      background: `repeating-linear-gradient(
+      background: this.isDA(block.height) ? this.colorFromDA(this.cacheService.daCache[block.height] || 1) :
+      `repeating-linear-gradient(
         var(--secondary),
         var(--secondary) ${greenBackgroundHeight}%,
         ${this.gradientColors[this.network][0]} ${Math.max(greenBackgroundHeight, 0)}%,
