@@ -71,6 +71,7 @@ export const defaultAuditColors = {
   censored: hexToColor('f344df'),
   missing: darken(desaturate(hexToColor('f344df'), 0.3), 0.7),
   added: hexToColor('0099ff'),
+  added_prioritized: darken(desaturate(hexToColor('0099ff'), 0.15), 0.85),
   prioritized: darken(desaturate(hexToColor('0099ff'), 0.3), 0.7),
   accelerated: hexToColor('8f5ff6'),
 };
@@ -101,6 +102,7 @@ export const contrastAuditColors = {
   censored: hexToColor('ffa8ff'),
   missing: darken(desaturate(hexToColor('ffa8ff'), 0.3), 0.7),
   added: hexToColor('00bb98'),
+  added_prioritized: darken(desaturate(hexToColor('00bb98'), 0.15), 0.85),
   prioritized: darken(desaturate(hexToColor('00bb98'), 0.3), 0.7),
   accelerated: hexToColor('8f5ff6'),
 };
@@ -136,6 +138,8 @@ export function defaultColorFunction(
       return auditColors.missing;
     case 'added':
       return auditColors.added;
+    case 'added_prioritized':
+      return auditColors.added_prioritized;
     case 'prioritized':
       return auditColors.prioritized;
     case 'selected':

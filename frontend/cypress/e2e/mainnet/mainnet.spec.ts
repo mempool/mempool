@@ -543,16 +543,7 @@ describe('Mainnet', () => {
           }
         });
 
-        cy.get('.alert').should('be.visible');
-        cy.get('.alert').invoke('css', 'width').then((alertWidth) => {
-          cy.get('.container-xl > :nth-child(3)').invoke('css', 'width').should('equal', alertWidth);
-        });
-
-        cy.get('.btn-warning').then(getRectangle).then((rectA) => {
-          cy.get('.alert').then(getRectangle).then((rectB) => {
-            expect(areOverlapping(rectA, rectB), 'Confirmations box and RBF alert are overlapping').to.be.false;
-          });
-        });
+        cy.get('.alert-replaced').should('be.visible');
       });
 
       it('shows RBF transactions properly (desktop)', () => {

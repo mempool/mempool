@@ -37,7 +37,11 @@ export class MiningService {
     private stateService: StateService,
     private apiService: ApiService,
     private storageService: StorageService,
-  ) { }
+  ) {
+    this.stateService.networkChanged$.subscribe((network) => {
+      this.clearCache();
+    });
+   }
 
   /**
    * Generate pool ranking stats
@@ -140,5 +144,10 @@ export class MiningService {
       miningUnits: miningUnits,
       totalBlockCount: parseInt(response.headers.get('x-total-count'), 10),
     };
+  }
+
+  private clearCache(): void {
+    this.cache = {};
+    this.poolsData = [];
   }
 }

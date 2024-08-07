@@ -32,6 +32,7 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
   dir: 'rtl' | 'ltr' = 'ltr';
   paramSubscription: Subscription;
   pools: { [id: number]: SinglePoolStats } = {};
+  nonEmptyAccelerations: boolean = true;
 
   constructor(
     private servicesApiService: ServicesApiServices,
@@ -50,6 +51,12 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.miningService.getPools().subscribe(pools => {
+      for (const pool of pools) {
+        this.pools[pool.unique_id] = pool;
+      }
+    });
+
     if (!this.widget) {
       this.websocketService.want(['blocks']);
       this.seoService.setTitle($localize`:@@02573b6980a2d611b4361a2595a4447e390058cd:Accelerations`);
@@ -82,12 +89,6 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
       ).subscribe(() => {
         this.pageChange(this.page);
       });
-
-      this.miningService.getPools().subscribe(pools => {
-        for (const pool of pools) {
-          this.pools[pool.unique_id] = pool;
-        }
-      });
     }
 
     this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
@@ -115,6 +116,7 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
             for (const acc of accelerations) {
               acc.boost = acc.boostCost != null ? acc.boostCost : acc.bidBoost;
             }
+            this.nonEmptyAccelerations = accelerations.length > 0;
             if (this.widget) {
               return of(accelerations.slice(0, 6));
             } else {

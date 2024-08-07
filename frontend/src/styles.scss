@@ -974,6 +974,28 @@ th {
     }
   }
 
+  .tracker-bar {
+    @extend .tracker-bar;
+    direction: ltr;
+  }
+
+  .confirmations {
+    @extend .confirmations;
+    margin-left: 0 !important;
+    margin-right: 1em;
+  }
+
+  .acceleration-tooltip {
+    @extend .acceleration-tooltip;
+    direction: rtl;
+    text-align: right !important;
+
+    .value {
+      @extend .value;
+      text-align: start !important;
+    }
+  }
+
   .table th {
     text-align: right;
   }

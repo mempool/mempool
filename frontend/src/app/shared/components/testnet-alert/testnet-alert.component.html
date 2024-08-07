@@ -5,9 +5,6 @@
       @if (stateService.network === 'testnet') {
         <span i18n="testnet3-deprecated">Testnet3 is deprecated, and will soon be replaced by <a href="/testnet4">Testnet4</a></span>
       }
-      @if (stateService.network === 'testnet4') {
-        <span i18n="testnet4-not-finalized">Testnet4 is not yet finalized, and may be reset at anytime.</span>
-      }
     </div>
     <button type="button" class="close" (click)="dismissWarning()">
       <span aria-hidden="true">&times;</span>

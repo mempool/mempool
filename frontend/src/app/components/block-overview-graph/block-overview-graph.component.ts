@@ -18,6 +18,7 @@ const unmatchedAuditColors = {
   censored: setOpacity(defaultAuditColors.censored, unmatchedOpacity),
   missing: setOpacity(defaultAuditColors.missing, unmatchedOpacity),
   added: setOpacity(defaultAuditColors.added, unmatchedOpacity),
+  added_prioritized: setOpacity(defaultAuditColors.added_prioritized, unmatchedOpacity),
   prioritized: setOpacity(defaultAuditColors.prioritized, unmatchedOpacity),
   accelerated: setOpacity(defaultAuditColors.accelerated, unmatchedOpacity),
 };
@@ -25,6 +26,7 @@ const unmatchedContrastAuditColors = {
   censored: setOpacity(contrastAuditColors.censored, unmatchedOpacity),
   missing: setOpacity(contrastAuditColors.missing, unmatchedOpacity),
   added: setOpacity(contrastAuditColors.added, unmatchedOpacity),
+  added_prioritized: setOpacity(contrastAuditColors.added_prioritized, unmatchedOpacity),
   prioritized: setOpacity(contrastAuditColors.prioritized, unmatchedOpacity),
   accelerated: setOpacity(contrastAuditColors.accelerated, unmatchedOpacity),
 };

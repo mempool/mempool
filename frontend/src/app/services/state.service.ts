@@ -210,6 +210,10 @@ export class StateService {
       this.env.MINING_DASHBOARD = false;
     }
 
+    if (document.location.hostname.endsWith('.onion')) {
+      this.env.SERVICES_API = 'http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion/api/v1/services';
+    }
+
     if (this.isBrowser) {
       this.setNetworkBasedonUrl(window.location.pathname);
       this.setLightningBasedonUrl(window.location.pathname);
@@ -226,10 +230,6 @@ export class StateService {
         this.setLightningBasedonUrl(event.url);
       }
     });
-
-    if (this.referrer === 'https://cash.app/' && window.innerWidth < 850 && window.location.pathname.startsWith('/tx/')) {
-      this.router.navigate(['/tracker/' + window.location.pathname.slice(4)]);
-    }
 
     this.liveMempoolBlockTransactions$ = this.mempoolBlockUpdate$.pipe(scan((transactions: { [txid: string]: TransactionStripped }, change: MempoolBlockUpdate): { [txid: string]: TransactionStripped } => {
       if (isMempoolState(change)) {

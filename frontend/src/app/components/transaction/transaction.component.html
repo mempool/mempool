@@ -62,6 +62,8 @@
     </div>
   }
 
+  <span id="accelerate"></span>
+
   <ng-template [ngIf]="!isLoadingTx && !error">
 
     <!-- CPFP Details -->
@@ -604,7 +606,14 @@
   @if (!isLoadingTx) {
     <tr>
       <td class="td-width" i18n="transaction.fee|Transaction fee">Fee</td>
-      <td>{{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> <span class="fiat"><app-fiat [blockConversion]="tx.price" [value]="tx.fee"></app-fiat></span></td>
+      <td class="text-wrap">{{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> 
+        @if (accelerationInfo?.bidBoost) {
+          <span class="oobFees" i18n-ngbTooltip="Acceleration Fees" ngbTooltip="Acceleration fees paid out-of-band"> +{{ accelerationInfo.bidBoost | number }} </span><span class="symbol" i18n="shared.sat|sat">sat</span>
+        } @else if (tx.feeDelta) {
+          <span class="oobFees" i18n-ngbTooltip="Acceleration Fees" ngbTooltip="Acceleration fees paid out-of-band"> +{{ tx.feeDelta | number }} </span><span class="symbol" i18n="shared.sat|sat">sat</span>
+        }
+        <span class="fiat"><app-fiat [blockConversion]="tx.price" [value]="tx.fee + (accelerationInfo?.bidBoost || tx.feeDelta || 0)"></app-fiat></span>
+      </td>
     </tr>
   } @else {
     <ng-container *ngTemplateOutlet="skeletonDetailsRow"></ng-container>
@@ -640,9 +649,9 @@
         <td>
           <div class="effective-fee-container">
             @if (accelerationInfo?.acceleratedFeeRate && (!tx.effectiveFeePerVsize || accelerationInfo.acceleratedFeeRate >= tx.effectiveFeePerVsize || tx.acceleration)) {
-              <app-fee-rate [fee]="accelerationInfo.acceleratedFeeRate"></app-fee-rate>
+              <app-fee-rate [class.oobFees]="isAcceleration" [fee]="accelerationInfo.acceleratedFeeRate"></app-fee-rate>
             } @else {
-              <app-fee-rate [fee]="tx.effectiveFeePerVsize"></app-fee-rate>
+              <app-fee-rate [class.oobFees]="isAcceleration" [fee]="tx.effectiveFeePerVsize"></app-fee-rate>
             }
 
             @if (tx?.status?.confirmed && !tx.acceleration && !accelerationInfo && tx.fee && tx.effectiveFeePerVsize) {

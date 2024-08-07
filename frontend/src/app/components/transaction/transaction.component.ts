@@ -411,10 +411,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
                 const isConflict = audit.fullrbfTxs.includes(txid);
                 const isExpected = audit.template.some(tx => tx.txid === txid);
                 const firstSeen = audit.template.find(tx => tx.txid === txid)?.time;
+                const wasSeen = audit.version === 1 ? !audit.unseenTxs.includes(txid) : (isExpected || isPrioritized || isAccelerated);
                 return {
-                  seen: isExpected || isPrioritized || isAccelerated,
+                  seen: wasSeen,
                   expected: isExpected,
-                  added: isAdded,
+                  added: isAdded && (audit.version === 0 || !wasSeen),
                   prioritized: isPrioritized,
                   conflict: isConflict,
                   accelerated: isAccelerated,
@@ -461,9 +462,23 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             if (txPosition.position.acceleratedBy) {
               txPosition.cpfp.acceleratedBy = txPosition.position.acceleratedBy;
             }
+            if (txPosition.position.acceleratedAt) {
+              txPosition.cpfp.acceleratedAt = txPosition.position.acceleratedAt;
+            }
+            if (txPosition.position.feeDelta) {
+              txPosition.cpfp.feeDelta = txPosition.position.feeDelta;
+            }
             this.setCpfpInfo(txPosition.cpfp);
-          } else if ((this.tx?.acceleration && txPosition.position.acceleratedBy)) {
-            this.tx.acceleratedBy = txPosition.position.acceleratedBy;
+          } else if ((this.tx?.acceleration)) {
+            if (txPosition.position.acceleratedBy) {
+              this.tx.acceleratedBy = txPosition.position.acceleratedBy;
+            }
+            if (txPosition.position.acceleratedAt) {
+              this.tx.acceleratedAt = txPosition.position.acceleratedAt;
+            }
+            if (txPosition.position.feeDelta) {
+              this.tx.feeDelta = txPosition.position.feeDelta;
+            }
           }
 
           if (this.stateService.network === '') {
@@ -517,6 +532,14 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
                 fragment: this.fragmentParams.toString(),
               });
             }
+          }
+          if (window.innerWidth <= 767.98) {
+            this.router.navigate([this.relativeUrlPipe.transform('/tx'), this.txId], {
+              queryParamsHandling: 'merge',
+              preserveFragment: true,
+              queryParams: { mode: 'details' },
+              replaceUrl: true,
+            });
           }
           this.seoService.setTitle(
             $localize`:@@bisq.transaction.browser-title:Transaction: ${this.txId}:INTERPOLATION:`

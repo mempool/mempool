@@ -11,6 +11,7 @@ import { MiningStats } from '../../services/mining.service';
 import { IAuth, AuthServiceMempool } from '../../services/auth.service';
 import { EnterpriseService } from '../../services/enterprise.service';
 import { ApiService } from '../../services/api.service';
+import { isDevMode } from '@angular/core';
 
 export type PaymentMethod = 'balance' | 'bitcoin' | 'cashapp' | 'applePay' | 'googlePay';
 
@@ -82,6 +83,13 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   timePaid: number = 0; // time acceleration requested
   math = Math;
   isMobile: boolean = window.innerWidth <= 767.98;
+  isProdDomain = ['mempool.space',
+    'mempool-staging.va1.mempool.space',
+    'mempool-staging.fmt.mempool.space',
+    'mempool-staging.fra.mempool.space',
+    'mempool-staging.tk7.mempool.space',
+    'mempool-staging.sg1.mempool.space'
+   ].indexOf(document.location.hostname) > -1;
 
   private _step: CheckoutStep = 'summary';
   simpleMode: boolean = true;
@@ -204,6 +212,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.fetchEstimate();
     }
     if (this._step === 'checkout') {
+      this.insertSquare();
       this.enterpriseService.goal(8);
     }
     if (this._step === 'checkout' && this.canPayWithBitcoin) {
@@ -213,17 +222,14 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.requestBTCPayInvoice();
     } else if (this._step === 'cashapp' && this.cashappEnabled) {
       this.loadingCashapp = true;
-      this.insertSquare();
       this.setupSquare();
       this.scrollToElementWithTimeout('confirm-title', 'center', 100);
     } else if (this._step === 'applepay' && this.applePayEnabled) {
       this.loadingApplePay = true;
-      this.insertSquare();
       this.setupSquare();
       this.scrollToElementWithTimeout('confirm-title', 'center', 100);
     } else if (this._step === 'googlepay' && this.googlePayEnabled) {
       this.loadingGooglePay = true;
-      this.insertSquare();
       this.setupSquare();
       this.scrollToElementWithTimeout('confirm-title', 'center', 100);
     } else if (this._step === 'paid') {
@@ -400,16 +406,15 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
    * Square
    */
   insertSquare(): void {
+    if (!this.isProdDomain && !isDevMode()) {
+      return;
+    }
     if (window['Square']) {
       return;
     }
     let statsUrl = 'https://sandbox.web.squarecdn.com/v1/square.js';
-    if (document.location.hostname === 'mempool-staging.fmt.mempool.space' ||
-        document.location.hostname === 'mempool-staging.va1.mempool.space' ||
-        document.location.hostname === 'mempool-staging.fra.mempool.space' ||
-        document.location.hostname === 'mempool-staging.tk7.mempool.space' ||
-        document.location.hostname === 'mempool.space') {
-      statsUrl = 'https://web.squarecdn.com/v1/square.js';
+    if (this.isProdDomain) {
+      statsUrl = '/square/v1/square.js';
     }
 
     (function(): void {
@@ -418,13 +423,16 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     })();
   }
   setupSquare(): void {
+    if (!this.isProdDomain && !isDevMode()) {
+      return;
+    }
     const init = (): void => {
       this.initSquare();
     };
 
     if (!window['Square']) {
-      console.debug('Square.js failed to load properly. Retrying in 1 second.');
-      setTimeout(init, 1000);
+      console.debug('Square.js failed to load properly. Retrying.');
+      setTimeout(this.setupSquare.bind(this), 100);
     } else {
       init();
     }
@@ -656,11 +664,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             amount: costUSD.toFixed(2),
             label: 'Total',
             pending: true,
-            productUrl: `${redirectHostname}/tracker/${this.tx.txid}`,
+            productUrl: `${redirectHostname}/tx/${this.tx.txid}`,
           }
         });
         this.cashAppPay = await this.payments.cashAppPay(paymentRequest, {
-          redirectURL: `${redirectHostname}/tracker/${this.tx.txid}`,
+          redirectURL: `${redirectHostname}/tx/${this.tx.txid}`,
           referenceId: `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`
         });
 
@@ -797,7 +805,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   get canPayWithCashapp(): boolean {
-    if (!this.cashappEnabled || !this.conversions) {
+    if (!this.cashappEnabled || !this.conversions || (!this.isProdDomain && !isDevMode())) {
       return false;
     }
 
@@ -813,7 +821,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   get canPayWithApplePay(): boolean {
-    if (!this.applePayEnabled || !this.conversions) {
+    if (!this.applePayEnabled || !this.conversions || (!this.isProdDomain && !isDevMode())) {
       return false;
     }
 
@@ -829,7 +837,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   get canPayWithGooglePay(): boolean {
-    if (!this.googlePayEnabled || !this.conversions) {
+    if (!this.googlePayEnabled || !this.conversions || (!this.isProdDomain && !isDevMode())) {
       return false;
     }
 
