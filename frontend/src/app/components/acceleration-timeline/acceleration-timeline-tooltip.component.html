@@ -26,9 +26,9 @@
       <tr *ngIf="accelerationInfo.bidBoost >= 0 || accelerationInfo.feeDelta">
         <td class="label" i18n="transaction.out-of-band-fees">Out-of-band fees</td>
         @if (accelerationInfo.status === 'accelerated') {
-          <td style="color: #905cf4;" class="value">{{ accelerationInfo.feeDelta | number }} <span class="symbol" i18n="shared.sat|sat">sat</span></td>
+          <td class="value oobFees">{{ accelerationInfo.feeDelta | number }} <span class="symbol" i18n="shared.sat|sat">sat</span></td>
         } @else {
-          <td style="color: #905cf4;" class="value">{{ accelerationInfo.bidBoost | number }} <span class="symbol" i18n="shared.sat|sat">sat</span></td>
+          <td class="value oobFees">{{ accelerationInfo.bidBoost | number }} <span class="symbol" i18n="shared.sat|sat">sat</span></td>
         }
       </tr>
       <tr *ngIf="accelerationInfo.fee && accelerationInfo.weight">
@@ -38,9 +38,9 @@
         } @else if (accelerationInfo.status === 'accelerated' || accelerationInfo.status === 'mined') {
           <td class="label" i18n="transaction.accelerated-fee-rate|Accelerated transaction fee rate">Accelerated fee rate</td>
           @if (accelerationInfo.status === 'accelerated') {
-            <td class="value"><app-fee-rate [fee]="accelerationInfo.fee + (accelerationInfo.feeDelta || 0)" [weight]="accelerationInfo.weight"></app-fee-rate></td>
+            <td class="value oobFees"><app-fee-rate [fee]="accelerationInfo.fee + (accelerationInfo.feeDelta || 0)" [weight]="accelerationInfo.weight"></app-fee-rate></td>
           } @else {
-            <td class="value"><app-fee-rate [fee]="accelerationInfo.fee + (accelerationInfo.bidBoost || 0)" [weight]="accelerationInfo.weight"></app-fee-rate></td>
+            <td class="value oobFees"><app-fee-rate [fee]="accelerationInfo.fee + (accelerationInfo.bidBoost || 0)" [weight]="accelerationInfo.weight"></app-fee-rate></td>
           }
         }
       </tr>
