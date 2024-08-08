@@ -33,7 +33,7 @@
         &lrm;{{ addPlus && satoshis >= 0 ? '+' : '' }}{{ satoshis | amountShortener : satoshis < 1000 && satoshis > -1000 ? 0 : 1 }}
       }
       <span class="symbol">
-        <ng-container *ngTemplateOutlet="prefix"></ng-container>sats
+        <ng-container *ngTemplateOutlet="prefix"></ng-container>sat
       </span>
     }
   </ng-template>
