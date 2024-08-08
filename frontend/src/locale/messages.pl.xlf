@@ -1517,7 +1517,7 @@
       </trans-unit>
       <trans-unit id="8918254921747459635" datatype="html">
         <source>Around block: <x id="PH" equiv-text="ticks[0].data[2]"/></source>
-        <target>Wokół bloku: <x id="PH" equiv-text="ticks[0].data[2]"/></target>
+        <target>Około bloku: <x id="PH" equiv-text="ticks[0].data[2]"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component.ts</context>
           <context context-type="linenumber">179</context>
