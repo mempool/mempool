@@ -1567,7 +1567,7 @@
       </trans-unit>
       <trans-unit id="bdb8bbb38e4ca3c73e19dc4167fbe4aec316f818" datatype="html">
         <source>Total Bid Boost</source>
-        <target>Całkowite zwiększenie oferty</target>
+        <target>Całk. zwiększenie oferty</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-stats/acceleration-stats.component.html</context>
           <context context-type="linenumber">11</context>
