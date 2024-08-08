@@ -83,7 +83,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.isLoading = true;
-    if (!this.address || !this.stats) {
+    if (!this.addressSummary$ && (!this.address || !this.stats)) {
       return;
     }
     if (changes.address || changes.isPubkey || changes.addressSummary$ || changes.stats) {
@@ -144,15 +144,16 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
   }
 
   prepareChartOptions(summary: AddressTxSummary[]) {
-    if (!summary || !this.stats) {
+    if (!summary) {
       return;
     }
     
-    let total = (this.stats.funded_txo_sum - this.stats.spent_txo_sum);
+    const total = this.stats ? (this.stats.funded_txo_sum - this.stats.spent_txo_sum) : summary.reduce((acc, tx) => acc + tx.value, 0);
+    let runningTotal = total;
     const processData = summary.map(d => {
-        const balance = total;
-        const fiatBalance = total * d.price / 100_000_000;
-        total -= d.value;
+        const balance = runningTotal;
+        const fiatBalance = runningTotal * d.price / 100_000_000;
+        runningTotal -= d.value;
         return {
             time: d.time * 1000,
             balance,
@@ -172,7 +173,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
       this.fiatData = this.fiatData.filter(d => d[0] >= startFiat);
     }
     this.data.push(
-      {value: [now, this.stats.funded_txo_sum - this.stats.spent_txo_sum], symbol: 'none', tooltip: { show: false }}
+      {value: [now, total], symbol: 'none', tooltip: { show: false }}
     );
 
     const maxValue = this.data.reduce((acc, d) => Math.max(acc, Math.abs(d[1] ?? d.value[1])), 0);

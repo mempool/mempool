@@ -4,7 +4,7 @@
       <div class="nav-header">
         @if (enterpriseInfo?.header_img) {
           <a class="d-flex" [routerLink]="['/' | relativeUrl]">
-            <img *ngIf="enterpriseInfo.header_img" [src]="enterpriseInfo?.header_img" alt="enterpriseInfo.title" height="42px">
+            <img *ngIf="enterpriseInfo.header_img" [src]="enterpriseInfo?.header_img" [alt]="enterpriseInfo.title" height="42px">
           </a>
         } @else if (enterpriseInfo?.img || enterpriseInfo?.imageMd5) {
           <a [routerLink]="['/' | relativeUrl]">

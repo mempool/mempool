@@ -1,0 +1,48 @@
+{
+  "theme": "wiz",
+  "enterprise": "bitb",
+  "branding": {
+    "name": "bitb",
+    "title": "BITB",
+    "site_id": 20,
+    "header_img": "/resources/bitblogo.svg",
+    "footer_img": "/resources/bitblogo.svg"
+  },
+  "dashboard": {
+    "widgets": [
+      {
+        "component": "fees",
+        "mobileOrder": 4
+      },
+      {
+        "component": "walletBalance",
+        "mobileOrder": 1,
+        "props": {
+          "wallet": "BITB"
+        }
+      },
+      {
+        "component": "goggles",
+        "mobileOrder": 5
+      },
+      {
+        "component": "wallet",
+        "mobileOrder": 2,
+        "props": {
+          "wallet": "BITB",
+          "period": "all"
+        }
+      },
+      {
+        "component": "blocks"
+      },
+      {
+        "component": "walletTransactions",
+        "mobileOrder": 3,
+        "props": {
+          "wallet": "BITB"
+        }
+      }
+    ]
+  }
+}
