@@ -5,7 +5,7 @@ import { AccelerationDelta, HealthCheckHost, IBackendInfo, MempoolBlock, Mempool
 import { Acceleration, AccelerationPosition, BlockExtended, CpfpInfo, DifficultyAdjustment, MempoolPosition, OptimizedMempoolStats, RbfTree, TransactionStripped } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
-import { filter, map, scan, shareReplay } from 'rxjs/operators';
+import { filter, map, scan, share, shareReplay } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 import { hasTouchScreen } from '../shared/pipes/bytes-pipe/utils';
 import { ActiveFilter } from '../shared/filters.utils';
@@ -131,6 +131,7 @@ export class StateService {
   latestBlockHeight = -1;
   blocks: BlockExtended[] = [];
   mempoolSequence: number;
+  mempoolBlockState: { block: number, transactions: { [txid: string]: TransactionStripped} };
 
   backend$ = new BehaviorSubject<'esplora' | 'electrum' | 'none'>('esplora');
   networkChanged$ = new ReplaySubject<string>(1);
@@ -143,7 +144,7 @@ export class StateService {
   mempoolInfo$ = new ReplaySubject<MempoolInfo>(1);
   mempoolBlocks$ = new ReplaySubject<MempoolBlock[]>(1);
   mempoolBlockUpdate$ = new Subject<MempoolBlockUpdate>();
-  liveMempoolBlockTransactions$: Observable<{ [txid: string]: TransactionStripped}>;
+  liveMempoolBlockTransactions$: Observable<{ block: number, transactions: { [txid: string]: TransactionStripped} }>;
   accelerations$ = new Subject<AccelerationDelta>();
   liveAccelerations$: Observable<Acceleration[]>;
   txConfirmed$ = new Subject<[string, BlockExtended]>();
@@ -231,29 +232,40 @@ export class StateService {
       }
     });
 
-    this.liveMempoolBlockTransactions$ = this.mempoolBlockUpdate$.pipe(scan((transactions: { [txid: string]: TransactionStripped }, change: MempoolBlockUpdate): { [txid: string]: TransactionStripped } => {
+    this.liveMempoolBlockTransactions$ = this.mempoolBlockUpdate$.pipe(scan((acc: { block: number, transactions: { [txid: string]: TransactionStripped } }, change: MempoolBlockUpdate): { block: number, transactions: { [txid: string]: TransactionStripped } } => {
       if (isMempoolState(change)) {
         const txMap = {};
         change.transactions.forEach(tx => {
           txMap[tx.txid] = tx;
         });
-        return txMap;
+        this.mempoolBlockState = {
+          block: change.block,
+          transactions: txMap
+        };
+        return this.mempoolBlockState;
       } else {
         change.added.forEach(tx => {
-          transactions[tx.txid] = tx;
+          acc.transactions[tx.txid] = tx;
         });
         change.removed.forEach(txid => {
-          delete transactions[txid];
+          delete acc.transactions[txid];
         });
         change.changed.forEach(tx => {
-          if (transactions[tx.txid]) {
-            transactions[tx.txid].rate = tx.rate;
-            transactions[tx.txid].acc = tx.acc;
+          if (acc.transactions[tx.txid]) {
+            acc.transactions[tx.txid].rate = tx.rate;
+            acc.transactions[tx.txid].acc = tx.acc;
           }
         });
-        return transactions;
+        this.mempoolBlockState = {
+          block: change.block,
+          transactions: acc.transactions
+        };
+        return this.mempoolBlockState;
       }
-    }, {}));
+    }, {}),
+    share()
+    );
+    this.liveMempoolBlockTransactions$.subscribe();
 
     // Emits the full list of pending accelerations each time it changes
     this.liveAccelerations$ = this.accelerations$.pipe(

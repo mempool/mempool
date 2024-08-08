@@ -170,8 +170,9 @@ export function uncompressTx(tx: TransactionCompressed): TransactionStripped {
   };
 }
 
-export function uncompressDeltaChange(delta: MempoolBlockDeltaCompressed): MempoolBlockDelta {
+export function uncompressDeltaChange(block: number, delta: MempoolBlockDeltaCompressed): MempoolBlockDelta {
   return {
+    block,
     added: delta.added.map(uncompressTx),
     removed: delta.removed,
     changed: delta.changed.map(tx => ({
