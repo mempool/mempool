@@ -458,7 +458,7 @@ class MiningRoutes {
         res.status(400).send('Acceleration data is not available.');
         return;
       }
-      res.status(200).send(accelerationApi.accelerations || []);
+      res.status(200).send(Object.values(accelerationApi.getAccelerations() || {}));
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
