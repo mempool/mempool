@@ -3,6 +3,7 @@
     <body>
       <trans-unit id="ngb.alert.close" datatype="html">
         <source>Close</source>
+        <target>Zatvori</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -10,6 +11,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.HH" datatype="html">
         <source>HH</source>
+        <target>HH</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -17,6 +19,7 @@
       </trans-unit>
       <trans-unit id="ngb.toast.close-aria" datatype="html">
         <source>Close</source>
+        <target>Zatvori</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -24,6 +27,7 @@
       </trans-unit>
       <trans-unit id="ngb.datepicker.select-month" datatype="html">
         <source>Select month</source>
+        <target>Odaberi mjesec</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -35,6 +39,7 @@
       </trans-unit>
       <trans-unit id="ngb.pagination.first" datatype="html">
         <source>««</source>
+        <target>««</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -42,6 +47,7 @@
       </trans-unit>
       <trans-unit id="ngb.datepicker.previous-month" datatype="html">
         <source>Previous month</source>
+        <target>Prethodni mjesec</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -53,6 +59,7 @@
       </trans-unit>
       <trans-unit id="ngb.progressbar.value" datatype="html">
         <source><x id="INTERPOLATION"/></source>
+        <target><x id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -60,6 +67,7 @@
       </trans-unit>
       <trans-unit id="ngb.carousel.slide-number" datatype="html">
         <source> Slide <x id="INTERPOLATION"/> of <x id="INTERPOLATION_1"/> </source>
+        <target>Slajd <x id="INTERPOLATION"/> od <x id="INTERPOLATION_1"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -68,6 +76,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.hours" datatype="html">
         <source>Hours</source>
+        <target>Sati</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -75,6 +84,7 @@
       </trans-unit>
       <trans-unit id="ngb.pagination.previous" datatype="html">
         <source>«</source>
+        <target>«</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -82,6 +92,7 @@
       </trans-unit>
       <trans-unit id="ngb.carousel.previous" datatype="html">
         <source>Previous</source>
+        <target>Prethodno</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -89,6 +100,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.MM" datatype="html">
         <source>MM</source>
+        <target>MM</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -96,6 +108,7 @@
       </trans-unit>
       <trans-unit id="ngb.pagination.next" datatype="html">
         <source>»</source>
+        <target>»</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -103,6 +116,7 @@
       </trans-unit>
       <trans-unit id="ngb.datepicker.select-year" datatype="html">
         <source>Select year</source>
+        <target>Odaberi godinu</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -114,6 +128,7 @@
       </trans-unit>
       <trans-unit id="ngb.datepicker.next-month" datatype="html">
         <source>Next month</source>
+        <target>Sljedeći mjesec</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -125,6 +140,7 @@
       </trans-unit>
       <trans-unit id="ngb.carousel.next" datatype="html">
         <source>Next</source>
+        <target>Sljedeći</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -132,6 +148,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.minutes" datatype="html">
         <source>Minutes</source>
+        <target>Minute</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -139,6 +156,7 @@
       </trans-unit>
       <trans-unit id="ngb.pagination.last" datatype="html">
         <source>»»</source>
+        <target>»»</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -146,6 +164,7 @@
       </trans-unit>
       <trans-unit id="ngb.pagination.first-aria" datatype="html">
         <source>First</source>
+        <target>Prvi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -153,6 +172,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.increment-hours" datatype="html">
         <source>Increment hours</source>
+        <target>Povećanje sati</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -160,6 +180,7 @@
       </trans-unit>
       <trans-unit id="ngb.pagination.previous-aria" datatype="html">
         <source>Previous</source>
+        <target>Prethodno</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -167,6 +188,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.decrement-hours" datatype="html">
         <source>Decrement hours</source>
+        <target>Smanjenje sati</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -174,6 +196,7 @@
       </trans-unit>
       <trans-unit id="ngb.pagination.next-aria" datatype="html">
         <source>Next</source>
+        <target>Sljedeće</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -181,6 +204,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.increment-minutes" datatype="html">
         <source>Increment minutes</source>
+        <target>Povećanje minuta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -188,6 +212,7 @@
       </trans-unit>
       <trans-unit id="ngb.pagination.last-aria" datatype="html">
         <source>Last</source>
+        <target>Zadnje</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -195,6 +220,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.decrement-minutes" datatype="html">
         <source>Decrement minutes</source>
+        <target>Smanjenje minuta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -202,6 +228,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.SS" datatype="html">
         <source>SS</source>
+        <target>SS</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -209,6 +236,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.seconds" datatype="html">
         <source>Seconds</source>
+        <target>Sekunde</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -216,6 +244,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.increment-seconds" datatype="html">
         <source>Increment seconds</source>
+        <target>Povećanje sekunda</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -223,6 +252,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.decrement-seconds" datatype="html">
         <source>Decrement seconds</source>
+        <target>Smsnjenje sekunda</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -230,6 +260,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.PM" datatype="html">
         <source><x id="INTERPOLATION"/></source>
+        <target><x id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -237,6 +268,7 @@
       </trans-unit>
       <trans-unit id="9bada74bc2b36480a6db8734d56a2b89135de590" datatype="html">
         <source>Become a Community Sponsor</source>
+        <target>Postani Community Sponsor</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about-sponsors.component.html</context>
           <context context-type="linenumber">4</context>
@@ -245,6 +277,7 @@
       </trans-unit>
       <trans-unit id="bef4c03ebfa29b890665fbcf6bf097b9ae29a91e" datatype="html">
         <source>Become an Enterprise Sponsor</source>
+        <target>Postani Enterprise Sponsor</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about-sponsors.component.html</context>
           <context context-type="linenumber">11</context>
@@ -253,6 +286,7 @@
       </trans-unit>
       <trans-unit id="4b137ec8bf73a47063740b75c0c40d5fd3c48015" datatype="html">
         <source>The Mempool Open Source Project</source>
+        <target>Mempool projekt otvorenog koda</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">13</context>
@@ -261,6 +295,7 @@
       </trans-unit>
       <trans-unit id="8a4411dcb4da0aa489ec367bf2a3ec289e07a86e" datatype="html">
         <source>Our mempool and blockchain explorer for the Bitcoin community, focusing on the transaction fee market and multi-layer ecosystem, completely self-hosted without any trusted third-parties.</source>
+        <target>Naš mempool i blockchain explorer za Bitcoin zajednicu, fokusiran na tržište transakcijskih naknada i višeslojni ekosustav, potpuno samostalno hostiran bez ikakvih trećih strana od povjerenja.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">14</context>
@@ -268,6 +303,7 @@
       </trans-unit>
       <trans-unit id="a24b1c6a9c4334ba204e4cec2dd9f32ea33d043f" datatype="html">
         <source>Enterprise Sponsors 🚀</source>
+        <target>Enterprise sponzori 🚀</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">40</context>
@@ -276,6 +312,7 @@
       </trans-unit>
       <trans-unit id="299789f4d4817ccf915f6a5b0e48c093b646b079" datatype="html">
         <source>Whale Sponsors</source>
+        <target>Kitovi sponzori</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">200</context>
@@ -284,6 +321,7 @@
       </trans-unit>
       <trans-unit id="2dca632c813555d7153785d4b6d25cc0f04d6bcd" datatype="html">
         <source>Chad Sponsors</source>
+        <target>Chad sponzori</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">213</context>
@@ -292,6 +330,7 @@
       </trans-unit>
       <trans-unit id="0a441237b27eaeacbeba376cabd33921fa4bb2d6" datatype="html">
         <source>OG Sponsors ❤️</source>
+        <target>OG sponzori ❤️</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">226</context>
@@ -300,6 +339,7 @@
       </trans-unit>
       <trans-unit id="1405c5f1a9834338ff13442c550927ab7144fdc8" datatype="html">
         <source>Community Integrations</source>
+        <target>Integracije zajednice</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">237</context>
@@ -308,6 +348,7 @@
       </trans-unit>
       <trans-unit id="020cce975a5d7e0cc0f4578903358459d693e4bb" datatype="html">
         <source>Community Alliances</source>
+        <target>Savezi zajednice</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">351</context>
@@ -316,6 +357,7 @@
       </trans-unit>
       <trans-unit id="d5a535ddb26ae8cb056325715af27bb1b4008c14" datatype="html">
         <source>Project Translators</source>
+        <target>Prevoditelji projekta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">367</context>
@@ -324,6 +366,7 @@
       </trans-unit>
       <trans-unit id="2dd9b8a8997a6b57413ca3cd32dd38cef9fa39c2" datatype="html">
         <source>Project Contributors</source>
+        <target>Suradnici projekta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">381</context>
@@ -332,6 +375,7 @@
       </trans-unit>
       <trans-unit id="3d395b07b1f87656ed773adcbb3daf8e00c08779" datatype="html">
         <source>Project Members</source>
+        <target>Članovi projekta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">393</context>
@@ -340,6 +384,7 @@
       </trans-unit>
       <trans-unit id="d177262e3a43b2a7221183812daf0ada97659436" datatype="html">
         <source>Project Maintainers</source>
+        <target>Održavatelji projekta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">406</context>
@@ -348,6 +393,7 @@
       </trans-unit>
       <trans-unit id="004b222ff9ef9dd4771b777950ca1d0e4cd4348a" datatype="html">
         <source>About</source>
+        <target>O projektu</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.ts</context>
           <context context-type="linenumber">49</context>
@@ -363,6 +409,7 @@
       </trans-unit>
       <trans-unit id="meta.description.about" datatype="html">
         <source>Learn more about The Mempool Open Source Project®: enterprise sponsors, individual sponsors, integrations, who contributes, FOSS licensing, and more.</source>
+        <target>Saznajte više o Mempool Open Source Project®: korporativni sponzori, pojedinačni sponzori, integracije, tko doprinosi, FOSS licenciranje i više.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.ts</context>
           <context context-type="linenumber">50</context>
@@ -370,6 +417,7 @@
       </trans-unit>
       <trans-unit id="1b47ebb11a7dbffd196a704d2325c5c73aea81e6" datatype="html">
         <source>Sorry, something went wrong!</source>
+        <target>Oprostite, nešto je pošlo naopako!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">5</context>
@@ -378,6 +426,7 @@
       </trans-unit>
       <trans-unit id="49b619d43af81067bfcbf7ba4036876a620e9bd8" datatype="html">
         <source>We were not able to accelerate this transaction. Please try again later.</source>
+        <target>Nismo uspjeli ubrzati ovu transakciju. Molimo pokušajte ponovo kasnije.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">11</context>
@@ -386,6 +435,7 @@
       </trans-unit>
       <trans-unit id="f4e529ae5ffd73001d1ff4bbdeeb0a72e342e5c8" datatype="html">
         <source>Close</source>
+        <target>Zatvori</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">18</context>
@@ -398,6 +448,7 @@
       </trans-unit>
       <trans-unit id="f24773075af97666c0feca0e883c2585712fe597" datatype="html">
         <source>Your transaction</source>
+        <target>Vaša transakcija</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">37</context>
@@ -406,6 +457,7 @@
       </trans-unit>
       <trans-unit id="bee6b649ee82d9a7cde233070b665eec7c531b1d" datatype="html">
         <source>Plus <x id="INTERPOLATION" equiv-text="{{ estimate.txSummary.ancestorCount - 1 }}"/> unconfirmed ancestor(s)</source>
+        <target>Plus <x id="INTERPOLATION" equiv-text="{{ estimate.txSummary.ancestorCount - 1 }}"/>nepotvrđeni predak(ci)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">41</context>
@@ -440,6 +492,7 @@
       </trans-unit>
       <trans-unit id="df89e157bacb4ab32e6ec725bf1eb176dc15201e" datatype="html">
         <source>Size in vbytes of this transaction (including unconfirmed ancestors)</source>
+        <target>Veličina u vbajtima ove transakcije (uključujući nepotvrđene pretke)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">51</context>
@@ -448,6 +501,7 @@
       </trans-unit>
       <trans-unit id="adbeb446bf941afda4d4a923b5e4ce0cf4a1c1b8" datatype="html">
         <source>In-band fees</source>
+        <target>In-band naknade</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">55</context>
@@ -456,6 +510,7 @@
       </trans-unit>
       <trans-unit id="e4b2d9e6a2ab9e6ca34027ec03beaac42b7badd4" datatype="html">
         <source>sats</source>
+        <target>sat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">57</context>
@@ -572,6 +627,7 @@
       </trans-unit>
       <trans-unit id="fad137784196a8fdc10588e27ed5d8ae95fe4e79" datatype="html">
         <source>Fees already paid by this transaction (including unconfirmed ancestors)</source>
+        <target>Naknade koje su već plaćene ovom transakcijom (uključujući nepotvrđene pretke)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">62</context>
@@ -580,6 +636,7 @@
       </trans-unit>
       <trans-unit id="4169a885bc1747a38344bae64e6926c6d7d7ec43" datatype="html">
         <source>How much faster?</source>
+        <target>Koliko brže?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">71</context>
@@ -588,6 +645,7 @@
       </trans-unit>
       <trans-unit id="d1a62bdb732f1efbfdc8af6fbb4349b89015b5e5" datatype="html">
         <source>This will reduce your expected waiting time until the first confirmation to <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="START_TAG_APP_TIME" ctype="x-app_time" equiv-text="n&quot; [time]=&quot;etaInfo.acceleratedETA&quot; [fastRender]=&quot;false&quot; [fixedRender]=&quot;true&quot;&gt;"/><x id="CLOSE_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;/strong&gt;&lt;/s"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/small&gt;"/></source>
+        <target>Ovo će smanjiti vaše očekivano vrijeme čekanja do prve potvrde na <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="START_TAG_APP_TIME" ctype="x-app_time" equiv-text="n&quot; [time]=&quot;etaInfo.acceleratedETA&quot; [fastRender]=&quot;false&quot; [fixedRender]=&quot;true&quot;&gt;"/><x id="CLOSE_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;/strong&gt;&lt;/s"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/small&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">76,77</context>
@@ -596,6 +654,7 @@
       </trans-unit>
       <trans-unit id="a8233de047500bf0f0d9f9f1712ddb071501a283" datatype="html">
         <source>Summary</source>
+        <target>Sažetak</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">100</context>
@@ -604,6 +663,7 @@
       </trans-unit>
       <trans-unit id="0b537472d5f7518ed2c2c2b747997b0447ec5ee8" datatype="html">
         <source>Next block market rate</source>
+        <target>Tržišna vrijednost sljedećeg bloka</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">109</context>
@@ -634,6 +694,7 @@
       </trans-unit>
       <trans-unit id="c2836a2964adf9e369ee0a1ce67f991cf2aa435d" datatype="html">
         <source>Estimated extra fee required</source>
+        <target>Procjena potrebne dodatne naknade</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">117</context>
@@ -642,6 +703,7 @@
       </trans-unit>
       <trans-unit id="6c37b6a6f9e5ec98367ed744afa4b36800aa79ce" datatype="html">
         <source>Target rate</source>
+        <target>Ciljana naknada</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">131</context>
@@ -650,6 +712,7 @@
       </trans-unit>
       <trans-unit id="e26d365629446e476b5d437e343b5b02b49adea2" datatype="html">
         <source>Extra fee required</source>
+        <target>Potrebna je dodatna naknada</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">139</context>
@@ -658,6 +721,7 @@
       </trans-unit>
       <trans-unit id="26e50fa97db4eecde26ff892d725e61ca9201c48" datatype="html">
         <source>Mempool Accelerator™ fees</source>
+        <target>Naknade za Mempool Accelerator™</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">153</context>
@@ -666,6 +730,7 @@
       </trans-unit>
       <trans-unit id="1ec82428244c76064090ea5a55827e3fada82306" datatype="html">
         <source>Accelerator Service Fee</source>
+        <target>Naknada za uslugu akceleratora</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">157</context>
@@ -674,6 +739,7 @@
       </trans-unit>
       <trans-unit id="7d07b80b17dfab3582807759420b8d723c9e4414" datatype="html">
         <source>Transaction Size Surcharge</source>
+        <target>Dodatna naknada za veličinu transakcije</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">169</context>
@@ -682,6 +748,7 @@
       </trans-unit>
       <trans-unit id="004732b44df582a2d24e2abbd3f46bc42ae8c546" datatype="html">
         <source>Estimated acceleration cost</source>
+        <target>Procijenjeni trošak ubrzanja</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">185</context>
@@ -690,6 +757,7 @@
       </trans-unit>
       <trans-unit id="c9ec95585f57bd87212693db7cb00d9ed70d49b1" datatype="html">
         <source>Maximum acceleration cost</source>
+        <target>Maksimalni trošak ubrzanja</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">204</context>
@@ -698,6 +766,7 @@
       </trans-unit>
       <trans-unit id="990d4cedae650a7a1b53887cfde7ed363e362bb2" datatype="html">
         <source>Acceleration cost</source>
+        <target>Trošak ubrzanja</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">206</context>
@@ -706,6 +775,7 @@
       </trans-unit>
       <trans-unit id="f3ff11006f77909b9fca2e0fda0a72b097cd76de" datatype="html">
         <source>Available balance</source>
+        <target>Dostupno Stanje</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">226</context>
@@ -714,6 +784,7 @@
       </trans-unit>
       <trans-unit id="a67aec1c4d47cdf3a4442a19e616def78fd77388" datatype="html">
         <source>Go back</source>
+        <target>Idi natrag</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">258</context>
@@ -730,6 +801,7 @@
       </trans-unit>
       <trans-unit id="7d89e94e98140d07d5c2bb12d6166b8b74506eb0" datatype="html">
         <source>Accelerate your Bitcoin transaction?</source>
+        <target>Ubrzati svoju Bitcoin transakciju?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">273</context>
@@ -738,6 +810,7 @@
       </trans-unit>
       <trans-unit id="eb70970e7741aca891aa54ff4651b050a60b1690" datatype="html">
         <source>Wait</source>
+        <target>Čekaj</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">285</context>
@@ -746,6 +819,7 @@
       </trans-unit>
       <trans-unit id="f6a46cd5ca2087712a145f2c680e2aad5f926eaf" datatype="html">
         <source>Confirmation expected</source>
+        <target>Očekuje se potvrda</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">287</context>
@@ -758,6 +832,7 @@
       </trans-unit>
       <trans-unit id="4adc5f10d717fbcfc9834dcf5eb203c1156db4d7" datatype="html">
         <source>Confirmation not expected any time soon</source>
+        <target>Potvrda se ne očekuje u skorije vrijeme</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">290</context>
@@ -766,6 +841,7 @@
       </trans-unit>
       <trans-unit id="fd1ab7f68416a5ce64f04f588c8b808d7bba9624" datatype="html">
         <source>For an additional</source>
+        <target>Za dodatnu</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">345</context>
@@ -774,6 +850,7 @@
       </trans-unit>
       <trans-unit id="b0cd496dc7758e691f57213379a47f0a043010ac" datatype="html">
         <source>Reducing expected confirmation time to <x id="START_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;app-time kind=&quot;within&quot; [time]=&quot;etaInfo.acceleratedETA&quot; [fastRender]=&quot;false&quot; [fixedRender]=&quot;true&quot;&gt;"/><x id="CLOSE_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;/ng-contain"/></source>
+        <target>Smanjenje očekivanog vremena potvrde na <x id="START_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;app-time kind=&quot;within&quot; [time]=&quot;etaInfo.acceleratedETA&quot; [fastRender]=&quot;false&quot; [fixedRender]=&quot;true&quot;&gt;"/><x id="CLOSE_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;/ng-contain"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">351,352</context>
@@ -782,6 +859,7 @@
       </trans-unit>
       <trans-unit id="b62e50ad8bdbb107a2ec978648faf36e9f91c3c1" datatype="html">
         <source>Payment to mempool.space for acceleration of txid <x id="START_LINK" ctype="x-a" equiv-text="&lt;a [routerLink]=&quot;'/tx/' + tx.txid&quot; target=&quot;_blank&quot;&gt;"/><x id="INTERPOLATION" equiv-text="tr(0, 10) }}"/>..<x id="INTERPOLATION_1" equiv-text="{{ tx.txid.substr(-10) }}"/><x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/p&gt;         &lt;/d"/></source>
+        <target>Plaćanje na mempool.space za ubrzanje txid <x id="START_LINK" ctype="x-a" equiv-text="&lt;a [routerLink]=&quot;'/tx/' + tx.txid&quot; target=&quot;_blank&quot;&gt;"/><x id="INTERPOLATION" equiv-text="tr(0, 10) }}"/>..<x id="INTERPOLATION_1" equiv-text="{{ tx.txid.substr(-10) }}"/> <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/p&gt;         &lt;/d"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">362,363</context>
@@ -794,6 +872,7 @@
       </trans-unit>
       <trans-unit id="9ebf5e1f1759ac5a81805ee901d02d1c14cab033" datatype="html">
         <source>Your account will be debited no more than</source>
+        <target>Vaš račun neće biti terećen za više od</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">367</context>
@@ -802,6 +881,7 @@
       </trans-unit>
       <trans-unit id="65fd4251d8ddfe4017d4d83f8cec6f5a80d89289" datatype="html">
         <source>Pay</source>
+        <target>Plati</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">378</context>
@@ -823,6 +903,7 @@
       </trans-unit>
       <trans-unit id="3da51e8df074e97a3479c4b2a6d1655529267544" datatype="html">
         <source>Failed to load invoice</source>
+        <target>Učitavanje fakture nije uspjelo</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">381</context>
@@ -831,6 +912,7 @@
       </trans-unit>
       <trans-unit id="13eacf4307fbadcc4ba552641200cdc36997a62c" datatype="html">
         <source>Loading invoice...</source>
+        <target>Učitavanje fakture...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">386</context>
@@ -839,6 +921,7 @@
       </trans-unit>
       <trans-unit id="63f5d0ec23e3cf4abf6d5221107633c90d8d4a15" datatype="html">
         <source>OR</source>
+        <target>OR</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">394</context>
@@ -847,6 +930,7 @@
       </trans-unit>
       <trans-unit id="d5380b83d01211f764e7dc17f115cbe2c306793f" datatype="html">
         <source>Confirm your payment</source>
+        <target>Potvrdite svoju uplatu</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">442</context>
@@ -855,6 +939,7 @@
       </trans-unit>
       <trans-unit id="23e85f2bac1f2bf2a36125a7cc9232e47d773bca" datatype="html">
         <source>Total additional cost</source>
+        <target>Ukupni dodatni trošak</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">458</context>
@@ -863,6 +948,7 @@
       </trans-unit>
       <trans-unit id="ada15d0099ccf0a54d598a658d7a5d9f95af8fc6" datatype="html">
         <source>with</source>
+        <target>s</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">462</context>
@@ -871,6 +957,7 @@
       </trans-unit>
       <trans-unit id="c427d1fcbff172397bf8f6fb154e3144f099afdc" datatype="html">
         <source>Loading payment method...</source>
+        <target>Učitavanje načina plaćanja...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">482</context>
@@ -879,6 +966,7 @@
       </trans-unit>
       <trans-unit id="72ca62832f62c0aeb0c0675d2ac6aa7043ee840d" datatype="html">
         <source>Confirming your payment</source>
+        <target>Potvrđujemo vašu uplatu</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">500</context>
@@ -887,6 +975,7 @@
       </trans-unit>
       <trans-unit id="8c8cbda9c5ddde6a4898a80aef46199c946c8895" datatype="html">
         <source>We are processing your payment...</source>
+        <target>Obrađujemo vašu uplatu...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">510</context>
@@ -895,6 +984,7 @@
       </trans-unit>
       <trans-unit id="ea3197c44781ecca4f2adbf7bff229574f192983" datatype="html">
         <source>Accelerating your transaction</source>
+        <target>Ubrzavamo vašu transakciju</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">520</context>
@@ -903,6 +993,7 @@
       </trans-unit>
       <trans-unit id="2279bfb8531701cc176ff6b266c3fa0df3983bce" datatype="html">
         <source>Confirming your acceleration with our mining pool partners...</source>
+        <target>Potvrđujemo vaše ubrzanje s našim mining pool partnerima...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">527</context>
@@ -911,6 +1002,7 @@
       </trans-unit>
       <trans-unit id="d005740e3435cf7e0aad9a67d179ec3b3065205e" datatype="html">
         <source>...sorry, this is taking longer than expected...</source>
+        <target>...žao nam je, ovo traje duže od očekivanog...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">529</context>
@@ -919,6 +1011,7 @@
       </trans-unit>
       <trans-unit id="afdff27fa38ec3386a7b9bb1b3ff113ed5d7e411" datatype="html">
         <source>Your transaction is being accelerated!</source>
+        <target>Vaša transakcija se ubrzava!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">538</context>
@@ -927,6 +1020,7 @@
       </trans-unit>
       <trans-unit id="f3b21cdfcc35a76e171f3bfd9c3daecbe065b159" datatype="html">
         <source>Your transaction has been accepted for acceleration by our mining pool partners.</source>
+        <target>Vašu su transakciju prihvatili za ubrzanje naši mining pool partneri.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">544</context>
@@ -935,6 +1029,7 @@
       </trans-unit>
       <trans-unit id="746506272a06b85cba0efc14907940df4bafdf96" datatype="html">
         <source>Calculating cost...</source>
+        <target>Izračunavanje troškova...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">563</context>
@@ -943,6 +1038,7 @@
       </trans-unit>
       <trans-unit id="484e154f1b26e67760d10baa8dddb2c69ddb1990" datatype="html">
         <source>customize</source>
+        <target>prilagodi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">569</context>
@@ -951,6 +1047,7 @@
       </trans-unit>
       <trans-unit id="fc60844faa5ea496fe8b8cfb7620b2bfc733c90b" datatype="html">
         <source>Accelerate to ~<x id="INTERPOLATION" equiv-text="{{ x | number : '1.0-0' }}"/> sat/vB</source>
+        <target>Ubrzaj na ~<x id="INTERPOLATION" equiv-text="{{ x | number : '1.0-0' }}"/> sat/vB</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">572</context>
@@ -959,6 +1056,7 @@
       </trans-unit>
       <trans-unit id="913e89d2d1ae354079cccf48b3d3f4ebf2e74080" datatype="html">
         <source>Accelerate</source>
+        <target>Ubrzaj</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">578</context>
@@ -976,6 +1074,7 @@
       </trans-unit>
       <trans-unit id="cae178cb66733552da9e3baefc1949a18af63ee0" datatype="html">
         <source>Your transaction will be prioritized by up to <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="1' }}"/>%<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> of miners.</source>
+        <target>Vašoj će transakciji dati prioritet do <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="1' }}"/>%<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> rudara .</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">600</context>
@@ -984,6 +1083,7 @@
       </trans-unit>
       <trans-unit id="83b8b9dd1ed416447cf8438460a37b0ddeb2677c" datatype="html">
         <source>sat</source>
+        <target>sat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-fee-graph.component.html</context>
           <context context-type="linenumber">15</context>
@@ -1033,6 +1133,7 @@
       </trans-unit>
       <trans-unit id="bdf0e930eb22431140a2eaeacd809cc5f8ebd38c" datatype="html">
         <source>Next Block</source>
+        <target>Sljedeći blok</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-fee-graph.component.ts</context>
           <context context-type="linenumber">81</context>
@@ -1056,6 +1157,7 @@
       </trans-unit>
       <trans-unit id="7159011509695804248" datatype="html">
         <source>maximum</source>
+        <target>maksimum</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-fee-graph.component.ts</context>
           <context context-type="linenumber">91</context>
@@ -1063,6 +1165,7 @@
       </trans-unit>
       <trans-unit id="1158292946432597388" datatype="html">
         <source>accelerated</source>
+        <target>ubrzano</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-fee-graph.component.ts</context>
           <context context-type="linenumber">91</context>
@@ -1070,6 +1173,7 @@
       </trans-unit>
       <trans-unit id="aa28c3afcb8b1a556fc1e1842e48a57f24fd643f" datatype="html">
         <source>Status</source>
+        <target>Status</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline-tooltip.component.html</context>
           <context context-type="linenumber">11</context>
@@ -1165,6 +1269,7 @@
       </trans-unit>
       <trans-unit id="b484583f0ce10f3341ab36750d05271d9d22c9a1" datatype="html">
         <source>Accelerated</source>
+        <target>Ubrzano</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline-tooltip.component.html</context>
           <context context-type="linenumber">16</context>
@@ -1197,6 +1302,7 @@
       </trans-unit>
       <trans-unit id="65d447765db0bf3390e9b3ecce142bf34bb602a3" datatype="html">
         <source>Mined</source>
+        <target>Izrudaredo</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline-tooltip.component.html</context>
           <context context-type="linenumber">18</context>
@@ -1287,6 +1393,7 @@
       </trans-unit>
       <trans-unit id="c3aaae1073e33c932a5c98f98c3520645c0e3a93" datatype="html">
         <source>Out-of-band fees</source>
+        <target>Izvanpojasne naknade</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline-tooltip.component.html</context>
           <context context-type="linenumber">27</context>
@@ -1295,6 +1402,7 @@
       </trans-unit>
       <trans-unit id="3e322ffba6477484e0dd2e65650fdd70322ea6d0" datatype="html">
         <source>Fee rate</source>
+        <target>Stopa naknade</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline-tooltip.component.html</context>
           <context context-type="linenumber">36</context>
@@ -1332,6 +1440,7 @@
       </trans-unit>
       <trans-unit id="8b01e0411c7160bfee109e504c84ecee5079c326" datatype="html">
         <source>Accelerated fee rate</source>
+        <target>Ubrzana stopa naknade</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline-tooltip.component.html</context>
           <context context-type="linenumber">39</context>
@@ -1349,6 +1458,7 @@
       </trans-unit>
       <trans-unit id="2c2a527d090d5d030fc130a243135dbc6ba276f0" datatype="html">
         <source>Accelerated by</source>
+        <target>Ubrzano od</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline-tooltip.component.html</context>
           <context context-type="linenumber">48</context>
@@ -1362,6 +1472,7 @@
       </trans-unit>
       <trans-unit id="bcf34abc2d9ed8f45a2f65dd464c46694e9a181e" datatype="html">
         <source>Acceleration Fees</source>
+        <target>Naknade za ubrzanje</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component.html</context>
           <context context-type="linenumber">6</context>
@@ -1378,6 +1489,7 @@
       </trans-unit>
       <trans-unit id="7920806087360513675" datatype="html">
         <source>No accelerated transaction for this timeframe</source>
+        <target>Nema ubrzane transakcije za ovaj vremenski okvir</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component.ts</context>
           <context context-type="linenumber">133</context>
@@ -1385,6 +1497,7 @@
       </trans-unit>
       <trans-unit id="4793828002882320882" datatype="html">
         <source>At block: <x id="PH" equiv-text="ticks[0].data[2]"/></source>
+        <target>U bloku: <x id="PH" equiv-text="ticks[0].data[2]"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component.ts</context>
           <context context-type="linenumber">177</context>
@@ -1404,6 +1517,7 @@
       </trans-unit>
       <trans-unit id="8918254921747459635" datatype="html">
         <source>Around block: <x id="PH" equiv-text="ticks[0].data[2]"/></source>
+        <target>Oko bloka: <x id="PH" equiv-text="ticks[0].data[2]"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component.ts</context>
           <context context-type="linenumber">179</context>
@@ -1423,6 +1537,7 @@
       </trans-unit>
       <trans-unit id="5238405b3e8e1b72d2732f0ecbd83be35b98cd5d" datatype="html">
         <source>Requests</source>
+        <target>Zahtjevi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-stats/acceleration-stats.component.html</context>
           <context context-type="linenumber">4</context>
@@ -1443,6 +1558,7 @@
       </trans-unit>
       <trans-unit id="25fbf6e80a945703c906a5a7d8c92e8729c7ab21" datatype="html">
         <source>accelerated</source>
+        <target>ubrzano</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-stats/acceleration-stats.component.html</context>
           <context context-type="linenumber">7</context>
@@ -1451,6 +1567,7 @@
       </trans-unit>
       <trans-unit id="bdb8bbb38e4ca3c73e19dc4167fbe4aec316f818" datatype="html">
         <source>Total Bid Boost</source>
+        <target>Ukupno povećanje ponude</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-stats/acceleration-stats.component.html</context>
           <context context-type="linenumber">11</context>
@@ -1467,6 +1584,7 @@
       </trans-unit>
       <trans-unit id="53475bdf4a94f0103f33211d02102859e9a8fe3e" datatype="html">
         <source>BTC</source>
+        <target>BTC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-stats/acceleration-stats.component.html</context>
           <context context-type="linenumber">13</context>
@@ -1500,6 +1618,7 @@
       </trans-unit>
       <trans-unit id="cf2ec414465d65ab24b354663d94d051a67e26e9" datatype="html">
         <source>Total vSize</source>
+        <target>Ukupno vSize</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-stats/acceleration-stats.component.html</context>
           <context context-type="linenumber">20</context>
@@ -1520,6 +1639,7 @@
       </trans-unit>
       <trans-unit id="d932577b535f10c9b3e25aaa430220bb09efc171" datatype="html">
         <source> of blocks</source>
+        <target>blokova</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-stats/acceleration-stats.component.html</context>
           <context context-type="linenumber">23</context>
@@ -1528,6 +1648,7 @@
       </trans-unit>
       <trans-unit id="02573b6980a2d611b4361a2595a4447e390058cd" datatype="html">
         <source>Accelerations</source>
+        <target>Ubrzanja</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">2</context>
@@ -1548,6 +1669,7 @@
       </trans-unit>
       <trans-unit id="94c248797dd2b6af49068cb49c3b4bc26bec6a16" datatype="html">
         <source>TXID</source>
+        <target>TXID</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">10</context>
@@ -1584,6 +1706,7 @@
       </trans-unit>
       <trans-unit id="9310d4be621ac60b19a4d73258b25f2b411971e7" datatype="html">
         <source>Bid</source>
+        <target>Ponuda</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">13</context>
@@ -1592,6 +1715,7 @@
       </trans-unit>
       <trans-unit id="dac1da772be9797ce39c7364d0e01373e4955ed1" datatype="html">
         <source>Requested</source>
+        <target>Zatraženo</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">14</context>
@@ -1604,6 +1728,7 @@
       </trans-unit>
       <trans-unit id="57cde27765d527a0d9195212fa5a7ce06408c827" datatype="html">
         <source>Bid Boost</source>
+        <target>Povećanje ponude</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">17</context>
@@ -1613,6 +1738,7 @@
       </trans-unit>
       <trans-unit id="7f5d0c10614e8a34f0e2dad33a0568277c50cf69" datatype="html">
         <source>Block</source>
+        <target>Blok</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">18</context>
@@ -1629,6 +1755,7 @@
       </trans-unit>
       <trans-unit id="e70fcca5a99575cffef3ff8cbd5e69f06ffd0f1c" datatype="html">
         <source>Pool</source>
+        <target>Pool</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">19</context>
@@ -1649,6 +1776,7 @@
       </trans-unit>
       <trans-unit id="e6a27066251ca1e04c5be86ad758380856df2506" datatype="html">
         <source>Pending</source>
+        <target>U tijeku</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">64</context>
@@ -1665,6 +1793,7 @@
       </trans-unit>
       <trans-unit id="a7c328c4773db932ff14a1954e15e43dca58e7b7" datatype="html">
         <source>Completed</source>
+        <target>Završeno</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">65</context>
@@ -1673,6 +1802,7 @@
       </trans-unit>
       <trans-unit id="64b582e0d8e3a28331a14d2a1017fa5d6ffb8d93" datatype="html">
         <source>Failed</source>
+        <target>Neuspješno</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">67</context>
@@ -1681,6 +1811,7 @@
       </trans-unit>
       <trans-unit id="805f27b06c3c2b919234b3bcf3d0f5abe445d922" datatype="html">
         <source>There are no active accelerations</source>
+        <target>Nema aktivnih ubrzanja</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">133</context>
@@ -1689,6 +1820,7 @@
       </trans-unit>
       <trans-unit id="0c2d0d4986aed63c43d3d39a37d5039a55ddf9d0" datatype="html">
         <source>There are no recent accelerations</source>
+        <target>Nema nedavnih ubrzanja</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">134</context>
@@ -1697,6 +1829,7 @@
       </trans-unit>
       <trans-unit id="e51c45c636401f8bb3bd8cfd1ed5a3c9810c5fa8" datatype="html">
         <source>Active Accelerations</source>
+        <target>Aktivna ubrzanja</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">10</context>
@@ -1709,6 +1842,7 @@
       </trans-unit>
       <trans-unit id="41a9456b7e195dfc4df3d67b09940bda160882af" datatype="html">
         <source>Acceleration stats</source>
+        <target>Statistika ubrzanja</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">24</context>
@@ -1717,6 +1851,7 @@
       </trans-unit>
       <trans-unit id="9467c16588ee9f97dfa4f1dd9c96a02d6dc6e008" datatype="html">
         <source>(1 day)</source>
+        <target>(1 dan)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">27</context>
@@ -1725,6 +1860,7 @@
       </trans-unit>
       <trans-unit id="d1c71eabdf119de5aa1d75ea1a8f93a9215dd8ea" datatype="html">
         <source>(1 week)</source>
+        <target>(1 tjedan)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">30</context>
@@ -1733,6 +1869,7 @@
       </trans-unit>
       <trans-unit id="0efb19c3388cbcc9f3cd257f389843f9ad2a1f31" datatype="html">
         <source>(1 month)</source>
+        <target>(1 mjesec)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">33</context>
@@ -1741,6 +1878,7 @@
       </trans-unit>
       <trans-unit id="9d202e68dd5064ae2e3d01073267b4db63b16c40" datatype="html">
         <source>(all time)</source>
+        <target>(cijelo vrijeme)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">36</context>
@@ -1749,6 +1887,7 @@
       </trans-unit>
       <trans-unit id="97ff5554c708164d58b14e45072acbcbf9f4d137" datatype="html">
         <source>View more »</source>
+        <target>Vidi više »</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">91</context>
@@ -1773,6 +1912,7 @@
       </trans-unit>
       <trans-unit id="f0ae1220633178276128371f3965fb53d63581d4" datatype="html">
         <source>Recent Accelerations</source>
+        <target>Nedavna ubrzanja</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">113</context>
@@ -1781,6 +1921,7 @@
       </trans-unit>
       <trans-unit id="6b867dc61c6a92f3229f1950f9f2d414790cce95" datatype="html">
         <source>Accelerator Dashboard</source>
+        <target>Nadzorna ploča akceleratora</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.ts</context>
           <context context-type="linenumber">57</context>
@@ -1792,6 +1933,7 @@
       </trans-unit>
       <trans-unit id="6bb1e9770b5c27f172ae67754ba316fe455a9821" datatype="html">
         <source>Accelerated to</source>
+        <target>Ubrzano do</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/active-acceleration-box/active-acceleration-box.component.html</context>
           <context context-type="linenumber">7</context>
@@ -1801,6 +1943,7 @@
       </trans-unit>
       <trans-unit id="3af3e9a4c4d8135f386b2fc59233884ae8fc57fb" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ acceleratedByPercentage }}"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;symbol hashrate-label&quot;&gt;"/>of hashrate<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target><x id="INTERPOLATION" equiv-text="{{ acceleratedByPercentage }}"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;symbol hashrate-label&quot;&gt;"/>od hashrate<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/active-acceleration-box/active-acceleration-box.component.html</context>
           <context context-type="linenumber">32</context>
@@ -1809,6 +1952,7 @@
       </trans-unit>
       <trans-unit id="4231517605576357140" datatype="html">
         <source>not accelerating</source>
+        <target>ne ubrzava se</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/active-acceleration-box/active-acceleration-box.component.ts</context>
           <context context-type="linenumber">86</context>
@@ -1816,6 +1960,7 @@
       </trans-unit>
       <trans-unit id="3590f5c3ef2810f637316edb8aaa86b8e907f152" datatype="html">
         <source>pending</source>
+        <target>u tijeku</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/pending-stats/pending-stats.component.html</context>
           <context context-type="linenumber">7</context>
@@ -1824,6 +1969,7 @@
       </trans-unit>
       <trans-unit id="841f2a74ae5095e6e37f5749f3cc1851cf36a420" datatype="html">
         <source>Avg Max Bid</source>
+        <target>Prosječna maks. ponuda</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/pending-stats/pending-stats.component.html</context>
           <context context-type="linenumber">11</context>
@@ -1836,6 +1982,7 @@
       </trans-unit>
       <trans-unit id="5538e35f9f610af0d1c70fcc7919a93191a810ca" datatype="html">
         <source> of block</source>
+        <target> od bloka</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/pending-stats/pending-stats.component.html</context>
           <context context-type="linenumber">23</context>
@@ -1844,6 +1991,7 @@
       </trans-unit>
       <trans-unit id="7e69426bd97a606d8ae6026762858e6e7c86a1fd" datatype="html">
         <source>Balance</source>
+        <target>Stanje</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-graph/address-graph.component.ts</context>
           <context context-type="linenumber">56</context>
@@ -1875,6 +2023,7 @@
       </trans-unit>
       <trans-unit id="b45214d1bf328d07f0aea939dfc197f5c59f421b" datatype="html">
         <source>Balances</source>
+        <target>Stanja</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-group/address-group.component.html</context>
           <context context-type="linenumber">4</context>
@@ -1883,6 +2032,7 @@
       </trans-unit>
       <trans-unit id="d04d5b5d13ac9acf9750f1807f0227eeee98b247" datatype="html">
         <source>Total</source>
+        <target>Ukupno</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-group/address-group.component.html</context>
           <context context-type="linenumber">9</context>
@@ -1891,6 +2041,7 @@
       </trans-unit>
       <trans-unit id="dfc2fb58e2a04ed944a4bd80f0a2087775134068" datatype="html">
         <source>Amount</source>
+        <target>Iznos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-transactions-widget/address-transactions-widget.component.html</context>
           <context context-type="linenumber">4</context>
@@ -1919,6 +2070,7 @@
       </trans-unit>
       <trans-unit id="2f933b826a570836cab04f683970a2d22068458c" datatype="html">
         <source>Date</source>
+        <target>Datum</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-transactions-widget/address-transactions-widget.component.html</context>
           <context context-type="linenumber">6</context>
@@ -1939,6 +2091,7 @@
       </trans-unit>
       <trans-unit id="729754dd19eb9ce0670b0aeb5a6ae60574c2c563" datatype="html">
         <source>Address</source>
+        <target>Adresa</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address-preview.component.html</context>
           <context context-type="linenumber">3</context>
@@ -1963,6 +2116,7 @@
       </trans-unit>
       <trans-unit id="04ffd930e7a2dc086c952a3a51b42c836bf21cc1" datatype="html">
         <source>Unconfidential</source>
+        <target>Nepovjerljivo</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address-preview.component.html</context>
           <context context-type="linenumber">15</context>
@@ -1975,6 +2129,7 @@
       </trans-unit>
       <trans-unit id="a9b87c3aa4731edee661c8287ef3aab71799c0b8" datatype="html">
         <source>Total received</source>
+        <target>Ukupno primljeno</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address-preview.component.html</context>
           <context context-type="linenumber">22</context>
@@ -1987,6 +2142,7 @@
       </trans-unit>
       <trans-unit id="f149942f271231be52f55589398967093382d96d" datatype="html">
         <source>Total sent</source>
+        <target>Ukupno poslano</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address-preview.component.html</context>
           <context context-type="linenumber">26</context>
@@ -1995,6 +2151,7 @@
       </trans-unit>
       <trans-unit id="add4cd82e3e38a3110fe67b3c7df56e9602644ee" datatype="html">
         <source>Transactions</source>
+        <target>Transakcije</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address-preview.component.html</context>
           <context context-type="linenumber">35</context>
@@ -2027,6 +2184,7 @@
       </trans-unit>
       <trans-unit id="fb5b5aec9a6add4912de64b7bbc55884cc7f8e3a" datatype="html">
         <source>Unspent TXOs</source>
+        <target>Nepotrošeni TXO-i</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address-preview.component.html</context>
           <context context-type="linenumber">39</context>
@@ -2035,6 +2193,7 @@
       </trans-unit>
       <trans-unit id="30751732ff4b8f6ddb2a906e0173072ac29d412a" datatype="html">
         <source>Confidential</source>
+        <target>Povjerljivo</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address-preview.component.html</context>
           <context context-type="linenumber">55</context>
@@ -2079,6 +2238,7 @@
       </trans-unit>
       <trans-unit id="address.component.browser-title" datatype="html">
         <source>Address: <x id="INTERPOLATION" equiv-text="this.addressString"/></source>
+        <target>Adresa: <x id="INTERPOLATION" equiv-text="this.addressString"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address-preview.component.ts</context>
           <context context-type="linenumber">71</context>
@@ -2090,6 +2250,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.address" datatype="html">
         <source>See mempool transactions, confirmed transactions, balance, and more for <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> address <x id="INTERPOLATION" equiv-text="this.addressString"/>.</source>
+        <target>Pogledajte mempool transakcije, potvrđene transakcije, stanje i više za <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> adresu <x id="INTERPOLATION" equiv-text="this.addressString"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address-preview.component.ts</context>
           <context context-type="linenumber">72</context>
@@ -2101,6 +2262,7 @@
       </trans-unit>
       <trans-unit id="7b2e0a6bafe35c5cd10e55846d89397df0bff128" datatype="html">
         <source>Balance History</source>
+        <target>Povijest stanja</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">79</context>
@@ -2113,6 +2275,7 @@
       </trans-unit>
       <trans-unit id="8754c2dbc855d18ee90ffff136caedfd64f71e83" datatype="html">
         <source>all</source>
+        <target>sve</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">84</context>
@@ -2121,6 +2284,7 @@
       </trans-unit>
       <trans-unit id="6e9a3395f190e740778f523253e1fd6c53259622" datatype="html">
         <source>recent</source>
+        <target>nedavno</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">87</context>
@@ -2129,6 +2293,7 @@
       </trans-unit>
       <trans-unit id="0a4ec18d2eb002662ee1c390be17000eace08818" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="of {{ mempoolStats.tx_count + chainStats.tx_cou"/> of <x id="INTERPOLATION_1" equiv-text="{{ mempoolStats.tx_count + chainStats.tx_count | number }}"/> transaction</source>
+        <target><x id="INTERPOLATION" equiv-text="of {{ mempoolStats.tx_count + chainStats.tx_cou"/> od <x id="INTERPOLATION_1" equiv-text="{{ mempoolStats.tx_count + chainStats.tx_count | number }}"/> transakcije</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">101</context>
@@ -2137,6 +2302,7 @@
       </trans-unit>
       <trans-unit id="b2e947b5b892e2d2c5d216b1a198b8bf40da45eb" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="of {{ mempoolStats.tx_count + chainStats.tx_count | numb"/> of <x id="INTERPOLATION_1" equiv-text="{{ mempoolStats.tx_count + chainStats.tx_count | number }}"/> transactions</source>
+        <target><x id="INTERPOLATION" equiv-text="of {{ mempoolStats.tx_count + chainStats.tx_count | numb"/> od <x id="INTERPOLATION_1" equiv-text="{{ mempoolStats.tx_count + chainStats.tx_count | number }}"/> transakcija</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">102</context>
@@ -2145,6 +2311,7 @@
       </trans-unit>
       <trans-unit id="f094f67fbe759cdbeb2ea14455634bbe5cc6375d" datatype="html">
         <source>Error loading address data.</source>
+        <target>Pogreška pri učitavanju podataka o adresi.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">201</context>
@@ -2157,6 +2324,7 @@
       </trans-unit>
       <trans-unit id="9eb81e2576ffe4e8fb0a303e203040b6ab23cc22" datatype="html">
         <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="There are too many transactions on this address, more than your backend can handle. See more on &lt;"/>There are too many transactions on this address, more than your backend can handle. See more on <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;/docs/faq#address-lookup-issues&quot;&gt;"/>setting up a stronger backend<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.<x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/><x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> Consider viewing this address on the official Mempool website instead: </source>
+        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="There are too many transactions on this address, more than your backend can handle. See more on &lt;"/>Previše je transakcija na ovoj adresi, više nego što vaš backend može podnijeti. Pogledajte više o <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;/docs/faq#address-lookup-issues&quot;&gt;"/>postavljanju jačeg backenda<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.<x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/><x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> Umjesto toga razmislite o pregledu ove adrese na službenoj web stranici Mempoola: </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">204,207</context>
@@ -2165,6 +2333,7 @@
       </trans-unit>
       <trans-unit id="88b90b0e9c946e7f151c040b0eb68850498fd5cf" datatype="html">
         <source>Confirmed balance</source>
+        <target>Potvrđeno stanje</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">247</context>
@@ -2173,6 +2342,7 @@
       </trans-unit>
       <trans-unit id="c7daf1b7c126095c054f2d3728ae790b0ceef33a" datatype="html">
         <source>Confirmed UTXOs</source>
+        <target>Potvrđeni UTXO-ovi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">257</context>
@@ -2181,6 +2351,7 @@
       </trans-unit>
       <trans-unit id="ba986bd9e2848d2ef7329394ec87b7f4eaf61118" datatype="html">
         <source>Pending UTXOs</source>
+        <target>UTXO-i na čekanju</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">262</context>
@@ -2189,6 +2360,7 @@
       </trans-unit>
       <trans-unit id="f61c6867295f3b53d23557021f2f4e0aa1d0b8fc" datatype="html">
         <source>Type</source>
+        <target>Tip</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">272</context>
@@ -2205,6 +2377,7 @@
       </trans-unit>
       <trans-unit id="f8c91b77ad53ccd0f6adb4a6ea3a0f5c3329688b" datatype="html">
         <source>Asset</source>
+        <target>Asset</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">3</context>
@@ -2214,6 +2387,7 @@
       </trans-unit>
       <trans-unit id="cff1428d10d59d14e45edec3c735a27b5482db59" datatype="html">
         <source>Name</source>
+        <target>Ime</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">21</context>
@@ -2238,6 +2412,7 @@
       </trans-unit>
       <trans-unit id="8f301d45550dcb7dec91cc1fdc1f65f13c6a2892" datatype="html">
         <source>Precision</source>
+        <target>Preciznost</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">25</context>
@@ -2247,6 +2422,7 @@
       </trans-unit>
       <trans-unit id="80475fc1bf22ded644db203c43a075f623c527d4" datatype="html">
         <source>Issuer</source>
+        <target>Izdavatelj</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">29</context>
@@ -2256,6 +2432,7 @@
       </trans-unit>
       <trans-unit id="e357dfd9e8685f17a862680cd98fe4aa2e068d28" datatype="html">
         <source>Issuance TX</source>
+        <target>TX izdavanja</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">33</context>
@@ -2265,6 +2442,7 @@
       </trans-unit>
       <trans-unit id="c5b2c0d65b8fd12ebf8c0d79f562703776fc954e" datatype="html">
         <source>Pegged in</source>
+        <target>Pegovano u</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">37</context>
@@ -2274,6 +2452,7 @@
       </trans-unit>
       <trans-unit id="8f5d6ce525a24b049fee47f9b2d8447cca97ccc8" datatype="html">
         <source>Pegged out</source>
+        <target>Odpegovano</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">41</context>
@@ -2283,6 +2462,7 @@
       </trans-unit>
       <trans-unit id="21530115a661c0faac6906740c586118628c2d54" datatype="html">
         <source>Issued amount</source>
+        <target>Izdani količina</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">45</context>
@@ -2292,6 +2472,7 @@
       </trans-unit>
       <trans-unit id="e21556753a442f3d474ccfed50cd3f60bec18fe3" datatype="html">
         <source>Burned amount</source>
+        <target>Spaljena količina</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">49</context>
@@ -2301,6 +2482,7 @@
       </trans-unit>
       <trans-unit id="1990b8bef8f205a7d1b821aa4f979cc9f4fe179d" datatype="html">
         <source>Circulating amount</source>
+        <target>Količina u optjecaju</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">53</context>
@@ -2314,6 +2496,7 @@
       </trans-unit>
       <trans-unit id="c3360a933cb312b395d276a2b865214cf832df58" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> </source>
+        <target><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> od <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">78</context>
@@ -2322,6 +2505,7 @@
       </trans-unit>
       <trans-unit id="d2a84740e76b7220516a9f10644e4b3bdabdb833" datatype="html">
         <source>Peg In/Out and Burn Transactions</source>
+        <target>Peg In/Out i Burn transakcije</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">79</context>
@@ -2330,6 +2514,7 @@
       </trans-unit>
       <trans-unit id="fcbd3315aa10b59ba6ef383c6f16ace6c9d53b71" datatype="html">
         <source>Issuance and Burn Transactions</source>
+        <target>Transakcije izdavanja i spaljivanja</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">80</context>
@@ -2338,6 +2523,7 @@
       </trans-unit>
       <trans-unit id="ef5ac12104751b93b03c16f64d4c3a4341dce89c" datatype="html">
         <source>Error loading asset data.</source>
+        <target>Pogreška pri učitavanju podataka.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">150</context>
@@ -2346,6 +2532,7 @@
       </trans-unit>
       <trans-unit id="asset.component.asset-browser-title" datatype="html">
         <source>Asset: <x id="INTERPOLATION" equiv-text="this.assetString"/></source>
+        <target>Asset: <x id="INTERPOLATION" equiv-text="this.assetString"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.ts</context>
           <context context-type="linenumber">75</context>
@@ -2353,6 +2540,7 @@
       </trans-unit>
       <trans-unit id="meta.description.liquid.asset" datatype="html">
         <source>Browse an overview of the Liquid asset <x id="INTERPOLATION" equiv-text="this.assetContract[1]"/> (<x id="INTERPOLATION" equiv-text="this.assetContract[1]"/>): see issued amount, burned amount, circulating amount, related transactions, and more.</source>
+        <target>Pregledajte pregled Liquid asseta <x id="INTERPOLATION" equiv-text="this.assetContract[1]"/> (<x id="INTERPOLATION" equiv-text="this.assetContract[1]"/>): pogledajte izdani iznos, spaljeni iznos, iznos u optjecaju, povezane transakcije i više.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.ts</context>
           <context context-type="linenumber">108</context>
@@ -2360,6 +2548,7 @@
       </trans-unit>
       <trans-unit id="e3f9fda25b281496fe296fb7e8228f59b50983ad" datatype="html">
         <source>Group of <x id="INTERPOLATION" equiv-text="{{ group.assets.length | number }}"/> assets</source>
+        <target>Grupa <x id="INTERPOLATION" equiv-text="{{ group.assets.length | number }}"/> asseta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/asset-group/asset-group.component.html</context>
           <context context-type="linenumber">8</context>
@@ -2371,6 +2560,7 @@
       </trans-unit>
       <trans-unit id="f315148e376b86b7c61be25ac372fcbd5cc49175" datatype="html">
         <source>No featured assets</source>
+        <target>Nema istaknutih asseta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets-featured/assets-featured.component.html</context>
           <context context-type="linenumber">3</context>
@@ -2379,6 +2569,7 @@
       </trans-unit>
       <trans-unit id="ee8f8008bae6ce3a49840c4e1d39b4af23d4c263" datatype="html">
         <source>Assets</source>
+        <target>Asseti</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets-nav/assets-nav.component.html</context>
           <context context-type="linenumber">3</context>
@@ -2399,6 +2590,7 @@
       </trans-unit>
       <trans-unit id="d06e27f7453fcf29134f9e61533ea4eb4b890f5f" datatype="html">
         <source>Featured</source>
+        <target>Istaknuto</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets-nav/assets-nav.component.html</context>
           <context context-type="linenumber">9</context>
@@ -2406,6 +2598,7 @@
       </trans-unit>
       <trans-unit id="dfc3c34e182ea73c5d784ff7c8135f087992dac1" datatype="html">
         <source>All</source>
+        <target>Sve</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets-nav/assets-nav.component.html</context>
           <context context-type="linenumber">13</context>
@@ -2453,6 +2646,7 @@
       </trans-unit>
       <trans-unit id="aef0d676b15fdae8cb70fc3b089cce7399fde9da" datatype="html">
         <source>Search asset</source>
+        <target>Pretraži asset</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets-nav/assets-nav.component.html</context>
           <context context-type="linenumber">19</context>
@@ -2461,6 +2655,7 @@
       </trans-unit>
       <trans-unit id="99ee4faa69cd2ea8e3678c1f557c0ff1f05aae46" datatype="html">
         <source>Clear</source>
+        <target>Očisti</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets-nav/assets-nav.component.html</context>
           <context context-type="linenumber">21</context>
@@ -2469,6 +2664,7 @@
       </trans-unit>
       <trans-unit id="meta.description.liquid.assets" datatype="html">
         <source>Explore all the assets issued on the Liquid network like L-BTC, L-CAD, USDT, and more.</source>
+        <target>Istražite sve assete izdane na Liquid mreži kao što su L-BTC, L-CAD, USDT i još mnogo toga.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets-nav/assets-nav.component.ts</context>
           <context context-type="linenumber">43</context>
@@ -2476,6 +2672,7 @@
       </trans-unit>
       <trans-unit id="4ad173c0e4010b1f25bf58e96a383edc1b59cd80" datatype="html">
         <source>Ticker</source>
+        <target>Ticker</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets.component.html</context>
           <context context-type="linenumber">5</context>
@@ -2488,6 +2685,7 @@
       </trans-unit>
       <trans-unit id="465c39daa2b644679d73a451043622f1610a2084" datatype="html">
         <source>Issuer domain</source>
+        <target>Domena izdavatelja</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets.component.html</context>
           <context context-type="linenumber">6</context>
@@ -2500,6 +2698,7 @@
       </trans-unit>
       <trans-unit id="d5e7c95d7c8920ae0a384e3fffb14776b1e203f4" datatype="html">
         <source>Asset ID</source>
+        <target>ID asseta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets.component.html</context>
           <context context-type="linenumber">7</context>
@@ -2512,6 +2711,7 @@
       </trans-unit>
       <trans-unit id="52686df280be57a57e1e9ecf5786499b147e0e90" datatype="html">
         <source>Error loading assets data.</source>
+        <target>Pogreška pri učitavanju podataka o assetu.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets.component.html</context>
           <context context-type="linenumber">50</context>
@@ -2520,6 +2720,7 @@
       </trans-unit>
       <trans-unit id="0ae529953ee15ef7af41fe3a3c30a10de5347f34" datatype="html">
         <source>BTC Holdings</source>
+        <target>BTC sredstva</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/balance-widget/balance-widget.component.html</context>
           <context context-type="linenumber">5</context>
@@ -2536,6 +2737,7 @@
       </trans-unit>
       <trans-unit id="8072922a37fcba13275c2aaed6efb408454cf943" datatype="html">
         <source>Change (7d)</source>
+        <target>Promjeni (7d)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/balance-widget/balance-widget.component.html</context>
           <context context-type="linenumber">14</context>
@@ -2548,6 +2750,7 @@
       </trans-unit>
       <trans-unit id="00b2f0e8008ca3c1240f29cec13a5a1ebea14dd9" datatype="html">
         <source>Change (30d)</source>
+        <target>Promjeni (30d)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/balance-widget/balance-widget.component.html</context>
           <context context-type="linenumber">23</context>
@@ -2560,6 +2763,7 @@
       </trans-unit>
       <trans-unit id="ed8e33059967f554ff06b4f5b6049c465b92d9b3" datatype="html">
         <source>Block Fee Rates</source>
+        <target>Stope naknada bloka</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fee-rates-graph/block-fee-rates-graph.component.html</context>
           <context context-type="linenumber">6</context>
@@ -2576,6 +2780,7 @@
       </trans-unit>
       <trans-unit id="f2600d9f6db47cc43f16142cf401048a1d360bda" datatype="html">
         <source>Avg Block Fee (24h)</source>
+        <target>Prosječna blok naknada (24 h)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fee-rates-graph/block-fee-rates-graph.component.html</context>
           <context context-type="linenumber">51</context>
@@ -2588,6 +2793,7 @@
       </trans-unit>
       <trans-unit id="de9a93ca8a13ccbd6de65782abb6b1432759b654" datatype="html">
         <source>Avg Block Fee (1m)</source>
+        <target>Prosječna blok naknada (1m)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fee-rates-graph/block-fee-rates-graph.component.html</context>
           <context context-type="linenumber">57</context>

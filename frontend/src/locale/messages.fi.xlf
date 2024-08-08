@@ -1393,6 +1393,7 @@
       </trans-unit>
       <trans-unit id="c3aaae1073e33c932a5c98f98c3520645c0e3a93" datatype="html">
         <source>Out-of-band fees</source>
+        <target>Kaistan ulkopuoliset maksut</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline-tooltip.component.html</context>
           <context context-type="linenumber">27</context>
@@ -1401,7 +1402,7 @@
       </trans-unit>
       <trans-unit id="3e322ffba6477484e0dd2e65650fdd70322ea6d0" datatype="html">
         <source>Fee rate</source>
-        <target>Siirtomaksu taso</target>
+        <target>Siirtomaksutaso</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline-tooltip.component.html</context>
           <context context-type="linenumber">36</context>
@@ -1488,7 +1489,7 @@
       </trans-unit>
       <trans-unit id="7920806087360513675" datatype="html">
         <source>No accelerated transaction for this timeframe</source>
-        <target>Ei nopeutettua transaktiota tällä aikataululla</target>
+        <target>Ei nopeutettua siirtotapahtumaa tällä aikataululla</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component.ts</context>
           <context context-type="linenumber">133</context>
@@ -1727,7 +1728,7 @@
       </trans-unit>
       <trans-unit id="57cde27765d527a0d9195212fa5a7ce06408c827" datatype="html">
         <source>Bid Boost</source>
-        <target>Tarjoustehostin</target>
+        <target>Bid Boost</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">17</context>
@@ -1792,6 +1793,7 @@
       </trans-unit>
       <trans-unit id="a7c328c4773db932ff14a1954e15e43dca58e7b7" datatype="html">
         <source>Completed</source>
+        <target>Valmis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">65</context>
@@ -1800,6 +1802,7 @@
       </trans-unit>
       <trans-unit id="64b582e0d8e3a28331a14d2a1017fa5d6ffb8d93" datatype="html">
         <source>Failed</source>
+        <target>Epäonnistui</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">67</context>
@@ -2299,7 +2302,7 @@
       </trans-unit>
       <trans-unit id="b2e947b5b892e2d2c5d216b1a198b8bf40da45eb" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="of {{ mempoolStats.tx_count + chainStats.tx_count | numb"/> of <x id="INTERPOLATION_1" equiv-text="{{ mempoolStats.tx_count + chainStats.tx_count | number }}"/> transactions</source>
-        <target><x id="INTERPOLATION" equiv-text="of {{ mempoolStats.tx_count + chainStats.tx_count | numb"/> / <x id="INTERPOLATION_1" equiv-text="{{ mempoolStats.tx_count + chainStats.tx_count | number }}"/> transaktiot</target>
+        <target><x id="INTERPOLATION" equiv-text="of {{ mempoolStats.tx_count + chainStats.tx_count | numb"/> / <x id="INTERPOLATION_1" equiv-text="{{ mempoolStats.tx_count + chainStats.tx_count | number }}"/> transaktiota</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">102</context>
@@ -2537,7 +2540,7 @@
       </trans-unit>
       <trans-unit id="meta.description.liquid.asset" datatype="html">
         <source>Browse an overview of the Liquid asset <x id="INTERPOLATION" equiv-text="this.assetContract[1]"/> (<x id="INTERPOLATION" equiv-text="this.assetContract[1]"/>): see issued amount, burned amount, circulating amount, related transactions, and more.</source>
-        <target>Selaa yleiskatsausta Liquid -varoihin <x id="INTERPOLATION" equiv-text="this.assetContract[1]"/> (<x id="INTERPOLATION" equiv-text="this.assetContract[1]"/>): näet liikkeeseen lasketun määrän, poltetun määrän, kiertävän määrän, asiaan liittyvät tapahtumat ja paljon muuta.</target>
+        <target>Selaa yleiskatsausta Liquid -varoihin <x id="INTERPOLATION" equiv-text="this.assetContract[1]"/> (<x id="INTERPOLATION" equiv-text="this.assetContract[1]"/>): näet liikkeeseen lasketun määrän, poltetun määrän, kiertävän määrän, asiaan liittyvät siirtotapahtumat ja paljon muuta.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.ts</context>
           <context context-type="linenumber">108</context>
@@ -3146,7 +3149,7 @@
       </trans-unit>
       <trans-unit id="eb1737af67381ce6f0b347038bb4c65b3deb84be" datatype="html">
         <source>Effective fee rate</source>
-        <target>Todellinen siirtomaksu taso</target>
+        <target>Todellinen siirtomaksutaso</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">52</context>
@@ -3205,7 +3208,7 @@
       </trans-unit>
       <trans-unit id="f0136f1a1d77aa656e0ebd0f3c023118dd2a2776" datatype="html">
         <source>Marginal fee rate</source>
-        <target>Marginaali siirtomaksu taso</target>
+        <target>Marginaali siirtomaksutaso</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">72</context>
@@ -3453,7 +3456,7 @@
       </trans-unit>
       <trans-unit id="meta.description.liquid.block" datatype="html">
         <source>See size, weight, fee range, included transactions, and more for Liquid<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> block <x id="BLOCK_HEIGHT" equiv-text="block.height"/> (<x id="BLOCK_ID" equiv-text="block.id"/>).</source>
-        <target>Katso koko, paino, maksualue, mukana olevat transaktiot ja paljon muuta Liquid<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> lohkon osalta <x id="BLOCK_HEIGHT" equiv-text="block.height"/>(<x id="BLOCK_ID" equiv-text="block.id"/>).</target>
+        <target>Katso koko, paino, maksualue, mukana olevat siirtotapahtumat ja paljon muuta Liquid<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> lohkon osalta <x id="BLOCK_HEIGHT" equiv-text="block.height"/>(<x id="BLOCK_ID" equiv-text="block.id"/>).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-view/block-view.component.ts</context>
           <context context-type="linenumber">112</context>
@@ -3469,7 +3472,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.block" datatype="html">
         <source>See size, weight, fee range, included transactions, audit (expected v actual), and more for Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> block <x id="BLOCK_HEIGHT" equiv-text="block.height"/> (<x id="BLOCK_ID" equiv-text="block.id"/>).</source>
-        <target>Katso koko, paino, maksuväli, mukana olevat tapahtumat, tilintarkastus (odotettu vs. todellinen) ja paljon muuta Bitcoinin<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> lohkon osalta <x id="BLOCK_HEIGHT" equiv-text="block.height"/>(<x id="BLOCK_ID" equiv-text="block.id"/>).</target>
+        <target>Katso koko, paino, maksuväli, mukana olevat siirtotapahtumat, tilintarkastus (odotettu vs. todellinen) ja paljon muuta Bitcoinin<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> lohkon osalta <x id="BLOCK_HEIGHT" equiv-text="block.height"/>(<x id="BLOCK_ID" equiv-text="block.id"/>).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-view/block-view.component.ts</context>
           <context context-type="linenumber">114</context>
@@ -3598,7 +3601,7 @@
       </trans-unit>
       <trans-unit id="27387c2af5dcaf343a548feba821515f5dc00faa" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="transaction&lt;/ng-template&gt;     &lt;ng-template #transactionsPlural let-i i18n=&quot;shared.transacti"/> transaction</source>
-        <target><x id="INTERPOLATION" equiv-text="transaction&lt;/ng-template&gt;     &lt;ng-template #transactionsPlural let-i i18n=&quot;shared.transacti"/> transaktio</target>
+        <target><x id="INTERPOLATION" equiv-text="transaction&lt;/ng-template&gt;     &lt;ng-template #transactionsPlural let-i i18n=&quot;shared.transacti"/> siirto</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block-transactions.component.html</context>
           <context context-type="linenumber">4</context>
@@ -3619,7 +3622,7 @@
       </trans-unit>
       <trans-unit id="14779b0ce4cbc4d975a35a8fe074426228a324f3" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="transactions&lt;/ng-template&gt;   &lt;/h2&gt;   &lt;ngb-pagination class=&quot;pagination-container float-ri"/> transactions</source>
-        <target><x id="INTERPOLATION" equiv-text="transactions&lt;/ng-template&gt;   &lt;/h2&gt;   &lt;ngb-pagination class=&quot;pagination-container float-ri"/> transaktiot</target>
+        <target><x id="INTERPOLATION" equiv-text="transactions&lt;/ng-template&gt;   &lt;/h2&gt;   &lt;ngb-pagination class=&quot;pagination-container float-ri"/> siirtoa</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block-transactions.component.html</context>
           <context context-type="linenumber">5</context>
@@ -4299,7 +4302,7 @@
       </trans-unit>
       <trans-unit id="9dfdbeb922d811d7b7b3fecd48360a059e52aaba" datatype="html">
         <source>Incoming Transactions</source>
-        <target>Saapuvat tapahtumat</target>
+        <target>Saapuvat siirtotapahtumat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/custom-dashboard/custom-dashboard.component.html</context>
           <context context-type="linenumber">55</context>
@@ -4455,7 +4458,7 @@
       </trans-unit>
       <trans-unit id="aa6ce7e6e6fe5cd080713965451f25bca15a2a25" datatype="html">
         <source>Recent Transactions</source>
-        <target>Viimeaikaiset tapahtumat</target>
+        <target>Viimeaikaiset siirtotapahtumat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/custom-dashboard/custom-dashboard.component.html</context>
           <context context-type="linenumber">190</context>
@@ -4527,7 +4530,7 @@
       </trans-unit>
       <trans-unit id="146442697456175258" datatype="html">
         <source>Data</source>
-        <target>Data</target>
+        <target>Tiedot</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/custom-dashboard/custom-dashboard.component.ts</context>
           <context context-type="linenumber">74</context>
@@ -4807,7 +4810,7 @@
       </trans-unit>
       <trans-unit id="8c134e132798ec5053a96a5a077056ace15b08d6" datatype="html">
         <source>New subsidy</source>
-        <target>Uusi tuki</target>
+        <target>Uusi palkkio</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">103</context>
@@ -5690,7 +5693,7 @@
       </trans-unit>
       <trans-unit id="142e923d3b04186ac6ba23387265d22a2fa404e0" datatype="html">
         <source>Lightning Explorer</source>
-        <target>Salamaverkko selain</target>
+        <target>Salamaverkkoselain</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">95</context>
@@ -5716,7 +5719,7 @@
       </trans-unit>
       <trans-unit id="meta.description.mempool-block" datatype="html">
         <source>See stats for <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> transactions in the mempool: fee range, aggregate size, and more. Mempool blocks are updated in real-time as the network receives new transactions.</source>
-        <target>Katso tilastoja <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> tapahtumista mempoolissa: kulualue, kokonaiskoko ja muuta. Mempool-lohkot päivittyvät reaaliajassa, kun verkko vastaanottaa uusia tapahtumia.</target>
+        <target>Katso tilastoja <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> tapahtumista mempoolissa: kulualue, kokonaiskoko ja muuta. Mempool-lohkot päivittyvät reaaliajassa, kun verkko vastaanottaa uusia siirtotapahtumia.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">62</context>
@@ -6649,7 +6652,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.mempool" datatype="html">
         <source>See mempool size (in MvB) and transactions per second (in vB/s) visualized over time.</source>
-        <target>Näe mempoolin koko (MvB:ssä) ja transaktiot sekunnissa (vB/s) visualisoituna ajan kuluessa.</target>
+        <target>Näe mempoolin koko (MvB) ja siirtotapahtumat per sekuntti (vB/s) visualisoituna ajan kuluessa.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.ts</context>
           <context context-type="linenumber">66</context>
@@ -6665,7 +6668,7 @@
       </trans-unit>
       <trans-unit id="f74d6f23e06c5a75d95a994017c00191c162ba9f" datatype="html">
         <source>Test Transactions</source>
-        <target>Testitapahtumat</target>
+        <target>Testisiirrot</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/test-transactions/test-transactions.component.html</context>
           <context context-type="linenumber">2</context>
@@ -6692,7 +6695,7 @@
       </trans-unit>
       <trans-unit id="48e4b0c012de5020053ecb26e9ac0d35a1f60688" datatype="html">
         <source>Comma-separated list of raw transactions</source>
-        <target>Pilkuilla eroteltu luettelo raakatapahtumista</target>
+        <target>Pilkuilla eroteltu luettelo raakasiirroista</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/test-transactions/test-transactions.component.html</context>
           <context context-type="linenumber">7</context>
@@ -8001,7 +8004,7 @@
       </trans-unit>
       <trans-unit id="a706b1ded7506620b153dbcdea8108e6691bbbd9" datatype="html">
         <source>Default push: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> action: 'want', data: ['blocks', ...] <x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> to express what you want pushed. Available: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>mempool-blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>live-2h-chart<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.<x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/><x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/>Push transactions related to address: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> 'track-address': '3PbJ...bF9B' <x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> to receive all new transactions containing that address as input or output. Returns an array of transactions. <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>address-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> for new mempool transactions, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> for new block confirmed transactions.</source>
-        <target>Oletus työntö: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/>action: 'want', data: ['blocks', ...] <x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>ilmaisemaan, mitä haluat työnnettävän. Käytettävissä: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>mempool-blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>live-2h-chart<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> ja <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.<x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/><x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/>Työnnä osoitteeseen liittyvät tapahtumat: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> 'track-address': '3PbJ...bF9B' <x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> vastaanottaa kaikki uudet transaktiot, jotka sisältävät kyseisen osoitteen syötteenä tai tulosteena. Palauttaa transaktioiden joukon. <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>address-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> uusille mempool-transaktioille ja <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> uusille lohkon vahvistetuille transaktioille.</target>
+        <target>Oletus työntö: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/>action: 'want', data: ['blocks', ...] <x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>ilmaisemaan, mitä haluat työnnettävän. Käytettävissä: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>mempool-blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>live-2h-chart<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> ja <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.<x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/><x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/>Työnnä osoitteeseen liittyvät transaktiot: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> 'track-address': '3PbJ...bF9B' <x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> vastaanottaa kaikki uudet transaktiot, jotka sisältävät kyseisen osoitteen syötteenä tai tulosteena. Palauttaa transaktioiden joukon. <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>address-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> uusille mempool-transaktioille ja <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> uusille lohkon vahvistetuille transaktioille.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">120</context>
@@ -8057,7 +8060,7 @@
       </trans-unit>
       <trans-unit id="meta.description.docs.faq" datatype="html">
         <source>Get answers to common questions like: What is a mempool? Why isn't my transaction confirming? How can I run my own instance of The Mempool Open Source Project? And more.</source>
-        <target>Hanki vastauksia yleisiin kysymyksiin, kuten: Mikä on mempool? Miksi tapahtumani ei vahvistu? Miten voin ajaa omaa The Mempool Open Source Project -instanssia? Ja paljon muuta.</target>
+        <target>Hanki vastauksia yleisiin kysymyksiin, kuten: Mikä on mempool? Miksi siirtoni ei vahvistu? Miten voin ajaa omaa The Mempool Open Source Project -instanssia? Ja paljon muuta.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">47</context>
@@ -8073,7 +8076,7 @@
       </trans-unit>
       <trans-unit id="meta.description.docs.rest-liquid" datatype="html">
         <source>Documentation for the liquid.network REST API service: get info on addresses, transactions, assets, blocks, and more.</source>
-        <target>Dokumentaatio liquid.network REST API-palvelulle: hae tietoja osoitteista, tapahtumista, omaisuuseristä, lohkoista ja muusta.</target>
+        <target>Dokumentaatio liquid.network REST API-palvelulle: hae tietoja osoitteista, siirtotapahtumista, omaisuuseristä, lohkoista ja muusta.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">53</context>
@@ -8081,7 +8084,7 @@
       </trans-unit>
       <trans-unit id="meta.description.docs.rest-bitcoin" datatype="html">
         <source>Documentation for the mempool.space REST API service: get info on addresses, transactions, blocks, fees, mining, the Lightning network, and more.</source>
-        <target>Dokumentaatio mempool.space REST API-palvelulle: hae tietoja osoitteista, tapahtumista, lohkoista, maksuista, louhinnasta, Salamaverkosta ja paljon muuta.</target>
+        <target>Dokumentaatio mempool.space REST API-palvelulle: hae tietoja osoitteista, siirtotapahtumista, lohkoista, maksuista, louhinnasta, Salamaverkosta ja paljon muuta.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">55</context>
@@ -8097,7 +8100,7 @@
       </trans-unit>
       <trans-unit id="meta.description.docs.websocket-liquid" datatype="html">
         <source>Documentation for the liquid.network WebSocket API service: get real-time info on blocks, mempools, transactions, addresses, and more.</source>
-        <target>Dokumentaatio liquid.networkin WebSocket API-palvelulle: hanki reaaliaikaista tietoa lohkoista, mempoolista, tapahtumista, osoitteista ja paljon muuta.</target>
+        <target>Dokumentaatio liquid.networkin WebSocket API-palvelulle: hanki reaaliaikaista tietoa lohkoista, mempoolista, siirtotapahtumista, osoitteista ja paljon muuta.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">61</context>
@@ -8105,7 +8108,7 @@
       </trans-unit>
       <trans-unit id="meta.description.docs.websocket-bitcoin" datatype="html">
         <source>Documentation for the mempool.space WebSocket API service: get real-time info on blocks, mempools, transactions, addresses, and more.</source>
-        <target>Dokumentaatio mempool.space WebSocket API-palvelulle: hanki reaaliaikaista tietoa lohkoista, mempooleista, tapahtumista, osoitteista ja muusta.</target>
+        <target>Dokumentaatio mempool.space WebSocket API-palvelulle: hanki reaaliaikaista tietoa lohkoista, mempooleista, siirtotapahtumista, osoitteista ja muusta.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">63</context>
@@ -8438,7 +8441,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.channel" datatype="html">
         <source>Overview for Lightning channel <x id="PH" equiv-text="params.get('short_id')"/>. See channel capacity, the Lightning nodes involved, related on-chain transactions, and more.</source>
-        <target>Yleiskatsaus Salamakanavalle <x id="PH" equiv-text="params.get('short_id')"/>. Katso kanavan kapasiteetti, mukana olevat Salamasolmut, liittyvät lohkoketjutapahtumat ja muuta.</target>
+        <target>Yleiskatsaus Salamakanavalle <x id="PH" equiv-text="params.get('short_id')"/>. Katso kanavan kapasiteetti, mukana olevat salamasolmut, pääketjuun liittyvät siirtotapahtumat ja paljon muuta.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.ts</context>
           <context context-type="linenumber">37</context>
@@ -8728,7 +8731,7 @@
       </trans-unit>
       <trans-unit id="2c1c39e28735f607d62dbf3272eb792451c265a5" datatype="html">
         <source>Med Fee Rate</source>
-        <target>Keskisuuri siirtomaksu taso</target>
+        <target>Keskisuuri siirtomaksutaso</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">72</context>
@@ -9256,7 +9259,7 @@
       </trans-unit>
       <trans-unit id="bc84b5a9a70217104a53c7139e30b392be6520b7" datatype="html">
         <source>Lease fee rate</source>
-        <target>Vuokra siirtomaksun taso</target>
+        <target>Vuokra siirtomaksutaso</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">190</context>
@@ -9984,7 +9987,7 @@
       </trans-unit>
       <trans-unit id="8fe988a9cb02c11f99631ca85721d34d67fc32ff" datatype="html">
         <source>Why isn't my transaction confirming?</source>
-        <target>Miksi tapahtumaani ei vahvisteta?</target>
+        <target>Miksi siirtoani ei vahvisteta?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">73</context>
