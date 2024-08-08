@@ -88,6 +88,22 @@ class DifficultyAdjustmentsRepository {
     }
   }
 
+  public async $getAdjustmentAtHeight(height: number): Promise<IndexedDifficultyAdjustment> {
+    try {
+      if (isNaN(height)) {
+        throw new Error(`argument must be a number`);
+      }
+      const [rows] = await DB.query(`SELECT * FROM difficulty_adjustments WHERE height = ?`, [height]);
+      if (!rows[0]) {
+        throw new Error(`not found`);
+      }
+      return rows[0] as IndexedDifficultyAdjustment;
+    } catch (e: any) {
+      logger.err(`Cannot get difficulty adjustment from the database. Reason: ${e instanceof Error ? e.message : e}`, logger.tags.mining);
+      throw e;
+    }
+  }
+
   public async $getAdjustmentsHeights(): Promise<number[]> {
     try {
       const [rows]: any[] = await DB.query(`SELECT height FROM difficulty_adjustments`);

@@ -315,6 +315,12 @@ export class ApiService {
       );
   }
 
+  getDifficultyAdjustmentByHeight$(height: number): Observable<any> {
+    return this.httpClient.get<any>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/difficulty-adjustment/${height}`
+    );
+  }
+
   getHistoricalHashrate$(interval: string | undefined): Observable<any> {
     return this.httpClient.get<any[]>(
         this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/hashrate` +

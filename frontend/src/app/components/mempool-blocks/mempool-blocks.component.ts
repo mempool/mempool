@@ -12,6 +12,8 @@ import { Location } from '@angular/common';
 import { DifficultyAdjustment, MempoolPosition } from '../../interfaces/node-api.interface';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { ThemeService } from '../../services/theme.service';
+import { CacheService } from '../../services/cache.service';
+import { colorFromRetarget } from '../../shared/common.utils';
 
 @Component({
   selector: 'app-mempool-blocks',
@@ -90,6 +92,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private router: Router,
     public stateService: StateService,
+    public cacheService: CacheService,
     private etaService: EtaService,
     private themeService: ThemeService,
     private cd: ChangeDetectorRef,
@@ -400,8 +403,32 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
     return {
       'right': this.containerOffset + index * this.blockOffset + 'px',
-      'background': backgroundGradients.join(',') + ')'
+      'background': this.isDA(mempoolBlock.height) ? colorFromRetarget(this.cacheService.daCache[mempoolBlock.height] || 1) : backgroundGradients.join(',') + ')'
     };
+  }
+
+  isDA(height: number): boolean {
+    if (this.chainTip === -1 || !height) {
+      return false;
+    }
+    const isDA = height % 2016 === 0 && this.stateService.network === '';
+    if (isDA && !this.cacheService.daCache[height]) {
+      this.cacheService.daCache[height] = 1;
+      this.difficultyAdjustments$.pipe(
+        filter((da) => 
+          !!da 
+          && parseFloat((1 + da.difficultyChange / 100).toFixed(4)) !== this.cacheService.daCache[height]
+          && this.chainTip > 0
+          && this.mempoolBlockStyles[height - this.chainTip]
+        ),
+        tap((da) => {
+          const adjustment = parseFloat((1 + da.difficultyChange / 100).toFixed(4));
+          this.cacheService.daCache[height] = adjustment;
+          this.mempoolBlockStyles[height - this.chainTip - 1].background = colorFromRetarget(adjustment);
+        })
+      ).subscribe();
+    }
+    return isDA;
   }
 
   getStyleForMempoolEmptyBlock(index: number) {
