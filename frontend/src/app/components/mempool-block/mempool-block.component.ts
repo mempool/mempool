@@ -71,7 +71,7 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
         })
       );
 
-    this.mempoolBlockTransactions$ = this.stateService.liveMempoolBlockTransactions$.pipe(map(txMap => Object.values(txMap)));
+    this.mempoolBlockTransactions$ = this.stateService.liveMempoolBlockTransactions$.pipe(map(({transactions}) => Object.values(transactions)));
 
     this.network$ = this.stateService.networkChanged$;
   }
