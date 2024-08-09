@@ -360,7 +360,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       for (const acceleration of accelerationHistory) {
         if (acceleration.txid === this.txId && (acceleration.status === 'completed' || acceleration.status === 'completed_provisional')) {
           const boostCost = acceleration.boostCost || acceleration.bidBoost;
-          acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
+          if (acceleration.pools.includes(acceleration.minedByPoolUniqueId)) {
+            acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
+          }
           acceleration.boost = boostCost;
           this.tx.acceleratedAt = acceleration.added;
           this.accelerationInfo = acceleration;
