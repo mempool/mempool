@@ -629,7 +629,7 @@
       <td i18n="transaction.fee-rate|Transaction fee rate">Fee rate</td>
       <td>
         <app-fee-rate [fee]="tx.feePerVsize"></app-fee-rate>
-        @if (tx?.status?.confirmed && tx.fee && !hasEffectiveFeeRate && !accelerationInfo) {
+        @if (tx?.status?.confirmed && tx.fee && !hasEffectiveFeeRate && !accelerationInfo?.acceleratedFeeRate) {
           &nbsp;
           <app-tx-fee-rating [tx]="tx"></app-tx-fee-rating>
         }
@@ -642,7 +642,7 @@
 
 <ng-template #effectiveRateRow>
   @if (!isLoadingTx) {
-    @if ((cpfpInfo && hasEffectiveFeeRate) || accelerationInfo) {
+    @if ((cpfpInfo && hasEffectiveFeeRate) || accelerationInfo?.acceleratedFeeRate) {
       <tr>
         @if (isAcceleration) {
           <td i18n="transaction.accelerated-fee-rate|Accelerated transaction fee rate">Accelerated fee rate</td>
@@ -657,7 +657,7 @@
               <app-fee-rate [class.oobFees]="isAcceleration" [fee]="tx.effectiveFeePerVsize"></app-fee-rate>
             }
 
-            @if (tx?.status?.confirmed && !tx.acceleration && !accelerationInfo && tx.fee && tx.effectiveFeePerVsize) {
+            @if (tx?.status?.confirmed && !tx.acceleration && !accelerationInfo?.acceleratedFeeRate && tx.fee && tx.effectiveFeePerVsize) {
               <app-tx-fee-rating class="ml-2 mr-2 effective-fee-rating" [tx]="tx"></app-tx-fee-rating>
             }
           </div>
