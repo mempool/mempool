@@ -1,0 +1,48 @@
+{
+  "txPosition": {
+      "txid": "40ba6b3c4ce73e3ba0160c137b1cc6c2c7333a2b9c19537b61ee8a8aaf095e0a",
+      "position": {
+          "block": 0,
+          "vsize": 37321.5,
+          "accelerated": true
+      },
+      "accelerationPositions": [
+          {
+              "block": 0,
+              "vsize": 37321.5,
+              "poolId": 111,
+              "pool": "Foundry USA"
+          },
+          {
+              "block": 0,
+              "vsize": 37321.5,
+              "poolId": 43,
+              "pool": "Braiins Pool"
+          },
+          {
+              "block": 0,
+              "vsize": 37321.5,
+              "poolId": 102,
+              "pool": "SpiderPool"
+          },
+          {
+              "block": 0,
+              "vsize": 37321.5,
+              "poolId": 112,
+              "pool": "SBI Crypto"
+          },
+          {
+              "block": 0,
+              "vsize": 37321.5,
+              "poolId": 142,
+              "pool": "OCEAN"
+          },
+          {
+              "block": 0,
+              "vsize": 37321.5,
+              "poolId": 115,
+              "pool": "MARA Pool"
+          }
+      ]
+  }
+}
