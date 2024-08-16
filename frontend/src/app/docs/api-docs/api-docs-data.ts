@@ -2952,33 +2952,37 @@ export const restApiDocsData = [
         codeSampleMainnet: {
           esModule: [],
           commonJS: [],
-          curl: [`slushpool`],
+          curl: [`antpool`],
           response: `{
   "pool": {
-    "id": 43,
-    "name": "SlushPool",
-    "link": "https://slushpool.com/",
+    "id": 45,
+    "name": "AntPool",
+    "link": "https://www.antpool.com",
     "addresses": [
-      "1CK6KHY6MHgYvmRQ4PAafKYDrg1ejbH1cE",
-      "1AqTMY7kmHZxBuLUR5wJjPFUvqGs23sesr"
+      "12dRugNcdxK39288NjcDV4GX7rMsKCGn6B",
+      "3FaYVQF6wCMUB9NCeRe4tUp1zZx8qqM7H1"
     ],
     "regexes": [
-      "/slush/"
-    ],
-    "slug": "slushpool"
-  },
-  "blockCount": {
-    "all": 679,
-    "24h": 8,
-    "1w": 56
-  },
-  "blockShare": {
-    "all": 0.06015770355275981,
-    "24h": 0.05333333333333334,
-    "1w": 0.055666003976143144
-  },
-  "estimatedHashrate": 12448077385930390000,
-  "reportedHashrate": null
+      "/AntPool/",
+      "Mined By AntPool",
+      "Mined by AntPool"
+      ],
+      "slug": "antpool",
+      "unique_id": 44
+      },
+      "blockCount": {
+        "all": 89431,
+        "24h": 48,
+        "1w": 270},
+      "blockShare": {
+        "all":0.10435709026326445,
+        "24h":0.3018867924528302,
+        "1w":0.2689243027888446
+      },
+      "estimatedHashrate": 204316419327585120000,
+      "reportedHashrate": null,
+      "avgBlockHealth":98.53,
+      "totalReward": "112220754466890"
 }`
         },
         codeSampleTestnet: {
