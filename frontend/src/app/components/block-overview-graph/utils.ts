@@ -142,6 +142,10 @@ export function defaultColorFunction(
       return auditColors.added_prioritized;
     case 'prioritized':
       return auditColors.prioritized;
+    case 'added_deprioritized':
+      return auditColors.added_prioritized;
+    case 'deprioritized':
+      return auditColors.prioritized;
     case 'selected':
       return colors.marginal[levelIndex] || colors.marginal[defaultMempoolFeeColors.length - 1];
     case 'accelerated':

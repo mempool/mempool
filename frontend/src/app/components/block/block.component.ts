@@ -17,6 +17,7 @@ import { PriceService, Price } from '../../services/price.service';
 import { CacheService } from '../../services/cache.service';
 import { ServicesApiServices } from '../../services/services-api.service';
 import { PreloadService } from '../../services/preload.service';
+import { identifyPrioritizedTransactions } from '../../shared/transaction.utils';
 
 @Component({
   selector: 'app-block',
@@ -524,6 +525,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       const isUnseen = {};
       const isAdded = {};
       const isPrioritized = {};
+      const isDeprioritized = {};
       const isCensored = {};
       const isMissing = {};
       const isSelected = {};
@@ -535,6 +537,17 @@ export class BlockComponent implements OnInit, OnDestroy {
       this.numUnexpected = 0;
 
       if (blockAudit?.template) {
+        // augment with locally calculated *de*prioritized transactions if possible
+        const { prioritized, deprioritized } = identifyPrioritizedTransactions(transactions);
+        // but if the local calculation produces returns unexpected results, don't use it
+        let useLocalDeprioritized = deprioritized.length < (transactions.length * 0.1);
+        for (const tx of prioritized) {
+          if (!isPrioritized[tx] && !isAccelerated[tx]) {
+            useLocalDeprioritized = false;
+            break;
+          }
+        }
+
         for (const tx of blockAudit.template) {
           inTemplate[tx.txid] = true;
           if (tx.acc) {
@@ -550,8 +563,13 @@ export class BlockComponent implements OnInit, OnDestroy {
         for (const txid of blockAudit.addedTxs) {
           isAdded[txid] = true;
         }
-        for (const txid of blockAudit.prioritizedTxs || []) {
+        for (const txid of blockAudit.prioritizedTxs) {
           isPrioritized[txid] = true;
+        }
+        if (useLocalDeprioritized) {
+          for (const txid of deprioritized || []) {
+            isDeprioritized[txid] = true;
+          }
         }
         for (const txid of blockAudit.missingTxs) {
           isCensored[txid] = true;
@@ -607,6 +625,12 @@ export class BlockComponent implements OnInit, OnDestroy {
               tx.status = 'added_prioritized';
             } else {
               tx.status = 'prioritized';
+            }
+          } else if (isDeprioritized[tx.txid]) {
+            if (isAdded[tx.txid] || (blockAudit.version > 0 && isUnseen[tx.txid])) {
+              tx.status = 'added_deprioritized';
+            } else {
+              tx.status = 'deprioritized';
             }
           } else if (isAdded[tx.txid] && (blockAudit.version === 0 || isUnseen[tx.txid])) {
             tx.status = 'added';

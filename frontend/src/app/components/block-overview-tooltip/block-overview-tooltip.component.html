@@ -79,6 +79,11 @@
               <span class="badge badge-warning" i18n="tx-features.tag.added|Added">Added</span>
               <span class="badge badge-warning ml-1" i18n="tx-features.tag.prioritized|Prioritized">Prioritized</span>
             </ng-container>
+            <span *ngSwitchCase="'deprioritized'" class="badge badge-warning" i18n="tx-features.tag.prioritized|Deprioritized">Deprioritized</span>
+            <ng-container *ngSwitchCase="'added_deprioritized'">
+              <span class="badge badge-warning" i18n="tx-features.tag.added|Added">Added</span>
+              <span class="badge badge-warning ml-1" i18n="tx-features.tag.prioritized|Deprioritized">Deprioritized</span>
+            </ng-container>
             <span *ngSwitchCase="'selected'" class="badge badge-warning" i18n="transaction.audit.marginal">Marginal fee rate</span>
             <span *ngSwitchCase="'rbf'" class="badge badge-warning" i18n="tx-features.tag.conflict|Conflict">Conflict</span>
             <span *ngSwitchCase="'accelerated'" class="badge badge-accelerated" i18n="transaction.audit.accelerated">Accelerated</span>
