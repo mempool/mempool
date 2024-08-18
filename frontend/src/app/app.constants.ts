@@ -151,7 +151,7 @@ export const languages: Language[] = [
    { code: 'fr', name: 'Français' },        // French
 // { code: 'gl', name: 'Galego' },          // Galician
    { code: 'ko', name: '한국어' },          // Korean
-// { code: 'hr', name: 'Hrvatski' },        // Croatian
+   { code: 'hr', name: 'Hrvatski' },        // Croatian
 // { code: 'id', name: 'Bahasa Indonesia' },// Indonesian
    { code: 'hi', name: 'हिन्दी' },             // Hindi
    { code: 'ne', name: 'नेपाली' },            // Nepalese

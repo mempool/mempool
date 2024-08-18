@@ -43,7 +43,7 @@
           <span *ngSwitchCase="'output'" i18n="transaction.output">Output</span>
           <span *ngSwitchCase="'fee'" i18n="transaction.fee|Transaction fee">Fee</span>
         </ng-container>
-        <span *ngIf="line.type !== 'fee'"> #{{ line.index + 1 }}</span>
+        <span *ngIf="line.type !== 'fee'"> #{{ line.index }}</span>
         <ng-container [ngSwitch]="line.type">
           <span *ngSwitchCase="'input'"> 
             <ng-container *ngIf="line.status?.block_height">
@@ -73,7 +73,7 @@
           <app-truncate [text]="line.txid"></app-truncate>
         </p>
           <ng-container [ngSwitch]="line.type">
-            <p *ngSwitchCase="'input'"><span i18n="transaction.output">Output</span>&nbsp; #{{ line.vout + 1 }}
+            <p *ngSwitchCase="'input'"><span i18n="transaction.output">Output</span>&nbsp; #{{ line.vout }}
               <ng-container *ngIf="line.status?.block_height">
                 <ng-container *ngIf="line.blockHeight; else noBlockHeight">
                   <ng-container *ngTemplateOutlet="nBlocksEarlier; context:{n: line.blockHeight - line?.status?.block_height, connector: true}"></ng-container>
@@ -83,7 +83,7 @@
                 </ng-template>
               </ng-container>
             </p>
-            <p *ngSwitchCase="'output'"><span i18n="transaction.input">Input</span>&nbsp; #{{ line.vin + 1 }}
+            <p *ngSwitchCase="'output'"><span i18n="transaction.input">Input</span>&nbsp; #{{ line.vin }}
               <ng-container *ngIf="line.blockHeight">
                 <ng-container *ngIf="line?.status?.block_height; else noBlockHeight">
                   <ng-container *ngTemplateOutlet="nBlocksLater; context:{n: line?.status?.block_height - line.blockHeight, connector: true}"></ng-container>
