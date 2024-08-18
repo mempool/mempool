@@ -67,13 +67,17 @@ export class ActiveAccelerationBox implements OnChanges {
 
     const acceleratingPools = (poolList || []).filter(id => pools[id]).sort((a,b) => pools[a].lastEstimatedHashrate - pools[b].lastEstimatedHashrate);
     const totalAcceleratedHashrate = acceleratingPools.reduce((total, pool) => total + pools[pool].lastEstimatedHashrate, 0);
-    const lightenStep = acceleratingPools.length ? (0.48 / acceleratingPools.length) : 0;
+    // Find the first pool with at least 1% of the total network hashrate
+    const firstSignificantPool = acceleratingPools.findIndex(pool => pools[pool].lastEstimatedHashrate > this.miningStats.lastEstimatedHashrate / 100);
+    const numSignificantPools = acceleratingPools.length - firstSignificantPool;
     acceleratingPools.forEach((poolId, index) => {
       const pool = pools[poolId];
       const poolShare = ((pool.lastEstimatedHashrate / this.miningStats.lastEstimatedHashrate) * 100).toFixed(1);
       data.push(getDataItem(
         pool.lastEstimatedHashrate,
-        toRGB(lighten({ r: 147, g: 57, b: 244 }, index * lightenStep)),
+        index >= firstSignificantPool
+          ? toRGB(lighten({ r: 147, g: 57, b: 244 }, 1 - (index - firstSignificantPool) / (numSignificantPools - 1)))
+          : 'white',
         `<b style="color: white">${pool.name} (${poolShare}%)</b>`,
         true,
       ) as PieSeriesOption);
