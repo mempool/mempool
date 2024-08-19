@@ -159,7 +159,7 @@ footer .nowrap {
   display: block;
 }
 
-@media (min-width: 951px) {
+@media (min-width: 1020px) {
   :host-context(.ltr-layout) .language-selector {
     float: right !important;
   }
@@ -177,7 +177,24 @@ footer .nowrap {
 }
 
 .services {
-  @media (min-width: 951px) and (max-width: 1147px) {
+  @media (min-width: 1300px) {
+    :host-context(.ltr-layout) .language-selector {
+      float: right !important;
+    }
+    :host-context(.rtl-layout) .language-selector {
+      float: left !important;
+    }
+  
+    .explore-tagline-desktop {
+      display: block;
+    }
+  
+    .explore-tagline-mobile {
+      display: none;
+    }
+  }
+
+  @media (max-width: 1300px) {
     :host-context(.ltr-layout) .services .language-selector {
       float: none !important;
     }
@@ -253,7 +270,7 @@ footer .nowrap {
 
 }
 
-@media (max-width: 950px) {
+@media (max-width: 1019px) {
 
   .main-logo {
     width: 220px;
@@ -292,7 +309,7 @@ footer .nowrap {
   }
 }
 
-@media (max-width: 1147px) {
+@media (max-width: 1300px) {
 
   .services.main-logo {
     width: 220px;
