@@ -1,5 +1,5 @@
 The Mempool Open Source Project®
-Copyright (c) 2019-2023 Mempool Space K.K. and other shadowy super-coders
+Copyright (c) 2019-2024 Mempool Space K.K. and other shadowy super-coders
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Affero General Public License as published by the Free
@@ -12,10 +12,12 @@ or any other contributor to The Mempool Open Source Project.
 
 The Mempool Open Source Project®, Mempool Accelerator™, Mempool Enterprise®, 
 Mempool Liquidity™, mempool.space®, Be your own explorer™, Explore the full 
-Bitcoin ecosystem™, Mempool Goggles™, the mempool Logo, the mempool Square logo, 
-the mempool Blocks logo, the mempool Blocks 3 | 2 logo, the mempool.space Vertical 
-Logo, and the mempool.space Horizontal logo are registered trademarks or trademarks 
-of Mempool Space K.K in Japan, the United States, and/or other countries.
+Bitcoin ecosystem™, Mempool Goggles™, the mempool Logo, the mempool Square Logo, 
+the mempool block visualization Logo, the mempool Blocks Logo, the mempool 
+transaction Logo, the mempool Blocks 3 | 2 Logo, the mempool research Logo, 
+the mempool.space Vertical Logo, and the mempool.space Horizontal Logo are 
+registered trademarks or trademarks of Mempool Space K.K in Japan, 
+the United States, and/or other countries.
 
 See our full Trademark Policy and Guidelines for more details, published on 
 <https://mempool.space/trademark-policy>.
