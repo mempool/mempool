@@ -27,6 +27,9 @@
           <div class="selector">
             <app-rate-unit-selector></app-rate-unit-selector>
           </div>
+          <div class="selector d-none d-sm-flex">
+            <app-amount-selector></app-amount-selector>
+          </div>
           @if (!env.customize?.theme) {
             <div class="selector d-none d-sm-flex">
               <app-theme-selector></app-theme-selector>
@@ -39,7 +42,8 @@
         </div>
         @if (!env.customize?.theme) {
           <div class="selector d-flex d-sm-none justify-content-center ml-auto mr-auto mt-0">
-            <app-theme-selector></app-theme-selector>
+            <app-amount-selector class="add-margin"></app-amount-selector>
+            <app-theme-selector class="add-margin"></app-theme-selector>
           </div>
         }
         @if (!enterpriseInfo?.footer_img) {
