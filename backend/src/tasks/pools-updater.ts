@@ -23,11 +23,8 @@ class PoolsUpdater {
       return;
     }
 
-    const oneWeek = 604800;
-    const oneDay = 86400;
-
     const now = new Date().getTime() / 1000;
-    if (now - this.lastRun < oneWeek) { // Execute the PoolsUpdate only once a week, or upon restart
+    if (now - this.lastRun < config.MEMPOOL.POOLS_UPDATE_DELAY) { // Execute the PoolsUpdate only once a week, or upon restart
       return;
     }
 
@@ -87,8 +84,8 @@ class PoolsUpdater {
       logger.info(`Mining pools-v2.json (${githubSha}) import completed`);
 
     } catch (e) {
-      this.lastRun = now - (oneWeek - oneDay); // Try again in 24h instead of waiting next week
-      logger.err(`PoolsUpdater failed. Will try again in 24h. Exception: ${JSON.stringify(e)}`, logger.tags.mining);
+      this.lastRun = now - 600; // Try again in 10 minutes
+      logger.err(`PoolsUpdater failed. Will try again in 10 minutes. Exception: ${JSON.stringify(e)}`, logger.tags.mining);
     }
   }
 
