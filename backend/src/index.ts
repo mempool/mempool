@@ -211,6 +211,8 @@ class Server {
         }
       });
     }
+
+    poolsUpdater.$startService();
   }
 
   async runMainUpdateLoop(): Promise<void> {
@@ -239,7 +241,6 @@ class Server {
       if (config.FIAT_PRICE.ENABLED) {
         priceUpdater.$run();
       }
-      await poolsUpdater.updatePoolsJson();
 
       // rerun immediately if we skipped the mempool update, otherwise wait POLL_RATE_MS
       const elapsed = Date.now() - start;
