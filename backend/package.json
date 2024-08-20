@@ -1,6 +1,6 @@
 {
   "name": "mempool-backend",
-  "version": "3.0.0-beta",
+  "version": "3.0.0-rc1",
   "description": "Bitcoin mempool visualizer and blockchain explorer backend",
   "license": "GNU Affero General Public License v3.0",
   "homepage": "https://mempool.space",

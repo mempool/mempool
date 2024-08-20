@@ -750,7 +750,7 @@
     },
     "backendInfo": {
       "hostname": "node205.tk7.mempool.space",
-      "version": "3.0.0-beta",
+      "version": "3.0.0-rc1",
       "gitCommit": "abbc8a134",
       "lightning": false
     },
