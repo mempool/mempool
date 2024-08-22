@@ -552,18 +552,18 @@
         <td>
           <ng-container *ngIf="(ETA$ | async) as eta; else etaSkeleton">
             @if (eta.blocks >= 7) {
-              <span [class]="(!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !showAccelerationSummary && eligibleForAcceleration) ? 'etaDeepMempool justify-content-end align-items-center' : ''">
+              <span [class]="(!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !showAccelerationSummary && eligibleForAcceleration && notAcceleratedOnLoad) ? 'etaDeepMempool justify-content-end align-items-center' : ''">
                 <span i18n="transaction.eta.not-any-time-soon|Transaction ETA mot any time soon">Not any time soon</span>
-                @if (!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !showAccelerationSummary && eligibleForAcceleration) {
+                @if (!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !showAccelerationSummary && eligibleForAcceleration && notAcceleratedOnLoad) {
                   <a class="btn btn-sm accelerateDeepMempool btn-small-height float-right" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
                 }
               </span>
             } @else if (network === 'liquid' || network === 'liquidtestnet') {
               <app-time kind="until" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time>
             } @else {
-              <span [class]="(!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !showAccelerationSummary && eligibleForAcceleration) ? 'etaDeepMempool justify-content-end align-items-center' : ''">
+              <span [class]="(!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !showAccelerationSummary && eligibleForAcceleration && notAcceleratedOnLoad) ? 'etaDeepMempool justify-content-end align-items-center' : ''">
                 <app-time kind="until" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time>
-                @if (!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !showAccelerationSummary && eligibleForAcceleration) {
+                @if (!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !showAccelerationSummary && eligibleForAcceleration && notAcceleratedOnLoad) {
                   <a class="btn btn-sm accelerateDeepMempool btn-small-height float-right" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
                 }
               </span>
