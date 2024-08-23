@@ -34,6 +34,17 @@ if (configContent && configContent.BASE_MODULE === 'liquid') {
       },
     },
     {
+      context: ['/liquid/api/v2/**'],
+      target: `http://localhost:8999`,
+      secure: false,
+      ws: true,
+      changeOrigin: true,
+      proxyTimeout: 30000,
+      pathRewrite: {
+          "^/liquid": ""
+      },
+    },
+    {
       context: ['/liquid/api/**'],
       target: `http://localhost:8999`,
       secure: false,
@@ -45,6 +56,17 @@ if (configContent && configContent.BASE_MODULE === 'liquid') {
     },
     {
       context: ['/liquidtestnet/api/v1/**'],
+      target: `http://localhost:8999`,
+      secure: false,
+      ws: true,
+      changeOrigin: true,
+      proxyTimeout: 30000,
+      pathRewrite: {
+          "^/liquidtestnet": ""
+      },
+    },
+    {
+      context: ['/liquidtestnet/api/v2/**'],
       target: `http://localhost:8999`,
       secure: false,
       ws: true,
@@ -88,6 +110,14 @@ PROXY_CONFIG.push(...[
   },
   {
     context: ['/api/v1/**'],
+    target: `http://localhost:8999`,
+    secure: false,
+    ws: true,
+    changeOrigin: true,
+    proxyTimeout: 30000,
+  },
+  {
+    context: ['/api/v2/**'],
     target: `http://localhost:8999`,
     secure: false,
     ws: true,
