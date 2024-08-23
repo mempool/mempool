@@ -36,7 +36,7 @@ export class FeesBoxComponent implements OnInit, OnDestroy {
     this.recommendedFees$ = this.stateService.recommendedFees$
       .pipe(
         tap((fees) => {
-          this.fees = fees;
+          this.fees = this.roundFees(fees);
           this.setFeeGradient();
         }
       )
@@ -59,6 +59,19 @@ export class FeesBoxComponent implements OnInit, OnDestroy {
     this.noPriority = startColor;
 
     this.cd.markForCheck();
+  }
+
+  roundFees(fees: Recommendedfees): Recommendedfees {
+    fees.fastestFee = this.roundFeeValue(fees.fastestFee);
+    fees.halfHourFee = this.roundFeeValue(fees.halfHourFee);
+    fees.hourFee = this.roundFeeValue(fees.hourFee);
+    fees.economyFee = this.roundFeeValue(fees.economyFee);
+    fees.minimumFee = this.roundFeeValue(fees.minimumFee);
+    return fees;
+  }
+
+  roundFeeValue(fee: number): number {
+    return fee >= 10.0 ? Math.ceil(fee) : fee;
   }
 
   ngOnDestroy(): void {
