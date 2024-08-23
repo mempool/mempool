@@ -12,6 +12,7 @@ interface IConfig {
     UNIX_SOCKET_PATH: string;
     SPAWN_CLUSTER_PROCS: number;
     API_URL_PREFIX: string;
+    API_V2_URL_PREFIX: string;
     POLL_RATE_MS: number;
     CACHE_DIR: string;
     CACHE_ENABLED: boolean;
@@ -172,6 +173,7 @@ const defaults: IConfig = {
     'UNIX_SOCKET_PATH': '',
     'SPAWN_CLUSTER_PROCS': 0,
     'API_URL_PREFIX': '/api/v1/',
+    'API_V2_URL_PREFIX': '/api/v2/',
     'POLL_RATE_MS': 2000,
     'CACHE_DIR': './cache',
     'CACHE_ENABLED': true,

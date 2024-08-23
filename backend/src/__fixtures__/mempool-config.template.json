@@ -10,6 +10,7 @@
     "UNIX_SOCKET_PATH": "/mempool/socket/mempool-bitcoin-mainnet",
     "SPAWN_CLUSTER_PROCS": 2,
     "API_URL_PREFIX": "__MEMPOOL_API_URL_PREFIX__",
+    "API_V2_URL_PREFIX": "__MEMPOOL_API_V2_URL_PREFIX__",
     "AUTOMATIC_POOLS_UPDATE": false,
     "POLL_RATE_MS": 3,
     "CACHE_DIR": "__MEMPOOL_CACHE_DIR__",
