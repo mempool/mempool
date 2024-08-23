@@ -47,6 +47,9 @@ class BitcoinRoutes {
       .post(config.MEMPOOL.API_URL_PREFIX + 'psbt/addparents', this.postPsbtCompletion)
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from', this.getBlocksByBulk.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from/:to', this.getBlocksByBulk.bind(this))
+
+      // V2 API
+      .get(config.MEMPOOL.API_V2_URL_PREFIX + 'fees/recommended', this.getRecommendedFeesDecimal)
       ;
 
       if (config.MEMPOOL.BACKEND !== 'esplora') {
@@ -97,6 +100,16 @@ class BitcoinRoutes {
       return;
     }
     const result = feeApi.getRecommendedFee();
+    res.json(result);
+  }
+
+  private getRecommendedFeesDecimal(req: Request, res: Response) {
+    if (!mempool.isInSync()) {
+      res.statusCode = 503;
+      res.send('Service Unavailable');
+      return;
+    }
+    const result = feeApi.getRecommendedFee(true);
     res.json(result);
   }
 

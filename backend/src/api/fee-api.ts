@@ -19,10 +19,12 @@ class FeeApi {
   defaultFee = isLiquid ? 0.1 : 1;
   minimumIncrement = isLiquid ? 0.1 : 1;
 
-  public getRecommendedFee(): RecommendedFees {
+  public getRecommendedFee(decimal: boolean = false): RecommendedFees {
     const pBlocks = projectedBlocks.getMempoolBlocks();
     const mPool = mempool.getMempoolInfo();
-    const minimumFee = this.roundUpToNearest(mPool.mempoolminfee * 100000, this.minimumIncrement);
+    const minimumFee = decimal ? 
+      this.roundUpToNearestDecimal(mPool.mempoolminfee * 100000) :
+      this.roundUpToNearest(mPool.mempoolminfee * 100000, this.minimumIncrement);
     const defaultMinFee = Math.max(minimumFee, this.defaultFee);
 
     if (!pBlocks.length) {
@@ -35,9 +37,9 @@ class FeeApi {
       };
     }
 
-    const firstMedianFee = this.optimizeMedianFee(pBlocks[0], pBlocks[1]);
-    const secondMedianFee = pBlocks[1] ? this.optimizeMedianFee(pBlocks[1], pBlocks[2], firstMedianFee) : this.defaultFee;
-    const thirdMedianFee = pBlocks[2] ? this.optimizeMedianFee(pBlocks[2], pBlocks[3], secondMedianFee) : this.defaultFee;
+    const firstMedianFee = this.optimizeMedianFee(pBlocks[0], pBlocks[1], undefined, decimal);
+    const secondMedianFee = pBlocks[1] ? this.optimizeMedianFee(pBlocks[1], pBlocks[2], firstMedianFee, decimal) : this.defaultFee;
+    const thirdMedianFee = pBlocks[2] ? this.optimizeMedianFee(pBlocks[2], pBlocks[3], secondMedianFee, decimal) : this.defaultFee;
 
     let fastestFee = Math.max(minimumFee, firstMedianFee);
     let halfHourFee = Math.max(minimumFee, secondMedianFee);
@@ -62,7 +64,7 @@ class FeeApi {
     };
   }
 
-  private optimizeMedianFee(pBlock: MempoolBlock, nextBlock: MempoolBlock | undefined, previousFee?: number): number {
+  private optimizeMedianFee(pBlock: MempoolBlock, nextBlock: MempoolBlock | undefined, previousFee?: number, decimal: boolean = false): number {
     const useFee = previousFee ? (pBlock.medianFee + previousFee) / 2 : pBlock.medianFee;
     if (pBlock.blockVSize <= 500000) {
       return this.defaultFee;
@@ -71,11 +73,17 @@ class FeeApi {
       const multiplier = (pBlock.blockVSize - 500000) / 500000;
       return Math.max(Math.round(useFee * multiplier), this.defaultFee);
     }
-    return this.roundUpToNearest(useFee, this.minimumIncrement);
+    return decimal ?
+      this.roundUpToNearestDecimal(useFee) :
+      this.roundUpToNearest(useFee, this.minimumIncrement);
   }
 
   private roundUpToNearest(value: number, nearest: number): number {
     return Math.ceil(value / nearest) * nearest;
+  }
+
+  private roundUpToNearestDecimal(value: number): number {
+    return Number(this.roundUpToNearest(value, 0.1).toFixed(1)); // avoid floating point errors
   }
 }
 
