@@ -6,7 +6,8 @@
     "BACKEND": "esplora",
     "HTTP_PORT": 8991,
     "INDEXING_BLOCKS_AMOUNT": 0,
-    "API_URL_PREFIX": "/api/v1/"
+    "API_URL_PREFIX": "/api/v1/",
+    "API_V2_URL_PREFIX": "/api/v2/"
   },
   "SYSLOG": {
     "MIN_PRIORITY": "debug"

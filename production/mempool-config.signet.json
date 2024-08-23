@@ -7,6 +7,7 @@
     "MINED_BLOCKS_CACHE": 144,
     "SPAWN_CLUSTER_PROCS": 0,
     "API_URL_PREFIX": "/api/v1/",
+    "API_V2_URL_PREFIX": "/api/v2/",
     "INDEXING_BLOCKS_AMOUNT": -1,
     "AUTOMATIC_POOLS_UPDATE": true,
     "AUDIT": true,
