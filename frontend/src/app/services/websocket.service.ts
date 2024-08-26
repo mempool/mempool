@@ -35,6 +35,7 @@ export class WebsocketService {
   private isTrackingAddresses: string[] | false = false;
   private isTrackingAccelerations: boolean = false;
   private trackingMempoolBlock: number;
+  private stoppingTrackMempoolBlock: any | null = null;
   private latestGitCommit = '';
   private onlineCheckTimeout: number;
   private onlineCheckTimeoutTwo: number;
@@ -203,19 +204,31 @@ export class WebsocketService {
     this.websocketSubject.next({ 'track-asset': 'stop' });
   }
 
-  startTrackMempoolBlock(block: number, force: boolean = false) {
+  startTrackMempoolBlock(block: number, force: boolean = false): boolean {
+    if (this.stoppingTrackMempoolBlock) {
+      clearTimeout(this.stoppingTrackMempoolBlock);
+    }
     // skip duplicate tracking requests
     if (force || this.trackingMempoolBlock !== block) {
       this.websocketSubject.next({ 'track-mempool-block': block });
       this.isTrackingMempoolBlock = true;
       this.trackingMempoolBlock = block;
+      return true;
     }
+    return false;
   }
 
-  stopTrackMempoolBlock() {
-    this.websocketSubject.next({ 'track-mempool-block': -1 });
+  stopTrackMempoolBlock(): void {
+    if (this.stoppingTrackMempoolBlock) {
+      clearTimeout(this.stoppingTrackMempoolBlock);
+    }
     this.isTrackingMempoolBlock = false;
-    this.trackingMempoolBlock = null;
+    this.stoppingTrackMempoolBlock = setTimeout(() => {
+      this.stoppingTrackMempoolBlock = null;
+      this.websocketSubject.next({ 'track-mempool-block': -1 });
+      this.trackingMempoolBlock = null;
+      this.stateService.mempoolBlockState = null;
+    }, 2000);
   }
 
   startTrackRbf(mode: 'all' | 'fullRbf') {
@@ -424,6 +437,7 @@ export class WebsocketService {
         if (response['projected-block-transactions'].blockTransactions) {
           this.stateService.mempoolSequence = response['projected-block-transactions'].sequence;
           this.stateService.mempoolBlockUpdate$.next({
+            block: this.trackingMempoolBlock,
             transactions: response['projected-block-transactions'].blockTransactions.map(uncompressTx),
           });
         } else if (response['projected-block-transactions'].delta) {
@@ -432,7 +446,7 @@ export class WebsocketService {
             this.startTrackMempoolBlock(this.trackingMempoolBlock, true);
           } else {
             this.stateService.mempoolSequence = response['projected-block-transactions'].sequence;
-            this.stateService.mempoolBlockUpdate$.next(uncompressDeltaChange(response['projected-block-transactions'].delta));
+            this.stateService.mempoolBlockUpdate$.next(uncompressDeltaChange(this.trackingMempoolBlock, response['projected-block-transactions'].delta));
           }
         }
       }
