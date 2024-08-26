@@ -520,14 +520,25 @@ class WebsocketHandler {
     }
   }
 
+  /**
+   *
+   * @param newMempool
+   * @param mempoolSize
+   * @param newTransactions  array of transactions added this mempool update.
+   * @param recentlyDeletedTransactions array of arrays of transactions removed in the last N mempool updates, most recent first.
+   * @param accelerationDelta
+   * @param candidates
+   */
   async $handleMempoolChange(newMempool: { [txid: string]: MempoolTransactionExtended }, mempoolSize: number,
-    newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[], accelerationDelta: string[],
+    newTransactions: MempoolTransactionExtended[], recentlyDeletedTransactions: MempoolTransactionExtended[][], accelerationDelta: string[],
     candidates?: GbtCandidates): Promise<void> {
     if (!this.webSocketServers.length) {
       throw new Error('No WebSocket.Server have been set');
     }
 
     this.printLogs();
+
+    const deletedTransactions = recentlyDeletedTransactions.length ? recentlyDeletedTransactions[0] : [];
 
     const transactionIds = (memPool.limitGBT && candidates) ? Object.keys(candidates?.txs || {}) : Object.keys(newMempool);
     let added = newTransactions;
@@ -547,7 +558,7 @@ class WebsocketHandler {
     const mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
     const mempoolInfo = memPool.getMempoolInfo();
     const vBytesPerSecond = memPool.getVBytesPerSecond();
-    const rbfTransactions = Common.findRbfTransactions(newTransactions, deletedTransactions);
+    const rbfTransactions = Common.findRbfTransactions(newTransactions, recentlyDeletedTransactions.flat());
     const da = difficultyAdjustment.getDifficultyAdjustment();
     const accelerations = memPool.getAccelerations();
     memPool.handleRbfTransactions(rbfTransactions);
@@ -578,7 +589,7 @@ class WebsocketHandler {
     const replacedTransactions: { replaced: string, by: TransactionExtended }[] = [];
     for (const tx of newTransactions) {
       if (rbfTransactions[tx.txid]) {
-        for (const replaced of rbfTransactions[tx.txid]) {
+        for (const replaced of rbfTransactions[tx.txid].replaced) {
           replacedTransactions.push({ replaced: replaced.txid, by: tx });
         }
       }
@@ -947,7 +958,7 @@ class WebsocketHandler {
     await accelerationRepository.$indexAccelerationsForBlock(block, accelerations, structuredClone(transactions));
 
     const rbfTransactions = Common.findMinedRbfTransactions(transactions, memPool.getSpendMap());
-    memPool.handleMinedRbfTransactions(rbfTransactions);
+    memPool.handleRbfTransactions(rbfTransactions);
     memPool.removeFromSpendMap(transactions);
 
     if (config.MEMPOOL.AUDIT && memPool.isInSync()) {
