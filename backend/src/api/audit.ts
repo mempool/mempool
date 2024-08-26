@@ -2,6 +2,7 @@ import config from '../config';
 import logger from '../logger';
 import { MempoolTransactionExtended, MempoolBlockWithTransactions } from '../mempool.interfaces';
 import rbfCache from './rbf-cache';
+import transactionUtils from './transaction-utils';
 
 const PROPAGATION_MARGIN = 180; // in seconds, time since a transaction is first seen after which it is assumed to have propagated to all miners
 
@@ -15,7 +16,8 @@ class Audit {
     const matches: string[] = []; // present in both mined block and template
     const added: string[] = []; // present in mined block, not in template
     const unseen: string[] = []; // present in the mined block, not in our mempool
-    const prioritized: string[] = []; // higher in the block than would be expected by in-band feerate alone
+    let prioritized: string[] = []; // higher in the block than would be expected by in-band feerate alone
+    let deprioritized: string[] = []; // lower in the block than would be expected by in-band feerate alone
     const fresh: string[] = []; // missing, but firstSeen or lastBoosted within PROPAGATION_MARGIN
     const rbf: string[] = []; // either missing or present, and either part of a full-rbf replacement, or a conflict with the mined block
     const accelerated: string[] = []; // prioritized by the mempool accelerator
@@ -133,23 +135,7 @@ class Audit {
       totalWeight += tx.weight;
     }
 
-
-    // identify "prioritized" transactions
-    let lastEffectiveRate = 0;
-    // Iterate over the mined template from bottom to top (excluding the coinbase)
-    // Transactions should appear in ascending order of mining priority.
-    for (let i = transactions.length - 1; i > 0; i--) {
-      const blockTx = transactions[i];
-      // If a tx has a lower in-band effective fee rate than the previous tx,
-      // it must have been prioritized out-of-band (in order to have a higher mining priority)
-      // so exclude from the analysis.
-      if ((blockTx.effectiveFeePerVsize || 0) < lastEffectiveRate) {
-        prioritized.push(blockTx.txid);
-        // accelerated txs may or may not have their prioritized fee rate applied, so don't use them as a reference
-      } else if (!isAccelerated[blockTx.txid]) {
-        lastEffectiveRate = blockTx.effectiveFeePerVsize || 0;
-      }
-    }
+    ({ prioritized, deprioritized } = transactionUtils.identifyPrioritizedTransactions(transactions, 'effectiveFeePerVsize'));
 
     // transactions missing from near the end of our template are probably not being censored
     let overflowWeightRemaining = overflowWeight - (config.MEMPOOL.BLOCK_WEIGHT_UNITS - totalWeight);
