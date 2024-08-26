@@ -403,7 +403,7 @@ class RbfCache {
     };
   }
 
-  public async load({ txs, trees, expiring, mempool }): Promise<void> {
+  public async load({ txs, trees, expiring, mempool, spendMap }): Promise<void> {
     try {
       txs.forEach(txEntry => {
         this.txs.set(txEntry.value.txid, txEntry.value);
@@ -425,6 +425,31 @@ class RbfCache {
         }
       });
       this.staleCount = 0;
+
+      // connect cached trees to current mempool transactions
+      const conflicts: Record<string, { replacedBy: MempoolTransactionExtended, replaces: Set<MempoolTransactionExtended> }> = {};
+      for (const tree of this.rbfTrees.values()) {
+        const tx = this.getTx(tree.tx.txid);
+        if (!tx || tree.mined) {
+          continue;
+        }
+        for (const vin of tx.vin) {
+          const conflict = spendMap.get(`${vin.txid}:${vin.vout}`);
+          if (conflict && conflict.txid !== tx.txid) {
+            if (!conflicts[conflict.txid]) {
+              conflicts[conflict.txid] = {
+                replacedBy: conflict,
+                replaces: new Set(),
+              };
+            }
+            conflicts[conflict.txid].replaces.add(tx);
+          }
+        }
+      }
+      for (const { replacedBy, replaces } of Object.values(conflicts)) {
+        this.add([...replaces.values()], replacedBy);
+      }
+
       await this.checkTrees();
       logger.debug(`loaded ${txs.length} txs, ${trees.length} trees into rbf cache, ${expiring.length} due to expire, ${this.staleCount} were stale`);
       this.cleanup();
