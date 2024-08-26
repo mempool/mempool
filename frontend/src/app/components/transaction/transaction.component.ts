@@ -358,12 +358,18 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       }),
     ).subscribe((accelerationHistory) => {
       for (const acceleration of accelerationHistory) {
-        if (acceleration.txid === this.txId && (acceleration.status === 'completed' || acceleration.status === 'completed_provisional')) {
-          const boostCost = acceleration.boostCost || acceleration.bidBoost;
-          acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
-          acceleration.boost = boostCost;
-          this.tx.acceleratedAt = acceleration.added;
-          this.accelerationInfo = acceleration;
+        if (acceleration.txid === this.txId) {
+          if (acceleration.status === 'completed' || acceleration.status === 'completed_provisional') {
+            if (acceleration.pools.includes(acceleration.minedByPoolUniqueId)) {
+              const boostCost = acceleration.boostCost || acceleration.bidBoost;
+              acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
+              acceleration.boost = boostCost;
+              this.tx.acceleratedAt = acceleration.added;
+              this.accelerationInfo = acceleration;  
+            } else {
+              this.tx.feeDelta = undefined;
+            }
+          }
           this.waitingForAccelerationInfo = false;
           this.setIsAccelerated();
         }

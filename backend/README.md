@@ -77,7 +77,7 @@ Query OK, 0 rows affected (0.00 sec)
 
 #### Build
 
-_Make sure to use Node.js 16.10 and npm 7._
+_Make sure to use Node.js 20.x and npm 9.x or newer_
 
 _The build process requires [Rust](https://www.rust-lang.org/tools/install) to be installed._
 

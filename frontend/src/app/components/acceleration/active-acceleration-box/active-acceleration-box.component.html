@@ -1,7 +1,7 @@
 @if (chartOnly) {
   <ng-container *ngTemplateOutlet="pieChart"></ng-container>
 } @else {
-<table>
+<table style="width: 100%;">
   <tbody>
     <tr>
       <td class="td-width field-label" [class]="chartPositionLeft ? 'chart-left' : ''" i18n="transaction.accelerated-to-feerate|Accelerated to feerate">Accelerated to</td>

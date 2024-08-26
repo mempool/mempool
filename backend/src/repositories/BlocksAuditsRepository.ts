@@ -132,11 +132,12 @@ class BlocksAuditRepositories {
             firstSeen = tx.time;
           }
         });
+        const wasSeen = blockAudit.version === 1 ? !blockAudit.unseenTxs.includes(txid) : (isExpected || isPrioritized || isAccelerated);
 
         return {
-          seen: isExpected || isPrioritized || isAccelerated,
+          seen: wasSeen,
           expected: isExpected,
-          added: isAdded,
+          added: isAdded && (blockAudit.version === 0 || !wasSeen),
           prioritized: isPrioritized,
           conflict: isConflict,
           accelerated: isAccelerated,

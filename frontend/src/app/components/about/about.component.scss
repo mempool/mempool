@@ -13,8 +13,6 @@
 
   .image.not-rounded {
     border-radius: 0;
-    width: 60px;
-    height: 60px;
   }
 
   .intro {
@@ -158,9 +156,8 @@
           margin: 40px 29px 10px;
           &.image.coldcard {
             border-radius: 0;
-            width: auto;
-            max-height: 50px;
-            margin: 40px 29px 14px 29px;
+            height: auto;
+            margin: 20px 29px 20px;
           }
         }
       }
