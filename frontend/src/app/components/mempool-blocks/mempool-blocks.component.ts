@@ -213,7 +213,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
         }
         if (state.mempoolPosition) {
           this.txPosition = state.mempoolPosition;
-          if (this.txPosition.accelerated && !oldTxPosition.accelerated) {
+          if (this.txPosition.accelerated && !oldTxPosition?.accelerated) {
             this.acceleratingArrow = true;
             setTimeout(() => {
               this.acceleratingArrow = false;

@@ -606,16 +606,11 @@
   @if (!isLoadingTx) {
     <tr>
       <td class="td-width" i18n="transaction.fee|Transaction fee">Fee</td>
-      <td class="text-wrap">{{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> 
-        @if (accelerationInfo?.bidBoost) {
-          <span class="oobFees" i18n-ngbTooltip="Acceleration Fees" ngbTooltip="Acceleration fees paid out-of-band"> +{{ accelerationInfo.bidBoost | number }} </span><span class="symbol" i18n="shared.sat|sat">sat</span>
-          <span class="fiat"><app-fiat [blockConversion]="tx.price" [value]="tx.fee + accelerationInfo.bidBoost"></app-fiat></span>
-        } @else if (tx.feeDelta && !accelerationInfo) {
-          <span class="oobFees" i18n-ngbTooltip="Acceleration Fees" ngbTooltip="Acceleration fees paid out-of-band"> +{{ tx.feeDelta | number }} </span><span class="symbol" i18n="shared.sat|sat">sat</span>
-          <span class="fiat"><app-fiat [blockConversion]="tx.price" [value]="tx.fee + tx.feeDelta"></app-fiat></span>
-        } @else {
-          <span class="fiat"><app-fiat [blockConversion]="tx.price" [value]="tx.fee"></app-fiat></span>
-        }        
+      <td class="text-wrap">{{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span>
+        @if (accelerationInfo?.bidBoost ?? tx.feeDelta > 0) {
+          <span class="oobFees" i18n-ngbTooltip="Acceleration Fees" ngbTooltip="Acceleration fees paid out-of-band"> +{{ accelerationInfo?.bidBoost ?? tx.feeDelta | number }} </span><span class="symbol" i18n="shared.sat|sat">sat</span>
+        }
+        <span class="fiat"><app-fiat [blockConversion]="tx.price" [value]="tx.fee + ((accelerationInfo?.bidBoost ?? tx.feeDelta) || 0)"></app-fiat></span>
       </td>
     </tr>
   } @else {
