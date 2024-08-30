@@ -2,9 +2,9 @@ import { TransactionFlags } from './filters.utils';
 import { getVarIntLength, opcodes, parseMultisigScript, isPoint } from './script.utils';
 import { Transaction } from '../interfaces/electrs.interface';
 import { CpfpInfo, RbfInfo, TransactionStripped } from '../interfaces/node-api.interface';
+import { StateService } from '../services/state.service';
 
 // Bitcoin Core default policy settings
-const TX_MAX_STANDARD_VERSION = 2;
 const MAX_STANDARD_TX_WEIGHT = 400_000;
 const MAX_BLOCK_SIGOPS_COST = 80_000;
 const MAX_STANDARD_TX_SIGOPS_COST = (MAX_BLOCK_SIGOPS_COST / 5);
@@ -89,10 +89,13 @@ export function isDERSig(w: string): boolean {
  *
  * returns true early if any standardness rule is violated, otherwise false
  * (except for non-mandatory-script-verify-flag and p2sh script evaluation rules which are *not* enforced)
+ *
+ * As standardness rules change, we'll need to apply the rules in force *at the time* to older blocks.
+ * For now, just pull out individual rules into versioned functions where necessary.
  */
-export function isNonStandard(tx: Transaction): boolean {
+export function isNonStandard(tx: Transaction, height?: number, network?: string): boolean {
   // version
-  if (tx.version > TX_MAX_STANDARD_VERSION) {
+  if (isNonStandardVersion(tx, height, network)) {
     return true;
   }
 
@@ -138,6 +141,8 @@ export function isNonStandard(tx: Transaction): boolean {
         return true;
       }
     } else if (['unknown', 'provably_unspendable', 'empty'].includes(vin.prevout?.scriptpubkey_type || '')) {
+      return true;
+    } else if (isNonStandardAnchor(tx, height, network)) {
       return true;
     }
     // TODO: bad-witness-nonstandard
@@ -200,6 +205,51 @@ export function isNonStandard(tx: Transaction): boolean {
 
   // TODO: non-mandatory-script-verify-flag
 
+  return false;
+}
+
+// Individual versioned standardness rules
+
+const V3_STANDARDNESS_ACTIVATION_HEIGHT = {
+  'testnet4': 42_000,
+  'testnet': 2_900_000,
+  'signet': 211_000,
+  '': 863_500,
+};
+function isNonStandardVersion(tx: Transaction, height?: number, network?: string): boolean {
+  let TX_MAX_STANDARD_VERSION = 3;
+  if (
+    height != null
+    && network != null
+    && V3_STANDARDNESS_ACTIVATION_HEIGHT[network]
+    && height <= V3_STANDARDNESS_ACTIVATION_HEIGHT[network]
+  ) {
+    // V3 transactions were non-standard to spend before v28.x (scheduled for 2024/09/30 https://github.com/bitcoin/bitcoin/issues/29891)
+    TX_MAX_STANDARD_VERSION = 2;
+  }
+
+  if (tx.version > TX_MAX_STANDARD_VERSION) {
+    return true;
+  }
+  return false;
+}
+
+const ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT = {
+  'testnet4': 42_000,
+  'testnet': 2_900_000,
+  'signet': 211_000,
+  '': 863_500,
+};
+function isNonStandardAnchor(tx: Transaction, height?: number, network?: string): boolean {
+  if (
+    height != null
+    && network != null
+    && ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT[network]
+    && height <= ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT[network]
+  ) {
+    // anchor outputs were non-standard to spend before v28.x (scheduled for 2024/09/30 https://github.com/bitcoin/bitcoin/issues/29891)
+    return true;
+  }
   return false;
 }
 
@@ -289,7 +339,7 @@ export function isBurnKey(pubkey: string): boolean {
   ].includes(pubkey);
 }
 
-export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replacement?: boolean): bigint {
+export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replacement?: boolean, height?: number, network?: string): bigint {
   let flags = tx.flags ? BigInt(tx.flags) : 0n;
 
   // Update variable flags (CPFP, RBF)
@@ -439,7 +489,7 @@ export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replac
     flags |= TransactionFlags.batch_payout;
   }
 
-  if (isNonStandard(tx)) {
+  if (isNonStandard(tx, height, network)) {
     flags |= TransactionFlags.nonstandard;
   }
 
