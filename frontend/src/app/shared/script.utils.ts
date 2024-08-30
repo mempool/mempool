@@ -166,6 +166,7 @@ export const ScriptTemplates: { [type: string]: (...args: any) => ScriptTemplate
   ln_anchor: () => ({ type: 'ln_anchor', label: 'Lightning Anchor' }),
   ln_anchor_swept: () => ({ type: 'ln_anchor_swept', label: 'Swept Lightning Anchor' }),
   multisig: (m: number, n: number) => ({ type: 'multisig', m, n, label: $localize`:@@address-label.multisig:Multisig ${m}:multisigM: of ${n}:multisigN:` }),
+  anchor: () => ({ type: 'anchor', label: 'anchor' }),
 };
 
 export class ScriptInfo {

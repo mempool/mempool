@@ -55,7 +55,7 @@ export class AddressLabelsComponent implements OnChanges {
   }
 
   handleVin() {
-    const address = new AddressTypeInfo(this.network || 'mainnet', this.vin.prevout?.scriptpubkey_address, this.vin.prevout?.scriptpubkey_type as AddressType, [this.vin])
+    const address = new AddressTypeInfo(this.network || 'mainnet', this.vin.prevout?.scriptpubkey_address, this.vin.prevout?.scriptpubkey_type as AddressType, [this.vin]);
     if (address?.scripts.size) {
       const script = address?.scripts.values().next().value;
       if (script.template?.label) {
