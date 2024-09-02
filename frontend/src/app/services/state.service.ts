@@ -1,7 +1,7 @@
 import { Inject, Injectable, PLATFORM_ID, LOCALE_ID } from '@angular/core';
 import { ReplaySubject, BehaviorSubject, Subject, fromEvent, Observable } from 'rxjs';
-import { AddressTxSummary, Transaction } from '@interfaces/electrs.interface';
-import { AccelerationDelta, HealthCheckHost, IBackendInfo, MempoolBlock, MempoolBlockUpdate, MempoolInfo, Recommendedfees, ReplacedTransaction, ReplacementInfo, isMempoolState } from '@interfaces/websocket.interface';
+import { Transaction } from '@interfaces/electrs.interface';
+import { AccelerationDelta, HealthCheckHost, IBackendInfo, MempoolBlock, MempoolBlockUpdate, MempoolInfo, Recommendedfees, ReplacedTransaction, ReplacementInfo, StratumJob, isMempoolState } from '@interfaces/websocket.interface';
 import { Acceleration, AccelerationPosition, BlockExtended, CpfpInfo, DifficultyAdjustment, MempoolPosition, OptimizedMempoolStats, RbfTree, TransactionStripped } from '@interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
@@ -159,6 +159,8 @@ export class StateService {
   liveMempoolBlockTransactions$: Observable<{ block: number, transactions: { [txid: string]: TransactionStripped} }>;
   accelerations$ = new Subject<AccelerationDelta>();
   liveAccelerations$: Observable<Acceleration[]>;
+  stratumJobUpdate$ = new Subject<{ state: Record<string, StratumJob> } | { job: StratumJob }>();
+  stratumJobs$ = new BehaviorSubject<Record<string, StratumJob>>({});
   txConfirmed$ = new Subject<[string, BlockExtended]>();
   txReplaced$ = new Subject<ReplacedTransaction>();
   txRbfInfo$ = new Subject<RbfTree>();
@@ -302,6 +304,24 @@ export class StateService {
       }, {}),
       map((accMap) => Object.values(accMap).sort((a,b) => b.added - a.added))
     );
+
+    this.stratumJobUpdate$.pipe(
+      scan((acc: Record<string, StratumJob>, update: { state: Record<string, StratumJob> } | { job: StratumJob }) => {
+        if ('state' in update) {
+          // Replace the entire state
+          return update.state;
+        } else {
+          // Update or create a single job entry
+          return {
+            ...acc,
+            [update.job.pool]: update.job
+          };
+        }
+      }, {}),
+      shareReplay(1)
+    ).subscribe(val => {
+      this.stratumJobs$.next(val);
+    });
 
     this.networkChanged$.subscribe((network) => {
       this.transactions$ = new BehaviorSubject<TransactionStripped[]>(null);
