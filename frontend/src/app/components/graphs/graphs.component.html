@@ -1,9 +1,9 @@
-<div *ngIf="stateService.env.MINING_DASHBOARD || stateService.env.LIGHTNING" class="mb-3 d-flex menu">
+<div *ngIf="stateService.env.MINING_DASHBOARD || stateService.env.LIGHTNING || stateService.env.ACCELERATOR" class="mb-3 d-flex menu" [style]="{'flex-wrap': flexWrap ? 'wrap' : ''}">
 
-  <a routerLinkActive="active" class="btn btn-primary" [class]="padding"
+  <a routerLinkActive="active" class="btn btn-primary w-33"
     [routerLink]="['/graphs/mempool' | relativeUrl]">Mempool</a>
 
-  <div ngbDropdown [class]="padding" *ngIf="stateService.env.MINING_DASHBOARD">
+  <div ngbDropdown class="w-33" *ngIf="stateService.env.MINING_DASHBOARD">
     <button class="btn btn-primary w-100" id="dropdownBasic1" ngbDropdownToggle i18n="mining">Mining</button>
     <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
       <a class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/mining/pools' | relativeUrl]"
@@ -11,12 +11,13 @@
       <a class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/mining/pools-dominance' | relativeUrl]"
         i18n="mining.pools-dominance">Pools Dominance</a>
       <a class="dropdown-item" routerLinkActive="active"
-        [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" i18n="mining.hashrate-difficulty">Hashrate &
-        Difficulty</a>
+        [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" i18n="mining.hashrate-difficulty">Hashrate & Difficulty</a>
       <a class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]"
         i18n="mining.block-fee-rates">Block Fee Rates</a>
       <a class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/mining/block-fees' | relativeUrl]"
         i18n="mining.block-fees">Block Fees</a>
+      <a class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/mining/block-fees-subsidy' | relativeUrl]"
+        i18n="mining.block-fees-subsidy-subsidy">Block Fees Vs Subsidy</a>
       <a class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/mining/block-rewards' | relativeUrl]"
         i18n="mining.block-rewards">Block Rewards</a>
       <a class="dropdown-item" routerLinkActive="active"
@@ -26,7 +27,7 @@
     </div>
   </div>
 
-  <div ngbDropdown [class]="padding" *ngIf="stateService.env.LIGHTNING">
+  <div ngbDropdown class="w-33" *ngIf="stateService.networkSupportsLightning()">
     <button class="btn btn-primary w-100" id="dropdownBasic1" ngbDropdownToggle i18n="lightning">Lightning</button>
     <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
       <a class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/lightning/nodes-networks' | relativeUrl]"
@@ -41,6 +42,14 @@
         i18n="lightning.lightning.nodes-heatmap">Lightning Nodes World Map</a>
       <a class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/lightning/nodes-channels-map' | relativeUrl]"
         i18n="lightning.nodes-channels-world-map">Lightning Nodes Channels World Map</a>
+    </div>
+  </div>
+
+  <div ngbDropdown class="w-33" *ngIf="stateService.env.ACCELERATOR && isMainnet">
+    <button class="btn btn-primary w-100" id="dropdownBasic1" ngbDropdownToggle i18n="accelerator.accelerations">Accelerations</button>
+    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+      <a class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]"
+        i18n="accelerator.acceleration-fees">Acceleration Fees</a>
     </div>
   </div>
 </div>

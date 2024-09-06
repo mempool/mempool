@@ -10,7 +10,7 @@
   justify-content: space-around;
   height: 50.5px;
   .shared-block {
-    color: #ffffff66;
+    color: var(--transparent-fg);
     font-size: 12px;
   }
   .item {
@@ -91,19 +91,19 @@
 }
 
 .card {
-  background-color: #1d1f31;
+  background-color: var(--bg);
   height: 100%;
 }
 
 .card-title {
-  color: #4a68b9;
+  color: var(--title-fg);
   font-size: 1rem;
 }
 
 .progress {
   display: inline-flex;
   width: 100%;
-  background-color: #2d3348;
+  background-color: var(--secondary);
   height: 1.1rem;
   max-width: 180px;
 }
@@ -128,7 +128,8 @@
 
 .main-title {
   position: relative;
-  color: #ffffff91;
+  color: var(--fg);
+  opacity: var(--opacity);
   margin-top: -13px;
   font-size: 10px;
   text-transform: uppercase;
@@ -177,19 +178,19 @@
 .epoch-blocks {
   display: block;
   width: 100%;
-  background: #2d3348;
+  background: var(--secondary);
 
   .rect {
-    fill: #2d3348;
+    fill: var(--secondary);
 
     &.behind {
-      fill: #D81B60;
+      fill: var(--red);
     }
     &.mined {
       fill: url(#diff-gradient);
     }
     &.ahead {
-      fill: #1a9436;
+      fill: var(--success);
     }
 
     &.hover {
@@ -208,10 +209,10 @@
 }
 
 .blocks-ahead {
-  color: #3bcc49;
+  color: var(--green);
 }
 .blocks-behind {
-  color: #D81B60;
+  color: var(--red);
 }
 
 .halving-progress {
@@ -223,12 +224,12 @@
     height: 100%;
   }
   .background {
-    background: linear-gradient(to right, #105fb0, #9339f4);
+    background: linear-gradient(to right, var(--primary), var(--mainnet-alt));
     left: 0;
     right: 0;
   }
   .remaining {
-    background: #2d3348;
+    background: var(--secondary);
     right: 0;
   }
   .label {
@@ -250,5 +251,5 @@
 }
 
 .inactive {
-  color: #ffffff66;
+  color: var(--transparent-fg);
 }

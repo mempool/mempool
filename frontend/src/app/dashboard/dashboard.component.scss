@@ -7,12 +7,12 @@
 }
 
 .card {
-  background-color: #1d1f31;
+  background-color: var(--bg);
   height: 100%;
 }
 
 .card-title {
-  color: #4a68b9;
+  color: var(--title-fg);
   font-size: 1rem;
 }
 
@@ -25,7 +25,7 @@
 .progress {
   display: inline-flex;
   width: 100%;
-  background-color: #2d3348;
+  background-color: var(--secondary);
   height: 1.1rem;
   max-width: 180px;
 }
@@ -101,11 +101,11 @@
     .card-text {
       font-size: 18px;
       span {
-        color: #ffffff66;
+        color: var(--transparent-fg);
         font-size: 12px;
       }
       .bitcoin-color {
-        color: #b86d12;
+        color: var(--orange);
       }
     }
     .progress {
@@ -301,7 +301,8 @@
 
 .main-title {
   position: relative;
-  color: #ffffff91;
+  color: var(--fg);
+  opacity: var(--opacity);
   margin-top: -13px;
   font-size: 10px;
   text-transform: uppercase;
@@ -399,11 +400,11 @@
 .goggle-badge {
   margin: 6px 5px 8px;
   background: none;
-  border: solid 2px #105fb0;
+  border: solid 2px var(--primary);
   cursor: pointer;
 
   &.active {
-    background: #105fb0;
+    background: var(--primary);
   }
 }
 
@@ -418,7 +419,7 @@
 }
 
 .card-liquid {
-  background-color: #1d1f31;
+  background-color: var(--bg);
   height: 418px;
   @media (min-width: 992px) {
     height: 512px;
@@ -435,7 +436,8 @@
 
 .in-progress-message {
   position: relative;
-  color: #ffffff91;
+  color: var(--fg);
+  opacity: var(--opacity);
   margin-top: 20px;
   text-align: center;
   padding-bottom: 3px;

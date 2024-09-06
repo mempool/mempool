@@ -13,10 +13,16 @@ export class ClipboardComponent implements AfterViewInit {
   @ViewChild('buttonWrapper') buttonWrapper: ElementRef;
   @Input() button = false;
   @Input() class = 'btn btn-secondary ml-1';
-  @Input() size: 'small' | 'normal' = 'normal';
+  @Input() size: 'small' | 'normal' | 'large' = 'normal';
   @Input() text: string;
   @Input() leftPadding = true;
   copiedMessage: string = $localize`:@@clipboard.copied-message:Copied!`;
+
+  widths = {
+    small: '10',
+    normal: '13',
+    large: '18',
+  };
 
   clipboard: any;
 

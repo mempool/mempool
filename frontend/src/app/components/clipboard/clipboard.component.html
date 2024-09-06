@@ -1,7 +1,7 @@
 <ng-template [ngIf]="button" [ngIfElse]="btnLink">
   <button #btn [attr.data-clipboard-text]="text" [class]="class" type="button" [disabled]="text === ''">
     <span #buttonWrapper [attr.data-tlite]="copiedMessage" style="position: relative;top: -2px;left: 1px;">
-      <app-svg-images name="clippy" [width]="size === 'small' ? '10' : '13'" viewBox="0 0 1000 1000"></app-svg-images>
+      <app-svg-images name="clippy" [width]="widths[size]" viewBox="0 0 1000 1000"></app-svg-images>
     </span>
   </button>
 </ng-template>
@@ -9,7 +9,7 @@
 <ng-template #btnLink>
   <span #buttonWrapper [attr.data-tlite]="copiedMessage" style="position: relative;">
     <button #btn class="btn btn-sm btn-link pt-0 {{ leftPadding ? 'padding' : '' }}" [attr.data-clipboard-text]="text"> 
-      <app-svg-images name="clippy" [width]="size === 'small' ? '10' : '13'" viewBox="0 0 1000 1000"></app-svg-images>
+      <app-svg-images name="clippy" [width]="widths[size]" viewBox="0 0 1000 1000"></app-svg-images>
     </button>
   </span>
 </ng-template>

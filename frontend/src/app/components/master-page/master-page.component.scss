@@ -3,11 +3,12 @@
   position: -webkit-sticky;
   top: 0;
   width: 100%;
+  background-color: var(--bg);
   z-index: 100;
 }
 
 li.nav-item.active {
-  background-color: #653b9c;
+  background-color: var(--tertiary);
 }
 
 fa-icon {
@@ -18,6 +19,7 @@ fa-icon {
   z-index: 100;
   min-height: 64px;
   width: 100%;
+  background-color: var(--nav-bg);
 }
 
 li.nav-item {
@@ -58,7 +60,7 @@ li.nav-item {
 }
 
 .navbar-nav {
-  background: #212121;
+  background: var(--nav-bg);
   bottom: 0;
   box-shadow: 0px 0px 15px 0px #000;
   flex-direction: row;
@@ -139,23 +141,23 @@ nav {
 }
 
 .mainnet.active {
-  background-color: #653b9c;
+  background-color: var(--tertiary);
 }
 
 .liquid.active {
-  background-color: #116761;
+  background-color: var(--liquid);
 }
 
 .liquidtestnet.active {
-  background-color: #494a4a;
+  background-color: var(--liquidtestnet);
 }
 
 .testnet.active {
-  background-color: #1d486f;
+  background-color: var(--testnet);
 }
 
 .signet.active {
-  background-color: #6f1d5d;
+  background-color: var(--signet);
 }
 
 .dropdown-divider {
@@ -179,7 +181,7 @@ nav {
   }
 }
 .navbar-dark .navbar-nav .nav-link {
-  color: #f1f1f1;
+  color: var(--icon);
 }
 
 .subdomain_logo {
@@ -240,6 +242,10 @@ nav {
     margin: 20px 0px 0px -19px;
     font-size: 7px;
   }
+}
+
+.beta-network {
+  font-size: 8px;
 }
 
 .current-network-svg {

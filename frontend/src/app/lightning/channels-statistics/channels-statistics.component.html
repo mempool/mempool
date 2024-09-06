@@ -1,7 +1,7 @@
 <div class="widget-toggler">
   <a href="" (click)="switchMode('avg')" class="toggler-option"
     [ngClass]="{'inactive': mode === 'avg'}"><small i18n="statistics.average-small">avg</small></a>
-  <span style="color: #ffffff66; font-size: 8px"> | </span>
+  <span style="color: var(--transparent-fg); font-size: 8px"> | </span>
   <a href="" (click)="switchMode('med')" class="toggler-option"
     [ngClass]="{'inactive': mode === 'med'}"><small i18n="statistics.median-small">med</small></a>
 </div>

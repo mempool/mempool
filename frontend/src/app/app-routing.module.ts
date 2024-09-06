@@ -7,6 +7,9 @@ import { MempoolBlockViewComponent } from './components/mempool-block-view/mempo
 import { ClockComponent } from './components/clock/clock.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
 import { AddressGroupComponent } from './components/address-group/address-group.component';
+import { TrackerComponent } from './components/tracker/tracker.component';
+import { AccelerateCheckout } from './components/accelerate-checkout/accelerate-checkout.component';
+import { TrackerGuard } from './route-guards';
 
 const browserWindow = window || {};
 // @ts-ignore
@@ -48,6 +51,44 @@ let routes: Routes = [
       {
         path: '**',
         redirectTo: '/testnet'
+      },
+    ]
+  },
+  {
+    path: 'testnet4',
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
+        data: { preload: true },
+      },
+      {
+        path: '',
+        loadChildren: () => import('./master-page.module').then(m => m.MasterPageModule),
+        data: { preload: true },
+      },
+      {
+        path: 'wallet',
+        children: [],
+        component: AddressGroupComponent,
+        data: {
+          networkSpecific: true,
+        }
+      },
+      {
+        path: 'status',
+        data: { networks: ['bitcoin', 'liquid'] },
+        component: StatusViewComponent
+      },
+      {
+        path: '',
+        loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
+        data: { preload: true },
+      },
+      {
+        path: '**',
+        redirectTo: '/testnet4'
       },
     ]
   },
@@ -101,6 +142,12 @@ let routes: Routes = [
     data: { preload: true },
   },
   {
+    path: 'tx',
+    canMatch: [TrackerGuard],
+    runGuardsAndResolvers: 'always',
+    loadChildren: () => import('./components/tracker/tracker.module').then(m => m.TrackerModule),
+  },
+  {
     path: '',
     loadChildren: () => import('./master-page.module').then(m => m.MasterPageModule),
     data: { preload: true },
@@ -122,6 +169,10 @@ let routes: Routes = [
       },
       {
         path: 'testnet',
+        loadChildren: () => import('./previews.module').then(m => m.PreviewsModule)
+      },
+      {
+        path: 'testnet4',
         loadChildren: () => import('./previews.module').then(m => m.PreviewsModule)
       },
       {
@@ -163,10 +214,6 @@ let routes: Routes = [
     path: '',
     loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
     data: { preload: true },
-  },
-  {
-    path: '**',
-    redirectTo: ''
   },
 ];
 
@@ -252,11 +299,14 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
       loadChildren: () => import('./liquid/liquid-graphs.module').then(m => m.LiquidGraphsModule),
       data: { preload: true },
     },
-    {
-      path: '**',
-      redirectTo: ''
-    },
   ];
+}
+
+if (!window['isMempoolSpaceBuild']) {
+  routes.push({
+    path: '**',
+    redirectTo: ''
+  });
 }
 
 @NgModule({

@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, NgZone, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { EChartsOption } from '../../../graphs/echarts';
-import { Observable, Subscription, combineLatest, fromEvent, share } from 'rxjs';
+import { Observable, Subject, Subscription, combineLatest, fromEvent, merge, share } from 'rxjs';
 import { startWith, switchMap, tap } from 'rxjs/operators';
 import { SeoService } from '../../../services/seo.service';
 import { formatNumber } from '@angular/common';
@@ -8,10 +8,11 @@ import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { download, formatterXAxis, formatterXAxisLabel, formatterXAxisTimeCategory } from '../../../shared/graphs.utils';
 import { StorageService } from '../../../services/storage.service';
 import { MiningService } from '../../../services/mining.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Acceleration } from '../../../interfaces/node-api.interface';
 import { ServicesApiServices } from '../../../services/services-api.service';
 import { StateService } from '../../../services/state.service';
+import { RelativeUrlPipe } from '../../../shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
   selector: 'app-acceleration-fees-graph',
@@ -22,16 +23,17 @@ import { StateService } from '../../../services/state.service';
       position: absolute;
       top: 50%;
       left: calc(50% - 15px);
-      z-index: 100;
+      z-index: 99;
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
+export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDestroy {
   @Input() widget: boolean = false;
   @Input() height: number = 300;
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
+  @Input() period: '24h' | '3d' | '1w' | '1m' | 'all' = '1w';
   @Input() accelerations$: Observable<Acceleration[]>;
 
   miningWindowPreference: string;
@@ -47,9 +49,8 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
   isLoading = true;
   formatNumber = formatNumber;
   timespan = '';
+  periodSubject$: Subject<'24h' | '3d' | '1w' | '1m' | 'all'> = new Subject();
   chartInstance: any = undefined;
-
-  currency: string;
   daysAvailable: number = 0;
 
   constructor(
@@ -62,30 +63,35 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     public stateService: StateService,
     private cd: ChangeDetectorRef,
+    private router: Router,
+    private zone: NgZone,
   ) {
-    this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
-    this.radioGroupForm.controls.dateSpan.setValue('1y');
-    this.currency = 'USD';
+    this.radioGroupForm = this.formBuilder.group({ dateSpan: '1w' });
+    this.radioGroupForm.controls.dateSpan.setValue('1w');
   }
 
   ngOnInit(): void {
     if (this.widget) {
-      this.miningWindowPreference = '3m';
+      this.miningWindowPreference = this.period;
     } else {
       this.seoService.setTitle($localize`:@@bcf34abc2d9ed8f45a2f65dd464c46694e9a181e:Acceleration Fees`);
-      this.miningWindowPreference = this.miningService.getDefaultTimespan('3m');
+      this.miningWindowPreference = this.miningService.getDefaultTimespan('1w');
     }
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
     
     this.route.fragment.subscribe((fragment) => {
-      if (['24h', '3d', '1w', '1m', '3m'].indexOf(fragment) > -1) {
+      if (['24h', '3d', '1w', '1m', '3m', 'all'].indexOf(fragment) > -1) {
         this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
       }
     });
     this.aggregatedHistory$ = combineLatest([
-      this.radioGroupForm.get('dateSpan').valueChanges.pipe(
-        startWith(this.radioGroupForm.controls.dateSpan.value),
+      merge(
+        this.radioGroupForm.get('dateSpan').valueChanges.pipe(
+          startWith(this.radioGroupForm.controls.dateSpan.value),
+        ),
+        this.periodSubject$
+      ).pipe(
         switchMap((timespan) => {
           if (!this.widget) {
             this.storageService.setValue('miningWindowPreference', timespan);
@@ -108,6 +114,12 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
     );
 
     this.aggregatedHistory$.subscribe();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.period) {
+      this.periodSubject$.next(this.period);
+    }
   }
 
   prepareChartOptions(data) {
@@ -221,7 +233,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
           splitLine: {
             lineStyle: {
               type: 'dotted',
-              color: '#ffffff66',
+              color: 'var(--transparent-fg)',
               opacity: 0.25,
             }
           },
@@ -285,6 +297,19 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
 
   onChartInit(ec) {
     this.chartInstance = ec;
+
+    this.chartInstance.on('click', (e) => {
+      this.zone.run(() => {
+        if (['24h', '3d'].includes(this.timespan)) {
+          const url = new RelativeUrlPipe(this.stateService).transform(`/block/${e.data[2]}`);
+          if (e.event.event.shiftKey || e.event.event.ctrlKey || e.event.event.metaKey) {
+            window.open(url);
+          } else {
+            this.router.navigate([url]);
+          }
+        }
+      });
+    });
   }
 
   isMobile() {

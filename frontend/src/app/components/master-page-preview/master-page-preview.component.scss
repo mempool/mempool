@@ -5,6 +5,7 @@
   max-width: 1200px;
   max-height: 600px;
   padding-top: 80px;
+  background: var(--nav-bg);
 
   header {
     position: absolute;
@@ -18,7 +19,7 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    background: #11131f;
+    background: var(--nav-bg);
     text-align: start;
     font-size: 1.8em;
   }
@@ -75,5 +76,17 @@
     width: 0;
     flex-grow: 1;
     flex-shrink: 1;
+  }
+}
+
+.subdomain_logo {
+  height: 35px;
+  overflow: clip;
+  max-width: 140px;
+  margin: auto;
+  align-self: center;
+  margin-right: 1em;
+  .rounded {
+    border-radius: 5px;
   }
 }

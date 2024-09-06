@@ -18,7 +18,7 @@
         <ng-container *ngIf="widget; else regularRows">
           <tr *ngFor="let utxo of utxos | slice:0:6">
             <td class="txid text-left widget">
-              <a href="{{ env.MEMPOOL_WEBSITE_URL + '/tx/' + utxo.txid + ':' + utxo.txindex }}" target="_blank" style="color:#b86d12">
+              <a href="{{ env.MEMPOOL_WEBSITE_URL + '/tx/' + utxo.txid + ':' + utxo.txindex }}" target="_blank" style="color:var(--orange)">
                 <app-truncate [text]="utxo.txid + ':' + utxo.txindex" [lastChars]="6"></app-truncate>
               </a>
             </td>
@@ -26,19 +26,19 @@
               <app-amount [satoshis]="utxo.amount" [noFiat]="true" [forceBtc]="true"></app-amount>
             </td>
             <td class="timestamp text-left widget">
-              <app-time kind="since" [time]="utxo.blocktime"></app-time>
+              <app-time kind="since" [time]="utxo.blocktime" [showTooltip]="true"></app-time>
             </td>
           </tr>
         </ng-container>
         <ng-template #regularRows>
           <tr *ngFor="let utxo of utxos | slice:(page - 1) * pageSize:page * pageSize">
             <td class="txid text-left">
-              <a href="{{ env.MEMPOOL_WEBSITE_URL + '/tx/' + utxo.txid + ':' + utxo.txindex }}" target="_blank" style="color:#b86d12">
+              <a href="{{ env.MEMPOOL_WEBSITE_URL + '/tx/' + utxo.txid + ':' + utxo.txindex }}" target="_blank" style="color:var(--orange)">
                 <app-truncate [text]="utxo.txid + ':' + utxo.txindex" [lastChars]="6"></app-truncate>
               </a>
             </td>
             <td class="address text-left">
-              <a href="{{ env.MEMPOOL_WEBSITE_URL + '/address/' + utxo.bitcoinaddress }}" target="_blank" style="color:#b86d12">
+              <a href="{{ env.MEMPOOL_WEBSITE_URL + '/address/' + utxo.bitcoinaddress }}" target="_blank" style="color:var(--orange)">
                 <app-truncate [text]="utxo.bitcoinaddress" [lastChars]="6"></app-truncate>
               </a>
             </td>
@@ -62,7 +62,7 @@
             <td class="expires-in text-left" [ngStyle]="{ 'color': getGradientColor(utxo.blocknumber + utxo.timelock - lastReservesBlockUpdate) }">
               {{ utxo.blocknumber + utxo.timelock - lastReservesBlockUpdate < 0 ? -(utxo.blocknumber + utxo.timelock - lastReservesBlockUpdate) : utxo.blocknumber + utxo.timelock - lastReservesBlockUpdate }} <span i18n="shared.blocks" class="symbol">blocks</span>
             </td>
-            <td *ngIf="!widget && showExpiredUtxos === true" class="is-dust text-right" [ngStyle]="{ 'color': !utxo.isDust ? '#D81B60' : '' }">
+            <td *ngIf="!widget && showExpiredUtxos === true" class="is-dust text-right" [ngStyle]="{ 'color': !utxo.isDust ? 'var(--red)' : '' }">
               @if (utxo.isDust) {
                 ✔
               } @else {

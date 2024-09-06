@@ -2,6 +2,7 @@
   "BASE_MODULE": "liquid",
   "OFFICIAL_MEMPOOL_SPACE": true,
   "TESTNET_ENABLED": true,
+  "TESTNET4_ENABLED": true,
   "LIQUID_ENABLED": true,
   "LIQUID_TESTNET_ENABLED": true,
   "BISQ_ENABLED": true,

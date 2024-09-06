@@ -73,27 +73,29 @@ export class BlocksList implements OnInit {
         this.seoService.setDescription($localize`:@@meta.description.bitcoin.blocks:See the most recent Bitcoin${seoDescriptionNetwork(this.stateService.network)} blocks along with basic stats such as block height, block reward, block size, and more.`);
       }
 
-      this.blocksCountInitializedSubscription = combineLatest([this.blocksCountInitialized$, this.route.queryParams]).pipe(
+      this.blocksCountInitializedSubscription = combineLatest([this.blocksCountInitialized$, this.route.params]).pipe(
         filter(([blocksCountInitialized, _]) => blocksCountInitialized),
         tap(([_, params]) => {
           this.page = +params['page'] || 1;
           this.page === 1 ? this.fromHeightSubject.next(undefined) : this.fromHeightSubject.next((this.blocksCount - 1) - (this.page - 1) * 15);
-          this.cd.markForCheck();
         })
       ).subscribe();
 
+      const prevKey = this.dir === 'ltr' ? 'ArrowLeft' : 'ArrowRight';
+      const nextKey = this.dir === 'ltr' ? 'ArrowRight' : 'ArrowLeft';
+
       this.keyNavigationSubscription = this.stateService.keyNavigation$
       .pipe(
+        filter((event) => event.key === prevKey || event.key === nextKey),
         tap((event) => {
-          this.isLoading = true;
-          const prevKey = this.dir === 'ltr' ? 'ArrowLeft' : 'ArrowRight';
-          const nextKey = this.dir === 'ltr' ? 'ArrowRight' : 'ArrowLeft';
           if (event.key === prevKey && this.page > 1) {
             this.page--;
+            this.isLoading = true;
             this.cd.markForCheck();
           }
           if (event.key === nextKey && this.page * 15 < this.blocksCount) {
             this.page++;
+            this.isLoading = true;
             this.cd.markForCheck();
           }
         }),
@@ -118,6 +120,7 @@ export class BlocksList implements OnInit {
                 if (this.blocksCount === undefined) {
                   this.blocksCount = blocks[0].height + 1;
                   this.blocksCountInitialized$.next(true);
+                  this.blocksCountInitialized$.complete();
                 }
                 this.isLoading = false;
                 this.lastBlockHeight = Math.max(...blocks.map(o => o.height));
@@ -179,7 +182,7 @@ export class BlocksList implements OnInit {
   }
 
   pageChange(page: number): void {
-    this.router.navigate([], { queryParams: { page: page } });
+    this.router.navigate(['blocks', page]);
   }
 
   trackByBlock(index: number, block: BlockExtended): number {

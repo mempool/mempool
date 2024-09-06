@@ -60,19 +60,19 @@
     justify-content: center;
 
     &.left {
-      background: #105fb0;
+      background: var(--primary);
     }
     &.center {
       background: repeating-linear-gradient(
         60deg,
-        #105fb0 0,
-        #105fb0 12px,
-        #1a9436 12px,
-        #1a9436 24px
+        var(--primary) 0,
+        var(--primary) 12px,
+        var(--success) 12px,
+        var(--success) 24px
       );
     }
     &.right {
-      background: #1a9436;
+      background: var(--success);
     }
 
     .value {
@@ -93,10 +93,10 @@
     .bar.center {
       background: repeating-linear-gradient(
         60deg,
-        #105fb0 0,
-        #105fb0 8px,
-        #1a9436 8px,
-        #1a9436 16px
+        var(--primary) 0,
+        var(--primary) 8px,
+        var(--success) 8px,
+        var(--success) 16px
       )
     }
 	}

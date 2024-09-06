@@ -19,7 +19,7 @@ import bitcoinClient from './bitcoin-client';
 import difficultyAdjustment from '../difficulty-adjustment';
 import transactionRepository from '../../repositories/TransactionRepository';
 import rbfCache from '../rbf-cache';
-import { calculateCpfp } from '../cpfp';
+import { calculateMempoolTxCpfp } from '../cpfp';
 import BlocksRepository from '../../repositories/BlocksRepository';
 
 class BitcoinRoutes {
@@ -43,6 +43,7 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash', this.getBlock)
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/summary', this.getStrippedBlockTransactions)
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/audit-summary', this.getBlockAuditSummary)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/tx/:txid/audit', this.$getBlockTxAuditSummary)
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/height', this.getBlockTipHeight)
       .post(config.MEMPOOL.API_URL_PREFIX + 'psbt/addparents', this.postPsbtCompletion)
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from', this.getBlocksByBulk.bind(this))
@@ -56,6 +57,7 @@ class BitcoinRoutes {
           .get(config.MEMPOOL.API_URL_PREFIX + 'mempool/recent', this.getRecentMempoolTransactions)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId', this.getTransaction)
           .post(config.MEMPOOL.API_URL_PREFIX + 'tx', this.$postTransaction)
+          .post(config.MEMPOOL.API_URL_PREFIX + 'txs/test', this.$testTransactions)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/hex', this.getRawTransaction)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/status', this.getTransactionStatus)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/outspends', this.getTransactionOutspends)
@@ -238,13 +240,17 @@ class BitcoinRoutes {
           descendants: tx.descendants || null,
           effectiveFeePerVsize: tx.effectiveFeePerVsize || null,
           sigops: tx.sigops,
+          fee: tx.fee,
           adjustedVsize: tx.adjustedVsize,
-          acceleration: tx.acceleration
+          acceleration: tx.acceleration,
+          acceleratedBy: tx.acceleratedBy || undefined,
+          acceleratedAt: tx.acceleratedAt || undefined,
+          feeDelta: tx.feeDelta || undefined,
         });
         return;
       }
 
-      const cpfpInfo = calculateCpfp(tx, mempool.getMempool());
+      const cpfpInfo = calculateMempoolTxCpfp(tx, mempool.getMempool());
 
       res.json(cpfpInfo);
       return;
@@ -432,6 +438,20 @@ class BitcoinRoutes {
         res.json(auditSummary);
       } else {
         return res.status(404).send(`audit not available`);
+      }
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getBlockTxAuditSummary(req: Request, res: Response) {
+    try {
+      const auditSummary = await blocks.$getBlockTxAuditSummary(req.params.hash, req.params.txid);
+      if (auditSummary) {
+        res.setHeader('Expires', new Date(Date.now() + 1000 * 3600 * 24 * 30).toUTCString());
+        res.json(auditSummary);
+      } else {
+        return res.status(404).send(`transaction audit not available`);
       }
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
@@ -825,6 +845,19 @@ class BitcoinRoutes {
       res.send(txIdResult);
     } catch (e: any) {
       res.status(400).send(e.message && e.code ? 'sendrawtransaction RPC error: ' + JSON.stringify({ code: e.code, message: e.message })
+        : (e.message || 'Error'));
+    }
+  }
+
+  private async $testTransactions(req: Request, res: Response) {
+    try {
+      const rawTxs = Common.getTransactionsFromRequest(req);
+      const maxfeerate = parseFloat(req.query.maxfeerate as string);
+      const result = await bitcoinApi.$testMempoolAccept(rawTxs, maxfeerate);
+      res.send(result);
+    } catch (e: any) {
+      res.setHeader('content-type', 'text/plain');
+      res.status(400).send(e.message && e.code ? 'testmempoolaccept RPC error: ' + JSON.stringify({ code: e.code, message: e.message })
         : (e.message || 'Error'));
     }
   }

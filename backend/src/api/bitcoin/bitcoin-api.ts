@@ -1,6 +1,6 @@
 import * as bitcoinjs from 'bitcoinjs-lib';
 import { AbstractBitcoinApi, HealthCheckHost } from './bitcoin-api-abstract-factory';
-import { IBitcoinApi } from './bitcoin-api.interface';
+import { IBitcoinApi, TestMempoolAcceptResult } from './bitcoin-api.interface';
 import { IEsploraApi } from './esplora-api.interface';
 import blocks from '../blocks';
 import mempool from '../mempool';
@@ -107,8 +107,14 @@ class BitcoinApi implements AbstractBitcoinApi {
       .then((rpcBlock: IBitcoinApi.Block) => rpcBlock.tx);
   }
 
-  $getTxsForBlock(hash: string): Promise<IEsploraApi.Transaction[]> {
-    throw new Error('Method getTxsForBlock not supported by the Bitcoin RPC API.');
+  async $getTxsForBlock(hash: string): Promise<IEsploraApi.Transaction[]> {
+    const verboseBlock: IBitcoinApi.VerboseBlock = await this.bitcoindClient.getBlock(hash, 2);
+    const transactions: IEsploraApi.Transaction[] = [];
+    for (const tx of verboseBlock.tx) {
+      const converted = await this.$convertTransaction(tx, true);
+      transactions.push(converted);
+    }
+    return transactions;
   }
 
   $getRawBlock(hash: string): Promise<Buffer> {
@@ -159,8 +165,16 @@ class BitcoinApi implements AbstractBitcoinApi {
     const mp = mempool.getMempool();
     for (const tx in mp) {
       for (const vout of mp[tx].vout) {
-        if (vout.scriptpubkey_address.indexOf(prefix) === 0) {
+        if (vout.scriptpubkey_address?.indexOf(prefix) === 0) {
           found[vout.scriptpubkey_address] = '';
+          if (Object.keys(found).length >= 10) {
+            return Object.keys(found);
+          }
+        }
+      }
+      for (const vin of mp[tx].vin) {
+        if (vin.prevout?.scriptpubkey_address?.indexOf(prefix) === 0) {
+          found[vin.prevout?.scriptpubkey_address] = '';
           if (Object.keys(found).length >= 10) {
             return Object.keys(found);
           }
@@ -172,6 +186,14 @@ class BitcoinApi implements AbstractBitcoinApi {
 
   $sendRawTransaction(rawTransaction: string): Promise<string> {
     return this.bitcoindClient.sendRawTransaction(rawTransaction);
+  }
+
+  async $testMempoolAccept(rawTransactions: string[], maxfeerate?: number): Promise<TestMempoolAcceptResult[]> {
+    if (rawTransactions.length) {
+      return this.bitcoindClient.testMempoolAccept(rawTransactions, maxfeerate ?? undefined);
+    } else {
+      return [];
+    }
   }
 
   async $getOutspend(txId: string, vout: number): Promise<IEsploraApi.Outspend> {
@@ -222,6 +244,11 @@ class BitcoinApi implements AbstractBitcoinApi {
       outspends.push(outspend);
     }
     return outspends;
+  }
+
+  async $getCoinbaseTx(blockhash: string): Promise<IEsploraApi.Transaction> {
+    const txids = await this.$getTxIdsForBlock(blockhash);
+    return this.$getRawTransaction(txids[0]);
   }
 
   $getEstimatedHashrate(blockHeight: number): Promise<number> {
@@ -296,6 +323,7 @@ class BitcoinApi implements AbstractBitcoinApi {
       'witness_v1_taproot': 'v1_p2tr',
       'nonstandard': 'nonstandard',
       'multisig': 'multisig',
+      'anchor': 'anchor',
       'nulldata': 'op_return'
     };
 

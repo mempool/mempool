@@ -1,11 +1,25 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, NgZone, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { echarts, EChartsOption } from '../../graphs/echarts';
-import { of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { ChainStats } from '../../interfaces/electrs.interface';
+import { BehaviorSubject, Observable, Subscription, combineLatest, of } from 'rxjs';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { AddressTxSummary, ChainStats } from '../../interfaces/electrs.interface';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
 import { Router } from '@angular/router';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { StateService } from '../../services/state.service';
+import { PriceService } from '../../services/price.service';
+import { FiatCurrencyPipe } from '../../shared/pipes/fiat-currency.pipe';
+import { FiatShortenerPipe } from '../../shared/pipes/fiat-shortener.pipe';
+
+const periodSeconds = {
+  '1d': (60 * 60 * 24),
+  '3d': (60 * 60 * 24 * 3),
+  '1w': (60 * 60 * 24 * 7),
+  '1m': (60 * 60 * 24 * 30),
+  '6m': (60 * 60 * 24 * 180),
+  '1y': (60 * 60 * 24 * 365),
+};
 
 @Component({
   selector: 'app-address-graph',
@@ -16,20 +30,33 @@ import { Router } from '@angular/router';
       position: absolute;
       top: 50%;
       left: calc(50% - 15px);
-      z-index: 100;
+      z-index: 99;
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddressGraphComponent implements OnChanges {
+export class AddressGraphComponent implements OnChanges, OnDestroy {
   @Input() address: string;
   @Input() isPubkey: boolean = false;
   @Input() stats: ChainStats;
+  @Input() addressSummary$: Observable<AddressTxSummary[]> | null;
+  @Input() period: '1d' | '3d' | '1w' | '1m' | '6m' | '1y' | 'all' = 'all';
+  @Input() height: number = 200;
   @Input() right: number | string = 10;
   @Input() left: number | string = 70;
+  @Input() widget: boolean = false;
 
   data: any[] = [];
+  fiatData: any[] = [];
   hoverData: any[] = [];
+  conversions: any;
+  allowZoom: boolean = false;
+  initialRight = this.right;
+  initialLeft = this.left;
+  selected = { [$localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`]: true, 'Fiat': false };
+
+  subscription: Subscription;
+  redraw$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -42,40 +69,114 @@ export class AddressGraphComponent implements OnChanges {
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
+    public stateService: StateService,
     private electrsApiService: ElectrsApiService,
     private router: Router,
     private amountShortenerPipe: AmountShortenerPipe,
     private cd: ChangeDetectorRef,
+    private relativeUrlPipe: RelativeUrlPipe,
+    private priceService: PriceService,
+    private fiatCurrencyPipe: FiatCurrencyPipe,
+    private fiatShortenerPipe: FiatShortenerPipe,
+    private zone: NgZone,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     this.isLoading = true;
-    (this.isPubkey
-      ? this.electrsApiService.getScriptHashSummary$((this.address.length === 66 ? '21' : '41') + this.address + 'ac')
-      : this.electrsApiService.getAddressSummary$(this.address)).pipe(
-      catchError(e => {
-        this.error = `Failed to fetch address balance history: ${e?.status || ''} ${e?.statusText || 'unknown error'}`;
-        return of(null);
-      }),
-    ).subscribe(addressSummary => {
-      if (addressSummary) {
-        this.error = null;
-        this.prepareChartOptions(addressSummary);
+    if (!this.address || !this.stats) {
+      return;
+    }
+    if (changes.address || changes.isPubkey || changes.addressSummary$ || changes.stats) {
+      if (this.subscription) {
+        this.subscription.unsubscribe();
       }
-      this.isLoading = false;
-      this.cd.markForCheck();
-    });
+      this.subscription = combineLatest([
+        this.redraw$,
+        (this.addressSummary$ || (this.isPubkey
+          ? this.electrsApiService.getScriptHashSummary$((this.address.length === 66 ? '21' : '41') + this.address + 'ac')
+          : this.electrsApiService.getAddressSummary$(this.address)).pipe(
+          catchError(e => {
+            this.error = `Failed to fetch address balance history: ${e?.status || ''} ${e?.statusText || 'unknown error'}`;
+            return of(null);
+          }),
+        )),
+        this.stateService.conversions$
+      ]).pipe(
+        switchMap(([redraw, addressSummary, conversions]) => {
+          this.conversions = conversions;
+          if (addressSummary) {
+            let extendedSummary = this.extendSummary(addressSummary);
+            return this.priceService.getPriceByBulk$(extendedSummary.map(d => d.time), 'USD').pipe(
+              tap((prices) => {
+                if (prices.length !== extendedSummary.length) {
+                  extendedSummary = extendedSummary.map(item => ({ ...item, price: 0 }));
+                } else {
+                  extendedSummary = extendedSummary.map((item, index) => {
+                    let price = 0;
+                    if (prices[index].price) {
+                      price = prices[index].price['USD'];
+                    } else if (this.conversions && this.conversions['USD']) {
+                      price = this.conversions['USD'];
+                    }
+                    return { ...item, price: price }
+                  });
+                }
+              }),
+              map(() => [redraw, extendedSummary, conversions])
+            )
+          } else {
+            return of([redraw, addressSummary, conversions]);
+          }
+        })
+      ).subscribe(([redraw, addressSummary, conversions]) => {
+        if (addressSummary) {
+          this.error = null;
+          this.allowZoom = addressSummary.length > 100 && !this.widget;
+          this.prepareChartOptions(addressSummary);
+        }
+        this.isLoading = false;
+        this.cd.markForCheck();
+      });
+    } else {
+      // re-trigger subscription
+      this.redraw$.next(true);
+    }
   }
 
-  prepareChartOptions(summary): void {
-    let total = (this.stats.funded_txo_sum - this.stats.spent_txo_sum); // + (summary[0]?.value || 0);
-    this.data = summary.map(d => {
-      const balance = total;
-      total -= d.value;
-      return [d.time * 1000, balance, d];
+  prepareChartOptions(summary: AddressTxSummary[]) {
+    if (!summary || !this.stats) {
+      return;
+    }
+    
+    let total = (this.stats.funded_txo_sum - this.stats.spent_txo_sum);
+    const processData = summary.map(d => {
+        const balance = total;
+        const fiatBalance = total * d.price / 100_000_000;
+        total -= d.value;
+        return {
+            time: d.time * 1000,
+            balance,
+            fiatBalance,
+            d
+        };
     }).reverse();
+    
+    this.data = processData.filter(({ d }) => d.txid !== undefined).map(({ time, balance, d }) => [time, balance, d]);
+    this.fiatData = processData.map(({ time, fiatBalance, balance, d }) => [time, fiatBalance, d, balance]);
 
-    const maxValue = this.data.reduce((acc, d) => Math.max(acc, Math.abs(d[1])), 0);
+    const now = Date.now();
+    if (this.period !== 'all') {
+      const start = now - (periodSeconds[this.period] * 1000);
+      this.data = this.data.filter(d => d[0] >= start);
+      const startFiat = this.data[0]?.[0] ?? start; // Make sure USD data starts at the same time as BTC data
+      this.fiatData = this.fiatData.filter(d => d[0] >= startFiat);
+    }
+    this.data.push(
+      {value: [now, this.stats.funded_txo_sum - this.stats.spent_txo_sum], symbol: 'none', tooltip: { show: false }}
+    );
+
+    const maxValue = this.data.reduce((acc, d) => Math.max(acc, Math.abs(d[1] ?? d.value[1])), 0);
+    const minValue = this.data.reduce((acc, d) => Math.min(acc, Math.abs(d[1] ?? d.value[1])), maxValue);
 
     this.chartOptions = {
       color: [
@@ -83,14 +184,42 @@ export class AddressGraphComponent implements OnChanges {
           { offset: 0, color: '#FDD835' },
           { offset: 1, color: '#FB8C00' },
         ]),
+        new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color: '#4CAF50' },
+          { offset: 1, color: '#1B5E20' },
+        ]),
       ],
       animation: false,
       grid: {
         top: 20,
-        bottom: 20,
+        bottom: this.allowZoom ? 65 : 20,
         right: this.right,
         left: this.left,
       },
+      legend: !this.stateService.isAnyTestnet() ? {
+        data: [
+          {
+            name: $localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`,
+            inactiveColor: 'var(--grey)',
+            textStyle: {
+              color: 'white',
+            },
+            icon: 'roundRect',
+          },
+          {
+            name: 'Fiat',
+            inactiveColor: 'var(--grey)',
+            textStyle: {
+              color: 'white',
+            },
+            icon: 'roundRect',
+          }
+        ],
+        selected: this.selected,
+        formatter: function (name) {
+          return name === 'Fiat' ? 'USD' : 'BTC';
+        }
+      } : undefined,
       tooltip: {
         show: !this.isMobile(),
         trigger: 'axis',
@@ -105,24 +234,64 @@ export class AddressGraphComponent implements OnChanges {
           align: 'left',
         },
         borderColor: '#000',
-        formatter: function (data): string {
-          const header = data.length === 1
+        formatter: function (data) {
+          const btcData = data.filter(d => d.seriesName !== 'Fiat');
+          const fiatData = data.filter(d => d.seriesName === 'Fiat');
+          data = btcData.length ? btcData : fiatData;
+          if ((!btcData.length || !btcData[0]?.data?.[2]?.txid) && !fiatData.length) {
+            return '';
+          }
+          let tooltip = '<div>';
+
+          const hasTx = data[0].data[2].txid;
+          if (hasTx) {
+            const header = data.length === 1
             ? `${data[0].data[2].txid.slice(0, 6)}...${data[0].data[2].txid.slice(-6)}`
             : `${data.length} transactions`;
+            tooltip += `<span><b>${header}</b></span>`;
+          }
+          
           const date = new Date(data[0].data[0]).toLocaleTimeString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
-          const val = data.reduce((total, d) => total + d.data[2].value, 0);
-          const color = val === 0 ? '' : (val > 0 ? '#1a9436' : '#dc3545');
-          const symbol = val > 0 ? '+' : '';
-          return `
-            <div>
-              <span><b>${header}</b></span>
-              <div style="text-align: right;">
-                <span style="color: ${color}">${symbol} ${(val / 100_000_000).toFixed(8)} BTC</span><br>
-                <span>${(data[0].data[1] / 100_000_000).toFixed(8)} BTC</span>
-              </div>
-              <span>${date}</span>
+          
+          tooltip += `<div>
+            <div style="text-align: right;">`;
+          
+          const formatBTC = (val, decimal) => (val / 100_000_000).toFixed(decimal);
+          const formatFiat = (val) => this.fiatCurrencyPipe.transform(val, null, 'USD');
+          
+          const btcVal = btcData.reduce((total, d) => total + d.data[2].value, 0);
+          const fiatVal = fiatData.reduce((total, d) => total + d.data[2].value * d.data[2].price / 100_000_000, 0);
+          const btcColor = btcVal === 0 ? '' : (btcVal > 0 ? 'var(--green)' : 'var(--red)');
+          const fiatColor = fiatVal === 0 ? '' : (fiatVal > 0 ? 'var(--green)' : 'var(--red)');
+          const btcSymbol = btcVal > 0 ? '+' : '';
+          const fiatSymbol = fiatVal > 0 ? '+' : '';
+
+          if (btcData.length && fiatData.length) {
+            tooltip += `<div style="display: flex; justify-content: space-between; color: ${btcColor}">
+              <span style="text-align: left; margin-right: 10px;">${btcSymbol} ${formatBTC(btcVal, 4)} BTC</span>
+              <span style="text-align: right;">${fiatSymbol} ${formatFiat(fiatVal)}</span>
             </div>
-          `; 
+            <div style="display: flex; justify-content: space-between;">
+              <span style="text-align: left; margin-right: 10px;">${formatBTC(btcData[0].data[1], 4)} BTC</span>
+              <span style="text-align: right;">${formatFiat(fiatData[0].data[1])}</span>
+            </div>`;
+          } else if (btcData.length) {
+            tooltip += `<span style="color: ${btcColor}">${btcSymbol} ${formatBTC(btcVal, 8)} BTC</span><br>
+              <span>${formatBTC(data[0].data[1], 8)} BTC</span>`;
+          } else {
+            if (this.selected[$localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`]) {
+              tooltip += `<div style="display: flex; justify-content: space-between;">
+                <span style="text-align: left; margin-right: 10px;">${formatBTC(data[0].data[3], 4)} BTC</span>
+                <span style="text-align: right;">${formatFiat(data[0].data[1])}</span>
+              </div>`;
+            } else {
+              tooltip += `${hasTx ? `<span style="color: ${fiatColor}">${fiatSymbol} ${formatFiat(fiatVal)}</span><br>` : ''}
+              <span>${formatFiat(data[0].data[1])}</span>`;
+            }
+          }
+
+          tooltip += `</div><span>${date}</span></div>`;
+          return tooltip;
         }.bind(this)
       },
       xAxis: {
@@ -139,13 +308,17 @@ export class AddressGraphComponent implements OnChanges {
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: (val): string => {
-              if (maxValue > 1_000_000_000) {
+              let valSpan = maxValue - (this.period === 'all' ? 0 : minValue);
+              if (valSpan > 100_000_000_000) {
                 return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 0)} BTC`;
-              } else if (maxValue > 100_000_000) {
+              }
+              else if (valSpan > 1_000_000_000) {
+                return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 2)} BTC`;
+              } else if (valSpan > 100_000_000) {
                 return `${(val / 100_000_000).toFixed(1)} BTC`;
-              } else if (maxValue > 10_000_000) {
+              } else if (valSpan > 10_000_000) {
                 return `${(val / 100_000_000).toFixed(2)} BTC`;
-              } else if (maxValue > 1_000_000) {
+              } else if (valSpan > 1_000_000) {
                 return `${(val / 100_000_000).toFixed(3)} BTC`;
               } else {
                 return `${this.amountShortenerPipe.transform(val, 0)} sats`;
@@ -155,11 +328,26 @@ export class AddressGraphComponent implements OnChanges {
           splitLine: {
             show: false,
           },
+          min: this.period === 'all' ? 0 : 'dataMin'
+        },
+        {
+          type: 'value',
+          axisLabel: {
+            color: 'rgb(110, 112, 121)',
+            formatter: function(val) {
+              return this.fiatShortenerPipe.transform(val, null, 'USD');
+            }.bind(this)
+          },
+          splitLine: {
+            show: false,
+          },
+          min: this.period === 'all' ? 0 : 'dataMin'
         },
       ],
       series: [
         {
-          name: $localize`Balance:Balance`,
+          name: $localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`,
+          yAxisIndex: 0,
           showSymbol: false,
           symbol: 'circle',
           symbolSize: 8,
@@ -171,14 +359,58 @@ export class AddressGraphComponent implements OnChanges {
           type: 'line',
           smooth: false,
           step: 'end'
-        }
+        }, !this.stateService.isAnyTestnet() ?
+        {
+          name: 'Fiat',
+          yAxisIndex: 1,
+          showSymbol: false,
+          symbol: 'circle',
+          symbolSize: 8,
+          data: this.fiatData,
+          areaStyle: {
+            opacity: 0.5,
+          },
+          triggerLineEvent: true,
+          type: 'line',
+          smooth: false,
+          step: 'end'
+        } : undefined
       ],
+      dataZoom: this.allowZoom ? [{
+        type: 'inside',
+        realtime: true,
+        zoomLock: true,
+        maxSpan: 100,
+        minSpan: 5,
+        moveOnMouseMove: false,
+      }, {
+        showDetail: false,
+        show: true,
+        type: 'slider',
+        brushSelect: false,
+        realtime: true,
+        left: this.left,
+        right: this.right,
+        selectedDataBackground: {
+          lineStyle: {
+            color: '#fff',
+            opacity: 0.45,
+          },
+        },
+      }] : undefined
     };
   }
 
   onChartClick(e) {
     if (this.hoverData?.length && this.hoverData[0]?.[2]?.txid) {
-      this.router.navigate(['/tx/', this.hoverData[0][2].txid]);
+      this.zone.run(() => { 
+        const url = this.relativeUrlPipe.transform(`/tx/${this.hoverData[0][2].txid}`);
+        if (e.event.event.shiftKey || e.event.event.ctrlKey || e.event.event.metaKey) {
+          window.open(url);
+        } else {
+          this.router.navigate([url]);
+        }
+      });
     }
   }
 
@@ -186,13 +418,70 @@ export class AddressGraphComponent implements OnChanges {
     this.hoverData = (e?.dataByCoordSys?.[0]?.dataByAxis?.[0]?.seriesDataIndices || []).map(indices => this.data[indices.dataIndex]);
   }
 
+  onLegendSelectChanged(e) {
+    this.selected = e.selected;
+    this.right = this.selected['Fiat'] ? +this.initialRight + 40 : this.initialRight;
+    this.left = this.selected[$localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`] ? this.initialLeft : +this.initialLeft - 40;
+
+    this.chartOptions = {
+      grid: {
+        right: this.right,
+        left: this.left,
+      },
+      legend: {
+        selected: this.selected,
+      },
+      dataZoom: this.allowZoom ? [{
+        left: this.left,
+        right: this.right,
+      }, {
+        left: this.left,
+        right: this.right,
+      }] : undefined
+    };
+    
+    if (this.chartInstance) {
+      this.chartInstance.setOption(this.chartOptions);
+    }
+  }
+
   onChartInit(ec) {
     this.chartInstance = ec;
     this.chartInstance.on('showTip', this.onTooltip.bind(this));
     this.chartInstance.on('click', 'series', this.onChartClick.bind(this));
+    this.chartInstance.on('legendselectchanged', this.onLegendSelectChanged.bind(this));
+  }
+
+  ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   isMobile() {
     return (window.innerWidth <= 767.98);
+  }
+
+  extendSummary(summary) {
+    let extendedSummary = summary.slice();
+
+    // Add a point at today's date to make the graph end at the current time
+    extendedSummary.unshift({ time: Date.now() / 1000, value: 0 });
+    extendedSummary.reverse();
+    
+    let oneHour = 60 * 60;
+    // Fill gaps longer than interval
+    for (let i = 0; i < extendedSummary.length - 1; i++) {
+      let hours = Math.floor((extendedSummary[i + 1].time - extendedSummary[i].time) / oneHour);      
+      if (hours > 1) {
+        for (let j = 1; j < hours; j++) {
+          let newTime = extendedSummary[i].time + oneHour * j;
+          extendedSummary.splice(i + j, 0, { time: newTime, value: 0 });
+        }
+        i += hours - 1;
+      }
+    }
+  
+    return extendedSummary.reverse();
   }
 }

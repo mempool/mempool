@@ -27,7 +27,7 @@ tr, td, th {
 }
 
 .progress {
-  background-color: #2d3348;
+  background-color: var(--secondary);
 }
 
 .transaction {
@@ -102,11 +102,11 @@ tr, td, th {
 }
 
 .credit {
-  color: #7CB342;
+  color: var(--green);
 }
 
 .debit {
-  color: #D81B60;
+  color: var(--red);
 }
 
 .glow-effect {
@@ -118,6 +118,6 @@ tr, td, th {
       color: #777983;
   }
   100% {
-      color: #D81B60;
+      color: var(--red);
   }
 }

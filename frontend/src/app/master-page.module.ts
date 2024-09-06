@@ -1,16 +1,18 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Routes, RouterModule } from '@angular/router';
+import { Routes, RouterModule, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { MasterPageComponent } from './components/master-page/master-page.component';
 import { SharedModule } from './shared/shared.module';
 
 import { StartComponent } from './components/start/start.component';
 import { PushTransactionComponent } from './components/push-transaction/push-transaction.component';
+import { TestTransactionsComponent } from './components/test-transactions/test-transactions.component';
 import { CalculatorComponent } from './components/calculator/calculator.component';
 import { BlocksList } from './components/blocks-list/blocks-list.component';
 import { RbfList } from './components/rbf-list/rbf-list.component';
 import { ServerHealthComponent } from './components/server-health/server-health.component';
 import { ServerStatusComponent } from './components/server-health/server-status.component';
+import { FaucetComponent } from './components/faucet/faucet.component'
 
 const browserWindow = window || {};
 // @ts-ignore
@@ -31,12 +33,24 @@ const routes: Routes = [
         component: PushTransactionComponent,
       },
       {
+        path: 'pushtx',
+        component: PushTransactionComponent,
+      },
+      {
+        path: 'tx/test',
+        component: TestTransactionsComponent,
+      },
+      {
         path: 'about',
         loadChildren: () => import('./components/about/about.module').then(m => m.AboutModule),
       },
       {
-        path: 'blocks',
+        path: 'blocks/:page',
         component: BlocksList,
+      },
+      {
+        path: 'blocks',
+        redirectTo: 'blocks/1',
       },
       {
         path: 'rbf',
@@ -99,6 +113,21 @@ if (window['__env']?.OFFICIAL_MEMPOOL_SPACE) {
     data: { networks: ['bitcoin', 'liquid'] },
     component: ServerStatusComponent
   });
+  if (window['isMempoolSpaceBuild']) {
+    routes[0].children.push({
+      path: 'faucet',
+      canActivate: [(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+        return state.url.startsWith('/testnet4/');
+      }],
+      component: StartComponent,
+      data: { preload: true, networkSpecific: true },
+      children: [{
+        path: '',
+        data: { networks: ['bitcoin'] },
+        component: FaucetComponent,
+      }]
+    })
+  }
 }
 
 @NgModule({

@@ -54,7 +54,7 @@
   }
 
   .label {
-    color: #ffffff66;
+    color: var(--transparent-fg);
   }
 
   &.pair > *:first-child {
@@ -79,7 +79,7 @@
 
 .graph-wrapper {
   position: relative;
-  background: #181b2d;
+  background: var(--stat-box-bg);
   padding: 10px 0;
   padding-bottom: 0;
 
@@ -113,7 +113,7 @@
       max-width: 100%;
       margin: auto;
       table-layout: auto;
-      background: #2d3348af;
+      background: var(--secondary)af;
       border-top-left-radius: 5px;
       border-top-right-radius: 5px;
 

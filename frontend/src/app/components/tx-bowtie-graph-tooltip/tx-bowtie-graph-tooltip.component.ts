@@ -63,7 +63,7 @@ export class TxBowtieGraphTooltipComponent implements OnChanges {
       this.blockConversions = {};
       this.inputStatus = {};
     });
-    this.viewFiatSubscription = this.stateService.viewFiat$.subscribe(viewFiat => this.viewFiat = viewFiat);
+    this.viewFiatSubscription = this.stateService.viewAmountMode$.subscribe(viewFiat => this.viewFiat = viewFiat === 'fiat');
     this.chainTipSubscription = this.stateService.chainTip$.subscribe(tip => this.chainTip = tip);
   }
 

@@ -5,6 +5,7 @@ import { SharedModule } from '../shared/shared.module';
 
 import { AccelerationFeesGraphComponent } from '../components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component';
 import { BlockFeesGraphComponent } from '../components/block-fees-graph/block-fees-graph.component';
+import { BlockFeesSubsidyGraphComponent } from '../components/block-fees-subsidy-graph/block-fees-subsidy-graph.component';
 import { BlockRewardsGraphComponent } from '../components/block-rewards-graph/block-rewards-graph.component';
 import { BlockFeeRatesGraphComponent } from '../components/block-fee-rates-graph/block-fee-rates-graph.component';
 import { BlockSizesWeightsGraphComponent } from '../components/block-sizes-weights-graph/block-sizes-weights-graph.component';
@@ -27,6 +28,7 @@ import { PoolRankingComponent } from '../components/pool-ranking/pool-ranking.co
 import { PoolComponent } from '../components/pool/pool.component';
 import { TelevisionComponent } from '../components/television/television.component';
 import { DashboardComponent } from '../dashboard/dashboard.component';
+import { CustomDashboardComponent } from '../components/custom-dashboard/custom-dashboard.component';
 import { MiningDashboardComponent } from '../components/mining-dashboard/mining-dashboard.component';
 import { AcceleratorDashboardComponent } from '../components/acceleration/accelerator-dashboard/accelerator-dashboard.component';
 import { HashrateChartComponent } from '../components/hashrate-chart/hashrate-chart.component';
@@ -34,11 +36,13 @@ import { HashrateChartPoolsComponent } from '../components/hashrates-chart-pools
 import { BlockHealthGraphComponent } from '../components/block-health-graph/block-health-graph.component';
 import { AddressComponent } from '../components/address/address.component';
 import { AddressGraphComponent } from '../components/address-graph/address-graph.component';
+import { ActiveAccelerationBox } from '../components/acceleration/active-acceleration-box/active-acceleration-box.component';
 import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
     DashboardComponent,
+    CustomDashboardComponent,
     MempoolBlockComponent,
     AddressComponent,
 
@@ -52,6 +56,7 @@ import { CommonModule } from '@angular/common';
     GraphsComponent,
     AccelerationFeesGraphComponent,
     BlockFeesGraphComponent,
+    BlockFeesSubsidyGraphComponent,
     BlockRewardsGraphComponent,
     BlockFeeRatesGraphComponent,
     BlockSizesWeightsGraphComponent,
@@ -71,6 +76,7 @@ import { CommonModule } from '@angular/common';
     HashrateChartPoolsComponent,
     BlockHealthGraphComponent,
     AddressGraphComponent,
+    ActiveAccelerationBox,
   ],
   imports: [
     CommonModule,
@@ -82,6 +88,7 @@ import { CommonModule } from '@angular/common';
   ],
   exports: [
     NgxEchartsModule,
+    ActiveAccelerationBox,
   ]
 })
 export class GraphsModule { }

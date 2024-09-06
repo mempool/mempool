@@ -3,7 +3,7 @@
   class="block-overview-tooltip"
   [class.clickable]="clickable"
   [style.visibility]="tx ? 'visible' : 'hidden'"
-  [style.left]="tooltipPosition.x + 'px'"
+  [style.left]="getTooltipLeftPosition()"
   [style.top]="tooltipPosition.y + 'px'"
 >
   <table class="table-fixed">
@@ -50,8 +50,8 @@
       </tr>
       <tr *ngIf="hasEffectiveRate && effectiveRate != null">
         <td *ngIf="!this.acceleration" class="label" i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
-        <td *ngIf="this.acceleration" class="label" i18n="transaction.effective-fee-rate|Effective transaction fee rate">Accelerated fee rate</td>
-        <td class="value">
+        <td *ngIf="this.acceleration" class="label" i18n="transaction.accelerated-fee-rate|Accelerated transaction fee rate">Accelerated fee rate</td>
+        <td class="value" [class.oobFees]="this.acceleration">
           <app-fee-rate [fee]="effectiveRate"></app-fee-rate>
         </td>
       </tr>
@@ -75,6 +75,15 @@
             <span *ngSwitchCase="'freshcpfp'" class="badge badge-warning" i18n="transaction.audit.recently-cpfped">Recently CPFP'd</span>
             <span *ngSwitchCase="'added'" class="badge badge-warning" i18n="tx-features.tag.added|Added">Added</span>
             <span *ngSwitchCase="'prioritized'" class="badge badge-warning" i18n="tx-features.tag.prioritized|Prioritized">Prioritized</span>
+            <ng-container *ngSwitchCase="'added_prioritized'">
+              <span class="badge badge-warning" i18n="tx-features.tag.added|Added">Added</span>
+              <span class="badge badge-warning ml-1" i18n="tx-features.tag.prioritized|Prioritized">Prioritized</span>
+            </ng-container>
+            <span *ngSwitchCase="'deprioritized'" class="badge badge-warning" i18n="tx-features.tag.prioritized|Deprioritized">Deprioritized</span>
+            <ng-container *ngSwitchCase="'added_deprioritized'">
+              <span class="badge badge-warning" i18n="tx-features.tag.added|Added">Added</span>
+              <span class="badge badge-warning ml-1" i18n="tx-features.tag.prioritized|Deprioritized">Deprioritized</span>
+            </ng-container>
             <span *ngSwitchCase="'selected'" class="badge badge-warning" i18n="transaction.audit.marginal">Marginal fee rate</span>
             <span *ngSwitchCase="'rbf'" class="badge badge-warning" i18n="tx-features.tag.conflict|Conflict">Conflict</span>
             <span *ngSwitchCase="'accelerated'" class="badge badge-accelerated" i18n="transaction.audit.accelerated">Accelerated</span>

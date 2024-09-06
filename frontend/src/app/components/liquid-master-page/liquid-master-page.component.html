@@ -1,6 +1,6 @@
 <ng-container *ngIf="{ val: network$ | async } as network">
 <header class="sticky-header">
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+  <nav class="navbar navbar-expand-md navbar-dark">
   <a class="navbar-brand" [routerLink]="['/' | relativeUrl]" style="position: relative;">
     <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
       <div class="logo" [ngStyle]="{'opacity': connectionState.val === 2 ? 1 : 0.5 }">
@@ -51,7 +51,8 @@
     <div ngbDropdownMenu [ngClass]="{'dropdown-menu-right' : isMobile}">
       <a [href]="env.MEMPOOL_WEBSITE_URL + urlLanguage + (networkPaths['mainnet'] || '')" ngbDropdownItem class="mainnet"><app-svg-images name="bitcoin" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Mainnet</a>
       <a [href]="env.MEMPOOL_WEBSITE_URL + urlLanguage + (networkPaths['signet'] || '/signet')" ngbDropdownItem *ngIf="env.SIGNET_ENABLED" class="signet"><app-svg-images name="signet" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Signet</a>
-      <a [href]="env.MEMPOOL_WEBSITE_URL + urlLanguage + (networkPaths['testnet'] || '/testnet')" ngbDropdownItem *ngIf="env.TESTNET_ENABLED" class="testnet"><app-svg-images name="testnet" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Testnet</a>
+      <a [href]="env.MEMPOOL_WEBSITE_URL + urlLanguage + (networkPaths['testnet'] || '/testnet')" ngbDropdownItem *ngIf="env.TESTNET_ENABLED" class="testnet"><app-svg-images name="testnet" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Testnet3</a>
+      <a [href]="env.MEMPOOL_WEBSITE_URL + urlLanguage + (networkPaths['testnet4'] || '/testnet4')" ngbDropdownItem *ngIf="env.TESTNET4_ENABLED" class="testnet"><app-svg-images name="testnet4" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Testnet4</a>
       <h6 class="dropdown-header" i18n="master-page.layer2-networks-header">Layer 2 Networks</h6>
       <a ngbDropdownItem class="liquid mr-1" [class.active]="network.val === 'liquid'" [routerLink]="networkPaths['liquid'] || '/'"><app-svg-images name="liquid" width="22" height="22" viewBox="0 0 125 125" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Liquid</a>
       <a ngbDropdownItem *ngIf="env.LIQUID_TESTNET_ENABLED" class="liquidtestnet" [class.active]="network.val === 'liquidtestnet'" [routerLink]="networkPaths['liquidtestnet'] || '/testnet'"><app-svg-images name="liquidtestnet" width="22" height="22" viewBox="0 0 125 125" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Liquid Testnet</a>

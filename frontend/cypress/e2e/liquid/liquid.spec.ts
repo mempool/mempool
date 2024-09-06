@@ -45,6 +45,7 @@ describe('Liquid', () => {
 
     it('loads a specific block page', () => {
       cy.visit(`${basePath}/block/7e1369a23a5ab861e7bdede2aadcccae4ea873ffd9caf11c7c5541eb5bcdff54`);
+      cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
       cy.waitForSkeletonGone();
     });
 
@@ -68,20 +69,6 @@ describe('Liquid', () => {
         cy.viewport('iphone-6');
         cy.wait(1000);
         cy.get('.tv-only').should('not.exist');
-      });
-    });
-
-    it('renders unconfidential addresses correctly on mobile', () => {
-      cy.viewport('iphone-6');
-      cy.visit(`${basePath}/address/ex1qqmmjdwrlg59c8q4l75sj6wedjx57tj5grt8pat`);
-      cy.waitForSkeletonGone();
-      //TODO: Add proper IDs for these selectors
-      const firstRowSelector = '.container-xl > :nth-child(3) > div > :nth-child(1) > .table > tbody';
-      const thirdRowSelector = '.container-xl > :nth-child(3) > div > :nth-child(3)';
-      cy.get(firstRowSelector).invoke('css', 'width').then(firstRowWidth => {
-        cy.get(thirdRowSelector).invoke('css', 'width').then(thirdRowWidth => {
-          expect(parseInt(firstRowWidth)).to.be.lessThan(parseInt(thirdRowWidth));
-        });
       });
     });
 

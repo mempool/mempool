@@ -54,6 +54,10 @@
             "translation": "src/locale/messages.fr.xlf",
             "baseHref": "/fr/"
           },
+          "hr": {
+            "translation": "src/locale/messages.hr.xlf",
+            "baseHref": "/hr/"
+          },
           "ja": {
             "translation": "src/locale/messages.ja.xlf",
             "baseHref": "/ja/"
@@ -166,10 +170,26 @@
               "src/resources",
               "src/robots.txt",
               "src/config.js",
+              "src/customize.js",
               "src/config.template.js"
             ],
             "styles": [
               "src/styles.scss",
+              {
+                "input": "src/theme-contrast.scss",
+                "bundleName": "contrast",
+                "inject": false
+              },
+              {
+                "input": "src/theme-wiz.scss",
+                "bundleName": "wiz",
+                "inject": false
+              },
+              {
+                "input": "src/theme-bukele.scss",
+                "bundleName": "bukele",
+                "inject": false
+              },
               "node_modules/@fortawesome/fontawesome-svg-core/styles.css"
             ],
             "vendorChunk": true,

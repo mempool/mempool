@@ -1,5 +1,5 @@
 .card-title {
-  color: #4a68b9;
+  color: var(--title-fg);
   font-size: 10px;
   margin-bottom: 4px;  
   font-size: 1rem;
@@ -34,7 +34,7 @@
     @media (min-width: 376px) {
       margin: 0 auto 0px;
     }    
-    &:first-child{
+    &:last-child{
       display: none;
       @media (min-width: 485px) {
         display: block;
@@ -50,7 +50,7 @@
       margin-bottom: 0;
     }
     .card-text span {
-      color: #ffffff66;
+      color: var(--transparent-fg);
       font-size: 12px;
       top: 0px;
     }

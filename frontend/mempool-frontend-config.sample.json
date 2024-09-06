@@ -1,8 +1,10 @@
 {
   "TESTNET_ENABLED": false,
+  "TESTNET4_ENABLED": false,
   "SIGNET_ENABLED": false,
   "LIQUID_ENABLED": false,
   "LIQUID_TESTNET_ENABLED": false,
+  "MAINNET_ENABLED": true,
   "ITEMS_PER_PAGE": 10,
   "KEEP_BLOCKS_AMOUNT": 8,
   "NGINX_PROTOCOL": "http",
@@ -11,6 +13,7 @@
   "BLOCK_WEIGHT_UNITS": 4000000,
   "MEMPOOL_BLOCKS_AMOUNT": 8,
   "BASE_MODULE": "mempool",
+  "ROOT_NETWORK": "",
   "MEMPOOL_WEBSITE_URL": "https://mempool.space",
   "LIQUID_WEBSITE_URL": "https://liquid.network",
   "MINING_DASHBOARD": true,
@@ -22,5 +25,7 @@
   "HISTORICAL_PRICE": true,
   "ADDITIONAL_CURRENCIES": false,
   "ACCELERATOR": false,
-  "PUBLIC_ACCELERATIONS": false
+  "ACCELERATOR_BUTTON": true,
+  "PUBLIC_ACCELERATIONS": false,
+  "SERVICES_API": "https://mempool.space/api/v1/services"
 }

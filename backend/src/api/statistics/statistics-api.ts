@@ -64,7 +64,7 @@ class StatisticsApi {
     }
   }
 
-  public async $create(statistics: Statistic): Promise<number | undefined> {
+  public async $create(statistics: Statistic, convertToDatetime = false): Promise<number | undefined> {
     try {
       const query = `INSERT INTO statistics(
               added,
@@ -114,7 +114,7 @@ class StatisticsApi {
               vsize_1800,
               vsize_2000
             )
-            VALUES (${statistics.added}, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+            VALUES (${convertToDatetime ? `FROM_UNIXTIME(${statistics.added})` : statistics.added}, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       const params: (string | number)[] = [
@@ -454,6 +454,59 @@ class StatisticsApi {
           s.vsize_2000,
         ]
       };
+    });
+  }
+
+  public mapOptimizedStatisticToStatistic(statistic: OptimizedStatistic[]): Statistic[] {
+    return statistic.map((s) => {
+      return {
+        added: s.added,
+        unconfirmed_transactions: s.count,
+        tx_per_second: 0,
+        vbytes_per_second: s.vbytes_per_second,
+        mempool_byte_weight: s.mempool_byte_weight || 0,
+        total_fee: s.total_fee || 0,
+        min_fee: s.min_fee,
+        fee_data: '',
+        vsize_1: s.vsizes[0],
+        vsize_2: s.vsizes[1],
+        vsize_3: s.vsizes[2],
+        vsize_4: s.vsizes[3],
+        vsize_5: s.vsizes[4],
+        vsize_6: s.vsizes[5],
+        vsize_8: s.vsizes[6],
+        vsize_10: s.vsizes[7],
+        vsize_12: s.vsizes[8],
+        vsize_15: s.vsizes[9],
+        vsize_20: s.vsizes[10],
+        vsize_30: s.vsizes[11],
+        vsize_40: s.vsizes[12],
+        vsize_50: s.vsizes[13],
+        vsize_60: s.vsizes[14],
+        vsize_70: s.vsizes[15],
+        vsize_80: s.vsizes[16],
+        vsize_90: s.vsizes[17],
+        vsize_100: s.vsizes[18],
+        vsize_125: s.vsizes[19],
+        vsize_150: s.vsizes[20],
+        vsize_175: s.vsizes[21],
+        vsize_200: s.vsizes[22],
+        vsize_250: s.vsizes[23],
+        vsize_300: s.vsizes[24],
+        vsize_350: s.vsizes[25],
+        vsize_400: s.vsizes[26],
+        vsize_500: s.vsizes[27],
+        vsize_600: s.vsizes[28],
+        vsize_700: s.vsizes[29],
+        vsize_800: s.vsizes[30],
+        vsize_900: s.vsizes[31],
+        vsize_1000: s.vsizes[32],
+        vsize_1200: s.vsizes[33],
+        vsize_1400: s.vsizes[34],
+        vsize_1600: s.vsizes[35],
+        vsize_1800: s.vsizes[36],
+        vsize_2000: s.vsizes[37],
+      }
     });
   }
 }

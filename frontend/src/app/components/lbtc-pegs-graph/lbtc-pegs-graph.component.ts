@@ -11,7 +11,7 @@ import { StateService } from '../../services/state.service';
       position: absolute;
       top: 50%;
       left: calc(50% - 16px);
-      z-index: 100;
+      z-index: 99;
     }
   `],
   templateUrl: './lbtc-pegs-graph.component.html',
@@ -137,7 +137,7 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
         splitLine: {
           lineStyle: {
             type: 'dotted',
-            color: '#ffffff66',
+            color: 'var(--transparent-fg)',
             opacity: 0.25,
           }
         }

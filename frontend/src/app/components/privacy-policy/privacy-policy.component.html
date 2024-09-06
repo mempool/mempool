@@ -5,33 +5,37 @@
     <br><br>
 
     <h2>Privacy Policy</h2>
-    <h6>Updated: November 23, 2023</h6>
+    <h6>Updated: July 31, 2024</h6>
 
     <br><br>
 
     <div class="text-left">
 
-      <p *ngIf="officialMempoolSpace">The <a href="https://mempool.space/">mempool.space</a> website, the <a href="https://liquid.network/">liquid.network</a> website, their associated API services, and related network and server infrastructure (collectively, the "Website") are operated by Mempool Space K.K. in Japan ("Mempool", "We", or "Us") and self-hosted from <a href="https://bgp.tools/as/142052#connectivity">AS142052</a>.</p>
+      <h4>USE YOUR OWN SELF-HOSTED MEMPOOL EXPLORER</h4>
+
+      <p>For maximum privacy, we recommend that you use your own self-hosted instance of The Mempool Open Source Project&reg;; on your own hardware. You can easily install your own self-hosted instance of this website on a Raspberry Pi using a one-click installation method maintained by various Bitcoin fullnode distributions such as Umbrel, RaspiBlitz, MyNode, and RoninDojo. See our project's GitHub page for more details about self-hosting this website. By using your own self-hosted instance you will have maximum security, privacy and freedom.</p>
+
+      <br>
+
+      <p *ngIf="officialMempoolSpace">The <a href="https://mempool.space/">mempool.space</a> website, the <a href="https://liquid.network/">liquid.network</a> website, the <a href="https://bitcoin.gob.sv/">bitcoin.gob.sv</a> website, their associated API services, and related network and server infrastructure (collectively, the "Website") are operated by Mempool Space K.K. in Japan ("Mempool", "We", or "Us") and self-hosted from <a href="https://bgp.tools/as/142052#connectivity">AS142052</a>.</p>
 
       <p *ngIf="!officialMempoolSpace">This website and its API service (collectively, the "Website") are operated by a member of the Bitcoin community ("We" or "Us"). Mempool Space K.K. in Japan ("Mempool") has no affiliation with the operator of this Website, and does not sponsor or endorse the information provided herein.</p>
+
+      <br>
 
       <h5>By accessing this Website, you agree to the following Privacy Policy:</h5>
 
       <br>
 
-      <h4>TRUSTED THIRD PARTIES ARE SECURITY HOLES</h4>
+      <h4>USING THIS WEBSITE</h4>
 
-      <p>Out of respect for the Bitcoin community, this website does not use any third-party analytics, third-party trackers, or third-party cookies, and we do not share any private user data with third-parties. Additionally, to mitigate the risk of surveillance by malicious third-parties, we self-host this website on our own hardware and network infrastructure, so there are no "hosting companies" or "cloud providers" involved with the operation of this website.</p>
+      <p *ngIf="officialMempoolSpace">Out of respect for the Bitcoin community, this Website does not use any third-party analytics, third-party trackers, or third-party cookies, and we do not share any private user data with third-parties. Additionally, to mitigate the risk of surveillance by malicious third-parties, we self-host this Website on our own hardware and network infrastructure, so there are no "hosting companies" or "cloud providers" involved with the operation of this Website.</p>
 
-      <br>
-
-      <h4>TRUSTED FIRST PARTIES ARE ALSO SECURITY HOLES</h4>
-
-      <p>Out of respect for the Bitcoin community, this website does not use any first-party cookies, except to store your preferred language setting (if any). However, we do use minimal first-party analytics and logging as needed for the operation of this website, as follows:</p>
+      <p>Out of respect for the Bitcoin community, this Website does not use any first-party cookies, except to store your preferred language setting (if any). However, we do use minimal first-party analytics and logging as needed for the operation of this Website, as follows:</p>
 
       <ul>
 
-        <li>We use basic webserver logging (nginx) for sysadmin purposes, which collects your IP address along with the requests you make. These logs are deleted after 10 days, and we do not share this data with any third-party. To conceal your IP address from our webserver logs, we recommend that you use Tor Browser with our Tor v3 hidden service onion hostname.</li>
+        <li>We use basic webserver logging (nginx) for sysadmin purposes, which collects your IP address along with the requests you make. These logs are deleted after 10 days, and we do not share this data with any third-party.</li>
 
         <br>
 
@@ -41,37 +45,67 @@
 
       <br>
 
-      <h4>TRUST YOUR OWN SELF-HOSTED MEMPOOL EXPLORER</h4>
+      <h4>USING MEMPOOL ACCELERATOR&trade;</h4>
 
-      <p>For maximum privacy, we recommend that you use your own self-hosted instance of The Mempool Open Source Project&reg; on your own hardware. You can easily install your own self-hosted instance of this website on a Raspberry Pi using a one-click installation method maintained by various Bitcoin fullnode distributions such as Umbrel, RaspiBlitz, MyNode, and RoninDojo. See our project's GitHub page for more details about self-hosting this website.</p>
+      <p *ngIf="officialMempoolSpace">If you use Mempool Accelerator&trade; your acceleration request will be sent to us and relayed to Mempool's mining pool partners. We will store the TXID of the transactions you accelerate with us. We share this information with our mining pool partners, and publicly display accelerated transaction details on our website and APIs. No personal information or account identifiers will be shared with any third party including mining pool partners.</p>
 
-      <br>
-
-      <h4>DONATING TO MEMPOOL.SPACE</h4>
-
-      <p>If you donate to mempool.space, your payment information and your Twitter identity (if provided) will be collected in a database, which may be used to publicly display the sponsor profiles on <a href="https://mempool.space/about">mempool.space/about</a>. Thank you for supporting The Mempool Open Source Project.</p>
+      <p *ngIf="!officialMempoolSpace">When using Mempool Accelerator&trade; the mempool.space privacy policy will apply: <a href="https://mempool.space/privacy-policy">https://mempool.space/privacy-policy</a>.</p>
 
       <br>
+      
+      <ng-container *ngIf="officialMempoolSpace">
 
-      <h4>SIGNING UP FOR AN ACCOUNT ON MEMPOOL.SPACE</h4>
+        <h4>SIGNING UP FOR AN ACCOUNT ON MEMPOOL.SPACE</h4>
 
-      <p>If you sign up for an account on mempool.space, we may collect the following:</p>
+        <p>If you sign up for an account on mempool.space, we may collect the following:</p>
 
-      <ol>
+        <ul>
 
-        <li>If you provide your name, country, and/or e-mail address, we may use this information to manage your user account, for billing purposes, or to update you about our services. We will not share this with any third-party, except as detailed below if you sponsor The Mempool Open Source Project®, purchase a subscription to Mempool Enterprise®, or accelerate transactions using Mempool Accelerator™.</li>
+          <li>Your e-mail address and/or country; we may use this information to manage your user account, for billing purposes, or to update you about our services. We will not share this with any third-party, except as necessary for our fiat payment processor (see "Payments" below).</li>
 
-        <li>If you connect your Twitter account, we may store your Twitter identity, e-mail address, and profile photo. We may publicly display your profile photo or link to your profile on our website, if you sponsor The Mempool Open Source Project, claim your Lightning node, or other such use cases.</li>
+          <li>If you connect your X (fka Twitter) account, we may store your X identity, e-mail address, and profile photo. We may publicly display your profile photo or link to your profile on our website, if you sponsor The Mempool Open Source Project&reg;, claim your Lightning node, or other such use cases.</li>
 
-        <li>If you make a credit card payment, we will process your payment using Square (Block, Inc.), and we will store details about the transaction in our database. Please see "Information we collect about customers" on Square's website at https://squareup.com/us/en/legal/general/privacy</li>
+          <li>If you sign up for a subscription to Mempool Enterprise&trade; we also collect your company name which is not shared with any third-party.</li>
 
-        <li>If you make a Bitcoin or Liquid payment, we will process your payment using our self-hosted BTCPay Server instance and not share these details with any third-party.</li>
+          <li>If you sign up for an account on mempool.space and use Mempool Accelerator&trade; Pro your accelerated transactions will be associated with your account for the purposes of accounting.</li>
 
-        <li>If you accelerate transactions using Mempool Accelerator™, we will store the TXID of your transactions you accelerate with us. We share this information with our mining pool partners, as well as publicly display accelerated transaction details on our website and APIs.</li>
+        </ul>
 
-      </ol>
+        <br>
 
-      <br>
+      </ng-container>  
+      
+      <ng-container *ngIf="officialMempoolSpace">    
+        
+      <h4>PAYMENTS AND DONATIONS</h4>
+
+        <p>If you make any payment to Mempool or donation to The Mempool Open Source Project&reg;, we may collect the following:</p>
+
+        <ul>
+
+          <li>Your e-mail address and/or country; we may use this information to manage your user account, for billing purposes, or to update you about our services. We will not share this with any third-party, except as necessary for our fiat payment processor.</li>
+
+          <li>If you make a payment using Bitcoin, we will process your payment using our self-hosted BTCPay Server instance. We will not share your payment details with any third-party. For payments made over the Lightning network, we may utilize third party LSPs / lightning liquidity providers.</li>
+
+          <li>If you make a payment using Fiat we will collect your payment details. We will share your payment details with our fiat payment processor Square (Block, Inc.) - Please see "Information we collect about customers" on Square's website at https://squareup.com/us/en/legal/general/privacy.</li>
+
+        </ul>
+
+        <br>
+
+      </ng-container> 
+
+      <ng-container *ngIf="officialMempoolSpace">
+
+        <h4>DATA RETENTION AND ACCOUNT INACTIVITY</h4>
+        
+        <p>We aim to retain your data only as long as necessary:</p>
+        <ul>
+          <li>An account is considered inactive if all of the following conditions are met: a) No login activity within the past 6 months, b) No active subscriptions associated with the account, c) No Mempool Accelerator™ Pro account credit</li>
+          <li>If an account meets the criteria for inactivity as defined above, we will automatically delete the associated account data after a period of 6 months of continuous inactivity, except in the case of payment disputes or account irregularities.</li>
+        </ul>
+
+      </ng-container>
 
       <p>EOF</p>
 

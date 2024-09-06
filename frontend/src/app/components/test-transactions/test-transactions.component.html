@@ -1,0 +1,53 @@
+<div class="container-xl">
+  <h1 class="text-left" i18n="shared.test-transactions|Test Transactions">Test Transactions</h1>
+
+  <form [formGroup]="testTxsForm" (submit)="testTxsForm.valid && testTxs()" novalidate>
+    <label for="maxfeerate" i18n="test.tx.raw-hex">Raw hex</label>
+    <div class="mb-3">
+      <textarea formControlName="txs" class="form-control" rows="5" i18n-placeholder="transaction.test-transactions" placeholder="Comma-separated list of raw transactions"></textarea>
+    </div>
+    <label for="maxfeerate" i18n="test.tx.max-fee-rate">Maximum fee rate (sat/vB)</label>
+    <input type="number" class="form-control input-dark" formControlName="maxfeerate" id="maxfeerate"
+        [value]="10000" placeholder="10,000 s/vb" [class]="{invalid: invalidMaxfeerate}">
+    <br>
+    <button [disabled]="isLoading" type="submit" class="btn btn-primary mr-2" i18n="shared.test-transactions|Test Transactions">Test Transactions</button>
+    <p class="red-color d-inline">{{ error }}</p>
+  </form>
+
+  <br>
+
+  <div class="box" *ngIf="results?.length">
+    <table class="accept-results table table-fixed table-borderless table-striped">
+      <tbody>
+        <tr>
+          <th class="allowed" i18n="test-tx.is-allowed">Allowed?</th>
+          <th class="txid" i18n="dashboard.latest-transactions.txid">TXID</th>
+          <th class="rate" i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</th>
+          <th class="reason" i18n="test-tx.rejection-reason">Rejection reason</th>
+        </tr>
+        <ng-container *ngFor="let result of results;">
+          <tr>
+            <td class="allowed">
+              <ng-container [ngSwitch]="result.allowed">
+                <span *ngSwitchCase="true">✅</span>
+                <span *ngSwitchCase="false">❌</span>
+                <span *ngSwitchDefault>-</span>
+              </ng-container>
+            </td>
+            <td class="txid">
+              <app-truncate [text]="result.txid || '-'"></app-truncate>
+            </td>
+            <td class="rate">
+              <app-fee-rate *ngIf="result.fees?.['effective-feerate'] != null" [fee]="result.fees?.['effective-feerate'] * 100000"></app-fee-rate>
+              <span *ngIf="result.fees?.['effective-feerate'] == null">-</span>
+            </td>
+            <td class="reason">
+              {{ result['reject-reason'] || '-' }}
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+
+</div>

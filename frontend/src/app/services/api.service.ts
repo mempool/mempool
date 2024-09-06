@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
-import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators,
-  PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights, RbfTree, BlockAudit, Acceleration, AccelerationHistoryParams, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume, AccelerationInfo } from '../interfaces/node-api.interface';
+import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators, PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights,
+  RbfTree, BlockAudit, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume, AccelerationInfo, TestMempoolAcceptResult } from '../interfaces/node-api.interface';
 import { BehaviorSubject, Observable, catchError, filter, map, of, shareReplay, take, tap } from 'rxjs';
 import { StateService } from './state.service';
 import { Transaction } from '../interfaces/electrs.interface';
 import { Conversion } from './price.service';
 import { StorageService } from './storage.service';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
+import { TxAuditStatus } from '../components/transaction/transaction.component';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,7 @@ export class ApiService {
   private apiBasePath: string; // network path is /testnet, etc. or '' for mainnet
 
   private requestCache = new Map<string, { subject: BehaviorSubject<any>, expiry: number }>;
+  public blockAuditLoaded: { [hash: string]: boolean } = {};
 
   constructor(
     private httpClient: HttpClient,
@@ -29,7 +31,7 @@ export class ApiService {
     }
     this.apiBasePath = ''; // assume mainnet by default
     this.stateService.networkChanged$.subscribe((network) => {
-      this.apiBasePath = network ? '/' + network : '';
+      this.apiBasePath = network && network !== this.stateService.env.ROOT_NETWORK ? '/' + network : '';
     });
   }
 
@@ -238,6 +240,10 @@ export class ApiService {
     return this.httpClient.post<any>(this.apiBaseUrl + this.apiBasePath + '/api/tx', hexPayload, { responseType: 'text' as 'json'});
   }
 
+  testTransactions$(rawTxs: string[], maxfeerate?: number): Observable<TestMempoolAcceptResult[]> {
+    return this.httpClient.post<TestMempoolAcceptResult[]>(this.apiBaseUrl + this.apiBasePath + `/api/txs/test${maxfeerate != null ? '?maxfeerate=' + maxfeerate.toFixed(8) : ''}`, rawTxs);
+  }
+
   getTransactionStatus$(txid: string): Observable<any> {
     return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + '/api/tx/' + txid + '/status');
   }
@@ -249,8 +255,9 @@ export class ApiService {
     )
     .pipe(
       map((response) => {
-        response.body.pools.forEach((pool) => {
-          if (pool.poolUniqueId === 0) {
+        const pools = interval !== undefined ? response.body.pools : response.body;
+        pools.forEach((pool) => {
+          if ((interval !== undefined && pool.poolUniqueId === 0) || (interval === undefined && pool.unique_id === 0)) {
             pool.name = $localize`:@@e5d8bb389c702588877f039d72178f219453a72d:Unknown`;
           }
         });
@@ -329,6 +336,12 @@ export class ApiService {
     );
   }
 
+  getBlockFeesFromTimespan$(from: number, to: number): Observable<any> {
+    return this.httpClient.get<any[]>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/fees?from=${from}&to=${to}`, { observe: 'response' }
+    );
+  }
+
   getHistoricalBlockRewards$(interval: string | undefined) : Observable<any> {
     return this.httpClient.get<any[]>(
       this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/rewards` +
@@ -358,8 +371,15 @@ export class ApiService {
   }
 
   getBlockAudit$(hash: string) : Observable<BlockAudit> {
+    this.setBlockAuditLoaded(hash);
     return this.httpClient.get<BlockAudit>(
       this.apiBaseUrl + this.apiBasePath + `/api/v1/block/${hash}/audit-summary`
+    );
+  }
+
+  getBlockTxAudit$(hash: string, txid: string) : Observable<TxAuditStatus> {
+    return this.httpClient.get<TxAuditStatus>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/block/${hash}/tx/${txid}/audit`
     );
   }
 
@@ -392,9 +412,13 @@ export class ApiService {
     return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/channels/txids/', { params });
   }
 
-  lightningSearch$(searchText: string): Observable<any[]> {
+  lightningSearch$(searchText: string): Observable<{ nodes: any[], channels: any[] }> {
     let params = new HttpParams().set('searchText', searchText);
-    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/search', { params });
+    // Don't request the backend if searchText is less than 3 characters
+    if (searchText.length < 3) {
+      return of({ nodes: [], channels: [] });
+    }
+    return this.httpClient.get<{ nodes: any[], channels: any[] }>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/search', { params });
   }
 
   getNodesPerIsp(): Observable<any> {
@@ -510,5 +534,18 @@ export class ApiService {
     return this.httpClient.get<{ cost: number, count: number }>(
       this.apiBaseUrl + this.apiBasePath + '/api/v1/accelerations/total' + (queryString?.length ? '?' + queryString : '')
     );
+  }
+
+  logAccelerationRequest$(txid: string): Observable<any> {
+    return this.httpClient.post(this.apiBaseUrl + this.apiBasePath + '/api/v1/acceleration/request/' + txid, '');
+  }
+
+  // Cache methods
+  async setBlockAuditLoaded(hash: string) {
+    this.blockAuditLoaded[hash] = true;
+  }
+
+  getBlockAuditLoaded(hash) {
+    return this.blockAuditLoaded[hash];
   }
 }

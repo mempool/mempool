@@ -1,0 +1,272 @@
+.acceleration-timeline {
+  position: relative;
+  width: 100%;
+  padding: 1em 0;
+  &.lower-padding {
+    padding: 0.5em 0 1em;
+  }
+
+  &::after, &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2em;
+    z-index: 2;
+  }
+
+  &::before {
+    left: 0;
+    background: linear-gradient(to right, var(--box-bg), var(--box-bg), transparent);
+  }
+
+  &::after {
+    right: 0;
+    background: linear-gradient(to left, var(--box-bg), var(--box-bg), transparent);
+  }
+
+  .timeline-wrapper {
+    position: relative;
+    width: calc(100% - 2em);
+    margin: auto;
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .intervals, .nodes {
+    min-width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    text-align: center;
+
+    .node, .node-spacer {
+      width: 6em;
+      min-width: 6em;
+      flex-grow: 1;
+    }
+
+    .interval, .interval-spacer {
+      width: 8em;
+      min-width: 8em;
+      max-width: 8em;
+      height: 32px;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: flex-end;
+    }
+
+    .interval {
+      overflow: visible;
+    }
+
+    .interval-time {
+      font-size: 12px;
+      line-height: 16px;
+      white-space: nowrap;
+
+      .compare {
+        font-style: italic;
+        color: var(--mainnet-alt);
+        font-weight: 600;
+        @media (max-width: 600px) {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .node, .interval-spacer {
+    position: relative;
+    .seen-to-acc {
+      position: absolute;
+      height: 10px;
+      left: -5px;
+      right: -5px;
+      top: 0;
+      transform: translateY(-50%);
+      background: var(--primary);
+      border-radius: 5px;
+
+      &.left {
+        right: 50%;
+      }
+
+      &.right {
+        left: 50%;
+      }
+    }
+
+    .acc-to-confirmed {
+      position: absolute;
+      height: 10px;
+      left: -5px;
+      right: -5px;
+      top: 0;
+      transform: translateY(-50%);
+      background: var(--tertiary);
+      border-radius: 5px;
+
+      &.go-faster {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='10'%3E%3Cpath style='fill:%239339f4;' d='M 0,0 5,5 0,10 Z'/%3E%3Cpath style='fill:%23653b9c;' d='M 0,0 10,0 15,5 10,10 0,10 5,5 Z'/%3E%3Cpath style='fill:%239339f4;' d='M 10,0 20,0 20,10 10,10 15,5 Z'/%3E%3C/svg%3E%0A");        background-size: 20px 10px;
+        border-radius: 0;
+
+        &.right {
+          left: calc(50% + 5px);
+          margin-right: calc(-4em + 5px);
+          animation: goFasterRight 0.8s infinite linear;
+        }
+        &.left {
+          right: calc(50% + 5px);
+          margin-left: calc(-4em + 5px);
+          animation: goFasterLeft 0.8s infinite linear;
+        }
+      }
+
+      &.left {
+        right: 50%;
+      }
+      &.right {
+        left: 50%;
+      }
+    }
+  }
+
+  .nodes {
+    position: relative;
+    margin-top: 1em;
+    .node {
+      .shape-border {
+        display: block;
+        margin: auto;
+        height: calc(1em + 8px);
+        width: calc(1em + 8px);
+        margin-bottom: -8px;
+        transform: translateY(-50%);
+        border-radius: 50%;
+        padding: 4px;
+        background: transparent;
+        transition: background-color 300ms, padding 300ms;
+
+        &.hovering {
+          cursor: pointer;
+          &:hover {
+            padding: 0px;
+          }
+        }
+    
+        .shape {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          background: white;
+          z-index: 1;
+        }
+
+        &.waiting {
+          .shape {
+            background: var(--grey);
+          }
+        }
+    
+        .connector {
+          position: absolute;
+          z-index: 0;
+          height: 88px;
+          width: 10px;
+          left: -5px;
+          top: -73px;
+          transform: translateX(120%);
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='20'%3E%3Cpath style='fill:%239339f4;' d='M 0,20 5,15 10,20 Z'/%3E%3Cpath style='fill:%23653b9c;' d='M 0,20 5,15 10,20 10,10 5,5 0,10 Z'/%3E%3Cpath style='fill:%239339f4;' d='M 0,10 5,5 10,10 10,0 0,0 Z'/%3E%3C/svg%3E%0A");      //     linear-gradient(135deg, var(--tertiary) 34%, transparent 34%),
+          background-size: 10px 20px;
+    
+          &.down {
+            border-top-left-radius: 10px;
+          }
+    
+          &.up {
+            border-top-right-radius: 10px;
+          }
+    
+          &.loading {
+            animation: goFasterUp 0.8s infinite linear;
+          }
+        }
+      }
+    
+      &.accelerated {
+        .shape-border {
+          animation: acceleratePulse 0.4s infinite;
+        }
+      }
+
+      &.selected {
+        .shape-border {
+          background: var(--mainnet-alt);
+        }
+      }
+
+      .status {
+        margin-top: -66px;
+
+        .badge.badge-waiting {
+          opacity: 0.5;
+          background-color: var(--grey);
+          color: white;
+        }
+        
+        .badge.badge-accelerated {
+          background-color: var(--tertiary);
+          color: white;
+        }
+      }
+
+      .time {
+        margin-top: 32px;
+        font-size: 12px;
+        line-height: 16px;
+        white-space: nowrap;
+
+        &.offset-left {
+          @media (max-width: 650px) {
+            margin-left: -20px;
+          }
+        }
+
+        &.no-margin {
+          margin-top: 0px;
+        }
+      }
+    }
+  }
+}
+
+@keyframes acceleratePulse {
+  0% { background-color: var(--tertiary) }
+  50% { background-color: var(--mainnet-alt) }
+  100% { background-color: var(--tertiary) }
+}
+
+@keyframes goFasterUp {
+  0% { background-position-y: 0; }
+  100% { background-position-y: -40px; }
+}
+
+@keyframes goFasterLeft {
+  0% { background-position: left 0px bottom 0px }
+  100% { background-position: left 40px bottom 0px; }
+}
+
+@keyframes goFasterRight {
+  0% { background-position: right 0 bottom 0px; }
+  100% { background-position: right -40px bottom 0px; }
+}

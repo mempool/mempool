@@ -62,7 +62,7 @@ export class ServerHealthComponent implements OnInit {
   getLastUpdateSeconds(host: HealthCheckHost): string {
     if (host.lastChecked) {
       const seconds = Math.ceil((this.now - host.lastChecked) / 1000);
-      return `${seconds} second${seconds > 1 ? 's' : '  '} ago`;
+      return `${seconds} s`;
     } else {
       return '~';
     }

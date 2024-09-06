@@ -7,9 +7,10 @@
     "BLOCKS_SUMMARIES_INDEXING": true,
     "GOGGLES_INDEXING": false,
     "HTTP_PORT": 1,
+    "UNIX_SOCKET_PATH": "/mempool/socket/mempool-bitcoin-mainnet",
     "SPAWN_CLUSTER_PROCS": 2,
     "API_URL_PREFIX": "__MEMPOOL_API_URL_PREFIX__",
-    "AUTOMATIC_BLOCK_REINDEXING": false,
+    "AUTOMATIC_POOLS_UPDATE": false,
     "POLL_RATE_MS": 3,
     "CACHE_DIR": "__MEMPOOL_CACHE_DIR__",
     "CACHE_ENABLED": true,
@@ -59,7 +60,8 @@
     "RETRY_UNIX_SOCKET_AFTER": 888,
     "REQUEST_TIMEOUT": 10000,
     "FALLBACK_TIMEOUT": 5000,
-    "FALLBACK": []
+    "FALLBACK": [],
+    "MAX_BEHIND_TIP": 2
   },
   "SECOND_CORE_RPC": {
     "HOST": "__SECOND_CORE_RPC_HOST__",
@@ -130,6 +132,8 @@
     "ENABLED": false,
     "AUDIT": false,
     "AUDIT_START_HEIGHT": 774000,
+    "STATISTICS": false,
+    "STATISTICS_START_TIME": 1481932800,
     "SERVERS": []
   },
   "MEMPOOL_SERVICES": {
@@ -143,6 +147,7 @@
   },
   "FIAT_PRICE": {
     "ENABLED": true,
+    "PAID": false,
     "API_KEY": "__MEMPOOL_CURRENCY_API_KEY__"
   }
 }

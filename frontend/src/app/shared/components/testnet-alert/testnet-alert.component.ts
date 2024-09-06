@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { StorageService } from '../../../services/storage.service';
+import { StateService } from '../../../services/state.service';
 
 @Component({
   selector: 'app-testnet-alert',
@@ -11,6 +12,7 @@ export class TestnetAlertComponent {
 
   constructor(
     public storageService: StorageService,
+    public stateService: StateService,
   ) { }
 
   dismissWarning(): void {

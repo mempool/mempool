@@ -14,8 +14,7 @@
 }
 
 .blockchain-wrapper {
-  height: 250px;
-
+  height: 260px;
   -webkit-user-select: none; /* Safari */
   -moz-user-select: none; /* Firefox */
   -ms-user-select: none; /* IE10+/Edge */
@@ -30,7 +29,7 @@
 }
 
 .black-background {
-  background-color: #11131f;
+  background-color: var(--active-bg);
   z-index: 100;
   position: relative;
 }
@@ -54,10 +53,10 @@
 }
 
 .time-toggle {
-  color: white;
+  color: var(--fg);
   font-size: 0.8rem;
   position: absolute;
-  bottom: -1.8em;
+  bottom: -2.2em;
   left: 1px;
   transform: translateX(-50%);
   background: none;
@@ -67,9 +66,24 @@
   padding: 0;
 }
 
+.block-display-toggle {
+  color: var(--fg);
+  font-size: 0.8rem;
+  position: absolute;
+  bottom: 16.1em;
+  left: 1px;
+  transform: translateX(-50%) rotate(90deg);
+  background: none;
+  border: none;
+  outline: none;
+  margin: 0;
+  padding: 0;
+}
+
 .blockchain-wrapper.ltr-transition .blocks-wrapper,
 .blockchain-wrapper.ltr-transition .position-container,
-.blockchain-wrapper.ltr-transition .time-toggle {
+.blockchain-wrapper.ltr-transition .time-toggle,
+.blockchain-wrapper.ltr-transition .block-display-toggle {
   transition: transform 1s;
 }
 
@@ -80,6 +94,10 @@
 
   .time-toggle {
     transform: translateX(-50%) scaleX(-1);
+  }
+
+  .block-display-toggle {
+    transform: translateX(-50%) scaleX(-1) rotate(90deg);
   }
 }
 

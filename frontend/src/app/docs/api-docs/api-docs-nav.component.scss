@@ -1,12 +1,12 @@
 p {
-  color: #4a68b9;
+  color: var(--title-fg);
   font-weight: 700;
   margin: 10px 0;
   margin: 15px 0 10px 0;
 }
 
 a {
-  color: #fff;
+  color: var(--fg);
   text-decoration: none;
   display: block;
   margin: 5px 0;
@@ -17,13 +17,13 @@ a {
   text-align: center;
   padding: 20px;
   margin: 20px 20px 20px 0;
-  background-color: #1d1f31;
+  background-color: var(--bg);
   border-radius: 12px;
 }
 
 #enterprise-cta-desktop p {
   margin: 0 auto 16px auto;
-  color: #fff;
+  color: var(--fg);
   font-weight: 400;
 }
 

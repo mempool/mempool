@@ -1,8 +1,9 @@
 {
   "OFFICIAL_MEMPOOL_SPACE": true,
   "TESTNET_ENABLED": true,
-  "LIQUID_ENABLED": true,
-  "LIQUID_TESTNET_ENABLED": true,
+  "TESTNET4_ENABLED": true,
+  "LIQUID_ENABLED": false,
+  "LIQUID_TESTNET_ENABLED": false,
   "BISQ_ENABLED": true,
   "BISQ_SEPARATE_BACKEND": true,
   "SIGNET_ENABLED": true,
@@ -12,6 +13,7 @@
   "ITEMS_PER_PAGE": 25,
   "LIGHTNING": true,
   "ACCELERATOR": true,
+  "ACCELERATOR_BUTTON": true,
   "PUBLIC_ACCELERATIONS": true,
   "AUDIT": true
 }

@@ -15,12 +15,12 @@
 
   &::before {
     left: 0;
-    background: linear-gradient(to right, #24273e, #24273e, transparent);
+    background: linear-gradient(to right, var(--box-bg), var(--box-bg), transparent);
   }
 
   &::after {
     right: 0;
-    background: linear-gradient(to left, #24273e, #24273e, transparent);
+    background: linear-gradient(to left, var(--box-bg), var(--box-bg), transparent);
   }
 
   .timeline-wrapper {
@@ -45,7 +45,7 @@
       width: 100%;
       height: 70px;
       top: -70px;
-      background: linear-gradient(to bottom, rgba(36, 39, 62, 0) 0%, rgba(36, 39, 62, 1) 100%);
+      background: linear-gradient(to bottom, var(--fade-out-box-bg-start), var(--fade-out-box-bg-end));
       z-index: 1;
     }
   }
@@ -101,7 +101,7 @@
       right: -5px;
       top: 0;
       transform: translateY(-50%);
-      background: #105fb0;
+      background: var(--primary);
       border-radius: 5px;
 
       &.left {
@@ -112,7 +112,7 @@
       }
 
       &.fullrbf {
-        background: #1bd8f4;
+        background: var(--info);
       }
     }
     &.first-node {
@@ -159,38 +159,38 @@
 
       &.selected {
         .shape-border {
-          background: #9339f4;
+          background: var(--mainnet-alt);
         }
       }
 
       &.mined {
         .shape-border {
-          background: #1a9436;
+          background: var(--success);
         }
       }
 
       .shape-border:hover {
         padding: 0px;
         .shape {
-          background: #1bd8f4;
+          background: var(--info);
         }
       }
 
       &.selected.mined {
         .shape-border {
-          background: #1a9436;
+          background: var(--success);
           height: calc(1em + 16px);
           width: calc(1em + 16px);
 
           .shape {
-            border: solid 4px #9339f4;
+            border: solid 4px var(--mainnet-alt);
           }
 
           &:hover {
             padding: 4px;
             .shape {
               border-width: 1px;
-              border-color: #1bd8f4
+              border-color: var(--info)
             }
           }
         }
@@ -207,9 +207,9 @@
         width: 20px;
         height: 108px;
         bottom: 50%;
-        border-right: solid 10px #105fb0;
+        border-right: solid 10px var(--primary);
         &.fullrbf {
-          border-right: solid 10px #1bd8f4;
+          border-right: solid 10px var(--info);
         }
         &.last-pipe {
           height: 150px;
@@ -218,10 +218,10 @@
       }
 
       .corner {
-        border-bottom: solid 10px #105fb0;
+        border-bottom: solid 10px var(--primary);
         border-bottom-right-radius: 10px;
         &.fullrbf {
-          border-bottom: solid 10px #1bd8f4;
+          border-bottom: solid 10px var(--info);
         }
       }
     }

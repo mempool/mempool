@@ -78,6 +78,18 @@ PROXY_CONFIG.push(...[
         "^/testnet": ""
     },
   },
+  /* Optional proxy to route dev to official acceleration services
+  {
+    context: ['/api/v1/services/accelerator/**'],
+    target: `https://mempool.space/api/v1/services/accelerator/`,
+    secure: false,
+    changeOrigin: true,
+    proxyTimeout: 30000,
+    pathRewrite: {
+      "^/api/v1/services/accelerator": ""
+    },
+  },
+  */
   {
     context: ['/api/v1/services/**'],
     target: `http://localhost:9000`,

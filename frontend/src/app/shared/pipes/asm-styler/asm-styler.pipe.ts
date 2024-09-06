@@ -5,13 +5,18 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class AsmStylerPipe implements PipeTransform {
 
-  transform(asm: string): string {
+  transform(asm: string, showAll = true): string {
     const instructions = asm.split('OP_');
     let out = '';
+    let chars = -3;
     for (const instruction of instructions) {
       if (instruction === '') {
         continue;
       }
+      if (!showAll && chars > 1000) {
+        break;
+      }
+      chars += instruction.length + 3;
       out += this.addStyling(instruction);
     }
     return out;

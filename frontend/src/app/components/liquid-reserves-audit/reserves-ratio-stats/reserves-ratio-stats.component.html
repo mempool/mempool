@@ -3,7 +3,7 @@
     <h5 class="card-title" i18n="liquid.unpeg">Unpeg</h5> 
     <div *ngIf="(unbackedMonths$ | async) as unbackedMonths; else loadingData" class="card-text">
       <ng-container *ngIf="unbackedMonths.historyComplete; else loadingData">
-        <div class="fee-text" [ngClass]="{'danger' : unbackedMonths.total > 0, 'correct': unbackedMonths.total === 0}">
+        <div class="fee-text" [ngClass]="{'danger' : unbackedMonths.total > 0, 'correct': unbackedMonths.total === 0}" i18n-ngbTooltip="liquid.unpeg-info" ngbTooltip="Number of times that the Federation's BTC holdings fall below 95% of the total L-BTC supply">
           {{ unbackedMonths.total }} <span i18n="liquid.unpeg-event">Unpeg Event</span>
         </div>
       </ng-container>
@@ -23,7 +23,7 @@
 
   <div class="item">
     <!-- <a class="title-link" [routerLink]="['/audit/emergency-spends' | relativeUrl]">
-      <h5 class="card-title"><ng-container i18n="liquid.forfeited-utxos">Forfeited UTXOs</ng-container>&nbsp;<fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: #4a68b9"></fa-icon></h5>
+      <h5 class="card-title"><ng-container i18n="liquid.forfeited-utxos">Forfeited UTXOs</ng-container>&nbsp;<fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: var(--title-fg)"></fa-icon></h5>
     </a> -->
     <h5 class="card-title" i18n="liquid.emergency-keys">Emergency Keys</h5>
     <div *ngIf="(emergencyUtxosStats$ | async) as emergencyUtxosStats; else loadingData" class="card-text">

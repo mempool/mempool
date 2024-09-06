@@ -31,7 +31,7 @@
     </div>  
 
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(hashrateObservable$ | async) as stats">
-      <div class="btn-group btn-group-toggle" name="radioBasic" [class]="{'disabled': isLoading}">
+      <div class="btn-group btn-group-toggle" name="radioBasic">
         <label class="btn btn-primary btn-sm" *ngIf="stats.blockCount >= 12960" [class.active]="radioGroupForm.get('dateSpan').value === '3m'">
           <input type="radio" [value]="'3m'" fragment="3m" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" [attr.data-cy]="'3m'" formControlName="dateSpan"> 3M
         </label>
@@ -54,7 +54,7 @@
     </form>
   </div>
 
-  <div [class]="!widget ? 'chart' : 'chart-widget'" *browserOnly [style]="{ height: widget ? ((height + 20) + 'px') : null}" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+  <div [class]="!widget ? 'chart' : 'chart-widget'" *browserOnly [style]="{ height: widget ? ((height + 20) + 'px') : null, opacity: isLoading ? 0.5 : 1 }" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
     (chartInit)="onChartInit($event)">
   </div>
   <div class="text-center loadingGraphs" *ngIf="!stateService.isBrowser || isLoading">

@@ -20,9 +20,10 @@ describe('Mempool Backend Config', () => {
         BLOCKS_SUMMARIES_INDEXING: false,
         GOGGLES_INDEXING: false,
         HTTP_PORT: 8999,
+        UNIX_SOCKET_PATH: '',
         SPAWN_CLUSTER_PROCS: 0,
         API_URL_PREFIX: '/api/v1/',
-        AUTOMATIC_BLOCK_REINDEXING: false,
+        AUTOMATIC_POOLS_UPDATE: false,
         POLL_RATE_MS: 2000,
         CACHE_DIR: './cache',
         CACHE_ENABLED: true,
@@ -62,6 +63,7 @@ describe('Mempool Backend Config', () => {
         REQUEST_TIMEOUT: 10000,
         FALLBACK_TIMEOUT: 5000,
         FALLBACK: [],
+        MAX_BEHIND_TIP: 2,
        });
 
       expect(config.CORE_RPC).toStrictEqual({
@@ -134,6 +136,8 @@ describe('Mempool Backend Config', () => {
         ENABLED: false,
         AUDIT: false,
         AUDIT_START_HEIGHT: 774000,
+        STATISTICS: false,
+        STATISTICS_START_TIME: 1481932800,
         SERVERS: []
       });
 
@@ -150,6 +154,7 @@ describe('Mempool Backend Config', () => {
 
       expect(config.FIAT_PRICE).toStrictEqual({
         ENABLED: true,
+        PAID: false,
         API_KEY: '',
       });
     });

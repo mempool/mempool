@@ -5,6 +5,7 @@ import { AbstractBitcoinApi, HealthCheckHost } from './bitcoin-api-abstract-fact
 import { IEsploraApi } from './esplora-api.interface';
 import logger from '../../logger';
 import { Common } from '../common';
+import { TestMempoolAcceptResult } from './bitcoin-api.interface';
 
 interface FailoverHost {
   host: string,
@@ -24,6 +25,7 @@ interface FailoverHost {
 class FailoverRouter {
   activeHost: FailoverHost;
   fallbackHost: FailoverHost;
+  maxSlippage: number = config.ESPLORA.MAX_BEHIND_TIP ?? 2;
   maxHeight: number = 0;
   hosts: FailoverHost[];
   multihost: boolean;
@@ -92,13 +94,13 @@ class FailoverRouter {
         );
         if (result) {
           const height = result.data;
-          this.maxHeight = Math.max(height, this.maxHeight);
+          host.latestHeight = height;
+          this.maxHeight = Math.max(height || 0, ...this.hosts.map(h => (!(h.unreachable || h.timedOut || h.outOfSync) ? h.latestHeight || 0 : 0)));
           const rtt = result.config['meta'].rtt;
           host.rtts.unshift(rtt);
           host.rtts.slice(0, 5);
           host.rtt = host.rtts.reduce((acc, l) => acc + l, 0) / host.rtts.length;
-          host.latestHeight = height;
-          if (height == null || isNaN(height) || (this.maxHeight - height > 2)) {
+          if (height == null || isNaN(height) || (this.maxHeight - height > this.maxSlippage)) {
             host.outOfSync = true;
           } else {
             host.outOfSync = false;
@@ -125,7 +127,6 @@ class FailoverRouter {
       host.checked = true;
       host.lastChecked = Date.now();
 
-      // switch if the current host is out of sync or significantly slower than the next best alternative
       const rankOrder = this.sortHosts();
       // switch if the current host is out of sync or significantly slower than the next best alternative
       if (this.activeHost.outOfSync || this.activeHost.unreachable || (this.activeHost !== rankOrder[0] && rankOrder[0].preferred) || (!this.activeHost.preferred && this.activeHost.rtt > (rankOrder[0].rtt * 2) + 50)) {
@@ -183,7 +184,6 @@ class FailoverRouter {
 
   // depose the active host and choose the next best replacement
   private electHost(): void {
-    this.activeHost.outOfSync = true;
     this.activeHost.failures = 0;
     const rankOrder = this.sortHosts();
     this.activeHost = rankOrder[0];
@@ -194,6 +194,7 @@ class FailoverRouter {
     host.failures++;
     if (host.failures > 5 && this.multihost) {
       logger.warn(`🚨🚨🚨 Too many esplora failures on ${this.activeHost.host}, falling back to next best alternative 🚨🚨🚨`);
+      this.activeHost.unreachable = true;
       this.electHost();
       return this.activeHost;
     } else {
@@ -327,6 +328,10 @@ class ElectrsApi implements AbstractBitcoinApi {
     throw new Error('Method not implemented.');
   }
 
+  $testMempoolAccept(rawTransactions: string[], maxfeerate?: number): Promise<TestMempoolAcceptResult[]> {
+    throw new Error('Method not implemented.');
+  }
+
   $getOutspend(txId: string, vout: number): Promise<IEsploraApi.Outspend> {
     return this.failoverRouter.$get<IEsploraApi.Outspend>('/tx/' + txId + '/outspend/' + vout);
   }
@@ -345,6 +350,11 @@ class ElectrsApi implements AbstractBitcoinApi {
 
   async $getOutSpendsByOutpoint(outpoints: { txid: string, vout: number }[]): Promise<IEsploraApi.Outspend[]> {
     return this.failoverRouter.$post<IEsploraApi.Outspend[]>('/internal/txs/outspends/by-outpoint', outpoints.map(out => `${out.txid}:${out.vout}`), 'json');
+  }
+
+  async $getCoinbaseTx(blockhash: string): Promise<IEsploraApi.Transaction> {
+    const txid = await this.failoverRouter.$get<string>(`/block/${blockhash}/txid/0`);
+    return this.failoverRouter.$get<IEsploraApi.Transaction>('/tx/' + txid);
   }
 
   public startHealthChecks(): void {

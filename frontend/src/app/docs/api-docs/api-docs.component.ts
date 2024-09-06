@@ -33,6 +33,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
   showMobileEnterpriseUpsell: boolean = true;
   timeLtrSubscription: Subscription;
   timeLtr: boolean = this.stateService.timeLtr.value;
+  isMempoolSpaceBuild = this.stateService.isMempoolSpaceBuild;
 
   @ViewChildren(FaqTemplateDirective) faqTemplates: QueryList<FaqTemplateDirective>;
   dict = {};
@@ -72,7 +73,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
     this.auditEnabled = this.env.AUDIT;
     this.network$ = merge(of(''), this.stateService.networkChanged$).pipe(
       tap((network: string) => {
-        if (this.env.BASE_MODULE === 'mempool' && network !== '') {
+        if (this.env.BASE_MODULE === 'mempool' && network !== '' && this.env.ROOT_NETWORK === '') {
           this.baseNetworkUrl = `/${network}`;
         } else if (this.env.BASE_MODULE === 'liquid') {
           if (!['', 'liquid'].includes(network)) {
@@ -102,6 +103,8 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
           this.electrsPort = 50002; break;
         case "testnet":
           this.electrsPort = 60002; break;
+        case "testnet4":
+          this.electrsPort = 40002; break;
         case "signet":
           this.electrsPort = 60602; break;
         case "liquid":
@@ -170,6 +173,9 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
     if (network === 'testnet') {
       curlResponse = code.codeSampleTestnet.curl;
     }
+    if (network === 'testnet4') {
+      curlResponse = code.codeSampleTestnet.curl;
+    }
     if (network === 'signet') {
       curlResponse = code.codeSampleSignet.curl;
     }
@@ -188,6 +194,10 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
       if (!['', 'liquid'].includes(network)) {
         curlNetwork = `/${network}`;
       }
+    }
+
+    if (network === this.env.ROOT_NETWORK) {
+      curlNetwork = '';
     }
 
     let text = code.codeTemplate.curl;

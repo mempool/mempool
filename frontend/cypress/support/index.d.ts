@@ -5,6 +5,6 @@ declare namespace Cypress {
         waitForSkeletonGone(): Chainable<any>
         waitForPageIdle(): Chainable<any>
         mockMempoolSocket(): Chainable<any>
-        changeNetwork(network: "testnet"|"signet"|"liquid"|"mainnet"): Chainable<any>
+        changeNetwork(network: "testnet"|"testnet4"|"signet"|"liquid"|"mainnet"): Chainable<any>
     }
 }

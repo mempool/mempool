@@ -1,0 +1,5 @@
+<div class="sparkles" #sparkleAnchor>
+  <div *ngFor="let sparkle of sparkles" class="sparkle" [style]="sparkle.style">
+    <span class="inner-sparkle" [style]="sparkle.rotation">+</span>
+  </div>
+</div>

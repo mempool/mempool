@@ -103,6 +103,7 @@ describe('Mainnet', () => {
 
     it('check op_return tx tooltip', () => {
       cy.visit('/block/00000000000000000003c5f542bed265319c6cf64238cf1f1bb9bca3ebf686d2');
+      cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
       cy.waitForSkeletonGone();
       cy.get('tbody > :nth-child(2) > :nth-child(1) > a').first().trigger('onmouseover');
       cy.get('tbody > :nth-child(2) > :nth-child(1) > a').first().trigger('mouseenter');
@@ -111,9 +112,10 @@ describe('Mainnet', () => {
 
     it('check op_return coinbase tooltip', () => {
       cy.visit('/block/00000000000000000003c5f542bed265319c6cf64238cf1f1bb9bca3ebf686d2');
+      cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
       cy.waitForSkeletonGone();
-      cy.get('div > a > .badge').first().trigger('onmouseover');
-      cy.get('div > a > .badge').first().trigger('mouseenter');
+      cy.get('tbody > :nth-child(2) > :nth-child(1) > a').first().trigger('onmouseover');
+      cy.get('tbody > :nth-child(2) > :nth-child(1) > a').first().trigger('mouseenter');
       cy.get('.tooltip-inner').should('be.visible');
     });
 
@@ -142,13 +144,13 @@ describe('Mainnet', () => {
         });
       });
 
-      ['BC1PQYQSZQ', 'bc1PqYqSzQ'].forEach((searchTerm) => {
+      ['BC1PQYQS', 'bc1PqYqS'].forEach((searchTerm) => {
         it(`allows searching for partial case insensitive bech32m addresses: ${searchTerm}`, () => {
           cy.visit('/');
           cy.get('.search-box-container > .form-control').type(searchTerm).then(() => {
-            cy.get('app-search-results button.dropdown-item').should('have.length', 1);
+            cy.get('app-search-results button.dropdown-item').should('have.length', 10);
             cy.get('app-search-results button.dropdown-item.active').click().then(() => {
-              cy.url().should('include', '/address/bc1pqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqsyjer9e');
+              cy.url().should('include', '/address/bc1pqyqs26fs4gnyw4aqttyjqa5ta7075zzfjftyz98qa8vdr49dh7fqm2zkv3');
               cy.waitForSkeletonGone();
               cy.get('.text-center').should('not.have.text', 'Invalid Bitcoin address');
             });
@@ -156,13 +158,13 @@ describe('Mainnet', () => {
         });
       });
 
-      ['BC1Q000375VXCU', 'bC1q000375vXcU'].forEach((searchTerm) => {
+      ['BC1Q0003', 'bC1q0003'].forEach((searchTerm) => {
         it(`allows searching for partial case insensitive bech32 addresses: ${searchTerm}`, () => {
           cy.visit('/');
           cy.get('.search-box-container > .form-control').type(searchTerm).then(() => {
-            cy.get('app-search-results button.dropdown-item').should('have.length', 1);
+            cy.get('app-search-results button.dropdown-item').should('have.length', 10);
             cy.get('app-search-results button.dropdown-item.active').click().then(() => {
-              cy.url().should('include', '/address/bc1q000375vxcuf5v04lmwy22vy2thvhqkxghgq7dy');
+              cy.url().should('include', '/address/bc1q000303cgr9zazthut63kdktwtatfe206um8nyh');
               cy.waitForSkeletonGone();
               cy.get('.text-center').should('not.have.text', 'Invalid Bitcoin address');
             });
@@ -283,6 +285,7 @@ describe('Mainnet', () => {
         it('loads genesis block and keypress arrow right', () => {
           cy.viewport('macbook-16');
           cy.visit('/block/0');
+          cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
           cy.waitForSkeletonGone();
           cy.waitForPageIdle();
 
@@ -295,6 +298,7 @@ describe('Mainnet', () => {
         it('loads genesis block and keypress arrow left', () => {
           cy.viewport('macbook-16');
           cy.visit('/block/0');
+          cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
           cy.waitForSkeletonGone();
           cy.waitForPageIdle();
 
@@ -323,6 +327,7 @@ describe('Mainnet', () => {
         it('loads genesis block and click on the arrow left', () => {
           cy.viewport('macbook-16');
           cy.visit('/block/0');
+          cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
           cy.waitForSkeletonGone();
           cy.waitForPageIdle();
           cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
@@ -339,7 +344,7 @@ describe('Mainnet', () => {
       cy.visit('/');
       cy.waitForSkeletonGone();
 
-      cy.changeNetwork('testnet');
+      cy.changeNetwork('testnet4');
       cy.changeNetwork('signet');
       cy.changeNetwork('mainnet');
     });
@@ -439,6 +444,7 @@ describe('Mainnet', () => {
     describe('blocks', () => {
       it('shows empty blocks properly', () => {
         cy.visit('/block/0000000000000000000bd14f744ef2e006e61c32214670de7eb891a5732ee775');
+        cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
         cy.waitForSkeletonGone();
         cy.waitForPageIdle();
         cy.get('h2').invoke('text').should('equal', '1 transaction');
@@ -446,6 +452,7 @@ describe('Mainnet', () => {
 
       it('expands and collapses the block details', () => {
         cy.visit('/block/0');
+        cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
         cy.waitForSkeletonGone();
         cy.waitForPageIdle();
         cy.get('.btn.btn-outline-info').click().then(() => {
@@ -458,6 +465,7 @@ describe('Mainnet', () => {
       });
       it('shows blocks with no pagination', () => {
         cy.visit('/block/00000000000000000001ba40caf1ad4cec0ceb77692662315c151953bfd7c4c4');
+        cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
         cy.waitForSkeletonGone();
         cy.waitForPageIdle();
         cy.get('.block-tx-title h2').invoke('text').should('equal', '19 transactions');
@@ -467,6 +475,7 @@ describe('Mainnet', () => {
       it('supports pagination on the block screen', () => {
         // 41 txs
         cy.visit('/block/00000000000000000009f9b7b0f63ad50053ad12ec3b7f5ca951332f134f83d8');
+        cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
         cy.waitForSkeletonGone();
         cy.get('.pagination-container a').invoke('text').then((text1) => {
           cy.get('.active + li').first().click().then(() => {
@@ -482,6 +491,7 @@ describe('Mainnet', () => {
       it('shows blocks pagination with 5 pages (desktop)', () => {
         cy.viewport(760, 800);
         cy.visit('/block/000000000000000000049281946d26fcba7d99fdabc1feac524bc3a7003d69b3').then(() => {
+          cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
           cy.waitForSkeletonGone();
           cy.waitForPageIdle();
         });
@@ -493,6 +503,7 @@ describe('Mainnet', () => {
       it('shows blocks pagination with 3 pages (mobile)', () => {
         cy.viewport(669, 800);
         cy.visit('/block/000000000000000000049281946d26fcba7d99fdabc1feac524bc3a7003d69b3').then(() => {
+          cy.get('.pagination').scrollIntoView({ offset: { top: 200, left: 0 } });
           cy.waitForSkeletonGone();
           cy.waitForPageIdle();
         });
@@ -532,16 +543,7 @@ describe('Mainnet', () => {
           }
         });
 
-        cy.get('.alert').should('be.visible');
-        cy.get('.alert').invoke('css', 'width').then((alertWidth) => {
-          cy.get('.container-xl > :nth-child(3)').invoke('css', 'width').should('equal', alertWidth);
-        });
-
-        cy.get('.btn-warning').then(getRectangle).then((rectA) => {
-          cy.get('.alert').then(getRectangle).then((rectB) => {
-            expect(areOverlapping(rectA, rectB), 'Confirmations box and RBF alert are overlapping').to.be.false;
-          });
-        });
+        cy.get('.alert-replaced').should('be.visible');
       });
 
       it('shows RBF transactions properly (desktop)', () => {

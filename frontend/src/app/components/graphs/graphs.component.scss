@@ -2,7 +2,7 @@
   flex-grow: 1;
   padding: 0 35px;
   @media (min-width: 576px) {
-    max-width: 400px;
+    max-width: 600px;
   }
 
   & > * {
@@ -11,5 +11,6 @@
     &.last-child {
       margin-inline-end: 0;
     }
+    margin-bottom: 5px;
   }
 }

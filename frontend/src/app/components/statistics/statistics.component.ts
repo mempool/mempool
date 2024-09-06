@@ -26,8 +26,7 @@ export class StatisticsComponent implements OnInit {
 
   network = '';
 
-  loading = true;
-  spinnerLoading = false;
+  isLoading = true;
   feeLevels = feeLevels;
   chartColors = chartColors;
   filterSize = 100000;
@@ -90,7 +89,7 @@ export class StatisticsComponent implements OnInit {
     .pipe(
       switchMap(() => {
         this.timespan = this.radioGroupForm.controls.dateSpan.value;
-        this.spinnerLoading = true;
+        this.isLoading = true;
         if (this.radioGroupForm.controls.dateSpan.value === '2h') {
           this.websocketService.want(['blocks', 'live-2h-chart']);
           return this.apiService.list2HStatistics$();
@@ -131,8 +130,7 @@ export class StatisticsComponent implements OnInit {
     .subscribe((mempoolStats: any) => {
       this.mempoolStats = mempoolStats;
       this.handleNewMempoolData(this.mempoolStats.concat([]));
-      this.loading = false;
-      this.spinnerLoading = false;
+      this.isLoading = false;
     });
 
     this.stateService.live2Chart$

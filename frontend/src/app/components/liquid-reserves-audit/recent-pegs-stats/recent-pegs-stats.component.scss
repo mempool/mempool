@@ -15,7 +15,7 @@
 
     .card-title {
       margin: 0;
-      color: #4a68b9;
+      color: var(--title-fg);
       font-size: 10px;
       font-size: 1rem;
       white-space: nowrap;
@@ -31,7 +31,7 @@
     }
 
     .card-text span {
-      color: #ffffff66;
+      color: var(--transparent-fg);
       font-size: 12px;
       top: 0px;
     }
@@ -72,9 +72,9 @@
 }
 
 .credit {
-  color: #7CB342;
+  color: var(--green);
 }
 
 .debit {
-  color: #D81B60;
+  color: var(--red);
 }

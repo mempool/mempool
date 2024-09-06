@@ -12,32 +12,68 @@ export interface OrphanedBlock {
   height: number;
   hash: string;
   status: 'valid-fork' | 'valid-headers' | 'headers-only';
+  prevhash: string;
 }
 
 class ChainTips {
   private chainTips: ChainTip[] = [];
-  private orphanedBlocks: OrphanedBlock[] = [];
+  private orphanedBlocks: { [hash: string]: OrphanedBlock } = {};
+  private blockCache: { [hash: string]: OrphanedBlock } = {};
+  private orphansByHeight: { [height: number]: OrphanedBlock[] } = {};
 
   public async updateOrphanedBlocks(): Promise<void> {
     try {
       this.chainTips = await bitcoinClient.getChainTips();
-      this.orphanedBlocks = [];
+
+      const start = Date.now();
+      const breakAt = start + 10000;
+      let newOrphans = 0;
+      this.orphanedBlocks = {};
 
       for (const chain of this.chainTips) {
         if (chain.status === 'valid-fork' || chain.status === 'valid-headers') {
-          let block = await bitcoinClient.getBlock(chain.hash);
-          while (block && block.confirmations === -1) {
-            this.orphanedBlocks.push({
-              height: block.height,
-              hash: block.hash,
-              status: chain.status
-            });
-            block = await bitcoinClient.getBlock(block.previousblockhash);
+          const orphans: OrphanedBlock[] = [];
+          let hash = chain.hash;
+          do {
+            let orphan = this.blockCache[hash];
+            if (!orphan) {
+              const block = await bitcoinClient.getBlock(hash);
+              if (block && block.confirmations === -1) {
+                newOrphans++;
+                orphan = {
+                  height: block.height,
+                  hash: block.hash,
+                  status: chain.status,
+                  prevhash: block.previousblockhash,
+                };
+                this.blockCache[hash] = orphan;
+              }
+            }
+            if (orphan) {
+              orphans.push(orphan);
+            }
+            hash = orphan?.prevhash;
+          } while (hash && (Date.now() < breakAt));
+          for (const orphan of orphans) {
+            this.orphanedBlocks[orphan.hash] = orphan;
           }
+        }
+        if (Date.now() >= breakAt) {
+          logger.debug(`Breaking orphaned blocks updater after 10s, will continue next block`);
+          break;
         }
       }
 
-      logger.debug(`Updated orphaned blocks cache. Found ${this.orphanedBlocks.length} orphaned blocks`);
+      this.orphansByHeight = {};
+      const allOrphans = Object.values(this.orphanedBlocks);
+      for (const orphan of allOrphans) {
+        if (!this.orphansByHeight[orphan.height]) {
+          this.orphansByHeight[orphan.height] = [];
+        }
+        this.orphansByHeight[orphan.height].push(orphan);
+      }
+
+      logger.debug(`Updated orphaned blocks cache. Fetched ${newOrphans} new orphaned blocks. Total ${allOrphans.length}`);
     } catch (e) {
       logger.err(`Cannot get fetch orphaned blocks. Reason: ${e instanceof Error ? e.message : e}`);
     }
@@ -48,13 +84,7 @@ class ChainTips {
       return [];
     }
 
-    const orphans: OrphanedBlock[] = [];
-    for (const block of this.orphanedBlocks) {
-      if (block.height === height) {
-        orphans.push(block);
-      }
-    }
-    return orphans;
+    return this.orphansByHeight[height] || [];
   }
 }
 

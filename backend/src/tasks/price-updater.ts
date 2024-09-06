@@ -59,7 +59,7 @@ class PriceUpdater {
   private currencyConversionFeed: ConversionFeed | undefined;
   private newCurrencies: string[] = ['BGN', 'BRL', 'CNY', 'CZK', 'DKK', 'HKD', 'HRK', 'HUF', 'IDR', 'ILS', 'INR', 'ISK', 'KRW', 'MXN', 'MYR', 'NOK', 'NZD', 'PHP', 'PLN', 'RON', 'RUB', 'SEK', 'SGD', 'THB', 'TRY', 'ZAR'];
   private lastTimeConversionsRatesFetched: number = 0;
-  private latestConversionsRatesFromFeed: ConversionRates = {};
+  private latestConversionsRatesFromFeed: ConversionRates = { USD: -1 };
   private ratesChangedCallback: ((rates: ApiPrice) => void) | undefined;
 
   constructor() {
@@ -71,7 +71,7 @@ class PriceUpdater {
     this.feeds.push(new BitfinexApi());
     this.feeds.push(new GeminiApi());
 
-    this.currencyConversionFeed = new FreeCurrencyApi(config.FIAT_PRICE.API_KEY);
+    this.currencyConversionFeed = new FreeCurrencyApi();
     this.setCyclePosition();
   }
 
@@ -157,9 +157,9 @@ class PriceUpdater {
       try {
         this.latestConversionsRatesFromFeed = await this.currencyConversionFeed.$fetchLatestConversionRates();
         this.lastTimeConversionsRatesFetched = Math.round(new Date().getTime() / 1000);
-        logger.debug(`Fetched currencies conversion rates from external API: ${JSON.stringify(this.latestConversionsRatesFromFeed)}`);
+        logger.debug(`Fetched currencies conversion rates from conversions API: ${JSON.stringify(this.latestConversionsRatesFromFeed)}`);
       } catch (e) {
-        logger.err(`Cannot fetch conversion rates from the API. Reason: ${(e instanceof Error ? e.message : e)}`);
+        logger.err(`Cannot fetch conversion rates from conversions API. Reason: ${(e instanceof Error ? e.message : e)}`);
       }
     }
 
@@ -408,17 +408,17 @@ class PriceUpdater {
     try {
       const remainingQuota = await this.currencyConversionFeed?.$getQuota();
       if (remainingQuota['month']['remaining'] < 500) { // We need some calls left for the daily updates
-        logger.debug(`Not enough currency API credit to insert missing prices in ${priceTimesToFill.length} rows (${remainingQuota['month']['remaining']} calls left).`, logger.tags.mining);
+        logger.debug(`Not enough conversions API credit to insert missing prices in ${priceTimesToFill.length} rows (${remainingQuota['month']['remaining']} calls left).`, logger.tags.mining);
         this.additionalCurrenciesHistoryInserted = true; // Do not try again until next day
         return;
       }
     } catch (e) {
-      logger.err(`Cannot fetch currency API credit, insertion of missing prices aborted. Reason: ${(e instanceof Error ? e.message : e)}`);
+      logger.err(`Cannot fetch conversions API credit, insertion of missing prices aborted. Reason: ${(e instanceof Error ? e.message : e)}`);
       return;
     }
 
     this.additionalCurrenciesHistoryRunning = true;
-    logger.debug(`Fetching missing conversion rates from external API to fill ${priceTimesToFill.length} rows`, logger.tags.mining);
+    logger.debug(`Inserting missing historical conversion rates using conversions API to fill ${priceTimesToFill.length} rows`, logger.tags.mining);
 
     let conversionRates: { [timestamp: number]: ConversionRates } = {};
     let totalInserted = 0;
@@ -430,10 +430,23 @@ class PriceUpdater {
       const month = new Date(priceTime.time * 1000).getMonth();
       const yearMonthTimestamp = new Date(year, month, 1).getTime() / 1000;
       if (conversionRates[yearMonthTimestamp] === undefined) {
-        conversionRates[yearMonthTimestamp] = await this.currencyConversionFeed?.$fetchConversionRates(`${year}-${month + 1 < 10 ? `0${month + 1}` : `${month + 1}`}-01`) || { USD: -1 };
-        if (conversionRates[yearMonthTimestamp]['USD'] < 0) {
-          logger.err(`Cannot fetch conversion rates from the API for ${year}-${month + 1 < 10 ? `0${month + 1}` : `${month + 1}`}-01. Aborting insertion of missing prices.`, logger.tags.mining);
-          this.lastFailedHistoricalRun = Math.round(new Date().getTime() / 1000);
+        try {
+          if (year === new Date().getFullYear() && month === new Date().getMonth()) { // For rows in the current month, we use the latest conversion rates
+            conversionRates[yearMonthTimestamp] = this.latestConversionsRatesFromFeed;
+          } else {
+            conversionRates[yearMonthTimestamp] = await this.currencyConversionFeed?.$fetchConversionRates(`${year}-${month + 1 < 10 ? `0${month + 1}` : `${month + 1}`}-15`) || { USD: -1 };
+          }
+
+          if (conversionRates[yearMonthTimestamp]['USD'] < 0) {
+            throw new Error('Incorrect USD conversion rate');
+          }
+        } catch (e) {
+          if ((e instanceof Error ? e.message : '').includes('429')) { // Continue 60 seconds later if and only if error is 429
+            this.lastFailedHistoricalRun = Math.round(new Date().getTime() / 1000);
+            logger.info(`Got a 429 error from conversions API. This is expected to happen a few times during the initial historical price insertion, process will resume in 60 seconds.`, logger.tags.mining);
+          } else {
+            logger.err(`Cannot fetch conversion rates from conversions API for ${year}-${month + 1 < 10 ? `0${month + 1}` : `${month + 1}`}-01, trying again next day. Error: ${(e instanceof Error ? e.message : e)}`, logger.tags.mining);
+          }
           break;
         }
       }

@@ -17,7 +17,7 @@ const OUTLIERS_MEDIAN_MULTIPLIER = 4;
       position: absolute;
       top: 50%;
       left: calc(50% - 16px);
-      z-index: 100;
+      z-index: 99;
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,8 +32,8 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
   @Input() template: ('widget' | 'advanced') = 'widget';
   @Input() windowPreferenceOverride: string;
   @Input() outlierCappingEnabled: boolean = false;
+  @Input() isLoading: boolean;
 
-  isLoading = true;
   mempoolStatsChartOption: EChartsOption = {};
   mempoolStatsChartInitOption = {
     renderer: 'svg'
@@ -52,8 +52,6 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
   ) { }
 
   ngOnInit() {
-    this.isLoading = true;
-
     this.rateUnitSub = this.stateService.rateUnits$.subscribe(rateUnits => {
       this.weightMode = rateUnits === 'wu';
       if (this.data) {
@@ -66,7 +64,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
     if (!this.data) {
       return;
     }
-    this.windowPreference = this.windowPreferenceOverride ? this.windowPreferenceOverride : this.storageService.getValue('graphWindowPreference');
+    this.windowPreference = (this.windowPreferenceOverride ? this.windowPreferenceOverride : this.storageService.getValue('graphWindowPreference')) || '2h';
     const windowSize = Math.max(10, Math.floor(this.data.series[0].length / 8));
     this.MA = this.calculateMA(this.data.series[0], windowSize);
     if (this.outlierCappingEnabled === true) {
@@ -79,7 +77,6 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
     if (!this.data) {
       return; 
     }
-    this.isLoading = false;
   }
 
   /**
@@ -216,22 +213,19 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
           type: 'line',
         },
         formatter: (params: any) => {
-          const axisValueLabel: string = formatterXAxis(this.locale, this.windowPreference, params[0].axisValue);
+          const bestItem = params.reduce((best, item) => {
+            return (item.seriesName === 'data' && (!best || best.value[1] < item.value[1])) ? item : best;
+          }, null);
+          const axisValueLabel: string = formatterXAxis(this.locale, this.windowPreference, bestItem.axisValue);
           const colorSpan = (color: string) => `<span class="indicator" style="background-color: ` + color + `"></span>`;
           let itemFormatted = '<div class="title">' + axisValueLabel + '</div>';
-          params.map((item: any, index: number) => {
-
-            //Do no include MA in tooltip legend!
-            if (item.seriesName !== 'MA') {
-              if (index < 26) {
-                itemFormatted += `<div class="item">
-                  <div class="indicator-container">${colorSpan(item.color)}</div>
+          if (bestItem) {
+            itemFormatted += `<div class="item">
+                  <div class="indicator-container">${colorSpan(bestItem.color)}</div>
                   <div class="grow"></div>
-                  <div class="value">${formatNumber(item.value[1], this.locale, '1.0-0')}<span class="symbol">vB/s</span></div>
+                  <div class="value">${formatNumber(bestItem.value[1], this.locale, '1.0-0')} <span class="symbol">vB/s</span></div>
                 </div>`;
-              }
-            }
-          });
+          }
           return `<div class="tx-wrapper-tooltip-chart ${(this.template === 'advanced') ? 'tx-wrapper-tooltip-chart-advanced' : ''}" 
                   style="width: ${(this.windowPreference === '2h' || this.template === 'widget') ? '125px' : '215px'}">${itemFormatted}</div>`;
         }
@@ -255,12 +249,13 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
         }
       ],
       yAxis: {
-        max: (value) => {
-          if (!this.outlierCappingEnabled || value.max < this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER) {
-            return undefined;
-          } else {
-            return Math.round(this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER);
+        max: (value): number => {
+          let cappedMax = value.max;
+          if (this.outlierCappingEnabled && value.max >= (this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER)) {
+            cappedMax = Math.round(this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER);
           }
+          // always show the clearing rate line, plus a small margin
+          return Math.max(1800, cappedMax);
         },
         type: 'value',
         axisLabel: {
@@ -272,7 +267,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
         splitLine: {
           lineStyle: {
             type: 'dotted',
-            color: '#ffffff66',
+            color: 'var(--transparent-fg)',
             opacity: 0.25,
           }
         }
@@ -332,7 +327,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
     const now = new Date();
     // @ts-ignore
     this.mempoolStatsChartOption.grid.height = prevHeight + 20;
-    this.mempoolStatsChartOption.backgroundColor = '#11131f';
+    this.mempoolStatsChartOption.backgroundColor = 'var(--active-bg)';
     this.chartInstance.setOption(this.mempoolStatsChartOption);
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,

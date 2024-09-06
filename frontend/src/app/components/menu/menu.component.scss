@@ -34,7 +34,7 @@
 
 .sidenav.open {
   display: block;
-  background-color: #1d1f31;
+  background-color: var(--bg);
 }
 
 :host-context(.ltr-layout) .sidenav.open {
@@ -56,7 +56,7 @@
 .sidenav nav {
   width: 100%;
   height: calc(100vh - 65px);
-  background-color: #1d1f31;
+  background-color: var(--bg);
   padding-left: 20px;
   padding-right: 20px;
   padding-top: 20px;
@@ -75,7 +75,7 @@
 }
 
 .badge-og {
-  background-color: #4a68b9;
+  background-color: var(--title-fg);
 }
 
 .badge-pleb {
@@ -87,7 +87,7 @@
 }
 
 .badge-whale {
-  background-color: #653b9c;
+  background-color: var(--tertiary);
 }
 
 .badge-silver {
@@ -99,5 +99,5 @@
 }
 
 .badge-platinum {
-  background-color: #653b9c;
+  background-color: var(--tertiary);
 }

@@ -36,7 +36,7 @@ export class RecentPegsListComponent implements OnInit {
   lastPegBlockUpdate: number = 0;
   lastPegAmount: string = '';
   isLoad: boolean = true;
-  queryParamSubscription: Subscription;
+  paramSubscription: Subscription;
   keyNavigationSubscription: Subscription;
   dir: 'rtl' | 'ltr' = 'ltr';
 
@@ -66,25 +66,28 @@ export class RecentPegsListComponent implements OnInit {
       this.seoService.setTitle($localize`:@@a8b0889ea1b41888f1e247f2731cc9322198ca04:Recent Peg-In / Out's`);
       this.websocketService.want(['blocks']);
 
-      this.queryParamSubscription = this.route.queryParams.pipe(
+      this.paramSubscription = this.route.params.pipe(
         tap((params) => {
           this.page = +params['page'] || 1;
           this.startingIndexSubject.next((this.page - 1) * 15);
         }),
       ).subscribe();
 
+      const prevKey = this.dir === 'ltr' ? 'ArrowLeft' : 'ArrowRight';
+      const nextKey = this.dir === 'ltr' ? 'ArrowRight' : 'ArrowLeft';
+
       this.keyNavigationSubscription = this.stateService.keyNavigation$
       .pipe(
+        filter((event) => event.key === prevKey || event.key === nextKey),
         tap((event) => {
-          this.isLoading = true;
-          const prevKey = this.dir === 'ltr' ? 'ArrowLeft' : 'ArrowRight';
-          const nextKey = this.dir === 'ltr' ? 'ArrowRight' : 'ArrowLeft';
           if (event.key === prevKey && this.page > 1) {
             this.page--;
+            this.isLoading = true;
             this.cd.markForCheck();
           }
           if (event.key === nextKey && this.page < this.pegsCount / this.pageSize) {
             this.page++;
+            this.isLoading = true;
             this.cd.markForCheck();
           }
         }),
@@ -172,12 +175,12 @@ export class RecentPegsListComponent implements OnInit {
   ngOnDestroy(): void {
     this.destroy$.next(1);
     this.destroy$.complete();
-    this.queryParamSubscription?.unsubscribe();
+    this.paramSubscription?.unsubscribe();
     this.keyNavigationSubscription?.unsubscribe();
   }
 
   pageChange(page: number): void {
-    this.router.navigate([], { queryParams: { page: page } });
+    this.router.navigate(['audit', 'pegs', page]);
   }
 
 }

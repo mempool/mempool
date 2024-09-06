@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en-US" dir="ltr">
+  <%- include('head'); %>
+  <body>
+    <%- include('header'); %>
+    <div class="main">
+      <h1>Transaction <%- data.transaction.txid %></h1>
+      <% if (data.transaction.status.confirmed) { %>
+        <p>confirmed in <a href="/block/<%= data.transaction.status.block_hash %>">block <%= data.transaction.status.block_height %></a></p>
+      <% } %>
+      <h2>Summary</h2>
+      <table>
+        <% if (data.transaction.status.confirmed) { %>
+          <tr>
+            <td>Timestamp</td>
+            <td><%= (new Date(data.transaction.status.block_time * 1000)).toISOString() %></td>
+          </tr>
+        <% } else { %>
+          <tr>
+            <td>First seen</td>
+            <td><%= (new Date(data.times[0] * 1000)).toISOString() %></td>
+          </tr>
+        <% } %>
+        <tr>
+          <td>Features</td>
+          <td>
+            <dl>
+              <div class="flag"><dt>SegWit</dt><dd class="<%= data.features.segwit ? "yes" : "no" %>"><%= data.features.segwit ? "yes" : "no" %></dd></div>
+              <div class="flag"><dt>Taproot</dt><dd class="<%= data.features.taproot ? "yes" : "no" %>"><%= data.features.taproot ? "yes" : "no" %></dd></div>
+              <div class="flag"><dt>RBF</dt><dd class="<%= data.features.rbf ? "yes" : "no" %>"><%= data.features.rbf ? "yes" : "no" %></dd></div>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td>Fee</td>
+          <td><%= data.transaction.fee %> sat</td>
+        </tr>
+        <tr>
+          <td>Fee rate</td>
+          <td><%= (data.transaction.fee / (data.transaction.weight / 4)).toFixed(2) %> sat/vB</td>
+        </tr>
+        <% if (data.cpfp && data.cpfp.effectiveFeePerVsize && data.cpfp.effectiveFeePerVsize !== (data.transaction.fee / (data.transaction.weight / 4))) { %>
+        <tr>
+          <td>Effective fee rate</td>
+          <td><%= data.cpfp.effectiveFeePerVsize.toFixed(2) %> sat/vB</td>
+        </tr>
+        <% } %>
+      </table>
+
+      <h2>Inputs & Outputs</h2>
+      <div class="flex">
+        <div>
+          <h3>Inputs</h3>
+          <table>
+            <% data.transaction.vin.forEach((vin, i) => { %>
+              <tr>
+                <% if (vin.is_coinbase) { %>
+                  <td>Coinbase <%= data.hex2ascii(vin.scriptsig) %></td>
+                <% } else { %>
+                  <td><a href="/address/<%= vin.prevout.scriptpubkey_address %>"><%= vin.prevout.scriptpubkey_address %></a></td>
+                <% } %>
+                <td><%= ((vin.prevout ? vin.prevout.value : 0) / 100_000_000).toFixed(8) %> BTC</td>
+              </tr>
+            <% }) %>
+          </table>
+        </div>
+        <div>
+          <h3>Outputs</h3>
+          <table>
+            <% data.transaction.vout.forEach((vout, i) => { %>
+              <tr>
+                <td>
+                  <% if (vout.scriptpubkey_type === 'op_return') { %>
+                    OP_RETURN <%= data.hex2ascii(vout.scriptpubkey_asm) %>
+                  <% } else if (vout.scriptpubkey_type === 'p2pk') { %>
+                    P2PK <a href="/address/<%= vout.scriptpubkey.slice(2, -2) %>"><%= vout.scriptpubkey.slice(2, -2) %></a>
+                  <% } else if (!['p2pkh', 'p2sh', 'v0_p2wpkh', 'v0_p2wsh', 'v1_p2tr'].includes(vout.scriptpubkey_type)) { %>
+                    <%= vout.scriptpubkey_type.toUpperCase() %>
+                  <% } else { %>
+                    <a href="/address/<%= vout.scriptpubkey_address %>"><%= vout.scriptpubkey_address %></a>
+                  <% } %>
+                </td>
+                <td><%= (vout.value / 100_000_000).toFixed(8) %> BTC</td>
+              </tr>
+            <% }) %>
+          </table>
+        </div>
+      </div>
+
+      <h2>Details</h2>
+      <table>
+        <tr>
+          <td>Size</td>
+          <td><%= data.transaction.size %> B</td>
+        </tr>
+        <tr>
+          <td>Virtual size</td>
+          <td><%= data.transaction.weight / 4 %> vB</td>
+        </tr>
+        <tr>
+          <td>Weight</td>
+          <td><%= data.transaction.weight %> WU</td>
+        </tr>
+        <tr>
+          <td>Version</td>
+          <td><%= data.transaction.version %></td>
+        </tr>
+        <tr>
+          <td>Locktime</td>
+          <td><%= data.transaction.locktime %></td>
+        </tr>
+        <% if (data.cpfp && data.cpfp.adjustedVsize && data.cpfp.adjustedVsize > (data.transaction.weight / 4)) { %>
+          <tr>
+            <td>Sigops</td>
+            <td><%= data.cpfp.sigops %></td>
+          </tr>
+          <tr>
+            <td>Adjusted vsize</td>
+            <td><%= data.cpfp.adjustedVsize %> vB</td>
+          </tr>
+        <% } %>
+      </table>
+    </div>
+    <%- include('footer'); %>
+  </body>
+</html>

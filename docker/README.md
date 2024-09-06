@@ -106,7 +106,7 @@ Below we list all settings from `mempool-config.json` and the corresponding over
     "EXTERNAL_ASSETS": [],
     "STDOUT_LOG_MIN_PRIORITY": "info",
     "INDEXING_BLOCKS_AMOUNT": false,
-    "AUTOMATIC_BLOCK_REINDEXING": false,
+    "AUTOMATIC_POOLS_UPDATE": false,
     "POOLS_JSON_URL": "https://raw.githubusercontent.com/mempool/mining-pools/master/pools-v2.json",
     "POOLS_JSON_TREE_URL": "https://api.github.com/repos/mempool/mining-pools/git/trees/master",
     "CPFP_INDEXING": false,
@@ -137,7 +137,7 @@ Corresponding `docker-compose.yml` overrides:
       MEMPOOL_EXTERNAL_ASSETS: ""
       MEMPOOL_STDOUT_LOG_MIN_PRIORITY: ""
       MEMPOOL_INDEXING_BLOCKS_AMOUNT: ""
-      MEMPOOL_AUTOMATIC_BLOCK_REINDEXING: ""
+      MEMPOOL_AUTOMATIC_POOLS_UPDATE: ""
       MEMPOOL_POOLS_JSON_URL: ""
       MEMPOOL_POOLS_JSON_TREE_URL: ""
       MEMPOOL_CPFP_INDEXING: ""

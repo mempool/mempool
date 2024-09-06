@@ -10,6 +10,7 @@ import { filter, map, tap, switchMap, shareReplay, catchError } from 'rxjs/opera
 import { BlockExtended } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { PriceService } from '../../services/price.service';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-transactions-list',
@@ -47,6 +48,8 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   transactionsLength: number = 0;
   inputRowLimit: number = 12;
   outputRowLimit: number = 12;
+  showFullScript: { [vinIndex: number]: boolean } = {};
+  showFullWitness: { [vinIndex: number]: { [witnessIndex: number]: boolean } } = {};
 
   constructor(
     public stateService: StateService,
@@ -56,6 +59,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     private assetsService: AssetsService,
     private ref: ChangeDetectorRef,
     private priceService: PriceService,
+    private storageService: StorageService,
   ) { }
 
   ngOnInit(): void {
@@ -110,7 +114,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
         ),
         this.refreshChannels$
           .pipe(
-            filter(() => this.stateService.env.LIGHTNING),
+            filter(() => this.stateService.networkSupportsLightning()),
             switchMap((txIds) => this.apiService.getChannelByTxIds$(txIds)),
             catchError((error) => {
               // handle 404
@@ -146,7 +150,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       this.transactions.forEach((tx) => {
         if (!this.blockTime) {
           if (tx.status.block_time) {
-            this.priceService.getBlockPrice$(tx.status.block_time, confirmedTxs < 10, this.currency).pipe(
+            this.priceService.getBlockPrice$(tx.status.block_time, confirmedTxs < 3, this.currency).pipe(
               tap((price) => tx['price'] = price),
             ).subscribe();
           }
@@ -231,7 +235,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
         }
 
         if (!this.blockTime && tx.status.block_time && this.currency) {
-          this.priceService.getBlockPrice$(tx.status.block_time, confirmedTxs < 10, this.currency).pipe(
+          this.priceService.getBlockPrice$(tx.status.block_time, confirmedTxs < 3, this.currency).pipe(
             tap((price) => tx['price'] = price),
           ).subscribe();
         }
@@ -246,7 +250,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       if (txIds.length && !this.cached) {
         this.refreshOutspends$.next(txIds);
       }
-      if (this.stateService.env.LIGHTNING) {
+      if (this.stateService.networkSupportsLightning()) {
         const txIds = this.transactions.filter((tx) => !tx._channels).map((tx) => tx.txid);
         if (txIds.length) {
           this.refreshChannels$.next(txIds);
@@ -271,8 +275,11 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     if (this.network === 'liquid' || this.network === 'liquidtestnet') {
       return;
     }
-    const oldvalue = !this.stateService.viewFiat$.value;
-    this.stateService.viewFiat$.next(oldvalue);
+    const modes = ['btc', 'sats', 'fiat'];
+    const oldIndex = modes.indexOf(this.stateService.viewAmountMode$.value);
+    const newIndex = (oldIndex + 1) % modes.length;
+    this.stateService.viewAmountMode$.next(modes[newIndex] as 'btc' | 'sats' | 'fiat');
+    this.storageService.setValue('view-amount-mode', modes[newIndex]);
   }
 
   trackByFn(index: number, tx: Transaction): string {
@@ -295,7 +302,17 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   toggleDetails(): void {
     if (this.showDetails$.value === true) {
       this.showDetails$.next(false);
+      this.showFullScript = {};
+      this.showFullWitness = {};
     } else {
+      this.showFullScript = this.transactions[0] ? this.transactions[0].vin.reduce((acc, _, i) => ({...acc, [i]: false}), {}) : {};
+      this.showFullWitness = this.transactions[0] ? this.transactions[0].vin.reduce((acc, vin, vinIndex) => {
+        acc[vinIndex] = vin.witness ? vin.witness.reduce((witnessAcc, _, witnessIndex) => {
+          witnessAcc[witnessIndex] = false;
+          return witnessAcc;
+        }, {}) : {};
+        return acc;
+      }, {}) : {};
       this.showDetails$.next(true);
     }
   }
@@ -345,6 +362,14 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       limit = tx.vout.length;
     }
     return limit;
+  }
+
+  toggleShowFullScript(vinIndex: number): void {
+    this.showFullScript[vinIndex] = !this.showFullScript[vinIndex];
+  }
+
+  toggleShowFullWitness(vinIndex: number, witnessIndex: number): void {
+    this.showFullWitness[vinIndex][witnessIndex] = !this.showFullWitness[vinIndex][witnessIndex];
   }
 
   ngOnDestroy(): void {

@@ -1,0 +1,150 @@
+.form-panel {
+  background-color: #292b45;
+  padding: 20px;
+}
+
+
+.sponsor-page {
+  text-align: center;
+}
+
+.qr-wrapper {
+    background-color: #FFF;
+    padding: 10px;
+    display: inline-block;
+    padding-bottom: 5px;
+    margin: 20px auto 0px;
+}
+
+.info-group {
+  max-width: 400px;
+}
+
+.card {
+  width: 240px;
+  height: 220px;
+  background-color: var(--bg);
+  border: 2px solid var(--bg);
+  cursor: pointer;
+  position: relative;
+  transition: 100ms all;
+  margin: 30px 30px 20px 30px;
+  @media(min-width: 476px) {
+    margin: 30px 100px 20px 100px;
+  }
+  @media(min-width: 851px) {
+    margin: 60px 20px 40px 20px;
+  }
+
+  .card-title {
+    font-weight: bold;
+    span {
+      font-weight: 100;
+    }
+  }
+
+  &.bigger {
+    height: 220px;
+    width: 240px;
+    margin-top: 40px;
+  }
+
+  &:hover {
+    background-color: #5058926b;
+    border: 2px solid #505892;
+    transform: scale(1.1) translateY(-10px);
+    margin-top: 70px;
+
+    .card-header {
+      background-color: #505892;
+    }
+  }
+}
+
+.donation-form {
+  max-width: 280px;
+  margin: auto;
+  button {
+    width: 100%;
+  }
+}
+
+.card-header {
+  background-color: #171929;
+}
+
+.flex-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.middle-card {
+  width: 280px;
+  height: 260px;
+  margin-top: 40px;
+  &:hover {
+    margin-top: 50px;
+  }
+}
+
+.shiny-border {
+  background-color: #5058926b;
+  border: 2px solid #505892;
+  transform: scale(1.1) translateY(-10px);
+  margin-top: 70px;
+  box-shadow: 0px 0px 100px #9858ff52;
+  .card-header {
+    background-color: #505892;
+  }
+
+  &.middle-card {
+    margin-top: 50px;
+  }
+}
+
+.input-group {
+  margin: 20px auto;
+}
+
+.donation-confirmed {
+  h2 {
+    margin-top: 50px;
+    span {
+      display: block;
+      &:last-child {
+        color: #9858ff;
+        font-weight: bold;
+        font-size: 2rem;
+      }
+    }
+  }
+
+  .order-details {
+    margin-top: 50px;
+    span {
+      color: #d81b60;
+      margin-left: 10px;
+    }
+  }
+}
+
+.card-body {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  height: 100%;
+}
+
+.wrapper {
+  text-align: center;
+  width: 100%;
+}
+
+.input-dark {
+  background-color: var(--bg);
+  border-color: var(--active-bg);
+  color: white;
+}

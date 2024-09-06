@@ -2,8 +2,7 @@ import * as fs from 'fs';
 import path from 'path';
 import config from './config';
 import { createPool, Pool, PoolConnection } from 'mysql2/promise';
-import { LogLevel } from './logger';
-import logger from './logger';
+import logger, { LogLevel } from './logger';
 import { FieldPacket, OkPacket, PoolOptions, ResultSetHeader, RowDataPacket } from 'mysql2/typings/mysql';
 import { execSync } from 'child_process';
 

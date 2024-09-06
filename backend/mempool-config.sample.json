@@ -24,7 +24,7 @@
     "EXTERNAL_RETRY_INTERVAL": 0,
     "USER_AGENT": "mempool",
     "STDOUT_LOG_MIN_PRIORITY": "debug",
-    "AUTOMATIC_BLOCK_REINDEXING": false,
+    "AUTOMATIC_POOLS_UPDATE": false,
     "POOLS_JSON_URL": "https://raw.githubusercontent.com/mempool/mining-pools/master/pools-v2.json",
     "POOLS_JSON_TREE_URL": "https://api.github.com/repos/mempool/mining-pools/git/trees/master",
     "AUDIT": false,
@@ -35,7 +35,8 @@
     "MAX_PUSH_TX_SIZE_WEIGHT": 4000000,
     "ALLOW_UNREACHABLE": true,
     "PRICE_UPDATES_PER_HOUR": 1,
-    "MAX_TRACKED_ADDRESSES": 100
+    "MAX_TRACKED_ADDRESSES": 100,
+    "UNIX_SOCKET_PATH": ""
   },
   "CORE_RPC": {
     "HOST": "127.0.0.1",
@@ -58,7 +59,8 @@
     "RETRY_UNIX_SOCKET_AFTER": 30000,
     "REQUEST_TIMEOUT": 10000,
     "FALLBACK_TIMEOUT": 5000,
-    "FALLBACK": []
+    "FALLBACK": [],
+    "MAX_BEHIND_TIP": 2
   },
   "SECOND_CORE_RPC": {
     "HOST": "127.0.0.1",
@@ -138,6 +140,8 @@
     "ENABLED": false,
     "AUDIT": false,
     "AUDIT_START_HEIGHT": 774000,
+    "STATISTICS": false,
+    "STATISTICS_START_TIME": 1481932800,
     "SERVERS": [
       "list",
       "of",
@@ -151,6 +155,7 @@
   },
   "FIAT_PRICE": {
     "ENABLED": true,
+    "PAID": false,
     "API_KEY": "your-api-key-from-freecurrencyapi.com"
   }
 }

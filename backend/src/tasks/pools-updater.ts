@@ -50,10 +50,10 @@ class PoolsUpdater {
 
       // See backend README for more details about the mining pools update process
       if (this.currentSha !== null && // If we don't have any mining pool, download it at least once
-        config.MEMPOOL.AUTOMATIC_BLOCK_REINDEXING !== true && // Automatic pools update is disabled
+        config.MEMPOOL.AUTOMATIC_POOLS_UPDATE !== true && // Automatic pools update is disabled
         !process.env.npm_config_update_pools // We're not manually updating mining pool
       ) {
-        logger.warn(`Updated mining pools data is available (${githubSha}) but AUTOMATIC_BLOCK_REINDEXING is disabled`);
+        logger.warn(`Updated mining pools data is available (${githubSha}) but AUTOMATIC_POOLS_UPDATE is disabled`);
         logger.info(`You can update your mining pools using the --update-pools command flag. You may want to clear your nginx cache as well if applicable`);
         return;
       }

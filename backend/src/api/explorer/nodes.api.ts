@@ -666,7 +666,9 @@ class NodesApi {
         node.last_update = null;
       }
   
-      const sockets = (node.addresses?.map(a => a.addr).join(',')) ?? '';
+      const uniqueAddr = [...new Set(node.addresses?.map(a => a.addr))];
+      const formattedSockets = (uniqueAddr.join(',')) ?? '';
+
       const query = `INSERT INTO nodes(
           public_key,
           first_seen,
@@ -695,13 +697,13 @@ class NodesApi {
         node.alias,
         this.aliasToSearchText(node.alias),
         node.color,
-        sockets,
+        formattedSockets,
         JSON.stringify(node.features),
         node.last_update,
         node.alias,
         this.aliasToSearchText(node.alias),
         node.color,
-        sockets,
+        formattedSockets,
         JSON.stringify(node.features),
       ]);
     } catch (e) {
@@ -713,7 +715,9 @@ class NodesApi {
    * Update node sockets
    */
   public async $updateNodeSockets(publicKey: string, sockets: {network: string; addr: string}[]): Promise<void> {
-    const formattedSockets = (sockets.map(a => a.addr).join(',')) ?? '';
+    const uniqueAddr = [...new Set(sockets.map(a => a.addr))];
+
+    const formattedSockets = (uniqueAddr.join(',')) ?? '';
     try {
       await DB.query(`UPDATE nodes SET sockets = ? WHERE public_key = ?`, [formattedSockets, publicKey]);
     } catch (e) {

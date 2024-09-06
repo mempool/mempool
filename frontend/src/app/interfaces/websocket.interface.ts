@@ -1,13 +1,13 @@
 import { SafeResourceUrl } from '@angular/platform-browser';
 import { ILoadingIndicators } from '../services/state.service';
 import { Transaction } from './electrs.interface';
-import { BlockExtended, DifficultyAdjustment, RbfTree, TransactionStripped } from './node-api.interface';
+import { Acceleration, BlockExtended, DifficultyAdjustment, RbfTree, TransactionStripped } from './node-api.interface';
 
 export interface WebsocketResponse {
   backend?: 'esplora' | 'electrum' | 'none';
   block?: BlockExtended;
   blocks?: BlockExtended[];
-  conversions?: any;
+  conversions?: Record<string, number>;
   txConfirmed?: string;
   historicalDate?: string;
   mempoolInfo?: MempoolInfo;
@@ -35,6 +35,7 @@ export interface WebsocketResponse {
   'track-mempool-block'?: number;
   'track-rbf'?: string;
   'track-rbf-summary'?: boolean;
+  'track-accelerations'?: boolean;
   'watch-mempool'?: boolean;
   'refresh-blocks'?: boolean;
 }
@@ -71,15 +72,33 @@ export interface MempoolBlockWithTransactions extends MempoolBlock {
 }
 
 export interface MempoolBlockDelta {
+  block: number;
   added: TransactionStripped[];
   removed: string[];
   changed: { txid: string, rate: number, flags: number, acc: boolean }[];
+}
+export interface MempoolBlockState {
+  block: number;
+  transactions: TransactionStripped[];
+}
+export type MempoolBlockUpdate = MempoolBlockDelta | MempoolBlockState;
+export function isMempoolState(update: MempoolBlockUpdate): update is MempoolBlockState {
+  return update['transactions'] !== undefined;
+}
+export function isMempoolDelta(update: MempoolBlockUpdate): update is MempoolBlockDelta {
+  return update['transactions'] === undefined;
 }
 
 export interface MempoolBlockDeltaCompressed {
   added: TransactionCompressed[];
   removed: string[];
   changed: MempoolDeltaChange[];
+}
+
+export interface AccelerationDelta {
+  added: Acceleration[];
+  removed: string[];
+  reset?: boolean;
 }
 
 export interface MempoolInfo {

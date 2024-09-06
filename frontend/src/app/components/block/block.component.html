@@ -181,8 +181,8 @@
       <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
         <td i18n="block.miner">Miner</td>
         <td *ngIf="stateService.env.MINING_DASHBOARD">
-          <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]" class="badge"
-            [class]="block.extras.pool.slug === 'unknown' ? 'badge-secondary' : 'badge-primary'">
+          <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]" class="badge" style="color: #FFF;padding:0;">
+            <img class="pool-logo" [src]="'/resources/mining-pools/' + block.extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'">
             {{ block.extras.pool.name }}
           </a>
         </td>
@@ -325,67 +325,47 @@
       >Details</button>
     </div>
 
-    <div #blockTxTitle id="block-tx-title" class="block-tx-title">
-      <h2 class="text-left">
-        <ng-container *ngTemplateOutlet="block.tx_count === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: block.tx_count | number}"></ng-container>
-        <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
-        <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
-      </h2>
-
-      <ngb-pagination class="pagination-container float-right" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page, blockTxTitle)" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
-    </div>
-    <div class="clearfix"></div>
-
-    <app-transactions-list [transactions]="transactions" [paginated]="true" [blockTime]="block.timestamp"></app-transactions-list>
-
-    <ng-template [ngIf]="transactionsError">
-      <br>
-      <app-http-error [error]="transactionsError">
-        <span i18n="error.general-loading-data">Error loading data.</span>
-      </app-http-error>
-      <br>
-      <br>
-    </ng-template>
-
-    <ng-template [ngIf]="isLoadingTransactions && !transactionsError">
-      <div class="text-center mb-4" class="tx-skeleton">
-
-        <ng-container *ngIf="(txsLoadingStatus$ | async) as txsLoadingStatus; else headerLoader">
+    @defer (on viewport) {
+      <app-block-transactions [paginationMaxSize]="paginationMaxSize" [block$]="block$" [txCount]="block.tx_count" [timestamp]="block.timestamp" [blockHash]="blockHash" [previousBlockHash]="block.previousblockhash" (blockReward)="updateBlockReward($event)"></app-block-transactions>
+    } @placeholder {
+      <div>
+        <div class="block-tx-title">
+          <h2 class="text-left">
+            <ng-container *ngTemplateOutlet="block.tx_count === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: block.tx_count | number}"></ng-container>
+            <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
+            <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
+          </h2>
+          <ngb-pagination class="pagination-container float-right" [disabled]="true" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="stateService.env.ITEMS_PER_PAGE" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
+        </div>
+        <div class="clearfix"></div>
+        <div class="tx-skeleton">
+  
           <div class="header-bg box">
-            <div class="progress progress-dark" style="margin: 4px; height: 14px;">
-              <div class="progress-bar progress-light" role="progressbar" [ngStyle]="{'width': txsLoadingStatus + '%' }"></div>
-            </div>
+            <span class="skeleton-loader"></span>
           </div>
-        </ng-container>
-
-        <div class="header-bg box">
-          <div class="row">
-            <div class="col-sm">
-              <span class="skeleton-loader"></span>
-              <span class="skeleton-loader"></span>
-            </div>
-            <div class="col-sm">
-              <span class="skeleton-loader"></span>
+          <div class="header-bg box">
+            <div class="row">
+              <div class="col-sm">
+                <span class="skeleton-loader"></span>
+              </div>
+              <div class="col-sm">
+                <span class="skeleton-loader"></span>
+                <span class="skeleton-loader"></span>
+                <span class="skeleton-loader"></span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </ng-template>
-    <ngb-pagination class="pagination-container float-right" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page, blockTxTitle)" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
+    }
 
     <div class="clearfix"></div>
     <br>
   </ng-template>
   <ng-template [ngIf]="error">
     <app-http-error [error]="error">
-      <span i18n="error.general-loading-data">Error loading data.</span>
+      <span i18n="block.error.loading-block-data">Error loading block data.</span>
     </app-http-error>
-  </ng-template>
-
-  <ng-template #headerLoader>
-    <div class="header-bg box">
-      <span class="skeleton-loader"></span>
-    </div>
   </ng-template>
 
 </div>
@@ -431,7 +411,7 @@
         <td class="text-wrap">
           <app-amount [satoshis]="block.extras.totalFees" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
           <span *ngIf="oobFees" class="oobFees" i18n-ngbTooltip="Acceleration Fees" ngbTooltip="Acceleration fees paid out-of-band">
-             +<app-amount [satoshis]="oobFees" digitsInfo="1.2-8" [noFiat]="true"></app-amount>
+             <app-amount [satoshis]="oobFees" digitsInfo="1.8-8" [noFiat]="true" [addPlus]="true"></app-amount>
           </span>
           <span *ngIf="blockAudit.feeDelta" class="difference" [class.positive]="blockAudit.feeDelta <= 0" [class.negative]="blockAudit.feeDelta > 0">
             {{ blockAudit.feeDelta < 0 ? '+' : '' }}{{ (-blockAudit.feeDelta * 100) | amountShortener: 2 }}%

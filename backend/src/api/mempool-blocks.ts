@@ -1,11 +1,13 @@
 import { GbtGenerator, GbtResult, ThreadTransaction as RustThreadTransaction, ThreadAcceleration as RustThreadAcceleration } from 'rust-gbt';
 import logger from '../logger';
-import { MempoolBlock, MempoolTransactionExtended, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, CompactThreadTransaction, EffectiveFeeStats, TransactionClassified, TransactionCompressed, MempoolDeltaChange, GbtCandidates } from '../mempool.interfaces';
+import { MempoolBlock, MempoolTransactionExtended, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, CompactThreadTransaction, EffectiveFeeStats, TransactionClassified, TransactionCompressed, MempoolDeltaChange, GbtCandidates, PoolTag } from '../mempool.interfaces';
 import { Common, OnlineFeeStatsCalculator } from './common';
 import config from '../config';
 import { Worker } from 'worker_threads';
 import path from 'path';
 import mempool from './mempool';
+import { Acceleration } from './services/acceleration';
+import PoolsRepository from '../repositories/PoolsRepository';
 
 const MAX_UINT32 = Math.pow(2, 32) - 1;
 
@@ -14,11 +16,13 @@ class MempoolBlocks {
   private mempoolBlockDeltas: MempoolBlockDelta[] = [];
   private txSelectionWorker: Worker | null = null;
   private rustInitialized: boolean = false;
-  private rustGbtGenerator: GbtGenerator = new GbtGenerator();
+  private rustGbtGenerator: GbtGenerator = new GbtGenerator(config.MEMPOOL.BLOCK_WEIGHT_UNITS, config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT);
 
   private nextUid: number = 1;
   private uidMap: Map<number, string> = new Map(); // map short numerical uids to full txids
   private txidMap: Map<string, number> = new Map(); // map full txids back to short numerical uids
+
+  private pools: { [id: number]: PoolTag } = {};
 
   public getMempoolBlocks(): MempoolBlock[] {
     return this.mempoolBlocks.map((block) => {
@@ -39,6 +43,18 @@ class MempoolBlocks {
 
   public getMempoolBlockDeltas(): MempoolBlockDelta[] {
     return this.mempoolBlockDeltas;
+  }
+
+  public async updatePools$(): Promise<void> {
+    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
+      this.pools = {};
+      return;
+    }
+    const allPools = await PoolsRepository.$getPools();
+    this.pools = {};
+    for (const pool of allPools) {
+      this.pools[pool.uniqueId] = pool;
+    }
   }
 
   private calculateMempoolDeltas(prevBlocks: MempoolBlockWithTransactions[], mempoolBlocks: MempoolBlockWithTransactions[]): MempoolBlockDelta[] {
@@ -214,7 +230,7 @@ class MempoolBlocks {
 
   private resetRustGbt(): void {
     this.rustInitialized = false;
-    this.rustGbtGenerator = new GbtGenerator();
+    this.rustGbtGenerator = new GbtGenerator(config.MEMPOOL.BLOCK_WEIGHT_UNITS, config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT);
   }
 
   public async $rustMakeBlockTemplates(txids: string[], newMempool: { [txid: string]: MempoolTransactionExtended }, candidates: GbtCandidates | undefined, saveResults: boolean = false, useAccelerations: boolean = false, accelerationPool?: number): Promise<MempoolBlockWithTransactions[]> {
@@ -246,7 +262,7 @@ class MempoolBlocks {
     });
 
     // run the block construction algorithm in a separate thread, and wait for a result
-    const rustGbt = saveResults ? this.rustGbtGenerator : new GbtGenerator();
+    const rustGbt = saveResults ? this.rustGbtGenerator : new GbtGenerator(config.MEMPOOL.BLOCK_WEIGHT_UNITS, config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT);
     try {
       const { blocks, blockWeights, rates, clusters, overflow } = this.convertNapiResultTxids(
         await rustGbt.make(transactions as RustThreadTransaction[], convertedAccelerations as RustThreadAcceleration[], this.nextUid),
@@ -333,10 +349,13 @@ class MempoolBlocks {
     }
   }
 
-  private processBlockTemplates(mempool: { [txid: string]: MempoolTransactionExtended }, blocks: string[][], blockWeights: number[] | null, rates: [string, number][], clusters: string[][], candidates: GbtCandidates | undefined, accelerations, accelerationPool, saveResults): MempoolBlockWithTransactions[] {
+  private processBlockTemplates(mempool: { [txid: string]: MempoolTransactionExtended }, blocks: string[][], blockWeights: number[] | null, rates: [string, number][], clusters: string[][], candidates: GbtCandidates | undefined, accelerations: { [txid: string]: Acceleration }, accelerationPool, saveResults): MempoolBlockWithTransactions[] {
     for (const txid of Object.keys(candidates?.txs ?? mempool)) {
       if (txid in mempool) {
         mempool[txid].cpfpDirty = false;
+        mempool[txid].ancestors = [];
+        mempool[txid].descendants = [];
+        mempool[txid].bestDescendant = null;
       }
     }
     for (const [txid, rate] of rates) {
@@ -396,7 +415,7 @@ class MempoolBlocks {
       }
     }
 
-    const isAccelerated : { [txid: string]: boolean } = {};
+    const isAcceleratedBy : { [txid: string]: number[] | false } = {};
 
     const sizeLimit = (config.MEMPOOL.BLOCK_WEIGHT_UNITS / 4) * 1.2;
     // update this thread's mempool with the results
@@ -427,17 +446,23 @@ class MempoolBlocks {
           };
 
           const acceleration = accelerations[txid];
-          if (isAccelerated[txid] || (acceleration && (!accelerationPool || acceleration.pools.includes(accelerationPool)))) {
+          if (isAcceleratedBy[txid] || (acceleration && (!accelerationPool || acceleration.pools.includes(accelerationPool)))) {
             if (!mempoolTx.acceleration) {
               mempoolTx.cpfpDirty = true;
             }
             mempoolTx.acceleration = true;
+            mempoolTx.acceleratedBy = isAcceleratedBy[txid] || acceleration?.pools;
+            mempoolTx.acceleratedAt = acceleration?.added;
+            mempoolTx.feeDelta = acceleration?.feeDelta;
             for (const ancestor of mempoolTx.ancestors || []) {
               if (!mempool[ancestor.txid].acceleration) {
                 mempool[ancestor.txid].cpfpDirty = true;
               }
               mempool[ancestor.txid].acceleration = true;
-              isAccelerated[ancestor.txid] = true;
+              mempool[ancestor.txid].acceleratedBy = mempoolTx.acceleratedBy;
+              mempool[ancestor.txid].acceleratedAt = mempoolTx.acceleratedAt;
+              mempool[ancestor.txid].feeDelta = mempoolTx.feeDelta;
+              isAcceleratedBy[ancestor.txid] = mempoolTx.acceleratedBy;
             }
           } else {
             if (mempoolTx.acceleration) {
@@ -475,7 +500,7 @@ class MempoolBlocks {
       const deltas = this.calculateMempoolDeltas(this.mempoolBlocks, mempoolBlocks);
       this.mempoolBlocks = mempoolBlocks;
       this.mempoolBlockDeltas = deltas;
-
+      this.updateAccelerationPositions(mempool, accelerations, mempoolBlocks);
     }
 
     return mempoolBlocks;
@@ -621,6 +646,124 @@ class MempoolBlocks {
       tx.flags,
       tx.acc ? 1 : 0,
     ];
+  }
+
+  // estimates and saves positions of accelerations in mining partner mempools
+  private updateAccelerationPositions(mempoolCache: { [txid: string]: MempoolTransactionExtended }, accelerations: { [txid: string]: Acceleration }, mempoolBlocks: MempoolBlockWithTransactions[]): void {
+    const accelerationPositions: { [txid: string]: { poolId: number, pool: string, block: number, vsize: number }[] } = {};
+    // keep track of simulated mempool blocks for each active pool
+    const pools: {
+      [pool: string]: { name: string, block: number, vsize: number, accelerations: string[], complete: boolean };
+    } = {};
+    // prepare a list of accelerations in ascending order (we'll pop items off the end of the list)
+    const accQueue: { acceleration: Acceleration, rate: number, vsize: number }[] = Object.values(accelerations).map(acc => {
+      let vsize = mempoolCache[acc.txid].vsize;
+      for (const ancestor of mempoolCache[acc.txid].ancestors || []) {
+        vsize += (ancestor.weight / 4);
+      }
+      return {
+        acceleration: acc,
+        rate: mempoolCache[acc.txid].effectiveFeePerVsize,
+        vsize
+      };
+    }).sort((a, b) => a.rate - b.rate);
+    // initialize the pool tracker
+    for (const { acceleration }  of accQueue) {
+      accelerationPositions[acceleration.txid] = [];
+      for (const pool of acceleration.pools) {
+        if (!pools[pool]) {
+          pools[pool] = {
+            name: this.pools[pool]?.name || 'unknown',
+            block: 0,
+            vsize: 0,
+            accelerations: [],
+            complete: false,
+          };
+        }
+        pools[pool].accelerations.push(acceleration.txid);
+      }
+      for (const ancestor of mempoolCache[acceleration.txid].ancestors || []) {
+        accelerationPositions[ancestor.txid] = [];
+      }
+    }
+
+    for (const pool of Object.keys(pools)) {
+      // if any pools accepted *every* acceleration, we can just use the GBT result positions directly
+      if (pools[pool].accelerations.length === Object.keys(accelerations).length) {
+        pools[pool].complete = true;
+      }
+    }
+
+    let block = 0;
+    let index = 0;
+    let next = accQueue.pop();
+    // build simulated blocks for each pool by taking the best option from
+    // either the mempool or the list of accelerations.
+    while (next && block < mempoolBlocks.length) {
+      while (next && index < mempoolBlocks[block].transactions.length) {
+        const nextTx = mempoolBlocks[block].transactions[index];
+        if (next.rate >= (nextTx.rate || (nextTx.fee / nextTx.vsize))) {
+          for (const pool of next.acceleration.pools) {
+            if (pools[pool].vsize + next.vsize <= 999_000) {
+              pools[pool].vsize += next.vsize;
+            } else {
+              pools[pool].block++;
+              pools[pool].vsize = next.vsize;
+            }
+            // insert the acceleration into matching pool's blocks
+            if (pools[pool].complete && mempoolCache[next.acceleration.txid]?.position !== undefined) {
+              accelerationPositions[next.acceleration.txid].push({
+                ...mempoolCache[next.acceleration.txid].position as { block: number, vsize: number },
+                poolId: pool,
+                pool: pools[pool].name
+              });
+            } else {
+              accelerationPositions[next.acceleration.txid].push({
+                poolId: pool,
+                pool: pools[pool].name,
+                block: pools[pool].block,
+                vsize: pools[pool].vsize - (next.vsize / 2),
+              });
+            }
+            // and any accelerated ancestors
+            for (const ancestor of mempoolCache[next.acceleration.txid].ancestors || []) {
+              if (pools[pool].complete && mempoolCache[ancestor.txid]?.position !== undefined) {
+                accelerationPositions[ancestor.txid].push({
+                  ...mempoolCache[ancestor.txid].position as { block: number, vsize: number },
+                  poolId: pool,
+                  pool: pools[pool].name,
+                });
+              } else {
+                accelerationPositions[ancestor.txid].push({
+                  poolId: pool,
+                  pool: pools[pool].name,
+                  block: pools[pool].block,
+                  vsize: pools[pool].vsize - (next.vsize / 2),
+                });
+              }
+            }
+          }
+          next = accQueue.pop();
+        } else {
+          // skip accelerated transactions and their CPFP ancestors
+          if (accelerationPositions[nextTx.txid] == null) {
+            // insert into all pools' blocks
+            for (const pool of Object.keys(pools)) {
+              if (pools[pool].vsize + nextTx.vsize <= 999_000) {
+                pools[pool].vsize += nextTx.vsize;
+              } else {
+                pools[pool].block++;
+                pools[pool].vsize = nextTx.vsize;
+              }
+            }
+          }
+          index++;
+        }
+      }
+      block++;
+      index = 0;
+    }
+    mempool.setAccelerationPositions(accelerationPositions);
   }
 }
 

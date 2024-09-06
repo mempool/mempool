@@ -1,0 +1,53 @@
+<div #blockTxTitle id="block-tx-title" class="block-tx-title">
+  <h2 class="text-left">
+    <ng-container *ngTemplateOutlet="txCount === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: txCount | number}"></ng-container>
+    <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
+    <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
+  </h2>
+  <ngb-pagination class="pagination-container float-right" [collectionSize]="txCount" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page, blockTxTitle)" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
+</div>
+<div class="clearfix"></div>
+
+<app-transactions-list *ngIf="transactions$ | async as transactions; else loading" [transactions]="transactions" [paginated]="true" [blockTime]="timestamp"></app-transactions-list>
+
+<ng-template [ngIf]="transactionsError">
+  <br>
+  <app-http-error [error]="transactionsError">
+    <span i18n="error.general-loading-data">Error loading data.</span>
+  </app-http-error>
+  <br>
+  <br>
+</ng-template>
+
+<ng-template #loading>
+  <div class="tx-skeleton">
+    <ng-container *ngIf="(txsLoadingStatus$ | async) as txsLoadingStatus; else headerLoader">
+      <div class="header-bg box">
+        <div class="progress progress-dark" style="margin: 4px; height: 14px;">
+          <div class="progress-bar progress-light" role="progressbar" [ngStyle]="{'width': txsLoadingStatus + '%' }"></div>
+        </div>
+      </div>
+    </ng-container>
+
+    <div class="header-bg box">
+      <div class="row">
+        <div class="col-sm">
+          <span class="skeleton-loader"></span>
+        </div>
+        <div class="col-sm">
+          <span class="skeleton-loader"></span>
+          <span class="skeleton-loader"></span>
+          <span class="skeleton-loader"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #headerLoader>
+  <div class="header-bg box">
+    <span class="skeleton-loader"></span>
+  </div>
+</ng-template>
+
+<ngb-pagination class="pagination-container float-right" [collectionSize]="txCount" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page, blockTxTitle)" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>

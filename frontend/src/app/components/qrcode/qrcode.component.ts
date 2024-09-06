@@ -37,7 +37,7 @@ export class QrcodeComponent implements AfterViewInit {
       return;
     }
     const opts: QRCode.QRCodeRenderersOptions = {
-      errorCorrectionLevel: 'L',
+      errorCorrectionLevel: 'M',
       margin: 0,
       color: {
         dark: '#000',

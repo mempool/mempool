@@ -7,7 +7,7 @@
 }
 
 .card {
-  background-color: #1d1f31;
+  background-color: var(--bg);
 }
 
 .graph-card {
@@ -29,10 +29,10 @@
 
 .card-title {
   font-size: 1rem;
-  color: #4a68b9;
+  color: var(--title-fg);
 }
 .card-title > a {
-  color: #4a68b9;
+  color: var(--title-fg);
 }
 
 .card-body.pool-ranking {
@@ -60,7 +60,8 @@
 
 .main-title {
   position: relative;
-  color: #ffffff91;
+  color: var(--fg);
+  opacity: var(--opacity);
   margin-top: -13px;
   font-size: 10px;
   text-transform: uppercase;
@@ -172,4 +173,20 @@
     max-height: 430px;
     max-width: 430px;
   }
+}
+
+.widget-toggler {
+  font-size: 12px;
+  position: absolute;
+  top: -20px;
+  right: 3px;
+  text-align: right;
+}
+
+.toggler-option {
+  text-decoration: none;
+}
+
+.inactive {
+  color: #ffffff66;
 }

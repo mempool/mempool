@@ -21,25 +21,6 @@
   }
 }
 
-.qr-wrapper {
-  background-color: #FFF;
-  padding: 10px;
-  padding-bottom: 5px;
-  display: inline-block;
-}
-
-.qrcode-col {
-  text-align: center;
-}
-
-.qrcode-col > div {
-  margin: 20px auto 5px;
-  @media (min-width: 768px) {
-    text-align: center;
-    margin: auto;
-  }
-}
-
 .fiat {
   display: block;
   font-size: 13px;
@@ -100,19 +81,7 @@ h1 {
   }
 }
 
-.address-link {
-  line-height: 26px;
-  margin-left: 0px;
-  top: 14px;
-  position: relative;
-  display: flex;
-  flex-direction: row;
-  @media (min-width: 768px) {
-    line-height: 38px;
-  }
-}
-
-.row{
+.row {
 	flex-direction: column;
 	@media (min-width: 768px) {
 		flex-direction: row;
@@ -140,28 +109,6 @@ h1 {
   margin-right: .5em;
 }
 
-.block-tx-title {
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-  margin-top: -15px;
-  position: relative;
-  @media (min-width: 550px) {
-    margin-top: 1rem;
-    flex-direction: row;
-  }
-  h2 {
-    line-height: 1;
-    margin: 0;
-    position: relative;
-    padding-bottom: 10px;
-    @media (min-width: 550px) {
-      padding-bottom: 0px;
-      align-self: end;
-    }
-  }
-}
-
 .grow {
   flex-grow: 1;
 }
@@ -175,9 +122,7 @@ h1 {
   }
 
   a {
-    color: #1ad8f4;
     &:hover, &:focus {
-      color: #09a3ba;
       display: inline-block;
     }
   }
@@ -203,22 +148,6 @@ h1 {
   color: #393e5c73;
   @media (min-width: 768px) {
     font-size: 36px;
-  }
-}
-
-.tx-skeleton {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  .header-bg {
-    &:first-child {
-      padding: 10px;
-      margin-bottom: 10px;
-    }
-    &:nth-child(2) {
-      .row {
-        height: 107px;
-      }
-    }
   }
 }
 
@@ -254,7 +183,7 @@ h1 {
   cursor: pointer;
 
   &.active {
-    background: #24273e;
+    background: var(--box-bg);
   }
 
   &.active, &:hover {
@@ -304,4 +233,50 @@ h1 {
 
 .graph-col {
   flex-grow: 1.11;
+}
+
+.block-tx-title {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  margin-top: -15px;
+  position: relative;
+  @media (min-width: 550px) {
+    margin-top: 1rem;
+    flex-direction: row;
+  }
+  h2 {
+    line-height: 1;
+    margin: 0;
+    position: relative;
+    padding-bottom: 10px;
+    @media (min-width: 550px) {
+      padding-bottom: 0px;
+      align-self: end;
+    }
+  }
+}
+
+.tx-skeleton {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  .header-bg {
+    &:first-child {
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    &:nth-child(2) {
+      .row {
+        height: 107px;
+      }
+    }
+  }
+}
+
+.pool-logo {
+  width: 15px;
+  height: 15px;
+  position: relative;
+  top: -1px;
+  margin-right: 2px;
 }

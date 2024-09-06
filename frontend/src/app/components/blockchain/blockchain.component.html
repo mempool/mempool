@@ -10,6 +10,7 @@
         </ng-container>
       </div>
       <div id="divider" [hidden]="pageIndex > 0">
+        <button class="block-display-toggle" (click)="toggleBlockDisplayMode()"><fa-icon [icon]="['fas', 'exchange-alt']" [fixedWidth]="true"></fa-icon></button>
         <button class="time-toggle" (click)="toggleTimeDirection()"><fa-icon [icon]="['fas', 'exchange-alt']" [fixedWidth]="true"></fa-icon></button>
       </div>
     </span>

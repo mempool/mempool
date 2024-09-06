@@ -14,7 +14,7 @@
 }
 
 .qr-wrapper {
-  background-color: #FFF;
+  background-color: var(--fg);
   padding: 10px;
   padding-bottom: 5px;
   display: inline-block;
@@ -89,7 +89,7 @@ app-fiat {
 
   .tlv-type {
     font-size: 12px;
-    color: #ffffff66;
+    color: var(--transparent-fg);
   }
 
   .tlv-payload {

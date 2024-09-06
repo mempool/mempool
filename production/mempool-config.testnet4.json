@@ -1,0 +1,85 @@
+{
+  "MEMPOOL": {
+    "OFFICIAL": true,
+    "NETWORK": "testnet",
+    "BACKEND": "esplora",
+    "HTTP_PORT": 8990,
+    "MINED_BLOCKS_CACHE": 144,
+    "SPAWN_CLUSTER_PROCS": 0,
+    "API_URL_PREFIX": "/api/v1/",
+    "INDEXING_BLOCKS_AMOUNT": -1,
+    "AUTOMATIC_POOLS_UPDATE": true,
+    "AUDIT": true,
+    "RUST_GBT": true,
+    "POLL_RATE_MS": 1000,
+    "DISK_CACHE_BLOCK_INTERVAL": 1,
+    "MAX_PUSH_TX_SIZE_WEIGHT": 4000000,
+    "ALLOW_UNREACHABLE": true,
+    "MAX_TRACKED_ADDRESSES": 10
+  },
+  "SYSLOG" : {
+    "MIN_PRIORITY": "debug"
+  },
+  "CORE_RPC": {
+    "PORT": 48332,
+    "USERNAME": "__BITCOIN_RPC_USER__",
+    "PASSWORD": "__BITCOIN_RPC_PASS__"
+  },
+  "ESPLORA": {
+    "UNIX_SOCKET_PATH": "/bitcoin/socket/esplora-bitcoin-testnet4",
+    "FALLBACK": [
+      "http://node201.fmt.mempool.space:3005",
+      "http://node202.fmt.mempool.space:3005",
+      "http://node203.fmt.mempool.space:3005",
+      "http://node204.fmt.mempool.space:3005",
+      "http://node205.fmt.mempool.space:3005",
+      "http://node206.fmt.mempool.space:3005",
+      "http://node201.va1.mempool.space:3005",
+      "http://node202.va1.mempool.space:3005",
+      "http://node203.va1.mempool.space:3005",
+      "http://node204.va1.mempool.space:3005",
+      "http://node205.va1.mempool.space:3005",
+      "http://node206.va1.mempool.space:3005",
+      "http://node207.va1.mempool.space:3005",
+      "http://node208.va1.mempool.space:3005",
+      "http://node209.va1.mempool.space:3005",
+      "http://node210.va1.mempool.space:3005",
+      "http://node211.va1.mempool.space:3005",
+      "http://node212.va1.mempool.space:3005",
+      "http://node213.va1.mempool.space:3005",
+      "http://node214.va1.mempool.space:3005",
+      "http://node201.fra.mempool.space:3005",
+      "http://node202.fra.mempool.space:3005",
+      "http://node203.fra.mempool.space:3005",
+      "http://node204.fra.mempool.space:3005",
+      "http://node205.fra.mempool.space:3005",
+      "http://node206.fra.mempool.space:3005",
+      "http://node207.fra.mempool.space:3005",
+      "http://node208.fra.mempool.space:3005",
+      "http://node209.fra.mempool.space:3005",
+      "http://node210.fra.mempool.space:3005",
+      "http://node211.fra.mempool.space:3005",
+      "http://node212.fra.mempool.space:3005",
+      "http://node213.fra.mempool.space:3005",
+      "http://node214.fra.mempool.space:3005",
+      "http://node201.tk7.mempool.space:3005",
+      "http://node202.tk7.mempool.space:3005",
+      "http://node203.tk7.mempool.space:3005",
+      "http://node204.tk7.mempool.space:3005",
+      "http://node205.tk7.mempool.space:3005",
+      "http://node206.tk7.mempool.space:3005"
+    ]
+  },
+  "DATABASE": {
+    "ENABLED": true,
+    "HOST": "127.0.0.1",
+    "SOCKET": "/var/run/mysql/mysql.sock",
+    "USERNAME": "__MEMPOOL_TESTNET4_USER__",
+    "PASSWORD": "__MEMPOOL_TESTNET4_PASS__",
+    "DATABASE": "mempool_testnet4"
+  },
+  "STATISTICS": {
+    "ENABLED": true,
+    "TX_PER_SECOND_SAMPLE_PERIOD": 150
+  }
+}

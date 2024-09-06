@@ -85,6 +85,7 @@ export class ReservesRatioComponent implements OnInit, OnChanges {
         {
           type: 'gauge',
           startAngle: 180,
+          silent: true,
           endAngle: 0,
           center: ['50%', '75%'],
           radius: '100%',
@@ -95,8 +96,8 @@ export class ReservesRatioComponent implements OnInit, OnChanges {
             lineStyle: {
               width: 6,
               color: [
-                [0.49, '#D81B60'],
-                [1, '#7CB342']
+                [0.49, 'var(--red)'],
+                [1, 'var(--green)']
               ]
             }
           },
@@ -141,7 +142,7 @@ export class ReservesRatioComponent implements OnInit, OnChanges {
             show: true,
             offsetCenter: [0, '-127%'],
             fontSize: 18,
-            color: '#4a68b9',
+            color: 'var(--title-fg)',
             fontFamily: 'inherit',
             fontWeight: 500,
           },

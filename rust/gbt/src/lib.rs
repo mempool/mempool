@@ -35,6 +35,8 @@ type ThreadTransactionsMap = HashMap<u32, ThreadTransaction, U32HasherState>;
 #[napi]
 pub struct GbtGenerator {
     thread_transactions: Arc<Mutex<ThreadTransactionsMap>>,
+    max_block_weight: u32,
+    max_blocks: usize,
 }
 
 #[napi::module_init]
@@ -65,10 +67,12 @@ impl GbtGenerator {
     #[napi(constructor)]
     #[allow(clippy::new_without_default)]
     #[must_use]
-    pub fn new() -> Self {
+    pub fn new(max_block_weight: u32, max_blocks: u32) -> Self {
         debug!("Created new GbtGenerator");
         Self {
             thread_transactions: Arc::new(Mutex::new(u32hashmap_with_capacity(STARTING_CAPACITY))),
+            max_block_weight,
+            max_blocks: max_blocks as usize,
         }
     }
 
@@ -76,12 +80,19 @@ impl GbtGenerator {
     ///
     /// Rejects if the thread panics or if the Mutex is poisoned.
     #[napi]
-    pub async fn make(&self, mempool: Vec<ThreadTransaction>, accelerations: Vec<ThreadAcceleration>, max_uid: u32) -> Result<GbtResult> {
+    pub async fn make(
+        &self,
+        mempool: Vec<ThreadTransaction>,
+        accelerations: Vec<ThreadAcceleration>,
+        max_uid: u32,
+    ) -> Result<GbtResult> {
         trace!("make: Current State {:#?}", self.thread_transactions);
         run_task(
             Arc::clone(&self.thread_transactions),
             accelerations,
             max_uid as usize,
+            self.max_block_weight,
+            self.max_blocks,
             move |map| {
                 for tx in mempool {
                     map.insert(tx.uid, tx);
@@ -107,6 +118,8 @@ impl GbtGenerator {
             Arc::clone(&self.thread_transactions),
             accelerations,
             max_uid as usize,
+            self.max_block_weight,
+            self.max_blocks,
             move |map| {
                 for tx in new_txs {
                     map.insert(tx.uid, tx);
@@ -149,6 +162,8 @@ async fn run_task<F>(
     thread_transactions: Arc<Mutex<ThreadTransactionsMap>>,
     accelerations: Vec<ThreadAcceleration>,
     max_uid: usize,
+    max_block_weight: u32,
+    max_blocks: usize,
     callback: F,
 ) -> Result<GbtResult>
 where
@@ -166,7 +181,13 @@ where
         callback(&mut map);
 
         info!("Starting gbt algorithm for {} elements...", map.len());
-        let result = gbt::gbt(&mut map, &accelerations, max_uid);
+        let result = gbt::gbt(
+            &mut map,
+            &accelerations,
+            max_uid,
+            max_block_weight,
+            max_blocks as usize,
+        );
         info!("Finished gbt algorithm for {} elements...", map.len());
 
         debug!(

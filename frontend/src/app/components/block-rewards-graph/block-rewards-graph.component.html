@@ -11,7 +11,7 @@
     </div>  
   
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(statsObservable$ | async) as stats">
-      <div class="btn-group btn-group-toggle" name="radioBasic" [class]="{'disabled': isLoading}">
+      <div class="btn-group btn-group-toggle" name="radioBasic">
         <label class="btn btn-primary btn-sm" *ngIf="stats.blockCount >= 4320" [class.active]="radioGroupForm.get('dateSpan').value === '1m'">
           <input type="radio" [value]="'1m'" fragment="1m" [routerLink]="['/graphs/mining/block-rewards' | relativeUrl]" formControlName="dateSpan"> 1M
         </label>
@@ -38,7 +38,7 @@
   </div>
 
   <div class="chart" *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions"
-    (chartInit)="onChartInit($event)">
+    (chartInit)="onChartInit($event)" [style]="{opacity: isLoading ? 0.5 : 1}">
   </div>
   <div class="text-center loadingGraphs" *ngIf="!stateService.isBrowser || isLoading">
     <div class="spinner-border text-light"></div>

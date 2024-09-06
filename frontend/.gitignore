@@ -63,6 +63,7 @@ src/resources/pools.json
 src/resources/mining-pools/*
 src/resources/**/*.mp4
 src/resources/**/*.vtt
+src/resources/customize.js
 
 # environment config
 mempool-frontend-config.json

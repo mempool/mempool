@@ -1,5 +1,5 @@
 footer {
-  background-color: #1d1f31;
+  background-color: var(--bg);
   margin-top: 30px;
   &.services {
     @media (min-width: 768px) {
@@ -34,11 +34,11 @@ footer .row.main .branding > p {
 
 footer .row.main .branding .btn {
   display: inline-block;
-  color: #fff !important;
+  color: var(--fg) !important;
 }
 
 footer .row.main .branding button.account {
-  background-color: #2d3348;
+  background-color: var(--secondary);
 }
 
 footer .row.main .branding .cta {
@@ -59,7 +59,7 @@ footer .row.main .links > div:first-child {
 }
 
 footer .links .category {
-  color: #4a68b9;
+  color: var(--title-fg);
   font-weight: 700;
 }
 
@@ -114,7 +114,7 @@ footer .row.social-links svg {
 footer .row.version {
   padding-top: 20px !important;
   padding-bottom: 20px !important;
-  background-color: #1d1f31;
+  background-color: var(--bg);
 }
 
 footer .row.version p {
@@ -142,6 +142,10 @@ footer .sponsor {
   max-width: 160px;
 }
 
+footer .nowrap {
+  white-space: nowrap;
+}
+
 .explore-tagline-desktop {
   display: none;
 }
@@ -150,7 +154,7 @@ footer .sponsor {
   display: block;
 }
 
-@media (min-width: 901px) {
+@media (min-width: 951px) {
   :host-context(.ltr-layout) .language-selector {
     float: right !important;
   }
@@ -168,7 +172,7 @@ footer .sponsor {
 }
 
 .services {
-  @media (min-width: 901px) and (max-width: 1147px) {
+  @media (min-width: 951px) and (max-width: 1147px) {
     :host-context(.ltr-layout) .services .language-selector {
       float: none !important;
     }
@@ -244,7 +248,7 @@ footer .sponsor {
 
 }
 
-@media (max-width: 900px) {
+@media (max-width: 950px) {
 
   .main-logo {
     width: 220px;
@@ -324,4 +328,9 @@ footer .sponsor {
   footer .services.selector:not(:last-child) {
     margin-right: 10px;
   }
+}
+
+.beta-network {
+  font-size: 8px;
+  margin-left: 1em;
 }

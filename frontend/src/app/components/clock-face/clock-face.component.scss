@@ -14,7 +14,7 @@
     height: 100%;
 
     .face {
-      fill: #11131f;
+      fill: var(--active-bg);
     }
   }
 
@@ -29,8 +29,8 @@
     }
 
     &.hour {
-      fill: #105fb0;
-      stroke: #105fb0;
+      fill: var(--primary);
+      stroke: var(--primary);
       stroke-width: 6px;
     }
   }

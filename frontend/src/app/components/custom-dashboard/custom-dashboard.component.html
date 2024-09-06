@@ -1,0 +1,286 @@
+
+<div class="container-xl dashboard-container">
+  <div class="row row-cols-1 row-cols-md-2" *ngIf="{ value: (mempoolInfoData$ | async) } as mempoolInfoData">
+    @for (widget of widgets; track widget.component) {
+      @switch (widget.component) {
+        @case ('fees') {
+          <div class="col card-wrapper" [style.order]="isMobile && widget.mobileOrder || 8">
+            <div class="main-title" i18n="fees-box.transaction-fees">Transaction Fees</div>
+            <div class="card">
+              <div class="card-body less-padding">
+                <app-fees-box class="d-block"></app-fees-box>
+              </div>
+            </div>
+          </div>
+        }
+        @case ('difficulty') {
+          <div class="col" [style.order]="isMobile && widget.mobileOrder || 8">
+            <app-difficulty></app-difficulty>
+          </div>
+        }
+        @case ('goggles') {
+          <div class="col" [style.order]="isMobile && widget.mobileOrder || 8">
+            <div class="card graph-card">
+              <div class="card-body pl-lg-3 pr-lg-3 pl-2 pr-2">
+                <a class="title-link mb-0" style="margin-top: -2px" href="" [routerLink]="['/mempool-block/0' | relativeUrl]">
+                  <h5 class="card-title d-inline"><span>Mempool Goggles&trade;</span> : {{ goggleCycle[goggleIndex].name }}</h5>
+                  <span>&nbsp;</span>
+                  <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
+                </a>
+                <div class="quick-filter">
+                  <div class="btn-group btn-group-toggle">
+                    <label class="btn btn-primary btn-xs" [class.active]="filter.index === goggleIndex"  *ngFor="let filter of goggleCycle">
+                      <input type="radio" [value]="'3m'" fragment="3m" (click)="setFilter(filter.index)" [attr.data-cy]="'3m'"> {{ filter.name }}
+                    </label>
+                  </div>
+                </div>
+                <div class="mempool-block-wrapper" *ngIf="webGlEnabled">
+                  <app-mempool-block-overview
+                    [index]="0"
+                    [resolution]="goggleResolution"
+                    [filterFlags]="goggleFlags"
+                    [filterMode]="goggleMode"
+                    [gradientMode]="gradientMode"
+                  ></app-mempool-block-overview>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+        @case ('incoming') {
+          <div class="col" [style.order]="isMobile && widget.mobileOrder || 8">
+            <div class="card graph-card">
+              <div class="card-body">
+                <ng-container *ngTemplateOutlet="mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
+                  <h5 class="card-title mt-3" i18n="dashboard.incoming-transactions">Incoming Transactions</h5>
+                  <div class="mempool-graph" *ngIf="(mempoolStats$ | async) as mempoolStats">
+                    <app-incoming-transactions-graph
+                      [height]="incomingGraphHeight"
+                      [left]="50"
+                      [right]="20"
+                      [data]="mempoolStats?.weightPerSecond"
+                      [windowPreferenceOverride]="'2h'"
+                      ></app-incoming-transactions-graph>
+                  </div>
+              </div>
+            </div>
+          </div>
+          <ng-template #mempoolTable let-mempoolInfoData>
+            <div class="mempool-info-data">
+              <div class="item">
+                <h5 *ngIf="!mempoolInfoData.value || mempoolInfoData.value.memPoolInfo.mempoolminfee === mempoolInfoData.value.memPoolInfo.minrelaytxfee || (stateService.env.BASE_MODULE === 'liquid' && mempoolInfoData.value.memPoolInfo.mempoolminfee === 0.000001) else purgingText" class="card-title" i18n="dashboard.minimum-fee|Minimum mempool fee">Minimum fee</h5>
+                <ng-template #purgingText><h5 class="card-title" i18n="dashboard.purging|Purgin below fee">Purging</h5></ng-template>
+                <p class="card-text" *ngIf="(isLoadingWebSocket$ | async) === false && mempoolInfoData.value; else loading">
+                  <ng-template [ngIf]="mempoolInfoData.value.memPoolInfo.mempoolminfee !== mempoolInfoData.value.memPoolInfo.minrelaytxfee">&lt; </ng-template><app-fee-rate [fee]="mempoolInfoData.value.memPoolInfo.mempoolminfee * 100000"></app-fee-rate>
+                </p>
+              </div>
+              <div class="item">
+                <h5 class="card-title" i18n="dashboard.unconfirmed|Unconfirmed count">Unconfirmed</h5>
+                <p class="card-text" *ngIf="(isLoadingWebSocket$ | async) === false && mempoolInfoData.value; else loading">
+                  {{ mempoolInfoData.value.memPoolInfo.size | number }} <span i18n="dashboard.txs">TXs</span>
+                </p>
+              </div>
+              <div class="item bar">
+                <h5 class="card-title" i18n="dashboard.memory-usage|Memory usage">Memory Usage</h5>
+                <div class="card-text" *ngIf="(isLoadingWebSocket$ | async) === false && mempoolInfoData.value; else loadingbig">
+                  <div class="progress">
+                    <div class="progress-bar {{ mempoolInfoData.value.mempoolSizeProgress }}" role="progressbar" [ngStyle]="{'width': (mempoolInfoData.value.memPoolInfo.usage / mempoolInfoData.value.memPoolInfo.maxmempool * 100) + '%' }">&nbsp;</div>
+                    <div class="progress-text">&lrm;<span [innerHTML]="mempoolInfoData.value.memPoolInfo.usage | bytes : 2 : 'B' : null : false : 3"></span> / <span [innerHTML]="mempoolInfoData.value.memPoolInfo.maxmempool | bytes"></span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        }
+        @case ('replacements') {
+          <div class="col" style="max-height: 410px" [style.order]="isMobile && widget.mobileOrder || 8">
+            <div class="card">
+              <div class="card-body">
+                <a class="title-link" href="" [routerLink]="['/rbf' | relativeUrl]">
+                  <h5 class="card-title d-inline" i18n="dashboard.recent-rbf-replacements">Recent Replacements</h5>
+                  <span>&nbsp;</span>
+                  <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
+                </a>
+                <table class="table lastest-replacements-table">
+                  <thead>
+                    <th class="table-cell-txid" i18n="dashboard.latest-transactions.txid">TXID</th>
+                    <th class="table-cell-old-fee" i18n="dashboard.previous-transaction-fee">Previous fee</th>
+                    <th class="table-cell-new-fee" i18n="dashboard.new-transaction-fee">New fee</th>
+                    <th class="table-cell-badges" i18n="transaction.status|Transaction Status">Status</th>
+                  </thead>
+                  <tbody *ngIf="replacements$ | async as replacements; else replacementsSkeleton">
+                    <tr *ngFor="let replacement of replacements">
+                      <td class="table-cell-txid">
+                        <a [routerLink]="['/tx' | relativeUrl, replacement.txid]">
+                          <app-truncate [text]="replacement.txid" [lastChars]="5"></app-truncate>
+                        </a>
+                      </td>
+                      <td class="table-cell-old-fee"><app-fee-rate [fee]="replacement.oldFee" [weight]="replacement.oldVsize * 4"></app-fee-rate></td>
+                      <td class="table-cell-new-fee"><app-fee-rate [fee]="replacement.newFee" [weight]="replacement.newVsize * 4"></app-fee-rate></td>
+                      <td class="table-cell-badges">
+                        <span *ngIf="replacement.mined" class="badge badge-success" i18n="transaction.rbf.mined">Mined</span>
+                        <span *ngIf="replacement.fullRbf" class="badge badge-info" i18n="transaction.full-rbf">Full RBF</span>
+                        <span *ngIf="!replacement.fullRbf" class="badge badge-success" i18n="tx-features.tag.rbf|RBF">RBF</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <ng-template #replacementsSkeleton>
+            <tbody>
+              <tr *ngFor="let i of [1,2,3,4,5,6]">
+                <td class="table-cell-txid"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+                <td class="table-cell-old-fee"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+                <td class="table-cell-new-fee"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+                <td class="table-cell-badges"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+              </tr>
+            </tbody>
+          </ng-template>
+        }
+        @case ('blocks') {
+          <div class="col" style="max-height: 410px" [style.order]="isMobile && widget.mobileOrder || 8">
+            <div class="card">
+              <div class="card-body">
+                <a class="title-link" href="" [routerLink]="['/blocks' | relativeUrl]">
+                  <h5 class="card-title d-inline" i18n="dashboard.recent-blocks">Recent Blocks</h5>
+                  <span>&nbsp;</span>
+                  <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
+                </a>
+                <table class="table lastest-blocks-table">
+                  <thead>
+                    <th class="table-cell-height" i18n="dashboard.latest-blocks.height">Height</th>
+                    <th class="table-cell-mined" i18n="dashboard.latest-blocks.mined">Mined</th>
+                    <th class="table-cell-transaction-count" i18n="dashboard.latest-blocks.transaction-count">TXs</th>
+                    <th class="table-cell-size" i18n="dashboard.latest-blocks.size">Size</th>
+                  </thead>
+                  <tbody *ngIf="blocks$ | async as blocks; else blocksSkeleton">
+                    <tr *ngFor="let block of blocks; let i = index; trackBy: trackByBlock">
+                      <td class="table-cell-height" ><a [routerLink]="['/block' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
+                      <td class="table-cell-mined" ><app-time kind="since" [time]="block.timestamp" [fastRender]="true" [showTooltip]="true"></app-time></td>
+                      <td class="table-cell-transaction-count">{{ block.tx_count | number }}</td>
+                      <td class="table-cell-size">
+                        <div class="progress">
+                          <div class="progress-bar progress-mempool {{ network$ | async }}" role="progressbar" [ngStyle]="{'width': (block.weight / stateService.env.BLOCK_WEIGHT_UNITS)*100 + '%' }">&nbsp;</div>
+                          <div class="progress-text" [innerHTML]="block.size | bytes: 2"></div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <ng-template #blocksSkeleton>
+            <tbody>
+              <tr *ngFor="let i of [1,2,3,4,5,6]">
+                <td class="table-cell-height"><div class="skeleton-loader skeleton-loader-transactions"></div> </td>
+                <td class="table-cell-mined"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+                <td class="table-cell-transaction-count"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+                <td class="table-cell-size"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+              </tr>
+            </tbody>
+          </ng-template>
+        }
+        @case ('transactions') {
+          <div class="col" style="max-height: 410px" [style.order]="isMobile && widget.mobileOrder || 8">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title" i18n="dashboard.recent-transactions">Recent Transactions</h5>
+                <table class="table latest-transactions">
+                  <thead>
+                    <th class="table-cell-txid" i18n="dashboard.latest-transactions.txid">TXID</th>
+                    <th class="table-cell-satoshis" i18n="dashboard.latest-transactions.amount">Amount</th>
+                    <th class="table-cell-fiat" *ngIf="(network$ | async) === ''">{{ currency }}</th>
+                    <th class="table-cell-fees" i18n="transaction.fee|Transaction fee">Fee</th>
+                  </thead>
+                  <tbody *ngIf="transactions$ | async as transactions else recentTransactionsSkeleton">
+                    <tr *ngFor="let transaction of transactions; let i = index;">
+                      <td class="table-cell-txid">
+                        <a [routerLink]="['/tx' | relativeUrl, transaction.txid]">
+                          <app-truncate [text]="transaction.txid" [lastChars]="5"></app-truncate>
+                        </a>
+                      </td>
+                      <td class="table-cell-satoshis"><app-amount *ngIf="(network$ | async) !== 'liquidtestnet'; else liquidAmount" [satoshis]="transaction.value" digitsInfo="1.2-4" [noFiat]="true"></app-amount><ng-template #liquidAmount i18n="shared.confidential">Confidential</ng-template></td>
+                      <td class="table-cell-fiat" *ngIf="(network$ | async) === ''" ><app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat></td>
+                      <td class="table-cell-fees"><app-fee-rate [fee]="transaction.fee" [weight]="transaction.vsize * 4"></app-fee-rate></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="">&nbsp;</div>
+              </div>
+            </div>
+          </div>
+          <ng-template #recentTransactionsSkeleton>
+            <tbody>
+              <tr *ngFor="let i of [1,2,3,4,5,6]">
+                <td class="table-cell-txid"><div class="skeleton-loader skeleton-loader-transactions"></div> </td>
+                <td class="table-cell-satoshis"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+                <td class="table-cell-fiat" *ngIf="(network$ | async) === ''"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+                <td class="table-cell-fees"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+              </tr>
+            </tbody>
+          </ng-template>
+        }
+        @case ('balance') {
+          <div class="col card-wrapper" [style.order]="isMobile && widget.mobileOrder || 8">
+            <div class="main-title" i18n="dashboard.treasury">Treasury</div>
+            <app-balance-widget [address]="widget.props.address" [addressSummary$]="addressSummary$" [addressInfo]="address"></app-balance-widget>
+          </div>
+        }
+        @case ('address') {
+          <div class="col" style="max-height: 410px" [style.order]="isMobile && widget.mobileOrder || 8">
+            <div class="card graph-card">
+              <div class="card-body">
+                <a class="title-link" href="" [routerLink]="[('/address/' + widget.props.address) | relativeUrl]">
+                  <h5 class="card-title d-inline" i18n="dashboard.balance-history">Balance History</h5>
+                  <span>&nbsp;</span>
+                  <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
+                </a>
+                <app-address-graph [address]="widget.props.address" [addressSummary$]="addressSummary$" [period]="widget.props.period || 'all'" [stats]="address ? address.chain_stats : null" [widget]="true" [height]="graphHeight"></app-address-graph>
+              </div>
+            </div>
+          </div>
+        }
+        @case ('addressTransactions') {
+          <div class="col" style="max-height: 410px" [style.order]="isMobile && widget.mobileOrder || 8">
+            <div class="card">
+              <div class="card-body">
+                <a class="title-link" href="" [routerLink]="[('/address/' + widget.props.address) | relativeUrl]">
+                  <h5 class="card-title d-inline" i18n="dashboard.treasury-transactions">Treasury Transactions</h5>
+                  <span>&nbsp;</span>
+                  <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
+                </a>
+                <app-address-transactions-widget [address]="widget.props.address" [addressSummary$]="addressSummary$" [addressInfo]="address"></app-address-transactions-widget>
+              </div>
+            </div>
+          </div>
+        }
+        @case ('twitter') {
+          <div class="col" style="min-height:410px" [style.order]="isMobile && widget.mobileOrder || 8">
+            <div class="card graph-card">
+              <div class="card-body pl-lg-3 pr-lg-3 pl-2 pr-2 d-flex flex-column">
+                <a class="title-link" [href]="'https://x.com/' + widget.props?.handle" target="_blank">
+                  <h5 class="card-title d-inline" i18n="dashboard.x-timeline">X Timeline</h5>
+                  <span>&nbsp;</span>
+                  <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
+                </a>
+                @defer {
+                  <app-twitter-widget [handle]="widget.props?.handle" style="flex-grow: 1"></app-twitter-widget>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      }
+    }
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="skeleton-loader"></div>
+</ng-template>
+<ng-template #loadingbig>
+  <span class="skeleton-loader skeleton-loader-big" ></span>
+</ng-template>

@@ -34,6 +34,8 @@
     "prefer-rest-params": 1,
     "quotes": [1, "single", { "allowTemplateLiterals": true }],
     "semi": 1,
-    "eqeqeq": 1
+    "curly": [1, "all"],
+    "eqeqeq": 1,
+    "no-trailing-spaces": 1
   }
 }

@@ -1,0 +1,32 @@
+@switch (address.type || null) {
+  @case ('fee') {
+    <span i18n="address.fee">fee</span>
+  }
+  @case ('empty') {
+    <span i18n="address.empty">empty</span>
+  }
+  @case ('v0_p2wpkh') {
+    <span>P2WPKH</span>
+  }
+  @case ('v0_p2wsh') {
+    <span>P2WSH</span>
+  }
+  @case ('v1_p2tr') {
+    <span>P2TR</span>
+  }
+  @case ('provably_unspendable') {
+    <span i18n="address.provably-unspendable">provably unspendable</span>
+  }
+  @case ('multisig') {
+    <span i18n="address.bare-multisig">bare multisig</span>
+  }
+  @case ('anchor') {
+    <span>anchor</span>
+  }
+  @case (null) {
+    <span>unknown</span>
+  }
+  @default {
+    <span>{{ address.type.toUpperCase() }}</span>
+  }
+}

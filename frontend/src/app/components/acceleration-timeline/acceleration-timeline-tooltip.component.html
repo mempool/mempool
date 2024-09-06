@@ -1,0 +1,62 @@
+<div
+  #tooltip
+  *ngIf="accelerationInfo && tooltipPosition !== null"
+  class="acceleration-tooltip"
+  [style.left]="tooltipPosition.x + 'px'"
+  [style.top]="tooltipPosition.y + 'px'"
+>
+  <table>
+    <tbody>
+      <tr>
+        <td class="label" i18n="transaction.status|Transaction Status">Status</td>
+        <td class="value">
+          @if (accelerationInfo.status === 'seen') {
+          <span class="badge badge-primary" i18n="transaction.first-seen|Transaction first seen">First seen</span>
+          } @else if (accelerationInfo.status === 'accelerated') {
+          <span class="badge badge-accelerated" i18n="transaction.audit.accelerated">Accelerated</span>
+          } @else if (accelerationInfo.status === 'mined') {
+          <span class="badge badge-success" i18n="transaction.rbf.mined">Mined</span>
+          }
+        </td>
+      </tr>
+      <tr *ngIf="accelerationInfo.fee">
+        <td class="label" i18n="transaction.fee|Transaction fee">Fee</td>
+        <td class="value">{{ accelerationInfo.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span></td>
+      </tr>
+      <tr *ngIf="accelerationInfo.bidBoost >= 0 || accelerationInfo.feeDelta">
+        <td class="label" i18n="transaction.out-of-band-fees">Out-of-band fees</td>
+        @if (accelerationInfo.status === 'accelerated') {
+          <td class="value oobFees">{{ accelerationInfo.feeDelta | number }} <span class="symbol" i18n="shared.sat|sat">sat</span></td>
+        } @else {
+          <td class="value oobFees">{{ accelerationInfo.bidBoost | number }} <span class="symbol" i18n="shared.sat|sat">sat</span></td>
+        }
+      </tr>
+      <tr *ngIf="accelerationInfo.fee && accelerationInfo.weight">
+        @if (accelerationInfo.status === 'seen') {
+          <td class="label" i18n="transaction.fee-rate|Transaction fee rate">Fee rate</td>
+          <td class="value"><app-fee-rate [fee]="accelerationInfo.fee" [weight]="accelerationInfo.weight"></app-fee-rate></td>
+        } @else if (accelerationInfo.status === 'accelerated' || accelerationInfo.status === 'mined') {
+          <td class="label" i18n="transaction.accelerated-fee-rate|Accelerated transaction fee rate">Accelerated fee rate</td>
+          @if (accelerationInfo.status === 'accelerated') {
+            <td class="value oobFees"><app-fee-rate [fee]="accelerationInfo.fee + (accelerationInfo.feeDelta || 0)" [weight]="accelerationInfo.weight"></app-fee-rate></td>
+          } @else {
+            <td class="value oobFees"><app-fee-rate [fee]="accelerationInfo.fee + (accelerationInfo.bidBoost || 0)" [weight]="accelerationInfo.weight"></app-fee-rate></td>
+          }
+        }
+      </tr>
+      <tr *ngIf="['accelerated', 'mined'].includes(accelerationInfo.status) && hasPoolsData()">
+        <td class="label" i18n="transaction.accelerated-by-hashrate|Accelerated to hashrate">Accelerated by</td>
+        <td class="value" *ngIf="accelerationInfo.pools">
+          <ng-container *ngFor="let pool of accelerationInfo.pools">
+            <img *ngIf="accelerationInfo.poolsData[pool]" 
+              class="pool-logo" 
+              [style.opacity]="accelerationInfo?.minedByPoolUniqueId && pool !== accelerationInfo?.minedByPoolUniqueId ? '0.3' : '1'"
+              [src]="'/resources/mining-pools/' + accelerationInfo.poolsData[pool].slug + '.svg'" 
+              onError="this.src = '/resources/mining-pools/default.svg'" 
+              [alt]="'Logo of ' + pool.name + ' mining pool'">
+          </ng-container>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

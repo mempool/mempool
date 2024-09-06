@@ -2,17 +2,17 @@
   <div class="item">
     <h5 class="card-title" i18n="liquid.non-dust-expired">Non-Dust Expired</h5>
     <div *ngIf="(stats$ | async) as expiredStats; else loadingData" class="card-text">
-      <div class="fee-text" i18n-ngbTooltip="liquid.expired-utxos-non-dust" ngbTooltip="Total amount of BTC held in non-dust Federation UTXOs that have expired timelocks" placement="top">{{ (+expiredStats.nonDust.total) / 100000000 | number: '1.5-5' }} <span style="color: #b86d12;">BTC</span></div>
+      <div class="fee-text" i18n-ngbTooltip="liquid.expired-utxos-non-dust" ngbTooltip="Total amount of BTC held in non-dust Federation UTXOs that have expired timelocks" placement="top">{{ (+expiredStats.nonDust.total) / 100000000 | number: '1.5-5' }} <span style="color: var(--orange);">BTC</span></div>
       <div class="fiat">{{ expiredStats.nonDust.count }} <span i18n="shared.utxos">UTXOs</span></div>
     </div>
   </div>
 
   <div class="item">
     <a class="title-link" [routerLink]="['/audit/wallet/utxos' | relativeUrl]" [fragment]="'expired'">
-      <h5 class="card-title"><ng-container i18n="liquid.total-expired">Total Expired</ng-container>&nbsp;<fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: #4a68b9"></fa-icon></h5>
+      <h5 class="card-title"><ng-container i18n="liquid.total-expired">Total Expired</ng-container>&nbsp;<fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: var(--title-fg)"></fa-icon></h5>
     </a>
     <div *ngIf="(stats$ | async) as expiredStats; else loadingData" class="card-text">
-      <div class="fee-text" i18n-ngbTooltip="liquid.expired-utxos" ngbTooltip="Total amount of BTC held in Federation UTXOs that have expired timelocks" placement="top">{{ (+expiredStats.all.total) / 100000000 | number: '1.5-5' }} <span style="color: #b86d12;">BTC</span></div>
+      <div class="fee-text" i18n-ngbTooltip="liquid.expired-utxos" ngbTooltip="Total amount of BTC held in Federation UTXOs that have expired timelocks" placement="top">{{ (+expiredStats.all.total) / 100000000 | number: '1.5-5' }} <span style="color: var(--orange);">BTC</span></div>
       <div class="fiat">{{ expiredStats.all.count }} <span i18n="shared.utxos">UTXOs</span></div>
     </div>
   </div>

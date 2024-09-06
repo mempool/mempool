@@ -7,7 +7,7 @@ import { Cluster } from 'puppeteer-cluster';
 import ReusablePage from './concurrency/ReusablePage';
 import ReusableSSRPage from './concurrency/ReusableSSRPage';
 import { parseLanguageUrl } from './language/lang';
-import { matchRoute } from './routes';
+import { matchRoute, networks } from './routes';
 import nodejsPath from 'path';
 import logger from './logger';
 import { TimeoutError } from "puppeteer";
@@ -47,8 +47,8 @@ class Server {
       case "liquid":
         canonical = "https://liquid.network"
         break;
-      case "bisq":
-        canonical = "https://bisq.markets"
+      case "onbtc":
+        canonical = "https://bitcoin.gob.sv"
         break;
       default:
         canonical = "https://mempool.space"
@@ -113,6 +113,8 @@ class Server {
   }
 
   setUpRoutes() {
+    this.app.set('view engine', 'ejs');
+
     if (puppeteerEnabled) {
       this.app.get('/unfurl/render*', async (req, res) => { return this.renderPreview(req, res) })
       this.app.get('/render*', async (req, res) => { return this.renderPreview(req, res) })
@@ -122,6 +124,7 @@ class Server {
     }
     this.app.get('/unfurl*', (req, res) => { return this.renderHTML(req, res, true) })
     this.app.get('/slurp*', (req, res) => { return this.renderHTML(req, res, false) })
+    this.app.get('/sip*', (req, res) => { return this.renderSip(req, res) })
     this.app.get('*', (req, res) => { return this.renderHTML(req, res, false) })
   }
 
@@ -330,12 +333,18 @@ class Server {
     const matchedRoute = matchRoute(this.network, path);
     let ogImageUrl = config.SERVER.HOST + (matchedRoute.staticImg || matchedRoute.fallbackImg);
     let ogTitle = 'The Mempool Open Source Project®';
+    let ogDescription = 'Explore the full Bitcoin ecosystem with mempool.space';
 
     const canonical = this.canonicalHost + rawPath;
 
     if (matchedRoute.render) {
       ogImageUrl = `${config.SERVER.HOST}/render/${lang || 'en'}/preview${path}`;
       ogTitle = `${this.network ? capitalize(this.network) + ' ' : ''}${matchedRoute.networkMode !== 'mainnet' ? capitalize(matchedRoute.networkMode) + ' ' : ''}${matchedRoute.title}`;
+    } else {
+      ogTitle = networks[this.network].title;
+    }
+    if (matchedRoute.description) {
+      ogDescription = matchedRoute.description;
     }
 
     return `<!doctype html>
@@ -344,7 +353,7 @@ class Server {
     <meta charset="utf-8">
     <title>${ogTitle}</title>
     <link rel="canonical" href="${canonical}" />
-    <meta name="description" content="The Mempool Open Source Project&reg; - Explore the full Bitcoin ecosystem with mempool.space&reg;"/>
+    <meta name="description" content="${ogDescription}"/>
     <meta property="og:image" content="${ogImageUrl}"/>
     <meta property="og:image:type" content="image/png"/>
     <meta property="og:image:width" content="${matchedRoute.render ? 1200 : 1000}"/>
@@ -354,7 +363,7 @@ class Server {
     <meta property="twitter:site" content="@mempool">
     <meta property="twitter:creator" content="@mempool">
     <meta property="twitter:title" content="${ogTitle}">
-    <meta property="twitter:description" content="Explore the full Bitcoin ecosystem with mempool.space"/>
+    <meta property="twitter:description" content="${ogDescription}"/>
     <meta property="twitter:image:src" content="${ogImageUrl}"/>
     <meta property="twitter:domain" content="mempool.space">
   </head>
@@ -371,6 +380,38 @@ class Server {
     }
     return html;
   }
+
+  async renderSip(req, res): Promise<void> {
+    const start = Date.now();
+    const rawPath = req.params[0];
+    const { lang, path } = parseLanguageUrl(rawPath);
+    const matchedRoute = matchRoute(this.network, path, 'sip');
+
+    let ogImageUrl = config.SERVER.HOST + (matchedRoute.staticImg || matchedRoute.fallbackImg);
+    let ogTitle = 'The Mempool Open Source Project®';
+
+    const canonical = this.canonicalHost + rawPath;
+
+    if (matchedRoute.render) {
+      ogImageUrl = `${config.SERVER.HOST}/render/${lang || 'en'}/preview${path}`;
+      ogTitle = `${this.network ? capitalize(this.network) + ' ' : ''}${matchedRoute.networkMode !== 'mainnet' ? capitalize(matchedRoute.networkMode) + ' ' : ''}${matchedRoute.title}`;
+    }
+
+    if (matchedRoute.sip) {
+      logger.info(`sipping "${req.url}"`);
+      try {
+        const data = await matchedRoute.sip.getData(matchedRoute.params);
+        logger.info(`sip data fetched for "${req.url}" in ${Date.now() - start}ms`);
+        res.render(matchedRoute.sip.template, { canonicalHost: this.canonicalHost, canonical, ogImageUrl, ogTitle, matchedRoute, data });
+        logger.info(`sip returned "${req.url}" in ${Date.now() - start}ms`);
+      } catch (e) {
+        logger.err(`failed to sip ${req.url}: ` + (e instanceof Error ? e.message : `${e}`));
+        res.status(500).send();
+      }
+    } else {
+      return this.renderHTML(req, res, false);
+    }
+  }
 }
 
 const server = new Server();
@@ -382,6 +423,9 @@ process.on('SIGTERM', async () => {
 });
 
 function capitalize(str) {
+  if (str === 'onbtc') {
+    return 'ONBTC';
+  }
   if (str && str.length) {
     return str[0].toUpperCase() + str.slice(1);
   } else {

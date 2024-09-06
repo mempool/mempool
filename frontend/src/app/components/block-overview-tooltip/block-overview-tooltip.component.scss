@@ -1,16 +1,16 @@
 .block-overview-tooltip {
   position: absolute;
-  background: rgba(#11131f, 0.95);
+	background: color-mix(in srgb, var(--active-bg) 95%, transparent);
   border-radius: 4px;
   box-shadow: 1px 1px 10px rgba(0,0,0,0.5);
-  color: #b1b1b1;
+  color: var(--tooltip-grey);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 10px 15px;
   text-align: left;
   min-width: 340px;
-  max-width: 340px;
+  max-width: 400px;
   pointer-events: none;
   z-index: 11;
 
@@ -27,6 +27,9 @@ th, td {
     width: 70%;
     text-align: end;
   }
+  &.oobFees {
+    color: #905cf4;
+  }
 }
 
 .badge.badge-accelerated {
@@ -41,7 +44,7 @@ th, td {
   flex-wrap: wrap;
   row-gap: 0.25em;
   margin-top: 0.2em;
-  max-width: 100%;
+  max-width: 310px;
 
   .badge {
     border-radius: 0.2rem;
@@ -51,20 +54,20 @@ th, td {
 
   .filter-tag {
     background: #181b2daf;
-    border: solid 1px #105fb0;
+    border: solid 1px var(--primary);
     color: white;
     transition: background-color 300ms;
 
     &.matching {
-      background-color: #105fb0;
+      background-color: var(--primary);
     }
   }
 
   &.any-mode {
     .filter-tag {
-      border: solid 1px #1a9436;
+      border: solid 1px var(--success);
       &.matching {
-        background-color: #1a9436;
+        background-color: var(--success);
       }
     }
   }

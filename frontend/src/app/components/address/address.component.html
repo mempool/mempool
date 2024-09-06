@@ -3,7 +3,13 @@
     <h1 i18n="shared.address">Address</h1>
     <div class="tx-link">
       <app-truncate [text]="addressString" [lastChars]="8" [link]="['/address/' | relativeUrl, addressString]">
-        <app-clipboard [text]="addressString"></app-clipboard>
+        <span class="qrSpan" (mouseover)="showQR = true" (mouseout)="showQR = false" (pointerdown)="showQR = true">
+          <fa-icon [icon]="['fas', 'qrcode']" [fixedWidth]="true" [style.font-size]="isMobile ? '18px' : '12px'"></fa-icon>
+          <div class="qr-wrapper" [hidden]="!showQR">
+            <app-qrcode [size]="200" [data]="addressString"></app-qrcode>
+          </div>
+        </span>
+        <app-clipboard [text]="addressString" [size]="isMobile ? 'large' : 'normal'"></app-clipboard>
       </app-truncate>
     </div>
   </div>
@@ -14,49 +20,75 @@
     <div class="box">
 
       <div class="row">
-        <div class="col-md">
-          <table class="table table-borderless table-striped address-table">
-            <tbody>
-              <tr *ngIf="addressInfo && addressInfo.unconfidential">
-                <td i18n="address.unconfidential">Unconfidential</td>
-                <td>
-                  <app-truncate [text]="addressInfo.unconfidential" [lastChars]="8" [link]="['/address/' | relativeUrl, addressInfo.unconfidential]">
-                    <app-clipboard [text]="addressInfo.unconfidential"></app-clipboard>
-                  </app-truncate>
-                </td>
-              </tr>
-              <ng-template [ngIf]="!address.electrum">
-                <tr>
-                  <td i18n="address.total-received">Total received</td>
-                  <td *ngIf="address.chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="received" [noFiat]="true"></app-amount></td>
-                </tr>
-                <tr>
-                  <td i18n="address.total-sent">Total sent</td>
-                  <td *ngIf="address.chain_stats.spent_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="sent" [noFiat]="true"></app-amount></td>
-                </tr>
-              </ng-template>
-              <tr>
-                <td i18n="address.balance">Balance</td>
-                <td *ngIf="address.chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="received - sent" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="received - sent"></app-fiat></span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="w-100 d-block d-md-none"></div>
-        <div class="col-md qrcode-col">
-          <div class="qr-wrapper">
-            <app-qrcode [data]="address.address"></app-qrcode>
+        @if (isMobile) {
+          <div class="col-sm">
+            <table class="table table-borderless table-striped address-table">
+              <tbody>
+                <tr><ng-container *ngTemplateOutlet="balanceRow"></ng-container></tr>
+                <tr><ng-container *ngTemplateOutlet="pendingBalanceRow"></ng-container></tr>
+                @if (!address.electrum) {
+                  <tr><ng-container *ngTemplateOutlet="utxoRow"></ng-container></tr>
+                  <tr><ng-container *ngTemplateOutlet="pendingUtxoRow"></ng-container></tr>
+                }
+                @if (network === 'liquid' || network === 'liquidtestnet') {
+                  <tr><ng-container *ngTemplateOutlet="liquidRow"></ng-container></tr>
+                } @else if (!address.electrum) {
+                  <tr><ng-container *ngTemplateOutlet="volumeRow"></ng-container></tr>
+                }
+                <tr><ng-container *ngTemplateOutlet="typeRow"></ng-container></tr>
+              </tbody>
+            </table>
           </div>
-        </div>
+        } @else {
+          <div class="col-sm">
+            <table class="table table-borderless dual-col-striped table-fixed address-table">
+              <tbody>
+                <tr>
+                  <ng-container *ngTemplateOutlet="balanceRow"></ng-container>
+                  <ng-container *ngTemplateOutlet="spacerCell"></ng-container>
+                  <ng-container *ngTemplateOutlet="pendingBalanceRow"></ng-container>
+                </tr>
+                @if (!address.electrum) {
+                <tr>
+                  <ng-container *ngTemplateOutlet="utxoRow"></ng-container>
+                  <ng-container *ngTemplateOutlet="spacerCell"></ng-container>
+                  <ng-container *ngTemplateOutlet="pendingUtxoRow"></ng-container>
+                </tr>
+                }
+                <tr>
+                  @if (network === 'liquid' || network === 'liquidtestnet') {
+                    <ng-container *ngTemplateOutlet="liquidRow"></ng-container>
+                  } @else if (!address.electrum) {
+                    <ng-container *ngTemplateOutlet="volumeRow"></ng-container>
+                  } @else {
+                    <ng-container *ngTemplateOutlet="emptyTd"></ng-container>
+                  }                  
+                  <ng-container *ngTemplateOutlet="spacerCell"></ng-container>
+                  <ng-container *ngTemplateOutlet="typeRow"></ng-container>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        }
       </div>
     </div>
 
     <ng-container *ngIf="(stateService.backend$ | async) === 'esplora' && address && transactions && transactions.length > 2">
       <br>
+      <div class="title-tx">
+        <h2 class="text-left" i18n="address.balance-history">Balance History</h2>
+      </div>
       <div class="box">
+        <div class="widget-toggler" *ngIf="showBalancePeriod()">
+          <a href="" (click)="setBalancePeriod('all')" class="toggler-option"
+            [ngClass]="{'inactive': balancePeriod === 'all'}"><small i18n="all">all</small></a>
+          <span style="color: var(--transparent-fg); font-size: 8px"> | </span>
+          <a href="" (click)="setBalancePeriod('1m')" class="toggler-option"
+            [ngClass]="{'inactive': balancePeriod === '1m'}"><small i18n="recent">recent</small></a>
+        </div>
         <div class="row">
           <div class="col-md">
-            <app-address-graph [address]="addressString" [isPubkey]="address?.is_pubkey" [stats]="address.chain_stats" />
+            <app-address-graph [address]="addressString" [isPubkey]="address?.is_pubkey" [stats]="address.chain_stats" [period]="balancePeriod" left="80" />
           </div>
         </div>
       </div>
@@ -66,8 +98,8 @@
     <div class="title-tx">
       <h2 class="text-left">
         <ng-template [ngIf]="!transactions?.length">&nbsp;</ng-template>
-        <ng-template i18n="X of X Address Transaction" [ngIf]="transactions?.length === 1">{{ (transactions?.length | number) || '?' }} of {{ txCount | number }} transaction</ng-template>
-        <ng-template i18n="X of X Address Transactions (Plural)" [ngIf]="transactions?.length > 1">{{ (transactions?.length | number) || '?' }} of {{ txCount | number }} transactions</ng-template>
+        <ng-template i18n="X of X Address Transaction" [ngIf]="transactions?.length === 1">{{ (transactions?.length | number) || '?' }} of {{ mempoolStats.tx_count + chainStats.tx_count | number }} transaction</ng-template>
+        <ng-template i18n="X of X Address Transactions (Plural)" [ngIf]="transactions?.length > 1">{{ (transactions?.length | number) || '?' }} of {{ mempoolStats.tx_count + chainStats.tx_count | number }} transactions</ng-template>
       </h2>
     </div>
 
@@ -109,25 +141,54 @@
 
     <div class="box">
       <div class="row">
-        <div class="col">
-          <table class="table table-borderless table-striped">
-            <tbody>
-              <tr>
-                <td colspan="2"><span class="skeleton-loader"></span></td>
-              </tr>
-              <tr>
-                <td colspan="2"><span class="skeleton-loader"></span></td>
-              </tr>
-              <tr>
-                <td colspan="2"><span class="skeleton-loader"></span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="w-100 d-block d-md-none"></div>
-        <div class="col">
-
-        </div>
+        @if (isMobile) {
+          <div class="col-sm">
+            <table class="table table-borderless table-striped">
+              <tbody>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <div class="col-sm">
+            <table class="table table-borderless dual-col-striped table-fixed">
+              <tbody>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                  <ng-container *ngTemplateOutlet="spacerCell"></ng-container>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                  <ng-container *ngTemplateOutlet="spacerCell"></ng-container>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                  <ng-container *ngTemplateOutlet="spacerCell"></ng-container>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        }
       </div>
     </div>
 
@@ -140,7 +201,7 @@
         <span i18n="address.error.loading-address-data">Error loading address data.</span>
         <br>
         <ng-container i18n="Electrum server limit exceeded error">
-          <i>There many transactions on this address, more than your backend can handle. See more on <a href="/docs/faq#address-lookup-issues">setting up a stronger backend</a>.</i>
+          <i>There are too many transactions on this address, more than your backend can handle. See more on <a href="/docs/faq#address-lookup-issues">setting up a stronger backend</a>.</i>
           <br><br>
           Consider viewing this address on the official Mempool website instead:
         </ng-container>
@@ -171,4 +232,59 @@
   <div class="header-bg box" style="padding: 10px; margin-bottom: 10px;">
     <span class="skeleton-loader"></span>
   </div>
+</ng-template>
+
+<ng-template #spacerCell>
+  <td class="spacer"></td>
+</ng-template>
+
+<ng-template #emptyTd>
+  <td class="spacer"></td>
+  <td class="spacer"></td>
+</ng-template>
+
+<ng-template #balanceRow>
+  <td i18n="address.confirmed-balance">Confirmed balance</td>
+  <td *ngIf="chainStats.funded_txo_sum !== undefined; else confidentialTd" class="wrap-cell"><app-amount [satoshis]="chainStats.balance" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="chainStats.balance"></app-fiat></span></td>
+</ng-template>
+
+<ng-template #pendingBalanceRow>
+  <td i18n="accelerator.pending-state" class="font-italic">Pending</td>
+  <td *ngIf="mempoolStats.funded_txo_sum !== undefined; else confidentialTd" class="font-italic wrap-cell"><app-amount [satoshis]="mempoolStats.balance" [noFiat]="true" [addPlus]="true"></app-amount> <span class="fiat"><app-fiat [value]="mempoolStats.balance"></app-fiat></span></td>
+</ng-template>
+
+<ng-template #utxoRow>
+  <td i18n="address.confirmed-utxos">Confirmed UTXOs</td>
+  <td class="wrap-cell">{{ chainStats.utxos }}</td>
+</ng-template>
+
+<ng-template #pendingUtxoRow>
+  <td i18n="address.pending-utxos" class="font-italic">Pending UTXOs</td>
+  <td class="font-italic wrap-cell">{{ mempoolStats.utxos > 0 ? '+' : ''}}{{ mempoolStats.utxos }}</td>
+</ng-template>
+
+<ng-template #volumeRow>
+  <td i18n="address.total-received">Total received</td>
+  <td *ngIf="chainStats.funded_txo_sum !== undefined; else confidentialTd" class="wrap-cell"><app-amount [satoshis]="chainStats.totalReceived"></app-amount></td>
+</ng-template>
+
+<ng-template #typeRow>
+  <td i18n="address.type">Type</td>
+  <td class="wrap-cell">
+    <span placement="bottom" class="badge badge-primary">
+      <app-address-type [address]="addressTypeInfo"></app-address-type>
+    </span>
+    <app-address-labels [channel]="exampleChannel" [address]="addressTypeInfo" class="ml-1"></app-address-labels>
+  </td>
+</ng-template>
+
+<ng-template #liquidRow>
+  <ng-container *ngIf="addressInfo && addressInfo.unconfidential">
+    <td i18n="address.unconfidential">Unconfidential</td>
+    <td>
+      <app-truncate [text]="addressInfo.unconfidential" [lastChars]="8" [textAlign]="isMobile ? 'end' : 'start'" [link]="['/address/' | relativeUrl, addressInfo.unconfidential]">
+        <app-clipboard [text]="addressInfo.unconfidential"></app-clipboard>
+      </app-truncate>
+    </td>
+  </ng-container>
 </ng-template>

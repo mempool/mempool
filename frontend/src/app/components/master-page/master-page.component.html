@@ -1,11 +1,11 @@
 <ng-container *ngIf="{ val: network$ | async } as network">
 <header *ngIf="headerVisible" class="sticky-header">
 
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+  <nav class="navbar navbar-expand-md navbar-dark">
   <!-- Hamburger -->
   <ng-container *ngIf="servicesEnabled">
     <div *ngIf="user" class="profile_image_container" [class]="{'anon': !user.imageMd5}" (click)="hamburgerClick($event)">
-      <img *ngIf="user.imageMd5" [src]="'/api/v1/services/account/images/' + user.username + '?md5=' + user.imageMd5" class="profile_image">
+      <img *ngIf="user.imageMd5" [src]="'/api/v1/services/account/images/' + user.username + '/md5=' + user.imageMd5" class="profile_image">
       <app-svg-images style="color: lightgrey; fill: lightgray" *ngIf="!user.imageMd5" name="anon"></app-svg-images>
     </div>
     <div *ngIf="false && user === null" class="profile_image_container" (click)="hamburgerClick($event)">
@@ -17,15 +17,19 @@
 
   <!-- Large screen -->
   <a class="navbar-brand d-none d-md-flex" [ngClass]="{'dual-logos': subdomain}" [routerLink]="['/' | relativeUrl]" (click)="brandClick($event)">
-    <ng-template [ngIf]="subdomain && enterpriseInfo">
-      <div class="subdomain_container">
-        <img [src]="'/api/v1/services/enterprise/images/' + subdomain + '/logo?imageMd5=' + enterpriseInfo.imageMd5" class="subdomain_logo" [class]="{'rounded': enterpriseInfo.rounded_corner}">
-      </div>
-      <div class="vertical-line"></div>
-    </ng-template>
     <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
-      <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126" class="mempool-logo" [ngStyle]="{'opacity': connectionState.val === 2 ? 1 : 0.5 }"></app-svg-images>
-      <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>
+      @if (enterpriseInfo?.header_img) {
+        <img [src]="enterpriseInfo?.header_img" alt="enterpriseInfo.title" height="48px" class="mr-3">
+      } @else {
+        <ng-template [ngIf]="subdomain && enterpriseInfo">
+          <div class="subdomain_container">
+            <img [src]="enterpriseInfo.img || '/api/v1/services/enterprise/images/' + subdomain + '/logo?imageMd5=' + enterpriseInfo.imageMd5" class="subdomain_logo" [class]="{'rounded': enterpriseInfo.rounded_corner}">
+          </div>
+          <div class="vertical-line"></div>
+        </ng-template>
+        <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126" class="mempool-logo" [ngStyle]="{'opacity': connectionState.val === 2 ? 1 : 0.5 }"></app-svg-images>
+        <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>
+      }
       <div class="connection-badge">
         <div class="badge badge-warning" *ngIf="connectionState.val === 0" i18n="master-page.offline">Offline</div>
         <div class="badge badge-warning" *ngIf="connectionState.val === 1" i18n="master-page.reconnecting">Reconnecting...</div>
@@ -34,31 +38,39 @@
   </a>
   <!-- Mobile -->
   <a class="navbar-brand d-flex d-md-none justify-content-center" [ngClass]="{'dual-logos': subdomain, 'mr-0': subdomain}" [routerLink]="['/' | relativeUrl]" (click)="brandClick($event)">
-    <ng-template [ngIf]="subdomain && enterpriseInfo">
-      <div class="subdomain_container">
-        <img [src]="'/api/v1/services/enterprise/images/' + subdomain + '/logo?imageMd5=' + enterpriseInfo.imageMd5" class="subdomain_logo" [class]="{'rounded': enterpriseInfo.rounded_corner}">
-      </div>
-      <div class="vertical-line"></div>
-    </ng-template>
-    <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
-      <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126" class="mempool-logo" [ngStyle]="{'opacity': connectionState.val === 2 ? 1 : 0.5 }"></app-svg-images>
-      <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>
-      <div class="connection-badge">
-        <div class="badge badge-warning" *ngIf="connectionState.val === 0" i18n="master-page.offline">Offline</div>
-        <div class="badge badge-warning" *ngIf="connectionState.val === 1" i18n="master-page.reconnecting">Reconnecting...</div>
-      </div>
-    </ng-container>
+    @if (enterpriseInfo?.header_img) {
+      <img [src]="enterpriseInfo?.header_img" alt="enterpriseInfo.title" height="42px">
+    } @else {
+      <ng-template [ngIf]="subdomain && enterpriseInfo">
+        <div class="subdomain_container">
+          <img [src]="enterpriseInfo.img || '/api/v1/services/enterprise/images/' + subdomain + '/logo?imageMd5=' + enterpriseInfo.imageMd5" class="subdomain_logo" [class]="{'rounded': enterpriseInfo.rounded_corner}">
+        </div>
+        <div class="vertical-line"></div>
+      </ng-template>
+      <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
+        @if (enterpriseInfo?.header_img) {
+          <img [src]="enterpriseInfo?.header_img" alt="enterpriseInfo.title" height="36px">
+        } @else {
+          <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126" class="mempool-logo" [ngStyle]="{'opacity': connectionState.val === 2 ? 1 : 0.5 }"></app-svg-images>
+          <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>
+        }
+          <div class="connection-badge">
+          <div class="badge badge-warning" *ngIf="connectionState.val === 0" i18n="master-page.offline">Offline</div>
+          <div class="badge badge-warning" *ngIf="connectionState.val === 1" i18n="master-page.reconnecting">Reconnecting...</div>
+        </div>
+      </ng-container>
+    }
   </a>
 
-  <div (window:resize)="onResize()" ngbDropdown class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.LIQUID_TESTNET_ENABLED">
+  <div (window:resize)="onResize()" ngbDropdown class="dropdown-container" *ngIf="isDropdownVisible">
     <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split d-flex justify-content-center align-items-center" aria-haspopup="true">
       <app-svg-images class="d-flex justify-content-center align-items-center current-network-svg" [name]="network.val === '' ? 'bitcoin' : network.val" width="20" height="20" viewBox="0 0 65 65"></app-svg-images>
     </button>
     <div ngbDropdownMenu [ngClass]="{'dropdown-menu-right' : isMobile}">
-      <a ngbDropdownItem class="mainnet" [routerLink]="networkPaths['mainnet'] || '/'"><app-svg-images name="bitcoin" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Mainnet</a>
+      <a ngbDropdownItem *ngIf="env.MAINNET_ENABLED" class="mainnet" [routerLink]="networkPaths['mainnet'] || '/'"><app-svg-images name="bitcoin" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Mainnet</a>
       <a ngbDropdownItem *ngIf="env.SIGNET_ENABLED" class="signet" [class.active]="network.val === 'signet'" [routerLink]="networkPaths['signet'] || '/signet'"><app-svg-images name="signet" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Signet</a>
-      <a ngbDropdownItem *ngIf="env.TESTNET_ENABLED" class="testnet" [class.active]="network.val === 'testnet'" [routerLink]="networkPaths['testnet'] || '/testnet'"><app-svg-images name="testnet" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Testnet</a>
-      <h6 *ngIf="env.LIQUID_ENABLED" class="dropdown-header" i18n="master-page.layer2-networks-header">Layer 2 Networks</h6>
+      <a ngbDropdownItem *ngIf="env.TESTNET_ENABLED" class="testnet" [class.active]="network.val === 'testnet'" [routerLink]="networkPaths['testnet'] || '/testnet'"><app-svg-images name="testnet" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Testnet3</a>
+      <a ngbDropdownItem *ngIf="env.TESTNET4_ENABLED" class="testnet4" [class.active]="network.val === 'testnet4'" [routerLink]="networkPaths['testnet4'] || '/testnet4'"><app-svg-images name="testnet4" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Testnet4</a>
       <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage + (networkPaths['liquid'] || '')" ngbDropdownItem *ngIf="env.LIQUID_ENABLED" class="liquid" [class.active]="network.val === 'liquid'"><app-svg-images name="liquid" width="22" height="22" viewBox="0 0 125 125" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Liquid</a>
       <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage  + (networkPaths['liquidtestnet'] || '/testnet')" ngbDropdownItem *ngIf="env.LIQUID_TESTNET_ENABLED" class="liquidtestnet" [class.active]="network.val === 'liquid'"><app-svg-images name="liquidtestnet" width="22" height="22" viewBox="0 0 125 125" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Liquid Testnet</a>
     </div>
@@ -79,7 +91,7 @@
       <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" id="btn-pools" *ngIf="stateService.env.MINING_DASHBOARD">
         <a class="nav-link" [routerLink]="['/mining' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'hammer']" [fixedWidth]="true" i18n-title="mining.mining-dashboard" title="Mining Dashboard"></fa-icon></a>
       </li>
-      <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" id="btn-lightning" *ngIf="stateService.env.LIGHTNING">
+      <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" id="btn-lightning" *ngIf="stateService.networkSupportsLightning()">
         <a class="nav-link" [routerLink]="['/lightning' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'bolt']" [fixedWidth]="true" i18n-title="master-page.lightning" title="Lightning Explorer"></fa-icon>
         </a>
       </li>
@@ -88,6 +100,9 @@
       </li>
       <li class="nav-item" routerLinkActive="active" id="btn-graphs">
         <a class="nav-link" [routerLink]="['/graphs' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'chart-area']" [fixedWidth]="true" i18n-title="master-page.graphs" title="Graphs"></fa-icon></a>
+      </li>
+      <li class="nav-item" routerLinkActive="active" id="btn-faucet" *ngIf="stateService.isMempoolSpaceBuild && stateService.env.OFFICIAL_MEMPOOL_SPACE && stateService.network === 'testnet4'">
+        <a class="nav-link" [routerLink]="['/faucet' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'faucet-drip']" [fixedWidth]="true" i18n-title="master-page.faucet" title="Faucet"></fa-icon></a>
       </li>
       <li class="nav-item" routerLinkActive="active" id="btn-docs">
         <a class="nav-link" [routerLink]="['/docs' | relativeUrl ]" (click)="collapse()"><fa-icon [icon]="['fas', 'book']" [fixedWidth]="true" i18n-title="documentation.title" title="Documentation"></fa-icon></a>
@@ -106,14 +121,14 @@
   <div class="empty-sidenav"><!-- empty sidenav needed to push footer down the screen --></div>
 
   <div class="flex-grow-1 d-flex flex-column">
-    <app-testnet-alert *ngIf="network.val === 'testnet' || network.val === 'signet'"></app-testnet-alert>
+    <app-testnet-alert *ngIf="network.val === 'testnet' || network.val === 'testnet4' || network.val === 'signet'"></app-testnet-alert>
 
     <main style="min-width: 375px; max-width: 100vw">
       <router-outlet></router-outlet>
     </main>
 
     <div class="flex-grow-1"></div>
-    <app-global-footer *ngIf="footerVisible"></app-global-footer>
+    <app-global-footer *ngIf="footerVisible" [user]="user"></app-global-footer>
   </div>
 </div>
 

@@ -12,7 +12,7 @@
   padding-bottom: 0px;
 }
 .container-xl.legacy {
-  max-width: 1140px;
+  max-width: 1200px;
 }
 .container-xl.widget-container {
   min-height: 335px;
@@ -59,7 +59,7 @@ tr, td, th {
 }
 
 .progress {
-  background-color: #2d3348;
+  background-color: var(--secondary);
 }
 
 .txid {
@@ -72,8 +72,24 @@ tr, td, th {
 
 .block {
   width: 15%;
+  @media (max-width: 900px) {
+    display: none;
+  }
+}
+
+.pool {
+  width: 15%;
+  
   @media (max-width: 700px) {
     display: none;
+  }
+
+  .pool-logo {
+    width: 18px;
+    height: 18px;
+    position: relative;
+    top: -1px;
+    margin-right: 2px;
   }
 }
 
@@ -148,7 +164,7 @@ tr, td, th {
 
 .tooltip-custom .tooltiptext {
   visibility: hidden;
-  color: #fff;
+  color: var(--fg);
   text-align: center;
   padding: 5px 0;
   border-radius: 6px;

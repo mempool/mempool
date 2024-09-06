@@ -1,5 +1,5 @@
 .card-title {
-  color: #4a68b9;
+  color: var(--title-fg);
   font-size: 10px;
   margin-bottom: 4px;
   font-size: 1rem;
@@ -36,7 +36,7 @@
       margin-bottom: 0;
     }
     .card-text span {
-      color: #ffffff66;
+      color: var(--transparent-fg);
       font-size: 12px;
       top: 0px;
     }
@@ -79,6 +79,7 @@
   display: flex;
   flex-direction: row;
   transition: background-color 1s;
+  color: #fff;
   &.priority {
     @media (767px < width < 992px), (width < 576px) {
       width: 100%;

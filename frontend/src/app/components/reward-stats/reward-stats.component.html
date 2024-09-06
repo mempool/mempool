@@ -5,7 +5,7 @@
       ngbTooltip="Miners Reward" placement="bottom" #minersreward [disableTooltip]="!isEllipsisActive(minersreward)">Miners Reward</h5>
       <div class="card-text" i18n-ngbTooltip="mining.rewards-desc" ngbTooltip="Amount being paid to miners in the past 144 blocks" placement="bottom">
         <div class="fee-text">
-          <app-amount [satoshis]="rewardStats.totalReward" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
+          <app-amount [satoshis]="rewardStats.totalReward" digitsInfo="1.2-2" [noFiat]="true" [ignoreViewMode]="true"></app-amount>
         </div>
         <span class="fiat">
           <app-fiat [value]="rewardStats.totalReward" digitsInfo="1.0-0" ></app-fiat>

@@ -31,7 +31,7 @@
               </ng-container>
             </td>
             <td class="timestamp text-left widget">
-              <app-time kind="since" [time]="peg.blocktime"></app-time>
+              <app-time kind="since" [time]="peg.blocktime" [showTooltip]="true"></app-time>
             </td>
             <td class="amount text-right widget" [ngClass]="{'credit': peg.amount > 0, 'debit': peg.amount < 0, 'glow-effect': peg.amount < 0 && peg.bitcoinaddress && !peg.bitcointxid}">
               <app-amount [satoshis]="peg.amount" [noFiat]="true" [forceBtc]="true" [addPlus]="true"></app-amount>
@@ -61,7 +61,7 @@
             </td>
             <td class="output text-left">
               <ng-container *ngIf="peg.bitcointxid; else redeemInProgress">
-                <a href="{{ env.MEMPOOL_WEBSITE_URL + '/tx/' + peg.bitcointxid + ':' + peg.bitcoinindex }}" target="_blank" style="color:#b86d12">
+                <a href="{{ env.MEMPOOL_WEBSITE_URL + '/tx/' + peg.bitcointxid + ':' + peg.bitcoinindex }}" target="_blank" style="color:var(--orange)">
                   <app-truncate [text]="peg.bitcointxid + ':' + peg.bitcoinindex" [lastChars]="6"></app-truncate>
                 </a>
               </ng-container>
@@ -73,7 +73,7 @@
             </td>
             <td class="address text-left">
               <ng-container *ngIf="peg.bitcoinaddress; else noRedeem">
-                <a href="{{ env.MEMPOOL_WEBSITE_URL + '/address/' + peg.bitcoinaddress }}" target="_blank" style="color:#b86d12">
+                <a href="{{ env.MEMPOOL_WEBSITE_URL + '/address/' + peg.bitcoinaddress }}" target="_blank" style="color:var(--orange)">
                   <app-truncate [text]="peg.bitcoinaddress" [lastChars]="6"></app-truncate>
                 </a>
               </ng-container>

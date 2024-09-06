@@ -30,7 +30,7 @@
         stroke: url(#output-highlight-gradient);
       }
       &.zerovalue {
-        stroke: #1bd8f4;
+        stroke: var(--info);
       }
     }
   }

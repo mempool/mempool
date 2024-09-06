@@ -10,7 +10,7 @@
     </div>  
 
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="daysAvailable">
-      <div class="btn-group btn-group-toggle" name="radioBasic" [class]="{'disabled': isLoading}">
+      <div class="btn-group btn-group-toggle" name="radioBasic">
         <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '24h'">
           <input type="radio" [value]="'24h'" fragment="24h" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" formControlName="dateSpan"> 24H
         </label>
@@ -45,7 +45,7 @@
     </form>
   </div>
 
-  <div [class.chart]="!widget" [class.chart-widget]="widget" *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+  <div [class.chart]="!widget" [class.chart-widget]="widget" *browserOnly [style]="{ height: widget ? ((height + 20) + 'px') : null, opacity: isLoading ? 0.5 : 1 }" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
     (chartInit)="onChartInit($event)">
   </div>
   <div class="text-center loadingGraphs" *ngIf="!stateService.isBrowser || isLoading">

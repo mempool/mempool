@@ -1,0 +1,11 @@
+<div class="tracker-bar" [class.transitions]="transitionsEnabled">
+  <div class="stage {{ stages.waiting.state }}" i18n="accelerator.sent-state">Sent</div>
+  <div class="divider left-{{ stages.waiting.state }} right-{{ stages.pending.state }}"></div>
+  <div class="stage {{ stages.pending.state }}" i18n="accelerator.pending-state">Pending</div>
+  <div class="divider left-{{ stages.pending.state }} right-{{ stages.soon.state }}"></div>
+  <div class="stage {{ stages.soon.state }}" i18n="accelerator.soon">Soon</div>
+  <div class="divider left-{{ stages.soon.state }} right-{{ stages.next.state }}"></div>
+  <div class="stage {{ stages.next.state }}" i18n="@@bdf0e930eb22431140a2eaeacd809cc5f8ebd38c">Next Block</div>
+  <div class="divider left-{{ stages.next.state }} right-{{ stages.confirmed.state }}"></div>
+  <div class="stage {{ stages.confirmed.state }}" i18n="transaction.confirmed|Transaction confirmed state">Confirmed</div>
+</div>

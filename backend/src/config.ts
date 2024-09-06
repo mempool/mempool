@@ -9,6 +9,7 @@ interface IConfig {
     NETWORK: 'mainnet' | 'testnet' | 'signet' | 'liquid' | 'liquidtestnet';
     BACKEND: 'esplora' | 'electrum' | 'none';
     HTTP_PORT: number;
+    UNIX_SOCKET_PATH: string;
     SPAWN_CLUSTER_PROCS: number;
     API_URL_PREFIX: string;
     POLL_RATE_MS: number;
@@ -28,7 +29,7 @@ interface IConfig {
     EXTERNAL_RETRY_INTERVAL: number;
     USER_AGENT: string;
     STDOUT_LOG_MIN_PRIORITY: 'emerg' | 'alert' | 'crit' | 'err' | 'warn' | 'notice' | 'info' | 'debug';
-    AUTOMATIC_BLOCK_REINDEXING: boolean;
+    AUTOMATIC_POOLS_UPDATE: boolean;
     POOLS_JSON_URL: string,
     POOLS_JSON_TREE_URL: string,
     AUDIT: boolean;
@@ -50,6 +51,7 @@ interface IConfig {
     REQUEST_TIMEOUT: number;
     FALLBACK_TIMEOUT: number;
     FALLBACK: string[];
+    MAX_BEHIND_TIP: number;
   };
   LIGHTNING: {
     ENABLED: boolean;
@@ -140,6 +142,8 @@ interface IConfig {
     ENABLED: boolean;
     AUDIT: boolean;
     AUDIT_START_HEIGHT: number;
+    STATISTICS: boolean;
+    STATISTICS_START_TIME: number | string;
     SERVERS: string[];
   },
   MEMPOOL_SERVICES: {
@@ -153,6 +157,7 @@ interface IConfig {
   },
   FIAT_PRICE: {
     ENABLED: boolean;
+    PAID: boolean;
     API_KEY: string;
   },
 }
@@ -164,6 +169,7 @@ const defaults: IConfig = {
     'NETWORK': 'mainnet',
     'BACKEND': 'none',
     'HTTP_PORT': 8999,
+    'UNIX_SOCKET_PATH': '',
     'SPAWN_CLUSTER_PROCS': 0,
     'API_URL_PREFIX': '/api/v1/',
     'POLL_RATE_MS': 2000,
@@ -183,7 +189,7 @@ const defaults: IConfig = {
     'EXTERNAL_RETRY_INTERVAL': 0,
     'USER_AGENT': 'mempool',
     'STDOUT_LOG_MIN_PRIORITY': 'debug',
-    'AUTOMATIC_BLOCK_REINDEXING': false,
+    'AUTOMATIC_POOLS_UPDATE': false,
     'POOLS_JSON_URL': 'https://raw.githubusercontent.com/mempool/mining-pools/master/pools-v2.json',
     'POOLS_JSON_TREE_URL': 'https://api.github.com/repos/mempool/mining-pools/git/trees/master',
     'AUDIT': false,
@@ -205,6 +211,7 @@ const defaults: IConfig = {
     'REQUEST_TIMEOUT': 10000,
     'FALLBACK_TIMEOUT': 5000,
     'FALLBACK': [],
+    'MAX_BEHIND_TIP': 2,
   },
   'ELECTRUM': {
     'HOST': '127.0.0.1',
@@ -295,6 +302,8 @@ const defaults: IConfig = {
     'ENABLED': false,
     'AUDIT': false,
     'AUDIT_START_HEIGHT': 774000,
+    'STATISTICS': false,
+    'STATISTICS_START_TIME': 1481932800,
     'SERVERS': [],
   },
   'MEMPOOL_SERVICES': {
@@ -308,6 +317,7 @@ const defaults: IConfig = {
   },
   'FIAT_PRICE': {
     'ENABLED': true,
+    'PAID': false,
     'API_KEY': '',
   },
 };

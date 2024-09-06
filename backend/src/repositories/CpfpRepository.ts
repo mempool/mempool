@@ -91,6 +91,26 @@ class CpfpRepository {
     return;
   }
 
+  public async $getClustersAt(height: number): Promise<CpfpCluster[]> {
+    const [clusterRows]: any = await DB.query(
+      `
+        SELECT *
+        FROM compact_cpfp_clusters
+        WHERE height = ?
+      `,
+      [height]
+    );
+    return clusterRows.map(cluster => {
+      if (cluster?.txs) {
+        cluster.effectiveFeePerVsize = cluster.fee_rate;
+        cluster.txs = this.unpack(cluster.txs);
+        return cluster;
+      } else {
+        return null;
+      }
+    }).filter(cluster => cluster !== null);
+  }
+
   public async $deleteClustersFrom(height: number): Promise<void> {
     logger.info(`Delete newer cpfp clusters from height ${height} from the database`);
     try {
@@ -113,6 +133,37 @@ class CpfpRepository {
         `
           DELETE from compact_cpfp_clusters
           WHERE height >= ?
+        `,
+        [height]
+      );
+    } catch (e: any) {
+      logger.err(`Cannot delete cpfp clusters from db. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  public async $deleteClustersAt(height: number): Promise<void> {
+    logger.info(`Delete cpfp clusters at height ${height} from the database`);
+    try {
+      const [rows] = await DB.query(
+        `
+          SELECT txs, height, root from compact_cpfp_clusters
+          WHERE height = ?
+        `,
+        [height]
+      ) as RowDataPacket[][];
+      if (rows?.length) {
+        for (const clusterToDelete of rows) {
+          const txs = this.unpack(clusterToDelete?.txs);
+          for (const tx of txs) {
+            await transactionRepository.$removeTransaction(tx.txid);
+          }
+        }
+      }
+      await DB.query(
+        `
+          DELETE from compact_cpfp_clusters
+          WHERE height = ?
         `,
         [height]
       );
@@ -189,6 +240,32 @@ class CpfpRepository {
       logger.warn(`Failed to unpack CPFP cluster. Reason: ` + (e instanceof Error ? e.message : e));
       return [];
     }
+  }
+
+  // returns `true` if two sets of CPFP clusters are deeply identical
+  public compareClusters(clustersA: CpfpCluster[], clustersB: CpfpCluster[]): boolean {
+    if (clustersA.length !== clustersB.length) {
+      return false;
+    }
+
+    clustersA = clustersA.sort((a,b) => a.root.localeCompare(b.root));
+    clustersB = clustersB.sort((a,b) => a.root.localeCompare(b.root));
+
+    for (let i = 0; i < clustersA.length; i++) {
+      if (clustersA[i].root !== clustersB[i].root) {
+        return false;
+      }
+      if (clustersA[i].txs.length !== clustersB[i].txs.length) {
+        return false;
+      }
+      for (let j = 0; j < clustersA[i].txs.length; j++) {
+        if (clustersA[i].txs[j].txid !== clustersB[i].txs[j].txid) {
+          return false;
+        }
+      }
+    }
+
+    return true;
   }
 }
 

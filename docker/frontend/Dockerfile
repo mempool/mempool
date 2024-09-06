@@ -1,4 +1,4 @@
-FROM node:20.12.0-buster-slim AS builder
+FROM node:20.15.0-buster-slim AS builder
 
 ARG commitHash
 ENV DOCKER_COMMIT_HASH=${commitHash}
@@ -13,7 +13,7 @@ RUN npm install --omit=dev --omit=optional
 
 RUN npm run build
 
-FROM nginx:1.25.4-alpine
+FROM nginx:1.27.0-alpine
 
 WORKDIR /patch
 

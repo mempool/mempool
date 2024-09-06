@@ -2,16 +2,18 @@ import { FastVertexArray } from './fast-vertex-array';
 import TxView from './tx-view';
 import { TransactionStripped } from '../../interfaces/node-api.interface';
 import { Color, Position, Square, ViewUpdateParams } from './sprite-types';
-import { defaultColorFunction } from './utils';
+import { defaultColorFunction, contrastColorFunction } from './utils';
+import { ThemeService } from '../../services/theme.service';
 
 export default class BlockScene {
   scene: { count: number, offset: { x: number, y: number}};
   vertexArray: FastVertexArray;
   txs: { [key: string]: TxView };
   getColor: ((tx: TxView) => Color) = defaultColorFunction;
+  theme: ThemeService;
   orientation: string;
   flip: boolean;
-  animationDuration: number = 900;
+  animationDuration: number = 1000;
   configAnimationOffset: number | null;
   animationOffset: number;
   highlightingEnabled: boolean;
@@ -29,11 +31,11 @@ export default class BlockScene {
   animateUntil = 0;
   dirty: boolean;
 
-  constructor({ width, height, resolution, blockLimit, animationDuration, animationOffset, orientation, flip, vertexArray, highlighting, colorFunction }:
+  constructor({ width, height, resolution, blockLimit, animationDuration, animationOffset, orientation, flip, vertexArray, theme, highlighting, colorFunction }:
       { width: number, height: number, resolution: number, blockLimit: number, animationDuration: number, animationOffset: number,
-        orientation: string, flip: boolean, vertexArray: FastVertexArray, highlighting: boolean, colorFunction: ((tx: TxView) => Color) | null }
+        orientation: string, flip: boolean, vertexArray: FastVertexArray, theme: ThemeService, highlighting: boolean, colorFunction: ((tx: TxView) => Color) | null }
   ) {
-    this.init({ width, height, resolution, blockLimit, animationDuration, animationOffset, orientation, flip, vertexArray, highlighting, colorFunction });
+    this.init({ width, height, resolution, blockLimit, animationDuration, animationOffset, orientation, flip, vertexArray, theme, highlighting, colorFunction });
   }
 
   resize({ width = this.width, height = this.height, animate = true }: { width?: number, height?: number, animate: boolean }): void {
@@ -67,7 +69,7 @@ export default class BlockScene {
   }
 
   setColorFunction(colorFunction: ((tx: TxView) => Color) | null): void {
-    this.getColor = colorFunction || defaultColorFunction;
+    this.theme.theme === 'contrast' || this.theme.theme === 'bukele' ? this.getColor = colorFunction || contrastColorFunction : this.getColor = colorFunction || defaultColorFunction;
     this.updateAllColors();
   }
 
@@ -86,16 +88,19 @@ export default class BlockScene {
   }
 
   // set up the scene with an initial set of transactions, without any transition animation
-  setup(txs: TransactionStripped[]) {
+  setup(txs: TransactionStripped[], sort: boolean = false) {
     // clean up any old transactions
     Object.values(this.txs).forEach(tx => {
       tx.destroy();
       delete this.txs[tx.txid];
     });
     this.layout = new BlockLayout({ width: this.gridWidth, height: this.gridHeight });
-    txs.forEach(tx => {
-      const txView = new TxView(tx, this);
-      this.txs[tx.txid] = txView;
+    let txViews = txs.map(tx => new TxView(tx, this));
+    if (sort) {
+      txViews = txViews.sort(feeRateDescending);
+    }
+    txViews.forEach(txView => {
+      this.txs[txView.txid] = txView;
       this.place(txView);
       this.saveGridToScreenPosition(txView);
       this.applyTxUpdate(txView, {
@@ -177,7 +182,7 @@ export default class BlockScene {
       removed.forEach(tx => {
         tx.destroy();
       });
-    }, 1000);
+    }, (startTime - performance.now()) + this.animationDuration + 1000);
 
     if (resetLayout) {
       add.forEach(tx => {
@@ -197,6 +202,7 @@ export default class BlockScene {
           this.txs[tx.txid].feerate = tx.rate || (this.txs[tx.txid].fee / this.txs[tx.txid].vsize);
           this.txs[tx.txid].rate = tx.rate;
           this.txs[tx.txid].dirty = true;
+          this.updateColor(this.txs[tx.txid], startTime, 50, true);
         }
       });
 
@@ -232,18 +238,19 @@ export default class BlockScene {
     this.animateUntil = Math.max(this.animateUntil, tx.setHighlight(value));
   }
 
-  private init({ width, height, resolution, blockLimit, animationDuration, animationOffset, orientation, flip, vertexArray, highlighting, colorFunction }:
+  private init({ width, height, resolution, blockLimit, animationDuration, animationOffset, orientation, flip, vertexArray, theme, highlighting, colorFunction }:
       { width: number, height: number, resolution: number, blockLimit: number, animationDuration: number, animationOffset: number,
-        orientation: string, flip: boolean, vertexArray: FastVertexArray, highlighting: boolean, colorFunction: ((tx: TxView) => Color) | null }
+        orientation: string, flip: boolean, vertexArray: FastVertexArray, theme: ThemeService, highlighting: boolean, colorFunction: ((tx: TxView) => Color) | null }
   ): void {
-    this.animationDuration = animationDuration || 1000;
+    this.animationDuration = animationDuration || this.animationDuration || 1000;
     this.configAnimationOffset = animationOffset;
     this.animationOffset = this.configAnimationOffset == null ? (this.width * 1.4) : this.configAnimationOffset;
     this.orientation = orientation;
     this.flip = flip;
     this.vertexArray = vertexArray;
     this.highlightingEnabled = highlighting;
-    this.getColor = colorFunction || defaultColorFunction;
+    theme.theme === 'contrast' || theme.theme === 'bukele' ? this.getColor = colorFunction || contrastColorFunction : this.getColor = colorFunction || defaultColorFunction;
+    this.theme = theme;
 
     this.scene = {
       count: 0,

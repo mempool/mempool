@@ -9,6 +9,7 @@ import bitcoinClient from '../bitcoin/bitcoin-client';
 import mining from "./mining";
 import PricesRepository from '../../repositories/PricesRepository';
 import AccelerationRepository from '../../repositories/AccelerationRepository';
+import accelerationApi from '../services/acceleration';
 
 class MiningRoutes {
   public initRoutes(app: Application) {
@@ -24,6 +25,7 @@ class MiningRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty-adjustments', this.$getDifficultyAdjustments)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/reward-stats/:blockCount', this.$getRewardStats)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/fees/:interval', this.$getHistoricalBlockFees)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/fees', this.$getBlockFeesTimespan)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/rewards/:interval', this.$getHistoricalBlockRewards)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/fee-rates/:interval', this.$getHistoricalBlockFeeRates)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/sizes-weights/:interval', this.$getHistoricalBlockSizeAndWeight)
@@ -40,6 +42,8 @@ class MiningRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'accelerations/block/:height', this.$getAccelerationsByHeight)
       .get(config.MEMPOOL.API_URL_PREFIX + 'accelerations/recent/:interval', this.$getRecentAccelerations)
       .get(config.MEMPOOL.API_URL_PREFIX + 'accelerations/total', this.$getAccelerationTotals)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'accelerations', this.$getActiveAccelerations)
+      .post(config.MEMPOOL.API_URL_PREFIX + 'acceleration/request/:txid', this.$requestAcceleration)
     ;
   }
 
@@ -210,6 +214,24 @@ class MiningRoutes {
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.header('X-total-count', blockCount.toString());
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      res.json(blockFees);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getBlockFeesTimespan(req: Request, res: Response) {
+    try {
+      if (!parseInt(req.query.from as string, 10) || !parseInt(req.query.to as string, 10)) {
+        throw new Error('Invalid timestamp range');
+      }
+      if (parseInt(req.query.from as string, 10) > parseInt(req.query.to as string, 10)) {
+        throw new Error('from must be less than to');
+      }
+      const blockFees = await mining.$getBlockFeesTimespan(parseInt(req.query.from as string, 10), parseInt(req.query.to as string, 10));
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(blockFees);
     } catch (e) {
@@ -422,6 +444,33 @@ class MiningRoutes {
         return;
       }
       res.status(200).send(await AccelerationRepository.$getAccelerationTotals(<string>req.query.pool, <string>req.query.interval));
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getActiveAccelerations(req: Request, res: Response): Promise<void> {
+    try {
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      if (!config.MEMPOOL_SERVICES.ACCELERATIONS || ['testnet', 'signet', 'liquidtestnet', 'liquid'].includes(config.MEMPOOL.NETWORK)) {
+        res.status(400).send('Acceleration data is not available.');
+        return;
+      }
+      res.status(200).send(accelerationApi.accelerations || []);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $requestAcceleration(req: Request, res: Response): Promise<void> {
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Cache-control', 'private, no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+    res.setHeader('expires', -1);
+    try {
+      accelerationApi.accelerationRequested(req.params.txid);
+      res.status(200).send();
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

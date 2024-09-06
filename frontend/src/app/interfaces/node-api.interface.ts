@@ -29,6 +29,9 @@ export interface CpfpInfo {
   sigops?: number;
   adjustedVsize?: number;
   acceleration?: boolean;
+  acceleratedBy?: number[];
+  acceleratedAt?: number;
+  feeDelta?: number;
 }
 
 export interface RbfInfo {
@@ -132,13 +135,14 @@ export interface ITranslators { [language: string]: string; }
  */
 export interface SinglePoolStats {
   poolId: number;
+  poolUniqueId: number; // unique global pool id
   name: string;
   link: string;
   blockCount: number;
   emptyBlocks: number;
   rank: number;
   share: number;
-  lastEstimatedHashrate: string;
+  lastEstimatedHashrate: number;
   emptyBlockRatio: string;
   logo: string;
   slug: string;
@@ -207,6 +211,8 @@ export interface BlockExtended extends Block {
 }
 
 export interface BlockAudit extends BlockExtended {
+  version: number,
+  unseenTxs?: string[],
   missingTxs: string[],
   addedTxs: string[],
   prioritizedTxs: string[],
@@ -233,7 +239,7 @@ export interface TransactionStripped {
   acc?: boolean;
   flags?: number | null;
   time?: number;
-  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'prioritized' | 'censored' | 'selected' | 'rbf' | 'accelerated';
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'added_prioritized' | 'prioritized' | 'added_deprioritized' | 'deprioritized' | 'censored' | 'selected' | 'rbf' | 'accelerated';
   context?: 'projected' | 'actual';
 }
 
@@ -245,7 +251,15 @@ export interface RbfTransaction extends TransactionStripped {
 export interface MempoolPosition {
   block: number,
   vsize: number,
-  accelerated?: boolean
+  accelerated?: boolean,
+  acceleratedBy?: number[],
+  acceleratedAt?: number,
+  feeDelta?: number,
+}
+
+export interface AccelerationPosition extends MempoolPosition {
+  poolId: number;
+  offset?: number;
 }
 
 export interface RewardStats {
@@ -394,12 +408,16 @@ export interface Acceleration {
   blockHash: string;
   blockHeight: number;
 
-  acceleratedFee?: number;
+  acceleratedFeeRate?: number;
   boost?: number;
+  bidBoost?: number;
+  boostCost?: number;
+  boostRate?: number;
+  minedByPoolUniqueId?: number;
 }
 
 export interface AccelerationHistoryParams {
-  status?: string;
+  status?: string; // Single status or comma separated list of status
   timeframe?: string;
   poolUniqueId?: number;
   blockHash?: string;
@@ -420,4 +438,17 @@ export interface AccelerationInfo {
   effective_fee: number,
   boost_rate: number,
   boost_cost: number,
+}
+
+export interface TestMempoolAcceptResult {
+  txid: string,
+  wtxid: string,
+  allowed?: boolean,
+  vsize?: number,
+  fees?: {
+    base: number,
+    "effective-feerate": number,
+    "effective-includes": string[],
+  },
+  ['reject-reason']?: string,
 }

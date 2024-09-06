@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 76;
+  private static currentVersion = 82;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -653,9 +653,11 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `prices` ADD `TRY` float DEFAULT "-1"');
       await this.$executeQuery('ALTER TABLE `prices` ADD `ZAR` float DEFAULT "-1"');
 
-      await this.$executeQuery('TRUNCATE hashrates');
-      await this.$executeQuery('TRUNCATE difficulty_adjustments');
-      await this.$executeQuery(`UPDATE state SET string = NULL WHERE name = 'pools_json_sha'`);
+      if (isBitcoin === true) {
+        await this.$executeQuery('TRUNCATE hashrates');
+        await this.$executeQuery('TRUNCATE difficulty_adjustments');
+        await this.$executeQuery(`UPDATE state SET string = NULL WHERE name = 'pools_json_sha'`);
+      }
 
       await this.updateToSchemaVersion(75);
     }
@@ -663,6 +665,45 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 76 && isBitcoin === true) {
       await this.$executeQuery('ALTER TABLE `blocks_audits` ADD prioritized_txs JSON DEFAULT "[]"');
       await this.updateToSchemaVersion(76);
+    }
+
+    if (databaseSchemaVersion < 77 && config.MEMPOOL.NETWORK === 'mainnet') {
+      await this.$executeQuery('ALTER TABLE `accelerations` ADD requested datetime DEFAULT NULL');
+      await this.updateToSchemaVersion(77);
+    }
+
+    if (databaseSchemaVersion < 78) {
+      await this.$executeQuery('ALTER TABLE `prices` CHANGE `time` `time` datetime NOT NULL');
+      await this.updateToSchemaVersion(78);
+    }
+
+    if (databaseSchemaVersion < 79 && config.MEMPOOL.NETWORK === 'mainnet') {
+      // Clear bad data
+      await this.$executeQuery(`TRUNCATE accelerations`);
+      this.uniqueLog(logger.notice, `'accelerations' table has been truncated`);
+      await this.$executeQuery(`
+        UPDATE state
+        SET number = 0
+        WHERE name = 'last_acceleration_block'
+      `);
+      await this.updateToSchemaVersion(79);
+    }
+
+    if (databaseSchemaVersion < 80) {
+      await this.$executeQuery('ALTER TABLE `blocks` ADD coinbase_addresses JSON DEFAULT NULL');
+      await this.updateToSchemaVersion(80);
+    }
+
+    if (databaseSchemaVersion < 81 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD version INT NOT NULL DEFAULT 0');
+      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD INDEX `version` (`version`)');
+      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD unseen_txs JSON DEFAULT "[]"');
+      await this.updateToSchemaVersion(81);
+    }
+
+    if (databaseSchemaVersion < 82 && isBitcoin === true && config.MEMPOOL.NETWORK === 'mainnet') {
+      await this.$fixBadV1AuditBlocks();
+      await this.updateToSchemaVersion(82);
     }
   }
 
@@ -1276,6 +1317,28 @@ class DatabaseMigration {
       }
     } catch (e) {
       logger.warn(`Failed to migrate cpfp transaction data`);
+    }
+  }
+
+  private async $fixBadV1AuditBlocks(): Promise<void> {
+    const badBlocks = [
+      '000000000000000000011ad49227fc8c9ba0ca96ad2ebce41a862f9a244478dc',
+      '000000000000000000010ac1f68b3080153f2826ffddc87ceffdd68ed97d6960',
+      '000000000000000000024cbdafeb2660ae8bd2947d166e7fe15d1689e86b2cf7',
+      '00000000000000000002e1dbfbf6ae057f331992a058b822644b368034f87286',
+      '0000000000000000000019973b2778f08ad6d21e083302ff0833d17066921ebb',
+    ];
+
+    for (const hash of badBlocks) {
+      try {
+        await this.$executeQuery(`
+          UPDATE blocks_audits
+          SET prioritized_txs = '[]'
+          WHERE hash = '${hash}'
+        `, true);
+      } catch (e) {
+        continue;
+      }
     }
   }
 }

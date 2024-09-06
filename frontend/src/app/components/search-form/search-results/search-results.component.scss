@@ -1,5 +1,5 @@
 .card-title {
-  color: #4a68b9;
+  color: var(--title-fg);
   font-size: 10px;
   margin-bottom: 4px;
   font-size: 1rem;
@@ -8,7 +8,7 @@
 }
 
 .danger {
-  color: #dc3545;
+  color: var(--red);
 }
 
 .dropdown-menu {
@@ -21,4 +21,16 @@
 
 .inactive {
   opacity: 0.2;
+}
+
+.active {
+  background-color: var(--active-bg);
+}
+
+.pool-logo {
+  width: 15px;
+  height: 15px;
+  position: relative;
+  top: -1px;
+  margin-right: 10px;
 }

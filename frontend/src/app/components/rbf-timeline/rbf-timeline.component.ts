@@ -51,7 +51,7 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes): void {
     this.rows = this.buildTimelines(this.replacements);
-    if (changes.txid) {
+    if (changes.txid && !changes.txid.firstChange && changes.txid.previousValue !== changes.txid.currentValue) {
       setTimeout(() => { this.scrollToSelected(); });
     }
   }

@@ -5,7 +5,7 @@
     <div class="widget-toggler">
       <a href="" (click)="setMode('difficulty')" class="toggler-option"
         [ngClass]="{'inactive': mode === 'difficulty'}"><small i18n="statistics.average-small">difficulty</small></a>
-      <span style="color: #ffffff66; font-size: 8px"> | </span>
+      <span style="color: var(--transparent-fg); font-size: 8px"> | </span>
       <a href="" (click)="setMode('halving')" class="toggler-option"
         [ngClass]="{'inactive': mode === 'halving'}"><small i18n="statistics.median-small">halving</small></a>
     </div>
@@ -15,8 +15,8 @@
           <svg #epochSvg class="epoch-blocks" height="22px" width="100%" viewBox="0 0 224 9" shape-rendering="crispEdges" preserveAspectRatio="none">
             <defs>
               <linearGradient id="diff-gradient" x1="0%" y1="0%" x2="100%" y2="0%" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#105fb0" />
-                <stop offset="100%" stop-color="#9339f4" />
+                <stop offset="0%" stop-color="var(--primary)" />
+                <stop offset="100%" stop-color="var(--mainnet-alt)" />
               </linearGradient>
               <linearGradient id="diff-hover-gradient" x1="0%" y1="0%" x2="100%" y2="0%" gradientUnits="userSpaceOnUse">
                 <stop offset="0%" stop-color="#2486eb" />

@@ -2,7 +2,7 @@ import config from '../config';
 import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import logger from '../logger';
 import memPool from './mempool';
-import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionMinerInfo, CpfpSummary, MempoolTransactionExtended, TransactionClassified, BlockAudit } from '../mempool.interfaces';
+import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionMinerInfo, CpfpSummary, MempoolTransactionExtended, TransactionClassified, BlockAudit, TransactionAudit } from '../mempool.interfaces';
 import { Common } from './common';
 import diskCache from './disk-cache';
 import transactionUtils from './transaction-utils';
@@ -29,6 +29,11 @@ import websocketHandler from './websocket-handler';
 import redisCache from './redis-cache';
 import rbfCache from './rbf-cache';
 import { calcBitsDifference } from './difficulty-adjustment';
+import AccelerationRepository from '../repositories/AccelerationRepository';
+import { calculateFastBlockCpfp, calculateGoodBlockCpfp } from './cpfp';
+import mempool from './mempool';
+import CpfpRepository from '../repositories/CpfpRepository';
+import accelerationApi from './services/acceleration';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -214,10 +219,10 @@ class Blocks {
     };
   }
 
-  public summarizeBlockTransactions(hash: string, transactions: TransactionExtended[]): BlockSummary {
+  public summarizeBlockTransactions(hash: string, height: number, transactions: TransactionExtended[]): BlockSummary {
     return {
       id: hash,
-      transactions: Common.classifyTransactions(transactions),
+      transactions: Common.classifyTransactions(transactions, height),
     };
   }
 
@@ -294,10 +299,12 @@ class Blocks {
     extras.virtualSize = block.weight / 4.0;
     if (coinbaseTx?.vout.length > 0) {
       extras.coinbaseAddress = coinbaseTx.vout[0].scriptpubkey_address ?? null;
+      extras.coinbaseAddresses = [...new Set<string>(coinbaseTx.vout.map(v => v.scriptpubkey_address).filter(a => a) as string[])];
       extras.coinbaseSignature = coinbaseTx.vout[0].scriptpubkey_asm ?? null;
       extras.coinbaseSignatureAscii = transactionUtils.hex2ascii(coinbaseTx.vin[0].scriptsig) ?? null;
     } else {
       extras.coinbaseAddress = null;
+      extras.coinbaseAddresses = null;
       extras.coinbaseSignature = null;
       extras.coinbaseSignatureAscii = null;
     }
@@ -369,8 +376,7 @@ class Blocks {
       }
     }
 
-    const asciiScriptSig = transactionUtils.hex2ascii(txMinerInfo.vin[0].scriptsig);
-    const addresses = txMinerInfo.vout.map((vout) => vout.scriptpubkey_address).filter((address) => address);
+    const addresses = txMinerInfo.vout.map((vout) => vout.scriptpubkey_address).filter(address => address) as string[];
 
     let pools: PoolTag[] = [];
     if (config.DATABASE.ENABLED === true) {
@@ -379,26 +385,9 @@ class Blocks {
       pools = poolsParser.miningPools;
     }
 
-    for (let i = 0; i < pools.length; ++i) {
-      if (addresses.length) {
-        const poolAddresses: string[] = typeof pools[i].addresses === 'string' ?
-          JSON.parse(pools[i].addresses) : pools[i].addresses;
-        for (let y = 0; y < poolAddresses.length; y++) {
-          if (addresses.indexOf(poolAddresses[y]) !== -1) {
-            return pools[i];
-          }
-        }
-      }
-
-      const regexes: string[] = typeof pools[i].regexes === 'string' ?
-        JSON.parse(pools[i].regexes) : pools[i].regexes;
-      for (let y = 0; y < regexes.length; ++y) {
-        const regex = new RegExp(regexes[y], 'i');
-        const match = asciiScriptSig.match(regex);
-        if (match !== null) {
-          return pools[i];
-        }
-      }
+    const pool = poolsParser.matchBlockMiner(txMinerInfo.vin[0].scriptsig, addresses || [], pools);
+    if (pool) {
+      return pool;
     }
 
     if (config.DATABASE.ENABLED === true) {
@@ -451,7 +440,7 @@ class Blocks {
 
 
         if (config.MEMPOOL.BACKEND === 'esplora') {
-          const txs = (await bitcoinApi.$getTxsForBlock(block.hash)).map(tx => transactionUtils.extendTransaction(tx));
+          const txs = (await bitcoinApi.$getTxsForBlock(block.hash)).map(tx => transactionUtils.extendMempoolTransaction(tx));
           const cpfpSummary = await this.$indexCPFP(block.hash, block.height, txs);
           if (cpfpSummary) {
             await this.$getStrippedBlockTransactions(block.hash, true, true, cpfpSummary, block.height); // This will index the block summary
@@ -582,8 +571,11 @@ class Blocks {
     const blockchainInfo = await bitcoinClient.getBlockchainInfo();
     const currentBlockHeight = blockchainInfo.blocks;
 
-    const unclassifiedBlocksList = await BlocksSummariesRepository.$getSummariesWithVersion(0);
-    const unclassifiedTemplatesList = await BlocksSummariesRepository.$getTemplatesWithVersion(0);
+    const targetSummaryVersion: number = 1;
+    const targetTemplateVersion: number = 1;
+
+    const unclassifiedBlocksList = await BlocksSummariesRepository.$getSummariesBelowVersion(targetSummaryVersion);
+    const unclassifiedTemplatesList = await BlocksSummariesRepository.$getTemplatesBelowVersion(targetTemplateVersion);
 
     // nothing to do
     if (!unclassifiedBlocksList?.length && !unclassifiedTemplatesList?.length) {
@@ -616,16 +608,24 @@ class Blocks {
 
     for (let height = currentBlockHeight; height >= 0; height--) {
       try {
-        let txs: TransactionExtended[] | null = null;
+        let txs: MempoolTransactionExtended[] | null = null;
         if (unclassifiedBlocks[height]) {
           const blockHash = unclassifiedBlocks[height];
           // fetch transactions
-          txs = (await bitcoinApi.$getTxsForBlock(blockHash)).map(tx => transactionUtils.extendTransaction(tx)) || [];
+          txs = (await bitcoinApi.$getTxsForBlock(blockHash)).map(tx => transactionUtils.extendMempoolTransaction(tx)) || [];
           // add CPFP
-          const cpfpSummary = Common.calculateCpfp(height, txs, true);
+          const cpfpSummary = calculateGoodBlockCpfp(height, txs, []);
           // classify
-          const { transactions: classifiedTxs } = this.summarizeBlockTransactions(blockHash, cpfpSummary.transactions);
-          await BlocksSummariesRepository.$saveTransactions(height, blockHash, classifiedTxs, 1);
+          const { transactions: classifiedTxs } = this.summarizeBlockTransactions(blockHash, height, cpfpSummary.transactions);
+          await BlocksSummariesRepository.$saveTransactions(height, blockHash, classifiedTxs, 2);
+          if (unclassifiedBlocks[height].version < 2 && targetSummaryVersion === 2) {
+            const cpfpClusters = await CpfpRepository.$getClustersAt(height);
+            if (!cpfpRepository.compareClusters(cpfpClusters, cpfpSummary.clusters)) {
+              // CPFP clusters changed - update the compact_cpfp tables
+              await CpfpRepository.$deleteClustersAt(height);
+              await this.$saveCpfp(blockHash, height, cpfpSummary);
+            }
+          }
           await Common.sleep$(250);
         }
         if (unclassifiedTemplates[height]) {
@@ -651,9 +651,9 @@ class Blocks {
               }
               templateTxs.push(tx || templateTx);
             }
-            const cpfpSummary = Common.calculateCpfp(height, templateTxs?.filter(tx => tx['effectiveFeePerVsize'] != null) as TransactionExtended[], true);
+            const cpfpSummary = calculateGoodBlockCpfp(height, templateTxs?.filter(tx => tx['effectiveFeePerVsize'] != null) as MempoolTransactionExtended[], []);
             // classify
-            const { transactions: classifiedTxs } = this.summarizeBlockTransactions(blockHash, cpfpSummary.transactions);
+            const { transactions: classifiedTxs } = this.summarizeBlockTransactions(blockHash, height, cpfpSummary.transactions);
             const classifiedTxMap: { [txid: string]: TransactionClassified } = {};
             for (const tx of classifiedTxs) {
               classifiedTxMap[tx.txid] = tx;
@@ -687,6 +687,52 @@ class Blocks {
     }
 
     this.classifyingBlocks = false;
+  }
+
+  /**
+   * [INDEXING] Index missing coinbase addresses for all blocks
+   */
+  public async $indexCoinbaseAddresses(): Promise<void> {
+    try {
+      // Get all indexed block hash
+      const unindexedBlocks = await blocksRepository.$getBlocksWithoutCoinbaseAddresses();
+
+      if (!unindexedBlocks?.length) {
+        return;
+      }
+
+      logger.info(`Indexing missing coinbase addresses for ${unindexedBlocks.length} blocks`);
+
+      // Logging
+      let count = 0;
+      let countThisRun = 0;
+      let timer = Date.now() / 1000;
+      const startedAt = Date.now() / 1000;
+      for (const { height, hash } of unindexedBlocks) {
+        // Logging
+        const elapsedSeconds = (Date.now() / 1000) - timer;
+        if (elapsedSeconds > 5) {
+          const runningFor = (Date.now() / 1000) - startedAt;
+          const blockPerSeconds = countThisRun / elapsedSeconds;
+          const progress = Math.round(count / unindexedBlocks.length * 10000) / 100;
+          logger.debug(`Indexing coinbase addresses for #${height} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${count}/${unindexedBlocks.length} (${progress}%) | elapsed: ${runningFor.toFixed(2)} seconds`);
+          timer = Date.now() / 1000;
+          countThisRun = 0;
+        }
+
+        const coinbaseTx = await bitcoinApi.$getCoinbaseTx(hash);
+        const addresses = new Set<string>(coinbaseTx.vout.map(v => v.scriptpubkey_address).filter(a => a) as string[]);
+        await blocksRepository.$saveCoinbaseAddresses(hash, [...addresses]);
+
+        // Logging
+        count++;
+        countThisRun++;
+      }
+      logger.notice(`coinbase addresses indexing completed: indexed ${count} blocks`);
+    } catch (e) {
+      logger.err(`coinbase addresses indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`);
+      throw e;
+    }
   }
 
   /**
@@ -838,8 +884,11 @@ class Blocks {
       } else {
         this.currentBlockHeight++;
         logger.debug(`New block found (#${this.currentBlockHeight})!`);
-        this.updateTimerProgress(timer, `getting orphaned blocks for ${this.currentBlockHeight}`);
-        await chainTips.updateOrphanedBlocks();
+        // skip updating the orphan block cache if we've fallen behind the chain tip
+        if (this.currentBlockHeight >= blockHeightTip - 2) {
+          this.updateTimerProgress(timer, `getting orphaned blocks for ${this.currentBlockHeight}`);
+          await chainTips.updateOrphanedBlocks();
+        }
       }
 
       this.updateTimerProgress(timer, `getting block data for ${this.currentBlockHeight}`);
@@ -856,9 +905,14 @@ class Blocks {
         }
       }
 
-      const cpfpSummary: CpfpSummary = Common.calculateCpfp(block.height, transactions);
+      let accelerations = Object.values(mempool.getAccelerations());
+      if (accelerations?.length > 0) {
+        const pool = await this.$findBlockMiner(transactionUtils.stripCoinbaseTransaction(transactions[0]));
+        accelerations = accelerations.filter(a => a.pools.includes(pool.uniqueId));
+      }
+      const cpfpSummary: CpfpSummary = calculateGoodBlockCpfp(block.height, transactions, accelerations.map(a => ({ txid: a.txid, max_bid: a.feeDelta })));
       const blockExtended: BlockExtended = await this.$getBlockExtended(block, cpfpSummary.transactions);
-      const blockSummary: BlockSummary = this.summarizeBlockTransactions(block.id, cpfpSummary.transactions);
+      const blockSummary: BlockSummary = this.summarizeBlockTransactions(block.id, block.height, cpfpSummary.transactions);
       this.updateTimerProgress(timer, `got block data for ${this.currentBlockHeight}`);
 
       if (Common.indexingEnabled()) {
@@ -872,18 +926,19 @@ class Blocks {
             await BlocksRepository.$deleteBlocksFrom(lastBlock.height - 10);
             await HashratesRepository.$deleteLastEntries();
             await cpfpRepository.$deleteClustersFrom(lastBlock.height - 10);
+            await AccelerationRepository.$deleteAccelerationsFrom(lastBlock.height - 10);
             this.blocks = this.blocks.slice(0, -10);
             this.updateTimerProgress(timer, `rolled back chain divergence from ${this.currentBlockHeight}`);
             for (let i = 10; i >= 0; --i) {
               const newBlock = await this.$indexBlock(lastBlock.height - i);
               this.blocks.push(newBlock);
               this.updateTimerProgress(timer, `reindexed block`);
-              let cpfpSummary;
+              let newCpfpSummary;
               if (config.MEMPOOL.CPFP_INDEXING) {
-                cpfpSummary = await this.$indexCPFP(newBlock.id, lastBlock.height - i);
+                newCpfpSummary = await this.$indexCPFP(newBlock.id, lastBlock.height - i);
                 this.updateTimerProgress(timer, `reindexed block cpfp`);
               }
-              await this.$getStrippedBlockTransactions(newBlock.id, true, true, cpfpSummary, newBlock.height);
+              await this.$getStrippedBlockTransactions(newBlock.id, true, true, newCpfpSummary, newBlock.height);
               this.updateTimerProgress(timer, `reindexed block summary`);
             }
             await mining.$indexDifficultyAdjustments();
@@ -932,7 +987,7 @@ class Blocks {
 
       // start async callbacks
       this.updateTimerProgress(timer, `starting async callbacks for ${this.currentBlockHeight}`);
-      const callbackPromises = this.newAsyncBlockCallbacks.map((cb) => cb(blockExtended, txIds, transactions));
+      const callbackPromises = this.newAsyncBlockCallbacks.map((cb) => cb(blockExtended, txIds, cpfpSummary.transactions));
 
       if (block.height % 2016 === 0) {
         if (Common.indexingEnabled()) {
@@ -974,6 +1029,9 @@ class Blocks {
       if (this.blocks.length > config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4) {
         this.blocks = this.blocks.slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4);
       }
+      blockSummary.transactions.forEach(tx => {
+        delete tx.acc;
+      });
       this.blockSummaries.push(blockSummary);
       if (this.blockSummaries.length > config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4) {
         this.blockSummaries = this.blockSummaries.slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4);
@@ -1111,12 +1169,13 @@ class Blocks {
         transactions: cpfpSummary.transactions.map(tx => {
           let flags: number = 0;
           try {
-            flags = tx.flags || Common.getTransactionFlags(tx);
+            flags = Common.getTransactionFlags(tx, height);
           } catch (e) {
             logger.warn('Failed to classify transaction: ' + (e instanceof Error ? e.message : e));
           }
           return {
             txid: tx.txid,
+            time: tx.firstSeen,
             fee: tx.fee || 0,
             vsize: tx.vsize,
             value: Math.round(tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0)),
@@ -1125,11 +1184,11 @@ class Blocks {
           };
         }),
       };
-      summaryVersion = 1;
+      summaryVersion = cpfpSummary.version;
     } else {
       if (config.MEMPOOL.BACKEND === 'esplora') {
         const txs = (await bitcoinApi.$getTxsForBlock(hash)).map(tx => transactionUtils.extendTransaction(tx));
-        summary = this.summarizeBlockTransactions(hash, txs);
+        summary = this.summarizeBlockTransactions(hash, height || 0, txs);
         summaryVersion = 1;
       } else {
         // Call Core RPC
@@ -1250,6 +1309,7 @@ class Blocks {
         utxoset_size: block.extras.utxoSetSize ?? null,
         coinbase_raw: block.extras.coinbaseRaw ?? null,
         coinbase_address: block.extras.coinbaseAddress ?? null,
+        coinbase_addresses: block.extras.coinbaseAddresses ?? null,
         coinbase_signature: block.extras.coinbaseSignature ?? null,
         coinbase_signature_ascii: block.extras.coinbaseSignatureAscii ?? null,
         pool_slug: block.extras.pool.slug ?? null,
@@ -1264,7 +1324,7 @@ class Blocks {
           let summaryVersion = 0;
           if (config.MEMPOOL.BACKEND === 'esplora') {
             const txs = (await bitcoinApi.$getTxsForBlock(cleanBlock.hash)).map(tx => transactionUtils.extendTransaction(tx));
-            summary = this.summarizeBlockTransactions(cleanBlock.hash, txs);
+            summary = this.summarizeBlockTransactions(cleanBlock.hash, cleanBlock.height, txs);
             summaryVersion = 1;
           } else {
             // Call Core RPC
@@ -1319,6 +1379,14 @@ class Blocks {
     }
   }
 
+  public async $getBlockTxAuditSummary(hash: string, txid: string): Promise<TransactionAudit | null> {
+    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) {
+      return BlocksAuditsRepository.$getBlockTxAudit(hash, txid);
+    } else {
+      return null;
+    }
+  }
+
   public getLastDifficultyAdjustmentTime(): number {
     return this.lastDifficultyAdjustmentTime;
   }
@@ -1335,11 +1403,11 @@ class Blocks {
     return this.currentBlockHeight;
   }
 
-  public async $indexCPFP(hash: string, height: number, txs?: TransactionExtended[]): Promise<CpfpSummary | null> {
+  public async $indexCPFP(hash: string, height: number, txs?: MempoolTransactionExtended[]): Promise<CpfpSummary | null> {
     let transactions = txs;
     if (!transactions) {
       if (config.MEMPOOL.BACKEND === 'esplora') {
-        transactions = (await bitcoinApi.$getTxsForBlock(hash)).map(tx => transactionUtils.extendTransaction(tx));
+        transactions = (await bitcoinApi.$getTxsForBlock(hash)).map(tx => transactionUtils.extendMempoolTransaction(tx));
       }
       if (!transactions) {
         const block = await bitcoinClient.getBlock(hash, 2);
@@ -1351,7 +1419,7 @@ class Blocks {
     }
 
     if (transactions?.length != null) {
-      const summary = Common.calculateCpfp(height, transactions as TransactionExtended[]);
+      const summary = calculateFastBlockCpfp(height, transactions);
 
       await this.$saveCpfp(hash, height, summary);
 

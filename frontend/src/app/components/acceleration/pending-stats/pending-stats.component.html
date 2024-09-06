@@ -17,10 +17,10 @@
       </div>
     </div>
     <div class="item">
-      <h5 class="card-title" i18n="accelerator.total-vsize">Total Vsize</h5>
+      <h5 class="card-title" i18n="accelerator.total-vsize">Total vSize</h5>
       <div class="card-text">
-        <div [innerHTML]="'&lrm;' + (stats.totalVsize * 4 | vbytes: 2)"></div>
-        <div class="symbol">{{ (stats.totalVsize / 1_000_000 * 100).toFixed(2) }}% <span i18n="accelerator.percent-of-next-block"> of next block</span></div>
+        <div [innerHTML]="'&lrm;' + (stats.totalVsize | vbytes: 2)"></div>
+        <div class="symbol">{{ (stats.totalVsize / 1_000_000 * 100).toFixed(2) }}% <span i18n="accelerator.percent-of-block"> of block</span></div>
       </div>
     </div>
   </div>
@@ -43,7 +43,7 @@
       </div>
     </div>
     <div class="item">
-      <h5 class="card-title" i18n="accelerator.total-vsize">Total Vsize</h5>
+      <h5 class="card-title" i18n="accelerator.total-vsize">Total vSize</h5>
       <div class="card-text">
         <div class="skeleton-loader"></div>
         <div class="skeleton-loader"></div>

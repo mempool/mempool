@@ -29,7 +29,7 @@
       <div class="card">
         <div class="card-body pl-2 pr-2">
           <div class="mempool-graph">
-            <app-pool-ranking [height]="graphHeight" [attr.data-cy]="'pool-distribution'" [widget]=true></app-pool-ranking>
+            <app-pool-ranking [height]="poolGraphHeight" [attr.data-cy]="'pool-distribution'" [widget]=true></app-pool-ranking>
           </div>
           <div class="mt-1"><a [attr.data-cy]="'pool-distribution-view-more'" [routerLink]="['/graphs/mining/pools' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
         </div>
@@ -41,7 +41,7 @@
       <div class="card">
         <div class="card-body pl-lg-3 pr-lg-3 pl-2 pr-2">
           <div class="fixed-mempool-graph">
-            <app-hashrate-chart [height]="graphHeight" [attr.data-cy]="'hashrate-graph'" [widget]="true"></app-hashrate-chart>
+            <app-hashrate-chart [height]="hashrateGraphHeight" [attr.data-cy]="'hashrate-graph'" [widget]="true"></app-hashrate-chart>
           </div>
           <div class="mt-1"><a [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" fragment="1y" i18n="dashboard.view-more">View more &raquo;</a></div>
         </div>
@@ -55,7 +55,7 @@
           <a class="title-link" href="" [routerLink]="['/blocks' | relativeUrl]">
             <h5 class="card-title d-inline" i18n="dashboard.recent-blocks">Recent Blocks</h5>
             <span>&nbsp;</span>
-            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: #4a68b9"></fa-icon>
+            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
           </a>
           <app-blocks-list [attr.data-cy]="'latest-blocks'" [widget]=true></app-blocks-list>
         </div>
@@ -69,7 +69,7 @@
           <a class="title-link" href="" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]">
             <h5 class="card-title d-inline" i18n="dashboard.adjustments">Adjustments</h5>
             <span>&nbsp;</span>
-            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: #4a68b9"></fa-icon>
+            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
           </a>
           <app-difficulty-adjustments-table [attr.data-cy]="'difficulty-adjustments-table'"></app-difficulty-adjustments-table>
         </div>

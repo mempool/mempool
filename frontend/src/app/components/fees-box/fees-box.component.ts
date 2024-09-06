@@ -1,9 +1,10 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { StateService } from '../../services/state.service';
-import { Observable, combineLatest } from 'rxjs';
+import { Observable, combineLatest, Subscription } from 'rxjs';
 import { Recommendedfees } from '../../interfaces/websocket.interface';
-import { feeLevels, mempoolFeeColors } from '../../app.constants';
+import { feeLevels } from '../../app.constants';
 import { map, startWith, tap } from 'rxjs/operators';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-fees-box',
@@ -11,14 +12,18 @@ import { map, startWith, tap } from 'rxjs/operators';
   styleUrls: ['./fees-box.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FeesBoxComponent implements OnInit {
+export class FeesBoxComponent implements OnInit, OnDestroy {
   isLoading$: Observable<boolean>;
   recommendedFees$: Observable<Recommendedfees>;
-  gradient = 'linear-gradient(to right, #2e324e, #2e324e)';
-  noPriority = '#2e324e';
+  themeSubscription: Subscription;
+  gradient = 'linear-gradient(to right, var(--skeleton-bg), var(--skeleton-bg))';
+  noPriority = 'var(--skeleton-bg)';
+  fees: Recommendedfees;
 
   constructor(
-    private stateService: StateService
+    private stateService: StateService,
+    private themeService: ThemeService,
+    private cd: ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
@@ -31,18 +36,32 @@ export class FeesBoxComponent implements OnInit {
     this.recommendedFees$ = this.stateService.recommendedFees$
       .pipe(
         tap((fees) => {
-          let feeLevelIndex = feeLevels.slice().reverse().findIndex((feeLvl) => fees.minimumFee >= feeLvl);
-          feeLevelIndex = feeLevelIndex >= 0 ? feeLevels.length - feeLevelIndex : feeLevelIndex;
-          const startColor = '#' + (mempoolFeeColors[feeLevelIndex - 1] || mempoolFeeColors[mempoolFeeColors.length - 1]);
-
-          feeLevelIndex = feeLevels.slice().reverse().findIndex((feeLvl) => fees.fastestFee >= feeLvl);
-          feeLevelIndex = feeLevelIndex >= 0 ? feeLevels.length - feeLevelIndex : feeLevelIndex;
-          const endColor = '#' + (mempoolFeeColors[feeLevelIndex - 1] || mempoolFeeColors[mempoolFeeColors.length - 1]);
-
-          this.gradient = `linear-gradient(to right, ${startColor}, ${endColor})`;
-          this.noPriority = startColor;
+          this.fees = fees;
+          this.setFeeGradient();
         }
       )
     );
+    this.themeSubscription = this.themeService.themeChanged$.subscribe(() => {
+      this.setFeeGradient();
+    })
+  }
+
+  setFeeGradient() {
+    let feeLevelIndex = feeLevels.slice().reverse().findIndex((feeLvl) => this.fees.minimumFee >= feeLvl);
+    feeLevelIndex = feeLevelIndex >= 0 ? feeLevels.length - feeLevelIndex : feeLevelIndex;
+    const startColor = '#' + (this.themeService.mempoolFeeColors[feeLevelIndex - 1] || this.themeService.mempoolFeeColors[this.themeService.mempoolFeeColors.length - 1]);
+
+    feeLevelIndex = feeLevels.slice().reverse().findIndex((feeLvl) => this.fees.fastestFee >= feeLvl);
+    feeLevelIndex = feeLevelIndex >= 0 ? feeLevels.length - feeLevelIndex : feeLevelIndex;
+    const endColor = '#' + (this.themeService.mempoolFeeColors[feeLevelIndex - 1] || this.themeService.mempoolFeeColors[this.themeService.mempoolFeeColors.length - 1]);
+
+    this.gradient = `linear-gradient(to right, ${startColor}, ${endColor})`;
+    this.noPriority = startColor;
+
+    this.cd.markForCheck();
+  }
+
+  ngOnDestroy(): void {
+    this.themeSubscription.unsubscribe();
   }
 }

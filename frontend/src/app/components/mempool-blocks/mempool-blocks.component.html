@@ -7,7 +7,7 @@
           class="spotlight-bottom"
           [style.right]="mempoolBlockStyles[i].right"
         ></div>
-        <div @blockEntryTrigger [@.disabled]="i > 0 || !animateEntry" [attr.data-cy]="'mempool-block-' + i" class="bitcoin-block text-center mempool-block" [class.hide-block]="count && i >= count" id="mempool-block-{{ i }}" [ngStyle]="mempoolBlockStyles[i]" [class.blink-bg]="projectedBlock.blink">
+        <div @blockEntryTrigger [@.disabled]="i > 0 || !animateEntry" [attr.data-cy]="'mempool-block-' + i" class="bitcoin-block text-center mempool-block" [class.hide-block]="count && i >= count" id="mempool-block-{{ i }}" [ngStyle]="mempoolBlockStyles[i]" [class.blink-bg]="projectedBlock.blink" [style]="blockTransformation">
           <a draggable="false" [routerLink]="[getHref(i) | relativeUrl]"
             class="blockLink" [ngClass]="{'disabled': (this.stateService.blockScrolling$ | async)}">&nbsp;</a>
           <div class="block-body">
@@ -20,7 +20,7 @@
                 -
                 <app-fee-rate [fee]="projectedBlock.feeRange[projectedBlock.feeRange.length - 1]" rounding="1.0-0" unitClass=""></app-fee-rate>
               </div>
-              <div *ngIf="showMiningInfo$ | async; else noMiningInfo" class="block-size">
+              <div *ngIf="blockDisplayMode === 'fees'; else noMiningInfo" class="block-size">
                 <app-amount [attr.data-cy]="'mempool-block-' + i + '-total-fees'" [satoshis]="projectedBlock.totalFees" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
               </div>
               <ng-template #noMiningInfo>
@@ -51,7 +51,8 @@
         </div>
       </ng-template>
     </div>
-    <div *ngIf="arrowVisible" id="arrow-up" [ngStyle]="{'right': rightPosition + 75 + 'px', transition: transition }" [class.blink]="txPosition?.accelerated"></div>
+    <app-acceleration-sparkles [style]="{ position: 'absolute', right: 0}" [arrow]="arrowElement" [run]="acceleratingArrow"></app-acceleration-sparkles>
+    <div *ngIf="arrowVisible" #arrowUp id="arrow-up" [ngStyle]="{'right': rightPosition + (blockWidth * 0.3) + containerOffset + 'px', transition: transition }" [class.blink]="txPosition?.accelerated"></div>
   </div>
 </ng-container>
 

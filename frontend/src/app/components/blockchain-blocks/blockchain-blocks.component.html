@@ -12,6 +12,7 @@
         class="text-center bitcoin-block mined-block blockchain-blocks-offset-{{ offset }}-index-{{ i }}"
         [class.offscreen]="!static && count && i >= count"
         id="bitcoin-block-{{ block.height }}" [ngStyle]="blockStyles[i]"
+        [style]="blockTransformation"
         [class.blink-bg]="isSpecial(block.height)">
         <a draggable="false" [routerLink]="[getHref(i, block) | relativeUrl]" [state]="{ data: { block: block } }"
           class="blockLink" [ngClass]="{'disabled': (this.stateService.blockScrolling$ | async)}">&nbsp;</a>
@@ -40,7 +41,7 @@
                 <app-fee-rate unitClass=""></app-fee-rate>
               </div>
             </ng-template>
-            <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-total-fees'" *ngIf="showMiningInfo$ | async; else noMiningInfo"
+            <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-total-fees'" *ngIf="blockDisplayMode === 'fees'; else noMiningInfo"
               class="block-size">
               <app-amount [satoshis]="block.extras?.totalFees ?? 0" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
             </div>
@@ -58,10 +59,11 @@
               <app-time kind="since" [time]="block.timestamp" [fastRender]="true" [precision]="1" minUnit="minute"></app-time></div>
           </ng-container>
         </div>
-        <div class="animated" [class]="markHeight === block.height ? 'hide' : 'show'" *ngIf="block.extras?.pool != undefined && showPools">
-          <a [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-pool'" class="badge badge-primary"
-            [routerLink]="[('/mining/pool/' + block.extras.pool.slug) | relativeUrl]">
-            {{ block.extras.pool.name}}</a>
+        <div class="animated" *ngIf="block.extras?.pool != undefined && showPools">
+          <a [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-pool'" class="badge" [routerLink]="[('/mining/pool/' + block.extras.pool.slug) | relativeUrl]">
+            <img class="pool-logo" [src]="'/resources/mining-pools/' + block.extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'"> 
+            {{ block.extras.pool.name}}
+          </a>
         </div>
       </div>
     </ng-container>
@@ -84,7 +86,7 @@
     </ng-template>
   </div>
   <div [hidden]="!arrowVisible" id="arrow-up" [style.transition]="arrowTransition"
-    [ngStyle]="{'left': arrowLeftPx + 'px' }"></div>
+    [ngStyle]="{'left': arrowLeftPx + 8 + 'px' }"></div>
 </div>
 
 <ng-template #loadingBlocksTemplate>

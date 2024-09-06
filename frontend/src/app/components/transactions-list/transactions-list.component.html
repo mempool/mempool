@@ -6,9 +6,9 @@
       <app-truncate [text]="tx.txid"></app-truncate>
     </a>
     <div>
-      <ng-template [ngIf]="tx.status.confirmed">&lrm;{{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }}</ng-template>
+      <ng-template [ngIf]="tx.status.confirmed">&lrm;{{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm:ss' }}</ng-template>
       <ng-template [ngIf]="!tx.status.confirmed && tx.firstSeen">
-        <i><app-time kind="since" [time]="tx.firstSeen" [fastRender]="true"></app-time></i>
+        <i><app-time kind="since" [time]="tx.firstSeen" [fastRender]="true" [showTooltip]="true"></app-time></i>
       </ng-template>
     </div>
   </div>
@@ -75,7 +75,7 @@
                           {{ vin.prevout.scriptpubkey_type?.toUpperCase() }}
                         </ng-template>
                         <div>
-                          <app-address-labels [vin]="vin" [channel]="tx._channels && tx._channels.inputs[vindex] ? tx._channels.inputs[vindex] : null"></app-address-labels>
+                          <app-address-labels  [vin]="vin" [channel]="tx._channels && tx._channels.inputs[vindex] ? tx._channels.inputs[vindex] : null"></app-address-labels>
                         </div>
                       </ng-template>
                     </ng-container>
@@ -114,22 +114,33 @@
                         <td i18n="transactions-list.witness">Witness</td>
                         <td style="text-align: left;">
                           <ng-container *ngFor="let witness of vin.witness; index as i">
-                            <input type="checkbox" [id]="'tx' + vindex + 'witness' + i" style="display: none;">
-                            <p class="witness-item" [class.accordioned]="witness.length > 1000">
-                              <ng-template [ngIf]="witness" [ngIfElse]="emptyWitnessItem">
+                            <p class="witness-item">
+                              @if (witness.length > 1000) {
+                                @if (!showFullWitness[vindex][i]) {
+                                  {{ witness | slice:0:1000 }}
+                                } @else {
+                                  {{ witness }}
+                                }
+                              } @else if (witness) {
                                 {{ witness }}
-                              </ng-template>
-                              <ng-template #emptyWitnessItem>
+                              } @else {
                                 &lt;empty&gt;
-                              </ng-template>
+                              }
                             </p>
-                            <div class="witness-toggle" *ngIf="witness.length > 1000">
-                              <span  class="ellipsis">...</span>
-                              <label [for]="'tx' + vindex + 'witness' + i" class="btn btn-sm btn-primary mt-2">
-                                <span class="show-all" i18n="show-all">Show all</span>
-                                <span class="show-less" i18n="show-less">Show less</span>
-                              </label>
-                            </div>
+                            @if (witness.length > 1000) {
+                              <div style="display: flex;">
+                                @if (!showFullWitness[vindex][i]) {
+                                  <span>...</span>
+                                }
+                                <label class="btn btn-sm btn-primary mt-2" (click)="toggleShowFullWitness(vindex, i)" style="margin-left: auto;">
+                                  @if (!showFullWitness[vindex][i]) {
+                                    <span i18n="show-all">Show all</span>
+                                  } @else {
+                                    <span i18n="show-less">Show less</span>
+                                  }
+                                </label>
+                              </div>
+                            }
                           </ng-container>
                         </td>
                       </tr>
@@ -142,7 +153,16 @@
                         <ng-template #p2wsh>
                           <td i18n="transactions-list.p2wsh-witness-script">P2WSH witness script</td>
                         </ng-template>
-                        <td style="text-align: left;" [innerHTML]="vin.inner_witnessscript_asm | asmStyler"></td>
+                        <td style="text-align: left;">
+                          <div [innerHTML]="vin.inner_witnessscript_asm | asmStyler:showFullScript[vindex]"></div>
+                          <div *ngIf="vin.inner_witnessscript_asm.length > 1000" style="display: flex;">
+                            <span *ngIf="!showFullScript[vindex]">...</span>
+                            <label class="btn btn-sm btn-primary mt-2" (click)="toggleShowFullScript(vindex)" style="margin-left: auto;">
+                              <span *ngIf="!showFullScript[vindex]" i18n="show-all">Show all</span>
+                              <span *ngIf="showFullScript[vindex]" i18n="show-less">Show less</span>
+                            </label>
+                          </div>
+                        </td>
                       </tr>
                       <tr>
                         <td i18n="transactions-list.nsequence">nSequence</td>
@@ -204,7 +224,7 @@
                     <ng-template [ngIf]="vout.pegout" [ngIfElse]="defaultscriptpubkey_type">
                       <ng-container i18n="transactions-list.peg-out-to">Peg-out to <ng-container *ngTemplateOutlet="pegOutLink"></ng-container></ng-container>
                       <ng-template #pegOutLink>
-                        <a *ngIf="stateService.env.BASE_MODULE === 'liquid'; else localPegoutLink" target="_blank" style="color:#b86d12" [attr.href]="'https://mempool.space/address/' + vout.pegout.scriptpubkey_address" title="{{ vout.pegout.scriptpubkey_address }}">
+                        <a *ngIf="stateService.env.BASE_MODULE === 'liquid'; else localPegoutLink" target="_blank" style="color:var(--orange)" [attr.href]="'https://mempool.space/address/' + vout.pegout.scriptpubkey_address" title="{{ vout.pegout.scriptpubkey_address }}">
                           <app-truncate [text]="vout.pegout.scriptpubkey_address"></app-truncate>
                         </a>
                         <ng-template #localPegoutLink>

@@ -12,7 +12,7 @@
     max-width: 720px;
     margin: auto;
     padding: 1em;
-    background: #24273e;
+    background: var(--box-bg);
   }
 
   .status-table {
@@ -20,26 +20,21 @@
 
     td, th {
       padding: 0.25em;
+      width: 0%;
 
       &.rank, &.flag {
-        width: 28px;
         text-align: right;
       }
       &.updated {
         display: none;
-        width: 130px;
         text-align: right;
-        white-space: pre-wrap;
+        white-space: nowrap;
       }
       &.rtt, &.height {
-        width: 92px;
         text-align: right;
       }
       &.only-small {
         display: table-cell;
-        &.rtt {
-          width: 60px;
-        }
       }
       &.only-large {
         display: none;
@@ -48,20 +43,16 @@
         padding-right: 0.5em;
       }
       &.host {
-        width: auto;
+        width: 100%;
+        max-width: 0;
         overflow: hidden;
         text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       @media (min-width: 576px) {
-        &.rank, &.flag {
-          width: 32px;
-        }
         &.updated {
           display: table-cell;
-        }
-        &.rtt, &.height {
-          width: 96px;
         }
         &.only-small {
           display: none;

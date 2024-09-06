@@ -15,7 +15,7 @@ import { StateService } from '../../services/state.service';
       position: absolute;
       top: 50%;
       left: calc(50% - 15px);
-      z-index: 100;
+      z-index: 99;
     }
   `],
 })

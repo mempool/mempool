@@ -1,6 +1,6 @@
 .dashboard-container {
   text-align: center;
-  margin-top: 0.5rem;
+  margin-top: 18px;
   @media (min-width: 992px) {
     padding-bottom: 0px;
   }
@@ -10,7 +10,7 @@
 }
 
 .card {
-  background-color: #1d1f31;
+  background-color: var(--bg);
 }
 
 .graph-card {
@@ -35,10 +35,10 @@
 
 .card-title {
   font-size: 1rem;
-  color: #4a68b9;
+  color: var(--title-fg);
 }
 .card-title > a {
-  color: #4a68b9;
+  color: var(--title-fg);
 }
 
 .card-body.pool-ranking {
@@ -66,7 +66,8 @@
 
 .main-title {
   position: relative;
-  color: #ffffff91;
+  color: var(--fg);
+  opacity: var(--opacity);
   margin-top: -13px;
   font-size: 10px;
   text-transform: uppercase;

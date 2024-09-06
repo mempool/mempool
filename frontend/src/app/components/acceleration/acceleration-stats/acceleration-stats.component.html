@@ -4,7 +4,7 @@
       <h5 class="card-title" i18n="accelerator.requests">Requests</h5>
       <div class="card-text">
         <div>{{ stats.totalRequested }}</div>
-        <div class="symbol" i18n="accelerator.total-accelerated">accelerated</div>
+        <div class="symbol" i18n="accelerator.total-accelerated-plural">accelerated</div>
       </div>
     </div>
     <div class="item">
@@ -17,10 +17,10 @@
       </div>
     </div>
     <div class="item">
-      <h5 class="card-title" i18n="accelerator.success-rate">Success Rate</h5>
+      <h5 class="card-title" i18n="accelerator.total-vsize">Total vSize</h5>
       <div class="card-text">
-        <div>{{ stats.successRate.toFixed(2) }} %</div>
-        <div class="symbol" i18n="accelerator.mined-next-block">mined</div>
+        <div [innerHTML]="'&lrm;' + (stats.totalVsize | vbytes: 2)"></div>
+        <div class="symbol">{{ (stats.totalVsize / (1_000_000 * blocksInPeriod) * 100).toFixed(2) }}% <span i18n="accelerator.percent-of-blocks"> of blocks</span></div>
       </div>
     </div>
   </div>
@@ -43,7 +43,7 @@
       </div>
     </div>
     <div class="item">
-      <h5 class="card-title" i18n="accelerator.success-rate">Success Rate</h5>
+      <h5 class="card-title" i18n="accelerator.total-vsize">Total vSize</h5>
       <div class="card-text">
         <div class="skeleton-loader"></div>
         <div class="skeleton-loader"></div>

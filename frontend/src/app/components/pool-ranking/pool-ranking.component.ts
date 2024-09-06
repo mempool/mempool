@@ -3,7 +3,7 @@ import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from '../../graphs/echarts';
 import { merge, Observable } from 'rxjs';
-import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
+import { map, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 import { SeoService } from '../../services/seo.service';
 import { StorageService } from '../..//services/storage.service';
 import { MiningService, MiningStats } from '../../services/mining.service';
@@ -107,7 +107,7 @@ export class PoolRankingComponent implements OnInit {
           this.isLoading = false;
           this.prepareChartOptions(data);
         }),
-        share()
+        shareReplay(1)
       );
   }
 
@@ -146,7 +146,7 @@ export class PoolRankingComponent implements OnInit {
         name: pool.name + ((isMobile() || this.widget) ? `` : ` (${pool.share}%)`),
         label: {
           overflow: 'none',
-          color: '#b1b1b1',
+          color: 'var(--tooltip-grey)',
           alignTo: 'edge',
           edgeDistance: edgeDistance,
         },
@@ -156,14 +156,14 @@ export class PoolRankingComponent implements OnInit {
           borderRadius: 4,
           shadowColor: 'rgba(0, 0, 0, 0.5)',
           textStyle: {
-            color: '#b1b1b1',
+            color: 'var(--tooltip-grey)',
           },
           borderColor: '#000',
           formatter: () => {
             const i = pool.blockCount.toString();
             if (this.miningWindowPreference === '24h') {
               return `<b style="color: white">${pool.name} (${pool.share}%)</b><br>` +
-                pool.lastEstimatedHashrate.toString() + ' ' + miningStats.miningUnits.hashrateUnit +
+                pool.lastEstimatedHashrate.toFixed(2) + ' ' + miningStats.miningUnits.hashrateUnit +
                 `<br>` + $localize`${ i }:INTERPOLATION: blocks`;
             } else {
               return `<b style="color: white">${pool.name} (${pool.share}%)</b><br>` +
@@ -186,7 +186,7 @@ export class PoolRankingComponent implements OnInit {
       name:  $localize`Other (${percentage})`,
       label: {
         overflow: 'none',
-        color: '#b1b1b1',
+        color: 'var(--tooltip-grey)',
         alignTo: 'edge',
         edgeDistance: edgeDistance
       },
@@ -195,7 +195,7 @@ export class PoolRankingComponent implements OnInit {
         borderRadius: 4,
         shadowColor: 'rgba(0, 0, 0, 0.5)',
         textStyle: {
-          color: '#b1b1b1',
+          color: 'var(--tooltip-grey)',
         },
         borderColor: '#000',
         formatter: () => {
@@ -291,7 +291,7 @@ export class PoolRankingComponent implements OnInit {
    */
   getEmptyMiningStat(): MiningStats {
     return {
-      lastEstimatedHashrate: 'Error',
+      lastEstimatedHashrate: 0,
       blockCount: 0,
       totalEmptyBlock: 0,
       totalEmptyBlockRatio: '',
@@ -306,7 +306,7 @@ export class PoolRankingComponent implements OnInit {
 
   onSaveChart() {
     const now = new Date();
-    this.chartOptions.backgroundColor = '#11131f';
+    this.chartOptions.backgroundColor = 'var(--active-bg)';
     this.chartInstance.setOption(this.chartOptions);
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,

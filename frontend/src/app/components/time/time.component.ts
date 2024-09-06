@@ -1,15 +1,17 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, ChangeDetectorRef, OnChanges } from '@angular/core';
 import { StateService } from '../../services/state.service';
 import { dates } from '../../shared/i18n/dates';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-time',
-  template: `{{ text }}`,
+  templateUrl: './time.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TimeComponent implements OnInit, OnChanges, OnDestroy {
   interval: number;
   text: string;
+  tooltip: string;
   precisionThresholds = {
     year: 100,
     month: 18,
@@ -23,19 +25,22 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() time: number;
   @Input() dateString: number;
-  @Input() kind: 'plain' | 'since' | 'until' | 'span' | 'before' = 'plain';
+  @Input() kind: 'plain' | 'since' | 'until' | 'span' | 'before' | 'within' = 'plain';
   @Input() fastRender = false;
   @Input() fixedRender = false;
+  @Input() showTooltip = false;
   @Input() relative = false;
   @Input() precision: number = 0;
   @Input() numUnits: number = 1;
   @Input() units: string[] = ['year', 'month', 'week', 'day', 'hour', 'minute', 'second'];
   @Input() minUnit: 'year' | 'month' | 'week' | 'day' | 'hour' | 'minute' | 'second' = 'second';
   @Input() fractionDigits: number = 0;
+  @Input() lowercaseStart = false;
 
   constructor(
     private ref: ChangeDetectorRef,
     private stateService: StateService,
+    private datePipe: DatePipe,
   ) {
       this.intervals = {
         year: 31536000,
@@ -74,24 +79,39 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   calculate() {
+    if (this.time == null) {
+      return;
+    }
+
     let seconds: number;
     switch (this.kind) {
       case 'since':
         seconds = Math.floor((+new Date() - +new Date(this.dateString || this.time * 1000)) / 1000);
+        this.tooltip = this.datePipe.transform(new Date(this.dateString || this.time * 1000), 'yyyy-MM-dd HH:mm');
         break;
       case 'until':
+      case 'within':
         seconds = (+new Date(this.time) - +new Date()) / 1000;
+        this.tooltip = this.datePipe.transform(new Date(this.time), 'yyyy-MM-dd HH:mm');
         break;
       default:
         seconds = Math.floor(this.time);
+        this.tooltip = '';
+    }
+
+    if (!this.showTooltip || this.relative) {
+      this.tooltip = '';
     }
 
     if (seconds < 1 && this.kind === 'span') {
       return $localize`:@@date-base.immediately:Immediately`;
     } else if (seconds < 60) {
       if (this.relative || this.kind === 'since') {
+        if (this.lowercaseStart) {
+          return $localize`:@@date-base.just-now:Just now`.charAt(0).toLowerCase() + $localize`:@@date-base.just-now:Just now`.slice(1);
+        }
         return $localize`:@@date-base.just-now:Just now`;
-      } else if (this.kind === 'until') {
+      } else if (this.kind === 'until' || this.kind === 'within') {
         seconds = 60;
       }
     }
@@ -112,12 +132,12 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
       if (counter > 0) {
         let rounded;
         const roundFactor = Math.pow(10,this.fractionDigits || 0);
-        if (this.kind === 'until' && usedUnits < this.numUnits) {
+        if ((this.kind === 'until' || this.kind === 'within') && usedUnits < this.numUnits) {
           rounded = Math.floor((seconds / this.intervals[precisionUnit]) * roundFactor) / roundFactor;
         } else {
           rounded = Math.round((seconds / this.intervals[precisionUnit]) * roundFactor) / roundFactor;
         }
-        if (this.kind !== 'until' || this.numUnits === 1) {
+        if ((this.kind !== 'until' && this.kind !== 'within')|| this.numUnits === 1) {
           return this.formatTime(this.kind, precisionUnit, rounded);
         } else {
           if (!usedUnits) {
@@ -182,6 +202,29 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
             case 'hour': return $localize`:@@time-until:In ~${dateStrings.i18nHours}:DATE:`; break;
             case 'minute': return $localize`:@@time-until:In ~${dateStrings.i18nMinutes}:DATE:`; break;
             case 'second': return $localize`:@@time-until:In ~${dateStrings.i18nSeconds}:DATE:`; break;
+          }
+        }
+        break;
+      case 'within':
+        if (number === 1) {
+          switch (unit) { // singular (In ~1 day)
+            case 'year': return $localize`:@@time-within:within ~${dateStrings.i18nYear}:DATE:`; break;
+            case 'month': return $localize`:@@time-within:within ~${dateStrings.i18nMonth}:DATE:`; break;
+            case 'week': return $localize`:@@time-within:within ~${dateStrings.i18nWeek}:DATE:`; break;
+            case 'day': return $localize`:@@time-within:within ~${dateStrings.i18nDay}:DATE:`; break;
+            case 'hour': return $localize`:@@time-within:within ~${dateStrings.i18nHour}:DATE:`; break;
+            case 'minute': return $localize`:@@time-within:within ~${dateStrings.i18nMinute}:DATE:`;
+            case 'second': return $localize`:@@time-within:within ~${dateStrings.i18nSecond}:DATE:`;
+          }
+        } else {
+          switch (unit) { // plural (In ~2 days)
+            case 'year': return $localize`:@@time-within:within ~${dateStrings.i18nYears}:DATE:`; break;
+            case 'month': return $localize`:@@time-within:within ~${dateStrings.i18nMonths}:DATE:`; break;
+            case 'week': return $localize`:@@time-within:within ~${dateStrings.i18nWeeks}:DATE:`; break;
+            case 'day': return $localize`:@@time-within:within ~${dateStrings.i18nDays}:DATE:`; break;
+            case 'hour': return $localize`:@@time-within:within ~${dateStrings.i18nHours}:DATE:`; break;
+            case 'minute': return $localize`:@@time-within:within ~${dateStrings.i18nMinutes}:DATE:`; break;
+            case 'second': return $localize`:@@time-within:within ~${dateStrings.i18nSeconds}:DATE:`; break;
           }
         }
         break;

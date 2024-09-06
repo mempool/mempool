@@ -133,7 +133,7 @@
           <p>{{electrsPort}}</p>
           <p class="subtitle">SSL</p>
           <p>Enabled</p>
-          <p class="note" *ngIf="network.val !== 'signet'">Electrum RPC interface for Bitcoin Signet is <a href="/signet/docs/api/electrs">publicly available</a>. Electrum RPC interface for all other networks is available to <a href='https://mempool.space/enterprise'>sponsors</a> only—whitelisting is required.</p>
+          <p class="note" *ngIf="network.val !== 'signet' && network.val !== 'testnet4'">Electrum RPC interface for <a href="/signet/docs/api/electrs">Bitcoin Signet</a> and <a href="/testnet4/docs/api/electrs">Bitcoin Testnet4</a> is publicly available. Electrum RPC interface for all other networks is available to <a href='https://mempool.space/enterprise'>sponsors</a> only—whitelisting is required.</p>
         </div>
       </div>
     </div>
@@ -190,11 +190,11 @@
 </ng-template>
 
 <ng-template type="why-is-transaction-stuck-in-mempool">
-  <p>If it's been a while and your transaction hasn't confirmed, your transaction is probably using a lower feerate relative to other transactions currently in the mempool. Depending on how you made your transaction, there may be <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="how-to-get-transaction-confirmed-quickly">ways to accelerate the process</a>.</p><p>There's no need to panic—a Bitcoin transaction will always either confirm completely (or not at all) at some point. As long as you have your transaction's ID, you can always see where your funds are.</p><p style='font-weight:700'>This site only provides data about the Bitcoin network—it cannot help you get your transaction confirmed quicker.</p>
+  <p>If it's been a while and your transaction hasn't confirmed, your transaction is probably using a lower feerate relative to other transactions currently in the mempool. Depending on how you made your transaction, there may be <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="how-to-get-transaction-confirmed-quickly">ways to accelerate the process</a>.</p><p>There's no need to panic—a Bitcoin transaction will always either confirm completely (or not at all) at some point. As long as you have your transaction's ID, you can always see where your funds are.</p><p>This site only provides data about the Bitcoin network. To get help with a transaction, get in touch with the entity that helped make the transaction (wallet software, exchange company, etc).</p>
 </ng-template>
 
 <ng-template type="how-to-get-transaction-confirmed-quickly">
-  <p>To get your transaction confirmed quicker, you will need to increase its effective feerate.</p><p>If your transaction was created with RBF enabled, your stuck transaction can simply be replaced with a new one that has a higher fee.</p><p>Otherwise, if you control any of the stuck transaction's outputs, you can use CPFP to increase your stuck transaction's effective feerate.</p><p>If you are not sure how to do RBF or CPFP, work with the tool you used to make the transaction (wallet software, exchange company, etc). This website only provides data about the Bitcoin network, so there is nothing it can do to help you get your transaction confirmed quicker.</p>
+  <p>To get your transaction confirmed quicker, you will need to increase its effective feerate.</p><p>If your transaction was created with RBF enabled, your stuck transaction can simply be replaced with a new one that has a higher fee. Otherwise, if you control any of the stuck transaction's outputs, you can use CPFP to increase your stuck transaction's effective feerate.</p><p>If you are not sure how to do RBF or CPFP, work with the tool you used to make the transaction (wallet software, exchange company, etc).</p><p>Another option to get your transaction confirmed more quickly is <a [href]="[ isMempoolSpaceBuild ? '/accelerator' : 'https://mempool.space/accelerator']" [target]="isMempoolSpaceBuild ? '' : 'blank'">Mempool Accelerator™</a>.</p>
 </ng-template>
 
 <ng-template type="how-prevent-stuck-transaction">
@@ -238,7 +238,7 @@
 </ng-template>
 
 <ng-template type="why-empty-blocks">
-  <p>When a new block is found, mining pools send miners a block template with no transactions so they can start searching for the next block as soon as possible. They send a block template full of transactions right afterward, but a full block template is a bigger data transfer and takes slightly longer to reach miners.</p><p>In this intervening time, which is usually no more than 1-2 seconds, miners sometimes get lucky and find a new block using the empty block template.</p>
+  <p>When a new block is found, mining pools often send miners new block templates prior to fully validating the new block, often before they've even received the new block. During this time, it is not possible to select transactions for the next block as a pool isn't sure which transactions conflict with transactions already mined.</p><p>While empty blocks do not add additional transactions to the blockchain, they do contribute to the overall security of transactions already in the chain.</p>
 </ng-template>
 
 <ng-template type="why-block-timestamps-dont-always-increase">
@@ -386,7 +386,7 @@
 
 <ng-template type="what-is-adjusted-vsize">
   <p>Bitcoin blocks have two independent consensus-enforced resource constraints - a 4MWU weight limit, and the 80,000 sigop limit.</p>
-  <p>Most transactions use a more of the weight limit than the sigop limit. However, some transactions use a disproportionate number of sigops compared to their weight.</p>
+  <p>Most transactions use more of the weight limit than the sigop limit. However, some transactions use a disproportionate number of sigops compared to their weight.</p>
   <p>To account for this, Bitcoin Core calculates and uses an "adjusted vsize" equal 5 times the number of sigops, or the unadjusted vsize, whichever is larger.</p>
   <p>Then, during block template construction, Bitcoin Core selects transactions in descending order of fee rate measured in satoshis per <i>adjusted vsize</i></p>
   <p>On mempool.space, effective fee rates for unconfirmed transactions are also measured in terms of satoshis per adjusted vsize, after accounting for CPFP relationships and other dependencies.</p>

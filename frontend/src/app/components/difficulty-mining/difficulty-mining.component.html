@@ -40,7 +40,7 @@
           <h5 class="card-title" i18n="difficulty-box.current-period">Current Period</h5>
           <div class="card-text">{{ epochData.progress | number: '1.2-2' }} <span class="symbol">%</span></div>
           <div class="progress small-bar">
-            <div class="progress-bar" role="progressbar" style="width: 15%; background-color: #105fb0" [ngStyle]="{'width': epochData.base}">&nbsp;</div>
+            <div class="progress-bar" role="progressbar" style="width: 15%; background-color: var(--primary)" [ngStyle]="{'width': epochData.base}">&nbsp;</div>
           </div>
         </div>
         <div class="item" *ngIf="showHalving">

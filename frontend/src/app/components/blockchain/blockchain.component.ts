@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, Output, EventEmitter, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-blockchain',
@@ -26,15 +27,18 @@ export class BlockchainComponent implements OnInit, OnDestroy, OnChanges {
   connectionStateSubscription: Subscription;
   loadingTip: boolean = true;
   connected: boolean = true;
+  blockDisplayMode: 'size' | 'fees';
 
   dividerOffset: number | null = null;
   mempoolOffset: number | null = null;
   positionStyle = {
     transform: "translateX(1280px)",
   };
+  blockDisplayToggleStyle = {};
 
   constructor(
     public stateService: StateService,
+    public StorageService: StorageService,
     private cd: ChangeDetectorRef,
   ) {}
 
@@ -51,6 +55,7 @@ export class BlockchainComponent implements OnInit, OnDestroy, OnChanges {
     firstValueFrom(this.stateService.chainTip$).then(() => {
       this.loadingTip = false;
     });
+    this.blockDisplayMode = this.StorageService.getValue('block-display-mode-preference') as 'size' | 'fees' || 'fees';
   }
 
   ngOnDestroy(): void {
@@ -82,6 +87,13 @@ export class BlockchainComponent implements OnInit, OnDestroy, OnChanges {
         this.cd.markForCheck();
       },  1000);
     }, 0);
+  }
+
+  toggleBlockDisplayMode(): void {
+    if (this.blockDisplayMode === 'size') this.blockDisplayMode = 'fees';
+    else this.blockDisplayMode = 'size';
+    this.StorageService.setValue('block-display-mode-preference', this.blockDisplayMode);
+    this.stateService.blockDisplayMode$.next(this.blockDisplayMode);
   }
 
   onMempoolWidthChange(width): void {

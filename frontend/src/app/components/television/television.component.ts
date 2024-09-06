@@ -71,7 +71,9 @@ export class TelevisionComponent implements OnInit, OnDestroy {
           mempoolStats = newStats;
         } else if (['2h', '24h'].includes(this.fragment)) {
           mempoolStats.unshift(newStats[0]);
-          mempoolStats = mempoolStats.slice(0, mempoolStats.length - 1);
+          const now = Date.now() / 1000;
+          const start = now - (this.fragment === '2h' ? (2 * 60 * 60) : (24 * 60 * 60) );
+          mempoolStats = mempoolStats.filter(p => p.added >= start);
         }
         return mempoolStats;
       })

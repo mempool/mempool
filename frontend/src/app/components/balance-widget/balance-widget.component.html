@@ -1,0 +1,59 @@
+<div class="card">
+  <div class="card-body more-padding">
+    <div class="balance-container" *ngIf="!isLoading; else loading">
+      <div class="item">
+        <h5 class="card-title" i18n="dashboard.btc-holdings">BTC Holdings</h5>
+        <div class="card-text">
+          {{ ((addressInfo.chain_stats.funded_txo_sum - addressInfo.chain_stats.spent_txo_sum) / 100_000_000) | number: '1.2-2' }} <span class="symbol" i18n="shared.btc|BTC">BTC</span>
+        </div>
+        <div class="symbol">
+          <app-fiat [value]="(addressInfo.chain_stats.funded_txo_sum - addressInfo.chain_stats.spent_txo_sum)"></app-fiat>
+        </div>
+      </div>
+      <div class="item">
+        <h5 class="card-title" i18n="dashboard.7d-change">Change (7d)</h5>
+        <div class="card-text">
+          {{ delta7d > 0 ? '+' : ''}}{{ ((delta7d) / 100_000_000) | number: '1.2-2' }} <span class="symbol" i18n="shared.btc|BTC">BTC</span>
+        </div>
+        <div class="symbol">
+          <app-fiat [value]="delta7d"></app-fiat>
+        </div>
+      </div>
+      <div class="item">
+        <h5 class="card-title" i18n="dashboard.30d-change">Change (30d)</h5>
+        <div class="card-text">
+          {{ delta30d > 0 ? '+' : ''}}{{ ((delta30d) / 100_000_000) | number: '1.2-2' }} <span class="symbol" i18n="shared.btc|BTC">BTC</span>
+        </div>
+        <div class="symbol">
+          <app-fiat [value]="delta30d"></app-fiat>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="balance-skeleton">
+    <div class="item">
+      <h5 class="card-title" i18n="dashboard.btc-holdings">BTC Holdings</h5>
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="dashboard.7d-change">Change (7d)</h5>
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="dashboard.30d-change">Change (30d)</h5>
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+  </div>
+</ng-template>

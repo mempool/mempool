@@ -11,7 +11,8 @@
 
 .main-title {
   position: relative;
-  color: #ffffff91;
+  color: var(--fg);
+  opacity: var(--opacity);
   margin-top: -13px;
   font-size: 10px;
   text-transform: uppercase;
@@ -93,12 +94,12 @@
     }
     .card-title {
       font-size: 1rem;
-      color: #4a68b9;
+      color: var(--title-fg);
     }
     .card-text {
       font-size: 18px;
       span {
-        color: #ffffff66;
+        color: var(--transparent-fg);
         font-size: 12px;
       }
     }

@@ -1,4 +1,4 @@
-FROM node:20.12.0-buster-slim AS builder
+FROM node:20.15.0-buster-slim AS builder
 
 ARG commitHash
 ENV MEMPOOL_COMMIT_HASH=${commitHash}
@@ -24,7 +24,7 @@ RUN npm install --omit=dev --omit=optional
 WORKDIR /build
 RUN npm run package
 
-FROM node:20.12.0-buster-slim
+FROM node:20.15.0-buster-slim
 
 WORKDIR /backend
 

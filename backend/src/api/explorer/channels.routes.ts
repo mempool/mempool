@@ -54,9 +54,11 @@ class ChannelsRoutes {
 
       if (index < -1) {
         res.status(400).send('Invalid index');
+        return;
       }
       if (['open', 'active', 'closed'].includes(status) === false) {
         res.status(400).send('Invalid status');
+        return;
       }
 
       const channels = await channelsApi.$getChannelsForNode(req.query.public_key, index, 10, status);

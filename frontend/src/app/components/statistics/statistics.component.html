@@ -94,13 +94,12 @@
               </button>
             </div>
           </form>
-          <div class="spinner-border text-light bootstrap-spinner" *ngIf="spinnerLoading && mempoolStats.length"></div>
         </div>
         <div class="card-body">
           <div class="incoming-transactions-graph">
             <app-mempool-graph #mempoolgraph dir="ltr" [template]="'advanced'" [hideCount]="!showCount"
               [limitFilterFee]="filterFeeIndex" [height]="500" [left]="65" [right]="showCount ? 50 : 10"
-              [data]="mempoolStats && mempoolStats.length ? mempoolStats : null"></app-mempool-graph>
+              [data]="mempoolStats && mempoolStats.length ? mempoolStats : null" [isLoading]="isLoading"></app-mempool-graph>
           </div>
         </div>
       </div>
@@ -128,7 +127,7 @@
         <div class="card-body">
           <div class="incoming-transactions-graph">
             <app-incoming-transactions-graph #incominggraph [height]="500" [left]="65" [template]="'advanced'"
-              [data]="mempoolTransactionsWeightPerSecondData" [outlierCappingEnabled]="outlierCappingEnabled"></app-incoming-transactions-graph>
+              [data]="mempoolTransactionsWeightPerSecondData" [outlierCappingEnabled]="outlierCappingEnabled" [isLoading]="isLoading"></app-incoming-transactions-graph>
           </div>
         </div>
       </div>

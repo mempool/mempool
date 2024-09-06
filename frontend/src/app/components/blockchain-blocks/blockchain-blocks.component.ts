@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, delay, filter, tap } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { specialBlocks } from '../../app.constants';
 import { BlockExtended } from '../../interfaces/node-api.interface';
@@ -45,7 +45,10 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   markBlockSubscription: Subscription;
   txConfirmedSubscription: Subscription;
   loadingBlocks$: Observable<boolean>;
-  showMiningInfo$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  showMiningInfoSubscription: Subscription;
+  blockDisplayModeSubscription: Subscription;
+  blockDisplayMode: 'size' | 'fees';
+  blockTransformation = {};
   blockStyles = [];
   emptyBlockStyles = [];
   interval: any;
@@ -63,11 +66,12 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   blockPadding: number = 30;
 
   gradientColors = {
-    '': ['#9339f4', '#105fb0'],
-    liquid: ['#116761', '#183550'],
-    'liquidtestnet': ['#494a4a', '#272e46'],
-    testnet: ['#1d486f', '#183550'],
-    signet: ['#6f1d5d', '#471850'],
+    '': ['var(--mainnet-alt)', 'var(--primary)'],
+    liquid: ['var(--liquid)', 'var(--testnet-alt)'],
+    'liquidtestnet': ['var(--liquidtestnet)', 'var(--liquidtestnet-alt)'],
+    testnet: ['var(--testnet)', 'var(--testnet-alt)'],
+    testnet4: ['var(--testnet)', 'var(--testnet-alt)'],
+    signet: ['var(--signet)', 'var(--signet-alt)'],
   };
 
   constructor(
@@ -78,22 +82,38 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   ) {
   }
 
-  enabledMiningInfoIfNeeded(url) {
-    const urlParts = url.split('/');
-    const onDashboard = ['','testnet','signet','mining','acceleration'].includes(urlParts[urlParts.length - 1]);
-    if (onDashboard) { // Only update showMiningInfo if we are on the main, mining or acceleration dashboards
-      this.stateService.showMiningInfo$.next(url.includes('/mining') || url.includes('/acceleration'));
-    }
-  }
-
   ngOnInit() {
     this.dynamicBlocksAmount = Math.min(8, this.stateService.env.KEEP_BLOCKS_AMOUNT);
 
-    if (['', 'testnet', 'signet'].includes(this.stateService.network)) {
-      this.enabledMiningInfoIfNeeded(this.location.path());
-      this.location.onUrlChange((url) => this.enabledMiningInfoIfNeeded(url));
-      this.showMiningInfo$ = this.stateService.showMiningInfo$;
-    }
+    this.blockDisplayMode = this.stateService.blockDisplayMode$.value as 'size' | 'fees';
+    this.blockDisplayModeSubscription = this.stateService.blockDisplayMode$
+    .pipe(
+      filter((mode: 'size' | 'fees') => mode !== this.blockDisplayMode),
+      tap(() => {
+        this.blockTransformation = this.timeLtr ? {
+          transform: 'scaleX(-1) rotateX(90deg)',
+          transition: 'transform 0.375s'
+        } : {
+          transform: 'rotateX(90deg)',
+          transition: 'transform 0.375s'
+        };
+      }),
+      delay(375),
+      tap((mode) => {
+        this.blockDisplayMode = mode;
+        this.blockTransformation = this.timeLtr ? {
+          transform: 'scaleX(-1)',
+          transition: 'transform 0.375s'
+        } : {
+          transition: 'transform 0.375s'
+        };
+        this.cd.markForCheck();
+      }),
+      delay(375),
+    )
+    .subscribe(() => {
+      this.blockTransformation = {};
+    });
 
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
       this.timeLtr = !!ltr;
@@ -204,6 +224,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.networkSubscription.unsubscribe();
     this.tabHiddenSubscription.unsubscribe();
     this.markBlockSubscription.unsubscribe();
+    this.blockDisplayModeSubscription.unsubscribe();
     this.timeLtrSubscription.unsubscribe();
     clearInterval(this.interval);
   }
@@ -329,8 +350,8 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     return {
       left: addLeft + this.blockOffset * index + 'px',
       background: `repeating-linear-gradient(
-        #2d3348,
-        #2d3348 ${greenBackgroundHeight}%,
+        var(--secondary),
+        var(--secondary) ${greenBackgroundHeight}%,
         ${this.gradientColors[this.network][0]} ${Math.max(greenBackgroundHeight, 0)}%,
         ${this.gradientColors[this.network][1]} 100%
       )`,
@@ -341,7 +362,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   convertStyleForLoadingBlock(style) {
     return {
       ...style,
-      background: "#2d3348",
+      background: "var(--secondary)",
     };
   }
 
@@ -350,7 +371,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
     return {
       left: addLeft + (this.blockOffset * index) + 'px',
-      background: "#2d3348",
+      background: "var(--secondary)",
     };
   }
 
@@ -366,7 +387,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
     return {
       left: addLeft + this.blockOffset * this.emptyBlocks.indexOf(block) + 'px',
-      background: "#2d3348",
+      background: "var(--secondary)",
     };
   }
 

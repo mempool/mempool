@@ -14,15 +14,15 @@ crate-type = ["cdylib"]
 [dependencies]
 priority-queue = "2.0.2"
 bytes = "1.4.0"
-napi = { version = "2.16.0", features = ["napi8", "tokio_rt"] }
-napi-derive = "2.16.0"
+napi = { version = "2", features = ["napi8", "tokio_rt"] }
+napi-derive = "2"
 bytemuck = "1.13.1"
 tracing = "0.1.36"
 tracing-log = "0.2.0"
 tracing-subscriber = { version = "0.3.15", features = ["env-filter"]}
 
 [build-dependencies]
-napi-build = "2.1.2"
+napi-build = "2"
 
 [profile.release]
 lto = true

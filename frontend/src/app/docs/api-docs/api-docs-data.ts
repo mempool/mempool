@@ -1,5 +1,6 @@
-const bitcoinNetworks = ["", "testnet", "signet"];
+const bitcoinNetworks = ["", "testnet", "testnet4", "signet"];
 const liquidNetworks = ["liquid", "liquidtestnet"];
+const lightningNetworks = ["", "testnet", "signet"];
 const miningTimeIntervals = "<code>24h</code>, <code>3d</code>, <code>1w</code>, <code>1m</code>, <code>3m</code>, <code>6m</code>, <code>1y</code>, <code>2y</code>, <code>3y</code>";
 
 const emptyCodeSample = {
@@ -6175,10 +6176,10 @@ export const restApiDocsData = [
     type: "endpoint",
     category: "transactions",
     httpRequestMethod: "GET",
-    fragment: "get-transaction-rbf-history",
-    title: "GET Transaction RBF History",
+    fragment: "get-transaction-rbf-timeline",
+    title: "GET Transaction RBF Timeline",
     description: {
-      default: "Returns the RBF tree history of a transaction."
+      default: "Returns the RBF tree timeline of a transaction."
     },
     urlString: "v1/tx/:txId/rbf",
     showConditions: bitcoinNetworks,
@@ -6513,7 +6514,7 @@ export const restApiDocsData = [
     category: "lightning",
     fragment: "lightning",
     title: "Lightning",
-    showConditions: bitcoinNetworks
+    showConditions: lightningNetworks
   },
   {
     type: "endpoint",
@@ -6525,7 +6526,7 @@ export const restApiDocsData = [
       default: "<p>Returns network-wide stats such as total number of channels and nodes, total capacity, and average/median fee figures.</p><p>Pass one of the following for <code>:interval</code>: <code>latest</code>, <code>24h</code>, <code>3d</code>, <code>1w</code>, <code>1m</code>, <code>3m</code>, <code>6m</code>, <code>1y</code>, <code>2y</code>, <code>3y</code>.</p>"
     },
     urlString: "/v1/lightning/statistics/:interval",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -6621,7 +6622,7 @@ export const restApiDocsData = [
       default: "<p>Returns Lightning nodes and channels that match a full-text, case-insensitive search <code>:query</code> across node aliases, node pubkeys, channel IDs, and short channel IDs.</p>"
     },
     urlString: "/v1/lightning/search?searchText=:query",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -6706,7 +6707,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of Lightning nodes running on clearnet in the requested <code>:country</code>, where <code>:country</code> is an ISO Alpha-2 country code.</p>"
     },
     urlString: "/v1/lightning/nodes/country/:country",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -6928,7 +6929,7 @@ export const restApiDocsData = [
       default: "<p>Returns aggregate capacity and number of clearnet nodes per country. Capacity figures are in satoshis.</p>"
     },
     urlString: "/v1/lightning/nodes/countries",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -7072,7 +7073,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of nodes hosted by a specified <code>:isp</code>, where <code>:isp</code> is an ISP's ASN.</p>"
     },
     urlString: "/v1/lightning/nodes/isp/:isp",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -7191,7 +7192,7 @@ export const restApiDocsData = [
       default: "<p>Returns aggregate capacity, number of nodes, and number of channels per ISP. Capacity figures are in satoshis.</p>"
     },
     urlString: "/v1/lightning/nodes/isp-ranking",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -7303,7 +7304,7 @@ export const restApiDocsData = [
       default: "<p>Returns two lists of the top 100 nodes: one ordered by liquidity (aggregate channel capacity) and the other ordered by connectivity (number of open channels).</p>"
     },
     urlString: "/v1/lightning/nodes/rankings",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -7426,7 +7427,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of the top 100 nodes by liquidity (aggregate channel capacity).</p>"
     },
     urlString: "/v1/lightning/nodes/rankings/liquidity",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -7623,7 +7624,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of the top 100 nodes by connectivity (number of open channels).</p>"
     },
     urlString: "/v1/lightning/nodes/rankings/connectivity",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -7819,7 +7820,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of the top 100 oldest nodes.</p>"
     },
     urlString: "/v1/lightning/nodes/rankings/age",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -8006,7 +8007,7 @@ export const restApiDocsData = [
       default: "<p>Returns details about a node with the given <code>:pubKey</code>.</p>"
     },
     urlString: "/v1/lightning/nodes/:pubKey",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -8170,7 +8171,7 @@ export const restApiDocsData = [
       default: "<p>Returns historical stats for a node with the given <code>:pubKey</code>.</p>"
     },
     urlString: "/v1/lightning/nodes/:pubKey/statistics",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -8268,7 +8269,7 @@ export const restApiDocsData = [
       default: "<p>Returns info about a Lightning channel with the given <code>:channelId</code>.</p>"
     },
     urlString: "/v1/lightning/channels/:channelId",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -8433,7 +8434,7 @@ export const restApiDocsData = [
       default: "<p>Returns channels that correspond to the given <code>:txid</code> (multiple transaction IDs can be specified).</p>"
     },
     urlString: "/v1/lightning/channels/txids?txId[]=:txid",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -8634,7 +8635,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of a node's channels given its <code>:pubKey</code>. Ten channels are returned at a time. Use <code>:index</code> for paging. <code>:channelStatus</code> can be <code>open</code>, <code>active</code>, or <code>closed</code>.</p>"
     },
     urlString: "/v1/lightning/channels?public_key=:pubKey&status=:channelStatus",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -8770,7 +8771,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of channels with corresponding node geodata.</p>"
     },
     urlString: "/v1/lightning/channels-geo",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -8878,7 +8879,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of channels with corresponding geodata for a node with the given <code>:pubKey</code>.</p>"
     },
     urlString: "/v1/lightning/channels-geo/:pubKey",
-    showConditions: bitcoinNetworks,
+    showConditions: lightningNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -8992,7 +8993,7 @@ export const restApiDocsData = [
     fragment: "accelerator-estimate",
     title: "POST Calculate Estimated Costs",
     description: {
-      default: "<p>Returns estimated costs to accelerate a transaction. Optionally set the <code>api_key</code> header to get customized estimation.</p>"
+      default: "<p>Returns estimated costs to accelerate a transaction. Optionally set the <code>X-Mempool-Auth</code> header to get customized estimation.</p>"
     },
     urlString: "/v1/services/accelerator/estimate",
     showConditions: [""],
@@ -9008,7 +9009,7 @@ export const restApiDocsData = [
           esModule: [],
           commonJS: [],
           curl: ["txInput=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29"],
-          headers: "api_key: stacksats",
+          headers: "X-Mempool-Auth: stacksats",
           response: `{
   "txSummary": {
     "txid": "ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29",
@@ -9016,14 +9017,85 @@ export const restApiDocsData = [
     "effectiveFee": 154,
     "ancestorCount": 1
   },
-  "cost": 3850,
-  "targetFeeRate": 26,
-  "nextBlockFee": 4004,
-  "userBalance": 99900000,
-  "mempoolBaseFee": 40000,
-  "vsizeFee": 50000,
-  "hasAccess": true
+  "cost": 1386,
+  "targetFeeRate": 10,
+  "nextBlockFee": 1540,
+  "userBalance": 0,
+  "mempoolBaseFee": 50000,
+  "vsizeFee": 0,
+  "pools": [
+    111,
+    102,
+    112,
+    142,
+    115
+  ],
+  "options": [
+    {
+      "fee": 1500
+    },
+    {
+      "fee": 3000
+    },
+    {
+      "fee": 12500
+    }
+  ],
+  "hasAccess": false,
+  "availablePaymentMethods": {
+    "bitcoin": {
+      "enabled": true,
+      "min": 1000,
+      "max": 10000000
+    },
+    "cashapp": {
+      "enabled": true,
+      "min": 10,
+      "max": 200
+    }
+  },
+  "unavailable": false
 }`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: "endpoint",
+    category: "accelerator-public",
+    httpRequestMethod: "POST",
+    fragment: "accelerator-get-invoice",
+    title: "POST Generate Acceleration Invoice",
+    description: {
+      default: "<p>Request a LN invoice to accelerate a transaction.</p>"
+    },
+    urlString: "/v1/services/payments/bitcoin",
+    showConditions: [""],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/payments/bitcoin`, //custom interpolation technique handled in replaceCurlPlaceholder()
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ["product=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&amount=12500"],
+          headers: "",
+          response: `[
+  {
+    "btcpayInvoiceId": "4Ww53d7VgSa596jmCFufe7",
+    "btcDue": "0.000625",
+    "addresses": {
+      "BTC": "bc1qcvqx2kr5mktd7gvym0atrrx0sn27mwv5kkghl3m78kegndm5t8ksvcqpja",
+      "BTC_LNURLPAY": null,
+      "BTC_LightningLike": "lnbc625u1pngl0wzpp56j7cqghsw2y5q7vdu9shmpxgpzsx4pqra4wcm9vdnvqegutplk2qdxj2pskjepqw3hjqnt9d4cx7mmvypqkxcm9d3jhyct5daezq2z0wfjx2u3qf9zr5grpvd3k2mr9wfshg6t0dckk2ef3xdjkyc3e8ymrxv3nxumkxvf4vvungwfcxqen2dmxxcmngepj8q6kzce5xyengdfjxq6nqvpnx9jkzdnyvdjrxefevgexgcej8yknzdejxqmrjd3jx5mrgdpj9ycqzpuxqrpr5sp58593dzj2uauaj3afa7x47qeam8k9yyqrh9qasj2ssdzstew6qv3q9qxpqysgqj8qshfkxmj0gfkly5xfydysvsx55uhnc6fgpw66uf6hl8leu07454axe2kq0q788yysg8guel2r36d6f75546nkhmdcmec4mmlft8dsq62rnsj"
+    }
+  }
+]`,
         },
       }
     }
@@ -9117,22 +9189,19 @@ export const restApiDocsData = [
   {
     "txid": "d7e1796d8eb4a09d4e6c174e36cfd852f1e6e6c9f7df4496339933cd32cbdd1d",
     "status": "completed",
-    "feePaid": 53239,
     "added": 1707421053,
-    "lastUpdated": 1707422952,
-    "baseFee": 50000,
-    "vsizeFee": 0,
+    "lastUpdated": 1719134667,
     "effectiveFee": 146,
     "effectiveVsize": 141,
     "feeDelta": 14000,
     "blockHash": "00000000000000000000482f0746d62141694b9210a813b97eb8445780a32003",
     "blockHeight": 829559,
+    "bidBoost": 3239,
+    "boostVersion": "v1",
     "pools": [
-      {
-        "pool_unique_id": 111,
-        "username": "foundryusa"
-      }
-    ]
+      111
+    ],
+    "minedByPoolUniqueId": 111
   }
 ]`,
         },
@@ -9171,7 +9240,7 @@ export const restApiDocsData = [
           esModule: [],
           commonJS: [],
           curl: [],
-          headers: "api_key: stacksats",
+          headers: "X-Mempool-Auth: stacksats",
           response: `[
   {
     "type": "Bitcoin",
@@ -9219,7 +9288,7 @@ export const restApiDocsData = [
           esModule: [],
           commonJS: [],
           curl: [],
-          headers: "api_key: stacksats",
+          headers: "X-Mempool-Auth: stacksats",
           response: `{
   "balance": 99900000,
   "hold": 101829,
@@ -9235,7 +9304,7 @@ export const restApiDocsData = [
     category: "accelerator-private",
     httpRequestMethod: "POST",
     fragment: "accelerator-accelerate",
-    title: "POST Accelerate A Transaction",
+    title: "POST Accelerate A Transaction (Pro)",
     description: {
       default: "<p>Sends a request to accelerate a transaction.</p>"
     },
@@ -9253,7 +9322,7 @@ export const restApiDocsData = [
           esModule: [],
           commonJS: [],
           curl: ["txInput=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&userBid=21000000"],
-          headers: "api_key: stacksats",
+          headers: "X-Mempool-Auth: stacksats",
           response: `HTTP/1.1 200 OK`,
         },
       }
@@ -9283,7 +9352,7 @@ export const restApiDocsData = [
           esModule: [],
           commonJS: [],
           curl: [],
-          headers: "api_key: stacksats",
+          headers: "X-Mempool-Auth: stacksats",
           response: `[
   {
     "id": 89,

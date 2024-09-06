@@ -22,7 +22,7 @@
 
     .card-title {
       margin-bottom: 4px;
-      color: #4a68b9;
+      color: var(--title-fg);
       font-size: 10px;
       font-size: 1rem;
       white-space: nowrap;
@@ -36,15 +36,15 @@
         top: -2px;
       }
       .danger {
-        color: #D81B60;
+        color: var(--red);
       }
       .correct {
-        color: #7CB342;
+        color: var(--green);
       }
     }
 
     .card-text span {
-      color: #ffffff66;
+      color: var(--transparent-fg);
       font-size: 12px;
       top: 0px;
     }

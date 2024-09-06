@@ -4,13 +4,19 @@
     <div class="row main" [class]="{'services': isServicesPage}">
       <div class="col-md-12 branding mt-2">
         <div class="main-logo" [class]="{'services': isServicesPage}">
-          <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>
-          <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126"></app-svg-images>
+          @if (enterpriseInfo?.footer_img) {
+            <img [src]="enterpriseInfo?.footer_img" alt="enterpriseInfo.title" height="60px" class="mr-3">
+          } @else {
+            <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>
+            <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126"></app-svg-images>
+          }
         </div>
-        <p class="explore-tagline-mobile">
-          <ng-container i18n="@@7deec1c1520f06170e1f8e8ddfbe4532312f638f">Explore the full Bitcoin ecosystem</ng-container>
-          <ng-template [ngIf]="locale.substr(0, 2) === 'en'">&reg;</ng-template>
-        </p>
+        @if (!enterpriseInfo?.footer_img) {
+          <p class="explore-tagline-mobile">
+            <ng-container i18n="@@7deec1c1520f06170e1f8e8ddfbe4532312f638f">Explore the full Bitcoin ecosystem</ng-container>
+            <ng-template [ngIf]="locale.substr(0, 2) === 'en'">&reg;</ng-template>
+          </p>
+        }
         <div class="site-options language-selector d-flex justify-content-center align-items-center" [class]="{'services': isServicesPage}">
           <div class="selector">
             <app-language-selector></app-language-selector>
@@ -21,28 +27,41 @@
           <div class="selector">
             <app-rate-unit-selector></app-rate-unit-selector>
           </div>
-          <a *ngIf="stateService.isMempoolSpaceBuild" class="btn btn-purple sponsor d-none d-sm-flex justify-content-center" [routerLink]="['/login' | relativeUrl]">
-            <span *ngIf="loggedIn" i18n="shared.my-account">My Account</span>
-            <span *ngIf="!loggedIn" i18n="shared.sign-in">Sign In</span>
+          @if (!env.customize?.theme) {
+            <div class="selector d-none d-sm-flex">
+              <app-theme-selector></app-theme-selector>
+            </div>
+          }
+          <a *ngIf="stateService.isMempoolSpaceBuild" class="btn btn-purple sponsor d-none d-sm-flex justify-content-center" [routerLink]="['/login']">
+            <span *ngIf="user" i18n="shared.my-account" class="nowrap">My Account</span>
+            <span *ngIf="!user" i18n="shared.sign-in" class="nowrap">Sign In</span>
           </a>
         </div>
-        <a *ngIf="stateService.isMempoolSpaceBuild" class="btn btn-purple sponsor d-flex d-sm-none justify-content-center ml-auto mr-auto mt-0 mb-2" [routerLink]="['/login' | relativeUrl]">
-          <span *ngIf="loggedIn" i18n="shared.my-account">My Account</span>
-          <span *ngIf="!loggedIn" i18n="shared.sign-in">Sign In</span>
-        </a>
-        <p class="explore-tagline-desktop">
-          <ng-container i18n="@@7deec1c1520f06170e1f8e8ddfbe4532312f638f">Explore the full Bitcoin ecosystem</ng-container>
-          <ng-template [ngIf]="locale.substr(0, 2) === 'en'">&reg;</ng-template>
-        </p>
+        @if (!env.customize?.theme) {
+          <div class="selector d-flex d-sm-none justify-content-center ml-auto mr-auto mt-0">
+            <app-theme-selector></app-theme-selector>
+          </div>
+        }
+        @if (!enterpriseInfo?.footer_img) {
+          <a *ngIf="stateService.isMempoolSpaceBuild" class="btn btn-purple sponsor d-flex d-sm-none justify-content-center ml-auto mr-auto mt-0 mb-2" [routerLink]="['/login']">
+            <span *ngIf="user" i18n="shared.my-account" class="nowrap">My Account</span>
+            <span *ngIf="!user" i18n="shared.sign-in" class="nowrap">Sign In</span>
+          </a>
+          <p class="explore-tagline-desktop">
+            <ng-container i18n="@@7deec1c1520f06170e1f8e8ddfbe4532312f638f">Explore the full Bitcoin ecosystem</ng-container>
+            <ng-template [ngIf]="locale.substr(0, 2) === 'en'">&reg;</ng-template>
+          </p>
+        }
       </div>
     </div>
     <div class="row col-md-12 link-tree" [class]="{'services': isServicesPage}">
         <div class="links">
           <p class="category" i18n="footer.explore">Explore</p>
-          <p><a [routerLink]="['/mining' | relativeUrl]" i18n="mining.mining-dashboard">Mining Dashboard</a></p>
-          <p><a *ngIf="env.LIGHTNING" [routerLink]="['/lightning' | relativeUrl]" i18n="master-page.lightning">Lightning Explorer</a></p>
+          <p><a *ngIf="env.MINING_DASHBOARD" [routerLink]="['/mining' | relativeUrl]" i18n="mining.mining-dashboard">Mining Dashboard</a></p>
+          <p><a *ngIf="stateService.networkSupportsLightning()" [routerLink]="['/lightning' | relativeUrl]" i18n="master-page.lightning">Lightning Explorer</a></p>
           <p><a [routerLink]="['/blocks' | relativeUrl]" i18n="dashboard.recent-blocks">Recent Blocks</a></p>
           <p><a [routerLink]="['/tx/push' | relativeUrl]" i18n="shared.broadcast-transaction|Broadcast Transaction">Broadcast Transaction</a></p>
+          <p><a [routerLink]="['/tx/test' | relativeUrl]" i18n="shared.test-transaction|Test Transaction">Test Transaction</a></p>
           <p *ngIf="officialMempoolSpace"><a [routerLink]="['/lightning/group/the-mempool-open-source-project' | relativeUrl]" i18n="footer.connect-to-our-nodes">Connect to our Nodes</a></p>
           <p><a [routerLink]="['/docs/api' | relativeUrl]" i18n="footer.api-documentation">API Documentation</a></p>
         </div>
@@ -53,12 +72,14 @@
           <p><a [routerLink]="['/docs/faq']" fragment="what-is-a-mempool-explorer" i18n="faq.what-is-a-mempool-exlorer">What is a mempool explorer?</a></p>
           <p><a [routerLink]="['/docs/faq']" fragment="why-is-transaction-stuck-in-mempool" i18n="faq.why-isnt-my-transaction-confirming">Why isn't my transaction confirming?</a></p>
           <p><a [routerLink]="['/docs/faq' | relativeUrl]" i18n="faq.more-faq">More FAQs &raquo;</a></p>
+          <p *ngIf="mempoolSpaceBuild"><a [routerLink]="['/research' | relativeUrl]" i18n="mempool-research">Research</a></p>
         </div>
 
-        <div class="links" *ngIf="officialMempoolSpace || env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.LIQUID_TESTNET_ENABLED else toolBox" >
+        <div class="links" *ngIf="officialMempoolSpace || env.TESTNET_ENABLED || env.TESTNET4_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.LIQUID_TESTNET_ENABLED else toolBox" >
           <p class="category" i18n="footer.networks">Networks</p>
           <p *ngIf="(officialMempoolSpace || (env.BASE_MODULE === 'mempool')) && (currentNetwork !== '') && (currentNetwork !== 'mainnet')"><a [href]="networkLink('mainnet')" i18n="footer.mainnet-explorer">Mainnet Explorer</a></p>
-          <p *ngIf="(officialMempoolSpace || (env.BASE_MODULE === 'mempool')) && (currentNetwork !== 'testnet') && env.TESTNET_ENABLED"><a [href]="networkLink('testnet')" i18n="footer.testnet-explorer">Testnet Explorer</a></p>
+          <p *ngIf="(officialMempoolSpace || (env.BASE_MODULE === 'mempool')) && (currentNetwork !== 'testnet') && env.TESTNET_ENABLED"><a [href]="networkLink('testnet')" i18n="footer.testnet3-explorer">Testnet3 Explorer</a></p>
+          <p *ngIf="(officialMempoolSpace || (env.BASE_MODULE === 'mempool')) && (currentNetwork !== 'testnet4') && env.TESTNET4_ENABLED"><a [href]="networkLink('testnet4')" i18n="footer.testnet4-explorer">Testnet4 Explorer</a></p>
           <p *ngIf="(officialMempoolSpace || (env.BASE_MODULE === 'mempool')) && (currentNetwork !== 'signet') && env.SIGNET_ENABLED"><a [href]="networkLink('signet')" i18n="footer.signet-explorer">Signet Explorer</a></p>
           <p *ngIf="(officialMempoolSpace || env.LIQUID_ENABLED) && (currentNetwork !== 'liquidtestnet')"><a [href]="networkLink('liquidtestnet')" i18n="footer.liquid-testnet-explorer">Liquid Testnet Explorer</a></p>
           <p *ngIf="(officialMempoolSpace || env.LIQUID_ENABLED) && (currentNetwork !== 'liquid')"><a [href]="networkLink('liquid')" i18n="footer.liquid-explorer">Liquid Explorer</a></p>
@@ -76,13 +97,13 @@
           <p><a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a></p>
           <p><a [routerLink]="['/privacy-policy']" i18n="shared.privacy-policy|Privacy Policy">Privacy Policy</a></p>
           <p><a [routerLink]="['/trademark-policy']" i18n="shared.trademark-policy|Trademark Policy">Trademark Policy</a></p>
-          <p><a [routerLink]="['/3rdpartylicenses.txt']" i18n="shared.trademark-policy|Third-party Licenses">Third-party Licenses</a></p>
+          <p><a href="/3rdpartylicenses.txt" i18n="shared.trademark-policy|Third-party Licenses">Third-party Licenses</a></p>
         </div>
     </div>
     <div class="row social-links">
       <div class="col-sm-12">
         <a href="https://github.com/mempool" target="_blank"><svg fill="#fff" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
-        <a href="https://twitter.com/mempool" target="_blank"><svg fill="#fff" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Twitter</title><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg></a>
+        <a href="https://x.com/mempool" target="_blank"><svg width="20" height="20" style="width: 17px" viewBox="0 0 1200 1227" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" fill="white"/></svg></a>
         <a href="nostr:npub18d4r6wanxkyrdfjdrjqzj2ukua5cas669ew2g5w7lf4a8te7awzqey6lt3" target="_blank"><svg fill="#fff" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 875 875"><path d="M684.72 485.57c.22 12.59-11.93 51.47-38.67 81.3-26.74 29.83-56.02 20.85-58.42 20.16s-3.09-4.46-7.89-3.77-9.6 6.17-18.86 7.2-17.49 1.71-26.06-1.37c-4.46.69-5.14.71-7.2 2.24s-17.83 10.79-21.6 11.47c0 7.2-1.37 44.57 0 55.89s3.77 25.71 7.54 36 2.74 10.63 7.54 9.94 13.37.34 15.77 4.11c2.4 3.77 1.37 6.51 5.49 8.23s60.69 17.14 99.43 19.2c26.74.69 42.86 2.74 52.12 19.54 1.37 7.89 7.54 13.03 11.31 14.06s8.23 2.06 12 5.83 1.03 8.23 5.49 11.66c4.46 3.43 14.74 8.57 25.37 13.71 10.63 5.14 15.09 13.37 15.77 16.11s1.71 10.97 1.71 10.97-8.91 0-10.97-2.06-2.74-5.83-2.74-5.83-6.17 1.03-7.54 3.43.69 2.74-7.89.69-11.66-3.77-18.17-8.57c-6.51-4.8-16.46-17.14-25.03-16.8 4.11 8.23 5.83 8.23 10.63 10.97s8.23 5.83 8.23 5.83l-7.2 4.46s-4.46 2.06-14.74-.69-11.66-4.46-12.69-10.63 0-9.26-2.74-14.4-4.11-15.77-22.29-21.26c-18.17-5.49-66.52-21.26-100.12-24.69s-22.63-2.74-28.11-1.37-15.77 4.46-26.4-1.37c-10.63-5.83-16.8-13.71-17.49-20.23s-1.71-10.97 0-19.2 3.43-19.89 1.71-26.74-14.06-55.89-19.89-64.12c-13.03 1.03-50.74-.69-50.74-.69s-2.4-.69-17.49 5.83-36.48 13.76-46.77 19.93-14.4 9.7-16.12 13.13c.12 3-1.23 7.72-2.79 9.06s-12.48 2.42-12.48 2.42-5.85 5.86-8.25 9.97c-6.86 9.6-55.2 125.14-66.52 149.83-13.54 32.57-9.77 27.43-37.71 27.43s-8.06.3-8.06.3-12.34 5.88-16.8 5.88-18.86-2.4-26.4 0-16.46 9.26-23.31 10.29-4.95-1.34-8.38-3.74c-4-.21-14.27-.12-14.27-.12s1.74-6.51 7.91-10.88c8.23-5.83 25.37-16.11 34.63-21.26s17.49-7.89 23.31-9.26 18.51-6.17 30.51-9.94 19.54-8.23 29.83-31.54 50.4-111.43 51.43-116.23c.63-2.96 3.73-6.48 4.8-15.09.66-5.35-2.49-13.04 1.71-22.63 10.97-25.03 21.6-20.23 26.4-20.23s17.14.34 26.4-1.37 15.43-2.74 24.69-7.89 11.31-8.91 11.31-8.91l-19.89-3.43s-18.51.69-25.03-4.46-15.43-15.77-15.43-15.77l-7.54-7.2 1.03 8.57s-5.14-8.91-6.51-10.29-8.57-6.51-11.31-11.31-7.54-25.03-7.54-25.03l-6.17 13.03-1.71-18.86-5.14 7.2-2.74-16.11-4.8 8.23-3.43-14.4-5.83 4.46-2.4-10.29-5.83-3.43s-14.06-9.26-16.46-9.6-4.46 3.43-4.46 3.43l1.37 12-12.2-6.27-7-11.9s2.36 4.01-9.62 7.53c-20.55 0-21.89-2.28-24.93-3.94-1.31-6.56-5.57-10.11-5.57-10.11h-20.57l-.34-6.86-7.89 3.09.69-10.29h-14.06l1.03-11.31h-8.91s3.09-9.26 25.71-22.97 25.03-16.46 46.29-17.14c21.26-.69 32.91 2.74 46.29 8.23s38.74 13.71 43.89 17.49c11.31-9.94 28.46-19.89 34.29-19.89 1.03-2.4 6.19-12.33 17.96-17.6 35.31-15.81 108.13-34 131.53-35.54 31.2-2.06 7.89-1.37 39.09 2.06 31.2 3.43 54.17 7.54 69.6 12.69 12.58 4.19 25.03 9.6 34.29 2.06 4.33-1.81 11.81-1.34 17.83-5.14 30.69-25.09 34.72-32.35 43.63-41.95s20.14-24.91 22.54-45.14 4.46-58.29-10.63-88.12-28.8-45.26-34.63-69.26c-5.83-24-8.23-61.03-6.17-73.03 2.06-12 5.14-22.29 6.86-30.51s9.94-14.74 19.89-16.46c9.94-1.71 17.83 1.37 22.29 4.8 4.46 3.43 11.65 6.28 13.37 10.29.34 1.71-1.37 6.51 8.23 8.23 9.6 1.71 16.05 4.16 16.05 4.16s15.64 4.29 3.11 7.73c-12.69 2.06-20.52-.71-24.29 1.69s-7.21 10.08-9.61 11.1-7.2.34-12 4.11-9.6 6.86-12.69 14.4-5.49 15.77-3.43 26.74 8.57 31.54 14.4 43.2c5.83 11.66 20.23 40.8 24.34 47.66s15.77 29.49 16.8 53.83 1.03 44.23 0 54.86-10.84 51.65-35.53 85.94c-8.16 14.14-23.21 31.9-24.67 35.03-1.45 3.13-3.02 4.88-1.61 7.65 4.62 9.05 12.87 22.13 14.71 29.22 2.29 6.64 6.99 16.13 7.22 28.72Z" style="stroke:#000;stroke-miterlimit:10;stroke-width:6px"/></svg></a>
         <a href="https://primal.net/mempool" target="_blank"><svg fill="#fff" role="img" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" ><path d="m155.5 253c-8.9 2-18.1 3-27.5 3-25.9 0-50-7.7-70.2-20.9-5-7.2-7.2-11.1-8.9-14-0.8-1.4-1.5-2.6-2.2-3.8-7.7-12.2-11.7-28-12.5-46.6-2.7-57.4 32.2-94 67.8-100.1 22.6-3.8 40.6 0.1 54.3 7.5-12.1-3.4-26.6-3.6-43.2 1.1-40.1 12.9-53.5 52.3-47.8 95.8 10 54.6 63.5 74.1 90.2 78zm-114.3-30.9c-7.4-13.2-14.2-33-15-51-2.9-60.9 34.4-101.6 74.5-108.3 54.7-9.3 85.1 23.1 95.6 47.1 0.4-0.3 0.6-0.9 0.3-1.4-17.2-37.4-52.8-63.2-94-63.2-46.8 0-88.5 33.6-102.6 83.4 0.2 36.9 16 70.2 41.2 93.4zm158.8 11.7c-9.2 6.3-19.3 11.5-30.1 15.2-5.1-0.9-10.9-2-14.9-2.8-1.9-0.4-3.4-0.7-4.3-0.9-24.4-4.4-67.9-20.1-77.5-71.6-2.6-20.6-0.7-39.7 6.1-54.8 6.7-14.9 18.4-26.3 36.1-32 20.6-5.6 37.7-2.9 50.3 3.9q-4.7-0.9-9.6-1c-27.4 0-49.7 23.9-49.7 53.3 0 11.7 3.6 22.5 9.6 31.3 0 0 17.2 32.5 64 29.6 41.7-2.6 63.4-40 66-53.8 1.3-7.2 2-14.6 2-22.2 0-66.3-53.7-120-120-120-50.1 0-93.1 30.8-111.1 74.4-6 7.9-11.2 16.7-15.4 26.2 9.3-61.5 62.4-108.6 126.5-108.6 70.7 0 128 57.3 128 128 0 44-22.2 82.8-56 105.8z" style="fill:#ffffff"/></svg></a>
         <a href="https://youtube.com/@mempool" target="_blank"><svg fill="#fff" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>YouTube</title><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
@@ -90,7 +111,7 @@
         <a href="https://mempool.chat" target="_blank"><svg fill="#fff" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Matrix</title><path d="M.632.55v22.9H2.28V24H0V0h2.28v.55zm7.043 7.26v1.157h.033c.309-.443.683-.784 1.117-1.024.433-.245.936-.365 1.5-.365.54 0 1.033.107 1.481.314.448.208.785.582 1.02 1.108.254-.374.6-.706 1.034-.992.434-.287.95-.43 1.546-.43.453 0 .872.056 1.26.167.388.11.716.286.993.53.276.245.489.559.646.951.152.392.23.863.23 1.417v5.728h-2.349V11.52c0-.286-.01-.559-.032-.812a1.755 1.755 0 0 0-.18-.66 1.106 1.106 0 0 0-.438-.448c-.194-.11-.457-.166-.785-.166-.332 0-.6.064-.803.189a1.38 1.38 0 0 0-.48.499 1.946 1.946 0 0 0-.231.696 5.56 5.56 0 0 0-.06.785v4.768h-2.35v-4.8c0-.254-.004-.503-.018-.752a2.074 2.074 0 0 0-.143-.688 1.052 1.052 0 0 0-.415-.503c-.194-.125-.476-.19-.854-.19-.111 0-.259.024-.439.074-.18.051-.36.143-.53.282-.171.138-.319.337-.439.595-.12.259-.18.6-.18 1.02v4.966H5.46V7.81zm15.693 15.64V.55H21.72V0H24v24h-2.28v-.55z"/></svg></a>
       </div>
     </div>
-    <div class="row version" [style]="{'background-color': isServicesPage ? '#1d1f31' : ''}">
+    <div class="row version" [style]="{'background-color': isServicesPage ? 'var(--bg)' : ''}">
       <div class="col-sm-12">
         <p *ngIf="officialMempoolSpace">
           <span>{{ (backendInfo$ | async)?.hostname }} (v{{ (backendInfo$ | async )?.version }}) [<a target="_blank" href="https://github.com/mempool/mempool/commit/{{ (backendInfo$ | async )?.gitCommit | slice:0:8 }}">{{ (backendInfo$ | async )?.gitCommit | slice:0:8 }}</a>]</span>

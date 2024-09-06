@@ -1,6 +1,6 @@
 <app-indexing-progress></app-indexing-progress>
 
-<div class="container-xl">
+<div class="container-xl" *ngIf="!error; else errorTemplate">
 
   <!-- Pool overview -->
   <div *ngIf="poolStats$ | async as poolStats; else loadingMain">
@@ -97,7 +97,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <td class="text-center"><app-amount [satoshis]="poolStats.totalReward" digitsInfo="1.0-0" [noFiat]="true"></app-amount></td>
+                      <td class="text-center"><app-amount [satoshis]="poolStats.totalReward" digitsInfo="1.0-0" [noFiat]="true" [ignoreViewMode]="true"></app-amount></td>
                       <td class="text-center">{{ poolStats.estimatedHashrate | amountShortener : 1 : 'H/s' }}</td>
                       <td class="text-center" *ngIf="auditAvailable; else emptyTd"><span class="health-badge badge" [class.badge-success]="poolStats.avgBlockHealth >= 99"
                           [class.badge-warning]="poolStats.avgBlockHealth >= 75 && poolStats.avgBlockHealth < 99" [class.badge-danger]="poolStats.avgBlockHealth < 75"
@@ -146,7 +146,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <td *ngFor="let total of oob" class="text-center clip"><app-amount [satoshis]="total.cost" [digitsInfo]="isMobile() ? '1.2-4' : '1.8-8'"></app-amount></td>
+                      <td *ngFor="let total of oob" class="text-center clip"><app-amount [satoshis]="total.cost" [digitsInfo]="isMobile() ? '1.2-4' : '1.8-8'" [ignoreViewMode]="true"></app-amount></td>
                     </tbody>
                   </table>
                 </td>
@@ -197,7 +197,7 @@
             &lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm:ss' }}
           </td>
           <td class="mined">
-            <app-time kind="since" [time]="block.timestamp" [fastRender]="true"></app-time>
+            <app-time kind="since" [time]="block.timestamp" [fastRender]="true" [showTooltip]="true"></app-time>
           </td>
           <td class="coinbase">
             <span class="badge badge-secondary scriptmessage longer">
@@ -219,10 +219,10 @@
             </ng-template>
           </td>
           <td class="reward text-right">
-            <app-amount [satoshis]="block.extras.reward" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
+            <app-amount [satoshis]="block.extras.reward" digitsInfo="1.2-2" [noFiat]="true" [ignoreViewMode]="true"></app-amount>
           </td>
           <td *ngIf="!auditAvailable" class="fees text-right">
-            <app-amount [satoshis]="block.extras.totalFees" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
+            <app-amount [satoshis]="block.extras.totalFees" digitsInfo="1.2-2" [noFiat]="true" [ignoreViewMode]="true"></app-amount>
           </td>
           <td class="txs text-right">
             {{ block.tx_count | number }}
@@ -459,4 +459,11 @@
 
 <ng-template #emptyTd>
   <td class="text-center"></td>
+</ng-template>
+
+<ng-template #errorTemplate>
+  <br>
+  <app-http-error [error]="error">
+    <span i18n="pool.error.loading-pool-data">Error loading pool data.</span>
+  </app-http-error>
 </ng-template>

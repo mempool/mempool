@@ -40,7 +40,7 @@ update_repo()
     git fetch origin || exit 1
     for remote in origin;do
         git remote add "${remote}" "https://github.com/${remote}/mempool" >/dev/null 2>&1
-        git fetch "${remote}" || exit 1
+        git fetch "${remote}" --tags || exit 1
     done
 
     if [ $(git tag -l "${REF}") ];then
@@ -96,6 +96,8 @@ build_backend()
         -e "s!__MEMPOOL_MAINNET_PASS__!${MEMPOOL_MAINNET_PASS}!" \
         -e "s!__MEMPOOL_TESTNET_USER__!${MEMPOOL_TESTNET_USER}!" \
         -e "s!__MEMPOOL_TESTNET_PASS__!${MEMPOOL_TESTNET_PASS}!" \
+        -e "s!__MEMPOOL_TESTNET4_USER__!${MEMPOOL_TESTNET4_USER}!" \
+        -e "s!__MEMPOOL_TESTNET4_PASS__!${MEMPOOL_TESTNET4_PASS}!" \
         -e "s!__MEMPOOL_SIGNET_USER__!${MEMPOOL_SIGNET_USER}!" \
         -e "s!__MEMPOOL_SIGNET_PASS__!${MEMPOOL_SIGNET_PASS}!" \
         -e "s!__MEMPOOL_MAINNET_LIGHTNING_USER__!${MEMPOOL_MAINNET_LIGHTNING_USER}!" \
@@ -129,8 +131,8 @@ export NVM_DIR="${HOME}/.nvm"
 source "${NVM_DIR}/nvm.sh"
 
 # what to look for
-frontends=(mainnet liquid)
-backends=(mainnet testnet signet liquid liquidtestnet)
+frontends=(mainnet liquid onbtc)
+backends=(mainnet testnet testnet4 signet liquid liquidtestnet onbtc)
 frontend_repos=()
 backend_repos=()
 
@@ -150,11 +152,6 @@ for repo in $backend_repos;do
     update_repo "${repo}"
 done
 
-# build unfurlers
-for repo in mainnet liquid;do
-    build_unfurler "${repo}"
-done
-
 # build backends
 for repo in $backend_repos;do
     build_backend "${repo}"
@@ -166,8 +163,13 @@ for repo in $frontend_repos;do
 done
 
 # ship frontend dist folders to public_html
-for target in mainnet liquid;do
+for target in $frontend_repos;do
     ship_frontend "${target}"
+done
+
+# build unfurlers
+for repo in $frontend_repos;do
+    build_unfurler "${repo}"
 done
 
 # notify everyone
