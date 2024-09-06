@@ -1,5 +1,6 @@
 import { WebSocket } from 'ws';
 import logger from '../../logger';
+import config from '../../config';
 import websocketHandler from '../websocket-handler';
 
 export interface StratumJob {
@@ -58,6 +59,9 @@ class StratumApi {
   }
 
   public async connectWebsocket(): Promise<void> {
+    if (!config.STRATUM.ENABLED) {
+      return;
+    }
     this.runWebsocketLoop = true;
     if (this.startedWebsocketLoop) {
       return;
@@ -65,7 +69,7 @@ class StratumApi {
     while (this.runWebsocketLoop) {
       this.startedWebsocketLoop = true;
       if (!this.ws) {
-        this.ws = new WebSocket(`http://localhost:3333`);
+        this.ws = new WebSocket(`${config.STRATUM.API}`);
         this.websocketConnected = true;
 
         this.ws.on('open', () => {

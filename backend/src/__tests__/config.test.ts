@@ -159,6 +159,11 @@ describe('Mempool Backend Config', () => {
         PAID: false,
         API_KEY: '',
       });
+
+      expect(config.STRATUM).toStrictEqual({
+        ENABLED: false,
+        API: 'http://127.0.0.1:1234',
+      });
     });
   });
 

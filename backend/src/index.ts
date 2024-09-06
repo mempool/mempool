@@ -321,7 +321,9 @@ class Server {
     loadingIndicators.setProgressChangedCallback(websocketHandler.handleLoadingChanged.bind(websocketHandler));
 
     accelerationApi.connectWebsocket();
-    stratumApi.connectWebsocket();
+    if (config.STRATUM.ENABLED) {
+      stratumApi.connectWebsocket();
+    }
   }
 
   setUpHttpApiRoutes(): void {
