@@ -439,6 +439,46 @@ export interface Statistic {
   vsize_1600: number;
   vsize_1800: number;
   vsize_2000: number;
+
+  vsize_ps_1: number;
+  vsize_ps_2: number;
+  vsize_ps_3: number;
+  vsize_ps_4: number;
+  vsize_ps_5: number;
+  vsize_ps_6: number;
+  vsize_ps_8: number;
+  vsize_ps_10: number;
+  vsize_ps_12: number;
+  vsize_ps_15: number;
+  vsize_ps_20: number;
+  vsize_ps_30: number;
+  vsize_ps_40: number;
+  vsize_ps_50: number;
+  vsize_ps_60: number;
+  vsize_ps_70: number;
+  vsize_ps_80: number;
+  vsize_ps_90: number;
+  vsize_ps_100: number;
+  vsize_ps_125: number;
+  vsize_ps_150: number;
+  vsize_ps_175: number;
+  vsize_ps_200: number;
+  vsize_ps_250: number;
+  vsize_ps_300: number;
+  vsize_ps_350: number;
+  vsize_ps_400: number;
+  vsize_ps_500: number;
+  vsize_ps_600: number;
+  vsize_ps_700: number;
+  vsize_ps_800: number;
+  vsize_ps_900: number;
+  vsize_ps_1000: number;
+  vsize_ps_1200: number;
+  vsize_ps_1400: number;
+  vsize_ps_1600: number;
+  vsize_ps_1800: number;
+  vsize_ps_2000: number;
+  
 }
 
 export interface OptimizedStatistic {
@@ -449,6 +489,7 @@ export interface OptimizedStatistic {
   mempool_byte_weight: number;
   min_fee: number;
   vsizes: number[];
+  vsizes_ps: number[];
 }
 
 export interface TxTrackingInfo {
@@ -481,6 +522,7 @@ export interface WebsocketResponse {
 export interface VbytesPerSecond {
   unixTime: number;
   vSize: number;
+  effectiveFeePerVsize: number;
 }
 
 export interface RequiredSpec { [name: string]: RequiredParams; }

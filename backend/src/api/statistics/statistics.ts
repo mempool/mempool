@@ -4,6 +4,9 @@ import { TransactionExtended, OptimizedStatistic } from '../../mempool.interface
 import { Common } from '../common';
 import statisticsApi from './statistics-api';
 
+export const logFees = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
+  250, 300, 350, 400, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000];
+
 class Statistics {
   protected intervalTimer: NodeJS.Timer | undefined;
   protected lastRun: number = 0;
@@ -42,6 +45,7 @@ class Statistics {
     const currentMempool = memPool.getMempool();
     const txPerSecond = memPool.getTxPerSecond();
     const vBytesPerSecond = memPool.getVBytesPerSecond();
+    const vBytesPerSecondByFeeRate = memPool.getVBytesPerSecondByFeeRate();
 
     logger.debug('Running statistics');
 
@@ -72,9 +76,6 @@ class Statistics {
     memPoolArray.sort((a, b) => a.effectiveFeePerVsize - b.effectiveFeePerVsize);
     const totalWeight = memPoolArray.map((tx) => tx.vsize).reduce((acc, curr) => acc + curr) * 4;
     const totalFee = memPoolArray.map((tx) => tx.fee).reduce((acc, curr) => acc + curr);
-
-    const logFees = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
-      250, 300, 350, 400, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000];
 
     const weightVsizeFees: { [feePerWU: number]: number } = {};
     const lastItem = logFees.length - 1;
@@ -147,6 +148,44 @@ class Statistics {
         vsize_1600: weightVsizeFees['1600'] || 0,
         vsize_1800: weightVsizeFees['1800'] || 0,
         vsize_2000: weightVsizeFees['2000'] || 0,
+        vsize_ps_1: vBytesPerSecondByFeeRate['1'] || 0,
+        vsize_ps_2: vBytesPerSecondByFeeRate['2'] || 0,
+        vsize_ps_3: vBytesPerSecondByFeeRate['3'] || 0,
+        vsize_ps_4: vBytesPerSecondByFeeRate['4'] || 0,
+        vsize_ps_5: vBytesPerSecondByFeeRate['5'] || 0,
+        vsize_ps_6: vBytesPerSecondByFeeRate['6'] || 0,
+        vsize_ps_8: vBytesPerSecondByFeeRate['8'] || 0,
+        vsize_ps_10: vBytesPerSecondByFeeRate['10'] || 0,
+        vsize_ps_12: vBytesPerSecondByFeeRate['12'] || 0,
+        vsize_ps_15: vBytesPerSecondByFeeRate['15'] || 0,
+        vsize_ps_20: vBytesPerSecondByFeeRate['20'] || 0,
+        vsize_ps_30: vBytesPerSecondByFeeRate['30'] || 0,
+        vsize_ps_40: vBytesPerSecondByFeeRate['40'] || 0,
+        vsize_ps_50: vBytesPerSecondByFeeRate['50'] || 0,
+        vsize_ps_60: vBytesPerSecondByFeeRate['60'] || 0,
+        vsize_ps_70: vBytesPerSecondByFeeRate['70'] || 0,
+        vsize_ps_80: vBytesPerSecondByFeeRate['80'] || 0,
+        vsize_ps_90: vBytesPerSecondByFeeRate['90'] || 0,
+        vsize_ps_100: vBytesPerSecondByFeeRate['100'] || 0,
+        vsize_ps_125: vBytesPerSecondByFeeRate['125'] || 0,
+        vsize_ps_150: vBytesPerSecondByFeeRate['150'] || 0,
+        vsize_ps_175: vBytesPerSecondByFeeRate['175'] || 0,
+        vsize_ps_200: vBytesPerSecondByFeeRate['200'] || 0,
+        vsize_ps_250: vBytesPerSecondByFeeRate['250'] || 0,
+        vsize_ps_300: vBytesPerSecondByFeeRate['300'] || 0,
+        vsize_ps_350: vBytesPerSecondByFeeRate['350'] || 0,
+        vsize_ps_400: vBytesPerSecondByFeeRate['400'] || 0,
+        vsize_ps_500: vBytesPerSecondByFeeRate['500'] || 0,
+        vsize_ps_600: vBytesPerSecondByFeeRate['600'] || 0,
+        vsize_ps_700: vBytesPerSecondByFeeRate['700'] || 0,
+        vsize_ps_800: vBytesPerSecondByFeeRate['800'] || 0,
+        vsize_ps_900: vBytesPerSecondByFeeRate['900'] || 0,
+        vsize_ps_1000: vBytesPerSecondByFeeRate['1000'] || 0,
+        vsize_ps_1200: vBytesPerSecondByFeeRate['1200'] || 0,
+        vsize_ps_1400: vBytesPerSecondByFeeRate['1400'] || 0,
+        vsize_ps_1600: vBytesPerSecondByFeeRate['1600'] || 0,
+        vsize_ps_1800: vBytesPerSecondByFeeRate['1800'] || 0,
+        vsize_ps_2000: vBytesPerSecondByFeeRate['2000'] || 0,
       });
 
       if (this.newStatisticsEntryCallback && insertId) {
