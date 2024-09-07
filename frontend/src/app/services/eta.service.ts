@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AccelerationPosition, CpfpInfo, DifficultyAdjustment, MempoolPosition, SinglePoolStats } from '../interfaces/node-api.interface';
+import { AccelerationPosition, CpfpInfo, DifficultyAdjustment, MempoolPosition, OptimizedMempoolStats, SinglePoolStats } from '../interfaces/node-api.interface';
 import { StateService } from './state.service';
 import { MempoolBlock } from '../interfaces/websocket.interface';
 import { Transaction } from '../interfaces/electrs.interface';
@@ -7,6 +7,7 @@ import { MiningService, MiningStats } from './mining.service';
 import { getUnacceleratedFeeRate } from '../shared/transaction.utils';
 import { AccelerationEstimate } from '../components/accelerate-checkout/accelerate-checkout.component';
 import { Observable, combineLatest, map, of, share, shareReplay, tap } from 'rxjs';
+import { feeLevels } from '../app.constants';
 
 export interface ETA {
   now: number, // time at which calculation performed
@@ -113,6 +114,7 @@ export class EtaService {
     miningStats: MiningStats,
     isAccelerated: boolean,
     accelerationPositions: AccelerationPosition[],
+    mempoolStats: OptimizedMempoolStats[] = [],
   ): ETA | null {
     // return this.calculateETA(tx, this.accelerationPositions, position, mempoolBlocks, da, isAccelerated)
     if (!tx || !mempoolBlocks) {
@@ -143,7 +145,28 @@ export class EtaService {
 
     if (!isAccelerated) {
       const blocks = mempoolPosition.block + 1;
-      const wait = da.adjustedTimeAvg * (mempoolPosition.block + 1);
+
+      // Estimate future incoming tx rate from mempool statistics
+      let vsizePerSecond = Math.min(
+        this.estimateVsizePerSecond(tx, mempoolStats),
+        0.95 * this.stateService.blockVSize / da.adjustedTimeAvg * 1000
+      );
+
+      // Count the number of blocks until we expect this tx to be mined
+      let blocksUntilMined = 0;
+      let mined = false;
+      let vsize = mempoolPosition.vsize + this.stateService.blockVSize * mempoolPosition.block;
+      // This loop will always terminate because we cap vsizePerSecond to 0.95 * maxCapacity
+      while (!mined) {
+        vsize = vsize + vsizePerSecond * da.adjustedTimeAvg / 1000 - this.stateService.blockVSize;
+        if (vsize + tx.weight / 8 < 0) { // Means that our tx fits in expected next block
+          mined = true;
+        }
+        blocksUntilMined++;
+      }
+
+      const wait = blocksUntilMined * da.adjustedTimeAvg;
+
       return {
         now,
         time: wait + now + da.timeOffset,
@@ -278,5 +301,47 @@ export class EtaService {
 
     return tx.fee / (tx.weight / 4);
 
+  }
+
+  estimateVsizePerSecond(tx: Transaction, mempoolStats: OptimizedMempoolStats[], timeWindow: number = 15 * 60 * 1000): number {
+    const nowMinusTimeSpan = (new Date().getTime() - timeWindow) / 1000;
+    const vsizeAboveTransaction = mempoolStats
+      // Remove datapoints older than now - timeWindow
+      .filter(stat => stat.added > nowMinusTimeSpan)
+      // Remove datapoints less than 45 seconds apart from the previous one
+      .filter((el, i, arr) => {
+        if (i === 0) {
+          return true;
+        }
+        return arr[i - 1].added - el.added > 45;
+      })
+      // For each datapoint, compute the total vsize of transactions with higher fee rate
+      .map(stat => {
+        let vsizeAbove = 0;
+        for (let i = feeLevels.length - 1; i >= 0; i--) {
+          if (feeLevels[i] > tx.effectiveFeePerVsize) {
+            vsizeAbove += stat.vsizes_ps[i];
+          } else {
+            break;
+          }
+        }
+        return vsizeAbove;
+      });
+    
+    // vsizeAboveTransaction is a temporal series of past vsize values above the transaction's fee rate
+    // From this array we need to estimate the future vsize per second
+    // Naive first approach: take the median of the series
+    if (!vsizeAboveTransaction.length) {
+      return 0;
+    }
+
+    const sorted = Array.from(vsizeAboveTransaction).sort((a, b) => a - b);
+    const middle = Math.floor(sorted.length / 2);
+
+    if (sorted.length % 2 === 0) {
+        return (sorted[middle - 1] + sorted[middle]) / 2;
+    }
+
+    return sorted[middle];
   }
 }
