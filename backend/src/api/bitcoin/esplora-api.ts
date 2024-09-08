@@ -89,7 +89,7 @@ class FailoverRouter {
     for (const host of this.hosts) {
       try {
         const result = await (host.socket
-          ? this.pollConnection.get<number>('/blocks/tip/height', { socketPath: host.host, timeout: config.ESPLORA.FALLBACK_TIMEOUT })
+          ? this.pollConnection.get<number>('http://localhost/blocks/tip/height', { socketPath: host.host, timeout: config.ESPLORA.FALLBACK_TIMEOUT })
           : this.pollConnection.get<number>(host.host + '/blocks/tip/height', { timeout: config.ESPLORA.FALLBACK_TIMEOUT })
         );
         if (result) {
