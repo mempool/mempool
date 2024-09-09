@@ -81,6 +81,7 @@ export interface Env {
   ADDITIONAL_CURRENCIES: boolean;
   GIT_COMMIT_HASH_MEMPOOL_SPACE?: string;
   PACKAGE_JSON_VERSION_MEMPOOL_SPACE?: string;
+  STRATUM_ENABLED: boolean;
   SERVICES_API?: string;
   customize?: Customization;
   PROD_DOMAINS: string[];
@@ -123,6 +124,7 @@ const defaultEnv: Env = {
   'ACCELERATOR_BUTTON': true,
   'PUBLIC_ACCELERATIONS': false,
   'ADDITIONAL_CURRENCIES': false,
+  'STRATUM_ENABLED': false,
   'SERVICES_API': 'https://mempool.space/api/v1/services',
   'PROD_DOMAINS': [],
 };
