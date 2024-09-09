@@ -146,25 +146,14 @@ export class EtaService {
     if (!isAccelerated) {
       const blocks = mempoolPosition.block + 1;
 
-      // Estimate future incoming tx rate from mempool statistics
-      let vsizePerSecond = Math.min(
-        this.estimateVsizePerSecond(tx, mempoolStats),
-        0.95 * this.stateService.blockVSize / da.adjustedTimeAvg * 1000
-      );
+      const vsizeAhead = mempoolPosition.vsize + this.stateService.blockVSize * mempoolPosition.block;
+      const incomingVsizePerBlock = this.estimateVsizePerSecond(tx, mempoolStats) * da.adjustedTimeAvg / 1000;
+      const vsizeConsumedPerBlock = Math.max(
+        this.stateService.blockVSize - incomingVsizePerBlock,
+        0.05 * this.stateService.blockVSize // So that we don't return infinite ETA
+      )
 
-      // Count the number of blocks until we expect this tx to be mined
-      let blocksUntilMined = 0;
-      let mined = false;
-      let vsize = mempoolPosition.vsize + this.stateService.blockVSize * mempoolPosition.block;
-      // This loop will always terminate because we cap vsizePerSecond to 0.95 * maxCapacity
-      while (!mined) {
-        vsize = vsize + vsizePerSecond * da.adjustedTimeAvg / 1000 - this.stateService.blockVSize;
-        if (vsize + tx.weight / 8 < 0) { // Means that our tx fits in expected next block
-          mined = true;
-        }
-        blocksUntilMined++;
-      }
-
+      const blocksUntilMined = Math.ceil(vsizeAhead / vsizeConsumedPerBlock);
       const wait = blocksUntilMined * da.adjustedTimeAvg;
 
       return {
