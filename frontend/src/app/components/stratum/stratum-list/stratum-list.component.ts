@@ -45,6 +45,7 @@ export class StratumList implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.websocketService.want(['stats', 'blocks', 'mempool-blocks']);
     this.miningService.getPools().subscribe(pools => {
       this.pools = {};
       for (const pool of pools) {

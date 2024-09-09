@@ -57,10 +57,16 @@ const routes: Routes = [
         path: 'rbf',
         component: RbfList,
       },
-      {
+      ...(browserWindowEnv.STRATUM_ENABLED ? [{
         path: 'stratum',
-        component: StratumList,
-      },
+        component: StartComponent,
+        children: [
+          {
+            path: '',
+            component: StratumList,
+          }
+        ]
+      }] : []),
       {
         path: 'terms-of-service',
         loadChildren: () => import('@components/terms-of-service/terms-of-service.module').then(m => m.TermsOfServiceModule),
