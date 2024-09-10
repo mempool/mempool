@@ -27,7 +27,7 @@ import { StorageService } from '../../services/storage.service';
 import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { getTransactionFlags, getUnacceleratedFeeRate } from '../../shared/transaction.utils';
 import { Filter, TransactionFlags, toFilters } from '../../shared/filters.utils';
-import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration, AccelerationPosition } from '../../interfaces/node-api.interface';
+import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration, AccelerationPosition, OptimizedMempoolStats } from '../../interfaces/node-api.interface';
 import { LiquidUnblinding } from './liquid-ublinding';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { PriceService } from '../../services/price.service';
@@ -139,6 +139,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   firstLoad = true;
   waitingForAccelerationInfo: boolean = false;
   isLoadingFirstSeen = false;
+  mempoolStats: OptimizedMempoolStats[] = null;
 
   featuresEnabled: boolean;
   segwitEnabled: boolean;
@@ -196,7 +197,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
 
-    this.websocketService.want(['blocks', 'mempool-blocks']);
+    this.websocketService.want(['blocks', 'mempool-blocks', 'live-2h-chart']);
     this.stateService.networkChanged$.subscribe(
       (network) => {
         this.network = network;
@@ -769,8 +770,20 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.stateService.difficultyAdjustment$.pipe(startWith(null)),
       this.isAccelerated$,
       this.txChanged$,
+      this.apiService.list2HStatistics$(),
+      this.stateService.live2Chart$.pipe(startWith(null)),
     ]).pipe(
-      map(([position, mempoolBlocks, da, isAccelerated]) => {
+      map(([position, mempoolBlocks, da, isAccelerated, _, mempoolStats, mempoolStat]) => {
+
+        if (this.mempoolStats === null) {
+          this.mempoolStats = mempoolStats;
+        }
+
+        if (this.mempoolStats.length && mempoolStat && this.mempoolStats[0].added !== mempoolStat.added) {
+          this.mempoolStats.pop();
+          this.mempoolStats.unshift(mempoolStat);
+        }
+
         return this.etaService.calculateETA(
           this.network,
           this.tx,
@@ -780,6 +793,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.miningStats,
           isAccelerated,
           this.accelerationPositions,
+          this.mempoolStats,
         );
       })
     );
@@ -977,6 +991,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isAcceleration = false;
     this.isAccelerated$.next(this.isAcceleration);
     this.eligibleForAcceleration = false;
+    this.mempoolStats = null;
     this.leaveTransaction();
   }
 

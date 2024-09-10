@@ -12,6 +12,7 @@ import rbfCache from './rbf-cache';
 import { Acceleration } from './services/acceleration';
 import redisCache from './redis-cache';
 import blocks from './blocks';
+import { logFees } from './statistics/statistics';
 
 class Mempool {
   private inSync: boolean = false;
@@ -34,6 +35,7 @@ class Mempool {
 
   private vBytesPerSecondArray: VbytesPerSecond[] = [];
   private vBytesPerSecond: number = 0;
+  private vBytesPerSecondByFeeRate: { [feePerWU: number]: number } = {};
   private mempoolProtection = 0;
   private latestTransactions: any[] = [];
 
@@ -193,6 +195,10 @@ class Mempool {
     return this.vBytesPerSecond;
   }
 
+  public getVBytesPerSecondByFeeRate(): { [feePerWU: number]: number } {
+    return this.vBytesPerSecondByFeeRate;
+  }
+
   public getFirstSeenForTransactions(txIds: string[]): number[] {
     const txTimes: number[] = [];
     txIds.forEach((txId: string) => {
@@ -270,6 +276,7 @@ class Mempool {
             this.vBytesPerSecondArray.push({
               unixTime: new Date().getTime(),
               vSize: transaction.vsize,
+              effectiveFeePerVsize: transaction.effectiveFeePerVsize
             });
           }
           hasChange = true;
@@ -588,6 +595,21 @@ class Mempool {
       this.vBytesPerSecond = Math.round(
         this.vBytesPerSecondArray.map((data) => data.vSize).reduce((a, b) => a + b) / config.STATISTICS.TX_PER_SECOND_SAMPLE_PERIOD
       );
+
+      if (!Common.isLiquid()) {
+        this.vBytesPerSecondByFeeRate = {};
+        for (const tx of this.vBytesPerSecondArray) {
+          for (let i = 0; i < logFees.length; i++) {
+            if (tx.effectiveFeePerVsize < logFees[i + 1] || i === logFees.length - 1) {
+              this.vBytesPerSecondByFeeRate[logFees[i]] = (this.vBytesPerSecondByFeeRate[logFees[i]] || 0) + tx.vSize;
+              break;
+            }
+          }
+        }
+        for (const feeRate of Object.keys(this.vBytesPerSecondByFeeRate)) {
+          this.vBytesPerSecondByFeeRate[feeRate] = Math.round(this.vBytesPerSecondByFeeRate[feeRate] / config.STATISTICS.TX_PER_SECOND_SAMPLE_PERIOD);
+        }
+      }
     }
   }
 

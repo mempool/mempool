@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 82;
+  private static currentVersion = 83;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -705,6 +705,11 @@ class DatabaseMigration {
       await this.$fixBadV1AuditBlocks();
       await this.updateToSchemaVersion(82);
     }
+
+    if (databaseSchemaVersion < 83) {
+      await this.$addPerSecondVsizeToStatistics();
+      await this.updateToSchemaVersion(83);
+    }
   }
 
   /**
@@ -1340,6 +1345,47 @@ class DatabaseMigration {
         continue;
       }
     }
+  }
+
+  private async $addPerSecondVsizeToStatistics(): Promise<void> {
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_1` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_2` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_3` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_4` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_5` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_6` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_8` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_10` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_12` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_15` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_20` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_30` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_40` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_50` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_60` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_70` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_80` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_90` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_100` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_125` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_150` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_175` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_200` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_250` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_300` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_350` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_400` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_500` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_600` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_700` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_800` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_900` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_1000` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_1200` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_1400` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_1600` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_1800` int(11) NOT NULL DEFAULT 0');
+    await this.$executeQuery('ALTER TABLE `statistics` ADD `vsize_ps_2000` int(11) NOT NULL DEFAULT 0');
   }
 }
 
