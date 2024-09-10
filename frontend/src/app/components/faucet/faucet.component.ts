@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit, ChangeDetectorRef } from "@angular/core";
 import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from "@angular/forms";
 import { Subscription } from "rxjs";
-import { StorageService } from "../../services/storage.service";
 import { ServicesApiServices } from "../../services/services-api.service";
 import { getRegex } from "../../shared/regex.utils";
 import { StateService } from "../../services/state.service";
@@ -34,7 +33,6 @@ export class FaucetComponent implements OnInit, OnDestroy {
 
   constructor(
     private cd: ChangeDetectorRef,
-    private storageService: StorageService,
     private servicesApiService: ServicesApiServices,
     private formBuilder: FormBuilder,
     private stateService: StateService,
@@ -56,14 +54,17 @@ export class FaucetComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.user = this.storageService.getAuth()?.user ?? null;
-    if (!this.user) {
-      this.loading = false;
-      return;
-    }
-
-    // Setup form
-    this.updateFaucetStatus();
+    this.servicesApiService.userSubject$.subscribe(user => {
+      this.user = user;
+      if (!user) {
+        this.loading = false;
+        this.cd.markForCheck();
+        return;
+      }
+      // Setup form
+      this.updateFaucetStatus();
+      this.cd.markForCheck();
+    });
 
     // Track transaction
     this.websocketService.want(['blocks', 'mempool-blocks']);
@@ -145,9 +146,6 @@ export class FaucetComponent implements OnInit, OnDestroy {
       'address': ['', [Validators.required, Validators.pattern(getRegex('address', 'testnet4')), this.getNotFaucetAddressValidator(faucetAddress)]],
       'satoshis': [min, [Validators.required, Validators.min(min), Validators.max(max)]]
     });
-
-    this.loading = false;
-    this.cd.markForCheck();
   }
 
   updateForm(min, max, faucetAddress: string): void {
@@ -160,6 +158,8 @@ export class FaucetComponent implements OnInit, OnDestroy {
       this.faucetForm.get('satoshis').updateValueAndValidity();
       this.faucetForm.get('satoshis').markAsDirty();
     }
+    this.loading = false;
+    this.cd.markForCheck();
   }
 
   setAmount(value: number): void {
