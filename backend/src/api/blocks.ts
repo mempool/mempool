@@ -406,8 +406,16 @@ class Blocks {
     }
 
     try {
+      const blockchainInfo = await bitcoinClient.getBlockchainInfo();
+      const currentBlockHeight = blockchainInfo.blocks;
+      let indexingBlockAmount = Math.min(config.MEMPOOL.INDEXING_BLOCKS_AMOUNT, currentBlockHeight);
+      if (indexingBlockAmount <= -1) {
+        indexingBlockAmount = currentBlockHeight + 1;
+      }
+      const lastBlockToIndex = Math.max(0, currentBlockHeight - indexingBlockAmount + 1);
+
       // Get all indexed block hash
-      const indexedBlocks = await blocksRepository.$getIndexedBlocks();
+      const indexedBlocks = (await blocksRepository.$getIndexedBlocks()).filter(block => block.height >= lastBlockToIndex);
       const indexedBlockSummariesHashesArray = await BlocksSummariesRepository.$getIndexedSummariesId();
 
       const indexedBlockSummariesHashes = {}; // Use a map for faster seek during the indexing loop
