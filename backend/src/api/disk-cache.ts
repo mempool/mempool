@@ -257,6 +257,7 @@ class DiskCache {
           trees: rbfData.rbf.trees,
           expiring: rbfData.rbf.expiring.map(([txid, value]) => ({ key: txid, value })),
           mempool: memPool.getMempool(),
+          spendMap: memPool.getSpendMap(),
         });
       }
     } catch (e) {
