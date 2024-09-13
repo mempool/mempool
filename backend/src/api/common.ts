@@ -10,7 +10,6 @@ import logger from '../logger';
 import { getVarIntLength, opcodes, parseMultisigScript } from '../utils/bitcoin-script';
 
 // Bitcoin Core default policy settings
-const TX_MAX_STANDARD_VERSION = 2;
 const MAX_STANDARD_TX_WEIGHT = 400_000;
 const MAX_BLOCK_SIGOPS_COST = 80_000;
 const MAX_STANDARD_TX_SIGOPS_COST = (MAX_BLOCK_SIGOPS_COST / 5);
@@ -200,10 +199,13 @@ export class Common {
    *
    * returns true early if any standardness rule is violated, otherwise false
    * (except for non-mandatory-script-verify-flag and p2sh script evaluation rules which are *not* enforced)
+   *
+   * As standardness rules change, we'll need to apply the rules in force *at the time* to older blocks.
+   * For now, just pull out individual rules into versioned functions where necessary.
    */
-  static isNonStandard(tx: TransactionExtended): boolean {
+  static isNonStandard(tx: TransactionExtended, height?: number): boolean {
     // version
-    if (tx.version > TX_MAX_STANDARD_VERSION) {
+    if (this.isNonStandardVersion(tx, height)) {
       return true;
     }
 
@@ -249,6 +251,8 @@ export class Common {
           return true;
         }
       } else if (['unknown', 'provably_unspendable', 'empty'].includes(vin.prevout?.scriptpubkey_type || '')) {
+        return true;
+      } else if (this.isNonStandardAnchor(tx, height)) {
         return true;
       }
       // TODO: bad-witness-nonstandard
@@ -335,6 +339,49 @@ export class Common {
     return false;
   }
 
+  // Individual versioned standardness rules
+
+  static V3_STANDARDNESS_ACTIVATION_HEIGHT = {
+    'testnet4': 42_000,
+    'testnet': 2_900_000,
+    'signet': 211_000,
+    '': 863_500,
+  };
+  static isNonStandardVersion(tx: TransactionExtended, height?: number): boolean {
+    let TX_MAX_STANDARD_VERSION = 3;
+    if (
+      height != null
+      && this.V3_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+      && height <= this.V3_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+    ) {
+      // V3 transactions were non-standard to spend before v28.x (scheduled for 2024/09/30 https://github.com/bitcoin/bitcoin/issues/29891)
+      TX_MAX_STANDARD_VERSION = 2;
+    }
+
+    if (tx.version > TX_MAX_STANDARD_VERSION) {
+      return true;
+    }
+    return false;
+  }
+
+  static ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT = {
+    'testnet4': 42_000,
+    'testnet': 2_900_000,
+    'signet': 211_000,
+    '': 863_500,
+  };
+  static isNonStandardAnchor(tx: TransactionExtended, height?: number): boolean {
+    if (
+      height != null
+      && this.ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+      && height <= this.ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+    ) {
+      // anchor outputs were non-standard to spend before v28.x (scheduled for 2024/09/30 https://github.com/bitcoin/bitcoin/issues/29891)
+      return true;
+    }
+    return false;
+  }
+
   static getNonWitnessSize(tx: TransactionExtended): number {
     let weight = tx.weight;
     let hasWitness = false;
@@ -415,7 +462,7 @@ export class Common {
     return flags;
   }
 
-  static getTransactionFlags(tx: TransactionExtended): number {
+  static getTransactionFlags(tx: TransactionExtended, height?: number): number {
     let flags = tx.flags ? BigInt(tx.flags) : 0n;
 
     // Update variable flags (CPFP, RBF)
@@ -548,7 +595,7 @@ export class Common {
     if (hasFakePubkey) {
       flags |= TransactionFlags.fake_pubkey;
     }
-    
+
     // fast but bad heuristic to detect possible coinjoins
     // (at least 5 inputs and 5 outputs, less than half of which are unique amounts, with no address reuse)
     const addressReuse = Object.keys(reusedOutputAddresses).reduce((acc, key) => Math.max(acc, (reusedInputAddresses[key] || 0) + (reusedOutputAddresses[key] || 0)), 0) > 1;
@@ -564,17 +611,17 @@ export class Common {
       flags |= TransactionFlags.batch_payout;
     }
 
-    if (this.isNonStandard(tx)) {
+    if (this.isNonStandard(tx, height)) {
       flags |= TransactionFlags.nonstandard;
     }
 
     return Number(flags);
   }
 
-  static classifyTransaction(tx: TransactionExtended): TransactionClassified {
+  static classifyTransaction(tx: TransactionExtended, height?: number): TransactionClassified {
     let flags = 0;
     try {
-      flags = Common.getTransactionFlags(tx);
+      flags = Common.getTransactionFlags(tx, height);
     } catch (e) {
       logger.warn('Failed to add classification flags to transaction: ' + (e instanceof Error ? e.message : e));
     }
@@ -585,8 +632,8 @@ export class Common {
     };
   }
 
-  static classifyTransactions(txs: TransactionExtended[]): TransactionClassified[] {
-    return txs.map(Common.classifyTransaction);
+  static classifyTransactions(txs: TransactionExtended[], height?: number): TransactionClassified[] {
+    return txs.map(tx => Common.classifyTransaction(tx, height));
   }
 
   static stripTransaction(tx: TransactionExtended): TransactionStripped {

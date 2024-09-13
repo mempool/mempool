@@ -19,7 +19,7 @@ export class FaucetComponent implements OnInit, OnDestroy {
   error: string = '';
   user: any = undefined;
   txid: string = '';
- 
+
   faucetStatusSubscription: Subscription;
   status: {
     min: number; // minimum amount to request at once (in sats)
