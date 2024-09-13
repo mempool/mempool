@@ -4,7 +4,7 @@ import { NgbCollapseModule, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstra
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faClock, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
-  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft, faFastForward, faWallet, faUserClock, faWrench, faUserFriends, faQuestionCircle, faHistory, faSignOutAlt, faKey, faSuitcase, faIdCardAlt, faNetworkWired, faUserCheck, faCircleCheck, faUserCircle, faCheck, faRocket, faScaleBalanced, faHourglassStart, faHourglassHalf, faHourglassEnd, faWandMagicSparkles, faFaucetDrip, faTimeline, faCircleXmark} from '@fortawesome/free-solid-svg-icons';
+  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft, faFastForward, faWallet, faUserClock, faWrench, faUserFriends, faQuestionCircle, faHistory, faSignOutAlt, faKey, faSuitcase, faIdCardAlt, faNetworkWired, faUserCheck, faCircleCheck, faUserCircle, faCheck, faRocket, faScaleBalanced, faHourglassStart, faHourglassHalf, faHourglassEnd, faWandMagicSparkles, faFaucetDrip, faTimeline, faCircleXmark, faCalendarCheck } from '@fortawesome/free-solid-svg-icons';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MenuComponent } from '../components/menu/menu.component';
 import { PreviewTitleComponent } from '../components/master-page-preview/preview-title.component';
@@ -35,6 +35,7 @@ import { LanguageSelectorComponent } from '../components/language-selector/langu
 import { FiatSelectorComponent } from '../components/fiat-selector/fiat-selector.component';
 import { RateUnitSelectorComponent } from '../components/rate-unit-selector/rate-unit-selector.component';
 import { ThemeSelectorComponent } from '../components/theme-selector/theme-selector.component';
+import { AmountSelectorComponent } from '../components/amount-selector/amount-selector.component';
 import { BrowserOnlyDirective } from './directives/browser-only.directive';
 import { ServerOnlyDirective } from './directives/server-only.directive';
 import { ColoredPriceDirective } from './directives/colored-price.directive';
@@ -131,6 +132,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     FiatSelectorComponent,
     ThemeSelectorComponent,
     RateUnitSelectorComponent,
+    AmountSelectorComponent,
     ScriptpubkeyTypePipe,
     RelativeUrlPipe,
     NoSanitizePipe,
@@ -278,6 +280,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     FiatSelectorComponent,
     RateUnitSelectorComponent,
     ThemeSelectorComponent,
+    AmountSelectorComponent,
     ScriptpubkeyTypePipe,
     RelativeUrlPipe,
     Hex2asciiPipe,
@@ -440,5 +443,6 @@ export class SharedModule {
     library.addIcons(faFaucetDrip);
     library.addIcons(faTimeline);
     library.addIcons(faCircleXmark);
+    library.addIcons(faCalendarCheck);
   }
 }

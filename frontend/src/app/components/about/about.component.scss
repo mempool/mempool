@@ -251,3 +251,12 @@
   width: 64px;
   height: 64px;
 }
+
+.enterprise-sponsor {
+  .wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 800px; 
+  }
+}

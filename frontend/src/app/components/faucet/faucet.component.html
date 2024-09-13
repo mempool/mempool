@@ -5,7 +5,7 @@
   </div>
 
   <div class="faucet-container text-center">
-  
+
     @if (txid) {
       <div class="alert alert-success w-100 text-truncate">
         <fa-icon [icon]="['fas', 'circle-check']"></fa-icon>
@@ -34,6 +34,13 @@
           <span class="mb-2 mr-2">To use the faucet, please</span>
         </div>
         <app-twitter-login customClass="btn btn-sm" width="180px" redirectTo="/testnet4/faucet" buttonString="Link your Twitter"></app-twitter-login>
+      </div>
+    }
+    @else if (error === 'account_limited') {
+      <div class="alert alert-mempool d-block text-center w-100">
+        <div class="d-inline align-middle">
+          <span class="mb-2 mr-2">Your Twitter account does not allow you to access the faucet</span>
+        </div>
       </div>
     }
     @else if (error) {
@@ -81,7 +88,7 @@
     }
 
     <!-- Send back coins -->
-    @if (status?.address) {  
+    @if (status?.address) {
       <div class="mt-4 alert alert-info w-100">If you no longer need your testnet4 coins, please consider <a class="text-primary" [routerLink]="['/address/' | relativeUrl, status.address]"><u>sending them back</u></a> to replenish the faucet.</div>
     }
 
