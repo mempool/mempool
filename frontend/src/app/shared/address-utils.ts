@@ -17,6 +17,7 @@ export type AddressType = 'fee'
   | 'v0_p2wsh'
   | 'v1_p2tr'
   | 'confidential'
+  | 'anchor'
   | 'unknown'
 
 const ADDRESS_PREFIXES = {
@@ -188,6 +189,12 @@ export class AddressTypeInfo {
         const v = vin[0];
         this.processScript(new ScriptInfo('scriptpubkey', v.prevout.scriptpubkey, v.prevout.scriptpubkey_asm));
       }
+    } else if (this.type === 'unknown') {
+      for (const v of vin) {
+        if (v.prevout?.scriptpubkey === '51024e73') {
+          this.type = 'anchor';
+        }
+      }
     }
     // and there's nothing more to learn from processing inputs for other types
   }
@@ -196,6 +203,10 @@ export class AddressTypeInfo {
     if (this.type === 'multisig') {
       if (!this.scripts.size) {
         this.processScript(new ScriptInfo('scriptpubkey', output.scriptpubkey, output.scriptpubkey_asm));
+      }
+    } else if (this.type === 'unknown') {
+      if (output.scriptpubkey === '51024e73') {
+        this.type = 'anchor';
       }
     }
   }

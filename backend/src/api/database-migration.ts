@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 81;
+  private static currentVersion = 82;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -700,6 +700,11 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `blocks_audits` ADD unseen_txs JSON DEFAULT "[]"');
       await this.updateToSchemaVersion(81);
     }
+
+    if (databaseSchemaVersion < 82 && isBitcoin === true && config.MEMPOOL.NETWORK === 'mainnet') {
+      await this.$fixBadV1AuditBlocks();
+      await this.updateToSchemaVersion(82);
+    }
   }
 
   /**
@@ -1312,6 +1317,28 @@ class DatabaseMigration {
       }
     } catch (e) {
       logger.warn(`Failed to migrate cpfp transaction data`);
+    }
+  }
+
+  private async $fixBadV1AuditBlocks(): Promise<void> {
+    const badBlocks = [
+      '000000000000000000011ad49227fc8c9ba0ca96ad2ebce41a862f9a244478dc',
+      '000000000000000000010ac1f68b3080153f2826ffddc87ceffdd68ed97d6960',
+      '000000000000000000024cbdafeb2660ae8bd2947d166e7fe15d1689e86b2cf7',
+      '00000000000000000002e1dbfbf6ae057f331992a058b822644b368034f87286',
+      '0000000000000000000019973b2778f08ad6d21e083302ff0833d17066921ebb',
+    ];
+
+    for (const hash of badBlocks) {
+      try {
+        await this.$executeQuery(`
+          UPDATE blocks_audits
+          SET prioritized_txs = '[]'
+          WHERE hash = '${hash}'
+        `, true);
+      } catch (e) {
+        continue;
+      }
     }
   }
 }

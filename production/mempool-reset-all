@@ -1,3 +1,5 @@
 #!/usr/bin/env zsh
-rm $HOME/*/backend/mempool-config.json
-rm $HOME/*/frontend/mempool-frontend-config.json
+rm -f $HOME/*/backend/mempool-config.json
+rm -f $HOME/*/frontend/mempool-frontend-config.json
+rm -f $HOME/*/frontend/projects/mempool/mempool-frontend-config.json
+exit 0

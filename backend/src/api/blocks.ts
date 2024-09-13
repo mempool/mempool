@@ -219,10 +219,10 @@ class Blocks {
     };
   }
 
-  public summarizeBlockTransactions(hash: string, transactions: TransactionExtended[]): BlockSummary {
+  public summarizeBlockTransactions(hash: string, height: number, transactions: TransactionExtended[]): BlockSummary {
     return {
       id: hash,
-      transactions: Common.classifyTransactions(transactions),
+      transactions: Common.classifyTransactions(transactions, height),
     };
   }
 
@@ -616,7 +616,7 @@ class Blocks {
           // add CPFP
           const cpfpSummary = calculateGoodBlockCpfp(height, txs, []);
           // classify
-          const { transactions: classifiedTxs } = this.summarizeBlockTransactions(blockHash, cpfpSummary.transactions);
+          const { transactions: classifiedTxs } = this.summarizeBlockTransactions(blockHash, height, cpfpSummary.transactions);
           await BlocksSummariesRepository.$saveTransactions(height, blockHash, classifiedTxs, 2);
           if (unclassifiedBlocks[height].version < 2 && targetSummaryVersion === 2) {
             const cpfpClusters = await CpfpRepository.$getClustersAt(height);
@@ -653,7 +653,7 @@ class Blocks {
             }
             const cpfpSummary = calculateGoodBlockCpfp(height, templateTxs?.filter(tx => tx['effectiveFeePerVsize'] != null) as MempoolTransactionExtended[], []);
             // classify
-            const { transactions: classifiedTxs } = this.summarizeBlockTransactions(blockHash, cpfpSummary.transactions);
+            const { transactions: classifiedTxs } = this.summarizeBlockTransactions(blockHash, height, cpfpSummary.transactions);
             const classifiedTxMap: { [txid: string]: TransactionClassified } = {};
             for (const tx of classifiedTxs) {
               classifiedTxMap[tx.txid] = tx;
@@ -912,7 +912,7 @@ class Blocks {
       }
       const cpfpSummary: CpfpSummary = calculateGoodBlockCpfp(block.height, transactions, accelerations.map(a => ({ txid: a.txid, max_bid: a.feeDelta })));
       const blockExtended: BlockExtended = await this.$getBlockExtended(block, cpfpSummary.transactions);
-      const blockSummary: BlockSummary = this.summarizeBlockTransactions(block.id, cpfpSummary.transactions);
+      const blockSummary: BlockSummary = this.summarizeBlockTransactions(block.id, block.height, cpfpSummary.transactions);
       this.updateTimerProgress(timer, `got block data for ${this.currentBlockHeight}`);
 
       if (Common.indexingEnabled()) {
@@ -1169,7 +1169,7 @@ class Blocks {
         transactions: cpfpSummary.transactions.map(tx => {
           let flags: number = 0;
           try {
-            flags = Common.getTransactionFlags(tx);
+            flags = Common.getTransactionFlags(tx, height);
           } catch (e) {
             logger.warn('Failed to classify transaction: ' + (e instanceof Error ? e.message : e));
           }
@@ -1188,7 +1188,7 @@ class Blocks {
     } else {
       if (config.MEMPOOL.BACKEND === 'esplora') {
         const txs = (await bitcoinApi.$getTxsForBlock(hash)).map(tx => transactionUtils.extendTransaction(tx));
-        summary = this.summarizeBlockTransactions(hash, txs);
+        summary = this.summarizeBlockTransactions(hash, height || 0, txs);
         summaryVersion = 1;
       } else {
         // Call Core RPC
@@ -1324,7 +1324,7 @@ class Blocks {
           let summaryVersion = 0;
           if (config.MEMPOOL.BACKEND === 'esplora') {
             const txs = (await bitcoinApi.$getTxsForBlock(cleanBlock.hash)).map(tx => transactionUtils.extendTransaction(tx));
-            summary = this.summarizeBlockTransactions(cleanBlock.hash, txs);
+            summary = this.summarizeBlockTransactions(cleanBlock.hash, cleanBlock.height, txs);
             summaryVersion = 1;
           } else {
             // Call Core RPC
