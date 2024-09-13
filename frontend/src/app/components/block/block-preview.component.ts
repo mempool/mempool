@@ -137,7 +137,7 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
                 })
               ),
             this.stateService.env.ACCELERATOR === true && block.height > 819500
-              ? this.servicesApiService.getAccelerationHistory$({ blockHeight: block.height })
+              ? this.servicesApiService.getAllAccelerationHistory$({ blockHeight: block.height })
                 .pipe(catchError(() => {
                   return of([]);
                 }))
