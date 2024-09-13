@@ -233,3 +233,10 @@ interface AssetStats {
   peg_out_amount: number;
   burn_count: number;
 }
+
+export interface Utxo {
+  txid: string;
+  vout: number;
+  value: number;
+  status: Status;
+}
