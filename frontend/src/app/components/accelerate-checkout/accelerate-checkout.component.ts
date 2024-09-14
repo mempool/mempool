@@ -196,9 +196,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     if (changes.scrollEvent && this.scrollEvent) {
       this.scrollToElement('acceleratePreviewAnchor', 'start');
     }
-    if (changes.accelerating) {
-      if ((this.step === 'processing' || this.step === 'paid') && this.accelerating) {
+    if (changes.accelerating && this.accelerating) {
+      if (this.step === 'processing' || this.step === 'paid') {
         this.moveToStep('success');
+      } else { // Edge case where the transaction gets accelerated by someone else or on another session
+        this.closeModal();
       }
     }
   }
