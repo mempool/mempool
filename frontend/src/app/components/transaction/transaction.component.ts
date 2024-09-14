@@ -971,6 +971,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.filters = [];
     this.showCpfpDetails = false;
     this.showAccelerationDetails = false;
+    this.accelerationFlowCompleted = false;
     this.accelerationInfo = null;
     this.cashappEligible = false;
     this.txInBlockIndex = null;
