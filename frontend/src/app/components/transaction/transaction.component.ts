@@ -139,6 +139,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   firstLoad = true;
   waitingForAccelerationInfo: boolean = false;
   isLoadingFirstSeen = false;
+  notAcceleratedOnLoad: boolean = null;
 
   featuresEnabled: boolean;
   segwitEnabled: boolean;
@@ -848,6 +849,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.tx.feeDelta = cpfpInfo.feeDelta;
       this.setIsAccelerated(firstCpfp);
     }
+    
+    if (this.notAcceleratedOnLoad === null) {
+      this.notAcceleratedOnLoad = !this.isAcceleration;
+    }
 
     if (!this.isAcceleration && this.fragmentParams.has('accelerate')) {
       this.forceAccelerationSummary = true;
@@ -1084,6 +1089,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         (!this.hideAccelerationSummary && !this.accelerationFlowCompleted)
         || this.forceAccelerationSummary
       )
+      && this.notAcceleratedOnLoad // avoid briefly showing accelerator checkout on already accelerated txs
     );
   }
 
