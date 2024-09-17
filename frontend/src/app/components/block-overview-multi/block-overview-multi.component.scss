@@ -1,0 +1,67 @@
+.block-overview-graph {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: var(--stat-box-bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-column: 1/-1;
+
+  .placeholder {
+    display: flex;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.graph-alignment {
+  position: relative;
+  width: 100%;
+}
+
+.grid-align {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 75px);
+  justify-content: center;
+}
+
+.block-overview-canvas {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  &.clickable {
+    cursor: pointer;
+  }
+}
+
+.loader-wrapper {
+  position: absolute;
+  background: #181b2d7f;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 500ms 500ms;
+  pointer-events: none;
+
+  &.hidden {
+    opacity: 0;
+  }
+}
