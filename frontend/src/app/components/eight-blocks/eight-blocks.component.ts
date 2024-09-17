@@ -1,16 +1,15 @@
-import { Component, OnInit, OnDestroy, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { catchError, startWith } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 import { Subject, Subscription, of } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { WebsocketService } from '../../services/websocket.service';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { BlockExtended, TransactionStripped } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
-import { BlockOverviewGraphComponent } from '../block-overview-graph/block-overview-graph.component';
 import { detectWebGL } from '../../shared/graphs.utils';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { BytesPipe } from '../../shared/pipes/bytes-pipe/bytes.pipe';
+import { BlockOverviewMultiComponent } from '../block-overview-multi/block-overview-multi.component';
 
 function bestFitResolution(min, max, n): number {
   const target = (min + max) / 2;
@@ -65,7 +64,7 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
   autofit: boolean = false;
   padding: number = 0;
   wrapBlocks: boolean = false;
-  blockWidth: number = 1080;
+  blockWidth: number = 360;
   animationDuration: number = 2000;
   animationOffset: number = 0;
   stagger: number = 0;
@@ -85,7 +84,7 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
   containerStyle = {};
   resolution: number = 86;
 
-  @ViewChildren('blockGraph') blockGraphs: QueryList<BlockOverviewGraphComponent>;
+  @ViewChild('blockGraph') blockGraph: BlockOverviewMultiComponent;
 
   constructor(
     private route: ActivatedRoute,
@@ -149,9 +148,7 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.graphChangeSubscription = this.blockGraphs.changes.pipe(startWith(null)).subscribe(() => {
-      this.setupBlockGraphs();
-    });
+    this.setupBlockGraphs();
   }
 
   ngOnDestroy(): void {
@@ -208,10 +205,10 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
 
   updateBlockGraphs(blocks): void {
     const startTime = performance.now() + 1000 - (this.stagger < 0 ? this.stagger * 8 : 0);
-    if (this.blockGraphs) {
-      this.blockGraphs.forEach((graph, index) => {
-        graph.replace(this.strippedTransactions[blocks?.[index]?.height] || [], 'right', false, startTime + (this.stagger * index));
-      });
+    if (this.blockGraph) {
+      for (let i = 0; i < this.numBlocks; i++) {
+        this.blockGraph.replace(i, this.strippedTransactions[blocks?.[i]?.height] || [], 'right', false, startTime + (this.stagger * i));
+      }
     }
     this.showInfo = false;
     setTimeout(() => {
@@ -226,28 +223,11 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
   }
 
   setupBlockGraphs(): void {
-    if (this.blockGraphs) {
-      this.blockGraphs.forEach((graph, index) => {
-        graph.destroy();
-        graph.setup(this.strippedTransactions[this.latestBlocks?.[index]?.height] || []);
-      });
-    }
-  }
-
-  onTxClick(event: { tx: TransactionStripped, keyModifier: boolean }): void {
-    const url = new RelativeUrlPipe(this.stateService).transform(`/tx/${event.tx.txid}`);
-    if (!event.keyModifier) {
-      this.router.navigate([url]);
-    } else {
-      window.open(url, '_blank');
-    }
-  }
-
-  onTxHover(txid: string): void {
-    if (txid && txid.length) {
-      this.hoverTx = txid;
-    } else {
-      this.hoverTx = null;
+    if (this.blockGraph) {
+      for (let i = 0; i < this.numBlocks; i++) {
+        this.blockGraph.destroy(i);
+        this.blockGraph.setup(i, this.strippedTransactions[this.latestBlocks?.[i]?.height] || []);
+      }
     }
   }
 }
