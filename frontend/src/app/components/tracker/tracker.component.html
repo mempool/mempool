@@ -42,7 +42,7 @@
       <div class="blockchain-wrapper" [style]="{ height: blockchainHeight * 1.16 + 'px' }">
         <app-clockchain [height]="blockchainHeight" [width]="blockchainWidth" mode="none"></app-clockchain>
       </div>
-    <div class="panel">
+    <div class="panel" *ngIf="!error || waitingForTransaction">
       @if (replaced) {
         <div class="alert-replaced" role="alert">
           <span i18n="transaction.rbf.replacement|RBF replacement">This transaction has been replaced by:</span>
@@ -111,7 +111,7 @@
       </div>
     </div>
 
-    <div class="bottom-panel">
+    <div class="bottom-panel" *ngIf="!error || waitingForTransaction">
       @if (isLoading) {
         <div class="progress-icon">
           <div class="spinner-border text-light" style="width: 1em; height: 1em"></div>
@@ -183,6 +183,12 @@
           }
         </div>
       }
+    </div>
+    
+    <div class="bottom-panel" *ngIf="error && !waitingForTransaction">
+      <app-http-error [error]="error">
+        <span i18n="transaction.error.loading-transaction-data">Error loading transaction data.</span>
+      </app-http-error>
     </div>
 
     <div class="footer-link"
