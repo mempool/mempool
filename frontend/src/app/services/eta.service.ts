@@ -204,7 +204,7 @@ export class EtaService {
 
       let tailProb = 0;
       let Q = 0;
-      for (let i = 0; i < max; i++) {
+      for (let i = 0; i <= max; i++) {
         // find H_i
         const H = shares.reduce((total, share) => total + (share.block <= i ? share.hashrateShare : 0), 0);
         // find S_i
@@ -215,7 +215,7 @@ export class EtaService {
         tailProb += S;
       }
       // at max depth, the transaction is guaranteed to be mined in the next block if it hasn't already
-      Q += (1-tailProb);
+      Q += ((max + 1) * (1-tailProb));
       const eta = da.timeAvg * Q; // T x Q
 
       return {
