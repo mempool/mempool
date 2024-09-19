@@ -155,7 +155,7 @@ export class EightMempoolComponent implements OnInit, OnDestroy {
       this.lastBlockHeightUpdate = this.blockIndices.map(() => 0);
       this.autofit = params.autofit !== 'false';
       this.blockWidth = Number.isInteger(Number(params.blockWidth)) ? Number(params.blockWidth) : 540;
-      this.padding = Number.isInteger(Number(params.padding)) ? Number(params.padding) : this.blockWidth;
+      this.padding = Number.isInteger(Number(params.padding)) ? Number(params.padding) : 0;
       this.wrapBlocks = params.wrap !== 'false';
       this.stagger = Number.isInteger(Number(params.stagger)) ? Number(params.stagger) : 0;
       this.animationDuration = Number.isInteger(Number(params.animationDuration)) ? Number(params.animationDuration) : 2000;
