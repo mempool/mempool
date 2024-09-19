@@ -123,7 +123,7 @@ export class EightMempoolComponent implements OnInit, OnDestroy {
         for (const tx of transactionsStripped) {
           inNewBlock[tx.txid] = true;
         }
-        for (const txid of Object.keys(this.blockGraph?.scenes[update.block]?.txs || {})) {
+        for (const txid of Object.keys(this.blockGraph?.scenes[this.numBlocks - update.block - 1]?.txs || {})) {
           inOldBlock[txid] = true;
           if (!inNewBlock[txid]) {
             removed.push(txid);
