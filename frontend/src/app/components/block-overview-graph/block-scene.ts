@@ -278,7 +278,7 @@ export default class BlockScene {
   }
 
   private applyTxUpdate(tx: TxView, update: ViewUpdateParams): void {
-    this.animateUntil = Math.max(this.animateUntil, tx.update(update, { minX: this.x - this.width, maxX: this.x + this.width + this.width, maxY: this.y + this.height }));
+    this.animateUntil = Math.max(this.animateUntil, tx.update(update, { minX: this.x, maxX: this.x + this.width, minY: this.y, maxY: this.y + this.height }));
   }
 
   private updateTxColor(tx: TxView, startTime: number, delay: number, animate: boolean = true, duration?: number): void {
@@ -394,6 +394,7 @@ export default class BlockScene {
           position: {
             x: tx.screenPosition.x + (direction === 'right' ? this.width + this.animationOffset : (direction === 'left' ? -this.width - this.animationOffset : 0)),
             y: tx.screenPosition.y + (direction === 'up' ? this.height + this.animationOffset : (direction === 'down' ? -this.height - this.animationOffset : 0)),
+            s: tx.screenPosition.s
           }
         },
         duration: this.animationDuration,
@@ -453,7 +454,7 @@ export default class BlockScene {
           break;
       }
       return {
-        x: this.x + x + this.unitPadding + (slotSize / 2),
+        x: this.x + x + this.unitPadding - (slotSize / 2),
         y: this.y + y + this.unitPadding - (slotSize / 2),
         s: squareSize
       };

@@ -2,12 +2,13 @@ import { FastVertexArray } from './fast-vertex-array';
 import { InterpolatedAttribute, Attributes, OptionalAttributes, SpriteUpdateParams, Update } from './sprite-types';
 
 const attribKeys = ['a', 'b', 't', 'v'];
-const updateKeys = ['x', 'y', 's', 'r', 'g', 'b', 'a'];
+const updateKeys = ['x', 'y', 'r', 'g', 'b', 'a'];
+const attributeKeys = ['x', 'y', 's', 'r', 'g', 'b', 'a'];
 
 export default class TxSprite {
-  static vertexSize = 30;
+  static vertexSize = 28;
   static vertexCount = 6;
-  static dataSize: number = (30 * 6);
+  static dataSize: number = (28 * 6);
 
   vertexArray: FastVertexArray;
   vertexPointer: number;
@@ -18,13 +19,14 @@ export default class TxSprite {
 
   minX: number;
   maxX: number;
+  minY: number;
   maxY: number;
 
 
-  constructor(params: SpriteUpdateParams, vertexArray: FastVertexArray, minX: number, maxX: number, maxY: number) {
+  constructor(params: SpriteUpdateParams, vertexArray: FastVertexArray, minX: number, maxX: number, minY: number, maxY: number) {
     const offsetTime = params.start;
     this.vertexArray = vertexArray;
-    this.vertexData = Array(VI.length).fill(0);
+    this.vertexData = Array(TxSprite.dataSize).fill(0);
 
     this.updateMap = {
       x: 0, y: 0, s: 0, r: 0, g: 0, b: 0, a: 0
@@ -32,6 +34,7 @@ export default class TxSprite {
 
     this.minX = minX;
     this.maxX = maxX;
+    this.minY = minY;
     this.maxY = maxY;
 
     this.attributes = {
@@ -86,18 +89,24 @@ export default class TxSprite {
       minDuration: minimum remaining transition duration when adjust = true
       temp: if true, this update is only temporary (can be reversed with 'resume')
   */
-  update(params: SpriteUpdateParams, minX?: number, maxX?: number, maxY?: number): void {
+  update(params: SpriteUpdateParams, minX?: number, maxX?: number, minY?: number, maxY?: number): void {
     const offsetTime = params.start || performance.now();
     const v = params.duration > 0 ? (1 / params.duration) : 0;
 
     if (minX != null) {
       this.minX = minX;
     }
+    if (maxX != null) {
+      this.maxX = maxX;
+    }
+    if (minY != null) {
+      this.minY = minY;
+    }
     if (maxY != null) {
       this.maxY = maxY;
     }
 
-    updateKeys.forEach(key => {
+    attributeKeys.forEach(key => {
       this.updateMap[key] = params[key];
     });
 
@@ -155,23 +164,32 @@ export default class TxSprite {
         ...this.tempAttributes
       };
     }
-    const size = attributes.s;
-    const s = size.b;
-    const y = attributes.y.b;
-    const maxYFactor = (this.maxY - y) / s;
-    const x = attributes.x.b;
-    const maxXFactor = -(x - this.minX) / s;
 
     // update vertex data in place
     // ugly, but avoids overhead of allocating large temporary arrays
-    const vertexStride = VI.length + 2;
+    const vertexStride = VI.length + 4;
     for (let vertex = 0; vertex < 6; vertex++) {
-      this.vertexData[vertex * vertexStride] = Math.max(maxXFactor, vertexOffsetFactors[vertex][0]);
-      this.vertexData[(vertex * vertexStride) + 1] = Math.min(maxYFactor, vertexOffsetFactors[vertex][1]);
-      for (let step = 0; step < VI.length; step++) {
+      this.vertexData[vertex * vertexStride] = this.minX;
+      this.vertexData[(vertex * vertexStride) + 1] = this.minY;
+      this.vertexData[(vertex * vertexStride) + 2] = this.maxX;
+      this.vertexData[(vertex * vertexStride) + 3] = this.maxY;
+
+      // x
+      this.vertexData[(vertex * vertexStride) + 4] = attributes[VI[0].a][VI[0].f] + (vertexOffsetFactors[vertex][0] * attributes.s.a);
+      this.vertexData[(vertex * vertexStride) + 5] = attributes[VI[1].a][VI[1].f] + (vertexOffsetFactors[vertex][0] * attributes.s.b);
+      this.vertexData[(vertex * vertexStride) + 6] = attributes[VI[2].a][VI[2].f];
+      this.vertexData[(vertex * vertexStride) + 7] = attributes[VI[3].a][VI[3].f];
+
+      // y
+      this.vertexData[(vertex * vertexStride) + 8] = attributes[VI[4].a][VI[4].f] + (vertexOffsetFactors[vertex][1] * attributes.s.a);
+      this.vertexData[(vertex * vertexStride) + 9] = attributes[VI[5].a][VI[5].f] + (vertexOffsetFactors[vertex][1] * attributes.s.b);
+      this.vertexData[(vertex * vertexStride) + 10] = attributes[VI[6].a][VI[6].f];
+      this.vertexData[(vertex * vertexStride) + 11] = attributes[VI[7].a][VI[7].f];
+
+      for (let step = 8; step < VI.length; step++) {
         // components of each field in the vertex array are defined by an entry in VI:
         // VI[i].a is the attribute, VI[i].f is the inner field, VI[i].offA and VI[i].offB are offset factors
-        this.vertexData[(vertex * vertexStride) + step + 2] = attributes[VI[step].a][VI[step].f];
+        this.vertexData[(vertex * vertexStride) + step + 4] = attributes[VI[step].a][VI[step].f];
       }
     }
 
@@ -217,12 +235,12 @@ function interpolateAttributeStart(attribute: InterpolatedAttribute, start: DOMH
 }
 
 const vertexOffsetFactors = [
-  [-1, 0],
-  [0, 1],
   [0, 0],
-  [-1, 0],
-  [0, 1],
-  [-1, 1]
+  [1, 1],
+  [1, 0],
+  [0, 0],
+  [1, 1],
+  [0, 1]
 ];
 
 const VI = [];
