@@ -192,7 +192,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.hideAccelerationSummary = this.stateService.isMempoolSpaceBuild ? this.storageService.getValue('hide-accelerator-pref') == 'true' : true;
 
     if (!this.stateService.isLiquid()) {
-      this.miningService.getMiningStats('1w').subscribe(stats => {
+      this.miningService.getMiningStats('1m').subscribe(stats => {
         this.miningStats = stats;
       });
     }
@@ -491,7 +491,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           if (this.stateService.network === '') {
             if (!this.mempoolPosition.accelerated) {
               if (!this.accelerationFlowCompleted && !this.hideAccelerationSummary && !this.showAccelerationSummary) {
-                this.miningService.getMiningStats('1w').subscribe(stats => {
+                this.miningService.getMiningStats('1m').subscribe(stats => {
                   this.miningStats = stats;
                 });
               }
