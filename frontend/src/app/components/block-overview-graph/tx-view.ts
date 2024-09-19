@@ -106,7 +106,7 @@ export default class TxView implements TransactionStripped {
 
     returns minimum transition end time
   */
-  update(params: ViewUpdateParams, { minX, maxY }: { minX: number, maxY: number }): number {
+  update(params: ViewUpdateParams, { minX, maxX, maxY }: { minX: number, maxX: number, maxY: number }): number {
     if (params.jitter) {
       params.delay += (Math.random() * params.jitter);
     }
@@ -117,6 +117,7 @@ export default class TxView implements TransactionStripped {
         toSpriteUpdate(params),
         this.vertexArray,
         minX,
+        maxX,
         maxY
       );
       // apply any pending hover event
@@ -130,6 +131,7 @@ export default class TxView implements TransactionStripped {
             temp: true
           },
           minX,
+          maxX,
           maxY
         );
       }
@@ -137,6 +139,7 @@ export default class TxView implements TransactionStripped {
       this.sprite.update(
         toSpriteUpdate(params),
         minX,
+        maxX,
         maxY
       );
     }

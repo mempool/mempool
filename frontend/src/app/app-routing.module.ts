@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { AppPreloadingStrategy } from './app.preloading-strategy'
 import { BlockViewComponent } from './components/block-view/block-view.component';
 import { EightBlocksComponent } from './components/eight-blocks/eight-blocks.component';
+import { EightMempoolComponent } from './components/eight-mempool/eight-mempool.component';
 import { MempoolBlockViewComponent } from './components/mempool-block-view/mempool-block-view.component';
 import { ClockComponent } from './components/clock/clock.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
@@ -204,6 +205,10 @@ let routes: Routes = [
   {
     path: 'view/blocks',
     component: EightBlocksComponent,
+  },
+  {
+    path: 'view/mempool-blocks',
+    component: EightMempoolComponent,
   },
   {
     path: 'status',
