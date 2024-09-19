@@ -65,23 +65,25 @@
               }
             </div>
           </div>
-          <div class="field narrower">
-            <div class="label" i18n="transaction.eta|Transaction ETA">ETA</div>
-            <div class="value">
-              <ng-container *ngIf="(ETA$ | async) as eta; else etaSkeleton">
-                <span class="justify-content-end d-flex align-items-center">
-                  @if (eta.blocks >= 7) {
-                    <span i18n="transaction.eta.not-any-time-soon|Transaction ETA mot any time soon">Not any time soon</span>
-                  } @else {
-                    <app-time kind="until" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time>
-                  }
-                </span>
-              </ng-container>
-              <ng-template #etaSkeleton>
-                <span class="skeleton-loader" style="max-width: 200px;"></span>
-              </ng-template>
-            </div>
-          </div>
+          @if (!replaced) {
+            <div class="field narrower">
+              <div class="label" i18n="transaction.eta|Transaction ETA">ETA</div>
+              <div class="value">
+                <ng-container *ngIf="(ETA$ | async) as eta; else etaSkeleton">
+                  <span class="justify-content-end d-flex align-items-center">
+                    @if (eta.blocks >= 7) {
+                      <span i18n="transaction.eta.not-any-time-soon|Transaction ETA mot any time soon">Not any time soon</span>
+                    } @else {
+                      <app-time kind="until" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time>
+                    }
+                  </span>
+                </ng-container>
+                <ng-template #etaSkeleton>
+                  <span class="skeleton-loader" style="max-width: 200px;"></span>
+                </ng-template>
+              </div>
+            </div>  
+          }
         } @else if (tx && tx.status?.confirmed) {
           <div class="field narrower mt-2">
             <div class="label" i18n="transaction.confirmed-at">Confirmed at</div>

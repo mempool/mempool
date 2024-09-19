@@ -28,7 +28,7 @@ export class EtaService {
     return combineLatest([
       this.stateService.mempoolTxPosition$.pipe(map(p => p?.position)),
       this.stateService.difficultyAdjustment$,
-      miningStats ? of(miningStats) : this.miningService.getMiningStats('1w'),
+      miningStats ? of(miningStats) : this.miningService.getMiningStats('1m'),
     ]).pipe(
       map(([mempoolPosition, da, miningStats]) => {
         if (!mempoolPosition || !estimate?.pools?.length || !miningStats || !da) {
@@ -166,7 +166,7 @@ export class EtaService {
         pools[pool.poolUniqueId] = pool;
       }
       const unacceleratedPosition = this.mempoolPositionFromFees(getUnacceleratedFeeRate(tx, true), mempoolBlocks);
-      const totalAcceleratedHashrate = accelerationPositions.reduce((total, pos) => total + (pools[pos.poolId].lastEstimatedHashrate), 0);
+      const totalAcceleratedHashrate = accelerationPositions.reduce((total, pos) => total + (pools[pos.poolId]?.lastEstimatedHashrate || 0), 0);
       const shares = [
         {
           block: unacceleratedPosition.block,
@@ -174,7 +174,7 @@ export class EtaService {
         },
         ...accelerationPositions.map(pos => ({
           block: pos.block,
-          hashrateShare: ((pools[pos.poolId].lastEstimatedHashrate) / miningStats.lastEstimatedHashrate)
+          hashrateShare: ((pools[pos.poolId]?.lastEstimatedHashrate || 0) / miningStats.lastEstimatedHashrate)
         }))
       ];
       return this.calculateETAFromShares(shares, da);
