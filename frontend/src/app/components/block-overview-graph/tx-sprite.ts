@@ -17,10 +17,11 @@ export default class TxSprite {
   tempAttributes: OptionalAttributes;
 
   minX: number;
+  maxX: number;
   maxY: number;
 
 
-  constructor(params: SpriteUpdateParams, vertexArray: FastVertexArray, minX, maxY: number) {
+  constructor(params: SpriteUpdateParams, vertexArray: FastVertexArray, minX: number, maxX: number, maxY: number) {
     const offsetTime = params.start;
     this.vertexArray = vertexArray;
     this.vertexData = Array(VI.length).fill(0);
@@ -30,6 +31,7 @@ export default class TxSprite {
     };
 
     this.minX = minX;
+    this.maxX = maxX;
     this.maxY = maxY;
 
     this.attributes = {
@@ -84,7 +86,7 @@ export default class TxSprite {
       minDuration: minimum remaining transition duration when adjust = true
       temp: if true, this update is only temporary (can be reversed with 'resume')
   */
-  update(params: SpriteUpdateParams, minX?: number, maxY?: number): void {
+  update(params: SpriteUpdateParams, minX?: number, maxX?: number, maxY?: number): void {
     const offsetTime = params.start || performance.now();
     const v = params.duration > 0 ? (1 / params.duration) : 0;
 

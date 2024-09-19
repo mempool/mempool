@@ -278,7 +278,7 @@ export default class BlockScene {
   }
 
   private applyTxUpdate(tx: TxView, update: ViewUpdateParams): void {
-    this.animateUntil = Math.max(this.animateUntil, tx.update(update, { minX: this.x, maxY: this.y + this.height }));
+    this.animateUntil = Math.max(this.animateUntil, tx.update(update, { minX: this.x - this.width, maxX: this.x + this.width + this.width, maxY: this.y + this.height }));
   }
 
   private updateTxColor(tx: TxView, startTime: number, delay: number, animate: boolean = true, duration?: number): void {

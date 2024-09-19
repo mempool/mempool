@@ -40,6 +40,7 @@ export class BlockOverviewMultiComponent implements AfterViewInit, OnDestroy, On
   @Input() isLoading: boolean;
   @Input() resolution: number;
   @Input() numBlocks: number;
+  @Input() padding: number = 0;
   @Input() blockWidth: number = 360;
   @Input() autofit: boolean = false;
   @Input() blockLimit: number;
@@ -285,8 +286,8 @@ export class BlockOverviewMultiComponent implements AfterViewInit, OnDestroy, On
     for (const [index, pendingUpdate] of this.pendingUpdates.entries()) {
       if (pendingUpdate.count && performance.now() > (this.lastUpdate + this.animationDuration)) {
         this.applyUpdate(index, Object.values(pendingUpdate.add), Object.values(pendingUpdate.remove), Object.values(pendingUpdate.change), pendingUpdate.direction);
+        this.clearUpdateQueue(index);
       }
-      this.clearUpdateQueue(index);
     }
   }
 
@@ -391,8 +392,8 @@ export class BlockOverviewMultiComponent implements AfterViewInit, OnDestroy, On
         this.gl.viewport(0, 0, this.displayWidth, this.displayHeight);
       }
       for (let i = 0; i < this.scenes.length; i++) {
-        const blocksPerRow = Math.floor(this.displayWidth / this.blockWidth);
-        const x = (i % blocksPerRow) * this.blockWidth;
+        const blocksPerRow = Math.floor((this.displayWidth + this.padding) / (this.blockWidth + this.padding));
+        const x = (i % blocksPerRow) * (this.blockWidth + this.padding);
         const row = Math.floor(i / blocksPerRow);
         const y = this.displayHeight - ((row + 1) * this.blockWidth);
         if (this.scenes[i]) {
@@ -401,7 +402,7 @@ export class BlockOverviewMultiComponent implements AfterViewInit, OnDestroy, On
         } else {
           this.scenes[i] = new BlockScene({ x, y, width: this.blockWidth, height: this.blockWidth, resolution: this.resolution,
             blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray, theme: this.themeService,
-            highlighting: this.auditHighlighting, animationDuration: this.animationDuration, animationOffset: 0,
+            highlighting: this.auditHighlighting, animationDuration: this.animationDuration, animationOffset: this.animationOffset,
           colorFunction: this.getColorFunction() });
           this.start();
         }

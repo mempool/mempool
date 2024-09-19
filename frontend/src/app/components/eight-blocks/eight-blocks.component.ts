@@ -114,7 +114,7 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
       this.wrapBlocks = params.wrap !== 'false';
       this.stagger = Number.isInteger(Number(params.stagger)) ? Number(params.stagger) : 0;
       this.animationDuration = Number.isInteger(Number(params.animationDuration)) ? Number(params.animationDuration) : 2000;
-      this.animationOffset = this.padding * 2;
+      this.animationOffset = 0;
 
       if (this.autofit) {
         this.resolution = bestFitResolution(76, 96, this.blockWidth - this.padding * 2);
