@@ -27,10 +27,6 @@ function bestFitResolution(min, max, n): number {
   return best;
 }
 
-interface BlockInfo extends BlockExtended {
-  timeString: string;
-}
-
 @Component({
   selector: 'app-eight-mempool',
   templateUrl: './eight-mempool.component.html',
@@ -53,11 +49,11 @@ export class EightMempoolComponent implements OnInit, OnDestroy {
   webGlEnabled = true;
   hoverTx: string | null = null;
 
-  tipSubscription: Subscription;
   networkChangedSubscription: Subscription;
   queryParamsSubscription: Subscription;
   graphChangeSubscription: Subscription;
   blockSub: Subscription;
+  mempoolBlockSub: Subscription;
 
   chainDirection: string = 'right';
   poolDirection: string = 'left';
@@ -78,11 +74,16 @@ export class EightMempoolComponent implements OnInit, OnDestroy {
   testShiftTimeout: number;
 
   showInfo: boolean = true;
-  blockInfo: BlockInfo[] = [];
+  blockInfo: { label: string}[] = [
+    { label: '' },
+    { label: 'mempool' },
+    { label: 'blocks' },
+  ];
 
   wrapperStyle = {
     '--block-width': '1080px',
     width: '1080px',
+    height: '1080px',
     maxWidth: '1080px',
     padding: '',
   };
@@ -104,7 +105,7 @@ export class EightMempoolComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.websocketService.want(['blocks']);
+    this.websocketService.want(['blocks', 'mempool-blocks']);
     this.network = this.stateService.network;
 
     this.blockSub = this.stateService.mempoolBlockUpdate$.subscribe((update) => {
@@ -149,6 +150,10 @@ export class EightMempoolComponent implements OnInit, OnDestroy {
       }
     });
 
+    this.mempoolBlockSub = this.stateService.mempoolBlocks$.subscribe((blocks) => {
+      this.blockInfo[0].label = `+${blocks.length - this.numBlocks}`;
+    });
+
     this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
       this.numBlocks = Number.isInteger(Number(params.numBlocks)) ? Number(params.numBlocks) : 8;
       this.blockIndices = [...Array(this.numBlocks).keys()];
@@ -170,6 +175,7 @@ export class EightMempoolComponent implements OnInit, OnDestroy {
       this.wrapperStyle = {
         '--block-width': this.blockWidth + 'px',
         width: this.blockWidth + 'px',
+        height: this.blockWidth + 'px',
         maxWidth: this.blockWidth + 'px',
         padding: (this.padding || 0) +'px 0px',
       };
@@ -183,7 +189,8 @@ export class EightMempoolComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.stateService.markBlock$.next({});
-    this.tipSubscription.unsubscribe();
+    this.blockSub.unsubscribe();
+    this.mempoolBlockSub.unsubscribe();
     this.networkChangedSubscription?.unsubscribe();
     this.queryParamsSubscription?.unsubscribe();
   }

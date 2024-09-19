@@ -73,6 +73,7 @@ export class BlockOverviewMultiComponent implements AfterViewInit, OnDestroy, On
   animationHeartBeat: number;
   displayWidth: number;
   displayHeight: number;
+  displayBlockWidth: number;
   cssWidth: number;
   cssHeight: number;
   shaderProgram: WebGLProgram;
@@ -386,21 +387,22 @@ export class BlockOverviewMultiComponent implements AfterViewInit, OnDestroy, On
       this.cssHeight = this.canvas.nativeElement.offsetParent.clientHeight;
       this.displayWidth = window.devicePixelRatio * this.cssWidth;
       this.displayHeight = window.devicePixelRatio * this.cssHeight;
+      this.displayBlockWidth = window.devicePixelRatio * this.blockWidth;
       this.canvas.nativeElement.width = this.displayWidth;
       this.canvas.nativeElement.height = this.displayHeight;
       if (this.gl) {
         this.gl.viewport(0, 0, this.displayWidth, this.displayHeight);
       }
       for (let i = 0; i < this.scenes.length; i++) {
-        const blocksPerRow = Math.floor((this.displayWidth + this.padding) / (this.blockWidth + this.padding));
-        const x = (i % blocksPerRow) * (this.blockWidth + this.padding);
+        const blocksPerRow = Math.floor((this.displayWidth + this.padding) / (this.displayBlockWidth + this.padding));
+        const x = (i % blocksPerRow) * (this.displayBlockWidth + this.padding);
         const row = Math.floor(i / blocksPerRow);
-        const y = this.displayHeight - ((row + 1) * this.blockWidth);
+        const y = this.displayHeight - ((row + 1) * this.displayBlockWidth);
         if (this.scenes[i]) {
-          this.scenes[i].resize({ x, y, width: this.blockWidth, height: this.blockWidth, animate: false });
+          this.scenes[i].resize({ x, y, width: this.displayBlockWidth, height: this.displayBlockWidth, animate: false });
           this.start();
         } else {
-          this.scenes[i] = new BlockScene({ x, y, width: this.blockWidth, height: this.blockWidth, resolution: this.resolution,
+          this.scenes[i] = new BlockScene({ x, y, width: this.displayBlockWidth, height: this.displayBlockWidth, resolution: this.resolution,
             blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray, theme: this.themeService,
             highlighting: this.auditHighlighting, animationDuration: this.animationDuration, animationOffset: this.animationOffset,
           colorFunction: this.getColorFunction() });
