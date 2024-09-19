@@ -18,7 +18,7 @@
       <div class="block-container" [style]="containerStyle">
         <div *ngIf="showInfo && blockInfo[i]" class="info" @infoChange>
           <h1 class="height">{{ blockInfo[i].height }}</h1>
-          <h2 class="mined-by">by {{ blockInfo[i].extras.pool.name || 'Unknown' }}</h2>
+          <h2 class="mined-by">by {{ blockInfo[i].extras.pool.name || 'Unknown' }} <img class="pool-logo" [src]="'/resources/mining-pools/' + blockInfo[i].extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'"> </h2>
         </div>
       </div>
     </div>

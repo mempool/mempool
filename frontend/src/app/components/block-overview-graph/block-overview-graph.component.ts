@@ -681,10 +681,9 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
 // WebGL shader attributes
 const attribs = {
-  offset: { type: 'FLOAT', count: 2, pointer: null, offset: 0 },
+  bounds: { type: 'FLOAT', count: 4, pointer: null, offset: 0 },
   posX: { type: 'FLOAT', count: 4, pointer: null, offset: 0 },
   posY: { type: 'FLOAT', count: 4, pointer: null, offset: 0 },
-  posR: { type: 'FLOAT', count: 4, pointer: null, offset: 0 },
   colR: { type: 'FLOAT', count: 4, pointer: null, offset: 0 },
   colG: { type: 'FLOAT', count: 4, pointer: null, offset: 0 },
   colB: { type: 'FLOAT', count: 4, pointer: null, offset: 0 },
@@ -707,10 +706,9 @@ varying lowp vec4 vColor;
 // each attribute contains [x: startValue, y: endValue, z: startTime, w: rate]
 // shader interpolates between start and end values at the given rate, from the given time
 
-attribute vec2 offset;
+attribute vec4 bounds;
 attribute vec4 posX;
 attribute vec4 posY;
-attribute vec4 posR;
 attribute vec4 colR;
 attribute vec4 colG;
 attribute vec4 colB;
@@ -735,10 +733,7 @@ float interpolateAttribute(vec4 attr) {
 void main() {
   vec4 screenTransform = vec4(2.0 / screenSize.x, 2.0 / screenSize.y, -1.0, -1.0);
   // vec4 screenTransform = vec4(1.0 / screenSize.x, 1.0 / screenSize.y, -0.5, -0.5);
-
-  float radius = interpolateAttribute(posR);
-  vec2 position = vec2(interpolateAttribute(posX), interpolateAttribute(posY)) + (radius * offset);
-
+  vec2 position = clamp(vec2(interpolateAttribute(posX), interpolateAttribute(posY)), bounds.xy, bounds.zw);
   gl_Position = vec4(position * screenTransform.xy + screenTransform.zw, 1.0, 1.0);
 
   float red = interpolateAttribute(colR);
