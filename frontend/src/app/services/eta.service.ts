@@ -28,7 +28,7 @@ export class EtaService {
     return combineLatest([
       this.stateService.mempoolTxPosition$.pipe(map(p => p?.position)),
       this.stateService.difficultyAdjustment$,
-      miningStats ? of(miningStats) : this.miningService.getMiningStats('1w'),
+      miningStats ? of(miningStats) : this.miningService.getMiningStats('1m'),
     ]).pipe(
       map(([mempoolPosition, da, miningStats]) => {
         if (!mempoolPosition || !estimate?.pools?.length || !miningStats || !da) {
