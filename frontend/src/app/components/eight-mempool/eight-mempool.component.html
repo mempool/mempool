@@ -1,26 +1,25 @@
-<!-- <div class="blocks" [class.wrap]="wrapBlocks">
+<app-block-overview-multi
+  #blockGraph
+  [isLoading]="false"
+  [numBlocks]="numBlocks"
+  [padding]="padding"
+  [blockWidth]="blockWidth"
+  [resolution]="resolution"
+  [blockLimit]="stateService.blockVSize"
+  [orientation]="'left'"
+  [flip]="true"
+  [animationDuration]="animationDuration"
+  [animationOffset]="animationOffset"
+  [disableSpinner]="true"
+></app-block-overview-multi>
+<div class="blocks" [class.wrap]="wrapBlocks">
   <ng-container *ngFor="let i of blockIndices">
     <div class="block-wrapper" [style]="wrapperStyle">
-      <div class="block-container" [style]="containerStyle"> -->
-        <app-block-overview-multi
-          #blockGraph
-          [isLoading]="false"
-          [numBlocks]="numBlocks"
-          [padding]="padding"
-          [blockWidth]="blockWidth"
-          [resolution]="resolution"
-          [blockLimit]="stateService.blockVSize"
-          [orientation]="'left'"
-          [flip]="true"
-          [animationDuration]="animationDuration"
-          [animationOffset]="animationOffset"
-          [disableSpinner]="true"
-        ></app-block-overview-multi>
-        <!-- <div *ngIf="showInfo && blockInfo[i]" class="info" @infoChange>
-          <h1 class="height">{{ blockInfo[i].height }}</h1>
-          <h2 class="mined-by">by {{ blockInfo[i].extras.pool.name || 'Unknown' }}</h2>
+      <div class="block-container" [style]="containerStyle">
+        <div *ngIf="showInfo && blockInfo[i]" class="info" @infoChange>
+          <h1 class="height">{{ blockInfo[i].label }}</h1>
         </div>
       </div>
     </div>
   </ng-container>
-</div> -->
+</div>
