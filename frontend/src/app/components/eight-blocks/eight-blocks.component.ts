@@ -10,6 +10,7 @@ import { detectWebGL } from '../../shared/graphs.utils';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { BytesPipe } from '../../shared/pipes/bytes-pipe/bytes.pipe';
 import { BlockOverviewMultiComponent } from '../block-overview-multi/block-overview-multi.component';
+import { CacheService } from '../../services/cache.service';
 
 function bestFitResolution(min, max, n): number {
   const target = (min + max) / 2;
@@ -47,18 +48,20 @@ interface BlockInfo extends BlockExtended {
 })
 export class EightBlocksComponent implements OnInit, OnDestroy {
   network = '';
-  latestBlocks: BlockExtended[] = [];
+  latestBlocks: (BlockExtended | null)[] = [];
+  pendingBlocks: Record<number, ((b: BlockExtended) => void)[]> = {};
   isLoadingTransactions = true;
   strippedTransactions: { [height: number]: TransactionStripped[] } = {};
   webGlEnabled = true;
   hoverTx: string | null = null;
 
-  blocksSubscription: Subscription;
+  tipSubscription: Subscription;
   cacheBlocksSubscription: Subscription;
   networkChangedSubscription: Subscription;
   queryParamsSubscription: Subscription;
   graphChangeSubscription: Subscription;
 
+  height: number = 0;
   numBlocks: number = 8;
   blockIndices: number[] = [...Array(8).keys()];
   autofit: boolean = false;
@@ -92,6 +95,7 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
     public stateService: StateService,
     private websocketService: WebsocketService,
     private apiService: ApiService,
+    private cacheService: CacheService,
     private bytesPipe: BytesPipe,
   ) {
     this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
@@ -125,18 +129,21 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
         padding: (this.padding || 0) +'px 0px',
       };
 
-      if (params.test === 'true') {
-        if (this.blocksSubscription) {
-          this.blocksSubscription.unsubscribe();
+      this.cacheBlocksSubscription = this.cacheService.loadedBlocks$.subscribe((block: BlockExtended) => {
+        if (this.pendingBlocks[block.height]) {
+          this.pendingBlocks[block.height].forEach(resolve => resolve(block));
+          delete this.pendingBlocks[block.height];
         }
-        this.blocksSubscription = (new Subject<BlockExtended[]>()).subscribe((blocks) => {
-          this.handleNewBlock(blocks.slice(0, this.numBlocks));
-        });
+      });
+
+      this.tipSubscription?.unsubscribe();
+      if (params.test === 'true') {
         this.shiftTestBlocks();
-      } else if (!this.blocksSubscription) {
-        this.blocksSubscription = this.stateService.blocks$
-          .subscribe((blocks) => {
-            this.handleNewBlock(blocks.slice(0, this.numBlocks));
+      } else {
+        this.tipSubscription = this.stateService.chainTip$
+          .subscribe((height) => {
+            this.height = height;
+            this.handleNewBlock(height);
           });
       }
     });
@@ -153,8 +160,8 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.stateService.markBlock$.next({});
-    if (this.blocksSubscription) {
-      this.blocksSubscription?.unsubscribe();
+    if (this.tipSubscription) {
+      this.tipSubscription?.unsubscribe();
     }
     this.cacheBlocksSubscription?.unsubscribe();
     this.networkChangedSubscription?.unsubscribe();
@@ -164,32 +171,27 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
   shiftTestBlocks(): void {
     const sub = this.apiService.getBlocks$(this.testHeight).subscribe(result => {
       sub.unsubscribe();
-      this.handleNewBlock(result.slice(0, this.numBlocks));
+      this.handleNewBlock(this.testHeight);
       this.testHeight++;
       clearTimeout(this.testShiftTimeout);
       this.testShiftTimeout = window.setTimeout(() => { this.shiftTestBlocks(); }, 10000);
     });
   }
 
-  async handleNewBlock(blocks: BlockExtended[]): Promise<void> {
+  async handleNewBlock(height: number): Promise<void> {
     const readyPromises: Promise<TransactionStripped[]>[] = [];
     const previousBlocks = this.latestBlocks;
+
+    const blocks = await this.loadBlocks(height, this.numBlocks);
+    console.log('loaded ', blocks.length, ' blocks from height ', height);
+    console.log(blocks);
+
     const newHeights = {};
     this.latestBlocks = blocks;
     for (const block of blocks) {
       newHeights[block.height] = true;
       if (!this.strippedTransactions[block.height]) {
-        readyPromises.push(new Promise((resolve) => {
-          const subscription = this.apiService.getStrippedBlockTransactions$(block.id).pipe(
-            catchError(() => {
-              return of([]);
-            }),
-          ).subscribe((transactions) => {
-            this.strippedTransactions[block.height] = transactions;
-            subscription.unsubscribe();
-            resolve(transactions);
-          });
-        }));
+        readyPromises.push(this.loadBlockTransactions(block));
       }
     }
     await Promise.allSettled(readyPromises);
@@ -200,6 +202,39 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
       if (!newHeights[block.height]) {
         delete this.strippedTransactions[block.height];
       }
+    });
+  }
+
+  async loadBlocks(height: number, numBlocks: number): Promise<BlockExtended[]> {
+    console.log('loading ', numBlocks, ' blocks from height ', height);
+    const promises: Promise<BlockExtended>[] = [];
+    for (let i = 0; i < numBlocks; i++) {
+      this.cacheService.loadBlock(height - i);
+      const cachedBlock = this.cacheService.getCachedBlock(height - i);
+      if (cachedBlock) {
+        promises.push(Promise.resolve(cachedBlock));
+      } else {
+        promises.push(new Promise((resolve) => {
+          if (!this.pendingBlocks[height - i]) {
+            this.pendingBlocks[height - i] = [];
+          }
+          this.pendingBlocks[height - i].push(resolve);
+        }));
+      }
+    }
+    return Promise.all(promises);
+  }
+
+  async loadBlockTransactions(block: BlockExtended): Promise<TransactionStripped[]> {
+    return new Promise((resolve) => {
+      this.apiService.getStrippedBlockTransactions$(block.id).pipe(
+        catchError(() => {
+          return of([]);
+        }),
+      ).subscribe((transactions) => {
+        this.strippedTransactions[block.height] = transactions;
+        resolve(transactions);
+      });
     });
   }
 
