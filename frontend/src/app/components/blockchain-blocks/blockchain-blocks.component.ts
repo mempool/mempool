@@ -281,6 +281,14 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
         if (block?.extras) {
           block.extras.minFee = this.getMinBlockFee(block);
           block.extras.maxFee = this.getMaxBlockFee(block);
+          if (block.extras.pool?.minerNames) {
+            block.extras.pool.minerNames = block.extras.pool.minerNames.map((name) => {
+              if (name.length > 16) {
+                return name.slice(0, 16) + '…';
+              }
+              return name;
+            });
+          }
         }
       }
       this.blocks.push(block || {
@@ -323,6 +331,14 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
       if (block?.extras) {
         block.extras.minFee = this.getMinBlockFee(block);
         block.extras.maxFee = this.getMaxBlockFee(block);
+        if (block.extras.pool?.minerNames) {
+          block.extras.pool.minerNames = block.extras.pool.minerNames.map((name) => {
+            if (name.length > 16) {
+              return name.slice(0, 16) + '…';
+            }
+            return name;
+          });
+        }
       }
       this.blocks[blockIndex] = block;
       this.blockStyles[blockIndex] = this.getStyleForBlock(block, blockIndex);

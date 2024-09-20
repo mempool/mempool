@@ -201,3 +201,26 @@ export function getVarIntLength(n: number): number {
     return 9;
   }
 }
+
+/** Extracts miner names from a DATUM coinbase transaction */
+export function parseDATUMTemplateCreator(coinbaseRaw: string): string[] | null {
+  let bytes: number[] = [];
+  for (let c = 0; c < coinbaseRaw.length; c += 2) {
+      bytes.push(parseInt(coinbaseRaw.slice(c, c + 2), 16));
+  }
+
+  // Skip block height
+  let tagLengthByte = 1 + bytes[0];
+
+  let tagsLength = bytes[tagLengthByte];
+  if (tagsLength == 0x4c) {
+    tagLengthByte += 1;
+    tagsLength = bytes[tagLengthByte];
+  }
+
+  const tagStart = tagLengthByte + 1;
+  const tags = bytes.slice(tagStart, tagStart + tagsLength);
+  const tagString = String.fromCharCode(...tags);
+
+  return tagString.split('\x0f');
+}

@@ -19,6 +19,37 @@
   pointer-events: none;
 }
 
+.on-pool-text {
+  font-weight: normal;
+  color: gray;
+  padding-inline-end: 4px;
+}
+
+.on-pool-name-text {
+  display: inline-block;
+  padding-top: 2px;
+  font-weight: normal;
+}
+
+
+.on-pool {
+  align-items: center;
+  background-color: var(--bg);
+  display: inline-block;
+  margin-top: 4px;
+  padding: .25em .4em;
+  border-radius: .25rem;
+}
+
+.on-pool-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.pool-container {
+  margin-top: 12px;
+}
+
 .mined-block {
   position: absolute;
   top: 0px;
@@ -125,7 +156,7 @@
 #arrow-up {
   position: relative;
   left: calc(var(--block-size) * 0.6);
-  top: calc(var(--block-size) * 1.28);
+  top: calc(var(--block-size) * 1.38);
   width: 0;
   height: 0;
   border-left: calc(var(--block-size) * 0.2) solid transparent;
@@ -155,7 +186,7 @@
 
 .badge {
   position: relative;
-  top: 15px;
+  top: 8px;
   z-index: 101;
   color: #FFF;
 }
@@ -166,6 +197,10 @@
   position: relative;
   top: -1px;
   margin-right: 2px;
+}
+
+.pool-logo.faded {
+  filter: grayscale(100%) brightness(1.5);
 }
 
 .animated {
