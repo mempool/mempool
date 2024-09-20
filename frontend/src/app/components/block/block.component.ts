@@ -327,7 +327,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       })
     ).subscribe((accelerations) => {
       this.accelerations = accelerations;
-      if (accelerations.length) {
+      if (accelerations.length && this.strippedTransactions) { // Don't call setupBlockAudit if we don't have transactions yet; it will be called later in overviewSubscription
         this.setupBlockAudit();
       }
     });
