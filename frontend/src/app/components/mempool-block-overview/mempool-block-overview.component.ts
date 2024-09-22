@@ -31,7 +31,7 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
 
   lastBlockHeight: number;
   blockIndex: number;
-  isLoading$ = new BehaviorSubject<boolean>(true);
+  isLoading$ = new BehaviorSubject<boolean>(false);
   timeLtrSubscription: Subscription;
   timeLtr: boolean;
   chainDirection: string = 'right';
@@ -95,6 +95,7 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
             }
           }
           this.updateBlock({
+            block: this.blockIndex,
             removed,
             changed,
             added
@@ -110,8 +111,11 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
       if (this.blockGraph) {
         this.blockGraph.clear(changes.index.currentValue > changes.index.previousValue ? this.chainDirection : this.poolDirection);
       }
-      this.isLoading$.next(true);
-      this.websocketService.startTrackMempoolBlock(changes.index.currentValue);
+      if (!this.websocketService.startTrackMempoolBlock(changes.index.currentValue) && this.stateService.mempoolBlockState && this.stateService.mempoolBlockState.block === changes.index.currentValue) {
+        this.resumeBlock(Object.values(this.stateService.mempoolBlockState.transactions));
+      } else {
+        this.isLoading$.next(true);
+      }
     }
   }
 
@@ -151,6 +155,19 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
     this.lastBlockHeight = this.stateService.latestBlockHeight;
     this.blockIndex = this.index;
     this.isLoading$.next(false);
+  }
+
+  resumeBlock(transactionsStripped: TransactionStripped[]): void {
+    if (this.blockGraph) {
+      this.firstLoad = false;
+      this.blockGraph.setup(transactionsStripped, true);
+      this.blockIndex = this.index;
+      this.isLoading$.next(false);
+    } else {
+      requestAnimationFrame(() => {
+        this.resumeBlock(transactionsStripped);
+      });
+    }
   }
 
   onTxClick(event: { tx: TransactionStripped, keyModifier: boolean }): void {

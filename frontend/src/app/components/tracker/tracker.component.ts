@@ -286,14 +286,14 @@ export class TrackerComponent implements OnInit, OnDestroy {
         this.accelerationInfo = null;
       }),
       switchMap((blockHash: string) => {
-        return this.servicesApiService.getAccelerationHistory$({ blockHash });
+        return this.servicesApiService.getAllAccelerationHistory$({ blockHash }, null, this.txId);
       }),
       catchError(() => {
         return of(null);
       })
     ).subscribe((accelerationHistory) => {
       for (const acceleration of accelerationHistory) {
-        if (acceleration.txid === this.txId && (acceleration.status === 'completed' || acceleration.status === 'completed_provisional')) {
+        if (acceleration.txid === this.txId && (acceleration.status === 'completed' || acceleration.status === 'completed_provisional') && acceleration.pools.includes(acceleration.minedByPoolUniqueId)) {
           const boostCost = acceleration.boostCost || acceleration.bidBoost;
           acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
           acceleration.boost = boostCost;
@@ -747,7 +747,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
 
   checkAccelerationEligibility() {
     if (this.tx) {
-      this.tx.flags = getTransactionFlags(this.tx);
+      this.tx.flags = getTransactionFlags(this.tx, null, null, this.tx.status?.block_time, this.stateService.network);
       const replaceableInputs = (this.tx.flags & (TransactionFlags.sighash_none | TransactionFlags.sighash_acp)) > 0n;
       const highSigop = (this.tx.sigops * 20) > this.tx.weight;
       this.eligibleForAcceleration = !replaceableInputs && !highSigop;

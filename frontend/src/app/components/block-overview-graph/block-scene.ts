@@ -88,16 +88,19 @@ export default class BlockScene {
   }
 
   // set up the scene with an initial set of transactions, without any transition animation
-  setup(txs: TransactionStripped[]) {
+  setup(txs: TransactionStripped[], sort: boolean = false) {
     // clean up any old transactions
     Object.values(this.txs).forEach(tx => {
       tx.destroy();
       delete this.txs[tx.txid];
     });
     this.layout = new BlockLayout({ width: this.gridWidth, height: this.gridHeight });
-    txs.forEach(tx => {
-      const txView = new TxView(tx, this);
-      this.txs[tx.txid] = txView;
+    let txViews = txs.map(tx => new TxView(tx, this));
+    if (sort) {
+      txViews = txViews.sort(feeRateDescending);
+    }
+    txViews.forEach(txView => {
+      this.txs[txView.txid] = txView;
       this.place(txView);
       this.saveGridToScreenPosition(txView);
       this.applyTxUpdate(txView, {

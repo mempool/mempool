@@ -1,7 +1,10 @@
 <app-indexing-progress *ngIf="!widget"></app-indexing-progress>
 
 <div class="container-xl" style="min-height: 335px" [ngClass]="{'widget': widget, 'full-height': !widget, 'legacy': !isMempoolModule}">
-  <h1 *ngIf="!widget" class="float-left" i18n="master-page.blocks">Blocks</h1>
+  <div *ngIf="!widget" class="float-left" style="display: flex; width: 100%; align-items: center;">
+    <h1 i18n="master-page.blocks">Blocks</h1>
+    <app-svg-images name="blocks-2-3" style="width: 275px; max-width: 90%; margin-top: -10px"></app-svg-images>
+  </div>
   <div *ngIf="!widget && isLoading" class="spinner-border ml-3" role="status"></div>
 
   <div class="clearfix"></div>

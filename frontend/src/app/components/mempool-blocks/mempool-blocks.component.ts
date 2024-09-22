@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, HostListener, Input, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, HostListener, Input, OnChanges, SimpleChanges, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { Subscription, Observable, of, combineLatest } from 'rxjs';
 import { MempoolBlock } from '../../interfaces/websocket.interface';
 import { StateService } from '../../services/state.service';
@@ -77,6 +77,9 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   maxArrowPosition = 0;
   rightPosition = 0;
   transition = 'background 2s, right 2s, transform 1s';
+  @ViewChild('arrowUp')
+  arrowElement: ElementRef<HTMLDivElement>;
+  acceleratingArrow: boolean = false;
 
   markIndex: number;
   txPosition: MempoolPosition;
@@ -201,6 +204,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
     this.markBlocksSubscription = this.stateService.markBlock$
       .subscribe((state) => {
+        const oldTxPosition = this.txPosition;
         this.markIndex = undefined;
         this.txPosition = undefined;
         this.txFeePerVSize = undefined;
@@ -209,6 +213,12 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
         }
         if (state.mempoolPosition) {
           this.txPosition = state.mempoolPosition;
+          if (this.txPosition.accelerated && !oldTxPosition?.accelerated) {
+            this.acceleratingArrow = true;
+            setTimeout(() => {
+              this.acceleratingArrow = false;
+            }, 2000);
+          }
         }
         if (state.txFeePerVSize) {
           this.txFeePerVSize = state.txFeePerVSize;

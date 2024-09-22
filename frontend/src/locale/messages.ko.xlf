@@ -457,6 +457,7 @@
       </trans-unit>
       <trans-unit id="bee6b649ee82d9a7cde233070b665eec7c531b1d" datatype="html">
         <source>Plus <x id="INTERPOLATION" equiv-text="{{ estimate.txSummary.ancestorCount - 1 }}"/> unconfirmed ancestor(s)</source>
+        <target>컨펌되지 않은 조상(들) <x id="INTERPOLATION" equiv-text="{{ estimate.txSummary.ancestorCount - 1 }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">41</context>
@@ -491,6 +492,7 @@
       </trans-unit>
       <trans-unit id="df89e157bacb4ab32e6ec725bf1eb176dc15201e" datatype="html">
         <source>Size in vbytes of this transaction (including unconfirmed ancestors)</source>
+        <target>트랜잭션 크기 (확인되지 않은 조상 포함)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">51</context>
@@ -499,6 +501,7 @@
       </trans-unit>
       <trans-unit id="adbeb446bf941afda4d4a923b5e4ce0cf4a1c1b8" datatype="html">
         <source>In-band fees</source>
+        <target>대역 내 수수료</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">55</context>
@@ -624,6 +627,7 @@
       </trans-unit>
       <trans-unit id="fad137784196a8fdc10588e27ed5d8ae95fe4e79" datatype="html">
         <source>Fees already paid by this transaction (including unconfirmed ancestors)</source>
+        <target>이 트랜잭션이 이미 지불한 수수료 (확인되지 않은 조상 포함)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">62</context>
@@ -632,6 +636,7 @@
       </trans-unit>
       <trans-unit id="4169a885bc1747a38344bae64e6926c6d7d7ec43" datatype="html">
         <source>How much faster?</source>
+        <target>얼마나 더 빠르게 원하시나요?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">71</context>
@@ -640,6 +645,7 @@
       </trans-unit>
       <trans-unit id="d1a62bdb732f1efbfdc8af6fbb4349b89015b5e5" datatype="html">
         <source>This will reduce your expected waiting time until the first confirmation to <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="START_TAG_APP_TIME" ctype="x-app_time" equiv-text="n&quot; [time]=&quot;etaInfo.acceleratedETA&quot; [fastRender]=&quot;false&quot; [fixedRender]=&quot;true&quot;&gt;"/><x id="CLOSE_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;/strong&gt;&lt;/s"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/small&gt;"/></source>
+        <target>첫 번째 컨펌까지 예상 대기 시간이 <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="START_TAG_APP_TIME" ctype="x-app_time" equiv-text="n&quot; [time]=&quot;etaInfo.acceleratedETA&quot; [fastRender]=&quot;false&quot; [fixedRender]=&quot;true&quot;&gt;"/><x id="CLOSE_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;/strong&gt;&lt;/s"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/small&gt;"/>로 단축됩니다</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">76,77</context>
@@ -657,6 +663,7 @@
       </trans-unit>
       <trans-unit id="0b537472d5f7518ed2c2c2b747997b0447ec5ee8" datatype="html">
         <source>Next block market rate</source>
+        <target>다음 블록 시장 수수료율</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">109</context>
@@ -687,6 +694,7 @@
       </trans-unit>
       <trans-unit id="c2836a2964adf9e369ee0a1ce67f991cf2aa435d" datatype="html">
         <source>Estimated extra fee required</source>
+        <target>예측된 추가발생 수수료</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">117</context>
@@ -695,6 +703,7 @@
       </trans-unit>
       <trans-unit id="6c37b6a6f9e5ec98367ed744afa4b36800aa79ce" datatype="html">
         <source>Target rate</source>
+        <target>목표율</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">131</context>
@@ -703,6 +712,7 @@
       </trans-unit>
       <trans-unit id="e26d365629446e476b5d437e343b5b02b49adea2" datatype="html">
         <source>Extra fee required</source>
+        <target>필요한 추가 수수료</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">139</context>
@@ -711,6 +721,7 @@
       </trans-unit>
       <trans-unit id="26e50fa97db4eecde26ff892d725e61ca9201c48" datatype="html">
         <source>Mempool Accelerator™ fees</source>
+        <target>멤풀 엑셀러레이터 수수료</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">153</context>
@@ -719,6 +730,7 @@
       </trans-unit>
       <trans-unit id="1ec82428244c76064090ea5a55827e3fada82306" datatype="html">
         <source>Accelerator Service Fee</source>
+        <target>엑셀러레이터 서비스 수수료</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">157</context>
@@ -727,6 +739,7 @@
       </trans-unit>
       <trans-unit id="7d07b80b17dfab3582807759420b8d723c9e4414" datatype="html">
         <source>Transaction Size Surcharge</source>
+        <target>트랜잭션 사이즈에 의한 추가 요금</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">169</context>
@@ -735,6 +748,7 @@
       </trans-unit>
       <trans-unit id="004732b44df582a2d24e2abbd3f46bc42ae8c546" datatype="html">
         <source>Estimated acceleration cost</source>
+        <target>예상 가속 비용</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">185</context>
@@ -743,6 +757,7 @@
       </trans-unit>
       <trans-unit id="c9ec95585f57bd87212693db7cb00d9ed70d49b1" datatype="html">
         <source>Maximum acceleration cost</source>
+        <target>최대 가속 비용</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">204</context>
@@ -760,6 +775,7 @@
       </trans-unit>
       <trans-unit id="f3ff11006f77909b9fca2e0fda0a72b097cd76de" datatype="html">
         <source>Available balance</source>
+        <target>잔액</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">226</context>
@@ -785,6 +801,7 @@
       </trans-unit>
       <trans-unit id="7d89e94e98140d07d5c2bb12d6166b8b74506eb0" datatype="html">
         <source>Accelerate your Bitcoin transaction?</source>
+        <target>비트코인 트랜잭션 가속하기</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">273</context>
@@ -802,6 +819,7 @@
       </trans-unit>
       <trans-unit id="f6a46cd5ca2087712a145f2c680e2aad5f926eaf" datatype="html">
         <source>Confirmation expected</source>
+        <target>컨펌이 예상됩니다</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">287</context>
@@ -1587,6 +1605,7 @@
       </trans-unit>
       <trans-unit id="cf2ec414465d65ab24b354663d94d051a67e26e9" datatype="html">
         <source>Total vSize</source>
+        <target>총 vSize</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-stats/acceleration-stats.component.html</context>
           <context context-type="linenumber">20</context>

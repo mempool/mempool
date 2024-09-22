@@ -72,11 +72,13 @@ export interface MempoolBlockWithTransactions extends MempoolBlock {
 }
 
 export interface MempoolBlockDelta {
+  block: number;
   added: TransactionStripped[];
   removed: string[];
   changed: { txid: string, rate: number, flags: number, acc: boolean }[];
 }
 export interface MempoolBlockState {
+  block: number;
   transactions: TransactionStripped[];
 }
 export type MempoolBlockUpdate = MempoolBlockDelta | MempoolBlockState;
