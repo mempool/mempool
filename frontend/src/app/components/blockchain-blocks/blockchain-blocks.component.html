@@ -61,18 +61,21 @@
         </div>
         <div class="animated" *ngIf="block.extras?.pool != undefined && showPools">
           <a [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-pool'" class="badge" [routerLink]="[('/mining/pool/' + block.extras.pool.slug) | relativeUrl]">
-            <div class="on-pool-container" *ngIf="block.extras.pool.minerNames != undefined && block.extras.pool.minerNames.length > 1 && block.extras.pool.minerNames[1] != ''; else centralisedPool">
-              {{ block.extras.pool.minerNames[1] }}
-              <div class="on-pool">
-                <span class="on-pool-text">on</span>
-                <img class="pool-logo faded" [src]="'/resources/mining-pools/' + block.extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'">
-                <span class="on-pool-name-text">{{ block.extras.pool.name }}</span>
+            <div *ngIf="block.extras.pool.minerNames != undefined && block.extras.pool.minerNames.length > 1 && block.extras.pool.minerNames[1] != ''; else centralisedPool">
+              <div class="on-pool-container" *ngIf="block.height != markHeight; else selectedDecentralisedPool">
+                {{ block.extras.pool.minerNames[1] }}
+                <div class="on-pool">
+                  <img class="pool-logo faded" [src]="'/resources/mining-pools/' + block.extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'">
+                  <span class="on-pool-name-text">{{ block.extras.pool.name }}</span>
+                </div>
               </div>
+              <ng-template #selectedDecentralisedPool>
+                <img class="pool-logo faded" [src]="'/resources/mining-pools/' + block.extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'">
+                {{ block.extras.pool.minerNames[1] }}
+              </ng-template>
             </div>
             <ng-template #centralisedPool>
-              <div class="pool-container">
-                <img class="pool-logo" [src]="'/resources/mining-pools/' + block.extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'"> {{ block.extras.pool.name }}
-              </div>
+              <img class="pool-logo" [src]="'/resources/mining-pools/' + block.extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'"> {{ block.extras.pool.name }}
             </ng-template>
           </a>
         </div>

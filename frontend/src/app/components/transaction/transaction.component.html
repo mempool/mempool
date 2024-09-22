@@ -687,7 +687,6 @@
               <div class="on-pool-container" *ngIf="pool.minerNames != undefined && pool.minerNames.length > 1 && pool.minerNames[1] != ''; else centralisedPool">
                 {{ pool.minerNames[1] }}
                 <div class="on-pool">
-                  <span class="on-pool-text">on</span>
                   <img class="pool-logo" [src]="'/resources/mining-pools/' + pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + pool.name + ' mining pool'">
                   {{ pool.name }}
                 </div>

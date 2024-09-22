@@ -220,7 +220,8 @@ export function parseDATUMTemplateCreator(coinbaseRaw: string): string[] | null 
 
   const tagStart = tagLengthByte + 1;
   const tags = bytes.slice(tagStart, tagStart + tagsLength);
-  const tagString = String.fromCharCode(...tags);
+  let tagString = String.fromCharCode(...tags);
+  tagString = tagString.replace('\x00', '');
 
   return tagString.split('\x0f');
 }
