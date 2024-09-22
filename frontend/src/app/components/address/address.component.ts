@@ -319,6 +319,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.transactions = this.transactions.slice();
           this.mempoolStats.removeTx(transaction);
           this.audioService.playSound('magic');
+          this.confirmTransaction(tx);
         } else {
           if (this.addTransaction(transaction, false)) {
             this.audioService.playSound('magic');
@@ -345,10 +346,12 @@ export class AddressComponent implements OnInit, OnDestroy {
     }
 
     // update utxos in-place
+    let utxosChanged = false;
     for (const vin of transaction.vin) {
       const utxoIndex = this.utxos.findIndex((utxo) => utxo.txid === vin.txid && utxo.vout === vin.vout);
       if (utxoIndex !== -1) {
         this.utxos.splice(utxoIndex, 1);
+        utxosChanged = true;
       }
     }
     for (const [index, vout] of transaction.vout.entries()) {
@@ -359,7 +362,11 @@ export class AddressComponent implements OnInit, OnDestroy {
           value: vout.value,
           status: JSON.parse(JSON.stringify(transaction.status)),
         });
+        utxosChanged = true;
       }
+    }
+    if (utxosChanged) {
+      this.utxos = this.utxos.slice();
     }
     return true;
   }
@@ -374,6 +381,7 @@ export class AddressComponent implements OnInit, OnDestroy {
     this.transactions = this.transactions.slice();
 
     // update utxos in-place
+    let utxosChanged = false;
     for (const vin of transaction.vin) {
       if (vin.prevout?.scriptpubkey_address === this.address.address) {
         this.utxos.push({
@@ -382,6 +390,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           value: vin.prevout.value,
           status: { confirmed: true }, // Assuming the input was confirmed
         });
+        utxosChanged = true;
       }
     }
     for (const [index, vout] of transaction.vout.entries()) {
@@ -389,11 +398,41 @@ export class AddressComponent implements OnInit, OnDestroy {
         const utxoIndex = this.utxos.findIndex((utxo) => utxo.txid === transaction.txid && utxo.vout === index);
         if (utxoIndex !== -1) {
           this.utxos.splice(utxoIndex, 1);
+          utxosChanged = true;
         }
       }
     }
+    if (utxosChanged) {
+      this.utxos = this.utxos.slice();
+    }
 
     return true;
+  }
+
+  confirmTransaction(transaction: Transaction): void {
+    // update utxos in-place
+    let utxosChanged = false;
+    for (const vin of transaction.vin) {
+      if (vin.prevout?.scriptpubkey_address === this.address.address) {
+        const utxoIndex = this.utxos.findIndex((utxo) => utxo.txid === vin.txid && utxo.vout === vin.vout);
+        if (utxoIndex !== -1) {
+          this.utxos[utxoIndex].status = JSON.parse(JSON.stringify(transaction.status));
+          utxosChanged = true;
+        }
+      }
+    }
+    for (const [index, vout] of transaction.vout.entries()) {
+      if (vout.scriptpubkey_address === this.address.address) {
+        const utxoIndex = this.utxos.findIndex((utxo) => utxo.txid === transaction.txid && utxo.vout === index);
+        if (utxoIndex !== -1) {
+          this.utxos[utxoIndex].status = JSON.parse(JSON.stringify(transaction.status));
+          utxosChanged = true;
+        }
+      }
+    }
+    if (utxosChanged) {
+      this.utxos = this.utxos.slice();
+    }
   }
 
   loadMore(): void {

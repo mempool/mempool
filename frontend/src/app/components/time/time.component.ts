@@ -3,6 +3,28 @@ import { StateService } from '../../services/state.service';
 import { dates } from '../../shared/i18n/dates';
 import { DatePipe } from '@angular/common';
 
+const datePipe = new DatePipe(navigator.language || 'en-US');
+
+const intervals = {
+  year: 31536000,
+  month: 2592000,
+  week: 604800,
+  day: 86400,
+  hour: 3600,
+  minute: 60,
+  second: 1
+};
+
+const precisionThresholds = {
+  year: 100,
+  month: 18,
+  week: 12,
+  day: 31,
+  hour: 48,
+  minute: 90,
+  second: 90
+};
+
 @Component({
   selector: 'app-time',
   templateUrl: './time.component.html',
@@ -12,19 +34,9 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
   interval: number;
   text: string;
   tooltip: string;
-  precisionThresholds = {
-    year: 100,
-    month: 18,
-    week: 12,
-    day: 31,
-    hour: 48,
-    minute: 90,
-    second: 90
-  };
-  intervals = {};
 
   @Input() time: number;
-  @Input() dateString: number;
+  @Input() dateString: string;
   @Input() kind: 'plain' | 'since' | 'until' | 'span' | 'before' | 'within' = 'plain';
   @Input() fastRender = false;
   @Input() fixedRender = false;
@@ -40,37 +52,25 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private ref: ChangeDetectorRef,
     private stateService: StateService,
-    private datePipe: DatePipe,
-  ) {
-      this.intervals = {
-        year: 31536000,
-        month: 2592000,
-        week: 604800,
-        day: 86400,
-        hour: 3600,
-        minute: 60,
-        second: 1
-      };
-  }
+  ) {}
 
   ngOnInit() {
+    this.calculateTime();
     if(this.fixedRender){
-      this.text = this.calculate();
       return;
     }
     if (!this.stateService.isBrowser) {
-      this.text = this.calculate();
       this.ref.markForCheck();
       return;
     }
     this.interval = window.setInterval(() => {
-      this.text = this.calculate();
+      this.calculateTime();
       this.ref.markForCheck();
     }, 1000 * (this.fastRender ? 1 : 60));
   }
 
   ngOnChanges() {
-    this.text = this.calculate();
+    this.calculateTime();
     this.ref.markForCheck();
   }
 
@@ -78,40 +78,71 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
     clearInterval(this.interval);
   }
 
-  calculate() {
-    if (this.time == null) {
-      return;
+  calculateTime(): void {
+    const { text, tooltip } = TimeComponent.calculate(
+      this.time,
+      this.kind,
+      this.relative,
+      this.precision,
+      this.minUnit,
+      this.showTooltip,
+      this.units,
+      this.dateString,
+      this.lowercaseStart,
+      this.numUnits,
+      this.fractionDigits,
+    );
+    this.text = text;
+    this.tooltip = tooltip;
+  }
+
+  static calculate(
+    time: number,
+    kind: 'plain' | 'since' | 'until' | 'span' | 'before' | 'within',
+    relative: boolean = false,
+    precision: number = 0,
+    minUnit: 'year' | 'month' | 'week' | 'day' | 'hour' | 'minute' | 'second' = 'second',
+    showTooltip: boolean = false,
+    units: string[] = ['year', 'month', 'week', 'day', 'hour', 'minute', 'second'],
+    dateString?: string,
+    lowercaseStart: boolean = false,
+    numUnits: number = 1,
+    fractionDigits: number = 0,
+  ): { text: string, tooltip: string } {
+    if (time == null) {
+      return { text: '', tooltip: '' };
     }
 
     let seconds: number;
-    switch (this.kind) {
+    let tooltip: string = '';
+    switch (kind) {
       case 'since':
-        seconds = Math.floor((+new Date() - +new Date(this.dateString || this.time * 1000)) / 1000);
-        this.tooltip = this.datePipe.transform(new Date(this.dateString || this.time * 1000), 'yyyy-MM-dd HH:mm');
+        seconds = Math.floor((+new Date() - +new Date(dateString || time * 1000)) / 1000);
+        tooltip = datePipe.transform(new Date(dateString || time * 1000), 'yyyy-MM-dd HH:mm');
         break;
       case 'until':
       case 'within':
-        seconds = (+new Date(this.time) - +new Date()) / 1000;
-        this.tooltip = this.datePipe.transform(new Date(this.time), 'yyyy-MM-dd HH:mm');
+        seconds = (+new Date(time) - +new Date()) / 1000;
+        tooltip = datePipe.transform(new Date(time), 'yyyy-MM-dd HH:mm');
         break;
       default:
-        seconds = Math.floor(this.time);
-        this.tooltip = '';
+        seconds = Math.floor(time);
+        tooltip = '';
     }
 
-    if (!this.showTooltip || this.relative) {
-      this.tooltip = '';
+    if (!showTooltip || relative) {
+      tooltip = '';
     }
 
-    if (seconds < 1 && this.kind === 'span') {
-      return $localize`:@@date-base.immediately:Immediately`;
+    if (seconds < 1 && kind === 'span') {
+      return { tooltip, text: $localize`:@@date-base.immediately:Immediately` };
     } else if (seconds < 60) {
-      if (this.relative || this.kind === 'since') {
-        if (this.lowercaseStart) {
-          return $localize`:@@date-base.just-now:Just now`.charAt(0).toLowerCase() + $localize`:@@date-base.just-now:Just now`.slice(1);
+      if (relative || kind === 'since') {
+        if (lowercaseStart) {
+          return { tooltip, text: $localize`:@@date-base.just-now:Just now`.charAt(0).toLowerCase() + $localize`:@@date-base.just-now:Just now`.slice(1) };
         }
-        return $localize`:@@date-base.just-now:Just now`;
-      } else if (this.kind === 'until' || this.kind === 'within') {
+        return { tooltip, text: $localize`:@@date-base.just-now:Just now` };
+      } else if (kind === 'until' || kind === 'within') {
         seconds = 60;
       }
     }
@@ -119,44 +150,44 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
     let counter: number;
     const result = [];
     let usedUnits = 0;
-    for (const [index, unit] of this.units.entries()) {
-      let precisionUnit = this.units[Math.min(this.units.length - 1, index + this.precision)];
-      counter = Math.floor(seconds / this.intervals[unit]);
-      const precisionCounter = Math.round(seconds / this.intervals[precisionUnit]);
-      if (precisionCounter > this.precisionThresholds[precisionUnit]) {
+    for (const [index, unit] of units.entries()) {
+      let precisionUnit = units[Math.min(units.length - 1, index + precision)];
+      counter = Math.floor(seconds / intervals[unit]);
+      const precisionCounter = Math.round(seconds / intervals[precisionUnit]);
+      if (precisionCounter > precisionThresholds[precisionUnit]) {
         precisionUnit = unit;
       }
-      if (this.units.indexOf(precisionUnit) === this.units.indexOf(this.minUnit)) {
+      if (units.indexOf(precisionUnit) === units.indexOf(minUnit)) {
         counter = Math.max(1, counter);
       }
       if (counter > 0) {
         let rounded;
-        const roundFactor = Math.pow(10,this.fractionDigits || 0);
-        if ((this.kind === 'until' || this.kind === 'within') && usedUnits < this.numUnits) {
-          rounded = Math.floor((seconds / this.intervals[precisionUnit]) * roundFactor) / roundFactor;
+        const roundFactor = Math.pow(10,fractionDigits || 0);
+        if ((kind === 'until' || kind === 'within') && usedUnits < numUnits) {
+          rounded = Math.floor((seconds / intervals[precisionUnit]) * roundFactor) / roundFactor;
         } else {
-          rounded = Math.round((seconds / this.intervals[precisionUnit]) * roundFactor) / roundFactor;
+          rounded = Math.round((seconds / intervals[precisionUnit]) * roundFactor) / roundFactor;
         }
-        if ((this.kind !== 'until' && this.kind !== 'within')|| this.numUnits === 1) {
-          return this.formatTime(this.kind, precisionUnit, rounded);
+        if ((kind !== 'until' && kind !== 'within')|| numUnits === 1) {
+          return { tooltip, text: TimeComponent.formatTime(kind, precisionUnit, rounded) };
         } else {
           if (!usedUnits) {
-            result.push(this.formatTime(this.kind, precisionUnit, rounded));
+            result.push(TimeComponent.formatTime(kind, precisionUnit, rounded));
           } else {
-            result.push(this.formatTime('', precisionUnit, rounded));
+            result.push(TimeComponent.formatTime('', precisionUnit, rounded));
           }
-          seconds -= (rounded * this.intervals[precisionUnit]);
+          seconds -= (rounded * intervals[precisionUnit]);
           usedUnits++;
-          if (usedUnits >= this.numUnits) {
-            return result.join(', ');
+          if (usedUnits >= numUnits) {
+            return { tooltip, text: result.join(', ') };
           }
         }
       }
     }
-    return result.join(', ');
+    return { tooltip, text: result.join(', ') };
   }
 
-  private formatTime(kind, unit, number): string {
+  static formatTime(kind, unit, number): string {
     const dateStrings = dates(number);
     switch (kind) {
       case 'since':

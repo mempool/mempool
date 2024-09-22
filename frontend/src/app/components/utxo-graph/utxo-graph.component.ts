@@ -6,6 +6,14 @@ import { StateService } from '../../services/state.service';
 import { Router } from '@angular/router';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { renderSats } from '../../shared/common.utils';
+import { colorToHex, hexToColor, mix } from '../block-overview-graph/utils';
+import { TimeComponent } from '../time/time.component';
+
+const newColorHex = '1bd8f4';
+const oldColorHex = '9339f4';
+const pendingColorHex = 'eba814';
+const newColor = hexToColor(newColorHex);
+const oldColor = hexToColor(oldColorHex);
 
 @Component({
   selector: 'app-utxo-graph',
@@ -29,7 +37,8 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
   @Input() widget: boolean = false;
 
   subscription: Subscription;
-  redraw$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  lastUpdate: number = 0;
+  updateInterval;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -46,7 +55,14 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
     private zone: NgZone,
     private router: Router,
     private relativeUrlPipe: RelativeUrlPipe,
-  ) {}
+  ) {
+    // re-render the chart every 10 seconds, to keep the age colors up to date
+    this.updateInterval = setInterval(() => {
+      if (this.lastUpdate < Date.now() - 10000 && this.utxos) {
+        this.prepareChartOptions(this.utxos);
+      }
+    }, 10000);
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.isLoading = true;
@@ -82,7 +98,18 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
     // Naive algorithm to pack circles as tightly as possible without overlaps
     const placedCircles: { x: number, y: number, r: number, utxo: Utxo, distances: number[] }[] = [];
     // Pack in descending order of value, and limit to the top 500 to preserve performance
-    const sortedUtxos = utxos.sort((a, b) => b.value - a.value).slice(0, 500);
+    const sortedUtxos = utxos.sort((a, b) => {
+      if (a.value === b.value) {
+        if (a.status.confirmed && !b.status.confirmed) {
+          return -1;
+        } else if (!a.status.confirmed && b.status.confirmed) {
+          return 1;
+        } else {
+          return a.status.block_height - b.status.block_height;
+        }
+      }
+      return b.value - a.value;
+    }).slice(0, 500);
     let centerOfMass = { x: 0, y: 0 };
     let weightOfMass = 0;
     sortedUtxos.forEach((utxo, index) => {
@@ -192,7 +219,7 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
           const x = datum[2] as number;
           const y = datum[3] as number;
           const r = datum[4] as number;
-          if (r * scale < 3) {
+          if (r * scale < 2) {
             // skip items too small to render cleanly
             return;
           }
@@ -207,7 +234,7 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
                 r: (r * scale) - 1,
               },
               style: {
-                fill: '#5470c6',
+                fill: '#' + this.getColor(utxo),
               }
             },
           ];
@@ -230,7 +257,7 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
             type: 'group',
             children: elements,
           };
-        }
+        },
       }],
       tooltip: {
         backgroundColor: 'rgba(17, 19, 31, 1)',
@@ -247,12 +274,38 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
           return `
           <b style="color: white;">${utxo.txid.slice(0, 6)}...${utxo.txid.slice(-6)}:${utxo.vout}</b>
           <br>
-          ${valueStr}`;
+          ${valueStr}
+          <br>
+          ${utxo.status.confirmed ? 'Confirmed ' + TimeComponent.calculate(utxo.status.block_time, 'since', true, 1, 'minute').text : 'Pending'}
+          `;
         },
       }
     };
+    this.lastUpdate = Date.now();
 
     this.cd.markForCheck();
+  }
+
+  getColor(utxo: Utxo): string {
+    if (utxo.status.confirmed) {
+      const age = Date.now() / 1000 - utxo.status.block_time;
+      const oneHour = 60 * 60;
+      const fourYears = 4 * 365 * 24 * 60 * 60;
+
+      if (age < oneHour) {
+        return newColorHex;
+      } else if (age >= fourYears) {
+        return oldColorHex;
+      } else {
+        // Logarithmic scale between 1 hour and 4 years
+        const logAge = Math.log(age / oneHour);
+        const logMax = Math.log(fourYears / oneHour);
+        const t = logAge / logMax;
+        return colorToHex(mix(newColor, oldColor, t));
+      }
+    } else {
+      return pendingColorHex;
+    }
   }
 
   onChartClick(e): void {
@@ -277,6 +330,7 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+    clearInterval(this.updateInterval);
   }
 
   isMobile(): boolean {
