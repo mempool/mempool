@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, Input, Output, OnChanges, SimpleChanges, EventEmitter } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input, Output, OnChanges, SimpleChanges, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { Transaction } from '../../../interfaces/electrs.interface';
 import { Acceleration, SinglePoolStats } from '../../../interfaces/node-api.interface';
 import { EChartsOption, PieSeriesOption } from '../../../graphs/echarts';
@@ -23,7 +23,8 @@ function toRGB({r,g,b}): string {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ActiveAccelerationBox implements OnChanges {
-  @Input() tx: Transaction;
+  @Input() acceleratedBy?: number[];
+  @Input() effectiveFeeRate?: number;
   @Input() accelerationInfo: Acceleration;
   @Input() miningStats: MiningStats;
   @Input() pools: number[];
@@ -41,10 +42,12 @@ export class ActiveAccelerationBox implements OnChanges {
   timespan = '';
   chartInstance: any = undefined;
 
-  constructor() {}
+  constructor(
+    private cd: ChangeDetectorRef,
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    const pools = this.pools || this.accelerationInfo?.pools || this.tx.acceleratedBy;
+    const pools = this.pools || this.accelerationInfo?.pools || this.acceleratedBy;
     if (pools && this.miningStats) {
       this.prepareChartOptions(pools);
     }
@@ -132,6 +135,7 @@ export class ActiveAccelerationBox implements OnChanges {
         }
       ]
     };
+    this.cd.markForCheck();
   }
 
   onChartInit(ec) {

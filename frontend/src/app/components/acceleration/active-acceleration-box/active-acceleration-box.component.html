@@ -10,10 +10,10 @@
       </td>
       <td class="field-value" [class]="chartPositionLeft ? 'chart-left' : ''">
         <div class="effective-fee-container">
-          @if (accelerationInfo?.acceleratedFeeRate && (!tx.effectiveFeePerVsize || accelerationInfo.acceleratedFeeRate >= tx.effectiveFeePerVsize)) {
+          @if (accelerationInfo?.acceleratedFeeRate && (!effectiveFeeRate || accelerationInfo.acceleratedFeeRate >= effectiveFeeRate)) {
             <app-fee-rate class="oobFees" [fee]="accelerationInfo.acceleratedFeeRate"></app-fee-rate>
           } @else {
-            <app-fee-rate class="oobFees" [fee]="tx.effectiveFeePerVsize"></app-fee-rate>
+            <app-fee-rate class="oobFees" [fee]="effectiveFeeRate"></app-fee-rate>
           }
         </div>
       </td>

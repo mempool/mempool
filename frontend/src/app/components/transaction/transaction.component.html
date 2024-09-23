@@ -670,7 +670,7 @@
 <ng-template #acceleratingRow>
   <tr>
     <td rowspan="2" colspan="2" style="padding: 0;">
-      <app-active-acceleration-box [tx]="tx" [accelerationInfo]="accelerationInfo" [miningStats]="miningStats" [hasCpfp]="hasCpfp" (toggleCpfp)="showCpfpDetails = !showCpfpDetails" [chartPositionLeft]="isMobile"></app-active-acceleration-box>
+      <app-active-acceleration-box [acceleratedBy]="tx.acceleratedBy" [effectiveFeeRate]="tx.effectiveFeePerVsize" [accelerationInfo]="accelerationInfo" [miningStats]="miningStats" [hasCpfp]="hasCpfp" (toggleCpfp)="showCpfpDetails = !showCpfpDetails" [chartPositionLeft]="isMobile"></app-active-acceleration-box>
     </td>
   </tr>
   <tr></tr>
