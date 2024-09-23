@@ -283,6 +283,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
           block.extras.maxFee = this.getMaxBlockFee(block);
           if (block.extras.pool?.minerNames) {
             block.extras.pool.minerNames = block.extras.pool.minerNames.map((name) => {
+              name = name.replace(/[^a-zA-Z0-9 ]/g, '');
               if (name.length > 16) {
                 return name.slice(0, 16) + '…';
               }
