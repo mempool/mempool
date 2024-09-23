@@ -92,7 +92,7 @@
     "ngx-infinite-scroll": "^17.0.0",
     "qrcode": "1.5.1",
     "rxjs": "~7.8.1",
-    "esbuild": "^0.23.0",
+    "esbuild": "^0.24.0",
     "tinyify": "^4.0.0",
     "tlite": "^0.1.9",
     "tslib": "~2.7.0",
