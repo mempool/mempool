@@ -369,7 +369,7 @@ class MempoolBlocks {
     const lastBlockIndex = blocks.length - 1;
     let hasBlockStack = blocks.length >= 8;
     let stackWeight;
-    let feeStatsCalculator: OnlineFeeStatsCalculator | void;
+    let feeStatsCalculator: OnlineFeeStatsCalculator | null = null;
     if (hasBlockStack) {
       if (blockWeights && blockWeights[7] !== null) {
         stackWeight = blockWeights[7];
@@ -380,28 +380,36 @@ class MempoolBlocks {
       feeStatsCalculator = new OnlineFeeStatsCalculator(stackWeight, 0.5, [10, 20, 30, 40, 50, 60, 70, 80, 90]);
     }
 
+    const ancestors: Ancestor[] = [];
+    const descendants: Ancestor[] = [];
+    let ancestor: MempoolTransactionExtended
     for (const cluster of clusters) {
       for (const memberTxid of cluster) {
         const mempoolTx = mempool[memberTxid];
         if (mempoolTx) {
-          const ancestors: Ancestor[] = [];
-          const descendants: Ancestor[] = [];
+          // ugly micro-optimization to avoid allocating new arrays
+          ancestors.length = 0;
+          descendants.length = 0;
           let matched = false;
           cluster.forEach(txid => {
+            ancestor = mempool[txid];
             if (txid === memberTxid) {
               matched = true;
             } else {
-              if (!mempool[txid]) {
+              if (!ancestor) {
                 console.log('txid missing from mempool! ', txid, candidates?.txs[txid]);
+                return;
               }
               const relative = {
                 txid: txid,
-                fee: mempool[txid].fee,
-                weight: (mempool[txid].adjustedVsize * 4),
+                fee: ancestor.fee,
+                weight: (ancestor.adjustedVsize * 4),
               };
               if (matched) {
                 descendants.push(relative);
-                mempoolTx.lastBoosted = Math.max(mempoolTx.lastBoosted || 0, mempool[txid].firstSeen || 0);
+                if (!mempoolTx.lastBoosted || (ancestor.firstSeen && ancestor.firstSeen > mempoolTx.lastBoosted)) {
+                  mempoolTx.lastBoosted = ancestor.firstSeen;
+                }
               } else {
                 ancestors.push(relative);
               }
@@ -410,7 +418,20 @@ class MempoolBlocks {
           if (mempoolTx.ancestors?.length !== ancestors.length || mempoolTx.descendants?.length !== descendants.length) {
             mempoolTx.cpfpDirty = true;
           }
-          Object.assign(mempoolTx, {ancestors, descendants, bestDescendant: null, cpfpChecked: true});
+          // ugly micro-optimization to avoid allocating new arrays or objects
+          if (mempoolTx.ancestors) {
+            mempoolTx.ancestors.length = 0;
+          } else {
+            mempoolTx.ancestors = [];
+          }
+          if (mempoolTx.descendants) {
+            mempoolTx.descendants.length = 0;
+          } else {
+            mempoolTx.descendants = [];
+          }
+          mempoolTx.ancestors.push(...ancestors);
+          mempoolTx.descendants.push(...descendants);
+          mempoolTx.cpfpChecked = true;
         }
       }
     }
@@ -420,7 +441,10 @@ class MempoolBlocks {
     const sizeLimit = (config.MEMPOOL.BLOCK_WEIGHT_UNITS / 4) * 1.2;
     // update this thread's mempool with the results
     let mempoolTx: MempoolTransactionExtended;
-    const mempoolBlocks: MempoolBlockWithTransactions[] = blocks.map((block, blockIndex) => {
+    let acceleration: Acceleration;
+    const mempoolBlocks: MempoolBlockWithTransactions[] = [];
+    for (let blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
+      const block = blocks[blockIndex];
       let totalSize = 0;
       let totalVsize = 0;
       let totalWeight = 0;
@@ -436,7 +460,8 @@ class MempoolBlocks {
         }
       }
 
-      for (const txid of block) {
+      for (let i = 0; i < block.length; i++) {
+        const txid = block[i];
         if (txid) {
           mempoolTx = mempool[txid];
           // save position in projected blocks
@@ -445,30 +470,37 @@ class MempoolBlocks {
             vsize: totalVsize + (mempoolTx.vsize / 2),
           };
 
-          const acceleration = accelerations[txid];
-          if (isAcceleratedBy[txid] || (acceleration && (!accelerationPool || acceleration.pools.includes(accelerationPool)))) {
-            if (!mempoolTx.acceleration) {
-              mempoolTx.cpfpDirty = true;
-            }
-            mempoolTx.acceleration = true;
-            mempoolTx.acceleratedBy = isAcceleratedBy[txid] || acceleration?.pools;
-            mempoolTx.acceleratedAt = acceleration?.added;
-            mempoolTx.feeDelta = acceleration?.feeDelta;
-            for (const ancestor of mempoolTx.ancestors || []) {
-              if (!mempool[ancestor.txid].acceleration) {
-                mempool[ancestor.txid].cpfpDirty = true;
+          if (txid in accelerations) {
+            acceleration = accelerations[txid];
+            if (isAcceleratedBy[txid] || (acceleration && (!accelerationPool || acceleration.pools.includes(accelerationPool)))) {
+              if (!mempoolTx.acceleration) {
+                mempoolTx.cpfpDirty = true;
               }
-              mempool[ancestor.txid].acceleration = true;
-              mempool[ancestor.txid].acceleratedBy = mempoolTx.acceleratedBy;
-              mempool[ancestor.txid].acceleratedAt = mempoolTx.acceleratedAt;
-              mempool[ancestor.txid].feeDelta = mempoolTx.feeDelta;
-              isAcceleratedBy[ancestor.txid] = mempoolTx.acceleratedBy;
+              mempoolTx.acceleration = true;
+              mempoolTx.acceleratedBy = isAcceleratedBy[txid] || acceleration?.pools;
+              mempoolTx.acceleratedAt = acceleration?.added;
+              mempoolTx.feeDelta = acceleration?.feeDelta;
+              for (const ancestor of mempoolTx.ancestors || []) {
+                if (!mempool[ancestor.txid].acceleration) {
+                  mempool[ancestor.txid].cpfpDirty = true;
+                }
+                mempool[ancestor.txid].acceleration = true;
+                mempool[ancestor.txid].acceleratedBy = mempoolTx.acceleratedBy;
+                mempool[ancestor.txid].acceleratedAt = mempoolTx.acceleratedAt;
+                mempool[ancestor.txid].feeDelta = mempoolTx.feeDelta;
+                isAcceleratedBy[ancestor.txid] = mempoolTx.acceleratedBy;
+              }
+            } else {
+              if (mempoolTx.acceleration) {
+                mempoolTx.cpfpDirty = true;
+                delete mempoolTx.acceleration;
+              }
             }
           } else {
             if (mempoolTx.acceleration) {
               mempoolTx.cpfpDirty = true;
+              delete mempoolTx.acceleration;
             }
-            delete mempoolTx.acceleration;
           }
 
           // online calculation of stack-of-blocks fee stats
@@ -486,7 +518,7 @@ class MempoolBlocks {
           }
         }
       }
-      return this.dataToMempoolBlocks(
+      mempoolBlocks[blockIndex] = this.dataToMempoolBlocks(
         block,
         transactions,
         totalSize,
@@ -494,7 +526,7 @@ class MempoolBlocks {
         totalFees,
         (hasBlockStack && blockIndex === lastBlockIndex && feeStatsCalculator) ? feeStatsCalculator.getRawFeeStats() : undefined,
       );
-    });
+    };
 
     if (saveResults) {
       const deltas = this.calculateMempoolDeltas(this.mempoolBlocks, mempoolBlocks);
