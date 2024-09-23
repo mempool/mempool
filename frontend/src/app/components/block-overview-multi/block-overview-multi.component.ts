@@ -74,6 +74,7 @@ export class BlockOverviewMultiComponent implements AfterViewInit, OnDestroy, On
   displayWidth: number;
   displayHeight: number;
   displayBlockWidth: number;
+  displayPadding: number;
   cssWidth: number;
   cssHeight: number;
   shaderProgram: WebGLProgram;
@@ -388,16 +389,17 @@ export class BlockOverviewMultiComponent implements AfterViewInit, OnDestroy, On
       this.displayWidth = window.devicePixelRatio * this.cssWidth;
       this.displayHeight = window.devicePixelRatio * this.cssHeight;
       this.displayBlockWidth = window.devicePixelRatio * this.blockWidth;
+      this.displayPadding = window.devicePixelRatio * this.padding;
       this.canvas.nativeElement.width = this.displayWidth;
       this.canvas.nativeElement.height = this.displayHeight;
       if (this.gl) {
         this.gl.viewport(0, 0, this.displayWidth, this.displayHeight);
       }
       for (let i = 0; i < this.scenes.length; i++) {
-        const blocksPerRow = Math.floor((this.displayWidth + this.padding) / (this.displayBlockWidth + this.padding));
-        const x = (i % blocksPerRow) * (this.displayBlockWidth + this.padding);
+        const blocksPerRow = Math.floor(this.displayWidth / (this.displayBlockWidth + (this.displayPadding * 2)));
+        const x = this.displayPadding + ((i % blocksPerRow) * (this.displayBlockWidth + (this.displayPadding * 2)));
         const row = Math.floor(i / blocksPerRow);
-        const y = this.displayHeight - ((row + 1) * this.displayBlockWidth);
+        const y = this.displayPadding + this.displayHeight - ((row + 1) * (this.displayBlockWidth + (this.displayPadding * 2)));
         if (this.scenes[i]) {
           this.scenes[i].resize({ x, y, width: this.displayBlockWidth, height: this.displayBlockWidth, animate: false });
           this.start();

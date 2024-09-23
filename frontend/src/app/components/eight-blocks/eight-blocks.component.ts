@@ -83,7 +83,7 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
     width: '1080px',
     height: '1080px',
     maxWidth: '1080px',
-    padding: '',
+    margin: '',
   };
   containerStyle = {};
   resolution: number = 86;
@@ -128,7 +128,7 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
         width: this.blockWidth + 'px',
         height: this.blockWidth + 'px',
         maxWidth: this.blockWidth + 'px',
-        padding: (this.padding || 0) +'px 0px',
+        margin: (this.padding || 0) +'px ',
       };
 
       this.cacheBlocksSubscription = this.cacheService.loadedBlocks$.subscribe((block: BlockExtended) => {
