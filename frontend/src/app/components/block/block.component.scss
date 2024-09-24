@@ -81,17 +81,9 @@ h1 {
   }
 }
 
-.on-pool-container {
-  display: inline;
-  flex-direction: row;
-}
-
-.on-pool {
-  background-color: var(--bg);
-  display: inline-block;
-  margin-top: 4px;
-  padding: .25em .4em;
-  border-radius: .25rem;
+.miner-name {
+  margin-right: 4px;
+  vertical-align: top;
 }
 
 .pool-logo {
