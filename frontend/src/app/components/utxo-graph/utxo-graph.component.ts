@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, NgZone, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { EChartsOption } from '../../graphs/echarts';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { Utxo } from '../../interfaces/electrs.interface';
 import { StateService } from '../../services/state.service';
 import { Router } from '@angular/router';
@@ -8,6 +8,7 @@ import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pi
 import { renderSats } from '../../shared/common.utils';
 import { colorToHex, hexToColor, mix } from '../block-overview-graph/utils';
 import { TimeComponent } from '../time/time.component';
+import { TimeService } from '../../services/time.service';
 
 const newColorHex = '1bd8f4';
 const oldColorHex = '9339f4';
@@ -55,6 +56,7 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
     private zone: NgZone,
     private router: Router,
     private relativeUrlPipe: RelativeUrlPipe,
+    private timeService: TimeService,
   ) {
     // re-render the chart every 10 seconds, to keep the age colors up to date
     this.updateInterval = setInterval(() => {
@@ -276,7 +278,7 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
           <br>
           ${valueStr}
           <br>
-          ${utxo.status.confirmed ? 'Confirmed ' + TimeComponent.calculate(utxo.status.block_time, 'since', true, 1, 'minute').text : 'Pending'}
+          ${utxo.status.confirmed ? 'Confirmed ' + this.timeService.calculate(utxo.status.block_time, 'since', true, 1, 'minute').text : 'Pending'}
           `;
         },
       }
