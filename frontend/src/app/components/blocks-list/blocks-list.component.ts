@@ -126,12 +126,6 @@ export class BlocksList implements OnInit {
                 this.lastBlockHeight = Math.max(...blocks.map(o => o.height));
               }),
               map(blocks => {
-                if (this.stateService.env.BASE_MODULE === 'mempool') {
-                  for (const block of blocks) {
-                    // @ts-ignore: Need to add an extra field for the template
-                    block.extras.pool.logo = `/resources/mining-pools/` + block.extras.pool.slug + '.svg';
-                  }
-                }
                 if (this.widget) {
                   return blocks.slice(0, 6);
                 }

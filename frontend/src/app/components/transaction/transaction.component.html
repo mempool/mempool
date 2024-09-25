@@ -684,7 +684,7 @@
         @if (pool) {
           <td class="wrap-cell">
             <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, pool.slug]" class="badge" style="color: #FFF;padding:0;">
-              <img class="pool-logo" [src]="'/resources/mining-pools/' + pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + pool.name + ' mining pool'">
+              <app-pool-logo [pool]="pool" style="position: relative; top: -1px; margin-right: 2px;"></app-pool-logo>
               {{ pool.name  }}
             </a>
           </td>

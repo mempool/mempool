@@ -90,6 +90,7 @@ import { BtcComponent } from './components/btc/btc.component';
 import { FeeRateComponent } from './components/fee-rate/fee-rate.component';
 import { AddressTypeComponent } from './components/address-type/address-type.component';
 import { TruncateComponent } from './components/truncate/truncate.component';
+import { PoolLogoComponent } from './components/pool-logo/pool-logo.component';
 import { SearchResultsComponent } from '../components/search-form/search-results/search-results.component';
 import { TimestampComponent } from './components/timestamp/timestamp.component';
 import { ConfirmationsComponent } from './components/confirmations/confirmations.component';
@@ -206,6 +207,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     FeeRateComponent,
     AddressTypeComponent,
     TruncateComponent,
+    PoolLogoComponent,
     SearchResultsComponent,
     TimestampComponent,
     ConfirmationsComponent,
@@ -348,6 +350,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     FeeRateComponent,
     AddressTypeComponent,
     TruncateComponent,
+    PoolLogoComponent,
     SearchResultsComponent,
     TimestampComponent,
     ConfirmationsComponent,

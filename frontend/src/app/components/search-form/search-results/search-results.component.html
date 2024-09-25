@@ -47,7 +47,7 @@
     <div class="card-title" i18n="search.mining-pools">Mining Pools</div>
     <ng-template ngFor [ngForOf]="results.pools" let-pool let-i="index">
       <button (click)="clickItem(results.hashQuickMatch + results.addresses.length + i)" [class.active]="results.hashQuickMatch + results.addresses.length + i === activeIdx" [class.inactive]="!pool.active" type="button" role="option" class="dropdown-item">
-        <img class="pool-logo" [src]="'/resources/mining-pools/' + pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + pool.name + ' mining pool'">
+        <app-pool-logo [pool]="pool" style="position: relative; top: -1px; margin-right: 10px;"></app-pool-logo>
         <ngb-highlight [result]="pool.name" [term]="results.searchText"></ngb-highlight>
       </button>
     </ng-template>

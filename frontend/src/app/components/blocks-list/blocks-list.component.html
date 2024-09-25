@@ -35,15 +35,13 @@
           <td  *ngIf="isMempoolModule" class="pool text-left" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
             <div *ngIf="indexingAvailable" class="tooltip-custom">
               <a class="clear-link" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]">
-                <img width="22" height="22" src="{{ block.extras.pool['logo'] }}"
-                  onError="this.onerror=null; this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'">
+                <app-pool-logo [pool]="block.extras.pool" [width]="22" [height]="22"></app-pool-logo>
                 <span class="pool-name">{{ block.extras.pool.name }}</span>
               </a>
               <span *ngIf="!widget" class="tooltiptext badge badge-secondary scriptmessage">{{ block.extras.coinbaseRaw | hex2ascii }}</span>
             </div>
             <div *ngIf="!indexingAvailable" class="tooltip-custom">
-              <img width="22" height="22" src="{{ block.extras.pool['logo'] }}"
-                onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'">
+              <app-pool-logo [pool]="block.extras.pool" [width]="22" [height]="22"></app-pool-logo>
               <span class="pool-name">{{ block.extras.pool.name }}</span>
               <span *ngIf="!widget" class="tooltiptext badge badge-secondary scriptmessage">{{ block.extras.coinbaseRaw | hex2ascii }}</span>
             </div>
