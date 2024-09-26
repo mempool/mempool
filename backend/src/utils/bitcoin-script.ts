@@ -223,5 +223,5 @@ export function parseDATUMTemplateCreator(coinbaseRaw: string): string[] | null 
   let tagString = String.fromCharCode(...tags);
   tagString = tagString.replace('\x00', '');
 
-  return tagString.split('\x0f');
+  return tagString.split('\x0f').map((name) => name.replace(/[^a-zA-Z0-9 ]/g, ''));
 }

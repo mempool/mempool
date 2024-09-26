@@ -187,9 +187,16 @@
 
 .badge {
   position: relative;
-  top: 15px;
+  top: 19px;
   z-index: 101;
   color: #FFF;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 145px;
+
+  &.miner-name {
+    max-width: 125px;
+  }
 }
 
 .pool-logo {
