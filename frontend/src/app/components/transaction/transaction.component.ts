@@ -42,6 +42,7 @@ interface Pool {
   id: number;
   name: string;
   slug: string;
+  minerNames: string[] | null;
 }
 
 export interface TxAuditStatus {

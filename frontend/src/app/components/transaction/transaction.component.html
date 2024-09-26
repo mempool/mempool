@@ -684,8 +684,17 @@
         @if (pool) {
           <td class="wrap-cell">
             <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, pool.slug]" class="badge" style="color: #FFF;padding:0;">
-              <img class="pool-logo" [src]="'/resources/mining-pools/' + pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + pool.name + ' mining pool'">
-              {{ pool.name  }}
+              <div class="on-pool-container" *ngIf="pool.minerNames != undefined && pool.minerNames.length > 1 && pool.minerNames[1] != ''; else centralisedPool">
+                {{ pool.minerNames[1] }}
+                <div class="on-pool">
+                  <img class="pool-logo" [src]="'/resources/mining-pools/' + pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + pool.name + ' mining pool'">
+                  {{ pool.name }}
+                </div>
+              </div>
+              <ng-template #centralisedPool>
+                <img class="pool-logo" [src]="'/resources/mining-pools/' + pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + pool.name + ' mining pool'">
+                {{ pool.name }}
+              </ng-template>
             </a>
           </td>
         } @else {

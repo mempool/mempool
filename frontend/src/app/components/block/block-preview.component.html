@@ -53,15 +53,33 @@
             <td i18n="block.miner">Miner</td>
             <td *ngIf="stateService.env.MINING_DASHBOARD">
               <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]" class="badge" style="color: #FFF;padding:0;">
-                <img class="pool-logo" [src]="'/resources/mining-pools/' + block.extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'">
-                {{ block.extras.pool.name }}
+                <ng-container *ngIf="block.extras.pool.minerNames != undefined && block.extras.pool.minerNames.length > 1 && block.extras.pool.minerNames[1] != ''; else centralisedPool">
+                  {{ block.extras.pool.minerNames[1] }}
+                  <div class="on-pool">
+                    on
+                    <img class="pool-logo" [src]="'/resources/mining-pools/' + block.extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'">
+                    {{ block.extras.pool.name}}
+                  </div>
+                </ng-container>
+                <ng-template #centralisedPool>
+                  <img class="pool-logo" [src]="'/resources/mining-pools/' + block.extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'">
+                  {{ block.extras.pool.name }}
+                </ng-template>
               </a>
             </td>
             <td *ngIf="!stateService.env.MINING_DASHBOARD && stateService.env.BASE_MODULE === 'mempool'">
               <span [attr.data-cy]="'block-details-miner-badge'" placement="bottom" class="badge"
                 [class]="!block?.extras.pool.name || block?.extras.pool.slug === 'unknown' ? 'badge-secondary' : 'badge-primary'">
-                {{ block?.extras.pool.name }}
-            </span>
+                <ng-container *ngIf="block?.extras.pool.minerNames != undefined && block?.extras.pool.minerNames.length > 1 && block?.extras.pool.minerNames[1] != ''; else centralisedPool">
+                  {{ block?.extras.pool.minerNames[1] }}
+                  <div class="on-pool">
+                    on {{ block?.extras.pool.name }}
+                  </div>
+                </ng-container>
+                <ng-template #centralisedPool>
+                  {{ block?.extras.pool.name }}
+                </ng-template>
+              </span>
             </td>
           </tr>
         </tbody>

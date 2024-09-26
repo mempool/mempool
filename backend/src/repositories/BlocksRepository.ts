@@ -14,6 +14,7 @@ import chainTips from '../api/chain-tips';
 import blocks from '../api/blocks';
 import BlocksAuditsRepository from './BlocksAuditsRepository';
 import transactionUtils from '../api/transaction-utils';
+import { parseDATUMTemplateCreator } from '../utils/bitcoin-script';
 
 interface DatabaseBlock {
   id: string;
@@ -1054,6 +1055,7 @@ class BlocksRepository {
       id: dbBlk.poolId,
       name: dbBlk.poolName,
       slug: dbBlk.poolSlug,
+      minerNames: null,
     };
     extras.avgFee = dbBlk.avgFee;
     extras.avgFeeRate = dbBlk.avgFeeRate;
@@ -1121,6 +1123,10 @@ class BlocksRepository {
         extras.medianFeeAmt = extras.feePercentiles[3];
         await this.$updateFeeAmounts(dbBlk.id, extras.feePercentiles, extras.medianFeeAmt);
       }
+    }
+
+    if (extras.pool.name === 'OCEAN') {
+      extras.pool.minerNames = parseDATUMTemplateCreator(extras.coinbaseRaw);
     }
 
     blk.extras = <BlockExtension>extras;

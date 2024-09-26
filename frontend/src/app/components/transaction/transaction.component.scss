@@ -60,6 +60,27 @@
 	top: -1px;
 }
 
+.on-pool-container {
+  display: inline;
+  flex-direction: row;
+}
+
+.on-pool {
+  background-color: var(--bg);
+  display: inline-block;
+  margin-top: 4px;
+  padding: .25em .4em;
+  border-radius: .25rem;
+}
+
+.pool-logo {
+  width: 25px;
+  height: 25px;
+  position: relative;
+  top: -1px;
+  margin-right: 2px;
+}
+
 .badge.badge-accelerated {
   background-color: var(--tertiary);
   color: white;

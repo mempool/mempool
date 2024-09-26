@@ -203,6 +203,7 @@ export interface BlockExtension {
     id: number;
     name: string;
     slug: string;
+    minerNames: string[] | null;
   }
 }
 
