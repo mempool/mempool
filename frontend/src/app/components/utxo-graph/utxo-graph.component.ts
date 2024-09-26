@@ -344,13 +344,13 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
   }
 
   onChartClick(e): void {
-    if (e.data?.[0]?.txid) {
+    if (e.data?.[1]?.txid) {
       this.zone.run(() => {
-        const url = this.relativeUrlPipe.transform(`/tx/${e.data[0].txid}`);
+        const url = this.relativeUrlPipe.transform(`/tx/${e.data[1].txid}`);
         if (e.event.event.shiftKey || e.event.event.ctrlKey || e.event.event.metaKey) {
-          window.open(url + '?mode=details#vout=' + e.data[0].vout);
+          window.open(url + '?mode=details#vout=' + e.data[1].vout);
         } else {
-          this.router.navigate([url], { fragment: `vout=${e.data[0].vout}` });
+          this.router.navigate([url], { fragment: `vout=${e.data[1].vout}` });
         }
       });
     }
