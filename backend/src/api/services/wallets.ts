@@ -9,55 +9,52 @@ interface WalletAddress {
   address: string;
   active: boolean;
   transactions?: IEsploraApi.AddressTxSummary[];
+  lastSync: number;
 }
 
-interface WalletConfig {
-  url: string;
+interface Wallet {
   name: string;
-  apiKey: string;
-}
-
-interface Wallet extends WalletConfig {
   addresses: Record<string, WalletAddress>;
   lastPoll: number;
 }
 
-const POLL_FREQUENCY = 60 * 60 * 1000; // 1 hour
+const POLL_FREQUENCY = 5 * 60 * 1000; // 5 minutes
 
 class WalletApi {
   private wallets: Record<string, Wallet> = {};
   private syncing = false;
 
   constructor() {
-    this.wallets = (config.WALLETS.WALLETS as WalletConfig[]).reduce((acc, wallet) => {
-      acc[wallet.name] = { ...wallet, addresses: {}, lastPoll: 0 };
+    this.wallets = config.WALLETS.ENABLED ? (config.WALLETS.WALLETS as string[]).reduce((acc, wallet) => {
+      acc[wallet] = { name: wallet, addresses: {}, lastPoll: 0 };
       return acc;
-    }, {} as Record<string, Wallet>);
+    }, {} as Record<string, Wallet>) : {};
   }
 
   public getWallet(wallet: string): Record<string, WalletAddress> {
     return this.wallets?.[wallet]?.addresses || {};
   }
 
-  // resync wallet addresses from the provided API
+  // resync wallet addresses from the services backend
   async $syncWallets(): Promise<void> {
+    if (!config.WALLETS.ENABLED) {
+      return;
+    }
     this.syncing = true;
     for (const walletKey of Object.keys(this.wallets)) {
       const wallet = this.wallets[walletKey];
       if (wallet.lastPoll < (Date.now() - POLL_FREQUENCY)) {
         try {
-          const response = await axios.get(`${wallet.url}/${wallet.name}`, { headers: { 'Authorization': `${wallet.apiKey}` } });
-          const data: { walletBalances: WalletAddress[] } = response.data;
-          const addresses = data.walletBalances;
-          const newAddresses: Record<string, boolean> = {};
+          const response = await axios.get(config.MEMPOOL_SERVICES.API + `/wallets/${wallet.name}`);
+          const addresses: Record<string, WalletAddress> = response.data;
+          const addressList: WalletAddress[] = Object.values(addresses);
           // sync all current addresses
-          for (const address of addresses) {
+          for (const address of addressList) {
             await this.$syncWalletAddress(wallet, address);
-            newAddresses[address.address] = true;
           }
           // remove old addresses
           for (const address of Object.keys(wallet.addresses)) {
-            if (!newAddresses[address]) {
+            if (!addresses[address]) {
               delete wallet.addresses[address];
             }
           }
@@ -73,16 +70,16 @@ class WalletApi {
 
   // resync address transactions from esplora
   async $syncWalletAddress(wallet: Wallet, address: WalletAddress): Promise<void> {
-    // fetch full transaction data if the address is new or still active
-    const refreshTransactions = !wallet.addresses[address.address] || address.active;
+    // fetch full transaction data if the address is new or still active and hasn't been synced in the last hour
+    const refreshTransactions = !wallet.addresses[address.address] || (address.active && (Date.now() - wallet.addresses[address.address].lastSync) > 60 * 60 * 1000);
     if (refreshTransactions) {
       try {
         const walletAddress: WalletAddress = {
           address: address.address,
           active: address.active,
           transactions: await bitcoinApi.$getAddressTransactionSummary(address.address),
+          lastSync: Date.now(),
         };
-        logger.debug(`Synced ${walletAddress.transactions?.length || 0} transactions for wallet ${wallet.name} address ${address.address}`);
         wallet.addresses[address.address] = walletAddress;
       } catch (e) {
         logger.err(`Error syncing wallet address ${address.address}: ${(e instanceof Error ? e.message : e)}`);
