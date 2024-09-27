@@ -1,11 +1,11 @@
 <div
   #tooltip
-  *ngIf="accelerationInfo && tooltipPosition !== null"
   class="acceleration-tooltip"
-  [style.left]="tooltipPosition.x + 'px'"
-  [style.top]="tooltipPosition.y + 'px'"
+  [style.visibility]="accelerationInfo ? 'visible' : 'hidden'"
+  [style.left]="tooltipPosition?.x + 'px'"
+  [style.top]="tooltipPosition?.y + 'px'"
 >
-  <table>
+  <table *ngIf="accelerationInfo">
     <tbody>
       <tr>
         <td class="label" i18n="transaction.status|Transaction Status">Status</td>
@@ -52,8 +52,7 @@
               class="pool-logo" 
               [style.opacity]="accelerationInfo?.minedByPoolUniqueId && pool !== accelerationInfo?.minedByPoolUniqueId ? '0.3' : '1'"
               [src]="'/resources/mining-pools/' + accelerationInfo.poolsData[pool].slug + '.svg'" 
-              onError="this.src = '/resources/mining-pools/default.svg'" 
-              [alt]="'Logo of ' + pool.name + ' mining pool'">
+              onError="this.src = '/resources/mining-pools/default.svg'">
             <br *ngIf="i % 6 === 5">
           </ng-container>
         </td>
