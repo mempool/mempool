@@ -8,10 +8,14 @@ import { SinglePoolStats } from '../../../interfaces/node-api.interface';
 
 type MerkleCellType = ' ' | '┬' | '├' | '└' | '│' | '─' | 'leaf';
 
+interface TaggedStratumJob extends StratumJob {
+  tag: string;
+}
+
 interface MerkleCell {
   hash: string;
   type: MerkleCellType;
-  job?: StratumJob;
+  job?: TaggedStratumJob;
 }
 
 interface MerkleTree {
@@ -22,8 +26,23 @@ interface MerkleTree {
 }
 
 interface PoolRow {
-  job: StratumJob;
+  job: TaggedStratumJob;
   merkleCells: MerkleCell[];
+}
+
+function parseTag(scriptSig: string): string {
+  const hex = scriptSig.slice(8).replace(/6d6d.{64}/, '');
+  const bytes: number[] = [];
+  for (let i = 0; i < hex.length; i += 2) {
+    bytes.push(parseInt(hex.substr(i, 2), 16));
+  }
+  const ascii = new TextDecoder('utf8').decode(Uint8Array.from(bytes)).replace(/\uFFFD/g, '').replace(/\\0/g, '');
+  if (ascii.includes('/ViaBTC/')) {
+    return '/ViaBTC/';
+  } else if (ascii.includes('SpiderPool/')) {
+    return 'SpiderPool/';
+  }
+  return ascii.match(/\/.*\//)?.[0] || ascii;
 }
 
 @Component({
@@ -60,7 +79,11 @@ export class StratumList implements OnInit, OnDestroy {
     this.websocketService.startTrackStratum('all');
   }
 
-  processJobs(jobs: Record<string, StratumJob>): PoolRow[] {
+  processJobs(rawJobs: Record<string, StratumJob>): PoolRow[] {
+    const jobs: Record<string, TaggedStratumJob> = {};
+    for (const [id, job] of Object.entries(rawJobs)) {
+      jobs[id] = { ...job, tag: parseTag(job.scriptsig) };
+    }
     if (Object.keys(jobs).length === 0) {
       return [];
     }

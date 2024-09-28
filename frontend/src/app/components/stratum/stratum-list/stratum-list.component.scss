@@ -6,8 +6,15 @@ td {
   position: relative;
   height: 2em;
 
-  &.height, &.reward {
+  &.height, &.reward, &.tag {
     padding: 0 5px;
+  }
+
+  &.tag {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   
   &.pool {
