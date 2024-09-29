@@ -370,23 +370,47 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
       const walletName = this.stateService.env.customize.dashboard.widgets.find(w => w.props?.wallet).props.wallet;
       this.websocketService.startTrackingWallet(walletName);
 
-      this.walletSummary$ = this.apiService.getWallet$(walletName).pipe(
+      this.walletSummary$ =  this.apiService.getWallet$(walletName).pipe(
         catchError(e => {
-          return of(null);
+          return of({});
         }),
-        map((walletTransactions) => {
-          const transactions = Object.values(walletTransactions).flatMap(wallet => wallet.transactions);
-          return this.deduplicateWalletTransactions(transactions);
-        }),
-        switchMap(initial => this.stateService.walletTransactions$.pipe(
-          startWith(null),
-          scan((summary, walletTransactions) => {
-            if (walletTransactions) {
-              const transactions: AddressTxSummary[] = [...summary, ...Object.values(walletTransactions).flat()];
-              return this.deduplicateWalletTransactions(transactions);
+        switchMap(wallet => this.stateService.walletTransactions$.pipe(
+          startWith([]),
+          scan((summaries, newTransactions) => {
+            const newSummaries: AddressTxSummary[] = [];
+            for (const tx of newTransactions) {
+              const funded: Record<string, number> = {};
+              const spent: Record<string, number> = {};
+              const fundedCount: Record<string, number> = {};
+              const spentCount: Record<string, number> = {};
+              for (const vin of tx.vin) {
+                const address = vin.prevout?.scriptpubkey_address;
+                if (address && wallet[address]) {
+                  spent[address] = (spent[address] ?? 0) + (vin.prevout?.value ?? 0);
+                  spentCount[address] = (spentCount[address] ?? 0) + 1;
+                }
+              }
+              for (const vout of tx.vout) {
+                const address = vout.scriptpubkey_address;
+                if (address && wallet[address]) {
+                  funded[address] = (funded[address] ?? 0) + (vout.value ?? 0);
+                  fundedCount[address] = (fundedCount[address] ?? 0) + 1;
+                }
+              }
+              for (const address of Object.keys({ ...funded, ...spent })) {
+                // add tx to summary
+                const txSummary: AddressTxSummary = {
+                  txid: tx.txid,
+                  value: (funded[address] ?? 0) - (spent[address] ?? 0),
+                  height: tx.status.block_height,
+                  time: tx.status.block_time,
+                };
+                wallet[address].transactions?.push(txSummary);
+                newSummaries.push(txSummary);
+              }
             }
-            return summary;
-          }, initial)
+            return [...summaries, ...this.deduplicateWalletTransactions(newSummaries)];
+          }, this.deduplicateWalletTransactions(Object.values(wallet).flatMap(address => address.transactions)))
         )),
         share(),
       );

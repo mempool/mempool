@@ -39,14 +39,19 @@ export class AddressesTreemap implements OnChanges {
   }
 
   prepareChartOptions(): void {
-    const maxTxs = this.addresses.reduce((max, address) => Math.max(max, address.chain_stats.tx_count), 0);
     const data = this.addresses.map(address => ({
-        address: address.address,
-        value: address.chain_stats.funded_txo_sum - address.chain_stats.spent_txo_sum,
-        stats: address.chain_stats,
-        itemStyle: {
-          color: lerpColor('#1E88E5', '#D81B60', address.chain_stats.tx_count / maxTxs),
-        }
+      address: address.address,
+      value: address.chain_stats.funded_txo_sum - address.chain_stats.spent_txo_sum,
+      stats: address.chain_stats,
+    }));
+    // only consider visible items for the color gradient
+    const totalValue = data.reduce((acc, address) => acc + address.value, 0);
+    const maxTxs = data.filter(address => address.value > (totalValue / 2000)).reduce((max, address) => Math.max(max, address.stats.tx_count), 0);
+    const dataItems = data.map(address => ({
+      ...address,
+      itemStyle: {
+        color: lerpColor('#1E88E5', '#D81B60', address.stats.tx_count / maxTxs),
+      }
     }));
     this.chartOptions = {
       tooltip: {
@@ -64,7 +69,7 @@ export class AddressesTreemap implements OnChanges {
           top: 0,
           roam: false,
           type: 'treemap',
-          data: data,
+          data: dataItems,
           nodeClick: 'link',
           progressive: 100,
           tooltip: {
@@ -87,7 +92,7 @@ export class AddressesTreemap implements OnChanges {
                       <td colspan="2"><b style="color: white; margin-left: 2px">${value.data.address}</b></td>
                     </tr>
                     <tr>
-                      <td>Recieved</td>
+                      <td>Received</td>
                       <td style="text-align: right">${this.formatValue(value.data.stats.funded_txo_sum)}</td>
                     </tr>
                     <tr>

@@ -5,7 +5,7 @@
 
   <div class="clearfix"></div>
 
-  <ng-template [ngIf]="!isLoadingAddress && !error">
+  <ng-container *ngIf="(walletAddresses$ | async) as walletAddresses; else loadingTemplate">
     <div class="box">
 
       <div class="row">
@@ -35,31 +35,31 @@
                   </div>
                 </td>
               </tr>
-              <ng-template [ngIf]="!addresses[0].electrum">
+              <ng-container *ngIf="(walletStats$ | async) as walletStats">
+                <tr>
+                  <td i18n="address.confirmed-balance">Confirmed balance</td>
+                  <td class="wrap-cell"><app-amount [satoshis]="walletStats.balance" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="walletStats.balance"></app-fiat></span></td>
+                </tr>
+                <tr>
+                  <td i18n="address.confirmed-utxos">Confirmed UTXOs</td>
+                  <td class="wrap-cell">{{ walletStats.utxos }}</td>
+                </tr>
                 <tr>
                   <td i18n="address.total-received">Total received</td>
-                  <td *ngIf="addresses[0].chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="received" [noFiat]="true"></app-amount></td>
+                  <td class="wrap-cell"><app-amount [satoshis]="walletStats.totalReceived"></app-amount></td>
                 </tr>
-                <tr>
-                  <td i18n="address.total-sent">Total sent</td>
-                  <td *ngIf="addresses[0].chain_stats.spent_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="sent" [noFiat]="true"></app-amount></td>
-                </tr>
-              </ng-template>
-              <tr>
-                <td i18n="address.balance">Balance</td>
-                <td *ngIf="addresses[0].chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="received - sent" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="received - sent"></app-fiat></span></td>
-              </tr>
+              </ng-container>
             </tbody>
           </table>
         </div>
         <div class="w-100 d-block d-md-none"></div>
         <div class="col-md treemap-col">
-          <app-addresses-treemap [addresses]="addresses" [isLoading]="isLoadingAddress"></app-addresses-treemap>
+          <app-addresses-treemap [addresses]="addresses" [isLoading]="isLoadingWallet"></app-addresses-treemap>
         </div>
       </div>
     </div>
 
-    <ng-container *ngIf="addresses && addresses.length && transactions && transactions.length > 2">
+    <ng-container *ngIf="(walletStats$ | async) as walletStats">
       <br>
       <div class="title-tx">
         <h2 class="text-left" i18n="address.balance-history">Balance History</h2>
@@ -67,56 +67,16 @@
       <div class="box">
         <div class="row">
           <div class="col-md">
-            <app-address-graph [addresses]="addressStrings" [isPubkey]="addresses[0]?.is_pubkey" [balance]="chainBalance" />
+            <app-address-graph [addressSummary$]="walletSummary$" period="all" />
           </div>
         </div>
       </div>
     </ng-container>
+  </ng-container>
 
-    <br>
-    <div class="title-tx">
-      <h2 class="text-left" i18n="address.transactions">
-        Transactions
-      </h2>
-    </div>
+  <ng-template #loadingTemplate>
 
-    <app-transactions-list [transactions]="transactions" [showConfirmations]="true" [addresses]="addressStrings" (loadMore)="loadMore()"></app-transactions-list>
-
-    <div class="text-center">
-      <ng-template [ngIf]="isLoadingTransactions">
-
-        <ng-container *ngIf="addressLoadingStatus$ as addressLoadingStatus">
-          <div class="header-bg box" style="padding: 12px; margin-bottom: 10px;">
-            <div class="progress progress-dark">
-              <div class="progress-bar progress-light" role="progressbar" [ngStyle]="{'width': addressLoadingStatus + '%' }"></div>
-            </div>
-          </div>
-        </ng-container>
-
-        <div class="header-bg box">
-          <div class="row" style="height: 107px;">
-            <div class="col-sm">
-              <span class="skeleton-loader"></span>
-            </div>
-            <div class="col-sm">
-              <span class="skeleton-loader"></span>
-            </div>
-          </div>
-        </div>
-
-      </ng-template>
-
-      <ng-template [ngIf]="retryLoadMore">
-        <br>
-        <button type="button" class="btn btn-outline-info btn-sm" (click)="loadMore()"><fa-icon [icon]="['fas', 'redo-alt']" [fixedWidth]="true"></fa-icon></button>
-      </ng-template>
-    </div>
-
-  </ng-template>
-
-  <ng-template [ngIf]="isLoadingAddress && !error">
-
-    <div class="box">
+    <div class="box" *ngIf="!error; else errorTemplate">
       <div class="row">
         <div class="col">
           <table class="table table-borderless table-striped">
@@ -142,21 +102,11 @@
 
   </ng-template>
 
-  <ng-template [ngIf]="error">
+  <ng-template #errorTemplate>
     <br>
     <ng-template [ngIf]="error.status === 413 || error.status === 405 || error.status === 504" [ngIfElse]="displayServerError">
       <div class="text-center">
         <span i18n="address.error.loading-wallet-data">Error loading wallet data.</span>
-        <br>
-        <ng-container i18n="Electrum server limit exceeded error">
-          <i>There many transactions in this wallet, more than your backend can handle. See more on <a href="/docs/faq#address-lookup-issues">setting up a stronger backend</a>.</i>
-          <br><br>
-          Consider viewing this wallet on the official Mempool website instead:
-        </ng-container>
-        <br>
-        <a href="https://mempool.space/wallet?addresses={{ addressStrings.join(',') }}" target="_blank">https://mempool.space/wallet?addresses={{ addressStrings.join(',') }}</a>
-        <br>
-        <a href="http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion/wallet?addresses={{ addressStrings.join(',') }}" target="_blank">http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion/wallet?addresses={{ addressStrings.join(',') }}</a>
         <br><br>
         <i class="small">({{ error | httpErrorMsg }})</i>
       </div>
@@ -171,10 +121,6 @@
 </div>
 
 <br>
-
-<ng-template #confidentialTd>
-  <td i18n="shared.confidential">Confidential</td>
-</ng-template>
 
 <ng-template #headerLoader>
   <div class="header-bg box" style="padding: 10px; margin-bottom: 10px;">

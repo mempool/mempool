@@ -90,7 +90,7 @@ const routes: Routes = [
         }
       },
       {
-        path: 'wallet',
+        path: 'wallet/:wallet',
         children: [],
         component: WalletComponent,
         data: {
