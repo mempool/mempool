@@ -281,6 +281,26 @@ export const networks = {
         routes: routes.lightning.routes,
       }
     }
+  },
+  bitb: {
+    title: 'BITB | Bitwise Bitcoin ETF',
+    description: 'BITB provides low-cost access to bitcoin through a professionally managed fund',
+    fallbackImg: '/resources/bitb/bitb-preview.jpg',
+    routes: { // only dynamic routes supported
+      block: routes.block,
+      address: routes.address,
+      tx: routes.tx,
+      mining: {
+        title: "Mining",
+        routes: {
+          pool: routes.mining.routes.pool,
+        }
+      },
+      lightning: {
+        title: "Lightning",
+        routes: routes.lightning.routes,
+      }
+    }
   }
 };
 
