@@ -524,7 +524,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                 this.tx.txid,
                 tokenResult.token,
                 cardTag,
-                `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
                 this.accelerationUUID
               ).subscribe({
                 next: () => {
@@ -597,9 +596,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             label: 'Total'
           }
         });
-        this.googlePay = await this.payments.googlePay(paymentRequest , {
-          referenceId: `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
-        });
+        this.googlePay = await this.payments.googlePay(paymentRequest);
 
         await this.googlePay.attach(`#google-pay-button`, {
           buttonType: 'pay',
@@ -623,7 +620,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               this.tx.txid,
               tokenResult.token,
               cardTag,
-              `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
               this.accelerationUUID
             ).subscribe({
               next: () => {
@@ -696,8 +692,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           }
         });
         this.cashAppPay = await this.payments.cashAppPay(paymentRequest, {
-          redirectURL: `${redirectHostname}/tx/${this.tx.txid}`,
-          referenceId: `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`
+          redirectURL: `${redirectHostname}/tx/${this.tx.txid}`
         });
 
         await this.cashAppPay.attach(`#cash-app-pay`, { theme: 'dark' });
@@ -713,7 +708,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               this.tx.txid,
               tokenResult.token,
               tokenResult.details.cashAppPay.cashtag,
-              tokenResult.details.cashAppPay.referenceId,
               this.accelerationUUID
             ).subscribe({
               next: () => {
