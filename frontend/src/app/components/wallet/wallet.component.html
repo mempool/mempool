@@ -74,6 +74,36 @@
     </ng-container>
   </ng-container>
 
+  <br>
+
+  <div class="title-tx">
+    <h2 class="text-left" i18n="address.transactions">Transactions</h2>
+  </div>
+
+  <app-transactions-list [transactions]="transactions" [showConfirmations]="true" [addresses]="addressStrings" (loadMore)="loadMore()"></app-transactions-list>
+
+  <div class="text-center">
+    <ng-template [ngIf]="isLoadingTransactions">
+      <div class="header-bg box">
+        <div class="row" style="height: 107px;">
+          <div class="col-sm">
+            <span class="skeleton-loader"></span>
+          </div>
+          <div class="col-sm">
+            <span class="skeleton-loader"></span>
+          </div>
+        </div>
+      </div>
+
+    </ng-template>
+
+    <ng-template [ngIf]="retryLoadMore">
+      <br>
+      <button type="button" class="btn btn-outline-info btn-sm" (click)="loadMore()"><fa-icon [icon]="['fas', 'redo-alt']" [fixedWidth]="true"></fa-icon></button>
+    </ng-template>
+  </div>
+
+
   <ng-template #loadingTemplate>
 
     <div class="box" *ngIf="!error; else errorTemplate">
