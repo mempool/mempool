@@ -79,6 +79,7 @@ import { AmountShortenerPipe } from '../shared/pipes/amount-shortener.pipe';
 import { DifficultyAdjustmentsTable } from '../components/difficulty-adjustments-table/difficulty-adjustments-table.components';
 import { BlocksList } from '../components/blocks-list/blocks-list.component';
 import { RbfList } from '../components/rbf-list/rbf-list.component';
+import { StratumList } from '../components/stratum/jobs-list/stratum-list.component';
 import { RewardStatsComponent } from '../components/reward-stats/reward-stats.component';
 import { DataCyDirective } from '../data-cy.directive';
 import { LoadingIndicatorComponent } from '../components/loading-indicator/loading-indicator.component';
@@ -195,6 +196,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     DifficultyAdjustmentsTable,
     BlocksList,
     RbfList,
+    StratumList,
     DataCyDirective,
     RewardStatsComponent,
     LoadingIndicatorComponent,
@@ -337,6 +339,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     AmountShortenerPipe,
     DifficultyAdjustmentsTable,
     BlocksList,
+    StratumList,
     DataCyDirective,
     RewardStatsComponent,
     LoadingIndicatorComponent,
