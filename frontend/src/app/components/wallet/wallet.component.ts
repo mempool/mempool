@@ -250,9 +250,9 @@ export class WalletComponent implements OnInit, OnDestroy {
               newSummaries.push(txSummary);
             }
           }
-          return [...summaries, ...this.deduplicateWalletTransactions(newSummaries)];
+          return this.deduplicateWalletTransactions([...summaries, ...newSummaries]);
         }, this.deduplicateWalletTransactions(Object.values(wallet).flatMap(address => address.transactions)))
-      )),
+      ))
     );
 
     this.walletStats$ = this.wallet$.pipe(

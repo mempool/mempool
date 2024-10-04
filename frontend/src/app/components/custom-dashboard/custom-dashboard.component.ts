@@ -409,7 +409,7 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
                 newSummaries.push(txSummary);
               }
             }
-            return [...summaries, ...this.deduplicateWalletTransactions(newSummaries)];
+            return this.deduplicateWalletTransactions([...summaries, ...newSummaries]);
           }, this.deduplicateWalletTransactions(Object.values(wallet).flatMap(address => address.transactions)))
         )),
         share(),
