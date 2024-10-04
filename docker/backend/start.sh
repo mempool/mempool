@@ -48,6 +48,7 @@ __CORE_RPC_PASSWORD__=${CORE_RPC_PASSWORD:=mempool}
 __CORE_RPC_TIMEOUT__=${CORE_RPC_TIMEOUT:=60000}
 __CORE_RPC_COOKIE__=${CORE_RPC_COOKIE:=false}
 __CORE_RPC_COOKIE_PATH__=${CORE_RPC_COOKIE_PATH:=""}
+__CORE_RPC_DEBUG_LOG_PATH__=${CORE_RPC_DEBUG_LOG_PATH:=""}
 
 # ELECTRUM
 __ELECTRUM_HOST__=${ELECTRUM_HOST:=127.0.0.1}
@@ -205,6 +206,7 @@ sed -i "s!__CORE_RPC_PASSWORD__!${__CORE_RPC_PASSWORD__}!g" mempool-config.json
 sed -i "s!__CORE_RPC_TIMEOUT__!${__CORE_RPC_TIMEOUT__}!g" mempool-config.json
 sed -i "s!__CORE_RPC_COOKIE__!${__CORE_RPC_COOKIE__}!g" mempool-config.json
 sed -i "s!__CORE_RPC_COOKIE_PATH__!${__CORE_RPC_COOKIE_PATH__}!g" mempool-config.json
+sed -i "s!__CORE_RPC_DEBUG_LOG_PATH__!${__CORE_RPC_DEBUG_LOG_PATH__}!g" mempool-config.json
 
 sed -i "s!__ELECTRUM_HOST__!${__ELECTRUM_HOST__}!g" mempool-config.json
 sed -i "s!__ELECTRUM_PORT__!${__ELECTRUM_PORT__}!g" mempool-config.json
