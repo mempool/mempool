@@ -45,6 +45,7 @@ export interface BlockAudit {
   expectedFees?: number,
   expectedWeight?: number,
   template?: any[];
+  firstSeen?: string;
 }
 
 export interface TransactionAudit {
@@ -57,6 +58,7 @@ export interface TransactionAudit {
   conflict?: boolean;
   coinbase?: boolean;
   firstSeen?: number;
+  blockFirstSeen?: string;
 }
 
 export interface AuditScore {

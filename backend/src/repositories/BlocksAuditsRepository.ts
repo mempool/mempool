@@ -15,11 +15,11 @@ interface MigrationAudit {
 }
 
 class BlocksAuditRepositories {
-  public async $saveAudit(audit: BlockAudit): Promise<void> {
+  public async $saveAudit(audit: BlockAudit, replication = false): Promise<void> {
     try {
-      await DB.query(`INSERT INTO blocks_audits(version, time, height, hash, unseen_txs, missing_txs, added_txs, prioritized_txs, fresh_txs, sigop_txs, fullrbf_txs, accelerated_txs, match_rate, expected_fees, expected_weight)
-        VALUE (?, FROM_UNIXTIME(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [audit.version, audit.time, audit.height, audit.hash, JSON.stringify(audit.unseenTxs), JSON.stringify(audit.missingTxs),
-          JSON.stringify(audit.addedTxs), JSON.stringify(audit.prioritizedTxs), JSON.stringify(audit.freshTxs), JSON.stringify(audit.sigopTxs), JSON.stringify(audit.fullrbfTxs), JSON.stringify(audit.acceleratedTxs), audit.matchRate, audit.expectedFees, audit.expectedWeight]);
+      await DB.query(`INSERT INTO blocks_audits(version, time, height, hash, unseen_txs, missing_txs, added_txs, prioritized_txs, fresh_txs, sigop_txs, fullrbf_txs, accelerated_txs, match_rate, expected_fees, expected_weight, first_seen)
+        VALUE (?, FROM_UNIXTIME(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ${replication ? 'FROM_UNIXTIME(?)' : '?'})`, [audit.version, audit.time, audit.height, audit.hash, JSON.stringify(audit.unseenTxs), JSON.stringify(audit.missingTxs),
+          JSON.stringify(audit.addedTxs), JSON.stringify(audit.prioritizedTxs), JSON.stringify(audit.freshTxs), JSON.stringify(audit.sigopTxs), JSON.stringify(audit.fullrbfTxs), JSON.stringify(audit.acceleratedTxs), audit.matchRate, audit.expectedFees, audit.expectedWeight, audit.firstSeen]);
     } catch (e: any) {
       if (e.errno === 1062) { // ER_DUP_ENTRY - This scenario is possible upon node backend restart
         logger.debug(`Cannot save block audit for block ${audit.hash} because it has already been indexed, ignoring`);
@@ -78,6 +78,7 @@ class BlocksAuditRepositories {
           blocks_audits.height,
           blocks_audits.hash as id,
           UNIX_TIMESTAMP(blocks_audits.time) as timestamp,
+          UNIX_TIMESTAMP(blocks_audits.first_seen) as firstSeen,
           template,
           unseen_txs as unseenTxs,
           missing_txs as missingTxs,
@@ -96,6 +97,7 @@ class BlocksAuditRepositories {
       `, [hash]);
       
       if (rows.length) {
+        console.log(rows[0].firstSeen);
         rows[0].unseenTxs = JSON.parse(rows[0].unseenTxs);
         rows[0].missingTxs = JSON.parse(rows[0].missingTxs);
         rows[0].addedTxs = JSON.parse(rows[0].addedTxs);
@@ -105,6 +107,10 @@ class BlocksAuditRepositories {
         rows[0].fullrbfTxs = JSON.parse(rows[0].fullrbfTxs);
         rows[0].acceleratedTxs = JSON.parse(rows[0].acceleratedTxs);
         rows[0].template = JSON.parse(rows[0].template);
+
+        if (!rows[0].firstSeen) {
+          delete rows[0].firstSeen;
+        }
 
         return rows[0];
       }
@@ -124,6 +130,7 @@ class BlocksAuditRepositories {
         const isPrioritized = blockAudit.prioritizedTxs.includes(txid);
         const isAccelerated = blockAudit.acceleratedTxs.includes(txid);
         const isConflict = blockAudit.fullrbfTxs.includes(txid);
+        const blockFirstSeen = blockAudit.firstSeen;
         let isExpected = false;
         let firstSeen = undefined;
         blockAudit.template?.forEach(tx => {
@@ -142,6 +149,7 @@ class BlocksAuditRepositories {
           conflict: isConflict,
           accelerated: isAccelerated,
           firstSeen,
+          ...(blockFirstSeen) && { blockFirstSeen },
         };
       }
       return null;

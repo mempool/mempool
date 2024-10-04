@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 82;
+  private static currentVersion = 83;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -704,6 +704,11 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 82 && isBitcoin === true && config.MEMPOOL.NETWORK === 'mainnet') {
       await this.$fixBadV1AuditBlocks();
       await this.updateToSchemaVersion(82);
+    }
+
+    if (databaseSchemaVersion < 83 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD first_seen timestamp(6) DEFAULT NULL');
+      await this.updateToSchemaVersion(83);
     }
   }
 
