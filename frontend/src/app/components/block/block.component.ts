@@ -163,7 +163,6 @@ export class BlockComponent implements OnInit, OnDestroy {
         this.block = undefined;
         this.error = undefined;
         this.fees = undefined;
-        this.blockAudit = undefined;
         this.oobFees = 0;
 
         if (history.state.data && history.state.data.blockHeight) {
