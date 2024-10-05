@@ -30,7 +30,7 @@
       @if (digitsInfo === '1.8-8') {
         &lrm;{{ addPlus && satoshis >= 0 ? '+' : '' }}{{ satoshis | number }}
       } @else { 
-        &lrm;{{ addPlus && satoshis >= 0 ? '+' : '' }}{{ satoshis | amountShortener : satoshis < 1000 && satoshis > -1000 ? 0 : 1 }}
+        &lrm;{{ addPlus && satoshis >= 0 ? '+' : '' }}{{ satoshis | amountShortener : (satoshis < 1000 && satoshis > -1000 ? 0 : 1) : undefined : true }}
       }
       <span class="symbol">
         <ng-container *ngTemplateOutlet="prefix"></ng-container>sats
