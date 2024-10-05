@@ -165,7 +165,7 @@ export class ServicesApiServices {
       return this.getAccelerationHistoryObserveResponse$({...params, page}).pipe(
         map((response) => ({
           page,
-          total: parseInt(response.headers.get('X-Total-Count'), 10),
+          total: parseInt(response.headers.get('X-Total-Count'), 10) || 0,
           accelerations: accelerations.concat(response.body || []),
         })),
         switchMap(({page, total, accelerations}) => {
