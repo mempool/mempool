@@ -160,6 +160,7 @@ export interface AddressTxSummary {
   height: number;
   time: number;
   price?: number;
+  tx_position?: number;
 }
 
 export interface ChainStats {

@@ -34,6 +34,8 @@ export class WebsocketService {
   private isTrackingAddress: string | false = false;
   private isTrackingAddresses: string[] | false = false;
   private isTrackingAccelerations: boolean = false;
+  private isTrackingWallet: boolean = false;
+  private trackingWalletName: string;
   private trackingMempoolBlock: number;
   private stoppingTrackMempoolBlock: any | null = null;
   private latestGitCommit = '';
@@ -137,6 +139,9 @@ export class WebsocketService {
           if (this.isTrackingAccelerations) {
             this.startTrackAccelerations();
           }
+          if (this.isTrackingWallet) {
+            this.startTrackingWallet(this.trackingWalletName);
+          }
           this.stateService.connectionState$.next(2);
         }
 
@@ -194,6 +199,18 @@ export class WebsocketService {
   stopTrackingAddresses() {
     this.websocketSubject.next({ 'track-addresses': [] });
     this.isTrackingAddresses = false;
+  }
+
+  startTrackingWallet(walletName: string) {
+    this.websocketSubject.next({ 'track-wallet': walletName });
+    this.isTrackingWallet = true;
+    this.trackingWalletName = walletName;
+  }
+
+  stopTrackingWallet() {
+    this.websocketSubject.next({ 'track-wallet': 'stop' });
+    this.isTrackingWallet = false;
+    this.trackingWalletName = '';
   }
 
   startTrackAsset(asset: string) {
@@ -450,6 +467,10 @@ export class WebsocketService {
           }
         }
       }
+    }
+
+    if (response['wallet-transactions']) {
+      this.stateService.walletTransactions$.next(response['wallet-transactions']);
     }
 
     if (response['accelerations']) {
