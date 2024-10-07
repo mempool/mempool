@@ -9168,6 +9168,8 @@ export const restApiDocsData = [
       <li><code>blockHeight</code>: a block height</a>
       <li><code>page</code>: the requested page number if using pagination <i>(min: 1)</i></a>
       <li><code>pageLength</code>: the page lenght if using pagination <i>(min: 1, max: 50)</i></a>
+      <li><code>from</code>: unix timestamp (<i>overrides <code>timeframe</code></i>)</a>
+      <li><code>to</code>: unix timestamp (<i>overrides <code>timeframe</code></i>)</a>
       </ul></p>`
     },
     urlString: "/v1/services/accelerator/accelerations/history",
