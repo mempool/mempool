@@ -365,6 +365,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     TwitterWidgetComponent,
     TwitterLogin,
     BitcoinInvoiceComponent,
+    BitcoinsatoshisPipe,
 
     MempoolBlockOverviewComponent,
     ClockchainComponent,

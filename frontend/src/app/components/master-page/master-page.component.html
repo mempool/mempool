@@ -85,7 +85,6 @@
       <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" id="btn-home" *ngIf="network.val === '' && stateService.env.ACCELERATOR">
         <a class="nav-link" [routerLink]="['/acceleration' | relativeUrl]" (click)="collapse()">
           <fa-icon [icon]="['fas', 'rocket']" [fixedWidth]="true" i18n-title="master-page.accelerator-dashboard" title="Accelerator Dashboard"></fa-icon>
-          <span class="badge badge-pill badge-warning beta" i18n="beta">beta</span>
         </a>
       </li>
       <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" id="btn-pools" *ngIf="stateService.env.MINING_DASHBOARD">
