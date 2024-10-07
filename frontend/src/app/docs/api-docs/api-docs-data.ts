@@ -9163,7 +9163,7 @@ export const restApiDocsData = [
       Filters can be applied:<ul>
       <li><code>status</code>: <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code></li>
       <li><code>timeframe</code>: <code>24h</code>, <code>3d</code>, <code>1w</code>, <code>1m</code>, <code>3m</code>, <code>6m</code>, <code>1y</code>, <code>2y</code>, <code>3y</code>, <code>4y</code>, <code>all</code></li>
-      <li><code>poolUniqueId</code>: any id from <a target="_blank" href="https://github.com/mempool/mining-pools/blob/master/pools-v2.json">https://github.com/mempool/mining-pools/blob/master/pools-v2.json</a>. <i>Note: This will return all acceleration requests accepted by the pool but the the listed transactions may have been mined by another pool.</i>
+      <li><code>minedByPoolUniqueId</code>: any id from <a target="_blank" href="https://github.com/mempool/mining-pools/blob/master/pools-v2.json">pools-v2.json</a>
       <li><code>blockHash</code>: a block hash</a>
       <li><code>blockHeight</code>: a block height</a>
       <li><code>page</code>: the requested page number if using pagination <i>(min: 1)</i></a>
@@ -9187,21 +9187,22 @@ export const restApiDocsData = [
           headers: '',
           response: `[
   {
-    "txid": "d7e1796d8eb4a09d4e6c174e36cfd852f1e6e6c9f7df4496339933cd32cbdd1d",
-    "status": "completed",
-    "added": 1707421053,
-    "lastUpdated": 1719134667,
-    "effectiveFee": 146,
-    "effectiveVsize": 141,
-    "feeDelta": 14000,
-    "blockHash": "00000000000000000000482f0746d62141694b9210a813b97eb8445780a32003",
-    "blockHeight": 829559,
-    "bidBoost": 3239,
-    "boostVersion": "v1",
+    "txid": "f829900985aad885c13fb90555d27514b05a338202c7ef5d694f4813ad474487",
+    "status": "completed_provisional",
+    "added": 1728111527,
+    "lastUpdated": 1728112113,
+    "effectiveFee": 1385,
+    "effectiveVsize": 276,
+    "feeDelta": 3000,
+    "blockHash": "00000000000000000000cde89e34036ece454ca2d07ddd7f71ab46307ca87423",
+    "blockHeight": 864248,
+    "bidBoost": 65,
+    "boostVersion": "v2",
     "pools": [
-      111
+      111,
+      115,
     ],
-    "minedByPoolUniqueId": 111
+    "minedByPoolUniqueId": 115
   }
 ]`,
         },
