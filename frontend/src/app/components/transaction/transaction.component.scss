@@ -60,6 +60,19 @@
 	top: -1px;
 }
 
+.miner-name {
+  margin-right: 4px;
+  vertical-align: top;
+}
+
+.pool-logo {
+  width: 25px;
+  height: 25px;
+  position: relative;
+  top: -1px;
+  margin-right: 2px;
+}
+
 .badge.badge-accelerated {
   background-color: var(--tertiary);
   color: white;
@@ -287,37 +300,21 @@
 }
 
 .accelerate {
-  display: flex !important;
-  align-self: auto;
-  margin-left: auto;
-  background-color: var(--tertiary);
-  @media (max-width: 849px) {
-    margin-left: 5px;
-  }
+  @media (min-width: 850px) {
+    margin-left: auto;
+  }  
 }
 
 .etaDeepMempool {
-  justify-content: flex-end;
   flex-wrap: wrap;
-  align-content: center;
-  @media (max-width: 995px) {
-    justify-content: left !important;
-  }
   @media (max-width: 849px) {
     justify-content: right !important;
   }
 }
 
 .accelerateDeepMempool {
-  align-self: auto;
-  margin-left: auto;
   background-color: var(--tertiary);
-  @media (max-width: 995px) {
-    margin-left: 0px;
-  }
-  @media (max-width: 849px) {
-    margin-left: 5px;
-  }
+  margin-left: 5px;
 }
 
 .goggles-icon {
@@ -335,4 +332,9 @@
 
 .oobFees {
   color: #905cf4;
+}
+
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
 }

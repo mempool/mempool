@@ -195,7 +195,7 @@ const defaults: IConfig = {
     'POOLS_JSON_TREE_URL': 'https://api.github.com/repos/mempool/mining-pools/git/trees/master',
     'POOLS_UPDATE_DELAY': 604800, // in seconds, default is one week
     'AUDIT': false,
-    'RUST_GBT': false,
+    'RUST_GBT': true,
     'LIMIT_GBT': false,
     'CPFP_INDEXING': false,
     'MAX_BLOCKS_BULK_QUERY': 0,

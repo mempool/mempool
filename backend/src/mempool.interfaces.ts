@@ -299,6 +299,7 @@ export interface BlockExtension {
     id: number; // Note - This is the `unique_id`, not to mix with the auto increment `id`
     name: string;
     slug: string;
+    minerNames: string[] | null;
   };
   avgFee: number;
   avgFeeRate: number;

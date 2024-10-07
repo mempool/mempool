@@ -21,7 +21,7 @@
       </ng-template>
     </span>
     <span class="field col-sm-4 text-center"><ng-container *ngIf="transactionTime > 0">&lrm;{{ transactionTime * 1000 | date:'yyyy-MM-dd HH:mm' }}</ng-container></span>
-    <span class="field col-sm-4 text-right"><span class="label" i18n="transaction.fee|Transaction fee">Fee</span> {{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span></span>
+    <span class="field col-sm-4 text-right"><span class="label" i18n="transaction.fee|Transaction fee">Fee</span> {{ tx.fee | number }} <span class="symbol" i18n="shared.sats">sats</span></span>
   </div>
 
 

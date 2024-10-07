@@ -1567,7 +1567,7 @@
       </trans-unit>
       <trans-unit id="bdb8bbb38e4ca3c73e19dc4167fbe4aec316f818" datatype="html">
         <source>Total Bid Boost</source>
-        <target>Ukupno povećanje ponude</target>
+        <target>Total Bid Boost</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-stats/acceleration-stats.component.html</context>
           <context context-type="linenumber">11</context>
@@ -1969,7 +1969,7 @@
       </trans-unit>
       <trans-unit id="841f2a74ae5095e6e37f5749f3cc1851cf36a420" datatype="html">
         <source>Avg Max Bid</source>
-        <target>Prosječna maks. ponuda</target>
+        <target>Prosj. max ponuda</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/pending-stats/pending-stats.component.html</context>
           <context context-type="linenumber">11</context>
@@ -3622,7 +3622,7 @@
       </trans-unit>
       <trans-unit id="14779b0ce4cbc4d975a35a8fe074426228a324f3" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="transactions&lt;/ng-template&gt;   &lt;/h2&gt;   &lt;ngb-pagination class=&quot;pagination-container float-ri"/> transactions</source>
-        <target><x id="INTERPOLATION" equiv-text="transactions&lt;/ng-template&gt;   &lt;/h2&gt;   &lt;ngb-pagination class=&quot;pagination-container float-ri"/> transakcije</target>
+        <target><x id="INTERPOLATION" equiv-text="transactions&lt;/ng-template&gt;   &lt;/h2&gt;   &lt;ngb-pagination class=&quot;pagination-container float-ri"/> transakcija</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block-transactions.component.html</context>
           <context context-type="linenumber">5</context>
@@ -4046,7 +4046,7 @@
       </trans-unit>
       <trans-unit id="8a7b4bd44c0ac71b2e72de0398b303257f7d2f54" datatype="html">
         <source>Blocks</source>
-        <target>Blokovi</target>
+        <target>Blokova</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
           <context context-type="linenumber">4</context>
@@ -4360,7 +4360,7 @@
       </trans-unit>
       <trans-unit id="23c872b0336e20284724607f2887da39bd8142c3" datatype="html">
         <source>Previous fee</source>
-        <target>Prethodna naknada</target>
+        <target>Preth. naknada</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/custom-dashboard/custom-dashboard.component.html</context>
           <context context-type="linenumber">107</context>
@@ -4594,7 +4594,7 @@
       </trans-unit>
       <trans-unit id="1bb6965f8e1bbe40c076528ffd841da86f57f119" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;blocks&lt;/span&gt;&lt;/ng-template&gt;             &lt;ng-"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>blocks<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
-        <target><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;blocks&lt;/span&gt;&lt;/ng-template&gt;             &lt;ng-"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>blokovi<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+        <target><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;blocks&lt;/span&gt;&lt;/ng-template&gt;             &lt;ng-"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>blokova<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">10,11</context>
@@ -4671,7 +4671,7 @@
       </trans-unit>
       <trans-unit id="df71fa93f0503396ea2bb3ba5161323330314d6c" datatype="html">
         <source>Next Halving</source>
-        <target>Sljedeće prepolovljenje</target>
+        <target>Slj prepolovljenje</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">47</context>
@@ -5465,7 +5465,7 @@
       </trans-unit>
       <trans-unit id="1a8246eba9a999ee881248c4767d63b875ef07fe" datatype="html">
         <source>blocks</source>
-        <target>blokovi</target>
+        <target>blokova</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component.html</context>
           <context context-type="linenumber">63</context>
@@ -5885,7 +5885,7 @@
       </trans-unit>
       <trans-unit id="9ef8b357c32266f8423e24bf654006d3aa8fcd0b" datatype="html">
         <source>Blocks (1w)</source>
-        <target>Blokova (1w)</target>
+        <target>Blokova (1 tj)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">25</context>
@@ -6165,7 +6165,7 @@
       </trans-unit>
       <trans-unit id="3dc78651b2810cbb6e830fe7e57499d8cf6a8e4d" datatype="html">
         <source>Blocks (24h)</source>
-        <target>Blokovi (24h)</target>
+        <target>Blokova (24h)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">120</context>
@@ -6815,7 +6815,7 @@
       </trans-unit>
       <trans-unit id="time-until" datatype="html">
         <source>In ~<x id="DATE" equiv-text="dateStrings.i18nYear"/></source>
-        <target>U ~<x id="DATE" equiv-text="dateStrings.i18nYear"/></target>
+        <target>Za ~<x id="DATE" equiv-text="dateStrings.i18nYear"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
           <context context-type="linenumber">188</context>

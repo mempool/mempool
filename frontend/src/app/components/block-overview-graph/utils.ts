@@ -11,6 +11,10 @@ export function hexToColor(hex: string): Color {
   };
 }
 
+export function colorToHex(color: Color): string {
+  return [color.r, color.g, color.b].map(c => Math.round(c * 255).toString(16)).join('');
+}
+
 export function desaturate(color: Color, amount: number): Color {
   const gray = (color.r + color.g + color.b) / 6;
   return {
@@ -27,6 +31,15 @@ export function darken(color: Color, amount: number): Color {
     g: color.g * amount,
     b: color.b * amount,
     a: color.a,
+  };
+}
+
+export function mix(color1: Color, color2: Color, amount: number): Color {
+  return {
+    r: color1.r * (1 - amount) + color2.r * amount,
+    g: color1.g * (1 - amount) + color2.g * amount,
+    b: color1.b * (1 - amount) + color2.b * amount,
+    a: color1.a * (1 - amount) + color2.a * amount,
   };
 }
 
@@ -141,6 +154,10 @@ export function defaultColorFunction(
     case 'added_prioritized':
       return auditColors.added_prioritized;
     case 'prioritized':
+      return auditColors.prioritized;
+    case 'added_deprioritized':
+      return auditColors.added_prioritized;
+    case 'deprioritized':
       return auditColors.prioritized;
     case 'selected':
       return colors.marginal[levelIndex] || colors.marginal[defaultMempoolFeeColors.length - 1];

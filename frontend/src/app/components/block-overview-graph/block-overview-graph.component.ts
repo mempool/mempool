@@ -198,7 +198,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   }
 
   // initialize the scene without any entry transition
-  setup(transactions: TransactionStripped[]): void {
+  setup(transactions: TransactionStripped[], sort: boolean = false): void {
     const filtersAvailable = transactions.reduce((flagSet, tx) => flagSet || tx.flags > 0, false);
     if (filtersAvailable !== this.filtersAvailable) {
       this.setFilterFlags();
@@ -206,7 +206,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     this.filtersAvailable = filtersAvailable;
     if (this.scene) {
       this.clearUpdateQueue();
-      this.scene.setup(transactions);
+      this.scene.setup(transactions, sort);
       this.readyNextFrame = true;
       this.start();
       this.updateSearchHighlight();

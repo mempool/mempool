@@ -264,7 +264,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
           type: 'bar',
           barWidth: '90%',
           large: true,
-          barMinHeight: 1,
+          barMinHeight: 3,
         },
       ],
       dataZoom: (this.widget || data.length === 0 )? undefined : [{

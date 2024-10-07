@@ -77,7 +77,7 @@ export class DifficultyMiningComponent implements OnInit {
           base: `${da.progressPercent.toFixed(2)}%`,
           change: da.difficultyChange,
           progress: da.progressPercent,
-          remainingBlocks: da.remainingBlocks - 1,
+          remainingBlocks: da.remainingBlocks,
           colorAdjustments,
           colorPreviousAdjustments,
           newDifficultyHeight: da.nextRetargetHeight,

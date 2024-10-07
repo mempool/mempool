@@ -1,5 +1,7 @@
 import { MempoolBlockDelta, MempoolBlockDeltaCompressed, MempoolDeltaChange, TransactionCompressed } from "../interfaces/websocket.interface";
 import { TransactionStripped } from "../interfaces/node-api.interface";
+import { AmountShortenerPipe } from "./pipes/amount-shortener.pipe";
+const amountShortenerPipe = new AmountShortenerPipe();
 
 export function isMobile(): boolean {
   return (window.innerWidth <= 767.98);
@@ -170,8 +172,9 @@ export function uncompressTx(tx: TransactionCompressed): TransactionStripped {
   };
 }
 
-export function uncompressDeltaChange(delta: MempoolBlockDeltaCompressed): MempoolBlockDelta {
+export function uncompressDeltaChange(block: number, delta: MempoolBlockDeltaCompressed): MempoolBlockDelta {
   return {
+    block,
     added: delta.added.map(uncompressTx),
     removed: delta.removed,
     changed: delta.changed.map(tx => ({
@@ -181,6 +184,33 @@ export function uncompressDeltaChange(delta: MempoolBlockDeltaCompressed): Mempo
       acc: !!tx[3],
     }))
   };
+}
+
+export function renderSats(value: number, network: string, mode: 'sats' | 'btc' | 'auto' = 'auto'): string {
+  let prefix = '';
+  switch (network) {
+    case 'liquid':
+      prefix = 'L';
+      break;
+    case 'liquidtestnet':
+      prefix = 'tL';
+      break;
+    case 'testnet':
+    case 'testnet4':
+      prefix = 't';
+      break;
+    case 'signet':
+      prefix = 's';
+      break;
+  }
+  if (mode === 'btc' || (mode === 'auto' && value >= 1000000)) {
+    return `${amountShortenerPipe.transform(value / 100000000, 2)} ${prefix}BTC`;
+  } else {
+    if (prefix.length) {
+      prefix += '-';
+    }
+    return `${amountShortenerPipe.transform(value, 2)} ${prefix}sats`;
+  }
 }
 
 export function insecureRandomUUID(): string {

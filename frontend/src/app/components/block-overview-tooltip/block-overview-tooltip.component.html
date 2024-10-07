@@ -40,7 +40,7 @@
       </tr>
       <tr>
         <td class="label" i18n="transaction.fee|Transaction fee">Fee</td>
-        <td class="value">{{ fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> &nbsp; <span class="fiat"><app-fiat [blockConversion]="blockConversion" [value]="fee"></app-fiat></span>
+        <td class="value">{{ fee | number }} <span class="symbol" i18n="shared.sats">sats</span> &nbsp; <span class="fiat"><app-fiat [blockConversion]="blockConversion" [value]="fee"></app-fiat></span>
       </tr>
       <tr>
         <td class="label" i18n="transaction.fee-rate|Transaction fee rate">Fee rate</td>
@@ -78,6 +78,11 @@
             <ng-container *ngSwitchCase="'added_prioritized'">
               <span class="badge badge-warning" i18n="tx-features.tag.added|Added">Added</span>
               <span class="badge badge-warning ml-1" i18n="tx-features.tag.prioritized|Prioritized">Prioritized</span>
+            </ng-container>
+            <span *ngSwitchCase="'deprioritized'" class="badge badge-warning" i18n="tx-features.tag.prioritized|Deprioritized">Deprioritized</span>
+            <ng-container *ngSwitchCase="'added_deprioritized'">
+              <span class="badge badge-warning" i18n="tx-features.tag.added|Added">Added</span>
+              <span class="badge badge-warning ml-1" i18n="tx-features.tag.prioritized|Deprioritized">Deprioritized</span>
             </ng-container>
             <span *ngSwitchCase="'selected'" class="badge badge-warning" i18n="transaction.audit.marginal">Marginal fee rate</span>
             <span *ngSwitchCase="'rbf'" class="badge badge-warning" i18n="tx-features.tag.conflict|Conflict">Conflict</span>

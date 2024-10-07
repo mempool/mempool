@@ -42,6 +42,7 @@ interface Pool {
   id: number;
   name: string;
   slug: string;
+  minerNames: string[] | null;
 }
 
 export interface TxAuditStatus {
@@ -139,6 +140,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   firstLoad = true;
   waitingForAccelerationInfo: boolean = false;
   isLoadingFirstSeen = false;
+  notAcceleratedOnLoad: boolean = null;
 
   featuresEnabled: boolean;
   segwitEnabled: boolean;
@@ -191,7 +193,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.hideAccelerationSummary = this.stateService.isMempoolSpaceBuild ? this.storageService.getValue('hide-accelerator-pref') == 'true' : true;
 
     if (!this.stateService.isLiquid()) {
-      this.miningService.getMiningStats('1w').subscribe(stats => {
+      this.miningService.getMiningStats('1m').subscribe(stats => {
         this.miningStats = stats;
       });
     }
@@ -343,7 +345,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.setIsAccelerated();
       }),
       switchMap((blockHeight: number) => {
-        return this.servicesApiService.getAccelerationHistory$({ blockHeight }).pipe(
+        return this.servicesApiService.getAllAccelerationHistory$({ blockHeight }, null, this.txId).pipe(
           switchMap((accelerationHistory: Acceleration[]) => {
             if (this.tx.acceleration && !accelerationHistory.length) { // If the just mined transaction was accelerated, but services backend did not return any acceleration data, retry
               return throwError('retry');
@@ -358,12 +360,18 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       }),
     ).subscribe((accelerationHistory) => {
       for (const acceleration of accelerationHistory) {
-        if (acceleration.txid === this.txId && (acceleration.status === 'completed' || acceleration.status === 'completed_provisional')) {
-          const boostCost = acceleration.boostCost || acceleration.bidBoost;
-          acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
-          acceleration.boost = boostCost;
-          this.tx.acceleratedAt = acceleration.added;
-          this.accelerationInfo = acceleration;
+        if (acceleration.txid === this.txId) {
+          if (acceleration.status === 'completed' || acceleration.status === 'completed_provisional') {
+            if (acceleration.pools.includes(acceleration.minedByPoolUniqueId)) {
+              const boostCost = acceleration.boostCost || acceleration.bidBoost;
+              acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
+              acceleration.boost = boostCost;
+              this.tx.acceleratedAt = acceleration.added;
+              this.accelerationInfo = acceleration;  
+            } else {
+              this.tx.feeDelta = undefined;
+            }
+          }
           this.waitingForAccelerationInfo = false;
           this.setIsAccelerated();
         }
@@ -484,7 +492,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           if (this.stateService.network === '') {
             if (!this.mempoolPosition.accelerated) {
               if (!this.accelerationFlowCompleted && !this.hideAccelerationSummary && !this.showAccelerationSummary) {
-                this.miningService.getMiningStats('1w').subscribe(stats => {
+                this.miningService.getMiningStats('1m').subscribe(stats => {
                   this.miningStats = stats;
                 });
               }
@@ -842,6 +850,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.tx.feeDelta = cpfpInfo.feeDelta;
       this.setIsAccelerated(firstCpfp);
     }
+    
+    if (this.notAcceleratedOnLoad === null) {
+      this.notAcceleratedOnLoad = !this.isAcceleration;
+    }
 
     if (!this.isAcceleration && this.fragmentParams.has('accelerate')) {
       this.forceAccelerationSummary = true;
@@ -895,7 +907,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.segwitEnabled = !this.tx.status.confirmed || isFeatureActive(this.stateService.network, this.tx.status.block_height, 'segwit');
       this.taprootEnabled = !this.tx.status.confirmed || isFeatureActive(this.stateService.network, this.tx.status.block_height, 'taproot');
       this.rbfEnabled = !this.tx.status.confirmed || isFeatureActive(this.stateService.network, this.tx.status.block_height, 'rbf');
-      this.tx.flags = getTransactionFlags(this.tx);
+      this.tx.flags = getTransactionFlags(this.tx, null, null, this.tx.status?.block_time, this.stateService.network);
       this.filters = this.tx.flags ? toFilters(this.tx.flags).filter(f => f.txPage) : [];
       this.checkAccelerationEligibility();
     } else {
@@ -960,6 +972,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.filters = [];
     this.showCpfpDetails = false;
     this.showAccelerationDetails = false;
+    this.accelerationFlowCompleted = false;
     this.accelerationInfo = null;
     this.cashappEligible = false;
     this.txInBlockIndex = null;
@@ -1077,6 +1090,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         (!this.hideAccelerationSummary && !this.accelerationFlowCompleted)
         || this.forceAccelerationSummary
       )
+      && this.notAcceleratedOnLoad // avoid briefly showing accelerator checkout on already accelerated txs
     );
   }
 

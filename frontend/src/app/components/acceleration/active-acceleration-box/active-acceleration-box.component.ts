@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, Input, Output, OnChanges, SimpleChanges, EventEmitter } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input, Output, OnChanges, SimpleChanges, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { Transaction } from '../../../interfaces/electrs.interface';
 import { Acceleration, SinglePoolStats } from '../../../interfaces/node-api.interface';
 import { EChartsOption, PieSeriesOption } from '../../../graphs/echarts';
@@ -23,7 +23,8 @@ function toRGB({r,g,b}): string {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ActiveAccelerationBox implements OnChanges {
-  @Input() tx: Transaction;
+  @Input() acceleratedBy?: number[];
+  @Input() effectiveFeeRate?: number;
   @Input() accelerationInfo: Acceleration;
   @Input() miningStats: MiningStats;
   @Input() pools: number[];
@@ -41,10 +42,12 @@ export class ActiveAccelerationBox implements OnChanges {
   timespan = '';
   chartInstance: any = undefined;
 
-  constructor() {}
+  constructor(
+    private cd: ChangeDetectorRef,
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    const pools = this.pools || this.accelerationInfo?.pools || this.tx.acceleratedBy;
+    const pools = this.pools || this.accelerationInfo?.pools || this.acceleratedBy;
     if (pools && this.miningStats) {
       this.prepareChartOptions(pools);
     }
@@ -67,13 +70,17 @@ export class ActiveAccelerationBox implements OnChanges {
 
     const acceleratingPools = (poolList || []).filter(id => pools[id]).sort((a,b) => pools[a].lastEstimatedHashrate - pools[b].lastEstimatedHashrate);
     const totalAcceleratedHashrate = acceleratingPools.reduce((total, pool) => total + pools[pool].lastEstimatedHashrate, 0);
-    const lightenStep = acceleratingPools.length ? (0.48 / acceleratingPools.length) : 0;
+    // Find the first pool with at least 1% of the total network hashrate
+    const firstSignificantPool = acceleratingPools.findIndex(pool => pools[pool].lastEstimatedHashrate > this.miningStats.lastEstimatedHashrate / 100);
+    const numSignificantPools = acceleratingPools.length - firstSignificantPool;
     acceleratingPools.forEach((poolId, index) => {
       const pool = pools[poolId];
       const poolShare = ((pool.lastEstimatedHashrate / this.miningStats.lastEstimatedHashrate) * 100).toFixed(1);
       data.push(getDataItem(
         pool.lastEstimatedHashrate,
-        toRGB(lighten({ r: 147, g: 57, b: 244 }, index * lightenStep)),
+        index >= firstSignificantPool
+          ? toRGB(lighten({ r: 147, g: 57, b: 244 }, 1 - (index - firstSignificantPool) / (numSignificantPools - 1)))
+          : 'white',
         `<b style="color: white">${pool.name} (${poolShare}%)</b>`,
         true,
       ) as PieSeriesOption);
@@ -128,6 +135,7 @@ export class ActiveAccelerationBox implements OnChanges {
         }
       ]
     };
+    this.cd.markForCheck();
   }
 
   onChartInit(ec) {
