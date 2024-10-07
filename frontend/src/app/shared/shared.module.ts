@@ -102,6 +102,7 @@ import { AccelerationsListComponent } from '../components/acceleration/accelerat
 import { PendingStatsComponent } from '../components/acceleration/pending-stats/pending-stats.component';
 import { AccelerationStatsComponent } from '../components/acceleration/acceleration-stats/acceleration-stats.component';
 import { AccelerationSparklesComponent } from '../components/acceleration/sparkles/acceleration-sparkles.component';
+import { OrdDataComponent } from '../components/ord-data/ord-data.component';
 
 import { BlockViewComponent } from '../components/block-view/block-view.component';
 import { EightBlocksComponent } from '../components/eight-blocks/eight-blocks.component';
@@ -229,6 +230,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     AccelerationStatsComponent,
     PendingStatsComponent,
     AccelerationSparklesComponent,
+    OrdDataComponent,
     HttpErrorComponent,
     TwitterWidgetComponent,
     FaucetComponent,
@@ -361,6 +363,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     AccelerationStatsComponent,
     PendingStatsComponent,
     AccelerationSparklesComponent,
+    OrdDataComponent,
     HttpErrorComponent,
     TwitterWidgetComponent,
     TwitterLogin,

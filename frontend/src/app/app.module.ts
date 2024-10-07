@@ -6,6 +6,7 @@ import { ZONE_SERVICE } from './injection-tokens';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './components/app/app.component';
 import { ElectrsApiService } from './services/electrs-api.service';
+import { OrdApiService } from './services/ord-api.service';
 import { StateService } from './services/state.service';
 import { CacheService } from './services/cache.service';
 import { PriceService } from './services/price.service';
@@ -32,6 +33,7 @@ import { DatePipe } from '@angular/common';
 
 const providers = [
   ElectrsApiService,
+  OrdApiService,
   StateService,
   CacheService,
   PriceService,
