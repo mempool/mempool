@@ -176,3 +176,14 @@ h2 {
 		overflow: hidden;	
 	}
 }
+
+.badge-ord {
+	background-color: var(--grey);
+	position: relative;
+	top: -2px;
+	font-size: 81%;
+	border: 0;
+	&.primary {
+		background-color: var(--primary);
+	}
+}

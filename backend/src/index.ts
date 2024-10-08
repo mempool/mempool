@@ -211,6 +211,8 @@ class Server {
         }
       });
     }
+
+    poolsUpdater.$startService();
   }
 
   async runMainUpdateLoop(): Promise<void> {

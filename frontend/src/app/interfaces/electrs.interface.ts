@@ -74,6 +74,8 @@ export interface Vin {
   issuance?: Issuance;
   // Custom
   lazy?: boolean;
+  // Ord
+  isInscription?: boolean;
 }
 
 interface Issuance {
@@ -98,6 +100,8 @@ export interface Vout {
   valuecommitment?: number;
   asset?: string;
   pegout?: Pegout;
+  // Ord
+  isRunestone?: boolean;
 }
 
 interface Pegout {
