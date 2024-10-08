@@ -34,10 +34,8 @@ export class OrdDataComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.runestone && this.runestone) {
-      this.transferredRunes = Object.entries(this.runeInfo).map(([key, runeInfo]) => ({ key, ...runeInfo }));
       if (this.runestone.mint && this.runeInfo[this.runestone.mint.toString()]) {
         const mint = this.runestone.mint.toString();
-        this.transferredRunes = this.transferredRunes.filter(rune => rune.key !== mint);
         const terms = this.runeInfo[mint].etching.terms;
         const amount = terms?.amount;
         const divisibility = this.runeInfo[mint].etching.divisibility;
@@ -45,6 +43,12 @@ export class OrdDataComponent implements OnChanges {
           this.minted = this.getAmount(amount, divisibility);
         }
       }
+
+      this.runestone.edicts.forEach(edict => {
+        if (this.runeInfo[edict.id.toString()]) {
+          this.transferredRunes.push({ key: edict.id.toString(), ...this.runeInfo[edict.id.toString()] });
+        }
+      });    
     }
 
     if (changes.inscriptions && this.inscriptions) {
