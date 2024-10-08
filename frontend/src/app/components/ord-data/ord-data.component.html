@@ -9,7 +9,7 @@
   @if (runestone?.etching.premine > 0) {
     <ng-container i18n="ord.premine-n-runes">
       <span>Premine</span>
-      <span class="amount"> {{ runestone.etching.premine >= 100000 ? (toNumber(runestone.etching.premine) | amountShortener:undefined:undefined:true) : runestone.etching.premine }} </span>
+      <span class="amount"> {{ getAmount(runestone.etching.premine, runestone.etching.divisibility || 0)  >= 100000 ? (getAmount(runestone.etching.premine, runestone.etching.divisibility || 0) | amountShortener:undefined:undefined:true) : getAmount(runestone.etching.premine, runestone.etching.divisibility || 0) }} </span>
       {{ runestone.etching.symbol }}
       <span class="name">{{ runestone.etching.spacedName }}</span>
       <span> ({{ toNumber(runestone.etching.premine) / toNumber(runestone.etching.supply) * 100 | amountShortener:0}}% of total supply)</span>
