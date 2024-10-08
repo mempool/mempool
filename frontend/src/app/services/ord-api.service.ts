@@ -3,10 +3,9 @@ import { catchError, forkJoin, map, Observable, of, switchMap, tap } from 'rxjs'
 import { Inscription } from '../components/ord-data/ord-data.component';
 import { Transaction } from '../interfaces/electrs.interface';
 import { getNextInscriptionMark, hexToBytes, extractInscriptionData } from '../shared/ord/inscription.utils';
-import { Runestone } from '../shared/ord/rune/runestone';
-import { Etching } from '../shared/ord/rune/etching';
+import { decipherRunestone, Runestone, Etching, UNCOMMON_GOODS } from '../shared/ord/rune.utils';
 import { ElectrsApiService } from './electrs-api.service';
-import { UNCOMMON_GOODS } from '../shared/ord/rune/runestone';
+
 
 @Injectable({
   providedIn: 'root'
@@ -18,27 +17,16 @@ export class OrdApiService {
   ) { }
 
   decodeRunestone$(tx: Transaction): Observable<{ runestone: Runestone, runeInfo: { [id: string]: { etching: Etching; txid: string; } } }> {
-    const runestoneTx = { vout: tx.vout.map(vout => ({ scriptpubkey: vout.scriptpubkey })) };
-    const decipher = Runestone.decipher(runestoneTx);
-
-    // For now, ignore cenotaphs
-    let message = decipher.isSome() ? decipher.unwrap() : null;
-    if (message?.type === 'cenotaph') {
-      return of({ runestone: null, runeInfo: {} });
-    }
-
-    const runestone = message as Runestone;
+    const runestone = decipherRunestone(tx);
     const runeInfo: { [id: string]: { etching: Etching; txid: string; } } = {};
     const runesToFetch: Set<string> = new Set();
 
     if (runestone) {
-      if (runestone.mint.isSome()) {
-        const mint = runestone.mint.unwrap().toString();
-
-        if (mint === '1:0') {
-          runeInfo[mint] = { etching: UNCOMMON_GOODS, txid: '0000000000000000000000000000000000000000000000000000000000000000' };
+      if (runestone.mint) {
+        if (runestone.mint.toString() === '1:0') {
+          runeInfo[runestone.mint.toString()] = { etching: UNCOMMON_GOODS, txid: '0000000000000000000000000000000000000000000000000000000000000000' };
         } else {
-          runesToFetch.add(mint);
+          runesToFetch.add(runestone.mint.toString());
         }
       }
 
@@ -65,9 +53,10 @@ export class OrdApiService {
           })
         );
       }
+      return of({ runestone: runestone, runeInfo });
+    } else {
+      return of({ runestone: null, runeInfo: {} });
     }
-
-    return of({ runestone: runestone, runeInfo });
   }
 
   // Get etching from runeId by looking up the transaction that etched the rune
@@ -78,11 +67,11 @@ export class OrdApiService {
       switchMap(blockHash => this.electrsApiService.getBlockTxId$(blockHash, parseInt(txIndex))),
       switchMap(txId => this.electrsApiService.getTransaction$(txId)),
       switchMap(tx => {
-        const decipheredMessage = Runestone.decipher(tx);
-        if (decipheredMessage.isSome()) {
-          const message = decipheredMessage.unwrap();
-          if (message?.type === 'runestone' && message.etching.isSome()) {
-            return of({ etching: message.etching.unwrap(), txid: tx.txid });
+        const runestone = decipherRunestone(tx);
+        if (runestone) {
+          const etching = runestone.etching;
+          if (etching) {
+            return of({ etching, txid: tx.txid });
           }
         }
         return of(null);
