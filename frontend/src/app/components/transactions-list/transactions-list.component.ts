@@ -6,15 +6,14 @@ import { Outspend, Transaction, Vin, Vout } from '../../interfaces/electrs.inter
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { environment } from '../../../environments/environment';
 import { AssetsService } from '../../services/assets.service';
-import { filter, map, tap, switchMap, shareReplay, catchError } from 'rxjs/operators';
+import { filter, map, tap, switchMap, catchError } from 'rxjs/operators';
 import { BlockExtended } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { PriceService } from '../../services/price.service';
 import { StorageService } from '../../services/storage.service';
 import { OrdApiService } from '../../services/ord-api.service';
 import { Inscription } from '../ord-data/ord-data.component';
-import { Runestone } from '../../shared/ord/rune/runestone';
-import { Etching } from '../../shared/ord/rune/etching';
+import { Etching, Runestone } from '../../shared/ord/rune.utils';
 
 @Component({
   selector: 'app-transactions-list',
@@ -261,7 +260,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
               tx.vout[i].isRunestone = true;
               break;
             }
-          }  
+          }
         }
       });
 

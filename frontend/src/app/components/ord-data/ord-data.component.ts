@@ -1,9 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { Runestone } from '../../shared/ord/rune/runestone';
-import { Etching } from '../../shared/ord/rune/etching';
-import { u128, u32, u8 } from '../../shared/ord/rune/integer';
 import { HttpErrorResponse } from '@angular/common/http';
-import { SpacedRune } from '../../shared/ord/rune/spacedrune';
+import { Runestone, Etching } from '../../shared/ord/rune.utils';
 
 export interface Inscription {
   body?: Uint8Array;
@@ -22,77 +19,32 @@ export interface Inscription {
 export class OrdDataComponent implements OnChanges {
   @Input() inscriptions: Inscription[];
   @Input() runestone: Runestone;
-  @Input() runeInfo: { [id: string]: { etching: Etching; txid: string; name?: string; } };
+  @Input() runeInfo: { [id: string]: { etching: Etching; txid: string } };
   @Input() error: HttpErrorResponse;
   @Input() type: 'vin' | 'vout';
+
+  toNumber = (value: bigint): number => Number(value);
 
   // Inscriptions
   inscriptionsData: { [key: string]: { count: number, totalSize: number, text?: string; json?: JSON; tag?: string; delegate?: string } };
   // Rune mints
   minted: number;
-  // Rune etching
-  premined: number = -1;
-  totalSupply: number = -1;
-  etchedName: string;
-  etchedSymbol: string;
   // Rune transfers
-  transferredRunes: { key: string; etching: Etching; txid: string; name?: string; }[] = [];
+  transferredRunes: { key: string; etching: Etching; txid: string }[] = [];
 
   constructor() { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.runestone && this.runestone) {
-
-      Object.keys(this.runeInfo).forEach((key) => {
-        const rune = this.runeInfo[key].etching.rune.isSome() ? this.runeInfo[key].etching.rune.unwrap() : null;
-        const spacers = this.runeInfo[key].etching.spacers.isSome() ? this.runeInfo[key].etching.spacers.unwrap() : u32(0);
-        if (rune) {
-          this.runeInfo[key].name = new SpacedRune(rune, Number(spacers)).toString();
-        }
-        this.transferredRunes.push({ key, ...this.runeInfo[key] });
-      });
-
-
-      if (this.runestone.mint.isSome() && this.runeInfo[this.runestone.mint.unwrap().toString()]) {
-        const mint = this.runestone.mint.unwrap().toString();
+      this.transferredRunes = Object.entries(this.runeInfo).map(([key, runeInfo]) => ({ key, ...runeInfo }));
+      if (this.runestone.mint && this.runeInfo[this.runestone.mint.toString()]) {
+        const mint = this.runestone.mint.toString();
         this.transferredRunes = this.transferredRunes.filter(rune => rune.key !== mint);
-        const terms = this.runeInfo[mint].etching.terms.isSome() ? this.runeInfo[mint].etching.terms.unwrap() : null;
-        let amount: u128;
-        if (terms) {
-          amount = terms.amount.isSome() ? terms.amount.unwrap() : u128(0);
-        }
-        const divisibility = this.runeInfo[mint].etching.divisibility.isSome() ? this.runeInfo[mint].etching.divisibility.unwrap() : u8(0);
+        const terms = this.runeInfo[mint].etching.terms;
+        const amount = terms?.amount;
+        const divisibility = this.runeInfo[mint].etching.divisibility;
         if (amount) {
           this.minted = this.getAmount(amount, divisibility);
-        }
-      }
-
-      if (this.runestone.etching.isSome()) {
-        const etching = this.runestone.etching.unwrap();
-        const rune = etching.rune.isSome() ? etching.rune.unwrap() : null;
-        const spacers = etching.spacers.isSome() ? etching.spacers.unwrap() : u32(0);
-        if (rune) {
-          this.etchedName = new SpacedRune(rune, Number(spacers)).toString();
-        }
-        this.etchedSymbol = etching.symbol.isSome() ? etching.symbol.unwrap() : '';
-
-        const divisibility = etching.divisibility.isSome() ? etching.divisibility.unwrap() : u8(0);
-        const premine = etching.premine.isSome() ? etching.premine.unwrap() : u128(0);
-        if (premine) {
-          this.premined = this.getAmount(premine, divisibility);
-        } else {
-          this.premined = 0;
-        }
-        const terms = etching.terms.isSome() ? etching.terms.unwrap() : null;
-        let amount: u128;
-        if (terms) {
-          amount = terms.amount.isSome() ? terms.amount.unwrap() : u128(0);
-          if (amount) {
-            const cap = terms.cap.isSome() ? terms.cap.unwrap() : u128(0);
-            this.totalSupply = this.premined + this.getAmount(amount, divisibility) * Number(cap);
-          }
-        } else {
-          this.totalSupply = this.premined;
         }
       }
     }
@@ -131,7 +83,7 @@ export class OrdDataComponent implements OnChanges {
     }
   }
 
-  getAmount(amount: u128 | bigint, divisibility: u8): number {
+  getAmount(amount: bigint, divisibility: number): number {
     const divisor = BigInt(10) ** BigInt(divisibility);
     const result = amount / divisor;
 
