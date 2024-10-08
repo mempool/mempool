@@ -19,15 +19,12 @@ export class OrdApiService {
   decodeRunestone$(tx: Transaction): Observable<{ runestone: Runestone, runeInfo: { [id: string]: { etching: Etching; txid: string; } } }> {
     const runestone = decipherRunestone(tx);
     const runeInfo: { [id: string]: { etching: Etching; txid: string; } } = {};
-    const runesToFetch: Set<string> = new Set();
 
     if (runestone) {
+      const runesToFetch: Set<string> = new Set();
+
       if (runestone.mint) {
-        if (runestone.mint.toString() === '1:0') {
-          runeInfo[runestone.mint.toString()] = { etching: UNCOMMON_GOODS, txid: '0000000000000000000000000000000000000000000000000000000000000000' };
-        } else {
-          runesToFetch.add(runestone.mint.toString());
-        }
+        runesToFetch.add(runestone.mint.toString());
       }
 
       if (runestone.edicts.length) {
@@ -37,18 +34,15 @@ export class OrdApiService {
       }
 
       if (runesToFetch.size) {
-        const runeEtchingObservables = Array.from(runesToFetch).map(runeId => {
-          return this.getEtchingFromRuneId$(runeId).pipe(
-            tap(etching => {
-              if (etching) {
-                runeInfo[runeId] = etching;
-              }
-            })
-          );
-        });
+        const runeEtchingObservables = Array.from(runesToFetch).map(runeId => this.getEtchingFromRuneId$(runeId));
 
         return forkJoin(runeEtchingObservables).pipe(
-          map(() => {
+          map((etchings) => {
+            etchings.forEach((el) => {
+              if (el) {
+                runeInfo[el.runeId] = { etching: el.etching, txid: el.txid };
+              }
+            });
             return { runestone: runestone, runeInfo };
           })
         );
@@ -60,24 +54,27 @@ export class OrdApiService {
   }
 
   // Get etching from runeId by looking up the transaction that etched the rune
-  getEtchingFromRuneId$(runeId: string): Observable<{ etching: Etching; txid: string; }> {
-    const [blockNumber, txIndex] = runeId.split(':');
-
-    return this.electrsApiService.getBlockHashFromHeight$(parseInt(blockNumber)).pipe(
-      switchMap(blockHash => this.electrsApiService.getBlockTxId$(blockHash, parseInt(txIndex))),
-      switchMap(txId => this.electrsApiService.getTransaction$(txId)),
-      switchMap(tx => {
-        const runestone = decipherRunestone(tx);
-        if (runestone) {
-          const etching = runestone.etching;
-          if (etching) {
-            return of({ etching, txid: tx.txid });
+  getEtchingFromRuneId$(runeId: string): Observable<{ runeId: string; etching: Etching; txid: string; }> {
+    if (runeId === '1:0') {
+      return of({ runeId, etching: UNCOMMON_GOODS, txid: '0000000000000000000000000000000000000000000000000000000000000000' });
+    } else {
+      const [blockNumber, txIndex] = runeId.split(':');
+      return this.electrsApiService.getBlockHashFromHeight$(parseInt(blockNumber)).pipe(
+        switchMap(blockHash => this.electrsApiService.getBlockTxId$(blockHash, parseInt(txIndex))),
+        switchMap(txId => this.electrsApiService.getTransaction$(txId)),
+        switchMap(tx => {
+          const runestone = decipherRunestone(tx);
+          if (runestone) {
+            const etching = runestone.etching;
+            if (etching) {
+              return of({ runeId, etching, txid: tx.txid });
+            }
           }
-        }
-        return of(null);
-      }),
-      catchError(() => of(null))
-    );
+          return of(null);
+        }),
+        catchError(() => of(null))
+      );
+    }
   }
 
   decodeInscriptions(witness: string): Inscription[] | null {
