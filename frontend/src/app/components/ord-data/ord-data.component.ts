@@ -41,7 +41,7 @@ export class OrdDataComponent implements OnChanges {
         if (this.runeInfo[edict.id.toString()]) {
           this.transferredRunes.push({ key: edict.id.toString(), ...this.runeInfo[edict.id.toString()] });
         }
-      });    
+      });
     }
 
     if (changes.inscriptions && this.inscriptions) {

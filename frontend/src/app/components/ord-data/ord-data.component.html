@@ -34,7 +34,11 @@
 @if (inscriptions?.length && type === 'vin') {
   <div *ngFor="let contentType of inscriptionsData | keyvalue">
     <div>
-      <span class="badge badge-ord mr-1">{{ contentType.value.count > 1 ? contentType.value.count + " " : "" }}{{ contentType.value?.tag || contentType.key }}</span>
+      @if (contentType.key !== 'undefined') {
+        <span class="badge badge-ord mr-1">{{ contentType.value.count > 1 ? contentType.value.count + " " : "" }}{{ contentType.value?.tag || contentType.key }}</span>
+      } @else {
+        <span class="badge badge-ord mr-1" i18n="unknown">Unknown</span>
+      }
       <span class="badge badge-ord" *ngIf="contentType.value.totalSize > 0">{{ contentType.value.totalSize | bytes:2:'B':undefined:true }}</span>
       <a *ngIf="contentType.value.delegate" [routerLink]="['/tx' | relativeUrl, contentType.value.delegate]">
         <span i18n="ord.source-inscription">Source inscription</span>
