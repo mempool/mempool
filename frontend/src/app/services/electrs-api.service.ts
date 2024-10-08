@@ -107,6 +107,10 @@ export class ElectrsApiService {
     return this.httpClient.get(this.apiBaseUrl + this.apiBasePath + '/api/block-height/' + height, {responseType: 'text'});
   }
 
+  getBlockTxId$(hash: string, index: number): Observable<string> {
+    return this.httpClient.get(this.apiBaseUrl + this.apiBasePath + '/api/block/' + hash + '/txid/' + index, { responseType: 'text' });
+  }
+
   getAddress$(address: string): Observable<Address> {
     return this.httpClient.get<Address>(this.apiBaseUrl + this.apiBasePath + '/api/address/' + address);
   }

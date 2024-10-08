@@ -6,11 +6,14 @@ import { Outspend, Transaction, Vin, Vout } from '../../interfaces/electrs.inter
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { environment } from '../../../environments/environment';
 import { AssetsService } from '../../services/assets.service';
-import { filter, map, tap, switchMap, shareReplay, catchError } from 'rxjs/operators';
+import { filter, map, tap, switchMap, catchError } from 'rxjs/operators';
 import { BlockExtended } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { PriceService } from '../../services/price.service';
 import { StorageService } from '../../services/storage.service';
+import { OrdApiService } from '../../services/ord-api.service';
+import { Inscription } from '../../shared/ord/inscription.utils';
+import { Etching, Runestone } from '../../shared/ord/rune.utils';
 
 @Component({
   selector: 'app-transactions-list',
@@ -50,12 +53,14 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   outputRowLimit: number = 12;
   showFullScript: { [vinIndex: number]: boolean } = {};
   showFullWitness: { [vinIndex: number]: { [witnessIndex: number]: boolean } } = {};
+  showOrdData: { [key: string]: { show: boolean; inscriptions?: Inscription[]; runestone?: Runestone, runeInfo?: { [id: string]: { etching: Etching; txid: string; } }; } } = {};
 
   constructor(
     public stateService: StateService,
     private cacheService: CacheService,
     private electrsApiService: ElectrsApiService,
     private apiService: ApiService,
+    private ordApiService: OrdApiService,
     private assetsService: AssetsService,
     private ref: ChangeDetectorRef,
     private priceService: PriceService,
@@ -239,6 +244,24 @@ export class TransactionsListComponent implements OnInit, OnChanges {
             tap((price) => tx['price'] = price),
           ).subscribe();
         }
+
+        // Check for ord data fingerprints in inputs and outputs
+        if (this.stateService.network !== 'liquid' && this.stateService.network !== 'liquidtestnet') {
+          for (let i = 0; i < tx.vin.length; i++) {
+            if (tx.vin[i].prevout?.scriptpubkey_type === 'v1_p2tr' && tx.vin[i].witness?.length) {
+              const hasAnnex = tx.vin[i].witness?.[tx.vin[i].witness.length - 1].startsWith('50');
+              if (tx.vin[i].witness.length > (hasAnnex ? 2 : 1) && tx.vin[i].witness[tx.vin[i].witness.length - (hasAnnex ? 3 : 2)].includes('0063036f7264')) {
+                tx.vin[i].isInscription = true;
+              }
+            }
+          }
+          for (let i = 0; i < tx.vout.length; i++) {
+            if (tx.vout[i]?.scriptpubkey?.startsWith('6a5d')) {
+              tx.vout[i].isRunestone = true;
+              break;
+            }
+          }
+        }
       });
 
       if (this.blockTime && this.transactions?.length && this.currency) {
@@ -370,6 +393,40 @@ export class TransactionsListComponent implements OnInit, OnChanges {
 
   toggleShowFullWitness(vinIndex: number, witnessIndex: number): void {
     this.showFullWitness[vinIndex][witnessIndex] = !this.showFullWitness[vinIndex][witnessIndex];
+  }
+
+  toggleOrdData(txid: string, type: 'vin' | 'vout', index: number) {
+    const tx = this.transactions.find((tx) => tx.txid === txid);
+    if (!tx) {
+      return;
+    }
+
+    const key = tx.txid + '-' + type + '-' + index;
+    this.showOrdData[key] = this.showOrdData[key] || { show: false };
+
+    if (type === 'vin') {
+
+      if (!this.showOrdData[key].inscriptions) {
+        const hasAnnex = tx.vin[index].witness?.[tx.vin[index].witness.length - 1].startsWith('50');
+        this.showOrdData[key].inscriptions = this.ordApiService.decodeInscriptions(tx.vin[index].witness[tx.vin[index].witness.length - (hasAnnex ? 3 : 2)]);
+      }
+      this.showOrdData[key].show = !this.showOrdData[key].show;
+
+    } else if (type === 'vout') {
+
+      if (!this.showOrdData[key].runestone) {
+        this.ordApiService.decodeRunestone$(tx).pipe(
+          tap((runestone) => {
+            if (runestone) {
+              Object.assign(this.showOrdData[key], runestone);
+              this.ref.markForCheck();
+            }
+          }),
+        ).subscribe();
+      }
+      this.showOrdData[key].show = !this.showOrdData[key].show;
+
+    }
   }
 
   ngOnDestroy(): void {
