@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
 import { Runestone, Etching } from '../../shared/ord/rune.utils';
 
 export interface Inscription {
@@ -20,7 +19,6 @@ export class OrdDataComponent implements OnChanges {
   @Input() inscriptions: Inscription[];
   @Input() runestone: Runestone;
   @Input() runeInfo: { [id: string]: { etching: Etching; txid: string } };
-  @Input() error: HttpErrorResponse;
   @Input() type: 'vin' | 'vout';
 
   toNumber = (value: bigint): number => Number(value);

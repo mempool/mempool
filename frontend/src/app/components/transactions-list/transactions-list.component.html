@@ -103,7 +103,7 @@
               }">
                 <td></td>
                 <td colspan="2">
-                  <app-ord-data [inscriptions]="showOrdData[tx.txid + '-vin-' + vindex]['inscriptions']" [type]="'vin'" [error]="showOrdData[tx.txid + '-vin-' + vindex]['error']"></app-ord-data>
+                  <app-ord-data [inscriptions]="showOrdData[tx.txid + '-vin-' + vindex]['inscriptions']" [type]="'vin'"></app-ord-data>
                 </td>
               </tr>
               <tr *ngIf="(showDetails$ | async) === true">
@@ -297,7 +297,7 @@
                 'highlight': this.address !== '' && (vout.scriptpubkey_address === this.address || (vout.scriptpubkey_type === 'p2pk' && vout.scriptpubkey.slice(2, -2) === this.address))
               }">
                 <td colspan="3">
-                    <app-ord-data [runestone]="showOrdData[tx.txid + '-vout-' + vindex]['runestone']" [runeInfo]="showOrdData[tx.txid + '-vout-' + vindex]['runeInfo']" [type]="'vout'" [error]="showOrdData[tx.txid + '-vout-' + vindex]['error']"></app-ord-data>
+                    <app-ord-data [runestone]="showOrdData[tx.txid + '-vout-' + vindex]['runestone']" [runeInfo]="showOrdData[tx.txid + '-vout-' + vindex]['runeInfo']" [type]="'vout'"></app-ord-data>
                 </td>
               </tr>
               <tr *ngIf="(showDetails$ | async) === true">
