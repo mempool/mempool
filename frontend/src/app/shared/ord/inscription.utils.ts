@@ -1,8 +1,6 @@
 // Adapted from https://github.com/ordpool-space/ordpool-parser/tree/ce04d7a5b6bb1cf37b9fdadd77ba430f5bd6e7d6/src
 // Utils functions to decode ord inscriptions
 
-import { Inscription } from "../../components/ord-data/ord-data.component";
-
 export const OP_FALSE = 0x00;
 export const OP_IF = 0x63;
 export const OP_0 = 0x00;
@@ -303,6 +301,15 @@ export function concatUint8Arrays(arrays: Uint8Array[]): Uint8Array {
 }
 
 ////////////////////////////// Inscription ///////////////////////////
+
+export interface Inscription {
+  body?: Uint8Array;
+  is_cropped?: boolean;
+  body_length?: number;
+  content_type?: Uint8Array;
+  content_type_str?: string;
+  delegate_txid?: string;
+}
 
 /**
  * Extracts fields from the raw data until OP_0 is encountered.

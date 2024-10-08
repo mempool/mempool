@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { catchError, forkJoin, map, Observable, of, switchMap, tap } from 'rxjs';
-import { Inscription } from '../components/ord-data/ord-data.component';
+import { Inscription } from '../shared/ord/inscription.utils';
 import { Transaction } from '../interfaces/electrs.interface';
 import { getNextInscriptionMark, hexToBytes, extractInscriptionData } from '../shared/ord/inscription.utils';
 import { decipherRunestone, Runestone, Etching, UNCOMMON_GOODS } from '../shared/ord/rune.utils';

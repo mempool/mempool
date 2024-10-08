@@ -1,14 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Runestone, Etching } from '../../shared/ord/rune.utils';
-
-export interface Inscription {
-  body?: Uint8Array;
-  is_cropped?: boolean;
-  body_length?: number;
-  content_type?: Uint8Array;
-  content_type_str?: string;
-  delegate_txid?: string;
-}
+import { Inscription } from '../../shared/ord/inscription.utils';
 
 @Component({
   selector: 'app-ord-data',

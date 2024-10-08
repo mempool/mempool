@@ -12,7 +12,7 @@ import { ApiService } from '../../services/api.service';
 import { PriceService } from '../../services/price.service';
 import { StorageService } from '../../services/storage.service';
 import { OrdApiService } from '../../services/ord-api.service';
-import { Inscription } from '../ord-data/ord-data.component';
+import { Inscription } from '../../shared/ord/inscription.utils';
 import { Etching, Runestone } from '../../shared/ord/rune.utils';
 
 @Component({
