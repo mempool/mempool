@@ -9,13 +9,12 @@ import { IBackendInfo } from '../interfaces/websocket.interface';
 import { Acceleration, AccelerationHistoryParams } from '../interfaces/node-api.interface';
 import { AccelerationStats } from '../components/acceleration/acceleration-stats/acceleration-stats.component';
 
-export type ProductType = 'enterprise' | 'community' | 'mining_pool' | 'custom';
 export interface IUser {
   username: string;
   email: string | null;
   passwordIsSet: boolean;
   snsId: string;
-  type: ProductType;
+  type: 'enterprise' | 'community' | 'mining_pool';
   subscription_tag: string;
   status: 'pending' | 'verified' | 'disabled';
   features: string | null;
