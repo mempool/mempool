@@ -3,6 +3,7 @@ import { Runestone, Etching } from '../../shared/ord/rune.utils';
 
 export interface Inscription {
   body?: Uint8Array;
+  is_cropped?: boolean;
   body_length?: number;
   content_type?: Uint8Array;
   content_type_str?: string;
@@ -68,7 +69,7 @@ export class OrdDataComponent implements OnChanges {
           }
 
           // Text / JSON data
-          if ((key.includes('text') || key.includes('json')) && inscription.body?.length && !this.inscriptionsData[key].text && !this.inscriptionsData[key].json) {
+          if ((key.includes('text') || key.includes('json')) && !inscription.is_cropped && !this.inscriptionsData[key].text && !this.inscriptionsData[key].json) {
             const decoder = new TextDecoder('utf-8');
             const text = decoder.decode(inscription.body);
             try {

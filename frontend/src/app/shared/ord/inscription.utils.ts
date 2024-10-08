@@ -390,7 +390,8 @@ export function extractInscriptionData(raw: Uint8Array, pointer: number): Inscri
 
     return {
       content_type_str: contentType,
-      body: combinedData.slice(0, 150), // Limit body to 150 bytes for now
+      body: combinedData.slice(0, 50_000), // Limit body to 50 kB for now
+      is_cropped: combinedData.length > 50_000,
       body_length: combinedData.length,
       delegate_txid: getKnownFieldValue(fields, knownFields.delegate) ? bytesToHex(getKnownFieldValue(fields, knownFields.delegate).reverse()) : null
     };
