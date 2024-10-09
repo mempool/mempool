@@ -43,12 +43,10 @@ export class AccelerationTimelineComponent implements OnInit, OnChanges {
         this.poolsData[pool.unique_id] = pool;
       }
     });
-
-    this.updateTimes();
-    this.interval = window.setInterval(this.updateTimes.bind(this), 60000);
   }
 
   ngOnChanges(changes): void {
+    this.updateTimes();
     // Hide standard ETA while we don't have a proper standard ETA calculation, see https://github.com/mempool/mempool/issues/65
     
     // if (changes?.eta?.currentValue || changes?.standardETA?.currentValue || changes?.acceleratedETA?.currentValue) {
