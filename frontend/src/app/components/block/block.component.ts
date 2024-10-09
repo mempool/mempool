@@ -99,7 +99,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     private relativeUrlPipe: RelativeUrlPipe,
     private apiService: ApiService,
     private priceService: PriceService,
-    private cacheService: CacheService,
+    public cacheService: CacheService,
     private servicesApiService: ServicesApiServices,
     private cd: ChangeDetectorRef,
     private preloadService: PreloadService,

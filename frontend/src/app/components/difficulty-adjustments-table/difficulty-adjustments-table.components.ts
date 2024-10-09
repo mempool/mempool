@@ -5,6 +5,7 @@ import { ApiService } from '../../services/api.service';
 import { formatNumber } from '@angular/common';
 import { selectPowerOfTen } from '../../bitcoin.utils';
 import { StateService } from '../../services/state.service';
+import { CacheService } from '../../services/cache.service';
 
 @Component({
   selector: 'app-difficulty-adjustments-table',
@@ -27,7 +28,8 @@ export class DifficultyAdjustmentsTable implements OnInit {
   constructor(
     @Inject(LOCALE_ID) public locale: string,
     private apiService: ApiService,
-    public stateService: StateService
+    public stateService: StateService,
+    private cacheService: CacheService,
   ) {
   }
 
@@ -52,6 +54,7 @@ export class DifficultyAdjustmentsTable implements OnInit {
                 adjustment[2] / selectedPowerOfTen.divider,
                 this.locale, `1.${decimals}-${decimals}`) + selectedPowerOfTen.unit
             });
+            this.cacheService.daCache[adjustment[1]] = { adjustment: adjustment[3], exact: true };
           }
           this.isLoading = false;
           return tableData.slice(0, 6);

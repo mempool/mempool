@@ -31,6 +31,7 @@ class MiningRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/fee-rates/:interval', this.$getHistoricalBlockFeeRates)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/sizes-weights/:interval', this.$getHistoricalBlockSizeAndWeight)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty-adjustments/:interval', this.$getDifficultyAdjustments)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty-adjustment/:height', this.$getDifficultyAdjustment)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/predictions/:interval', this.$getHistoricalBlocksHealth)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/audit/scores', this.$getBlockAuditScores)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/audit/scores/:height', this.$getBlockAuditScores)
@@ -295,6 +296,18 @@ class MiningRoutes {
       res.json(difficulty.map(adj => [adj.time, adj.height, adj.difficulty, adj.adjustment]));
     } catch (e) {
       handleError(req, res, 500, e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getDifficultyAdjustment(req: Request, res: Response) {
+    try {
+      const adjustment = await DifficultyAdjustmentsRepository.$getAdjustmentAtHeight(parseInt(req.params.height, 10));
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      res.json(adjustment);
+    } catch (e) {
+      res.status(e instanceof Error && e.message === 'not found' ? 204 : 500).send(e instanceof Error ? e.message : e);
     }
   }
 

@@ -293,3 +293,11 @@ h1 {
   top: -1px;
   margin-right: 2px;
 }
+
+.retarget-sign {
+  margin-right: -3px;
+  &.up {
+    position: relative;
+    top: 2px;
+  }
+}

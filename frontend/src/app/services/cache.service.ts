@@ -23,6 +23,7 @@ export class CacheService {
   blockLoading: { [height: number]: boolean } = {};
   copiesInBlockQueue: { [height: number]: number } = {};
   blockPriorities: number[] = [];
+  daCache: { [height: number]: { adjustment: number, exact?: boolean } } = {};
 
   constructor(
     private stateService: StateService,
@@ -128,6 +129,7 @@ export class CacheService {
     this.blockLoading = {};
     this.copiesInBlockQueue = {};
     this.blockPriorities = [];
+    this.daCache = {};
   }
 
   getCachedBlock(height) {

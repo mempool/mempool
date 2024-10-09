@@ -269,3 +269,25 @@ export function md5(inputString): string {
     }
     return rh(a)+rh(b)+rh(c)+rh(d);
 }
+
+export function colorFromRetarget(da: number): string {
+  const minDA = 0.95;
+  const maxDA = 1.05;
+  const midDA = 1;
+
+  const red = { r: 220, g: 53, b: 69 };
+  const grey = { r: 108, g: 117, b: 125 };
+  const green = { r: 59, g: 204, b: 73 };
+
+  const interpolateColor = (color1, color2, ratio) => {
+    ratio = Math.min(1, Math.max(0, ratio));
+    const r = Math.round(color1.r + ratio * (color2.r - color1.r));
+    const g = Math.round(color1.g + ratio * (color2.g - color1.g));
+    const b = Math.round(color1.b + ratio * (color2.b - color1.b));
+    return `rgba(${r}, ${g}, ${b}, 0.7)`;
+  }
+
+  return da <= midDA ?
+    interpolateColor(red, grey, (da - minDA) / (midDA - minDA)) : 
+    interpolateColor(grey, green, (da - midDA) / (maxDA - midDA));
+}

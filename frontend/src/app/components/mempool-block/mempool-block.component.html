@@ -41,6 +41,25 @@
                 </div>
               </td>
             </tr>
+            <tr *ngIf="this.stateService.network === '' && mempoolBlock.height % 2016 === 0">
+              <td i18n="mining.difficulty-adjustment">Adjustment</td>
+              <td>
+                <ng-container *ngIf="cacheService.daCache[mempoolBlock.height]?.adjustment > 0; else loadingAdjustment">
+                  <div [style.color]="cacheService.daCache[mempoolBlock.height].adjustment > 1 ? 'var(--green)' : (cacheService.daCache[mempoolBlock.height].adjustment < 1 ? 'var(--red)' : '')">
+                    @if (cacheService.daCache[mempoolBlock.height].adjustment > 1) {
+                      <fa-icon class="retarget-sign up" [icon]="['fas', 'caret-up']" [fixedWidth]="true"></fa-icon>
+                    } @else if (cacheService.daCache[mempoolBlock.height].adjustment < 1) {
+                      <fa-icon class="retarget-sign" [icon]="['fas', 'caret-down']" [fixedWidth]="true"></fa-icon>
+                    }
+                    {{ (cacheService.daCache[mempoolBlock.height].adjustment - 1) * 100 | absolute | number: '1.2-2' }}
+                    <span class="symbol">%</span>
+                  </div>
+                </ng-container>
+                <ng-template #loadingAdjustment>
+                  <span class="skeleton-loader" style="max-width: 60px"></span>
+                </ng-template>
+              </td>
+            </tr>
           </tbody>
         </table>
         <app-fee-distribution-graph *ngIf="webGlEnabled" [transactions]="mempoolBlockTransactions$ | async" [feeRange]="mempoolBlock.isStack ? mempoolBlock.feeRange : []" [vsize]="mempoolBlock.blockVSize" ></app-fee-distribution-graph>

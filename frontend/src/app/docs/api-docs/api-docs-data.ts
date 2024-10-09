@@ -3674,6 +3674,39 @@ export const restApiDocsData = [
     type: "endpoint",
     category: "mining",
     httpRequestMethod: "GET",
+    fragment: "get-difficulty-adjustment-by-height",
+    title: "GET Difficulty Adjustment",
+    description: {
+      default: "<p>Returns difficulty adjustment for the block at the specified <code>:blockHeight</code>. If no adjustment happened at that height, an empty response is returned.</p>"
+    },
+    urlString: "/v1/mining/difficulty-adjustment/:blockHeight",
+    showConditions: [""],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/difficulty-adjustment/%{1}`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`756000`],
+          response: `{
+  "time": "2022-09-28T02:56:34.000Z",
+  "height": 756000,
+  "difficulty": 31360548173144.9,
+  "adjustment": 0.97863
+}`
+        },
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mining",
+    httpRequestMethod: "GET",
     fragment: "get-reward-stats",
     title: "GET Reward Stats",
     description: {
