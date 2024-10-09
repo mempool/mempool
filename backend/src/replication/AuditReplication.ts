@@ -124,8 +124,7 @@ class AuditReplication {
       matchRate: auditSummary.matchRate,
       expectedFees: auditSummary.expectedFees,
       expectedWeight: auditSummary.expectedWeight,
-      firstSeen: auditSummary.firstSeen,
-    }, true);
+    });
     // add missing data to cached blocks
     const cachedBlock = blocks.getBlocks().find(block => block.id === blockHash);
     if (cachedBlock) {

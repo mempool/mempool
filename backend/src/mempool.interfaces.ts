@@ -45,7 +45,6 @@ export interface BlockAudit {
   expectedFees?: number,
   expectedWeight?: number,
   template?: any[];
-  firstSeen?: string;
 }
 
 export interface TransactionAudit {
@@ -58,7 +57,6 @@ export interface TransactionAudit {
   conflict?: boolean;
   coinbase?: boolean;
   firstSeen?: number;
-  blockFirstSeen?: string;
 }
 
 export interface AuditScore {
@@ -322,6 +320,7 @@ export interface BlockExtension {
   segwitTotalSize: number;
   segwitTotalWeight: number;
   header: string;
+  firstSeen: number | null;
   utxoSetChange: number;
   // Requires coinstatsindex, will be set to NULL otherwise
   utxoSetSize: number | null;

@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import config from '../config';
 import logger from '../logger';
 import { MempoolTransactionExtended, MempoolBlockWithTransactions } from '../mempool.interfaces';
@@ -8,10 +7,10 @@ import transactionUtils from './transaction-utils';
 const PROPAGATION_MARGIN = 180; // in seconds, time since a transaction is first seen after which it is assumed to have propagated to all miners
 
 class Audit {
-  auditBlock(height: number, transactions: MempoolTransactionExtended[], projectedBlocks: MempoolBlockWithTransactions[], mempool: { [txId: string]: MempoolTransactionExtended }, hash: string)
-   : { unseen: string[], censored: string[], added: string[], prioritized: string[], fresh: string[], sigop: string[], fullrbf: string[], accelerated: string[], score: number, similarity: number, firstSeen: string | undefined } {
+  auditBlock(height: number, transactions: MempoolTransactionExtended[], projectedBlocks: MempoolBlockWithTransactions[], mempool: { [txId: string]: MempoolTransactionExtended })
+   : { unseen: string[], censored: string[], added: string[], prioritized: string[], fresh: string[], sigop: string[], fullrbf: string[], accelerated: string[], score: number, similarity: number } {
     if (!projectedBlocks?.[0]?.transactionIds || !mempool) {
-      return { unseen: [], censored: [], added: [], prioritized: [], fresh: [], sigop: [], fullrbf: [], accelerated: [], score: 1, similarity: 1, firstSeen: undefined };
+      return { unseen: [], censored: [], added: [], prioritized: [], fresh: [], sigop: [], fullrbf: [], accelerated: [], score: 1, similarity: 1 };
     }
 
     const matches: string[] = []; // present in both mined block and template
@@ -177,8 +176,6 @@ class Audit {
     }
     const similarity = projectedWeight ? matchedWeight / projectedWeight : 1;
 
-    const firstSeen = this.getFirstSeenFromLogs(hash);
-
     return {
       unseen,
       censored: Object.keys(isCensored),
@@ -190,38 +187,7 @@ class Audit {
       accelerated,
       score,
       similarity,
-      firstSeen
     };
-  }
-
-  getFirstSeenFromLogs(hash: string): string | undefined {
-    const debugLogPath = config.CORE_RPC.DEBUG_LOG_PATH;
-    if (debugLogPath) {
-      try {
-        const fileDescriptor = fs.openSync(debugLogPath, 'r');
-        const bufferSize = 2048; // Read the last few lines of the file
-        const buffer = Buffer.alloc(bufferSize);
-        const fileSize = fs.statSync(debugLogPath).size;
-        const chunkSize = Math.min(bufferSize, fileSize);
-        fs.readSync(fileDescriptor, buffer, 0, chunkSize, fileSize - chunkSize);
-        const lines = buffer.toString('utf8', 0, chunkSize).split('\n');
-        fs.closeSync(fileDescriptor);
-  
-        for (let i = lines.length - 1; i >= 0; i--) {
-          const line = lines[i];
-          if (line && line.includes(`Saw new header hash=${hash}`)) {
-            // Extract time from log: "2021-08-31T12:34:56Z" or "2021-08-31T12:34:56.123456Z" if logtimemicros=1
-            const dateMatch = line.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.?\d{6})?Z/);
-            if (dateMatch) {
-              return dateMatch[0].replace("T", " ").replace("Z", "");
-            }
-          }
-        }
-      } catch (e) {
-        logger.err(`Cannot parse block first seen time from Core logs. Reason: ` + (e instanceof Error ? e.message : e));
-      }
-    }
-    return undefined;
   }
 }
 

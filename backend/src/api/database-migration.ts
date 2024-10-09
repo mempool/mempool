@@ -707,7 +707,7 @@ class DatabaseMigration {
     }
 
     if (databaseSchemaVersion < 83 && isBitcoin === true) {
-      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD first_seen timestamp(6) DEFAULT NULL');
+      await this.$executeQuery('ALTER TABLE `blocks` ADD first_seen datetime(6) DEFAULT NULL');
       await this.updateToSchemaVersion(83);
     }
   }
