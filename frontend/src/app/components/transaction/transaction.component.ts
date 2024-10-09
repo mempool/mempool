@@ -119,7 +119,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   txChanged$ = new BehaviorSubject<boolean>(false); // triggered whenever this.tx changes (long term, we should refactor to make this.tx an observable itself)
   isAccelerated$ = new BehaviorSubject<boolean>(false); // refactor this to make isAccelerated an observable itself
   ETA$: Observable<ETA | null>;
-  standardETA$: Observable<ETA | null>;
   isCached: boolean = false;
   now = Date.now();
   da$: Observable<DifficultyAdjustment>;
@@ -883,21 +882,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.miningStats = stats;
         this.isAccelerated$.next(this.isAcceleration); // hack to trigger recalculation of ETA without adding another source observable
       });
-      if (!this.tx.status?.confirmed) {
-        this.standardETA$ = combineLatest([
-          this.stateService.mempoolBlocks$.pipe(startWith(null)),
-          this.stateService.difficultyAdjustment$.pipe(startWith(null)),
-        ]).pipe(
-          map(([mempoolBlocks, da]) => {
-            return this.etaService.calculateUnacceleratedETA(
-              this.tx,
-              mempoolBlocks,
-              da,
-              this.cpfpInfo,
-            );
-          })
-        )
-      }
     }
     this.isAccelerated$.next(this.isAcceleration);
   }
