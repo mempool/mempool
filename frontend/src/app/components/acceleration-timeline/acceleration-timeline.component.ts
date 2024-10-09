@@ -11,11 +11,11 @@ import { MiningService } from '../../services/mining.service';
 })
 export class AccelerationTimelineComponent implements OnInit, OnChanges {
   @Input() transactionTime: number;
+  @Input() acceleratedAt: number;
   @Input() tx: Transaction;
   @Input() accelerationInfo: Acceleration;
   @Input() eta: ETA;
 
-  acceleratedAt: number;
   now: number;
   accelerateRatio: number;
   useAbsoluteTime: boolean = false;
@@ -31,7 +31,7 @@ export class AccelerationTimelineComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
-    this.acceleratedAt = this.tx.acceleratedAt ?? new Date().getTime() / 1000;
+    this.updateTimes();
 
     this.miningService.getPools().subscribe(pools => {
       for (const pool of pools) {
