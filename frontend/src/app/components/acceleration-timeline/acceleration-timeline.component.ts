@@ -52,6 +52,7 @@ export class AccelerationTimelineComponent implements OnInit, OnChanges {
   }
   
   onHover(event, status: string): void {
+    this.tooltipPosition = { x: event.clientX, y: event.clientY };
     if (status === 'seen') {
       this.hoverInfo = {
         status,
@@ -80,12 +81,19 @@ export class AccelerationTimelineComponent implements OnInit, OnChanges {
     }
   }
 
-  onBlur(event): void {
-    this.hoverInfo = null;
-  }
-
   @HostListener('pointermove', ['$event'])
   onPointerMove(event) {
-    this.tooltipPosition = { x: event.clientX, y: event.clientY };
+    if (event.target.id === 'step') {
+      this.tooltipPosition = { x: event.clientX, y: event.clientY };
+    } else {
+      this.hoverInfo = null;
+    }
+  }
+
+  @HostListener('document:click', ['$event'])
+  clickAway(event) {
+    if (event.target.id !== 'step') {
+      this.hoverInfo = null;
+    }
   }
 }
