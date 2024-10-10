@@ -320,6 +320,7 @@ export interface BlockExtension {
   segwitTotalSize: number;
   segwitTotalWeight: number;
   header: string;
+  firstSeen: number | null;
   utxoSetChange: number;
   // Requires coinstatsindex, will be set to NULL otherwise
   utxoSetSize: number | null;
