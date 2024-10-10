@@ -117,7 +117,7 @@
       </h2>
     </div>
 
-    <app-transactions-list [transactions]="transactions" [showConfirmations]="true" [address]="address.address" (loadMore)="loadMore()"></app-transactions-list>
+    <app-transactions-list [transactions]="transactions" [showConfirmations]="true" [addresses]="[address.address]" (loadMore)="loadMore()"></app-transactions-list>
 
     <div class="text-center">
       <ng-template [ngIf]="isLoadingTransactions">

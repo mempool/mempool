@@ -142,12 +142,32 @@ export class ElectrsApiService {
     return this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/address/' + address + '/txs', { params });
   }
 
+  getAddressesTransactions$(addresses: string[], txid?: string): Observable<Transaction[]> {
+    let params = new HttpParams();
+    if (txid) {
+      params = params.append('after_txid', txid);
+    }
+    return this.httpClient.post<Transaction[]>(
+      this.apiBaseUrl + this.apiBasePath + '/api/addresses/txs',
+      addresses,
+      { params }
+    );
+  }
+
   getAddressSummary$(address: string,  txid?: string): Observable<AddressTxSummary[]> {
     let params = new HttpParams();
     if (txid) {
       params = params.append('after_txid', txid);
     }
     return this.httpClient.get<AddressTxSummary[]>(this.apiBaseUrl + this.apiBasePath + '/api/address/' + address + '/txs/summary', { params });
+  }
+
+  getAddressesSummary$(addresses: string[],  txid?: string): Observable<AddressTxSummary[]> {
+    let params = new HttpParams();
+    if (txid) {
+      params = params.append('after_txid', txid);
+    }
+    return this.httpClient.post<AddressTxSummary[]>(this.apiBaseUrl + this.apiBasePath + '/api/addresses/txs/summary', addresses, { params });
   }
 
   getScriptHashTransactions$(script: string,  txid?: string): Observable<Transaction[]> {
@@ -157,6 +177,16 @@ export class ElectrsApiService {
     }
     return from(calcScriptHash$(script)).pipe(
       switchMap(scriptHash => this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/scripthash/' + scriptHash + '/txs', { params })),
+    );
+  }
+
+  getScriptHashesTransactions$(scripts: string[],  txid?: string): Observable<Transaction[]> {
+    let params = new HttpParams();
+    if (txid) {
+      params = params.append('after_txid', txid);
+    }
+    return from(Promise.all(scripts.map(script => calcScriptHash$(script)))).pipe(
+      switchMap(scriptHashes => this.httpClient.post<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/scripthashes/txs', scriptHashes, { params })),
     );
   }
 
@@ -177,6 +207,16 @@ export class ElectrsApiService {
   getScriptHashUtxos$(script: string): Observable<Utxo[]> {
     return from(calcScriptHash$(script)).pipe(
       switchMap(scriptHash => this.httpClient.get<Utxo[]>(this.apiBaseUrl + this.apiBasePath + '/api/scripthash/' + scriptHash + '/utxo')),
+    );
+  }
+
+  getScriptHashesSummary$(scripts: string[],  txid?: string): Observable<AddressTxSummary[]> {
+    let params = new HttpParams();
+    if (txid) {
+      params = params.append('after_txid', txid);
+    }
+    return from(Promise.all(scripts.map(script => calcScriptHash$(script)))).pipe(
+      switchMap(scriptHashes => this.httpClient.post<AddressTxSummary[]>(this.apiBaseUrl + this.apiBasePath + '/api/scripthashes/txs/summary', scriptHashes, { params })),
     );
   }
 
