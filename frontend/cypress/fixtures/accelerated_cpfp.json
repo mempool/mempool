@@ -1,0 +1,20 @@
+{
+  "ancestors": [],
+  "bestDescendant": null,
+  "descendants": [],
+  "effectiveFeePerVsize": 15.452914798206278,
+  "sigops": 4,
+  "fee": 446,
+  "adjustedVsize": 223,
+  "acceleration": true,
+  "acceleratedBy": [
+      111,
+      43,
+      102,
+      112,
+      142,
+      115
+  ],
+  "acceleratedAt": 1723417553,
+  "feeDelta": 3000
+}

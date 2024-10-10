@@ -96,6 +96,18 @@ export const emitMempoolInfo = ({
 				});
 				break;
 			}
+			case 'txPosition': {
+				cy.readFile('cypress/fixtures/accelerated_position.json', 'ascii').then((fixture) => {
+					win.mockSocket.send(JSON.stringify(fixture));
+				});
+				break;
+			}
+			case 'txPositionConfirmed': {
+				cy.readFile('cypress/fixtures/accelerated_position_confirmed.json', 'ascii').then((fixture) => {
+					win.mockSocket.send(JSON.stringify(fixture));
+				});
+				break;
+			}
 			default:
 				break;
 		}

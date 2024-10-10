@@ -594,4 +594,63 @@ describe('Mainnet', () => {
   } else {
     it.skip(`Tests cannot be run on the selected BASE_MODULE ${baseModule}`);
   }
+
+  describe('Accelerated Transactions', () => {
+    describe('Unconfirmed Accelerated Transaction', () => {
+      before(() => {
+        cy.intercept('/api/tx/40ba6b3c4ce73e3ba0160c137b1cc6c2c7333a2b9c19537b61ee8a8aaf095e0a', {
+          fixture: 'accelerated_tx.json'
+        }).as('tx');
+
+        cy.intercept('/api/v1/cpfp/40ba6b3c4ce73e3ba0160c137b1cc6c2c7333a2b9c19537b61ee8a8aaf095e0a', {
+          fixture: 'accelerated_cpfp.json'
+        }).as('accelerated_cpfp');
+
+        cy.intercept('/api/v1/transaction-times?txId%5B%5D=40ba6b3c4ce73e3ba0160c137b1cc6c2c7333a2b9c19537b61ee8a8aaf095e0a', {
+          body: '[1723416086]',
+        }).as('transaction-time');
+
+        cy.intercept('https://mempool.space/api/v1/services/accelerator/accelerations/history', {
+          fixture: 'accelerated_history.json'
+        }).as('history');
+
+        cy.viewport('macbook-16');
+        cy.mockMempoolSocket();
+        cy.visit('/tx/40ba6b3c4ce73e3ba0160c137b1cc6c2c7333a2b9c19537b61ee8a8aaf095e0a');
+
+        emitMempoolInfo({
+          'params': {
+            command: 'txPosition'
+          }
+        });
+        cy.waitForSkeletonGone();
+      });
+
+      it('shows unconfirmed accelerated transaction properly', () => {
+        cy.get('.badge-accelerated').should('exist');
+        cy.get('[data-cy="active-acceleration-box"]').should('exist');
+        cy.get('[data-cy="active-acceleration-box"] > table > tbody > :nth-child(1) .oobFees').invoke('text').should('contain', `15.5 `);
+        cy.get('[data-cy="tx-fee-delta"]').invoke('text').should('contain', `3,000`);
+        cy.get('#acceleration-timeline').should('be.visible');
+      });
+
+      // currently doesn't work due to 'accelerations/history' endpoint not being intercepted
+      it.skip('properly render accelerated transacion as it confirms', () => {
+        emitMempoolInfo({
+          'params': {
+            command: 'txPositionConfirmed'
+          }
+        });
+
+        cy.wait(1000);
+
+        cy.get('.badge-accelerated').should('exist');
+        cy.get('[data-cy="active-acceleration-box"]').should('not.exist');
+        cy.get('[data-cy="fee-rate"]').invoke('text').should('contain', `2.17 `);
+        cy.get('[data-cy="tx-fee-delta"]').invoke('text').should('contain', `39`);
+        cy.get('#acceleration-timeline').should('be.visible');
+      });
+    });
+  });
+
 });
