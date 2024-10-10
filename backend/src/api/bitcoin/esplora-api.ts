@@ -305,7 +305,7 @@ class ElectrsApi implements AbstractBitcoinApi {
   }
 
   $getAddress(address: string): Promise<IEsploraApi.Address> {
-    throw new Error('Method getAddress not implemented.');
+    return this.failoverRouter.$get<IEsploraApi.Address>('/address/' + address);
   }
 
   $getAddressTransactions(address: string, txId?: string): Promise<IEsploraApi.Transaction[]> {
@@ -355,6 +355,10 @@ class ElectrsApi implements AbstractBitcoinApi {
   async $getCoinbaseTx(blockhash: string): Promise<IEsploraApi.Transaction> {
     const txid = await this.failoverRouter.$get<string>(`/block/${blockhash}/txid/0`);
     return this.failoverRouter.$get<IEsploraApi.Transaction>('/tx/' + txid);
+  }
+
+  async $getAddressTransactionSummary(address: string): Promise<IEsploraApi.AddressTxSummary[]> {
+    return this.failoverRouter.$get<IEsploraApi.AddressTxSummary[]>('/address/' + address + '/txs/summary');
   }
 
   public startHealthChecks(): void {

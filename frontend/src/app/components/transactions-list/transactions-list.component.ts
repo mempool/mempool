@@ -34,7 +34,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   @Input() paginated = false;
   @Input() inputIndex: number;
   @Input() outputIndex: number;
-  @Input() address: string = '';
+  @Input() addresses: string[] = [];
   @Input() rowLimit = 12;
   @Input() blockTime: number = 0; // Used for price calculation if all the transactions are in the same block
 
@@ -181,7 +181,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
         }, 10);
       }
     }
-    if (changes.transactions || changes.address) {
+    if (changes.transactions || changes.addresses) {
       if (!this.transactions || !this.transactions.length) {
         return;
       }
@@ -197,46 +197,52 @@ export class TransactionsListComponent implements OnInit, OnChanges {
           return;
         }
 
-        if (this.address) {
-          const isP2PKUncompressed = this.address.length === 130;
-          const isP2PKCompressed = this.address.length === 66;
-          if (isP2PKCompressed) {
-            const addressIn = tx.vout
-              .filter((v: Vout) => v.scriptpubkey === '21' + this.address + 'ac')
-              .map((v: Vout) => v.value || 0)
-              .reduce((a: number, b: number) => a + b, 0);
-
-            const addressOut = tx.vin
-              .filter((v: Vin) => v.prevout && v.prevout.scriptpubkey === '21' + this.address + 'ac')
-              .map((v: Vin) => v.prevout.value || 0)
-              .reduce((a: number, b: number) => a + b, 0);
-
-            tx['addressValue'] = addressIn - addressOut;
-          } else if (isP2PKUncompressed) {
-            const addressIn = tx.vout
-              .filter((v: Vout) => v.scriptpubkey === '41' + this.address + 'ac')
-              .map((v: Vout) => v.value || 0)
-              .reduce((a: number, b: number) => a + b, 0);
-
-            const addressOut = tx.vin
-              .filter((v: Vin) => v.prevout && v.prevout.scriptpubkey === '41' + this.address + 'ac')
-              .map((v: Vin) => v.prevout.value || 0)
-              .reduce((a: number, b: number) => a + b, 0);
-
-            tx['addressValue'] = addressIn - addressOut;
-          } else {
-            const addressIn = tx.vout
-              .filter((v: Vout) => v.scriptpubkey_address === this.address)
-              .map((v: Vout) => v.value || 0)
-              .reduce((a: number, b: number) => a + b, 0);
-
-            const addressOut = tx.vin
-              .filter((v: Vin) => v.prevout && v.prevout.scriptpubkey_address === this.address)
-              .map((v: Vin) => v.prevout.value || 0)
-              .reduce((a: number, b: number) => a + b, 0);
-
-            tx['addressValue'] = addressIn - addressOut;
-          }
+        if (this.addresses?.length) {
+          const addressIn = tx.vout.map(v => {
+            for (const address of this.addresses) {
+              switch (address.length) {
+                case 130: {
+                  if (v.scriptpubkey === '21' + address + 'ac') {
+                    return v.value;
+                  }
+                } break;
+                case 66: {
+                  if (v.scriptpubkey === '41' + address + 'ac') {
+                    return v.value;
+                  }
+                } break;
+                default:{
+                  if (v.scriptpubkey_address === address) {
+                    return v.value;
+                  }
+                } break;
+              }
+            }
+            return 0;
+          }).reduce((acc, v) => acc + v, 0);
+          const addressOut = tx.vin.map(v => {
+            for (const address of this.addresses) {
+              switch (address.length) {
+                case 130: {
+                  if (v.prevout?.scriptpubkey === '21' + address + 'ac') {
+                    return v.prevout?.value;
+                  }
+                } break;
+                case 66: {
+                  if (v.prevout?.scriptpubkey === '41' + address + 'ac') {
+                    return v.prevout?.value;
+                  }
+                } break;
+                default:{
+                  if (v.prevout?.scriptpubkey_address === address) {
+                    return v.prevout?.value;
+                  }
+                } break;
+              }
+            }
+            return 0;
+          }).reduce((acc, v) => acc + v, 0);
+          tx['addressValue'] = addressIn - addressOut;
         }
 
         if (!this.blockTime && tx.status.block_time && this.currency) {
