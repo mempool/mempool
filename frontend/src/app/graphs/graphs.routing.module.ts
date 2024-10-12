@@ -22,6 +22,7 @@ import { CustomDashboardComponent } from '../components/custom-dashboard/custom-
 import { AccelerationFeesGraphComponent } from '../components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component';
 import { AccelerationsListComponent } from '../components/acceleration/accelerations-list/accelerations-list.component';
 import { AddressComponent } from '../components/address/address.component';
+import { WalletComponent } from '../components/wallet/wallet.component';
 
 const browserWindow = window || {};
 // @ts-ignore
@@ -83,6 +84,15 @@ const routes: Routes = [
         path: 'address/:id',
         children: [],
         component: AddressComponent,
+        data: {
+          ogImage: true,
+          networkSpecific: true,
+        }
+      },
+      {
+        path: 'wallet/:wallet',
+        children: [],
+        component: WalletComponent,
         data: {
           ogImage: true,
           networkSpecific: true,

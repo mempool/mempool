@@ -62,8 +62,10 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
   widgets;
 
   addressSubscription: Subscription;
+  walletSubscription: Subscription;
   blockTxSubscription: Subscription;
   addressSummary$: Observable<AddressTxSummary[]>;
+  walletSummary$: Observable<AddressTxSummary[]>;
   address: Address;
 
   goggleResolution = 82;
@@ -106,6 +108,10 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
       this.addressSubscription.unsubscribe();
       this.websocketService.stopTrackingAddress();
       this.address = null;
+    }
+    if (this.walletSubscription) {
+      this.walletSubscription.unsubscribe();
+      this.websocketService.stopTrackingWallet();
     }
     this.destroy$.next(1);
     this.destroy$.complete();
@@ -260,6 +266,7 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
     });
 
     this.startAddressSubscription();
+    this.startWalletSubscription();
   }
 
   handleNewMempoolData(mempoolStats: OptimizedMempoolStats[]) {
@@ -356,6 +363,75 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
         share(),
       );
     }
+  }
+
+  startWalletSubscription(): void {
+    if (this.stateService.env.customize && this.stateService.env.customize.dashboard.widgets.some(w => w.props?.wallet)) {
+      const walletName = this.stateService.env.customize.dashboard.widgets.find(w => w.props?.wallet).props.wallet;
+      this.websocketService.startTrackingWallet(walletName);
+
+      this.walletSummary$ =  this.apiService.getWallet$(walletName).pipe(
+        catchError(e => {
+          return of({});
+        }),
+        switchMap(wallet => this.stateService.walletTransactions$.pipe(
+          startWith([]),
+          scan((summaries, newTransactions) => {
+            const newSummaries: AddressTxSummary[] = [];
+            for (const tx of newTransactions) {
+              const funded: Record<string, number> = {};
+              const spent: Record<string, number> = {};
+              const fundedCount: Record<string, number> = {};
+              const spentCount: Record<string, number> = {};
+              for (const vin of tx.vin) {
+                const address = vin.prevout?.scriptpubkey_address;
+                if (address && wallet[address]) {
+                  spent[address] = (spent[address] ?? 0) + (vin.prevout?.value ?? 0);
+                  spentCount[address] = (spentCount[address] ?? 0) + 1;
+                }
+              }
+              for (const vout of tx.vout) {
+                const address = vout.scriptpubkey_address;
+                if (address && wallet[address]) {
+                  funded[address] = (funded[address] ?? 0) + (vout.value ?? 0);
+                  fundedCount[address] = (fundedCount[address] ?? 0) + 1;
+                }
+              }
+              for (const address of Object.keys({ ...funded, ...spent })) {
+                // add tx to summary
+                const txSummary: AddressTxSummary = {
+                  txid: tx.txid,
+                  value: (funded[address] ?? 0) - (spent[address] ?? 0),
+                  height: tx.status.block_height,
+                  time: tx.status.block_time,
+                };
+                wallet[address].transactions?.push(txSummary);
+                newSummaries.push(txSummary);
+              }
+            }
+            return this.deduplicateWalletTransactions([...summaries, ...newSummaries]);
+          }, this.deduplicateWalletTransactions(Object.values(wallet).flatMap(address => address.transactions)))
+        )),
+        share(),
+      );
+    }
+  }
+
+  deduplicateWalletTransactions(walletTransactions: AddressTxSummary[]): AddressTxSummary[] {
+    const transactions = new Map<string, AddressTxSummary>();
+    for (const tx of walletTransactions) {
+      if (transactions.has(tx.txid)) {
+        transactions.get(tx.txid).value += tx.value;
+      } else {
+        transactions.set(tx.txid, tx);
+      }
+    }
+    return Array.from(transactions.values()).sort((a, b) => {
+      if (a.height === b.height) {
+        return b.tx_position - a.tx_position;
+      }
+      return b.height - a.height;
+    });
   }
 
   @HostListener('window:resize', ['$event'])

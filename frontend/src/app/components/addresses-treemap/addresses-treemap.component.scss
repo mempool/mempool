@@ -1,0 +1,17 @@
+.node-channels-container {
+  position: relative;
+}
+
+.loading-spinner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 100;
+}
+
+.spinner-border {
+  position: relative;
+  top: 225px;
+}
