@@ -1,4 +1,4 @@
-import { IBitcoinApi, TestMempoolAcceptResult } from './bitcoin-api.interface';
+import { IBitcoinApi, SubmitPackageResult, TestMempoolAcceptResult } from './bitcoin-api.interface';
 import { IEsploraApi } from './esplora-api.interface';
 
 export interface AbstractBitcoinApi {
@@ -23,6 +23,7 @@ export interface AbstractBitcoinApi {
   $getScriptHashTransactions(address: string, lastSeenTxId: string): Promise<IEsploraApi.Transaction[]>;
   $sendRawTransaction(rawTransaction: string): Promise<string>;
   $testMempoolAccept(rawTransactions: string[], maxfeerate?: number): Promise<TestMempoolAcceptResult[]>;
+  $submitPackage(rawTransactions: string[], maxfeerate?: number, maxburnamount?: number): Promise<SubmitPackageResult>;
   $getOutspend(txId: string, vout: number): Promise<IEsploraApi.Outspend>;
   $getOutspends(txId: string): Promise<IEsploraApi.Outspend[]>;
   $getBatchedOutspends(txId: string[]): Promise<IEsploraApi.Outspend[][]>;

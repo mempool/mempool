@@ -58,6 +58,7 @@ class BitcoinRoutes {
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId', this.getTransaction)
           .post(config.MEMPOOL.API_URL_PREFIX + 'tx', this.$postTransaction)
           .post(config.MEMPOOL.API_URL_PREFIX + 'txs/test', this.$testTransactions)
+          .post(config.MEMPOOL.API_URL_PREFIX + 'txs/package', this.$submitPackage)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/hex', this.getRawTransaction)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/status', this.getTransactionStatus)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/outspends', this.getTransactionOutspends)
@@ -790,6 +791,19 @@ class BitcoinRoutes {
       res.send(result);
     } catch (e: any) {
       handleError(req, res, 400, e.message && e.code ? 'testmempoolaccept RPC error: ' + JSON.stringify({ code: e.code, message: e.message })
+        : (e.message || 'Error'));
+    }
+  }
+
+  private async $submitPackage(req: Request, res: Response) {
+    try {
+      const rawTxs = Common.getTransactionsFromRequest(req);
+      const maxfeerate = parseFloat(req.query.maxfeerate as string);
+      const maxburneamount = parseFloat(req.query.maxburneamount as string);
+      const result = await bitcoinApi.$submitPackage(rawTxs, maxfeerate, maxburneamount);
+      res.send(result);
+    } catch (e: any) {
+      handleError(req, res, 400, e.message && e.code ? 'submitpackage RPC error: ' + JSON.stringify({ code: e.code, message: e.message })
         : (e.message || 'Error'));
     }
   }
