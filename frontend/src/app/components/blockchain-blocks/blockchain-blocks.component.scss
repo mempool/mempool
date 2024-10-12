@@ -19,6 +19,38 @@
   pointer-events: none;
 }
 
+.on-pool-name-text {
+  display: inline-block;
+  padding-top: 2px;
+  font-weight: normal;
+}
+
+
+.on-pool {
+  align-items: center;
+  background-color: var(--bg);
+  display: inline-block;
+  margin-top: 4px;
+  padding: .25em .4em;
+  border-radius: .25rem;
+}
+
+.on-pool-container {
+  align-items: center;
+  position: relative;
+  top: -8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.on-pool-container.selected {
+  top: 0px;
+}
+
+.pool-container {
+  margin-top: 12px;
+}
+
 .mined-block {
   position: absolute;
   top: 0px;
@@ -155,9 +187,16 @@
 
 .badge {
   position: relative;
-  top: 15px;
+  top: 19px;
   z-index: 101;
   color: #FFF;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 145px;
+
+  &.miner-name {
+    max-width: 125px;
+  }
 }
 
 .pool-logo {
@@ -166,6 +205,10 @@
   position: relative;
   top: -1px;
   margin-right: 2px;
+}
+
+.pool-logo.faded {
+  filter: grayscale(100%) brightness(1.5);
 }
 
 .animated {

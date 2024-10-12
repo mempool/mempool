@@ -60,6 +60,19 @@
 	top: -1px;
 }
 
+.miner-name {
+  margin-right: 4px;
+  vertical-align: top;
+}
+
+.pool-logo {
+  width: 25px;
+  height: 25px;
+  position: relative;
+  top: -1px;
+  margin-right: 2px;
+}
+
 .badge.badge-accelerated {
   background-color: var(--tertiary);
   color: white;

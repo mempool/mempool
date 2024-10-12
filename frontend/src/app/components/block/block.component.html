@@ -66,10 +66,10 @@
                     [class.badge-success]="blockAudit?.matchRate >= 99"
                     [class.badge-warning]="blockAudit?.matchRate >= 75 && blockAudit?.matchRate < 99"
                     [class.badge-danger]="blockAudit?.matchRate < 75"
-                    *ngIf="blockAudit?.matchRate != null; else nullHealth"
+                    *ngIf="blockAudit?.matchRate != null && blockAudit?.id === block.id; else nullHealth"
                   >{{ blockAudit?.matchRate }}%</span>
                   <ng-template #nullHealth>
-                    <ng-container *ngIf="!isLoadingOverview; else loadingHealth">
+                    <ng-container *ngIf="!isLoadingOverview && blockAudit?.id === block.id; else loadingHealth">
                       <span class="health-badge badge badge-secondary" i18n="unknown">Unknown</span>
                     </ng-container>
                   </ng-template>
@@ -182,6 +182,13 @@
         <td i18n="block.miner">Miner</td>
         <td *ngIf="stateService.env.MINING_DASHBOARD">
           <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]" class="badge" style="color: #FFF;padding:0;">
+            <span class="miner-name" *ngIf="block.extras.pool.minerNames?.length > 1 && block.extras.pool.minerNames[1] != ''">
+              @if (block.extras.pool.minerNames[1].length > 16) {
+                {{ block.extras.pool.minerNames[1].slice(0, 15) }}…
+              } @else {
+                {{ block.extras.pool.minerNames[1] }}
+              }
+            </span>
             <img class="pool-logo" [src]="'/resources/mining-pools/' + block.extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'">
             {{ block.extras.pool.name }}
           </a>

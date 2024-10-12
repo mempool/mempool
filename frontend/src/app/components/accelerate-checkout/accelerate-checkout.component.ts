@@ -75,6 +75,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   @Output() changeMode = new EventEmitter<boolean>();
 
   calculating = true;
+  processing = false;
   selectedOption: 'wait' | 'accel';
   cantPayReason = '';
   quoteError = ''; // error fetching estimate or initial data
@@ -196,9 +197,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     if (changes.scrollEvent && this.scrollEvent) {
       this.scrollToElement('acceleratePreviewAnchor', 'start');
     }
-    if (changes.accelerating) {
-      if ((this.step === 'processing' || this.step === 'paid') && this.accelerating) {
+    if (changes.accelerating && this.accelerating) {
+      if (this.step === 'processing' || this.step === 'paid') {
         this.moveToStep('success');
+      } else { // Edge case where the transaction gets accelerated by someone else or on another session
+        this.closeModal();
       }
     }
   }
@@ -378,9 +381,10 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
    * Account-based acceleration request
    */
   accelerateWithMempoolAccount(): void {
-    if (!this.canPay || this.calculating) {
+    if (!this.canPay || this.calculating || this.processing) {
       return;
     }
+    this.processing = true;
     if (this.accelerationSubscription) {
       this.accelerationSubscription.unsubscribe();
     }
@@ -390,6 +394,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.accelerationUUID
     ).subscribe({
       next: () => {
+        this.processing = false;
         this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
         this.audioService.playSound('ascend-chime-cartoon');
         this.showSuccess = true;
@@ -397,6 +402,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         this.moveToStep('paid');
       },
       error: (response) => {
+        this.processing = false;
         this.accelerateError = response.error;
       }
     });
@@ -466,10 +472,14 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
    * APPLE PAY
    */
   async requestApplePayPayment(): Promise<void> {
+    if (this.processing) {
+      return;
+    }
     if (this.conversionsSubscription) {
       this.conversionsSubscription.unsubscribe();
     }
 
+    this.processing = true;
     this.conversionsSubscription = this.stateService.conversions$.subscribe(
       async (conversions) => {
         this.conversions = conversions;
@@ -494,6 +504,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             console.error(`Unable to find apple pay button id='apple-pay-button'`);
             // Try again
             setTimeout(this.requestApplePayPayment.bind(this), 500);
+            this.processing = false;
             return;
           }
           this.loadingApplePay = false;
@@ -505,6 +516,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               if (!card || !card.brand || !card.expMonth || !card.expYear || !card.last4) {
                 console.error(`Cannot retreive payment card details`);
                 this.accelerateError = 'apple_pay_no_card_details';
+                this.processing = false;
                 return;
               }
               const cardTag = md5(`${card.brand}${card.expMonth}${card.expYear}${card.last4}`.toLowerCase());
@@ -513,9 +525,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                 tokenResult.token,
                 cardTag,
                 `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
-                this.accelerationUUID
+                this.accelerationUUID,
+                costUSD
               ).subscribe({
                 next: () => {
+                  this.processing = false;
                   this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
                   this.audioService.playSound('ascend-chime-cartoon');
                   if (this.applePay) {
@@ -526,6 +540,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                   }, 1000);
                 },
                 error: (response) => {
+                  this.processing = false;
                   this.accelerateError = response.error;
                   if (!(response.status === 403 && response.error === 'not_available')) {
                     setTimeout(() => {
@@ -537,6 +552,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                 }
               });
             } else {
+              this.processing = false;
               let errorMessage = `Tokenization failed with status: ${tokenResult.status}`;
               if (tokenResult.errors) {
                 errorMessage += ` and errors: ${JSON.stringify(
@@ -547,6 +563,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             }
           });
         } catch (e) {
+          this.processing = false;
           console.error(e);
         }
       }
@@ -557,10 +574,14 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
    * GOOGLE PAY
    */
   async requestGooglePayPayment(): Promise<void> {
+    if (this.processing) {
+      return;
+    }
     if (this.conversionsSubscription) {
       this.conversionsSubscription.unsubscribe();
     }
-
+    
+    this.processing = true;
     this.conversionsSubscription = this.stateService.conversions$.subscribe(
       async (conversions) => {
         this.conversions = conversions;
@@ -595,6 +616,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             if (!card || !card.brand || !card.expMonth || !card.expYear || !card.last4) {
               console.error(`Cannot retreive payment card details`);
               this.accelerateError = 'apple_pay_no_card_details';
+              this.processing = false;
               return;
             }
             const cardTag = md5(`${card.brand}${card.expMonth}${card.expYear}${card.last4}`.toLowerCase());
@@ -603,9 +625,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               tokenResult.token,
               cardTag,
               `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
-              this.accelerationUUID
+              this.accelerationUUID,
+              costUSD
             ).subscribe({
               next: () => {
+                this.processing = false;
                 this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
                 this.audioService.playSound('ascend-chime-cartoon');
                 if (this.googlePay) {
@@ -616,6 +640,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                 }, 1000);
               },
               error: (response) => {
+                this.processing = false;
                 this.accelerateError = response.error;
                 if (!(response.status === 403 && response.error === 'not_available')) {
                   setTimeout(() => {
@@ -627,6 +652,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               }
             });
           } else {
+            this.processing = false;
             let errorMessage = `Tokenization failed with status: ${tokenResult.status}`;
             if (tokenResult.errors) {
               errorMessage += ` and errors: ${JSON.stringify(
@@ -644,10 +670,14 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
    * CASHAPP
    */
   async requestCashAppPayment(): Promise<void> {
+    if (this.processing) {
+      return;
+    }
     if (this.conversionsSubscription) {
       this.conversionsSubscription.unsubscribe();
     }
 
+    this.processing = true;
     this.conversionsSubscription = this.stateService.conversions$.subscribe(
       async (conversions) => {
         this.conversions = conversions;
@@ -678,6 +708,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         this.cashAppPay.addEventListener('ontokenization', event => {
           const { tokenResult, error } = event.detail;
           if (error) {
+            this.processing = false;
             this.accelerateError = error;
           } else if (tokenResult.status === 'OK') {
             this.servicesApiService.accelerateWithCashApp$(
@@ -685,9 +716,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               tokenResult.token,
               tokenResult.details.cashAppPay.cashtag,
               tokenResult.details.cashAppPay.referenceId,
-              this.accelerationUUID
+              this.accelerationUUID,
+              costUSD
             ).subscribe({
               next: () => {
+                this.processing = false;
                 this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
                 this.audioService.playSound('ascend-chime-cartoon');
                 if (this.cashAppPay) {
@@ -702,6 +735,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                 }, 1000);
               },
               error: (response) => {
+                this.processing = false;
                 this.accelerateError = response.error;
                 if (!(response.status === 403 && response.error === 'not_available')) {
                   setTimeout(() => {

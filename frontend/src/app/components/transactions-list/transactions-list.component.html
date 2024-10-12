@@ -81,7 +81,8 @@
                     </ng-container>
                   </div>
                 </td>
-                <td class="text-right nowrap amount" [class]="{large: vin?.prevout?.value > 1000000000}">
+                <td class="text-right nowrap amount" [class]="{large: vin?.prevout?.value > 1000000000 || vin.isInscription}">
+                  <button *ngIf="vin.isInscription" (click)="toggleOrdData(tx.txid, 'vin', vindex)" type="button" class="btn btn-sm badge badge-ord primary" style="margin-right: 10px;">Inscription</button>
                   <ng-template [ngIf]="vin.prevout && vin.prevout.asset && vin.prevout.asset !== nativeAssetId" [ngIfElse]="defaultOutput">
                     <div *ngIf="assetsMinimal && assetsMinimal[vin.prevout.asset] else assetVinNotFound">
                       <ng-container *ngTemplateOutlet="assetBox; context:{ $implicit: vin.prevout }"></ng-container>
@@ -94,6 +95,15 @@
                     <span *ngIf="vin.lazy" class="skeleton-loader"></span>
                     <app-amount [blockConversion]="tx.price" *ngIf="vin.prevout" [satoshis]="vin.prevout.value"></app-amount>
                   </ng-template>
+                </td>
+              </tr>
+              <tr *ngIf="showOrdData[tx.txid + '-vin-' + vindex]?.show" [ngClass]="{
+                'assetBox': (assetsMinimal && vin.prevout && assetsMinimal[vin.prevout.asset] && !vin.is_coinbase && vin.prevout.scriptpubkey_address && tx._unblinded) || inputIndex === vindex,
+                'highlight': this.address !== '' && (vin.prevout?.scriptpubkey_address === this.address || (vin.prevout?.scriptpubkey_type === 'p2pk' && vin.prevout?.scriptpubkey.slice(2, -2) === this.address))
+              }">
+                <td></td>
+                <td colspan="2">
+                  <app-ord-data [inscriptions]="showOrdData[tx.txid + '-vin-' + vindex]['inscriptions']" [type]="'vin'"></app-ord-data>
                 </td>
               </tr>
               <tr *ngIf="(showDetails$ | async) === true">
@@ -236,7 +246,12 @@
                     </ng-template>
                     <ng-template #defaultscriptpubkey_type>
                       <ng-template [ngIf]="vout.scriptpubkey_type === 'op_return'" [ngIfElse]="otherPubkeyType">
-                        OP_RETURN&nbsp;<a placement="bottom" [ngbTooltip]="vout.scriptpubkey_asm | hex2ascii"><span *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" class="badge badge-secondary scriptmessage">{{ vout.scriptpubkey_asm | hex2ascii }}</span></a>
+                        OP_RETURN&nbsp;
+                        @if (vout.isRunestone) {
+                          <button (click)="toggleOrdData(tx.txid, 'vout', vindex)" type="button" class="btn btn-sm badge badge-ord">Runestone</button>
+                        } @else {
+                          <a placement="bottom" [ngbTooltip]="vout.scriptpubkey_asm | hex2ascii"><span *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" class="badge badge-secondary scriptmessage">{{ vout.scriptpubkey_asm | hex2ascii }}</span></a>
+                        }
                       </ng-template>
                       <ng-template #otherPubkeyType>{{ vout.scriptpubkey_type | scriptpubkeyType }}</ng-template>
                     </ng-template>
@@ -274,6 +289,15 @@
                       </ng-template>
                     </ng-template>
                   </ng-template>
+                </td>
+              </tr>
+
+              <tr *ngIf="showOrdData[tx.txid + '-vout-' + vindex]?.show" [ngClass]="{
+                'assetBox': assetsMinimal && assetsMinimal[vout.asset] && vout.scriptpubkey_address && tx.vin && !tx.vin[0].is_coinbase && tx._unblinded || outputIndex === vindex,
+                'highlight': this.address !== '' && (vout.scriptpubkey_address === this.address || (vout.scriptpubkey_type === 'p2pk' && vout.scriptpubkey.slice(2, -2) === this.address))
+              }">
+                <td colspan="3">
+                    <app-ord-data [runestone]="showOrdData[tx.txid + '-vout-' + vindex]['runestone']" [runeInfo]="showOrdData[tx.txid + '-vout-' + vindex]['runeInfo']" [type]="'vout'"></app-ord-data>
                 </td>
               </tr>
               <tr *ngIf="(showDetails$ | async) === true">
@@ -321,7 +345,7 @@
       <div class="float-left mt-2-5" *ngIf="!transactionPage && !tx.vin[0].is_coinbase && tx.fee !== -1">
         <app-fee-rate [fee]="tx.fee" [weight]="tx.weight"></app-fee-rate>
         <span class="d-none d-sm-inline-block">&nbsp;&ndash; {{ tx.fee | number }} <span class="symbol"
-            i18n="shared.sat|sat">sat</span> <span class="fiat"><app-fiat [blockConversion]="tx.price" [value]="tx.fee"></app-fiat></span></span>
+            i18n="shared.sats">sats</span> <span class="fiat"><app-fiat [blockConversion]="tx.price" [value]="tx.fee"></app-fiat></span></span>
       </div>
       <div class="float-left mt-2-5 grey-info-text" *ngIf="tx.fee === -1" i18n="transactions-list.load-to-reveal-fee-info">Show more inputs to reveal fee data</div>
 

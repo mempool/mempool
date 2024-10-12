@@ -4,18 +4,17 @@ import { HttpClient } from '@angular/common/http';
 import { StateService } from './state.service';
 import { StorageService } from './storage.service';
 import { MenuGroup } from '../interfaces/services.interface';
-import { Observable, of, ReplaySubject, tap, catchError, share, filter, switchMap } from 'rxjs';
+import { Observable, of, ReplaySubject, tap, catchError, share, filter, switchMap, map } from 'rxjs';
 import { IBackendInfo } from '../interfaces/websocket.interface';
 import { Acceleration, AccelerationHistoryParams } from '../interfaces/node-api.interface';
 import { AccelerationStats } from '../components/acceleration/acceleration-stats/acceleration-stats.component';
 
-export type ProductType = 'enterprise' | 'community' | 'mining_pool' | 'custom';
 export interface IUser {
   username: string;
   email: string | null;
   passwordIsSet: boolean;
   snsId: string;
-  type: ProductType;
+  type: 'enterprise' | 'community' | 'mining_pool';
   subscription_tag: string;
   status: 'pending' | 'verified' | 'disabled';
   features: string | null;
@@ -136,16 +135,16 @@ export class ServicesApiServices {
     return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate`, { txInput: txInput, userBid: userBid, accelerationUUID: accelerationUUID });
   }
 
-  accelerateWithCashApp$(txInput: string, token: string, cashtag: string, referenceId: string, accelerationUUID: string) {
-    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/cashapp`, { txInput: txInput, token: token, cashtag: cashtag, referenceId: referenceId, accelerationUUID: accelerationUUID });
+  accelerateWithCashApp$(txInput: string, token: string, cashtag: string, referenceId: string, accelerationUUID: string, userApprovedUSD: number) {
+    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/cashapp`, { txInput: txInput, token: token, cashtag: cashtag, referenceId: referenceId, accelerationUUID: accelerationUUID, userApprovedUSD: userApprovedUSD });
   }
 
-  accelerateWithApplePay$(txInput: string, token: string, cardTag: string, referenceId: string, accelerationUUID: string) {
-    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/applePay`, { txInput: txInput, cardTag: cardTag, token: token, referenceId: referenceId, accelerationUUID: accelerationUUID });
+  accelerateWithApplePay$(txInput: string, token: string, cardTag: string, referenceId: string, accelerationUUID: string, userApprovedUSD: number) {
+    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/applePay`, { txInput: txInput, cardTag: cardTag, token: token, referenceId: referenceId, accelerationUUID: accelerationUUID, userApprovedUSD: userApprovedUSD });
   }
 
-  accelerateWithGooglePay$(txInput: string, token: string, cardTag: string, referenceId: string, accelerationUUID: string) {
-    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/googlePay`, { txInput: txInput, cardTag: cardTag, token: token, referenceId: referenceId, accelerationUUID: accelerationUUID });
+  accelerateWithGooglePay$(txInput: string, token: string, cardTag: string, referenceId: string, accelerationUUID: string, userApprovedUSD: number) {
+    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/googlePay`, { txInput: txInput, cardTag: cardTag, token: token, referenceId: referenceId, accelerationUUID: accelerationUUID, userApprovedUSD: userApprovedUSD });
   }
 
   getAccelerations$(): Observable<Acceleration[]> {
@@ -158,6 +157,29 @@ export class ServicesApiServices {
 
   getAccelerationHistory$(params: AccelerationHistoryParams): Observable<Acceleration[]> {
     return this.httpClient.get<Acceleration[]>(`${this.stateService.env.SERVICES_API}/accelerator/accelerations/history`, { params: { ...params } });
+  }
+
+  getAllAccelerationHistory$(params: AccelerationHistoryParams, limit?: number, findTxid?: string): Observable<Acceleration[]> {
+    const getPage$ = (page: number, accelerations: Acceleration[] = []): Observable<{ page: number, total: number, accelerations: Acceleration[] }> => {
+      return this.getAccelerationHistoryObserveResponse$({...params, page}).pipe(
+        map((response) => ({
+          page,
+          total: parseInt(response.headers.get('X-Total-Count'), 10) || 0,
+          accelerations: accelerations.concat(response.body || []),
+        })),
+        switchMap(({page, total, accelerations}) => {
+          if (accelerations.length >= Math.min(total, limit ?? Infinity) || (findTxid && accelerations.find((acc) => acc.txid === findTxid))) {
+            return of({ page, total, accelerations });
+          } else {
+            return getPage$(page + 1, accelerations);
+          }
+        }),
+      );
+    };
+
+    return getPage$(1).pipe(
+      map(({ accelerations }) => accelerations),
+    );
   }
 
   getAccelerationHistoryObserveResponse$(params: AccelerationHistoryParams): Observable<any> {

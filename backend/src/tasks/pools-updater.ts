@@ -6,15 +6,29 @@ import backendInfo from '../api/backend-info';
 import logger from '../logger';
 import { SocksProxyAgent } from 'socks-proxy-agent';
 import * as https from 'https';
+import { Common } from '../api/common';
 
 /**
  * Maintain the most recent version of pools-v2.json
  */
 class PoolsUpdater {
+  tag = 'PoolsUpdater';
+
   lastRun: number = 0;
   currentSha: string | null = null;
   poolsUrl: string = config.MEMPOOL.POOLS_JSON_URL;
   treeUrl: string = config.MEMPOOL.POOLS_JSON_TREE_URL;
+
+  public async $startService(): Promise<void> {
+    while ('Bitcoin is still alive') {
+      try {
+        await this.updatePoolsJson();
+      } catch (e: any) {
+        logger.info(`Exception ${e} in PoolsUpdater::$startService. Code: ${e.code}. Message: ${e.message}`, this.tag);
+      }
+      await Common.sleep$(10000);
+    }
+  }
 
   public async updatePoolsJson(): Promise<void> {
     if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false ||
@@ -23,11 +37,8 @@ class PoolsUpdater {
       return;
     }
 
-    const oneWeek = 604800;
-    const oneDay = 86400;
-
     const now = new Date().getTime() / 1000;
-    if (now - this.lastRun < oneWeek) { // Execute the PoolsUpdate only once a week, or upon restart
+    if (now - this.lastRun < config.MEMPOOL.POOLS_UPDATE_DELAY) { // Execute the PoolsUpdate only once a week, or upon restart
       return;
     }
 
@@ -43,7 +54,7 @@ class PoolsUpdater {
         this.currentSha = await this.getShaFromDb();
       }
 
-      logger.debug(`pools-v2.json sha | Current: ${this.currentSha} | Github: ${githubSha}`);
+      logger.debug(`pools-v2.json sha | Current: ${this.currentSha} | Github: ${githubSha}`, this.tag);
       if (this.currentSha !== null && this.currentSha === githubSha) {
         return;
       }
@@ -53,16 +64,16 @@ class PoolsUpdater {
         config.MEMPOOL.AUTOMATIC_POOLS_UPDATE !== true && // Automatic pools update is disabled
         !process.env.npm_config_update_pools // We're not manually updating mining pool
       ) {
-        logger.warn(`Updated mining pools data is available (${githubSha}) but AUTOMATIC_POOLS_UPDATE is disabled`);
-        logger.info(`You can update your mining pools using the --update-pools command flag. You may want to clear your nginx cache as well if applicable`);
+        logger.warn(`Updated mining pools data is available (${githubSha}) but AUTOMATIC_POOLS_UPDATE is disabled`, this.tag);
+        logger.info(`You can update your mining pools using the --update-pools command flag. You may want to clear your nginx cache as well if applicable`, this.tag);
         return;
       }
 
       const network = config.SOCKS5PROXY.ENABLED ? 'tor' : 'clearnet';
       if (this.currentSha === null) {
-        logger.info(`Downloading pools-v2.json for the first time from ${this.poolsUrl} over ${network}`, logger.tags.mining);
+        logger.info(`Downloading pools-v2.json for the first time from ${this.poolsUrl} over ${network}`, this.tag);
       } else {
-        logger.warn(`pools-v2.json is outdated, fetching latest from ${this.poolsUrl} over ${network}`, logger.tags.mining);
+        logger.warn(`pools-v2.json is outdated, fetching latest from ${this.poolsUrl} over ${network}`, this.tag);
       }
       const poolsJson = await this.query(this.poolsUrl);
       if (poolsJson === undefined) {
@@ -71,7 +82,7 @@ class PoolsUpdater {
       poolsParser.setMiningPools(poolsJson);
 
       if (config.DATABASE.ENABLED === false) { // Don't run db operations
-        logger.info(`Mining pools-v2.json (${githubSha}) import completed (no database)`);
+        logger.info(`Mining pools-v2.json (${githubSha}) import completed (no database)`, this.tag);
         return;
       }
 
@@ -81,14 +92,14 @@ class PoolsUpdater {
         await this.updateDBSha(githubSha);
         await DB.query('COMMIT;');
       } catch (e) {
-        logger.err(`Could not migrate mining pools, rolling back. Exception: ${JSON.stringify(e)}`, logger.tags.mining);
+        logger.err(`Could not migrate mining pools, rolling back. Exception: ${JSON.stringify(e)}`, this.tag);
         await DB.query('ROLLBACK;');
       }
-      logger.info(`Mining pools-v2.json (${githubSha}) import completed`);
+      logger.info(`Mining pools-v2.json (${githubSha}) import completed`, this.tag);
 
     } catch (e) {
-      this.lastRun = now - (oneWeek - oneDay); // Try again in 24h instead of waiting next week
-      logger.err(`PoolsUpdater failed. Will try again in 24h. Exception: ${JSON.stringify(e)}`, logger.tags.mining);
+      this.lastRun = now - 600; // Try again in 10 minutes
+      logger.err(`PoolsUpdater failed. Will try again in 10 minutes. Exception: ${JSON.stringify(e)}`, this.tag);
     }
   }
 
@@ -102,7 +113,7 @@ class PoolsUpdater {
         await DB.query('DELETE FROM state where name="pools_json_sha"');
         await DB.query(`INSERT INTO state VALUES('pools_json_sha', NULL, '${githubSha}')`);
       } catch (e) {
-        logger.err('Cannot save github pools-v2.json sha into the db. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
+        logger.err('Cannot save github pools-v2.json sha into the db. Reason: ' + (e instanceof Error ? e.message : e), this.tag);
       }
     }
   }
@@ -115,7 +126,7 @@ class PoolsUpdater {
       const [rows]: any[] = await DB.query('SELECT string FROM state WHERE name="pools_json_sha"');
       return (rows.length > 0 ? rows[0].string : null);
     } catch (e) {
-      logger.err('Cannot fetch pools-v2.json sha from db. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
+      logger.err('Cannot fetch pools-v2.json sha from db. Reason: ' + (e instanceof Error ? e.message : e), this.tag);
       return null;
     }
   }
@@ -134,7 +145,7 @@ class PoolsUpdater {
       }
     }
 
-    logger.err(`Cannot find "pools-v2.json" in git tree (${this.treeUrl})`, logger.tags.mining);
+    logger.err(`Cannot find "pools-v2.json" in git tree (${this.treeUrl})`, this.tag);
     return null;
   }
 
@@ -186,7 +197,7 @@ class PoolsUpdater {
         }
         return data.data;
       } catch (e) {
-        logger.err('Could not connect to Github. Reason: ' + (e instanceof Error ? e.message : e));
+        logger.err('Could not connect to Github. Reason: ' + (e instanceof Error ? e.message : e), this.tag);
         retry++;
       }
       await setDelay(config.MEMPOOL.EXTERNAL_RETRY_INTERVAL);

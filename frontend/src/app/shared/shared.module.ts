@@ -35,6 +35,7 @@ import { LanguageSelectorComponent } from '../components/language-selector/langu
 import { FiatSelectorComponent } from '../components/fiat-selector/fiat-selector.component';
 import { RateUnitSelectorComponent } from '../components/rate-unit-selector/rate-unit-selector.component';
 import { ThemeSelectorComponent } from '../components/theme-selector/theme-selector.component';
+import { AmountSelectorComponent } from '../components/amount-selector/amount-selector.component';
 import { BrowserOnlyDirective } from './directives/browser-only.directive';
 import { ServerOnlyDirective } from './directives/server-only.directive';
 import { ColoredPriceDirective } from './directives/colored-price.directive';
@@ -101,6 +102,7 @@ import { AccelerationsListComponent } from '../components/acceleration/accelerat
 import { PendingStatsComponent } from '../components/acceleration/pending-stats/pending-stats.component';
 import { AccelerationStatsComponent } from '../components/acceleration/acceleration-stats/acceleration-stats.component';
 import { AccelerationSparklesComponent } from '../components/acceleration/sparkles/acceleration-sparkles.component';
+import { OrdDataComponent } from '../components/ord-data/ord-data.component';
 
 import { BlockViewComponent } from '../components/block-view/block-view.component';
 import { EightBlocksComponent } from '../components/eight-blocks/eight-blocks.component';
@@ -131,6 +133,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     FiatSelectorComponent,
     ThemeSelectorComponent,
     RateUnitSelectorComponent,
+    AmountSelectorComponent,
     ScriptpubkeyTypePipe,
     RelativeUrlPipe,
     NoSanitizePipe,
@@ -227,6 +230,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     AccelerationStatsComponent,
     PendingStatsComponent,
     AccelerationSparklesComponent,
+    OrdDataComponent,
     HttpErrorComponent,
     TwitterWidgetComponent,
     FaucetComponent,
@@ -278,6 +282,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     FiatSelectorComponent,
     RateUnitSelectorComponent,
     ThemeSelectorComponent,
+    AmountSelectorComponent,
     ScriptpubkeyTypePipe,
     RelativeUrlPipe,
     Hex2asciiPipe,
@@ -358,10 +363,12 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     AccelerationStatsComponent,
     PendingStatsComponent,
     AccelerationSparklesComponent,
+    OrdDataComponent,
     HttpErrorComponent,
     TwitterWidgetComponent,
     TwitterLogin,
     BitcoinInvoiceComponent,
+    BitcoinsatoshisPipe,
 
     MempoolBlockOverviewComponent,
     ClockchainComponent,

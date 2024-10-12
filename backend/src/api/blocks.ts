@@ -34,6 +34,7 @@ import { calculateFastBlockCpfp, calculateGoodBlockCpfp } from './cpfp';
 import mempool from './mempool';
 import CpfpRepository from '../repositories/CpfpRepository';
 import accelerationApi from './services/acceleration';
+import { parseDATUMTemplateCreator } from '../utils/bitcoin-script';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -342,7 +343,12 @@ class Blocks {
           id: pool.uniqueId,
           name: pool.name,
           slug: pool.slug,
+          minerNames: null,
         };
+
+        if (extras.pool.name === 'OCEAN') {
+          extras.pool.minerNames = parseDATUMTemplateCreator(extras.coinbaseRaw);
+        }
       }
 
       extras.matchRate = null;

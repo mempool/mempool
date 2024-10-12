@@ -21,14 +21,14 @@
       </tr>
       <tr *ngIf="accelerationInfo.fee">
         <td class="label" i18n="transaction.fee|Transaction fee">Fee</td>
-        <td class="value">{{ accelerationInfo.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span></td>
+        <td class="value">{{ accelerationInfo.fee | number }} <span class="symbol" i18n="shared.sats">sats</span></td>
       </tr>
       <tr *ngIf="accelerationInfo.bidBoost >= 0 || accelerationInfo.feeDelta">
         <td class="label" i18n="transaction.out-of-band-fees">Out-of-band fees</td>
         @if (accelerationInfo.status === 'accelerated') {
-          <td class="value oobFees">{{ accelerationInfo.feeDelta | number }} <span class="symbol" i18n="shared.sat|sat">sat</span></td>
+          <td class="value oobFees">{{ accelerationInfo.feeDelta | number }} <span class="symbol" i18n="shared.sats">sats</span></td>
         } @else {
-          <td class="value oobFees">{{ accelerationInfo.bidBoost | number }} <span class="symbol" i18n="shared.sat|sat">sat</span></td>
+          <td class="value oobFees">{{ accelerationInfo.bidBoost | number }} <span class="symbol" i18n="shared.sats">sats</span></td>
         }
       </tr>
       <tr *ngIf="accelerationInfo.fee && accelerationInfo.weight">
@@ -47,13 +47,14 @@
       <tr *ngIf="['accelerated', 'mined'].includes(accelerationInfo.status) && hasPoolsData()">
         <td class="label" i18n="transaction.accelerated-by-hashrate|Accelerated to hashrate">Accelerated by</td>
         <td class="value" *ngIf="accelerationInfo.pools">
-          <ng-container *ngFor="let pool of accelerationInfo.pools">
+          <ng-container *ngFor="let pool of accelerationInfo.pools; let i = index;">
             <img *ngIf="accelerationInfo.poolsData[pool]" 
               class="pool-logo" 
               [style.opacity]="accelerationInfo?.minedByPoolUniqueId && pool !== accelerationInfo?.minedByPoolUniqueId ? '0.3' : '1'"
               [src]="'/resources/mining-pools/' + accelerationInfo.poolsData[pool].slug + '.svg'" 
               onError="this.src = '/resources/mining-pools/default.svg'" 
               [alt]="'Logo of ' + pool.name + ' mining pool'">
+            <br *ngIf="i % 6 === 5">
           </ng-container>
         </td>
       </tr>

@@ -11,19 +11,16 @@ import { MiningService } from '../../services/mining.service';
 })
 export class AccelerationTimelineComponent implements OnInit, OnChanges {
   @Input() transactionTime: number;
+  @Input() acceleratedAt: number;
   @Input() tx: Transaction;
   @Input() accelerationInfo: Acceleration;
   @Input() eta: ETA;
-  // A mined transaction has standard ETA and accelerated ETA undefined
-  // A transaction in mempool has either standardETA defined (if accelerated) or acceleratedETA defined (if not accelerated yet)
-  @Input() standardETA: number;
-  @Input() acceleratedETA: number;
 
-  acceleratedAt: number;
   now: number;
   accelerateRatio: number;
   useAbsoluteTime: boolean = false;
-  interval: number;
+  firstSeenToAccelerated: number;
+  acceleratedToMined: number;
 
   tooltipPosition = null;
   hoverInfo: any = null;
@@ -34,38 +31,24 @@ export class AccelerationTimelineComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
-    this.acceleratedAt = this.tx.acceleratedAt ?? new Date().getTime() / 1000;
-    this.now = Math.floor(new Date().getTime() / 1000);
-    this.useAbsoluteTime = this.tx.status.block_time < this.now - 7 * 24 * 3600;
+    this.updateTimes();
 
     this.miningService.getPools().subscribe(pools => {
       for (const pool of pools) {
         this.poolsData[pool.unique_id] = pool;
       }
     });
-
-    this.interval = window.setInterval(() => {
-      this.now = Math.floor(new Date().getTime() / 1000);
-      this.useAbsoluteTime = this.tx.status.block_time < this.now - 7 * 24 * 3600;
-    }, 60000);
   }
 
   ngOnChanges(changes): void {
-    // Hide standard ETA while we don't have a proper standard ETA calculation, see https://github.com/mempool/mempool/issues/65
-    
-    // if (changes?.eta?.currentValue || changes?.standardETA?.currentValue || changes?.acceleratedETA?.currentValue) {
-    //   if (changes?.eta?.currentValue) {
-    //     if (changes?.acceleratedETA?.currentValue) {
-    //       this.accelerateRatio = Math.floor((Math.floor(changes.eta.currentValue.time / 1000) - this.now) / (Math.floor(changes.acceleratedETA.currentValue / 1000) - this.now));
-    //     } else if (changes?.standardETA?.currentValue) {
-    //       this.accelerateRatio = Math.floor((Math.floor(changes.standardETA.currentValue / 1000) - this.now) / (Math.floor(changes.eta.currentValue.time / 1000) - this.now));
-    //     }
-    //   }
-    // }
+    this.updateTimes();
   }
 
-  ngOnDestroy(): void {
-    clearInterval(this.interval);
+  updateTimes(): void {
+    this.now = Math.floor(new Date().getTime() / 1000);
+    this.useAbsoluteTime = this.tx.status.block_time < this.now - 7 * 24 * 3600;
+    this.firstSeenToAccelerated = Math.max(0, this.acceleratedAt - this.transactionTime);
+    this.acceleratedToMined = Math.max(0, this.tx.status.block_time - this.acceleratedAt);
   }
   
   onHover(event, status: string): void {

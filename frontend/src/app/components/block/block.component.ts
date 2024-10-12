@@ -319,7 +319,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.accelerationsSubscription = this.block$.pipe(
       switchMap((block) => {
         return this.stateService.env.ACCELERATOR === true && block.height > 819500
-          ? this.servicesApiService.getAccelerationHistory$({ blockHeight: block.height })
+          ? this.servicesApiService.getAllAccelerationHistory$({ blockHeight: block.height })
             .pipe(catchError(() => {
               return of([]);
             }))
@@ -327,7 +327,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       })
     ).subscribe((accelerations) => {
       this.accelerations = accelerations;
-      if (accelerations.length) {
+      if (accelerations.length && this.strippedTransactions) { // Don't call setupBlockAudit if we don't have transactions yet; it will be called later in overviewSubscription
         this.setupBlockAudit();
       }
     });
