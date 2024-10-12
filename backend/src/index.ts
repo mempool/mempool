@@ -46,7 +46,7 @@ import bitcoinSecondClient from './api/bitcoin/bitcoin-second-client';
 import accelerationRoutes from './api/acceleration/acceleration.routes';
 import aboutRoutes from './api/about.routes';
 import mempoolBlocks from './api/mempool-blocks';
-
+import stratumApi from './api/services/stratum';
 class Server {
   private wss: WebSocket.Server | undefined;
   private wssUnixSocket: WebSocket.Server | undefined;
@@ -312,8 +312,11 @@ class Server {
       priceUpdater.setRatesChangedCallback(websocketHandler.handleNewConversionRates.bind(websocketHandler));
     }
     loadingIndicators.setProgressChangedCallback(websocketHandler.handleLoadingChanged.bind(websocketHandler));
+    if (config.STRATUM.ENABLED) {
+      stratumApi.connectWebsocket();
+    }
   }
-  
+
   setUpHttpApiRoutes(): void {
     bitcoinRoutes.initRoutes(this.app);
     bitcoinCoreRoutes.initRoutes(this.app);
