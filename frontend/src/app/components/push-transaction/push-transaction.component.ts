@@ -59,7 +59,7 @@ export class PushTransactionComponent implements OnInit {
       },
       (error) => {
         if (typeof error.error === 'string') {
-          const matchText = error.error.match('"message":"(.*?)"');
+          const matchText = error.error.replace(/\\/g, '').match('"message":"(.*?)"');
           this.error = 'Failed to broadcast transaction, reason: ' + (matchText && matchText[1] || error.error);
         } else if (error.message) {
           this.error = 'Failed to broadcast transaction, reason: ' + error.message;
