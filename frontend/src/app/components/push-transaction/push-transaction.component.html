@@ -9,4 +9,66 @@
     <p class="red-color d-inline">{{ error }}</p> <a *ngIf="txId" [routerLink]="['/tx/' | relativeUrl, txId]">{{ txId }}</a>
   </form>
 
+  @if (network === '' || network === 'testnet' || network === 'testnet4' || network === 'signet') {
+    <br>
+    <h1 class="text-left" style="margin-top: 1rem;" i18n="shared.submit-transactions|Submit Package">Submit Package</h1>
+
+    <form [formGroup]="submitTxsForm" (submit)="submitTxsForm.valid && submitTxs()" novalidate>
+      <div class="mb-3">
+        <textarea formControlName="txs" class="form-control" rows="5" i18n-placeholder="transaction.test-transactions" placeholder="Comma-separated list of raw transactions"></textarea>
+      </div>
+      <label i18n="test.tx.max-fee-rate">Maximum fee rate (sat/vB)</label>
+      <input type="number" class="form-control input-dark" formControlName="maxfeerate" id="maxfeerate"
+          [value]="10000" placeholder="10,000 s/vb" [class]="{invalid: invalidMaxfeerate}">
+      <label i18n="submitpackage.tx.max-burn-amount">Maximum burn amount (sats)</label>
+      <input type="number" class="form-control input-dark" formControlName="maxburnamount" id="maxburnamount"
+          [value]="0" placeholder="0 sat" [class]="{invalid: invalidMaxburnamount}">
+      <br>
+      <button [disabled]="isLoadingPackage" type="submit" class="btn btn-primary mr-2" i18n="shared.submit-transactions|Submit Package">Submit Package</button>
+      <p *ngIf="errorPackage" class="red-color d-inline">{{ errorPackage }}</p>
+      <p *ngIf="packageMessage" class="d-inline">{{ packageMessage }}</p>
+      
+    </form>
+
+    <br>
+
+    <div class="box" *ngIf="results?.length">
+      <table class="accept-results table table-fixed table-borderless table-striped">
+        <tbody>
+          <tr>
+            <th class="allowed" i18n="test-tx.is-allowed">Allowed?</th>
+            <th class="txid" i18n="dashboard.latest-transactions.txid">TXID</th>
+            <th class="rate" i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</th>
+            <th class="reason" i18n="test-tx.rejection-reason">Rejection reason</th>
+          </tr>
+          <ng-container *ngFor="let result of results;">
+            <tr>
+              <td class="allowed">
+                @if (result.error == null) {
+                  <span>✅</span>
+                }
+                @else {
+                  <span>❌</span>
+                }
+              </td>
+              <td class="txid">
+                @if (!result.error) {
+                  <a [routerLink]="['/tx/' | relativeUrl, result.txid]"><app-truncate [text]="result.txid"></app-truncate></a>
+                } @else {
+                  <app-truncate [text]="result.txid"></app-truncate>
+                }
+              </td>
+              <td class="rate">
+                <app-fee-rate *ngIf="result.fees?.['effective-feerate'] != null" [fee]="result.fees?.['effective-feerate'] * 100000"></app-fee-rate>
+                <span *ngIf="result.fees?.['effective-feerate'] == null">-</span>
+              </td>
+              <td class="reason">
+                {{ result.error || '-' }}
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  }
 </div>
