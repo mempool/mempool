@@ -525,7 +525,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                 tokenResult.token,
                 cardTag,
                 `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
-                this.accelerationUUID
+                this.accelerationUUID,
+                costUSD
               ).subscribe({
                 next: () => {
                   this.processing = false;
@@ -624,7 +625,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               tokenResult.token,
               cardTag,
               `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
-              this.accelerationUUID
+              this.accelerationUUID,
+              costUSD
             ).subscribe({
               next: () => {
                 this.processing = false;
@@ -714,7 +716,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               tokenResult.token,
               tokenResult.details.cashAppPay.cashtag,
               tokenResult.details.cashAppPay.referenceId,
-              this.accelerationUUID
+              this.accelerationUUID,
+              costUSD
             ).subscribe({
               next: () => {
                 this.processing = false;

@@ -74,7 +74,7 @@ export class TestTransactionsComponent implements OnInit {
       },
       (error) => {
         if (typeof error.error === 'string') {
-          const matchText = error.error.match('"message":"(.*?)"');
+          const matchText = error.error.replace(/\\/g, '').match('"message":"(.*?)"');
           this.error = matchText && matchText[1] || error.error;
         } else if (error.message) {
           this.error = error.message;

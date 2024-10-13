@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators, PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights,
-  RbfTree, BlockAudit, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume, AccelerationInfo, TestMempoolAcceptResult } from '../interfaces/node-api.interface';
+  RbfTree, BlockAudit, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume, AccelerationInfo, TestMempoolAcceptResult, 
+  SubmitPackageResult} from '../interfaces/node-api.interface';
 import { BehaviorSubject, Observable, catchError, filter, map, of, shareReplay, take, tap } from 'rxjs';
 import { StateService } from './state.service';
 import { Transaction } from '../interfaces/electrs.interface';
@@ -242,6 +243,19 @@ export class ApiService {
 
   testTransactions$(rawTxs: string[], maxfeerate?: number): Observable<TestMempoolAcceptResult[]> {
     return this.httpClient.post<TestMempoolAcceptResult[]>(this.apiBaseUrl + this.apiBasePath + `/api/txs/test${maxfeerate != null ? '?maxfeerate=' + maxfeerate.toFixed(8) : ''}`, rawTxs);
+  }
+
+  submitPackage$(rawTxs: string[], maxfeerate?: number, maxburnamount?: number): Observable<SubmitPackageResult> {
+    const queryParams = [];
+
+    if (maxfeerate) {
+      queryParams.push(`maxfeerate=${maxfeerate}`);
+    }
+
+    if (maxburnamount) {
+      queryParams.push(`maxburnamount=${maxburnamount}`);
+    }
+    return this.httpClient.post<SubmitPackageResult>(this.apiBaseUrl + this.apiBasePath + '/api/v1/txs/package' + (queryParams.length > 0 ? `?${queryParams.join('&')}` : ''), rawTxs);
   }
 
   getTransactionStatus$(txid: string): Observable<any> {
