@@ -255,7 +255,7 @@ export class ApiService {
     if (maxburnamount) {
       queryParams.push(`maxburnamount=${maxburnamount}`);
     }
-    return this.httpClient.post<SubmitPackageResult>(this.apiBaseUrl + this.apiBasePath + '/api/txs/package' + (queryParams.length > 0 ? `?${queryParams.join('&')}` : ''), rawTxs);
+    return this.httpClient.post<SubmitPackageResult>(this.apiBaseUrl + this.apiBasePath + '/api/v1/txs/package' + (queryParams.length > 0 ? `?${queryParams.join('&')}` : ''), rawTxs);
   }
 
   getTransactionStatus$(txid: string): Observable<any> {

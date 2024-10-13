@@ -48,6 +48,8 @@ class BitcoinRoutes {
       .post(config.MEMPOOL.API_URL_PREFIX + 'psbt/addparents', this.postPsbtCompletion)
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from', this.getBlocksByBulk.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from/:to', this.getBlocksByBulk.bind(this))
+      // Temporarily add txs/package endpoint for all backends until esplora supports it
+      .post(config.MEMPOOL.API_URL_PREFIX + 'txs/package', this.$submitPackage)
       ;
 
       if (config.MEMPOOL.BACKEND !== 'esplora') {
@@ -58,7 +60,6 @@ class BitcoinRoutes {
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId', this.getTransaction)
           .post(config.MEMPOOL.API_URL_PREFIX + 'tx', this.$postTransaction)
           .post(config.MEMPOOL.API_URL_PREFIX + 'txs/test', this.$testTransactions)
-          .post(config.MEMPOOL.API_URL_PREFIX + 'txs/package', this.$submitPackage)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/hex', this.getRawTransaction)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/status', this.getTransactionStatus)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/outspends', this.getTransactionOutspends)
@@ -799,8 +800,8 @@ class BitcoinRoutes {
     try {
       const rawTxs = Common.getTransactionsFromRequest(req);
       const maxfeerate = parseFloat(req.query.maxfeerate as string);
-      const maxburneamount = parseFloat(req.query.maxburneamount as string);
-      const result = await bitcoinApi.$submitPackage(rawTxs, maxfeerate, maxburneamount);
+      const maxburnamount = parseFloat(req.query.maxburnamount as string);
+      const result = await bitcoinClient.submitPackage(rawTxs, maxfeerate ?? undefined, maxburnamount ?? undefined);
       res.send(result);
     } catch (e: any) {
       handleError(req, res, 400, e.message && e.code ? 'submitpackage RPC error: ' + JSON.stringify({ code: e.code, message: e.message })
