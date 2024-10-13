@@ -1,0 +1,22 @@
+[Unit]
+Description=Bitcoind-testnet4
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/bitcoind -conf=bitcoin.conf -daemon -testnet4 -printtoconsole -pid=/bitcoin/bitcoind-testnet4.pid
+ExecStop=/usr/local/bin/bitcoin-cli -testnet4 stop
+
+Type=forking
+PIDFile=/bitcoin/bitcoind-testnet4.pid
+Restart=on-failure
+
+User=bitcoin
+Group=bitcoin
+
+PrivateTmp=true
+ProtectSystem=full
+NoNewPrivileges=true
+PrivateDevices=true
+
+[Install]
+WantedBy=multi-user.target
