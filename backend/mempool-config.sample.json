@@ -46,7 +46,8 @@
     "PASSWORD": "mempool",
     "TIMEOUT": 60000,
     "COOKIE": false,
-    "COOKIE_PATH": "/path/to/bitcoin/.cookie"
+    "COOKIE_PATH": "/path/to/bitcoin/.cookie",
+    "DEBUG_LOG_PATH": "/path/to/bitcoin/debug.log"
   },
   "ELECTRUM": {
     "HOST": "127.0.0.1",
