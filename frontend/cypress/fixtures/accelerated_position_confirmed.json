@@ -1,0 +1,66 @@
+{
+  "txConfirmed": "40ba6b3c4ce73e3ba0160c137b1cc6c2c7333a2b9c19537b61ee8a8aaf095e0a",
+  "block":{
+    "id": "000000000000000000014cc3d86b7c096ef92aca180e3cf27d72e34ce944caed",
+    "height": 837051,
+    "version": 821051392,
+    "timestamp": 1723452588,
+    "bits": 386079422,
+    "nonce": 2215159619,
+    "difficulty": 90666502495565.78,
+    "merkle_root": "207ad51f6c1150f63fcd043eb1b4624b77ac70558594317e989c1109fbb47c47",
+    "tx_count": 2284,
+    "size": 1490522,
+    "weight": 3993155,
+    "previousblockhash": "00000000000000000002b8a66307c997aa27bf99a384ceb7cfe5f29576eddb26",
+    "mediantime": 1723450608,
+    "stale": false,
+    "extras": {
+      "reward": 319417632,
+      "coinbaseRaw": "0378110d04adccb9662f466f756e6472792055534120506f6f6c202364726f70676f6c642f2c08727fca05000000000000",
+      "orphans": [],
+      "medianFee": 4.021446911342697,
+      "feeRange": [
+        3.1,
+        3.4184397163120566,
+        3.998624011007912,
+        4.444976076555024,
+        5.382978723404255,
+        11.62814371257485,
+        468.75
+      ],
+      "totalFees": 6917632,
+      "avgFee": 3030,
+      "avgFeeRate": 6,
+      "utxoSetChange": -2647,
+      "avgTxSize": 652.44,
+      "totalInputs": 8544,
+      "totalOutputs": 5897,
+      "totalOutputAmt": 2950130527407,
+      "segwitTotalTxs": 2084,
+      "segwitTotalSize": 1137877,
+      "segwitTotalWeight": 2582683,
+      "feePercentiles": null,
+      "virtualSize": 998288.75,
+      "coinbaseAddress": "bc1p8k4v4xuz55dv49svzjg43qjxq2whur7ync9tm0xgl5t4wjl9ca9snxgmlt",
+      "coinbaseAddresses": [
+        "bc1p8k4v4xuz55dv49svzjg43qjxq2whur7ync9tm0xgl5t4wjl9ca9snxgmlt",
+        "bc1qxhmdufsvnuaaaer4ynz88fspdsxq2h9e9cetdj"
+      ],
+      "coinbaseSignature": "OP_PUSHNUM_1 OP_PUSHBYTES_32 3daaca9b82a51aca960c1491588246029d7e0fc49e0abdbcc8fd17574be5c74b",
+      "coinbaseSignatureAscii": "f/Foundry USA Pool #dropgold/",
+      "header": "0040f03026dbed7695f2e5cfb7ce84a399bf27aa97c90763a6b802000000000000000000477cb4fb09119c987e3194855570ac774b62b4b13e04cd3ff650116c1fd57a20acccb966be1a031743a70884",
+      "utxoSetSize": null,
+      "totalInputAmt": null,
+      "pool": {
+        "id": 111,
+        "name": "Foundry USA",
+        "slug": "foundryusa"
+      },
+      "matchRate": 100,
+      "expectedFees": 6957093,
+      "expectedWeight": 3991895,
+      "similarity": 0.9907343565880212
+    }
+  }
+}

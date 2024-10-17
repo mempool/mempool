@@ -1,0 +1,24 @@
+[
+  {
+      "txid": "40ba6b3c4ce73e3ba0160c137b1cc6c2c7333a2b9c19537b61ee8a8aaf095e0a",
+      "status": "completed",
+      "added": 1723417553,
+      "lastUpdated": 1723424127,
+      "effectiveFee": 446,
+      "effectiveVsize": 223,
+      "feeDelta": 3000,
+      "blockHash": "000000000000000000005bc0a822da172e43c687428cc268177ad27d636f3059",
+      "blockHeight": 856387,
+      "bidBoost": 39,
+      "boostVersion": "v2",
+      "pools": [
+          111,
+          43,
+          102,
+          112,
+          142,
+          115
+      ],
+      "minedByPoolUniqueId": 111
+  }
+]
