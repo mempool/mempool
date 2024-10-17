@@ -1,16 +1,17 @@
 import { Component, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { catchError } from 'rxjs/operators';
-import { Subject, Subscription, of } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { WebsocketService } from '../../services/websocket.service';
-import { BlockExtended, TransactionStripped } from '../../interfaces/node-api.interface';
+import { TransactionStripped } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { detectWebGL } from '../../shared/graphs.utils';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { BytesPipe } from '../../shared/pipes/bytes-pipe/bytes.pipe';
 import { BlockOverviewMultiComponent } from '../block-overview-multi/block-overview-multi.component';
 import { CacheService } from '../../services/cache.service';
+import { isMempoolDelta, MempoolBlockDelta } from '../../interfaces/websocket.interface';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 
 function bestFitResolution(min, max, n): number {
   const target = (min + max) / 2;
@@ -26,14 +27,10 @@ function bestFitResolution(min, max, n): number {
   return best;
 }
 
-interface BlockInfo extends BlockExtended {
-  timeString: string;
-}
-
 @Component({
-  selector: 'app-eight-blocks',
-  templateUrl: './eight-blocks.component.html',
-  styleUrls: ['./eight-blocks.component.scss'],
+  selector: 'app-eight-mempool',
+  templateUrl: './eight-mempool.component.html',
+  styleUrls: ['./eight-mempool.component.scss'],
   animations: [
     trigger('infoChange', [
       transition(':enter', [
@@ -46,25 +43,25 @@ interface BlockInfo extends BlockExtended {
     ]),
   ],
 })
-export class EightBlocksComponent implements OnInit, OnDestroy {
+export class EightMempoolComponent implements OnInit, OnDestroy {
   network = '';
-  latestBlocks: (BlockExtended | null)[] = [];
-  pendingBlocks: Record<number, ((b: BlockExtended) => void)[]> = {};
-  isLoadingTransactions = true;
   strippedTransactions: { [height: number]: TransactionStripped[] } = {};
   webGlEnabled = true;
   hoverTx: string | null = null;
 
-  tipSubscription: Subscription;
-  cacheBlocksSubscription: Subscription;
   networkChangedSubscription: Subscription;
   queryParamsSubscription: Subscription;
   graphChangeSubscription: Subscription;
+  blockSub: Subscription;
 
-  height: number = 0;
+  chainDirection: string = 'right';
+  poolDirection: string = 'left';
+
+  lastBlockHeight: number = 0;
+  lastBlockHeightUpdate: number[] = [];
   numBlocks: number = 8;
   autoNumBlocks: boolean = false;
-  blockIndices: number[] = [...Array(8).keys()];
+  blockIndices: number[] = [];
   autofit: boolean = false;
   padding: number = 0;
   wrapBlocks: boolean = false;
@@ -77,7 +74,6 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
   testShiftTimeout: number;
 
   showInfo: boolean = true;
-  blockInfo: BlockInfo[] = [];
 
   wrapperStyle = {
     '--block-width': '1080px',
@@ -104,8 +100,52 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.websocketService.want(['blocks']);
+    this.websocketService.want(['blocks', 'mempool-blocks']);
     this.network = this.stateService.network;
+
+    this.stateService.activeGoggles$.next({ mode: 'and', filters: [], gradient: 'fee' });
+
+    this.blockSub = this.stateService.mempoolBlockUpdate$.subscribe((update) => {
+      // process update
+      if (isMempoolDelta(update)) {
+        // delta
+        this.updateBlock(update);
+      } else {
+        const transactionsStripped = update.transactions;
+        const inOldBlock = {};
+        const inNewBlock = {};
+        const added: TransactionStripped[] = [];
+        const changed: { txid: string, rate: number | undefined, flags: number, acc: boolean | undefined }[] = [];
+        const removed: string[] = [];
+        for (const tx of transactionsStripped) {
+          inNewBlock[tx.txid] = true;
+        }
+        for (const txid of Object.keys(this.blockGraph?.scenes[this.numBlocks - update.block - 1]?.txs || {})) {
+          inOldBlock[txid] = true;
+          if (!inNewBlock[txid]) {
+            removed.push(txid);
+          }
+        }
+        for (const tx of transactionsStripped) {
+          if (!inOldBlock[tx.txid]) {
+            added.push(tx);
+          } else {
+            changed.push({
+              txid: tx.txid,
+              rate: tx.rate,
+              flags: tx.flags,
+              acc: tx.acc
+            });
+          }
+        }
+        this.updateBlock({
+          block: update.block,
+          removed,
+          changed,
+          added
+        });
+      }
+    });
 
     this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
       this.autofit = params.autofit !== 'false';
@@ -125,6 +165,7 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
       }
 
       this.blockIndices = [...Array(this.numBlocks).keys()];
+      this.lastBlockHeightUpdate = this.blockIndices.map(() => 0);
 
       if (this.autofit) {
         this.resolution = bestFitResolution(76, 96, this.blockWidth - this.padding * 2);
@@ -140,29 +181,20 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
         margin: (this.padding || 0) +'px ',
       };
 
-      this.cacheBlocksSubscription = this.cacheService.loadedBlocks$.subscribe((block: BlockExtended) => {
-        if (this.pendingBlocks[block.height]) {
-          this.pendingBlocks[block.height].forEach(resolve => resolve(block));
-          delete this.pendingBlocks[block.height];
-        }
-      });
-
-      this.tipSubscription?.unsubscribe();
-      this.tipSubscription = this.stateService.chainTip$
-        .subscribe((height) => {
-          this.height = height;
-          this.handleNewBlock(height);
-        });
+      this.websocketService.startTrackMempoolBlocks(this.blockIndices);
     });
-
-    this.setupBlockGraphs();
 
     this.networkChangedSubscription = this.stateService.networkChanged$
       .subscribe((network) => this.network = network);
   }
 
-  ngAfterViewInit(): void {
-    this.setupBlockGraphs();
+  onTxClick(event: { tx: TransactionStripped, keyModifier: boolean }): void {
+    const url = new RelativeUrlPipe(this.stateService).transform(`/tx/${event.tx.txid}`);
+    if (!event.keyModifier) {
+      this.router.navigate([url]);
+    } else {
+      window.open(url, '_blank');
+    }
   }
 
   @HostListener('window:resize', ['$event'])
@@ -173,6 +205,7 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
       const height = window.innerHeight;
       this.numBlocks = Math.floor(width / this.blockWidth) * Math.floor(height / this.blockWidth);
       this.blockIndices = [...Array(this.numBlocks).keys()];
+      this.lastBlockHeightUpdate = this.blockIndices.map(() => 0);
 
       if (this.autofit) {
         this.resolution = bestFitResolution(76, 96, this.blockWidth - this.padding * 2);
@@ -188,119 +221,25 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
         margin: (this.padding || 0) +'px ',
       };
 
-      if (this.cacheBlocksSubscription) {
-        this.cacheBlocksSubscription.unsubscribe();
-      }
-      this.cacheBlocksSubscription = this.cacheService.loadedBlocks$.subscribe((block: BlockExtended) => {
-        if (this.pendingBlocks[block.height]) {
-          this.pendingBlocks[block.height].forEach(resolve => resolve(block));
-          delete this.pendingBlocks[block.height];
-        }
-      });
-
-      this.tipSubscription?.unsubscribe();
-      this.tipSubscription = this.stateService.chainTip$
-        .subscribe((height) => {
-          this.height = height;
-          this.handleNewBlock(height);
-        });
-
-      this.setupBlockGraphs();
+      this.websocketService.startTrackMempoolBlocks(this.blockIndices);
     }
   }
 
   ngOnDestroy(): void {
     this.stateService.markBlock$.next({});
-    if (this.tipSubscription) {
-      this.tipSubscription?.unsubscribe();
-    }
-    this.cacheBlocksSubscription?.unsubscribe();
+    this.blockSub.unsubscribe();
     this.networkChangedSubscription?.unsubscribe();
     this.queryParamsSubscription?.unsubscribe();
   }
 
-  async handleNewBlock(height: number): Promise<void> {
-    const readyPromises: Promise<TransactionStripped[]>[] = [];
-    const previousBlocks = this.latestBlocks;
-
-    const blocks = await this.loadBlocks(height, this.numBlocks);
-
-    const newHeights = {};
-    this.latestBlocks = blocks;
-    for (const block of blocks) {
-      newHeights[block.height] = true;
-      if (!this.strippedTransactions[block.height]) {
-        readyPromises.push(this.loadBlockTransactions(block));
-      }
+  updateBlock(delta: MempoolBlockDelta): void {
+    const blockMined = (this.stateService.latestBlockHeight > this.lastBlockHeightUpdate[delta.block]);
+    if (blockMined) {
+      this.blockGraph.update(this.numBlocks - delta.block - 1, delta.added, delta.removed, delta.changed || [], blockMined ? this.chainDirection : this.poolDirection, blockMined);
+    } else {
+      this.blockGraph.update(this.numBlocks - delta.block - 1, delta.added, delta.removed, delta.changed || [], this.poolDirection);
     }
-    await Promise.allSettled(readyPromises);
-    this.updateBlockGraphs(blocks);
 
-    // free up old transactions
-    previousBlocks.forEach(block => {
-      if (!newHeights[block.height]) {
-        delete this.strippedTransactions[block.height];
-      }
-    });
-  }
-
-  async loadBlocks(height: number, numBlocks: number): Promise<BlockExtended[]> {
-    const promises: Promise<BlockExtended>[] = [];
-    for (let i = 0; i < numBlocks; i++) {
-      this.cacheService.loadBlock(height - i);
-      const cachedBlock = this.cacheService.getCachedBlock(height - i);
-      if (cachedBlock) {
-        promises.push(Promise.resolve(cachedBlock));
-      } else {
-        promises.push(new Promise((resolve) => {
-          if (!this.pendingBlocks[height - i]) {
-            this.pendingBlocks[height - i] = [];
-          }
-          this.pendingBlocks[height - i].push(resolve);
-        }));
-      }
-    }
-    return Promise.all(promises);
-  }
-
-  async loadBlockTransactions(block: BlockExtended): Promise<TransactionStripped[]> {
-    return new Promise((resolve) => {
-      this.apiService.getStrippedBlockTransactions$(block.id).pipe(
-        catchError(() => {
-          return of([]);
-        }),
-      ).subscribe((transactions) => {
-        this.strippedTransactions[block.height] = transactions;
-        resolve(transactions);
-      });
-    });
-  }
-
-  updateBlockGraphs(blocks): void {
-    const startTime = performance.now() + 1000 - (this.stagger < 0 ? this.stagger * 8 : 0);
-    if (this.blockGraph) {
-      for (let i = 0; i < this.numBlocks; i++) {
-        this.blockGraph.replace(i, this.strippedTransactions[blocks?.[i]?.height] || [], 'right', false, startTime + (this.stagger * i));
-      }
-    }
-    this.showInfo = false;
-    setTimeout(() => {
-      this.blockInfo = blocks.map(block => {
-        return {
-          ...block,
-          timeString: (new Date(block.timestamp * 1000)).toLocaleTimeString(),
-        };
-      });
-      this.showInfo = true;
-    }, 1600);  // Should match the animation time.
-  }
-
-  setupBlockGraphs(): void {
-    if (this.blockGraph) {
-      for (let i = 0; i < this.numBlocks; i++) {
-        this.blockGraph.destroy(i);
-        this.blockGraph.setup(i, this.strippedTransactions[this.latestBlocks?.[i]?.height] || []);
-      }
-    }
+    this.lastBlockHeightUpdate[delta.block] = this.stateService.latestBlockHeight;
   }
 }
