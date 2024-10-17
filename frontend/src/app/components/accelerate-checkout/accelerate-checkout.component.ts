@@ -374,6 +374,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.selectFeeRateIndex = index;
       this.userBid = Math.max(0, fee);
       this.cost = this.userBid + this.estimate.mempoolBaseFee + this.estimate.vsizeFee;
+      this.validateChoice();
     }
   }
 
