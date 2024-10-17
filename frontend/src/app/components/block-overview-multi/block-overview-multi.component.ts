@@ -398,7 +398,8 @@ export class BlockOverviewMultiComponent implements AfterViewInit, OnDestroy, On
       for (let i = 0; i < this.scenes.length; i++) {
         const blocksPerRow = Math.floor(this.displayWidth / (this.displayBlockWidth + (this.displayPadding * 2)));
         const x = this.displayPadding + ((i % blocksPerRow) * (this.displayBlockWidth + (this.displayPadding * 2)));
-        const row = Math.floor(i / blocksPerRow);
+        const numRows = Math.ceil(this.scenes.length / blocksPerRow);
+        const row = numRows - Math.floor(i / blocksPerRow) - 1;
         const y = this.displayPadding + this.displayHeight - ((row + 1) * (this.displayBlockWidth + (this.displayPadding * 2)));
         if (this.scenes[i]) {
           this.scenes[i].resize({ x, y, width: this.displayBlockWidth, height: this.displayBlockWidth, animate: false });

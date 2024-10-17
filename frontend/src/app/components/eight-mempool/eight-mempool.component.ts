@@ -74,11 +74,6 @@ export class EightMempoolComponent implements OnInit, OnDestroy {
   testShiftTimeout: number;
 
   showInfo: boolean = true;
-  blockInfo: { label: string}[] = [
-    { label: '' },
-    { label: 'mempool' },
-    { label: 'blocks' },
-  ];
 
   wrapperStyle = {
     '--block-width': '1080px',
@@ -148,10 +143,6 @@ export class EightMempoolComponent implements OnInit, OnDestroy {
           added
         });
       }
-    });
-
-    this.mempoolBlockSub = this.stateService.mempoolBlocks$.subscribe((blocks) => {
-      this.blockInfo[0].label = `+${blocks.length - this.numBlocks}`;
     });
 
     this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {

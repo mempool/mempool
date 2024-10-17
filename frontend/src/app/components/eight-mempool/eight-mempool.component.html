@@ -12,14 +12,3 @@
   [animationOffset]="animationOffset"
   [disableSpinner]="true"
 ></app-block-overview-multi>
-<div class="blocks" [class.wrap]="wrapBlocks">
-  <ng-container *ngFor="let i of blockIndices">
-    <div class="block-wrapper" [style]="wrapperStyle">
-      <div class="block-container" [style]="containerStyle">
-        <div *ngIf="showInfo && blockInfo[i]" class="info" @infoChange>
-          <h1 class="height">{{ blockInfo[i].label }}</h1>
-        </div>
-      </div>
-    </div>
-  </ng-container>
-</div>
