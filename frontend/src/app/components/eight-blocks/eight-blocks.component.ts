@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { catchError } from 'rxjs/operators';
 import { Subject, Subscription, of } from 'rxjs';
@@ -63,6 +63,7 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
 
   height: number = 0;
   numBlocks: number = 8;
+  autoNumBlocks: boolean = false;
   blockIndices: number[] = [...Array(8).keys()];
   autofit: boolean = false;
   padding: number = 0;
@@ -107,15 +108,23 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
     this.network = this.stateService.network;
 
     this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
-      this.numBlocks = Number.isInteger(Number(params.numBlocks)) ? Number(params.numBlocks) : 8;
-      this.blockIndices = [...Array(this.numBlocks).keys()];
       this.autofit = params.autofit !== 'false';
-      this.padding = Number.isInteger(Number(params.padding)) ? Number(params.padding) : 10;
-      this.blockWidth = Number.isInteger(Number(params.blockWidth)) ? Number(params.blockWidth) : 540;
+      this.numBlocks = Number.isInteger(Number(params.numBlocks)) ? Number(params.numBlocks) : 0;
+      this.blockWidth = Number.isInteger(Number(params.blockWidth)) ? Number(params.blockWidth) : 320;
+      this.padding = Number.isInteger(Number(params.padding)) ? Number(params.padding) : 4;
       this.wrapBlocks = params.wrap !== 'false';
       this.stagger = Number.isInteger(Number(params.stagger)) ? Number(params.stagger) : 0;
       this.animationDuration = Number.isInteger(Number(params.animationDuration)) ? Number(params.animationDuration) : 2000;
       this.animationOffset = 0;
+
+      if (!this.numBlocks) {
+        this.autoNumBlocks = true;
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        this.numBlocks = Math.floor(width / this.blockWidth) * Math.floor(height / this.blockWidth);
+      }
+
+      this.blockIndices = [...Array(this.numBlocks).keys()];
 
       if (this.autofit) {
         this.resolution = bestFitResolution(76, 96, this.blockWidth - this.padding * 2);
@@ -139,15 +148,11 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
       });
 
       this.tipSubscription?.unsubscribe();
-      if (params.test === 'true') {
-        this.shiftTestBlocks();
-      } else {
-        this.tipSubscription = this.stateService.chainTip$
-          .subscribe((height) => {
-            this.height = height;
-            this.handleNewBlock(height);
-          });
-      }
+      this.tipSubscription = this.stateService.chainTip$
+        .subscribe((height) => {
+          this.height = height;
+          this.handleNewBlock(height);
+        });
     });
 
     this.setupBlockGraphs();
@@ -160,6 +165,50 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
     this.setupBlockGraphs();
   }
 
+  @HostListener('window:resize', ['$event'])
+  resizeCanvas(): void {
+    if (this.autoNumBlocks) {
+      this.autoNumBlocks = true;
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      this.numBlocks = Math.floor(width / this.blockWidth) * Math.floor(height / this.blockWidth);
+      this.blockIndices = [...Array(this.numBlocks).keys()];
+
+      if (this.autofit) {
+        this.resolution = bestFitResolution(76, 96, this.blockWidth - this.padding * 2);
+      } else {
+        this.resolution = 86;
+      }
+
+      this.wrapperStyle = {
+        '--block-width': this.blockWidth + 'px',
+        width: this.blockWidth + 'px',
+        height: this.blockWidth + 'px',
+        maxWidth: this.blockWidth + 'px',
+        margin: (this.padding || 0) +'px ',
+      };
+
+      if (this.cacheBlocksSubscription) {
+        this.cacheBlocksSubscription.unsubscribe();
+      }
+      this.cacheBlocksSubscription = this.cacheService.loadedBlocks$.subscribe((block: BlockExtended) => {
+        if (this.pendingBlocks[block.height]) {
+          this.pendingBlocks[block.height].forEach(resolve => resolve(block));
+          delete this.pendingBlocks[block.height];
+        }
+      });
+
+      this.tipSubscription?.unsubscribe();
+      this.tipSubscription = this.stateService.chainTip$
+        .subscribe((height) => {
+          this.height = height;
+          this.handleNewBlock(height);
+        });
+
+      this.setupBlockGraphs();
+    }
+  }
+
   ngOnDestroy(): void {
     this.stateService.markBlock$.next({});
     if (this.tipSubscription) {
@@ -170,23 +219,11 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
     this.queryParamsSubscription?.unsubscribe();
   }
 
-  shiftTestBlocks(): void {
-    const sub = this.apiService.getBlocks$(this.testHeight).subscribe(result => {
-      sub.unsubscribe();
-      this.handleNewBlock(this.testHeight);
-      this.testHeight++;
-      clearTimeout(this.testShiftTimeout);
-      this.testShiftTimeout = window.setTimeout(() => { this.shiftTestBlocks(); }, 10000);
-    });
-  }
-
   async handleNewBlock(height: number): Promise<void> {
     const readyPromises: Promise<TransactionStripped[]>[] = [];
     const previousBlocks = this.latestBlocks;
 
     const blocks = await this.loadBlocks(height, this.numBlocks);
-    console.log('loaded ', blocks.length, ' blocks from height ', height);
-    console.log(blocks);
 
     const newHeights = {};
     this.latestBlocks = blocks;
@@ -208,7 +245,6 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
   }
 
   async loadBlocks(height: number, numBlocks: number): Promise<BlockExtended[]> {
-    console.log('loading ', numBlocks, ' blocks from height ', height);
     const promises: Promise<BlockExtended>[] = [];
     for (let i = 0; i < numBlocks; i++) {
       this.cacheService.loadBlock(height - i);
