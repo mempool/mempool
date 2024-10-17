@@ -523,11 +523,164 @@ export class BlockOverviewMultiComponent implements AfterViewInit, OnDestroy, On
     }
   }
 
+  @HostListener('document:click', ['$event'])
+  clickAway(event) {
+    if (!this.elRef.nativeElement.contains(event.target)) {
+      const currentPreview = this.selectedTx || this.hoverTx;
+      if (currentPreview) {
+        for (const scene of this.scenes) {
+          if (scene) {
+            scene.setHover(currentPreview, false);
+          }
+        }
+        this.start();
+      }
+      this.hoverTx = null;
+      this.selectedTx = null;
+      this.onTxHover(null);
+    }
+  }
+
+  @HostListener('pointerup', ['$event'])
+  onClick(event) {
+    if (!this.canvas) {
+      return;
+    }
+    if (event.target === this.canvas.nativeElement && event.pointerType === 'touch') {
+      this.setPreviewTx(event.offsetX, event.offsetY, true);
+    } else if (event.target === this.canvas.nativeElement) {
+      const keyMod = event.shiftKey || event.ctrlKey || event.metaKey;
+      const middleClick = event.which === 2 || event.button === 1;
+      this.onTxClick(event.offsetX, event.offsetY, keyMod || middleClick);
+    }
+  }
+
+  @HostListener('pointermove', ['$event'])
+  onPointerMove(event) {
+    if (!this.canvas) {
+      return;
+    }
+    if (event.target === this.canvas.nativeElement) {
+      this.setPreviewTx(event.offsetX, event.offsetY, false);
+    } else {
+      this.onPointerLeave(event);
+    }
+  }
+
+  @HostListener('pointerleave', ['$event'])
+  onPointerLeave(event) {
+    if (event.pointerType !== 'touch') {
+      this.setPreviewTx(-1, -1, true);
+    }
+  }
+
+  setPreviewTx(cssX: number, cssY: number, clicked: boolean = false) {
+    const x = cssX * window.devicePixelRatio;
+    const y = cssY * window.devicePixelRatio;
+    if (!this.selectedTx || clicked) {
+      this.tooltipPosition = {
+        x: cssX,
+        y: cssY
+      };
+      const currentPreview = this.selectedTx || this.hoverTx;
+      let selected;
+      for (const scene of this.scenes) {
+        if (scene) {
+          selected = scene.getTxAt({ x, y: this.displayHeight - y });
+          if (selected) {
+            break;
+          }
+        }
+      }
+
+      if (selected !== currentPreview) {
+        if (currentPreview) {
+          for (const scene of this.scenes) {
+            if (scene) {
+              scene.setHover(currentPreview, false);
+              break;
+            }
+          }
+          this.start();
+        }
+        if (selected) {
+          for (const scene of this.scenes) {
+            if (scene) {
+              scene.setHover(selected, true);
+              break;
+            }
+          }
+          this.start();
+          if (clicked) {
+            this.selectedTx = selected;
+          } else {
+            this.hoverTx = selected;
+            this.onTxHover(this.hoverTx ? this.hoverTx.txid : null);
+          }
+        } else {
+          if (clicked) {
+            this.selectedTx = null;
+          }
+          this.hoverTx = null;
+          this.onTxHover(null);
+        }
+      } else if (clicked) {
+        if (selected === this.selectedTx) {
+          this.hoverTx = this.selectedTx;
+          this.selectedTx = null;
+          this.onTxHover(this.hoverTx ? this.hoverTx.txid : null);
+        } else {
+          this.selectedTx = selected;
+        }
+      }
+    }
+  }
+
+  updateSearchHighlight(): void {
+    if (this.highlightTx && this.highlightTx.txid !== this.searchText) {
+      for (const scene of this.scenes) {
+        if (scene) {
+          scene.setHighlight(this.highlightTx, false);
+        }
+      }
+      this.start();
+    } else if (this.searchText && this.searchText.length === 64) {
+      for (const scene of this.scenes) {
+        if (scene) {
+          const highlightTx = scene.txs[this.searchText];
+          if (highlightTx) {
+            scene.setHighlight(highlightTx, true);
+            this.highlightTx = highlightTx;
+            this.start();
+          }
+        }
+      }
+    }
+  }
+
   setHighlightingEnabled(enabled: boolean): void {
     for (const scene of this.scenes) {
       scene.setHighlighting(enabled);
     }
     this.start();
+  }
+
+  onTxClick(cssX: number, cssY: number, keyModifier: boolean = false) {
+    for (const scene of this.scenes) {
+      if (scene) {
+        const x = cssX * window.devicePixelRatio;
+        const y = cssY * window.devicePixelRatio;
+        const selected = scene.getTxAt({ x, y: this.displayHeight - y });
+        if (selected && selected.txid) {
+          this.txClickEvent.emit({ tx: selected, keyModifier });
+          return;
+        }
+      }
+    }
+  }
+
+  onTxHover(hoverId: string) {
+    this.txHoverEvent.emit(hoverId);
   }
 
   getColorFunction(): ((tx: TxView) => Color) {

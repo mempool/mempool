@@ -12,6 +12,7 @@ import { BytesPipe } from '../../shared/pipes/bytes-pipe/bytes.pipe';
 import { BlockOverviewMultiComponent } from '../block-overview-multi/block-overview-multi.component';
 import { CacheService } from '../../services/cache.service';
 import { isMempoolDelta, MempoolBlockDelta } from '../../interfaces/websocket.interface';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 
 function bestFitResolution(min, max, n): number {
   const target = (min + max) / 2;
@@ -53,7 +54,6 @@ export class EightMempoolComponent implements OnInit, OnDestroy {
   queryParamsSubscription: Subscription;
   graphChangeSubscription: Subscription;
   blockSub: Subscription;
-  mempoolBlockSub: Subscription;
 
   chainDirection: string = 'right';
   poolDirection: string = 'left';
@@ -178,10 +178,18 @@ export class EightMempoolComponent implements OnInit, OnDestroy {
       .subscribe((network) => this.network = network);
   }
 
+  onTxClick(event: { tx: TransactionStripped, keyModifier: boolean }): void {
+    const url = new RelativeUrlPipe(this.stateService).transform(`/tx/${event.tx.txid}`);
+    if (!event.keyModifier) {
+      this.router.navigate([url]);
+    } else {
+      window.open(url, '_blank');
+    }
+  }
+
   ngOnDestroy(): void {
     this.stateService.markBlock$.next({});
     this.blockSub.unsubscribe();
-    this.mempoolBlockSub.unsubscribe();
     this.networkChangedSubscription?.unsubscribe();
     this.queryParamsSubscription?.unsubscribe();
   }

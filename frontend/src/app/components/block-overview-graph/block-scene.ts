@@ -228,7 +228,11 @@ export default class BlockScene {
   getTxAt(position: Position): TxView | void {
     if (this.layout) {
       const gridPosition = this.screenToGrid(position);
-      return this.layout.getTx(gridPosition);
+      if (gridPosition.x >= 0 && gridPosition.x < this.gridWidth && gridPosition.y >= 0 && gridPosition.y < this.gridHeight) {
+        return this.layout.getTx(gridPosition);
+      } else {
+        return null;
+      }
     } else {
       return null;
     }
@@ -465,7 +469,7 @@ export default class BlockScene {
 
   private screenToGrid(position: Position): Position {
     let x = position.x - this.x;
-    let y = this.height - (position.y - this.y);
+    let y = position.y - this.y;
     let t;
 
     switch (this.orientation) {

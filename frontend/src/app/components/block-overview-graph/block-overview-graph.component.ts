@@ -553,7 +553,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
         x: cssX,
         y: cssY
       };
-      const selected = this.scene.getTxAt({ x, y });
+      const selected = this.scene.getTxAt({ x, y: this.displayHeight - y });
       const currentPreview = this.selectedTx || this.hoverTx;
 
       if (selected !== currentPreview) {
@@ -627,7 +627,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     if (this.scene) {
       const x = cssX * window.devicePixelRatio;
       const y = cssY * window.devicePixelRatio;
-      const selected = this.scene.getTxAt({ x, y });
+      const selected = this.scene.getTxAt({ x, y: this.displayHeight - y });
       if (selected && selected.txid) {
         this.txClickEvent.emit({ tx: selected, keyModifier });
       }
