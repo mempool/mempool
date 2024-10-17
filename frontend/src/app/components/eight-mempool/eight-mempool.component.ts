@@ -1,10 +1,9 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { catchError } from 'rxjs/operators';
-import { Subject, Subscription, of } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { WebsocketService } from '../../services/websocket.service';
-import { BlockExtended, TransactionStripped } from '../../interfaces/node-api.interface';
+import { TransactionStripped } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { detectWebGL } from '../../shared/graphs.utils';
 import { animate, style, transition, trigger } from '@angular/animations';
@@ -61,6 +60,7 @@ export class EightMempoolComponent implements OnInit, OnDestroy {
   lastBlockHeight: number = 0;
   lastBlockHeightUpdate: number[] = [];
   numBlocks: number = 8;
+  autoNumBlocks: boolean = false;
   blockIndices: number[] = [];
   autofit: boolean = false;
   padding: number = 0;
@@ -148,16 +148,24 @@ export class EightMempoolComponent implements OnInit, OnDestroy {
     });
 
     this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
-      this.numBlocks = Number.isInteger(Number(params.numBlocks)) ? Number(params.numBlocks) : 8;
-      this.blockIndices = [...Array(this.numBlocks).keys()];
-      this.lastBlockHeightUpdate = this.blockIndices.map(() => 0);
       this.autofit = params.autofit !== 'false';
-      this.blockWidth = Number.isInteger(Number(params.blockWidth)) ? Number(params.blockWidth) : 540;
-      this.padding = Number.isInteger(Number(params.padding)) ? Number(params.padding) : 0;
+      this.numBlocks = Number.isInteger(Number(params.numBlocks)) ? Number(params.numBlocks) : 0;
+      this.blockWidth = Number.isInteger(Number(params.blockWidth)) ? Number(params.blockWidth) : 320;
+      this.padding = Number.isInteger(Number(params.padding)) ? Number(params.padding) : 4;
       this.wrapBlocks = params.wrap !== 'false';
       this.stagger = Number.isInteger(Number(params.stagger)) ? Number(params.stagger) : 0;
       this.animationDuration = Number.isInteger(Number(params.animationDuration)) ? Number(params.animationDuration) : 2000;
       this.animationOffset = 0;
+
+      if (!this.numBlocks) {
+        this.autoNumBlocks = true;
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        this.numBlocks = Math.floor(width / this.blockWidth) * Math.floor(height / this.blockWidth);
+      }
+
+      this.blockIndices = [...Array(this.numBlocks).keys()];
+      this.lastBlockHeightUpdate = this.blockIndices.map(() => 0);
 
       if (this.autofit) {
         this.resolution = bestFitResolution(76, 96, this.blockWidth - this.padding * 2);
@@ -186,6 +194,34 @@ export class EightMempoolComponent implements OnInit, OnDestroy {
       this.router.navigate([url]);
     } else {
       window.open(url, '_blank');
+    }
+  }
+
+  @HostListener('window:resize', ['$event'])
+  resizeCanvas(): void {
+    if (this.autoNumBlocks) {
+      this.autoNumBlocks = true;
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      this.numBlocks = Math.floor(width / this.blockWidth) * Math.floor(height / this.blockWidth);
+      this.blockIndices = [...Array(this.numBlocks).keys()];
+      this.lastBlockHeightUpdate = this.blockIndices.map(() => 0);
+
+      if (this.autofit) {
+        this.resolution = bestFitResolution(76, 96, this.blockWidth - this.padding * 2);
+      } else {
+        this.resolution = 86;
+      }
+
+      this.wrapperStyle = {
+        '--block-width': this.blockWidth + 'px',
+        width: this.blockWidth + 'px',
+        height: this.blockWidth + 'px',
+        maxWidth: this.blockWidth + 'px',
+        margin: (this.padding || 0) +'px ',
+      };
+
+      this.websocketService.startTrackMempoolBlocks(this.blockIndices);
     }
   }
 
