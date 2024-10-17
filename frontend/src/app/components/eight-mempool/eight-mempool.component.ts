@@ -103,6 +103,8 @@ export class EightMempoolComponent implements OnInit, OnDestroy {
     this.websocketService.want(['blocks', 'mempool-blocks']);
     this.network = this.stateService.network;
 
+    this.stateService.activeGoggles$.next({ mode: 'and', filters: [], gradient: 'fee' });
+
     this.blockSub = this.stateService.mempoolBlockUpdate$.subscribe((update) => {
       // process update
       if (isMempoolDelta(update)) {

@@ -179,13 +179,15 @@ export class BlockOverviewMultiComponent implements AfterViewInit, OnDestroy, On
 
   setFilterFlags(goggle?: ActiveFilter): void {
     this.filterMode = goggle?.mode || this.filterMode;
-    this.gradientMode = goggle?.gradient || this.gradientMode;
+    this.gradientMode = goggle?.gradient || 'fee'; // this.gradientMode;
     this.activeFilterFlags = goggle?.filters ? toFlags(goggle.filters) : this.filterFlags;
     for (const scene of this.scenes) {
-      if (this.activeFilterFlags != null && this.filtersAvailable) {
-        scene.setColorFunction(this.getFilterColorFunction(this.activeFilterFlags, this.gradientMode));
-      } else {
-        scene.setColorFunction(this.getFilterColorFunction(0n, this.gradientMode));
+      if (scene) {
+        if (this.activeFilterFlags != null && this.filtersAvailable) {
+          scene.setColorFunction(this.getFilterColorFunction(this.activeFilterFlags, this.gradientMode));
+        } else {
+          scene.setColorFunction(this.getFilterColorFunction(0n, this.gradientMode));
+        }
       }
     }
     this.start();
