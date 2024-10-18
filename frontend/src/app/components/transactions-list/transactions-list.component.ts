@@ -258,6 +258,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
               const hasAnnex = tx.vin[i].witness?.[tx.vin[i].witness.length - 1].startsWith('50');
               if (tx.vin[i].witness.length > (hasAnnex ? 2 : 1) && tx.vin[i].witness[tx.vin[i].witness.length - (hasAnnex ? 3 : 2)].includes('0063036f7264')) {
                 tx.vin[i].isInscription = true;
+                tx.largeInput = true;
               }
             }
           }
@@ -268,6 +269,9 @@ export class TransactionsListComponent implements OnInit, OnChanges {
             }
           }
         }
+
+        tx.largeInput = tx.largeInput || tx.vin.some(vin => (vin?.prevout?.value > 1000000000));
+        tx.largeOutput = tx.vout.some(vout => (vout?.value > 1000000000));
       });
 
       if (this.blockTime && this.transactions?.length && this.currency) {
