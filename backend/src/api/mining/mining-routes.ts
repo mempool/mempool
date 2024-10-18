@@ -459,7 +459,7 @@ class MiningRoutes {
         handleError(req, res, 400, 'Acceleration data is not available.');
         return;
       }
-      res.status(200).send(accelerationApi.accelerations || []);
+      res.status(200).send(Object.values(accelerationApi.getAccelerations() || {}));
     } catch (e) {
       handleError(req, res, 500, e instanceof Error ? e.message : e);
     }
