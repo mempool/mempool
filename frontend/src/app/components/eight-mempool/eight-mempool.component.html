@@ -1,0 +1,15 @@
+<app-block-overview-multi
+  #blockGraph
+  [isLoading]="isLoading"
+  [numBlocks]="numBlocks"
+  [padding]="padding"
+  [blockWidth]="blockWidth"
+  [resolution]="resolution"
+  [blockLimit]="stateService.blockVSize"
+  [orientation]="'left'"
+  [flip]="true"
+  [showFilters]="true"
+  [animationDuration]="animationDuration"
+  [animationOffset]="animationOffset"
+  (txClickEvent)="onTxClick($event)"
+></app-block-overview-multi>

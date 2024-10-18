@@ -1,15 +1,15 @@
 import { Component, ElementRef, ViewChild, HostListener, Input, Output, EventEmitter, NgZone, AfterViewInit, OnDestroy, OnChanges } from '@angular/core';
 import { TransactionStripped } from '../../interfaces/node-api.interface';
-import { FastVertexArray } from './fast-vertex-array';
-import BlockScene from './block-scene';
-import TxSprite from './tx-sprite';
-import TxView from './tx-view';
-import { Color, Position } from './sprite-types';
+import { FastVertexArray } from '../block-overview-graph/fast-vertex-array';
+import BlockScene from '../block-overview-graph/block-scene';
+import TxSprite from '../block-overview-graph/tx-sprite';
+import TxView from '../block-overview-graph/tx-view';
+import { Color, Position } from '../block-overview-graph/sprite-types';
 import { Price } from '../../services/price.service';
 import { StateService } from '../../services/state.service';
 import { ThemeService } from '../../services/theme.service';
 import { Subscription } from 'rxjs';
-import { defaultColorFunction, setOpacity, defaultAuditColors, defaultColors, ageColorFunction, contrastColorFunction, contrastAuditColors, contrastColors } from './utils';
+import { defaultColorFunction, setOpacity, defaultAuditColors, defaultColors, ageColorFunction, contrastColorFunction, contrastAuditColors, contrastColors } from '../block-overview-graph/utils';
 import { ActiveFilter, FilterMode, toFlags } from '../../shared/filters.utils';
 import { detectWebGL } from '../../shared/graphs.utils';
 
@@ -32,13 +32,16 @@ const unmatchedContrastAuditColors = {
 };
 
 @Component({
-  selector: 'app-block-overview-graph',
-  templateUrl: './block-overview-graph.component.html',
-  styleUrls: ['./block-overview-graph.component.scss'],
+  selector: 'app-block-overview-multi',
+  templateUrl: './block-overview-multi.component.html',
+  styleUrls: ['./block-overview-multi.component.scss'],
 })
-export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, OnChanges {
+export class BlockOverviewMultiComponent implements AfterViewInit, OnDestroy, OnChanges {
   @Input() isLoading: boolean;
   @Input() resolution: number;
+  @Input() numBlocks: number;
+  @Input() padding: number = 0;
+  @Input() blockWidth: number = 360;
   @Input() autofit: boolean = false;
   @Input() blockLimit: number;
   @Input() orientation = 'left';
@@ -70,12 +73,14 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   animationHeartBeat: number;
   displayWidth: number;
   displayHeight: number;
+  displayBlockWidth: number;
+  displayPadding: number;
   cssWidth: number;
   cssHeight: number;
   shaderProgram: WebGLProgram;
   vertexArray: FastVertexArray;
   running: boolean;
-  scene: BlockScene;
+  scenes: BlockScene[] = [];
   hoverTx: TxView | void;
   selectedTx: TxView | void;
   highlightTx: TxView | void;
@@ -84,19 +89,13 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   readyNextFrame = false;
   lastUpdate: number = 0;
-  pendingUpdate: {
+  pendingUpdates: {
     count: number,
     add: { [txid: string]: TransactionStripped },
     remove: { [txid: string]: string },
     change: { [txid: string]: { txid: string, rate: number | undefined, acc: boolean | undefined } },
     direction?: string,
-  } = {
-    count: 0,
-    add: {},
-    remove: {},
-    change: {},
-    direction: 'left',
-  };
+  }[] = [];
 
   searchText: string;
   searchSubscription: Subscription;
@@ -113,10 +112,6 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   ) {
     this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
     this.vertexArray = new FastVertexArray(512, TxSprite.dataSize);
-    this.searchSubscription = this.stateService.searchText$.subscribe((text) => {
-      this.searchText = text;
-      this.updateSearchHighlight();
-    });
   }
 
   ngAfterViewInit(): void {
@@ -124,31 +119,58 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
       this.canvas.nativeElement.addEventListener('webglcontextlost', this.handleContextLost, false);
       this.canvas.nativeElement.addEventListener('webglcontextrestored', this.handleContextRestored, false);
       this.gl = this.canvas.nativeElement.getContext('webgl');
+      this.initScenes();
 
       if (this.gl) {
         this.initCanvas();
         this.resizeCanvas();
         this.themeChangedSubscription = this.themeService.themeChanged$.subscribe(() => {
-          this.scene.setColorFunction(this.getColorFunction());
+          for (const scene of this.scenes) {
+            scene.setColorFunction(this.getColorFunction());
+          }
         });
       }
     }
   }
 
-  ngOnChanges(changes): void {
-    if (changes.orientation || changes.flip) {
-      if (this.scene) {
-        this.scene.setOrientation(this.orientation, this.flip);
+  initScenes(): void {
+    for (const scene of this.scenes) {
+      if (scene) {
+        scene.destroy();
       }
     }
-    if (changes.mirrorTxid) {
-      this.setMirror(this.mirrorTxid);
+    this.scenes = [];
+    this.pendingUpdates = [];
+    for (let i = 0; i < this.numBlocks; i++) {
+      this.scenes.push(null);
+      this.pendingUpdates.push({
+        count: 0,
+        add: {},
+        remove: {},
+        change: {},
+        direction: 'left',
+      });
+    }
+    this.resizeCanvas();
+    this.start();
+  }
+
+  ngOnChanges(changes): void {
+    if (changes.numBlocks) {
+      this.initScenes();
+    }
+    if (changes.orientation || changes.flip) {
+      for (const scene of this.scenes) {
+        scene?.setOrientation(this.orientation, this.flip);
+      }
     }
     if (changes.auditHighlighting) {
       this.setHighlightingEnabled(this.auditHighlighting);
     }
-    if (changes.overrideColor && this.scene) {
-      this.scene.setColorFunction(this.getFilterColorFunction(0n, this.gradientMode));
+    if (changes.overrideColor) {
+      for (const scene of this.scenes) {
+        scene?.setColorFunction(this.getFilterColorFunction(0n, this.gradientMode));
+      }
     }
     if ((changes.filterFlags || changes.showFilters || changes.filterMode || changes.gradientMode)) {
       this.setFilterFlags();
@@ -157,13 +179,15 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   setFilterFlags(goggle?: ActiveFilter): void {
     this.filterMode = goggle?.mode || this.filterMode;
-    this.gradientMode = goggle?.gradient || this.gradientMode;
+    this.gradientMode = goggle?.gradient || 'fee'; // this.gradientMode;
     this.activeFilterFlags = goggle?.filters ? toFlags(goggle.filters) : this.filterFlags;
-    if (this.scene) {
-      if (this.activeFilterFlags != null && this.filtersAvailable) {
-        this.scene.setColorFunction(this.getFilterColorFunction(this.activeFilterFlags, this.gradientMode));
-      } else {
-        this.scene.setColorFunction(this.getFilterColorFunction(0n, this.gradientMode));
+    for (const scene of this.scenes) {
+      if (scene) {
+        if (this.activeFilterFlags != null && this.filtersAvailable) {
+          scene.setColorFunction(this.getFilterColorFunction(this.activeFilterFlags, this.gradientMode));
+        } else {
+          scene.setColorFunction(this.getFilterColorFunction(0n, this.gradientMode));
+        }
       }
     }
     this.start();
@@ -181,103 +205,98 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     }
   }
 
-  clear(direction): void {
-    this.exit(direction);
-    this.hoverTx = null;
-    this.selectedTx = null;
-    this.onTxHover(null);
+  clear(block: number, direction): void {
+    this.exit(block, direction);
     this.start();
   }
 
-  destroy(): void {
-    if (this.scene) {
-      this.scene.destroy();
-      this.clearUpdateQueue();
+  destroy(block: number): void {
+    if (this.scenes[block]) {
+      this.scenes[block].destroy();
+      this.clearUpdateQueue(block);
       this.start();
     }
   }
 
   // initialize the scene without any entry transition
-  setup(transactions: TransactionStripped[], sort: boolean = false): void {
+  setup(block: number, transactions: TransactionStripped[], sort: boolean = false): void {
     const filtersAvailable = transactions.reduce((flagSet, tx) => flagSet || tx.flags > 0, false);
     if (filtersAvailable !== this.filtersAvailable) {
       this.setFilterFlags();
     }
     this.filtersAvailable = filtersAvailable;
-    if (this.scene) {
-      this.clearUpdateQueue();
-      this.scene.setup(transactions, sort);
+    if (this.scenes[block]) {
+      this.clearUpdateQueue(block);
+      this.scenes[block].setup(transactions, sort);
       this.readyNextFrame = true;
       this.start();
-      this.updateSearchHighlight();
     }
   }
 
-  enter(transactions: TransactionStripped[], direction: string): void {
-    if (this.scene) {
-      this.clearUpdateQueue();
-      this.scene.enter(transactions, direction);
+  enter(block: number, transactions: TransactionStripped[], direction: string): void {
+    if (this.scenes[block]) {
+      this.clearUpdateQueue(block);
+      this.scenes[block].enter(transactions, direction);
       this.start();
-      this.updateSearchHighlight();
     }
   }
 
-  exit(direction: string): void {
-    if (this.scene) {
-      this.clearUpdateQueue();
-      this.scene.exit(direction);
+  exit(block: number, direction: string): void {
+    if (this.scenes[block]) {
+      this.clearUpdateQueue(block);
+      this.scenes[block].exit(direction);
       this.start();
-      this.updateSearchHighlight();
     }
   }
 
-  replace(transactions: TransactionStripped[], direction: string, sort: boolean = true, startTime?: number): void {
-    if (this.scene) {
-      this.clearUpdateQueue();
-      this.scene.replace(transactions || [], direction, sort, startTime);
+  replace(block: number, transactions: TransactionStripped[], direction: string, sort: boolean = true, startTime?: number): void {
+    if (this.scenes[block]) {
+      this.clearUpdateQueue(block);
+      this.scenes[block].replace(transactions || [], direction, sort, startTime);
       this.start();
-      this.updateSearchHighlight();
     }
   }
 
   // collates deferred updates into a set of consistent pending changes
-  queueUpdate(add: TransactionStripped[], remove: string[], change: { txid: string, rate: number | undefined, acc: boolean | undefined }[], direction: string = 'left'): void {
+  queueUpdate(block: number, add: TransactionStripped[], remove: string[], change: { txid: string, rate: number | undefined, acc: boolean | undefined }[], direction: string = 'left'): void {
     for (const tx of add) {
-      this.pendingUpdate.add[tx.txid] = tx;
-      delete this.pendingUpdate.remove[tx.txid];
-      delete this.pendingUpdate.change[tx.txid];
+      this.pendingUpdates[block].add[tx.txid] = tx;
+      delete this.pendingUpdates[block].remove[tx.txid];
+      delete this.pendingUpdates[block].change[tx.txid];
     }
     for (const txid of remove) {
-      delete this.pendingUpdate.add[txid];
-      this.pendingUpdate.remove[txid] = txid;
-      delete this.pendingUpdate.change[txid];
+      delete this.pendingUpdates[block].add[txid];
+      this.pendingUpdates[block].remove[txid] = txid;
+      delete this.pendingUpdates[block].change[txid];
     }
     for (const tx of change) {
-      if (this.pendingUpdate.add[tx.txid]) {
-        this.pendingUpdate.add[tx.txid].rate = tx.rate;
-        this.pendingUpdate.add[tx.txid].acc = tx.acc;
+      if (this.pendingUpdates[block].add[tx.txid]) {
+        this.pendingUpdates[block].add[tx.txid].rate = tx.rate;
+        this.pendingUpdates[block].add[tx.txid].acc = tx.acc;
       } else {
-        this.pendingUpdate.change[tx.txid] = tx;
+        this.pendingUpdates[block].change[tx.txid] = tx;
       }
     }
-    this.pendingUpdate.direction = direction;
-    this.pendingUpdate.count++;
+    this.pendingUpdates[block].direction = direction;
+    this.pendingUpdates[block].count++;
   }
 
-  deferredUpdate(add: TransactionStripped[], remove: string[], change: { txid: string, rate: number | undefined, acc: boolean | undefined }[], direction: string = 'left'): void {
-    this.queueUpdate(add, remove, change, direction);
+  deferredUpdate(block: number, add: TransactionStripped[], remove: string[], change: { txid: string, rate: number | undefined, acc: boolean | undefined }[], direction: string = 'left'): void {
+    this.queueUpdate(block, add, remove, change, direction);
     this.applyQueuedUpdates();
   }
 
   applyQueuedUpdates(): void {
-    if (this.pendingUpdate.count && performance.now() > (this.lastUpdate + this.animationDuration)) {
-      this.applyUpdate(Object.values(this.pendingUpdate.add), Object.values(this.pendingUpdate.remove), Object.values(this.pendingUpdate.change), this.pendingUpdate.direction);
-      this.clearUpdateQueue();
+    for (const [index, pendingUpdate] of this.pendingUpdates.entries()) {
+      if (pendingUpdate.count && performance.now() > (this.lastUpdate + this.animationDuration)) {
+        this.applyUpdate(index, Object.values(pendingUpdate.add), Object.values(pendingUpdate.remove), Object.values(pendingUpdate.change), pendingUpdate.direction);
+        this.clearUpdateQueue(index);
+      }
     }
   }
 
-  clearUpdateQueue(): void {
-    this.pendingUpdate = {
+  clearUpdateQueue(block: number): void {
+    this.pendingUpdates[block] = {
       count: 0,
       add: {},
       remove: {},
@@ -286,26 +305,25 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     this.lastUpdate = performance.now();
   }
 
-  update(add: TransactionStripped[], remove: string[], change: { txid: string, rate: number | undefined, acc: boolean | undefined }[], direction: string = 'left', resetLayout: boolean = false): void {
+  update(block: number, add: TransactionStripped[], remove: string[], change: { txid: string, rate: number | undefined, acc: boolean | undefined }[], direction: string = 'left', resetLayout: boolean = false): void {
     // merge any pending changes into this update
-    this.queueUpdate(add, remove, change);
-    this.applyUpdate(Object.values(this.pendingUpdate.add), Object.values(this.pendingUpdate.remove), Object.values(this.pendingUpdate.change), direction, resetLayout);
-    this.clearUpdateQueue();
+    this.queueUpdate(block, add, remove, change, direction);
+    this.applyUpdate(block,Object.values(this.pendingUpdates[block].add), Object.values(this.pendingUpdates[block].remove), Object.values(this.pendingUpdates[block].change), direction, resetLayout);
+    this.clearUpdateQueue(block);
   }
 
-  applyUpdate(add: TransactionStripped[], remove: string[], change: { txid: string, rate: number | undefined, acc: boolean | undefined }[], direction: string = 'left', resetLayout: boolean = false): void {
-    if (this.scene) {
-      add = add.filter(tx => !this.scene.txs[tx.txid]);
-      remove = remove.filter(txid => this.scene.txs[txid]);
-      change = change.filter(tx => this.scene.txs[tx.txid]);
+  applyUpdate(block: number, add: TransactionStripped[], remove: string[], change: { txid: string, rate: number | undefined, acc: boolean | undefined }[], direction: string = 'left', resetLayout: boolean = false): void {
+    if (this.scenes[block]) {
+      add = add.filter(tx => !this.scenes[block].txs[tx.txid]);
+      remove = remove.filter(txid => this.scenes[block].txs[txid]);
+      change = change.filter(tx => this.scenes[block].txs[tx.txid]);
 
       if (this.gradientMode === 'age') {
-        this.scene.updateAllColors();
+        this.scenes[block].updateAllColors();
       }
-      this.scene.update(add, remove, change, direction, resetLayout);
+      this.scenes[block].update(add, remove, change, direction, resetLayout);
       this.start();
       this.lastUpdate = performance.now();
-      this.updateSearchHighlight();
     }
   }
 
@@ -372,20 +390,29 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
       this.cssHeight = this.canvas.nativeElement.offsetParent.clientHeight;
       this.displayWidth = window.devicePixelRatio * this.cssWidth;
       this.displayHeight = window.devicePixelRatio * this.cssHeight;
+      this.displayBlockWidth = window.devicePixelRatio * this.blockWidth;
+      this.displayPadding = window.devicePixelRatio * this.padding;
       this.canvas.nativeElement.width = this.displayWidth;
       this.canvas.nativeElement.height = this.displayHeight;
       if (this.gl) {
         this.gl.viewport(0, 0, this.displayWidth, this.displayHeight);
       }
-      if (this.scene) {
-        this.scene.resize({ width: this.displayWidth, height: this.displayHeight, animate: false });
-        this.start();
-      } else {
-        this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: this.resolution,
-          blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray, theme: this.themeService,
-          highlighting: this.auditHighlighting, animationDuration: this.animationDuration, animationOffset: this.animationOffset,
-        colorFunction: this.getColorFunction() });
-        this.start();
+      for (let i = 0; i < this.scenes.length; i++) {
+        const blocksPerRow = Math.floor(this.displayWidth / (this.displayBlockWidth + (this.displayPadding * 2)));
+        const x = this.displayPadding + ((i % blocksPerRow) * (this.displayBlockWidth + (this.displayPadding * 2)));
+        const numRows = Math.ceil(this.scenes.length / blocksPerRow);
+        const row = numRows - Math.floor(i / blocksPerRow) - 1;
+        const y = this.displayPadding + this.displayHeight - ((row + 1) * (this.displayBlockWidth + (this.displayPadding * 2)));
+        if (this.scenes[i]) {
+          this.scenes[i].resize({ x, y, width: this.displayBlockWidth, height: this.displayBlockWidth, animate: false });
+          this.start();
+        } else {
+          this.scenes[i] = new BlockScene({ x, y, width: this.displayBlockWidth, height: this.displayBlockWidth, resolution: this.resolution,
+            blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray, theme: this.themeService,
+            highlighting: this.auditHighlighting, animationDuration: this.animationDuration, animationOffset: this.animationOffset,
+          colorFunction: this.getColorFunction() });
+          this.start();
+        }
       }
     }
   }
@@ -447,7 +474,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     }
     this.applyQueuedUpdates();
     // skip re-render if there's no change to the scene
-    if (this.scene && this.gl) {
+    if (this.scenes.length && this.gl) {
       /* SET UP SHADER UNIFORMS */
       // screen dimensions
       this.gl.uniform2f(this.gl.getUniformLocation(this.shaderProgram, 'screenSize'), this.displayWidth, this.displayHeight);
@@ -486,7 +513,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     }
 
     /* LOOP */
-    if (this.running && this.scene && now <= (this.scene.animateUntil + 500)) {
+    if (this.running && this.scenes.length && now <= (this.scenes.reduce((max, scene) => scene.animateUntil > max ? scene.animateUntil : max, 0) + 500)) {
       this.doRun();
     } else {
       if (this.animationHeartBeat) {
@@ -502,8 +529,12 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   clickAway(event) {
     if (!this.elRef.nativeElement.contains(event.target)) {
       const currentPreview = this.selectedTx || this.hoverTx;
-      if (currentPreview && this.scene) {
-        this.scene.setHover(currentPreview, false);
+      if (currentPreview) {
+        for (const scene of this.scenes) {
+          if (scene) {
+            scene.setHover(currentPreview, false);
+          }
+        }
         this.start();
       }
       this.hoverTx = null;
@@ -548,24 +579,40 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   setPreviewTx(cssX: number, cssY: number, clicked: boolean = false) {
     const x = cssX * window.devicePixelRatio;
     const y = cssY * window.devicePixelRatio;
-    if (this.scene && (!this.selectedTx || clicked)) {
+    if (!this.selectedTx || clicked) {
       this.tooltipPosition = {
         x: cssX,
         y: cssY
       };
-      const selected = this.scene.getTxAt({ x, y: this.displayHeight - y });
       const currentPreview = this.selectedTx || this.hoverTx;
+      let selected;
+      for (const scene of this.scenes) {
+        if (scene) {
+          selected = scene.getTxAt({ x, y: this.displayHeight - y });
+          if (selected) {
+            break;
+          }
+        }
+      }
 
       if (selected !== currentPreview) {
-        if (currentPreview && this.scene) {
-          this.scene.setHover(currentPreview, false);
+        if (currentPreview) {
+          for (const scene of this.scenes) {
+            if (scene) {
+              scene.setHover(currentPreview, false);
+              break;
+            }
+          }
           this.start();
         }
         if (selected) {
-          if (selected && this.scene) {
-            this.scene.setHover(selected, true);
-            this.start();
+          for (const scene of this.scenes) {
+            if (scene) {
+              scene.setHover(selected, true);
+              break;
+            }
           }
+          this.start();
           if (clicked) {
             this.selectedTx = selected;
           } else {
@@ -591,45 +638,45 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     }
   }
 
-  setMirror(txid: string | void) {
-    if (this.mirrorTx) {
-      this.scene.setHover(this.mirrorTx, false);
-      this.start();
-    }
-    if (txid && this.scene.txs[txid]) {
-      this.mirrorTx = this.scene.txs[txid];
-      this.scene.setHover(this.mirrorTx, true);
-      this.start();
-    }
-  }
-
   updateSearchHighlight(): void {
-    if (this.highlightTx && this.highlightTx.txid !== this.searchText && this.scene) {
-      this.scene.setHighlight(this.highlightTx, false);
+    if (this.highlightTx && this.highlightTx.txid !== this.searchText) {
+      for (const scene of this.scenes) {
+        if (scene) {
+          scene.setHighlight(this.highlightTx, false);
+        }
+      }
       this.start();
-    } else if (this.scene?.txs && this.searchText && this.searchText.length === 64) {
-      this.highlightTx = this.scene.txs[this.searchText];
-      if (this.highlightTx) {
-        this.scene.setHighlight(this.highlightTx, true);
-        this.start();
+    } else if (this.searchText && this.searchText.length === 64) {
+      for (const scene of this.scenes) {
+        if (scene) {
+          const highlightTx = scene.txs[this.searchText];
+          if (highlightTx) {
+            scene.setHighlight(highlightTx, true);
+            this.highlightTx = highlightTx;
+            this.start();
+          }
+        }
       }
     }
   }
 
   setHighlightingEnabled(enabled: boolean): void {
-    if (this.scene) {
-      this.scene.setHighlighting(enabled);
-      this.start();
+    for (const scene of this.scenes) {
+      scene.setHighlighting(enabled);
     }
+    this.start();
   }
 
   onTxClick(cssX: number, cssY: number, keyModifier: boolean = false) {
-    if (this.scene) {
-      const x = cssX * window.devicePixelRatio;
-      const y = cssY * window.devicePixelRatio;
-      const selected = this.scene.getTxAt({ x, y: this.displayHeight - y });
-      if (selected && selected.txid) {
-        this.txClickEvent.emit({ tx: selected, keyModifier });
+    for (const scene of this.scenes) {
+      if (scene) {
+        const x = cssX * window.devicePixelRatio;
+        const y = cssY * window.devicePixelRatio;
+        const selected = scene.getTxAt({ x, y: this.displayHeight - y });
+        if (selected && selected.txid) {
+          this.txClickEvent.emit({ tx: selected, keyModifier });
+          return;
+        }
       }
     }
   }

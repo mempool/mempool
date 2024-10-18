@@ -18,6 +18,8 @@ export default class BlockScene {
   animationOffset: number;
   highlightingEnabled: boolean;
   filterFlags: bigint | null = 0b00000100_00000000_00000000_00000000n;
+  x: number;
+  y: number;
   width: number;
   height: number;
   gridWidth: number;
@@ -31,14 +33,16 @@ export default class BlockScene {
   animateUntil = 0;
   dirty: boolean;
 
-  constructor({ width, height, resolution, blockLimit, animationDuration, animationOffset, orientation, flip, vertexArray, theme, highlighting, colorFunction }:
-      { width: number, height: number, resolution: number, blockLimit: number, animationDuration: number, animationOffset: number,
+  constructor({ x = 0, y = 0, width, height, resolution, blockLimit, animationDuration, animationOffset, orientation, flip, vertexArray, theme, highlighting, colorFunction }:
+      { x?: number, y?: number, width: number, height: number, resolution: number, blockLimit: number, animationDuration: number, animationOffset: number,
         orientation: string, flip: boolean, vertexArray: FastVertexArray, theme: ThemeService, highlighting: boolean, colorFunction: ((tx: TxView) => Color) | null }
   ) {
-    this.init({ width, height, resolution, blockLimit, animationDuration, animationOffset, orientation, flip, vertexArray, theme, highlighting, colorFunction });
+    this.init({ x, y,width, height, resolution, blockLimit, animationDuration, animationOffset, orientation, flip, vertexArray, theme, highlighting, colorFunction });
   }
 
-  resize({ width = this.width, height = this.height, animate = true }: { width?: number, height?: number, animate: boolean }): void {
+  resize({ x = 0, y = 0, width = this.width, height = this.height, animate = true }: { x?: number, y?: number, width?: number, height?: number, animate: boolean }): void {
+    this.x = x;
+    this.y = y;
     this.width = width;
     this.height = height;
     this.gridSize = this.width / this.gridWidth;
@@ -224,7 +228,11 @@ export default class BlockScene {
   getTxAt(position: Position): TxView | void {
     if (this.layout) {
       const gridPosition = this.screenToGrid(position);
-      return this.layout.getTx(gridPosition);
+      if (gridPosition.x >= 0 && gridPosition.x < this.gridWidth && gridPosition.y >= 0 && gridPosition.y < this.gridHeight) {
+        return this.layout.getTx(gridPosition);
+      } else {
+        return null;
+      }
     } else {
       return null;
     }
@@ -238,8 +246,8 @@ export default class BlockScene {
     this.animateUntil = Math.max(this.animateUntil, tx.setHighlight(value));
   }
 
-  private init({ width, height, resolution, blockLimit, animationDuration, animationOffset, orientation, flip, vertexArray, theme, highlighting, colorFunction }:
-      { width: number, height: number, resolution: number, blockLimit: number, animationDuration: number, animationOffset: number,
+  private init({ x, y, width, height, resolution, blockLimit, animationDuration, animationOffset, orientation, flip, vertexArray, theme, highlighting, colorFunction }:
+      { x: number, y: number, width: number, height: number, resolution: number, blockLimit: number, animationDuration: number, animationOffset: number,
         orientation: string, flip: boolean, vertexArray: FastVertexArray, theme: ThemeService, highlighting: boolean, colorFunction: ((tx: TxView) => Color) | null }
   ): void {
     this.animationDuration = animationDuration || this.animationDuration || 1000;
@@ -264,7 +272,7 @@ export default class BlockScene {
     this.vbytesPerUnit = blockLimit / Math.pow(resolution / 1.02, 2);
     this.gridWidth = resolution;
     this.gridHeight = resolution;
-    this.resize({ width, height, animate: true });
+    this.resize({ x, y, width, height, animate: true });
     this.layout = new BlockLayout({ width: this.gridWidth, height: this.gridHeight });
 
     this.txs = {};
@@ -274,7 +282,7 @@ export default class BlockScene {
   }
 
   private applyTxUpdate(tx: TxView, update: ViewUpdateParams): void {
-    this.animateUntil = Math.max(this.animateUntil, tx.update(update));
+    this.animateUntil = Math.max(this.animateUntil, tx.update(update, { minX: this.x, maxX: this.x + this.width, minY: this.y, maxY: this.y + this.height }));
   }
 
   private updateTxColor(tx: TxView, startTime: number, delay: number, animate: boolean = true, duration?: number): void {
@@ -390,6 +398,7 @@ export default class BlockScene {
           position: {
             x: tx.screenPosition.x + (direction === 'right' ? this.width + this.animationOffset : (direction === 'left' ? -this.width - this.animationOffset : 0)),
             y: tx.screenPosition.y + (direction === 'up' ? this.height + this.animationOffset : (direction === 'down' ? -this.height - this.animationOffset : 0)),
+            s: tx.screenPosition.s
           }
         },
         duration: this.animationDuration,
@@ -449,18 +458,18 @@ export default class BlockScene {
           break;
       }
       return {
-        x: x + this.unitPadding - (slotSize / 2),
-        y: y + this.unitPadding - (slotSize / 2),
+        x: this.x + x + this.unitPadding - (slotSize / 2),
+        y: this.y + y + this.unitPadding - (slotSize / 2),
         s: squareSize
       };
     } else {
-      return { x: 0, y: 0, s: 0 };
+      return { x: this.x, y: this.y, s: 0 };
     }
   }
 
   private screenToGrid(position: Position): Position {
-    let x = position.x;
-    let y = this.height - position.y;
+    let x = position.x - this.x;
+    let y = position.y - this.y;
     let t;
 
     switch (this.orientation) {
