@@ -99,7 +99,7 @@
               </tr>
               <tr *ngIf="showOrdData[tx.txid + '-vin-' + vindex]?.show" [ngClass]="{
                 'assetBox': (assetsMinimal && vin.prevout && assetsMinimal[vin.prevout.asset] && !vin.is_coinbase && vin.prevout.scriptpubkey_address && tx._unblinded) || inputIndex === vindex,
-                'highlight': this.address !== '' && (vin.prevout?.scriptpubkey_address === this.address || (vin.prevout?.scriptpubkey_type === 'p2pk' && vin.prevout?.scriptpubkey.slice(2, -2) === this.address))
+                'highlight': addresses?.length && (addresses.includes(vin.prevout?.scriptpubkey_address) || (vin.prevout?.scriptpubkey_type === 'p2pk' && addresses.includes(vin.prevout?.scriptpubkey.slice(2, -2))))
               }">
                 <td></td>
                 <td colspan="2">
@@ -294,7 +294,7 @@
 
               <tr *ngIf="showOrdData[tx.txid + '-vout-' + vindex]?.show" [ngClass]="{
                 'assetBox': assetsMinimal && assetsMinimal[vout.asset] && vout.scriptpubkey_address && tx.vin && !tx.vin[0].is_coinbase && tx._unblinded || outputIndex === vindex,
-                'highlight': this.address !== '' && (vout.scriptpubkey_address === this.address || (vout.scriptpubkey_type === 'p2pk' && vout.scriptpubkey.slice(2, -2) === this.address))
+                'highlight': addresses?.length && (addresses.includes(vout.scriptpubkey_address) || (vout.scriptpubkey_type === 'p2pk' && addresses.includes(vout.scriptpubkey.slice(2, -2))))
               }">
                 <td colspan="3">
                     <app-ord-data [runestone]="showOrdData[tx.txid + '-vout-' + vindex]['runestone']" [runeInfo]="showOrdData[tx.txid + '-vout-' + vindex]['runeInfo']" [type]="'vout'"></app-ord-data>
