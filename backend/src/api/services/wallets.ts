@@ -8,7 +8,14 @@ import { TransactionExtended } from '../../mempool.interfaces';
 interface WalletAddress {
   address: string;
   active: boolean;
-  transactions?: IEsploraApi.AddressTxSummary[];
+  stats: {
+    funded_txo_count: number;
+    funded_txo_sum: number;
+    spent_txo_count: number;
+    spent_txo_sum: number;
+    tx_count: number;
+  };
+  transactions: IEsploraApi.AddressTxSummary[];
   lastSync: number;
 }
 
@@ -37,7 +44,7 @@ class WalletApi {
 
   // resync wallet addresses from the services backend
   async $syncWallets(): Promise<void> {
-    if (!config.WALLETS.ENABLED) {
+    if (!config.WALLETS.ENABLED || this.syncing) {
       return;
     }
     this.syncing = true;
@@ -74,10 +81,13 @@ class WalletApi {
     const refreshTransactions = !wallet.addresses[address.address] || (address.active && (Date.now() - wallet.addresses[address.address].lastSync) > 60 * 60 * 1000);
     if (refreshTransactions) {
       try {
+        const summary = await bitcoinApi.$getAddressTransactionSummary(address.address);
+        const addressInfo = await bitcoinApi.$getAddress(address.address);
         const walletAddress: WalletAddress = {
           address: address.address,
           active: address.active,
-          transactions: await bitcoinApi.$getAddressTransactionSummary(address.address),
+          transactions: summary,
+          stats: addressInfo.chain_stats,
           lastSync: Date.now(),
         };
         wallet.addresses[address.address] = walletAddress;
@@ -88,36 +98,51 @@ class WalletApi {
   }
 
   // check a new block for transactions that affect wallet address balances, and add relevant transactions to wallets
-  processBlock(block: IEsploraApi.Block, blockTxs: TransactionExtended[]): Record<string, Record<string, IEsploraApi.AddressTxSummary[]>> {
-    const walletTransactions: Record<string, Record<string, IEsploraApi.AddressTxSummary[]>> = {};
+  processBlock(block: IEsploraApi.Block, blockTxs: TransactionExtended[]): Record<string, IEsploraApi.Transaction[]> {
+    const walletTransactions: Record<string, IEsploraApi.Transaction[]> = {};
     for (const walletKey of Object.keys(this.wallets)) {
       const wallet = this.wallets[walletKey];
-      walletTransactions[walletKey] = {};
+      walletTransactions[walletKey] = [];
       for (const tx of blockTxs) {
         const funded: Record<string, number> = {};
         const spent: Record<string, number> = {};
+        const fundedCount: Record<string, number> = {};
+        const spentCount: Record<string, number> = {};
+        let anyMatch = false;
         for (const vin of tx.vin) {
           const address = vin.prevout?.scriptpubkey_address;
           if (address && wallet.addresses[address]) {
+            anyMatch = true;
             spent[address] = (spent[address] ?? 0) + (vin.prevout?.value ?? 0);
+            spentCount[address] = (spentCount[address] ?? 0) + 1;
           }
         }
         for (const vout of tx.vout) {
           const address = vout.scriptpubkey_address;
           if (address && wallet.addresses[address]) {
+            anyMatch = true;
             funded[address] = (funded[address] ?? 0) + (vout.value ?? 0);
+            fundedCount[address] = (fundedCount[address] ?? 0) + 1;
           }
         }
         for (const address of Object.keys({ ...funded, ...spent })) {
-          if (!walletTransactions[walletKey][address]) {
-            walletTransactions[walletKey][address] = [];
-          }
-          walletTransactions[walletKey][address].push({
+          // update address stats
+          wallet.addresses[address].stats.tx_count++;
+          wallet.addresses[address].stats.funded_txo_count += fundedCount[address] || 0;
+          wallet.addresses[address].stats.spent_txo_count += spentCount[address] || 0;
+          wallet.addresses[address].stats.funded_txo_sum += funded[address] || 0;
+          wallet.addresses[address].stats.spent_txo_sum += spent[address] || 0;
+          // add tx to summary
+          const txSummary: IEsploraApi.AddressTxSummary = {
             txid: tx.txid,
             value: (funded[address] ?? 0) - (spent[address] ?? 0),
             height: block.height,
             time: block.timestamp,
-          });
+          };
+          wallet.addresses[address].transactions?.push(txSummary);
+        }
+        if (anyMatch) {
+          walletTransactions[walletKey].push(tx);
         }
       }
     }
