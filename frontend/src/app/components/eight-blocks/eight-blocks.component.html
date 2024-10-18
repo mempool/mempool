@@ -1,7 +1,7 @@
 
 <app-block-overview-multi
   #blockGraph
-  [isLoading]="false"
+  [isLoading]="isLoadingTransactions"
   [numBlocks]="numBlocks"
   [padding]="padding"
   [blockWidth]="blockWidth"
@@ -11,7 +11,6 @@
   [flip]="false"
   [animationDuration]="animationDuration"
   [animationOffset]="animationOffset"
-  [disableSpinner]="true"
 ></app-block-overview-multi>
 <div class="blocks" [class.wrap]="wrapBlocks">
   <ng-container *ngFor="let i of blockIndices">

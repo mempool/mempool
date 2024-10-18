@@ -121,7 +121,8 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
         this.autoNumBlocks = true;
         const width = window.innerWidth;
         const height = window.innerHeight;
-        this.numBlocks = Math.floor(width / this.blockWidth) * Math.floor(height / this.blockWidth);
+        const paddedWidth = this.blockWidth + (this.padding * 2);
+        this.numBlocks = Math.floor(width / paddedWidth) * Math.floor(height / paddedWidth);
       }
 
       this.blockIndices = [...Array(this.numBlocks).keys()];
@@ -171,7 +172,8 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
       this.autoNumBlocks = true;
       const width = window.innerWidth;
       const height = window.innerHeight;
-      this.numBlocks = Math.floor(width / this.blockWidth) * Math.floor(height / this.blockWidth);
+      const paddedWidth = this.blockWidth + (this.padding * 2);
+      this.numBlocks = Math.floor(width / paddedWidth) * Math.floor(height / paddedWidth);
       this.blockIndices = [...Array(this.numBlocks).keys()];
 
       if (this.autofit) {
@@ -234,6 +236,7 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
       }
     }
     await Promise.allSettled(readyPromises);
+    this.isLoadingTransactions = false;
     this.updateBlockGraphs(blocks);
 
     // free up old transactions
@@ -280,7 +283,7 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
     const startTime = performance.now() + 1000 - (this.stagger < 0 ? this.stagger * 8 : 0);
     if (this.blockGraph) {
       for (let i = 0; i < this.numBlocks; i++) {
-        this.blockGraph.replace(i, this.strippedTransactions[blocks?.[i]?.height] || [], 'right', false, startTime + (this.stagger * i));
+        this.blockGraph.replace(i, this.strippedTransactions[blocks?.[this.getBlockIndex(i)]?.height] || [], 'right', false, startTime + (this.stagger * i));
       }
     }
     this.showInfo = false;
@@ -299,8 +302,19 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
     if (this.blockGraph) {
       for (let i = 0; i < this.numBlocks; i++) {
         this.blockGraph.destroy(i);
-        this.blockGraph.setup(i, this.strippedTransactions[this.latestBlocks?.[i]?.height] || []);
+        this.blockGraph.setup(i, this.strippedTransactions[this.latestBlocks?.[this.getBlockIndex(i)]?.height] || []);
       }
     }
+  }
+
+  getBlockIndex(slotIndex: number): number {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const paddedWidth = this.blockWidth + (this.padding * 2);
+    const blocksPerRow = Math.floor(width / paddedWidth);
+    const blocksPerColumn = Math.floor(height / paddedWidth);
+    const row = Math.floor(slotIndex / blocksPerRow);
+    const column = slotIndex % blocksPerRow;
+    return (blocksPerColumn - 1 - row) * blocksPerRow + column;
   }
 }

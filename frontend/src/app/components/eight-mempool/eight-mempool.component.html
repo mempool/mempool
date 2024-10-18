@@ -1,6 +1,6 @@
 <app-block-overview-multi
   #blockGraph
-  [isLoading]="false"
+  [isLoading]="isLoading"
   [numBlocks]="numBlocks"
   [padding]="padding"
   [blockWidth]="blockWidth"
@@ -11,6 +11,5 @@
   [showFilters]="true"
   [animationDuration]="animationDuration"
   [animationOffset]="animationOffset"
-  [disableSpinner]="true"
   (txClickEvent)="onTxClick($event)"
 ></app-block-overview-multi>

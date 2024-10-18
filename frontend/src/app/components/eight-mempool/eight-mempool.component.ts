@@ -46,6 +46,7 @@ function bestFitResolution(min, max, n): number {
 export class EightMempoolComponent implements OnInit, OnDestroy {
   network = '';
   strippedTransactions: { [height: number]: TransactionStripped[] } = {};
+  isLoading = true;
   webGlEnabled = true;
   hoverTx: string | null = null;
 
@@ -161,7 +162,8 @@ export class EightMempoolComponent implements OnInit, OnDestroy {
         this.autoNumBlocks = true;
         const width = window.innerWidth;
         const height = window.innerHeight;
-        this.numBlocks = Math.floor(width / this.blockWidth) * Math.floor(height / this.blockWidth);
+        const paddedWidth = this.blockWidth + (this.padding * 2);
+        this.numBlocks = Math.floor(width / paddedWidth) * Math.floor(height / paddedWidth);
       }
 
       this.blockIndices = [...Array(this.numBlocks).keys()];
@@ -203,7 +205,8 @@ export class EightMempoolComponent implements OnInit, OnDestroy {
       this.autoNumBlocks = true;
       const width = window.innerWidth;
       const height = window.innerHeight;
-      this.numBlocks = Math.floor(width / this.blockWidth) * Math.floor(height / this.blockWidth);
+      const paddedWidth = this.blockWidth + (this.padding * 2);
+      this.numBlocks = Math.floor(width / paddedWidth) * Math.floor(height / paddedWidth);
       this.blockIndices = [...Array(this.numBlocks).keys()];
       this.lastBlockHeightUpdate = this.blockIndices.map(() => 0);
 
@@ -239,6 +242,7 @@ export class EightMempoolComponent implements OnInit, OnDestroy {
     } else {
       this.blockGraph.update(this.numBlocks - delta.block - 1, delta.added, delta.removed, delta.changed || [], this.poolDirection);
     }
+    this.isLoading = false;
 
     this.lastBlockHeightUpdate[delta.block] = this.stateService.latestBlockHeight;
   }
