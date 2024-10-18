@@ -30,6 +30,7 @@ export interface AbstractBitcoinApi {
   $getBatchedOutspendsInternal(txId: string[]): Promise<IEsploraApi.Outspend[][]>;
   $getOutSpendsByOutpoint(outpoints: { txid: string, vout: number }[]): Promise<IEsploraApi.Outspend[]>;
   $getCoinbaseTx(blockhash: string): Promise<IEsploraApi.Transaction>;
+  $getAddressTransactionSummary(address: string): Promise<IEsploraApi.AddressTxSummary[]>;
 
   startHealthChecks(): void;
   getHealthStatus(): HealthCheckHost[];
