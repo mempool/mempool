@@ -1,16 +1,16 @@
 import { Component, ViewChild, Input, Output, EventEmitter,
   OnInit, OnDestroy, OnChanges, ChangeDetectionStrategy, ChangeDetectorRef, AfterViewInit } from '@angular/core';
-import { StateService } from '../../services/state.service';
-import { MempoolBlockDelta, isMempoolDelta } from '../../interfaces/websocket.interface';
-import { TransactionStripped } from '../../interfaces/node-api.interface';
-import { BlockOverviewGraphComponent } from '../../components/block-overview-graph/block-overview-graph.component';
+import { StateService } from '@app/services/state.service';
+import { MempoolBlockDelta, isMempoolDelta } from '@app/interfaces/websocket.interface';
+import { TransactionStripped } from '@app/interfaces/node-api.interface';
+import { BlockOverviewGraphComponent } from '@components/block-overview-graph/block-overview-graph.component';
 import { Subscription, BehaviorSubject } from 'rxjs';
-import { WebsocketService } from '../../services/websocket.service';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { WebsocketService } from '@app/services/websocket.service';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { Router } from '@angular/router';
-import { Color } from '../block-overview-graph/sprite-types';
-import TxView from '../block-overview-graph/tx-view';
-import { FilterMode, GradientMode } from '../../shared/filters.utils';
+import { Color } from '@components/block-overview-graph/sprite-types';
+import TxView from '@components/block-overview-graph/tx-view';
+import { FilterMode, GradientMode } from '@app/shared/filters.utils';
 
 @Component({
   selector: 'app-mempool-block-overview',

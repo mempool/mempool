@@ -1,16 +1,16 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { combineLatest, merge, Observable, of, Subject, Subscription } from 'rxjs';
 import { catchError, filter, map, scan, share, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
-import { BlockExtended, OptimizedMempoolStats, TransactionStripped } from '../../interfaces/node-api.interface';
-import { MempoolInfo, ReplacementInfo } from '../../interfaces/websocket.interface';
-import { ApiService } from '../../services/api.service';
-import { StateService } from '../../services/state.service';
-import { WebsocketService } from '../../services/websocket.service';
-import { SeoService } from '../../services/seo.service';
-import { ActiveFilter, FilterMode, GradientMode, toFlags } from '../../shared/filters.utils';
-import { detectWebGL } from '../../shared/graphs.utils';
-import { Address, AddressTxSummary } from '../../interfaces/electrs.interface';
-import { ElectrsApiService } from '../../services/electrs-api.service';
+import { BlockExtended, OptimizedMempoolStats, TransactionStripped } from '@app/interfaces/node-api.interface';
+import { MempoolInfo, ReplacementInfo } from '@app/interfaces/websocket.interface';
+import { ApiService } from '@app/services/api.service';
+import { StateService } from '@app/services/state.service';
+import { WebsocketService } from '@app/services/websocket.service';
+import { SeoService } from '@app/services/seo.service';
+import { ActiveFilter, FilterMode, GradientMode, toFlags } from '@app/shared/filters.utils';
+import { detectWebGL } from '@app/shared/graphs.utils';
+import { Address, AddressTxSummary } from '@app/interfaces/electrs.interface';
+import { ElectrsApiService } from '@app/services/electrs-api.service';
 
 interface MempoolBlocksData {
   blocks: number;

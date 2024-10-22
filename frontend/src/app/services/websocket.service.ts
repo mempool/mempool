@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { WebsocketResponse } from '../interfaces/websocket.interface';
-import { StateService } from './state.service';
-import { Transaction } from '../interfaces/electrs.interface';
+import { WebsocketResponse } from '@app/interfaces/websocket.interface';
+import { StateService } from '@app/services/state.service';
+import { Transaction } from '@app/interfaces/electrs.interface';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { ApiService } from './api.service';
 import { take } from 'rxjs/operators';
 import { TransferState, makeStateKey } from '@angular/core';
 import { CacheService } from './cache.service';
-import { uncompressDeltaChange, uncompressTx } from '../shared/common.utils';
+import { uncompressDeltaChange, uncompressTx } from '@app/shared/common.utils';
 
 const OFFLINE_RETRY_AFTER_MS = 2000;
 const OFFLINE_PING_CHECK_AFTER_MS = 30000;

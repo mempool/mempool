@@ -1,15 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LightningDashboardComponent } from './lightning-dashboard/lightning-dashboard.component';
-import { LightningWrapperComponent } from './lightning-wrapper/lightning-wrapper.component';
-import { NodeComponent } from './node/node.component';
-import { ChannelComponent } from './channel/channel.component';
-import { NodesPerCountry } from './nodes-per-country/nodes-per-country.component';
-import { NodesPerISP } from './nodes-per-isp/nodes-per-isp.component';
-import { NodesRanking } from './nodes-ranking/nodes-ranking.component';
-import { NodesRankingsDashboard } from './nodes-rankings-dashboard/nodes-rankings-dashboard.component';
-import { GroupComponent } from './group/group.component';
-import { JusticeList } from './justice-list/justice-list.component';
+import { LightningDashboardComponent } from '@app/lightning/lightning-dashboard/lightning-dashboard.component';
+import { LightningWrapperComponent } from '@app/lightning/lightning-wrapper/lightning-wrapper.component';
+import { NodeComponent } from '@app/lightning/node/node.component';
+import { ChannelComponent } from '@app/lightning/channel/channel.component';
+import { NodesPerCountry } from '@app/lightning/nodes-per-country/nodes-per-country.component';
+import { NodesPerISP } from '@app/lightning/nodes-per-isp/nodes-per-isp.component';
+import { NodesRanking } from '@app/lightning/nodes-ranking/nodes-ranking.component';
+import { NodesRankingsDashboard } from '@app/lightning/nodes-rankings-dashboard/nodes-rankings-dashboard.component';
+import { GroupComponent } from '@app/lightning/group/group.component';
+import { JusticeList } from '@app/lightning/justice-list/justice-list.component';
 
 const routes: Routes = [
     {

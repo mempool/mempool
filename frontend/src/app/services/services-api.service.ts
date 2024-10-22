@@ -1,13 +1,13 @@
 import { Router, NavigationStart } from '@angular/router';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { StateService } from './state.service';
-import { StorageService } from './storage.service';
-import { MenuGroup } from '../interfaces/services.interface';
+import { StateService } from '@app/services/state.service';
+import { StorageService } from '@app/services/storage.service';
+import { MenuGroup } from '@app/interfaces/services.interface';
 import { Observable, of, ReplaySubject, tap, catchError, share, filter, switchMap, map } from 'rxjs';
-import { IBackendInfo } from '../interfaces/websocket.interface';
-import { Acceleration, AccelerationHistoryParams } from '../interfaces/node-api.interface';
-import { AccelerationStats } from '../components/acceleration/acceleration-stats/acceleration-stats.component';
+import { IBackendInfo } from '@app/interfaces/websocket.interface';
+import { Acceleration, AccelerationHistoryParams } from '@app/interfaces/node-api.interface';
+import { AccelerationStats } from '@components/acceleration/acceleration-stats/acceleration-stats.component';
 
 export interface IUser {
   username: string;

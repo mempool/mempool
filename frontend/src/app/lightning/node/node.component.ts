@@ -2,13 +2,13 @@ import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef } from '@
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { catchError, map, switchMap, tap, share } from 'rxjs/operators';
-import { SeoService } from '../../services/seo.service';
-import { ApiService } from '../../services/api.service';
-import { LightningApiService } from '../lightning-api.service';
-import { GeolocationData } from '../../shared/components/geolocation/geolocation.component';
-import { ILiquidityAd, parseLiquidityAdHex } from './liquidity-ad';
-import { haversineDistance, kmToMiles } from '../../../app/shared/common.utils';
-import { ServicesApiServices } from '../../services/services-api.service';
+import { SeoService } from '@app/services/seo.service';
+import { ApiService } from '@app/services/api.service';
+import { LightningApiService } from '@app/lightning/lightning-api.service';
+import { GeolocationData } from '@app/shared/components/geolocation/geolocation.component';
+import { ILiquidityAd, parseLiquidityAdHex } from '@app/lightning/node/liquidity-ad';
+import { haversineDistance, kmToMiles } from '@app/shared/common.utils';
+import { ServicesApiServices } from '@app/services/services-api.service';
 
 interface CustomRecord {
   type: string;

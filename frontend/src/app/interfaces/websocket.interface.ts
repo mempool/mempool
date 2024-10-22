@@ -1,6 +1,6 @@
 import { SafeResourceUrl } from '@angular/platform-browser';
-import { ILoadingIndicators } from '../services/state.service';
-import { Transaction } from './electrs.interface';
+import { ILoadingIndicators } from '@app/services/state.service';
+import { Transaction } from '@app/interfaces/electrs.interface';
 import { Acceleration, BlockExtended, DifficultyAdjustment, RbfTree, TransactionStripped } from './node-api.interface';
 
 export interface WebsocketResponse {

@@ -1,5 +1,5 @@
-import { Transaction, Vin } from './interfaces/electrs.interface';
-import { Hash } from './shared/sha256';
+import { Transaction, Vin } from '@app/interfaces/electrs.interface';
+import { Hash } from '@app/shared/sha256';
 
 const P2SH_P2WPKH_COST = 21 * 4; // the WU cost for the non-witness part of P2SH-P2WPKH
 const P2SH_P2WSH_COST  = 35 * 4; // the WU cost for the non-witness part of P2SH-P2WSH

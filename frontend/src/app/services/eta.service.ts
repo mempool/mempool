@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { AccelerationPosition, CpfpInfo, DifficultyAdjustment, MempoolPosition, SinglePoolStats } from '../interfaces/node-api.interface';
-import { StateService } from './state.service';
-import { MempoolBlock } from '../interfaces/websocket.interface';
-import { Transaction } from '../interfaces/electrs.interface';
-import { MiningService, MiningStats } from './mining.service';
-import { getUnacceleratedFeeRate } from '../shared/transaction.utils';
-import { AccelerationEstimate } from '../components/accelerate-checkout/accelerate-checkout.component';
+import { AccelerationPosition, CpfpInfo, DifficultyAdjustment, MempoolPosition, SinglePoolStats } from '@app/interfaces/node-api.interface';
+import { StateService } from '@app/services/state.service';
+import { MempoolBlock } from '@app/interfaces/websocket.interface';
+import { Transaction } from '@app/interfaces/electrs.interface';
+import { MiningService, MiningStats } from '@app/services/mining.service';
+import { getUnacceleratedFeeRate } from '@app/shared/transaction.utils';
+import { AccelerationEstimate } from '@components/accelerate-checkout/accelerate-checkout.component';
 import { Observable, combineLatest, map, of, share, shareReplay, tap } from 'rxjs';
 
 export interface ETA {

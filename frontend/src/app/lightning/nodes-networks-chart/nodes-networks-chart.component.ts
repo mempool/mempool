@@ -1,17 +1,17 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding, OnChanges, SimpleChanges } from '@angular/core';
-import { echarts, EChartsOption, LineSeriesOption } from '../../graphs/echarts';
+import { echarts, EChartsOption, LineSeriesOption } from '@app/graphs/echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { formatNumber } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { StorageService } from '../../services/storage.service';
-import { MiningService } from '../../services/mining.service';
-import { download } from '../../shared/graphs.utils';
-import { SeoService } from '../../services/seo.service';
-import { LightningApiService } from '../lightning-api.service';
-import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
-import { isMobile } from '../../shared/common.utils';
-import { StateService } from '../../services/state.service';
+import { StorageService } from '@app/services/storage.service';
+import { MiningService } from '@app/services/mining.service';
+import { download } from '@app/shared/graphs.utils';
+import { SeoService } from '@app/services/seo.service';
+import { LightningApiService } from '@app/lightning/lightning-api.service';
+import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
+import { isMobile } from '@app/shared/common.utils';
+import { StateService } from '@app/services/state.service';
 
 @Component({
   selector: 'app-nodes-networks-chart',

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { Env, StateService } from '../../services/state.service';
-import { SeoService } from '../../services/seo.service';
-import { OpenGraphService } from '../../services/opengraph.service';
+import { Env, StateService } from '@app/services/state.service';
+import { SeoService } from '@app/services/seo.service';
+import { OpenGraphService } from '@app/services/opengraph.service';
 
 @Component({
   selector: 'app-terms-of-service',

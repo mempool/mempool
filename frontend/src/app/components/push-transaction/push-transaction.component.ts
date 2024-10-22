@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { ApiService } from '../../services/api.service';
-import { StateService } from '../../services/state.service';
-import { SeoService } from '../../services/seo.service';
-import { OpenGraphService } from '../../services/opengraph.service';
-import { seoDescriptionNetwork } from '../../shared/common.utils';
+import { ApiService } from '@app/services/api.service';
+import { StateService } from '@app/services/state.service';
+import { SeoService } from '@app/services/seo.service';
+import { OpenGraphService } from '@app/services/opengraph.service';
+import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
-import { TxResult } from '../../interfaces/node-api.interface';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
+import { TxResult } from '@app/interfaces/node-api.interface';
 
 @Component({
   selector: 'app-push-transaction',

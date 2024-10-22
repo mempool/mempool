@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnI
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
-import { isMobile } from '../../shared/common.utils';
-import { LightningApiService } from '../lightning-api.service';
+import { isMobile } from '@app/shared/common.utils';
+import { LightningApiService } from '@app/lightning/lightning-api.service';
 
 @Component({
   selector: 'app-channels-list',

@@ -1,4 +1,4 @@
-import { Transaction } from '../../interfaces/electrs.interface';
+import { Transaction } from '@app/interfaces/electrs.interface';
 
 export const U128_MAX_BIGINT = 0xffff_ffff_ffff_ffff_ffff_ffff_ffff_ffffn;
 

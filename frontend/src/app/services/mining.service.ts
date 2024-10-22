@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { PoolsStats, SinglePoolStats } from '../interfaces/node-api.interface';
-import { ApiService } from '../services/api.service';
-import { StateService } from './state.service';
-import { StorageService } from './storage.service';
+import { PoolsStats, SinglePoolStats } from '@app/interfaces/node-api.interface';
+import { ApiService } from '@app/services/api.service';
+import { StateService } from '@app/services/state.service';
+import { StorageService } from '@app/services/storage.service';
 
 export interface MiningUnits {
   hashrateDivider: number;

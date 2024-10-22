@@ -1,14 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap, catchError, map, tap, shareReplay, startWith, scan } from 'rxjs/operators';
-import { Address, AddressTxSummary, ChainStats, Transaction } from '../../interfaces/electrs.interface';
-import { WebsocketService } from '../../services/websocket.service';
-import { StateService } from '../../services/state.service';
-import { ApiService } from '../../services/api.service';
+import { Address, AddressTxSummary, ChainStats, Transaction } from '@app/interfaces/electrs.interface';
+import { WebsocketService } from '@app/services/websocket.service';
+import { StateService } from '@app/services/state.service';
+import { ApiService } from '@app/services/api.service';
 import { of, Observable, Subscription } from 'rxjs';
-import { SeoService } from '../../services/seo.service';
-import { seoDescriptionNetwork } from '../../shared/common.utils';
-import { WalletAddress } from '../../interfaces/node-api.interface';
+import { SeoService } from '@app/services/seo.service';
+import { seoDescriptionNetwork } from '@app/shared/common.utils';
+import { WalletAddress } from '@app/interfaces/node-api.interface';
 
 class WalletStats implements ChainStats {
   addresses: string[];

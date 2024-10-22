@@ -1,17 +1,17 @@
 import { Component, ElementRef, ViewChild, HostListener, Input, Output, EventEmitter, NgZone, AfterViewInit, OnDestroy, OnChanges } from '@angular/core';
-import { TransactionStripped } from '../../interfaces/node-api.interface';
+import { TransactionStripped } from '@app/interfaces/node-api.interface';
 import { FastVertexArray } from './fast-vertex-array';
 import BlockScene from './block-scene';
 import TxSprite from './tx-sprite';
 import TxView from './tx-view';
-import { Color, Position } from './sprite-types';
-import { Price } from '../../services/price.service';
-import { StateService } from '../../services/state.service';
-import { ThemeService } from '../../services/theme.service';
+import { Color, Position } from '@components/block-overview-graph/sprite-types';
+import { Price } from '@app/services/price.service';
+import { StateService } from '@app/services/state.service';
+import { ThemeService } from '@app/services/theme.service';
 import { Subscription } from 'rxjs';
 import { defaultColorFunction, setOpacity, defaultAuditColors, defaultColors, ageColorFunction, contrastColorFunction, contrastAuditColors, contrastColors } from './utils';
-import { ActiveFilter, FilterMode, toFlags } from '../../shared/filters.utils';
-import { detectWebGL } from '../../shared/graphs.utils';
+import { ActiveFilter, FilterMode, toFlags } from '@app/shared/filters.utils';
+import { detectWebGL } from '@app/shared/graphs.utils';
 
 const unmatchedOpacity = 0.2;
 const unmatchedAuditColors = {

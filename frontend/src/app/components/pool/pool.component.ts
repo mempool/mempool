@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { echarts, EChartsOption } from '../../graphs/echarts';
+import { echarts, EChartsOption } from '@app/graphs/echarts';
 import { BehaviorSubject, Observable, Subscription, combineLatest, of } from 'rxjs';
 import { catchError, distinctUntilChanged, filter, map, share, switchMap, tap } from 'rxjs/operators';
-import { BlockExtended, PoolStat } from '../../interfaces/node-api.interface';
-import { ApiService } from '../../services/api.service';
-import { StateService } from '../../services/state.service';
-import { selectPowerOfTen } from '../../bitcoin.utils';
+import { BlockExtended, PoolStat } from '@app/interfaces/node-api.interface';
+import { ApiService } from '@app/services/api.service';
+import { StateService } from '@app/services/state.service';
+import { selectPowerOfTen } from '@app/bitcoin.utils';
 import { formatNumber } from '@angular/common';
-import { SeoService } from '../../services/seo.service';
+import { SeoService } from '@app/services/seo.service';
 import { HttpErrorResponse } from '@angular/common/http';
 
 interface AccelerationTotal {

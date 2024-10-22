@@ -1,15 +1,15 @@
 import { Component, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { ElectrsApiService } from '../../services/electrs-api.service';
+import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { switchMap, tap, catchError, shareReplay, filter } from 'rxjs/operators';
 import { of, Subscription } from 'rxjs';
-import { StateService } from '../../services/state.service';
-import { SeoService } from '../../services/seo.service';
-import { BlockExtended, TransactionStripped } from '../../interfaces/node-api.interface';
-import { ApiService } from '../../services/api.service';
-import { seoDescriptionNetwork } from '../../shared/common.utils';
-import { BlockOverviewGraphComponent } from '../block-overview-graph/block-overview-graph.component';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { StateService } from '@app/services/state.service';
+import { SeoService } from '@app/services/seo.service';
+import { BlockExtended, TransactionStripped } from '@app/interfaces/node-api.interface';
+import { ApiService } from '@app/services/api.service';
+import { seoDescriptionNetwork } from '@app/shared/common.utils';
+import { BlockOverviewGraphComponent } from '@components/block-overview-graph/block-overview-graph.component';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 
 function bestFitResolution(min, max, n): number {
   const target = (min + max) / 2;

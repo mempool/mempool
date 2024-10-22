@@ -3,8 +3,8 @@ import { FastVertexArray } from './fast-vertex-array';
 import { SpriteUpdateParams, Square, Color, ViewUpdateParams } from './sprite-types';
 import { hexToColor } from './utils';
 import BlockScene from './block-scene';
-import { TransactionStripped } from '../../interfaces/node-api.interface';
-import { TransactionFlags } from '../../shared/filters.utils';
+import { TransactionStripped } from '@app/interfaces/node-api.interface';
+import { TransactionFlags } from '@app/shared/filters.utils';
 
 const hoverTransitionTime = 300;
 const defaultHoverColor = hexToColor('1bd8f4');

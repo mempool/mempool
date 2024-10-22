@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, NgZone, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
-import { EChartsOption } from '../../graphs/echarts';
+import { EChartsOption } from '@app/graphs/echarts';
 import { Subscription } from 'rxjs';
-import { Utxo } from '../../interfaces/electrs.interface';
-import { StateService } from '../../services/state.service';
+import { Utxo } from '@app/interfaces/electrs.interface';
+import { StateService } from '@app/services/state.service';
 import { Router } from '@angular/router';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
-import { renderSats } from '../../shared/common.utils';
-import { colorToHex, hexToColor, mix } from '../block-overview-graph/utils';
-import { TimeService } from '../../services/time.service';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
+import { renderSats } from '@app/shared/common.utils';
+import { colorToHex, hexToColor, mix } from '@components/block-overview-graph/utils';
+import { TimeService } from '@app/services/time.service';
 
 const newColorHex = '1bd8f4';
 const oldColorHex = '9339f4';

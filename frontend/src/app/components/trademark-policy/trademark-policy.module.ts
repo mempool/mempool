@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
-import { TrademarkPolicyComponent } from './trademark-policy.component';
-import { SharedModule } from '../../shared/shared.module';
+import { TrademarkPolicyComponent } from '@components/trademark-policy/trademark-policy.component';
+import { SharedModule } from '@app/shared/shared.module';
 
 const routes: Routes = [
   {

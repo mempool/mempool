@@ -1,16 +1,16 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, NgZone, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
-import { echarts, EChartsOption } from '../../graphs/echarts';
+import { echarts, EChartsOption } from '@app/graphs/echarts';
 import { BehaviorSubject, Observable, Subscription, combineLatest, of } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
-import { AddressTxSummary, ChainStats } from '../../interfaces/electrs.interface';
-import { ElectrsApiService } from '../../services/electrs-api.service';
-import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
+import { AddressTxSummary, ChainStats } from '@app/interfaces/electrs.interface';
+import { ElectrsApiService } from '@app/services/electrs-api.service';
+import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { Router } from '@angular/router';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
-import { StateService } from '../../services/state.service';
-import { PriceService } from '../../services/price.service';
-import { FiatCurrencyPipe } from '../../shared/pipes/fiat-currency.pipe';
-import { FiatShortenerPipe } from '../../shared/pipes/fiat-shortener.pipe';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
+import { StateService } from '@app/services/state.service';
+import { PriceService } from '@app/services/price.service';
+import { FiatCurrencyPipe } from '@app/shared/pipes/fiat-currency.pipe';
+import { FiatShortenerPipe } from '@app/shared/pipes/fiat-shortener.pipe';
 
 const periodSeconds = {
   '1d': (60 * 60 * 24),

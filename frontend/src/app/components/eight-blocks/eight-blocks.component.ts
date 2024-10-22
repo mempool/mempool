@@ -2,15 +2,15 @@ import { Component, OnInit, OnDestroy, ViewChildren, QueryList } from '@angular/
 import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, startWith } from 'rxjs/operators';
 import { Subject, Subscription, of } from 'rxjs';
-import { StateService } from '../../services/state.service';
-import { WebsocketService } from '../../services/websocket.service';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
-import { BlockExtended, TransactionStripped } from '../../interfaces/node-api.interface';
-import { ApiService } from '../../services/api.service';
-import { BlockOverviewGraphComponent } from '../block-overview-graph/block-overview-graph.component';
-import { detectWebGL } from '../../shared/graphs.utils';
+import { StateService } from '@app/services/state.service';
+import { WebsocketService } from '@app/services/websocket.service';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
+import { BlockExtended, TransactionStripped } from '@app/interfaces/node-api.interface';
+import { ApiService } from '@app/services/api.service';
+import { BlockOverviewGraphComponent } from '@components/block-overview-graph/block-overview-graph.component';
+import { detectWebGL } from '@app/shared/graphs.utils';
 import { animate, style, transition, trigger } from '@angular/animations';
-import { BytesPipe } from '../../shared/pipes/bytes-pipe/bytes.pipe';
+import { BytesPipe } from '@app/shared/pipes/bytes-pipe/bytes.pipe';
 
 function bestFitResolution(min, max, n): number {
   const target = (min + max) / 2;

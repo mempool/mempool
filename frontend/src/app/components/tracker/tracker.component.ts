@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, HostListener, Inject, ChangeDetectorRef, ChangeDetectionStrategy, NgZone } from '@angular/core';
-import { ElectrsApiService } from '../../services/electrs-api.service';
+import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import {
   switchMap,
@@ -12,26 +12,26 @@ import {
   map,
   startWith
 } from 'rxjs/operators';
-import { Transaction } from '../../interfaces/electrs.interface';
+import { Transaction } from '@app/interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, Subject, throwError, combineLatest, BehaviorSubject } from 'rxjs';
-import { StateService } from '../../services/state.service';
-import { CacheService } from '../../services/cache.service';
-import { WebsocketService } from '../../services/websocket.service';
-import { AudioService } from '../../services/audio.service';
-import { ApiService } from '../../services/api.service';
-import { SeoService } from '../../services/seo.service';
-import { seoDescriptionNetwork } from '../../shared/common.utils';
-import { Filter, TransactionFlags } from '../../shared/filters.utils';
-import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration, AccelerationPosition } from '../../interfaces/node-api.interface';
-import { PriceService } from '../../services/price.service';
-import { ServicesApiServices } from '../../services/services-api.service';
-import { EnterpriseService } from '../../services/enterprise.service';
-import { ZONE_SERVICE } from '../../injection-tokens';
-import { TrackerStage } from './tracker-bar.component';
-import { MiningService, MiningStats } from '../../services/mining.service';
-import { ETA, EtaService } from '../../services/eta.service';
-import { getTransactionFlags, getUnacceleratedFeeRate } from '../../shared/transaction.utils';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { StateService } from '@app/services/state.service';
+import { CacheService } from '@app/services/cache.service';
+import { WebsocketService } from '@app/services/websocket.service';
+import { AudioService } from '@app/services/audio.service';
+import { ApiService } from '@app/services/api.service';
+import { SeoService } from '@app/services/seo.service';
+import { seoDescriptionNetwork } from '@app/shared/common.utils';
+import { Filter, TransactionFlags } from '@app/shared/filters.utils';
+import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration, AccelerationPosition } from '@app/interfaces/node-api.interface';
+import { PriceService } from '@app/services/price.service';
+import { ServicesApiServices } from '@app/services/services-api.service';
+import { EnterpriseService } from '@app/services/enterprise.service';
+import { ZONE_SERVICE } from '@app/injection-tokens';
+import { TrackerStage } from '@components/tracker/tracker-bar.component';
+import { MiningService, MiningStats } from '@app/services/mining.service';
+import { ETA, EtaService } from '@app/services/eta.service';
+import { getTransactionFlags, getUnacceleratedFeeRate } from '@app/shared/transaction.utils';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 
 
 interface Pool {
