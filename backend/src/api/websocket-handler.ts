@@ -3,7 +3,8 @@ import * as WebSocket from 'ws';
 import {
   BlockExtended, TransactionExtended, MempoolTransactionExtended, WebsocketResponse,
   OptimizedStatistic, ILoadingIndicators, GbtCandidates, TxTrackingInfo,
-  MempoolDelta, MempoolDeltaTxids
+  MempoolDelta, MempoolDeltaTxids,
+  TransactionCompressed
 } from '../mempool.interfaces';
 import blocks from './blocks';
 import memPool from './mempool';
@@ -326,6 +327,7 @@ class WebsocketHandler {
 
           if (parsedMessage && parsedMessage['track-mempool-block'] !== undefined) {
             if (Number.isInteger(parsedMessage['track-mempool-block']) && parsedMessage['track-mempool-block'] >= 0) {
+              client['track-mempool-blocks'] = undefined;
               const index = parsedMessage['track-mempool-block'];
               client['track-mempool-block'] = index;
               const mBlocksWithTransactions = mempoolBlocks.getMempoolBlocksWithTransactions();
@@ -335,7 +337,31 @@ class WebsocketHandler {
                 blockTransactions: (mBlocksWithTransactions[index]?.transactions || []).map(mempoolBlocks.compressTx),
               });
             } else {
-              client['track-mempool-block'] = null;
+              client['track-mempool-block'] = undefined;
+            }
+          }
+
+          if (parsedMessage && parsedMessage['track-mempool-blocks'] !== undefined) {
+            if (parsedMessage['track-mempool-blocks'].length > 0) {
+              client['track-mempool-block'] = undefined;
+              const indices: number[] = [];
+              const mBlocksWithTransactions = mempoolBlocks.getMempoolBlocksWithTransactions();
+              const updates: { index: number, sequence: number, blockTransactions: TransactionCompressed[] }[] = [];
+              for (const i of parsedMessage['track-mempool-blocks']) {
+                const index = parseInt(i);
+                if (Number.isInteger(index) && index >= 0) {
+                  indices.push(index);
+                  updates.push({
+                    index: index,
+                    sequence: this.mempoolSequence,
+                    blockTransactions: (mBlocksWithTransactions[index]?.transactions || []).map(mempoolBlocks.compressTx),
+                  });
+                }
+              }
+              client['track-mempool-blocks'] = indices;
+              response['projected-block-transactions'] = JSON.stringify(updates);
+            } else {
+              client['track-mempool-blocks'] = undefined;
             }
           }
 
@@ -919,6 +945,19 @@ class WebsocketHandler {
             delta: mBlockDeltas[index],
           });
         }
+      } else if (client['track-mempool-blocks']?.length && memPool.isInSync()) {
+        const indices = client['track-mempool-blocks'];
+        const updates: string[] = [];
+        for (const index of indices) {
+          if (mBlockDeltas[index]) {
+            updates.push(getCachedResponse(`projected-block-transactions-${index}`, {
+              index: index,
+              sequence: this.mempoolSequence,
+              delta: mBlockDeltas[index],
+            }));
+          }
+        }
+        response['projected-block-transactions'] = '[' + updates.join(',') + ']';
       }
 
       if (client['track-rbf'] === 'all' && rbfReplacements) {
@@ -1318,6 +1357,27 @@ class WebsocketHandler {
             });
           }
         }
+      } else if (client['track-mempool-blocks']?.length && memPool.isInSync()) {
+        const indices = client['track-mempool-blocks'];
+        const updates: string[] = [];
+        for (const index of indices) {
+          if (mBlockDeltas && mBlockDeltas[index] && mBlocksWithTransactions[index]?.transactions?.length) {
+            if (mBlockDeltas[index].added.length > (mBlocksWithTransactions[index]?.transactions.length / 2)) {
+              updates.push(getCachedResponse(`projected-block-transactions-full-${index}`, {
+                index: index,
+                sequence: this.mempoolSequence,
+                blockTransactions: mBlocksWithTransactions[index].transactions.map(mempoolBlocks.compressTx),
+              }));
+            } else {
+              updates.push(getCachedResponse(`projected-block-transactions-delta-${index}`, {
+                index: index,
+                sequence: this.mempoolSequence,
+                delta: mBlockDeltas[index],
+              }));
+            }
+          }
+        }
+        response['projected-block-transactions'] = '[' + updates.join(',') + ']';
       }
 
       if (client['track-mempool-txids']) {

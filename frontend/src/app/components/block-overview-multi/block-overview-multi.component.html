@@ -1,0 +1,24 @@
+
+<div class="block-overview-graph">
+  <canvas *browserOnly class="block-overview-canvas" [class.clickable]="!!hoverTx" #blockCanvas></canvas>
+  @if (!disableSpinner) {
+    <div class="loader-wrapper" [class.hidden]="!isLoading && !unavailable">
+      <div *ngIf="!unavailable" class="spinner-border ml-3 loading" role="status"></div>
+      <div *ngIf="!isLoading && unavailable" class="ml-3" i18n="block.not-available">not available</div>
+    </div>
+  }
+  <app-block-overview-tooltip
+    [tx]="selectedTx || hoverTx"
+    [cursorPosition]="tooltipPosition"
+    [clickable]="!!selectedTx"
+    [auditEnabled]="auditHighlighting"
+    [blockConversion]="blockConversion"
+    [filterFlags]="activeFilterFlags"
+    [filterMode]="filterMode"
+    [relativeTime]="relativeTime"
+  ></app-block-overview-tooltip>
+  <app-block-filters *ngIf="webGlEnabled && showFilters && filtersAvailable" [excludeFilters]="excludeFilters" [cssWidth]="cssWidth" (onFilterChanged)="setFilterFlags($event)"></app-block-filters>
+  <div *ngIf="!webGlEnabled" class="placeholder">
+    <span i18n="webgl-disabled">Your browser does not support this feature.</span>
+  </div>
+</div>

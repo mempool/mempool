@@ -29,6 +29,7 @@ export class WebsocketService {
   private isTrackingTx = false;
   private trackingTxId: string;
   private isTrackingMempoolBlock = false;
+  private isTrackingMempoolBlocks = false;
   private isTrackingRbf: 'all' | 'fullRbf' | false = false;
   private isTrackingRbfSummary = false;
   private isTrackingAddress: string | false = false;
@@ -37,6 +38,7 @@ export class WebsocketService {
   private isTrackingWallet: boolean = false;
   private trackingWalletName: string;
   private trackingMempoolBlock: number;
+  private trackingMempoolBlocks: number[];
   private stoppingTrackMempoolBlock: any | null = null;
   private latestGitCommit = '';
   private onlineCheckTimeout: number;
@@ -123,6 +125,9 @@ export class WebsocketService {
           }
           if (this.isTrackingMempoolBlock) {
             this.startTrackMempoolBlock(this.trackingMempoolBlock, true);
+          }
+          if (this.isTrackingMempoolBlocks) {
+            this.startTrackMempoolBlocks(this.trackingMempoolBlocks);
           }
           if (this.isTrackingRbf) {
             this.startTrackRbf(this.isTrackingRbf);
@@ -235,6 +240,13 @@ export class WebsocketService {
     return false;
   }
 
+  startTrackMempoolBlocks(blocks: number[], force: boolean = false): boolean {
+    this.websocketSubject.next({ 'track-mempool-blocks': blocks });
+    this.isTrackingMempoolBlocks = true;
+    this.trackingMempoolBlocks = blocks;
+    return true;
+  }
+
   stopTrackMempoolBlock(): void {
     if (this.stoppingTrackMempoolBlock) {
       clearTimeout(this.stoppingTrackMempoolBlock);
@@ -246,6 +258,11 @@ export class WebsocketService {
       this.trackingMempoolBlock = null;
       this.stateService.mempoolBlockState = null;
     }, 2000);
+  }
+
+  stopTrackMempoolBlocks(): void {
+    this.websocketSubject.next({ 'track-mempool-blocks': [] });
+    this.isTrackingMempoolBlocks = false;
   }
 
   startTrackRbf(mode: 'all' | 'fullRbf') {
@@ -450,20 +467,25 @@ export class WebsocketService {
     }
 
     if (response['projected-block-transactions']) {
-      if (response['projected-block-transactions'].index == this.trackingMempoolBlock) {
-        if (response['projected-block-transactions'].blockTransactions) {
-          this.stateService.mempoolSequence = response['projected-block-transactions'].sequence;
+      if (response['projected-block-transactions'].index != null) {
+        const update = response['projected-block-transactions'];
+        if (update.blockTransactions) {
           this.stateService.mempoolBlockUpdate$.next({
-            block: this.trackingMempoolBlock,
-            transactions: response['projected-block-transactions'].blockTransactions.map(uncompressTx),
+            block: update.index,
+            transactions: update.blockTransactions.map(uncompressTx),
           });
-        } else if (response['projected-block-transactions'].delta) {
-          if (this.stateService.mempoolSequence && response['projected-block-transactions'].sequence !== this.stateService.mempoolSequence + 1) {
-            this.stateService.mempoolSequence = 0;
-            this.startTrackMempoolBlock(this.trackingMempoolBlock, true);
-          } else {
-            this.stateService.mempoolSequence = response['projected-block-transactions'].sequence;
-            this.stateService.mempoolBlockUpdate$.next(uncompressDeltaChange(this.trackingMempoolBlock, response['projected-block-transactions'].delta));
+        } else if (update.delta) {
+          this.stateService.mempoolBlockUpdate$.next(uncompressDeltaChange(update.index, update.delta));
+        }
+      } else if (response['projected-block-transactions'].length) {
+        for (const update of response['projected-block-transactions']) {
+          if (update.blockTransactions) {
+            this.stateService.mempoolBlockUpdate$.next({
+              block: update.index,
+              transactions: update.blockTransactions.map(uncompressTx),
+            });
+          } else if (update.delta) {
+            this.stateService.mempoolBlockUpdate$.next(uncompressDeltaChange(update.index, update.delta));
           }
         }
       }

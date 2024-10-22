@@ -33,6 +33,7 @@ export interface WebsocketResponse {
   'track-scriptpubkeys'?: string[];
   'track-asset'?: string;
   'track-mempool-block'?: number;
+  'track-mempool-blocks'?: number[];
   'track-rbf'?: string;
   'track-rbf-summary'?: boolean;
   'track-accelerations'?: boolean;

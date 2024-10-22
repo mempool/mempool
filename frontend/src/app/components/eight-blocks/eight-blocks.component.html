@@ -1,23 +1,24 @@
+
+<app-block-overview-multi
+  #blockGraph
+  [isLoading]="isLoadingTransactions"
+  [numBlocks]="numBlocks"
+  [padding]="padding"
+  [blockWidth]="blockWidth"
+  [resolution]="resolution"
+  [blockLimit]="stateService.blockVSize"
+  [orientation]="'top'"
+  [flip]="false"
+  [animationDuration]="animationDuration"
+  [animationOffset]="animationOffset"
+></app-block-overview-multi>
 <div class="blocks" [class.wrap]="wrapBlocks">
   <ng-container *ngFor="let i of blockIndices">
     <div class="block-wrapper" [style]="wrapperStyle">
       <div class="block-container" [style]="containerStyle">
-        <app-block-overview-graph
-          #blockGraph
-          [isLoading]="false"
-          [resolution]="resolution"
-          [blockLimit]="stateService.blockVSize"
-          [orientation]="'top'"
-          [flip]="false"
-          [animationDuration]="animationDuration"
-          [animationOffset]="animationOffset"
-          [disableSpinner]="true"
-          [relativeTime]="blockInfo[i]?.timestamp"
-          (txClickEvent)="onTxClick($event)"
-        ></app-block-overview-graph>
         <div *ngIf="showInfo && blockInfo[i]" class="info" @infoChange>
           <h1 class="height">{{ blockInfo[i].height }}</h1>
-          <h2 class="mined-by">by {{ blockInfo[i].extras.pool.name || 'Unknown' }}</h2>
+          <h2 class="mined-by">by {{ blockInfo[i].extras.pool.name || 'Unknown' }} <img class="pool-logo" [src]="'/resources/mining-pools/' + blockInfo[i].extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'"> </h2>
         </div>
       </div>
     </div>
