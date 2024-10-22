@@ -226,6 +226,14 @@ export function insecureRandomUUID(): string {
   return uuid.slice(0, -1);
 }
 
+export function sleep$(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+     setTimeout(() => {
+       resolve();
+     }, ms);
+  });
+}
+
 // https://stackoverflow.com/a/60467595
 export function md5(inputString): string {
     var hc="0123456789abcdef";
