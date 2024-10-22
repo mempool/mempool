@@ -76,7 +76,7 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
     if (!window.demoMode) {
       // @ts-ignore
       window.demoMode = true;
-      const paths = ['', 'acceleration', 'mining', 'graphs'];
+      const paths = ['', 'acceleration', 'mining', 'lightning'];
       let i = 0;
       while ('Bitcoin is still alive') {
         i = (i + 1) % paths.length;
