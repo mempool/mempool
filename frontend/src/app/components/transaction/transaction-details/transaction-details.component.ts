@@ -41,6 +41,7 @@ export class TransactionDetailsComponent implements OnInit {
   @Input() ETA$: Observable<ETA>;
 
   @Output() accelerateClicked = new EventEmitter<boolean>();
+  @Output() toggleCpfp$ = new EventEmitter<void>();
 
   constructor() {}
 
@@ -48,5 +49,9 @@ export class TransactionDetailsComponent implements OnInit {
 
   onAccelerateClicked(): void {
     this.accelerateClicked.emit(true);
+  }
+
+    toggleCpfp(): void {
+    this.toggleCpfp$.emit();
   }
 }
