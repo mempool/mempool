@@ -78,6 +78,7 @@ export interface Env {
   PACKAGE_JSON_VERSION_MEMPOOL_SPACE?: string;
   SERVICES_API?: string;
   customize?: Customization;
+  PROD_DOMAINS: string[];
 }
 
 const defaultEnv: Env = {
@@ -113,6 +114,7 @@ const defaultEnv: Env = {
   'PUBLIC_ACCELERATIONS': false,
   'ADDITIONAL_CURRENCIES': false,
   'SERVICES_API': 'https://mempool.space/api/v1/services',
+  'PROD_DOMAINS': [],
 };
 
 @Injectable({
@@ -206,6 +208,10 @@ export class StateService {
     const browserWindow = window || {};
     // @ts-ignore
     const browserWindowEnv = browserWindow.__env || {};
+    if (browserWindowEnv.PROD_DOMAINS && typeof(browserWindowEnv.PROD_DOMAINS) === 'string') {
+      browserWindowEnv.PROD_DOMAINS = browserWindowEnv.PROD_DOMAINS.split(',');
+    }
+
     this.env = Object.assign(defaultEnv, browserWindowEnv);
 
     if (defaultEnv.BASE_MODULE !== 'mempool') {

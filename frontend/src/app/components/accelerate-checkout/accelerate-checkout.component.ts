@@ -84,13 +84,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   timePaid: number = 0; // time acceleration requested
   math = Math;
   isMobile: boolean = window.innerWidth <= 767.98;
-  isProdDomain = ['mempool.space',
-    'mempool-staging.va1.mempool.space',
-    'mempool-staging.fmt.mempool.space',
-    'mempool-staging.fra.mempool.space',
-    'mempool-staging.tk7.mempool.space',
-    'mempool-staging.sg1.mempool.space'
-   ].indexOf(document.location.hostname) > -1;
+  isProdDomain = false;
 
   private _step: CheckoutStep = 'summary';
   simpleMode: boolean = true;
@@ -143,6 +137,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     private authService: AuthServiceMempool,
     private enterpriseService: EnterpriseService,
   ) {
+    this.isProdDomain = this.stateService.env.PROD_DOMAINS.indexOf(document.location.hostname) > -1;
     this.accelerationUUID = insecureRandomUUID();
 
     // Check if Apple Pay available
