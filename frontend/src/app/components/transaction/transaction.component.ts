@@ -38,7 +38,7 @@ import { ZONE_SERVICE } from '@app/injection-tokens';
 import { MiningService, MiningStats } from '@app/services/mining.service';
 import { ETA, EtaService } from '@app/services/eta.service';
 
-interface Pool {
+export interface Pool {
   id: number;
   name: string;
   slug: string;
