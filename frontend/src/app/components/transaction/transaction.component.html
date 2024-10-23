@@ -608,7 +608,7 @@
       <td class="td-width" i18n="transaction.fee|Transaction fee">Fee</td>
       <td class="text-wrap">{{ tx.fee | number }} <span class="symbol" i18n="shared.sats">sats</span>
         @if (accelerationInfo?.bidBoost ?? tx.feeDelta > 0) {
-          <span class="oobFees" i18n-ngbTooltip="Acceleration Fees" ngbTooltip="Acceleration fees paid out-of-band"> +{{ accelerationInfo?.bidBoost ?? tx.feeDelta | number }} </span><span class="symbol" i18n="shared.sats">sats</span>
+          <span class="oobFees" [attr.data-cy]="'tx-fee-delta'" i18n-ngbTooltip="Acceleration Fees" ngbTooltip="Acceleration fees paid out-of-band"> +{{ accelerationInfo?.bidBoost ?? tx.feeDelta | number }} </span><span class="symbol" i18n="shared.sats">sats</span>
         }
         <span class="fiat"><app-fiat [blockConversion]="tx.price" [value]="tx.fee + ((accelerationInfo?.bidBoost ?? tx.feeDelta) || 0)"></app-fiat></span>
       </td>
@@ -647,9 +647,9 @@
         <td>
           <div class="effective-fee-container">
             @if (accelerationInfo?.acceleratedFeeRate && (!tx.effectiveFeePerVsize || accelerationInfo.acceleratedFeeRate >= tx.effectiveFeePerVsize || tx.acceleration)) {
-              <app-fee-rate [class.oobFees]="isAcceleration" [fee]="accelerationInfo.acceleratedFeeRate"></app-fee-rate>
+              <app-fee-rate [attr.data-cy]="'fee-rate'" [class.oobFees]="isAcceleration" [fee]="accelerationInfo.acceleratedFeeRate"></app-fee-rate>
             } @else {
-              <app-fee-rate [class.oobFees]="isAcceleration" [fee]="tx.effectiveFeePerVsize"></app-fee-rate>
+              <app-fee-rate [attr.data-cy]="'fee-rate'" [class.oobFees]="isAcceleration" [fee]="tx.effectiveFeePerVsize"></app-fee-rate>
             }
 
             @if (tx?.status?.confirmed && !tx.acceleration && !accelerationInfo && tx.fee && tx.effectiveFeePerVsize) {
@@ -670,7 +670,7 @@
 <ng-template #acceleratingRow>
   <tr>
     <td rowspan="2" colspan="2" style="padding: 0;">
-      <app-active-acceleration-box [acceleratedBy]="tx.acceleratedBy" [effectiveFeeRate]="tx.effectiveFeePerVsize" [accelerationInfo]="accelerationInfo" [miningStats]="miningStats" [hasCpfp]="hasCpfp" (toggleCpfp)="showCpfpDetails = !showCpfpDetails" [chartPositionLeft]="isMobile"></app-active-acceleration-box>
+      <app-active-acceleration-box [attr.data-cy]="'active-acceleration-box'" [acceleratedBy]="tx.acceleratedBy" [effectiveFeeRate]="tx.effectiveFeePerVsize" [accelerationInfo]="accelerationInfo" [miningStats]="miningStats" [hasCpfp]="hasCpfp" (toggleCpfp)="showCpfpDetails = !showCpfpDetails" [chartPositionLeft]="isMobile"></app-active-acceleration-box>
     </td>
   </tr>
   <tr></tr>
