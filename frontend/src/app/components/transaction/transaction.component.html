@@ -69,7 +69,7 @@
     <!-- CPFP Details -->
     <ng-template [ngIf]="showCpfpDetails">
       <br>
-      <h2 class="text-left">CPFP <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true" size="xs"></fa-icon></h2>
+      <h2 class="text-left">CPFP (Child Pays For Parent)</h2>
       <div class="box cpfp-details">
         <table class="table table-fixed table-borderless table-striped">
           <thead>
@@ -657,7 +657,7 @@
             }
           </div>
           @if (hasCpfp) {
-            <button type="button" class="btn btn-outline-info btn-sm btn-small-height float-right" (click)="showCpfpDetails = !showCpfpDetails">CPFP <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></button>
+            <button type="button" class="btn btn-outline-info btn-sm btn-small-height float-right" (click)="showCpfpDetails = !showCpfpDetails">CPFP</button>
           }
         </td>
       </tr>
