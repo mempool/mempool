@@ -60,12 +60,12 @@ let routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
+        loadChildren: () => import('@app/bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
         data: { preload: true },
       },
       {
         path: '',
-        loadChildren: () => import('./master-page.module').then(m => m.MasterPageModule),
+        loadChildren: () => import('@app/master-page.module').then(m => m.MasterPageModule),
         data: { preload: true },
       },
       {
@@ -83,7 +83,7 @@ let routes: Routes = [
       },
       {
         path: '',
-        loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
+        loadChildren: () => import('@app/bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
         data: { preload: true },
       },
       {
@@ -103,12 +103,12 @@ let routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
+        loadChildren: () => import('@app/bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
         data: { preload: true },
       },
       {
         path: '',
-        loadChildren: () => import('./master-page.module').then(m => m.MasterPageModule),
+        loadChildren: () => import('@app/master-page.module').then(m => m.MasterPageModule),
         data: { preload: true },
       },
       {
@@ -126,7 +126,7 @@ let routes: Routes = [
       },
       {
         path: '',
-        loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
+        loadChildren: () => import('@app/bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
         data: { preload: true },
       },
       {
@@ -138,7 +138,7 @@ let routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
+    loadChildren: () => import('@app/bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
     data: { preload: true },
   },
   {
@@ -149,7 +149,7 @@ let routes: Routes = [
   },
   {
     path: '',
-    loadChildren: () => import('./master-page.module').then(m => m.MasterPageModule),
+    loadChildren: () => import('@app/master-page.module').then(m => m.MasterPageModule),
     data: { preload: true },
   },
   {
@@ -165,19 +165,19 @@ let routes: Routes = [
     children: [
       {
         path: '',
-        loadChildren: () => import('./previews.module').then(m => m.PreviewsModule)
+        loadChildren: () => import('@app/previews.module').then(m => m.PreviewsModule)
       },
       {
         path: 'testnet',
-        loadChildren: () => import('./previews.module').then(m => m.PreviewsModule)
+        loadChildren: () => import('@app/previews.module').then(m => m.PreviewsModule)
       },
       {
         path: 'testnet4',
-        loadChildren: () => import('./previews.module').then(m => m.PreviewsModule)
+        loadChildren: () => import('@app/previews.module').then(m => m.PreviewsModule)
       },
       {
         path: 'signet',
-        loadChildren: () => import('./previews.module').then(m => m.PreviewsModule)
+        loadChildren: () => import('@app/previews.module').then(m => m.PreviewsModule)
       },
     ],
   },
@@ -212,7 +212,7 @@ let routes: Routes = [
   },
   {
     path: '',
-    loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
+    loadChildren: () => import('@app/bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
     data: { preload: true },
   },
 ];
@@ -225,12 +225,12 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
         {
           path: '',
           pathMatch: 'full',
-          loadChildren: () => import('./liquid/liquid-graphs.module').then(m => m.LiquidGraphsModule),
+          loadChildren: () => import('@app/liquid/liquid-graphs.module').then(m => m.LiquidGraphsModule),
           data: { preload: true },
         },
         {
           path: '',
-          loadChildren: () => import ('./liquid/liquid-master-page.module').then(m => m.LiquidMasterPageModule),
+          loadChildren: () => import ('@app/liquid/liquid-master-page.module').then(m => m.LiquidMasterPageModule),
           data: { preload: true },
         },
         {
@@ -248,7 +248,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
         },
         {
           path: '',
-          loadChildren: () => import('./liquid/liquid-graphs.module').then(m => m.LiquidGraphsModule),
+          loadChildren: () => import('@app/liquid/liquid-graphs.module').then(m => m.LiquidGraphsModule),
           data: { preload: true },
         },
         {
@@ -260,12 +260,12 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
     {
       path: '',
       pathMatch: 'full',
-      loadChildren: () => import('./liquid/liquid-graphs.module').then(m => m.LiquidGraphsModule),
+      loadChildren: () => import('@app/liquid/liquid-graphs.module').then(m => m.LiquidGraphsModule),
       data: { preload: true },
     },
     {
       path: '',
-      loadChildren: () => import ('./liquid/liquid-master-page.module').then(m => m.LiquidMasterPageModule),
+      loadChildren: () => import ('@app/liquid/liquid-master-page.module').then(m => m.LiquidMasterPageModule),
       data: { preload: true },
     },
     {
@@ -281,11 +281,11 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
       children: [
         {
           path: '',
-          loadChildren: () => import('./previews.module').then(m => m.PreviewsModule)
+          loadChildren: () => import('@app/previews.module').then(m => m.PreviewsModule)
         },
         {
           path: 'testnet',
-          loadChildren: () => import('./previews.module').then(m => m.PreviewsModule)
+          loadChildren: () => import('@app/previews.module').then(m => m.PreviewsModule)
         },
       ],
     },
@@ -296,7 +296,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
     },
     {
       path: '',
-      loadChildren: () => import('./liquid/liquid-graphs.module').then(m => m.LiquidGraphsModule),
+      loadChildren: () => import('@app/liquid/liquid-graphs.module').then(m => m.LiquidGraphsModule),
       data: { preload: true },
     },
   ];

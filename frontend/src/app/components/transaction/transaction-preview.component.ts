@@ -17,7 +17,7 @@ import { ApiService } from '@app/services/api.service';
 import { SeoService } from '@app/services/seo.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { CpfpInfo } from '@interfaces/node-api.interface';
-import { LiquidUnblinding } from './liquid-ublinding';
+import { LiquidUnblinding } from '@components/transaction/liquid-ublinding';
 
 @Component({
   selector: 'app-transaction-preview',

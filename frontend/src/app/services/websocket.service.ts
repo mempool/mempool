@@ -4,10 +4,10 @@ import { WebsocketResponse } from '@interfaces/websocket.interface';
 import { StateService } from '@app/services/state.service';
 import { Transaction } from '@interfaces/electrs.interface';
 import { firstValueFrom, Subscription } from 'rxjs';
-import { ApiService } from './api.service';
+import { ApiService } from '@app/services/api.service';
 import { take } from 'rxjs/operators';
 import { TransferState, makeStateKey } from '@angular/core';
-import { CacheService } from './cache.service';
+import { CacheService } from '@app/services/cache.service';
 import { uncompressDeltaChange, uncompressTx } from '@app/shared/common.utils';
 
 const OFFLINE_RETRY_AFTER_MS = 2000;

@@ -1,8 +1,8 @@
-import TxSprite from './tx-sprite';
-import { FastVertexArray } from './fast-vertex-array';
-import { SpriteUpdateParams, Square, Color, ViewUpdateParams } from './sprite-types';
-import { hexToColor } from './utils';
-import BlockScene from './block-scene';
+import TxSprite from '@components/block-overview-graph/tx-sprite';
+import { FastVertexArray } from '@components/block-overview-graph/fast-vertex-array';
+import { SpriteUpdateParams, Square, Color, ViewUpdateParams } from '@components/block-overview-graph/sprite-types';
+import { hexToColor } from '@components/block-overview-graph/utils';
+import BlockScene from '@components/block-overview-graph/block-scene';
 import { TransactionStripped } from '@interfaces/node-api.interface';
 import { TransactionFlags } from '@app/shared/filters.utils';
 

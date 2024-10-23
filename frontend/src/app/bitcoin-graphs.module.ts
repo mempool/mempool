@@ -7,7 +7,7 @@ const routes: Routes = [
   {
     path: '',
     component: MasterPageComponent,
-    loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule),
+    loadChildren: () => import('@app/graphs/graphs.module').then(m => m.GraphsModule),
     data: { preload: true },
   }
 ];

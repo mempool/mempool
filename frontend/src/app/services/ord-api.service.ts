@@ -4,7 +4,7 @@ import { Inscription } from '@app/shared/ord/inscription.utils';
 import { Transaction } from '@interfaces/electrs.interface';
 import { getNextInscriptionMark, hexToBytes, extractInscriptionData } from '@app/shared/ord/inscription.utils';
 import { decipherRunestone, Runestone, Etching, UNCOMMON_GOODS } from '@app/shared/ord/rune.utils';
-import { ElectrsApiService } from './electrs-api.service';
+import { ElectrsApiService } from '@app/services/electrs-api.service';
 
 
 @Injectable({

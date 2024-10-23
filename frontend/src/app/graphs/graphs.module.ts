@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { NgxEchartsModule } from 'ngx-echarts';
-import { GraphsRoutingModule } from './graphs.routing.module';
+import { GraphsRoutingModule } from '@app/graphs/graphs.routing.module';
 import { SharedModule } from '@app/shared/shared.module';
 
 import { AccelerationFeesGraphComponent } from '@components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component';
@@ -89,7 +89,7 @@ import { CommonModule } from '@angular/common';
     SharedModule,
     GraphsRoutingModule,
     NgxEchartsModule.forRoot({
-      echarts: () => import('./echarts').then(m => m.echarts),
+      echarts: () => import('@app/graphs/echarts').then(m => m.echarts),
     })
   ],
   exports: [

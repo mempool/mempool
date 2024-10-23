@@ -156,7 +156,7 @@ const routes: Routes = [
           {
             path: 'lightning',
             data: { preload: true, networks: ['bitcoin'] },
-            loadChildren: () => import ('./lightning-graphs.module').then(m => m.LightningGraphsModule),
+            loadChildren: () => import ('@app/graphs/lightning-graphs.module').then(m => m.LightningGraphsModule),
           },
           {
             path: '',

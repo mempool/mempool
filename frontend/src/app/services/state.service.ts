@@ -6,7 +6,7 @@ import { Acceleration, AccelerationPosition, BlockExtended, CpfpInfo, Difficulty
 import { Router, NavigationStart } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { filter, map, scan, share, shareReplay } from 'rxjs/operators';
-import { StorageService } from './storage.service';
+import { StorageService } from '@app/services/storage.service';
 import { hasTouchScreen } from '@app/shared/pipes/bytes-pipe/utils';
 import { ActiveFilter } from '@app/shared/filters.utils';
 

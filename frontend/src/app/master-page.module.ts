@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Routes, RouterModule, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { MasterPageComponent } from '@components/master-page/master-page.component';
-import { SharedModule } from './shared/shared.module';
+import { SharedModule } from '@app/shared/shared.module';
 
 import { StartComponent } from '@components/start/start.component';
 import { PushTransactionComponent } from '@components/push-transaction/push-transaction.component';
@@ -82,16 +82,16 @@ const routes: Routes = [
       },
       {
         path: 'docs',
-        loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule),
+        loadChildren: () => import('@app/docs/docs.module').then(m => m.DocsModule),
         data: { preload: true },
       },
       {
         path: 'api',
-        loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
+        loadChildren: () => import('@app/docs/docs.module').then(m => m.DocsModule)
       },
       {
         path: 'lightning',
-        loadChildren: () => import('./lightning/lightning.module').then(m => m.LightningModule),
+        loadChildren: () => import('@app/lightning/lightning.module').then(m => m.LightningModule),
         data: { preload: browserWindowEnv && browserWindowEnv.LIGHTNING === true, networks: ['bitcoin'] },
       },
       {

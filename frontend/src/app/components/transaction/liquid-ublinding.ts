@@ -34,7 +34,7 @@ export class LiquidUnblinding {
   }
 
   async makeCommitmentMap(blinders: any) {
-    const libwally = await import('./libwally.js');
+    const libwally = await import('@components/transaction/libwally.js');
     await libwally.load();
     const commitments = new Map();
     blinders.forEach(b => {
