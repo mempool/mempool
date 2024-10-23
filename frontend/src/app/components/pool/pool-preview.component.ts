@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { echarts, EChartsOption } from '@app/graphs/echarts';
 import { Observable, of } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
-import { PoolStat } from '@app/interfaces/node-api.interface';
+import { PoolStat } from '@interfaces/node-api.interface';
 import { ApiService } from '@app/services/api.service';
 import { StateService } from '@app/services/state.service';
 import { formatNumber } from '@angular/common';

@@ -6,7 +6,7 @@ import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { LightningApiService } from '@app/lightning/lightning-api.service';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from '@app/services/state.service';
-import { Address } from '@app/interfaces/electrs.interface';
+import { Address } from '@interfaces/electrs.interface';
 import { formatNumber } from '@angular/common';
 
 @Component({

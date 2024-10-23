@@ -1,7 +1,7 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, OnInit } from '@angular/core';
 import { Observable, merge } from 'rxjs';
 import { share } from 'rxjs/operators';
-import { INodesRanking, INodesStatistics } from '@app/interfaces/node-api.interface';
+import { INodesRanking, INodesStatistics } from '@interfaces/node-api.interface';
 import { SeoService } from '@app/services/seo.service';
 import { OpenGraphService } from '@app/services/opengraph.service';
 import { StateService } from '@app/services/state.service';

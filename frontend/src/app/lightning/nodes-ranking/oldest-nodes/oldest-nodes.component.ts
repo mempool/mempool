@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core
 import { map, Observable } from 'rxjs';
 import { GeolocationData } from '@app/shared/components/geolocation/geolocation.component';
 import { SeoService } from '@app/services/seo.service';
-import { IOldestNodes } from '@app/interfaces/node-api.interface';
+import { IOldestNodes } from '@interfaces/node-api.interface';
 import { LightningApiService } from '@app/lightning/lightning-api.service';
 
 @Component({

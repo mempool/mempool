@@ -3,7 +3,7 @@ import { VbytesPipe } from '@app/shared/pipes/bytes-pipe/vbytes.pipe';
 import { WuBytesPipe } from '@app/shared/pipes/bytes-pipe/wubytes.pipe';
 import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { formatNumber } from '@angular/common';
-import { OptimizedMempoolStats } from '@app/interfaces/node-api.interface';
+import { OptimizedMempoolStats } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 import { StorageService } from '@app/services/storage.service';
 import { EChartsOption } from '@app/graphs/echarts';

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, NgZone, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { EChartsOption } from '@app/graphs/echarts';
 import { Subscription } from 'rxjs';
-import { Utxo } from '@app/interfaces/electrs.interface';
+import { Utxo } from '@interfaces/electrs.interface';
 import { StateService } from '@app/services/state.service';
 import { Router } from '@angular/router';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';

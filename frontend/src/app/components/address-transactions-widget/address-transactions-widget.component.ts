@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { StateService } from '@app/services/state.service';
-import { Address, AddressTxSummary } from '@app/interfaces/electrs.interface';
+import { Address, AddressTxSummary } from '@interfaces/electrs.interface';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { Observable, Subscription, catchError, map, of, switchMap, zip } from 'rxjs';
 import { PriceService } from '@app/services/price.service';

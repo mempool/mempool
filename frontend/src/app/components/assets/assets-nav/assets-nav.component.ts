@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
 import { merge, Observable, of, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
-import { AssetExtended } from '@app/interfaces/electrs.interface';
+import { AssetExtended } from '@interfaces/electrs.interface';
 import { AssetsService } from '@app/services/assets.service';
 import { SeoService } from '@app/services/seo.service';
 import { StateService } from '@app/services/state.service';

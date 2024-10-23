@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { map, Observable, of, Subject, Subscription, switchMap, tap, zip } from 'rxjs';
-import { IChannel } from '@app/interfaces/node-api.interface';
+import { IChannel } from '@interfaces/node-api.interface';
 import { LightningApiService } from '@app/lightning/lightning-api.service';
-import { Transaction } from '@app/interfaces/electrs.interface';
+import { Transaction } from '@interfaces/electrs.interface';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 
 @Component({

@@ -4,7 +4,7 @@ import { UntypedFormGroup, UntypedFormBuilder } from '@angular/forms';
 import { of, merge} from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
-import { OptimizedMempoolStats } from '@app/interfaces/node-api.interface';
+import { OptimizedMempoolStats } from '@interfaces/node-api.interface';
 import { WebsocketService } from '@app/services/websocket.service';
 import { ApiService } from '@app/services/api.service';
 

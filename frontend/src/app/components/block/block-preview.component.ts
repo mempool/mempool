@@ -6,7 +6,7 @@ import { of, Subscription, asyncScheduler, forkJoin } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 import { SeoService } from '@app/services/seo.service';
 import { OpenGraphService } from '@app/services/opengraph.service';
-import { BlockExtended, TransactionStripped } from '@app/interfaces/node-api.interface';
+import { BlockExtended, TransactionStripped } from '@interfaces/node-api.interface';
 import { ApiService } from '@app/services/api.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { BlockOverviewGraphComponent } from '@components/block-overview-graph/block-overview-graph.component';

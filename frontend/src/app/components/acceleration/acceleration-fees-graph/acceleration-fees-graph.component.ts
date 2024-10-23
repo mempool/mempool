@@ -9,7 +9,7 @@ import { download, formatterXAxis, formatterXAxisLabel, formatterXAxisTimeCatego
 import { StorageService } from '@app/services/storage.service';
 import { MiningService } from '@app/services/mining.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Acceleration } from '@app/interfaces/node-api.interface';
+import { Acceleration } from '@interfaces/node-api.interface';
 import { ServicesApiServices } from '@app/services/services-api.service';
 import { StateService } from '@app/services/state.service';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';

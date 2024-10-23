@@ -15,7 +15,7 @@ import {
   repeat,
   take
 } from 'rxjs/operators';
-import { Transaction } from '@app/interfaces/electrs.interface';
+import { Transaction } from '@interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, Subject, from, throwError, combineLatest, BehaviorSubject } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 import { CacheService } from '@app/services/cache.service';
@@ -27,7 +27,7 @@ import { StorageService } from '@app/services/storage.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { getTransactionFlags, getUnacceleratedFeeRate } from '@app/shared/transaction.utils';
 import { Filter, TransactionFlags, toFilters } from '@app/shared/filters.utils';
-import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration, AccelerationPosition } from '@app/interfaces/node-api.interface';
+import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration, AccelerationPosition } from '@interfaces/node-api.interface';
 import { LiquidUnblinding } from '@components/transaction/liquid-ublinding';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { PriceService } from '@app/services/price.service';

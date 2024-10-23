@@ -1,5 +1,5 @@
 import { Component, Input, Output, OnChanges, EventEmitter, HostListener, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { Transaction } from '@app/interfaces/electrs.interface';
+import { Transaction } from '@interfaces/electrs.interface';
 import { AccelerationEstimate, RateOption } from '@components/accelerate-checkout/accelerate-checkout.component';
 
 interface GraphBar {

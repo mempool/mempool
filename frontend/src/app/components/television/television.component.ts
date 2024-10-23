@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { WebsocketService } from '@app/services/websocket.service';
-import { OptimizedMempoolStats } from '@app/interfaces/node-api.interface';
+import { OptimizedMempoolStats } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 import { ApiService } from '@app/services/api.service';
 import { SeoService } from '@app/services/seo.service';

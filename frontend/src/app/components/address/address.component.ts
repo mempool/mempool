@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { switchMap, filter, catchError, map, tap } from 'rxjs/operators';
-import { Address, ChainStats, Transaction, Utxo, Vin } from '@app/interfaces/electrs.interface';
+import { Address, ChainStats, Transaction, Utxo, Vin } from '@interfaces/electrs.interface';
 import { WebsocketService } from '@app/services/websocket.service';
 import { StateService } from '@app/services/state.service';
 import { AudioService } from '@app/services/audio.service';
@@ -10,7 +10,7 @@ import { ApiService } from '@app/services/api.service';
 import { of, merge, Subscription, Observable, forkJoin } from 'rxjs';
 import { SeoService } from '@app/services/seo.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
-import { AddressInformation } from '@app/interfaces/node-api.interface';
+import { AddressInformation } from '@interfaces/node-api.interface';
 import { AddressTypeInfo } from '@app/shared/address-utils';
 
 class AddressStats implements ChainStats {

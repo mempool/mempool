@@ -4,10 +4,10 @@ import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITrans
   RbfTree, BlockAudit, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume, AccelerationInfo, TestMempoolAcceptResult, WalletAddress, SubmitPackageResult } from '../interfaces/node-api.interface';
 import { BehaviorSubject, Observable, catchError, filter, map, of, shareReplay, take, tap } from 'rxjs';
 import { StateService } from '@app/services/state.service';
-import { Transaction } from '@app/interfaces/electrs.interface';
+import { Transaction } from '@interfaces/electrs.interface';
 import { Conversion } from '@app/services/price.service';
 import { StorageService } from '@app/services/storage.service';
-import { WebsocketResponse } from '@app/interfaces/websocket.interface';
+import { WebsocketResponse } from '@interfaces/websocket.interface';
 import { TxAuditStatus } from '@components/transaction/transaction.component';
 
 @Injectable({

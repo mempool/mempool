@@ -3,7 +3,7 @@ import { Observable, Subject, combineLatest, of, timer } from 'rxjs';
 import { delayWhen, filter, map, share, shareReplay, switchMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
 import { ApiService } from '@app/services/api.service';
 import { Env, StateService } from '@app/services/state.service';
-import { AuditStatus, CurrentPegs, FederationAddress } from '@app/interfaces/node-api.interface';
+import { AuditStatus, CurrentPegs, FederationAddress } from '@interfaces/node-api.interface';
 import { WebsocketService } from '@app/services/websocket.service';
 
 @Component({

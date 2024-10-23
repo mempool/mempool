@@ -6,7 +6,7 @@ import { md5, insecureRandomUUID } from '@app/shared/common.utils';
 import { StateService } from '@app/services/state.service';
 import { AudioService } from '@app/services/audio.service';
 import { ETA, EtaService } from '@app/services/eta.service';
-import { Transaction } from '@app/interfaces/electrs.interface';
+import { Transaction } from '@interfaces/electrs.interface';
 import { MiningStats } from '@app/services/mining.service';
 import { IAuth, AuthServiceMempool } from '@app/services/auth.service';
 import { EnterpriseService } from '@app/services/enterprise.service';

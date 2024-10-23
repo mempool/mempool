@@ -1,5 +1,5 @@
 import { Price } from '@app/services/price.service';
-import { IChannel } from '@app/interfaces/node-api.interface';
+import { IChannel } from '@interfaces/node-api.interface';
 
 export interface Transaction {
   txid: string;

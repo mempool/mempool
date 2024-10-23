@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { switchMap, filter, catchError, map, tap } from 'rxjs/operators';
-import { Address, Transaction } from '@app/interfaces/electrs.interface';
+import { Address, Transaction } from '@interfaces/electrs.interface';
 import { StateService } from '@app/services/state.service';
 import { OpenGraphService } from '@app/services/opengraph.service';
 import { AudioService } from '@app/services/audio.service';
@@ -10,7 +10,7 @@ import { ApiService } from '@app/services/api.service';
 import { of, merge, Subscription, Observable } from 'rxjs';
 import { SeoService } from '@app/services/seo.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
-import { AddressInformation } from '@app/interfaces/node-api.interface';
+import { AddressInformation } from '@interfaces/node-api.interface';
 
 @Component({
   selector: 'app-address-preview',

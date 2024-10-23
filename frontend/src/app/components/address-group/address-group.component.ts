@@ -2,14 +2,14 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef, HostListener } from '@
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { switchMap, catchError } from 'rxjs/operators';
-import { Address, Transaction } from '@app/interfaces/electrs.interface';
+import { Address, Transaction } from '@interfaces/electrs.interface';
 import { WebsocketService } from '@app/services/websocket.service';
 import { StateService } from '@app/services/state.service';
 import { AudioService } from '@app/services/audio.service';
 import { ApiService } from '@app/services/api.service';
 import { of, Subscription, forkJoin } from 'rxjs';
 import { SeoService } from '@app/services/seo.service';
-import { AddressInformation } from '@app/interfaces/node-api.interface';
+import { AddressInformation } from '@interfaces/node-api.interface';
 
 @Component({
   selector: 'app-address-group',

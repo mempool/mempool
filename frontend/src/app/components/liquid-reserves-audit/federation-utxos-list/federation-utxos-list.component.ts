@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable, Subject, combineLatest, of, timer } from '
 import { delayWhen, filter, map, share, shareReplay, switchMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
 import { ApiService } from '@app/services/api.service';
 import { Env, StateService } from '@app/services/state.service';
-import { AuditStatus, CurrentPegs, FederationUtxo } from '@app/interfaces/node-api.interface';
+import { AuditStatus, CurrentPegs, FederationUtxo } from '@interfaces/node-api.interface';
 import { WebsocketService } from '@app/services/websocket.service';
 
 @Component({

@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { echarts, EChartsOption } from '@app/graphs/echarts';
 import { BehaviorSubject, Observable, Subscription, combineLatest, of } from 'rxjs';
 import { catchError, distinctUntilChanged, filter, map, share, switchMap, tap } from 'rxjs/operators';
-import { BlockExtended, PoolStat } from '@app/interfaces/node-api.interface';
+import { BlockExtended, PoolStat } from '@interfaces/node-api.interface';
 import { ApiService } from '@app/services/api.service';
 import { StateService } from '@app/services/state.service';
 import { selectPowerOfTen } from '@app/bitcoin.utils';

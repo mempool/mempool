@@ -1,9 +1,9 @@
 import { Component, ElementRef, ViewChild, Input, OnChanges, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Position } from '@components/block-overview-graph/sprite-types.js';
 import { Price } from '@app/services/price.service';
-import { TransactionStripped } from '@app/interfaces/node-api.interface.js';
+import { TransactionStripped } from '@interfaces/node-api.interface.js';
 import { Filter, FilterMode, TransactionFlags, toFilters } from '@app/shared/filters.utils';
-import { Block } from '@app/interfaces/electrs.interface.js';
+import { Block } from '@interfaces/electrs.interface.js';
 
 @Component({
   selector: 'app-block-overview-tooltip',

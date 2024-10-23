@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { switchMap, filter, catchError, take } from 'rxjs/operators';
-import { Asset, Transaction } from '@app/interfaces/electrs.interface';
+import { Asset, Transaction } from '@interfaces/electrs.interface';
 import { WebsocketService } from '@app/services/websocket.service';
 import { StateService } from '@app/services/state.service';
 import { AudioService } from '@app/services/audio.service';

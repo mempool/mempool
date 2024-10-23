@@ -1,6 +1,6 @@
 import { FastVertexArray } from './fast-vertex-array';
 import TxView from './tx-view';
-import { TransactionStripped } from '@app/interfaces/node-api.interface';
+import { TransactionStripped } from '@interfaces/node-api.interface';
 import { Color, Position, Square, ViewUpdateParams } from './sprite-types';
 import { defaultColorFunction, contrastColorFunction } from './utils';
 import { ThemeService } from '@app/services/theme.service';

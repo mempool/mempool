@@ -1,8 +1,8 @@
 import { Component, ChangeDetectionStrategy, OnChanges, Input, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { Transaction } from '@app/interfaces/electrs.interface';
+import { Transaction } from '@interfaces/electrs.interface';
 import { StateService } from '@app/services/state.service';
 import { Subscription } from 'rxjs';
-import { BlockExtended } from '@app/interfaces/node-api.interface';
+import { BlockExtended } from '@interfaces/node-api.interface';
 import { CacheService } from '@app/services/cache.service';
 
 @Component({

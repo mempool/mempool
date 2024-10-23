@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, Input, Output, OnChanges, SimpleChanges, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import { Transaction } from '@app/interfaces/electrs.interface';
-import { Acceleration, SinglePoolStats } from '@app/interfaces/node-api.interface';
+import { Transaction } from '@interfaces/electrs.interface';
+import { Acceleration, SinglePoolStats } from '@interfaces/node-api.interface';
 import { EChartsOption, PieSeriesOption } from '@app/graphs/echarts';
 import { MiningStats } from '@app/services/mining.service';
 

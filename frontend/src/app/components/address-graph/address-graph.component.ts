@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, L
 import { echarts, EChartsOption } from '@app/graphs/echarts';
 import { BehaviorSubject, Observable, Subscription, combineLatest, of } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
-import { AddressTxSummary, ChainStats } from '@app/interfaces/electrs.interface';
+import { AddressTxSummary, ChainStats } from '@interfaces/electrs.interface';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { Router } from '@angular/router';

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { Acceleration } from '@app/interfaces/node-api.interface';
+import { Acceleration } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 import { WebsocketService } from '@app/services/websocket.service';
 

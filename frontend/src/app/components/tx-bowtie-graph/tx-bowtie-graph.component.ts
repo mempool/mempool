@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnChanges, HostListener, Inject, LOCALE_ID } from '@angular/core';
 import { StateService } from '@app/services/state.service';
-import { Outspend, Transaction, Vin, Vout } from '@app/interfaces/electrs.interface';
+import { Outspend, Transaction, Vin, Vout } from '@interfaces/electrs.interface';
 import { Router } from '@angular/router';
 import { ReplaySubject, merge, Subscription, of } from 'rxjs';
 import { tap, switchMap } from 'rxjs/operators';

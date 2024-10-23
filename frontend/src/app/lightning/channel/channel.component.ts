@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable, of, zip } from 'rxjs';
 import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
-import { IChannel } from '@app/interfaces/node-api.interface';
+import { IChannel } from '@interfaces/node-api.interface';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { SeoService } from '@app/services/seo.service';
 import { LightningApiService } from '@app/lightning/lightning-api.service';

@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { map, shareReplay, switchMap } from 'rxjs/operators';
 import { StateService } from '@app/services/state.service';
 import { environment } from '@environments/environment';
-import { AssetExtended } from '@app/interfaces/electrs.interface';
+import { AssetExtended } from '@interfaces/electrs.interface';
 
 @Injectable({
   providedIn: 'root'

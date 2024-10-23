@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { combineLatest, map, Observable } from 'rxjs';
-import { INodesRanking, INodesStatistics, ITopNodesPerCapacity } from '@app/interfaces/node-api.interface';
+import { INodesRanking, INodesStatistics, ITopNodesPerCapacity } from '@interfaces/node-api.interface';
 import { SeoService } from '@app/services/seo.service';
 import { StateService } from '@app/services/state.service';
 import { GeolocationData } from '@app/shared/components/geolocation/geolocation.component';

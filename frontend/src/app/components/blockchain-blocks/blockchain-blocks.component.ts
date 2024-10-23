@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRe
 import { Observable, Subscription, delay, filter, tap } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 import { specialBlocks } from '@app/app.constants';
-import { BlockExtended } from '@app/interfaces/node-api.interface';
+import { BlockExtended } from '@interfaces/node-api.interface';
 import { Location } from '@angular/common';
 import { CacheService } from '@app/services/cache.service';
 

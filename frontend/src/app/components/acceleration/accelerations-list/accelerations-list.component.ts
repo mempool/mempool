@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef, OnDestroy, Inject, LOCALE_ID } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription, catchError, combineLatest, filter, of, switchMap, tap, throttleTime, timer } from 'rxjs';
-import { Acceleration, BlockExtended, SinglePoolStats } from '@app/interfaces/node-api.interface';
+import { Acceleration, BlockExtended, SinglePoolStats } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 import { WebsocketService } from '@app/services/websocket.service';
 import { ServicesApiServices } from '@app/services/services-api.service';

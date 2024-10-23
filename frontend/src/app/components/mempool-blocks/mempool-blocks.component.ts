@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, HostListener, Input, OnChanges, SimpleChanges, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { Subscription, Observable, of, combineLatest } from 'rxjs';
-import { MempoolBlock } from '@app/interfaces/websocket.interface';
+import { MempoolBlock } from '@interfaces/websocket.interface';
 import { StateService } from '@app/services/state.service';
 import { EtaService } from '@app/services/eta.service';
 import { Router } from '@angular/router';
@@ -9,7 +9,7 @@ import { feeLevels } from '@app/app.constants';
 import { specialBlocks } from '@app/app.constants';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { Location } from '@angular/common';
-import { DifficultyAdjustment, MempoolPosition } from '@app/interfaces/node-api.interface';
+import { DifficultyAdjustment, MempoolPosition } from '@interfaces/node-api.interface';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { ThemeService } from '@app/services/theme.service';
 

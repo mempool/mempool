@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectionStrategy, SecurityContext, ChangeDete
 import { WebsocketService } from '@app/services/websocket.service';
 import { Observable, Subject, map } from 'rxjs';
 import { StateService } from '@app/services/state.service';
-import { HealthCheckHost } from '@app/interfaces/websocket.interface';
+import { HealthCheckHost } from '@interfaces/websocket.interface';
 import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({

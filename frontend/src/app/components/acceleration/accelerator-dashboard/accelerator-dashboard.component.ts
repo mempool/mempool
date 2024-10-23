@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, HostListener, Inject, OnDestroy, On
 import { SeoService } from '@app/services/seo.service';
 import { OpenGraphService } from '@app/services/opengraph.service';
 import { WebsocketService } from '@app/services/websocket.service';
-import { Acceleration, BlockExtended } from '@app/interfaces/node-api.interface';
+import { Acceleration, BlockExtended } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 import { Observable, Subscription, catchError, combineLatest, distinctUntilChanged, map, of, share, switchMap, tap } from 'rxjs';
 import { Color } from '@components/block-overview-graph/sprite-types';

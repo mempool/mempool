@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, EMPTY, merge, Observable, Subscription } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
 import { WebsocketService } from '@app/services/websocket.service';
-import { RbfTree } from '@app/interfaces/node-api.interface';
+import { RbfTree } from '@interfaces/node-api.interface';
 import { ApiService } from '@app/services/api.service';
 import { StateService } from '@app/services/state.service';
 import { SeoService } from '@app/services/seo.service';

@@ -1,6 +1,6 @@
 import { HostListener, OnChanges, OnDestroy } from '@angular/core';
 import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { TransactionStripped } from '@app/interfaces/node-api.interface';
+import { TransactionStripped } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 import { VbytesPipe } from '@app/shared/pipes/bytes-pipe/vbytes.pipe';
 import { selectPowerOfTen } from '@app/bitcoin.utils';

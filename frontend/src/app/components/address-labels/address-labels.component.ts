@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, Input, OnChanges } from '@angular/core';
-import { Vin, Vout } from '@app/interfaces/electrs.interface';
+import { Vin, Vout } from '@interfaces/electrs.interface';
 import { StateService } from '@app/services/state.service';
 import { AddressType, AddressTypeInfo } from '@app/shared/address-utils';
 

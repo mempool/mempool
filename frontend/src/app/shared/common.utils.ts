@@ -1,5 +1,5 @@
 import { MempoolBlockDelta, MempoolBlockDeltaCompressed, MempoolDeltaChange, TransactionCompressed } from "../interfaces/websocket.interface";
-import { TransactionStripped } from "@app/interfaces/node-api.interface";
+import { TransactionStripped } from "@interfaces/node-api.interface";
 import { AmountShortenerPipe } from "@app/shared/pipes/amount-shortener.pipe";
 const amountShortenerPipe = new AmountShortenerPipe();
 

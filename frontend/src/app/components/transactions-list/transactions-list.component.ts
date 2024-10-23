@@ -2,12 +2,12 @@ import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, Output, E
 import { StateService } from '@app/services/state.service';
 import { CacheService } from '@app/services/cache.service';
 import { Observable, ReplaySubject, BehaviorSubject, merge, Subscription, of, forkJoin } from 'rxjs';
-import { Outspend, Transaction, Vin, Vout } from '@app/interfaces/electrs.interface';
+import { Outspend, Transaction, Vin, Vout } from '@interfaces/electrs.interface';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { environment } from '@environments/environment';
 import { AssetsService } from '@app/services/assets.service';
 import { filter, map, tap, switchMap, catchError } from 'rxjs/operators';
-import { BlockExtended } from '@app/interfaces/node-api.interface';
+import { BlockExtended } from '@interfaces/node-api.interface';
 import { ApiService } from '@app/services/api.service';
 import { PriceService } from '@app/services/price.service';
 import { StorageService } from '@app/services/storage.service';

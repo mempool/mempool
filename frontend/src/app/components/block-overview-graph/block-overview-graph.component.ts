@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild, HostListener, Input, Output, EventEmitter, NgZone, AfterViewInit, OnDestroy, OnChanges } from '@angular/core';
-import { TransactionStripped } from '@app/interfaces/node-api.interface';
+import { TransactionStripped } from '@interfaces/node-api.interface';
 import { FastVertexArray } from './fast-vertex-array';
 import BlockScene from './block-scene';
 import TxSprite from './tx-sprite';

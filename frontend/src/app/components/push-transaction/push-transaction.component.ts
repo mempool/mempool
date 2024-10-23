@@ -7,7 +7,7 @@ import { OpenGraphService } from '@app/services/opengraph.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
-import { TxResult } from '@app/interfaces/node-api.interface';
+import { TxResult } from '@interfaces/node-api.interface';
 
 @Component({
   selector: 'app-push-transaction',

@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { LightningApiService } from '@app/lightning/lightning-api.service';
 import { share } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { INodesStatistics } from '@app/interfaces/node-api.interface';
+import { INodesStatistics } from '@interfaces/node-api.interface';
 
 @Component({
   selector: 'app-nodes-ranking',

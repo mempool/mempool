@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { firstValueFrom, Subject, Subscription} from 'rxjs';
-import { Transaction } from '@app/interfaces/electrs.interface';
-import { BlockExtended } from '@app/interfaces/node-api.interface';
+import { Transaction } from '@interfaces/electrs.interface';
+import { BlockExtended } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 import { ApiService } from '@app/services/api.service';
 

@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef, I
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, Observable, timer, of, Subscription } from 'rxjs';
 import { debounceTime, delayWhen, filter, map, retryWhen, scan, skip, switchMap, tap, throttleTime } from 'rxjs/operators';
-import { BlockExtended } from '@app/interfaces/node-api.interface';
+import { BlockExtended } from '@interfaces/node-api.interface';
 import { ApiService } from '@app/services/api.service';
 import { StateService } from '@app/services/state.service';
 import { WebsocketService } from '@app/services/websocket.service';

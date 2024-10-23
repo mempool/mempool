@@ -8,7 +8,7 @@ import {
   retryWhen,
   delay,
 } from 'rxjs/operators';
-import { Transaction, Vout } from '@app/interfaces/electrs.interface';
+import { Transaction, Vout } from '@interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, Subject, from } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 import { CacheService } from '@app/services/cache.service';
@@ -16,7 +16,7 @@ import { OpenGraphService } from '@app/services/opengraph.service';
 import { ApiService } from '@app/services/api.service';
 import { SeoService } from '@app/services/seo.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
-import { CpfpInfo } from '@app/interfaces/node-api.interface';
+import { CpfpInfo } from '@interfaces/node-api.interface';
 import { LiquidUnblinding } from './liquid-ublinding';
 
 @Component({

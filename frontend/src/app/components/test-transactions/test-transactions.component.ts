@@ -4,7 +4,7 @@ import { ApiService } from '@app/services/api.service';
 import { StateService } from '@app/services/state.service';
 import { SeoService } from '@app/services/seo.service';
 import { OpenGraphService } from '@app/services/opengraph.service';
-import { TestMempoolAcceptResult } from '@app/interfaces/node-api.interface';
+import { TestMempoolAcceptResult } from '@interfaces/node-api.interface';
 
 @Component({
   selector: 'app-test-transactions',

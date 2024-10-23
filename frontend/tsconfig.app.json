@@ -6,7 +6,8 @@
     "paths": {
       "@app/*" : ["src/app/*"],
       "@components/*" : ["src/app/components/*"],
-      "@environments/*" : ["src/environments/*"]
+      "@environments/*" : ["src/environments/*"],
+      "@interfaces/*" : ["src/app/interfaces/*"]
     }
   },
   "files": [

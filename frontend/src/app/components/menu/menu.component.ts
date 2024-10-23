@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, HostListener, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
-import { MenuGroup } from '@app/interfaces/services.interface';
+import { MenuGroup } from '@interfaces/services.interface';
 import { StorageService } from '@app/services/storage.service';
 import { Router, NavigationStart } from '@angular/router';
 import { StateService } from '@app/services/state.service';

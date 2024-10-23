@@ -12,7 +12,7 @@ import {
   map,
   startWith
 } from 'rxjs/operators';
-import { Transaction } from '@app/interfaces/electrs.interface';
+import { Transaction } from '@interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, Subject, throwError, combineLatest, BehaviorSubject } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 import { CacheService } from '@app/services/cache.service';
@@ -22,7 +22,7 @@ import { ApiService } from '@app/services/api.service';
 import { SeoService } from '@app/services/seo.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { Filter, TransactionFlags } from '@app/shared/filters.utils';
-import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration, AccelerationPosition } from '@app/interfaces/node-api.interface';
+import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration, AccelerationPosition } from '@interfaces/node-api.interface';
 import { PriceService } from '@app/services/price.service';
 import { ServicesApiServices } from '@app/services/services-api.service';
 import { EnterpriseService } from '@app/services/enterprise.service';

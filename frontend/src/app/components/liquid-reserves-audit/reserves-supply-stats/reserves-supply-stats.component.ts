@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Env, StateService } from '@app/services/state.service';
-import { CurrentPegs } from '@app/interfaces/node-api.interface';
+import { CurrentPegs } from '@interfaces/node-api.interface';
 
 @Component({
   selector: 'app-reserves-supply-stats',
