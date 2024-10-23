@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { StateService } from '../../../services/state.service';
+import { StateService } from '@app/services/state.service';
 
 @Pipe({
   name: 'relativeUrl'

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ServicesApiServices } from '../../../services/services-api.service';
+import { ServicesApiServices } from '@app/services/services-api.service';
 
 export type AccelerationStats = {
   totalRequested: number;

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ElectrsApiService } from '../services/electrs-api.service';
 import { Subject, debounceTime, switchMap } from 'rxjs';
-import { ApiService } from './api.service';
+import { ApiService } from '@app/services/api.service';
 
 @Injectable({
   providedIn: 'root'

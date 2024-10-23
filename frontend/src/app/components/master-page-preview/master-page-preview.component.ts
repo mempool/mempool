@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { StateService } from '../../services/state.service';
+import { StateService } from '@app/services/state.service';
 import { Observable, Subscription, merge, of } from 'rxjs';
-import { LanguageService } from '../../services/language.service';
-import { EnterpriseService } from '../../services/enterprise.service';
+import { LanguageService } from '@app/services/language.service';
+import { EnterpriseService } from '@app/services/enterprise.service';
 
 @Component({
   selector: 'app-master-page-preview',

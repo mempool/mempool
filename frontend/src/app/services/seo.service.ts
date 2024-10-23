@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter, map, switchMap } from 'rxjs';
-import { StateService } from './state.service';
+import { StateService } from '@app/services/state.service';
 
 @Injectable({
   providedIn: 'root'

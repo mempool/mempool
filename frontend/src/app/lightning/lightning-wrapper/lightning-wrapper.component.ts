@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { WebsocketService } from '../../services/websocket.service';
+import { WebsocketService } from '@app/services/websocket.service';
 
 @Component({
   selector: 'app-lightning-wrapper',

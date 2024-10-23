@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ChannelCloseBoxComponent } from './channel-close-box.component';
+import { ChannelCloseBoxComponent } from '@components/channel-close-box.component';
 
 describe('ChannelCloseBoxComponent', () => {
   let component: ChannelCloseBoxComponent;

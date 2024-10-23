@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, HostListener, ViewChild, ElementRef, Inject, ChangeDetectorRef } from '@angular/core';
-import { ElectrsApiService } from '../../services/electrs-api.service';
+import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import {
   switchMap,
@@ -15,28 +15,28 @@ import {
   repeat,
   take
 } from 'rxjs/operators';
-import { Transaction } from '../../interfaces/electrs.interface';
+import { Transaction } from '@interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, Subject, from, throwError, combineLatest, BehaviorSubject } from 'rxjs';
-import { StateService } from '../../services/state.service';
-import { CacheService } from '../../services/cache.service';
-import { WebsocketService } from '../../services/websocket.service';
-import { AudioService } from '../../services/audio.service';
-import { ApiService } from '../../services/api.service';
-import { SeoService } from '../../services/seo.service';
-import { StorageService } from '../../services/storage.service';
-import { seoDescriptionNetwork } from '../../shared/common.utils';
-import { getTransactionFlags, getUnacceleratedFeeRate } from '../../shared/transaction.utils';
-import { Filter, TransactionFlags, toFilters } from '../../shared/filters.utils';
-import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration, AccelerationPosition } from '../../interfaces/node-api.interface';
-import { LiquidUnblinding } from './liquid-ublinding';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
-import { PriceService } from '../../services/price.service';
-import { isFeatureActive } from '../../bitcoin.utils';
-import { ServicesApiServices } from '../../services/services-api.service';
-import { EnterpriseService } from '../../services/enterprise.service';
-import { ZONE_SERVICE } from '../../injection-tokens';
-import { MiningService, MiningStats } from '../../services/mining.service';
-import { ETA, EtaService } from '../../services/eta.service';
+import { StateService } from '@app/services/state.service';
+import { CacheService } from '@app/services/cache.service';
+import { WebsocketService } from '@app/services/websocket.service';
+import { AudioService } from '@app/services/audio.service';
+import { ApiService } from '@app/services/api.service';
+import { SeoService } from '@app/services/seo.service';
+import { StorageService } from '@app/services/storage.service';
+import { seoDescriptionNetwork } from '@app/shared/common.utils';
+import { getTransactionFlags, getUnacceleratedFeeRate } from '@app/shared/transaction.utils';
+import { Filter, TransactionFlags, toFilters } from '@app/shared/filters.utils';
+import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration, AccelerationPosition } from '@interfaces/node-api.interface';
+import { LiquidUnblinding } from '@components/transaction/liquid-ublinding';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
+import { PriceService } from '@app/services/price.service';
+import { isFeatureActive } from '@app/bitcoin.utils';
+import { ServicesApiServices } from '@app/services/services-api.service';
+import { EnterpriseService } from '@app/services/enterprise.service';
+import { ZONE_SERVICE } from '@app/injection-tokens';
+import { MiningService, MiningStats } from '@app/services/mining.service';
+import { ETA, EtaService } from '@app/services/eta.service';
 
 interface Pool {
   id: number;

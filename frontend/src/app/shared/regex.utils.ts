@@ -1,4 +1,4 @@
-import { Env } from '../services/state.service';
+import { Env } from '@app/services/state.service';
 
 // all base58 characters
 export const BASE58_CHARS = `[a-km-zA-HJ-NP-Z1-9]`;

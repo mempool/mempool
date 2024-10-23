@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { Observable, map, of } from 'rxjs';
-import { FederationUtxo } from '../../../interfaces/node-api.interface';
+import { FederationUtxo } from '@interfaces/node-api.interface';
 
 @Component({
   selector: 'app-expired-utxos-stats',

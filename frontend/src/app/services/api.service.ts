@@ -3,12 +3,12 @@ import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators, PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights,
   RbfTree, BlockAudit, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume, AccelerationInfo, TestMempoolAcceptResult, WalletAddress, SubmitPackageResult } from '../interfaces/node-api.interface';
 import { BehaviorSubject, Observable, catchError, filter, map, of, shareReplay, take, tap } from 'rxjs';
-import { StateService } from './state.service';
-import { Transaction } from '../interfaces/electrs.interface';
-import { Conversion } from './price.service';
-import { StorageService } from './storage.service';
-import { WebsocketResponse } from '../interfaces/websocket.interface';
-import { TxAuditStatus } from '../components/transaction/transaction.component';
+import { StateService } from '@app/services/state.service';
+import { Transaction } from '@interfaces/electrs.interface';
+import { Conversion } from '@app/services/price.service';
+import { StorageService } from '@app/services/storage.service';
+import { WebsocketResponse } from '@interfaces/websocket.interface';
+import { TxAuditStatus } from '@components/transaction/transaction.component';
 
 @Injectable({
   providedIn: 'root'

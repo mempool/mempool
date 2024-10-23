@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { DocsComponent } from './docs/docs.component';
+import { DocsComponent } from '@app/docs/docs/docs.component';
 
 const browserWindow = window || {};
 // @ts-ignore

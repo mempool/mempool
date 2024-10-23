@@ -1,14 +1,14 @@
 import { Component, OnInit, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnChanges } from '@angular/core';
-import { VbytesPipe } from '../../shared/pipes/bytes-pipe/vbytes.pipe';
-import { WuBytesPipe } from '../../shared/pipes/bytes-pipe/wubytes.pipe';
-import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
+import { VbytesPipe } from '@app/shared/pipes/bytes-pipe/vbytes.pipe';
+import { WuBytesPipe } from '@app/shared/pipes/bytes-pipe/wubytes.pipe';
+import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { formatNumber } from '@angular/common';
-import { OptimizedMempoolStats } from '../../interfaces/node-api.interface';
-import { StateService } from '../../services/state.service';
-import { StorageService } from '../../services/storage.service';
-import { EChartsOption } from '../../graphs/echarts';
-import { feeLevels, chartColors } from '../../app.constants';
-import { download, formatterXAxis, formatterXAxisLabel } from '../../shared/graphs.utils';
+import { OptimizedMempoolStats } from '@interfaces/node-api.interface';
+import { StateService } from '@app/services/state.service';
+import { StorageService } from '@app/services/storage.service';
+import { EChartsOption } from '@app/graphs/echarts';
+import { feeLevels, chartColors } from '@app/app.constants';
+import { download, formatterXAxis, formatterXAxisLabel } from '@app/shared/graphs.utils';
 
 @Component({
   selector: 'app-mempool-graph',

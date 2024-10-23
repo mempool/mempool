@@ -1,10 +1,10 @@
 import { Component, ElementRef, HostListener, OnInit, OnDestroy, ViewChild, Input, ChangeDetectorRef, ChangeDetectionStrategy, AfterViewChecked } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { MarkBlockState, StateService } from '../../services/state.service';
-import { specialBlocks } from '../../app.constants';
-import { BlockExtended } from '../../interfaces/node-api.interface';
+import { MarkBlockState, StateService } from '@app/services/state.service';
+import { specialBlocks } from '@app/app.constants';
+import { BlockExtended } from '@interfaces/node-api.interface';
 import { Router } from '@angular/router';
-import { sleep$ } from '../../shared/common.utils';
+import { sleep$ } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-start',

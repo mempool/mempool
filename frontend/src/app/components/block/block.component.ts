@@ -1,23 +1,23 @@
 import { Component, OnInit, OnDestroy, ViewChildren, QueryList, ChangeDetectorRef } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { ElectrsApiService } from '../../services/electrs-api.service';
+import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { switchMap, tap, throttleTime, catchError, map, shareReplay, startWith, filter } from 'rxjs/operators';
 import { Observable, of, Subscription, asyncScheduler, EMPTY, combineLatest, forkJoin } from 'rxjs';
-import { StateService } from '../../services/state.service';
-import { SeoService } from '../../services/seo.service';
-import { WebsocketService } from '../../services/websocket.service';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
-import { Acceleration, BlockAudit, BlockExtended, TransactionStripped } from '../../interfaces/node-api.interface';
-import { ApiService } from '../../services/api.service';
-import { BlockOverviewGraphComponent } from '../../components/block-overview-graph/block-overview-graph.component';
-import { detectWebGL } from '../../shared/graphs.utils';
-import { seoDescriptionNetwork } from '../../shared/common.utils';
-import { PriceService, Price } from '../../services/price.service';
-import { CacheService } from '../../services/cache.service';
-import { ServicesApiServices } from '../../services/services-api.service';
-import { PreloadService } from '../../services/preload.service';
-import { identifyPrioritizedTransactions } from '../../shared/transaction.utils';
+import { StateService } from '@app/services/state.service';
+import { SeoService } from '@app/services/seo.service';
+import { WebsocketService } from '@app/services/websocket.service';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
+import { Acceleration, BlockAudit, BlockExtended, TransactionStripped } from '@interfaces/node-api.interface';
+import { ApiService } from '@app/services/api.service';
+import { BlockOverviewGraphComponent } from '@components/block-overview-graph/block-overview-graph.component';
+import { detectWebGL } from '@app/shared/graphs.utils';
+import { seoDescriptionNetwork } from '@app/shared/common.utils';
+import { PriceService, Price } from '@app/services/price.service';
+import { CacheService } from '@app/services/cache.service';
+import { ServicesApiServices } from '@app/services/services-api.service';
+import { PreloadService } from '@app/services/preload.service';
+import { identifyPrioritizedTransactions } from '@app/shared/transaction.utils';
 
 @Component({
   selector: 'app-block',

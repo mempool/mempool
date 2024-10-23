@@ -1,19 +1,19 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Inject, Input, LOCALE_ID, NgZone, OnInit } from '@angular/core';
-import { EChartsOption } from '../../graphs/echarts';
+import { EChartsOption } from '@app/graphs/echarts';
 import { Observable } from 'rxjs';
 import { catchError, map, share, startWith, switchMap, tap } from 'rxjs/operators';
-import { ApiService } from '../../services/api.service';
-import { SeoService } from '../../services/seo.service';
+import { ApiService } from '@app/services/api.service';
+import { SeoService } from '@app/services/seo.service';
 import { formatNumber } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { download, formatterXAxis } from '../../shared/graphs.utils';
+import { download, formatterXAxis } from '@app/shared/graphs.utils';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FiatShortenerPipe } from '../../shared/pipes/fiat-shortener.pipe';
-import { FiatCurrencyPipe } from '../../shared/pipes/fiat-currency.pipe';
-import { StateService } from '../../services/state.service';
-import { MiningService } from '../../services/mining.service';
-import { StorageService } from '../../services/storage.service';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { FiatShortenerPipe } from '@app/shared/pipes/fiat-shortener.pipe';
+import { FiatCurrencyPipe } from '@app/shared/pipes/fiat-currency.pipe';
+import { StateService } from '@app/services/state.service';
+import { MiningService } from '@app/services/mining.service';
+import { StorageService } from '@app/services/storage.service';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
   selector: 'app-block-fees-subsidy-graph',

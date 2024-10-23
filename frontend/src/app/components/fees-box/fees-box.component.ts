@@ -1,10 +1,10 @@
 import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { StateService } from '../../services/state.service';
+import { StateService } from '@app/services/state.service';
 import { Observable, combineLatest, Subscription } from 'rxjs';
-import { Recommendedfees } from '../../interfaces/websocket.interface';
-import { feeLevels } from '../../app.constants';
+import { Recommendedfees } from '@interfaces/websocket.interface';
+import { feeLevels } from '@app/app.constants';
 import { map, startWith, tap } from 'rxjs/operators';
-import { ThemeService } from '../../services/theme.service';
+import { ThemeService } from '@app/services/theme.service';
 
 @Component({
   selector: 'app-fees-box',
