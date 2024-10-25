@@ -338,7 +338,7 @@ const defaults: IConfig = {
   },
   'STRATUM': {
     'ENABLED': false,
-    'API': 'http://127.0.0.1:1234',
+    'API': 'http://localhost:1234',
   }
 };
 

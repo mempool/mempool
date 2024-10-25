@@ -162,7 +162,7 @@ describe('Mempool Backend Config', () => {
 
       expect(config.STRATUM).toStrictEqual({
         ENABLED: false,
-        API: 'http://127.0.0.1:1234',
+        API: 'http://localhost:1234',
       });
     });
   });
