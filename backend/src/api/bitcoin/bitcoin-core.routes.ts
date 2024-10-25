@@ -11,15 +11,15 @@ class BitcoinBackendRoutes {
 
   public initRoutes(app: Application) {
     app
-      .get('/api/internal/bitcoin-core/' + 'get-mempool-entry', this.disableCache, this.$getMempoolEntry)
-      .post('/api/internal/bitcoin-core/' + 'decode-raw-transaction', this.disableCache, this.$decodeRawTransaction)
-      .get('/api/internal/bitcoin-core/' + 'get-raw-transaction', this.disableCache, this.$getRawTransaction)
-      .post('/api/internal/bitcoin-core/' + 'send-raw-transaction', this.disableCache, this.$sendRawTransaction)
-      .post('/api/internal/bitcoin-core/' + 'test-mempool-accept', this.disableCache, this.$testMempoolAccept)
-      .get('/api/internal/bitcoin-core/' + 'get-mempool-ancestors', this.disableCache, this.$getMempoolAncestors)
-      .get('/api/internal/bitcoin-core/' + 'get-block', this.disableCache, this.$getBlock)
-      .get('/api/internal/bitcoin-core/' + 'get-block-hash', this.disableCache, this.$getBlockHash)
-      .get('/api/internal/bitcoin-core/' + 'get-block-count', this.disableCache, this.$getBlockCount)
+      .get('/api/v1/internal/bitcoin-core/' + 'get-mempool-entry', this.disableCache, this.$getMempoolEntry)
+      .post('/api/v1/internal/bitcoin-core/' + 'decode-raw-transaction', this.disableCache, this.$decodeRawTransaction)
+      .get('/api/v1/internal/bitcoin-core/' + 'get-raw-transaction', this.disableCache, this.$getRawTransaction)
+      .post('/api/v1/internal/bitcoin-core/' + 'send-raw-transaction', this.disableCache, this.$sendRawTransaction)
+      .post('/api/v1/internal/bitcoin-core/' + 'test-mempool-accept', this.disableCache, this.$testMempoolAccept)
+      .get('/api/v1/internal/bitcoin-core/' + 'get-mempool-ancestors', this.disableCache, this.$getMempoolAncestors)
+      .get('/api/v1/internal/bitcoin-core/' + 'get-block', this.disableCache, this.$getBlock)
+      .get('/api/v1/internal/bitcoin-core/' + 'get-block-hash', this.disableCache, this.$getBlockHash)
+      .get('/api/v1/internal/bitcoin-core/' + 'get-block-count', this.disableCache, this.$getBlockCount)
     ;
   }
 
