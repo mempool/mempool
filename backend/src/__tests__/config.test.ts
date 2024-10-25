@@ -41,6 +41,7 @@ describe('Mempool Backend Config', () => {
         STDOUT_LOG_MIN_PRIORITY: 'debug',
         POOLS_JSON_TREE_URL: 'https://api.github.com/repos/mempool/mining-pools/git/trees/master',
         POOLS_JSON_URL: 'https://raw.githubusercontent.com/mempool/mining-pools/master/pools-v2.json',
+        POOLS_UPDATE_DELAY: 604800,
         AUDIT: false,
         RUST_GBT: true,
         LIMIT_GBT: false,
@@ -73,7 +74,8 @@ describe('Mempool Backend Config', () => {
         PASSWORD: 'mempool',
         TIMEOUT: 60000,
         COOKIE: false,
-        COOKIE_PATH: '/bitcoin/.cookie'
+        COOKIE_PATH: '/bitcoin/.cookie',
+        DEBUG_LOG_PATH: '',
       });
 
       expect(config.SECOND_CORE_RPC).toStrictEqual({

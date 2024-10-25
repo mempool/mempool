@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { StateService } from '../../services/state.service';
-import { Address, AddressTxSummary } from '../../interfaces/electrs.interface';
-import { ElectrsApiService } from '../../services/electrs-api.service';
+import { StateService } from '@app/services/state.service';
+import { Address, AddressTxSummary } from '@interfaces/electrs.interface';
+import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { Observable, catchError, of } from 'rxjs';
 
 @Component({
@@ -19,6 +19,7 @@ export class BalanceWidgetComponent implements OnInit, OnChanges {
   isLoading: boolean = true;
   error: any;
 
+  total: number = 0;
   delta7d: number = 0;
   delta30d: number = 0;
 
@@ -34,7 +35,7 @@ export class BalanceWidgetComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.isLoading = true;
-    if (!this.address || !this.addressInfo) {
+    if (!this.addressSummary$ && (!this.address || !this.addressInfo)) {
       return;
     }
     (this.addressSummary$ || (this.isPubkey
@@ -57,6 +58,7 @@ export class BalanceWidgetComponent implements OnInit, OnChanges {
   calculateStats(summary: AddressTxSummary[]): void {
     let weekTotal = 0;
     let monthTotal = 0;
+    this.total = this.addressInfo ? this.addressInfo.chain_stats.funded_txo_sum - this.addressInfo.chain_stats.spent_txo_sum : summary.reduce((acc, tx) => acc + tx.value, 0);
 
     const weekAgo = (new Date(new Date().setHours(0, 0, 0, 0) - (7 * 24 * 60 * 60 * 1000)).getTime()) / 1000;
     const monthAgo = (new Date(new Date().setHours(0, 0, 0, 0) - (30 * 24 * 60 * 60 * 1000)).getTime()) / 1000;

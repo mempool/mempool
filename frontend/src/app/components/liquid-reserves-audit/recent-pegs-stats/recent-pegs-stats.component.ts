@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { PegsVolume } from '../../../interfaces/node-api.interface';
+import { PegsVolume } from '@interfaces/node-api.interface';
 
 @Component({
   selector: 'app-recent-pegs-stats',

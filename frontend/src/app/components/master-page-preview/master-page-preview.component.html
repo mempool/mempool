@@ -6,7 +6,7 @@
         <img [src]="enterpriseInfo.img" class="subdomain_logo" [class]="{'rounded': enterpriseInfo.rounded_corner}">
       }
       @if (enterpriseInfo?.header_img) {
-        <img *ngIf="enterpriseInfo.header_img" [src]="enterpriseInfo?.header_img" alt="enterpriseInfo.title" height="60px" class="mr-3">
+        <img *ngIf="enterpriseInfo.header_img" [src]="enterpriseInfo?.header_img" [alt]="enterpriseInfo.title" height="60px" class="mr-3">
       } @else {
         <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126" width="500" height="126" class="mempool-logo" style="width: 200px; height: 50px"></app-svg-images>
         <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" style="width: 200px; height: 50px" width="500" height="126" viewBox="0 0 500 126"></app-svg-images>

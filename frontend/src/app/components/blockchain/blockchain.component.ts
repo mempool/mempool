@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, Output, EventEmitter, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 import { firstValueFrom, Subscription } from 'rxjs';
-import { StateService } from '../../services/state.service';
-import { StorageService } from '../../services/storage.service';
+import { StateService } from '@app/services/state.service';
+import { StorageService } from '@app/services/storage.service';
 
 @Component({
   selector: 'app-blockchain',

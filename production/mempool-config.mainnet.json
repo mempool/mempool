@@ -150,5 +150,9 @@
   "MEMPOOL_SERVICES": {
     "API": "https://mempool.space/api/v1/services",
     "ACCELERATIONS": true
+  },
+  "WALLETS": {
+    "ENABLED": true,
+    "WALLETS": ["BITB"]
   }
 }

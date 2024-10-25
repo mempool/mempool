@@ -1,16 +1,16 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, NgZone, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
-import { echarts, EChartsOption } from '../../graphs/echarts';
+import { echarts, EChartsOption } from '@app/graphs/echarts';
 import { BehaviorSubject, Observable, Subscription, combineLatest, of } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
-import { AddressTxSummary, ChainStats } from '../../interfaces/electrs.interface';
-import { ElectrsApiService } from '../../services/electrs-api.service';
-import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
+import { AddressTxSummary, ChainStats } from '@interfaces/electrs.interface';
+import { ElectrsApiService } from '@app/services/electrs-api.service';
+import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { Router } from '@angular/router';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
-import { StateService } from '../../services/state.service';
-import { PriceService } from '../../services/price.service';
-import { FiatCurrencyPipe } from '../../shared/pipes/fiat-currency.pipe';
-import { FiatShortenerPipe } from '../../shared/pipes/fiat-shortener.pipe';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
+import { StateService } from '@app/services/state.service';
+import { PriceService } from '@app/services/price.service';
+import { FiatCurrencyPipe } from '@app/shared/pipes/fiat-currency.pipe';
+import { FiatShortenerPipe } from '@app/shared/pipes/fiat-shortener.pipe';
 
 const periodSeconds = {
   '1d': (60 * 60 * 24),
@@ -83,7 +83,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.isLoading = true;
-    if (!this.address || !this.stats) {
+    if (!this.addressSummary$ && (!this.address || !this.stats)) {
       return;
     }
     if (changes.address || changes.isPubkey || changes.addressSummary$ || changes.stats) {
@@ -144,15 +144,16 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
   }
 
   prepareChartOptions(summary: AddressTxSummary[]) {
-    if (!summary || !this.stats) {
+    if (!summary) {
       return;
     }
     
-    let total = (this.stats.funded_txo_sum - this.stats.spent_txo_sum);
+    const total = this.stats ? (this.stats.funded_txo_sum - this.stats.spent_txo_sum) : summary.reduce((acc, tx) => acc + tx.value, 0);
+    let runningTotal = total;
     const processData = summary.map(d => {
-        const balance = total;
-        const fiatBalance = total * d.price / 100_000_000;
-        total -= d.value;
+        const balance = runningTotal;
+        const fiatBalance = runningTotal * d.price / 100_000_000;
+        runningTotal -= d.value;
         return {
             time: d.time * 1000,
             balance,
@@ -172,7 +173,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
       this.fiatData = this.fiatData.filter(d => d[0] >= startFiat);
     }
     this.data.push(
-      {value: [now, this.stats.funded_txo_sum - this.stats.spent_txo_sum], symbol: 'none', tooltip: { show: false }}
+      {value: [now, total], symbol: 'none', tooltip: { show: false }}
     );
 
     const maxValue = this.data.reduce((acc, d) => Math.max(acc, Math.abs(d[1] ?? d.value[1])), 0);

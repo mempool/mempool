@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
-import { MasterPageComponent } from './components/master-page/master-page.component';
+import { MasterPageComponent } from '@components/master-page/master-page.component';
 
 const routes: Routes = [
   {
     path: '',
     component: MasterPageComponent,
-    loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule),
+    loadChildren: () => import('@app/graphs/graphs.module').then(m => m.GraphsModule),
     data: { preload: true },
   }
 ];

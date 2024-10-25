@@ -1,4 +1,4 @@
-import { Block, Transaction } from "./electrs.interface";
+import { AddressTxSummary, Block, ChainStats, Transaction } from "./electrs.interface";
 
 export interface OptimizedMempoolStats {
   added: number;
@@ -452,4 +452,28 @@ export interface TestMempoolAcceptResult {
     "effective-includes": string[],
   },
   ['reject-reason']?: string,
+}
+
+export interface SubmitPackageResult {
+  package_msg: string;
+  "tx-results": { [wtxid: string]: TxResult };
+  "replaced-transactions"?: string[];
+}
+
+export interface TxResult {
+  txid: string;
+  "other-wtxid"?: string;
+  vsize?: number;
+  fees?: {
+    base: number;
+    "effective-feerate"?: number;
+    "effective-includes"?: string[];
+  };
+  error?: string;
+}
+export interface WalletAddress {
+  address: string;
+  active: boolean;
+  stats: ChainStats;
+  transactions: AddressTxSummary[];
 }

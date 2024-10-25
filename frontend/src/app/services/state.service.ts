@@ -1,14 +1,14 @@
 import { Inject, Injectable, PLATFORM_ID, LOCALE_ID } from '@angular/core';
 import { ReplaySubject, BehaviorSubject, Subject, fromEvent, Observable } from 'rxjs';
-import { Transaction } from '../interfaces/electrs.interface';
-import { AccelerationDelta, HealthCheckHost, IBackendInfo, MempoolBlock, MempoolBlockUpdate, MempoolInfo, Recommendedfees, ReplacedTransaction, ReplacementInfo, isMempoolState } from '../interfaces/websocket.interface';
-import { Acceleration, AccelerationPosition, BlockExtended, CpfpInfo, DifficultyAdjustment, MempoolPosition, OptimizedMempoolStats, RbfTree, TransactionStripped } from '../interfaces/node-api.interface';
+import { AddressTxSummary, Transaction } from '@interfaces/electrs.interface';
+import { AccelerationDelta, HealthCheckHost, IBackendInfo, MempoolBlock, MempoolBlockUpdate, MempoolInfo, Recommendedfees, ReplacedTransaction, ReplacementInfo, isMempoolState } from '@interfaces/websocket.interface';
+import { Acceleration, AccelerationPosition, BlockExtended, CpfpInfo, DifficultyAdjustment, MempoolPosition, OptimizedMempoolStats, RbfTree, TransactionStripped } from '@interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { filter, map, scan, share, shareReplay } from 'rxjs/operators';
-import { StorageService } from './storage.service';
-import { hasTouchScreen } from '../shared/pipes/bytes-pipe/utils';
-import { ActiveFilter } from '../shared/filters.utils';
+import { StorageService } from '@app/services/storage.service';
+import { hasTouchScreen } from '@app/shared/pipes/bytes-pipe/utils';
+import { ActiveFilter } from '@app/shared/filters.utils';
 
 export interface MarkBlockState {
   blockHeight?: number;
@@ -78,6 +78,7 @@ export interface Env {
   PACKAGE_JSON_VERSION_MEMPOOL_SPACE?: string;
   SERVICES_API?: string;
   customize?: Customization;
+  PROD_DOMAINS: string[];
 }
 
 const defaultEnv: Env = {
@@ -113,6 +114,7 @@ const defaultEnv: Env = {
   'PUBLIC_ACCELERATIONS': false,
   'ADDITIONAL_CURRENCIES': false,
   'SERVICES_API': 'https://mempool.space/api/v1/services',
+  'PROD_DOMAINS': [],
 };
 
 @Injectable({
@@ -159,6 +161,7 @@ export class StateService {
   mempoolRemovedTransactions$ = new Subject<Transaction>();
   multiAddressTransactions$ = new Subject<{ [address: string]: { mempool: Transaction[], confirmed: Transaction[], removed: Transaction[] }}>();
   blockTransactions$ = new Subject<Transaction>();
+  walletTransactions$ = new Subject<Transaction[]>();
   isLoadingWebSocket$ = new ReplaySubject<boolean>(1);
   isLoadingMempool$ = new BehaviorSubject<boolean>(true);
   vbytesPerSecond$ = new ReplaySubject<number>(1);
@@ -205,6 +208,10 @@ export class StateService {
     const browserWindow = window || {};
     // @ts-ignore
     const browserWindowEnv = browserWindow.__env || {};
+    if (browserWindowEnv.PROD_DOMAINS && typeof(browserWindowEnv.PROD_DOMAINS) === 'string') {
+      browserWindowEnv.PROD_DOMAINS = browserWindowEnv.PROD_DOMAINS.split(',');
+    }
+
     this.env = Object.assign(defaultEnv, browserWindowEnv);
 
     if (defaultEnv.BASE_MODULE !== 'mempool') {

@@ -1,0 +1,35 @@
+.amount {
+	font-weight: bold;
+}
+
+a.rune-link {
+	color: inherit;
+	&:hover {
+		text-decoration: underline;
+		text-decoration-color: var(--transparent-fg);	
+	}
+}
+
+a.disabled {
+	text-decoration: none;
+}
+
+.name {
+	color: var(--transparent-fg);
+	font-weight: 700;
+}
+
+.badge-ord {
+	background-color: var(--grey);
+	position: relative;
+	top: -2px;
+	font-size: 81%;
+	&.primary {
+		background-color: var(--primary);
+	}
+}
+
+pre {
+	margin-top: 5px;
+	max-height: 200px;
+}

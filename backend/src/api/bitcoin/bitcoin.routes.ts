@@ -48,6 +48,8 @@ class BitcoinRoutes {
       .post(config.MEMPOOL.API_URL_PREFIX + 'psbt/addparents', this.postPsbtCompletion)
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from', this.getBlocksByBulk.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from/:to', this.getBlocksByBulk.bind(this))
+      // Temporarily add txs/package endpoint for all backends until esplora supports it
+      .post(config.MEMPOOL.API_URL_PREFIX + 'txs/package', this.$submitPackage)
       ;
 
       if (config.MEMPOOL.BACKEND !== 'esplora') {
@@ -790,6 +792,19 @@ class BitcoinRoutes {
       res.send(result);
     } catch (e: any) {
       handleError(req, res, 400, e.message && e.code ? 'testmempoolaccept RPC error: ' + JSON.stringify({ code: e.code, message: e.message })
+        : (e.message || 'Error'));
+    }
+  }
+
+  private async $submitPackage(req: Request, res: Response) {
+    try {
+      const rawTxs = Common.getTransactionsFromRequest(req);
+      const maxfeerate = parseFloat(req.query.maxfeerate as string);
+      const maxburnamount = parseFloat(req.query.maxburnamount as string);
+      const result = await bitcoinClient.submitPackage(rawTxs, maxfeerate ?? undefined, maxburnamount ?? undefined);
+      res.send(result);
+    } catch (e: any) {
+      handleError(req, res, 400, e.message && e.code ? 'submitpackage RPC error: ' + JSON.stringify({ code: e.code, message: e.message })
         : (e.message || 'Error'));
     }
   }

@@ -1,8 +1,8 @@
 import { Component, Input, OnInit, OnChanges, Inject, LOCALE_ID, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
-import { RbfTree, RbfTransaction } from '../../interfaces/node-api.interface';
-import { StateService } from '../../services/state.service';
-import { ApiService } from '../../services/api.service';
+import { RbfTree, RbfTransaction } from '@interfaces/node-api.interface';
+import { StateService } from '@app/services/state.service';
+import { ApiService } from '@app/services/api.service';
 
 type Connector = 'pipe' | 'corner';
 

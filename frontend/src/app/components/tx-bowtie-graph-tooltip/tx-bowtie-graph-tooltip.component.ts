@@ -1,9 +1,9 @@
 import { Component, ElementRef, ViewChild, Input, OnChanges, OnInit } from '@angular/core';
 import { Subscription, of, switchMap, tap } from 'rxjs';
-import { Price, PriceService } from '../../services/price.service';
-import { StateService } from '../../services/state.service';
-import { ApiService } from '../../services/api.service';
-import { environment } from '../../../environments/environment';
+import { Price, PriceService } from '@app/services/price.service';
+import { StateService } from '@app/services/state.service';
+import { ApiService } from '@app/services/api.service';
+import { environment } from '@environments/environment';
 
 interface Xput {
   type: 'input' | 'output' | 'fee';

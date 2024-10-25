@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { Router, NavigationEnd, ActivatedRouteSnapshot } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-import { StateService } from './state.service';
-import { RelativeUrlPipe } from '../shared/pipes/relative-url/relative-url.pipe';
+import { StateService } from '@app/services/state.service';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 
 @Injectable({
   providedIn: 'root'

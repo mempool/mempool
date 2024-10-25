@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { NodePreviewComponent } from './node/node-preview.component';
-import { ChannelPreviewComponent } from './channel/channel-preview.component';
-import { NodesPerISPPreview } from './nodes-per-isp/nodes-per-isp-preview.component';
-import { GroupPreviewComponent } from './group/group-preview.component';
+import { NodePreviewComponent } from '@app/lightning/node/node-preview.component';
+import { ChannelPreviewComponent } from '@app/lightning/channel/channel-preview.component';
+import { NodesPerISPPreview } from '@app/lightning/nodes-per-isp/nodes-per-isp-preview.component';
+import { GroupPreviewComponent } from '@app/lightning/group/group-preview.component';
 
 const routes: Routes = [
     {

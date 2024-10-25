@@ -1,8 +1,8 @@
 import { Component, ChangeDetectionStrategy, Input, Output, OnChanges, SimpleChanges, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import { Transaction } from '../../../interfaces/electrs.interface';
-import { Acceleration, SinglePoolStats } from '../../../interfaces/node-api.interface';
-import { EChartsOption, PieSeriesOption } from '../../../graphs/echarts';
-import { MiningStats } from '../../../services/mining.service';
+import { Transaction } from '@interfaces/electrs.interface';
+import { Acceleration, SinglePoolStats } from '@interfaces/node-api.interface';
+import { EChartsOption, PieSeriesOption } from '@app/graphs/echarts';
+import { MiningStats } from '@app/services/mining.service';
 
 function lighten(color, p): { r, g, b } {
   return {
@@ -76,15 +76,21 @@ export class ActiveAccelerationBox implements OnChanges {
     acceleratingPools.forEach((poolId, index) => {
       const pool = pools[poolId];
       const poolShare = ((pool.lastEstimatedHashrate / this.miningStats.lastEstimatedHashrate) * 100).toFixed(1);
+      let color = 'white';
+      if (index >= firstSignificantPool) {
+        if (numSignificantPools > 1) {
+          color = toRGB(lighten({ r: 147, g: 57, b: 244 }, 1 - (index - firstSignificantPool) / Math.max((numSignificantPools - 1), 1)));
+        } else {
+          color = toRGB({ r: 147, g: 57, b: 244 });
+        }
+      }
       data.push(getDataItem(
         pool.lastEstimatedHashrate,
-        index >= firstSignificantPool
-          ? toRGB(lighten({ r: 147, g: 57, b: 244 }, 1 - (index - firstSignificantPool) / (numSignificantPools - 1)))
-          : 'white',
+        color,
         `<b style="color: white">${pool.name} (${poolShare}%)</b>`,
         true,
       ) as PieSeriesOption);
-    })
+    });
     this.acceleratedByPercentage = ((totalAcceleratedHashrate / this.miningStats.lastEstimatedHashrate) * 100).toFixed(1) + '%';
     const notAcceleratedByPercentage = ((1 - (totalAcceleratedHashrate / this.miningStats.lastEstimatedHashrate)) * 100).toFixed(1) + '%';
     data.push(getDataItem(

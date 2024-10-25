@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, combineLatest, map, Observable, share, tap } from 'rxjs';
-import { ApiService } from '../../services/api.service';
-import { SeoService } from '../../services/seo.service';
-import { getFlagEmoji } from '../../shared/common.utils';
-import { GeolocationData } from '../../shared/components/geolocation/geolocation.component';
+import { ApiService } from '@app/services/api.service';
+import { SeoService } from '@app/services/seo.service';
+import { getFlagEmoji } from '@app/shared/common.utils';
+import { GeolocationData } from '@app/shared/components/geolocation/geolocation.component';
 
 @Component({
   selector: 'app-nodes-per-isp',

@@ -2,7 +2,13 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": []
+    "types": [],
+    "paths": {
+      "@app/*" : ["src/app/*"],
+      "@components/*" : ["src/app/components/*"],
+      "@environments/*" : ["src/environments/*"],
+      "@interfaces/*" : ["src/app/interfaces/*"]
+    }
   },
   "files": [
     "src/main.ts",

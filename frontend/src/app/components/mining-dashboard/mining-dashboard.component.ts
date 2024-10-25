@@ -1,8 +1,8 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, HostListener, OnInit } from '@angular/core';
-import { SeoService } from '../../services/seo.service';
-import { OpenGraphService } from '../../services/opengraph.service';
-import { WebsocketService } from '../../services/websocket.service';
-import { StateService } from '../../services/state.service';
+import { SeoService } from '@app/services/seo.service';
+import { OpenGraphService } from '@app/services/opengraph.service';
+import { WebsocketService } from '@app/services/websocket.service';
+import { StateService } from '@app/services/state.service';
 import { EventType, NavigationStart, Router } from '@angular/router';
 
 @Component({

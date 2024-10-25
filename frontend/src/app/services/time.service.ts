@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { dates } from '../shared/i18n/dates';
+import { dates } from '@app/shared/i18n/dates';
 
 const intervals = {
   year: 31536000,

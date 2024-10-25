@@ -27,6 +27,14 @@
         <app-twitter-login customClass="btn btn-sm" width="220px" redirectTo="/testnet4/faucet" buttonString="Sign up with Twitter"></app-twitter-login>
       </div>
     }
+    @else if (user && user.status === 'pending' && !user.email && user.snsId) {
+      <div class="alert alert-danger w-100 col d-flex justify-content-center text-left">
+        <span class="d-flex">
+          <fa-icon [icon]="['fas', 'exclamation-triangle']" [fixedWidth]="true" class="mr-1"></fa-icon>
+          <span>Please <a class="text-primary" [routerLink]="['/services/account/settings']">verify your account</a> by providing a valid email address. To mitigate spam, we delete unverified accounts at regular intervals.</span>
+        </span>
+      </div>
+    }
     @else if (error === 'not_available') {
       <!-- User logged in but not a paid user or did not link its Twitter account -->
       <div class="alert alert-mempool d-block text-center w-100">

@@ -16,6 +16,7 @@ import transactionUtils from './transaction-utils';
 import rbfCache, { ReplacementInfo } from './rbf-cache';
 import difficultyAdjustment from './difficulty-adjustment';
 import feeApi from './fee-api';
+import BlocksRepository from '../repositories/BlocksRepository';
 import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
 import Audit from './audit';
@@ -26,6 +27,7 @@ import mempool from './mempool';
 import statistics from './statistics/statistics';
 import accelerationRepository from '../repositories/AccelerationRepository';
 import bitcoinApi from './bitcoin/bitcoin-api-factory';
+import walletApi from './services/wallets';
 
 interface AddressTransactions {
   mempool: MempoolTransactionExtended[],
@@ -34,6 +36,7 @@ interface AddressTransactions {
 }
 import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
 import { calculateMempoolTxCpfp } from './cpfp';
+import { getRecentFirstSeen } from '../utils/file-read';
 
 // valid 'want' subscriptions
 const wantable = [
@@ -302,6 +305,14 @@ class WebsocketHandler {
               client['track-scriptpubkeys'] = spks;
             } else {
               client['track-scriptpubkeys'] = null;
+            }
+          }
+
+          if (parsedMessage && parsedMessage['track-wallet']) {
+            if (parsedMessage['track-wallet'] === 'stop') {
+              client['track-wallet'] = null;
+            } else {
+              client['track-wallet'] = parsedMessage['track-wallet'];
             }
           }
 
@@ -1028,6 +1039,14 @@ class WebsocketHandler {
       }
     }
 
+    if (config.CORE_RPC.DEBUG_LOG_PATH && block.extras) {
+      const firstSeen = getRecentFirstSeen(block.id);
+      if (firstSeen) {
+        BlocksRepository.$saveFirstSeenTime(block.id, firstSeen);
+        block.extras.firstSeen = firstSeen;
+      }
+    }
+
     const confirmedTxids: { [txid: string]: boolean } = {};
 
     // Update mempool to remove transactions included in the new block
@@ -1101,6 +1120,9 @@ class WebsocketHandler {
       mined: transactions.map(tx => tx.txid),
       replaced: replacedTransactions,
     };
+
+    // check for wallet transactions
+    const walletTransactions = config.WALLETS.ENABLED ? walletApi.processBlock(block, transactions) : [];
 
     const responseCache = { ...this.socketData };
     function getCachedResponse(key, data): string {
@@ -1304,6 +1326,11 @@ class WebsocketHandler {
 
       if (client['track-mempool']) {
         response['mempool-transactions'] = getCachedResponse('mempool-transactions', mempoolDelta);
+      }
+
+      if (client['track-wallet']) {
+        const trackedWallet = client['track-wallet'];
+        response['wallet-transactions'] = getCachedResponse(`wallet-transactions-${trackedWallet}`, walletTransactions[trackedWallet] ?? {});
       }
 
       if (Object.keys(response).length) {

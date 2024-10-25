@@ -12,9 +12,15 @@
         <span class="badge mr-1 badge-og" *ngIf="user.ogRank">
           OG #{{ user.ogRank }}
         </span>
-        <span class="badge mr-1 badge-default" [class]="'badge-' + user.subscription_tag" *ngIf="user.subscription_tag !== 'free'">
-          {{ user.subscription_tag.toUpperCase() }}
-        </span>
+        @if (user.subscription_tag !== 'free') {
+          <span class="badge mr-1 badge-default" [class]="'badge-' + user.subscription_tag">
+            {{ user.subscription_tag.toUpperCase() }}
+          </span>
+        } @else if (user.type === 'mining_pool') {
+          <span class="badge mr-1 badge-default" [class]="'badge-mining-pool'">
+            MINING POOL
+          </span>
+        }
       </span>
       <a *ngIf="!userAuth" class="d-flex justify-content-center align-items-center nav-link m-0  menu-click" routerLink="/login" role="tab" (click)="onLinkClick('/login')">
         <fa-icon class="menu-click" [icon]="['fas', 'user-circle']" [fixedWidth]="true" style="font-size: 25px;margin-right: 15px;"></fa-icon>

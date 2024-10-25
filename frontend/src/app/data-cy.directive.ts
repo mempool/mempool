@@ -1,5 +1,5 @@
 import { Directive, ElementRef, Renderer2 } from '@angular/core';
-import { environment } from '../environments/environment';
+import { environment } from '@environments/environment';
 
 @Directive({
   selector: '[data-cy]'
