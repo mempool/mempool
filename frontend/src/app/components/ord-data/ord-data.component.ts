@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { Runestone, Etching } from '../../shared/ord/rune.utils';
-import { Inscription } from '../../shared/ord/inscription.utils';
+import { Runestone, Etching } from '@app/shared/ord/rune.utils';
+import { Inscription } from '@app/shared/ord/inscription.utils';
 
 @Component({
   selector: 'app-ord-data',

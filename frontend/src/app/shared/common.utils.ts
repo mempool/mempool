@@ -1,6 +1,6 @@
 import { MempoolBlockDelta, MempoolBlockDeltaCompressed, MempoolDeltaChange, TransactionCompressed } from "../interfaces/websocket.interface";
-import { TransactionStripped } from "../interfaces/node-api.interface";
-import { AmountShortenerPipe } from "./pipes/amount-shortener.pipe";
+import { TransactionStripped } from "@interfaces/node-api.interface";
+import { AmountShortenerPipe } from "@app/shared/pipes/amount-shortener.pipe";
 const amountShortenerPipe = new AmountShortenerPipe();
 
 export function isMobile(): boolean {
@@ -224,6 +224,14 @@ export function insecureRandomUUID(): string {
       uuid += '-';
   }
   return uuid.slice(0, -1);
+}
+
+export function sleep$(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+     setTimeout(() => {
+       resolve();
+     }, ms);
+  });
 }
 
 // https://stackoverflow.com/a/60467595

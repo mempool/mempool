@@ -1,12 +1,12 @@
-import { Component, OnDestroy, OnInit, ChangeDetectorRef } from "@angular/core";
-import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from "@angular/forms";
-import { Subscription } from "rxjs";
-import { ServicesApiServices } from "../../services/services-api.service";
-import { getRegex } from "../../shared/regex.utils";
-import { StateService } from "../../services/state.service";
-import { WebsocketService } from "../../services/websocket.service";
-import { AudioService } from "../../services/audio.service";
-import { HttpErrorResponse } from "@angular/common/http";
+import { Component, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
+import { Subscription } from 'rxjs';
+import { ServicesApiServices } from '@app/services/services-api.service';
+import { getRegex } from '@app/shared/regex.utils';
+import { StateService } from '@app/services/state.service';
+import { WebsocketService } from '@app/services/websocket.service';
+import { AudioService } from '@app/services/audio.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-faucet',

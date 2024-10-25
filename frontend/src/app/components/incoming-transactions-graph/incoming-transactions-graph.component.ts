@@ -1,10 +1,10 @@
 import { Component, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnInit, OnDestroy } from '@angular/core';
-import { EChartsOption } from '../../graphs/echarts';
+import { EChartsOption } from '@app/graphs/echarts';
 import { OnChanges } from '@angular/core';
-import { StorageService } from '../../services/storage.service';
-import { download, formatterXAxis, formatterXAxisLabel } from '../../shared/graphs.utils';
+import { StorageService } from '@app/services/storage.service';
+import { download, formatterXAxis, formatterXAxisLabel } from '@app/shared/graphs.utils';
 import { formatNumber } from '@angular/common';
-import { StateService } from '../../services/state.service';
+import { StateService } from '@app/services/state.service';
 import { Subscription } from 'rxjs';
 
 const OUTLIERS_MEDIAN_MULTIPLIER = 4;

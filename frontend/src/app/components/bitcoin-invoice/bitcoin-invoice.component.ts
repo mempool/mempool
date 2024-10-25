@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { Subscription, tap, catchError, of } from 'rxjs';
-import { retry } from 'rxjs/operators';
-import { ServicesApiServices } from '../../services/services-api.service';
+import { Subscription, of, catchError } from 'rxjs';
+import { retry, tap } from 'rxjs/operators';
+import { ServicesApiServices } from '@app/services/services-api.service';
 
 @Component({
   selector: 'app-bitcoin-invoice',

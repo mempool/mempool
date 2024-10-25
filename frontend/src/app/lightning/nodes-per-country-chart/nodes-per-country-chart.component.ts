@@ -1,15 +1,15 @@
 import { ChangeDetectionStrategy, Component, OnInit, HostBinding, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
-import { EChartsOption, PieSeriesOption } from '../../graphs/echarts';
+import { EChartsOption, PieSeriesOption } from '@app/graphs/echarts';
 import { map, Observable, share, tap } from 'rxjs';
-import { chartColors } from '../../app.constants';
-import { ApiService } from '../../services/api.service';
-import { SeoService } from '../../services/seo.service';
-import { StateService } from '../../services/state.service';
-import { download } from '../../shared/graphs.utils';
-import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
-import { getFlagEmoji } from '../../shared/common.utils';
+import { chartColors } from '@app/app.constants';
+import { ApiService } from '@app/services/api.service';
+import { SeoService } from '@app/services/seo.service';
+import { StateService } from '@app/services/state.service';
+import { download } from '@app/shared/graphs.utils';
+import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
+import { getFlagEmoji } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-nodes-per-country-chart',

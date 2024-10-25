@@ -1,12 +1,12 @@
 import { Component, OnInit, OnDestroy, Input, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { Env, StateService } from '../../services/state.service';
+import { Env, StateService } from '@app/services/state.service';
 import { Observable, merge, of, Subscription } from 'rxjs';
-import { LanguageService } from '../../services/language.service';
-import { EnterpriseService } from '../../services/enterprise.service';
-import { NavigationService } from '../../services/navigation.service';
-import { MenuComponent } from '../menu/menu.component';
-import { StorageService } from '../../services/storage.service';
+import { LanguageService } from '@app/services/language.service';
+import { EnterpriseService } from '@app/services/enterprise.service';
+import { NavigationService } from '@app/services/navigation.service';
+import { MenuComponent } from '@components/menu/menu.component';
+import { StorageService } from '@app/services/storage.service';
 
 @Component({
   selector: 'app-master-page',

@@ -1,17 +1,17 @@
 import { ChangeDetectionStrategy, Component, Input, NgZone, OnInit, HostBinding } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EChartsOption, PieSeriesOption } from '../../graphs/echarts';
+import { EChartsOption, PieSeriesOption } from '@app/graphs/echarts';
 import { merge, Observable } from 'rxjs';
 import { map, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
-import { SeoService } from '../../services/seo.service';
-import { StorageService } from '../..//services/storage.service';
-import { MiningService, MiningStats } from '../../services/mining.service';
-import { StateService } from '../../services/state.service';
-import { chartColors, poolsColor } from '../../app.constants';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
-import { download } from '../../shared/graphs.utils';
-import { isMobile } from '../../shared/common.utils';
+import { SeoService } from '@app/services/seo.service';
+import { StorageService } from '@app//services/storage.service';
+import { MiningService, MiningStats } from '@app/services/mining.service';
+import { StateService } from '@app/services/state.service';
+import { chartColors, poolsColor } from '@app/app.constants';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
+import { download } from '@app/shared/graphs.utils';
+import { isMobile } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-pool-ranking',

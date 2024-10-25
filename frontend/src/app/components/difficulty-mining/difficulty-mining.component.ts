@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { StateService } from '../../services/state.service';
+import { StateService } from '@app/services/state.service';
 
 interface EpochProgress {
   base: string;

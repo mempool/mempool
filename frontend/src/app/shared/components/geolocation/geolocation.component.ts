@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges } from '@angular/core';
-import { convertRegion, getFlagEmoji } from '../../common.utils';
+import { convertRegion, getFlagEmoji } from '@app/shared/common.utils';
 
 export interface GeolocationData {
   country: string;

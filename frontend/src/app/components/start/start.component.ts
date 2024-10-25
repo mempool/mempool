@@ -1,8 +1,10 @@
 import { Component, ElementRef, HostListener, OnInit, OnDestroy, ViewChild, Input, ChangeDetectorRef, ChangeDetectionStrategy, AfterViewChecked } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { MarkBlockState, StateService } from '../../services/state.service';
-import { specialBlocks } from '../../app.constants';
-import { BlockExtended } from '../../interfaces/node-api.interface';
+import { MarkBlockState, StateService } from '@app/services/state.service';
+import { specialBlocks } from '@app/app.constants';
+import { BlockExtended } from '@interfaces/node-api.interface';
+import { Router } from '@angular/router';
+import { sleep$ } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-start',
@@ -61,6 +63,7 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
   constructor(
     public stateService: StateService,
     private cd: ChangeDetectorRef,
+    private router: Router
   ) {
     this.isiOS = ['iPhone','iPod','iPad'].includes((navigator as any)?.userAgentData?.platform || navigator.platform);
     if (this.stateService.network === '') {
@@ -68,7 +71,27 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
     }
   }
 
+  async demoMode() {
+    // @ts-ignore
+    if (!window.demoMode) {
+      // @ts-ignore
+      window.demoMode = true;
+      const paths = ['', 'acceleration', 'mining', 'lightning'];
+      let i = 0;
+      while ('Bitcoin is still alive') {
+        i = (i + 1) % paths.length;
+        this.router.navigateByUrl(paths[i]);
+        await sleep$(30000);
+      }
+    }
+  }
+
   ngOnInit() {
+    // @ts-ignore
+    if (window.location.search === '?demo=1') {
+      this.demoMode();
+    }
+
     this.firstPageWidth = 40 + (this.blockWidth * this.dynamicBlocksAmount);
     this.blockCounterSubscription = this.stateService.blocks$.subscribe((blocks) => {
       this.blockCount = blocks.length;

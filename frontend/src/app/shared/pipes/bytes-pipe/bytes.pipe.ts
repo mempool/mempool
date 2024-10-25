@@ -1,6 +1,6 @@
 /* tslint:disable */
 import { Pipe, PipeTransform } from '@angular/core';
-import { isNumberFinite, isPositive, isInteger, toDecimal, toSigFigs } from './utils';
+import { isNumberFinite, isPositive, isInteger, toDecimal, toSigFigs } from '@app/shared/pipes/bytes-pipe/utils';
 
 export type ByteUnit = 'B' | 'kB' | 'MB' | 'GB' | 'TB';
 

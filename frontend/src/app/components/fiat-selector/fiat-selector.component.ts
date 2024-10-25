@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { StorageService } from '../../services/storage.service';
-import { fiatCurrencies } from '../../app.constants';
-import { StateService } from '../../services/state.service';
+import { StorageService } from '@app/services/storage.service';
+import { fiatCurrencies } from '@app/app.constants';
+import { StateService } from '@app/services/state.service';
 
 @Component({
   selector: 'app-fiat-selector',

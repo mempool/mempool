@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Env, StateService } from '../../services/state.service';
+import { Env, StateService } from '@app/services/state.service';
 
 @Component({
   selector: 'app-code-template',

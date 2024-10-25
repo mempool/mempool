@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
-import { SharedModule } from '../../shared/shared.module';
-import { TxBowtieModule } from '../tx-bowtie-graph/tx-bowtie.module';
-import { GraphsModule } from '../../graphs/graphs.module';
-import { TrackerComponent } from '../tracker/tracker.component';
-import { TrackerBarComponent } from '../tracker/tracker-bar.component';
-import { TransactionModule } from '../transaction/transaction.module';
+import { SharedModule } from '@app/shared/shared.module';
+import { TxBowtieModule } from '@components/tx-bowtie-graph/tx-bowtie.module';
+import { GraphsModule } from '@app/graphs/graphs.module';
+import { TrackerComponent } from '@components/tracker/tracker.component';
+import { TrackerBarComponent } from '@components/tracker/tracker-bar.component';
+import { TransactionModule } from '@components/transaction/transaction.module';
 
 const routes: Routes = [
   {

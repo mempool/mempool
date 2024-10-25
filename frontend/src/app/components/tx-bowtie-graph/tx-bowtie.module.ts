@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SharedModule } from '../../shared/shared.module';
-import { TxBowtieGraphComponent } from '../tx-bowtie-graph/tx-bowtie-graph.component';
-import { TxBowtieGraphTooltipComponent } from '../tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component';
+import { SharedModule } from '@app/shared/shared.module';
+import { TxBowtieGraphComponent } from '@components/tx-bowtie-graph/tx-bowtie-graph.component';
+import { TxBowtieGraphTooltipComponent } from '@components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component';
 
 
 @NgModule({

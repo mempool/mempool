@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { firstValueFrom, Subject, Subscription} from 'rxjs';
-import { Transaction } from '../interfaces/electrs.interface';
-import { BlockExtended } from '../interfaces/node-api.interface';
-import { StateService } from './state.service';
-import { ApiService } from './api.service';
+import { Transaction } from '@interfaces/electrs.interface';
+import { BlockExtended } from '@interfaces/node-api.interface';
+import { StateService } from '@app/services/state.service';
+import { ApiService } from '@app/services/api.service';
 
 const BLOCK_CACHE_SIZE = 500;
 const KEEP_RECENT_BLOCKS = 50;
