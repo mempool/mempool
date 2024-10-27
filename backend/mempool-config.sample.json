@@ -155,6 +155,10 @@
     "API": "https://mempool.space/api/v1/services",
     "ACCELERATIONS": false
   },
+  "STRATUM": {
+    "ENABLED": false,
+    "API": "http://localhost:1234"
+  },
   "FIAT_PRICE": {
     "ENABLED": true,
     "PAID": false,
