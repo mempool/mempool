@@ -3,7 +3,7 @@ import { ModuleWithProviders, NgModule } from '@angular/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ZONE_SERVICE } from '@app/injection-tokens';
-import { AppRoutingModule } from '@app/app-routing.module';
+import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from '@components/app/app.component';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { OrdApiService } from '@app/services/ord-api.service';
