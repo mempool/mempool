@@ -36,6 +36,7 @@ export class WebsocketService {
   private isTrackingAccelerations: boolean = false;
   private isTrackingWallet: boolean = false;
   private trackingWalletName: string;
+  private isTrackingStratum: string | number | false = false;
   private trackingMempoolBlock: number;
   private stoppingTrackMempoolBlock: any | null = null;
   private latestGitCommit = '';
@@ -141,6 +142,9 @@ export class WebsocketService {
           }
           if (this.isTrackingWallet) {
             this.startTrackingWallet(this.trackingWalletName);
+          }
+          if (this.isTrackingStratum !== false) {
+            this.startTrackStratum(this.isTrackingStratum);
           }
           this.stateService.connectionState$.next(2);
         }
@@ -284,6 +288,18 @@ export class WebsocketService {
   ensureTrackAccelerations() {
     if (!this.isTrackingAccelerations) {
       this.startTrackAccelerations();
+    }
+  }
+
+  startTrackStratum(pool: number | string) {
+    this.websocketSubject.next({ 'track-stratum': pool });
+    this.isTrackingStratum = pool;
+  }
+
+  stopTrackStratum() {
+    if (this.isTrackingStratum) {
+      this.websocketSubject.next({ 'track-stratum': null });
+      this.isTrackingStratum = false;
     }
   }
 
@@ -508,6 +524,14 @@ export class WebsocketService {
 
     if (response.previousRetarget !== undefined) {
       this.stateService.previousRetarget$.next(response.previousRetarget);
+    }
+
+    if (response.stratumJobs) {
+      this.stateService.stratumJobUpdate$.next({ state: response.stratumJobs });
+    }
+
+    if (response.stratumJob) {
+      this.stateService.stratumJobUpdate$.next({ job: response.stratumJob });
     }
 
     if (response['tomahawk']) {

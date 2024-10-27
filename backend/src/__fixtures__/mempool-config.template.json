@@ -151,5 +151,9 @@
     "ENABLED": true,
     "PAID": false,
     "API_KEY": "__MEMPOOL_CURRENCY_API_KEY__"
+  },
+  "STRATUM": {
+    "ENABLED": false,
+    "API": "http://localhost:1234"
   }
 }
