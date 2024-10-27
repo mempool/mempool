@@ -9,7 +9,7 @@ import { AudioService } from '@app/services/audio.service';
 import { ApiService } from '@app/services/api.service';
 import { of, merge, Subscription, combineLatest } from 'rxjs';
 import { SeoService } from '@app/services/seo.service';
-import { environment } from '@app/../environments/environment';
+import { environment } from '@environments/environment';
 import { AssetsService } from '@app/services/assets.service';
 import { moveDec } from '@app/bitcoin.utils';
 
