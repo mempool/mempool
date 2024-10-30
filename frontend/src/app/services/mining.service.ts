@@ -13,6 +13,8 @@ export interface MiningUnits {
 
 export interface MiningStats {
   lastEstimatedHashrate: number;
+  lastEstimatedHashrate3d: number;
+  lastEstimatedHashrate1w: number;
   blockCount: number;
   totalEmptyBlock: number;
   totalEmptyBlockRatio: string;
@@ -129,6 +131,8 @@ export class MiningService {
       return {
         share: parseFloat((poolStat.blockCount / stats.blockCount * 100).toFixed(2)),
         lastEstimatedHashrate: poolStat.blockCount / stats.blockCount * stats.lastEstimatedHashrate / hashrateDivider,
+        lastEstimatedHashrate3d: poolStat.blockCount / stats.blockCount * stats.lastEstimatedHashrate3d / hashrateDivider,
+        lastEstimatedHashrate1w: poolStat.blockCount / stats.blockCount * stats.lastEstimatedHashrate1w / hashrateDivider,
         emptyBlockRatio: (poolStat.emptyBlocks / poolStat.blockCount * 100).toFixed(2),
         logo: `/resources/mining-pools/` + poolStat.slug + '.svg',
         ...poolStat
@@ -137,6 +141,8 @@ export class MiningService {
 
     return {
       lastEstimatedHashrate: stats.lastEstimatedHashrate / hashrateDivider,
+      lastEstimatedHashrate3d: stats.lastEstimatedHashrate3d / hashrateDivider,
+      lastEstimatedHashrate1w: stats.lastEstimatedHashrate1w / hashrateDivider,
       blockCount: stats.blockCount,
       totalEmptyBlock: totalEmptyBlock,
       totalEmptyBlockRatio: totalEmptyBlockRatio,
