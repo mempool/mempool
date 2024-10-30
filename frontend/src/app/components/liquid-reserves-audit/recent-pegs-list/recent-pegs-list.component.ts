@@ -2,11 +2,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Component, OnInit, ChangeDetectionStrategy, Input, Inject, LOCALE_ID, ChangeDetectorRef } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, Subscription, combineLatest, of, timer } from 'rxjs';
 import { delayWhen, filter, map, share, shareReplay, switchMap, take, takeUntil, tap, throttleTime } from 'rxjs/operators';
-import { ApiService } from '../../../services/api.service';
-import { Env, StateService } from '../../../services/state.service';
-import { AuditStatus, CurrentPegs, RecentPeg } from '../../../interfaces/node-api.interface';
-import { WebsocketService } from '../../../services/websocket.service';
-import { SeoService } from '../../../services/seo.service';
+import { ApiService } from '@app/services/api.service';
+import { Env, StateService } from '@app/services/state.service';
+import { AuditStatus, CurrentPegs, RecentPeg } from '@interfaces/node-api.interface';
+import { WebsocketService } from '@app/services/websocket.service';
+import { SeoService } from '@app/services/seo.service';
 
 @Component({
   selector: 'app-recent-pegs-list',

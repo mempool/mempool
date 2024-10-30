@@ -1,6 +1,7 @@
 import { Application, NextFunction, Request, Response } from 'express';
 import logger from '../../logger';
 import bitcoinClient from './bitcoin-client';
+import config from '../../config';
 
 /**
  * Define a set of routes used by the accelerator server
@@ -11,15 +12,15 @@ class BitcoinBackendRoutes {
 
   public initRoutes(app: Application) {
     app
-      .get('/api/internal/bitcoin-core/' + 'get-mempool-entry', this.disableCache, this.$getMempoolEntry)
-      .post('/api/internal/bitcoin-core/' + 'decode-raw-transaction', this.disableCache, this.$decodeRawTransaction)
-      .get('/api/internal/bitcoin-core/' + 'get-raw-transaction', this.disableCache, this.$getRawTransaction)
-      .post('/api/internal/bitcoin-core/' + 'send-raw-transaction', this.disableCache, this.$sendRawTransaction)
-      .post('/api/internal/bitcoin-core/' + 'test-mempool-accept', this.disableCache, this.$testMempoolAccept)
-      .get('/api/internal/bitcoin-core/' + 'get-mempool-ancestors', this.disableCache, this.$getMempoolAncestors)
-      .get('/api/internal/bitcoin-core/' + 'get-block', this.disableCache, this.$getBlock)
-      .get('/api/internal/bitcoin-core/' + 'get-block-hash', this.disableCache, this.$getBlockHash)
-      .get('/api/internal/bitcoin-core/' + 'get-block-count', this.disableCache, this.$getBlockCount)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'internal/bitcoin-core/' + 'get-mempool-entry', this.disableCache, this.$getMempoolEntry)
+      .post(config.MEMPOOL.API_URL_PREFIX + 'internal/bitcoin-core/' + 'decode-raw-transaction', this.disableCache, this.$decodeRawTransaction)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'internal/bitcoin-core/' + 'get-raw-transaction', this.disableCache, this.$getRawTransaction)
+      .post(config.MEMPOOL.API_URL_PREFIX + 'internal/bitcoin-core/' + 'send-raw-transaction', this.disableCache, this.$sendRawTransaction)
+      .post(config.MEMPOOL.API_URL_PREFIX + 'internal/bitcoin-core/' + 'test-mempool-accept', this.disableCache, this.$testMempoolAccept)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'internal/bitcoin-core/' + 'get-mempool-ancestors', this.disableCache, this.$getMempoolAncestors)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'internal/bitcoin-core/' + 'get-block', this.disableCache, this.$getBlock)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'internal/bitcoin-core/' + 'get-block-hash', this.disableCache, this.$getBlockHash)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'internal/bitcoin-core/' + 'get-block-count', this.disableCache, this.$getBlockCount)
     ;
   }
 

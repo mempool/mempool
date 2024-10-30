@@ -5,7 +5,7 @@ import { AbstractBitcoinApi, HealthCheckHost } from './bitcoin-api-abstract-fact
 import { IEsploraApi } from './esplora-api.interface';
 import logger from '../../logger';
 import { Common } from '../common';
-import { TestMempoolAcceptResult } from './bitcoin-api.interface';
+import { SubmitPackageResult, TestMempoolAcceptResult } from './bitcoin-api.interface';
 
 interface FailoverHost {
   host: string,
@@ -305,7 +305,7 @@ class ElectrsApi implements AbstractBitcoinApi {
   }
 
   $getAddress(address: string): Promise<IEsploraApi.Address> {
-    throw new Error('Method getAddress not implemented.');
+    return this.failoverRouter.$get<IEsploraApi.Address>('/address/' + address);
   }
 
   $getAddressTransactions(address: string, txId?: string): Promise<IEsploraApi.Transaction[]> {
@@ -332,6 +332,10 @@ class ElectrsApi implements AbstractBitcoinApi {
     throw new Error('Method not implemented.');
   }
 
+  $submitPackage(rawTransactions: string[]): Promise<SubmitPackageResult> {
+    throw new Error('Method not implemented.');
+  }
+
   $getOutspend(txId: string, vout: number): Promise<IEsploraApi.Outspend> {
     return this.failoverRouter.$get<IEsploraApi.Outspend>('/tx/' + txId + '/outspend/' + vout);
   }
@@ -355,6 +359,10 @@ class ElectrsApi implements AbstractBitcoinApi {
   async $getCoinbaseTx(blockhash: string): Promise<IEsploraApi.Transaction> {
     const txid = await this.failoverRouter.$get<string>(`/block/${blockhash}/txid/0`);
     return this.failoverRouter.$get<IEsploraApi.Transaction>('/tx/' + txid);
+  }
+
+  async $getAddressTransactionSummary(address: string): Promise<IEsploraApi.AddressTxSummary[]> {
+    return this.failoverRouter.$get<IEsploraApi.AddressTxSummary[]>('/address/' + address + '/txs/summary');
   }
 
   public startHealthChecks(): void {

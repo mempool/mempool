@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
-import { SharedModule } from '../shared/shared.module';
+import { SharedModule } from '@app/shared/shared.module';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
-import { NodesNetworksChartComponent } from '../lightning/nodes-networks-chart/nodes-networks-chart.component';
-import { LightningStatisticsChartComponent } from '../lightning/statistics-chart/lightning-statistics-chart.component';
-import { NodesPerISPChartComponent } from '../lightning/nodes-per-isp-chart/nodes-per-isp-chart.component';
-import { NodesPerCountryChartComponent } from '../lightning/nodes-per-country-chart/nodes-per-country-chart.component';
-import { NodesMap } from '../lightning/nodes-map/nodes-map.component';
-import { NodesChannelsMap } from '../lightning/nodes-channels-map/nodes-channels-map.component';
+import { NodesNetworksChartComponent } from '@app/lightning/nodes-networks-chart/nodes-networks-chart.component';
+import { LightningStatisticsChartComponent } from '@app/lightning/statistics-chart/lightning-statistics-chart.component';
+import { NodesPerISPChartComponent } from '@app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component';
+import { NodesPerCountryChartComponent } from '@app/lightning/nodes-per-country-chart/nodes-per-country-chart.component';
+import { NodesMap } from '@app/lightning/nodes-map/nodes-map.component';
+import { NodesChannelsMap } from '@app/lightning/nodes-channels-map/nodes-channels-map.component';
 
 const routes: Routes = [
   {

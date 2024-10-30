@@ -32,6 +32,7 @@ interface IConfig {
     AUTOMATIC_POOLS_UPDATE: boolean;
     POOLS_JSON_URL: string,
     POOLS_JSON_TREE_URL: string,
+    POOLS_UPDATE_DELAY: number,
     AUDIT: boolean;
     RUST_GBT: boolean;
     LIMIT_GBT: boolean;
@@ -85,6 +86,7 @@ interface IConfig {
     TIMEOUT: number;
     COOKIE: boolean;
     COOKIE_PATH: string;
+    DEBUG_LOG_PATH: string;
   };
   SECOND_CORE_RPC: {
     HOST: string;
@@ -160,6 +162,10 @@ interface IConfig {
     PAID: boolean;
     API_KEY: string;
   },
+  WALLETS: {
+    ENABLED: boolean;
+    WALLETS: string[];
+  }
 }
 
 const defaults: IConfig = {
@@ -192,8 +198,9 @@ const defaults: IConfig = {
     'AUTOMATIC_POOLS_UPDATE': false,
     'POOLS_JSON_URL': 'https://raw.githubusercontent.com/mempool/mining-pools/master/pools-v2.json',
     'POOLS_JSON_TREE_URL': 'https://api.github.com/repos/mempool/mining-pools/git/trees/master',
+    'POOLS_UPDATE_DELAY': 604800, // in seconds, default is one week
     'AUDIT': false,
-    'RUST_GBT': false,
+    'RUST_GBT': true,
     'LIMIT_GBT': false,
     'CPFP_INDEXING': false,
     'MAX_BLOCKS_BULK_QUERY': 0,
@@ -225,7 +232,8 @@ const defaults: IConfig = {
     'PASSWORD': 'mempool',
     'TIMEOUT': 60000,
     'COOKIE': false,
-    'COOKIE_PATH': '/bitcoin/.cookie'
+    'COOKIE_PATH': '/bitcoin/.cookie',
+    'DEBUG_LOG_PATH': '',
   },
   'SECOND_CORE_RPC': {
     'HOST': '127.0.0.1',
@@ -320,6 +328,10 @@ const defaults: IConfig = {
     'PAID': false,
     'API_KEY': '',
   },
+  'WALLETS': {
+    'ENABLED': false,
+    'WALLETS': [],
+  },
 };
 
 class Config implements IConfig {
@@ -341,6 +353,7 @@ class Config implements IConfig {
   MEMPOOL_SERVICES: IConfig['MEMPOOL_SERVICES'];
   REDIS: IConfig['REDIS'];
   FIAT_PRICE: IConfig['FIAT_PRICE'];
+  WALLETS: IConfig['WALLETS'];
 
   constructor() {
     const configs = this.merge(configFromFile, defaults);
@@ -362,6 +375,7 @@ class Config implements IConfig {
     this.MEMPOOL_SERVICES = configs.MEMPOOL_SERVICES;
     this.REDIS = configs.REDIS;
     this.FIAT_PRICE = configs.FIAT_PRICE;
+    this.WALLETS = configs.WALLETS;
   }
 
   merge = (...objects: object[]): IConfig => {

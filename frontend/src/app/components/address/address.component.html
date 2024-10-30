@@ -94,6 +94,20 @@
       </div>
     </ng-container>
 
+    <ng-container *ngIf="(stateService.backend$ | async) === 'esplora' && address && utxos && utxos.length > 2">
+      <br>
+      <div class="title-tx">
+        <h2 class="text-left" i18n="address.unspent-outputs">Unspent Outputs</h2>
+      </div>
+      <div class="box">
+        <div class="row">
+          <div class="col-md">
+            <app-utxo-graph [utxos]="utxos" left="80" />
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
     <br>
     <div class="title-tx">
       <h2 class="text-left">
@@ -103,7 +117,7 @@
       </h2>
     </div>
 
-    <app-transactions-list [transactions]="transactions" [showConfirmations]="true" [address]="address.address" (loadMore)="loadMore()"></app-transactions-list>
+    <app-transactions-list [transactions]="transactions" [showConfirmations]="true" [addresses]="[address.address]" (loadMore)="loadMore()"></app-transactions-list>
 
     <div class="text-center">
       <ng-template [ngIf]="isLoadingTransactions">

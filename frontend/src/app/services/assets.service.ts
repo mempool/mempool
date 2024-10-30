@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map, shareReplay, switchMap } from 'rxjs/operators';
-import { StateService } from './state.service';
-import { environment } from '../../../src/environments/environment';
-import { AssetExtended } from '../interfaces/electrs.interface';
+import { StateService } from '@app/services/state.service';
+import { environment } from '@environments/environment';
+import { AssetExtended } from '@interfaces/electrs.interface';
 
 @Injectable({
   providedIn: 'root'

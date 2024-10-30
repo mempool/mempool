@@ -201,12 +201,17 @@
         <img class="image" src="/resources/profile/leather.svg" />
         <span>Leather</span>
       </a>
+
+      <a href="https://taprootwizards.com/" target="_blank" title="Taproot Wizards">
+        <img class="image" src="/resources/profile/wizardhat.png" />
+        <span>Taproot Wizards</span>
+      </a>
     </div>
   </div>
 
   <ng-container>
     <div *ngIf="profiles$ | async as profiles" id="community-sponsors-anchor">
-      <div class="community-sponsor" style="margin-bottom: 68px" *ngIf="profiles.whales.length > 0">
+      <div class="community-sponsor whale-sponsor" style="margin-bottom: 68px" *ngIf="profiles.whales.length > 0">
         <h3 i18n="about.sponsors.withHeart">Whale Sponsors</h3>
         <div class="wrapper">
           <ng-container>

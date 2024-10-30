@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Input, OnInit } from '@angular/core';
 import { Observable, Subscription, of, switchMap, tap } from 'rxjs';
-import { StateService } from '../../services/state.service';
-import { BlockExtended } from '../../interfaces/node-api.interface';
-import { WebsocketService } from '../../services/websocket.service';
-import { MempoolInfo, Recommendedfees } from '../../interfaces/websocket.interface';
+import { StateService } from '@app/services/state.service';
+import { BlockExtended } from '@interfaces/node-api.interface';
+import { WebsocketService } from '@app/services/websocket.service';
+import { MempoolInfo, Recommendedfees } from '@interfaces/websocket.interface';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
   selector: 'app-clock',

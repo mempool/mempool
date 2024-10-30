@@ -1,0 +1,10 @@
+<div class="addresses-treemap-container">
+  <div *ngIf="addresses" style="height: 300px">
+    <div *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions" (chartInit)="onChartInit($event)">
+    </div>
+  </div>
+
+  <div *ngIf="!stateService.isBrowser || isLoading" class="text-center loading-spinner">
+    <div class="spinner-border text-light"></div>
+  </div>
+</div>

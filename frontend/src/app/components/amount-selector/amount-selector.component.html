@@ -1,0 +1,7 @@
+<div [formGroup]="amountForm" class="text-small text-center">
+    <select formControlName="mode" class="custom-select custom-select-sm form-control-secondary form-control mx-auto" style="width: 70px;" (change)="changeMode()">
+        <option value="btc" i18n="shared.btc|BTC">BTC</option>
+        <option value="sats" i18n="shared.sats">sats</option>
+        <option value="fiat" i18n="shared.fiat|Fiat">Fiat</option>
+    </select>
+</div>

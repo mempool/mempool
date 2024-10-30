@@ -79,8 +79,8 @@ export class Common {
     return arr;
   }
 
-  static findRbfTransactions(added: MempoolTransactionExtended[], deleted: MempoolTransactionExtended[], forceScalable = false): { [txid: string]: MempoolTransactionExtended[] } {
-    const matches: { [txid: string]: MempoolTransactionExtended[] } = {};
+  static findRbfTransactions(added: MempoolTransactionExtended[], deleted: MempoolTransactionExtended[], forceScalable = false): { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }} {
+    const matches: { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }} = {};
 
     // For small N, a naive nested loop is extremely fast, but it doesn't scale
     if (added.length < 1000 && deleted.length < 50 && !forceScalable) {
@@ -95,7 +95,7 @@ export class Common {
               addedTx.vin.some((vin) => vin.txid === deletedVin.txid && vin.vout === deletedVin.vout));
             });
         if (foundMatches?.length) {
-          matches[addedTx.txid] = [...new Set(foundMatches)];
+          matches[addedTx.txid] = { replaced: [...new Set(foundMatches)], replacedBy: addedTx };
         }
       });
     } else {
@@ -123,7 +123,7 @@ export class Common {
             foundMatches.add(deletedTx);
           }
           if (foundMatches.size) {
-            matches[addedTx.txid] = [...foundMatches];
+            matches[addedTx.txid] = { replaced: [...foundMatches], replacedBy: addedTx };
           }
         }
       }
@@ -138,17 +138,17 @@ export class Common {
       const replaced: Set<MempoolTransactionExtended> = new Set();
       for (let i = 0; i < tx.vin.length; i++) {
         const vin = tx.vin[i];
-        const match = spendMap.get(`${vin.txid}:${vin.vout}`);
+        const key = `${vin.txid}:${vin.vout}`;
+        const match = spendMap.get(key);
         if (match && match.txid !== tx.txid) {
           replaced.add(match);
           // remove this tx from the spendMap
           // prevents the same tx being replaced more than once
           for (const replacedVin of match.vin) {
-            const key = `${replacedVin.txid}:${replacedVin.vout}`;
-            spendMap.delete(key);
+            const replacedKey = `${replacedVin.txid}:${replacedVin.vout}`;
+            spendMap.delete(replacedKey);
           }
         }
-        const key = `${vin.txid}:${vin.vout}`;
         spendMap.delete(key);
       }
       if (replaced.size) {

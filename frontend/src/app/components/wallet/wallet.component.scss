@@ -1,0 +1,117 @@
+.qr-wrapper {
+  background-color: #FFF;
+  padding: 10px;
+  padding-bottom: 5px;
+  display: inline-block;
+}
+
+.treemap-col {
+  width: 45%;
+  height: 300px;
+}
+
+.fiat {
+  display: block;
+  @media (min-width: 992px){
+    display: inline-block;
+    margin-left: 10px;
+  }
+}
+
+.table {
+  tr td {
+    &:last-child {
+      text-align: right;
+      @media (min-width: 576px) {
+        text-align: left;
+      }
+    }
+  }
+}
+
+.address-list {
+  width: 100%;
+  max-width: 200px;
+}
+
+h1 {
+  margin: 0px;
+  padding: 0px;
+  margin-right: 10px;
+  font-size: 1.9rem;
+  @media (min-width: 576px) {
+    font-size: 2rem;
+    float: left;
+  }
+  @media (min-width: 768px) {
+    font-size: 2.5rem;
+  }
+}
+
+.title-address {
+  align-items: baseline;
+}
+
+.address-link {
+  line-height: 56px;
+  margin-left: 0px;
+  top: -2px;
+  position: relative;
+  @media (min-width: 768px) {
+    line-height: 69px;
+  }
+}
+
+.row{
+	flex-direction: column;
+	@media (min-width: 576px) {
+		flex-direction: row;
+	}
+}
+
+@media (max-width: 767.98px) {
+	.mobile-bottomcol {
+		margin-top: 15px;
+	}
+	.details-table td:first-child {
+		white-space: pre-wrap;
+	}
+}
+
+.tx-link {
+  display: block;
+  height: 100%;
+  top: 9px;
+  position: relative;
+	@media (min-width: 576px) {
+    top: 11px;
+	}
+  @media (min-width: 768px) {
+    max-width: calc(100% - 180px);
+    top: 17px;
+  }
+}
+
+.title-tx {
+  h2 {
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+}
+
+.liquid-address {
+  .address-table {
+    table-layout: fixed;
+
+    tr td:first-child {
+      width: 170px;
+    }
+    tr td:last-child {
+      width: 80%;
+    }
+  }
+
+  .qrcode-col {
+    flex-grow: 0.5;
+  }
+}

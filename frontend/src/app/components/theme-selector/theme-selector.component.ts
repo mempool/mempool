@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { ThemeService } from '../../services/theme.service';
+import { ThemeService } from '@app/services/theme.service';
 import { Subscription } from 'rxjs';
 
 @Component({

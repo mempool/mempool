@@ -2,13 +2,13 @@ import { Input, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, O
 import { Router, ActivatedRoute } from '@angular/router';
 import { Observable, merge, of, Subject, Subscription } from 'rxjs';
 import { tap, takeUntil } from 'rxjs/operators';
-import { Env, StateService } from '../../../services/state.service';
-import { IBackendInfo } from '../../../interfaces/websocket.interface';
-import { LanguageService } from '../../../services/language.service';
-import { NavigationService } from '../../../services/navigation.service';
-import { StorageService } from '../../../services/storage.service';
-import { WebsocketService } from '../../../services/websocket.service';
-import { EnterpriseService } from '../../../services/enterprise.service';
+import { Env, StateService } from '@app/services/state.service';
+import { IBackendInfo } from '@interfaces/websocket.interface';
+import { LanguageService } from '@app/services/language.service';
+import { NavigationService } from '@app/services/navigation.service';
+import { StorageService } from '@app/services/storage.service';
+import { WebsocketService } from '@app/services/websocket.service';
+import { EnterpriseService } from '@app/services/enterprise.service';
 
 @Component({
   selector: 'app-global-footer',

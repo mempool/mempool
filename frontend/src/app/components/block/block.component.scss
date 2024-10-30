@@ -81,6 +81,19 @@ h1 {
   }
 }
 
+.miner-name {
+  margin-right: 4px;
+  vertical-align: top;
+}
+
+.pool-logo {
+  width: 25px;
+  height: 25px;
+  position: relative;
+  top: -1px;
+  margin-right: 2px;
+}
+
 .row {
 	flex-direction: column;
 	@media (min-width: 768px) {
