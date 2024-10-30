@@ -1,11 +1,11 @@
 import { Component, OnInit, Input, Output, EventEmitter, HostListener, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
-import { MenuGroup } from '../../interfaces/services.interface';
-import { StorageService } from '../../services/storage.service';
+import { MenuGroup } from '@interfaces/services.interface';
+import { StorageService } from '@app/services/storage.service';
 import { Router, NavigationStart } from '@angular/router';
-import { StateService } from '../../services/state.service';
-import { IUser, ServicesApiServices } from '../../services/services-api.service';
-import { AuthServiceMempool } from '../../services/auth.service';
+import { StateService } from '@app/services/state.service';
+import { IUser, ServicesApiServices } from '@app/services/services-api.service';
+import { AuthServiceMempool } from '@app/services/auth.service';
 
 @Component({
   selector: 'app-menu',

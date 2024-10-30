@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Observable, share } from 'rxjs';
-import { INodesRanking } from '../../interfaces/node-api.interface';
-import { SeoService } from '../../services/seo.service';
-import { LightningApiService } from '../lightning-api.service';
+import { INodesRanking } from '@interfaces/node-api.interface';
+import { SeoService } from '@app/services/seo.service';
+import { LightningApiService } from '@app/lightning/lightning-api.service';
 
 @Component({
   selector: 'app-nodes-rankings-dashboard',

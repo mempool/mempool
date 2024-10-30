@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { StateService } from '../../../services/state.service';
+import { StateService } from '@app/services/state.service';
 
 @Component({
   selector: 'app-btc',

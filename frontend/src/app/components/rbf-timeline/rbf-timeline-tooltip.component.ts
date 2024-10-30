@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild, Input, OnChanges } from '@angular/core';
-import { RbfTree } from '../../interfaces/node-api.interface';
+import { RbfTree } from '@interfaces/node-api.interface';
 
 @Component({
   selector: 'app-rbf-timeline-tooltip',

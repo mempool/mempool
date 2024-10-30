@@ -1,9 +1,9 @@
-import { FastVertexArray } from './fast-vertex-array';
-import TxView from './tx-view';
-import { TransactionStripped } from '../../interfaces/node-api.interface';
-import { Color, Position, Square, ViewUpdateParams } from './sprite-types';
-import { defaultColorFunction, contrastColorFunction } from './utils';
-import { ThemeService } from '../../services/theme.service';
+import { FastVertexArray } from '@components/block-overview-graph/fast-vertex-array';
+import TxView from '@components/block-overview-graph/tx-view';
+import { TransactionStripped } from '@interfaces/node-api.interface';
+import { Color, Position, Square, ViewUpdateParams } from '@components/block-overview-graph/sprite-types';
+import { defaultColorFunction, contrastColorFunction } from '@components/block-overview-graph/utils';
+import { ThemeService } from '@app/services/theme.service';
 
 export default class BlockScene {
   scene: { count: number, offset: { x: number, y: number}};

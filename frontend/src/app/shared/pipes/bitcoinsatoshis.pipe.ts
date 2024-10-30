@@ -8,7 +8,7 @@ export class BitcoinsatoshisPipe implements PipeTransform {
 
   constructor(private sanitizer: DomSanitizer) { }
 
-  transform(value: string): SafeHtml {
+  transform(value: string, firstPartClass?: string): SafeHtml {
     const newValue = this.insertSpaces(parseFloat(value || '0').toFixed(8));
     const position = (newValue || '0').search(/[1-9]/);
 
@@ -16,7 +16,7 @@ export class BitcoinsatoshisPipe implements PipeTransform {
     const secondPart = newValue.slice(position);
 
     return this.sanitizer.bypassSecurityTrustHtml(
-      `<span class="text-secondary">${firstPart}</span>${secondPart}`
+      `<span class="${firstPartClass ? firstPartClass : 'text-secondary'}">${firstPart}</span>${secondPart}`
     );
   }
 

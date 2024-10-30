@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { AccelerationPosition, CpfpInfo, DifficultyAdjustment, MempoolPosition, SinglePoolStats } from '../interfaces/node-api.interface';
-import { StateService } from './state.service';
-import { MempoolBlock } from '../interfaces/websocket.interface';
-import { Transaction } from '../interfaces/electrs.interface';
-import { MiningService, MiningStats } from './mining.service';
-import { getUnacceleratedFeeRate } from '../shared/transaction.utils';
-import { AccelerationEstimate } from '../components/accelerate-checkout/accelerate-checkout.component';
+import { AccelerationPosition, CpfpInfo, DifficultyAdjustment, MempoolPosition, SinglePoolStats } from '@interfaces/node-api.interface';
+import { StateService } from '@app/services/state.service';
+import { MempoolBlock } from '@interfaces/websocket.interface';
+import { Transaction } from '@interfaces/electrs.interface';
+import { MiningService, MiningStats } from '@app/services/mining.service';
+import { getUnacceleratedFeeRate } from '@app/shared/transaction.utils';
+import { AccelerationEstimate } from '@components/accelerate-checkout/accelerate-checkout.component';
 import { Observable, combineLatest, map, of, share, shareReplay, tap } from 'rxjs';
 
 export interface ETA {
@@ -28,7 +28,7 @@ export class EtaService {
     return combineLatest([
       this.stateService.mempoolTxPosition$.pipe(map(p => p?.position)),
       this.stateService.difficultyAdjustment$,
-      miningStats ? of(miningStats) : this.miningService.getMiningStats('1w'),
+      miningStats ? of(miningStats) : this.miningService.getMiningStats('1m'),
     ]).pipe(
       map(([mempoolPosition, da, miningStats]) => {
         if (!mempoolPosition || !estimate?.pools?.length || !miningStats || !da) {
@@ -166,7 +166,7 @@ export class EtaService {
         pools[pool.poolUniqueId] = pool;
       }
       const unacceleratedPosition = this.mempoolPositionFromFees(getUnacceleratedFeeRate(tx, true), mempoolBlocks);
-      const totalAcceleratedHashrate = accelerationPositions.reduce((total, pos) => total + (pools[pos.poolId].lastEstimatedHashrate), 0);
+      const totalAcceleratedHashrate = accelerationPositions.reduce((total, pos) => total + (pools[pos.poolId]?.lastEstimatedHashrate || 0), 0);
       const shares = [
         {
           block: unacceleratedPosition.block,
@@ -174,7 +174,7 @@ export class EtaService {
         },
         ...accelerationPositions.map(pos => ({
           block: pos.block,
-          hashrateShare: ((pools[pos.poolId].lastEstimatedHashrate) / miningStats.lastEstimatedHashrate)
+          hashrateShare: ((pools[pos.poolId]?.lastEstimatedHashrate || 0) / miningStats.lastEstimatedHashrate)
         }))
       ];
       return this.calculateETAFromShares(shares, da);
@@ -204,7 +204,7 @@ export class EtaService {
 
       let tailProb = 0;
       let Q = 0;
-      for (let i = 0; i < max; i++) {
+      for (let i = 0; i <= max; i++) {
         // find H_i
         const H = shares.reduce((total, share) => total + (share.block <= i ? share.hashrateShare : 0), 0);
         // find S_i
@@ -215,7 +215,7 @@ export class EtaService {
         tailProb += S;
       }
       // at max depth, the transaction is guaranteed to be mined in the next block if it hasn't already
-      Q += (1-tailProb);
+      Q += ((max + 1) * (1-tailProb));
       const eta = da.timeAvg * Q; // T x Q
 
       return {

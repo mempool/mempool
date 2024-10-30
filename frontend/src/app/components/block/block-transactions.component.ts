@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { StateService } from '../../services/state.service';
-import { Transaction, Vout } from '../../interfaces/electrs.interface';
+import { StateService } from '@app/services/state.service';
+import { Transaction, Vout } from '@interfaces/electrs.interface';
 import { Observable, Subscription, catchError, combineLatest, map, of, startWith, switchMap, tap } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ElectrsApiService } from '../../services/electrs-api.service';
-import { PreloadService } from '../../services/preload.service';
+import { ElectrsApiService } from '@app/services/electrs-api.service';
+import { PreloadService } from '@app/services/preload.service';
 
 @Component({
   selector: 'app-block-transactions',

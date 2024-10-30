@@ -1,16 +1,16 @@
 import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, NgZone, OnInit } from '@angular/core';
-import { SeoService } from '../../services/seo.service';
-import { ApiService } from '../../services/api.service';
+import { SeoService } from '@app/services/seo.service';
+import { ApiService } from '@app/services/api.service';
 import { delay, Observable, of, switchMap, tap, zip } from 'rxjs';
-import { AssetsService } from '../../services/assets.service';
+import { AssetsService } from '@app/services/assets.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
-import { StateService } from '../../services/state.service';
-import { EChartsOption, echarts } from '../../graphs/echarts';
-import { isMobile } from '../../shared/common.utils';
-import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
-import { getFlagEmoji } from '../../shared/common.utils';
-import { lerpColor } from '../../shared/graphs.utils';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
+import { StateService } from '@app/services/state.service';
+import { EChartsOption, echarts } from '@app/graphs/echarts';
+import { isMobile } from '@app/shared/common.utils';
+import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
+import { getFlagEmoji } from '@app/shared/common.utils';
+import { lerpColor } from '@app/shared/graphs.utils';
 
 @Component({
   selector: 'app-nodes-channels-map',

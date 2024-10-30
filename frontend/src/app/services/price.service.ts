@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { map, Observable, of, share, shareReplay, tap } from 'rxjs';
-import { ApiService } from './api.service';
-import { StateService } from './state.service';
+import { ApiService } from '@app/services/api.service';
+import { StateService } from '@app/services/state.service';
 
 // nodejs backend interfaces
 export interface ApiPrice {

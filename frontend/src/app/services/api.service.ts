@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators, PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights,
-  RbfTree, BlockAudit, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume, AccelerationInfo, TestMempoolAcceptResult } from '../interfaces/node-api.interface';
+  RbfTree, BlockAudit, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume, AccelerationInfo, TestMempoolAcceptResult, WalletAddress, SubmitPackageResult } from '../interfaces/node-api.interface';
 import { BehaviorSubject, Observable, catchError, filter, map, of, shareReplay, take, tap } from 'rxjs';
-import { StateService } from './state.service';
-import { Transaction } from '../interfaces/electrs.interface';
-import { Conversion } from './price.service';
-import { StorageService } from './storage.service';
-import { WebsocketResponse } from '../interfaces/websocket.interface';
-import { TxAuditStatus } from '../components/transaction/transaction.component';
+import { StateService } from '@app/services/state.service';
+import { Transaction } from '@interfaces/electrs.interface';
+import { Conversion } from '@app/services/price.service';
+import { StorageService } from '@app/services/storage.service';
+import { WebsocketResponse } from '@interfaces/websocket.interface';
+import { TxAuditStatus } from '@components/transaction/transaction.component';
 
 @Injectable({
   providedIn: 'root'
@@ -242,6 +242,19 @@ export class ApiService {
 
   testTransactions$(rawTxs: string[], maxfeerate?: number): Observable<TestMempoolAcceptResult[]> {
     return this.httpClient.post<TestMempoolAcceptResult[]>(this.apiBaseUrl + this.apiBasePath + `/api/txs/test${maxfeerate != null ? '?maxfeerate=' + maxfeerate.toFixed(8) : ''}`, rawTxs);
+  }
+
+  submitPackage$(rawTxs: string[], maxfeerate?: number, maxburnamount?: number): Observable<SubmitPackageResult> {
+    const queryParams = [];
+
+    if (maxfeerate) {
+      queryParams.push(`maxfeerate=${maxfeerate}`);
+    }
+
+    if (maxburnamount) {
+      queryParams.push(`maxburnamount=${maxburnamount}`);
+    }
+    return this.httpClient.post<SubmitPackageResult>(this.apiBaseUrl + this.apiBasePath + '/api/v1/txs/package' + (queryParams.length > 0 ? `?${queryParams.join('&')}` : ''), rawTxs);
   }
 
   getTransactionStatus$(txid: string): Observable<any> {
@@ -501,6 +514,12 @@ export class ApiService {
     return this.httpClient.get<Conversion>(
       `${this.apiBaseUrl}${this.apiBasePath}/api/v1/historical-price` +
         (queryParams.length > 0 ? `?${queryParams.join('&')}` : '')
+    );
+  }
+
+  getWallet$(walletName: string): Observable<Record<string, WalletAddress>> {
+    return this.httpClient.get<Record<string, WalletAddress>>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/wallet/${walletName}`
     );
   }
 

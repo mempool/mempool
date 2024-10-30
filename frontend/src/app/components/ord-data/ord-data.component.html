@@ -1,0 +1,65 @@
+@if (minted) {
+  <ng-container i18n="ord.mint-n-runes">
+    <span>Mint</span>
+    <span class="amount"> {{ minted >= 100000 ? (minted | amountShortener:undefined:undefined:true) : minted }} </span>
+    <ng-container *ngTemplateOutlet="runeName; context: { $implicit: runestone.mint.toString() }"></ng-container>
+  </ng-container>
+}
+@if (runestone?.etching?.supply) {
+  @if (runestone?.etching.premine > 0) {
+    <ng-container i18n="ord.premine-n-runes">
+      <span>Premine</span>
+      <span class="amount"> {{ getAmount(runestone.etching.premine, runestone.etching.divisibility || 0)  >= 100000 ? (getAmount(runestone.etching.premine, runestone.etching.divisibility || 0) | amountShortener:undefined:undefined:true) : getAmount(runestone.etching.premine, runestone.etching.divisibility || 0) }} </span>
+      {{ runestone.etching.symbol }}
+      <span class="name">{{ runestone.etching.spacedName }}</span>
+      <span> ({{ toNumber(runestone.etching.premine) / toNumber(runestone.etching.supply) * 100 | amountShortener:0}}% of total supply)</span>
+    </ng-container>
+  } @else {
+    <ng-container i18n="ord.etch-rune">
+      <span>Etching of</span>
+      {{ runestone.etching.symbol }}
+      <span class="name">{{ runestone.etching.spacedName }}</span>
+    </ng-container>
+  }
+}
+@if (transferredRunes?.length && type === 'vout') {
+  <div *ngFor="let rune of transferredRunes">
+    <ng-container i18n="ord.transfer-rune">
+      <span>Transfer</span>
+      <ng-container *ngTemplateOutlet="runeName; context: { $implicit: rune.key }"></ng-container>
+    </ng-container>
+  </div>
+}
+
+@if (inscriptions?.length && type === 'vin') {
+  <div *ngFor="let contentType of inscriptionsData | keyvalue">
+    <div>
+      @if (contentType.key !== 'undefined') {
+        <span class="badge badge-ord mr-1">{{ contentType.value.count > 1 ? contentType.value.count + " " : "" }}{{ contentType.value?.tag || contentType.key }}</span>
+      } @else {
+        <span class="badge badge-ord mr-1" i18n="unknown">Unknown</span>
+      }
+      <span class="badge badge-ord" *ngIf="contentType.value.totalSize > 0">{{ contentType.value.totalSize | bytes:2:'B':undefined:true }}</span>
+      <a *ngIf="contentType.value.delegate" [routerLink]="['/tx' | relativeUrl, contentType.value.delegate]">
+        <span i18n="ord.source-inscription">Source inscription</span>
+      </a>
+    </div>
+    <pre *ngIf="contentType.value.json" class="name" style="white-space: pre-wrap; word-break: break-word;">{{ contentType.value.json | json }}</pre>
+    <pre *ngIf="contentType.value.text" class="name" style="white-space: pre-wrap; word-break: break-word;">{{ contentType.value.text }}</pre>
+    </div>
+}
+
+@if (!runestone && type === 'vout') {
+  <div class="skeleton-loader" style="width: 50%;"></div>
+}
+
+@if ((runestone && !minted && !runestone.etching?.supply && !transferredRunes?.length && type === 'vout') || (!inscriptions?.length && type === 'vin')) {
+  <i i18n="error.decoding-data">Error decoding data</i>
+}
+
+<ng-template #runeName let-id>
+  {{ runeInfo[id]?.etching.symbol || '' }}
+  <a [routerLink]="id !== '1:0' ? ['/tx' | relativeUrl, runeInfo[id]?.txid] : null" [class.rune-link]="id !== '1:0'" [class.disabled]="id === '1:0'">
+    <span class="name">{{ runeInfo[id]?.etching.spacedName }}</span>
+  </a>
+</ng-template>

@@ -12,7 +12,7 @@
           <div class="input-group-prepend">
             <span class="input-group-text">{{ currency$ | async }}</span>
           </div>
-          <input type="text" class="form-control" formControlName="fiat" (input)="transformInput('fiat')" (click)="selectAll($event)">
+          <input type="text" inputmode="numeric" class="form-control" formControlName="fiat" (input)="transformInput('fiat')" (click)="selectAll($event)">
           <app-clipboard [button]="true" [text]="form.get('fiat').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
         </div>
 
@@ -20,7 +20,7 @@
           <div class="input-group-prepend">
             <span class="input-group-text">BTC</span>
           </div>
-          <input type="text" class="form-control" formControlName="bitcoin" (input)="transformInput('bitcoin')" (click)="selectAll($event)">
+          <input type="text" inputmode="numeric" class="form-control" formControlName="bitcoin" (input)="transformInput('bitcoin')" (click)="selectAll($event)">
           <app-clipboard [button]="true" [text]="form.get('bitcoin').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
         </div>
 
@@ -28,7 +28,7 @@
           <div class="input-group-prepend">
             <span class="input-group-text" i18n="shared.sats">sats</span>
           </div>
-          <input type="text" class="form-control" formControlName="satoshis" (input)="transformInput('satoshis')" (click)="selectAll($event)">
+          <input type="text" inputmode="numeric" class="form-control" formControlName="satoshis" (input)="transformInput('satoshis')" (click)="selectAll($event)">
           <app-clipboard [button]="true" [text]="form.get('satoshis').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
         </div>
       </form>

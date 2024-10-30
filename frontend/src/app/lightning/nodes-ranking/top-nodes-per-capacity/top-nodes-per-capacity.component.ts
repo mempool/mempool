@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { combineLatest, map, Observable } from 'rxjs';
-import { INodesRanking, INodesStatistics, ITopNodesPerCapacity } from '../../../interfaces/node-api.interface';
-import { SeoService } from '../../../services/seo.service';
-import { StateService } from '../../../services/state.service';
-import { GeolocationData } from '../../../shared/components/geolocation/geolocation.component';
-import { LightningApiService } from '../../lightning-api.service';
+import { INodesRanking, INodesStatistics, ITopNodesPerCapacity } from '@interfaces/node-api.interface';
+import { SeoService } from '@app/services/seo.service';
+import { StateService } from '@app/services/state.service';
+import { GeolocationData } from '@app/shared/components/geolocation/geolocation.component';
+import { LightningApiService } from '@app/lightning/lightning-api.service';
 
 @Component({
   selector: 'app-top-nodes-per-capacity',

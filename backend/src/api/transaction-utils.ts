@@ -121,6 +121,7 @@ class TransactionUtils {
     const adjustedVsize = Math.max(fractionalVsize, sigops *  5); // adjusted vsize = Max(weight, sigops * bytes_per_sigop) / witness_scale_factor
     const feePerVbytes = (transaction.fee || 0) / fractionalVsize;
     const adjustedFeePerVsize = (transaction.fee || 0) / adjustedVsize;
+    const effectiveFeePerVsize = transaction['effectiveFeePerVsize'] || adjustedFeePerVsize || feePerVbytes;
     const transactionExtended: MempoolTransactionExtended = Object.assign(transaction, {
       order: this.txidToOrdering(transaction.txid),
       vsize,
@@ -128,7 +129,7 @@ class TransactionUtils {
       sigops,
       feePerVsize: feePerVbytes,
       adjustedFeePerVsize: adjustedFeePerVsize,
-      effectiveFeePerVsize: adjustedFeePerVsize,
+      effectiveFeePerVsize: effectiveFeePerVsize,
     });
     if (!transactionExtended?.status?.confirmed && !transactionExtended.firstSeen) {
       transactionExtended.firstSeen = Math.round((Date.now() / 1000));

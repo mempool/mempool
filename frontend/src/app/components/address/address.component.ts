@@ -1,17 +1,17 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { ElectrsApiService } from '../../services/electrs-api.service';
+import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { switchMap, filter, catchError, map, tap } from 'rxjs/operators';
-import { Address, ChainStats, Transaction, Vin } from '../../interfaces/electrs.interface';
-import { WebsocketService } from '../../services/websocket.service';
-import { StateService } from '../../services/state.service';
-import { AudioService } from '../../services/audio.service';
-import { ApiService } from '../../services/api.service';
-import { of, merge, Subscription, Observable } from 'rxjs';
-import { SeoService } from '../../services/seo.service';
-import { seoDescriptionNetwork } from '../../shared/common.utils';
-import { AddressInformation } from '../../interfaces/node-api.interface';
-import { AddressTypeInfo } from '../../shared/address-utils';
+import { Address, ChainStats, Transaction, Utxo, Vin } from '@interfaces/electrs.interface';
+import { WebsocketService } from '@app/services/websocket.service';
+import { StateService } from '@app/services/state.service';
+import { AudioService } from '@app/services/audio.service';
+import { ApiService } from '@app/services/api.service';
+import { of, merge, Subscription, Observable, forkJoin } from 'rxjs';
+import { SeoService } from '@app/services/seo.service';
+import { seoDescriptionNetwork } from '@app/shared/common.utils';
+import { AddressInformation } from '@interfaces/node-api.interface';
+import { AddressTypeInfo } from '@app/shared/address-utils';
 
 class AddressStats implements ChainStats {
   address: string;
@@ -104,6 +104,7 @@ export class AddressComponent implements OnInit, OnDestroy {
   addressString: string;
   isLoadingAddress = true;
   transactions: Transaction[];
+  utxos: Utxo[];
   isLoadingTransactions = true;
   retryLoadMore = false;
   error: any;
@@ -159,6 +160,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.address = null;
           this.isLoadingTransactions = true;
           this.transactions = null;
+          this.utxos = null;
           this.addressInfo = null;
           this.exampleChannel = null;
           document.body.scrollTo(0, 0);
@@ -212,11 +214,23 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.updateChainStats();
           this.isLoadingAddress = false;
           this.isLoadingTransactions = true;
-          return address.is_pubkey
+          const utxoCount = this.chainStats.utxos + this.mempoolStats.utxos;
+          return forkJoin([
+            address.is_pubkey
               ? this.electrsApiService.getScriptHashTransactions$((address.address.length === 66 ? '21' : '41') + address.address + 'ac')
-              : this.electrsApiService.getAddressTransactions$(address.address);
+              : this.electrsApiService.getAddressTransactions$(address.address),
+            (utxoCount > 2 && utxoCount <= 500 ? (address.is_pubkey
+              ? this.electrsApiService.getScriptHashUtxos$((address.address.length === 66 ? '21' : '41') + address.address + 'ac')
+              : this.electrsApiService.getAddressUtxos$(address.address)) : of(null)).pipe(
+                catchError(() => {
+                  return of(null);
+                })
+              )
+          ]);
         }),
-        switchMap((transactions) => {
+        switchMap(([transactions, utxos]) => {
+          this.utxos = utxos;
+
           this.tempTransactions = transactions;
           if (transactions.length) {
             this.lastTransactionTxId = transactions[transactions.length - 1].txid;
@@ -309,6 +323,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.transactions = this.transactions.slice();
           this.mempoolStats.removeTx(transaction);
           this.audioService.playSound('magic');
+          this.confirmTransaction(tx);
         } else {
           if (this.addTransaction(transaction, false)) {
             this.audioService.playSound('magic');
@@ -334,6 +349,31 @@ export class AddressComponent implements OnInit, OnDestroy {
       }
     }
 
+    // update utxos in-place
+    if (this.utxos != null) {
+      let utxosChanged = false;
+      for (const vin of transaction.vin) {
+        const utxoIndex = this.utxos.findIndex((utxo) => utxo.txid === vin.txid && utxo.vout === vin.vout);
+        if (utxoIndex !== -1) {
+          this.utxos.splice(utxoIndex, 1);
+          utxosChanged = true;
+        }
+      }
+      for (const [index, vout] of transaction.vout.entries()) {
+        if (vout.scriptpubkey_address === this.address.address) {
+          this.utxos.push({
+            txid: transaction.txid,
+            vout: index,
+            value: vout.value,
+            status: JSON.parse(JSON.stringify(transaction.status)),
+          });
+          utxosChanged = true;
+        }
+      }
+      if (utxosChanged) {
+        this.utxos = this.utxos.slice();
+      }
+    }
     return true;
   }
 
@@ -346,7 +386,63 @@ export class AddressComponent implements OnInit, OnDestroy {
     this.transactions.splice(index, 1);
     this.transactions = this.transactions.slice();
 
+    // update utxos in-place
+    if (this.utxos != null) {
+      let utxosChanged = false;
+      for (const vin of transaction.vin) {
+        if (vin.prevout?.scriptpubkey_address === this.address.address) {
+          this.utxos.push({
+            txid: vin.txid,
+            vout: vin.vout,
+            value: vin.prevout.value,
+            status: { confirmed: true }, // Assuming the input was confirmed
+          });
+          utxosChanged = true;
+        }
+      }
+      for (const [index, vout] of transaction.vout.entries()) {
+        if (vout.scriptpubkey_address === this.address.address) {
+          const utxoIndex = this.utxos.findIndex((utxo) => utxo.txid === transaction.txid && utxo.vout === index);
+          if (utxoIndex !== -1) {
+            this.utxos.splice(utxoIndex, 1);
+            utxosChanged = true;
+          }
+        }
+      }
+      if (utxosChanged) {
+        this.utxos = this.utxos.slice();
+      }
+    }
+
     return true;
+  }
+
+  confirmTransaction(transaction: Transaction): void {
+    // update utxos in-place
+    if (this.utxos != null) {
+      let utxosChanged = false;
+      for (const vin of transaction.vin) {
+        if (vin.prevout?.scriptpubkey_address === this.address.address) {
+          const utxoIndex = this.utxos.findIndex((utxo) => utxo.txid === vin.txid && utxo.vout === vin.vout);
+          if (utxoIndex !== -1) {
+            this.utxos[utxoIndex].status = JSON.parse(JSON.stringify(transaction.status));
+            utxosChanged = true;
+          }
+        }
+      }
+      for (const [index, vout] of transaction.vout.entries()) {
+        if (vout.scriptpubkey_address === this.address.address) {
+          const utxoIndex = this.utxos.findIndex((utxo) => utxo.txid === transaction.txid && utxo.vout === index);
+          if (utxoIndex !== -1) {
+            this.utxos[utxoIndex].status = JSON.parse(JSON.stringify(transaction.status));
+            utxosChanged = true;
+          }
+        }
+      }
+      if (utxosChanged) {
+        this.utxos = this.utxos.slice();
+      }
+    }
   }
 
   loadMore(): void {

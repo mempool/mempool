@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-import { defaultMempoolFeeColors, contrastMempoolFeeColors } from '../app.constants';
-import { StorageService } from './storage.service';
-import { StateService } from './state.service';
+import { defaultMempoolFeeColors, contrastMempoolFeeColors } from '@app/app.constants';
+import { StorageService } from '@app/services/storage.service';
+import { StateService } from '@app/services/state.service';
 
 @Injectable({
   providedIn: 'root'

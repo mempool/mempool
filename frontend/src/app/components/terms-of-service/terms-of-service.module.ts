@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
-import { TermsOfServiceComponent } from './terms-of-service.component';
-import { SharedModule } from '../../shared/shared.module';
+import { TermsOfServiceComponent } from '@components/terms-of-service/terms-of-service.component';
+import { SharedModule } from '@app/shared/shared.module';
 
 const routes: Routes = [
   {

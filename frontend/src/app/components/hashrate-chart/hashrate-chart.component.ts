@@ -1,18 +1,18 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
-import { echarts, EChartsOption } from '../../graphs/echarts';
+import { echarts, EChartsOption } from '@app/graphs/echarts';
 import { combineLatest, fromEvent, merge, Observable, of } from 'rxjs';
 import { map, mergeMap, share, startWith, switchMap, tap } from 'rxjs/operators';
-import { ApiService } from '../../services/api.service';
-import { SeoService } from '../../services/seo.service';
+import { ApiService } from '@app/services/api.service';
+import { SeoService } from '@app/services/seo.service';
 import { formatNumber } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { selectPowerOfTen } from '../../bitcoin.utils';
-import { StorageService } from '../../services/storage.service';
-import { MiningService } from '../../services/mining.service';
-import { download } from '../../shared/graphs.utils';
+import { selectPowerOfTen } from '@app/bitcoin.utils';
+import { StorageService } from '@app/services/storage.service';
+import { MiningService } from '@app/services/mining.service';
+import { download } from '@app/shared/graphs.utils';
 import { ActivatedRoute } from '@angular/router';
-import { StateService } from '../../services/state.service';
-import { seoDescriptionNetwork } from '../../shared/common.utils';
+import { StateService } from '@app/services/state.service';
+import { seoDescriptionNetwork } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-hashrate-chart',

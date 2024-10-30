@@ -1,12 +1,12 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef, OnDestroy, Inject, LOCALE_ID } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription, catchError, filter, of, switchMap, tap, throttleTime } from 'rxjs';
-import { Acceleration, BlockExtended, SinglePoolStats } from '../../../interfaces/node-api.interface';
-import { StateService } from '../../../services/state.service';
-import { WebsocketService } from '../../../services/websocket.service';
-import { ServicesApiServices } from '../../../services/services-api.service';
-import { SeoService } from '../../../services/seo.service';
+import { BehaviorSubject, Observable, Subscription, catchError, combineLatest, filter, of, switchMap, tap, throttleTime, timer } from 'rxjs';
+import { Acceleration, BlockExtended, SinglePoolStats } from '@interfaces/node-api.interface';
+import { StateService } from '@app/services/state.service';
+import { WebsocketService } from '@app/services/websocket.service';
+import { ServicesApiServices } from '@app/services/services-api.service';
+import { SeoService } from '@app/services/seo.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MiningService } from '../../../services/mining.service';
+import { MiningService } from '@app/services/mining.service';
 
 @Component({
   selector: 'app-accelerations-list',
@@ -61,8 +61,11 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
       this.websocketService.want(['blocks']);
       this.seoService.setTitle($localize`:@@02573b6980a2d611b4361a2595a4447e390058cd:Accelerations`);
 
-      this.paramSubscription = this.route.params.pipe(
-        tap(params => {
+      this.paramSubscription = combineLatest([
+        this.route.params,
+        timer(0),
+      ]).pipe(
+        tap(([params]) => {
           this.page = +params['page'] || 1;
           this.pageSubject.next(this.page);
         })
