@@ -42,6 +42,7 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/:height', this.getBlocks.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash', this.getBlock)
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/summary', this.getStrippedBlockTransactions)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/tx/:txid/summary', this.getStrippedBlockTransaction)
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/audit-summary', this.getBlockAuditSummary)
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/tx/:txid/audit', this.$getBlockTxAuditSummary)
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/height', this.getBlockTipHeight)
@@ -318,6 +319,20 @@ class BitcoinRoutes {
       res.json(transactions);
     } catch (e) {
       handleError(req, res, 500, e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async getStrippedBlockTransaction(req: Request, res: Response) {
+    try {
+      const transaction = await blocks.$getSingleTxFromSummary(req.params.hash, req.params.txid);
+      if (!transaction) {
+        handleError(req, res, 404, `transaction not found in summary`);
+        return;
+      }
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 3600 * 24 * 30).toUTCString());
+      res.json(transaction);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
