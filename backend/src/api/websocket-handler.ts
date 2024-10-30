@@ -22,6 +22,7 @@ import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository
 import Audit from './audit';
 import priceUpdater from '../tasks/price-updater';
 import { ApiPrice } from '../repositories/PricesRepository';
+import { Acceleration } from './services/acceleration';
 import accelerationApi from './services/acceleration';
 import mempool from './mempool';
 import statistics from './statistics/statistics';
@@ -59,6 +60,8 @@ class WebsocketHandler {
   private serializedInitData: string = '{}';
   private lastRbfSummary: ReplacementInfo[] | null = null;
   private mempoolSequence: number = 0;
+
+  private accelerations: Record<string, Acceleration> = {};
 
   constructor() { }
 
@@ -495,6 +498,42 @@ class WebsocketHandler {
     }
   }
 
+  handleAccelerationsChanged(accelerations: Record<string, Acceleration>): void {
+    if (!this.webSocketServers.length) {
+      throw new Error('No WebSocket.Server has been set');
+    }
+
+    const websocketAccelerationDelta = accelerationApi.getAccelerationDelta(this.accelerations, accelerations);
+    this.accelerations = accelerations;
+
+    if (!websocketAccelerationDelta.length) {
+      return;
+    }
+
+    // pre-compute acceleration delta
+    const accelerationUpdate = {
+      added: websocketAccelerationDelta.map(txid => accelerations[txid]).filter(acc => acc != null),
+      removed: websocketAccelerationDelta.filter(txid => !accelerations[txid]),
+    };
+
+    try {
+      const response = JSON.stringify({
+        accelerations: accelerationUpdate,
+      });
+
+      for (const server of this.webSocketServers) {
+        server.clients.forEach((client) => {
+          if (client.readyState !== WebSocket.OPEN) {
+            return;
+          }
+          client.send(response);
+        });
+      }
+    } catch (e) {
+      logger.debug(`Error sending acceleration update to websocket clients: ${e}`);
+    }
+  }
+
   handleReorg(): void {
     if (!this.webSocketServers.length) {
       throw new Error('No WebSocket.Server have been set');
@@ -571,7 +610,7 @@ class WebsocketHandler {
     const vBytesPerSecond = memPool.getVBytesPerSecond();
     const rbfTransactions = Common.findRbfTransactions(newTransactions, recentlyDeletedTransactions.flat());
     const da = difficultyAdjustment.getDifficultyAdjustment();
-    const accelerations = memPool.getAccelerations();
+    const accelerations = accelerationApi.getAccelerations();
     memPool.handleRbfTransactions(rbfTransactions);
     const rbfChanges = rbfCache.getRbfChanges();
     let rbfReplacements;
@@ -679,10 +718,13 @@ class WebsocketHandler {
     const addressCache = this.makeAddressCache(newTransactions);
     const removedAddressCache = this.makeAddressCache(deletedTransactions);
 
+    const websocketAccelerationDelta = accelerationApi.getAccelerationDelta(this.accelerations, accelerations);
+    this.accelerations = accelerations;
+
     // pre-compute acceleration delta
     const accelerationUpdate = {
-      added: accelerationDelta.map(txid => accelerations[txid]).filter(acc => acc != null),
-      removed: accelerationDelta.filter(txid => !accelerations[txid]),
+      added: websocketAccelerationDelta.map(txid => accelerations[txid]).filter(acc => acc != null),
+      removed: websocketAccelerationDelta.filter(txid => !accelerations[txid]),
     };
 
     // TODO - Fix indentation after PR is merged
