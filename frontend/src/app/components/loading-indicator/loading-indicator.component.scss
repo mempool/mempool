@@ -1,7 +1,7 @@
 .sticky-loading {
   position: absolute;
   right: 10px;
-  z-index: 99;
+  z-index: 1000;
   font-size: 14px;
   @media (width >= 992px) {
     left: 32px;
