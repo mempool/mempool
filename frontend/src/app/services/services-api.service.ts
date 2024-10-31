@@ -18,7 +18,6 @@ export interface IUser {
   subscription_tag: string;
   status: 'pending' | 'verified' | 'disabled';
   features: string | null;
-  fullName: string | null;
   countryCode: string | null;
   imageMd5: string;
   ogRank: number | null;
