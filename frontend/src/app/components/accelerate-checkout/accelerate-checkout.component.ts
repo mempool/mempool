@@ -1,16 +1,16 @@
 /* eslint-disable no-console */
 import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, ChangeDetectorRef, SimpleChanges, HostListener } from '@angular/core';
 import { Subscription, tap, of, catchError, Observable, switchMap } from 'rxjs';
-import { ServicesApiServices } from '../../services/services-api.service';
-import { md5, insecureRandomUUID } from '../../shared/common.utils';
-import { StateService } from '../../services/state.service';
-import { AudioService } from '../../services/audio.service';
-import { ETA, EtaService } from '../../services/eta.service';
-import { Transaction } from '../../interfaces/electrs.interface';
-import { MiningStats } from '../../services/mining.service';
-import { IAuth, AuthServiceMempool } from '../../services/auth.service';
-import { EnterpriseService } from '../../services/enterprise.service';
-import { ApiService } from '../../services/api.service';
+import { ServicesApiServices } from '@app/services/services-api.service';
+import { md5, insecureRandomUUID } from '@app/shared/common.utils';
+import { StateService } from '@app/services/state.service';
+import { AudioService } from '@app/services/audio.service';
+import { ETA, EtaService } from '@app/services/eta.service';
+import { Transaction } from '@interfaces/electrs.interface';
+import { MiningStats } from '@app/services/mining.service';
+import { IAuth, AuthServiceMempool } from '@app/services/auth.service';
+import { EnterpriseService } from '@app/services/enterprise.service';
+import { ApiService } from '@app/services/api.service';
 import { isDevMode } from '@angular/core';
 
 export type PaymentMethod = 'balance' | 'bitcoin' | 'cashapp' | 'applePay' | 'googlePay';
@@ -84,13 +84,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   timePaid: number = 0; // time acceleration requested
   math = Math;
   isMobile: boolean = window.innerWidth <= 767.98;
-  isProdDomain = ['mempool.space',
-    'mempool-staging.va1.mempool.space',
-    'mempool-staging.fmt.mempool.space',
-    'mempool-staging.fra.mempool.space',
-    'mempool-staging.tk7.mempool.space',
-    'mempool-staging.sg1.mempool.space'
-   ].indexOf(document.location.hostname) > -1;
+  isProdDomain = false;
 
   private _step: CheckoutStep = 'summary';
   simpleMode: boolean = true;
@@ -143,6 +137,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     private authService: AuthServiceMempool,
     private enterpriseService: EnterpriseService,
   ) {
+    this.isProdDomain = this.stateService.env.PROD_DOMAINS.indexOf(document.location.hostname) > -1;
     this.accelerationUUID = insecureRandomUUID();
 
     // Check if Apple Pay available

@@ -1,8 +1,8 @@
-import { TransactionFlags } from './filters.utils';
-import { getVarIntLength, opcodes, parseMultisigScript, isPoint } from './script.utils';
-import { Transaction } from '../interfaces/electrs.interface';
-import { CpfpInfo, RbfInfo, TransactionStripped } from '../interfaces/node-api.interface';
-import { StateService } from '../services/state.service';
+import { TransactionFlags } from '@app/shared/filters.utils';
+import { getVarIntLength, opcodes, parseMultisigScript, isPoint } from '@app/shared/script.utils';
+import { Transaction } from '@interfaces/electrs.interface';
+import { CpfpInfo, RbfInfo, TransactionStripped } from '@interfaces/node-api.interface';
+import { StateService } from '@app/services/state.service';
 
 // Bitcoin Core default policy settings
 const MAX_STANDARD_TX_WEIGHT = 400_000;

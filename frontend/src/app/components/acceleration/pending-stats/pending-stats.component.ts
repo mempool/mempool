@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { Acceleration } from '../../../interfaces/node-api.interface';
-import { StateService } from '../../../services/state.service';
-import { WebsocketService } from '../../../services/websocket.service';
+import { Acceleration } from '@interfaces/node-api.interface';
+import { StateService } from '@app/services/state.service';
+import { WebsocketService } from '@app/services/websocket.service';
 
 @Component({
   selector: 'app-pending-stats',

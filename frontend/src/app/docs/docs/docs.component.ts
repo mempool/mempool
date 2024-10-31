@@ -1,9 +1,9 @@
 import { Component, OnInit, HostBinding } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Env, StateService } from '../../services/state.service';
-import { WebsocketService } from '../../services/websocket.service';
-import { SeoService } from '../../services/seo.service';
-import { OpenGraphService } from '../../services/opengraph.service';
+import { Env, StateService } from '@app/services/state.service';
+import { WebsocketService } from '@app/services/websocket.service';
+import { SeoService } from '@app/services/seo.service';
+import { OpenGraphService } from '@app/services/opengraph.service';
 
 @Component({
   selector: 'app-docs',

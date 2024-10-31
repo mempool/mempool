@@ -90,9 +90,9 @@
           <th class="d-none d-md-table-cell" i18n="mining.rank">Rank</th>
           <th class=""></th>
           <th class="" i18n="mining.pool-name">Pool</th>
-          <th class="" *ngIf="this.miningWindowPreference === '24h'" i18n="mining.hashrate">Hashrate</th>
+          <th class="" *ngIf="['24h', '3d', '1w'].includes(this.miningWindowPreference)" i18n="mining.hashrate">Hashrate</th>
           <th class="" i18n="master-page.blocks">Blocks</th>
-          <th *ngIf="auditAvailable" class="health text-right widget" [ngClass]="{'health-column': this.miningWindowPreference === '24h'}" i18n="latest-blocks.avg_health"
+          <th *ngIf="auditAvailable" class="health text-right widget" [ngClass]="{'health-column': ['24h', '3d', '1w'].includes(this.miningWindowPreference)}" i18n="latest-blocks.avg_health"
             i18n-ngbTooltip="latest-blocks.avg_health" ngbTooltip="Avg Health" placement="bottom" #health [disableTooltip]="!isEllipsisActive(health)">Avg Health</th>
           <th *ngIf="auditAvailable" class="d-none d-sm-table-cell" i18n="mining.fees-per-block">Avg Block Fees</th>
           <th class="d-none d-lg-table-cell" i18n="mining.empty-blocks">Empty Blocks</th>
@@ -105,12 +105,13 @@
             <img width="25" height="25" src="{{ pool.logo }}" [alt]="pool.name + ' mining pool logo'" onError="this.onerror=null; this.src = '/resources/mining-pools/default.svg'">
           </td>
           <td class="pool-name"><a [routerLink]="[('/mining/pool/' + pool.slug) | relativeUrl]">{{ pool.name }}</a></td>
-          <td class="" *ngIf="this.miningWindowPreference === '24h'">{{ pool.lastEstimatedHashrate | number: '1.2-2' }} {{
-            miningStats.miningUnits.hashrateUnit }}</td>
+          <td class="" *ngIf="'24h' === this.miningWindowPreference">{{ pool.lastEstimatedHashrate | number: '1.2-2' }} {{ miningStats.miningUnits.hashrateUnit }}</td>
+          <td class="" *ngIf="'3d' === this.miningWindowPreference">{{ pool.lastEstimatedHashrate3d | number: '1.2-2' }} {{ miningStats.miningUnits.hashrateUnit }}</td>
+          <td class="" *ngIf="'1w' === this.miningWindowPreference">{{ pool.lastEstimatedHashrate1w | number: '1.2-2' }} {{ miningStats.miningUnits.hashrateUnit }}</td>
           <td class="d-flex justify-content-center">
             {{ pool.blockCount }}<span class="d-none d-md-table-cell">&nbsp;({{ pool.share }}%)</span>
           </td>
-          <td *ngIf="auditAvailable" class="health text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable, 'health-column': this.miningWindowPreference === '24h'}">
+          <td *ngIf="auditAvailable" class="health text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable, 'health-column': ['24h', '3d', '1w'].includes(this.miningWindowPreference)}">
             <a
               class="health-badge badge"
               [class.badge-success]="pool.avgMatchRate >= 99"
@@ -136,8 +137,9 @@
           <td class="d-none d-md-table-cell"></td>
           <td class="text-right"></td>
           <td class=""><b i18n="mining.all-miners">All miners</b></td>
-          <td class="" *ngIf="this.miningWindowPreference === '24h'"><b>{{ miningStats.lastEstimatedHashrate | number: '1.2-2' }} {{
-              miningStats.miningUnits.hashrateUnit }}</b></td>
+          <td class="" *ngIf="'24h' === this.miningWindowPreference">{{ miningStats.lastEstimatedHashrate| number: '1.2-2' }} {{ miningStats.miningUnits.hashrateUnit }}</td>
+          <td class="" *ngIf="'3d' === this.miningWindowPreference">{{ miningStats.lastEstimatedHashrate3d | number: '1.2-2' }} {{ miningStats.miningUnits.hashrateUnit }}</td>
+          <td class="" *ngIf="'1w' === this.miningWindowPreference">{{ miningStats.lastEstimatedHashrate1w | number: '1.2-2' }} {{ miningStats.miningUnits.hashrateUnit }}</td>
           <td class=""><b>{{ miningStats.blockCount }}</b></td>
           <td *ngIf="auditAvailable"></td>
           <td *ngIf="auditAvailable"></td>

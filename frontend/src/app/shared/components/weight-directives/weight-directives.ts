@@ -1,6 +1,6 @@
 import { Directive, OnDestroy, TemplateRef, ViewContainerRef } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { StateService } from '../../../services/state.service';
+import { StateService } from '@app/services/state.service';
 
 function createRateUnitDirective(checkFn: (rateUnit: string) => boolean): any {
   @Directive()

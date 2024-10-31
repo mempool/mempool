@@ -1,17 +1,17 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, NgZone, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { echarts, EChartsOption } from '../../../graphs/echarts';
+import { echarts, EChartsOption } from '@app/graphs/echarts';
 import { Observable, Subject, Subscription, combineLatest, fromEvent, merge, share } from 'rxjs';
 import { startWith, switchMap, tap } from 'rxjs/operators';
-import { SeoService } from '../../../services/seo.service';
+import { SeoService } from '@app/services/seo.service';
 import { formatNumber } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { download, formatterXAxis, formatterXAxisLabel, formatterXAxisTimeCategory } from '../../../shared/graphs.utils';
-import { StorageService } from '../../../services/storage.service';
-import { MiningService } from '../../../services/mining.service';
-import { ActivatedRoute } from '@angular/router';
-import { Acceleration } from '../../../interfaces/node-api.interface';
-import { ServicesApiServices } from '../../../services/services-api.service';
-import { StateService } from '../../../services/state.service';
+import { download, formatterXAxis, formatterXAxisLabel, formatterXAxisTimeCategory } from '@app/shared/graphs.utils';
+import { StorageService } from '@app/services/storage.service';
+import { MiningService } from '@app/services/mining.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Acceleration } from '@interfaces/node-api.interface';
+import { ServicesApiServices } from '@app/services/services-api.service';
+import { StateService } from '@app/services/state.service';
 
 @Component({
   selector: 'app-acceleration-fees-graph',

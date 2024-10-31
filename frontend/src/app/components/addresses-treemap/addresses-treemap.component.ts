@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, NgZone, OnChanges } from '@angular/core';
 import { Router } from '@angular/router';
-import { EChartsOption, TreemapSeriesOption } from '../../graphs/echarts';
-import { lerpColor } from '../../shared/graphs.utils';
-import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
-import { LightningApiService } from '../../lightning/lightning-api.service';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
-import { StateService } from '../../services/state.service';
-import { Address } from '../../interfaces/electrs.interface';
+import { EChartsOption, TreemapSeriesOption } from '@app/graphs/echarts';
+import { lerpColor } from '@app/shared/graphs.utils';
+import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
+import { LightningApiService } from '@app/lightning/lightning-api.service';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
+import { StateService } from '@app/services/state.service';
+import { Address } from '@interfaces/electrs.interface';
 import { formatNumber } from '@angular/common';
 
 @Component({

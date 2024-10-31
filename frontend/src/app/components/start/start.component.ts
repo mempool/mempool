@@ -1,8 +1,10 @@
 import { Component, ElementRef, HostListener, OnInit, OnDestroy, ViewChild, Input, ChangeDetectorRef, ChangeDetectionStrategy, AfterViewChecked } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { MarkBlockState, StateService } from '../../services/state.service';
-import { specialBlocks } from '../../app.constants';
-import { BlockExtended } from '../../interfaces/node-api.interface';
+import { MarkBlockState, StateService } from '@app/services/state.service';
+import { specialBlocks } from '@app/app.constants';
+import { BlockExtended } from '@interfaces/node-api.interface';
+import { Router, ActivatedRoute } from '@angular/router';
+import { handleDemoRedirect } from '../../shared/common.utils';
 
 @Component({
   selector: 'app-start',
@@ -61,6 +63,8 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
   constructor(
     public stateService: StateService,
     private cd: ChangeDetectorRef,
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.isiOS = ['iPhone','iPod','iPad'].includes((navigator as any)?.userAgentData?.platform || navigator.platform);
     if (this.stateService.network === '') {
@@ -69,6 +73,8 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   ngOnInit() {
+    handleDemoRedirect(this.route, this.router);
+
     this.firstPageWidth = 40 + (this.blockWidth * this.dynamicBlocksAmount);
     this.blockCounterSubscription = this.stateService.blocks$.subscribe((blocks) => {
       this.blockCount = blocks.length;

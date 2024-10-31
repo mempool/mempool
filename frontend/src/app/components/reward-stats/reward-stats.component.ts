@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { concat, Observable } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
-import { ApiService } from '../../services/api.service';
-import { StateService } from '../../services/state.service';
+import { ApiService } from '@app/services/api.service';
+import { StateService } from '@app/services/state.service';
 
 @Component({
   selector: 'app-reward-stats',

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output, HostListener, Input, ChangeDetectorRef, OnChanges, SimpleChanges, OnInit, OnDestroy } from '@angular/core';
-import { ActiveFilter, FilterGroups, FilterMode, GradientMode, TransactionFilters } from '../../shared/filters.utils';
-import { StateService } from '../../services/state.service';
+import { ActiveFilter, FilterGroups, FilterMode, GradientMode, TransactionFilters } from '@app/shared/filters.utils';
+import { StateService } from '@app/services/state.service';
 import { Subscription } from 'rxjs';
 
 
