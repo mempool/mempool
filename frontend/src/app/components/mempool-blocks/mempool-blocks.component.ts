@@ -267,7 +267,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
       if (event.key === prevKey) {
         if (this.mempoolBlocks[this.markIndex - 1]) {
-          this.router.navigate([this.relativeUrlPipe.transform('mempool-block/'), this.markIndex - 1]);
+          this.router.navigate([this.relativeUrlPipe.transform('/mempool-block/'), this.markIndex - 1]);
         } else {
           const blocks = this.stateService.blocksSubject$.getValue();
           for (const block of (blocks || [])) {
