@@ -1,0 +1,3 @@
+[submodule "rust/tui"]
+	path = rust/tui
+	url = git@github.com:RandyMcMillan/mempool_space.git
