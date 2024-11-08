@@ -406,6 +406,30 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         const auditAvailable = this.isAuditAvailable(height);
         const isCoinbase = this.tx.vin.some(v => v.is_coinbase);
         const fetchAudit = auditAvailable && !isCoinbase;
+
+        const addFirstSeen = (audit: TxAuditStatus | null, hash: string, height: number, txid: string, useFullSummary: boolean) => {
+          if (
+            this.isFirstSeenAvailable(height)
+            && !audit?.firstSeen             // firstSeen is not already in audit
+            && (!audit || audit?.seen)       // audit is disabled or tx is already seen (meaning 'firstSeen' is in block summary)
+          ) {
+            return useFullSummary ?
+              this.apiService.getStrippedBlockTransactions$(hash).pipe(
+                map(strippedTxs => {
+                  return { audit, firstSeen: strippedTxs.find(tx => tx.txid === txid)?.time };
+                }),
+                catchError(() => of({ audit }))
+              ) :
+              this.apiService.getStrippedBlockTransaction$(hash, txid).pipe(
+                map(strippedTx => {
+                  return { audit, firstSeen: strippedTx?.time };
+                }),
+                catchError(() => of({ audit }))
+              );
+          }
+          return of({ audit });
+        };
+
         if (fetchAudit) {
         // If block audit is already cached, use it to get transaction audit
           const blockAuditLoaded = this.apiService.getBlockAuditLoaded(hash);
@@ -428,24 +452,31 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
                   accelerated: isAccelerated,
                   firstSeen,
                 };
+              }),
+              switchMap(audit => addFirstSeen(audit, hash, height, txid, true)),
+              catchError(() => {
+                return of({ audit: null });
               })
             )
           } else {
             return this.apiService.getBlockTxAudit$(hash, txid).pipe(
               retry({ count: 3, delay: 2000 }),
+              switchMap(audit => addFirstSeen(audit, hash, height, txid, false)),
               catchError(() => {
-                return of(null);
+                return of({ audit: null });
               })
             )
           }
         } else {
-          return of(isCoinbase ? { coinbase: true } : null);
+          const audit = isCoinbase ? { coinbase: true } : null;
+          return addFirstSeen(audit, hash, height, txid, this.apiService.getBlockSummaryLoaded(hash));
         }
       }),
     ).subscribe(auditStatus => {
-      this.auditStatus = auditStatus;
-      if (this.auditStatus?.firstSeen) {
-        this.transactionTime = this.auditStatus.firstSeen;
+      this.auditStatus = auditStatus?.audit;
+      const firstSeen = this.auditStatus?.firstSeen || auditStatus['firstSeen'];
+      if (firstSeen) {
+        this.transactionTime = firstSeen;
       }
       this.setIsAccelerated();
     });
@@ -922,6 +953,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           return false;
         }
         break;
+      case 'testnet4':
+        if (blockHeight < this.stateService.env.TESTNET4_BLOCK_AUDIT_START_HEIGHT) {
+          return false;
+        }
+        break;
       case 'signet':
         if (blockHeight < this.stateService.env.SIGNET_BLOCK_AUDIT_START_HEIGHT) {
           return false;
@@ -933,6 +969,34 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
     return true;
+  }
+
+  isFirstSeenAvailable(blockHeight: number): boolean {
+    if (this.stateService.env.BASE_MODULE !== 'mempool') {
+      return false;
+    }
+    switch (this.stateService.network) {
+      case 'testnet':
+        if (this.stateService.env.TESTNET_TX_FIRST_SEEN_START_HEIGHT && blockHeight >= this.stateService.env.TESTNET_TX_FIRST_SEEN_START_HEIGHT) {
+          return true;
+        }
+        break;
+      case 'testnet4':
+        if (this.stateService.env.TESTNET4_TX_FIRST_SEEN_START_HEIGHT && blockHeight >= this.stateService.env.TESTNET4_TX_FIRST_SEEN_START_HEIGHT) {
+          return true;
+        }
+        break;
+      case 'signet':
+        if (this.stateService.env.SIGNET_TX_FIRST_SEEN_START_HEIGHT && blockHeight >= this.stateService.env.SIGNET_TX_FIRST_SEEN_START_HEIGHT) {
+          return true;
+        }
+        break;
+      default:
+        if (this.stateService.env.MAINNET_TX_FIRST_SEEN_START_HEIGHT && blockHeight >= this.stateService.env.MAINNET_TX_FIRST_SEEN_START_HEIGHT) {
+          return true;
+        }
+    }
+    return false;
   }
 
   resetTransaction() {

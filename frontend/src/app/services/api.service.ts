@@ -18,6 +18,7 @@ export class ApiService {
   private apiBasePath: string; // network path is /testnet, etc. or '' for mainnet
 
   private requestCache = new Map<string, { subject: BehaviorSubject<any>, expiry: number }>;
+  public blockSummaryLoaded: { [hash: string]: boolean } = {};
   public blockAuditLoaded: { [hash: string]: boolean } = {};
 
   constructor(
@@ -318,7 +319,12 @@ export class ApiService {
   }
 
   getStrippedBlockTransactions$(hash: string): Observable<TransactionStripped[]> {
+    this.setBlockSummaryLoaded(hash);
     return this.httpClient.get<TransactionStripped[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/block/' + hash + '/summary');
+  }
+
+  getStrippedBlockTransaction$(hash: string, txid: string): Observable<TransactionStripped> {
+    return this.httpClient.get<TransactionStripped>(this.apiBaseUrl + this.apiBasePath + '/api/v1/block/' + hash + '/tx/' + txid + '/summary');
   }
 
   getDifficultyAdjustments$(interval: string | undefined): Observable<any> {
@@ -566,5 +572,13 @@ export class ApiService {
 
   getBlockAuditLoaded(hash) {
     return this.blockAuditLoaded[hash];
+  }
+
+  async setBlockSummaryLoaded(hash: string) {
+    this.blockSummaryLoaded[hash] = true;
+  }
+
+  getBlockSummaryLoaded(hash) {
+    return this.blockSummaryLoaded[hash];
   }
 }

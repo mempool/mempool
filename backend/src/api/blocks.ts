@@ -1224,6 +1224,11 @@ class Blocks {
     return summary.transactions;
   }
 
+  public async $getSingleTxFromSummary(hash: string, txid: string): Promise<TransactionClassified | null> {
+    const txs = await this.$getStrippedBlockTransactions(hash);
+    return txs.find(tx => tx.txid === txid) || null;
+  }
+
   /**
    * Get 15 blocks
    * 
