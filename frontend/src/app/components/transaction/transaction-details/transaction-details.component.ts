@@ -29,7 +29,6 @@ export class TransactionDetailsComponent implements OnInit {
   @Input() hasEffectiveFeeRate: boolean;
   @Input() cpfpInfo: CpfpInfo;
   @Input() hasCpfp: boolean;
-  @Input() showCpfpDetails: boolean;
   @Input() accelerationInfo: Acceleration;
   @Input() acceleratorAvailable: boolean;
   @Input() accelerateCtaType: string;
@@ -51,7 +50,7 @@ export class TransactionDetailsComponent implements OnInit {
     this.accelerateClicked.emit(true);
   }
 
-    toggleCpfp(): void {
+  toggleCpfp(): void {
     this.toggleCpfp$.emit();
   }
 }
