@@ -49,6 +49,8 @@ class AccelerationApi {
   private websocketPath = config.MEMPOOL_SERVICES?.API ? `${config.MEMPOOL_SERVICES.API.replace('https://', 'wss://').replace('http://', 'ws://')}/accelerator/ws` : '/';
   private _accelerations: Record<string, Acceleration> = {};
   private lastPoll = 0;
+  private lastPing = 0;
+  private lastPong = 0;
   private forcePoll = false;
   private myAccelerations: Record<string, { status: MyAccelerationStatus, added: number, acceleration?: Acceleration }> = {};
 
@@ -267,12 +269,32 @@ class AccelerationApi {
 
         this.ws.on('message', (data, isBinary) => {
           try {
-            const parsedMsg = JSON.parse((isBinary ? data : data.toString()) as string);
+            const msg = (isBinary ? data : data.toString()) as string;
+            const parsedMsg = msg?.length ? JSON.parse(msg) : null;
             this.handleWebsocketMessage(parsedMsg);
           } catch (e) {
             logger.warn('Failed to parse acceleration websocket message: ' + (e instanceof Error ? e.message : e));
           }
         });
+
+        this.ws.on('ping', () => {
+          logger.debug('received ping from acceleration websocket server');
+        });
+
+        this.ws.on('pong', () => {
+          logger.debug('received pong from acceleration websocket server');
+        });
+      } else {
+        if (this.lastPing > this.lastPong && Date.now() - this.lastPing > 10000) {
+          logger.warn('No pong received within 10 seconds, terminating connection');
+          this.ws.terminate();
+          this.ws = null;
+          this.websocketConnected = false;
+        } else if (Date.now() - this.lastPing > 30000) {
+          logger.debug('sending ping to acceleration websocket server');
+          this.ws.ping();
+          this.lastPing = Date.now();
+        }
       }
       await new Promise(resolve => setTimeout(resolve, 5000));
     }
