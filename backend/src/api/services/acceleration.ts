@@ -50,6 +50,7 @@ class AccelerationApi {
   private _accelerations: Record<string, Acceleration> = {};
   private lastPoll = 0;
   private lastPing = 0;
+  private lastPong = 0;
   private forcePoll = false;
   private myAccelerations: Record<string, { status: MyAccelerationStatus, added: number, acceleration?: Acceleration }> = {};
 
@@ -284,7 +285,12 @@ class AccelerationApi {
           logger.debug('received pong from acceleration websocket server');
         });
       } else {
-        if (Date.now() - this.lastPing > 30000) {
+        if (this.lastPing > this.lastPong && Date.now() - this.lastPing > 5000) {
+          logger.warn('No pong received within 5 seconds, terminating connection');
+          this.ws.terminate();
+          this.ws = null;
+          this.websocketConnected = false;
+        } else if (Date.now() - this.lastPing > 30000) {
           logger.debug('sending ping to acceleration websocket server');
           this.ws.ping();
           this.lastPing = Date.now();
