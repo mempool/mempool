@@ -49,8 +49,8 @@ class AccelerationApi {
   private websocketPath = config.MEMPOOL_SERVICES?.API ? `${config.MEMPOOL_SERVICES.API.replace('https://', 'wss://').replace('http://', 'ws://')}/accelerator/ws` : '/';
   private _accelerations: Record<string, Acceleration> = {};
   private lastPoll = 0;
-  private lastPing = 0;
-  private lastPong = 0;
+  private lastPing = Date.now();
+  private lastPong = Date.now();
   private forcePoll = false;
   private myAccelerations: Record<string, { status: MyAccelerationStatus, added: number, acceleration?: Acceleration }> = {};
 
@@ -283,6 +283,7 @@ class AccelerationApi {
 
         this.ws.on('pong', () => {
           logger.debug('received pong from acceleration websocket server');
+          this.lastPong = Date.now();
         });
       } else {
         if (this.lastPing > this.lastPong && Date.now() - this.lastPing > 10000) {
