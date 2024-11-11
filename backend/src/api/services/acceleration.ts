@@ -46,6 +46,7 @@ class AccelerationApi {
   private websocketConnected: boolean = false;
   private onDemandPollingEnabled = !config.MEMPOOL_SERVICES.ACCELERATIONS;
   private apiPath = config.MEMPOOL.OFFICIAL ? (config.MEMPOOL_SERVICES.API + '/accelerator/accelerations') : (config.EXTERNAL_DATA_SERVER.MEMPOOL_API + '/accelerations');
+  private websocketPath = config.MEMPOOL_SERVICES?.API ? `${config.MEMPOOL_SERVICES.API.replace('https://', 'wss://').replace('http://', 'ws://')}/accelerator/ws` : '/';
   private _accelerations: Record<string, Acceleration> = {};
   private lastPoll = 0;
   private forcePoll = false;
@@ -242,18 +243,18 @@ class AccelerationApi {
     while (this.useWebsocket) {
       this.startedWebsocketLoop = true;
       if (!this.ws) {
-        this.ws = new WebSocket(`${config.MEMPOOL_SERVICES.API.replace('https://', 'wss://').replace('http://', 'ws://')}/accelerator/ws`);
+        this.ws = new WebSocket(this.websocketPath);
         this.websocketConnected = true;
 
         this.ws.on('open', () => {
-          logger.info('Acceleration websocket opened');
+          logger.info(`Acceleration websocket opened to ${this.websocketPath}`);
           this.ws?.send(JSON.stringify({
             'watch-accelerations': true
           }));
         });
 
         this.ws.on('error', (error) => {
-          logger.err('Acceleration websocket error: ' + error);
+          logger.err(`Acceleration websocket error on ${this.websocketPath}: ` + error);
           this.ws = null;
           this.websocketConnected = false;
         });
