@@ -242,7 +242,7 @@ class AccelerationApi {
     while (this.useWebsocket) {
       this.startedWebsocketLoop = true;
       if (!this.ws) {
-        this.ws = new WebSocket(`${config.MEMPOOL_SERVICES.API.replace('https://', 'ws://').replace('http://', 'ws://')}/accelerator/ws`);
+        this.ws = new WebSocket(`${config.MEMPOOL_SERVICES.API.replace('https://', 'wss://').replace('http://', 'ws://')}/accelerator/ws`);
         this.websocketConnected = true;
 
         this.ws.on('open', () => {
