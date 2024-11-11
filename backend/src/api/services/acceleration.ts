@@ -285,8 +285,8 @@ class AccelerationApi {
           logger.debug('received pong from acceleration websocket server');
         });
       } else {
-        if (this.lastPing > this.lastPong && Date.now() - this.lastPing > 5000) {
-          logger.warn('No pong received within 5 seconds, terminating connection');
+        if (this.lastPing > this.lastPong && Date.now() - this.lastPing > 10000) {
+          logger.warn('No pong received within 10 seconds, terminating connection');
           this.ws.terminate();
           this.ws = null;
           this.websocketConnected = false;
