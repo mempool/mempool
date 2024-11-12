@@ -7,7 +7,19 @@
   padding-left: 0.4rem;
 }
 
-img {
-  position: relative;
-  left: -3px;
+.copied-message {
+  background: color-mix(in srgb, var(--active-bg) 95%, transparent);
+  color: var(--fg);
+  font-family: sans-serif;
+  font-size: .8rem;
+  font-weight: 400;
+  text-decoration: none;
+  text-align: left;
+  padding: .6em .75rem;
+  border-radius: 4px;
+  position: absolute;
+  white-space: nowrap;
+  box-shadow: 0 .5rem 1rem -.5rem #000;
+  z-index: 1000;
+  opacity: .9;
 }
