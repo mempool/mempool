@@ -6,7 +6,7 @@
       <app-truncate [text]="tx.txid"></app-truncate>
     </a>
     <div>
-      <ng-template [ngIf]="tx.status.confirmed">&lrm;{{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm:ss' }}</ng-template>
+      <ng-template [ngIf]="tx.status.confirmed"><app-timestamp [customFormat]="'yyyy-MM-dd HH:mm:ss'" [unixTime]="tx.status.block_time" [hideTimeSince]="true"></app-timestamp></ng-template>
       <ng-template [ngIf]="!tx.status.confirmed && tx.firstSeen">
         <i><app-time kind="since" [time]="tx.firstSeen" [fastRender]="true" [showTooltip]="true"></app-time></i>
       </ng-template>
