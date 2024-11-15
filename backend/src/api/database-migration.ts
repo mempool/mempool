@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 84;
+  private static currentVersion = 91;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -711,40 +711,69 @@ class DatabaseMigration {
       await this.updateToSchemaVersion(83);
     }
 
+    // add new pools indexes
     if (databaseSchemaVersion < 84 && isBitcoin === true) {
-      // pools
-      await this.$executeQuery('ALTER TABLE `pools` ADD INDEX `slug` (`slug`)');
-      await this.$executeQuery('ALTER TABLE `pools` ADD INDEX `unique_id` (`unique_id`)');
-
-      // lightning channels
-      await this.$executeQuery('ALTER TABLE `channels` ADD INDEX `created` (`created`)');
-      await this.$executeQuery('ALTER TABLE `channels` ADD INDEX `capacity` (`capacity`)');
-      await this.$executeQuery('ALTER TABLE `channels` ADD INDEX `closing_reason` (`closing_reason`)');
-      await this.$executeQuery('ALTER TABLE `channels` ADD INDEX `closing_resolved` (`closing_resolved`)');
-
-      // lightning nodes
-      await this.$executeQuery('ALTER TABLE `nodes` ADD INDEX `status` (`status`)');
-      await this.$executeQuery('ALTER TABLE `nodes` ADD INDEX `channels` (`channels`)');
-      await this.$executeQuery('ALTER TABLE `nodes` ADD INDEX `country_id` (`country_id`)');
-      await this.$executeQuery('ALTER TABLE `nodes` ADD INDEX `as_number` (`as_number`)');
-      await this.$executeQuery('ALTER TABLE `nodes` ADD INDEX `first_seen` (`first_seen`)');
-
-      // lightning nodes sockets
-      await this.$executeQuery('ALTER TABLE `nodes_sockets` ADD INDEX `type` (`type`)');
-
-      // lightning stats
-      await this.$executeQuery('ALTER TABLE `lightning_stats` ADD INDEX `added` (`added`)');
-
-      // geonames
-      await this.$executeQuery('ALTER TABLE `geo_names` ADD INDEX `names` (`names`)');
-
-      // hashrates
-      await this.$executeQuery('ALTER TABLE `hashrates` ADD INDEX `type` (`type`)');
-
-      // audits
-      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD INDEX `time` (`time`)');
-
+      await this.$executeQuery(`
+        ALTER TABLE \`pools\`
+          ADD INDEX \`slug\` (\`slug\`),
+          ADD INDEX \`unique_id\` (\`unique_id\`)
+      `);
       await this.updateToSchemaVersion(84);
+    }
+
+    // lightning channels indexes
+    if (databaseSchemaVersion < 85 && isBitcoin === true) {
+      await this.$executeQuery(`
+        ALTER TABLE \`channels\`
+          ADD INDEX \`created\` (\`created\`),
+          ADD INDEX \`capacity\` (\`capacity\`),
+          ADD INDEX \`closing_reason\` (\`closing_reason\`),
+          ADD INDEX \`closing_resolved\` (\`closing_resolved\`)
+      `);
+      await this.updateToSchemaVersion(85);
+    }
+
+    // lightning nodes indexes
+    if (databaseSchemaVersion < 86 && isBitcoin === true) {
+      await this.$executeQuery(`
+        ALTER TABLE \`nodes\`
+          ADD INDEX \`status\` (\`status\`),
+          ADD INDEX \`channels\` (\`channels\`),
+          ADD INDEX \`country_id\` (\`country_id\`),
+          ADD INDEX \`as_number\` (\`as_number\`),
+          ADD INDEX \`first_seen\` (\`first_seen\`)
+      `);
+      await this.updateToSchemaVersion(86);
+    }
+
+    // lightning node sockets indexes
+    if (databaseSchemaVersion < 87 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `nodes_sockets` ADD INDEX `type` (`type`)');
+      await this.updateToSchemaVersion(87);
+    }
+
+    // lightning stats indexes
+    if (databaseSchemaVersion < 88 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `lightning_stats` ADD INDEX `added` (`added`)');
+      await this.updateToSchemaVersion(88);
+    }
+
+    // geo names indexes
+    if (databaseSchemaVersion < 89 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `geo_names` ADD INDEX `names` (`names`)');
+      await this.updateToSchemaVersion(89);
+    }
+
+    // hashrates indexes
+    if (databaseSchemaVersion < 90 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `hashrates` ADD INDEX `type` (`type`)');
+      await this.updateToSchemaVersion(90);
+    }
+
+    // block audits indexes
+    if (databaseSchemaVersion < 91 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD INDEX `time` (`time`)');
+      await this.updateToSchemaVersion(91);
     }
   }
 
