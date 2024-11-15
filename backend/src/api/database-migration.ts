@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 91;
+  private static currentVersion = 92;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -774,6 +774,25 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 91 && isBitcoin === true) {
       await this.$executeQuery('ALTER TABLE `blocks_audits` ADD INDEX `time` (`time`)');
       await this.updateToSchemaVersion(91);
+    }
+
+    if (databaseSchemaVersion < 92 && config.MEMPOOL.NETWORK === 'liquid') {
+      // elements_pegs
+      await this.$executeQuery('ALTER TABLE `elements_pegs` ADD INDEX `block` (`block`)');
+      await this.$executeQuery('ALTER TABLE `elements_pegs` ADD INDEX `datetime` (`datetime`)');
+      await this.$executeQuery('ALTER TABLE `elements_pegs` ADD INDEX `amount` (`amount`)');
+      await this.$executeQuery('ALTER TABLE `elements_pegs` ADD INDEX `bitcoinaddress` (`bitcoinaddress`)');
+      await this.$executeQuery('ALTER TABLE `elements_pegs` ADD INDEX `bitcointxid` (`bitcointxid`)');
+
+      // federation_txos
+      await this.$executeQuery('ALTER TABLE `federation_txos` ADD INDEX `unspent` (`unspent`)');
+      await this.$executeQuery('ALTER TABLE `federation_txos` ADD INDEX `lastblockupdate` (`lastblockupdate`)');
+      await this.$executeQuery('ALTER TABLE `federation_txos` ADD INDEX `blocktime` (`blocktime`)');
+      await this.$executeQuery('ALTER TABLE `federation_txos` ADD INDEX `emergencyKey` (`emergencyKey`)');
+      await this.$executeQuery('ALTER TABLE `federation_txos` ADD INDEX `expiredAt` (`expiredAt`)');
+      await this.$executeQuery('ALTER TABLE `federation_txos` ADD INDEX `balance` (`balance`)');
+
+      await this.updateToSchemaVersion(85);
     }
   }
 
