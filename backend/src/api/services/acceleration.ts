@@ -247,6 +247,7 @@ class AccelerationApi {
       if (!this.ws) {
         this.ws = new WebSocket(this.websocketPath);
         this.websocketConnected = true;
+        this.lastPing = 0;
 
         this.ws.on('open', () => {
           logger.info(`Acceleration websocket opened to ${this.websocketPath}`);
@@ -286,12 +287,13 @@ class AccelerationApi {
           this.lastPong = Date.now();
         });
       } else {
-        if (this.lastPing > this.lastPong && Date.now() - this.lastPing > 10000) {
+        if (this.lastPing && this.lastPing > this.lastPong && (Date.now() - this.lastPing > 10000)) {
           logger.warn('No pong received within 10 seconds, terminating connection');
           this.ws.terminate();
           this.ws = null;
           this.websocketConnected = false;
-        } else if (Date.now() - this.lastPing > 30000) {
+          this.lastPing = 0;
+        } else if (!this.lastPing || (Date.now() - this.lastPing > 30000)) {
           logger.debug('sending ping to acceleration websocket server');
           this.ws.ping();
           this.lastPing = Date.now();
