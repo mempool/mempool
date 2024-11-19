@@ -243,17 +243,18 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
           let tooltip = '<div>';
 
           const hasTx = data[0].data[2].txid;
+          const date = new Date(data[0].data[0]).toLocaleTimeString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
+          
+          tooltip += `<div>
+            <div style="text-align: right;">
+            <div><b>${date}</b></div>`;
+
           if (hasTx) {
             const header = data.length === 1
             ? `${data[0].data[2].txid.slice(0, 6)}...${data[0].data[2].txid.slice(-6)}`
             : `${data.length} transactions`;
-            tooltip += `<span><b>${header}</b></span>`;
+            tooltip += `<div><b>${header}</b></div>`;
           }
-          
-          const date = new Date(data[0].data[0]).toLocaleTimeString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
-          
-          tooltip += `<div>
-            <div style="text-align: right;">`;
           
           const formatBTC = (val, decimal) => (val / 100_000_000).toFixed(decimal);
           const formatFiat = (val) => this.fiatCurrencyPipe.transform(val, null, 'USD');
@@ -289,7 +290,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
             }
           }
 
-          tooltip += `</div><span>${date}</span></div>`;
+          tooltip += `</div></div>`;
           return tooltip;
         }.bind(this)
       },
