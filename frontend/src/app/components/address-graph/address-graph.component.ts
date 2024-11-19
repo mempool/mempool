@@ -319,6 +319,9 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
               } else if (valSpan > 10_000_000) {
                 return `${(val / 100_000_000).toFixed(2)} BTC`;
               } else if (valSpan > 1_000_000) {
+                if (maxValue > 100_000_000_000) {
+                  return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 3, undefined, true)} BTC`;
+                }
                 return `${(val / 100_000_000).toFixed(3)} BTC`;
               } else {
                 return `${this.amountShortenerPipe.transform(val, 0, undefined, true)} sats`;
