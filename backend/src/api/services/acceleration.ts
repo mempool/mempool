@@ -257,7 +257,11 @@ class AccelerationApi {
         });
 
         this.ws.on('error', (error) => {
-          logger.err(`Acceleration websocket error on ${this.websocketPath}: ` + error);
+          let errMsg = `Acceleration websocket error on ${this.websocketPath}: ${error['code']}`;
+          if (error['errors']) {
+            errMsg += ' - ' + error['errors'].join(' - ');
+          }
+          logger.err(errMsg);
           this.ws = null;
           this.websocketConnected = false;
         });
