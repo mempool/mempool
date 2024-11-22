@@ -77,7 +77,7 @@
     "@angular/ssr": "^17.3.1",
     "@fortawesome/angular-fontawesome": "~0.14.1",
     "@fortawesome/fontawesome-common-types": "~6.6.0",
-    "@fortawesome/fontawesome-svg-core": "~6.6.0",
+    "@fortawesome/fontawesome-svg-core": "~6.7.1",
     "@fortawesome/free-solid-svg-icons": "~6.6.0",
     "@mempool/mempool.js": "2.3.0",
     "@ng-bootstrap/ng-bootstrap": "^16.0.0",
