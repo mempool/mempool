@@ -9,12 +9,17 @@ import { TransactionExtrasModule } from '@components/transaction/transaction-ext
 import { GraphsModule } from '@app/graphs/graphs.module';
 import { AccelerateCheckout } from '@components/accelerate-checkout/accelerate-checkout.component';
 import { AccelerateFeeGraphComponent } from '@components/accelerate-checkout/accelerate-fee-graph.component';
+import { TransactionRawComponent } from '@components/transaction/transaction-raw.component';
 
 const routes: Routes = [
   {
     path: '',
     redirectTo: '/',
     pathMatch: 'full',
+  },
+  {
+    path: 'preview',
+    component: TransactionRawComponent,
   },
   {
     path: ':id',
@@ -49,6 +54,7 @@ export class TransactionRoutingModule { }
     TransactionDetailsComponent,
     AccelerateCheckout,
     AccelerateFeeGraphComponent,
+    TransactionRawComponent,
   ],
   exports: [
     TransactionComponent,
