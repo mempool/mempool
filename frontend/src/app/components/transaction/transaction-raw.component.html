@@ -43,7 +43,11 @@
 
     @if (!hasPrevouts) {
       <div class="alert alert-mempool">
-        <span><strong>This transaction is missing prevouts data</strong>. {{ errorPrevouts ? 'Reason: ' + errorPrevouts : '' }}</span>
+        @if (offlineMode) {
+          <span><strong>Prevouts are not loaded, some fields like fee rate cannot be displayed.</strong></span>
+        } @else {
+          <span><strong>Could not load prevouts</strong>. {{ errorPrevouts ? 'Reason: ' + errorPrevouts : '' }}</span>
+        }
       </div>
     }
 
