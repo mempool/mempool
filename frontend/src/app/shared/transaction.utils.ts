@@ -590,6 +590,8 @@ export function identifyPrioritizedTransactions(transactions: TransactionStrippe
   return { prioritized, deprioritized };
 }
 
+// Adapted from mempool backend https://github.com/mempool/mempool/blob/14e49126c3ca8416a8d7ad134a95c5e090324d69/backend/src/api/transaction-utils.ts#L254
+// Converts hex bitcoin script to ASM
 function convertScriptSigAsm(hex: string): string {
 
   const buf = new Uint8Array(hex.length / 2);
@@ -655,6 +657,7 @@ function convertScriptSigAsm(hex: string): string {
   return b.join(' ');
 }
 
+// Copied from mempool backend https://github.com/mempool/mempool/blob/14e49126c3ca8416a8d7ad134a95c5e090324d69/backend/src/api/transaction-utils.ts#L327
 /**
  * This function must only be called when we know the witness we are parsing
  * is a taproot witness.
@@ -679,6 +682,8 @@ function witnessToP2TRScript(witness: string[]): string | null {
   return witness[positionOfScript];
 }
 
+// Copied from mempool backend https://github.com/mempool/mempool/blob/14e49126c3ca8416a8d7ad134a95c5e090324d69/backend/src/api/transaction-utils.ts#L227
+// Fills inner_redeemscript_asm and inner_witnessscript_asm fields of fetched prevouts for decoded transactions
 export function addInnerScriptsToVin(vin: Vin): void {
   if (!vin.prevout) {
     return;
@@ -706,6 +711,8 @@ export function addInnerScriptsToVin(vin: Vin): void {
   }
 }
 
+// Adapted from bitcoinjs-lib at https://github.com/bitcoinjs/bitcoinjs-lib/blob/32e08aa57f6a023e995d8c4f0c9fbdc5f11d1fa0/ts_src/transaction.ts#L78
+// Reads buffer of raw transaction data
 function fromBuffer(buffer: Uint8Array, network: string): Transaction {
   let offset = 0;
 
@@ -910,6 +917,7 @@ function txid(tx: Transaction): string {
   return uint8ArrayToHexString(hash2.reverse());
 }
 
+// Copied from mempool backend https://github.com/mempool/mempool/blob/14e49126c3ca8416a8d7ad134a95c5e090324d69/backend/src/api/transaction-utils.ts#L177
 export function countSigops(transaction: Transaction): number {
   let sigops = 0;
 
@@ -1213,6 +1221,7 @@ function varIntToBytes(value: number | bigint): number[] {
   return bytes;
 }
 
+// Inversed the opcodes object from https://github.com/mempool/mempool/blob/14e49126c3ca8416a8d7ad134a95c5e090324d69/backend/src/utils/bitcoin-script.ts#L1
 const opcodes = {
   0: 'OP_0',
   76: 'OP_PUSHDATA1',
