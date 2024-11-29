@@ -33,8 +33,8 @@ import AccelerationRepository from '../repositories/AccelerationRepository';
 import { calculateFastBlockCpfp, calculateGoodBlockCpfp } from './cpfp';
 import mempool from './mempool';
 import CpfpRepository from '../repositories/CpfpRepository';
-import accelerationApi from './services/acceleration';
 import { parseDATUMTemplateCreator } from '../utils/bitcoin-script';
+import database from '../database';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -1461,6 +1461,19 @@ class Blocks {
     } catch (e) {
       // not a fatal error, we'll try again next time the indexer runs
     }
+  }
+
+  public async $getBlockDefinitionHashes(): Promise<string[]> {
+    try {
+      const [rows]: any = await database.query(`SELECT DISTINCT(definition_hash) FROM blocks`);
+      if (rows && rows.length) {
+        return rows.map(r => r.definition_hash);
+      }
+    } catch (e) {
+      // we just return an empty array
+    }
+    logger.debug(`Unable to retreive list of blocks.definition_hash from db`);
+    return [];
   }
 }
 

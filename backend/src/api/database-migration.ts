@@ -779,6 +779,7 @@ class DatabaseMigration {
     // blocks pools-v2.json hash
     if (databaseSchemaVersion < 92) {
       await this.$executeQuery('ALTER TABLE `blocks` ADD definition_hash varchar(255) NOT NULL DEFAULT "5f32a67401929169f225f5db43c9efa795d1b159"');
+      await this.$executeQuery('ALTER TABLE `blocks` ADD INDEX `definition_hash` (`definition_hash`)');
       await this.updateToSchemaVersion(92);
     }
   }

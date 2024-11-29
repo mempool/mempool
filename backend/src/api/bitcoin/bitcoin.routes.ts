@@ -21,6 +21,7 @@ import transactionRepository from '../../repositories/TransactionRepository';
 import rbfCache from '../rbf-cache';
 import { calculateMempoolTxCpfp } from '../cpfp';
 import { handleError } from '../../utils/api';
+import poolsUpdater from '../../tasks/pools-updater';
 
 class BitcoinRoutes {
   public initRoutes(app: Application) {
@@ -46,6 +47,8 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/audit-summary', this.getBlockAuditSummary)
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/tx/:txid/audit', this.$getBlockTxAuditSummary)
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/height', this.getBlockTipHeight)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/definition/list', this.getBlockDefinitionHashes)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/definition/current', this.getCurrentBlockDefinitionHash)
       .post(config.MEMPOOL.API_URL_PREFIX + 'psbt/addparents', this.postPsbtCompletion)
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from', this.getBlocksByBulk.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from/:to', this.getBlocksByBulk.bind(this))
@@ -652,6 +655,34 @@ class BitcoinRoutes {
     try {
       const rawMempool = await bitcoinApi.$getRawMempool();
       res.send(rawMempool);
+    } catch (e) {
+      handleError(req, res, 500, e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async getBlockDefinitionHashes(req: Request, res: Response) {
+    try {
+      const result = await blocks.$getBlockDefinitionHashes();
+      if (!result) {
+        handleError(req, res, 503, `Service Temporarily Unavailable`);
+        return;
+      }
+      res.setHeader('content-type', 'application/json');
+      res.send(result);
+    } catch (e) {
+      handleError(req, res, 500, e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async getCurrentBlockDefinitionHash(req: Request, res: Response) {
+    try {
+      const currentSha = await poolsUpdater.getShaFromDb();
+      if (!currentSha) {
+        handleError(req, res, 503, `Service Temporarily Unavailable`);
+        return;
+      }
+      res.setHeader('content-type', 'text/plain');
+      res.send(currentSha);
     } catch (e) {
       handleError(req, res, 500, e instanceof Error ? e.message : e);
     }
