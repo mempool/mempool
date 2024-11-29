@@ -1463,17 +1463,34 @@ class Blocks {
     }
   }
 
-  public async $getBlockDefinitionHashes(): Promise<string[]> {
+  public async $getBlockDefinitionHashes(): Promise<string[] | null> {
     try {
       const [rows]: any = await database.query(`SELECT DISTINCT(definition_hash) FROM blocks`);
-      if (rows && rows.length) {
+      if (rows && Array.isArray(rows)) {
         return rows.map(r => r.definition_hash);
+      } else {
+        logger.debug(`Unable to retreive list of blocks.definition_hash from db (no result)`);
+        return null;
       }
     } catch (e) {
-      // we just return an empty array
+      logger.debug(`Unable to retreive list of blocks.definition_hash from db (exception: ${e})`);
+      return null;
     }
-    logger.debug(`Unable to retreive list of blocks.definition_hash from db`);
-    return [];
+  }
+
+  public async $getBlocksByDefinitionHash(definitionHash: string): Promise<string[] | null> {
+    try {
+      const [rows]: any = await database.query(`SELECT hash FROM blocks WHERE definition_hash = ?`, [definitionHash]);
+      if (rows && Array.isArray(rows)) {
+        return rows.map(r => r.hash);
+      } else {
+        logger.debug(`Unable to retreive list of blocks for definition hash ${definitionHash} from db (no result)`);
+        return null;
+      }
+    } catch (e) {
+      logger.debug(`Unable to retreive list of blocks for definition hash ${definitionHash} from db (exception: ${e})`);
+      return null;
+    }
   }
 }
 

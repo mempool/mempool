@@ -47,13 +47,15 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/audit-summary', this.getBlockAuditSummary)
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/tx/:txid/audit', this.$getBlockTxAuditSummary)
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/height', this.getBlockTipHeight)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/definition/list', this.getBlockDefinitionHashes)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/definition/current', this.getCurrentBlockDefinitionHash)
       .post(config.MEMPOOL.API_URL_PREFIX + 'psbt/addparents', this.postPsbtCompletion)
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from', this.getBlocksByBulk.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from/:to', this.getBlocksByBulk.bind(this))
       // Temporarily add txs/package endpoint for all backends until esplora supports it
       .post(config.MEMPOOL.API_URL_PREFIX + 'txs/package', this.$submitPackage)
+      // Internal routes
+      .get(config.MEMPOOL.API_URL_PREFIX + 'internal/blocks/definition/list', this.getBlockDefinitionHashes)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'internal/blocks/definition/current', this.getCurrentBlockDefinitionHash)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'internal/blocks/:definitionHash', this.getBlocksByDefinitionHash)
       ;
 
       if (config.MEMPOOL.BACKEND !== 'esplora') {
@@ -660,7 +662,7 @@ class BitcoinRoutes {
     }
   }
 
-  private async getBlockDefinitionHashes(req: Request, res: Response) {
+  private async getBlockDefinitionHashes(req: Request, res: Response): Promise<void> {
     try {
       const result = await blocks.$getBlockDefinitionHashes();
       if (!result) {
@@ -674,7 +676,7 @@ class BitcoinRoutes {
     }
   }
 
-  private async getCurrentBlockDefinitionHash(req: Request, res: Response) {
+  private async getCurrentBlockDefinitionHash(req: Request, res: Response): Promise<void> {
     try {
       const currentSha = await poolsUpdater.getShaFromDb();
       if (!currentSha) {
@@ -683,6 +685,24 @@ class BitcoinRoutes {
       }
       res.setHeader('content-type', 'text/plain');
       res.send(currentSha);
+    } catch (e) {
+      handleError(req, res, 500, e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async getBlocksByDefinitionHash(req: Request, res: Response): Promise<void> {
+    try {
+      if (typeof(req.params.definitionHash) !== 'string') {
+        res.status(400).send('Parameter "hash" must be a valid string');
+        return;
+      }
+      const blocksHash = await blocks.$getBlocksByDefinitionHash(req.params.definitionHash as string);
+      if (!blocksHash) {
+        handleError(req, res, 503, `Service Temporarily Unavailable`);
+        return;
+      }
+      res.setHeader('content-type', 'application/json');
+      res.send(blocksHash);
     } catch (e) {
       handleError(req, res, 500, e instanceof Error ? e.message : e);
     }
