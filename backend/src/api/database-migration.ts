@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 91;
+  private static currentVersion = 92;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -774,6 +774,12 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 91 && isBitcoin === true) {
       await this.$executeQuery('ALTER TABLE `blocks_audits` ADD INDEX `time` (`time`)');
       await this.updateToSchemaVersion(91);
+    }
+
+    // blocks pools-v2.json hash
+    if (databaseSchemaVersion < 92) {
+      await this.$executeQuery('ALTER TABLE `blocks` ADD definition_hash varchar(255) NOT NULL DEFAULT "5f32a67401929169f225f5db43c9efa795d1b159"');
+      await this.updateToSchemaVersion(92);
     }
   }
 
