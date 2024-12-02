@@ -688,7 +688,7 @@ class MempoolBlocks {
       [pool: string]: { name: string, block: number, vsize: number, accelerations: string[], complete: boolean };
     } = {};
     // prepare a list of accelerations in ascending order (we'll pop items off the end of the list)
-    const accQueue: { acceleration: Acceleration, rate: number, vsize: number }[] = Object.values(accelerations).map(acc => {
+    const accQueue: { acceleration: Acceleration, rate: number, vsize: number }[] = Object.values(accelerations).filter(acc => acc.txid in mempoolCache).map(acc => {
       let vsize = mempoolCache[acc.txid].vsize;
       for (const ancestor of mempoolCache[acc.txid].ancestors || []) {
         vsize += (ancestor.weight / 4);
