@@ -382,7 +382,7 @@ class MempoolBlocks {
 
     const ancestors: Ancestor[] = [];
     const descendants: Ancestor[] = [];
-    let ancestor: MempoolTransactionExtended
+    let ancestor: MempoolTransactionExtended;
     for (const cluster of clusters) {
       for (const memberTxid of cluster) {
         const mempoolTx = mempool[memberTxid];
@@ -462,7 +462,7 @@ class MempoolBlocks {
 
       for (let i = 0; i < block.length; i++) {
         const txid = block[i];
-        if (txid) {
+        if (txid in mempool) {
           mempoolTx = mempool[txid];
           // save position in projected blocks
           mempoolTx.position = {
@@ -481,6 +481,9 @@ class MempoolBlocks {
               mempoolTx.acceleratedAt = acceleration?.added;
               mempoolTx.feeDelta = acceleration?.feeDelta;
               for (const ancestor of mempoolTx.ancestors || []) {
+                if (!(ancestor.txid in mempool)) {
+                  continue;
+                }
                 if (!mempool[ancestor.txid].acceleration) {
                   mempool[ancestor.txid].cpfpDirty = true;
                 }
