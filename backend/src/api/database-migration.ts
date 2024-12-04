@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 91;
+  private static currentVersion = 93;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -774,6 +774,33 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 91 && isBitcoin === true) {
       await this.$executeQuery('ALTER TABLE `blocks_audits` ADD INDEX `time` (`time`)');
       await this.updateToSchemaVersion(91);
+    }
+
+    // elements_pegs indexes
+    if (databaseSchemaVersion < 92 && config.MEMPOOL.NETWORK === 'liquid') {
+      await this.$executeQuery(`
+        ALTER TABLE \`elements_pegs\`
+          ADD INDEX \`block\` (\`block\`),
+          ADD INDEX \`datetime\` (\`datetime\`),
+          ADD INDEX \`amount\` (\`amount\`),
+          ADD INDEX \`bitcoinaddress\` (\`bitcoinaddress\`),
+          ADD INDEX \`bitcointxid\` (\`bitcointxid\`)
+      `);
+      await this.updateToSchemaVersion(92);
+    }
+
+    // federation_txos indexes
+    if (databaseSchemaVersion < 93 && config.MEMPOOL.NETWORK === 'liquid') {
+      await this.$executeQuery(`
+        ALTER TABLE \`federation_txos\`
+          ADD INDEX \`unspent\` (\`unspent\`),
+          ADD INDEX \`lastblockupdate\` (\`lastblockupdate\`),
+          ADD INDEX \`blocktime\` (\`blocktime\`),
+          ADD INDEX \`emergencyKey\` (\`emergencyKey\`),
+          ADD INDEX \`expiredAt\` (\`expiredAt\`),
+          ADD INDEX \`balance\` (\`balance\`)
+      `);
+      await this.updateToSchemaVersion(93);
     }
   }
 
