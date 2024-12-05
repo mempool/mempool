@@ -797,8 +797,7 @@ class DatabaseMigration {
           ADD INDEX \`lastblockupdate\` (\`lastblockupdate\`),
           ADD INDEX \`blocktime\` (\`blocktime\`),
           ADD INDEX \`emergencyKey\` (\`emergencyKey\`),
-          ADD INDEX \`expiredAt\` (\`expiredAt\`),
-          ADD INDEX \`balance\` (\`balance\`)
+          ADD INDEX \`expiredAt\` (\`expiredAt\`)
       `);
       await this.updateToSchemaVersion(93);
     }
