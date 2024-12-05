@@ -129,6 +129,9 @@
           margin-left: calc(-4em + 5px);
           animation: goFasterLeft 0.8s infinite linear;
         }
+        &.no-animation {
+          animation: none;
+        }
       }
 
       &.left {
