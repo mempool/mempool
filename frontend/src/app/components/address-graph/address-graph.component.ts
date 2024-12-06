@@ -10,7 +10,6 @@ import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pip
 import { StateService } from '@app/services/state.service';
 import { PriceService } from '@app/services/price.service';
 import { FiatCurrencyPipe } from '@app/shared/pipes/fiat-currency.pipe';
-import { FiatShortenerPipe } from '@app/shared/pipes/fiat-shortener.pipe';
 
 const periodSeconds = {
   '1d': (60 * 60 * 24),
@@ -77,7 +76,6 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
     private relativeUrlPipe: RelativeUrlPipe,
     private priceService: PriceService,
     private fiatCurrencyPipe: FiatCurrencyPipe,
-    private fiatShortenerPipe: FiatShortenerPipe,
     private zone: NgZone,
   ) {}
 
@@ -245,17 +243,18 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
           let tooltip = '<div>';
 
           const hasTx = data[0].data[2].txid;
+          const date = new Date(data[0].data[0]).toLocaleTimeString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
+          
+          tooltip += `<div>
+            <div style="text-align: right;">
+            <div><b>${date}</b></div>`;
+
           if (hasTx) {
             const header = data.length === 1
             ? `${data[0].data[2].txid.slice(0, 6)}...${data[0].data[2].txid.slice(-6)}`
             : `${data.length} transactions`;
-            tooltip += `<span><b>${header}</b></span>`;
+            tooltip += `<div><b>${header}</b></div>`;
           }
-          
-          const date = new Date(data[0].data[0]).toLocaleTimeString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
-          
-          tooltip += `<div>
-            <div style="text-align: right;">`;
           
           const formatBTC = (val, decimal) => (val / 100_000_000).toFixed(decimal);
           const formatFiat = (val) => this.fiatCurrencyPipe.transform(val, null, 'USD');
@@ -291,7 +290,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
             }
           }
 
-          tooltip += `</div><span>${date}</span></div>`;
+          tooltip += `</div></div>`;
           return tooltip;
         }.bind(this)
       },
@@ -311,18 +310,21 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
             formatter: (val): string => {
               let valSpan = maxValue - (this.period === 'all' ? 0 : minValue);
               if (valSpan > 100_000_000_000) {
-                return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 0)} BTC`;
+                return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 0, undefined, true)} BTC`;
               }
               else if (valSpan > 1_000_000_000) {
-                return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 2)} BTC`;
+                return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 2, undefined, true)} BTC`;
               } else if (valSpan > 100_000_000) {
                 return `${(val / 100_000_000).toFixed(1)} BTC`;
               } else if (valSpan > 10_000_000) {
                 return `${(val / 100_000_000).toFixed(2)} BTC`;
               } else if (valSpan > 1_000_000) {
+                if (maxValue > 100_000_000_000) {
+                  return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 3, undefined, true)} BTC`;
+                }
                 return `${(val / 100_000_000).toFixed(3)} BTC`;
               } else {
-                return `${this.amountShortenerPipe.transform(val, 0)} sats`;
+                return `${this.amountShortenerPipe.transform(val, 0, undefined, true)} sats`;
               }
             }
           },
@@ -336,7 +338,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: function(val) {
-              return this.fiatShortenerPipe.transform(val, null, 'USD');
+              return `$${this.amountShortenerPipe.transform(val, 0, undefined, true)}`;
             }.bind(this)
           },
           splitLine: {
