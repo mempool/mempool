@@ -879,6 +879,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.tx.acceleratedAt = cpfpInfo.acceleratedAt;
       this.tx.feeDelta = cpfpInfo.feeDelta;
       this.setIsAccelerated(firstCpfp);
+    } else if (this.tx.acceleration) { // Acceleration was cancelled while on the tx page, reset acceleration state
+      this.tx.acceleration = false;
+      this.setIsAccelerated(firstCpfp);
     }
     
     if (this.notAcceleratedOnLoad === null) {
