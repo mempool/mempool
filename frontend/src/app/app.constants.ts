@@ -449,7 +449,7 @@ export interface Timezone {
 export const timezones: Timezone[] = [
   { offset: '-12', name: 'Anywhere on Earth (AoE)' },
   { offset: '-11', name: 'Samoa Standard Time (SST)' },
-  { offset: '-10', name: 'Hawaii-Aleutian Standard Time (HST)' },
+  { offset: '-10', name: 'Hawaii Standard Time (HST)' },
   { offset: '-9', name: 'Alaska Standard Time (AKST)' },
   { offset: '-8', name: 'Pacific Standard Time (PST)' },
   { offset: '-7', name: 'Mountain Standard Time (MST)' },
