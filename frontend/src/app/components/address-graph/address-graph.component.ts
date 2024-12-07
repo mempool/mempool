@@ -310,21 +310,21 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
             formatter: (val): string => {
               let valSpan = maxValue - (this.period === 'all' ? 0 : minValue);
               if (valSpan > 100_000_000_000) {
-                return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 0, undefined, true)} BTC`;
+                return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 0, undefined, true, true)} BTC`;
               }
               else if (valSpan > 1_000_000_000) {
-                return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 2, undefined, true)} BTC`;
+                return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 2, undefined, true, true)} BTC`;
               } else if (valSpan > 100_000_000) {
                 return `${(val / 100_000_000).toFixed(1)} BTC`;
               } else if (valSpan > 10_000_000) {
                 return `${(val / 100_000_000).toFixed(2)} BTC`;
               } else if (valSpan > 1_000_000) {
                 if (maxValue > 100_000_000_000) {
-                  return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 3, undefined, true)} BTC`;
+                  return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 3, undefined, true, true)} BTC`;
                 }
                 return `${(val / 100_000_000).toFixed(3)} BTC`;
               } else {
-                return `${this.amountShortenerPipe.transform(val, 0, undefined, true)} sats`;
+                return `${this.amountShortenerPipe.transform(val, 0, undefined, true, true)} sats`;
               }
             }
           },
@@ -338,7 +338,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: function(val) {
-              return `$${this.amountShortenerPipe.transform(val, 0, undefined, true)}`;
+              return `$${this.amountShortenerPipe.transform(val, 0, undefined, true, true)}`;
             }.bind(this)
           },
           splitLine: {

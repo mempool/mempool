@@ -5,9 +5,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class AmountShortenerPipe implements PipeTransform {
   transform(num: number, ...args: any[]): unknown {
-    const digits = args[0] ?? 1;
+    let digits = args[0] ?? 1;
     const unit = args[1] || undefined;
     const isMoney = args[2] || false;
+    const addMoreDigits = args[3] || false;
 
     if (num < 1000) {
       return num.toFixed(digits);
@@ -24,6 +25,12 @@ export class AmountShortenerPipe implements PipeTransform {
     ];
     const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
     const item = lookup.slice().reverse().find((item) => num >= item.value);
+
+    if (addMoreDigits) {
+      // Add more decimal digits if the integer part is small
+      const integerPartLength = Math.floor(num / item.value).toString().length;
+      digits += Math.max(0, 3 - integerPartLength);
+    }
 
     if (unit !== undefined) {
       return item ? (num / item.value).toFixed(digits).replace(rx, '$1') + ' ' + item.symbol + unit : '0';
