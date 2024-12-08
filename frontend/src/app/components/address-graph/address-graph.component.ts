@@ -116,7 +116,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
                     } else if (this.conversions && this.conversions['USD']) {
                       price = this.conversions['USD'];
                     }
-                    return { ...item, price: price }
+                    return { ...item, price: price };
                   });
                 }
               }),
@@ -338,7 +338,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: function(val) {
-              return `$${this.amountShortenerPipe.transform(val, 0, undefined, true)}`;
+              return `$${this.amountShortenerPipe.transform(val, 3, undefined, true, true)}`;
             }.bind(this)
           },
           splitLine: {
@@ -406,7 +406,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
 
   onChartClick(e) {
     if (this.hoverData?.length && this.hoverData[0]?.[2]?.txid) {
-      this.zone.run(() => { 
+      this.zone.run(() => {
         const url = this.relativeUrlPipe.transform(`/tx/${this.hoverData[0][2].txid}`);
         if (e.event.event.shiftKey || e.event.event.ctrlKey || e.event.event.metaKey) {
           window.open(url);
@@ -471,7 +471,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
     // Add a point at today's date to make the graph end at the current time
     extendedSummary.unshift({ time: Date.now() / 1000, value: 0 });
     extendedSummary.reverse();
-    
+
     let oneHour = 60 * 60;
     // Fill gaps longer than interval
     for (let i = 0; i < extendedSummary.length - 1; i++) {
@@ -484,7 +484,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         i += hours - 1;
       }
     }
-  
+
     return extendedSummary.reverse();
   }
 }
