@@ -440,3 +440,38 @@ export const fiatCurrencies = {
     indexed: true,
   },
 };
+
+export interface Timezone {
+  offset: string;
+  name: string;
+}
+
+export const timezones: Timezone[] = [
+  { offset: '-12', name: 'Anywhere on Earth (AoE)' },
+  { offset: '-11', name: 'Samoa Standard Time (SST)' },
+  { offset: '-10', name: 'Hawaii Standard Time (HST)' },
+  { offset: '-9', name: 'Alaska Standard Time (AKST)' },
+  { offset: '-8', name: 'Pacific Standard Time (PST)' },
+  { offset: '-7', name: 'Mountain Standard Time (MST)' },
+  { offset: '-6', name: 'Central Standard Time (CST)' },
+  { offset: '-5', name: 'Eastern Standard Time (EST)' },
+  { offset: '-4', name: 'Atlantic Standard Time (AST)' },
+  { offset: '-3', name: 'Argentina Time (ART)' },
+  { offset: '-2', name: 'Fernando de Noronha Time (FNT)' },
+  { offset: '-1', name: 'Azores Time (AZOT)' },
+  { offset: '+0', name: 'Greenwich Mean Time (GMT)' },
+  { offset: '+1', name: 'Central European Time (CET)' },
+  { offset: '+2', name: 'Eastern European Time (EET)' },
+  { offset: '+3', name: 'Moscow Standard Time (MSK)' },
+  { offset: '+4', name: 'Armenia Time (AMT)' },
+  { offset: '+5', name: 'Pakistan Standard Time (PKT)' },
+  { offset: '+6', name: 'Xinjiang Time (XJT)' },
+  { offset: '+7', name: 'Indochina Time (ICT)' },
+  { offset: '+8', name: 'Hong Kong Time (HKT)' },
+  { offset: '+9', name: 'Japan Standard Time (JST)' },
+  { offset: '+10', name: 'Australian Eastern Standard Time (AEST)' },
+  { offset: '+11', name: 'Norfolk Time (NFT)' },
+  { offset: '+12', name: 'New Zealand Standard Time (NZST)' },
+  { offset: '+13', name: 'Tonga Time (TOT)' },
+  { offset: '+14', name: 'Line Islands Time (LINT)' }
+];

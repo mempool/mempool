@@ -194,7 +194,7 @@
             <a [routerLink]="['/block' | relativeUrl, block.id]">{{ block.height }}</a>
           </td>
           <td class="timestamp">
-            &lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm:ss' }}
+            <app-timestamp [customFormat]="'yyyy-MM-dd HH:mm:ss'" [unixTime]="block.timestamp" [hideTimeSince]="true"></app-timestamp>
           </td>
           <td class="mined">
             <app-time kind="since" [time]="block.timestamp" [fastRender]="true" [showTooltip]="true"></app-time>
