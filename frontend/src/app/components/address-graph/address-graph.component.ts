@@ -44,6 +44,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
   @Input() right: number | string = 10;
   @Input() left: number | string = 70;
   @Input() widget: boolean = false;
+  @Input() defaultFiat: boolean = false;
 
   data: any[] = [];
   fiatData: any[] = [];
@@ -83,6 +84,9 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
     this.isLoading = true;
     if (!this.addressSummary$ && (!this.address || !this.stats)) {
       return;
+    }
+    if (changes.defaultFiat) {
+      this.selected['Fiat'] = !!this.defaultFiat;
     }
     if (changes.address || changes.isPubkey || changes.addressSummary$ || changes.stats) {
       if (this.subscription) {
@@ -145,7 +149,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
     if (!summary) {
       return;
     }
-    
+
     const total = this.stats ? (this.stats.funded_txo_sum - this.stats.spent_txo_sum) : summary.reduce((acc, tx) => acc + tx.value, 0);
     let runningTotal = total;
     const processData = summary.map(d => {
@@ -159,7 +163,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
             d
         };
     }).reverse();
-    
+
     this.data = processData.filter(({ d }) => d.txid !== undefined).map(({ time, balance, d }) => [time, balance, d]);
     this.fiatData = processData.map(({ time, fiatBalance, balance, d }) => [time, fiatBalance, d, balance]);
 
@@ -176,6 +180,9 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
 
     const maxValue = this.data.reduce((acc, d) => Math.max(acc, Math.abs(d[1] ?? d.value[1])), 0);
     const minValue = this.data.reduce((acc, d) => Math.min(acc, Math.abs(d[1] ?? d.value[1])), maxValue);
+
+    this.right = this.selected['Fiat'] ? +this.initialRight + 40 : this.initialRight;
+    this.left = this.selected[$localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`] ? this.initialLeft : +this.initialLeft - 40;
 
     this.chartOptions = {
       color: [
@@ -244,7 +251,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
 
           const hasTx = data[0].data[2].txid;
           const date = new Date(data[0].data[0]).toLocaleTimeString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
-          
+
           tooltip += `<div>
             <div style="text-align: right;">
             <div><b>${date}</b></div>`;
@@ -255,10 +262,10 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
             : `${data.length} transactions`;
             tooltip += `<div><b>${header}</b></div>`;
           }
-          
+
           const formatBTC = (val, decimal) => (val / 100_000_000).toFixed(decimal);
           const formatFiat = (val) => this.fiatCurrencyPipe.transform(val, null, 'USD');
-          
+
           const btcVal = btcData.reduce((total, d) => total + d.data[2].value, 0);
           const fiatVal = fiatData.reduce((total, d) => total + d.data[2].value * d.data[2].price / 100_000_000, 0);
           const btcColor = btcVal === 0 ? '' : (btcVal > 0 ? 'var(--green)' : 'var(--red)');
@@ -442,7 +449,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         right: this.right,
       }] : undefined
     };
-    
+
     if (this.chartInstance) {
       this.chartInstance.setOption(this.chartOptions);
     }
