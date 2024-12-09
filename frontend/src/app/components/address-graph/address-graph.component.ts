@@ -10,7 +10,6 @@ import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pip
 import { StateService } from '@app/services/state.service';
 import { PriceService } from '@app/services/price.service';
 import { FiatCurrencyPipe } from '@app/shared/pipes/fiat-currency.pipe';
-import { FiatShortenerPipe } from '@app/shared/pipes/fiat-shortener.pipe';
 
 const periodSeconds = {
   '1d': (60 * 60 * 24),
@@ -45,6 +44,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
   @Input() right: number | string = 10;
   @Input() left: number | string = 70;
   @Input() widget: boolean = false;
+  @Input() defaultFiat: boolean = false;
 
   data: any[] = [];
   fiatData: any[] = [];
@@ -77,7 +77,6 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
     private relativeUrlPipe: RelativeUrlPipe,
     private priceService: PriceService,
     private fiatCurrencyPipe: FiatCurrencyPipe,
-    private fiatShortenerPipe: FiatShortenerPipe,
     private zone: NgZone,
   ) {}
 
@@ -85,6 +84,9 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
     this.isLoading = true;
     if (!this.addressSummary$ && (!this.address || !this.stats)) {
       return;
+    }
+    if (changes.defaultFiat) {
+      this.selected['Fiat'] = !!this.defaultFiat;
     }
     if (changes.address || changes.isPubkey || changes.addressSummary$ || changes.stats) {
       if (this.subscription) {
@@ -147,7 +149,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
     if (!summary) {
       return;
     }
-    
+
     const total = this.stats ? (this.stats.funded_txo_sum - this.stats.spent_txo_sum) : summary.reduce((acc, tx) => acc + tx.value, 0);
     let runningTotal = total;
     const processData = summary.map(d => {
@@ -161,7 +163,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
             d
         };
     }).reverse();
-    
+
     this.data = processData.filter(({ d }) => d.txid !== undefined).map(({ time, balance, d }) => [time, balance, d]);
     this.fiatData = processData.map(({ time, fiatBalance, balance, d }) => [time, fiatBalance, d, balance]);
 
@@ -178,6 +180,9 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
 
     const maxValue = this.data.reduce((acc, d) => Math.max(acc, Math.abs(d[1] ?? d.value[1])), 0);
     const minValue = this.data.reduce((acc, d) => Math.min(acc, Math.abs(d[1] ?? d.value[1])), maxValue);
+
+    this.right = this.selected['Fiat'] ? +this.initialRight + 40 : this.initialRight;
+    this.left = this.selected[$localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`] ? this.initialLeft : +this.initialLeft - 40;
 
     this.chartOptions = {
       color: [
@@ -245,21 +250,22 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
           let tooltip = '<div>';
 
           const hasTx = data[0].data[2].txid;
+          const date = new Date(data[0].data[0]).toLocaleTimeString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
+
+          tooltip += `<div>
+            <div style="text-align: right;">
+            <div><b>${date}</b></div>`;
+
           if (hasTx) {
             const header = data.length === 1
             ? `${data[0].data[2].txid.slice(0, 6)}...${data[0].data[2].txid.slice(-6)}`
             : `${data.length} transactions`;
-            tooltip += `<span><b>${header}</b></span>`;
+            tooltip += `<div><b>${header}</b></div>`;
           }
-          
-          const date = new Date(data[0].data[0]).toLocaleTimeString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
-          
-          tooltip += `<div>
-            <div style="text-align: right;">`;
-          
+
           const formatBTC = (val, decimal) => (val / 100_000_000).toFixed(decimal);
           const formatFiat = (val) => this.fiatCurrencyPipe.transform(val, null, 'USD');
-          
+
           const btcVal = btcData.reduce((total, d) => total + d.data[2].value, 0);
           const fiatVal = fiatData.reduce((total, d) => total + d.data[2].value * d.data[2].price / 100_000_000, 0);
           const btcColor = btcVal === 0 ? '' : (btcVal > 0 ? 'var(--green)' : 'var(--red)');
@@ -291,7 +297,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
             }
           }
 
-          tooltip += `</div><span>${date}</span></div>`;
+          tooltip += `</div></div>`;
           return tooltip;
         }.bind(this)
       },
@@ -311,18 +317,21 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
             formatter: (val): string => {
               let valSpan = maxValue - (this.period === 'all' ? 0 : minValue);
               if (valSpan > 100_000_000_000) {
-                return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 0)} BTC`;
+                return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 0, undefined, true)} BTC`;
               }
               else if (valSpan > 1_000_000_000) {
-                return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 2)} BTC`;
+                return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 2, undefined, true)} BTC`;
               } else if (valSpan > 100_000_000) {
                 return `${(val / 100_000_000).toFixed(1)} BTC`;
               } else if (valSpan > 10_000_000) {
                 return `${(val / 100_000_000).toFixed(2)} BTC`;
               } else if (valSpan > 1_000_000) {
+                if (maxValue > 100_000_000_000) {
+                  return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 3, undefined, true)} BTC`;
+                }
                 return `${(val / 100_000_000).toFixed(3)} BTC`;
               } else {
-                return `${this.amountShortenerPipe.transform(val, 0)} sats`;
+                return `${this.amountShortenerPipe.transform(val, 0, undefined, true)} sats`;
               }
             }
           },
@@ -336,7 +345,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: function(val) {
-              return this.fiatShortenerPipe.transform(val, null, 'USD');
+              return `$${this.amountShortenerPipe.transform(val, 0, undefined, true)}`;
             }.bind(this)
           },
           splitLine: {
@@ -440,7 +449,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         right: this.right,
       }] : undefined
     };
-    
+
     if (this.chartInstance) {
       this.chartInstance.setOption(this.chartOptions);
     }
