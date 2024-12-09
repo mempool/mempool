@@ -56,8 +56,7 @@
               </ng-template>
             </td>
             <td class="timestamp text-left">
-              &lrm;{{ utxo.blocktime * 1000 | date:'yyyy-MM-dd HH:mm' }}
-              <div class="symbol lg-inline relative-time"><i>(<app-time kind="since" [time]="utxo.blocktime"></app-time>)</i></div>
+              <app-timestamp [customFormat]="'yyyy-MM-dd HH:mm'" [unixTime]="utxo.blocktime"></app-timestamp>
             </td>
             <td class="expires-in text-left" [ngStyle]="{ 'color': getGradientColor(utxo.blocknumber + utxo.timelock - lastReservesBlockUpdate) }">
               {{ utxo.blocknumber + utxo.timelock - lastReservesBlockUpdate < 0 ? -(utxo.blocknumber + utxo.timelock - lastReservesBlockUpdate) : utxo.blocknumber + utxo.timelock - lastReservesBlockUpdate }} <span i18n="shared.blocks" class="symbol">blocks</span>

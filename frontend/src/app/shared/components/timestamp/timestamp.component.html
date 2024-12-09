@@ -1,6 +1,6 @@
 <span *ngIf="seconds === undefined">-</span>
 <span *ngIf="seconds !== undefined">
-  &lrm;{{ seconds * 1000 | date: customFormat ?? 'yyyy-MM-dd HH:mm' }}
+  &lrm;{{ seconds * 1000 | date: customFormat ?? 'yyyy-MM-dd HH:mm' : (stateService.timezone$ | async) }}
   <div class="lg-inline" *ngIf="!hideTimeSince">
     <i class="symbol">(<app-time kind="since" [time]="seconds" [fastRender]="true" [precision]="precision" [minUnit]="minUnit"></app-time>)</i>
   </div>

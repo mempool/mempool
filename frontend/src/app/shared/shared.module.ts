@@ -36,6 +36,7 @@ import { FiatSelectorComponent } from '@components/fiat-selector/fiat-selector.c
 import { RateUnitSelectorComponent } from '@components/rate-unit-selector/rate-unit-selector.component';
 import { ThemeSelectorComponent } from '@components/theme-selector/theme-selector.component';
 import { AmountSelectorComponent } from '@components/amount-selector/amount-selector.component';
+import { TimezoneSelectorComponent } from '@components/timezone-selector/timezone-selector.component';
 import { BrowserOnlyDirective } from '@app/shared/directives/browser-only.directive';
 import { ServerOnlyDirective } from '@app/shared/directives/server-only.directive';
 import { ColoredPriceDirective } from '@app/shared/directives/colored-price.directive';
@@ -134,6 +135,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from '@app/shared/components/
     ThemeSelectorComponent,
     RateUnitSelectorComponent,
     AmountSelectorComponent,
+    TimezoneSelectorComponent,
     ScriptpubkeyTypePipe,
     RelativeUrlPipe,
     NoSanitizePipe,
@@ -283,6 +285,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from '@app/shared/components/
     RateUnitSelectorComponent,
     ThemeSelectorComponent,
     AmountSelectorComponent,
+    TimezoneSelectorComponent,
     ScriptpubkeyTypePipe,
     RelativeUrlPipe,
     Hex2asciiPipe,
