@@ -32,6 +32,8 @@ export interface Transaction {
   price?: Price;
   sigops?: number;
   flags?: bigint;
+  largeInput?: boolean;
+  largeOutput?: boolean;
 }
 
 export interface TransactionChannels {
