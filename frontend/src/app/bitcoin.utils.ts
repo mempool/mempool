@@ -1,5 +1,5 @@
-import { Transaction, Vin } from './interfaces/electrs.interface';
-import { Hash } from './shared/sha256';
+import { Transaction, Vin } from '@interfaces/electrs.interface';
+import { Hash } from '@app/shared/sha256';
 
 const P2SH_P2WPKH_COST = 21 * 4; // the WU cost for the non-witness part of P2SH-P2WPKH
 const P2SH_P2WSH_COST  = 35 * 4; // the WU cost for the non-witness part of P2SH-P2WSH
@@ -135,7 +135,7 @@ export function parseMultisigScript(script: string): void | { m: number, n: numb
     return;
   }
   const opN = ops.pop();
-  if (!opN.startsWith('OP_PUSHNUM_')) {
+  if (opN !== 'OP_0' && !opN.startsWith('OP_PUSHNUM_')) {
     return;
   }
   const n = parseInt(opN.match(/[0-9]+/)[0], 10);
@@ -152,7 +152,7 @@ export function parseMultisigScript(script: string): void | { m: number, n: numb
     }
   }
   const opM = ops.pop();
-  if (!opM.startsWith('OP_PUSHNUM_')) {
+  if (opM !== 'OP_0' && !opM.startsWith('OP_PUSHNUM_')) {
     return;
   }
   const m = parseInt(opM.match(/[0-9]+/)[0], 10);

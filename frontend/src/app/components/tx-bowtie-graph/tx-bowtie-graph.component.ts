@@ -1,14 +1,14 @@
 import { Component, OnInit, Input, OnChanges, HostListener, Inject, LOCALE_ID } from '@angular/core';
-import { StateService } from '../../services/state.service';
-import { Outspend, Transaction, Vin, Vout } from '../../interfaces/electrs.interface';
+import { StateService } from '@app/services/state.service';
+import { Outspend, Transaction, Vin, Vout } from '@interfaces/electrs.interface';
 import { Router } from '@angular/router';
 import { ReplaySubject, merge, Subscription, of } from 'rxjs';
 import { tap, switchMap } from 'rxjs/operators';
-import { ApiService } from '../../services/api.service';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
-import { AssetsService } from '../../services/assets.service';
-import { environment } from '../../../environments/environment';
-import { ElectrsApiService } from '../../services/electrs-api.service';
+import { ApiService } from '@app/services/api.service';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
+import { AssetsService } from '@app/services/assets.service';
+import { environment } from '@environments/environment';
+import { ElectrsApiService } from '@app/services/electrs-api.service';
 
 interface SvgLine {
   path: string;

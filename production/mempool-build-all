@@ -40,7 +40,7 @@ update_repo()
     git fetch origin || exit 1
     for remote in origin;do
         git remote add "${remote}" "https://github.com/${remote}/mempool" >/dev/null 2>&1
-        git fetch "${remote}" || exit 1
+        git fetch "${remote}" --tags || exit 1
     done
 
     if [ $(git tag -l "${REF}") ];then
@@ -131,7 +131,7 @@ export NVM_DIR="${HOME}/.nvm"
 source "${NVM_DIR}/nvm.sh"
 
 # what to look for
-frontends=(mainnet liquid onbtc bitb)
+frontends=(mainnet liquid onbtc bitb meta)
 backends=(mainnet testnet testnet4 signet liquid liquidtestnet onbtc bitb)
 frontend_repos=()
 backend_repos=()
@@ -148,7 +148,7 @@ for repo in $backends;do
 done
 
 # update all repos
-for repo in $backend_repos;do
+for repo in $frontend_repos $backend_repos;do
     update_repo "${repo}"
 done
 

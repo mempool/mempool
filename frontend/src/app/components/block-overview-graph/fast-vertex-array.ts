@@ -8,7 +8,7 @@
   or compacting into a smaller Float32Array when there's space to do so.
 */
 
-import TxSprite from './tx-sprite';
+import TxSprite from '@components/block-overview-graph/tx-sprite';
 
 export class FastVertexArray {
   length: number;

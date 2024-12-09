@@ -68,7 +68,7 @@ h3 {
 .loading-spinner {
   position: absolute;
   top: 400px;
-  z-index: 100;
+  z-index: 99;
   width: 100%;
   left: 0;
   @media (max-width: 767.98px) {

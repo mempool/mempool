@@ -1,4 +1,5 @@
 @reboot sleep 5 ; /usr/local/bin/bitcoind -testnet >/dev/null 2>&1
+@reboot sleep 5 ; /usr/local/bin/bitcoind -testnet4 >/dev/null 2>&1
 @reboot sleep 5 ; /usr/local/bin/bitcoind -signet >/dev/null 2>&1
 @reboot sleep 10 ; screen -dmS mainnet /bitcoin/electrs/start mainnet
 @reboot sleep 10 ; screen -dmS testnet /bitcoin/electrs/start testnet

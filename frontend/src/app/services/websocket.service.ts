@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { WebsocketResponse } from '../interfaces/websocket.interface';
-import { StateService } from './state.service';
-import { Transaction } from '../interfaces/electrs.interface';
+import { WebsocketResponse } from '@interfaces/websocket.interface';
+import { StateService } from '@app/services/state.service';
+import { Transaction } from '@interfaces/electrs.interface';
 import { firstValueFrom, Subscription } from 'rxjs';
-import { ApiService } from './api.service';
+import { ApiService } from '@app/services/api.service';
 import { take } from 'rxjs/operators';
 import { TransferState, makeStateKey } from '@angular/core';
-import { CacheService } from './cache.service';
-import { uncompressDeltaChange, uncompressTx } from '../shared/common.utils';
+import { CacheService } from '@app/services/cache.service';
+import { uncompressDeltaChange, uncompressTx } from '@app/shared/common.utils';
 
 const OFFLINE_RETRY_AFTER_MS = 2000;
 const OFFLINE_PING_CHECK_AFTER_MS = 30000;
@@ -37,6 +37,8 @@ export class WebsocketService {
   private isTrackingWallet: boolean = false;
   private trackingWalletName: string;
   private trackingMempoolBlock: number;
+  private trackingMempoolBlockNetwork: string;
+  private stoppingTrackMempoolBlock: any | null = null;
   private latestGitCommit = '';
   private onlineCheckTimeout: number;
   private onlineCheckTimeoutTwo: number;
@@ -220,19 +222,32 @@ export class WebsocketService {
     this.websocketSubject.next({ 'track-asset': 'stop' });
   }
 
-  startTrackMempoolBlock(block: number, force: boolean = false) {
+  startTrackMempoolBlock(block: number, force: boolean = false): boolean {
+    if (this.stoppingTrackMempoolBlock) {
+      clearTimeout(this.stoppingTrackMempoolBlock);
+    }
     // skip duplicate tracking requests
-    if (force || this.trackingMempoolBlock !== block) {
+    if (force || this.trackingMempoolBlock !== block || this.network !== this.trackingMempoolBlockNetwork) {
       this.websocketSubject.next({ 'track-mempool-block': block });
       this.isTrackingMempoolBlock = true;
       this.trackingMempoolBlock = block;
+      this.trackingMempoolBlockNetwork = this.network;
+      return true;
     }
+    return false;
   }
 
-  stopTrackMempoolBlock() {
-    this.websocketSubject.next({ 'track-mempool-block': -1 });
+  stopTrackMempoolBlock(): void {
+    if (this.stoppingTrackMempoolBlock) {
+      clearTimeout(this.stoppingTrackMempoolBlock);
+    }
     this.isTrackingMempoolBlock = false;
-    this.trackingMempoolBlock = null;
+    this.stoppingTrackMempoolBlock = setTimeout(() => {
+      this.stoppingTrackMempoolBlock = null;
+      this.websocketSubject.next({ 'track-mempool-block': -1 });
+      this.trackingMempoolBlock = null;
+      this.stateService.mempoolBlockState = null;
+    }, 2000);
   }
 
   startTrackRbf(mode: 'all' | 'fullRbf') {
@@ -441,6 +456,7 @@ export class WebsocketService {
         if (response['projected-block-transactions'].blockTransactions) {
           this.stateService.mempoolSequence = response['projected-block-transactions'].sequence;
           this.stateService.mempoolBlockUpdate$.next({
+            block: this.trackingMempoolBlock,
             transactions: response['projected-block-transactions'].blockTransactions.map(uncompressTx),
           });
         } else if (response['projected-block-transactions'].delta) {
@@ -449,7 +465,7 @@ export class WebsocketService {
             this.startTrackMempoolBlock(this.trackingMempoolBlock, true);
           } else {
             this.stateService.mempoolSequence = response['projected-block-transactions'].sequence;
-            this.stateService.mempoolBlockUpdate$.next(uncompressDeltaChange(response['projected-block-transactions'].delta));
+            this.stateService.mempoolBlockUpdate$.next(uncompressDeltaChange(this.trackingMempoolBlock, response['projected-block-transactions'].delta));
           }
         }
       }

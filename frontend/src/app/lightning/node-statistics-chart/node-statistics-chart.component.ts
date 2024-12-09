@@ -1,14 +1,14 @@
 import { Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
-import { EChartsOption } from '../../graphs/echarts';
+import { EChartsOption } from '@app/graphs/echarts';
 import { Observable } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { formatNumber } from '@angular/common';
 import { UntypedFormGroup } from '@angular/forms';
-import { StorageService } from '../../services/storage.service';
-import { download } from '../../shared/graphs.utils';
-import { LightningApiService } from '../lightning-api.service';
+import { StorageService } from '@app/services/storage.service';
+import { download } from '@app/shared/graphs.utils';
+import { LightningApiService } from '@app/lightning/lightning-api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { StateService } from '../../services/state.service';
+import { StateService } from '@app/services/state.service';
 
 @Component({
   selector: 'app-node-statistics-chart',
@@ -19,7 +19,7 @@ import { StateService } from '../../services/state.service';
       position: absolute;
       top: 50%;
       left: calc(50% - 15px);
-      z-index: 100;
+      z-index: 99;
     }
   `],
 })

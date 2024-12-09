@@ -1,13 +1,13 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { AssetsService } from '../../services/assets.service';
-import { environment } from '../../../environments/environment';
+import { AssetsService } from '@app/services/assets.service';
+import { environment } from '@environments/environment';
 import { UntypedFormGroup } from '@angular/forms';
 import { filter, map, switchMap, take } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, Observable } from 'rxjs';
-import { AssetExtended } from '../../interfaces/electrs.interface';
-import { SeoService } from '../../services/seo.service';
-import { StateService } from '../../services/state.service';
+import { AssetExtended } from '@interfaces/electrs.interface';
+import { SeoService } from '@app/services/seo.service';
+import { StateService } from '@app/services/state.service';
 
 @Component({
   selector: 'app-assets',

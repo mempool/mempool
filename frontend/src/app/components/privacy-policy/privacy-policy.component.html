@@ -5,7 +5,7 @@
     <br><br>
 
     <h2>Privacy Policy</h2>
-    <h6>Updated: July 10, 2024</h6>
+    <h6>Updated: July 31, 2024</h6>
 
     <br><br>
 
@@ -27,7 +27,7 @@
 
       <br>
 
-      <h4>General</h4>
+      <h4>USING THIS WEBSITE</h4>
 
       <p *ngIf="officialMempoolSpace">Out of respect for the Bitcoin community, this Website does not use any third-party analytics, third-party trackers, or third-party cookies, and we do not share any private user data with third-parties. Additionally, to mitigate the risk of surveillance by malicious third-parties, we self-host this Website on our own hardware and network infrastructure, so there are no "hosting companies" or "cloud providers" involved with the operation of this Website.</p>
 
@@ -35,7 +35,7 @@
 
       <ul>
 
-        <li>We use basic webserver logging (nginx) for sysadmin purposes, which collects your IP address along with the requests you make. These logs are deleted after 10 days, and we do not share this data with any third-party. To conceal your IP address from our webserver logs, we recommend that you use Tor Browser with our Tor v3 hidden service onion hostname.</li>
+        <li>We use basic webserver logging (nginx) for sysadmin purposes, which collects your IP address along with the requests you make. These logs are deleted after 10 days, and we do not share this data with any third-party.</li>
 
         <br>
 
@@ -49,7 +49,7 @@
 
       <p *ngIf="officialMempoolSpace">If you use Mempool Accelerator&trade; your acceleration request will be sent to us and relayed to Mempool's mining pool partners. We will store the TXID of the transactions you accelerate with us. We share this information with our mining pool partners, and publicly display accelerated transaction details on our website and APIs. No personal information or account identifiers will be shared with any third party including mining pool partners.</p>
 
-      <p *ngIf="!officialMempoolSpace">If you click the accelerate button on a transaction you will load acceleration pricing information from Mempool. If you make an acceleration request, the TXID and your maximum bid will be sent to Mempool who will store and share this information with their mining pool partners, and publicly display accelerated transaction details on mempool.space and via Mempool's APIs. No personal information or account identifiers will be shared with any third party including mining pool partners.</p>
+      <p *ngIf="!officialMempoolSpace">When using Mempool Accelerator&trade; the mempool.space privacy policy will apply: <a href="https://mempool.space/privacy-policy">https://mempool.space/privacy-policy</a>.</p>
 
       <br>
       
@@ -74,22 +74,38 @@
         <br>
 
       </ng-container>  
-
+      
+      <ng-container *ngIf="officialMempoolSpace">    
+        
       <h4>PAYMENTS AND DONATIONS</h4>
 
-      <p>If you make any payment to Mempool or donation to The Mempool Open Source Project&reg;, we may collect the following:</p>
+        <p>If you make any payment to Mempool or donation to The Mempool Open Source Project&reg;, we may collect the following:</p>
 
-      <ul>
+        <ul>
 
-        <li>Your e-mail address and/or country; we may use this information to manage your user account, for billing purposes, or to update you about our services. We will not share this with any third-party, except as necessary for our fiat payment processor.</li>
+          <li>Your e-mail address and/or country; we may use this information to manage your user account, for billing purposes, or to update you about our services. We will not share this with any third-party, except as necessary for our fiat payment processor.</li>
 
-        <li>If you make a payment using Bitcoin, we will process your payment using our self-hosted BTCPay Server instance. We will not share your payment details with any third-party. For payments made over the Lightning network, we may utilize third party LSPs / lightning liquidity providers.</li>
+          <li>If you make a payment using Bitcoin, we will process your payment using our self-hosted BTCPay Server instance. We will not share your payment details with any third-party. For payments made over the Lightning network, we may utilize third party LSPs / lightning liquidity providers.</li>
 
-        <li>If you make a payment using Fiat we will collect your payment details. We will share your payment details with our fiat payment processor Square (Block, Inc.),. - Please see "Information we collect about customers" on Square's website at https://squareup.com/us/en/legal/general/privacy.</li>
+          <li>If you make a payment using Fiat we will collect your payment details. We will share your payment details with our fiat payment processor Square (Block, Inc.) - Please see "Information we collect about customers" on Square's website at https://squareup.com/us/en/legal/general/privacy.</li>
 
-      </ul>
+        </ul>
 
-      <br>
+        <br>
+
+      </ng-container> 
+
+      <ng-container *ngIf="officialMempoolSpace">
+
+        <h4>DATA RETENTION AND ACCOUNT INACTIVITY</h4>
+        
+        <p>We aim to retain your data only as long as necessary:</p>
+        <ul>
+          <li>An account is considered inactive if all of the following conditions are met: a) No login activity within the past 6 months, b) No active subscriptions associated with the account, c) No Mempool Accelerator™ Pro account credit</li>
+          <li>If an account meets the criteria for inactivity as defined above, we will automatically delete the associated account data after a period of 6 months of continuous inactivity, except in the case of payment disputes or account irregularities.</li>
+        </ul>
+
+      </ng-container>
 
       <p>EOF</p>
 

@@ -1,16 +1,16 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { combineLatest, merge, Observable, of, Subject, Subscription } from 'rxjs';
 import { catchError, filter, map, scan, share, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
-import { BlockExtended, OptimizedMempoolStats, TransactionStripped } from '../../interfaces/node-api.interface';
-import { MempoolInfo, ReplacementInfo } from '../../interfaces/websocket.interface';
-import { ApiService } from '../../services/api.service';
-import { StateService } from '../../services/state.service';
-import { WebsocketService } from '../../services/websocket.service';
-import { SeoService } from '../../services/seo.service';
-import { ActiveFilter, FilterMode, GradientMode, toFlags } from '../../shared/filters.utils';
-import { detectWebGL } from '../../shared/graphs.utils';
-import { Address, AddressTxSummary } from '../../interfaces/electrs.interface';
-import { ElectrsApiService } from '../../services/electrs-api.service';
+import { BlockExtended, OptimizedMempoolStats, TransactionStripped } from '@interfaces/node-api.interface';
+import { MempoolInfo, ReplacementInfo } from '@interfaces/websocket.interface';
+import { ApiService } from '@app/services/api.service';
+import { StateService } from '@app/services/state.service';
+import { WebsocketService } from '@app/services/websocket.service';
+import { SeoService } from '@app/services/seo.service';
+import { ActiveFilter, FilterMode, GradientMode, toFlags } from '@app/shared/filters.utils';
+import { detectWebGL } from '@app/shared/graphs.utils';
+import { Address, AddressTxSummary } from '@interfaces/electrs.interface';
+import { ElectrsApiService } from '@app/services/electrs-api.service';
 
 interface MempoolBlocksData {
   blocks: number;
@@ -73,7 +73,7 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
     { index: 0, name: $localize`:@@dfc3c34e182ea73c5d784ff7c8135f087992dac1:All`, mode: 'and', filters: [], gradient: 'age' },
     { index: 1, name: $localize`Consolidation`, mode: 'and', filters: ['consolidation'], gradient: 'fee' },
     { index: 2, name: $localize`Coinjoin`, mode: 'and', filters: ['coinjoin'], gradient: 'fee' },
-    { index: 3, name: $localize`Data`, mode: 'or', filters: ['inscription', 'fake_pubkey', 'op_return'], gradient: 'fee' },
+    { index: 3, name: $localize`Data`, mode: 'or', filters: ['inscription', 'fake_pubkey', 'fake_scripthash', 'op_return'], gradient: 'fee' },
   ];
   goggleFlags = 0n;
   goggleMode: FilterMode = 'and';
@@ -370,23 +370,47 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
       const walletName = this.stateService.env.customize.dashboard.widgets.find(w => w.props?.wallet).props.wallet;
       this.websocketService.startTrackingWallet(walletName);
 
-      this.walletSummary$ = this.apiService.getWallet$(walletName).pipe(
+      this.walletSummary$ =  this.apiService.getWallet$(walletName).pipe(
         catchError(e => {
-          return of(null);
+          return of({});
         }),
-        map((walletTransactions) => {
-          const transactions = Object.values(walletTransactions).flatMap(wallet => wallet.transactions);
-          return this.deduplicateWalletTransactions(transactions);
-        }),
-        switchMap(initial => this.stateService.walletTransactions$.pipe(
-          startWith(null),
-          scan((summary, walletTransactions) => {
-            if (walletTransactions) {
-              const transactions: AddressTxSummary[] = [...summary, ...Object.values(walletTransactions).flat()];
-              return this.deduplicateWalletTransactions(transactions);
+        switchMap(wallet => this.stateService.walletTransactions$.pipe(
+          startWith([]),
+          scan((summaries, newTransactions) => {
+            const newSummaries: AddressTxSummary[] = [];
+            for (const tx of newTransactions) {
+              const funded: Record<string, number> = {};
+              const spent: Record<string, number> = {};
+              const fundedCount: Record<string, number> = {};
+              const spentCount: Record<string, number> = {};
+              for (const vin of tx.vin) {
+                const address = vin.prevout?.scriptpubkey_address;
+                if (address && wallet[address]) {
+                  spent[address] = (spent[address] ?? 0) + (vin.prevout?.value ?? 0);
+                  spentCount[address] = (spentCount[address] ?? 0) + 1;
+                }
+              }
+              for (const vout of tx.vout) {
+                const address = vout.scriptpubkey_address;
+                if (address && wallet[address]) {
+                  funded[address] = (funded[address] ?? 0) + (vout.value ?? 0);
+                  fundedCount[address] = (fundedCount[address] ?? 0) + 1;
+                }
+              }
+              for (const address of Object.keys({ ...funded, ...spent })) {
+                // add tx to summary
+                const txSummary: AddressTxSummary = {
+                  txid: tx.txid,
+                  value: (funded[address] ?? 0) - (spent[address] ?? 0),
+                  height: tx.status.block_height,
+                  time: tx.status.block_time,
+                };
+                wallet[address].transactions?.push(txSummary);
+                newSummaries.push(txSummary);
+              }
             }
-            return summary;
-          }, initial)
+            return this.deduplicateWalletTransactions([...summaries, ...newSummaries]);
+          }, this.deduplicateWalletTransactions(Object.values(wallet).flatMap(address => address.transactions)))
         )),
         share(),
       );

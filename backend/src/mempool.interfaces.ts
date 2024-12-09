@@ -29,9 +29,11 @@ export interface PoolStats extends PoolInfo {
 }
 
 export interface BlockAudit {
+  version: number,
   time: number,
   height: number,
   hash: string,
+  unseenTxs: string[],
   missingTxs: string[],
   freshTxs: string[],
   sigopTxs: string[],
@@ -126,6 +128,7 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
   acceleration?: boolean;
   acceleratedBy?: number[];
   acceleratedAt?: number;
+  feeDelta?: number;
   replacement?: boolean;
   uid?: number;
   flags?: number;
@@ -296,6 +299,7 @@ export interface BlockExtension {
     id: number; // Note - This is the `unique_id`, not to mix with the auto increment `id`
     name: string;
     slug: string;
+    minerNames: string[] | null;
   };
   avgFee: number;
   avgFeeRate: number;
@@ -316,6 +320,7 @@ export interface BlockExtension {
   segwitTotalSize: number;
   segwitTotalWeight: number;
   header: string;
+  firstSeen: number | null;
   utxoSetChange: number;
   // Requires coinstatsindex, will be set to NULL otherwise
   utxoSetSize: number | null;
@@ -382,8 +387,9 @@ export interface CpfpCluster {
 }
 
 export interface CpfpSummary {
-  transactions: TransactionExtended[];
+  transactions: MempoolTransactionExtended[];
   clusters: CpfpCluster[];
+  version: number;
 }
 
 export interface Statistic {
@@ -449,7 +455,7 @@ export interface OptimizedStatistic {
 
 export interface TxTrackingInfo {
   replacedBy?: string,
-  position?: { block: number, vsize: number, accelerated?: boolean, acceleratedBy?: number[], acceleratedAt?: number },
+  position?: { block: number, vsize: number, accelerated?: boolean, acceleratedBy?: number[], acceleratedAt?: number, feeDelta?: number },
   cpfp?: {
     ancestors?: Ancestor[],
     bestDescendant?: Ancestor | null,
@@ -462,6 +468,7 @@ export interface TxTrackingInfo {
   accelerated?: boolean,
   acceleratedBy?: number[],
   acceleratedAt?: number,
+  feeDelta?: number,
   confirmed?: boolean
 }
 

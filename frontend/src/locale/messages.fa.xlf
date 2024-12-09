@@ -417,6 +417,7 @@
       </trans-unit>
       <trans-unit id="1b47ebb11a7dbffd196a704d2325c5c73aea81e6" datatype="html">
         <source>Sorry, something went wrong!</source>
+        <target>با عرض پوزش، اشکالی پیش آمد!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">5</context>
@@ -425,6 +426,7 @@
       </trans-unit>
       <trans-unit id="49b619d43af81067bfcbf7ba4036876a620e9bd8" datatype="html">
         <source>We were not able to accelerate this transaction. Please try again later.</source>
+        <target>شوربختانه نتوانستیم این تراکنش را شتاب‌دهی کنیم. لطفا در زمان دیگری دوباره امتحان کنید.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">11</context>
@@ -433,13 +435,14 @@
       </trans-unit>
       <trans-unit id="f4e529ae5ffd73001d1ff4bbdeeb0a72e342e5c8" datatype="html">
         <source>Close</source>
+        <target>بستن</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">18</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">531</context>
+          <context context-type="linenumber">551</context>
         </context-group>
         <note priority="1" from="description">close</note>
       </trans-unit>
@@ -478,11 +481,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">77</context>
+          <context context-type="linenumber">79</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">243</context>
+          <context context-type="linenumber">245</context>
         </context-group>
         <note priority="1" from="description">Transaction Virtual Size</note>
         <note priority="1" from="meaning">transaction.vsize</note>
@@ -558,7 +561,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">541</context>
+          <context context-type="linenumber">561</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/calculator/calculator.component.html</context>
@@ -642,6 +645,7 @@
       </trans-unit>
       <trans-unit id="d1a62bdb732f1efbfdc8af6fbb4349b89015b5e5" datatype="html">
         <source>This will reduce your expected waiting time until the first confirmation to <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="START_TAG_APP_TIME" ctype="x-app_time" equiv-text="n&quot; [time]=&quot;etaInfo.acceleratedETA&quot; [fastRender]=&quot;false&quot; [fixedRender]=&quot;true&quot;&gt;"/><x id="CLOSE_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;/strong&gt;&lt;/s"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/small&gt;"/></source>
+        <target>کاهش زمان انتظار برای یک تأیید به <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="START_TAG_APP_TIME" ctype="x-app_time" equiv-text="n&quot; [time]=&quot;etaInfo.acceleratedETA&quot; [fastRender]=&quot;false&quot; [fixedRender]=&quot;true&quot;&gt;"/><x id="CLOSE_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;/strong&gt;&lt;/s"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/small&gt;"/> </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">76,77</context>
@@ -699,6 +703,7 @@
       </trans-unit>
       <trans-unit id="6c37b6a6f9e5ec98367ed744afa4b36800aa79ce" datatype="html">
         <source>Target rate</source>
+        <target>نرخ هدف</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">131</context>
@@ -779,22 +784,24 @@
       </trans-unit>
       <trans-unit id="a67aec1c4d47cdf3a4442a19e616def78fd77388" datatype="html">
         <source>Go back</source>
+        <target>برگشتن</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">258</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">421</context>
+          <context context-type="linenumber">435</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">473</context>
+          <context context-type="linenumber">493</context>
         </context-group>
         <note priority="1" from="description">go-back</note>
       </trans-unit>
       <trans-unit id="7d89e94e98140d07d5c2bb12d6166b8b74506eb0" datatype="html">
         <source>Accelerate your Bitcoin transaction?</source>
+        <target>شتاب‌دهی تراکنش بیت‌کوین شما؟</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">273</context>
@@ -803,6 +810,7 @@
       </trans-unit>
       <trans-unit id="eb70970e7741aca891aa54ff4651b050a60b1690" datatype="html">
         <source>Wait</source>
+        <target>انتظار</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">285</context>
@@ -811,18 +819,20 @@
       </trans-unit>
       <trans-unit id="f6a46cd5ca2087712a145f2c680e2aad5f926eaf" datatype="html">
         <source>Confirmation expected</source>
+        <target>انتظار می‌رود تأیید به زودی اتفاق بیفتد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">287</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">539</context>
+          <context context-type="linenumber">559</context>
         </context-group>
         <note priority="1" from="description">accelerator.confirmation-expected</note>
       </trans-unit>
       <trans-unit id="4adc5f10d717fbcfc9834dcf5eb203c1156db4d7" datatype="html">
         <source>Confirmation not expected any time soon</source>
+        <target>انتظار نمی‌رود تأیید به این زودی‌ها باشد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">290</context>
@@ -831,6 +841,7 @@
       </trans-unit>
       <trans-unit id="fd1ab7f68416a5ce64f04f588c8b808d7bba9624" datatype="html">
         <source>For an additional</source>
+        <target>به ازای مبلغ اضافی</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">345</context>
@@ -839,6 +850,7 @@
       </trans-unit>
       <trans-unit id="b0cd496dc7758e691f57213379a47f0a043010ac" datatype="html">
         <source>Reducing expected confirmation time to <x id="START_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;app-time kind=&quot;within&quot; [time]=&quot;etaInfo.acceleratedETA&quot; [fastRender]=&quot;false&quot; [fixedRender]=&quot;true&quot;&gt;"/><x id="CLOSE_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;/ng-contain"/></source>
+        <target>کاهش زمان تأیید مورد انتظار به <x id="START_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;app-time kind=&quot;within&quot; [time]=&quot;etaInfo.acceleratedETA&quot; [fastRender]=&quot;false&quot; [fixedRender]=&quot;true&quot;&gt;"/><x id="CLOSE_TAG_APP_TIME" ctype="x-app_time" equiv-text="&lt;/ng-contain"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">351,352</context>
@@ -847,18 +859,20 @@
       </trans-unit>
       <trans-unit id="b62e50ad8bdbb107a2ec978648faf36e9f91c3c1" datatype="html">
         <source>Payment to mempool.space for acceleration of txid <x id="START_LINK" ctype="x-a" equiv-text="&lt;a [routerLink]=&quot;'/tx/' + tx.txid&quot; target=&quot;_blank&quot;&gt;"/><x id="INTERPOLATION" equiv-text="tr(0, 10) }}"/>..<x id="INTERPOLATION_1" equiv-text="{{ tx.txid.substr(-10) }}"/><x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/p&gt;         &lt;/d"/></source>
+        <target>پرداخت به mempool.space برای شتاب‌دهی تراکنش <x id="START_LINK" ctype="x-a" equiv-text="&lt;a [routerLink]=&quot;'/tx/' + tx.txid&quot; target=&quot;_blank&quot;&gt;"/><x id="INTERPOLATION" equiv-text="tr(0, 10) }}"/>..<x id="INTERPOLATION_1" equiv-text="{{ tx.txid.substr(-10) }}"/><x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/p&gt;         &lt;/d"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">362,363</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">435</context>
+          <context context-type="linenumber">449</context>
         </context-group>
         <note priority="1" from="description">accelerator.payment-to-mempool-space</note>
       </trans-unit>
       <trans-unit id="9ebf5e1f1759ac5a81805ee901d02d1c14cab033" datatype="html">
         <source>Your account will be debited no more than</source>
+        <target>حساب شما بیش از این بدهکار نمی‌شود</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">367</context>
@@ -867,6 +881,7 @@
       </trans-unit>
       <trans-unit id="65fd4251d8ddfe4017d4d83f8cec6f5a80d89289" datatype="html">
         <source>Pay</source>
+        <target>پرداخت</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">378</context>
@@ -877,17 +892,18 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">446</context>
+          <context context-type="linenumber">460</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">570</context>
+          <context context-type="linenumber">590</context>
         </context-group>
         <note priority="1" from="description">Pay button label</note>
         <note priority="1" from="meaning">transaction.pay</note>
       </trans-unit>
       <trans-unit id="3da51e8df074e97a3479c4b2a6d1655529267544" datatype="html">
         <source>Failed to load invoice</source>
+        <target>خطا در بارگذاری صورتحساب</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">381</context>
@@ -896,6 +912,7 @@
       </trans-unit>
       <trans-unit id="13eacf4307fbadcc4ba552641200cdc36997a62c" datatype="html">
         <source>Loading invoice...</source>
+        <target>در حال بارگذاری صوتحساب...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">386</context>
@@ -904,6 +921,7 @@
       </trans-unit>
       <trans-unit id="63f5d0ec23e3cf4abf6d5221107633c90d8d4a15" datatype="html">
         <source>OR</source>
+        <target>یا</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
           <context context-type="linenumber">394</context>
@@ -912,113 +930,127 @@
       </trans-unit>
       <trans-unit id="d5380b83d01211f764e7dc17f115cbe2c306793f" datatype="html">
         <source>Confirm your payment</source>
+        <target>تأیید پرداخت</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">428</context>
+          <context context-type="linenumber">442</context>
         </context-group>
         <note priority="1" from="description">accelerator.confirm-your-payment</note>
       </trans-unit>
       <trans-unit id="23e85f2bac1f2bf2a36125a7cc9232e47d773bca" datatype="html">
         <source>Total additional cost</source>
+        <target>مجموع هزینه اضافی</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">444</context>
+          <context context-type="linenumber">458</context>
         </context-group>
         <note priority="1" from="description">accelerator.total-additional-cost</note>
       </trans-unit>
       <trans-unit id="ada15d0099ccf0a54d598a658d7a5d9f95af8fc6" datatype="html">
         <source>with</source>
+        <target>با</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">448</context>
+          <context context-type="linenumber">462</context>
         </context-group>
         <note priority="1" from="description">accelerator.pay-with</note>
       </trans-unit>
       <trans-unit id="c427d1fcbff172397bf8f6fb154e3144f099afdc" datatype="html">
         <source>Loading payment method...</source>
+        <target>در حال باگذاری روش پرداخت...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">462</context>
+          <context context-type="linenumber">482</context>
         </context-group>
         <note priority="1" from="description">accelerator.loading-payment-method</note>
       </trans-unit>
       <trans-unit id="72ca62832f62c0aeb0c0675d2ac6aa7043ee840d" datatype="html">
         <source>Confirming your payment</source>
+        <target>تأیید پرداخت شما</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">480</context>
+          <context context-type="linenumber">500</context>
         </context-group>
         <note priority="1" from="description">accelerator.confirming-your-payment</note>
       </trans-unit>
       <trans-unit id="8c8cbda9c5ddde6a4898a80aef46199c946c8895" datatype="html">
         <source>We are processing your payment...</source>
+        <target>در حال پردازش پرداخت شما...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">490</context>
+          <context context-type="linenumber">510</context>
         </context-group>
         <note priority="1" from="description">accelerator.payment-processing</note>
       </trans-unit>
       <trans-unit id="ea3197c44781ecca4f2adbf7bff229574f192983" datatype="html">
         <source>Accelerating your transaction</source>
+        <target>شتاب‌دهی پرداخت شما</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">500</context>
+          <context context-type="linenumber">520</context>
         </context-group>
         <note priority="1" from="description">accelerator.accelerating-your-transaction</note>
       </trans-unit>
       <trans-unit id="2279bfb8531701cc176ff6b266c3fa0df3983bce" datatype="html">
         <source>Confirming your acceleration with our mining pool partners...</source>
+        <target>در حال ارسال درخواست شتاب‌دهی شما به استخرهای استخراج همکار...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">507</context>
+          <context context-type="linenumber">527</context>
         </context-group>
         <note priority="1" from="description">accelerator.confirming-acceleration-with-miners</note>
       </trans-unit>
       <trans-unit id="d005740e3435cf7e0aad9a67d179ec3b3065205e" datatype="html">
         <source>...sorry, this is taking longer than expected...</source>
+        <target>با عرض پوزش، بیشتر از چیزی که انتظار می‌رفت به طول انجامید...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">509</context>
+          <context context-type="linenumber">529</context>
         </context-group>
         <note priority="1" from="description">accelerator.confirming-acceleration-with-miners</note>
       </trans-unit>
       <trans-unit id="afdff27fa38ec3386a7b9bb1b3ff113ed5d7e411" datatype="html">
         <source>Your transaction is being accelerated!</source>
+        <target>تراکنش شما در حال شتاب‌دهی است!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">518</context>
+          <context context-type="linenumber">538</context>
         </context-group>
         <note priority="1" from="description">accelerator.success-message</note>
       </trans-unit>
       <trans-unit id="f3b21cdfcc35a76e171f3bfd9c3daecbe065b159" datatype="html">
         <source>Your transaction has been accepted for acceleration by our mining pool partners.</source>
+        <target>تراکنش شما برای شتاب‌دهی در استخرهای استخراج همکار ما تأیید شد.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">524</context>
+          <context context-type="linenumber">544</context>
         </context-group>
         <note priority="1" from="description">accelerator.confirmed-acceleration-with-miners</note>
       </trans-unit>
       <trans-unit id="746506272a06b85cba0efc14907940df4bafdf96" datatype="html">
         <source>Calculating cost...</source>
+        <target>محاسبه هزینه...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">543</context>
+          <context context-type="linenumber">563</context>
         </context-group>
         <note priority="1" from="description">accelerator.calculating-cost</note>
       </trans-unit>
       <trans-unit id="484e154f1b26e67760d10baa8dddb2c69ddb1990" datatype="html">
         <source>customize</source>
+        <target>شخصی‌سازی</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">549</context>
+          <context context-type="linenumber">569</context>
         </context-group>
         <note priority="1" from="description">accelerator.customize</note>
       </trans-unit>
       <trans-unit id="fc60844faa5ea496fe8b8cfb7620b2bfc733c90b" datatype="html">
         <source>Accelerate to ~<x id="INTERPOLATION" equiv-text="{{ x | number : '1.0-0' }}"/> sat/vB</source>
+        <target>شتاب‌دهی به حدود <x id="INTERPOLATION" equiv-text="{{ x | number : '1.0-0' }}"/> sat بر vB</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">552</context>
+          <context context-type="linenumber">572</context>
         </context-group>
         <note priority="1" from="description">accelerator.accelerate-to-x</note>
       </trans-unit>
@@ -1027,24 +1059,25 @@
         <target>شتاب‌دهی</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
+          <context context-type="linenumber">578</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">558</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">556</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">565</context>
+          <context context-type="linenumber">567</context>
         </context-group>
         <note priority="1" from="description">Accelerate button label</note>
         <note priority="1" from="meaning">transaction.accelerate</note>
       </trans-unit>
       <trans-unit id="cae178cb66733552da9e3baefc1949a18af63ee0" datatype="html">
         <source>Your transaction will be prioritized by up to <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="1' }}"/>%<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> of miners.</source>
+        <target>تراکنش شما در <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="1' }}"/> درصد <x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> استخراج‌کننده‌ها اولویت داده می‌شود. </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">580</context>
+          <context context-type="linenumber">600</context>
         </context-group>
         <note priority="1" from="description">accelerator.hashrate-percentage-description</note>
       </trans-unit>
@@ -1056,12 +1089,24 @@
           <context context-type="linenumber">15</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
-          <context context-type="linenumber">35</context>
+          <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline-tooltip.component.html</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline-tooltip.component.html</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline-tooltip.component.html</context>
+          <context context-type="linenumber">31</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
-          <context context-type="linenumber">43</context>
+          <context context-type="linenumber">36</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
+          <context context-type="linenumber">44</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
@@ -1077,7 +1122,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">607</context>
+          <context context-type="linenumber">609</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -1120,21 +1165,52 @@
       </trans-unit>
       <trans-unit id="1158292946432597388" datatype="html">
         <source>accelerated</source>
+        <target>شتاب‌دهی شده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-fee-graph.component.ts</context>
           <context context-type="linenumber">91</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="aa28c3afcb8b1a556fc1e1842e48a57f24fd643f" datatype="html">
+        <source>Status</source>
+        <target>وضعیت</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline-tooltip.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/custom-dashboard/custom-dashboard.component.html</context>
+          <context context-type="linenumber">109</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/rbf-timeline/rbf-timeline-tooltip.component.html</context>
+          <context context-type="linenumber">33</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">74</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
+          <context context-type="linenumber">40</context>
+        </context-group>
+        <note priority="1" from="description">Transaction Status</note>
+        <note priority="1" from="meaning">transaction.status</note>
+      </trans-unit>
       <trans-unit id="1bc4a5de56ea48a832e32294c124009867b478d0" datatype="html">
         <source>First seen</source>
         <target>اولین زمان دیده‌شدن</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline.component.html</context>
-          <context context-type="linenumber">26</context>
+          <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline-tooltip.component.html</context>
+          <context context-type="linenumber">14</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline.component.html</context>
-          <context context-type="linenumber">120</context>
+          <context context-type="linenumber">64</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
@@ -1158,11 +1234,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">481</context>
+          <context context-type="linenumber">483</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">486</context>
+          <context context-type="linenumber">488</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
@@ -1195,12 +1271,16 @@
         <source>Accelerated</source>
         <target>شتاب‌دهی‌شده</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline.component.html</context>
-          <context context-type="linenumber">40</context>
+          <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline-tooltip.component.html</context>
+          <context context-type="linenumber">16</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline.component.html</context>
-          <context context-type="linenumber">136</context>
+          <context context-type="linenumber">90</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline.component.html</context>
+          <context context-type="linenumber">94</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
@@ -1212,7 +1292,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">592</context>
+          <context context-type="linenumber">594</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/filters.utils.ts</context>
@@ -1224,12 +1304,20 @@
         <source>Mined</source>
         <target>استخراج‌شده</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline.component.html</context>
-          <context context-type="linenumber">53</context>
+          <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline-tooltip.component.html</context>
+          <context context-type="linenumber">18</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline.component.html</context>
-          <context context-type="linenumber">93</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline.component.html</context>
+          <context context-type="linenumber">123</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
+          <context context-type="linenumber">66</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/custom-dashboard/custom-dashboard.component.html</context>
@@ -1265,6 +1353,123 @@
         </context-group>
         <note priority="1" from="description">transaction.rbf.mined</note>
       </trans-unit>
+      <trans-unit id="cb1b52c13b95fa29ea4044f2bbe0ac623b890c80" datatype="html">
+        <source>Fee</source>
+        <target>کارمزد</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline-tooltip.component.html</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/custom-dashboard/custom-dashboard.component.html</context>
+          <context context-type="linenumber">196</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/rbf-timeline/rbf-timeline-tooltip.component.html</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction-preview.component.html</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">608</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component.html</context>
+          <context context-type="linenumber">44</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">137</context>
+        </context-group>
+        <note priority="1" from="description">Transaction fee</note>
+        <note priority="1" from="meaning">transaction.fee</note>
+      </trans-unit>
+      <trans-unit id="c3aaae1073e33c932a5c98f98c3520645c0e3a93" datatype="html">
+        <source>Out-of-band fees</source>
+        <target>کارمزدهای خارج از شبکه</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline-tooltip.component.html</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+        <note priority="1" from="description">transaction.out-of-band-fees</note>
+      </trans-unit>
+      <trans-unit id="3e322ffba6477484e0dd2e65650fdd70322ea6d0" datatype="html">
+        <source>Fee rate</source>
+        <target>نرخ کارمزد</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline-tooltip.component.html</context>
+          <context context-type="linenumber">36</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">81</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">619</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+        <note priority="1" from="description">Transaction fee rate</note>
+        <note priority="1" from="meaning">transaction.fee-rate</note>
+      </trans-unit>
+      <trans-unit id="8b01e0411c7160bfee109e504c84ecee5079c326" datatype="html">
+        <source>Accelerated fee rate</source>
+        <target>نرخ کارمزد شتاب‌داده‌شده</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline-tooltip.component.html</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
+          <context context-type="linenumber">53</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">638</context>
+        </context-group>
+        <note priority="1" from="description">Accelerated transaction fee rate</note>
+        <note priority="1" from="meaning">transaction.accelerated-fee-rate</note>
+      </trans-unit>
+      <trans-unit id="2c2a527d090d5d030fc130a243135dbc6ba276f0" datatype="html">
+        <source>Accelerated by</source>
+        <target>شتاب‌دهی‌شده توسط</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline-tooltip.component.html</context>
+          <context context-type="linenumber">48</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration/active-acceleration-box/active-acceleration-box.component.html</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+        <note priority="1" from="description">Accelerated to hashrate</note>
+        <note priority="1" from="meaning">transaction.accelerated-by-hashrate</note>
+      </trans-unit>
       <trans-unit id="bcf34abc2d9ed8f45a2f65dd464c46694e9a181e" datatype="html">
         <source>Acceleration Fees</source>
         <target>کارمزد شتاب‌دهی</target>
@@ -1274,7 +1479,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component.ts</context>
-          <context context-type="linenumber">74</context>
+          <context context-type="linenumber">77</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
@@ -1287,7 +1492,7 @@
         <target>هیچ تراکنشی در این بازه زمانی شتاب‌دهی نشده است</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component.ts</context>
-          <context context-type="linenumber">130</context>
+          <context context-type="linenumber">133</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4793828002882320882" datatype="html">
@@ -1295,7 +1500,7 @@
         <target>در بلاک: <x id="PH" equiv-text="ticks[0].data[2]"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component.ts</context>
-          <context context-type="linenumber">174</context>
+          <context context-type="linenumber">177</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fee-rates-graph/block-fee-rates-graph.component.ts</context>
@@ -1315,7 +1520,7 @@
         <target>حدودا در بلاک: <x id="PH" equiv-text="ticks[0].data[2]"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component.ts</context>
-          <context context-type="linenumber">176</context>
+          <context context-type="linenumber">179</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fee-rates-graph/block-fee-rates-graph.component.ts</context>
@@ -1434,6 +1639,7 @@
       </trans-unit>
       <trans-unit id="d932577b535f10c9b3e25aaa430220bb09efc171" datatype="html">
         <source> of blocks</source>
+        <target> از بلاک‌ها</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-stats/acceleration-stats.component.html</context>
           <context context-type="linenumber">23</context>
@@ -1449,7 +1655,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.ts</context>
-          <context context-type="linenumber">52</context>
+          <context context-type="linenumber">62</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
@@ -1486,7 +1692,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">76</context>
+          <context context-type="linenumber">78</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -1497,40 +1703,6 @@
           <context context-type="linenumber">134</context>
         </context-group>
         <note priority="1" from="description">dashboard.latest-transactions.txid</note>
-      </trans-unit>
-      <trans-unit id="3e322ffba6477484e0dd2e65650fdd70322ea6d0" datatype="html">
-        <source>Fee rate</source>
-        <target>نرخ کارمزد</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
-          <context context-type="linenumber">12</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
-          <context context-type="linenumber">46</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">79</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">617</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
-          <context context-type="linenumber">18</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
-          <context context-type="linenumber">31</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
-          <context context-type="linenumber">41</context>
-        </context-group>
-        <note priority="1" from="description">Transaction fee rate</note>
-        <note priority="1" from="meaning">transaction.fee-rate</note>
       </trans-unit>
       <trans-unit id="9310d4be621ac60b19a4d73258b25f2b411971e7" datatype="html">
         <source>Bid</source>
@@ -1550,7 +1722,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
-          <context context-type="linenumber">20</context>
+          <context context-type="linenumber">21</context>
         </context-group>
         <note priority="1" from="description">accelerator.requested</note>
       </trans-unit>
@@ -1581,38 +1753,37 @@
         </context-group>
         <note priority="1" from="description">shared.block-title</note>
       </trans-unit>
-      <trans-unit id="aa28c3afcb8b1a556fc1e1842e48a57f24fd643f" datatype="html">
-        <source>Status</source>
-        <target>وضعیت</target>
+      <trans-unit id="e70fcca5a99575cffef3ff8cbd5e69f06ffd0f1c" datatype="html">
+        <source>Pool</source>
+        <target>استخر</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">19</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/custom-dashboard/custom-dashboard.component.html</context>
-          <context context-type="linenumber">109</context>
+          <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
+          <context context-type="linenumber">14</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/rbf-timeline/rbf-timeline-tooltip.component.html</context>
-          <context context-type="linenumber">33</context>
+          <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
+          <context context-type="linenumber">14</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">74</context>
+          <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
+          <context context-type="linenumber">92</context>
         </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
-          <context context-type="linenumber">40</context>
-        </context-group>
-        <note priority="1" from="description">Transaction Status</note>
-        <note priority="1" from="meaning">transaction.status</note>
+        <note priority="1" from="description">mining.pool-name</note>
       </trans-unit>
       <trans-unit id="e6a27066251ca1e04c5be86ad758380856df2506" datatype="html">
         <source>Pending</source>
         <target>در حال انتظار</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
-          <context context-type="linenumber">53</context>
+          <context context-type="linenumber">64</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
+          <context context-type="linenumber">252</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker-bar.component.html</context>
@@ -1620,20 +1791,21 @@
         </context-group>
         <note priority="1" from="description">accelerator.pending</note>
       </trans-unit>
-      <trans-unit id="9362dc86738f282259d3ef3789b7824dbfd19202" datatype="html">
-        <source>Completed <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span *ngIf=&quot;acceleration.status === 'completed_provisional'&quot;&gt;"/>🔄<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
-        <target>کامل‌شده <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span *ngIf=&quot;acceleration.status === 'completed_provisional'&quot;&gt;"/>🔄<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      <trans-unit id="a7c328c4773db932ff14a1954e15e43dca58e7b7" datatype="html">
+        <source>Completed</source>
+        <target>انجام‌شده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
-          <context context-type="linenumber">54,55</context>
+          <context context-type="linenumber">65</context>
         </context-group>
+        <note priority="1" from="description">accelerator.completed</note>
       </trans-unit>
-      <trans-unit id="7131ba3d0dee65d36dc5de582917a4fc826e73d0" datatype="html">
-        <source>Failed <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span *ngIf=&quot;acceleration.status === 'failed_provisional'&quot;&gt;"/>🔄<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
-        <target>ناموفق <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span *ngIf=&quot;acceleration.status === 'failed_provisional'&quot;&gt;"/>🔄<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      <trans-unit id="64b582e0d8e3a28331a14d2a1017fa5d6ffb8d93" datatype="html">
+        <source>Failed</source>
+        <target>ناموفق</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
-          <context context-type="linenumber">55,56</context>
+          <context context-type="linenumber">67</context>
         </context-group>
         <note priority="1" from="description">accelerator.canceled</note>
       </trans-unit>
@@ -1642,7 +1814,7 @@
         <target>هیچ شتاب‌دهی فعالی وجود ندارد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
-          <context context-type="linenumber">96</context>
+          <context context-type="linenumber">133</context>
         </context-group>
         <note priority="1" from="description">accelerations.no-accelerations</note>
       </trans-unit>
@@ -1651,7 +1823,7 @@
         <target>هیچ شتاب‌دهی اخیری وجود ندارد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
-          <context context-type="linenumber">97</context>
+          <context context-type="linenumber">134</context>
         </context-group>
         <note priority="1" from="description">accelerations.no-accelerations</note>
       </trans-unit>
@@ -1679,6 +1851,7 @@
       </trans-unit>
       <trans-unit id="9467c16588ee9f97dfa4f1dd9c96a02d6dc6e008" datatype="html">
         <source>(1 day)</source>
+        <target>(1 روز)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">27</context>
@@ -1705,6 +1878,7 @@
       </trans-unit>
       <trans-unit id="9d202e68dd5064ae2e3d01073267b4db63b16c40" datatype="html">
         <source>(all time)</source>
+        <target>(همه)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">36</context>
@@ -1759,6 +1933,7 @@
       </trans-unit>
       <trans-unit id="6bb1e9770b5c27f172ae67754ba316fe455a9821" datatype="html">
         <source>Accelerated to</source>
+        <target>شتاب‌دهی‌شده به</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/active-acceleration-box/active-acceleration-box.component.html</context>
           <context context-type="linenumber">7</context>
@@ -1766,28 +1941,21 @@
         <note priority="1" from="description">Accelerated to feerate</note>
         <note priority="1" from="meaning">transaction.accelerated-to-feerate</note>
       </trans-unit>
-      <trans-unit id="2c2a527d090d5d030fc130a243135dbc6ba276f0" datatype="html">
-        <source>Accelerated by</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/acceleration/active-acceleration-box/active-acceleration-box.component.html</context>
-          <context context-type="linenumber">25</context>
-        </context-group>
-        <note priority="1" from="description">Accelerated to hashrate</note>
-        <note priority="1" from="meaning">transaction.accelerated-by-hashrate</note>
-      </trans-unit>
       <trans-unit id="3af3e9a4c4d8135f386b2fc59233884ae8fc57fb" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ acceleratedByPercentage }}"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;symbol hashrate-label&quot;&gt;"/>of hashrate<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target><x id="INTERPOLATION" equiv-text="{{ acceleratedByPercentage }}"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;symbol hashrate-label&quot;&gt;"/> از نرخ تولید هش <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/active-acceleration-box/active-acceleration-box.component.html</context>
-          <context context-type="linenumber">27</context>
+          <context context-type="linenumber">32</context>
         </context-group>
         <note priority="1" from="description">accelerator.x-of-hash-rate</note>
       </trans-unit>
       <trans-unit id="4231517605576357140" datatype="html">
         <source>not accelerating</source>
+        <target>شتاب‌دهی نشده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/active-acceleration-box/active-acceleration-box.component.ts</context>
-          <context context-type="linenumber">83</context>
+          <context context-type="linenumber">86</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3590f5c3ef2810f637316edb8aaa86b8e907f152" datatype="html">
@@ -1814,6 +1982,7 @@
       </trans-unit>
       <trans-unit id="5538e35f9f610af0d1c70fcc7919a93191a810ca" datatype="html">
         <source> of block</source>
+        <target> از بلاک</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/pending-stats/pending-stats.component.html</context>
           <context context-type="linenumber">23</context>
@@ -2106,6 +2275,7 @@
       </trans-unit>
       <trans-unit id="8754c2dbc855d18ee90ffff136caedfd64f71e83" datatype="html">
         <source>all</source>
+        <target>همه</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">84</context>
@@ -2114,6 +2284,7 @@
       </trans-unit>
       <trans-unit id="6e9a3395f190e740778f523253e1fd6c53259622" datatype="html">
         <source>recent</source>
+        <target>اخیر</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">87</context>
@@ -2151,9 +2322,9 @@
         </context-group>
         <note priority="1" from="description">address.error.loading-address-data</note>
       </trans-unit>
-      <trans-unit id="49cef95661d86f4341788ce40068d58801adc6e6" datatype="html">
-        <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="There many transactions on this address, more than your backend can handle. See more on &lt;a href=&quot;/d"/>There many transactions on this address, more than your backend can handle. See more on <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;/docs/faq#address-lookup-issues&quot;&gt;"/>setting up a stronger backend<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.<x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/><x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> Consider viewing this address on the official Mempool website instead: </source>
-        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="There many transactions on this address, more than your backend can handle. See more on &lt;a href=&quot;/d"/>این آدرس تعداد زیادی تراکنش دارد. بیشتر از حدی که پیکربندی سیستم شما بتواند آن را پردازش کند. برای راه‌اندازی سیستم قوی‌تر <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;/docs/faq#address-lookup-issues&quot;&gt;"/>اینجا<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> را ببینید. <x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/><x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> همچنین می‌توانید این آدرس را در سایت ممپول مشاهده کنید: </target>
+      <trans-unit id="9eb81e2576ffe4e8fb0a303e203040b6ab23cc22" datatype="html">
+        <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="There are too many transactions on this address, more than your backend can handle. See more on &lt;"/>There are too many transactions on this address, more than your backend can handle. See more on <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;/docs/faq#address-lookup-issues&quot;&gt;"/>setting up a stronger backend<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.<x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/><x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> Consider viewing this address on the official Mempool website instead: </source>
+        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="There are too many transactions on this address, more than your backend can handle. See more on &lt;"/> این آدرس تعداد زیادی تراکنش دارد. بیشتر از حدی که پیکربندی سیستم شما بتواند آن را پردازش کند. برای راه‌اندازی سیستم قوی‌تر <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;/docs/faq#address-lookup-issues&quot;&gt;"/>اینجا<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> را ببینید. <x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/><x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> همچنین می‌توانید این آدرس را در سایت ممپول مشاهده کنید:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">204,207</context>
@@ -2169,30 +2340,23 @@
         </context-group>
         <note priority="1" from="description">address.confirmed-balance</note>
       </trans-unit>
-      <trans-unit id="8211b4be0291a035cd67aeb84782c9e87d4daca3" datatype="html">
-        <source>Unconfirmed balance</source>
-        <target>موجودی تأیید‌نشده</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">252</context>
-        </context-group>
-        <note priority="1" from="description">address.unconfirmed-balance</note>
-      </trans-unit>
       <trans-unit id="c7daf1b7c126095c054f2d3728ae790b0ceef33a" datatype="html">
         <source>Confirmed UTXOs</source>
+        <target>UTXO‌های تأییدشده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">257</context>
         </context-group>
         <note priority="1" from="description">address.confirmed-utxos</note>
       </trans-unit>
-      <trans-unit id="928915f31e05788ae07a353761e10e5992b2b58c" datatype="html">
-        <source>Unconfirmed UTXOs</source>
+      <trans-unit id="ba986bd9e2848d2ef7329394ec87b7f4eaf61118" datatype="html">
+        <source>Pending UTXOs</source>
+        <target>UTXOهای در انتظار</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">262</context>
         </context-group>
-        <note priority="1" from="description">address.unconfirmed-utxos</note>
+        <note priority="1" from="description">address.pending-utxos</note>
       </trans-unit>
       <trans-unit id="f61c6867295f3b53d23557021f2f4e0aa1d0b8fc" datatype="html">
         <source>Type</source>
@@ -2203,7 +2367,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">75</context>
+          <context context-type="linenumber">77</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -2278,7 +2442,7 @@
       </trans-unit>
       <trans-unit id="c5b2c0d65b8fd12ebf8c0d79f562703776fc954e" datatype="html">
         <source>Pegged in</source>
-        <target>Pegged in</target>
+        <target>میخکوب‌شده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">37</context>
@@ -2288,7 +2452,7 @@
       </trans-unit>
       <trans-unit id="8f5d6ce525a24b049fee47f9b2d8447cca97ccc8" datatype="html">
         <source>Pegged out</source>
-        <target>Pegged out</target>
+        <target>میخ‌کن‌شده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">41</context>
@@ -2341,7 +2505,7 @@
       </trans-unit>
       <trans-unit id="d2a84740e76b7220516a9f10644e4b3bdabdb833" datatype="html">
         <source>Peg In/Out and Burn Transactions</source>
-        <target>تراکنش‌های سوزاندن و PegIn/Out</target>
+        <target>تراکنش‌های سوزاندن و میخکوب و میخ‌کن</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">79</context>
@@ -2640,6 +2804,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.block-fee-rates" datatype="html">
         <source>See Bitcoin feerates visualized over time, including minimum and maximum feerates per block along with feerates at various percentiles.</source>
+        <target>دیدن نرخ کارمزدهای بیت‌کوین، تصویرسازی‌شده در طول زمان، شامل حداکثر و حداقل نرخ کازمزد در بلاک، به همراه نرخ کارمزدها در صدک‌های مختلف.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fee-rates-graph/block-fee-rates-graph.component.ts</context>
           <context context-type="linenumber">73</context>
@@ -2664,6 +2829,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.block-fees" datatype="html">
         <source>See the average mining fees earned per Bitcoin block visualized in BTC and USD over time.</source>
+        <target>دیدن میانگین کارمزدهای استخراج بدست‌آمده در بلاک‌های بیت‌کوین، تصویرسازی‌شده در طول زمان به BTC و USD.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fees-graph/block-fees-graph.component.ts</context>
           <context context-type="linenumber">70</context>
@@ -2724,6 +2890,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.block-fees-subsidy" datatype="html">
         <source>See the mining fees earned per Bitcoin block compared to the Bitcoin block subsidy, visualized in BTC and USD over time.</source>
+        <target>دیدن کارمزدهای استخراج بدست‌آمده در بلاک‌های بیت‌کوین در مقایسه با یارانهٔ بلاک، تصویرسازی‌شده در طول زمان به BTC و USD.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fees-subsidy-graph/block-fees-subsidy-graph.component.ts</context>
           <context context-type="linenumber">79</context>
@@ -2731,6 +2898,7 @@
       </trans-unit>
       <trans-unit id="8538305450922736186" datatype="html">
         <source>At block <x id="PH" equiv-text="'&lt;b style=&quot;color: white; margin-left: 2px&quot;&gt;' + data[0].axisValue"/></source>
+        <target>در بلاک <x id="PH" equiv-text="'&lt;b style=&quot;color: white; margin-left: 2px&quot;&gt;' + data[0].axisValue"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fees-subsidy-graph/block-fees-subsidy-graph.component.ts</context>
           <context context-type="linenumber">185</context>
@@ -2738,6 +2906,7 @@
       </trans-unit>
       <trans-unit id="8807945662832318286" datatype="html">
         <source>Around block <x id="PH" equiv-text="'&lt;b style=&quot;color: white; margin-left: 2px&quot;&gt;' + data[0].axisValue"/></source>
+        <target>حوالی بلاک <x id="PH" equiv-text="'&lt;b style=&quot;color: white; margin-left: 2px&quot;&gt;' + data[0].axisValue"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fees-subsidy-graph/block-fees-subsidy-graph.component.ts</context>
           <context context-type="linenumber">187</context>
@@ -2745,6 +2914,7 @@
       </trans-unit>
       <trans-unit id="98ec8c22c6a0e036b9af829b20e84afc56a79af8" datatype="html">
         <source>select filter categories to highlight matching transactions</source>
+        <target>دسته‌بندی‌های پالایشی را انتخاب کنید تا تراکنش‌های مورد نظر نشان داده شوند</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-filters/block-filters.component.html</context>
           <context context-type="linenumber">2</context>
@@ -2778,7 +2948,7 @@
       </trans-unit>
       <trans-unit id="180092a6b8a6151a05f4a7552a2fb75fd159dfa8" datatype="html">
         <source>Match</source>
-        <target>همتا</target>
+        <target>پالایش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-filters/block-filters.component.html</context>
           <context context-type="linenumber">19</context>
@@ -2791,6 +2961,7 @@
       </trans-unit>
       <trans-unit id="16d449549ab7bc61caf3d636372a4a56b5870383" datatype="html">
         <source>Any</source>
+        <target>هر کدام</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-filters/block-filters.component.html</context>
           <context context-type="linenumber">25</context>
@@ -2799,6 +2970,7 @@
       </trans-unit>
       <trans-unit id="360b9f5c32209001518dbd1dc512f25291473b79" datatype="html">
         <source>Tint</source>
+        <target>سایه‌روشن</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-filters/block-filters.component.html</context>
           <context context-type="linenumber">30</context>
@@ -2807,6 +2979,7 @@
       </trans-unit>
       <trans-unit id="4cfabb48965febabe67eb491a3b7e58555d3d52a" datatype="html">
         <source>Classic</source>
+        <target>کلاسیک</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-filters/block-filters.component.html</context>
           <context context-type="linenumber">33</context>
@@ -2819,6 +2992,7 @@
       </trans-unit>
       <trans-unit id="2e6be334a2152f179a557167f98ce4459ff9a2f9" datatype="html">
         <source>Age</source>
+        <target>بر اساس قدمت</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-filters/block-filters.component.html</context>
           <context context-type="linenumber">36</context>
@@ -2844,6 +3018,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.block-health" datatype="html">
         <source>See Bitcoin block health visualized over time. Block health is a measure of how many expected transactions were included in an actual mined block. Expected transactions are determined using Mempool's re-implementation of Bitcoin Core's transaction selection algorithm.</source>
+        <target>دیدن وضعیت سلامت بلاک در طول زمان. سلامت بلاک از سنجش تعداد تراکنش‌های پیش‌بینی‌شده به نسبت تراکنش‌های واقعی قرارگرفته در بلاک بدست می‌آید. تراکنش‌های پیش‌بینی‌شده با پیاده‌سازی ممپول از الگوریتم انتخاب سکهٔ Bitcoin core بدست می‌آیند.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-health-graph/block-health-graph.component.ts</context>
           <context context-type="linenumber">64</context>
@@ -2908,6 +3083,7 @@
       </trans-unit>
       <trans-unit id="f13653cd063e5c83ac884349e4657d68d804126e" datatype="html">
         <source>Your browser does not support this feature.</source>
+        <target>مرورگر شما این ویژگی را پشتیبانی نمی‌کند.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-graph/block-overview-graph.component.html</context>
           <context context-type="linenumber">21</context>
@@ -2960,7 +3136,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">467</context>
+          <context context-type="linenumber">469</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/confirmations/confirmations.component.html</context>
@@ -2968,40 +3144,6 @@
         </context-group>
         <note priority="1" from="description">Transaction confirmed state</note>
         <note priority="1" from="meaning">transaction.confirmed</note>
-      </trans-unit>
-      <trans-unit id="cb1b52c13b95fa29ea4044f2bbe0ac623b890c80" datatype="html">
-        <source>Fee</source>
-        <target>کارمزد</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
-          <context context-type="linenumber">42</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/custom-dashboard/custom-dashboard.component.html</context>
-          <context context-type="linenumber">196</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/rbf-timeline/rbf-timeline-tooltip.component.html</context>
-          <context context-type="linenumber">21</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction-preview.component.html</context>
-          <context context-type="linenumber">24</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">606</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component.html</context>
-          <context context-type="linenumber">44</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">137</context>
-        </context-group>
-        <note priority="1" from="description">Transaction fee</note>
-        <note priority="1" from="meaning">transaction.fee</note>
       </trans-unit>
       <trans-unit id="eb1737af67381ce6f0b347038bb4c65b3deb84be" datatype="html">
         <source>Effective fee rate</source>
@@ -3016,24 +3158,10 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">638</context>
+          <context context-type="linenumber">640</context>
         </context-group>
         <note priority="1" from="description">Effective transaction fee rate</note>
         <note priority="1" from="meaning">transaction.effective-fee-rate</note>
-      </trans-unit>
-      <trans-unit id="8b01e0411c7160bfee109e504c84ecee5079c326" datatype="html">
-        <source>Accelerated fee rate</source>
-        <target>نرخ کارمزد شتاب‌داده‌شده</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
-          <context context-type="linenumber">53</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">636</context>
-        </context-group>
-        <note priority="1" from="description">Accelerated transaction fee rate</note>
-        <note priority="1" from="meaning">transaction.accelerated-fee-rate</note>
       </trans-unit>
       <trans-unit id="13f5a75f3e01e5924e45052d2f336eda8bac37e8" datatype="html">
         <source>Weight</source>
@@ -3048,7 +3176,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">78</context>
+          <context context-type="linenumber">80</context>
         </context-group>
         <note priority="1" from="description">Transaction Weight</note>
         <note priority="1" from="meaning">transaction.weight</note>
@@ -3125,7 +3253,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">527</context>
+          <context context-type="linenumber">529</context>
         </context-group>
         <note priority="1" from="description">Added</note>
         <note priority="1" from="meaning">tx-features.tag.added</note>
@@ -3139,7 +3267,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">530</context>
+          <context context-type="linenumber">532</context>
         </context-group>
         <note priority="1" from="description">Prioritized</note>
         <note priority="1" from="meaning">tx-features.tag.prioritized</note>
@@ -3153,7 +3281,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">533</context>
+          <context context-type="linenumber">535</context>
         </context-group>
         <note priority="1" from="description">Conflict</note>
         <note priority="1" from="meaning">tx-features.tag.conflict</note>
@@ -3177,6 +3305,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.block-rewards" datatype="html">
         <source>See Bitcoin block rewards in BTC and USD visualized over time. Block rewards are the total funds miners earn from the block subsidy and fees.</source>
+        <target>دیدن پاداش‌های بلاک بیت‌کوین به BTC و USD تصویرسازی‌شده در طول زمان. پاداش بلاک مبلغی است که استخراج‌کننده‌های بیت‌کوین از مجموع یارانه بلاک و کارمزدها بدست می‌آورند.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-rewards-graph/block-rewards-graph.component.ts</context>
           <context context-type="linenumber">68</context>
@@ -3201,6 +3330,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.block-sizes" datatype="html">
         <source>See Bitcoin block sizes (MB) and block weights (weight units) visualized over time.</source>
+        <target>دیدن اندازه بلاک‌های بیت‌کوین (مگابایت) و وزن بلاک‌ها (واحد وزن) تصویرسازی‌شده در طول زمان.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-sizes-weights-graph/block-sizes-weights-graph.component.ts</context>
           <context context-type="linenumber">65</context>
@@ -3251,7 +3381,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">239</context>
+          <context context-type="linenumber">241</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -3291,7 +3421,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">255</context>
+          <context context-type="linenumber">257</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4786852746659896870" datatype="html">
@@ -3324,6 +3454,7 @@
       </trans-unit>
       <trans-unit id="meta.description.liquid.block" datatype="html">
         <source>See size, weight, fee range, included transactions, and more for Liquid<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> block <x id="BLOCK_HEIGHT" equiv-text="block.height"/> (<x id="BLOCK_ID" equiv-text="block.id"/>).</source>
+        <target>دیدن اندازه، وزن، محدوده کارمزد، تراکنش‌ها و موارد دیگر برای لیکوئید <x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> بلاک <x id="BLOCK_HEIGHT" equiv-text="block.height"/> (<x id="BLOCK_ID" equiv-text="block.id"/>)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-view/block-view.component.ts</context>
           <context context-type="linenumber">112</context>
@@ -3339,6 +3470,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.block" datatype="html">
         <source>See size, weight, fee range, included transactions, audit (expected v actual), and more for Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> block <x id="BLOCK_HEIGHT" equiv-text="block.height"/> (<x id="BLOCK_ID" equiv-text="block.id"/>).</source>
+        <target>دیدن اندازه، وزن، محدوده کارمزد، تراکنش‌ها، وضعیت بررسی (بلاک پیش‌بینی‌شده در برابر بلاک واقعی) و موارد دیگر برای بیت‌کوین <x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> بلاک <x id="BLOCK_HEIGHT" equiv-text="block.height"/> (<x id="BLOCK_ID" equiv-text="block.id"/>)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-view/block-view.component.ts</context>
           <context context-type="linenumber">114</context>
@@ -3393,7 +3525,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">450</context>
+          <context context-type="linenumber">452</context>
         </context-group>
         <note priority="1" from="description">block.timestamp</note>
       </trans-unit>
@@ -3461,7 +3593,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">676</context>
+          <context context-type="linenumber">678</context>
         </context-group>
         <note priority="1" from="description">block.miner</note>
       </trans-unit>
@@ -3530,6 +3662,7 @@
       </trans-unit>
       <trans-unit id="e170a90ee0d3a604adf439a60c890caff9152466" datatype="html">
         <source>This block does not belong to the main chain, it has been replaced by:</source>
+        <target>این بلاک متعلق به زنجیرهٔ اصلی نیست و با بلاکی دیگری جایگزین شده است:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">5</context>
@@ -3548,6 +3681,7 @@
       </trans-unit>
       <trans-unit id="0dc973e4853621b49d9e31be902a0680334f632d" datatype="html">
         <source>Stale</source>
+        <target>مانده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">30</context>
@@ -3722,7 +3856,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">265</context>
+          <context context-type="linenumber">267</context>
         </context-group>
         <note priority="1" from="description">transaction.version</note>
       </trans-unit>
@@ -3830,7 +3964,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">514</context>
+          <context context-type="linenumber">516</context>
         </context-group>
         <note priority="1" from="description">Toggle Audit</note>
         <note priority="1" from="meaning">block.toggle-audit</note>
@@ -3844,19 +3978,19 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">132</context>
+          <context context-type="linenumber">134</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">223</context>
+          <context context-type="linenumber">225</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">231</context>
+          <context context-type="linenumber">233</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">356</context>
+          <context context-type="linenumber">358</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
@@ -3901,6 +4035,7 @@
       </trans-unit>
       <trans-unit id="958d4960ca7a46c7893e7b81ce7465872bb5a44f" datatype="html">
         <source>Acceleration fees paid out-of-band</source>
+        <target>کارمزدهای شتاب‌دهی پرداخت‌شدهٔ خارج از شبکه</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">413</context>
@@ -3960,23 +4095,6 @@
           <context context-type="linenumber">105</context>
         </context-group>
         <note priority="1" from="description">latest-blocks.height</note>
-      </trans-unit>
-      <trans-unit id="e70fcca5a99575cffef3ff8cbd5e69f06ffd0f1c" datatype="html">
-        <source>Pool</source>
-        <target>استخر</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
-          <context context-type="linenumber">14</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
-          <context context-type="linenumber">14</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
-          <context context-type="linenumber">92</context>
-        </context-group>
-        <note priority="1" from="description">mining.pool-name</note>
       </trans-unit>
       <trans-unit id="12f86e6747a5ad39e62d3480ddc472b1aeab5b76" datatype="html">
         <source>Reward</source>
@@ -4074,6 +4192,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.blocks" datatype="html">
         <source>See the most recent Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> blocks along with basic stats such as block height, block reward, block size, and more.</source>
+        <target>دیدن بلاک‌های اخیر بیت‌کوین <x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> به همراه آمارهای پایه‌ای مانند طول بلاک، پاداش بلاک، اندازه بلاک و آمارهای دیگر.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.ts</context>
           <context context-type="linenumber">73</context>
@@ -4081,6 +4200,7 @@
       </trans-unit>
       <trans-unit id="cf8caac4de0166eae6cd0fdfd010ee92b995cd96" datatype="html">
         <source>Calculator</source>
+        <target>ماشین‌حساب</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/calculator/calculator.component.html</context>
           <context context-type="linenumber">3</context>
@@ -4263,6 +4383,7 @@
       </trans-unit>
       <trans-unit id="8a9b3afe9486474f0d7767605fe99af99c8ea430" datatype="html">
         <source>Full RBF</source>
+        <target>Full RBF</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/custom-dashboard/custom-dashboard.component.html</context>
           <context context-type="linenumber">122</context>
@@ -4647,7 +4768,7 @@
       </trans-unit>
       <trans-unit id="2d1bb593bedb956071b14cbb5cdd5e3150f0e575" datatype="html">
         <source>Halving Countdown</source>
-        <target>شمارش معکوس نصف‌شدن یارانه بلاک</target>
+        <target>شمارش معکوس نصف‌شدن یارانهٔ بلاک</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">2</context>
@@ -4665,7 +4786,7 @@
       </trans-unit>
       <trans-unit id="b9161223dda21fe34200a720dcb36830ca568104" datatype="html">
         <source>halving</source>
-        <target>نصف‌شدن یارانه بلاک</target>
+        <target>نصف‌شدن یارانهٔ بلاک</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">10</context>
@@ -4718,6 +4839,7 @@
       </trans-unit>
       <trans-unit id="615ba6c4511a36f93c225c725935fdbf16f162a5" datatype="html">
         <source>Amount (sats)</source>
+        <target>مقدار (ساتوشی)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/faucet/faucet.component.html</context>
           <context context-type="linenumber">51</context>
@@ -4726,6 +4848,7 @@
       </trans-unit>
       <trans-unit id="2183c5be8b7f219129fdbd07ed2dd14d67fd1711" datatype="html">
         <source>Request Testnet4 Coins</source>
+        <target>درخواست سکه‌های Testnet4</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/faucet/faucet.component.html</context>
           <context context-type="linenumber">70</context>
@@ -5048,6 +5171,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.hashrate" datatype="html">
         <source>See hashrate and difficulty for the Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.network)"/> network visualized over time.</source>
+        <target>دیدن نرخ تولید هش و سختی برای شبکه <x id="PH" equiv-text="seoDescriptionNetwork(this.network)"/> بیت‌کوین، تصویرسازی شده در طول زمان.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
           <context context-type="linenumber">76</context>
@@ -5075,6 +5199,7 @@
       </trans-unit>
       <trans-unit id="meta.descriptions.bitcoin.graphs.hashrate-pools" datatype="html">
         <source>See Bitcoin mining pool dominance visualized over time: see how top mining pools' share of total hashrate has fluctuated over time.</source>
+        <target>دیدن تصویرسازی سهم استخرهای استخراج در طول زمان: ببینید چطور سهم استخرهای استخراج از مجموع نرخ تولید هش در طول زمان تغییر کرده است.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrates-chart-pools/hashrate-chart-pools.component.ts</context>
           <context context-type="linenumber">75</context>
@@ -5220,6 +5345,7 @@
       </trans-unit>
       <trans-unit id="5754c4f243f1eca150768c8435b70657f42eceb8" datatype="html">
         <source>Total Expired</source>
+        <target>محموع منقضی‌شده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/expired-utxos-stats/expired-utxos-stats.component.html</context>
           <context context-type="linenumber">12</context>
@@ -5282,6 +5408,7 @@
       </trans-unit>
       <trans-unit id="4e3a7555e83abb62ac42d78275cf01b81793cd92" datatype="html">
         <source>Related Peg-In</source>
+        <target>میخکوب مرتبط</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component.html</context>
           <context context-type="linenumber">11</context>
@@ -5290,6 +5417,7 @@
       </trans-unit>
       <trans-unit id="f093a73f10804563b96cab97e4e0516ce684e036" datatype="html">
         <source>Expires in</source>
+        <target>انقضا در</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component.html</context>
           <context context-type="linenumber">13</context>
@@ -5298,6 +5426,7 @@
       </trans-unit>
       <trans-unit id="7f37d56e12d893cd46fc8ccba015d51f32d83131" datatype="html">
         <source>Expired since</source>
+        <target>منقضی‌شده در</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component.html</context>
           <context context-type="linenumber">14</context>
@@ -5306,6 +5435,7 @@
       </trans-unit>
       <trans-unit id="1c6520aeea2eb946269acab0a2863162b8311e7d" datatype="html">
         <source>Dust</source>
+        <target>گرد و خاک</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component.html</context>
           <context context-type="linenumber">15</context>
@@ -5314,6 +5444,7 @@
       </trans-unit>
       <trans-unit id="a5d0bd2f3fedabd093937eb13a9edb9bcd00b919" datatype="html">
         <source>Change output</source>
+        <target>خروجی باقیمانده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component.html</context>
           <context context-type="linenumber">55</context>
@@ -5364,6 +5495,7 @@
       </trans-unit>
       <trans-unit id="a8b0889ea1b41888f1e247f2731cc9322198ca04" datatype="html">
         <source>Recent Peg-In / Out's</source>
+        <target>میخکوب‌ها و میخ‌کن‌های اخیر</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-list/recent-pegs-list.component.html</context>
           <context context-type="linenumber">4</context>
@@ -5392,6 +5524,7 @@
       </trans-unit>
       <trans-unit id="4dbfcaee1d2f0308bd20b3b6b6655ba1e04330dc" datatype="html">
         <source>BTC Address</source>
+        <target>آدرس BTC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-list/recent-pegs-list.component.html</context>
           <context context-type="linenumber">16</context>
@@ -5400,6 +5533,7 @@
       </trans-unit>
       <trans-unit id="2e37a2401f3cb55f2b0c108f77c28bb9738f09e0" datatype="html">
         <source>Peg out in progress...</source>
+        <target>در حال میخ‌کنی..</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-list/recent-pegs-list.component.html</context>
           <context context-type="linenumber">70</context>
@@ -5408,6 +5542,7 @@
       </trans-unit>
       <trans-unit id="92b8788842b6cced2a7dad59e5fa1803daff1ca2" datatype="html">
         <source>24h Peg-In Volume</source>
+        <target>حجم 24 ساعته میخکوب</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-stats/recent-pegs-stats.component.html</context>
           <context context-type="linenumber">12</context>
@@ -5416,6 +5551,7 @@
       </trans-unit>
       <trans-unit id="44cfc2e57619bf9beab1ef5b4bedfa52246f5e27" datatype="html">
         <source>Peg-Ins</source>
+        <target>میخکوب‌ها</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-stats/recent-pegs-stats.component.html</context>
           <context context-type="linenumber">13</context>
@@ -5424,6 +5560,7 @@
       </trans-unit>
       <trans-unit id="544fb5f2a64924b4b9d7d2bc25b8925492bd6d64" datatype="html">
         <source>24h Peg-Out Volume</source>
+        <target>حجم 24 ساعته میخ‌کن</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-stats/recent-pegs-stats.component.html</context>
           <context context-type="linenumber">18</context>
@@ -5432,6 +5569,7 @@
       </trans-unit>
       <trans-unit id="3e7a5b4cf20d583207c96127eb0f0d1b91358544" datatype="html">
         <source>Peg-Outs</source>
+        <target>میخ‌کن‌ها</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-stats/recent-pegs-stats.component.html</context>
           <context context-type="linenumber">19</context>
@@ -5440,6 +5578,7 @@
       </trans-unit>
       <trans-unit id="380175a30ef4d977ec376044b17cf505d0e8ede0" datatype="html">
         <source>Unpeg</source>
+        <target>میخ‌کن</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/reserves-ratio-stats/reserves-ratio-stats.component.html</context>
           <context context-type="linenumber">3</context>
@@ -5456,6 +5595,7 @@
       </trans-unit>
       <trans-unit id="34e09704961f3373354d01328a1bb907ffbe44a6" datatype="html">
         <source>Unpeg Event</source>
+        <target>رویداد میخ‌کن</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/reserves-ratio-stats/reserves-ratio-stats.component.html</context>
           <context context-type="linenumber">7</context>
@@ -5464,6 +5604,7 @@
       </trans-unit>
       <trans-unit id="a4c3af092f04fb531a39f0a85e2f7b13ef6e9512" datatype="html">
         <source>Avg Peg Ratio</source>
+        <target>نرخ متوسط میخکوبی</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/reserves-ratio-stats/reserves-ratio-stats.component.html</context>
           <context context-type="linenumber">14</context>
@@ -5472,6 +5613,7 @@
       </trans-unit>
       <trans-unit id="6ffd2b9ed79c063071099b61933a45f68f7ff5a2" datatype="html">
         <source>Emergency Keys</source>
+        <target>کلیدهای اضطراری</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/reserves-ratio-stats/reserves-ratio-stats.component.html</context>
           <context context-type="linenumber">28</context>
@@ -5480,6 +5622,7 @@
       </trans-unit>
       <trans-unit id="81f05fa58fc9f3fb248f0b4f5710163461d06ea1" datatype="html">
         <source>usage</source>
+        <target>استفاده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/reserves-ratio-stats/reserves-ratio-stats.component.html</context>
           <context context-type="linenumber">31</context>
@@ -5488,6 +5631,7 @@
       </trans-unit>
       <trans-unit id="9076228015944198327" datatype="html">
         <source>Assets vs Liabilities</source>
+        <target>دارایی‌ها در برابر تعهدات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/reserves-ratio/reserves-ratio.component.ts</context>
           <context context-type="linenumber">163</context>
@@ -5504,6 +5648,7 @@
       </trans-unit>
       <trans-unit id="bda0c55e9a859780b954c2718f66496d8ea13b63" datatype="html">
         <source>As of block</source>
+        <target>از بلاک</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-reserves-audit/reserves-supply-stats/reserves-supply-stats.component.html</context>
           <context context-type="linenumber">7</context>
@@ -5558,6 +5703,7 @@
       </trans-unit>
       <trans-unit id="meta.description.mempool-block" datatype="html">
         <source>See stats for <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> transactions in the mempool: fee range, aggregate size, and more. Mempool blocks are updated in real-time as the network receives new transactions.</source>
+        <target>دیدن آمارها برای تراکنش‌های ممپول <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/>: محدوده کارمزد، اندازه تجمیعی و آمارهای بیشتر. بلاک‌های ممپول با دریافت تراکنش‌های جدید از شبکه، به صورت زنده بروز می‌شوند.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">62</context>
@@ -5653,6 +5799,7 @@
       </trans-unit>
       <trans-unit id="meta.description.mining.dashboard" datatype="html">
         <source>Get real-time Bitcoin mining stats like hashrate, difficulty adjustment, block rewards, pool dominance, and more.</source>
+        <target>دریافت زنده آمارهای استخراج بیت‌کوین مانند نرخ تولید هش، تنظیم سختی، پاداش‌های بلاک، سهم استخرها و آمارهای دیگر.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.ts</context>
           <context context-type="linenumber">30</context>
@@ -5837,6 +5984,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.pool-ranking" datatype="html">
         <source>See the top Bitcoin mining pools ranked by number of blocks mined, over your desired timeframe.</source>
+        <target>دیدن برترین استخرهای استخراج،‌ رتبه‌بندی‌شده بر اساس تعداد بلاک‌های استخراج‌شده در طول دورهٔ زمان مورد نظر شما.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">60</context>
@@ -5864,6 +6012,7 @@
       </trans-unit>
       <trans-unit id="3666195172774554282" datatype="html">
         <source>Other (<x id="PH" equiv-text="percentage"/>)</source>
+        <target>دیگر (<x id="PH" equiv-text="percentage"/>)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">186</context>
@@ -5929,6 +6078,7 @@
       </trans-unit>
       <trans-unit id="meta.description.mining.pool" datatype="html">
         <source>See mining pool stats for <x id="PH" equiv-text="poolStats.pool.name"/>: most recent mined blocks, hashrate over time, total block reward to date, known coinbase addresses, and more.</source>
+        <target>دیدن آمارهای استخر استخراج <x id="PH" equiv-text="poolStats.pool.name"/>: آخرین بلاک‌های استخراج‌شده، نرخ تولید هش در طول زمان، مجموع پاداش‌های بلاک تا این لحظه، آدرس‌های coinbase شناخته‌شده و آمارهای دیگر.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool-preview.component.ts</context>
           <context context-type="linenumber">86</context>
@@ -6033,6 +6183,7 @@
       </trans-unit>
       <trans-unit id="c34fb298028c4e1089bdfc36c8324086fe8c0527" datatype="html">
         <source>Out-of-band Fees (1w)</source>
+        <target>کارمزدهای خارج از شبکه (1 هفته)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">143</context>
@@ -6063,6 +6214,7 @@
       </trans-unit>
       <trans-unit id="09c61c6c6f04877fbce3db88fa0f20cd046ed9b1" datatype="html">
         <source>Error loading pool data.</source>
+        <target>خطا در بازکردن داد‌ه‌های استخر.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">467</context>
@@ -6117,7 +6269,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">281</context>
+          <context context-type="linenumber">283</context>
         </context-group>
         <note priority="1" from="description">transaction.hex</note>
       </trans-unit>
@@ -6152,6 +6304,7 @@
       </trans-unit>
       <trans-unit id="c88914ee712e3ab5ad5f88de8a6ed12050919ccb" datatype="html">
         <source>There are no replacements in the mempool yet!</source>
+        <target>هیچ تراکنش جایگزینی هنوز در ممپول دیده نشده است.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/rbf-list/rbf-list.component.html</context>
           <context context-type="linenumber">34</context>
@@ -6160,6 +6313,7 @@
       </trans-unit>
       <trans-unit id="meta.description.rbf-list" datatype="html">
         <source>See the most recent RBF replacements on the Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> network, updated in real-time.</source>
+        <target>دیدن تراکنش‌های جایگزینی RBF در شبکهٔ <x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> بیت‌کوین، بروزشده به صورت زنده.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/rbf-list/rbf-list.component.ts</context>
           <context context-type="linenumber">62</context>
@@ -6174,7 +6328,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">202</context>
+          <context context-type="linenumber">204</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -6188,6 +6342,7 @@
       </trans-unit>
       <trans-unit id="ea7c261363dc5f6134b7bacba2a1ef97f4ff7859" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ x }}"/> remaining</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ x }}"/> باقیمانده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/rbf-timeline/rbf-timeline.component.html</context>
           <context context-type="linenumber">86</context>
@@ -6480,6 +6635,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.mempool" datatype="html">
         <source>See mempool size (in MvB) and transactions per second (in vB/s) visualized over time.</source>
+        <target>دیدن اندازه ممپول (به MvB) و تراکنش بر ثانیه (به vB بر ثانیه) تصویرسازی‌شده در طول زمان.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.ts</context>
           <context context-type="linenumber">66</context>
@@ -6487,6 +6643,7 @@
       </trans-unit>
       <trans-unit id="meta.description.tv" datatype="html">
         <source>See Bitcoin blocks and mempool congestion in real-time in a simplified format perfect for a TV.</source>
+        <target>دیدن وضعیت تراکم بلاک‌ها و ممپول بیت‌کوین به صورت زنده و در یک فرم سادهٔ بهینه‌شده برای نمایش در تلویزیون.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/television/television.component.ts</context>
           <context context-type="linenumber">40</context>
@@ -6512,6 +6669,7 @@
       </trans-unit>
       <trans-unit id="fec63564786cefc0ca1c650527fdfd859aff4b76" datatype="html">
         <source>Raw hex</source>
+        <target>به صورت Hex</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/test-transactions/test-transactions.component.html</context>
           <context context-type="linenumber">5</context>
@@ -6520,6 +6678,7 @@
       </trans-unit>
       <trans-unit id="48e4b0c012de5020053ecb26e9ac0d35a1f60688" datatype="html">
         <source>Comma-separated list of raw transactions</source>
+        <target>فهرست تراکنش‌های خام جداشده با درنگ‌نما</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/test-transactions/test-transactions.component.html</context>
           <context context-type="linenumber">7</context>
@@ -6528,6 +6687,7 @@
       </trans-unit>
       <trans-unit id="ea22e5fb229522f3faa5e87dbf0c5f56ddc234fb" datatype="html">
         <source>Maximum fee rate (sat/vB)</source>
+        <target>حداکثر نرخ کارمزد (sat بر vB)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/test-transactions/test-transactions.component.html</context>
           <context context-type="linenumber">9</context>
@@ -6536,6 +6696,7 @@
       </trans-unit>
       <trans-unit id="b92fb7ca717f99e787cec47dcf1b6f72ba26d685" datatype="html">
         <source>Allowed?</source>
+        <target>مجاز؟</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/test-transactions/test-transactions.component.html</context>
           <context context-type="linenumber">23</context>
@@ -6697,7 +6858,7 @@
       </trans-unit>
       <trans-unit id="time-within" datatype="html">
         <source>within ~<x id="DATE" equiv-text="dateStrings.i18nYear"/></source>
-        <target>در حدود <x id="DATE" equiv-text="dateStrings.i18nYear"/></target>
+        <target>حدود <x id="DATE" equiv-text="dateStrings.i18nYear"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
           <context context-type="linenumber">211</context>
@@ -6916,20 +7077,21 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">549</context>
+          <context context-type="linenumber">551</context>
         </context-group>
         <note priority="1" from="description">Transaction ETA</note>
         <note priority="1" from="meaning">transaction.eta</note>
       </trans-unit>
       <trans-unit id="dbd3edcb9583d2d5a624f70b4593d785858b6130" datatype="html">
         <source>Not any time soon</source>
+        <target>به این زودی‌ها نخواهد بود</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker.component.html</context>
           <context context-type="linenumber">74</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">554</context>
+          <context context-type="linenumber">556</context>
         </context-group>
         <note priority="1" from="description">Transaction ETA mot any time soon</note>
         <note priority="1" from="meaning">transaction.eta.not-any-time-soon</note>
@@ -6957,7 +7119,7 @@
         <target>تراکنش شما شتاب‌دهی شده است</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker.component.html</context>
-          <context context-type="linenumber">141</context>
+          <context context-type="linenumber">143</context>
         </context-group>
         <note priority="1" from="description">tracker.explain.accelerated</note>
       </trans-unit>
@@ -6966,7 +7128,7 @@
         <target>منتظر دیده‌شدن تراکنش شما در mempool</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker.component.html</context>
-          <context context-type="linenumber">148</context>
+          <context context-type="linenumber">150</context>
         </context-group>
         <note priority="1" from="description">tracker.explain.waiting</note>
       </trans-unit>
@@ -6975,7 +7137,7 @@
         <target>تراکنش شما در mempool است اما فعلا تأیید نخواهد شد.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker.component.html</context>
-          <context context-type="linenumber">154</context>
+          <context context-type="linenumber">156</context>
         </context-group>
         <note priority="1" from="description">tracker.explain.pending</note>
       </trans-unit>
@@ -6984,7 +7146,7 @@
         <target>تراکنش شما جلوی صف mempool قرار دارد و به زودی تأیید خواهد شد.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker.component.html</context>
-          <context context-type="linenumber">160</context>
+          <context context-type="linenumber">162</context>
         </context-group>
         <note priority="1" from="description">tracker.explain.soon</note>
       </trans-unit>
@@ -6993,7 +7155,7 @@
         <target>تراکنش شما به زودی در بلاک بعدی تأیید خواهد شد.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker.component.html</context>
-          <context context-type="linenumber">166</context>
+          <context context-type="linenumber">168</context>
         </context-group>
         <note priority="1" from="description">tracker.explain.next-block</note>
       </trans-unit>
@@ -7002,7 +7164,7 @@
         <target>تراکنش شما تأیید شد!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker.component.html</context>
-          <context context-type="linenumber">172</context>
+          <context context-type="linenumber">174</context>
         </context-group>
         <note priority="1" from="description">tracker.explain.confirmed</note>
       </trans-unit>
@@ -7011,7 +7173,7 @@
         <target>تراکنش شما با نسخه جدیدی جایگزین شده!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker.component.html</context>
-          <context context-type="linenumber">178</context>
+          <context context-type="linenumber">180</context>
         </context-group>
         <note priority="1" from="description">tracker.explain.replaced</note>
       </trans-unit>
@@ -7020,7 +7182,7 @@
         <target>دیدن اطلاعات بیشتر</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker.component.html</context>
-          <context context-type="linenumber">186</context>
+          <context context-type="linenumber">193</context>
         </context-group>
         <note priority="1" from="description">accelerator.show-more-details</note>
       </trans-unit>
@@ -7029,7 +7191,7 @@
         <target>تراکنش: <x id="INTERPOLATION" equiv-text="this.txId"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker.component.ts</context>
-          <context context-type="linenumber">406</context>
+          <context context-type="linenumber">409</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction-preview.component.ts</context>
@@ -7037,7 +7199,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.ts</context>
-          <context context-type="linenumber">497</context>
+          <context context-type="linenumber">530</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.transaction" datatype="html">
@@ -7045,7 +7207,7 @@
         <target>دیدن وضعیت زنده آدرس‌ها، کارمزدها و اطلاعات script و بیشتر برای <x id="PH" equiv-text="network"/> <x id="PH_1" equiv-text="seoDescription"/> تراکنش با شناسه <x id="PH_2" equiv-text="this.txId"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker.component.ts</context>
-          <context context-type="linenumber">410</context>
+          <context context-type="linenumber">413</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction-preview.component.ts</context>
@@ -7053,7 +7215,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.ts</context>
-          <context context-type="linenumber">501</context>
+          <context context-type="linenumber">534</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7e06b8dd9f29261827018351cd71efe1c87839de" datatype="html">
@@ -7065,7 +7227,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">518</context>
+          <context context-type="linenumber">520</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -7082,11 +7244,11 @@
         <target>نواده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">86</context>
+          <context context-type="linenumber">88</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">98</context>
+          <context context-type="linenumber">100</context>
         </context-group>
         <note priority="1" from="description">Descendant</note>
         <note priority="1" from="meaning">transaction.descendant</note>
@@ -7096,7 +7258,7 @@
         <target>والد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">110</context>
+          <context context-type="linenumber">112</context>
         </context-group>
         <note priority="1" from="description">Transaction Ancestor</note>
         <note priority="1" from="meaning">transaction.ancestor</note>
@@ -7106,7 +7268,7 @@
         <target>پنهان‌کردن شتاب‌دهی</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">131</context>
+          <context context-type="linenumber">133</context>
         </context-group>
         <note priority="1" from="description">accelerator.hide</note>
       </trans-unit>
@@ -7115,7 +7277,7 @@
         <target>خط‌زمان RBF</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">158</context>
+          <context context-type="linenumber">160</context>
         </context-group>
         <note priority="1" from="description">RBF Timeline</note>
         <note priority="1" from="meaning">transaction.rbf-history</note>
@@ -7125,7 +7287,7 @@
         <target>خط‌زمان شتاب‌دهی</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">167</context>
+          <context context-type="linenumber">169</context>
         </context-group>
         <note priority="1" from="description">Acceleration Timeline</note>
         <note priority="1" from="meaning">transaction.acceleration-timeline</note>
@@ -7135,11 +7297,11 @@
         <target>جریان</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">176</context>
+          <context context-type="linenumber">178</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">296</context>
+          <context context-type="linenumber">298</context>
         </context-group>
         <note priority="1" from="description">Transaction flow</note>
         <note priority="1" from="meaning">transaction.flow</note>
@@ -7149,7 +7311,7 @@
         <target>پنهان‌کردن نمودار</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">179</context>
+          <context context-type="linenumber">181</context>
         </context-group>
         <note priority="1" from="description">hide-diagram</note>
       </trans-unit>
@@ -7158,7 +7320,7 @@
         <target>بیشتر</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">200</context>
+          <context context-type="linenumber">202</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -7175,11 +7337,11 @@
         <target>ورودی‌ها و خروجی‌ها</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">218</context>
+          <context context-type="linenumber">220</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">327</context>
+          <context context-type="linenumber">329</context>
         </context-group>
         <note priority="1" from="description">Transaction inputs and outputs</note>
         <note priority="1" from="meaning">transaction.inputs-and-outputs</note>
@@ -7189,7 +7351,7 @@
         <target>نمایش نمودار</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">222</context>
+          <context context-type="linenumber">224</context>
         </context-group>
         <note priority="1" from="description">show-diagram</note>
       </trans-unit>
@@ -7198,7 +7360,7 @@
         <target>vsize تنظیم‌شده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">247</context>
+          <context context-type="linenumber">249</context>
         </context-group>
         <note priority="1" from="description">Transaction Adjusted VSize</note>
         <note priority="1" from="meaning">transaction.adjusted-vsize</note>
@@ -7208,7 +7370,7 @@
         <target>قفل‌زمانی</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">269</context>
+          <context context-type="linenumber">271</context>
         </context-group>
         <note priority="1" from="description">transaction.locktime</note>
       </trans-unit>
@@ -7217,7 +7379,7 @@
         <target>تعداد کدهای عملیاتی امضا (Sigops)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">273</context>
+          <context context-type="linenumber">275</context>
         </context-group>
         <note priority="1" from="description">Transaction Sigops</note>
         <note priority="1" from="meaning">transaction.sigops</note>
@@ -7227,7 +7389,7 @@
         <target>تراکنش پیدا نشد.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">405</context>
+          <context context-type="linenumber">407</context>
         </context-group>
         <note priority="1" from="description">transaction.error.transaction-not-found</note>
       </trans-unit>
@@ -7236,7 +7398,7 @@
         <target>منتظر دیده‌شدن در mempool...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">406</context>
+          <context context-type="linenumber">408</context>
         </context-group>
         <note priority="1" from="description">transaction.error.waiting-for-it-to-appear</note>
       </trans-unit>
@@ -7245,7 +7407,7 @@
         <target>خطا در بازکردن داده‌های تراکنش.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">412</context>
+          <context context-type="linenumber">414</context>
         </context-group>
         <note priority="1" from="description">transaction.error.loading-transaction-data</note>
       </trans-unit>
@@ -7254,7 +7416,7 @@
         <target>ویژگی‌ها</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">497</context>
+          <context context-type="linenumber">499</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
@@ -7269,76 +7431,85 @@
       </trans-unit>
       <trans-unit id="bbd31e1edb0c089cca11d3d718b6588f3496e9e1" datatype="html">
         <source>This transaction was projected to be included in the block</source>
+        <target>پیش‌بینی می‌شد این تراکنش در بلاک قرار بگیرد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">520</context>
+          <context context-type="linenumber">522</context>
         </context-group>
         <note priority="1" from="description">Expected in block tooltip</note>
       </trans-unit>
       <trans-unit id="e75410f8ab03085a3dbecf82de6acd9679fefb75" datatype="html">
         <source>Expected in Block</source>
+        <target>پیش‌بینی‌شده در بلاک</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">520</context>
+          <context context-type="linenumber">522</context>
         </context-group>
         <note priority="1" from="description">Expected in Block</note>
         <note priority="1" from="meaning">tx-features.tag.expected</note>
       </trans-unit>
       <trans-unit id="2533fb35288295dac23fe0bdfcc2685b025a9f2e" datatype="html">
         <source>This transaction was seen in the mempool prior to mining</source>
+        <target>این تراکنش قبل از قرار گرفتن در بلاک، در ممپول دیده شده بود</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">522</context>
+          <context context-type="linenumber">524</context>
         </context-group>
         <note priority="1" from="description">Seen in mempool tooltip</note>
       </trans-unit>
       <trans-unit id="08c516e1fe345b4ae1fcae5fd4e5a0cd22e646dd" datatype="html">
         <source>Seen in Mempool</source>
+        <target>در mempool.space دیده شده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">522</context>
+          <context context-type="linenumber">524</context>
         </context-group>
         <note priority="1" from="description">Seen in Mempool</note>
         <note priority="1" from="meaning">tx-features.tag.seen</note>
       </trans-unit>
       <trans-unit id="5f79b588d43d16312a9a2e6df1e76922ffe3c45d" datatype="html">
         <source>This transaction was missing from our mempool prior to mining</source>
+        <target>این تراکنش قبل از تأیید در ممپول ما وجود نداشت</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">524</context>
+          <context context-type="linenumber">526</context>
         </context-group>
         <note priority="1" from="description">Not seen in mempool tooltip</note>
       </trans-unit>
       <trans-unit id="53d5fe49e4a07a663eb2f26ceeb76afceef86334" datatype="html">
         <source>Not seen in Mempool</source>
+        <target>در mempool.space دیده نشده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">524</context>
+          <context context-type="linenumber">526</context>
         </context-group>
         <note priority="1" from="description">Not seen in Mempool</note>
         <note priority="1" from="meaning">tx-features.tag.not-seen</note>
       </trans-unit>
       <trans-unit id="500acb5f67d1f175e1d5dd666c7b15c66611e411" datatype="html">
         <source>This transaction may have been added out-of-band</source>
+        <target>احتمالا این تراکنش خارج از شبکه به دست استخراج‌کننده رسیده است</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">527</context>
+          <context context-type="linenumber">529</context>
         </context-group>
         <note priority="1" from="description">Added transaction tooltip</note>
       </trans-unit>
       <trans-unit id="0badd8c91194cb72dd79e12955d4ed4b43a7cf41" datatype="html">
         <source>This transaction may have been prioritized out-of-band</source>
+        <target>احتمالا این تراکنش خارج از شبکه اولویت داده شده است</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">530</context>
+          <context context-type="linenumber">532</context>
         </context-group>
         <note priority="1" from="description">Prioritized transaction tooltip</note>
       </trans-unit>
       <trans-unit id="7ef1a8a56ad5696e527a8da06a13661f883ad6b2" datatype="html">
         <source>This transaction conflicted with another version in our mempool</source>
+        <target>این تراکنش متناقض با نگارش دیگری از آن در ممپول ما است</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">533</context>
+          <context context-type="linenumber">535</context>
         </context-group>
         <note priority="1" from="description">Conflict in mempool tooltip</note>
       </trans-unit>
@@ -7353,7 +7524,7 @@
       </trans-unit>
       <trans-unit id="5de25175982d51c72d25bd79933e7b412d51e343" datatype="html">
         <source>Peg-in</source>
-        <target>Peg-in</target>
+        <target>میخکوب</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">56</context>
@@ -7445,7 +7616,7 @@
       </trans-unit>
       <trans-unit id="9fb28e77d5963f2275397f2f9cee54f32942aeeb" datatype="html">
         <source>Peg-out to <x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-contain"/></source>
-        <target>‏Peg-out به <x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-contain"/></target>
+        <target>میخ‌کنی به <x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-contain"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">225,226</context>
@@ -7514,7 +7685,7 @@
       </trans-unit>
       <trans-unit id="395b6ec0ab68cd45fad7ab791393d85d4077f94b" datatype="html">
         <source>1 block earlier</source>
-        <target>1 بلاک زودتر</target>
+        <target>1 بلاک پیش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component.html</context>
           <context context-type="linenumber">123</context>
@@ -7523,7 +7694,7 @@
       </trans-unit>
       <trans-unit id="f6f7403b9d7495e7282520b50133c3c3843a6b62" datatype="html">
         <source>1 block later</source>
-        <target>1 بلاک دیرتر</target>
+        <target>1 بلاک بعد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component.html</context>
           <context context-type="linenumber">127</context>
@@ -7541,7 +7712,7 @@
       </trans-unit>
       <trans-unit id="95bf37451da5bff541c9380f803a695f2aac28a2" datatype="html">
         <source>blocks earlier</source>
-        <target>بلاک زودتر</target>
+        <target>بلاک پیش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component.html</context>
           <context context-type="linenumber">137</context>
@@ -7559,7 +7730,7 @@
       </trans-unit>
       <trans-unit id="21ea333dd6a24e18e5af771634afbaeeeb369a8d" datatype="html">
         <source>blocks later</source>
-        <target>بلاک دیرتر</target>
+        <target>بلاک بعد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component.html</context>
           <context context-type="linenumber">150</context>
@@ -7713,6 +7884,7 @@
       </trans-unit>
       <trans-unit id="2d70cb7985eaebe99c35bcdfa7dc49b2662c345b" datatype="html">
         <source>Liquid Federation Holdings</source>
+        <target>دارایی‌های فدراسیون لیکوئید</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">165</context>
@@ -7766,6 +7938,7 @@
       </trans-unit>
       <trans-unit id="999bb1a0150c2815a6b4dd64a1850e763603e525" datatype="html">
         <source><x id="START_PARAGRAPH" ctype="x-p" equiv-text="For any such requ"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space mer"/>mempool.space merely provides data about the Bitcoin network.<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> It cannot help you with retrieving funds, wallet issues, etc.<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="For any such requ"/>For any such requests, you need to get in touch with the entity that helped make the transaction (wallet software, exchange company, etc).<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
+        <target><x id="START_PARAGRAPH" ctype="x-p" equiv-text="For any such requ"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space mer"/> تارنمای mempool.space تنها به ارائه اطلاعاتی درباره شبکهٔ بیت‌کوین می‌پردازد.<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> به شما کمکی درباره برگرداندن دارایی‌ها یا حل مشکلات کیف‌پولتان نمی‌کند. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="For any such requ"/> برای چنین درخواست‌هایی، باید به موجودیتی که به شما در ساخت تراکنش کمک کرده بازگردید (مانند نرم‌افزار کیف‌پول، شرکت صرافی و غیره). <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">15,16</context>
@@ -7868,6 +8041,7 @@
       </trans-unit>
       <trans-unit id="meta.description.docs.faq" datatype="html">
         <source>Get answers to common questions like: What is a mempool? Why isn't my transaction confirming? How can I run my own instance of The Mempool Open Source Project? And more.</source>
+        <target>جواب سوال‌های متداول مانند این‌ها را بگیرید: ممپول چیست؟ چرا تراکنش من تأیید نمی‌شود؟ چگونه می‌توانم یک نمونه از پروژه متن‌باز ممپول را برای خودم اجرا کنم؟</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">47</context>
@@ -7883,6 +8057,7 @@
       </trans-unit>
       <trans-unit id="meta.description.docs.rest-liquid" datatype="html">
         <source>Documentation for the liquid.network REST API service: get info on addresses, transactions, assets, blocks, and more.</source>
+        <target>مستندات خدمات REST API برای شبکهٔ لیکوئید: دریافت اطلاعات درباره آدرس‌ها، تراکنش‌ها، دارایی‌ها، بلاک‌ها و دیگر موارد.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">53</context>
@@ -7890,6 +8065,7 @@
       </trans-unit>
       <trans-unit id="meta.description.docs.rest-bitcoin" datatype="html">
         <source>Documentation for the mempool.space REST API service: get info on addresses, transactions, blocks, fees, mining, the Lightning network, and more.</source>
+        <target>مستندات خدمات REST API برای mempool.space: دریافت اطلاعات درباره آدرس‌ها، تراکنش‌ها، بلاک‌ها، کارمزدها، استخراج، شبکهٔ لایتنینگ و موارد دیگر.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">55</context>
@@ -7905,6 +8081,7 @@
       </trans-unit>
       <trans-unit id="meta.description.docs.websocket-liquid" datatype="html">
         <source>Documentation for the liquid.network WebSocket API service: get real-time info on blocks, mempools, transactions, addresses, and more.</source>
+        <target>مستندات خدمات WebSocket API برای شبکهٔ لیکوئید: دریافت اطلاعات زنده درباره بلاک‌ها، ممپول‌ها، تراکنش‌ها، آدرس‌ها و موارد دیگر.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">61</context>
@@ -7912,6 +8089,7 @@
       </trans-unit>
       <trans-unit id="meta.description.docs.websocket-bitcoin" datatype="html">
         <source>Documentation for the mempool.space WebSocket API service: get real-time info on blocks, mempools, transactions, addresses, and more.</source>
+        <target>مستندات خدمات WebSocket API برای mempool.space: دریافت اطلاعات زنده بلاک‌ها، ممپول‌ها، تراکنش‌ها، آدرس‌ها و غیره.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">63</context>
@@ -7919,6 +8097,7 @@
       </trans-unit>
       <trans-unit id="meta.title.docs.electrum" datatype="html">
         <source>Electrum RPC</source>
+        <target>Electrum RPC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -7926,6 +8105,7 @@
       </trans-unit>
       <trans-unit id="meta.description.docs.electrumrpc" datatype="html">
         <source>Documentation for our Electrum RPC interface: get instant, convenient, and reliable access to an Esplora instance.</source>
+        <target>مستندات رابط Electrum RPC ما: دریافت دسترسی آسان، راحت و سریع به یک Esplora</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">68</context>
@@ -8242,6 +8422,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.channel" datatype="html">
         <source>Overview for Lightning channel <x id="PH" equiv-text="params.get('short_id')"/>. See channel capacity, the Lightning nodes involved, related on-chain transactions, and more.</source>
+        <target>کانال لایتنینگ <x id="PH" equiv-text="params.get('short_id')"/> در یک نگاه. دیدن ظرفیت کانال، گره‌های لایتنینگ درگیر، تراکنش‌های در زنجیره مرتبط، اطلاعات بیشتر.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.ts</context>
           <context context-type="linenumber">37</context>
@@ -8740,6 +8921,7 @@
       </trans-unit>
       <trans-unit id="ec42ed2d917189340598d7993c29b30c7fd32af4" datatype="html">
         <source>Connect</source>
+        <target>اتصال</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/group/group.component.html</context>
           <context context-type="linenumber">73</context>
@@ -8790,6 +8972,7 @@
       </trans-unit>
       <trans-unit id="34e302a08660d9860dda71e3f350351d34bda498" datatype="html">
         <source>Penalties</source>
+        <target>جریمه‌ها</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/justice-list/justice-list.component.html</context>
           <context context-type="linenumber">4</context>
@@ -8867,6 +9050,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.dashboard" datatype="html">
         <source>Get stats on the Lightning network (aggregate capacity, connectivity, etc), Lightning nodes (channels, liquidity, etc) and Lightning channels (status, fees, etc).</source>
+        <target>دریافت آمارهای شبکهٔ لایتنینگ (ظرفیت تجمیعی، وضعیت اتصال و غیره)، گره‌های لایتنینگ (کانال‌ها، نقدینگی‌ها و غیره) و کانال‌های لایتنینگ (وضعیت، کارمزدها و غیره).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.ts</context>
           <context context-type="linenumber">34</context>
@@ -8976,6 +9160,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.node" datatype="html">
         <source>Overview for the Lightning network node named <x id="PH" equiv-text="node.alias"/>. See channels, capacity, location, fee stats, and more.</source>
+        <target>گره شبکهٔ لایتنینگ به نام <x id="PH" equiv-text="node.alias"/> در یک نگاه. دیدن کانال‌ها، ظرفیت، موقعیت مکانی، وضعیت کارمزد و اطلاعات بیشتر.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node-preview.component.ts</context>
           <context context-type="linenumber">52</context>
@@ -9036,6 +9221,7 @@
       </trans-unit>
       <trans-unit id="a737eb6814b234b0fd00e81b645b95a396711f15" datatype="html">
         <source>Decoded</source>
+        <target>رمزگشایی‌شده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">134</context>
@@ -9174,6 +9360,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.node-map" datatype="html">
         <source>See the channels of non-Tor Lightning network nodes visualized on a world map. Hover/tap on points on the map for node names and details.</source>
+        <target>دیدن کانال‌های گره‌های غیر Tor شبکهٔ لایتنینگ، تصویرسازی شده روی نقشهٔ جهان. روی گره‌ها نگه‌دارید/بزنید تا نام و جزئیات آنها را ببینید.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-channels-map/nodes-channels-map.component.ts</context>
           <context context-type="linenumber">74</context>
@@ -9198,6 +9385,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.node-channel-map" datatype="html">
         <source>See the locations of non-Tor Lightning network nodes visualized on a world map. Hover/tap on points on the map for node names and details.</source>
+        <target>دیدن موقعیت‌های مکانی گره‌های غیر Tor شبکهٔ لایتنینگ تصویرسازی شده بر روی نقشهٔ جهان. روی گره‌ها نگه‌دارید/بزنید تا نام و جرئیات آنها را ببینید.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-map/nodes-map.component.ts</context>
           <context context-type="linenumber">52</context>
@@ -9205,6 +9393,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.nodes-network" datatype="html">
         <source>See the number of Lightning network nodes visualized over time by network: clearnet only (IPv4, IPv6), darknet (Tor, I2p, cjdns), and both.</source>
+        <target>دیدن تعداد گره‌های شبکهٔ لایتنینگ تصویرسازی‌شده در طول زمان بر اساس شبکه: فقط شبکه آشکار (IPv4, IPv6)، شبکهٔ پنهان (Tor, I2p, cjdns) و هر دو.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">74</context>
@@ -9248,7 +9437,7 @@
       </trans-unit>
       <trans-unit id="2165336009914523952" datatype="html">
         <source>Darknet Only (Tor, I2P, cjdns)</source>
-        <target>فقط شبکه پنهان (Tor, I2P, cjdns)</target>
+        <target>فقط شبکهٔ پنهان (Tor, I2P, cjdns)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">218</context>
@@ -9273,6 +9462,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.nodes-country-overview" datatype="html">
         <source>See a geographical breakdown of the Lightning network: how many Lightning nodes are hosted in countries around the world, aggregate BTC capacity for each country, and more.</source>
+        <target>دیدن شبکهٔ لاتینینگ به تفکیک موقعیت جغرافیایی: چه تعداد گره لایتنینگ در کشورهای مختلف جهان میزبانی شده‌اند، ظرفیت تحمیعی BTC برای هر کشور و اطلاعات بیشتر.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
           <context context-type="linenumber">47</context>
@@ -9343,6 +9533,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.nodes-country" datatype="html">
         <source>Explore all the Lightning nodes hosted in <x id="PH" equiv-text="response.country.en"/> and see an overview of each node's capacity, number of open channels, and more.</source>
+        <target>در تمام گره‌های لایتنینگ میزبانی‌شده در <x id="PH" equiv-text="response.country.en"/> کاوش کنید و در یک نگاه اطلاعاتی مانند ظرفیت و تعداد کانال‌های باز هر گره را ببینید.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.ts</context>
           <context context-type="linenumber">44</context>
@@ -9425,6 +9616,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.nodes-per-isp" datatype="html">
         <source>Browse the top 100 ISPs hosting Lightning nodes along with stats like total number of nodes per ISP, aggregate BTC capacity per ISP, and more</source>
+        <target>کاوش در 100 ارائه‌کننده اینترنت برتر گره‌های لایتنینگ، به همراه آمارهایی مانند مجموع تعداد گره‌ها بر اساس ارائه‌کننده اینترنت، مجموع ظرفیت بیت‌کوین بر اساس ارائه‌کننده اینترنت و آمارهای بیشتر</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
           <context context-type="linenumber">54</context>
@@ -9487,6 +9679,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.nodes-isp" datatype="html">
         <source>Browse all Bitcoin Lightning nodes using the <x id="PH" equiv-text="response.isp"/> [AS<x id="PH_1" equiv-text="this.route.snapshot.params.isp"/>] ISP and see aggregate stats like total number of nodes, total capacity, and more for the ISP.</source>
+        <target>تمام گره‌های لایتنینگ بیت‌کوین که از تأمین کنندهٔ اینترنت <x id="PH" equiv-text="response.isp"/> [<x id="PH_1" equiv-text="this.route.snapshot.params.isp"/> AS] استفاده می‌کنند را مرور کنید و امارهای تجمیعی مانند تعداد کل گره‌ها، مجموع ظرفیت آن را ببینید.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp-preview.component.ts</context>
           <context context-type="linenumber">45</context>
@@ -9542,6 +9735,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.ranking.oldest" datatype="html">
         <source>See the oldest nodes on the Lightning network along with their capacity, number of channels, location, etc.</source>
+        <target>دیدن قدیمی‌ترین گره‌ها در شبکهٔ لایتنینگ به همراه ظرفیت آنها، تعداد کانال‌ها، موقعیت مکانی و غیره.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/oldest-nodes/oldest-nodes.component.ts</context>
           <context context-type="linenumber">28</context>
@@ -9549,6 +9743,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.ranking.liquidity" datatype="html">
         <source>See Lightning nodes with the most BTC liquidity deployed along with high-level stats like number of open channels, location, node age, and more.</source>
+        <target>دیدن گره‌های لایتنینگ با بیشترین میزان نقدینگی BTC به همراه آمارهای کلی مانند تعداد کانال‌های باز، موقعیت مکانی، عمر گره و آمارهای دیگر.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-capacity/top-nodes-per-capacity.component.ts</context>
           <context context-type="linenumber">35</context>
@@ -9556,6 +9751,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.ranking.channels" datatype="html">
         <source>See Lightning nodes with the most channels open along with high-level stats like total node capacity, node age, and more.</source>
+        <target>دیدن گره‌های لایتنینگ با بیشترین تعداد کانال باز به همراه آمارهای کلی مثل ظرفیت کلی گره، عمر گره و آمارهای بیشتر.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-channels/top-nodes-per-channels.component.ts</context>
           <context context-type="linenumber">39</context>
@@ -9572,7 +9768,7 @@
       </trans-unit>
       <trans-unit id="4034215342842066505" datatype="html">
         <source>Top lightning nodes</source>
-        <target>بالاترین گره‌های لایتنینگ</target>
+        <target>برترین گره‌های لایتنینگ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-rankings-dashboard/nodes-rankings-dashboard.component.ts</context>
           <context context-type="linenumber">22</context>
@@ -9580,6 +9776,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.rankings-dashboard" datatype="html">
         <source>See the top Lightning network nodes ranked by liquidity, connectivity, and age.</source>
+        <target>دیدن گره‌های لایتنینگ برتر، رتبه‌بندی‌شده بر اساس نقدینگی، وضعیت اتصال و عمر.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-rankings-dashboard/nodes-rankings-dashboard.component.ts</context>
           <context context-type="linenumber">23</context>
@@ -9587,6 +9784,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.stats-chart" datatype="html">
         <source>See the capacity of the Lightning network visualized over time in terms of the number of open channels and total bitcoin capacity.</source>
+        <target>دیدن ظرفیت شبکهٔ لایتنینگ تصویرسازی شده در طول زمان بر اساس تعداد کانال‌های باز و مجموع ظرفیت بیت‌کوین.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
           <context context-type="linenumber">71</context>
@@ -9612,6 +9810,7 @@
       </trans-unit>
       <trans-unit id="6d5788756fcb0b8fc937226ff60bf1bd12a8e464" datatype="html">
         <source>provably unspendable</source>
+        <target>خرج‌نشدنی</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/address-type/address-type.component.html</context>
           <context context-type="linenumber">18</context>
@@ -9787,7 +9986,7 @@
       </trans-unit>
       <trans-unit id="692f6e6f4f6afc7f48b8194ab03e1d2155650f00" datatype="html">
         <source>Research</source>
-        <target>تحقیقات ممپول</target>
+        <target>ممپول پژوهی</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">75</context>
@@ -9926,6 +10125,7 @@
       </trans-unit>
       <trans-unit id="ba7f0c6fdfa0ab7afc59e9384bca0265d23fb018" datatype="html">
         <source>Your balance is too low.<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br/&gt;"/>Please <x id="START_LINK" ctype="x-a" equiv-text="&lt;a class=&quot;top-up-link&quot; href=&quot;/services/accelerator/overview&quot;&gt;"/>top up your account<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.</source>
+        <target>موجودی شما کافی نیست. <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br/&gt;"/>لطفا <x id="START_LINK" ctype="x-a" equiv-text="&lt;a class=&quot;top-up-link&quot; href=&quot;/services/accelerator/overview&quot;&gt;"/> موجودی حساب خود را افزایش دهید<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/mempool-error/mempool-error.component.html</context>
           <context context-type="linenumber">9</context>
@@ -9985,6 +10185,7 @@
       </trans-unit>
       <trans-unit id="6290595884142884507" datatype="html">
         <source>Heuristics</source>
+        <target>مکاشفات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/filters.utils.ts</context>
           <context context-type="linenumber">122</context>

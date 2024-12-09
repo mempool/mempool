@@ -1,9 +1,9 @@
-import { FastVertexArray } from './fast-vertex-array';
-import TxView from './tx-view';
-import { TransactionStripped } from '../../interfaces/node-api.interface';
-import { Color, Position, Square, ViewUpdateParams } from './sprite-types';
-import { defaultColorFunction, contrastColorFunction } from './utils';
-import { ThemeService } from '../../services/theme.service';
+import { FastVertexArray } from '@components/block-overview-graph/fast-vertex-array';
+import TxView from '@components/block-overview-graph/tx-view';
+import { TransactionStripped } from '@interfaces/node-api.interface';
+import { Color, Position, Square, ViewUpdateParams } from '@components/block-overview-graph/sprite-types';
+import { defaultColorFunction, contrastColorFunction } from '@components/block-overview-graph/utils';
+import { ThemeService } from '@app/services/theme.service';
 
 export default class BlockScene {
   scene: { count: number, offset: { x: number, y: number}};
@@ -88,16 +88,19 @@ export default class BlockScene {
   }
 
   // set up the scene with an initial set of transactions, without any transition animation
-  setup(txs: TransactionStripped[]) {
+  setup(txs: TransactionStripped[], sort: boolean = false) {
     // clean up any old transactions
     Object.values(this.txs).forEach(tx => {
       tx.destroy();
       delete this.txs[tx.txid];
     });
     this.layout = new BlockLayout({ width: this.gridWidth, height: this.gridHeight });
-    txs.forEach(tx => {
-      const txView = new TxView(tx, this);
-      this.txs[tx.txid] = txView;
+    let txViews = txs.map(tx => new TxView(tx, this));
+    if (sort) {
+      txViews = txViews.sort(feeRateDescending);
+    }
+    txViews.forEach(txView => {
+      this.txs[txView.txid] = txView;
       this.place(txView);
       this.saveGridToScreenPosition(txView);
       this.applyTxUpdate(txView, {

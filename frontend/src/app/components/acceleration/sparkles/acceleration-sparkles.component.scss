@@ -1,0 +1,45 @@
+.sparkles {
+  position: absolute;
+  top: var(--block-size);
+  height: 50px;
+  right: 0;
+}
+
+.sparkle {
+  position: absolute;
+  color: rgba(152, 88, 255, 0.75);
+  opacity: 0;
+  transform: scale(0.8) rotate(0deg);
+  animation: pop ease 2000ms forwards, sparkle ease 500ms infinite;
+}
+
+.inner-sparkle {
+  display: block;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.8) rotate(0deg);
+    opacity: 0;
+  }
+  20% {
+    transform: scale(1) rotate(72deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes sparkle {
+  0% {
+    color: rgba(152, 88, 255, 0.75);
+  }
+  50% {
+    color: rgba(198, 162, 255, 0.75);
+  }
+  100% {
+    color: rgba(152, 88, 255, 0.75);
+  }
+}

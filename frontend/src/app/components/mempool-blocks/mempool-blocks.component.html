@@ -51,7 +51,8 @@
         </div>
       </ng-template>
     </div>
-    <div *ngIf="arrowVisible" id="arrow-up" [ngStyle]="{'right': rightPosition + (blockWidth * 0.3) + containerOffset + 'px', transition: transition }" [class.blink]="txPosition?.accelerated"></div>
+    <app-acceleration-sparkles [style]="{ position: 'absolute', right: 0}" [arrow]="arrowElement" [run]="acceleratingArrow"></app-acceleration-sparkles>
+    <div *ngIf="arrowVisible" #arrowUp id="arrow-up" [ngStyle]="{'right': rightPosition + (blockWidth * 0.3) + containerOffset + 'px', transition: transition }" [class.blink]="txPosition?.accelerated"></div>
   </div>
 </ng-container>
 

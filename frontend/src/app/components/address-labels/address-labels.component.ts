@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, Input, OnChanges } from '@angular/core';
-import { Vin, Vout } from '../../interfaces/electrs.interface';
-import { StateService } from '../../services/state.service';
-import { AddressType, AddressTypeInfo } from '../../shared/address-utils';
+import { Vin, Vout } from '@interfaces/electrs.interface';
+import { StateService } from '@app/services/state.service';
+import { AddressType, AddressTypeInfo } from '@app/shared/address-utils';
 
 @Component({
   selector: 'app-address-labels',
@@ -55,7 +55,7 @@ export class AddressLabelsComponent implements OnChanges {
   }
 
   handleVin() {
-    const address = new AddressTypeInfo(this.network || 'mainnet', this.vin.prevout?.scriptpubkey_address, this.vin.prevout?.scriptpubkey_type as AddressType, [this.vin])
+    const address = new AddressTypeInfo(this.network || 'mainnet', this.vin.prevout?.scriptpubkey_address, this.vin.prevout?.scriptpubkey_type as AddressType, [this.vin]);
     if (address?.scripts.size) {
       const script = address?.scripts.values().next().value;
       if (script.template?.label) {

@@ -1,10 +1,10 @@
-import TxSprite from './tx-sprite';
-import { FastVertexArray } from './fast-vertex-array';
-import { SpriteUpdateParams, Square, Color, ViewUpdateParams } from './sprite-types';
-import { hexToColor } from './utils';
-import BlockScene from './block-scene';
-import { TransactionStripped } from '../../interfaces/node-api.interface';
-import { TransactionFlags } from '../../shared/filters.utils';
+import TxSprite from '@components/block-overview-graph/tx-sprite';
+import { FastVertexArray } from '@components/block-overview-graph/fast-vertex-array';
+import { SpriteUpdateParams, Square, Color, ViewUpdateParams } from '@components/block-overview-graph/sprite-types';
+import { hexToColor } from '@components/block-overview-graph/utils';
+import BlockScene from '@components/block-overview-graph/block-scene';
+import { TransactionStripped } from '@interfaces/node-api.interface';
+import { TransactionFlags } from '@app/shared/filters.utils';
 
 const hoverTransitionTime = 300;
 const defaultHoverColor = hexToColor('1bd8f4');
@@ -33,7 +33,7 @@ export default class TxView implements TransactionStripped {
   flags: number;
   bigintFlags?: bigint | null = 0b00000100_00000000_00000000_00000000n;
   time?: number;
-  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'prioritized' | 'censored' | 'selected' | 'rbf' | 'accelerated';
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'added_prioritized' | 'prioritized' | 'added_deprioritized' | 'deprioritized' | 'censored' | 'selected' | 'rbf' | 'accelerated';
   context?: 'projected' | 'actual';
   scene?: BlockScene;
 

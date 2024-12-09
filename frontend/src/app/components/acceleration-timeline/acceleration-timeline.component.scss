@@ -129,6 +129,9 @@
           margin-left: calc(-4em + 5px);
           animation: goFasterLeft 0.8s infinite linear;
         }
+        &.no-animation {
+          animation: none;
+        }
       }
 
       &.left {
@@ -152,9 +155,16 @@
         margin-bottom: -8px;
         transform: translateY(-50%);
         border-radius: 50%;
-        cursor: pointer;
         padding: 4px;
         background: transparent;
+        transition: background-color 300ms, padding 300ms;
+
+        &.hovering {
+          cursor: pointer;
+          &:hover {
+            padding: 0px;
+          }
+        }
     
         .shape {
           position: relative;

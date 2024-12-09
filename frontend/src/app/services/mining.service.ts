@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { PoolsStats, SinglePoolStats } from '../interfaces/node-api.interface';
-import { ApiService } from '../services/api.service';
-import { StateService } from './state.service';
-import { StorageService } from './storage.service';
+import { PoolsStats, SinglePoolStats } from '@interfaces/node-api.interface';
+import { ApiService } from '@app/services/api.service';
+import { StateService } from '@app/services/state.service';
+import { StorageService } from '@app/services/storage.service';
 
 export interface MiningUnits {
   hashrateDivider: number;
@@ -13,6 +13,8 @@ export interface MiningUnits {
 
 export interface MiningStats {
   lastEstimatedHashrate: number;
+  lastEstimatedHashrate3d: number;
+  lastEstimatedHashrate1w: number;
   blockCount: number;
   totalEmptyBlock: number;
   totalEmptyBlockRatio: string;
@@ -31,12 +33,17 @@ export class MiningService {
       data: MiningStats;
     }
   } = {};
+  poolsData: SinglePoolStats[] = [];
 
   constructor(
     private stateService: StateService,
     private apiService: ApiService,
     private storageService: StorageService,
-  ) { }
+  ) {
+    this.stateService.networkChanged$.subscribe((network) => {
+      this.clearCache();
+    });
+   }
 
   /**
    * Generate pool ranking stats
@@ -57,7 +64,19 @@ export class MiningService {
       );
     }
   }
-
+  
+  /** 
+   * Get names and slugs of all pools
+   */
+  public getPools(): Observable<any[]> {
+    return this.poolsData.length ? of(this.poolsData) : this.apiService.listPools$(undefined).pipe(
+      map(response => {
+        this.poolsData = response.body;
+        return this.poolsData;
+      })
+    );
+    
+  }
   /**
    * Set the hashrate power of ten we want to display
    */
@@ -112,6 +131,8 @@ export class MiningService {
       return {
         share: parseFloat((poolStat.blockCount / stats.blockCount * 100).toFixed(2)),
         lastEstimatedHashrate: poolStat.blockCount / stats.blockCount * stats.lastEstimatedHashrate / hashrateDivider,
+        lastEstimatedHashrate3d: poolStat.blockCount / stats.blockCount * stats.lastEstimatedHashrate3d / hashrateDivider,
+        lastEstimatedHashrate1w: poolStat.blockCount / stats.blockCount * stats.lastEstimatedHashrate1w / hashrateDivider,
         emptyBlockRatio: (poolStat.emptyBlocks / poolStat.blockCount * 100).toFixed(2),
         logo: `/resources/mining-pools/` + poolStat.slug + '.svg',
         ...poolStat
@@ -120,6 +141,8 @@ export class MiningService {
 
     return {
       lastEstimatedHashrate: stats.lastEstimatedHashrate / hashrateDivider,
+      lastEstimatedHashrate3d: stats.lastEstimatedHashrate3d / hashrateDivider,
+      lastEstimatedHashrate1w: stats.lastEstimatedHashrate1w / hashrateDivider,
       blockCount: stats.blockCount,
       totalEmptyBlock: totalEmptyBlock,
       totalEmptyBlockRatio: totalEmptyBlockRatio,
@@ -127,5 +150,10 @@ export class MiningService {
       miningUnits: miningUnits,
       totalBlockCount: parseInt(response.headers.get('x-total-count'), 10),
     };
+  }
+
+  private clearCache(): void {
+    this.cache = {};
+    this.poolsData = [];
   }
 }

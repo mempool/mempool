@@ -76,6 +76,11 @@ footer .selector {
   display: inline-block;
 }
 
+footer .add-margin {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
 footer .row.link-tree {
   max-width: 1140px;
   margin: 0 auto;
@@ -154,7 +159,7 @@ footer .nowrap {
   display: block;
 }
 
-@media (min-width: 951px) {
+@media (min-width: 1020px) {
   :host-context(.ltr-layout) .language-selector {
     float: right !important;
   }
@@ -172,7 +177,24 @@ footer .nowrap {
 }
 
 .services {
-  @media (min-width: 951px) and (max-width: 1147px) {
+  @media (min-width: 1300px) {
+    :host-context(.ltr-layout) .language-selector {
+      float: right !important;
+    }
+    :host-context(.rtl-layout) .language-selector {
+      float: left !important;
+    }
+  
+    .explore-tagline-desktop {
+      display: block;
+    }
+  
+    .explore-tagline-mobile {
+      display: none;
+    }
+  }
+
+  @media (max-width: 1300px) {
     :host-context(.ltr-layout) .services .language-selector {
       float: none !important;
     }
@@ -248,7 +270,7 @@ footer .nowrap {
 
 }
 
-@media (max-width: 950px) {
+@media (max-width: 1019px) {
 
   .main-logo {
     width: 220px;
@@ -281,13 +303,17 @@ footer .nowrap {
     margin: 0 auto;
   }
 
+  .enterprise-logo {
+    max-width: 100%;
+  }
+
   footer .site-options {
     float: none;
     margin-top: 15px;
   }
 }
 
-@media (max-width: 1147px) {
+@media (max-width: 1300px) {
 
   .services.main-logo {
     width: 220px;

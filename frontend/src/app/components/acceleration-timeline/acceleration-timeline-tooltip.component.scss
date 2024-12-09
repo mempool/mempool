@@ -1,0 +1,41 @@
+.acceleration-tooltip {
+  position: fixed;
+  z-index: 3;
+  background: color-mix(in srgb, var(--active-bg) 95%, transparent);
+  border-radius: 4px;
+  box-shadow: 1px 1px 10px rgba(0,0,0,0.5);
+  color: var(--tooltip-grey);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px 15px;
+  text-align: left;
+  pointer-events: none;
+
+  .badge.badge-accelerated {
+    background-color: var(--tertiary);
+    color: white;
+  }
+
+  .value {
+    text-align: end;
+  }
+
+  .label {
+    padding-right: 30px;
+    vertical-align: top;
+  }
+
+  .pool-logo {
+    width: 22px;
+    height: 22px;
+    position: relative;
+    top: -1px;
+    margin-right: 4px;
+    margin-bottom: 4px;
+  }
+
+  .oobFees {
+    color: #905cf4;
+  }
+}

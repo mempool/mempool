@@ -1,6 +1,6 @@
 import * as bitcoinjs from 'bitcoinjs-lib';
 import { AbstractBitcoinApi, HealthCheckHost } from './bitcoin-api-abstract-factory';
-import { IBitcoinApi, TestMempoolAcceptResult } from './bitcoin-api.interface';
+import { IBitcoinApi, SubmitPackageResult, TestMempoolAcceptResult } from './bitcoin-api.interface';
 import { IEsploraApi } from './esplora-api.interface';
 import blocks from '../blocks';
 import mempool from '../mempool';
@@ -196,6 +196,10 @@ class BitcoinApi implements AbstractBitcoinApi {
     }
   }
 
+  $submitPackage(rawTransactions: string[], maxfeerate?: number, maxburnamount?: number): Promise<SubmitPackageResult> {
+    return this.bitcoindClient.submitPackage(rawTransactions, maxfeerate ?? undefined, maxburnamount ?? undefined);
+  }
+
   async $getOutspend(txId: string, vout: number): Promise<IEsploraApi.Outspend> {
     const txOut = await this.bitcoindClient.getTxOut(txId, vout, false);
     return {
@@ -327,6 +331,7 @@ class BitcoinApi implements AbstractBitcoinApi {
       'witness_v1_taproot': 'v1_p2tr',
       'nonstandard': 'nonstandard',
       'multisig': 'multisig',
+      'anchor': 'anchor',
       'nulldata': 'op_return'
     };
 

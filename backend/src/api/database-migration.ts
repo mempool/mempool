@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 80;
+  private static currentVersion = 93;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -653,9 +653,11 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `prices` ADD `TRY` float DEFAULT "-1"');
       await this.$executeQuery('ALTER TABLE `prices` ADD `ZAR` float DEFAULT "-1"');
 
-      await this.$executeQuery('TRUNCATE hashrates');
-      await this.$executeQuery('TRUNCATE difficulty_adjustments');
-      await this.$executeQuery(`UPDATE state SET string = NULL WHERE name = 'pools_json_sha'`);
+      if (isBitcoin === true) {
+        await this.$executeQuery('TRUNCATE hashrates');
+        await this.$executeQuery('TRUNCATE difficulty_adjustments');
+        await this.$executeQuery(`UPDATE state SET string = NULL WHERE name = 'pools_json_sha'`);
+      }
 
       await this.updateToSchemaVersion(75);
     }
@@ -690,6 +692,114 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 80) {
       await this.$executeQuery('ALTER TABLE `blocks` ADD coinbase_addresses JSON DEFAULT NULL');
       await this.updateToSchemaVersion(80);
+    }
+
+    if (databaseSchemaVersion < 81 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD version INT NOT NULL DEFAULT 0');
+      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD INDEX `version` (`version`)');
+      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD unseen_txs JSON DEFAULT "[]"');
+      await this.updateToSchemaVersion(81);
+    }
+
+    if (databaseSchemaVersion < 82 && isBitcoin === true && config.MEMPOOL.NETWORK === 'mainnet') {
+      await this.$fixBadV1AuditBlocks();
+      await this.updateToSchemaVersion(82);
+    }
+
+    if (databaseSchemaVersion < 83 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `blocks` ADD first_seen datetime(6) DEFAULT NULL');
+      await this.updateToSchemaVersion(83);
+    }
+
+    // add new pools indexes
+    if (databaseSchemaVersion < 84 && isBitcoin === true) {
+      await this.$executeQuery(`
+        ALTER TABLE \`pools\`
+          ADD INDEX \`slug\` (\`slug\`),
+          ADD INDEX \`unique_id\` (\`unique_id\`)
+      `);
+      await this.updateToSchemaVersion(84);
+    }
+
+    // lightning channels indexes
+    if (databaseSchemaVersion < 85 && isBitcoin === true) {
+      await this.$executeQuery(`
+        ALTER TABLE \`channels\`
+          ADD INDEX \`created\` (\`created\`),
+          ADD INDEX \`capacity\` (\`capacity\`),
+          ADD INDEX \`closing_reason\` (\`closing_reason\`),
+          ADD INDEX \`closing_resolved\` (\`closing_resolved\`)
+      `);
+      await this.updateToSchemaVersion(85);
+    }
+
+    // lightning nodes indexes
+    if (databaseSchemaVersion < 86 && isBitcoin === true) {
+      await this.$executeQuery(`
+        ALTER TABLE \`nodes\`
+          ADD INDEX \`status\` (\`status\`),
+          ADD INDEX \`channels\` (\`channels\`),
+          ADD INDEX \`country_id\` (\`country_id\`),
+          ADD INDEX \`as_number\` (\`as_number\`),
+          ADD INDEX \`first_seen\` (\`first_seen\`)
+      `);
+      await this.updateToSchemaVersion(86);
+    }
+
+    // lightning node sockets indexes
+    if (databaseSchemaVersion < 87 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `nodes_sockets` ADD INDEX `type` (`type`)');
+      await this.updateToSchemaVersion(87);
+    }
+
+    // lightning stats indexes
+    if (databaseSchemaVersion < 88 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `lightning_stats` ADD INDEX `added` (`added`)');
+      await this.updateToSchemaVersion(88);
+    }
+
+    // geo names indexes
+    if (databaseSchemaVersion < 89 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `geo_names` ADD INDEX `names` (`names`)');
+      await this.updateToSchemaVersion(89);
+    }
+
+    // hashrates indexes
+    if (databaseSchemaVersion < 90 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `hashrates` ADD INDEX `type` (`type`)');
+      await this.updateToSchemaVersion(90);
+    }
+
+    // block audits indexes
+    if (databaseSchemaVersion < 91 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD INDEX `time` (`time`)');
+      await this.updateToSchemaVersion(91);
+    }
+
+    // elements_pegs indexes
+    if (databaseSchemaVersion < 92 && config.MEMPOOL.NETWORK === 'liquid') {
+      await this.$executeQuery(`
+        ALTER TABLE \`elements_pegs\`
+          ADD INDEX \`block\` (\`block\`),
+          ADD INDEX \`datetime\` (\`datetime\`),
+          ADD INDEX \`amount\` (\`amount\`),
+          ADD INDEX \`bitcoinaddress\` (\`bitcoinaddress\`),
+          ADD INDEX \`bitcointxid\` (\`bitcointxid\`)
+      `);
+      await this.updateToSchemaVersion(92);
+    }
+
+    // federation_txos indexes
+    if (databaseSchemaVersion < 93 && config.MEMPOOL.NETWORK === 'liquid') {
+      await this.$executeQuery(`
+        ALTER TABLE \`federation_txos\`
+          ADD INDEX \`unspent\` (\`unspent\`),
+          ADD INDEX \`lastblockupdate\` (\`lastblockupdate\`),
+          ADD INDEX \`blocktime\` (\`blocktime\`),
+          ADD INDEX \`emergencyKey\` (\`emergencyKey\`),
+          ADD INDEX \`expiredAt\` (\`expiredAt\`)
+      `);
+      await this.updateToSchemaVersion(93);
     }
   }
 
@@ -1303,6 +1413,28 @@ class DatabaseMigration {
       }
     } catch (e) {
       logger.warn(`Failed to migrate cpfp transaction data`);
+    }
+  }
+
+  private async $fixBadV1AuditBlocks(): Promise<void> {
+    const badBlocks = [
+      '000000000000000000011ad49227fc8c9ba0ca96ad2ebce41a862f9a244478dc',
+      '000000000000000000010ac1f68b3080153f2826ffddc87ceffdd68ed97d6960',
+      '000000000000000000024cbdafeb2660ae8bd2947d166e7fe15d1689e86b2cf7',
+      '00000000000000000002e1dbfbf6ae057f331992a058b822644b368034f87286',
+      '0000000000000000000019973b2778f08ad6d21e083302ff0833d17066921ebb',
+    ];
+
+    for (const hash of badBlocks) {
+      try {
+        await this.$executeQuery(`
+          UPDATE blocks_audits
+          SET prioritized_txs = '[]'
+          WHERE hash = '${hash}'
+        `, true);
+      } catch (e) {
+        continue;
+      }
     }
   }
 }

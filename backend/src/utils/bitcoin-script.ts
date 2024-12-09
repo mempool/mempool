@@ -158,7 +158,7 @@ export function parseMultisigScript(script: string): void | { m: number, n: numb
   if (!opN) {
     return;
   }
-  if (!opN.startsWith('OP_PUSHNUM_')) {
+  if (opN !== 'OP_0' && !opN.startsWith('OP_PUSHNUM_')) {
     return;
   }
   const n = parseInt(opN.match(/[0-9]+/)?.[0] || '', 10);
@@ -178,7 +178,7 @@ export function parseMultisigScript(script: string): void | { m: number, n: numb
   if (!opM) {
     return;
   }
-  if (!opM.startsWith('OP_PUSHNUM_')) {
+  if (opM !== 'OP_0' && !opM.startsWith('OP_PUSHNUM_')) {
     return;
   }
   const m = parseInt(opM.match(/[0-9]+/)?.[0] || '', 10);
@@ -200,4 +200,28 @@ export function getVarIntLength(n: number): number {
   } else {
     return 9;
   }
+}
+
+/** Extracts miner names from a DATUM coinbase transaction */
+export function parseDATUMTemplateCreator(coinbaseRaw: string): string[] | null {
+  let bytes: number[] = [];
+  for (let c = 0; c < coinbaseRaw.length; c += 2) {
+      bytes.push(parseInt(coinbaseRaw.slice(c, c + 2), 16));
+  }
+
+  // Skip block height
+  let tagLengthByte = 1 + bytes[0];
+
+  let tagsLength = bytes[tagLengthByte];
+  if (tagsLength == 0x4c) {
+    tagLengthByte += 1;
+    tagsLength = bytes[tagLengthByte];
+  }
+
+  const tagStart = tagLengthByte + 1;
+  const tags = bytes.slice(tagStart, tagStart + tagsLength);
+  let tagString = String.fromCharCode(...tags);
+  tagString = tagString.replace('\x00', '');
+
+  return tagString.split('\x0f').map((name) => name.replace(/[^a-zA-Z0-9 ]/g, ''));
 }

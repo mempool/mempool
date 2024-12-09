@@ -1,10 +1,10 @@
-import { TransactionFlags } from './filters.utils';
-import { getVarIntLength, opcodes, parseMultisigScript, isPoint } from './script.utils';
-import { Transaction } from '../interfaces/electrs.interface';
-import { CpfpInfo, RbfInfo } from '../interfaces/node-api.interface';
+import { TransactionFlags } from '@app/shared/filters.utils';
+import { getVarIntLength, opcodes, parseMultisigScript, isPoint } from '@app/shared/script.utils';
+import { Transaction } from '@interfaces/electrs.interface';
+import { CpfpInfo, RbfInfo, TransactionStripped } from '@interfaces/node-api.interface';
+import { StateService } from '@app/services/state.service';
 
 // Bitcoin Core default policy settings
-const TX_MAX_STANDARD_VERSION = 2;
 const MAX_STANDARD_TX_WEIGHT = 400_000;
 const MAX_BLOCK_SIGOPS_COST = 80_000;
 const MAX_STANDARD_TX_SIGOPS_COST = (MAX_BLOCK_SIGOPS_COST / 5);
@@ -89,10 +89,13 @@ export function isDERSig(w: string): boolean {
  *
  * returns true early if any standardness rule is violated, otherwise false
  * (except for non-mandatory-script-verify-flag and p2sh script evaluation rules which are *not* enforced)
+ *
+ * As standardness rules change, we'll need to apply the rules in force *at the time* to older blocks.
+ * For now, just pull out individual rules into versioned functions where necessary.
  */
-export function isNonStandard(tx: Transaction): boolean {
+export function isNonStandard(tx: Transaction, height?: number, network?: string): boolean {
   // version
-  if (tx.version > TX_MAX_STANDARD_VERSION) {
+  if (isNonStandardVersion(tx, height, network)) {
     return true;
   }
 
@@ -138,6 +141,8 @@ export function isNonStandard(tx: Transaction): boolean {
         return true;
       }
     } else if (['unknown', 'provably_unspendable', 'empty'].includes(vin.prevout?.scriptpubkey_type || '')) {
+      return true;
+    } else if (isNonStandardAnchor(tx, height, network)) {
       return true;
     }
     // TODO: bad-witness-nonstandard
@@ -200,6 +205,51 @@ export function isNonStandard(tx: Transaction): boolean {
 
   // TODO: non-mandatory-script-verify-flag
 
+  return false;
+}
+
+// Individual versioned standardness rules
+
+const V3_STANDARDNESS_ACTIVATION_HEIGHT = {
+  'testnet4': 42_000,
+  'testnet': 2_900_000,
+  'signet': 211_000,
+  '': 863_500,
+};
+function isNonStandardVersion(tx: Transaction, height?: number, network?: string): boolean {
+  let TX_MAX_STANDARD_VERSION = 3;
+  if (
+    height != null
+    && network != null
+    && V3_STANDARDNESS_ACTIVATION_HEIGHT[network]
+    && height <= V3_STANDARDNESS_ACTIVATION_HEIGHT[network]
+  ) {
+    // V3 transactions were non-standard to spend before v28.x (scheduled for 2024/09/30 https://github.com/bitcoin/bitcoin/issues/29891)
+    TX_MAX_STANDARD_VERSION = 2;
+  }
+
+  if (tx.version > TX_MAX_STANDARD_VERSION) {
+    return true;
+  }
+  return false;
+}
+
+const ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT = {
+  'testnet4': 42_000,
+  'testnet': 2_900_000,
+  'signet': 211_000,
+  '': 863_500,
+};
+function isNonStandardAnchor(tx: Transaction, height?: number, network?: string): boolean {
+  if (
+    height != null
+    && network != null
+    && ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT[network]
+    && height <= ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT[network]
+  ) {
+    // anchor outputs were non-standard to spend before v28.x (scheduled for 2024/09/30 https://github.com/bitcoin/bitcoin/issues/29891)
+    return true;
+  }
   return false;
 }
 
@@ -289,7 +339,7 @@ export function isBurnKey(pubkey: string): boolean {
   ].includes(pubkey);
 }
 
-export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replacement?: boolean): bigint {
+export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replacement?: boolean, height?: number, network?: string): bigint {
   let flags = tx.flags ? BigInt(tx.flags) : 0n;
 
   // Update variable flags (CPFP, RBF)
@@ -439,7 +489,7 @@ export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replac
     flags |= TransactionFlags.batch_payout;
   }
 
-  if (isNonStandard(tx)) {
+  if (isNonStandard(tx, height, network)) {
     flags |= TransactionFlags.nonstandard;
   }
 
@@ -458,4 +508,83 @@ export function getUnacceleratedFeeRate(tx: Transaction, accelerated: boolean): 
   } else {
     return tx.effectiveFeePerVsize;
   }
+}
+
+export function identifyPrioritizedTransactions(transactions: TransactionStripped[]): { prioritized: string[], deprioritized: string[] } {
+  // find the longest increasing subsequence of transactions
+  // (adapted from https://en.wikipedia.org/wiki/Longest_increasing_subsequence#Efficient_algorithms)
+  // should be O(n log n)
+  const X = transactions.slice(1).reverse(); // standard block order is by *decreasing* effective fee rate, but we want to iterate in increasing order (and skip the coinbase)
+  if (X.length < 2) {
+    return { prioritized: [], deprioritized: [] };
+  }
+  const N = X.length;
+  const P: number[] = new Array(N);
+  const M: number[] = new Array(N + 1);
+  M[0] = -1; // undefined so can be set to any value
+
+  let L = 0;
+  for (let i = 0; i < N; i++) {
+    // Binary search for the smallest positive l ≤ L
+    // such that X[M[l]].effectiveFeePerVsize > X[i].effectiveFeePerVsize
+    let lo = 1;
+    let hi = L + 1;
+    while (lo < hi) {
+      const mid = lo + Math.floor((hi - lo) / 2); // lo <= mid < hi
+      if (X[M[mid]].rate > X[i].rate) {
+        hi = mid;
+      } else { // if X[M[mid]].effectiveFeePerVsize < X[i].effectiveFeePerVsize
+        lo = mid + 1;
+      }
+    }
+
+    // After searching, lo == hi is 1 greater than the
+    // length of the longest prefix of X[i]
+    const newL = lo;
+
+    // The predecessor of X[i] is the last index of
+    // the subsequence of length newL-1
+    P[i] = M[newL - 1];
+    M[newL] = i;
+
+    if (newL > L) {
+      // If we found a subsequence longer than any we've
+      // found yet, update L
+      L = newL;
+    }
+  }
+
+  // Reconstruct the longest increasing subsequence
+  // It consists of the values of X at the L indices:
+  // ..., P[P[M[L]]], P[M[L]], M[L]
+  const LIS: TransactionStripped[] = new Array(L);
+  let k = M[L];
+  for (let j = L - 1; j >= 0; j--) {
+    LIS[j] = X[k];
+    k = P[k];
+  }
+
+  const lisMap = new Map<string, number>();
+  LIS.forEach((tx, index) => lisMap.set(tx.txid, index));
+
+  const prioritized: string[] = [];
+  const deprioritized: string[] = [];
+
+  let lastRate = 0;
+
+  for (const tx of X) {
+    if (lisMap.has(tx.txid)) {
+      lastRate = tx.rate;
+    } else {
+      if (Math.abs(tx.rate - lastRate) < 0.1) {
+        // skip if the rate is almost the same as the previous transaction
+      } else if (tx.rate <= lastRate) {
+        prioritized.push(tx.txid);
+      } else {
+        deprioritized.push(tx.txid);
+      }
+    }
+  }
+
+  return { prioritized, deprioritized };
 }

@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { Router, NavigationEnd, ActivatedRouteSnapshot } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-import { StateService } from './state.service';
-import { RelativeUrlPipe } from '../shared/pipes/relative-url/relative-url.pipe';
+import { StateService } from '@app/services/state.service';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 
 @Injectable({
   providedIn: 'root'
@@ -27,6 +27,7 @@ export class NavigationService {
     }
   };
   networks = Object.keys(this.networkModules);
+  initialLoad = true;
 
   constructor(
     private stateService: StateService,
@@ -40,6 +41,10 @@ export class NavigationService {
       if (this.enforceSubnetRestrictions(state)) {
         this.updateSubnetPaths(state);
       }
+      if (this.initialLoad) {
+        this.initialLoad = false;
+      }
+      this.updateSubnetPaths(state);
     });
   }
 
@@ -97,5 +102,9 @@ export class NavigationService {
       });
     });
     this.subnetPaths.next(subnetPaths);
+  }
+
+  isInitialLoad(): boolean {
+    return this.initialLoad;
   }
 }

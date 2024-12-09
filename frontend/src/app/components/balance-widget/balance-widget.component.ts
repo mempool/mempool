@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { StateService } from '../../services/state.service';
-import { Address, AddressTxSummary } from '../../interfaces/electrs.interface';
-import { ElectrsApiService } from '../../services/electrs-api.service';
+import { StateService } from '@app/services/state.service';
+import { Address, AddressTxSummary } from '@interfaces/electrs.interface';
+import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { Observable, catchError, of } from 'rxjs';
 
 @Component({

@@ -1,14 +1,14 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
-import { detectWebGL } from '../../shared/graphs.utils';
-import { StateService } from '../../services/state.service';
+import { detectWebGL } from '@app/shared/graphs.utils';
+import { StateService } from '@app/services/state.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap, map, tap, filter } from 'rxjs/operators';
-import { MempoolBlock } from '../../interfaces/websocket.interface';
-import { TransactionStripped } from '../../interfaces/node-api.interface';
+import { MempoolBlock } from '@interfaces/websocket.interface';
+import { TransactionStripped } from '@interfaces/node-api.interface';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { SeoService } from '../../services/seo.service';
-import { seoDescriptionNetwork } from '../../shared/common.utils';
-import { WebsocketService } from '../../services/websocket.service';
+import { SeoService } from '@app/services/seo.service';
+import { seoDescriptionNetwork } from '@app/shared/common.utils';
+import { WebsocketService } from '@app/services/websocket.service';
 
 @Component({
   selector: 'app-mempool-block',
@@ -71,7 +71,7 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
         })
       );
 
-    this.mempoolBlockTransactions$ = this.stateService.liveMempoolBlockTransactions$.pipe(map(txMap => Object.values(txMap)));
+    this.mempoolBlockTransactions$ = this.stateService.liveMempoolBlockTransactions$.pipe(map(({transactions}) => Object.values(transactions)));
 
     this.network$ = this.stateService.networkChanged$;
   }

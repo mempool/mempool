@@ -1,5 +1,8 @@
 import { MempoolBlockDelta, MempoolBlockDeltaCompressed, MempoolDeltaChange, TransactionCompressed } from "../interfaces/websocket.interface";
-import { TransactionStripped } from "../interfaces/node-api.interface";
+import { TransactionStripped } from "@interfaces/node-api.interface";
+import { AmountShortenerPipe } from "@app/shared/pipes/amount-shortener.pipe";
+import { Router, ActivatedRoute } from '@angular/router';
+const amountShortenerPipe = new AmountShortenerPipe();
 
 export function isMobile(): boolean {
   return (window.innerWidth <= 767.98);
@@ -170,8 +173,9 @@ export function uncompressTx(tx: TransactionCompressed): TransactionStripped {
   };
 }
 
-export function uncompressDeltaChange(delta: MempoolBlockDeltaCompressed): MempoolBlockDelta {
+export function uncompressDeltaChange(block: number, delta: MempoolBlockDeltaCompressed): MempoolBlockDelta {
   return {
+    block,
     added: delta.added.map(uncompressTx),
     removed: delta.removed,
     changed: delta.changed.map(tx => ({
@@ -183,17 +187,54 @@ export function uncompressDeltaChange(delta: MempoolBlockDeltaCompressed): Mempo
   };
 }
 
-export function insecureRandomUUID(): string {
-  const hexDigits = '0123456789abcdef';
-  const uuidLengths = [8, 4, 4, 4, 12];
-  let uuid = '';
-  for (const length of uuidLengths) {
-      for (let i = 0; i < length; i++) {
-          uuid += hexDigits[Math.floor(Math.random() * 16)];
-      }
-      uuid += '-';
+export function renderSats(value: number, network: string, mode: 'sats' | 'btc' | 'auto' = 'auto'): string {
+  let prefix = '';
+  switch (network) {
+    case 'liquid':
+      prefix = 'L';
+      break;
+    case 'liquidtestnet':
+      prefix = 'tL';
+      break;
+    case 'testnet':
+    case 'testnet4':
+      prefix = 't';
+      break;
+    case 'signet':
+      prefix = 's';
+      break;
   }
-  return uuid.slice(0, -1);
+  if (mode === 'btc' || (mode === 'auto' && value >= 1000000)) {
+    return `${amountShortenerPipe.transform(value / 100000000, 2)} ${prefix}BTC`;
+  } else {
+    if (prefix.length) {
+      prefix += '-';
+    }
+    return `${amountShortenerPipe.transform(value, 2)} ${prefix}sats`;
+  }
+}
+
+export function sleep$(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+     setTimeout(() => {
+       resolve();
+     }, ms);
+  });
+}
+
+export function handleDemoRedirect(route: ActivatedRoute, router: Router) {
+  route.queryParams
+    .subscribe(params => {
+      if (params.next) {
+        const path = ['/', '/acceleration', '/mining', '/lightning'];
+        const index = path.indexOf(params.next);
+        if (index >= 0) {
+          const nextPath = path[(index + 1) % path.length];
+          setTimeout(() => { window.location.replace(`${params.next}?next=${nextPath}`) }, 15000);
+        }
+      }
+    }
+  );
 }
 
 // https://stackoverflow.com/a/60467595

@@ -1,6 +1,6 @@
 <div class="acceleration-timeline box" [class.lower-padding]="!tx.status.confirmed">
   <div class="timeline-wrapper">
-    @if (!tx.status.confirmed) {
+    @if (!tx.status.confirmed || canceled) {
     <div class="timeline">
       <div class="intervals">
         <div class="node-spacer"></div>
@@ -8,8 +8,8 @@
         <div class="node-spacer"></div>
         <div class="interval">
           <div class="interval-time">
-            @if (eta) {
-              ~<app-time [time]="eta?.wait / 1000"></app-time> <!-- <span *ngIf="accelerateRatio > 1" class="compare"> ({{ accelerateRatio }}x faster)</span> -->
+            @if (eta && !canceled) {
+              ~<app-time [time]="eta?.wait / 1000"></app-time>
               }
           </div>
         </div>
@@ -19,16 +19,20 @@
         <div class="node-spacer"></div>
         <div class="interval-spacer"></div>
         <div class="node">
-          <div class="acc-to-confirmed right go-faster"></div>
+          <div class="acc-to-confirmed right go-faster" [class.no-animation]="canceled"></div>
         </div>
         <div class="interval-spacer">
         </div>
         <div class="node" [id]="'confirmed'">
-          <div class="acc-to-confirmed left go-faster"></div>
+          <div class="acc-to-confirmed left go-faster" [class.no-animation]="canceled"></div>
           <div class="shape-border waiting">
-            <div class="shape animate"></div>
+            <div class="shape"></div>
           </div>
-          <div class="status"><span class="badge badge-waiting" i18n="transaction.rbf.mined">Mined</span></div>
+          @if (canceled) {
+          <div class="status"><span class="badge badge-danger" i18n="accelerator.canceled">Canceled</span></div>
+          } @else {
+            <div class="status"><span class="badge badge-waiting" i18n="transaction.rbf.mined">Mined</span></div>
+          }
         </div>
       </div>
     </div>
@@ -38,18 +42,16 @@
         <div class="node-spacer"></div>
         <div class="interval">
           <div class="interval-time">
-            <app-time [time]="acceleratedAt - transactionTime"></app-time>
+            <app-time [time]="firstSeenToAccelerated"></app-time>
           </div>
         </div>
         <div class="node-spacer"></div>
         <div class="interval">
           <div class="interval-time">
             @if (tx.status.confirmed) {
-              <div class="interval-time">
-                <app-time [time]="tx.status.block_time - acceleratedAt"></app-time>
-              </div>
-            } @else if (standardETA && !tx.status.confirmed) {
-              <!-- ~<app-time [time]="standardETA / 1000 - now"></app-time> -->
+              <app-time [time]="acceleratedToMined"></app-time>
+            } @else if (eta && canceled) {
+              ~<app-time [time]="eta?.wait / 1000"></app-time>
             }
           </div>
         </div>
@@ -58,7 +60,7 @@
       <div class="nodes">
         <div class="node" [id]="'first-seen'">
           <div class="seen-to-acc right"></div>
-          <div class="shape-border">
+          <div class="shape-border hovering" (pointerover)="onHover($event, 'seen');" (pointerout)="onBlur($event);">
             <div class="shape"></div>
           </div>
           <div class="status"><span class="badge badge-primary" i18n="transaction.first-seen|Transaction first seen">First seen</span></div>
@@ -73,47 +75,50 @@
         <div class="interval-spacer">
           <div class="seen-to-acc"></div>
         </div>
-        <div class="node" [class.accelerated]="!tx.status.confirmed" [id]="'accelerated'">
+        <div class="node" [class.accelerated]="!tx.status.confirmed && !canceled" [id]="'accelerated'">
           <div class="seen-to-acc left"></div>
-          @if (tx.status.confirmed) {
+          @if (tx.status.confirmed && !canceled) {
             <div class="acc-to-confirmed right"></div>
           } @else {
           <div class="seen-to-acc right"></div>
           }
-          <div  class="shape-border">
+          <div  class="shape-border hovering" (pointerover)="onHover($event, 'accelerated');" (pointerout)="onBlur($event);">
             <div class="shape"></div>
-            @if (!tx.status.confirmed) {
-            <div class="connector down loading"></div>
+            @if (!tx.status.confirmed || canceled) {
+            <div class="connector down" [class.loading]="!canceled"></div>
             }
           </div>
-          @if (tx.status.confirmed) {
+          @if (tx.status.confirmed && !canceled) {
             <div class="status"><span class="badge badge-accelerated" i18n="transaction.audit.accelerated">Accelerated</span></div>
           }
-          <div class="time offset-left" [class.no-margin]="!tx.status.confirmed">
+          <div class="time" [class.no-margin]="!tx.status.confirmed || canceled" [class.offset-left]="!tx.status.confirmed || canceled">
             @if (!tx.status.confirmed) {
             <span i18n="transaction.audit.accelerated">Accelerated</span>{{ "" }} 
             }
             @if (useAbsoluteTime) {
             <span>{{ acceleratedAt * 1000 | date }}</span>
             } @else {
-            <app-time kind="since" [time]="acceleratedAt" [lowercaseStart]="true"></app-time>
+            <app-time kind="since" [time]="acceleratedAt" [lowercaseStart]="!tx.status.confirmed || canceled"></app-time>
             }
           </div>
         </div>
         <div class="interval-spacer">
-          @if (tx.status.confirmed) {
+          @if (tx.status.confirmed && !canceled) {
           <div class="acc-to-confirmed"></div>
           } @else {
           <div class="seen-to-acc"></div>
           }
         </div>
         <div class="node" [class.selected]="tx.status.confirmed" [id]="'confirmed'">
-          @if (tx.status.confirmed) {
+          @if (tx.status.confirmed && !canceled) {
           <div class="acc-to-confirmed left"></div>
           } @else {
           <div class="seen-to-acc left"></div>
           }
-          <div class="shape-border" [class.waiting]="!tx.status.confirmed">
+          <div class="shape-border" 
+              [ngClass]="{'waiting': !tx.status.confirmed, 'hovering': tx.status.confirmed}"
+              (pointerover)="onHover($event, tx.status.confirmed ? 'mined' : null)" 
+              (pointerout)="onBlur($event);">
             <div class="shape"></div>
           </div>
           @if (tx.status.confirmed) {
@@ -130,4 +135,10 @@
       </div>
     </div>
   </div>
+
+  <app-acceleration-timeline-tooltip
+  [accelerationInfo]="hoverInfo"
+  [cursorPosition]="tooltipPosition"
+></app-acceleration-timeline-tooltip>
+
 </div>

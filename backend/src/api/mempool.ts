@@ -10,6 +10,7 @@ import bitcoinClient from './bitcoin/bitcoin-client';
 import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
 import rbfCache from './rbf-cache';
 import { Acceleration } from './services/acceleration';
+import accelerationApi from './services/acceleration';
 import redisCache from './redis-cache';
 import blocks from './blocks';
 
@@ -19,12 +20,13 @@ class Mempool {
   private mempoolCache: { [txId: string]: MempoolTransactionExtended } = {};
   private mempoolCandidates: { [txid: string ]: boolean } = {};
   private spendMap = new Map<string, MempoolTransactionExtended>();
+  private recentlyDeleted: MempoolTransactionExtended[][] = []; // buffer of transactions deleted in recent mempool updates
   private mempoolInfo: IBitcoinApi.MempoolInfo = { loaded: false, size: 0, bytes: 0, usage: 0, total_fee: 0,
                                                     maxmempool: 300000000, mempoolminfee: Common.isLiquid() ? 0.00000100 : 0.00001000, minrelaytxfee: Common.isLiquid() ? 0.00000100 : 0.00001000 };
   private mempoolChangedCallback: ((newMempool: {[txId: string]: MempoolTransactionExtended; }, newTransactions: MempoolTransactionExtended[],
-    deletedTransactions: MempoolTransactionExtended[], accelerationDelta: string[]) => void) | undefined;
+    deletedTransactions: MempoolTransactionExtended[][], accelerationDelta: string[]) => void) | undefined;
   private $asyncMempoolChangedCallback: ((newMempool: {[txId: string]: MempoolTransactionExtended; }, mempoolSize: number, newTransactions: MempoolTransactionExtended[],
-    deletedTransactions: MempoolTransactionExtended[], accelerationDelta: string[], candidates?: GbtCandidates) => Promise<void>) | undefined;
+    deletedTransactions: MempoolTransactionExtended[][], accelerationDelta: string[], candidates?: GbtCandidates) => Promise<void>) | undefined;
 
   private accelerations: { [txId: string]: Acceleration } = {};
   private accelerationPositions: { [txid: string]: { poolId: number, pool: string, block: number, vsize: number }[] } = {};
@@ -74,12 +76,12 @@ class Mempool {
   }
 
   public setMempoolChangedCallback(fn: (newMempool: { [txId: string]: MempoolTransactionExtended; },
-    newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[], accelerationDelta: string[]) => void): void {
+    newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[][], accelerationDelta: string[]) => void): void {
     this.mempoolChangedCallback = fn;
   }
 
   public setAsyncMempoolChangedCallback(fn: (newMempool: { [txId: string]: MempoolTransactionExtended; }, mempoolSize: number,
-    newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[], accelerationDelta: string[],
+    newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[][], accelerationDelta: string[],
     candidates?: GbtCandidates) => Promise<void>): void {
     this.$asyncMempoolChangedCallback = fn;
   }
@@ -206,7 +208,7 @@ class Mempool {
     return txTimes;
   }
 
-  public async $updateMempool(transactions: string[], accelerations: Acceleration[] | null, minFeeMempool: string[], minFeeTip: number, pollRate: number): Promise<void> {
+  public async $updateMempool(transactions: string[], accelerations: Record<string, Acceleration> | null, minFeeMempool: string[], minFeeTip: number, pollRate: number): Promise<void> {
     logger.debug(`Updating mempool...`);
 
     // warn if this run stalls the main loop for more than 2 minutes
@@ -353,7 +355,7 @@ class Mempool {
     const newTransactionsStripped = newTransactions.map((tx) => Common.stripTransaction(tx));
     this.latestTransactions = newTransactionsStripped.concat(this.latestTransactions).slice(0, 6);
 
-    const accelerationDelta = accelerations != null ? await this.$updateAccelerations(accelerations) : [];
+    const accelerationDelta = accelerations != null ? await this.updateAccelerations(accelerations) : [];
     if (accelerationDelta.length) {
       hasChange = true;
     }
@@ -362,12 +364,15 @@ class Mempool {
 
     const candidatesChanged = candidates?.added?.length || candidates?.removed?.length;
 
-    if (this.mempoolChangedCallback && (hasChange || deletedTransactions.length)) {
-      this.mempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions, accelerationDelta);
+    this.recentlyDeleted.unshift(deletedTransactions);
+    this.recentlyDeleted.length = Math.min(this.recentlyDeleted.length, 10); // truncate to the last 10 mempool updates
+
+    if (this.mempoolChangedCallback && (hasChange || newTransactions.length || deletedTransactions.length)) {
+      this.mempoolChangedCallback(this.mempoolCache, newTransactions, this.recentlyDeleted, accelerationDelta);
     }
-    if (this.$asyncMempoolChangedCallback && (hasChange || deletedTransactions.length || candidatesChanged)) {
+    if (this.$asyncMempoolChangedCallback && (hasChange || newTransactions.length || deletedTransactions.length || candidatesChanged)) {
       this.updateTimerProgress(timer, 'running async mempool callback');
-      await this.$asyncMempoolChangedCallback(this.mempoolCache, newMempoolSize, newTransactions, deletedTransactions, accelerationDelta, candidates);
+      await this.$asyncMempoolChangedCallback(this.mempoolCache, newMempoolSize, newTransactions, this.recentlyDeleted, accelerationDelta, candidates);
       this.updateTimerProgress(timer, 'completed async mempool callback');
     }
 
@@ -395,58 +400,11 @@ class Mempool {
     return this.accelerations;
   }
 
-  public $updateAccelerations(newAccelerations: Acceleration[]): string[] {
+  public updateAccelerations(newAccelerationMap: Record<string, Acceleration>): string[] {
     try {
-      const changed: string[] = [];
-
-      const newAccelerationMap: { [txid: string]: Acceleration } = {};
-      for (const acceleration of newAccelerations) {
-        // skip transactions we don't know about
-        if (!this.mempoolCache[acceleration.txid]) {
-          continue;
-        }
-        newAccelerationMap[acceleration.txid] = acceleration;
-        if (this.accelerations[acceleration.txid] == null) {
-          // new acceleration
-          changed.push(acceleration.txid);
-        } else {
-          if (this.accelerations[acceleration.txid].feeDelta !== acceleration.feeDelta) {
-            // feeDelta changed
-            changed.push(acceleration.txid);
-          } else if (this.accelerations[acceleration.txid].pools?.length) {
-            let poolsChanged = false;
-            const pools = new Set();
-            this.accelerations[acceleration.txid].pools.forEach(pool => {
-              pools.add(pool);
-            });
-            acceleration.pools.forEach(pool => {
-              if (!pools.has(pool)) {
-                poolsChanged = true;
-              } else {
-                pools.delete(pool);
-              }
-            });
-            if (pools.size > 0) {
-              poolsChanged = true;
-            }
-            if (poolsChanged) {
-              // pools changed
-              changed.push(acceleration.txid);
-            }
-          }
-        }
-      }
-
-      for (const oldTxid of Object.keys(this.accelerations)) {
-        if (!newAccelerationMap[oldTxid]) {
-          // removed
-          changed.push(oldTxid);
-        }
-      }
-
+      const accelerationDelta = accelerationApi.getAccelerationDelta(this.accelerations, newAccelerationMap);
       this.accelerations = newAccelerationMap;
-
-      return changed;
+      return accelerationDelta;
     } catch (e: any) {
       logger.debug(`Failed to update accelerations: ` + (e instanceof Error ? e.message : e));
       return [];
@@ -541,16 +499,7 @@ class Mempool {
     }
   }
 
-  public handleRbfTransactions(rbfTransactions: { [txid: string]: MempoolTransactionExtended[]; }): void {
-    for (const rbfTransaction in rbfTransactions) {
-      if (this.mempoolCache[rbfTransaction] && rbfTransactions[rbfTransaction]?.length) {
-        // Store replaced transactions
-        rbfCache.add(rbfTransactions[rbfTransaction], this.mempoolCache[rbfTransaction]);
-      }
-    }
-  }
-
-  public handleMinedRbfTransactions(rbfTransactions: { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }}): void {
+  public handleRbfTransactions(rbfTransactions: { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }}): void {
     for (const rbfTransaction in rbfTransactions) {
       if (rbfTransactions[rbfTransaction].replacedBy && rbfTransactions[rbfTransaction]?.replaced?.length) {
         // Store replaced transactions

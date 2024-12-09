@@ -1,15 +1,17 @@
 <ng-template [ngIf]="button" [ngIfElse]="btnLink">
-  <button #btn [attr.data-clipboard-text]="text" [class]="class" type="button" [disabled]="text === ''">
-    <span #buttonWrapper [attr.data-tlite]="copiedMessage" style="position: relative;top: -2px;left: 1px;">
+  <button [class]="class" type="button" [disabled]="text === ''" style="box-shadow: none;" (click)="copyText()">
+    <span style="position: relative;top: -2px;left: 1px;">
       <app-svg-images name="clippy" [width]="widths[size]" viewBox="0 0 1000 1000"></app-svg-images>
+      <span *ngIf="showMessage" class="copied-message" style="top: 29px; left: -23.5px;">{{ copiedMessage }}</span>
     </span>
   </button>
 </ng-template>
 
 <ng-template #btnLink>
-  <span #buttonWrapper [attr.data-tlite]="copiedMessage" style="position: relative;">
-    <button #btn class="btn btn-sm btn-link pt-0 {{ leftPadding ? 'padding' : '' }}" [attr.data-clipboard-text]="text"> 
+  <span style="position: relative;">
+    <button class="btn btn-sm btn-link pt-0 {{ leftPadding ? 'padding' : '' }}" style="box-shadow: none;" (click)="copyText()">
       <app-svg-images name="clippy" [width]="widths[size]" viewBox="0 0 1000 1000"></app-svg-images>
     </button>
+    <span *ngIf="showMessage" class="copied-message" style="top: 29px; left: -23.5px;">{{ copiedMessage }}</span>
   </span>
 </ng-template>

@@ -1,16 +1,16 @@
 import { ChangeDetectionStrategy, Component, ElementRef, Inject, LOCALE_ID, OnInit, ViewChild } from '@angular/core';
-import { WebsocketService } from '../../services/websocket.service';
-import { SeoService } from '../../services/seo.service';
-import { OpenGraphService } from '../../services/opengraph.service';
-import { StateService } from '../../services/state.service';
+import { WebsocketService } from '@app/services/websocket.service';
+import { SeoService } from '@app/services/seo.service';
+import { OpenGraphService } from '@app/services/opengraph.service';
+import { StateService } from '@app/services/state.service';
 import { Observable } from 'rxjs';
-import { ApiService } from '../../services/api.service';
-import { IBackendInfo } from '../../interfaces/websocket.interface';
+import { ApiService } from '@app/services/api.service';
+import { IBackendInfo } from '@interfaces/websocket.interface';
 import { Router, ActivatedRoute } from '@angular/router';
 import { map, share, tap } from 'rxjs/operators';
-import { ITranslators } from '../../interfaces/node-api.interface';
+import { ITranslators } from '@interfaces/node-api.interface';
 import { DOCUMENT } from '@angular/common';
-import { EnterpriseService } from '../../services/enterprise.service';
+import { EnterpriseService } from '@app/services/enterprise.service';
 
 @Component({
   selector: 'app-about',

@@ -42,11 +42,11 @@
       <div class="blockchain-wrapper" [style]="{ height: blockchainHeight * 1.16 + 'px' }">
         <app-clockchain [height]="blockchainHeight" [width]="blockchainWidth" mode="none"></app-clockchain>
       </div>
-    <div class="panel">
+    <div class="panel" *ngIf="!error || waitingForTransaction">
       @if (replaced) {
         <div class="alert-replaced" role="alert">
           <span i18n="transaction.rbf.replacement|RBF replacement">This transaction has been replaced by:</span>
-          <app-truncate [text]="latestReplacement" [lastChars]="12" [link]="['/tracker/' | relativeUrl, latestReplacement]"></app-truncate>
+          <app-truncate [text]="latestReplacement" [lastChars]="12" [link]="['/tx/' | relativeUrl, latestReplacement]" [queryParams]="{mode: 'status'}"></app-truncate>
         </div>
       } @else {
         <div class="tracker-bar">
@@ -61,27 +61,29 @@
               @if (transactionTime > 0) {
                 <i><app-time kind="since" [time]="transactionTime" [fastRender]="true" [showTooltip]="true"></app-time></i>
               } @else {
-                <span class="skeleton-loader" style="max-width: 50%;"></span>
+                <span class="skeleton-loader" style="max-width: 200px;"></span>
               }
             </div>
           </div>
-          <div class="field narrower">
-            <div class="label" i18n="transaction.eta|Transaction ETA">ETA</div>
-            <div class="value">
-              <ng-container *ngIf="(ETA$ | async) as eta; else etaSkeleton">
-                <span class="justify-content-end d-flex align-items-center">
-                  @if (eta.blocks >= 7) {
-                    <span i18n="transaction.eta.not-any-time-soon|Transaction ETA mot any time soon">Not any time soon</span>
-                  } @else {
-                    <app-time kind="until" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time>
-                  }
-                </span>
-              </ng-container>
-              <ng-template #etaSkeleton>
-                <span class="skeleton-loader"></span>
-              </ng-template>
-            </div>
-          </div>
+          @if (!replaced) {
+            <div class="field narrower">
+              <div class="label" i18n="transaction.eta|Transaction ETA">ETA</div>
+              <div class="value">
+                <ng-container *ngIf="(ETA$ | async) as eta; else etaSkeleton">
+                  <span class="justify-content-end d-flex align-items-center">
+                    @if (eta.blocks >= 7) {
+                      <span i18n="transaction.eta.not-any-time-soon|Transaction ETA mot any time soon">Not any time soon</span>
+                    } @else {
+                      <app-time kind="until" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time>
+                    }
+                  </span>
+                </ng-container>
+                <ng-template #etaSkeleton>
+                  <span class="skeleton-loader" style="max-width: 200px;"></span>
+                </ng-template>
+              </div>
+            </div>  
+          }
         } @else if (tx && tx.status?.confirmed) {
           <div class="field narrower mt-2">
             <div class="label" i18n="transaction.confirmed-at">Confirmed at</div>
@@ -111,14 +113,14 @@
       </div>
     </div>
 
-    <div class="bottom-panel">
+    <div class="bottom-panel" *ngIf="!error || waitingForTransaction">
       @if (isLoading) {
         <div class="progress-icon">
           <div class="spinner-border text-light" style="width: 1em; height: 1em"></div>
         </div>
         <span class="explainer">&nbsp;</span>
       } @else {
-        @if (!tx.status?.confirmed && showAccelerationSummary) {
+        @if (tx && !tx.status?.confirmed && showAccelerationSummary) {
           <ng-container *ngIf="(ETA$ | async) as eta;">
             <app-accelerate-checkout
               *ngIf="(da$ | async) as da;"
@@ -135,7 +137,7 @@
             ></app-accelerate-checkout>
           </ng-container>
         }
-        <div class="status-panel d-flex flex-column h-100 w-100 justify-content-center align-items-center" [class.small-status]="!tx.status?.confirmed && showAccelerationSummary">
+        <div class="status-panel d-flex flex-column h-100 w-100 justify-content-center align-items-center" [class.small-status]="tx && !tx.status?.confirmed && showAccelerationSummary">
           @if (tx?.acceleration && !tx.status?.confirmed) {
             <div class="progress-icon">
               <fa-icon [icon]="['fas', 'wand-magic-sparkles']" [fixedWidth]="true"></fa-icon>
@@ -184,8 +186,18 @@
         </div>
       }
     </div>
+    
+    <div class="bottom-panel" *ngIf="error && !waitingForTransaction">
+      <app-http-error [error]="error">
+        <span i18n="transaction.error.loading-transaction-data">Error loading transaction data.</span>
+      </app-http-error>
+    </div>
 
-    <div class="footer-link" [routerLink]="['/tx' | relativeUrl, tx?.txid]">
+    <div class="footer-link"
+      [routerLink]="['/tx' | relativeUrl, tx?.txid || txId]"
+      [queryParams]="{ mode: 'details' }"
+      queryParamsHandling="merge"
+    >
       <span><ng-container i18n="accelerator.show-more-details">See more details</ng-container>&nbsp;<fa-icon [icon]="['fas', 'arrow-alt-circle-right']"></fa-icon></span>
     </div>
   </div>

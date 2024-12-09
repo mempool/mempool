@@ -916,6 +916,86 @@ th {
     }
   }
 
+  .beta {
+    @extend .beta;
+    margin: 24px -19px 0px 0px !important;
+    @media (max-width: 767.98px) {
+      margin: 30px -23px 0px 0px !important;
+    }
+    @media (max-width: 3429px) {
+      margin: 25px -23px 0px 0px !important;
+    }
+    @media (max-width: 369px) {
+      margin: 20px -23px 0px 0px !important;
+    }
+  }
+
+  .etaDeepMempool {
+    @extend .etaDeepMempool;
+    @media (max-width: 995px) {
+      justify-content: right !important;
+    }
+    @media (max-width: 849px) {
+      justify-content: left !important;
+    }
+  }
+
+  .nodes {
+    @extend .nodes;
+    direction: ltr !important;
+  }
+
+  .fee-rate {
+    @extend .fee-rate;
+    direction: rtl !important;
+  }
+
+  .bitcoin-satoshis-text {
+    direction: ltr !important;
+  }
+
+  .fee-graph {
+    @extend .fee-graph;
+    margin-left: 5em !important;
+  }
+
+  .acceleration-timeline {
+    @extend .acceleration-timeline;
+    direction: ltr !important;
+
+    .interval {
+      @extend .interval;
+      direction: rtl !important;
+    }
+
+    .time {
+      @extend .time;
+      direction: rtl !important;
+    }
+  }
+
+  .tracker-bar {
+    @extend .tracker-bar;
+    direction: ltr;
+  }
+
+  .confirmations {
+    @extend .confirmations;
+    margin-left: 0 !important;
+    margin-right: 1em;
+  }
+
+  .acceleration-tooltip {
+    @extend .acceleration-tooltip;
+    direction: rtl;
+    text-align: right !important;
+
+    .value {
+      @extend .value;
+      text-align: start !important;
+    }
+  }
+
   .table th {
     text-align: right;
   }
@@ -931,6 +1011,10 @@ th {
 
   .mr-1 {
       @extend .ml-1;
+  }
+
+  .mr-2 {
+    @extend .ml-2;
   }
 
   .float-left {
@@ -1319,4 +1403,8 @@ a {
   color: var(--fg);
   background-color: var(--primary);
   border-color: var(--primary);
+}
+
+.btn-small-height {
+	line-height: 1;
 }

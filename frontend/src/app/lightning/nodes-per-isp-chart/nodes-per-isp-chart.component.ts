@@ -1,15 +1,15 @@
 import { ChangeDetectionStrategy, Component, OnInit, HostBinding, NgZone, Input } from '@angular/core';
 import { Router } from '@angular/router';
-import { EChartsOption, PieSeriesOption } from '../../graphs/echarts';
+import { EChartsOption, PieSeriesOption } from '@app/graphs/echarts';
 import { combineLatest, map, Observable, share, startWith, Subject, switchMap, tap } from 'rxjs';
-import { chartColors } from '../../app.constants';
-import { ApiService } from '../../services/api.service';
-import { SeoService } from '../../services/seo.service';
-import { StateService } from '../../services/state.service';
-import { isMobile } from '../../shared/common.utils';
-import { download } from '../../shared/graphs.utils';
-import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { chartColors } from '@app/app.constants';
+import { ApiService } from '@app/services/api.service';
+import { SeoService } from '@app/services/seo.service';
+import { StateService } from '@app/services/state.service';
+import { isMobile } from '@app/shared/common.utils';
+import { download } from '@app/shared/graphs.utils';
+import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
   selector: 'app-nodes-per-isp-chart',

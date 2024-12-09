@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { AddressTypeInfo } from '../../address-utils';
+import { AddressTypeInfo } from '@app/shared/address-utils';
 
 @Component({
   selector: 'app-address-type',

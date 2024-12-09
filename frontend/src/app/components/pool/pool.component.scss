@@ -167,7 +167,7 @@ div.scrollable {
 .loadingGraphs {
   position: absolute;
   left: calc(50% - 15px);
-  z-index: 100;
+  z-index: 99;
   top: 475px;
   @media (max-width: 992px) {
     top: 600px;

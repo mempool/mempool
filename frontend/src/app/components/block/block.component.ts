@@ -1,22 +1,23 @@
 import { Component, OnInit, OnDestroy, ViewChildren, QueryList, ChangeDetectorRef } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { ElectrsApiService } from '../../services/electrs-api.service';
+import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { switchMap, tap, throttleTime, catchError, map, shareReplay, startWith, filter } from 'rxjs/operators';
 import { Observable, of, Subscription, asyncScheduler, EMPTY, combineLatest, forkJoin } from 'rxjs';
-import { StateService } from '../../services/state.service';
-import { SeoService } from '../../services/seo.service';
-import { WebsocketService } from '../../services/websocket.service';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
-import { Acceleration, BlockAudit, BlockExtended, TransactionStripped } from '../../interfaces/node-api.interface';
-import { ApiService } from '../../services/api.service';
-import { BlockOverviewGraphComponent } from '../../components/block-overview-graph/block-overview-graph.component';
-import { detectWebGL } from '../../shared/graphs.utils';
-import { seoDescriptionNetwork } from '../../shared/common.utils';
-import { PriceService, Price } from '../../services/price.service';
-import { CacheService } from '../../services/cache.service';
-import { ServicesApiServices } from '../../services/services-api.service';
-import { PreloadService } from '../../services/preload.service';
+import { StateService } from '@app/services/state.service';
+import { SeoService } from '@app/services/seo.service';
+import { WebsocketService } from '@app/services/websocket.service';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
+import { Acceleration, BlockAudit, BlockExtended, TransactionStripped } from '@interfaces/node-api.interface';
+import { ApiService } from '@app/services/api.service';
+import { BlockOverviewGraphComponent } from '@components/block-overview-graph/block-overview-graph.component';
+import { detectWebGL } from '@app/shared/graphs.utils';
+import { seoDescriptionNetwork } from '@app/shared/common.utils';
+import { PriceService, Price } from '@app/services/price.service';
+import { CacheService } from '@app/services/cache.service';
+import { ServicesApiServices } from '@app/services/services-api.service';
+import { PreloadService } from '@app/services/preload.service';
+import { identifyPrioritizedTransactions } from '@app/shared/transaction.utils';
 
 @Component({
   selector: 'app-block',
@@ -318,7 +319,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.accelerationsSubscription = this.block$.pipe(
       switchMap((block) => {
         return this.stateService.env.ACCELERATOR === true && block.height > 819500
-          ? this.servicesApiService.getAccelerationHistory$({ blockHeight: block.height })
+          ? this.servicesApiService.getAllAccelerationHistory$({ blockHeight: block.height })
             .pipe(catchError(() => {
               return of([]);
             }))
@@ -326,7 +327,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       })
     ).subscribe((accelerations) => {
       this.accelerations = accelerations;
-      if (accelerations.length) {
+      if (accelerations.length && this.strippedTransactions) { // Don't call setupBlockAudit if we don't have transactions yet; it will be called later in overviewSubscription
         this.setupBlockAudit();
       }
     });
@@ -521,8 +522,10 @@ export class BlockComponent implements OnInit, OnDestroy {
     if (transactions && blockAudit) {
       const inTemplate = {};
       const inBlock = {};
+      const isUnseen = {};
       const isAdded = {};
       const isPrioritized = {};
+      const isDeprioritized = {};
       const isCensored = {};
       const isMissing = {};
       const isSelected = {};
@@ -534,6 +537,17 @@ export class BlockComponent implements OnInit, OnDestroy {
       this.numUnexpected = 0;
 
       if (blockAudit?.template) {
+        // augment with locally calculated *de*prioritized transactions if possible
+        const { prioritized, deprioritized } = identifyPrioritizedTransactions(transactions);
+        // but if the local calculation produces returns unexpected results, don't use it
+        let useLocalDeprioritized = deprioritized.length < (transactions.length * 0.1);
+        for (const tx of prioritized) {
+          if (!isPrioritized[tx] && !isAccelerated[tx]) {
+            useLocalDeprioritized = false;
+            break;
+          }
+        }
+
         for (const tx of blockAudit.template) {
           inTemplate[tx.txid] = true;
           if (tx.acc) {
@@ -543,11 +557,19 @@ export class BlockComponent implements OnInit, OnDestroy {
         for (const tx of transactions) {
           inBlock[tx.txid] = true;
         }
+        for (const txid of blockAudit.unseenTxs || []) {
+          isUnseen[txid] = true;
+        }
         for (const txid of blockAudit.addedTxs) {
           isAdded[txid] = true;
         }
-        for (const txid of blockAudit.prioritizedTxs || []) {
+        for (const txid of blockAudit.prioritizedTxs) {
           isPrioritized[txid] = true;
+        }
+        if (useLocalDeprioritized) {
+          for (const txid of deprioritized || []) {
+            isDeprioritized[txid] = true;
+          }
         }
         for (const txid of blockAudit.missingTxs) {
           isCensored[txid] = true;
@@ -592,18 +614,33 @@ export class BlockComponent implements OnInit, OnDestroy {
             tx.status = 'accelerated';
           }
         }
-        for (const [index, tx] of transactions.entries()) {
+        let anySeen = false;
+        for (let index = transactions.length - 1; index >= 0; index--) {
+          const tx = transactions[index];
           tx.context = 'actual';
           if (index === 0) {
             tx.status = null;
-          } else if (isAdded[tx.txid]) {
-            tx.status = 'added';
           } else if (isPrioritized[tx.txid]) {
-            tx.status = 'prioritized';
+            if (isAdded[tx.txid] || (blockAudit.version > 0 && isUnseen[tx.txid])) {
+              tx.status = 'added_prioritized';
+            } else {
+              tx.status = 'prioritized';
+            }
+          } else if (isDeprioritized[tx.txid]) {
+            if (isAdded[tx.txid] || (blockAudit.version > 0 && isUnseen[tx.txid])) {
+              tx.status = 'added_deprioritized';
+            } else {
+              tx.status = 'deprioritized';
+            }
+          } else if (isAdded[tx.txid] && (blockAudit.version === 0 || isUnseen[tx.txid])) {
+            tx.status = 'added';
           } else if (inTemplate[tx.txid]) {
+            anySeen = true;
             tx.status = 'found';
           } else if (isRbf[tx.txid]) {
             tx.status = 'rbf';
+          } else if (isUnseen[tx.txid] && anySeen) {
+            tx.status = 'added';
           } else {
             tx.status = 'selected';
             isSelected[tx.txid] = true;

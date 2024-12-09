@@ -3,8 +3,8 @@ import { Meta } from '@angular/platform-browser';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { filter, map, switchMap } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
-import { StateService } from './state.service';
-import { LanguageService } from './language.service';
+import { StateService } from '@app/services/state.service';
+import { LanguageService } from '@app/services/language.service';
 
 @Injectable({
   providedIn: 'root'
