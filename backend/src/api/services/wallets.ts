@@ -84,8 +84,8 @@ class WalletApi {
 
   // resync address transactions from esplora
   async $syncWalletAddress(wallet: Wallet, address: WalletAddress): Promise<void> {
-    // fetch full transaction data if the address is new or still active
-    const refreshTransactions = !wallet.addresses[address.address] || address.active;
+    // fetch full transaction data if the address is new or still active and hasn't been synced in the last hour
+    const refreshTransactions = !wallet.addresses[address.address] || (address.active && (Date.now() - wallet.addresses[address.address].lastSync) > 60 * 60 * 1000);
     if (refreshTransactions) {
       try {
         const summary = await bitcoinApi.$getAddressTransactionSummary(address.address);
