@@ -238,7 +238,7 @@
                   <span>&nbsp;</span>
                   <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
                 </a>
-                <app-address-graph [address]="widget.props.address" [addressSummary$]="addressSummary$" [period]="widget.props.period || 'all'" [stats]="address ? address.chain_stats : null" [widget]="true" [height]="graphHeight"></app-address-graph>
+                <app-address-graph [address]="widget.props.address" [addressSummary$]="addressSummary$" [period]="widget.props.period || 'all'" [stats]="address ? address.chain_stats : null" [widget]="true" [defaultFiat]="true" [height]="graphHeight"></app-address-graph>
               </div>
             </div>
           </div>
