@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 93;
+  private static currentVersion = 94;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -800,6 +800,323 @@ class DatabaseMigration {
           ADD INDEX \`expiredAt\` (\`expiredAt\`)
       `);
       await this.updateToSchemaVersion(93);
+    }
+
+    // Unify database schema for all mempool netwoks
+    // versions above 94 should not use network-specific flags
+    if (databaseSchemaVersion < 94) {
+
+      if (!isBitcoin) {
+        // Apply all the bitcoin specific migrations to non-bitcoin networks: liquid, liquidtestnet and testnet4 (!)
+        // Version 5
+        await this.$executeQuery('ALTER TABLE blocks ADD `reward` double unsigned NOT NULL DEFAULT "0"');
+
+        // Version 6
+        await this.$executeQuery('ALTER TABLE blocks MODIFY `height` integer unsigned NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE blocks MODIFY `tx_count` smallint unsigned NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE blocks MODIFY `size` integer unsigned NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE blocks MODIFY `weight` integer unsigned NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE blocks MODIFY `difficulty` double NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE blocks DROP FOREIGN KEY IF EXISTS `blocks_ibfk_1`');
+        await this.$executeQuery('ALTER TABLE pools MODIFY `id` smallint unsigned AUTO_INCREMENT');
+        await this.$executeQuery('ALTER TABLE blocks MODIFY `pool_id` smallint unsigned NULL');
+        await this.$executeQuery('ALTER TABLE blocks ADD FOREIGN KEY (`pool_id`) REFERENCES `pools` (`id`)');
+        await this.$executeQuery('ALTER TABLE blocks ADD `version` integer unsigned NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE blocks ADD `bits` integer unsigned NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE blocks ADD `nonce` bigint unsigned NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE blocks ADD `merkle_root` varchar(65) NOT NULL DEFAULT ""');
+        await this.$executeQuery('ALTER TABLE blocks ADD `previous_block_hash` varchar(65) NULL');
+
+        // Version 7
+        await this.$executeQuery('DROP table IF EXISTS hashrates;');
+        await this.$executeQuery(this.getCreateDailyStatsTableQuery(), await this.$checkIfTableExists('hashrates'));
+
+        // Version 8
+        await this.$executeQuery('ALTER TABLE `hashrates` DROP INDEX `PRIMARY`');
+        await this.$executeQuery('ALTER TABLE `hashrates` ADD `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST');
+        await this.$executeQuery('ALTER TABLE `hashrates` ADD `share` float NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE `hashrates` ADD `type` enum("daily", "weekly") DEFAULT "daily"');
+
+        // Version 9
+        await this.$executeQuery('ALTER TABLE `state` CHANGE `name` `name` varchar(100)');
+        await this.$executeQuery('ALTER TABLE `hashrates` ADD UNIQUE `hashrate_timestamp_pool_id` (`hashrate_timestamp`, `pool_id`)');
+
+        // Version 10
+        await this.$executeQuery('ALTER TABLE `blocks` ADD INDEX `blockTimestamp` (`blockTimestamp`)');
+
+        // Version 11
+        await this.$executeQuery(`ALTER TABLE blocks
+          ADD avg_fee INT UNSIGNED NULL,
+          ADD avg_fee_rate INT UNSIGNED NULL
+        `);
+        await this.$executeQuery('ALTER TABLE blocks MODIFY `reward` BIGINT UNSIGNED NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE blocks MODIFY `median_fee` INT UNSIGNED NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE blocks MODIFY `fees` INT UNSIGNED NOT NULL DEFAULT "0"');
+
+        // Version 12
+        await this.$executeQuery('ALTER TABLE blocks MODIFY `fees` BIGINT UNSIGNED NOT NULL DEFAULT "0"');
+
+        // Version 13
+        await this.$executeQuery('ALTER TABLE blocks MODIFY `difficulty` DOUBLE UNSIGNED NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE blocks MODIFY `median_fee` BIGINT UNSIGNED NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE blocks MODIFY `avg_fee` BIGINT UNSIGNED NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE blocks MODIFY `avg_fee_rate` BIGINT UNSIGNED NOT NULL DEFAULT "0"');
+
+        // Version 14
+        await this.$executeQuery('ALTER TABLE `hashrates` DROP FOREIGN KEY `hashrates_ibfk_1`');
+        await this.$executeQuery('ALTER TABLE `hashrates` MODIFY `pool_id` SMALLINT UNSIGNED NOT NULL DEFAULT "0"');
+
+        // Version 17
+        await this.$executeQuery('ALTER TABLE `pools` ADD `slug` CHAR(50) NULL');
+
+        // Version 18
+        await this.$executeQuery('ALTER TABLE `blocks` ADD INDEX `hash` (`hash`);');
+
+        // Version 20
+        await this.$executeQuery(this.getCreateBlocksSummariesTableQuery(), await this.$checkIfTableExists('blocks_summaries'));
+
+        // Version 22
+        await this.$executeQuery('DROP TABLE IF EXISTS `difficulty_adjustments`');
+        await this.$executeQuery(this.getCreateDifficultyAdjustmentsTableQuery(), await this.$checkIfTableExists('difficulty_adjustments'));
+
+        // Version 24
+        await this.$executeQuery('DROP TABLE IF EXISTS `blocks_audits`');
+        await this.$executeQuery(this.getCreateBlocksAuditsTableQuery(), await this.$checkIfTableExists('blocks_audits'));
+
+        // Version 25
+        await this.$executeQuery(this.getCreateLightningStatisticsQuery(), await this.$checkIfTableExists('lightning_stats'));
+        await this.$executeQuery(this.getCreateNodesQuery(), await this.$checkIfTableExists('nodes'));
+        await this.$executeQuery(this.getCreateChannelsQuery(), await this.$checkIfTableExists('channels'));
+        await this.$executeQuery(this.getCreateNodesStatsQuery(), await this.$checkIfTableExists('node_stats'));
+
+        // Version 26
+        await this.$executeQuery('ALTER TABLE `lightning_stats` ADD tor_nodes int(11) NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE `lightning_stats` ADD clearnet_nodes int(11) NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE `lightning_stats` ADD unannounced_nodes int(11) NOT NULL DEFAULT "0"');
+
+        // Version 27
+        await this.$executeQuery('ALTER TABLE `lightning_stats` ADD avg_capacity bigint(20) unsigned NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE `lightning_stats` ADD avg_fee_rate int(11) unsigned NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE `lightning_stats` ADD avg_base_fee_mtokens bigint(20) unsigned NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE `lightning_stats` ADD med_capacity bigint(20) unsigned NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE `lightning_stats` ADD med_fee_rate int(11) unsigned NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE `lightning_stats` ADD med_base_fee_mtokens bigint(20) unsigned NOT NULL DEFAULT "0"');
+
+        // Version 28
+        await this.$executeQuery(`ALTER TABLE lightning_stats MODIFY added DATE`);
+
+        // Version 29
+        await this.$executeQuery(this.getCreateGeoNamesTableQuery(), await this.$checkIfTableExists('geo_names'));
+        await this.$executeQuery('ALTER TABLE `nodes` ADD as_number int(11) unsigned NULL DEFAULT NULL');
+        await this.$executeQuery('ALTER TABLE `nodes` ADD city_id int(11) unsigned NULL DEFAULT NULL');
+        await this.$executeQuery('ALTER TABLE `nodes` ADD country_id int(11) unsigned NULL DEFAULT NULL');
+        await this.$executeQuery('ALTER TABLE `nodes` ADD accuracy_radius int(11) unsigned NULL DEFAULT NULL');
+        await this.$executeQuery('ALTER TABLE `nodes` ADD subdivision_id int(11) unsigned NULL DEFAULT NULL');
+        await this.$executeQuery('ALTER TABLE `nodes` ADD longitude double NULL DEFAULT NULL');
+        await this.$executeQuery('ALTER TABLE `nodes` ADD latitude double NULL DEFAULT NULL');
+
+        // Version 30
+        await this.$executeQuery('ALTER TABLE `geo_names` CHANGE `type` `type` enum("city","country","division","continent","as_organization") NOT NULL');
+
+        // Version 31
+        await this.$executeQuery('ALTER TABLE `prices` ADD `id` int NULL AUTO_INCREMENT UNIQUE');
+        await this.$executeQuery('DROP TABLE IF EXISTS `blocks_prices`');
+        await this.$executeQuery(this.getCreateBlocksPricesTableQuery(), await this.$checkIfTableExists('blocks_prices'));
+
+        // Version 32
+        await this.$executeQuery('ALTER TABLE `blocks_summaries` ADD `template` JSON DEFAULT "[]"');
+
+        // Version 33
+        await this.$executeQuery('ALTER TABLE `geo_names` CHANGE `type` `type` enum("city","country","division","continent","as_organization", "country_iso_code") NOT NULL');
+
+        // Version 34
+        await this.$executeQuery('ALTER TABLE `lightning_stats` ADD clearnet_tor_nodes int(11) NOT NULL DEFAULT "0"');
+    
+        // Version 35
+        await this.$executeQuery('DELETE from `lightning_stats` WHERE added > "2021-09-19"');
+        await this.$executeQuery('ALTER TABLE `lightning_stats` ADD CONSTRAINT added_unique UNIQUE (added);');
+
+        // Version 36
+        await this.$executeQuery('ALTER TABLE `nodes` ADD status TINYINT NOT NULL DEFAULT "1"');
+    
+        // Version 37
+        await this.$executeQuery(this.getCreateLNNodesSocketsTableQuery(), await this.$checkIfTableExists('nodes_sockets'));
+        
+        // Version 38
+        await this.$executeQuery(`TRUNCATE lightning_stats`);
+        await this.$executeQuery(`TRUNCATE node_stats`);
+        await this.$executeQuery('ALTER TABLE `lightning_stats` CHANGE `added` `added` timestamp NULL');
+        await this.$executeQuery('ALTER TABLE `node_stats` CHANGE `added` `added` timestamp NULL');
+        await this.updateToSchemaVersion(38);
+      
+        // Version 39
+        await this.$executeQuery('ALTER TABLE `nodes` ADD alias_search TEXT NULL DEFAULT NULL AFTER `alias`');
+        await this.$executeQuery('ALTER TABLE nodes ADD FULLTEXT(alias_search)');
+
+        // Version 40
+        await this.$executeQuery('ALTER TABLE `nodes` ADD capacity bigint(20) unsigned DEFAULT NULL');
+        await this.$executeQuery('ALTER TABLE `nodes` ADD channels int(11) unsigned DEFAULT NULL');
+        await this.$executeQuery('ALTER TABLE `nodes` ADD INDEX `capacity` (`capacity`);');
+
+        // Version 41
+        await this.$executeQuery('UPDATE channels SET closing_reason = NULL WHERE closing_reason = 1');
+
+        // Version 42
+        await this.$executeQuery('ALTER TABLE `channels` ADD closing_resolved tinyint(1) DEFAULT 0');
+      
+        // Version 43
+        await this.$executeQuery(this.getCreateLNNodeRecordsTableQuery(), await this.$checkIfTableExists('nodes_records'));
+
+        // Version 44
+        await this.$executeQuery('UPDATE blocks_summaries SET template = NULL');
+
+        // Version 45
+        await this.$executeQuery('ALTER TABLE `blocks_audits` ADD fresh_txs JSON DEFAULT "[]"');
+    
+        // Version 48
+        await this.$executeQuery('ALTER TABLE `channels` ADD source_checked tinyint(1) DEFAULT 0');
+        await this.$executeQuery('ALTER TABLE `channels` ADD closing_fee bigint(20) unsigned DEFAULT 0');
+        await this.$executeQuery('ALTER TABLE `channels` ADD node1_funding_balance bigint(20) unsigned DEFAULT 0');
+        await this.$executeQuery('ALTER TABLE `channels` ADD node2_funding_balance bigint(20) unsigned DEFAULT 0');
+        await this.$executeQuery('ALTER TABLE `channels` ADD node1_closing_balance bigint(20) unsigned DEFAULT 0');
+        await this.$executeQuery('ALTER TABLE `channels` ADD node2_closing_balance bigint(20) unsigned DEFAULT 0');
+        await this.$executeQuery('ALTER TABLE `channels` ADD funding_ratio float unsigned DEFAULT NULL');
+        await this.$executeQuery('ALTER TABLE `channels` ADD closed_by varchar(66) DEFAULT NULL');
+        await this.$executeQuery('ALTER TABLE `channels` ADD single_funded tinyint(1) DEFAULT 0');
+        await this.$executeQuery('ALTER TABLE `channels` ADD outputs JSON DEFAULT "[]"');
+
+        // Version 57
+        await this.$executeQuery(`ALTER TABLE nodes MODIFY updated_at datetime NULL`);
+
+        // Version 60
+        await this.$executeQuery('ALTER TABLE `blocks_audits` ADD sigop_txs JSON DEFAULT "[]"');
+
+        // Version 61
+        if (! await this.$checkIfTableExists('blocks_templates')) {
+          await this.$executeQuery('CREATE TABLE blocks_templates AS SELECT id, template FROM blocks_summaries WHERE template != "[]"');
+        }
+        await this.$executeQuery('ALTER TABLE blocks_templates MODIFY template JSON DEFAULT "[]"');
+        await this.$executeQuery('ALTER TABLE blocks_templates ADD PRIMARY KEY (id)');
+        await this.$executeQuery('ALTER TABLE blocks_summaries DROP COLUMN template');
+
+        // Version 62
+        await this.$executeQuery('ALTER TABLE `blocks_audits` ADD expected_fees BIGINT UNSIGNED DEFAULT NULL');
+        await this.$executeQuery('ALTER TABLE `blocks_audits` ADD expected_weight BIGINT UNSIGNED DEFAULT NULL');
+      
+        // Version 63
+        await this.$executeQuery('ALTER TABLE `blocks_audits` ADD fullrbf_txs JSON DEFAULT "[]"');
+    
+        // Version 64
+        await this.$executeQuery('ALTER TABLE `nodes` ADD features text NULL');
+    
+        // Version 65
+        await this.$executeQuery('ALTER TABLE `blocks_audits` ADD accelerated_txs JSON DEFAULT "[]"');
+
+        // Version 67
+        await this.$executeQuery('ALTER TABLE `blocks_summaries` ADD version INT NOT NULL DEFAULT 0');
+        await this.$executeQuery('ALTER TABLE `blocks_summaries` ADD INDEX `version` (`version`)');
+        await this.$executeQuery('ALTER TABLE `blocks_templates` ADD version INT NOT NULL DEFAULT 0');
+        await this.$executeQuery('ALTER TABLE `blocks_templates` ADD INDEX `version` (`version`)');
+
+        // Version 76
+        await this.$executeQuery('ALTER TABLE `blocks_audits` ADD prioritized_txs JSON DEFAULT "[]"');
+
+        // Version 81
+        await this.$executeQuery('ALTER TABLE `blocks_audits` ADD version INT NOT NULL DEFAULT 0');
+        await this.$executeQuery('ALTER TABLE `blocks_audits` ADD INDEX `version` (`version`)');
+        await this.$executeQuery('ALTER TABLE `blocks_audits` ADD unseen_txs JSON DEFAULT "[]"');
+
+        // Version 83
+        await this.$executeQuery('ALTER TABLE `blocks` ADD first_seen datetime(6) DEFAULT NULL');
+
+        // Version 84
+        await this.$executeQuery(`
+          ALTER TABLE \`pools\`
+            ADD INDEX \`slug\` (\`slug\`),
+            ADD INDEX \`unique_id\` (\`unique_id\`)
+        `);
+
+        // Version 85
+        await this.$executeQuery(`
+          ALTER TABLE \`channels\`
+            ADD INDEX \`created\` (\`created\`),
+            ADD INDEX \`capacity\` (\`capacity\`),
+            ADD INDEX \`closing_reason\` (\`closing_reason\`),
+            ADD INDEX \`closing_resolved\` (\`closing_resolved\`)
+        `);
+        
+        // Version 86        
+        await this.$executeQuery(`
+          ALTER TABLE \`nodes\`
+            ADD INDEX \`status\` (\`status\`),
+            ADD INDEX \`channels\` (\`channels\`),
+            ADD INDEX \`country_id\` (\`country_id\`),
+            ADD INDEX \`as_number\` (\`as_number\`),
+            ADD INDEX \`first_seen\` (\`first_seen\`)
+        `);
+
+        // Version 87
+        await this.$executeQuery('ALTER TABLE `nodes_sockets` ADD INDEX `type` (`type`)');
+        await this.updateToSchemaVersion(87);
+        
+        // Version 88
+        await this.$executeQuery('ALTER TABLE `lightning_stats` ADD INDEX `added` (`added`)');
+    
+        // Version 89
+        await this.$executeQuery('ALTER TABLE `geo_names` ADD INDEX `names` (`names`)');
+    
+        // Version 90
+        await this.$executeQuery('ALTER TABLE `hashrates` ADD INDEX `type` (`type`)');
+
+        // Version 91
+        await this.$executeQuery('ALTER TABLE `blocks_audits` ADD INDEX `time` (`time`)');
+      }
+      
+      if (config.MEMPOOL.NETWORK !== 'liquid') {
+        // Apply all the liquid specific migrations to all other networks
+        // Version 68
+        await this.$executeQuery('ALTER TABLE elements_pegs ADD PRIMARY KEY (txid, txindex);');
+        await this.$executeQuery(this.getCreateFederationAddressesTableQuery(), await this.$checkIfTableExists('federation_addresses'));
+        await this.$executeQuery(this.getCreateFederationTxosTableQuery(), await this.$checkIfTableExists('federation_txos'));
+
+        // Version 71
+        await this.$executeQuery('ALTER TABLE `federation_txos` ADD timelock INT NOT NULL DEFAULT 0');
+        await this.$executeQuery('ALTER TABLE `federation_txos` ADD expiredAt INT NOT NULL DEFAULT 0');
+        await this.$executeQuery('ALTER TABLE `federation_txos` ADD emergencyKey TINYINT NOT NULL DEFAULT 0');
+
+        // Version 92
+        await this.$executeQuery(`
+          ALTER TABLE \`elements_pegs\`
+            ADD INDEX \`block\` (\`block\`),
+            ADD INDEX \`datetime\` (\`datetime\`),
+            ADD INDEX \`amount\` (\`amount\`),
+            ADD INDEX \`bitcoinaddress\` (\`bitcoinaddress\`),
+            ADD INDEX \`bitcointxid\` (\`bitcointxid\`)
+        `);
+    
+        // Version 93
+        await this.$executeQuery(`
+          ALTER TABLE \`federation_txos\`
+            ADD INDEX \`unspent\` (\`unspent\`),
+            ADD INDEX \`lastblockupdate\` (\`lastblockupdate\`),
+            ADD INDEX \`blocktime\` (\`blocktime\`),
+            ADD INDEX \`emergencyKey\` (\`emergencyKey\`),
+            ADD INDEX \`expiredAt\` (\`expiredAt\`)
+        `);
+      }
+
+      if (config.MEMPOOL.NETWORK !== 'mainnet') {
+        // Apply all the mainnet specific migrations to all other networks
+        // Version 69
+        await this.$executeQuery(this.getCreateAccelerationsTableQuery(), await this.$checkIfTableExists('accelerations'));
+
+        // Version 70
+        await this.$executeQuery('ALTER TABLE accelerations MODIFY COLUMN added DATETIME;');
+
+        // Version 77
+        await this.$executeQuery('ALTER TABLE `accelerations` ADD requested datetime DEFAULT NULL');
+      }
+      await this.updateToSchemaVersion(94);
     }
   }
 
