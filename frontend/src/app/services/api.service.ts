@@ -565,6 +565,10 @@ export class ApiService {
     return this.httpClient.post(this.apiBaseUrl + this.apiBasePath + '/api/v1/acceleration/request/' + txid, '');
   }
 
+  getPrevouts$(outpoints: {txid: string; vout: number}[]): Observable<any> {
+    return this.httpClient.post(this.apiBaseUrl + this.apiBasePath + '/api/v1/prevouts', outpoints);
+  }
+
   // Cache methods
   async setBlockAuditLoaded(hash: string) {
     this.blockAuditLoaded[hash] = true;

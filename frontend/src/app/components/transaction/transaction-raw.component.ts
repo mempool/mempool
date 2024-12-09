@@ -1,5 +1,5 @@
-import { Component, OnInit, HostListener, ViewChild, ElementRef, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { Transaction } from '@interfaces/electrs.interface';
+import { Component, OnInit, HostListener, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Transaction, Vout } from '@interfaces/electrs.interface';
 import { StateService } from '../../services/state.service';
 import { Filter, toFilters } from '../../shared/filters.utils';
 import { decodeRawTransaction, getTransactionFlags, addInnerScriptsToVin, countSigops } from '../../shared/transaction.utils';
@@ -28,8 +28,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
   error: string;
   errorPrevouts: string;
   hasPrevouts: boolean;
-  prevoutsLoadedCount: number = 0;
-  prevoutsCount: number;
+  missingPrevouts: string[];
   isLoadingBroadcast: boolean;
   errorBroadcast: string;
   successBroadcast: boolean;
@@ -59,7 +58,6 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     public electrsApi: ElectrsApiService,
     public websocketService: WebsocketService,
     public formBuilder: UntypedFormBuilder,
-    public cd: ChangeDetectorRef,
     public seoService: SeoService,
     public apiService: ApiService,
     public relativeUrlPipe: RelativeUrlPipe,
@@ -93,52 +91,38 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.prevoutsCount = transaction.vin.filter(input => !input.is_coinbase).length;
-    if (this.prevoutsCount === 0) {
+    const prevoutsToFetch = transaction.vin.map((input) => ({ txid: input.txid, vout: input.vout }));
+
+    if (!prevoutsToFetch.length || transaction.vin[0].is_coinbase) {
       this.hasPrevouts = true;
       return;
     }
 
-    const txsToFetch: { [txid: string]: number } = transaction.vin.reduce((acc, input) => {
-      if (!input.is_coinbase) {
-        acc[input.txid] = (acc[input.txid] || 0) + 1;
-      }
-      return acc;
-    }, {} as { [txid: string]: number });
-
     try {
+      this.missingPrevouts = [];
 
-      if (Object.keys(txsToFetch).length > 20) {
-        throw new Error($localize`:@@transaction.too-many-prevouts:Too many transactions to fetch (${Object.keys(txsToFetch).length})`);
+      const prevouts: { prevout: Vout, tx?: any }[] = await firstValueFrom(this.apiService.getPrevouts$(prevoutsToFetch));
+
+      if (prevouts?.length !== prevoutsToFetch.length) {
+        throw new Error();
       }
 
-      const fetchedTransactions = await Promise.all(
-        Object.keys(txsToFetch).map(txid =>
-          firstValueFrom(this.electrsApi.getTransaction$(txid))
-            .then(response => {
-              this.prevoutsLoadedCount += txsToFetch[txid];
-              this.cd.markForCheck();
-              return response;
-            })
-        )
-      );
-  
-      const transactionsMap = fetchedTransactions.reduce((acc, transaction) => {
-        acc[transaction.txid] = transaction;
-        return acc;
-      }, {} as { [txid: string]: any });
-  
-      const prevouts = transaction.vin.map((input, index) => ({ index, prevout: transactionsMap[input.txid]?.vout[input.vout] || null}));
-  
       transaction.vin = transaction.vin.map((input, index) => {
-        if (!input.is_coinbase) {
-          input.prevout = prevouts.find(p => p.index === index)?.prevout;
+        if (prevouts[index]) {
+          input.prevout = prevouts[index].prevout;
           addInnerScriptsToVin(input);
+        } else {
+          this.missingPrevouts.push(`${input.txid}:${input.vout}`);
         }
         return input;
       });
+
+      if (this.missingPrevouts.length) {
+        throw new Error(`Some prevouts do not exist or are already spent (${this.missingPrevouts.length})`);
+      }
+
       this.hasPrevouts = true;
-    } catch (error) {
+      } catch (error) {
       this.errorPrevouts = error.message;
     }
   }
@@ -207,6 +191,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
       .subscribe((result) => {
         this.isLoadingBroadcast = false;
         this.successBroadcast = true;
+        this.transaction.txid = result;
         resolve(result);
       },
       (error) => {
@@ -232,8 +217,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.adjustedVsize = null;
     this.filters = [];
     this.hasPrevouts = false;
-    this.prevoutsLoadedCount = 0;
-    this.prevoutsCount = 0;
+    this.missingPrevouts = [];
     this.stateService.markBlock$.next({});
     this.mempoolBlocksSubscription?.unsubscribe();
   }

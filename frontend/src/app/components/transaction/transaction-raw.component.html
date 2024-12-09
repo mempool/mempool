@@ -46,7 +46,7 @@
         @if (offlineMode) {
           <span><strong>Prevouts are not loaded, some fields like fee rate cannot be displayed.</strong></span>
         } @else {
-          <span><strong>Could not load prevouts</strong>. {{ errorPrevouts ? 'Reason: ' + errorPrevouts : '' }}</span>
+          <span><strong>Error loading prevouts</strong>. {{ errorPrevouts ? 'Reason: ' + errorPrevouts : '' }}</span>
         }
       </div>
     }
@@ -188,7 +188,7 @@
   @if (isLoading) {
     <div class="text-center">
       <div class="spinner-border text-light mt-2 mb-2"></div>
-      <h3 i18n="transaction.error.loading-prevouts">Loading transaction prevouts ({{ prevoutsLoadedCount }} / {{ prevoutsCount }})</h3>
+      <h3 i18n="transaction.error.loading-prevouts">Loading transaction prevouts</h3>
     </div>
   }
 </div>
