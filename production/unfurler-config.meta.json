@@ -1,12 +1,12 @@
 {
   "SERVER": {
-    "HOST": "https://onbtc.tk7.mempool.space",
-    "HTTP_PORT": 8004
+    "HOST": "https://metaplanet.mempool.space",
+    "HTTP_PORT": 8005
   },
   "MEMPOOL": {
     "HTTP_HOST": "http://127.0.0.1",
-    "HTTP_PORT": 84,
-    "NETWORK": "onbtc"
+    "HTTP_PORT": 85,
+    "NETWORK": "meta"
   },
   "PUPPETEER": {
     "CLUSTER_SIZE": 8,
