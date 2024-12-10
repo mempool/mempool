@@ -142,12 +142,12 @@ const routes: Routes = [
 
 if (window['__env']?.OFFICIAL_MEMPOOL_SPACE) {
   routes[0].children.push({
-    path: 'nodes',
+    path: 'monitoring',
     data: { networks: ['bitcoin', 'liquid'] },
     component: ServerHealthComponent
   });
   routes[0].children.push({
-    path: 'network',
+    path: 'nodes',
     data: { networks: ['bitcoin', 'liquid'] },
     component: ServerStatusComponent
   });
