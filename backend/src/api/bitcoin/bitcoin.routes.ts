@@ -12,7 +12,7 @@ import backendInfo from '../backend-info';
 import transactionUtils from '../transaction-utils';
 import { IEsploraApi } from './esplora-api.interface';
 import loadingIndicators from '../loading-indicators';
-import { TransactionExtended } from '../../mempool.interfaces';
+import { MempoolTransactionExtended, TransactionExtended } from '../../mempool.interfaces';
 import logger from '../../logger';
 import blocks from '../blocks';
 import bitcoinClient from './bitcoin-client';
@@ -49,6 +49,7 @@ class BitcoinRoutes {
       .post(config.MEMPOOL.API_URL_PREFIX + 'psbt/addparents', this.postPsbtCompletion)
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from', this.getBlocksByBulk.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from/:to', this.getBlocksByBulk.bind(this))
+      .post(config.MEMPOOL.API_URL_PREFIX + 'prevouts', this.$getPrevouts)
       // Temporarily add txs/package endpoint for all backends until esplora supports it
       .post(config.MEMPOOL.API_URL_PREFIX + 'txs/package', this.$submitPackage)
       ;
@@ -824,6 +825,50 @@ class BitcoinRoutes {
     }
   }
 
+  private async $getPrevouts(req: Request, res: Response) {
+    try {
+      const outpoints = req.body;
+      if (!Array.isArray(outpoints) || outpoints.some((item) => !/^[a-fA-F0-9]{64}$/.test(item.txid) || typeof item.vout !== 'number')) {
+        return res.status(400).json({ error: 'Invalid input format' });
+      }
+
+      if (outpoints.length > 100) {
+        return res.status(400).json({ error: 'Too many prevouts requested' });
+      }
+
+      const memPool = mempool.getMempool();
+      const mempoolPrevouts: { [key: string]: { prevout: IEsploraApi.Vout, tx?: MempoolTransactionExtended } } = {};
+      for (let i = outpoints.length - 1; i >= 0; i--) {
+        const outpoint = outpoints[i];
+        const tx = memPool[outpoint.txid];
+        if (tx) {
+          const prevout = tx.vout[outpoint.vout];
+          mempoolPrevouts[`${outpoint.txid}:${outpoint.vout}`] = { prevout, tx };
+          outpoints.splice(i, 1);
+        }
+      }
+
+      const confirmedPrevouts: { [key: string]: { prevout: IEsploraApi.Vout } } = {};
+      for (const outpoint of outpoints) {
+        const rawPrevout = await bitcoinClient.getTxOut(outpoint.txid, outpoint.vout, false);
+        if (rawPrevout) {
+          const prevout: IEsploraApi.Vout = { 
+            value: Math.round(rawPrevout.value * 100000000),
+            scriptpubkey: rawPrevout.scriptPubKey.hex,
+            scriptpubkey_asm: rawPrevout.scriptPubKey.asm ? transactionUtils.convertScriptSigAsm(rawPrevout.scriptPubKey.hex) : '',
+            scriptpubkey_type: transactionUtils.translateScriptPubKeyType(rawPrevout.scriptPubKey.type),
+            scriptpubkey_address: rawPrevout.scriptPubKey && rawPrevout.scriptPubKey.address ? rawPrevout.scriptPubKey.address : '',
+          }
+          confirmedPrevouts[`${outpoint.txid}:${outpoint.vout}`] = { prevout };
+        }
+      }
+
+      res.json({ ...mempoolPrevouts, ...confirmedPrevouts });
+
+    } catch (e) {
+      handleError(req, res, 500, e instanceof Error ? e.message : e);
+    }
+  }
 }
 
 export default new BitcoinRoutes();
