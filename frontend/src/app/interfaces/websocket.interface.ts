@@ -144,4 +144,9 @@ export interface HealthCheckHost {
   link?: string;
   statusPage?: SafeResourceUrl;
   flag?: string;
+  hashes?: {
+    frontend?: string;
+    backend?: string;
+    electrs?: string;
+  }
 }
