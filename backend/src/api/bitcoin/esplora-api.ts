@@ -20,6 +20,7 @@ interface FailoverHost {
   preferred?: boolean,
   checked: boolean,
   lastChecked?: number,
+  publicDomain: string,
   hashes: {
     frontend?: string,
     backend?: string,
@@ -58,6 +59,7 @@ class FailoverRouter {
         rtts: [],
         rtt: Infinity,
         failures: 0,
+        publicDomain: 'https://' + this.extractPublicDomain(domain),
         hashes: {
           lastUpdated: 0,
         },
@@ -71,6 +73,7 @@ class FailoverRouter {
       socket: !!config.ESPLORA.UNIX_SOCKET_PATH,
       preferred: true,
       checked: false,
+      publicDomain: `http://${this.localHostname}`,
       hashes: {
         lastUpdated: 0,
       },
@@ -242,7 +245,7 @@ class FailoverRouter {
   // methods for retrieving git hashes by host
   private async $updateFrontendGitHash(host: FailoverHost): Promise<void> {
     try {
-      const url = host.socket ? `http://${this.localHostname}/resources/config.js` : `${host.host.slice(0, -4)}/resources/config.js`;
+      const url = `${host.publicDomain}/resources/config.js`;
       const response = await this.pollConnection.get<string>(url, { timeout: config.ESPLORA.FALLBACK_TIMEOUT });
       const match = response.data.match(/GIT_COMMIT_HASH\s*=\s*['"](.*?)['"]/);
       if (match && match[1]?.length) {
@@ -255,13 +258,28 @@ class FailoverRouter {
 
   private async $updateBackendGitHash(host: FailoverHost): Promise<void> {
     try {
-      const url = host.socket ? `http://${this.localHostname}/api/v1/backend-info` : `${host.host}/v1/backend-info`;
+      const url = `${host.publicDomain}/api/v1/backend-info`;
       const response = await this.pollConnection.get<any>(url, { timeout: config.ESPLORA.FALLBACK_TIMEOUT });
       if (response.data?.gitCommit) {
         host.hashes.backend = response.data.gitCommit;
       }
     } catch (e) {
       // failed to get backend build hash - do nothing
+    }
+  }
+
+  // returns the public mempool domain corresponding to an esplora server url
+  // (a bit of a hack to avoid manually specifying frontend & backend URLs for each esplora server)
+  private extractPublicDomain(url: string): string {
+    // force the url to start with a valid protocol
+    const urlWithProtocol = url.startsWith('http') ? url : `https://${url}`;
+    // parse as URL and extract the hostname
+    try {
+      const parsed = new URL(urlWithProtocol);
+      return parsed.hostname;
+    } catch (e) {
+      // fallback to the original url
+      return url;
     }
   }
 
