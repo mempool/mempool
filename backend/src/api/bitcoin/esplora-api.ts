@@ -1,12 +1,12 @@
 import config from '../../config';
-import axios, { AxiosResponse, isAxiosError } from 'axios';
+import axios, { isAxiosError } from 'axios';
 import http from 'http';
 import { AbstractBitcoinApi, HealthCheckHost } from './bitcoin-api-abstract-factory';
 import { IEsploraApi } from './esplora-api.interface';
 import logger from '../../logger';
 import { Common } from '../common';
 import { SubmitPackageResult, TestMempoolAcceptResult } from './bitcoin-api.interface';
-
+import os from 'os';
 interface FailoverHost {
   host: string,
   rtts: number[],
@@ -20,6 +20,12 @@ interface FailoverHost {
   preferred?: boolean,
   checked: boolean,
   lastChecked?: number,
+  hashes: {
+    frontend?: string,
+    backend?: string,
+    electrs?: string,
+    lastUpdated: number,
+  }
 }
 
 class FailoverRouter {
@@ -29,14 +35,21 @@ class FailoverRouter {
   maxHeight: number = 0;
   hosts: FailoverHost[];
   multihost: boolean;
-  pollInterval: number = 60000;
+  gitHashInterval: number = 600000; // 10 minutes
+  pollInterval: number = 60000; // 1 minute
   pollTimer: NodeJS.Timeout | null = null;
   pollConnection = axios.create();
+  localHostname: string = 'localhost';
   requestConnection = axios.create({
     httpAgent: new http.Agent({ keepAlive: true })
   });
 
   constructor() {
+    try {
+      this.localHostname = os.hostname();
+    } catch (e) {
+      logger.warn('Failed to set local hostname, using "localhost"');
+    }
     // setup list of hosts
     this.hosts = (config.ESPLORA.FALLBACK || []).map(domain => {
       return {
@@ -45,6 +58,9 @@ class FailoverRouter {
         rtts: [],
         rtt: Infinity,
         failures: 0,
+        hashes: {
+          lastUpdated: 0,
+        },
       };
     });
     this.activeHost = {
@@ -55,6 +71,9 @@ class FailoverRouter {
       socket: !!config.ESPLORA.UNIX_SOCKET_PATH,
       preferred: true,
       checked: false,
+      hashes: {
+        lastUpdated: 0,
+      },
     };
     this.fallbackHost = this.activeHost;
     this.hosts.unshift(this.activeHost);
@@ -106,6 +125,24 @@ class FailoverRouter {
             host.outOfSync = false;
           }
           host.unreachable = false;
+
+          // update esplora git hash using the x-powered-by header from the height check
+          const poweredBy = result.headers['x-powered-by'];
+          if (poweredBy) {
+            const match = poweredBy.match(/([a-fA-F0-9]{5,40})/);
+            if (match && match[1]?.length) {
+              host.hashes.electrs = match[1];
+            }
+          }
+
+          // Check front and backend git hashes less often
+          if (Date.now() - host.hashes.lastUpdated > this.gitHashInterval) {
+            await Promise.all([
+              this.$updateFrontendGitHash(host),
+              this.$updateBackendGitHash(host)
+            ]);
+            host.hashes.lastUpdated = Date.now();
+          }
         } else {
           host.outOfSync = true;
           host.unreachable = true;
@@ -199,6 +236,32 @@ class FailoverRouter {
       return this.activeHost;
     } else {
       return this.fallbackHost;
+    }
+  }
+
+  // methods for retrieving git hashes by host
+  private async $updateFrontendGitHash(host: FailoverHost): Promise<void> {
+    try {
+      const url = host.socket ? `http://${this.localHostname}/resources/config.js` : `${host.host.slice(0, -4)}/resources/config.js`;
+      const response = await this.pollConnection.get<string>(url, { timeout: config.ESPLORA.FALLBACK_TIMEOUT });
+      const match = response.data.match(/GIT_COMMIT_HASH\s*=\s*['"](.*?)['"]/);
+      if (match && match[1]?.length) {
+        host.hashes.frontend = match[1];
+      }
+    } catch (e) {
+      // failed to get frontend build hash - do nothing
+    }
+  }
+
+  private async $updateBackendGitHash(host: FailoverHost): Promise<void> {
+    try {
+      const url = host.socket ? `http://${this.localHostname}/api/v1/backend-info` : `${host.host}/v1/backend-info`;
+      const response = await this.pollConnection.get<any>(url, { timeout: config.ESPLORA.FALLBACK_TIMEOUT });
+      if (response.data?.gitCommit) {
+        host.hashes.backend = response.data.gitCommit;
+      }
+    } catch (e) {
+      // failed to get backend build hash - do nothing
     }
   }
 
@@ -381,6 +444,7 @@ class ElectrsApi implements AbstractBitcoinApi {
         unreachable: !!host.unreachable,
         checked: !!host.checked,
         lastChecked: host.lastChecked || 0,
+        hashes: host.hashes,
       }));
     } else {
       return [];
