@@ -270,6 +270,7 @@ export const networks = {
     routes: {} // no routes supported
   },
   onbtc: {
+    networkName: 'ONBTC',
     title: 'National Bitcoin Office of El Salvador',
     description: 'The National Bitcoin Office (ONBTC) of El Salvador under President @nayibbukele',
     fallbackImg: '/resources/onbtc/onbtc-preview.jpg',
@@ -290,6 +291,7 @@ export const networks = {
     }
   },
   bitb: {
+    networkName: 'BITB',
     title: 'BITB | Bitwise Bitcoin ETF',
     description: 'BITB provides low-cost access to bitcoin through a professionally managed fund',
     fallbackImg: '/resources/bitb/bitb-preview.jpg',
@@ -311,6 +313,7 @@ export const networks = {
     }
   },
   meta: {
+    networkName: 'Metaplanet',
     title: 'Metaplanet Inc.',
     description: 'Secure the Future with Bitcoin',
     fallbackImg: '/resources/meta/meta-preview.png',
