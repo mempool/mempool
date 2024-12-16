@@ -10,6 +10,7 @@ import { GraphsModule } from '@app/graphs/graphs.module';
 import { AccelerateCheckout } from '@components/accelerate-checkout/accelerate-checkout.component';
 import { AccelerateFeeGraphComponent } from '@components/accelerate-checkout/accelerate-fee-graph.component';
 import { TransactionRawComponent } from '@components/transaction/transaction-raw.component';
+import { CpfpInfoComponent } from '@components/transaction/cpfp-info.component';
 
 const routes: Routes = [
   {
@@ -55,12 +56,14 @@ export class TransactionRoutingModule { }
     AccelerateCheckout,
     AccelerateFeeGraphComponent,
     TransactionRawComponent,
+    CpfpInfoComponent,
   ],
   exports: [
     TransactionComponent,
     TransactionDetailsComponent,
     AccelerateCheckout,
     AccelerateFeeGraphComponent,
+    CpfpInfoComponent,
   ]
 })
 export class TransactionModule { }
