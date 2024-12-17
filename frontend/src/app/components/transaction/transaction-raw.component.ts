@@ -13,6 +13,7 @@ import { SeoService } from '../../services/seo.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { ApiService } from '../../services/api.service';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
+import { CpfpInfo } from '../../interfaces/node-api.interface';
 
 @Component({
   selector: 'app-transaction-raw',
@@ -23,10 +24,13 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
 
   pushTxForm: UntypedFormGroup;
   isLoading: boolean;
+  isLoadingPrevouts: boolean;
+  isLoadingCpfpInfo: boolean;
   offlineMode: boolean = false;
   transaction: Transaction;
   error: string;
   errorPrevouts: string;
+  errorCpfpInfo: string;
   hasPrevouts: boolean;
   missingPrevouts: string[];
   isLoadingBroadcast: boolean;
@@ -46,6 +50,10 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
   flowEnabled: boolean;
   adjustedVsize: number;
   filters: Filter[] = [];
+  hasEffectiveFeeRate: boolean;
+  fetchCpfp: boolean;
+  cpfpInfo: CpfpInfo | null;
+  hasCpfp: boolean = false;
   showCpfpDetails = false;
   ETA$: Observable<ETA | null>;
   mempoolBlocksSubscription: Subscription;
@@ -78,6 +86,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     try {
       const tx = decodeRawTransaction(this.pushTxForm.get('txRaw').value, this.stateService.network);
       await this.fetchPrevouts(tx);
+      await this.fetchCpfpInfo(tx);
       this.processTransaction(tx);
     } catch (error) {
       this.error = error.message;
@@ -100,8 +109,9 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
 
     try {
       this.missingPrevouts = [];
+      this.isLoadingPrevouts = true;
 
-      const prevouts: { prevout: Vout, tx?: any }[] = await firstValueFrom(this.apiService.getPrevouts$(prevoutsToFetch));
+      const prevouts: { prevout: Vout, unconfirmed: boolean }[] = await firstValueFrom(this.apiService.getPrevouts$(prevoutsToFetch));
 
       if (prevouts?.length !== prevoutsToFetch.length) {
         throw new Error();
@@ -121,27 +131,57 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
         throw new Error(`Some prevouts do not exist or are already spent (${this.missingPrevouts.length})`);
       }
 
+      transaction.fee = transaction.vin.some(input => input.is_coinbase)
+        ? 0
+        : transaction.vin.reduce((fee, input) => {
+          return fee + (input.prevout?.value || 0);
+        }, 0) - transaction.vout.reduce((sum, output) => sum + output.value, 0);
+      transaction.feePerVsize = transaction.fee / (transaction.weight / 4);
+      transaction.sigops = countSigops(transaction);
+
       this.hasPrevouts = true;
+      this.isLoadingPrevouts = false;
+      this.fetchCpfp = prevouts.some(prevout => prevout?.unconfirmed);
+    } catch (error) {
+      this.errorPrevouts = error?.error?.message || error?.message;
+      this.isLoadingPrevouts = false;
+    }
+  }
+
+  async fetchCpfpInfo(transaction: Transaction): Promise<void> {
+    // Fetch potential cpfp data if all prevouts were parsed successfully and at least one of them is unconfirmed
+    if (this.hasPrevouts && this.fetchCpfp) {
+      try {
+        this.isLoadingCpfpInfo = true;
+        const cpfpInfo: CpfpInfo = await firstValueFrom(this.apiService.getCpfpLocalTx$({
+          txid: transaction.txid,
+          weight: transaction.weight,
+          sigops: transaction.sigops,
+          fee: transaction.fee,
+          vin: transaction.vin,
+          vout: transaction.vout
+        }));
+
+        if (cpfpInfo && cpfpInfo.ancestors.length > 0) {
+          const { ancestors, effectiveFeePerVsize } = cpfpInfo;
+          transaction.effectiveFeePerVsize = effectiveFeePerVsize;
+          this.cpfpInfo = { ancestors, effectiveFeePerVsize };
+          this.hasCpfp = true;
+          this.hasEffectiveFeeRate = true;
+        }
+        this.isLoadingCpfpInfo = false;
       } catch (error) {
-      this.errorPrevouts = error.message;
+        this.errorCpfpInfo = error?.error?.message || error?.message;
+        this.isLoadingCpfpInfo = false;
+      }
     }
   }
 
   processTransaction(tx: Transaction): void {
     this.transaction = tx;
 
-    if (this.hasPrevouts) {
-      this.transaction.fee = this.transaction.vin.some(input => input.is_coinbase)
-        ? 0
-        : this.transaction.vin.reduce((fee, input) => {
-          return fee + (input.prevout?.value || 0);
-        }, 0) - this.transaction.vout.reduce((sum, output) => sum + output.value, 0);
-      this.transaction.feePerVsize = this.transaction.fee / (this.transaction.weight / 4);
-    }
-
     this.transaction.flags = getTransactionFlags(this.transaction, null, null, null, this.stateService.network);
     this.filters = this.transaction.flags ? toFilters(this.transaction.flags).filter(f => f.txPage) : [];
-    this.transaction.sigops = countSigops(this.transaction);
     if (this.transaction.sigops >= 0) {
       this.adjustedVsize = Math.max(this.transaction.weight / 4, this.transaction.sigops * 5);
     }
@@ -155,16 +195,15 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.setGraphSize();
 
     this.ETA$ = combineLatest([
-      this.stateService.mempoolTxPosition$.pipe(startWith(null)),
       this.stateService.mempoolBlocks$.pipe(startWith(null)),
       this.stateService.difficultyAdjustment$.pipe(startWith(null)),
     ]).pipe(
-      map(([position, mempoolBlocks, da]) => {
+      map(([mempoolBlocks, da]) => {
         return this.etaService.calculateETA(
           this.stateService.network,
           this.transaction,
           mempoolBlocks,
-          position,
+          null,
           da,
           null,
           null,
@@ -177,7 +216,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
       if (this.transaction) {
         this.stateService.markBlock$.next({
           txid: this.transaction.txid,
-          txFeePerVSize: this.transaction.feePerVsize,
+          txFeePerVSize: this.transaction.effectiveFeePerVsize || this.transaction.feePerVsize,
         });
       }
     });
@@ -214,7 +253,15 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.errorBroadcast = null;
     this.successBroadcast = false;
     this.isLoading = false;
+    this.isLoadingPrevouts = false;
+    this.isLoadingCpfpInfo = false;
+    this.isLoadingBroadcast = false;
     this.adjustedVsize = null;
+    this.showCpfpDetails = false;
+    this.hasCpfp = false;
+    this.fetchCpfp = false;
+    this.cpfpInfo = null;
+    this.hasEffectiveFeeRate = false;
     this.filters = [];
     this.hasPrevouts = false;
     this.missingPrevouts = [];

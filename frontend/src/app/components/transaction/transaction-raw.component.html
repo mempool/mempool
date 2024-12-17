@@ -51,6 +51,12 @@
       </div>
     }
 
+    @if (errorCpfpInfo) {
+      <div class="alert alert-mempool">
+        <span><strong>Error loading CPFP data</strong>. Reason: {{ errorCpfpInfo }}</span>
+      </div>
+    }
+
     <app-transaction-details
       [network]="stateService.network"
       [tx]="transaction"
@@ -61,11 +67,14 @@
       [filters]="filters"
       [hasEffectiveFeeRate]="false"
       [cpfpInfo]="null"
-      [hasCpfp]="false"
       [ETA$]="ETA$"
+      [hasEffectiveFeeRate]="hasEffectiveFeeRate"
+      [cpfpInfo]="cpfpInfo"
+      [hasCpfp]="hasCpfp"
       (toggleCpfp$)="this.showCpfpDetails = !this.showCpfpDetails"
     ></app-transaction-details>
   
+    <app-cpfp-info *ngIf="showCpfpDetails" [cpfpInfo]="cpfpInfo" [tx]="transaction"></app-cpfp-info>
     <br>
 
     <ng-container *ngIf="flowEnabled; else flowPlaceholder">
@@ -188,7 +197,9 @@
   @if (isLoading) {
     <div class="text-center">
       <div class="spinner-border text-light mt-2 mb-2"></div>
-      <h3 i18n="transaction.error.loading-prevouts">Loading transaction prevouts</h3>
+      <h3 i18n="transaction.error.loading-prevouts">
+        Loading {{ isLoadingPrevouts ? 'transaction prevouts' : isLoadingCpfpInfo ? 'CPFP' : '' }}
+      </h3>
     </div>
   }
 </div>
