@@ -612,10 +612,18 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               this.processing = false;
               return;
             }
+            const verificationToken = await this.$verifyBuyer(this.payments, tokenResult.token, tokenResult.details, costUSD.toFixed(2));
+            if (!verificationToken) {
+              console.error(`SCA verification failed`);
+              this.accelerateError = 'SCA Verification Failed. Payment Declined.';
+              this.processing = false;
+              return;
+            }
             const cardTag = md5(`${card.brand}${card.expMonth}${card.expYear}${card.last4}`.toLowerCase());
             this.servicesApiService.accelerateWithGooglePay$(
               this.tx.txid,
               tokenResult.token,
+              verificationToken,
               cardTag,
               `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
               costUSD
@@ -741,6 +749,32 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         });
       }
     );
+  }
+
+  /**
+   * Required in SCA Mandated Regions: Learn more at https://developer.squareup.com/docs/sca-overview
+   */
+  async $verifyBuyer(payments, token, details, amount) {
+    const verificationDetails = {
+      amount: amount,
+      currencyCode: 'USD',
+      intent: 'CHARGE',
+      billingContact: {
+        givenName: details.card?.billing?.givenName,
+        familyName: details.card?.billing?.familyName,
+        phone: details.card?.billing?.phone,
+        addressLines: details.card?.billing?.addressLines,
+        city: details.card?.billing?.city,
+        state: details.card?.billing?.state,
+        countryCode: details.card?.billing?.countryCode,
+      },
+    };
+
+    const verificationResults = await payments.verifyBuyer(
+      token,
+      verificationDetails,
+    );
+    return verificationResults.token;
   }
 
   /**
