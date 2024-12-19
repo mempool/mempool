@@ -324,7 +324,9 @@ class Server {
 
   setUpHttpApiRoutes(): void {
     bitcoinRoutes.initRoutes(this.app);
-    bitcoinCoreRoutes.initRoutes(this.app);
+    if (config.MEMPOOL.OFFICIAL) {
+      bitcoinCoreRoutes.initRoutes(this.app);
+    }
     pricesRoutes.initRoutes(this.app);
     if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED && config.MEMPOOL.ENABLED) {
       statisticsRoutes.initRoutes(this.app);
