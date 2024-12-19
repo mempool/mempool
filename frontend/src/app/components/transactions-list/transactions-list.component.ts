@@ -351,8 +351,12 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       this.electrsApiService.getTransaction$(tx.txid)
         .subscribe((newTx) => {
           tx['@vinLoaded'] = true;
+          let temp = tx.vin;
           tx.vin = newTx.vin;
           tx.fee = newTx.fee;
+          for (const [index, vin] of temp.entries()) {
+            newTx.vin[index].isInscription = vin.isInscription;
+          }
           this.ref.markForCheck();
         });
     }
