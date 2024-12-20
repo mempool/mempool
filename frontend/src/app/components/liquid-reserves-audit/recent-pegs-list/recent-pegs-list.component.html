@@ -53,8 +53,7 @@
               </ng-container>
             </td>
             <td class="timestamp text-left">
-              &lrm;{{ peg.blocktime * 1000 | date:'yyyy-MM-dd HH:mm' }}
-              <div class="symbol lg-inline relative-time"><i>(<app-time kind="since" [time]="peg.blocktime"></app-time>)</i></div>
+              <app-timestamp [customFormat]="'yyyy-MM-dd HH:mm'" [unixTime]="peg.blocktime"></app-timestamp>
             </td>
             <td class="amount text-right" [ngClass]="{'credit': peg.amount > 0, 'debit': peg.amount < 0, 'glow-effect': peg.amount < 0 && peg.bitcoinaddress && !peg.bitcointxid}">
               <app-amount [satoshis]="peg.amount" [noFiat]="true" [forceBtc]="true" [addPlus]="true"></app-amount>
