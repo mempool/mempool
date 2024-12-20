@@ -19,7 +19,7 @@ import bitcoinClient from './bitcoin-client';
 import difficultyAdjustment from '../difficulty-adjustment';
 import transactionRepository from '../../repositories/TransactionRepository';
 import rbfCache from '../rbf-cache';
-import { calculateMempoolTxCpfp } from '../cpfp';
+import { calculateMempoolTxCpfp, calculateLocalTxCpfp } from '../cpfp';
 import { handleError } from '../../utils/api';
 
 const TXID_REGEX = /^[a-f0-9]{64}$/i;
@@ -54,6 +54,8 @@ class BitcoinRoutes {
       .post(config.MEMPOOL.API_URL_PREFIX + 'psbt/addparents', this.postPsbtCompletion)
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from', this.getBlocksByBulk.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from/:to', this.getBlocksByBulk.bind(this))
+      .post(config.MEMPOOL.API_URL_PREFIX + 'prevouts', this.$getPrevouts)
+      .post(config.MEMPOOL.API_URL_PREFIX + 'cpfp', this.getCpfpLocalTx)
       // Temporarily add txs/package endpoint for all backends until esplora supports it
       .post(config.MEMPOOL.API_URL_PREFIX + 'txs/package', this.$submitPackage)
       ;
@@ -927,6 +929,80 @@ class BitcoinRoutes {
     }
   }
 
+  private async $getPrevouts(req: Request, res: Response) {
+    try {
+      const outpoints = req.body;
+      if (!Array.isArray(outpoints) || outpoints.some((item) => !/^[a-fA-F0-9]{64}$/.test(item.txid) || typeof item.vout !== 'number')) {
+        return res.status(400).json({ message: 'Invalid input format' });
+      }
+
+      if (outpoints.length > 100) {
+        return res.status(400).json({ message: 'Too many prevouts requested' });
+      }
+
+      const result = Array(outpoints.length).fill(null);
+      const memPool = mempool.getMempool();
+
+      for (let i = 0; i < outpoints.length; i++) {
+        const outpoint = outpoints[i];
+        let prevout: IEsploraApi.Vout | null = null;
+        let unconfirmed: boolean | null = null;
+
+        const mempoolTx = memPool[outpoint.txid];
+        if (mempoolTx) {
+          if (outpoint.vout < mempoolTx.vout.length) {
+            prevout = mempoolTx.vout[outpoint.vout];
+            unconfirmed = true;  
+          }
+        } else {
+          const rawPrevout = await bitcoinClient.getTxOut(outpoint.txid, outpoint.vout, false);
+          if (rawPrevout) {
+            prevout = {
+              value: Math.round(rawPrevout.value * 100000000),
+              scriptpubkey: rawPrevout.scriptPubKey.hex,
+              scriptpubkey_asm: rawPrevout.scriptPubKey.asm ? transactionUtils.convertScriptSigAsm(rawPrevout.scriptPubKey.hex) : '',
+              scriptpubkey_type: transactionUtils.translateScriptPubKeyType(rawPrevout.scriptPubKey.type),
+              scriptpubkey_address: rawPrevout.scriptPubKey && rawPrevout.scriptPubKey.address ? rawPrevout.scriptPubKey.address : '',
+            };
+            unconfirmed = false;
+          }
+        }
+
+        if (prevout) {
+          result[i] = { prevout, unconfirmed };
+        }
+      }
+
+      res.json(result);
+
+    } catch (e) {
+      handleError(req, res, 500, e instanceof Error ? e.message : e);
+    }
+  }
+
+  private getCpfpLocalTx(req: Request, res: Response) {
+    try {
+      const tx = req.body;
+
+      if (
+        !tx || typeof tx !== "object" ||
+        !tx.txid || typeof tx.txid !== "string" ||
+        typeof tx.weight !== "number" ||
+        typeof tx.sigops !== "number" ||
+        typeof tx.fee !== "number" ||
+        !Array.isArray(tx.vin) ||
+        !Array.isArray(tx.vout)
+      ) {
+        return res.status(400).json({ message: 'Invalid transaction format: missing or incorrect fields' });
+      }
+
+      const cpfpInfo = calculateLocalTxCpfp(tx, mempool.getMempool());
+      res.json(cpfpInfo);
+
+    } catch (e) {
+      handleError(req, res, 500, e instanceof Error ? e.message : e);
+    }
+  }
 }
 
 export default new BitcoinRoutes();

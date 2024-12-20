@@ -222,6 +222,34 @@ export function calculateMempoolTxCpfp(tx: MempoolTransactionExtended, mempool: 
   };
 }
 
+
+/**
+ * Takes an unbroadcasted transaction and a copy of the current mempool, and calculates an estimate
+ * of the CPFP data if the transaction were to enter the mempool. This only returns potential ancerstors 
+ * and effective fee rate, and does not update the CPFP data of other transactions in the cluster.
+ */
+export function calculateLocalTxCpfp(tx: MempoolTransactionExtended, mempool: { [txid: string]: MempoolTransactionExtended }): CpfpInfo {
+  const ancestorMap = new Map<string, GraphTx>();
+  const graphTx = convertToGraphTx(tx, memPool.getSpendMap());
+  ancestorMap.set(tx.txid, graphTx);
+
+  const allRelatives = expandRelativesGraph(mempool, ancestorMap, memPool.getSpendMap());
+  const relativesMap = initializeRelatives(allRelatives);
+  const cluster = calculateCpfpCluster(tx.txid, relativesMap);
+
+  let totalVsize = 0;
+  let totalFee = 0;
+  for (const tx of cluster.values()) {
+    totalVsize += tx.vsize;
+    totalFee += tx.fees.base;
+  }
+
+  return {
+    ancestors: Array.from(cluster.get(tx.txid)?.ancestors.values() || []).map(ancestor => ({ txid: ancestor.txid, weight: ancestor.weight, fee: ancestor.fees.base })),
+    effectiveFeePerVsize: totalFee / totalVsize
+  }
+}
+
 /**
    * Given a root transaction and a list of in-mempool ancestors,
    * Calculate the CPFP cluster
