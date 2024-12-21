@@ -72,7 +72,7 @@ class MiningRoutes {
       }
       res.status(200).send(response);
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get historical prices');
     }
   }
 
@@ -87,7 +87,7 @@ class MiningRoutes {
       if (e instanceof Error && e.message.indexOf('This mining pool does not exist') > -1) {
         handleError(req, res, 404, e.message);
       } else {
-        handleError(req, res, 500, e instanceof Error ? e.message : e);
+        handleError(req, res, 500, 'Failed to get pool');
       }
     }
   }
@@ -106,7 +106,7 @@ class MiningRoutes {
       if (e instanceof Error && e.message.indexOf('This mining pool does not exist') > -1) {
         handleError(req, res, 404, e.message);
       } else {
-        handleError(req, res, 500, e instanceof Error ? e.message : e);
+        handleError(req, res, 500, 'Failed to get blocks for pool');
       }
     }
   }
@@ -130,7 +130,7 @@ class MiningRoutes {
         res.json(pools);
       }
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get pools');
     }
   }
 
@@ -144,7 +144,7 @@ class MiningRoutes {
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(stats);
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get pools');
     }
   }
 
@@ -158,7 +158,7 @@ class MiningRoutes {
       res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
       res.json(hashrates);
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get pools historical hashrate');
     }
   }
 
@@ -175,7 +175,7 @@ class MiningRoutes {
       if (e instanceof Error && e.message.indexOf('This mining pool does not exist') > -1) {
         handleError(req, res, 404, e.message);
       } else {
-        handleError(req, res, 500, e instanceof Error ? e.message : e);
+        handleError(req, res, 500, 'Failed to get pool historical hashrate');
       }
     }
   }
@@ -204,7 +204,7 @@ class MiningRoutes {
         currentDifficulty: currentDifficulty,
       });
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get historical hashrate');
     }
   }
 
@@ -218,7 +218,7 @@ class MiningRoutes {
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(blockFees);
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get historical block fees');
     }
   }
 
@@ -236,7 +236,7 @@ class MiningRoutes {
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(blockFees);
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get historical block fees');
     }
   }
 
@@ -250,7 +250,7 @@ class MiningRoutes {
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(blockRewards);
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get historical block rewards');
     }
   }
 
@@ -264,7 +264,7 @@ class MiningRoutes {
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(blockFeeRates);
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get historical block fee rates');
     }
   }
 
@@ -282,7 +282,7 @@ class MiningRoutes {
         weights: blockWeights
       });
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get historical block size and weight');
     }
   }
 
@@ -294,7 +294,7 @@ class MiningRoutes {
       res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
       res.json(difficulty.map(adj => [adj.time, adj.height, adj.difficulty, adj.adjustment]));
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get historical difficulty adjustments');
     }
   }
 
@@ -304,7 +304,7 @@ class MiningRoutes {
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(response);
     } catch (e) {
-      res.status(500).end();
+      handleError(req, res, 500, 'Failed to get reward stats');
     }
   }
 
@@ -318,7 +318,7 @@ class MiningRoutes {
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(blocksHealth.map(health => [health.time, health.height, health.match_rate]));
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get historical blocks health');
     }
   }
 
@@ -336,7 +336,7 @@ class MiningRoutes {
       res.setHeader('Expires', new Date(Date.now() + 1000 * 3600 * 24).toUTCString());
       res.json(audit);
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get block audit');
     }
   }
 
@@ -359,7 +359,7 @@ class MiningRoutes {
       res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
       res.json(result);
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get height from timestamp');
     }
   }
 
@@ -372,7 +372,7 @@ class MiningRoutes {
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(await BlocksAuditsRepository.$getBlockAuditScores(height, height - 15));
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get block audit scores');
     }
   }
 
@@ -385,7 +385,7 @@ class MiningRoutes {
       res.setHeader('Expires', new Date(Date.now() + 1000 * 3600 * 24).toUTCString());
       res.json(audit || 'null');
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get block audit score');
     }
   }
 
@@ -400,7 +400,7 @@ class MiningRoutes {
       }
       res.status(200).send(await AccelerationRepository.$getAccelerationInfo(req.params.slug));
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get accelerations by pool');
     }
   }
 
@@ -416,7 +416,7 @@ class MiningRoutes {
       const height = req.params.height === undefined ? undefined : parseInt(req.params.height, 10);
       res.status(200).send(await AccelerationRepository.$getAccelerationInfo(null, height));
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get accelerations by height');
     }
   }
 
@@ -431,7 +431,7 @@ class MiningRoutes {
       }
       res.status(200).send(await AccelerationRepository.$getAccelerationInfo(null, null, req.params.interval));
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get recent accelerations');
     }
   }
 
@@ -446,7 +446,7 @@ class MiningRoutes {
       }
       res.status(200).send(await AccelerationRepository.$getAccelerationTotals(<string>req.query.pool, <string>req.query.interval));
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get acceleration totals');
     }
   }
 
@@ -459,9 +459,9 @@ class MiningRoutes {
         handleError(req, res, 400, 'Acceleration data is not available.');
         return;
       }
-      res.status(200).send(accelerationApi.accelerations || []);
+      res.status(200).send(Object.values(accelerationApi.getAccelerations() || {}));
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get active accelerations');
     }
   }
 
@@ -473,7 +473,7 @@ class MiningRoutes {
       accelerationApi.accelerationRequested(req.params.txid);
       res.status(200).send();
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to request acceleration');
     }
   }
 }

@@ -1,15 +1,15 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, HostListener } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { ElectrsApiService } from '../../services/electrs-api.service';
+import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { switchMap, catchError } from 'rxjs/operators';
-import { Address, Transaction } from '../../interfaces/electrs.interface';
-import { WebsocketService } from '../../services/websocket.service';
-import { StateService } from '../../services/state.service';
-import { AudioService } from '../../services/audio.service';
-import { ApiService } from '../../services/api.service';
+import { Address, Transaction } from '@interfaces/electrs.interface';
+import { WebsocketService } from '@app/services/websocket.service';
+import { StateService } from '@app/services/state.service';
+import { AudioService } from '@app/services/audio.service';
+import { ApiService } from '@app/services/api.service';
 import { of, Subscription, forkJoin } from 'rxjs';
-import { SeoService } from '../../services/seo.service';
-import { AddressInformation } from '../../interfaces/node-api.interface';
+import { SeoService } from '@app/services/seo.service';
+import { AddressInformation } from '@interfaces/node-api.interface';
 
 @Component({
   selector: 'app-address-group',

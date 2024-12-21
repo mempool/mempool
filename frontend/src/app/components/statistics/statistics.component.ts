@@ -4,16 +4,16 @@ import { UntypedFormGroup, UntypedFormBuilder } from '@angular/forms';
 import { of, merge} from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
-import { OptimizedMempoolStats } from '../../interfaces/node-api.interface';
-import { WebsocketService } from '../../services/websocket.service';
-import { ApiService } from '../../services/api.service';
+import { OptimizedMempoolStats } from '@interfaces/node-api.interface';
+import { WebsocketService } from '@app/services/websocket.service';
+import { ApiService } from '@app/services/api.service';
 
-import { StateService } from '../../services/state.service';
-import { SeoService } from '../../services/seo.service';
-import { StorageService } from '../../services/storage.service';
-import { feeLevels, chartColors } from '../../app.constants';
-import { MempoolGraphComponent } from '../mempool-graph/mempool-graph.component';
-import { IncomingTransactionsGraphComponent } from '../incoming-transactions-graph/incoming-transactions-graph.component';
+import { StateService } from '@app/services/state.service';
+import { SeoService } from '@app/services/seo.service';
+import { StorageService } from '@app/services/storage.service';
+import { feeLevels, chartColors } from '@app/app.constants';
+import { MempoolGraphComponent } from '@components/mempool-graph/mempool-graph.component';
+import { IncomingTransactionsGraphComponent } from '@components/incoming-transactions-graph/incoming-transactions-graph.component';
 
 @Component({
   selector: 'app-statistics',

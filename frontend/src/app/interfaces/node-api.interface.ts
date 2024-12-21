@@ -1,4 +1,4 @@
-import { Block, Transaction } from "./electrs.interface";
+import { AddressTxSummary, Block, ChainStats, Transaction } from "./electrs.interface";
 
 export interface OptimizedMempoolStats {
   added: number;
@@ -143,6 +143,8 @@ export interface SinglePoolStats {
   rank: number;
   share: number;
   lastEstimatedHashrate: number;
+  lastEstimatedHashrate3d: number;
+  lastEstimatedHashrate1w: number;
   emptyBlockRatio: string;
   logo: string;
   slug: string;
@@ -152,6 +154,8 @@ export interface SinglePoolStats {
 export interface PoolsStats {
   blockCount: number;
   lastEstimatedHashrate: number;
+  lastEstimatedHashrate3d: number;
+  lastEstimatedHashrate1w: number;
   pools: SinglePoolStats[];
 }
 
@@ -470,4 +474,10 @@ export interface TxResult {
     "effective-includes"?: string[];
   };
   error?: string;
+}
+export interface WalletAddress {
+  address: string;
+  active: boolean;
+  stats: ChainStats;
+  transactions: AddressTxSummary[];
 }

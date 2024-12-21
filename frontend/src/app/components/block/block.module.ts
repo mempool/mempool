@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
-import { BlockComponent } from './block.component';
-import { BlockTransactionsComponent } from './block-transactions.component';
-import { SharedModule } from '../../shared/shared.module';
+import { BlockComponent } from '@components/block/block.component';
+import { BlockTransactionsComponent } from '@components/block/block-transactions.component';
+import { SharedModule } from '@app/shared/shared.module';
 
 const routes: Routes = [
   {

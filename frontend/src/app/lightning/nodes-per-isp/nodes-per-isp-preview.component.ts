@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { catchError, map, switchMap, Observable, share, of } from 'rxjs';
-import { ApiService } from '../../services/api.service';
-import { SeoService } from '../../services/seo.service';
-import { OpenGraphService } from '../../services/opengraph.service';
-import { getFlagEmoji } from '../../shared/common.utils';
-import { GeolocationData } from '../../shared/components/geolocation/geolocation.component';
+import { ApiService } from '@app/services/api.service';
+import { SeoService } from '@app/services/seo.service';
+import { OpenGraphService } from '@app/services/opengraph.service';
+import { getFlagEmoji } from '@app/shared/common.utils';
+import { GeolocationData } from '@app/shared/components/geolocation/geolocation.component';
 
 @Component({
   selector: 'app-nodes-per-isp-preview',

@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, ChangeDetectorRef, OnChanges } from '@angular/core';
-import { StateService } from '../../services/state.service';
-import { TimeService } from '../../services/time.service';
+import { StateService } from '@app/services/state.service';
+import { TimeService } from '@app/services/time.service';
 
 @Component({
   selector: 'app-time',

@@ -1,8 +1,8 @@
 import { Component, Input, OnInit, OnChanges, HostListener } from '@angular/core';
-import { ETA } from '../../services/eta.service';
-import { Transaction } from '../../interfaces/electrs.interface';
-import { Acceleration, SinglePoolStats } from '../../interfaces/node-api.interface';
-import { MiningService } from '../../services/mining.service';
+import { ETA } from '@app/services/eta.service';
+import { Transaction } from '@interfaces/electrs.interface';
+import { Acceleration, SinglePoolStats } from '@interfaces/node-api.interface';
+import { MiningService } from '@app/services/mining.service';
 
 @Component({
   selector: 'app-acceleration-timeline',
@@ -15,6 +15,7 @@ export class AccelerationTimelineComponent implements OnInit, OnChanges {
   @Input() tx: Transaction;
   @Input() accelerationInfo: Acceleration;
   @Input() eta: ETA;
+  @Input() canceled: boolean;
 
   now: number;
   accelerateRatio: number;

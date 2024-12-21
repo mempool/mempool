@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Env, StateService } from '../../services/state.service';
+import { Env, StateService } from '@app/services/state.service';
 import { merge, Observable, of} from 'rxjs';
-import { LanguageService } from '../../services/language.service';
-import { EnterpriseService } from '../../services/enterprise.service';
-import { NavigationService } from '../../services/navigation.service';
+import { LanguageService } from '@app/services/language.service';
+import { EnterpriseService } from '@app/services/enterprise.service';
+import { NavigationService } from '@app/services/navigation.service';
 
 @Component({
   selector: 'app-liquid-master-page',

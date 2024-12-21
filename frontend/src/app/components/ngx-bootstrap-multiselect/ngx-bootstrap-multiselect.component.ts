@@ -24,8 +24,8 @@ import {
 } from '@angular/forms';
 
 import { takeUntil } from 'rxjs/operators';
-import { MultiSelectSearchFilter } from './search-filter.pipe';
-import { IMultiSelectOption, IMultiSelectSettings, IMultiSelectTexts, } from './types';
+import { MultiSelectSearchFilter } from '@components/ngx-bootstrap-multiselect/search-filter.pipe';
+import { IMultiSelectOption, IMultiSelectSettings, IMultiSelectTexts, } from '@components/ngx-bootstrap-multiselect/types';
 import { Subject, Observable } from 'rxjs';
 
 const MULTISELECT_VALUE_ACCESSOR: any = {

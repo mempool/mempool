@@ -1,0 +1,8 @@
+<div [formGroup]="timezoneForm" class="text-small text-center">
+    <select formControlName="mode" class="custom-select custom-select-sm form-control-secondary form-control mx-auto" style="width: 110px;" (change)="changeMode()">
+        <option value="local">UTC{{ localTimezoneOffset !== '+0' ? localTimezoneOffset : '' }} {{ localTimezoneName ? '- ' + localTimezoneName : '' }}</option>
+        <option value="+0" *ngIf="localTimezoneOffset !== '+0'">UTC - Greenwich Mean Time (GMT)</option>
+        <option disabled>────</option>
+        <option *ngFor="let timezone of timezones" [value]="timezone.offset">UTC{{ timezone.offset !== '+0' ? timezone.offset : '' }} - {{ timezone.name }}</option>
+    </select>
+</div>

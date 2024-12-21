@@ -1,14 +1,14 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { combineLatest, EMPTY, fromEvent, interval, merge, Observable, of, Subject, Subscription, timer } from 'rxjs';
 import { catchError, delayWhen, distinctUntilChanged, filter, map, scan, share, shareReplay, startWith, switchMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
-import { AuditStatus, BlockExtended, CurrentPegs, FederationAddress, FederationUtxo, OptimizedMempoolStats, PegsVolume, RecentPeg, TransactionStripped } from '../interfaces/node-api.interface';
-import { MempoolInfo, ReplacementInfo } from '../interfaces/websocket.interface';
-import { ApiService } from '../services/api.service';
-import { StateService } from '../services/state.service';
-import { WebsocketService } from '../services/websocket.service';
-import { SeoService } from '../services/seo.service';
-import { ActiveFilter, FilterMode, GradientMode, toFlags } from '../shared/filters.utils';
-import { detectWebGL } from '../shared/graphs.utils';
+import { AuditStatus, BlockExtended, CurrentPegs, FederationAddress, FederationUtxo, OptimizedMempoolStats, PegsVolume, RecentPeg, TransactionStripped } from '@interfaces/node-api.interface';
+import { MempoolInfo, ReplacementInfo } from '@interfaces/websocket.interface';
+import { ApiService } from '@app/services/api.service';
+import { StateService } from '@app/services/state.service';
+import { WebsocketService } from '@app/services/websocket.service';
+import { SeoService } from '@app/services/seo.service';
+import { ActiveFilter, FilterMode, GradientMode, toFlags } from '@app/shared/filters.utils';
+import { detectWebGL } from '@app/shared/graphs.utils';
 
 interface MempoolBlocksData {
   blocks: number;
@@ -78,7 +78,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     { index: 0, name: $localize`:@@dfc3c34e182ea73c5d784ff7c8135f087992dac1:All`, mode: 'and', filters: [], gradient: 'age' },
     { index: 1, name: $localize`Consolidation`, mode: 'and', filters: ['consolidation'], gradient: 'fee' },
     { index: 2, name: $localize`Coinjoin`, mode: 'and', filters: ['coinjoin'], gradient: 'fee' },
-    { index: 3, name: $localize`Data`, mode: 'or', filters: ['inscription', 'fake_pubkey', 'op_return'], gradient: 'fee' },
+    { index: 3, name: $localize`Data`, mode: 'or', filters: ['inscription', 'fake_pubkey', 'fake_scripthash', 'op_return'], gradient: 'fee' },
   ];
   goggleFlags = 0n;
   goggleMode: FilterMode = 'and';

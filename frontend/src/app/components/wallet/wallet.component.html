@@ -1,0 +1,129 @@
+<div class="container-xl" [class.liquid-address]="network === 'liquid' || network === 'liquidtestnet'">
+  <div class="title-address">
+    <h1 i18n="shared.wallet">Wallet</h1>
+  </div>
+
+  <div class="clearfix"></div>
+
+  <ng-container *ngIf="(walletAddresses$ | async) as walletAddresses; else loadingTemplate">
+    <div class="box">
+
+      <div class="row">
+        <div class="col-md">
+          <table class="table table-borderless table-striped address-table">
+            <tbody>
+              <tr>
+                <td i18n="address.number-addresses">Addresses</td>
+                <td *ngIf="addressStrings.length" class="address-list">
+                  <app-truncate [text]="addressStrings[0]" [lastChars]="8" [link]="['/address/' | relativeUrl, addressStrings[0]]"></app-truncate>
+                  <ng-container *ngIf="addressStrings.length > 1">
+                    <app-truncate [text]="addressStrings[1]" [lastChars]="8" [link]="['/address/' | relativeUrl, addressStrings[1]]"></app-truncate>
+                  </ng-container>
+                  <div>
+                    <div #collapse="ngbCollapse" [(ngbCollapse)]="collapseAddresses">
+                      <app-truncate
+                        *ngFor="let address of addressStrings | slice: (addressStrings.length > 1 ? 2 : 1)"
+                        [text]="address" [lastChars]="8" [link]="['/address/' | relativeUrl, address]"
+                      ></app-truncate>
+                    </div>
+                    <button *ngIf="addressStrings.length > 2" type="button"
+                      class="btn btn-sm btn-primary small-button" (click)="collapse.toggle()"
+                      [attr.aria-expanded]="!collapseAddresses" aria-controls="collapseExample">
+                      <div *ngIf="collapseAddresses"><span i18n="show-all">Show all</span> ({{ addressStrings.length }})</div>
+                      <span *ngIf="!collapseAddresses" i18n="hide">Hide</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <ng-container *ngIf="(walletStats$ | async) as walletStats">
+                <tr>
+                  <td i18n="address.confirmed-balance">Confirmed balance</td>
+                  <td class="wrap-cell"><app-amount [satoshis]="walletStats.balance" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="walletStats.balance"></app-fiat></span></td>
+                </tr>
+                <tr>
+                  <td i18n="address.confirmed-utxos">Confirmed UTXOs</td>
+                  <td class="wrap-cell">{{ walletStats.utxos }}</td>
+                </tr>
+                <tr>
+                  <td i18n="address.total-received">Total received</td>
+                  <td class="wrap-cell"><app-amount [satoshis]="walletStats.totalReceived"></app-amount></td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
+        <div class="w-100 d-block d-md-none"></div>
+        <div class="col-md treemap-col">
+          <app-addresses-treemap [addresses]="addresses" [isLoading]="isLoadingWallet"></app-addresses-treemap>
+        </div>
+      </div>
+    </div>
+
+    <ng-container *ngIf="(walletStats$ | async) as walletStats">
+      <br>
+      <div class="title-tx">
+        <h2 class="text-left" i18n="address.balance-history">Balance History</h2>
+      </div>
+      <div class="box">
+        <div class="row">
+          <div class="col-md">
+            <app-address-graph [addressSummary$]="walletSummary$" period="all" />
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </ng-container>
+
+  <ng-template #loadingTemplate>
+
+    <div class="box" *ngIf="!error; else errorTemplate">
+      <div class="row">
+        <div class="col">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td colspan="2"><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td colspan="2"><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td colspan="2"><span class="skeleton-loader"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="w-100 d-block d-md-none"></div>
+        <div class="col">
+
+        </div>
+      </div>
+    </div>
+
+  </ng-template>
+
+  <ng-template #errorTemplate>
+    <br>
+    <ng-template [ngIf]="error.status === 413 || error.status === 405 || error.status === 504" [ngIfElse]="displayServerError">
+      <div class="text-center">
+        <span i18n="address.error.loading-wallet-data">Error loading wallet data.</span>
+        <br><br>
+        <i class="small">({{ error | httpErrorMsg }})</i>
+      </div>
+    </ng-template>
+    <ng-template #displayServerError>
+      <app-http-error [error]="error">
+        <span i18n="address.error.loading-wallet-data">Error loading wallet data.</span>
+      </app-http-error>
+    </ng-template>
+  </ng-template>
+
+</div>
+
+<br>
+
+<ng-template #headerLoader>
+  <div class="header-bg box" style="padding: 10px; margin-bottom: 10px;">
+    <span class="skeleton-loader"></span>
+  </div>
+</ng-template>

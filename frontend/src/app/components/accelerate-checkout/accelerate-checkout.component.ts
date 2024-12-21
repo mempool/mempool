@@ -1,16 +1,16 @@
 /* eslint-disable no-console */
 import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, ChangeDetectorRef, SimpleChanges, HostListener } from '@angular/core';
 import { Subscription, tap, of, catchError, Observable, switchMap } from 'rxjs';
-import { ServicesApiServices } from '../../services/services-api.service';
-import { md5, insecureRandomUUID } from '../../shared/common.utils';
-import { StateService } from '../../services/state.service';
-import { AudioService } from '../../services/audio.service';
-import { ETA, EtaService } from '../../services/eta.service';
-import { Transaction } from '../../interfaces/electrs.interface';
-import { MiningStats } from '../../services/mining.service';
-import { IAuth, AuthServiceMempool } from '../../services/auth.service';
-import { EnterpriseService } from '../../services/enterprise.service';
-import { ApiService } from '../../services/api.service';
+import { ServicesApiServices } from '@app/services/services-api.service';
+import { md5 } from '@app/shared/common.utils';
+import { StateService } from '@app/services/state.service';
+import { AudioService } from '@app/services/audio.service';
+import { ETA, EtaService } from '@app/services/eta.service';
+import { Transaction } from '@interfaces/electrs.interface';
+import { MiningStats } from '@app/services/mining.service';
+import { IAuth, AuthServiceMempool } from '@app/services/auth.service';
+import { EnterpriseService } from '@app/services/enterprise.service';
+import { ApiService } from '@app/services/api.service';
 import { isDevMode } from '@angular/core';
 
 export type PaymentMethod = 'balance' | 'bitcoin' | 'cashapp' | 'applePay' | 'googlePay';
@@ -84,13 +84,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   timePaid: number = 0; // time acceleration requested
   math = Math;
   isMobile: boolean = window.innerWidth <= 767.98;
-  isProdDomain = ['mempool.space',
-    'mempool-staging.va1.mempool.space',
-    'mempool-staging.fmt.mempool.space',
-    'mempool-staging.fra.mempool.space',
-    'mempool-staging.tk7.mempool.space',
-    'mempool-staging.sg1.mempool.space'
-   ].indexOf(document.location.hostname) > -1;
+  isProdDomain = false;
 
   private _step: CheckoutStep = 'summary';
   simpleMode: boolean = true;
@@ -100,7 +94,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   auth: IAuth | null = null;
 
   // accelerator stuff
-  accelerationUUID: string;
   accelerationSubscription: Subscription;
   difficultySubscription: Subscription;
   estimateSubscription: Subscription;
@@ -143,7 +136,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     private authService: AuthServiceMempool,
     private enterpriseService: EnterpriseService,
   ) {
-    this.accelerationUUID = insecureRandomUUID();
+    this.isProdDomain = this.stateService.env.PROD_DOMAINS.indexOf(document.location.hostname) > -1;
 
     // Check if Apple Pay available
     // https://developer.apple.com/documentation/apple_pay_on_the_web/apple_pay_js_api/checking_for_apple_pay_availability#overview
@@ -207,6 +200,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   moveToStep(step: CheckoutStep): void {
+    this.processing = false;
     this._step = step;
     if (this.timeoutTimer) {
       clearTimeout(this.timeoutTimer);
@@ -392,7 +386,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     this.accelerationSubscription = this.servicesApiService.accelerate$(
       this.tx.txid,
       this.userBid,
-      this.accelerationUUID
     ).subscribe({
       next: () => {
         this.processing = false;
@@ -526,7 +519,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                 tokenResult.token,
                 cardTag,
                 `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
-                this.accelerationUUID,
                 costUSD
               ).subscribe({
                 next: () => {
@@ -620,13 +612,20 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               this.processing = false;
               return;
             }
+            const verificationToken = await this.$verifyBuyer(this.payments, tokenResult.token, tokenResult.details, costUSD.toFixed(2));
+            if (!verificationToken) {
+              console.error(`SCA verification failed`);
+              this.accelerateError = 'SCA Verification Failed. Payment Declined.';
+              this.processing = false;
+              return;
+            }
             const cardTag = md5(`${card.brand}${card.expMonth}${card.expYear}${card.last4}`.toLowerCase());
             this.servicesApiService.accelerateWithGooglePay$(
               this.tx.txid,
               tokenResult.token,
+              verificationToken,
               cardTag,
               `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
-              this.accelerationUUID,
               costUSD
             ).subscribe({
               next: () => {
@@ -717,7 +716,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               tokenResult.token,
               tokenResult.details.cashAppPay.cashtag,
               tokenResult.details.cashAppPay.referenceId,
-              this.accelerationUUID,
               costUSD
             ).subscribe({
               next: () => {
@@ -751,6 +749,32 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         });
       }
     );
+  }
+
+  /**
+   * Required in SCA Mandated Regions: Learn more at https://developer.squareup.com/docs/sca-overview
+   */
+  async $verifyBuyer(payments, token, details, amount) {
+    const verificationDetails = {
+      amount: amount,
+      currencyCode: 'USD',
+      intent: 'CHARGE',
+      billingContact: {
+        givenName: details.card?.billing?.givenName,
+        familyName: details.card?.billing?.familyName,
+        phone: details.card?.billing?.phone,
+        addressLines: details.card?.billing?.addressLines,
+        city: details.card?.billing?.city,
+        state: details.card?.billing?.state,
+        countryCode: details.card?.billing?.countryCode,
+      },
+    };
+
+    const verificationResults = await payments.verifyBuyer(
+      token,
+      verificationDetails,
+    );
+    return verificationResults.token;
   }
 
   /**

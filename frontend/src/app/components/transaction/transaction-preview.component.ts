@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ElectrsApiService } from '../../services/electrs-api.service';
+import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import {
   switchMap,
@@ -8,16 +8,16 @@ import {
   retryWhen,
   delay,
 } from 'rxjs/operators';
-import { Transaction, Vout } from '../../interfaces/electrs.interface';
+import { Transaction, Vout } from '@interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, Subject, from } from 'rxjs';
-import { StateService } from '../../services/state.service';
-import { CacheService } from '../../services/cache.service';
-import { OpenGraphService } from '../../services/opengraph.service';
-import { ApiService } from '../../services/api.service';
-import { SeoService } from '../../services/seo.service';
-import { seoDescriptionNetwork } from '../../shared/common.utils';
-import { CpfpInfo } from '../../interfaces/node-api.interface';
-import { LiquidUnblinding } from './liquid-ublinding';
+import { StateService } from '@app/services/state.service';
+import { CacheService } from '@app/services/cache.service';
+import { OpenGraphService } from '@app/services/opengraph.service';
+import { ApiService } from '@app/services/api.service';
+import { SeoService } from '@app/services/seo.service';
+import { seoDescriptionNetwork } from '@app/shared/common.utils';
+import { CpfpInfo } from '@interfaces/node-api.interface';
+import { LiquidUnblinding } from '@components/transaction/liquid-ublinding';
 
 @Component({
   selector: 'app-transaction-preview',

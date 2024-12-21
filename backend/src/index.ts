@@ -32,6 +32,7 @@ import pricesRoutes from './api/prices/prices.routes';
 import miningRoutes from './api/mining/mining-routes';
 import liquidRoutes from './api/liquid/liquid.routes';
 import bitcoinRoutes from './api/bitcoin/bitcoin.routes';
+import servicesRoutes from './api/services/services-routes';
 import fundingTxFetcher from './tasks/lightning/sync-tasks/funding-tx-fetcher';
 import forensicsService from './tasks/lightning/forensics.service';
 import priceUpdater from './tasks/price-updater';
@@ -46,6 +47,7 @@ import bitcoinSecondClient from './api/bitcoin/bitcoin-second-client';
 import accelerationRoutes from './api/acceleration/acceleration.routes';
 import aboutRoutes from './api/about.routes';
 import mempoolBlocks from './api/mempool-blocks';
+import walletApi from './api/services/wallets';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -231,13 +233,17 @@ class Server {
       const newMempool = await bitcoinApi.$getRawMempool();
       const minFeeMempool = memPool.limitGBT ? await bitcoinSecondClient.getRawMemPool() : null;
       const minFeeTip = memPool.limitGBT ? await bitcoinSecondClient.getBlockCount() : -1;
-      const newAccelerations = await accelerationApi.$updateAccelerations();
+      const latestAccelerations = await accelerationApi.$updateAccelerations();
       const numHandledBlocks = await blocks.$updateBlocks();
       const pollRate = config.MEMPOOL.POLL_RATE_MS * (indexer.indexerIsRunning() ? 10 : 1);
       if (numHandledBlocks === 0) {
-        await memPool.$updateMempool(newMempool, newAccelerations, minFeeMempool, minFeeTip, pollRate);
+        await memPool.$updateMempool(newMempool, latestAccelerations, minFeeMempool, minFeeTip, pollRate);
       }
       indexer.$run();
+      if (config.WALLETS.ENABLED) {
+        // might take a while, so run in the background
+        walletApi.$syncWallets();
+      }
       if (config.FIAT_PRICE.ENABLED) {
         priceUpdater.$run();
       }
@@ -312,11 +318,15 @@ class Server {
       priceUpdater.setRatesChangedCallback(websocketHandler.handleNewConversionRates.bind(websocketHandler));
     }
     loadingIndicators.setProgressChangedCallback(websocketHandler.handleLoadingChanged.bind(websocketHandler));
+
+    accelerationApi.connectWebsocket();
   }
-  
+
   setUpHttpApiRoutes(): void {
     bitcoinRoutes.initRoutes(this.app);
-    bitcoinCoreRoutes.initRoutes(this.app);
+    if (config.MEMPOOL.OFFICIAL) {
+      bitcoinCoreRoutes.initRoutes(this.app);
+    }
     pricesRoutes.initRoutes(this.app);
     if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED && config.MEMPOOL.ENABLED) {
       statisticsRoutes.initRoutes(this.app);
@@ -334,6 +344,9 @@ class Server {
     }
     if (config.MEMPOOL_SERVICES.ACCELERATIONS) {
       accelerationRoutes.initRoutes(this.app);
+    }
+    if (config.WALLETS.ENABLED) {
+      servicesRoutes.initRoutes(this.app);
     }
     if (!config.MEMPOOL.OFFICIAL) {
       aboutRoutes.initRoutes(this.app);

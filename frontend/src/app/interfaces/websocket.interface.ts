@@ -1,7 +1,7 @@
 import { SafeResourceUrl } from '@angular/platform-browser';
-import { ILoadingIndicators } from '../services/state.service';
-import { Transaction } from './electrs.interface';
-import { Acceleration, BlockExtended, DifficultyAdjustment, RbfTree, TransactionStripped } from './node-api.interface';
+import { ILoadingIndicators } from '@app/services/state.service';
+import { Transaction } from '@interfaces/electrs.interface';
+import { Acceleration, BlockExtended, DifficultyAdjustment, RbfTree, TransactionStripped } from '@interfaces/node-api.interface';
 
 export interface WebsocketResponse {
   backend?: 'esplora' | 'electrum' | 'none';
@@ -36,6 +36,7 @@ export interface WebsocketResponse {
   'track-rbf'?: string;
   'track-rbf-summary'?: boolean;
   'track-accelerations'?: boolean;
+  'track-wallet'?: string;
   'watch-mempool'?: boolean;
   'refresh-blocks'?: boolean;
 }
@@ -143,4 +144,9 @@ export interface HealthCheckHost {
   link?: string;
   statusPage?: SafeResourceUrl;
   flag?: string;
+  hashes?: {
+    frontend?: string;
+    backend?: string;
+    electrs?: string;
+  }
 }

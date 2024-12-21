@@ -9339,7 +9339,7 @@ export const restApiDocsData = [
     fragment: "accelerator-history",
     title: "GET Acceleration History",
     description: {
-      default: "<p>Returns the user's past acceleration requests.</p><p>Pass one of the following for <code>:status</code>: <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code>. Pass <code>true</code> in <code>:details</code> to get a detailed <code>history</code> of the acceleration request.</p>"
+      default: "<p>Returns the user's past acceleration requests.</p><p>Pass one of the following for <code>:status</code> (required): <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code>.<br>Pass <code>true</code> in <code>:details</code> to get a detailed <code>history</code> of the acceleration request.</p>"
     },
     urlString: "/v1/services/accelerator/history?status=:status&details=:details",
     showConditions: [""],
@@ -9445,6 +9445,36 @@ export const restApiDocsData = [
     ]
   }
 ]`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: "endpoint",
+    category: "accelerator-private",
+    httpRequestMethod: "POST",
+    fragment: "accelerator-cancel",
+    title: "POST Cancel Acceleration (Pro)",
+    description: {
+      default: "<p>Sends a request to cancel an acceleration in the <code>accelerating</code> status.<br>You can retreive eligible acceleration <code>id</code> using the history endpoint GET <code>/api/v1/services/accelerator/history?status=accelerating</code>."
+    },
+    urlString: "/v1/services/accelerator/cancel",
+    showConditions: [""],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/accelerator/cancel`, //custom interpolation technique handled in replaceCurlPlaceholder()
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ["id=42"],
+          headers: "X-Mempool-Auth: stacksats",
+          response: `HTTP/1.1 200 OK`,
         },
       }
     }

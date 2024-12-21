@@ -2014,9 +2014,9 @@ case $OS in
 moused_nondefault_enable="NO"
 
 nginx_enable="YES"
-nginx_profiles="mempool"
-nginx_mempool_flags="-p /mempool"
-nginx_mempool_configfile="/mempool/mempool/nginx/nginx.conf"
+#nginx_profiles="mempool"
+#nginx_mempool_flags="-p /mempool"
+#nginx_mempool_configfile="/mempool/mempool.space/nginx/nginx.conf"
 
 mysql_enable="YES"
 mysql_dbdir="/mysql"

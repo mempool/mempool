@@ -1,6 +1,7 @@
 import { MempoolBlockDelta, MempoolBlockDeltaCompressed, MempoolDeltaChange, TransactionCompressed } from "../interfaces/websocket.interface";
-import { TransactionStripped } from "../interfaces/node-api.interface";
-import { AmountShortenerPipe } from "./pipes/amount-shortener.pipe";
+import { TransactionStripped } from "@interfaces/node-api.interface";
+import { AmountShortenerPipe } from "@app/shared/pipes/amount-shortener.pipe";
+import { Router, ActivatedRoute } from '@angular/router';
 const amountShortenerPipe = new AmountShortenerPipe();
 
 export function isMobile(): boolean {
@@ -213,17 +214,27 @@ export function renderSats(value: number, network: string, mode: 'sats' | 'btc' 
   }
 }
 
-export function insecureRandomUUID(): string {
-  const hexDigits = '0123456789abcdef';
-  const uuidLengths = [8, 4, 4, 4, 12];
-  let uuid = '';
-  for (const length of uuidLengths) {
-      for (let i = 0; i < length; i++) {
-          uuid += hexDigits[Math.floor(Math.random() * 16)];
+export function sleep$(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+     setTimeout(() => {
+       resolve();
+     }, ms);
+  });
+}
+
+export function handleDemoRedirect(route: ActivatedRoute, router: Router) {
+  route.queryParams
+    .subscribe(params => {
+      if (params.next) {
+        const path = ['/', '/acceleration', '/mining', '/lightning'];
+        const index = path.indexOf(params.next);
+        if (index >= 0) {
+          const nextPath = path[(index + 1) % path.length];
+          setTimeout(() => { window.location.replace(`${params.next}?next=${nextPath}`) }, 15000);
+        }
       }
-      uuid += '-';
-  }
-  return uuid.slice(0, -1);
+    }
+  );
 }
 
 // https://stackoverflow.com/a/60467595

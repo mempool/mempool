@@ -1,25 +1,25 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
-import { SharedModule } from '../shared/shared.module';
+import { SharedModule } from '@app/shared/shared.module';
 import { NgxEchartsModule } from 'ngx-echarts';
-import { LiquidMasterPageComponent } from '../components/liquid-master-page/liquid-master-page.component';
+import { LiquidMasterPageComponent } from '@components/liquid-master-page/liquid-master-page.component';
 
 
-import { StartComponent } from '../components/start/start.component';
-import { PushTransactionComponent } from '../components/push-transaction/push-transaction.component';
-import { BlocksList } from '../components/blocks-list/blocks-list.component';
-import { AssetGroupComponent } from '../components/assets/asset-group/asset-group.component';
-import { AssetsComponent } from '../components/assets/assets.component';
-import { AssetsFeaturedComponent } from '../components/assets/assets-featured/assets-featured.component'
-import { AssetComponent } from '../components/asset/asset.component';
-import { AssetsNavComponent } from '../components/assets/assets-nav/assets-nav.component';
-import { RecentPegsListComponent } from '../components/liquid-reserves-audit/recent-pegs-list/recent-pegs-list.component';
-import { FederationWalletComponent } from '../components/liquid-reserves-audit/federation-wallet/federation-wallet.component';
-import { FederationUtxosListComponent } from '../components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component';
-import { FederationAddressesListComponent } from '../components/liquid-reserves-audit/federation-addresses-list/federation-addresses-list.component';
-import { ServerHealthComponent } from '../components/server-health/server-health.component';
-import { ServerStatusComponent } from '../components/server-health/server-status.component';
+import { StartComponent } from '@components/start/start.component';
+import { PushTransactionComponent } from '@components/push-transaction/push-transaction.component';
+import { BlocksList } from '@components/blocks-list/blocks-list.component';
+import { AssetGroupComponent } from '@components/assets/asset-group/asset-group.component';
+import { AssetsComponent } from '@components/assets/assets.component';
+import { AssetsFeaturedComponent } from '@components/assets/assets-featured/assets-featured.component'
+import { AssetComponent } from '@components/asset/asset.component';
+import { AssetsNavComponent } from '@components/assets/assets-nav/assets-nav.component';
+import { RecentPegsListComponent } from '@components/liquid-reserves-audit/recent-pegs-list/recent-pegs-list.component';
+import { FederationWalletComponent } from '@components/liquid-reserves-audit/federation-wallet/federation-wallet.component';
+import { FederationUtxosListComponent } from '@components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component';
+import { FederationAddressesListComponent } from '@components/liquid-reserves-audit/federation-addresses-list/federation-addresses-list.component';
+import { ServerHealthComponent } from '@components/server-health/server-health.component';
+import { ServerStatusComponent } from '@components/server-health/server-status.component';
 
 const routes: Routes = [
   {
@@ -32,7 +32,7 @@ const routes: Routes = [
       },
       {
         path: 'about',
-        loadChildren: () => import('../components/about/about.module').then(m => m.AboutModule),
+        loadChildren: () => import('@components/about/about.module').then(m => m.AboutModule),
       },
       {
         path: 'blocks/:page',
@@ -44,27 +44,27 @@ const routes: Routes = [
       },
       {
         path: 'terms-of-service',
-        loadChildren: () => import('../components/terms-of-service/terms-of-service.module').then(m => m.TermsOfServiceModule),
+        loadChildren: () => import('@components/terms-of-service/terms-of-service.module').then(m => m.TermsOfServiceModule),
       },
       {
         path: 'privacy-policy',
-        loadChildren: () => import('../components/privacy-policy/privacy-policy.module').then(m => m.PrivacyPolicyModule),
+        loadChildren: () => import('@components/privacy-policy/privacy-policy.module').then(m => m.PrivacyPolicyModule),
       },
       {
         path: 'trademark-policy',
-        loadChildren: () => import('../components/trademark-policy/trademark-policy.module').then(m => m.TrademarkModule),
+        loadChildren: () => import('@components/trademark-policy/trademark-policy.module').then(m => m.TrademarkModule),
       },
       {
         path: 'tx',
         component: StartComponent,
         data: { preload: true, networkSpecific: true },
-        loadChildren: () => import('../components/transaction/transaction.module').then(m => m.TransactionModule),
+        loadChildren: () => import('@components/transaction/transaction.module').then(m => m.TransactionModule),
       },
       {
         path: 'block',
         component: StartComponent,
         data: { preload: true, networkSpecific: true },
-        loadChildren: () => import('../components/block/block.module').then(m => m.BlockModule),
+        loadChildren: () => import('@components/block/block.module').then(m => m.BlockModule),
       },
       {
         path: 'audit/wallet',
@@ -142,12 +142,12 @@ const routes: Routes = [
 
 if (window['__env']?.OFFICIAL_MEMPOOL_SPACE) {
   routes[0].children.push({
-    path: 'nodes',
+    path: 'monitoring',
     data: { networks: ['bitcoin', 'liquid'] },
     component: ServerHealthComponent
   });
   routes[0].children.push({
-    path: 'network',
+    path: 'nodes',
     data: { networks: ['bitcoin', 'liquid'] },
     component: ServerStatusComponent
   });
