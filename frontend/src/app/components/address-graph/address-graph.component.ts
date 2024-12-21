@@ -1,16 +1,15 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, NgZone, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
-import { echarts, EChartsOption } from '../../graphs/echarts';
+import { echarts, EChartsOption } from '@app/graphs/echarts';
 import { BehaviorSubject, Observable, Subscription, combineLatest, of } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
-import { AddressTxSummary, ChainStats } from '../../interfaces/electrs.interface';
-import { ElectrsApiService } from '../../services/electrs-api.service';
-import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
+import { AddressTxSummary, ChainStats } from '@interfaces/electrs.interface';
+import { ElectrsApiService } from '@app/services/electrs-api.service';
+import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { Router } from '@angular/router';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
-import { StateService } from '../../services/state.service';
-import { PriceService } from '../../services/price.service';
-import { FiatCurrencyPipe } from '../../shared/pipes/fiat-currency.pipe';
-import { FiatShortenerPipe } from '../../shared/pipes/fiat-shortener.pipe';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
+import { StateService } from '@app/services/state.service';
+import { PriceService } from '@app/services/price.service';
+import { FiatCurrencyPipe } from '@app/shared/pipes/fiat-currency.pipe';
 
 const periodSeconds = {
   '1d': (60 * 60 * 24),
@@ -45,14 +44,18 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
   @Input() right: number | string = 10;
   @Input() left: number | string = 70;
   @Input() widget: boolean = false;
+  @Input() defaultFiat: boolean = false;
+  @Input() showLegend: boolean = true;
+  @Input() showYAxis: boolean = true;
 
+  adjustedLeft: number;
+  adjustedRight: number;
   data: any[] = [];
   fiatData: any[] = [];
   hoverData: any[] = [];
   conversions: any;
   allowZoom: boolean = false;
-  initialRight = this.right;
-  initialLeft = this.left;
+
   selected = { [$localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`]: true, 'Fiat': false };
 
   subscription: Subscription;
@@ -77,14 +80,16 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
     private relativeUrlPipe: RelativeUrlPipe,
     private priceService: PriceService,
     private fiatCurrencyPipe: FiatCurrencyPipe,
-    private fiatShortenerPipe: FiatShortenerPipe,
     private zone: NgZone,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     this.isLoading = true;
-    if (!this.address || !this.stats) {
+    if (!this.addressSummary$ && (!this.address || !this.stats)) {
       return;
+    }
+    if (changes.defaultFiat) {
+      this.selected['Fiat'] = !!this.defaultFiat;
     }
     if (changes.address || changes.isPubkey || changes.addressSummary$ || changes.stats) {
       if (this.subscription) {
@@ -118,7 +123,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
                     } else if (this.conversions && this.conversions['USD']) {
                       price = this.conversions['USD'];
                     }
-                    return { ...item, price: price }
+                    return { ...item, price: price };
                   });
                 }
               }),
@@ -144,15 +149,16 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
   }
 
   prepareChartOptions(summary: AddressTxSummary[]) {
-    if (!summary || !this.stats) {
+    if (!summary) {
       return;
     }
-    
-    let total = (this.stats.funded_txo_sum - this.stats.spent_txo_sum);
+
+    const total = this.stats ? (this.stats.funded_txo_sum - this.stats.spent_txo_sum) : summary.reduce((acc, tx) => acc + tx.value, 0);
+    let runningTotal = total;
     const processData = summary.map(d => {
-        const balance = total;
-        const fiatBalance = total * d.price / 100_000_000;
-        total -= d.value;
+        const balance = runningTotal;
+        const fiatBalance = runningTotal * d.price / 100_000_000;
+        runningTotal -= d.value;
         return {
             time: d.time * 1000,
             balance,
@@ -160,7 +166,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
             d
         };
     }).reverse();
-    
+
     this.data = processData.filter(({ d }) => d.txid !== undefined).map(({ time, balance, d }) => [time, balance, d]);
     this.fiatData = processData.map(({ time, fiatBalance, balance, d }) => [time, fiatBalance, d, balance]);
 
@@ -172,11 +178,14 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
       this.fiatData = this.fiatData.filter(d => d[0] >= startFiat);
     }
     this.data.push(
-      {value: [now, this.stats.funded_txo_sum - this.stats.spent_txo_sum], symbol: 'none', tooltip: { show: false }}
+      {value: [now, total], symbol: 'none', tooltip: { show: false }}
     );
 
     const maxValue = this.data.reduce((acc, d) => Math.max(acc, Math.abs(d[1] ?? d.value[1])), 0);
     const minValue = this.data.reduce((acc, d) => Math.min(acc, Math.abs(d[1] ?? d.value[1])), maxValue);
+
+    this.adjustedRight = this.selected['Fiat'] ? +this.right + 40 : +this.right;
+    this.adjustedLeft = this.selected[$localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`] ? +this.left : +this.left - 40;
 
     this.chartOptions = {
       color: [
@@ -193,10 +202,10 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
       grid: {
         top: 20,
         bottom: this.allowZoom ? 65 : 20,
-        right: this.right,
-        left: this.left,
+        right: this.adjustedRight,
+        left: this.adjustedLeft,
       },
-      legend: !this.stateService.isAnyTestnet() ? {
+      legend: (this.showLegend && !this.stateService.isAnyTestnet()) ? {
         data: [
           {
             name: $localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`,
@@ -244,21 +253,22 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
           let tooltip = '<div>';
 
           const hasTx = data[0].data[2].txid;
+          const date = new Date(data[0].data[0]).toLocaleTimeString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
+
+          tooltip += `<div>
+            <div style="text-align: right;">
+            <div><b>${date}</b></div>`;
+
           if (hasTx) {
             const header = data.length === 1
             ? `${data[0].data[2].txid.slice(0, 6)}...${data[0].data[2].txid.slice(-6)}`
             : `${data.length} transactions`;
-            tooltip += `<span><b>${header}</b></span>`;
+            tooltip += `<div><b>${header}</b></div>`;
           }
-          
-          const date = new Date(data[0].data[0]).toLocaleTimeString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
-          
-          tooltip += `<div>
-            <div style="text-align: right;">`;
-          
+
           const formatBTC = (val, decimal) => (val / 100_000_000).toFixed(decimal);
           const formatFiat = (val) => this.fiatCurrencyPipe.transform(val, null, 'USD');
-          
+
           const btcVal = btcData.reduce((total, d) => total + d.data[2].value, 0);
           const fiatVal = fiatData.reduce((total, d) => total + d.data[2].value * d.data[2].price / 100_000_000, 0);
           const btcColor = btcVal === 0 ? '' : (btcVal > 0 ? 'var(--green)' : 'var(--red)');
@@ -290,7 +300,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
             }
           }
 
-          tooltip += `</div><span>${date}</span></div>`;
+          tooltip += `</div></div>`;
           return tooltip;
         }.bind(this)
       },
@@ -306,22 +316,26 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
           type: 'value',
           position: 'left',
           axisLabel: {
+            show: this.showYAxis,
             color: 'rgb(110, 112, 121)',
             formatter: (val): string => {
               let valSpan = maxValue - (this.period === 'all' ? 0 : minValue);
               if (valSpan > 100_000_000_000) {
-                return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 0)} BTC`;
+                return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 0, undefined, true)} BTC`;
               }
               else if (valSpan > 1_000_000_000) {
-                return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 2)} BTC`;
+                return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 2, undefined, true)} BTC`;
               } else if (valSpan > 100_000_000) {
                 return `${(val / 100_000_000).toFixed(1)} BTC`;
               } else if (valSpan > 10_000_000) {
                 return `${(val / 100_000_000).toFixed(2)} BTC`;
               } else if (valSpan > 1_000_000) {
+                if (maxValue > 100_000_000_000) {
+                  return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 3, undefined, true)} BTC`;
+                }
                 return `${(val / 100_000_000).toFixed(3)} BTC`;
               } else {
-                return `${this.amountShortenerPipe.transform(val, 0)} sats`;
+                return `${this.amountShortenerPipe.transform(val, 0, undefined, true)} sats`;
               }
             }
           },
@@ -333,9 +347,10 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         {
           type: 'value',
           axisLabel: {
+            show: this.showYAxis,
             color: 'rgb(110, 112, 121)',
             formatter: function(val) {
-              return this.fiatShortenerPipe.transform(val, null, 'USD');
+              return `$${this.amountShortenerPipe.transform(val, 3, undefined, true, true)}`;
             }.bind(this)
           },
           splitLine: {
@@ -389,8 +404,8 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         type: 'slider',
         brushSelect: false,
         realtime: true,
-        left: this.left,
-        right: this.right,
+        left: this.adjustedLeft,
+        right: this.adjustedRight,
         selectedDataBackground: {
           lineStyle: {
             color: '#fff',
@@ -403,7 +418,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
 
   onChartClick(e) {
     if (this.hoverData?.length && this.hoverData[0]?.[2]?.txid) {
-      this.zone.run(() => { 
+      this.zone.run(() => {
         const url = this.relativeUrlPipe.transform(`/tx/${this.hoverData[0][2].txid}`);
         if (e.event.event.shiftKey || e.event.event.ctrlKey || e.event.event.metaKey) {
           window.open(url);
@@ -420,26 +435,26 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
 
   onLegendSelectChanged(e) {
     this.selected = e.selected;
-    this.right = this.selected['Fiat'] ? +this.initialRight + 40 : this.initialRight;
-    this.left = this.selected[$localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`] ? this.initialLeft : +this.initialLeft - 40;
+    this.adjustedRight = this.selected['Fiat'] ? +this.right + 40 : +this.right;
+    this.adjustedLeft = this.selected[$localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`] ? +this.left : +this.left - 40;
 
     this.chartOptions = {
       grid: {
-        right: this.right,
-        left: this.left,
+        right: this.adjustedRight,
+        left: this.adjustedLeft,
       },
       legend: {
         selected: this.selected,
       },
       dataZoom: this.allowZoom ? [{
-        left: this.left,
-        right: this.right,
+        left: this.adjustedLeft,
+        right: this.adjustedRight,
       }, {
-        left: this.left,
-        right: this.right,
+        left: this.adjustedLeft,
+        right: this.adjustedRight,
       }] : undefined
     };
-    
+
     if (this.chartInstance) {
       this.chartInstance.setOption(this.chartOptions);
     }
@@ -468,7 +483,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
     // Add a point at today's date to make the graph end at the current time
     extendedSummary.unshift({ time: Date.now() / 1000, value: 0 });
     extendedSummary.reverse();
-    
+
     let oneHour = 60 * 60;
     // Fill gaps longer than interval
     for (let i = 0; i < extendedSummary.length - 1; i++) {
@@ -481,7 +496,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         i += hours - 1;
       }
     }
-  
+
     return extendedSummary.reverse();
   }
 }

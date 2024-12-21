@@ -1,17 +1,17 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { ElectrsApiService } from '../../services/electrs-api.service';
+import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { switchMap, filter, catchError, take } from 'rxjs/operators';
-import { Asset, Transaction } from '../../interfaces/electrs.interface';
-import { WebsocketService } from '../../services/websocket.service';
-import { StateService } from '../../services/state.service';
-import { AudioService } from '../../services/audio.service';
-import { ApiService } from '../../services/api.service';
+import { Asset, Transaction } from '@interfaces/electrs.interface';
+import { WebsocketService } from '@app/services/websocket.service';
+import { StateService } from '@app/services/state.service';
+import { AudioService } from '@app/services/audio.service';
+import { ApiService } from '@app/services/api.service';
 import { of, merge, Subscription, combineLatest } from 'rxjs';
-import { SeoService } from '../../services/seo.service';
-import { environment } from '../../../environments/environment';
-import { AssetsService } from '../../services/assets.service';
-import { moveDec } from '../../bitcoin.utils';
+import { SeoService } from '@app/services/seo.service';
+import { environment } from '@environments/environment';
+import { AssetsService } from '@app/services/assets.service';
+import { moveDec } from '@app/bitcoin.utils';
 
 @Component({
   selector: 'app-asset',

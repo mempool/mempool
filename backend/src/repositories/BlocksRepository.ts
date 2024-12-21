@@ -57,6 +57,7 @@ interface DatabaseBlock {
   utxoSetChange: number;
   utxoSetSize: number;
   totalInputAmt: number;
+  firstSeen: number;
 }
 
 const BLOCK_DB_FIELDS = `
@@ -99,7 +100,8 @@ const BLOCK_DB_FIELDS = `
   blocks.header,
   blocks.utxoset_change AS utxoSetChange,
   blocks.utxoset_size AS utxoSetSize,
-  blocks.total_input_amt AS totalInputAmt
+  blocks.total_input_amt AS totalInputAmt,
+  UNIX_TIMESTAMP(blocks.first_seen) AS firstSeen
 `;
 
 class BlocksRepository {
@@ -499,7 +501,7 @@ class BlocksRepository {
     }
 
     query += ` ORDER BY height DESC
-      LIMIT 10`;
+      LIMIT 100`;
 
     try {
       const [rows]: any[] = await DB.query(query, params);
@@ -1022,6 +1024,24 @@ class BlocksRepository {
   }
 
   /**
+   * Save block first seen time
+   * 
+   * @param id 
+   */
+  public async $saveFirstSeenTime(id: string, firstSeen: number): Promise<void> {
+    try {
+      await DB.query(`
+        UPDATE blocks SET first_seen = FROM_UNIXTIME(?)
+        WHERE hash = ?`,
+        [firstSeen, id]
+      );
+    } catch (e) {
+      logger.err(`Cannot update block first seen time. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
    * Convert a mysql row block into a BlockExtended. Note that you
    * must provide the correct field into dbBlk object param
    * 
@@ -1078,6 +1098,7 @@ class BlocksRepository {
     extras.utxoSetSize = dbBlk.utxoSetSize;
     extras.totalInputAmt = dbBlk.totalInputAmt;
     extras.virtualSize = dbBlk.weight / 4.0;
+    extras.firstSeen = dbBlk.firstSeen;
 
     // Re-org can happen after indexing so we need to always get the
     // latest state from core

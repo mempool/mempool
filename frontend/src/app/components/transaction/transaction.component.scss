@@ -18,6 +18,7 @@
     line-height: 1;
   }
 }
+
 .tx-link {
   display: flex;
   flex-direction: row;
@@ -60,26 +61,9 @@
 	top: -1px;
 }
 
-.miner-name {
-  margin-right: 4px;
-  vertical-align: top;
-}
-
-.pool-logo {
-  width: 25px;
-  height: 25px;
-  position: relative;
-  top: -1px;
-  margin-right: 2px;
-}
-
 .badge.badge-accelerated {
   background-color: var(--tertiary);
   color: white;
-}
-
-.btn-small-height {
-	line-height: 1;
 }
 
 .arrow-green {
@@ -94,7 +78,7 @@
 	margin-bottom: 40px;
 }
 
-.row{
+.row {
 	flex-direction: column;
 	@media (min-width: 850px) {
 		flex-direction: row;

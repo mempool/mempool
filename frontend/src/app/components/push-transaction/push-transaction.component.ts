@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { ApiService } from '../../services/api.service';
-import { StateService } from '../../services/state.service';
-import { SeoService } from '../../services/seo.service';
-import { OpenGraphService } from '../../services/opengraph.service';
-import { seoDescriptionNetwork } from '../../shared/common.utils';
+import { ApiService } from '@app/services/api.service';
+import { StateService } from '@app/services/state.service';
+import { SeoService } from '@app/services/seo.service';
+import { OpenGraphService } from '@app/services/opengraph.service';
+import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
+import { TxResult } from '@interfaces/node-api.interface';
 
 @Component({
   selector: 'app-push-transaction',
@@ -18,6 +19,16 @@ export class PushTransactionComponent implements OnInit {
   error: string = '';
   txId: string = '';
   isLoading = false;
+
+  submitTxsForm: UntypedFormGroup;
+  errorPackage: string = '';
+  packageMessage: string = '';
+  results: TxResult[] = [];
+  invalidMaxfeerate = false;
+  invalidMaxburnamount = false;
+  isLoadingPackage = false;
+
+  network = this.stateService.network;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -34,6 +45,14 @@ export class PushTransactionComponent implements OnInit {
     this.pushTxForm = this.formBuilder.group({
       txHash: ['', Validators.required],
     });
+
+    this.submitTxsForm = this.formBuilder.group({
+      txs: ['', Validators.required],
+      maxfeerate: ['', Validators.min(0)],
+      maxburnamount: ['', Validators.min(0)],
+    });
+
+    this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
     this.seoService.setTitle($localize`:@@meta.title.push-tx:Broadcast Transaction`);
     this.seoService.setDescription($localize`:@@meta.description.push-tx:Broadcast a transaction to the ${this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'}${seoDescriptionNetwork(this.stateService.network)} network using the transaction's hash.`);
@@ -59,7 +78,7 @@ export class PushTransactionComponent implements OnInit {
       },
       (error) => {
         if (typeof error.error === 'string') {
-          const matchText = error.error.match('"message":"(.*?)"');
+          const matchText = error.error.replace(/\\/g, '').match('"message":"(.*?)"');
           this.error = 'Failed to broadcast transaction, reason: ' + (matchText && matchText[1] || error.error);
         } else if (error.message) {
           this.error = 'Failed to broadcast transaction, reason: ' + error.message;
@@ -68,6 +87,67 @@ export class PushTransactionComponent implements OnInit {
         reject(this.error);
       });
     });
+  }
+
+  submitTxs() {
+    let txs: string[] = [];
+    try {
+      txs = (this.submitTxsForm.get('txs')?.value as string).split(',').map(hex => hex.trim());
+      if (txs?.length === 1) {
+        this.pushTxForm.get('txHash').setValue(txs[0]);
+        this.submitTxsForm.get('txs').setValue('');
+        this.postTx();
+        return;
+      }
+    } catch (e) {
+      this.errorPackage = e?.message;
+      return;
+    }
+
+    let maxfeerate;
+    let maxburnamount;
+    this.invalidMaxfeerate = false;
+    this.invalidMaxburnamount = false;
+    try {
+      const maxfeerateVal = this.submitTxsForm.get('maxfeerate')?.value;
+      if (maxfeerateVal != null && maxfeerateVal !== '') {
+        maxfeerate = parseFloat(maxfeerateVal) / 100_000;
+      }
+    } catch (e) {
+      this.invalidMaxfeerate = true;
+    }
+    try {
+      const maxburnamountVal = this.submitTxsForm.get('maxburnamount')?.value;
+      if (maxburnamountVal != null && maxburnamountVal !== '') {
+        maxburnamount = parseInt(maxburnamountVal) / 100_000_000;
+      }
+    } catch (e) {
+      this.invalidMaxburnamount = true;
+    }
+
+    this.isLoadingPackage = true;
+    this.errorPackage = '';
+    this.results = [];
+    this.apiService.submitPackage$(txs, maxfeerate === 0.1 ? null : maxfeerate, maxburnamount === 0 ? null : maxburnamount)
+      .subscribe((result) => {
+        this.isLoadingPackage = false;
+
+        this.packageMessage = result['package_msg'];
+        for (let wtxid in result['tx-results']) {
+          this.results.push(result['tx-results'][wtxid]);
+        }
+
+        this.submitTxsForm.reset();
+      },
+      (error) => {
+        if (typeof error.error?.error === 'string') {
+          const matchText = error.error.error.replace(/\\/g, '').match('"message":"(.*?)"');
+          this.errorPackage = matchText && matchText[1] || error.error.error;
+        } else if (error.message) {
+          this.errorPackage = error.message;
+        }
+        this.isLoadingPackage = false;
+      });
   }
 
   private async handleColdcardPushTx(fragmentParams: URLSearchParams): Promise<boolean> {

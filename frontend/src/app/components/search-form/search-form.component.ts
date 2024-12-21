@@ -1,15 +1,15 @@
 import { Component, OnInit, ChangeDetectionStrategy, EventEmitter, Output, ViewChild, HostListener, ElementRef, Input } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { EventType, NavigationStart, Router } from '@angular/router';
-import { AssetsService } from '../../services/assets.service';
-import { Env, StateService } from '../../services/state.service';
+import { AssetsService } from '@app/services/assets.service';
+import { Env, StateService } from '@app/services/state.service';
 import { Observable, of, Subject, zip, BehaviorSubject, combineLatest } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, map, startWith,  tap } from 'rxjs/operators';
-import { ElectrsApiService } from '../../services/electrs-api.service';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
-import { ApiService } from '../../services/api.service';
-import { SearchResultsComponent } from './search-results/search-results.component';
-import { Network, findOtherNetworks, getRegex, getTargetUrl, needBaseModuleChange } from '../../shared/regex.utils';
+import { ElectrsApiService } from '@app/services/electrs-api.service';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
+import { ApiService } from '@app/services/api.service';
+import { SearchResultsComponent } from '@components/search-form/search-results/search-results.component';
+import { Network, findOtherNetworks, getRegex, getTargetUrl, needBaseModuleChange } from '@app/shared/regex.utils';
 
 @Component({
   selector: 'app-search-form',

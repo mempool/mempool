@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Observable, Subscription, delay, filter, tap } from 'rxjs';
-import { StateService } from '../../services/state.service';
-import { specialBlocks } from '../../app.constants';
-import { BlockExtended } from '../../interfaces/node-api.interface';
+import { StateService } from '@app/services/state.service';
+import { specialBlocks } from '@app/app.constants';
+import { BlockExtended } from '@interfaces/node-api.interface';
 import { Location } from '@angular/common';
-import { CacheService } from '../../services/cache.service';
+import { CacheService } from '@app/services/cache.service';
 
 interface BlockchainBlock extends BlockExtended {
   placeholder?: boolean;

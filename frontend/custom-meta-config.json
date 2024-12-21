@@ -1,0 +1,51 @@
+{
+  "theme": "contrast",
+  "enterprise": "meta",
+  "branding": {
+    "name": "metaplanet",
+    "title": "Metaplanet",
+    "site_id": 21,
+    "header_img": "/resources/metalogo.svg",
+    "footer_img": "/resources/metalogo.svg"
+  },
+  "dashboard": {
+    "widgets": [
+      {
+        "component": "fees",
+        "mobileOrder": 4
+      },
+      {
+        "component": "walletBalance",
+        "mobileOrder": 1,
+        "props": {
+          "wallet": "3350"
+        }
+      },
+      {
+        "component": "twitter",
+        "mobileOrder": 5,
+        "props": {
+          "handle": "Metaplanet_JP"
+        }
+      },
+      {
+        "component": "wallet",
+        "mobileOrder": 2,
+        "props": {
+          "wallet": "3350",
+          "period": "all"
+        }
+      },
+      {
+        "component": "blocks"
+      },
+      {
+        "component": "walletTransactions",
+        "mobileOrder": 3,
+        "props": {
+          "wallet": "3350"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,183 @@
+.title-block {
+  flex-wrap: wrap;
+  align-items: baseline;
+  @media (min-width: 650px) {
+    flex-direction: row;
+  }
+  h1 {
+    margin: 0rem;
+    margin-right: 15px;
+    line-height: 1;
+  }
+}
+
+.td-width {
+	width: 150px;
+
+	@media (max-width: 768px) {
+	  width: 175px;
+	}
+}
+
+.badge {
+	position: relative;
+	top: -1px;
+}
+
+.miner-name {
+  margin-right: 4px;
+  vertical-align: top;
+}
+
+.pool-logo {
+  width: 25px;
+  height: 25px;
+  position: relative;
+  top: -1px;
+  margin-right: 2px;
+}
+
+.badge.badge-accelerated {
+  background-color: var(--tertiary);
+  color: white;
+}
+
+.btn-small-height {
+	line-height: 1;
+}
+
+.row{
+	flex-direction: column;
+	@media (min-width: 850px) {
+		flex-direction: row;
+	}
+}
+
+.box.hidden {
+  visibility: hidden;
+  height: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+@media (max-width: 767.98px) {
+	.mobile-bottomcol {
+		margin-top: 15px;
+	}
+
+	.details-table td:first-child {
+		white-space: pre-wrap;
+	}
+}
+
+.fiat {
+	display: block;
+	@media (min-width: 768px){
+		display: inline-block;
+		margin-left: 15px;
+		text-align: left;
+	}
+}
+
+.table {
+  tr td {
+		padding: 0.75rem 0.5rem;
+		@media (min-width: 576px) {
+			padding: 0.75rem 0.75rem;
+		}
+		&:last-child {
+			text-align: right;
+			@media (min-width: 850px) {
+        text-align: left;
+			}
+		}
+		.btn {
+			display: block;
+		}
+
+    &.wrap-cell {
+      white-space: normal;
+    }
+	}
+}
+
+.effective-fee-container {
+	display: block;
+	@media (min-width: 768px){
+		display: inline-block;
+	}
+  @media (max-width: 425px){
+		display: flex;
+    flex-direction: column;
+	}
+}
+
+@media (max-width: 767px){
+  .hide-on-mobile {
+    display: none;
+  }
+}
+
+.effective-fee-rating {
+  @media (max-width: 767px){
+    margin-right: 0px !important;
+  }
+}
+
+.btn-outline-info {
+	margin-top: 5px;
+	@media (min-width: 768px){
+		margin-top: 0px;
+	}
+}
+
+.eta {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  @media (min-width: 850px) {
+    justify-content: left !important;    
+  }
+}
+
+.accelerate {
+  @media (min-width: 850px) {
+    margin-left: auto;
+  }  
+}
+
+.etaDeepMempool {
+  flex-wrap: wrap;
+  @media (max-width: 849px) {
+    justify-content: right !important;
+  }
+}
+
+.accelerateDeepMempool {
+  background-color: var(--tertiary);
+  margin-left: 5px;
+}
+
+.goggles-icon {
+  display: block;
+  width: 2.7em;
+}
+
+.pool-logo {
+  width: 15px;
+  height: 15px;
+  position: relative;
+  top: -1px;
+  margin-right: 2px;
+}
+
+.oobFees {
+  color: #905cf4;
+}
+
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}

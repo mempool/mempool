@@ -1,27 +1,28 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { BlockHealthGraphComponent } from '../components/block-health-graph/block-health-graph.component';
-import { BlockFeeRatesGraphComponent } from '../components/block-fee-rates-graph/block-fee-rates-graph.component';
-import { BlockFeesGraphComponent } from '../components/block-fees-graph/block-fees-graph.component';
-import { BlockFeesSubsidyGraphComponent } from '../components/block-fees-subsidy-graph/block-fees-subsidy-graph.component';
-import { BlockRewardsGraphComponent } from '../components/block-rewards-graph/block-rewards-graph.component';
-import { BlockSizesWeightsGraphComponent } from '../components/block-sizes-weights-graph/block-sizes-weights-graph.component';
-import { GraphsComponent } from '../components/graphs/graphs.component';
-import { HashrateChartComponent } from '../components/hashrate-chart/hashrate-chart.component';
-import { HashrateChartPoolsComponent } from '../components/hashrates-chart-pools/hashrate-chart-pools.component';
-import { MempoolBlockComponent } from '../components/mempool-block/mempool-block.component';
-import { MiningDashboardComponent } from '../components/mining-dashboard/mining-dashboard.component';
-import { AcceleratorDashboardComponent } from '../components/acceleration/accelerator-dashboard/accelerator-dashboard.component';
-import { PoolRankingComponent } from '../components/pool-ranking/pool-ranking.component';
-import { PoolComponent } from '../components/pool/pool.component';
-import { StartComponent } from '../components/start/start.component';
-import { StatisticsComponent } from '../components/statistics/statistics.component';
-import { TelevisionComponent } from '../components/television/television.component';
-import { DashboardComponent } from '../dashboard/dashboard.component';
-import { CustomDashboardComponent } from '../components/custom-dashboard/custom-dashboard.component';
-import { AccelerationFeesGraphComponent } from '../components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component';
-import { AccelerationsListComponent } from '../components/acceleration/accelerations-list/accelerations-list.component';
-import { AddressComponent } from '../components/address/address.component';
+import { BlockHealthGraphComponent } from '@components/block-health-graph/block-health-graph.component';
+import { BlockFeeRatesGraphComponent } from '@components/block-fee-rates-graph/block-fee-rates-graph.component';
+import { BlockFeesGraphComponent } from '@components/block-fees-graph/block-fees-graph.component';
+import { BlockFeesSubsidyGraphComponent } from '@components/block-fees-subsidy-graph/block-fees-subsidy-graph.component';
+import { BlockRewardsGraphComponent } from '@components/block-rewards-graph/block-rewards-graph.component';
+import { BlockSizesWeightsGraphComponent } from '@components/block-sizes-weights-graph/block-sizes-weights-graph.component';
+import { GraphsComponent } from '@components/graphs/graphs.component';
+import { HashrateChartComponent } from '@components/hashrate-chart/hashrate-chart.component';
+import { HashrateChartPoolsComponent } from '@components/hashrates-chart-pools/hashrate-chart-pools.component';
+import { MempoolBlockComponent } from '@components/mempool-block/mempool-block.component';
+import { MiningDashboardComponent } from '@components/mining-dashboard/mining-dashboard.component';
+import { AcceleratorDashboardComponent } from '@components/acceleration/accelerator-dashboard/accelerator-dashboard.component';
+import { PoolRankingComponent } from '@components/pool-ranking/pool-ranking.component';
+import { PoolComponent } from '@components/pool/pool.component';
+import { StartComponent } from '@components/start/start.component';
+import { StatisticsComponent } from '@components/statistics/statistics.component';
+import { TelevisionComponent } from '@components/television/television.component';
+import { DashboardComponent } from '@app/dashboard/dashboard.component';
+import { CustomDashboardComponent } from '@components/custom-dashboard/custom-dashboard.component';
+import { AccelerationFeesGraphComponent } from '@components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component';
+import { AccelerationsListComponent } from '@components/acceleration/accelerations-list/accelerations-list.component';
+import { AddressComponent } from '@components/address/address.component';
+import { WalletComponent } from '@components/wallet/wallet.component';
 
 const browserWindow = window || {};
 // @ts-ignore
@@ -89,6 +90,15 @@ const routes: Routes = [
         }
       },
       {
+        path: 'wallet/:wallet',
+        children: [],
+        component: WalletComponent,
+        data: {
+          ogImage: true,
+          networkSpecific: true,
+        }
+      },
+      {
         path: 'graphs',
         data: { networks: ['bitcoin', 'liquid'] },
         component: GraphsComponent,
@@ -146,7 +156,7 @@ const routes: Routes = [
           {
             path: 'lightning',
             data: { preload: true, networks: ['bitcoin'] },
-            loadChildren: () => import ('./lightning-graphs.module').then(m => m.LightningGraphsModule),
+            loadChildren: () => import ('@app/graphs/lightning-graphs.module').then(m => m.LightningGraphsModule),
           },
           {
             path: '',

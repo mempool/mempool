@@ -1,5 +1,5 @@
 import { Component, Input, ChangeDetectionStrategy, SecurityContext, SimpleChanges, OnChanges } from '@angular/core';
-import { LanguageService } from '../../services/language.service';
+import { LanguageService } from '@app/services/language.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({

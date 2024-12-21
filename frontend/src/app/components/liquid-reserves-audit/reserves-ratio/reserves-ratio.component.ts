@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, Input, OnChanges, OnInit, HostListener } from '@angular/core';
-import { EChartsOption } from '../../../graphs/echarts';
-import { CurrentPegs } from '../../../interfaces/node-api.interface';
+import { EChartsOption } from '@app/graphs/echarts';
+import { CurrentPegs } from '@interfaces/node-api.interface';
 
 
 @Component({

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { StorageService } from '../../services/storage.service';
-import { StateService } from '../../services/state.service';
+import { StorageService } from '@app/services/storage.service';
+import { StateService } from '@app/services/state.service';
 
 @Component({
   selector: 'app-amount-selector',

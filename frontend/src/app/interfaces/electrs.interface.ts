@@ -1,5 +1,5 @@
-import { Price } from '../services/price.service';
-import { IChannel } from './node-api.interface';
+import { Price } from '@app/services/price.service';
+import { IChannel } from '@interfaces/node-api.interface';
 
 export interface Transaction {
   txid: string;
@@ -32,6 +32,8 @@ export interface Transaction {
   price?: Price;
   sigops?: number;
   flags?: bigint;
+  largeInput?: boolean;
+  largeOutput?: boolean;
 }
 
 export interface TransactionChannels {
@@ -164,6 +166,7 @@ export interface AddressTxSummary {
   height: number;
   time: number;
   price?: number;
+  tx_position?: number;
 }
 
 export interface ChainStats {

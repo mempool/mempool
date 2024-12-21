@@ -1,13 +1,13 @@
 import { Router, NavigationStart } from '@angular/router';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { StateService } from './state.service';
-import { StorageService } from './storage.service';
-import { MenuGroup } from '../interfaces/services.interface';
+import { StateService } from '@app/services/state.service';
+import { StorageService } from '@app/services/storage.service';
+import { MenuGroup } from '@interfaces/services.interface';
 import { Observable, of, ReplaySubject, tap, catchError, share, filter, switchMap, map } from 'rxjs';
-import { IBackendInfo } from '../interfaces/websocket.interface';
-import { Acceleration, AccelerationHistoryParams } from '../interfaces/node-api.interface';
-import { AccelerationStats } from '../components/acceleration/acceleration-stats/acceleration-stats.component';
+import { IBackendInfo } from '@interfaces/websocket.interface';
+import { Acceleration, AccelerationHistoryParams } from '@interfaces/node-api.interface';
+import { AccelerationStats } from '@components/acceleration/acceleration-stats/acceleration-stats.component';
 
 export interface IUser {
   username: string;
@@ -131,20 +131,20 @@ export class ServicesApiServices {
     return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/estimate`, { txInput: txInput }, { observe: 'response' });
   }
 
-  accelerate$(txInput: string, userBid: number, accelerationUUID: string) {
-    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate`, { txInput: txInput, userBid: userBid, accelerationUUID: accelerationUUID });
+  accelerate$(txInput: string, userBid: number) {
+    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate`, { txInput: txInput, userBid: userBid});
   }
 
-  accelerateWithCashApp$(txInput: string, token: string, cashtag: string, referenceId: string, accelerationUUID: string) {
-    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/cashapp`, { txInput: txInput, token: token, cashtag: cashtag, referenceId: referenceId, accelerationUUID: accelerationUUID });
+  accelerateWithCashApp$(txInput: string, token: string, cashtag: string, referenceId: string, userApprovedUSD: number) {
+    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/cashapp`, { txInput: txInput, token: token, cashtag: cashtag, referenceId: referenceId, userApprovedUSD: userApprovedUSD });
   }
 
-  accelerateWithApplePay$(txInput: string, token: string, cardTag: string, referenceId: string, accelerationUUID: string) {
-    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/applePay`, { txInput: txInput, cardTag: cardTag, token: token, referenceId: referenceId, accelerationUUID: accelerationUUID });
+  accelerateWithApplePay$(txInput: string, token: string, cardTag: string, referenceId: string, userApprovedUSD: number) {
+    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/applePay`, { txInput: txInput, cardTag: cardTag, token: token, referenceId: referenceId, userApprovedUSD: userApprovedUSD });
   }
 
-  accelerateWithGooglePay$(txInput: string, token: string, cardTag: string, referenceId: string, accelerationUUID: string) {
-    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/googlePay`, { txInput: txInput, cardTag: cardTag, token: token, referenceId: referenceId, accelerationUUID: accelerationUUID });
+  accelerateWithGooglePay$(txInput: string, token: string, verificationToken: string, cardTag: string, referenceId: string, userApprovedUSD: number) {
+    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/googlePay`, { txInput: txInput, cardTag: cardTag, token: token, verificationToken: verificationToken, referenceId: referenceId, userApprovedUSD: userApprovedUSD });
   }
 
   getAccelerations$(): Observable<Acceleration[]> {

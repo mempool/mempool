@@ -5,6 +5,7 @@ nvm use v20.12.0
 
 # start all mempool backends that exist
 for site in mainnet mainnet-lightning testnet testnet-lightning testnet4 signet signet-lightning liquid liquidtestnet;do
+    [ ! -e "${HOME}/${site}/backend/" ] && continue
     cd "${HOME}/${site}/backend/" && \
     echo "starting mempool backend: ${site}" && \
     screen -dmS "${site}" sh -c 'while true;do npm run start-production;sleep 1;done'
@@ -15,7 +16,7 @@ screen -dmS x startx
 sleep 3
 
 # start unfurlers for each frontend
-for site in mainnet liquid onbtc;do
+for site in mainnet liquid onbtc bitb meta;do
     cd "$HOME/${site}/unfurler" && \
     echo "starting mempool unfurler: ${site}" && \
     screen -dmS "unfurler-${site}" sh -c 'while true;do npm run unfurler;sleep 2;done'

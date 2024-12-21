@@ -1,17 +1,17 @@
 import { ChangeDetectionStrategy, Component, Input, NgZone, OnInit, HostBinding } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EChartsOption, PieSeriesOption } from '../../graphs/echarts';
+import { EChartsOption, PieSeriesOption } from '@app/graphs/echarts';
 import { merge, Observable } from 'rxjs';
 import { map, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
-import { SeoService } from '../../services/seo.service';
-import { StorageService } from '../..//services/storage.service';
-import { MiningService, MiningStats } from '../../services/mining.service';
-import { StateService } from '../../services/state.service';
-import { chartColors, poolsColor } from '../../app.constants';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
-import { download } from '../../shared/graphs.utils';
-import { isMobile } from '../../shared/common.utils';
+import { SeoService } from '@app/services/seo.service';
+import { StorageService } from '@app//services/storage.service';
+import { MiningService, MiningStats } from '@app/services/mining.service';
+import { StateService } from '@app/services/state.service';
+import { chartColors, poolsColor } from '@app/app.constants';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
+import { download } from '@app/shared/graphs.utils';
+import { isMobile } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-pool-ranking',
@@ -161,9 +161,12 @@ export class PoolRankingComponent implements OnInit {
           borderColor: '#000',
           formatter: () => {
             const i = pool.blockCount.toString();
-            if (this.miningWindowPreference === '24h') {
+            if (['24h', '3d', '1w'].includes(this.miningWindowPreference)) {
+              let hashrate = pool.lastEstimatedHashrate;
+              if ('3d' === this.miningWindowPreference) { hashrate = pool.lastEstimatedHashrate3d; }
+              if ('1w' === this.miningWindowPreference) { hashrate = pool.lastEstimatedHashrate1w; }
               return `<b style="color: white">${pool.name} (${pool.share}%)</b><br>` +
-                pool.lastEstimatedHashrate.toFixed(2) + ' ' + miningStats.miningUnits.hashrateUnit +
+                hashrate.toFixed(2) + ' ' + miningStats.miningUnits.hashrateUnit +
                 `<br>` + $localize`${ i }:INTERPOLATION: blocks`;
             } else {
               return `<b style="color: white">${pool.name} (${pool.share}%)</b><br>` +
@@ -200,13 +203,10 @@ export class PoolRankingComponent implements OnInit {
         borderColor: '#000',
         formatter: () => {
           const i = totalBlockOther.toString();
-          if (this.miningWindowPreference === '24h') {
-            return `<b style="color: white">` + $localize`Other (${percentage})` + `</b><br>` +
-              totalEstimatedHashrateOther.toString() + ' ' + miningStats.miningUnits.hashrateUnit +
-              `<br>` + $localize`${ i }:INTERPOLATION: blocks`;
+          if (['24h', '3d', '1w'].includes(this.miningWindowPreference)) {
+            return `<b style="color: white">` + $localize`Other (${percentage})` + `</b><br>` + totalEstimatedHashrateOther.toFixed(2) + ' ' + miningStats.miningUnits.hashrateUnit + `<br>` + $localize`${ i }:INTERPOLATION: blocks`;
           } else {
-            return `<b style="color: white">` + $localize`Other (${percentage})` + `</b><br>` +
-              $localize`${ i }:INTERPOLATION: blocks`;
+            return `<b style="color: white">` + $localize`Other (${percentage})` + `</b><br>` + $localize`${ i }:INTERPOLATION: blocks`;
           }
         }
       },
@@ -292,6 +292,8 @@ export class PoolRankingComponent implements OnInit {
   getEmptyMiningStat(): MiningStats {
     return {
       lastEstimatedHashrate: 0,
+      lastEstimatedHashrate3d: 0,
+      lastEstimatedHashrate1w: 0,
       blockCount: 0,
       totalEmptyBlock: 0,
       totalEmptyBlockRatio: '',

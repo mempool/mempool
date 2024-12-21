@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, Input, OnChanges } from '@angular/core';
-import { Vin, Vout } from '../../interfaces/electrs.interface';
-import { StateService } from '../../services/state.service';
-import { AddressType, AddressTypeInfo } from '../../shared/address-utils';
+import { Vin, Vout } from '@interfaces/electrs.interface';
+import { StateService } from '@app/services/state.service';
+import { AddressType, AddressTypeInfo } from '@app/shared/address-utils';
 
 @Component({
   selector: 'app-address-labels',

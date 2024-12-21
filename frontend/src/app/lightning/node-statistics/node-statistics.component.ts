@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { INodesStatistics } from '../../interfaces/node-api.interface';
+import { INodesStatistics } from '@interfaces/node-api.interface';
 
 @Component({
   selector: 'app-node-statistics',

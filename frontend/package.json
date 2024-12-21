@@ -95,7 +95,7 @@
     "esbuild": "^0.24.0",
     "tinyify": "^4.0.0",
     "tlite": "^0.1.9",
-    "tslib": "~2.7.0",
+    "tslib": "~2.8.0",
     "zone.js": "~0.14.4"
   },
   "devDependencies": {
@@ -105,7 +105,7 @@
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^7.4.0",
     "eslint": "^8.57.0",
-    "browser-sync": "^3.0.0",
+    "browser-sync": "^3.0.3",
     "http-proxy-middleware": "~2.0.6",
     "prettier": "^3.0.0",
     "source-map-support": "^0.5.21",

@@ -1,6 +1,6 @@
 import * as bitcoinjs from 'bitcoinjs-lib';
 import { AbstractBitcoinApi, HealthCheckHost } from './bitcoin-api-abstract-factory';
-import { IBitcoinApi, TestMempoolAcceptResult } from './bitcoin-api.interface';
+import { IBitcoinApi, SubmitPackageResult, TestMempoolAcceptResult } from './bitcoin-api.interface';
 import { IEsploraApi } from './esplora-api.interface';
 import blocks from '../blocks';
 import mempool from '../mempool';
@@ -196,6 +196,10 @@ class BitcoinApi implements AbstractBitcoinApi {
     }
   }
 
+  $submitPackage(rawTransactions: string[], maxfeerate?: number, maxburnamount?: number): Promise<SubmitPackageResult> {
+    return this.bitcoindClient.submitPackage(rawTransactions, maxfeerate ?? undefined, maxburnamount ?? undefined);
+  }
+
   async $getOutspend(txId: string, vout: number): Promise<IEsploraApi.Outspend> {
     const txOut = await this.bitcoindClient.getTxOut(txId, vout, false);
     return {
@@ -249,6 +253,10 @@ class BitcoinApi implements AbstractBitcoinApi {
   async $getCoinbaseTx(blockhash: string): Promise<IEsploraApi.Transaction> {
     const txids = await this.$getTxIdsForBlock(blockhash);
     return this.$getRawTransaction(txids[0]);
+  }
+
+  async $getAddressTransactionSummary(address: string): Promise<IEsploraApi.AddressTxSummary[]> {
+    throw new Error('Method getAddressTransactionSummary not supported by the Bitcoin RPC API.');
   }
 
   $getEstimatedHashrate(blockHeight: number): Promise<number> {

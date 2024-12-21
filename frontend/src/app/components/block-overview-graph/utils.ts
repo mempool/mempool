@@ -1,6 +1,6 @@
-import { feeLevels, defaultMempoolFeeColors, contrastMempoolFeeColors } from '../../app.constants';
-import { Color } from './sprite-types';
-import TxView from './tx-view';
+import { feeLevels, defaultMempoolFeeColors, contrastMempoolFeeColors } from '@app/app.constants';
+import { Color } from '@components/block-overview-graph/sprite-types';
+import TxView from '@components/block-overview-graph/tx-view';
 
 export function hexToColor(hex: string): Color {
   return {

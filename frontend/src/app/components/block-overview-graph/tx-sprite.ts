@@ -1,5 +1,5 @@
-import { FastVertexArray } from './fast-vertex-array';
-import { InterpolatedAttribute, Attributes, OptionalAttributes, SpriteUpdateParams, Update } from './sprite-types';
+import { FastVertexArray } from '@components/block-overview-graph/fast-vertex-array';
+import { InterpolatedAttribute, Attributes, OptionalAttributes, SpriteUpdateParams, Update } from '@components/block-overview-graph/sprite-types';
 
 const attribKeys = ['a', 'b', 't', 'v'];
 const updateKeys = ['x', 'y', 's', 'r', 'g', 'b', 'a'];

@@ -5,7 +5,7 @@
       <div class="col-md-12 branding mt-2">
         <div class="main-logo" [class]="{'services': isServicesPage}">
           @if (enterpriseInfo?.footer_img) {
-            <img [src]="enterpriseInfo?.footer_img" alt="enterpriseInfo.title" height="60px" class="mr-3">
+            <img [src]="enterpriseInfo?.footer_img" [alt]="enterpriseInfo.title" height="60px" class="enterprise-logo">
           } @else {
             <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>
             <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126"></app-svg-images>
@@ -30,7 +30,7 @@
             <app-fiat-selector></app-fiat-selector>
           </div>
           <div class="selector">
-            <app-rate-unit-selector></app-rate-unit-selector>
+            <app-timezone-selector></app-timezone-selector>
           </div>
           <div class="selector d-none" [ngClass]="isServicesPage ? 'd-lg-flex' : 'd-md-flex'">
             <app-amount-selector></app-amount-selector>

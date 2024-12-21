@@ -29,7 +29,7 @@ class GeneralLightningRoutes {
         channels: channels,
       });
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to search for nodes and channels');
     }
   }
 
@@ -43,7 +43,7 @@ class GeneralLightningRoutes {
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(statistics);
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get lightning statistics');
     }
   }
 
@@ -52,7 +52,7 @@ class GeneralLightningRoutes {
       const statistics = await statisticsApi.$getLatestStatistics();
       res.json(statistics);
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get lightning statistics');
     }
   }
 }

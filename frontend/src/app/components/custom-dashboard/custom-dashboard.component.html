@@ -238,7 +238,7 @@
                   <span>&nbsp;</span>
                   <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
                 </a>
-                <app-address-graph [address]="widget.props.address" [addressSummary$]="addressSummary$" [period]="widget.props.period || 'all'" [stats]="address ? address.chain_stats : null" [widget]="true" [height]="graphHeight"></app-address-graph>
+                <app-address-graph [address]="widget.props.address" [addressSummary$]="addressSummary$" [period]="widget.props.period || 'all'" [stats]="address ? address.chain_stats : null" [widget]="true" [defaultFiat]="true" [height]="graphHeight"></app-address-graph>
               </div>
             </div>
           </div>
@@ -253,6 +253,38 @@
                   <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
                 </a>
                 <app-address-transactions-widget [address]="widget.props.address" [addressSummary$]="addressSummary$" [addressInfo]="address"></app-address-transactions-widget>
+              </div>
+            </div>
+          </div>
+        }
+        @case ('walletBalance') {
+          <div class="col card-wrapper" [style.order]="isMobile && widget.mobileOrder || 8">
+            <div class="main-title" i18n="dashboard.treasury">Treasury</div>
+            <app-balance-widget [addressSummary$]="walletSummary$"></app-balance-widget>
+          </div>
+        }
+        @case ('wallet') {
+          <div class="col" style="max-height: 410px" [style.order]="isMobile && widget.mobileOrder || 8">
+            <div class="card graph-card">
+              <div class="card-body">
+                <a class="title-link mb-0" style="margin-top: -2px" href="" [routerLink]="['/wallet/' + widget.props.wallet | relativeUrl]">
+                  <h5 class="card-title d-inline" i18n="dashboard.balance-history">Balance History</h5>
+                  <span>&nbsp;</span>
+                  <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
+                </a>
+                <app-address-graph [addressSummary$]="walletSummary$" [period]="widget.props.period || 'all'" [widget]="true" [height]="graphHeight"></app-address-graph>
+              </div>
+            </div>
+          </div>
+        }
+        @case ('walletTransactions') {
+          <div class="col" style="max-height: 410px" [style.order]="isMobile && widget.mobileOrder || 8">
+            <div class="card">
+              <div class="card-body">
+                <span class="title-link">
+                  <h5 class="card-title d-inline" i18n="dashboard.treasury-transactions">Treasury Transactions</h5>
+                </span>
+                <app-address-transactions-widget [addressSummary$]="walletSummary$"></app-address-transactions-widget>
               </div>
             </div>
           </div>

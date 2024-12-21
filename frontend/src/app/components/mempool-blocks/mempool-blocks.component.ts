@@ -1,17 +1,17 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, HostListener, Input, OnChanges, SimpleChanges, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { Subscription, Observable, of, combineLatest } from 'rxjs';
-import { MempoolBlock } from '../../interfaces/websocket.interface';
-import { StateService } from '../../services/state.service';
-import { EtaService } from '../../services/eta.service';
+import { MempoolBlock } from '@interfaces/websocket.interface';
+import { StateService } from '@app/services/state.service';
+import { EtaService } from '@app/services/eta.service';
 import { Router } from '@angular/router';
 import { delay, filter, map, switchMap, tap } from 'rxjs/operators';
-import { feeLevels } from '../../app.constants';
-import { specialBlocks } from '../../app.constants';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { feeLevels } from '@app/app.constants';
+import { specialBlocks } from '@app/app.constants';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { Location } from '@angular/common';
-import { DifficultyAdjustment, MempoolPosition } from '../../interfaces/node-api.interface';
+import { DifficultyAdjustment, MempoolPosition } from '@interfaces/node-api.interface';
 import { animate, style, transition, trigger } from '@angular/animations';
-import { ThemeService } from '../../services/theme.service';
+import { ThemeService } from '@app/services/theme.service';
 
 @Component({
   selector: 'app-mempool-blocks',
@@ -267,7 +267,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
       if (event.key === prevKey) {
         if (this.mempoolBlocks[this.markIndex - 1]) {
-          this.router.navigate([this.relativeUrlPipe.transform('mempool-block/'), this.markIndex - 1]);
+          this.router.navigate([this.relativeUrlPipe.transform('/mempool-block/'), this.markIndex - 1]);
         } else {
           const blocks = this.stateService.blocksSubject$.getValue();
           for (const block of (blocks || [])) {
