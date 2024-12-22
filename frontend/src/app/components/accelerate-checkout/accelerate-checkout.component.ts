@@ -156,7 +156,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         this.accelerateError = null;
         this.timePaid = 0;
         this.btcpayInvoiceFailed = false;
-        this.moveToStep('summary');
+        this.moveToStep('summary', true);
       } else {
         this.auth = auth;
       }
@@ -165,11 +165,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('cash_request_id')) { // Redirected from cashapp
-      this.moveToStep('processing');
+      this.moveToStep('processing', true);
       this.insertSquare();
       this.setupSquare();
     } else {
-      this.moveToStep('summary');
+      this.moveToStep('summary', true);
     }
 
     this.conversionsSubscription = this.stateService.conversions$.subscribe(
@@ -194,14 +194,17 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     }
     if (changes.accelerating && this.accelerating) {
       if (this.step === 'processing' || this.step === 'paid') {
-        this.moveToStep('success');
+        this.moveToStep('success', true);
       } else { // Edge case where the transaction gets accelerated by someone else or on another session
         this.closeModal();
       }
     }
   }
 
-  moveToStep(step: CheckoutStep): void {
+  moveToStep(step: CheckoutStep, force: boolean = false): void {
+    if (this.isCheckoutLocked > 0 && !force) {
+      return;
+    }
     this.processing = false;
     this._step = step;
     if (this.timeoutTimer) {
@@ -244,7 +247,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
   closeModal(): void {
     this.completed.emit(true);
-    this.moveToStep('summary');
+    this.moveToStep('summary', true);
   }
 
   /**
@@ -395,7 +398,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         this.audioService.playSound('ascend-chime-cartoon');
         this.showSuccess = true;
         this.estimateSubscription.unsubscribe();
-        this.moveToStep('paid');
+        this.moveToStep('paid', true);
       },
       error: (response) => {
         this.processing = false;
@@ -505,6 +508,9 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           }
           this.loadingApplePay = false;
           applePayButton.addEventListener('click', async event => {
+            if (this.isCheckoutLocked > 0 || this.isTokenizing > 0) {
+              return;
+            }
             event.preventDefault();
             try {
               // lock the checkout UI and show a loading spinner until the square modals are finished
@@ -540,16 +546,16 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                     setTimeout(() => {
                       this.isTokenizing--;
                       this.isCheckoutLocked--;
-                      this.moveToStep('paid');
+                      this.moveToStep('paid', true);
                     }, 1000);
                   },
                   error: (response) => {
                     this.processing = false;
                     this.accelerateError = response.error;
-                    this.isTokenizing--;
-                    this.isCheckoutLocked--;
                     if (!(response.status === 403 && response.error === 'not_available')) {
                       setTimeout(() => {
+                        this.isTokenizing--;
+                        this.isCheckoutLocked--;
                         // Reset everything by reloading the page :D, can be improved
                         const urlParams = new URLSearchParams(window.location.search);
                         window.location.assign(window.location.toString().replace(`?cash_request_id=${urlParams.get('cash_request_id')}`, ``));
@@ -620,6 +626,9 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         this.loadingGooglePay = false;
 
         document.getElementById('google-pay-button').addEventListener('click', async event => {
+          if (this.isCheckoutLocked > 0 || this.isTokenizing > 0) {
+            return;
+          }
           event.preventDefault();
           try {
             // lock the checkout UI and show a loading spinner until the square modals are finished
@@ -655,15 +664,15 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               ).subscribe({
                 next: () => {
                   this.processing = false;
-                  this.isTokenizing--;
-                  this.isCheckoutLocked--;
                   this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
                   this.audioService.playSound('ascend-chime-cartoon');
                   if (this.googlePay) {
                     this.googlePay.destroy();
                   }
                   setTimeout(() => {
-                    this.moveToStep('paid');
+                    this.isTokenizing--;
+                    this.isCheckoutLocked--;
+                    this.moveToStep('paid', true);
                   }, 1000);
                 },
                 error: (response) => {
@@ -760,7 +769,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                   this.cashAppPay.destroy();
                 }
                 setTimeout(() => {
-                  this.moveToStep('paid');
+                  this.moveToStep('paid', true);
                   if (window.history.replaceState) {
                     const urlParams = new URLSearchParams(window.location.search);
                     window.history.replaceState(null, null, window.location.toString().replace(`?cash_request_id=${urlParams.get('cash_request_id')}`, ''));
@@ -834,7 +843,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
     this.audioService.playSound('ascend-chime-cartoon');
     this.estimateSubscription.unsubscribe();
-    this.moveToStep('paid');
+    this.moveToStep('paid', true);
   }
 
   isLoggedIn(): boolean {
