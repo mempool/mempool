@@ -302,7 +302,7 @@ export class WalletComponent implements OnInit, OnDestroy {
       }),
       map(transactions => {
         // only confirmed transactions supported for now
-        return transactions.filter(tx => tx.status.confirmed);
+        return transactions.filter(tx => tx.status.confirmed).sort((a, b) => b.status.block_height - a.status.block_height);
       }),
       catchError((error) => {
         console.log(error);
@@ -329,7 +329,7 @@ export class WalletComponent implements OnInit, OnDestroy {
     this.electrsApiService.getAddressesTransactions$(this.addressStrings, this.transactions[this.transactions.length - 1].txid)
       .subscribe((transactions: Transaction[]) => {
         if (transactions && transactions.length) {
-          this.transactions = this.transactions.concat(transactions);
+          this.transactions = this.transactions.concat(transactions.sort((a, b) => b.status.block_height - a.status.block_height));
         } else {
           this.fullyLoaded = true;
         }
