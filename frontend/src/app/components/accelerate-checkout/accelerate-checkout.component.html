@@ -1,4 +1,4 @@
-<div class="box card w-100" style="background: var(--box-bg)" id=acceleratePreviewAnchor>
+<div class="box card w-100 accelerate-checkout-inner" [class.input-disabled]="checkoutLocked" style="background: var(--box-bg)" id=acceleratePreviewAnchor>
   @if (accelerateError) {
     <div class="row mb-1 text-center">
       <div class="col-sm">
@@ -361,7 +361,7 @@
         <div class="row text-center justify-content-center mx-2">
           <p i18n="accelerator.payment-to-mempool-space">Payment to mempool.space for acceleration of txid <a [routerLink]="'/tx/' + tx.txid" target="_blank">{{ tx.txid.substr(0, 10) }}..{{ tx.txid.substr(-10) }}</a></p>
         </div>
-        @if (canPayWithBalance || !(canPayWithBitcoin || canPayWithCashapp)) {
+        @if (canPayWithBalance || !(canPayWithBitcoin || canPayWithCashapp || canPayWithApplePay || canPayWithGooglePay)) {
           <div class="row">
             <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
               <p><ng-container i18n="accelerator.your-account-will-be-debited">Your account will be debited no more than</ng-container>&nbsp;<small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></p>
@@ -484,6 +484,11 @@
           </div>
           }
         </div>
+        @if (tokenizing) {
+          <div class="d-flex flex-row justify-content-center">
+            <div class="ml-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
+          </div>
+        }
       </div>
     </div>
 
