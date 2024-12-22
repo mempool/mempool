@@ -1,4 +1,4 @@
-<div class="box card w-100 accelerate-checkout-inner" [class.input-disabled]="checkoutLocked" style="background: var(--box-bg)" id=acceleratePreviewAnchor>
+<div class="box card w-100 accelerate-checkout-inner" [class.input-disabled]="isCheckoutLocked > 0" style="background: var(--box-bg)" id=acceleratePreviewAnchor>
   @if (accelerateError) {
     <div class="row mb-1 text-center">
       <div class="col-sm">
@@ -484,7 +484,7 @@
           </div>
           }
         </div>
-        @if (tokenizing) {
+        @if (isTokenizing > 0) {
           <div class="d-flex flex-row justify-content-center">
             <div class="ml-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
           </div>

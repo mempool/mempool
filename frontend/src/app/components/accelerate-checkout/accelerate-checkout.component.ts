@@ -76,8 +76,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
   calculating = true;
   processing = false;
-  checkoutLocked = false;
-  tokenizing = false;
+  isCheckoutLocked = 0; // reference counter, 0 = unlocked, >0 = locked
+  isTokenizing = 0; // reference counter, 0 = false, >0 = true
   selectedOption: 'wait' | 'accel';
   cantPayReason = '';
   quoteError = ''; // error fetching estimate or initial data
@@ -508,8 +508,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             event.preventDefault();
             try {
               // lock the checkout UI and show a loading spinner until the square modals are finished
-              this.checkoutLocked = true;
-              this.tokenizing = true;
+              this.isCheckoutLocked++;
+              this.isTokenizing++;
               const tokenResult = await this.applePay.tokenize();
               if (tokenResult?.status === 'OK') {
                 const card = tokenResult.details?.card;
@@ -520,6 +520,9 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                   return;
                 }
                 const cardTag = md5(`${card.brand}${card.expMonth}${card.expYear}${card.last4}`.toLowerCase());
+                // keep checkout in loading state until the acceleration request completes
+                this.isTokenizing++;
+                this.isCheckoutLocked++;
                 this.servicesApiService.accelerateWithApplePay$(
                   this.tx.txid,
                   tokenResult.token,
@@ -535,12 +538,16 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                       this.applePay.destroy();
                     }
                     setTimeout(() => {
+                      this.isTokenizing--;
+                      this.isCheckoutLocked--;
                       this.moveToStep('paid');
                     }, 1000);
                   },
                   error: (response) => {
                     this.processing = false;
                     this.accelerateError = response.error;
+                    this.isTokenizing--;
+                    this.isCheckoutLocked--;
                     if (!(response.status === 403 && response.error === 'not_available')) {
                       setTimeout(() => {
                         // Reset everything by reloading the page :D, can be improved
@@ -562,8 +569,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               }
             } finally {
               // always unlock the checkout once we're finished
-              this.tokenizing = false;
-              this.checkoutLocked = false;
+              this.isTokenizing--;
+              this.isCheckoutLocked--;
             }
           });
         } catch (e) {
@@ -616,10 +623,9 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           event.preventDefault();
           try {
             // lock the checkout UI and show a loading spinner until the square modals are finished
-            this.checkoutLocked = true;
-            this.tokenizing = true;
+            this.isCheckoutLocked++;
+            this.isTokenizing++;
             const tokenResult = await this.googlePay.tokenize();
-            tokenResult.token = 'ccof:customer-card-id-requires-verification';
             if (tokenResult?.status === 'OK') {
               const card = tokenResult.details?.card;
               if (!card || !card.brand || !card.expMonth || !card.expYear || !card.last4) {
@@ -636,6 +642,9 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                 return;
               }
               const cardTag = md5(`${card.brand}${card.expMonth}${card.expYear}${card.last4}`.toLowerCase());
+              // keep checkout in loading state until the acceleration request completes
+              this.isCheckoutLocked++;
+              this.isTokenizing++;
               this.servicesApiService.accelerateWithGooglePay$(
                 this.tx.txid,
                 tokenResult.token,
@@ -646,6 +655,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               ).subscribe({
                 next: () => {
                   this.processing = false;
+                  this.isTokenizing--;
+                  this.isCheckoutLocked--;
                   this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
                   this.audioService.playSound('ascend-chime-cartoon');
                   if (this.googlePay) {
@@ -658,6 +669,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                 error: (response) => {
                   this.processing = false;
                   this.accelerateError = response.error;
+                  this.isTokenizing--;
+                  this.isCheckoutLocked--;
                   if (!(response.status === 403 && response.error === 'not_available')) {
                     setTimeout(() => {
                       // Reset everything by reloading the page :D, can be improved
@@ -679,8 +692,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             }
           } finally {
             // always unlock the checkout once we're finished
-            this.tokenizing = false;
-            this.checkoutLocked = false;
+            this.isTokenizing--;
+            this.isCheckoutLocked--;
           }
         });
       }
