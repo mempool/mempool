@@ -45,14 +45,17 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
   @Input() left: number | string = 70;
   @Input() widget: boolean = false;
   @Input() defaultFiat: boolean = false;
+  @Input() showLegend: boolean = true;
+  @Input() showYAxis: boolean = true;
 
+  adjustedLeft: number;
+  adjustedRight: number;
   data: any[] = [];
   fiatData: any[] = [];
   hoverData: any[] = [];
   conversions: any;
   allowZoom: boolean = false;
-  initialRight = this.right;
-  initialLeft = this.left;
+
   selected = { [$localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`]: true, 'Fiat': false };
 
   subscription: Subscription;
@@ -120,7 +123,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
                     } else if (this.conversions && this.conversions['USD']) {
                       price = this.conversions['USD'];
                     }
-                    return { ...item, price: price }
+                    return { ...item, price: price };
                   });
                 }
               }),
@@ -181,8 +184,8 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
     const maxValue = this.data.reduce((acc, d) => Math.max(acc, Math.abs(d[1] ?? d.value[1])), 0);
     const minValue = this.data.reduce((acc, d) => Math.min(acc, Math.abs(d[1] ?? d.value[1])), maxValue);
 
-    this.right = this.selected['Fiat'] ? +this.initialRight + 40 : this.initialRight;
-    this.left = this.selected[$localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`] ? this.initialLeft : +this.initialLeft - 40;
+    this.adjustedRight = this.selected['Fiat'] ? +this.right + 40 : +this.right;
+    this.adjustedLeft = this.selected[$localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`] ? +this.left : +this.left - 40;
 
     this.chartOptions = {
       color: [
@@ -199,10 +202,10 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
       grid: {
         top: 20,
         bottom: this.allowZoom ? 65 : 20,
-        right: this.right,
-        left: this.left,
+        right: this.adjustedRight,
+        left: this.adjustedLeft,
       },
-      legend: !this.stateService.isAnyTestnet() ? {
+      legend: (this.showLegend && !this.stateService.isAnyTestnet()) ? {
         data: [
           {
             name: $localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`,
@@ -313,6 +316,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
           type: 'value',
           position: 'left',
           axisLabel: {
+            show: this.showYAxis,
             color: 'rgb(110, 112, 121)',
             formatter: (val): string => {
               let valSpan = maxValue - (this.period === 'all' ? 0 : minValue);
@@ -343,9 +347,10 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         {
           type: 'value',
           axisLabel: {
+            show: this.showYAxis,
             color: 'rgb(110, 112, 121)',
             formatter: function(val) {
-              return `$${this.amountShortenerPipe.transform(val, 0, undefined, true)}`;
+              return `$${this.amountShortenerPipe.transform(val, 3, undefined, true, true)}`;
             }.bind(this)
           },
           splitLine: {
@@ -399,8 +404,8 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         type: 'slider',
         brushSelect: false,
         realtime: true,
-        left: this.left,
-        right: this.right,
+        left: this.adjustedLeft,
+        right: this.adjustedRight,
         selectedDataBackground: {
           lineStyle: {
             color: '#fff',
@@ -413,7 +418,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
 
   onChartClick(e) {
     if (this.hoverData?.length && this.hoverData[0]?.[2]?.txid) {
-      this.zone.run(() => { 
+      this.zone.run(() => {
         const url = this.relativeUrlPipe.transform(`/tx/${this.hoverData[0][2].txid}`);
         if (e.event.event.shiftKey || e.event.event.ctrlKey || e.event.event.metaKey) {
           window.open(url);
@@ -430,23 +435,23 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
 
   onLegendSelectChanged(e) {
     this.selected = e.selected;
-    this.right = this.selected['Fiat'] ? +this.initialRight + 40 : this.initialRight;
-    this.left = this.selected[$localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`] ? this.initialLeft : +this.initialLeft - 40;
+    this.adjustedRight = this.selected['Fiat'] ? +this.right + 40 : +this.right;
+    this.adjustedLeft = this.selected[$localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`] ? +this.left : +this.left - 40;
 
     this.chartOptions = {
       grid: {
-        right: this.right,
-        left: this.left,
+        right: this.adjustedRight,
+        left: this.adjustedLeft,
       },
       legend: {
         selected: this.selected,
       },
       dataZoom: this.allowZoom ? [{
-        left: this.left,
-        right: this.right,
+        left: this.adjustedLeft,
+        right: this.adjustedRight,
       }, {
-        left: this.left,
-        right: this.right,
+        left: this.adjustedLeft,
+        right: this.adjustedRight,
       }] : undefined
     };
 
@@ -478,7 +483,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
     // Add a point at today's date to make the graph end at the current time
     extendedSummary.unshift({ time: Date.now() / 1000, value: 0 });
     extendedSummary.reverse();
-    
+
     let oneHour = 60 * 60;
     // Fill gaps longer than interval
     for (let i = 0; i < extendedSummary.length - 1; i++) {
@@ -491,7 +496,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         i += hours - 1;
       }
     }
-  
+
     return extendedSummary.reverse();
   }
 }

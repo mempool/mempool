@@ -1,0 +1,31 @@
+<div class="box preview-box" *ngIf="(walletAddresses$ | async) as walletAddresses">
+  <app-preview-title>
+    <span i18n="shared.wallet">Wallet</span>
+  </app-preview-title>
+  <div>
+    <div class="table-col">
+      <table class="table table-borderless dual-col-striped table-fixed wallet-table" *ngIf="(walletStats$ | async) as walletStats">
+        <tbody>
+          <tr>
+            <td i18n="address.number-addresses">Addresses</td>
+            <td class="wrap-cell">{{ addressStrings.length }}</td>
+            <td class="spacer"></td>
+            <td i18n="address.utxos">UTXOs</td>
+            <td class="wrap-cell">{{ walletStats.utxos }}</td>
+          </tr>
+          <tr>
+            <td i18n="wallet.balance-btc">Balance (BTC)</td>
+            <td class="wrap-cell"><app-amount [satoshis]="walletStats.balance" [noFiat]="true" [digitsInfo]="walletStats.balance > 1_000_000_000 ? '1.4-4' : '1.8-8'"></app-amount></td>
+            <td class="spacer"></td>
+            <td i18n="wallet.balance-usd">Balance (USD)</td>
+            <td class="wrap-cell"><span class="fiat"><app-fiat [value]="walletStats.balance"></app-fiat></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="w-100 d-block d-md-none"></div>
+    <div class="col-md graph-col">
+      <app-address-graph [addressSummary$]="walletSummary$" period="all" [widget]="true" [defaultFiat]="true" [height]="330" [left]="-40" [right]="-40" [showLegend]="false" [showYAxis]="false"/>
+    </div>
+  </div>
+</div>
