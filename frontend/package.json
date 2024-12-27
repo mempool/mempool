@@ -87,7 +87,6 @@
     "clipboard": "^2.0.11",
     "domino": "^2.1.6",
     "echarts": "~5.5.0",
-    "lightweight-charts": "~3.8.0",
     "ngx-echarts": "~17.2.0",
     "ngx-infinite-scroll": "^17.0.0",
     "qrcode": "1.5.1",
