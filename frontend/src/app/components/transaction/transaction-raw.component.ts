@@ -143,7 +143,8 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
       this.isLoadingPrevouts = false;
       this.fetchCpfp = prevouts.some(prevout => prevout?.unconfirmed);
     } catch (error) {
-      this.errorPrevouts = error?.error?.message || error?.message;
+      console.log(error);
+      this.errorPrevouts = error?.error?.error || error?.message;
       this.isLoadingPrevouts = false;
     }
   }
@@ -171,7 +172,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
         }
         this.isLoadingCpfpInfo = false;
       } catch (error) {
-        this.errorCpfpInfo = error?.error?.message || error?.message;
+        this.errorCpfpInfo = error?.error?.error || error?.message;
         this.isLoadingCpfpInfo = false;
       }
     }

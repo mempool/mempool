@@ -936,11 +936,13 @@ class BitcoinRoutes {
     try {
       const outpoints = req.body;
       if (!Array.isArray(outpoints) || outpoints.some((item) => !/^[a-fA-F0-9]{64}$/.test(item.txid) || typeof item.vout !== 'number')) {
-        return res.status(400).json({ message: 'Invalid input format' });
+        handleError(req, res, 400, 'Invalid outpoints format');
+        return;
       }
 
       if (outpoints.length > 100) {
-        return res.status(400).json({ message: 'Too many prevouts requested' });
+        handleError(req, res, 400, 'Too many outpoints requested');
+        return;
       }
 
       const result = Array(outpoints.length).fill(null);
@@ -955,7 +957,7 @@ class BitcoinRoutes {
         if (mempoolTx) {
           if (outpoint.vout < mempoolTx.vout.length) {
             prevout = mempoolTx.vout[outpoint.vout];
-            unconfirmed = true;  
+            unconfirmed = true;
           }
         } else {
           const rawPrevout = await bitcoinClient.getTxOut(outpoint.txid, outpoint.vout, false);
@@ -979,7 +981,7 @@ class BitcoinRoutes {
       res.json(result);
 
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get prevouts');
     }
   }
 
@@ -988,22 +990,23 @@ class BitcoinRoutes {
       const tx = req.body;
 
       if (
-        !tx || typeof tx !== "object" ||
-        !tx.txid || typeof tx.txid !== "string" ||
-        typeof tx.weight !== "number" ||
-        typeof tx.sigops !== "number" ||
-        typeof tx.fee !== "number" ||
+        !tx || typeof tx !== 'object' ||
+        !tx.txid || typeof tx.txid !== 'string' ||
+        typeof tx.weight !== 'number' ||
+        typeof tx.sigops !== 'number' ||
+        typeof tx.fee !== 'number' ||
         !Array.isArray(tx.vin) ||
         !Array.isArray(tx.vout)
       ) {
-        return res.status(400).json({ message: 'Invalid transaction format: missing or incorrect fields' });
+        handleError(req, res, 400, 'Invalid transaction format');
+        return;
       }
 
       const cpfpInfo = calculateLocalTxCpfp(tx, mempool.getMempool());
       res.json(cpfpInfo);
 
     } catch (e) {
-      handleError(req, res, 500, e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to calculate CPFP info');
     }
   }
 }
