@@ -177,8 +177,9 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     if (this.canvas) {
       this.canvas.nativeElement.removeEventListener('webglcontextlost', this.handleContextLost);
       this.canvas.nativeElement.removeEventListener('webglcontextrestored', this.handleContextRestored);
-      this.themeChangedSubscription?.unsubscribe();
     }
+    this.themeChangedSubscription?.unsubscribe();
+    this.searchSubscription?.unsubscribe();
   }
 
   clear(direction): void {
