@@ -176,5 +176,8 @@ export class BlockViewComponent implements OnInit, OnDestroy {
     if (this.queryParamsSubscription) {
       this.queryParamsSubscription.unsubscribe();
     }
+    if (this.blockGraph) {
+      this.blockGraph.destroy();
+    }
   }
 }

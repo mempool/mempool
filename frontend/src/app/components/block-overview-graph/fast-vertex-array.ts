@@ -110,4 +110,12 @@ export class FastVertexArray {
   getVertexData(): Float32Array {
     return this.data;
   }
+
+  destroy(): void {
+    this.data = null;
+    this.sprites = null;
+    this.freeSlots = null;
+    this.lastSlot = 0;
+    this.dirty = false;
+  }
 }

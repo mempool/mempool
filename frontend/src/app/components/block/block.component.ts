@@ -428,6 +428,12 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.isAuditEnabledSubscription?.unsubscribe();
     this.oobSubscription?.unsubscribe();
     this.priceSubscription?.unsubscribe();
+    this.blockGraphProjected.forEach(graph => {
+      graph.destroy();
+    });
+    this.blockGraphActual.forEach(graph => {
+      graph.destroy();
+    });
   }
 
   // TODO - Refactor this.fees/this.reward for liquid because it is not
