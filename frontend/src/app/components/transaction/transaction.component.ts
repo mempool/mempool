@@ -240,7 +240,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         retry({ count: 2, delay: 2000 }),
         // Try again until we either get a valid response, or the transaction is confirmed
         repeat({ delay: 2000 }),
-        filter((transactionTimes) => transactionTimes?.length && transactionTimes[0] > 0 && !this.tx.status?.confirmed),
+        filter((transactionTimes) => transactionTimes?.[0] > 0 || this.tx.status?.confirmed),
         take(1),
       )),
     )
