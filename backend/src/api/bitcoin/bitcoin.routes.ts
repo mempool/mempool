@@ -960,16 +960,20 @@ class BitcoinRoutes {
             unconfirmed = true;
           }
         } else {
-          const rawPrevout = await bitcoinClient.getTxOut(outpoint.txid, outpoint.vout, false);
-          if (rawPrevout) {
-            prevout = {
-              value: Math.round(rawPrevout.value * 100000000),
-              scriptpubkey: rawPrevout.scriptPubKey.hex,
-              scriptpubkey_asm: rawPrevout.scriptPubKey.asm ? transactionUtils.convertScriptSigAsm(rawPrevout.scriptPubKey.hex) : '',
-              scriptpubkey_type: transactionUtils.translateScriptPubKeyType(rawPrevout.scriptPubKey.type),
-              scriptpubkey_address: rawPrevout.scriptPubKey && rawPrevout.scriptPubKey.address ? rawPrevout.scriptPubKey.address : '',
-            };
-            unconfirmed = false;
+          try {
+            const rawPrevout = await bitcoinClient.getTxOut(outpoint.txid, outpoint.vout, false);
+            if (rawPrevout) {
+              prevout = {
+                value: Math.round(rawPrevout.value * 100000000),
+                scriptpubkey: rawPrevout.scriptPubKey.hex,
+                scriptpubkey_asm: rawPrevout.scriptPubKey.asm ? transactionUtils.convertScriptSigAsm(rawPrevout.scriptPubKey.hex) : '',
+                scriptpubkey_type: transactionUtils.translateScriptPubKeyType(rawPrevout.scriptPubKey.type),
+                scriptpubkey_address: rawPrevout.scriptPubKey && rawPrevout.scriptPubKey.address ? rawPrevout.scriptPubKey.address : '',
+              };
+              unconfirmed = false;
+            }
+          } catch (e) {
+            // Ignore bitcoin client errors, just leave prevout as null
           }
         }
 
