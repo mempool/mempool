@@ -222,7 +222,6 @@ export function calculateMempoolTxCpfp(tx: MempoolTransactionExtended, mempool: 
   };
 }
 
-
 /**
  * Takes an unbroadcasted transaction and a copy of the current mempool, and calculates an estimate
  * of the CPFP data if the transaction were to enter the mempool. This only returns potential ancerstors 

@@ -55,7 +55,7 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from', this.getBlocksByBulk.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from/:to', this.getBlocksByBulk.bind(this))
       .post(config.MEMPOOL.API_URL_PREFIX + 'prevouts', this.$getPrevouts)
-      .post(config.MEMPOOL.API_URL_PREFIX + 'cpfp', this.getCpfpLocalTx)
+      .post(config.MEMPOOL.API_URL_PREFIX + 'cpfp', this.getCpfpLocalTxs)
       // Temporarily add txs/package endpoint for all backends until esplora supports it
       .post(config.MEMPOOL.API_URL_PREFIX + 'txs/package', this.$submitPackage)
       ;
@@ -989,25 +989,30 @@ class BitcoinRoutes {
     }
   }
 
-  private getCpfpLocalTx(req: Request, res: Response) {
+  private getCpfpLocalTxs(req: Request, res: Response) {
     try {
-      const tx = req.body;
+      const transactions = req.body;
 
-      if (
+      if (!Array.isArray(transactions) || transactions.some(tx =>
         !tx || typeof tx !== 'object' ||
-        !tx.txid || typeof tx.txid !== 'string' ||
+        !/^[a-fA-F0-9]{64}$/.test(tx.txid) ||
         typeof tx.weight !== 'number' ||
         typeof tx.sigops !== 'number' ||
         typeof tx.fee !== 'number' ||
         !Array.isArray(tx.vin) ||
         !Array.isArray(tx.vout)
-      ) {
-        handleError(req, res, 400, 'Invalid transaction format');
+      )) {
+        handleError(req, res, 400, 'Invalid transactions format');
         return;
       }
 
-      const cpfpInfo = calculateLocalTxCpfp(tx, mempool.getMempool());
-      res.json(cpfpInfo);
+      if (transactions.length > 1) {
+        handleError(req, res, 400, 'More than one transaction is not supported yet');
+        return;
+      }
+
+      const cpfpInfo = calculateLocalTxCpfp(transactions[0], mempool.getMempool());
+      res.json([cpfpInfo]);
 
     } catch (e) {
       handleError(req, res, 500, 'Failed to calculate CPFP info');

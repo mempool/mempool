@@ -154,17 +154,17 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     if (this.hasPrevouts && this.fetchCpfp) {
       try {
         this.isLoadingCpfpInfo = true;
-        const cpfpInfo: CpfpInfo = await firstValueFrom(this.apiService.getCpfpLocalTx$({
+        const cpfpInfo: CpfpInfo[] = await firstValueFrom(this.apiService.getCpfpLocalTx$([{
           txid: transaction.txid,
           weight: transaction.weight,
           sigops: transaction.sigops,
           fee: transaction.fee,
           vin: transaction.vin,
           vout: transaction.vout
-        }));
+        }]));
 
-        if (cpfpInfo && cpfpInfo.ancestors.length > 0) {
-          const { ancestors, effectiveFeePerVsize } = cpfpInfo;
+        if (cpfpInfo?.[0]?.ancestors?.length) {
+          const { ancestors, effectiveFeePerVsize } = cpfpInfo[0];
           transaction.effectiveFeePerVsize = effectiveFeePerVsize;
           this.cpfpInfo = { ancestors, effectiveFeePerVsize };
           this.hasCpfp = true;
