@@ -202,12 +202,12 @@ export class TransactionsListComponent implements OnInit, OnChanges {
             for (const address of this.addresses) {
               switch (address.length) {
                 case 130: {
-                  if (v.scriptpubkey === '21' + address + 'ac') {
+                  if (v.scriptpubkey === '41' + address + 'ac') {
                     return v.value;
                   }
                 } break;
                 case 66: {
-                  if (v.scriptpubkey === '41' + address + 'ac') {
+                  if (v.scriptpubkey === '21' + address + 'ac') {
                     return v.value;
                   }
                 } break;
@@ -224,12 +224,12 @@ export class TransactionsListComponent implements OnInit, OnChanges {
             for (const address of this.addresses) {
               switch (address.length) {
                 case 130: {
-                  if (v.prevout?.scriptpubkey === '21' + address + 'ac') {
+                  if (v.prevout?.scriptpubkey === '41' + address + 'ac') {
                     return v.prevout?.value;
                   }
                 } break;
                 case 66: {
-                  if (v.prevout?.scriptpubkey === '41' + address + 'ac') {
+                  if (v.prevout?.scriptpubkey === '21' + address + 'ac') {
                     return v.prevout?.value;
                   }
                 } break;
