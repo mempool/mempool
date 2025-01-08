@@ -988,7 +988,7 @@ function scriptPubKeyToAddress(scriptPubKey: string, network: string): { address
   }
   // anchor
   if (scriptPubKey === '51024e73') {
-    return { address: 'bc1pfeessrawgf', type: 'anchor' };
+    return { address: p2a(network), type: 'anchor' };
   }
   // op_return
   if (/^6a/.test(scriptPubKey)) {
@@ -1041,6 +1041,15 @@ function p2wsh(scriptHash: string, network: string): string {
 
 function p2tr(pubKeyHash: string, network: string): string {
   const pubkeyHashArray = hexStringToUint8Array(pubKeyHash);
+  const hrp = ['testnet', 'testnet4', 'signet'].includes(network) ? 'tb' : 'bc';
+  const version = 1;
+  const words = [version].concat(toWords(pubkeyHashArray));
+  const bech32Address = bech32Encode(hrp, words, 0x2bc830a3);
+  return bech32Address;
+}
+
+function p2a(network: string): string {
+  const pubkeyHashArray = hexStringToUint8Array('4e73');
   const hrp = ['testnet', 'testnet4', 'signet'].includes(network) ? 'tb' : 'bc';
   const version = 1;
   const words = [version].concat(toWords(pubkeyHashArray));
