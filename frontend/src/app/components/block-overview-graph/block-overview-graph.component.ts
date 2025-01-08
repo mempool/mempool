@@ -453,7 +453,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     }
     this.applyQueuedUpdates();
     // skip re-render if there's no change to the scene
-    if (this.scene && this.gl) {
+    if (this.scene && this.gl && this.vertexArray) {
       /* SET UP SHADER UNIFORMS */
       // screen dimensions
       this.gl.uniform2f(this.gl.getUniformLocation(this.shaderProgram, 'screenSize'), this.displayWidth, this.displayHeight);
