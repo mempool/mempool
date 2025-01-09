@@ -167,8 +167,10 @@ export function calculateGoodBlockCpfp(height: number, transactions: MempoolTran
 /**
  * Takes a mempool transaction and a copy of the current mempool, and calculates the CPFP data for
  * that transaction (and all others in the same cluster)
+ * If the passed transaction is not guaranteed to be in the mempool, set localTx to true: this will
+ * prevent updating the CPFP data of other transactions in the cluster
  */
-export function calculateMempoolTxCpfp(tx: MempoolTransactionExtended, mempool: { [txid: string]: MempoolTransactionExtended }): CpfpInfo {
+export function calculateMempoolTxCpfp(tx: MempoolTransactionExtended, mempool: { [txid: string]: MempoolTransactionExtended }, localTx: boolean = false): CpfpInfo {
   if (tx.cpfpUpdated && Date.now() < (tx.cpfpUpdated + CPFP_UPDATE_INTERVAL)) {
     tx.cpfpDirty = false;
     return {
@@ -198,17 +200,26 @@ export function calculateMempoolTxCpfp(tx: MempoolTransactionExtended, mempool: 
     totalFee += tx.fees.base;
   }
   const effectiveFeePerVsize = totalFee / totalVsize;
-  for (const tx of cluster.values()) {
-    mempool[tx.txid].effectiveFeePerVsize = effectiveFeePerVsize;
-    mempool[tx.txid].ancestors = Array.from(tx.ancestors.values()).map(tx => ({ txid: tx.txid, weight: tx.weight, fee: tx.fees.base }));
-    mempool[tx.txid].descendants = Array.from(cluster.values()).filter(entry => entry.txid !== tx.txid && !tx.ancestors.has(entry.txid)).map(tx => ({ txid: tx.txid, weight: tx.weight, fee: tx.fees.base }));
-    mempool[tx.txid].bestDescendant = null;
-    mempool[tx.txid].cpfpChecked = true;
-    mempool[tx.txid].cpfpDirty = true;
-    mempool[tx.txid].cpfpUpdated = Date.now();
-  }
 
-  tx = mempool[tx.txid];
+  if (localTx) {
+    tx.effectiveFeePerVsize = effectiveFeePerVsize;
+    tx.ancestors = Array.from(cluster.get(tx.txid)?.ancestors.values() || []).map(ancestor => ({ txid: ancestor.txid, weight: ancestor.weight, fee: ancestor.fees.base }));
+    tx.descendants = Array.from(cluster.values()).filter(entry => entry.txid !== tx.txid && !cluster.get(tx.txid)?.ancestors.has(entry.txid)).map(tx => ({ txid: tx.txid, weight: tx.weight, fee: tx.fees.base }));
+    tx.bestDescendant = null;
+  } else {
+    for (const tx of cluster.values()) {
+      mempool[tx.txid].effectiveFeePerVsize = effectiveFeePerVsize;
+      mempool[tx.txid].ancestors = Array.from(tx.ancestors.values()).map(tx => ({ txid: tx.txid, weight: tx.weight, fee: tx.fees.base }));
+      mempool[tx.txid].descendants = Array.from(cluster.values()).filter(entry => entry.txid !== tx.txid && !tx.ancestors.has(entry.txid)).map(tx => ({ txid: tx.txid, weight: tx.weight, fee: tx.fees.base }));
+      mempool[tx.txid].bestDescendant = null;
+      mempool[tx.txid].cpfpChecked = true;
+      mempool[tx.txid].cpfpDirty = true;
+      mempool[tx.txid].cpfpUpdated = Date.now();
+    }
+
+    tx = mempool[tx.txid];
+
+  }
 
   return {
     ancestors: tx.ancestors || [],
@@ -220,33 +231,6 @@ export function calculateMempoolTxCpfp(tx: MempoolTransactionExtended, mempool: 
     adjustedVsize: tx.adjustedVsize,
     acceleration: tx.acceleration
   };
-}
-
-/**
- * Takes an unbroadcasted transaction and a copy of the current mempool, and calculates an estimate
- * of the CPFP data if the transaction were to enter the mempool. This only returns potential ancerstors 
- * and effective fee rate, and does not update the CPFP data of other transactions in the cluster.
- */
-export function calculateLocalTxCpfp(tx: MempoolTransactionExtended, mempool: { [txid: string]: MempoolTransactionExtended }): CpfpInfo {
-  const ancestorMap = new Map<string, GraphTx>();
-  const graphTx = convertToGraphTx(tx, memPool.getSpendMap());
-  ancestorMap.set(tx.txid, graphTx);
-
-  const allRelatives = expandRelativesGraph(mempool, ancestorMap, memPool.getSpendMap());
-  const relativesMap = initializeRelatives(allRelatives);
-  const cluster = calculateCpfpCluster(tx.txid, relativesMap);
-
-  let totalVsize = 0;
-  let totalFee = 0;
-  for (const tx of cluster.values()) {
-    totalVsize += tx.vsize;
-    totalFee += tx.fees.base;
-  }
-
-  return {
-    ancestors: Array.from(cluster.get(tx.txid)?.ancestors.values() || []).map(ancestor => ({ txid: ancestor.txid, weight: ancestor.weight, fee: ancestor.fees.base })),
-    effectiveFeePerVsize: totalFee / totalVsize
-  }
 }
 
 /**

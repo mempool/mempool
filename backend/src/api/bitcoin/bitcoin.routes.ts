@@ -19,7 +19,7 @@ import bitcoinClient from './bitcoin-client';
 import difficultyAdjustment from '../difficulty-adjustment';
 import transactionRepository from '../../repositories/TransactionRepository';
 import rbfCache from '../rbf-cache';
-import { calculateMempoolTxCpfp, calculateLocalTxCpfp } from '../cpfp';
+import { calculateMempoolTxCpfp } from '../cpfp';
 import { handleError } from '../../utils/api';
 
 const TXID_REGEX = /^[a-f0-9]{64}$/i;
@@ -1011,7 +1011,7 @@ class BitcoinRoutes {
         return;
       }
 
-      const cpfpInfo = calculateLocalTxCpfp(transactions[0], mempool.getMempool());
+      const cpfpInfo = calculateMempoolTxCpfp(transactions[0], mempool.getMempool(), true);
       res.json([cpfpInfo]);
 
     } catch (e) {
