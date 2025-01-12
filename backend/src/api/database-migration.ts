@@ -1105,13 +1105,6 @@ class DatabaseMigration {
         `);
       }
 
-      // blocks pools-v2.json hash
-      if (databaseSchemaVersion < 95) {
-        await this.$executeQuery('ALTER TABLE `blocks` ADD definition_hash varchar(255) NOT NULL DEFAULT "5f32a67401929169f225f5db43c9efa795d1b159"');
-        await this.$executeQuery('ALTER TABLE `blocks` ADD INDEX `definition_hash` (`definition_hash`)');
-        await this.updateToSchemaVersion(95);
-      }
-
       if (config.MEMPOOL.NETWORK !== 'mainnet') {
         // Apply all the mainnet specific migrations to all other networks
         // Version 69
@@ -1124,6 +1117,18 @@ class DatabaseMigration {
         await this.$executeQuery('ALTER TABLE `accelerations` ADD requested datetime DEFAULT NULL');
       }
       await this.updateToSchemaVersion(94);
+    }
+
+    // blocks pools-v2.json hash
+    if (databaseSchemaVersion < 95) {
+      let poolJsonSha = 'f737d86571d190cf1a1a3cf5fd86b33ba9624254';
+      const [poolJsonShaDb]: any[] = await DB.query(`SELECT string FROM state WHERE name = 'pools_json_sha'`);
+      if (poolJsonShaDb?.length > 0) {
+        poolJsonSha = poolJsonShaDb[0].string;
+      }
+      await this.$executeQuery(`ALTER TABLE blocks ADD definition_hash varchar(255) NOT NULL DEFAULT "${poolJsonSha}"`);
+      await this.$executeQuery('ALTER TABLE blocks ADD INDEX `definition_hash` (`definition_hash`)');
+      await this.updateToSchemaVersion(95);
     }
   }
 
