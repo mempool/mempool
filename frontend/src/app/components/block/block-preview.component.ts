@@ -117,7 +117,7 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
         this.openGraphService.waitOver('block-data-' + this.rawId);
       }),
       throttleTime(50, asyncScheduler, { leading: true, trailing: true }),
-      shareReplay(1)
+      shareReplay({ bufferSize: 1, refCount: true })
     );
 
     this.overviewSubscription = block$.pipe(

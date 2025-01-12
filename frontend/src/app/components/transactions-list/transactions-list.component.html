@@ -6,7 +6,7 @@
       <app-truncate [text]="tx.txid"></app-truncate>
     </a>
     <div>
-      <ng-template [ngIf]="tx.status.confirmed">&lrm;{{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm:ss' }}</ng-template>
+      <ng-template [ngIf]="tx.status.confirmed"><app-timestamp [customFormat]="'yyyy-MM-dd HH:mm:ss'" [unixTime]="tx.status.block_time" [hideTimeSince]="true"></app-timestamp></ng-template>
       <ng-template [ngIf]="!tx.status.confirmed && tx.firstSeen">
         <i><app-time kind="since" [time]="tx.firstSeen" [fastRender]="true" [showTooltip]="true"></app-time></i>
       </ng-template>
@@ -81,7 +81,7 @@
                     </ng-container>
                   </div>
                 </td>
-                <td class="text-right nowrap amount" [class]="{large: vin?.prevout?.value > 1000000000 || vin.isInscription}">
+                <td class="text-right nowrap amount" [class]="{large: tx.largeInput}">
                   <button *ngIf="vin.isInscription" (click)="toggleOrdData(tx.txid, 'vin', vindex)" type="button" class="btn btn-sm badge badge-ord primary" style="margin-right: 10px;">Inscription</button>
                   <ng-template [ngIf]="vin.prevout && vin.prevout.asset && vin.prevout.asset !== nativeAssetId" [ngIfElse]="defaultOutput">
                     <div *ngIf="assetsMinimal && assetsMinimal[vin.prevout.asset] else assetVinNotFound">
@@ -257,7 +257,7 @@
                     </ng-template>
                   </ng-template>
                 </td>
-                <td class="text-right nowrap amount" [class]="{large: vout?.value > 1000000000}">
+                <td class="text-right nowrap amount" [class]="{large: tx.largeOutput}">
                   <ng-template [ngIf]="vout.asset && vout.asset !== nativeAssetId" [ngIfElse]="defaultOutput">
                     <div *ngIf="assetsMinimal && assetsMinimal[vout.asset] else assetNotFound">
                       <ng-container *ngTemplateOutlet="assetBox; context:{ $implicit: vout }"></ng-container>

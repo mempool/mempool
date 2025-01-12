@@ -37,6 +37,7 @@ export class WebsocketService {
   private isTrackingWallet: boolean = false;
   private trackingWalletName: string;
   private trackingMempoolBlock: number;
+  private trackingMempoolBlockNetwork: string;
   private stoppingTrackMempoolBlock: any | null = null;
   private latestGitCommit = '';
   private onlineCheckTimeout: number;
@@ -226,10 +227,11 @@ export class WebsocketService {
       clearTimeout(this.stoppingTrackMempoolBlock);
     }
     // skip duplicate tracking requests
-    if (force || this.trackingMempoolBlock !== block) {
+    if (force || this.trackingMempoolBlock !== block || this.network !== this.trackingMempoolBlockNetwork) {
       this.websocketSubject.next({ 'track-mempool-block': block });
       this.isTrackingMempoolBlock = true;
       this.trackingMempoolBlock = block;
+      this.trackingMempoolBlockNetwork = this.network;
       return true;
     }
     return false;

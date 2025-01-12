@@ -61,10 +61,7 @@
     <tr>
       <td i18n="block.timestamp">Timestamp</td>
       <td>
-        &lrm;{{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm:ss' }}
-        <div class="lg-inline">
-          <i class="symbol">(<app-time kind="since" [time]="tx.status.block_time" [fastRender]="true"></app-time>)</i>
-        </div>
+        <app-timestamp [customFormat]="'yyyy-MM-dd HH:mm:ss'" [unixTime]="tx.status.block_time"></app-timestamp>
       </td>
     </tr>
   } @else {
@@ -217,10 +214,10 @@
     <tr>
       <td class="td-width" i18n="transaction.fee|Transaction fee">Fee</td>
       <td class="text-wrap">{{ tx.fee | number }} <span class="symbol" i18n="shared.sats">sats</span>
-        @if (accelerationInfo?.bidBoost ?? tx.feeDelta > 0) {
+        @if (isAcceleration && accelerationInfo?.bidBoost ?? tx.feeDelta > 0) {
           <span class="oobFees" i18n-ngbTooltip="Acceleration Fees" ngbTooltip="Acceleration fees paid out-of-band"> +{{ accelerationInfo?.bidBoost ?? tx.feeDelta | number }} </span><span class="symbol" i18n="shared.sats">sats</span>
         }
-        <span class="fiat"><app-fiat [blockConversion]="tx.price" [value]="tx.fee + ((accelerationInfo?.bidBoost ?? tx.feeDelta) || 0)"></app-fiat></span>
+        <span class="fiat"><app-fiat [blockConversion]="tx.price" [value]="tx.fee + (isAcceleration ? ((accelerationInfo?.bidBoost ?? tx.feeDelta) || 0) : 0)"></app-fiat></span>
       </td>
     </tr>
   } @else {
@@ -247,7 +244,7 @@
 
 <ng-template #effectiveRateRow>
   @if (!isLoadingTx) {
-    @if ((cpfpInfo && hasEffectiveFeeRate) || accelerationInfo) {
+    @if ((cpfpInfo && hasEffectiveFeeRate) || (accelerationInfo && isAcceleration)) {
       <tr>
         @if (isAcceleration) {
           <td i18n="transaction.accelerated-fee-rate|Accelerated transaction fee rate">Accelerated fee rate</td>
