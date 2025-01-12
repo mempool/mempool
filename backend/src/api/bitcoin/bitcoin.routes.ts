@@ -229,6 +229,7 @@ class BitcoinRoutes {
       if (e instanceof Error && e instanceof Error && e.message && e.message.indexOf('No such mempool or blockchain transaction') > -1) {
         statusCode = 404;
         handleError(req, res, statusCode, 'No such mempool or blockchain transaction');
+        return;
       }
       handleError(req, res, statusCode, 'Failed to get transaction');
     }
@@ -248,6 +249,7 @@ class BitcoinRoutes {
       if (e instanceof Error && e.message && e.message.indexOf('No such mempool or blockchain transaction') > -1) {
         statusCode = 404;
         handleError(req, res, statusCode, 'No such mempool or blockchain transaction');
+        return;
       }
       handleError(req, res, statusCode, 'Failed to get raw transaction');
     }
@@ -334,6 +336,7 @@ class BitcoinRoutes {
       if (e instanceof Error && e.message && e.message.indexOf('No such mempool or blockchain transaction') > -1) {
         statusCode = 404;
         handleError(req, res, statusCode, 'No such mempool or blockchain transaction');
+        return;
       }
       handleError(req, res, statusCode, 'Failed to get transaction status');
     }

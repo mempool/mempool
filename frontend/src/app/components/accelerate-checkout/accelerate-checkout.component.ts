@@ -644,7 +644,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                 return;
               }
               const verificationToken = await this.$verifyBuyer(this.payments, tokenResult.token, tokenResult.details, costUSD.toFixed(2));
-              if (!verificationToken) {
+              if (!verificationToken || !verificationToken.token) {
                 console.error(`SCA verification failed`);
                 this.accelerateError = 'SCA Verification Failed. Payment Declined.';
                 this.processing = false;
@@ -657,10 +657,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               this.servicesApiService.accelerateWithGooglePay$(
                 this.tx.txid,
                 tokenResult.token,
-                verificationToken,
+                verificationToken.token,
                 cardTag,
                 `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
-                costUSD
+                costUSD,
+                verificationToken.userChallenged
               ).subscribe({
                 next: () => {
                   this.processing = false;
@@ -795,9 +796,9 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   /**
-   * Required in SCA Mandated Regions: Learn more at https://developer.squareup.com/docs/sca-overview
+   * https://developer.squareup.com/docs/sca-overview
    */
-  async $verifyBuyer(payments, token, details, amount) {
+  async $verifyBuyer(payments, token, details, amount): Promise<{token: string, userChallenged: boolean}> {
     const verificationDetails = {
       amount: amount,
       currencyCode: 'USD',
@@ -817,7 +818,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       token,
       verificationDetails,
     );
-    return verificationResults.token;
+    return verificationResults;
   }
 
   /**
