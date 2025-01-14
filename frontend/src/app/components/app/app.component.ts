@@ -41,7 +41,7 @@ export class AppComponent implements OnInit {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvents(event: KeyboardEvent) {
-    if (event.target instanceof HTMLInputElement) {
+    if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
       return;
     }
     // prevent arrow key horizontal scrolling
