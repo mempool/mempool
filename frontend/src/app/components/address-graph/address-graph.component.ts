@@ -478,25 +478,30 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
   }
 
   extendSummary(summary) {
-    let extendedSummary = summary.slice();
+    const extendedSummary = summary.slice();
 
     // Add a point at today's date to make the graph end at the current time
     extendedSummary.unshift({ time: Date.now() / 1000, value: 0 });
-    extendedSummary.reverse();
 
-    let oneHour = 60 * 60;
+    let maxTime = Date.now() / 1000;
+
+    const oneHour = 60 * 60;
     // Fill gaps longer than interval
     for (let i = 0; i < extendedSummary.length - 1; i++) {
-      let hours = Math.floor((extendedSummary[i + 1].time - extendedSummary[i].time) / oneHour);      
+      if (extendedSummary[i].time > maxTime) {
+        extendedSummary[i].time = maxTime - 30;
+      }
+      maxTime = extendedSummary[i].time;
+      const hours = Math.floor((extendedSummary[i].time - extendedSummary[i + 1].time) / oneHour);
       if (hours > 1) {
         for (let j = 1; j < hours; j++) {
-          let newTime = extendedSummary[i].time + oneHour * j;
+          const newTime = extendedSummary[i].time - oneHour * j;
           extendedSummary.splice(i + j, 0, { time: newTime, value: 0 });
         }
         i += hours - 1;
       }
     }
 
-    return extendedSummary.reverse();
+    return extendedSummary;
   }
 }
