@@ -11,9 +11,9 @@
 <ng-template [ngIf]="!hideUnconfirmed && !confirmations && replaced">
   <button type="button" class="btn btn-sm btn-warning no-cursor {{buttonClass}}" i18n="transaction.replaced|Transaction replaced state">Replaced</button>
 </ng-template>
-<ng-template [ngIf]="!hideUnconfirmed && !confirmations && !replaced && removed">
+<ng-template [ngIf]="!hideUnconfirmed && !confirmations && !replaced && (removed || cached)">
   <button type="button" class="btn btn-sm btn-warning no-cursor {{buttonClass}}" i18n="transaction.audit.removed|Transaction removed state">Removed</button>
 </ng-template>
-<ng-template [ngIf]="!hideUnconfirmed && chainTip != null && !confirmations && !replaced && !removed">
+<ng-template [ngIf]="!hideUnconfirmed && chainTip != null && !confirmations && !replaced && !(removed || cached)">
   <button type="button" class="btn btn-sm btn-danger no-cursor {{buttonClass}}" i18n="transaction.unconfirmed|Transaction unconfirmed state">Unconfirmed</button>
 </ng-template>
