@@ -9,8 +9,6 @@ import { of, Observable, Subscription } from 'rxjs';
 import { SeoService } from '@app/services/seo.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { WalletAddress } from '@interfaces/node-api.interface';
-import { ElectrsApiService } from '@app/services/electrs-api.service';
-import { AudioService } from '@app/services/audio.service';
 
 class WalletStats implements ChainStats {
   addresses: string[];
@@ -26,7 +24,6 @@ class WalletStats implements ChainStats {
         acc.funded_txo_sum += stat.funded_txo_sum;
         acc.spent_txo_count += stat.spent_txo_count;
         acc.spent_txo_sum += stat.spent_txo_sum;
-        acc.tx_count += stat.tx_count;
         return acc;
       }, {
         funded_txo_count: 0,
@@ -112,17 +109,12 @@ export class WalletComponent implements OnInit, OnDestroy {
   addressStrings: string[] = [];
   walletName: string;
   isLoadingWallet = true;
-  isLoadingTransactions = true;
-  transactions: Transaction[];
-  totalTransactionCount: number;
-  retryLoadMore = false;
   wallet$: Observable<Record<string, WalletAddress>>;
   walletAddresses$: Observable<Record<string, Address>>;
   walletSummary$: Observable<AddressTxSummary[]>;
   walletStats$: Observable<WalletStats>;
   error: any;
   walletSubscription: Subscription;
-  transactionSubscription: Subscription;
 
   collapseAddresses: boolean = true;
 
@@ -137,8 +129,6 @@ export class WalletComponent implements OnInit, OnDestroy {
     private websocketService: WebsocketService,
     private stateService: StateService,
     private apiService: ApiService,
-    private electrsApiService: ElectrsApiService,
-    private audioService: AudioService,
     private seoService: SeoService,
   ) { }
 
@@ -182,21 +172,6 @@ export class WalletComponent implements OnInit, OnDestroy {
       }),
       switchMap(initial => this.stateService.walletTransactions$.pipe(
         startWith(null),
-        tap((transactions) => {
-          if (!transactions?.length) {
-            return;
-          }
-          for (const transaction of transactions) {
-            const tx = this.transactions.find((t) => t.txid === transaction.txid);
-            if (tx) {
-              tx.status = transaction.status;
-            } else {
-              this.transactions.unshift(transaction);
-            }
-          }
-          this.transactions = this.transactions.slice();
-          this.audioService.playSound('magic');
-        }),
         scan((wallet, walletTransactions) => {
           for (const tx of (walletTransactions || [])) {
             const funded: Record<string, number> = {};
@@ -292,57 +267,8 @@ export class WalletComponent implements OnInit, OnDestroy {
             return stats;
           }, walletStats),
         );
-      })
+      }),
     );
-
-    this.transactionSubscription = this.wallet$.pipe(
-      switchMap(wallet => {
-        const addresses = Object.keys(wallet).map(addr => this.normalizeAddress(addr));
-        return this.electrsApiService.getAddressesTransactions$(addresses);
-      }),
-      map(transactions => {
-        // only confirmed transactions supported for now
-        return transactions.filter(tx => tx.status.confirmed).sort((a, b) => b.status.block_height - a.status.block_height);
-      }),
-      catchError((error) => {
-        console.log(error);
-        this.error = error;
-        this.seoService.logSoft404();
-        this.isLoadingWallet = false;
-        return of([]);
-      })
-    ).subscribe((transactions: Transaction[] | null) => {
-      if (!transactions) {
-        return;
-      }
-      this.transactions = transactions;
-      this.isLoadingTransactions = false;
-    });
-  }
-
-  loadMore(): void {
-    if (this.isLoadingTransactions || this.fullyLoaded) {
-      return;
-    }
-    this.isLoadingTransactions = true;
-    this.retryLoadMore = false;
-    this.electrsApiService.getAddressesTransactions$(this.addressStrings, this.transactions[this.transactions.length - 1].txid)
-      .subscribe((transactions: Transaction[]) => {
-        if (transactions && transactions.length) {
-          this.transactions = this.transactions.concat(transactions.sort((a, b) => b.status.block_height - a.status.block_height));
-        } else {
-          this.fullyLoaded = true;
-        }
-        this.isLoadingTransactions = false;
-      },
-      (error) => {
-        this.isLoadingTransactions = false;
-        this.retryLoadMore = true;
-        // In the unlikely event of the txid wasn't found in the mempool anymore and we must reload the page.
-        if (error.status === 422) {
-          window.location.reload();
-        }
-      });
   }
 
   deduplicateWalletTransactions(walletTransactions: AddressTxSummary[]): AddressTxSummary[] {
@@ -373,6 +299,5 @@ export class WalletComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.websocketService.stopTrackingWallet();
     this.walletSubscription.unsubscribe();
-    this.transactionSubscription.unsubscribe();
   }
 }

@@ -142,16 +142,12 @@ export class ElectrsApiService {
     return this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/address/' + address + '/txs', { params });
   }
 
-  getAddressesTransactions$(addresses: string[], txid?: string): Observable<Transaction[]> {
+  getAddressesTransactions$(addresses: string[],  txid?: string): Observable<Transaction[]> {
     let params = new HttpParams();
     if (txid) {
       params = params.append('after_txid', txid);
     }
-    return this.httpClient.post<Transaction[]>(
-      this.apiBaseUrl + this.apiBasePath + '/api/addresses/txs',
-      addresses,
-      { params }
-    );
+    return this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + `/api/addresses/txs?addresses=${addresses.join(',')}`, { params });
   }
 
   getAddressSummary$(address: string,  txid?: string): Observable<AddressTxSummary[]> {
@@ -167,7 +163,7 @@ export class ElectrsApiService {
     if (txid) {
       params = params.append('after_txid', txid);
     }
-    return this.httpClient.post<AddressTxSummary[]>(this.apiBaseUrl + this.apiBasePath + '/api/addresses/txs/summary', addresses, { params });
+    return this.httpClient.get<AddressTxSummary[]>(this.apiBaseUrl + this.apiBasePath + `/api/addresses/txs/summary?addresses=${addresses.join(',')}`, { params });
   }
 
   getScriptHashTransactions$(script: string,  txid?: string): Observable<Transaction[]> {
@@ -186,7 +182,7 @@ export class ElectrsApiService {
       params = params.append('after_txid', txid);
     }
     return from(Promise.all(scripts.map(script => calcScriptHash$(script)))).pipe(
-      switchMap(scriptHashes => this.httpClient.post<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/scripthashes/txs', scriptHashes, { params })),
+      switchMap(scriptHashes => this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + `/api/scripthashes/txs?scripthashes=${scriptHashes.join(',')}`, { params })),
     );
   }
 
@@ -216,7 +212,7 @@ export class ElectrsApiService {
       params = params.append('after_txid', txid);
     }
     return from(Promise.all(scripts.map(script => calcScriptHash$(script)))).pipe(
-      switchMap(scriptHashes => this.httpClient.post<AddressTxSummary[]>(this.apiBaseUrl + this.apiBasePath + '/api/scripthashes/txs/summary', scriptHashes, { params })),
+      switchMap(scriptHashes => this.httpClient.get<AddressTxSummary[]>(this.apiBaseUrl + this.apiBasePath + `/api/scripthashes/txs/summary?scripthashes=${scriptHashes.join(',')}`, { params })),
     );
   }
 
