@@ -36,13 +36,14 @@ function parseTag(scriptSig: string): string {
   for (let i = 0; i < hex.length; i += 2) {
     bytes.push(parseInt(hex.substr(i, 2), 16));
   }
-  const ascii = new TextDecoder('utf8').decode(Uint8Array.from(bytes)).replace(/\uFFFD/g, '').replace(/\\0/g, '');
+  // eslint-disable-next-line no-control-regex
+  const ascii = new TextDecoder('utf8').decode(Uint8Array.from(bytes)).replace(/\uFFFD/g, '').replace(/\\0/g, '').replace(/[\x00-\x1F\x7F-\x9F]/g, '');
   if (ascii.includes('/ViaBTC/')) {
     return '/ViaBTC/';
   } else if (ascii.includes('SpiderPool/')) {
     return 'SpiderPool/';
   }
-  return ascii.match(/\/.*\//)?.[0] || ascii;
+  return (ascii.match(/\/.*\//)?.[0] || ascii).trim();
 }
 
 @Component({
