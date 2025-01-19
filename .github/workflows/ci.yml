@@ -258,8 +258,8 @@ jobs:
               cypress/e2e/mainnet/*.spec.ts
               cypress/e2e/signet/*.spec.ts
           - module: "testnet4"
-              spec: |
-                cypress/e2e/testnet4/*.spec.ts
+            spec: |
+              cypress/e2e/testnet4/*.spec.ts
           - module: "liquid"
             spec: |
               cypress/e2e/liquid/liquid.spec.ts
