@@ -318,7 +318,7 @@ jobs:
         with:
           tag: ${{ github.event_name }}
           working-directory: ${{ matrix.module }}/frontend
-          build: npm run config:defaults:${{ matrix.module }}
+          build: ${{ matrix.module == 'testnet4' && 'npm run config:defaults:mempool' || 'npm run config:defaults:${{ matrix.module }}' }}
           start: npm run start:local-staging
           wait-on: "http://localhost:4200"
           wait-on-timeout: 120
