@@ -327,6 +327,7 @@ jobs:
           browser: "chrome"
           ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
         env:
+          CYPRESS_REROUTE_TESTNET:  ${{ matrix.spec == 'cypress/e2e/testnet4/*.spec.ts' }}
           COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
