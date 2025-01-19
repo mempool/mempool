@@ -252,16 +252,23 @@ jobs:
       fail-fast: false
       matrix:
         module: ["mempool", "liquid"]
+        spec:
+          - "cypress/e2e/mainnet/*.spec.ts"
+          - "cypress/e2e/signet/*.spec.ts"
+          - "cypress/e2e/testnet4/*.spec.ts"
+          - "cypress/e2e/liquid/liquid.spec.ts"
+          - "cypress/e2e/liquidtestnet/liquidtestnet.spec.ts"
         include:
           - module: "mempool"
-            spec: |
-              cypress/e2e/mainnet/*.spec.ts
-              cypress/e2e/signet/*.spec.ts
-              cypress/e2e/testnet4/*.spec.ts
+            spec: "cypress/e2e/mainnet/*.spec.ts"
+          - module: "mempool"
+            spec: "cypress/e2e/signet/*.spec.ts"
+          - module: "mempool"
+            spec: "cypress/e2e/testnet4/*.spec.ts"
           - module: "liquid"
-            spec: |
-              cypress/e2e/liquid/liquid.spec.ts
-              cypress/e2e/liquidtestnet/liquidtestnet.spec.ts
+            spec: "cypress/e2e/liquid/liquid.spec.ts"
+          - module: "liquid"
+            spec: "cypress/e2e/liquidtestnet/liquidtestnet.spec.ts"
 
     name: E2E tests for ${{ matrix.module }}
     steps:
