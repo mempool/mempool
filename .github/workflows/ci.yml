@@ -251,17 +251,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        module: ["mempool", "liquid"]
-        include:
-          - module: "mempool"
-            spec: |
-              cypress/e2e/mainnet/*.spec.ts
-              cypress/e2e/signet/*.spec.ts
-              cypress/e2e/testnet4/*.spec.ts
-          - module: "liquid"
-            spec: |
-              cypress/e2e/liquid/liquid.spec.ts
-              cypress/e2e/liquidtestnet/liquidtestnet.spec.ts
+        module: ["mempool", "liquid", "testnet4"]
 
     name: E2E tests for ${{ matrix.module }}
     steps:
@@ -310,8 +300,10 @@ jobs:
 
       - name: Unzip assets before building (src/resources)
         run: unzip -o promo-video-assets.zip -d ${{ matrix.module }}/frontend/src/resources/promo-video
-      
+
+      # mempool
       - name: Chrome browser tests (${{ matrix.module }})
+        if: ${{ matrix.module == 'mempool' }}
         uses: cypress-io/github-action@v5
         with:
           tag: ${{ github.event_name }}
@@ -322,11 +314,63 @@ jobs:
           wait-on-timeout: 120
           record: true
           parallel: true
-          spec: ${{ matrix.spec }}
+          spec: |
+            cypress/e2e/mainnet/*.spec.ts
+            cypress/e2e/signet/*.spec.ts
           group: Tests on Chrome (${{ matrix.module }})
           browser: "chrome"
           ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
         env:
+          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+
+      # liquid
+      - name: Chrome browser tests (${{ matrix.module }})
+        if: ${{ matrix.module == 'liquid' }}
+        uses: cypress-io/github-action@v5
+        with:
+          tag: ${{ github.event_name }}
+          working-directory: ${{ matrix.module }}/frontend
+          build: npm run config:defaults:${{ matrix.module }}
+          start: npm run start:local-staging
+          wait-on: "http://localhost:4200"
+          wait-on-timeout: 120
+          record: true
+          parallel: true
+          spec: |
+            cypress/e2e/liquid/liquid.spec.ts
+            cypress/e2e/liquidtestnet/liquidtestnet.spec.ts
+          group: Tests on Chrome (${{ matrix.module }})
+          browser: "chrome"
+          ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
+        env:
+          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+
+      # testnet
+      - name: Chrome browser tests (${{ matrix.module }})
+        if: ${{ matrix.module == 'testnet4' }}
+        uses: cypress-io/github-action@v5
+        with:
+          tag: ${{ github.event_name }}
+          working-directory: ${{ matrix.module }}/frontend
+          build: npm run config:defaults:mempool
+          start: npm run start:local-staging
+          wait-on: "http://localhost:4200"
+          wait-on-timeout: 120
+          record: true
+          parallel: true
+          spec: |
+            cypress/e2e/testnet4/*.spec.ts
+          group: Tests on Chrome (${{ matrix.module }})
+          browser: "chrome"
+          ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
+        env:
+          CYPRESS_REROUTE_TESTNET: true
           COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
