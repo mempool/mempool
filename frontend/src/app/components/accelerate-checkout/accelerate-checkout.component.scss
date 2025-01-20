@@ -8,6 +8,13 @@
   color: var(--green)
 }
 
+.accelerate-checkout-inner {
+  &.input-disabled {
+    pointer-events: none;
+    opacity: 0.75;
+  }
+}
+
 .paymentMethod {
   padding: 10px;
   background-color: var(--secondary);
