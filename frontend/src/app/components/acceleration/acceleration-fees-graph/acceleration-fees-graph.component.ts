@@ -45,6 +45,8 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
 
   aggregatedHistory$: Observable<any>;
   statsSubscription: Subscription;
+  aggregatedHistorySubscription: Subscription;
+  fragmentSubscription: Subscription;
   isLoading = true;
   formatNumber = formatNumber;
   timespan = '';
@@ -76,8 +78,8 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
     }
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
-    
-    this.route.fragment.subscribe((fragment) => {
+
+    this.fragmentSubscription = this.route.fragment.subscribe((fragment) => {
       if (['1w', '1m', '1y', 'all'].indexOf(fragment) > -1) {
         this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
       }
@@ -112,7 +114,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
       share(),
     );
 
-    this.aggregatedHistory$.subscribe();
+    this.aggregatedHistorySubscription = this.aggregatedHistory$.subscribe();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -358,8 +360,8 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
   }
 
   ngOnDestroy(): void {
-    if (this.statsSubscription) {
-      this.statsSubscription.unsubscribe();
-    }
+    this.aggregatedHistorySubscription?.unsubscribe();
+    this.fragmentSubscription?.unsubscribe();
+    this.statsSubscription?.unsubscribe();
   }
 }

@@ -108,18 +108,43 @@
       </div>
     </div>
 
-    <div id="websocketAPI" *ngIf="( whichTab === 'websocket' )">
-      <div class="api-category">
-        <div class="websocket">
-          <div class="endpoint">
-            <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-            {{ wrapUrl(network.val, wsDocs, true) }}
+    <div id="websocketAPI" *ngIf="whichTab === 'websocket'">
+
+      <div id="doc-nav-desktop" class="hide-on-mobile" [ngClass]="desktopDocsNavPosition">
+        <app-api-docs-nav (navLinkClickEvent)="anchorLinkClick( $event )" [network]="{ val: network$ | async }" [whichTab]="whichTab"></app-api-docs-nav>
+      </div>
+
+      <div class="doc-content">
+
+        <div id="enterprise-cta-mobile" *ngIf="officialMempoolInstance && showMobileEnterpriseUpsell">
+          <p>Get higher API limits with <span class="no-line-break">Mempool Enterprise®</span></p>
+          <div class="button-group">
+            <a class="btn btn-small btn-secondary" (click)="showMobileEnterpriseUpsell = false">No Thanks</a>
+            <a class="btn btn-small btn-purple" href="https://mempool.space/enterprise">More Info <fa-icon [icon]="['fas', 'angle-right']" [styles]="{'font-size': '12px'}"></fa-icon></a>
           </div>
-          <div class="description">
-            <div class="subtitle" i18n>Description</div>
-            <div i18n="api-docs.websocket.websocket">Default push: <code>{{ '{' }} action: 'want', data: ['blocks', ...] {{ '}' }}</code> to express what you want pushed. Available: <code>blocks</code>, <code>mempool-blocks</code>, <code>live-2h-chart</code>, and <code>stats</code>.<br><br>Push transactions related to address: <code>{{ '{' }} 'track-address': '3PbJ...bF9B' {{ '}' }}</code> to receive all new transactions containing that address as input or output. Returns an array of transactions. <code>address-transactions</code> for new mempool transactions, and <code>block-transactions</code> for new block confirmed transactions.</div>
+        </div>
+
+        <p class="doc-welcome-note">Below is a reference for the {{ network.val === '' ? 'Bitcoin' : network.val.charAt(0).toUpperCase() + network.val.slice(1) }} <ng-container i18n="api-docs.title-websocket">Websocket service</ng-container> running at {{ websocketUrl(network.val) }}.</p>
+        <p class="doc-welcome-note api-note" *ngIf="officialMempoolInstance">Note that usage limits apply to our WebSocket API. Consider an <a href="https://mempool.space/enterprise">enterprise sponsorship</a> if you need higher API limits, such as higher tracking limits.</p>
+
+        <div class="doc-item-container" *ngFor="let item of wsDocs">
+          <div *ngIf="!item.hasOwnProperty('options') || ( item.hasOwnProperty('options') && item.options.hasOwnProperty('officialOnly') && item.options.officialOnly && officialMempoolInstance )">
+            <h3 *ngIf="( item.type === 'category' ) && ( item.showConditions.indexOf(network.val) > -1 )">{{ item.title }}</h3>
+            <div *ngIf="( item.type !== 'category' ) && ( item.showConditions.indexOf(network.val) > -1 )" class="endpoint-container" id="{{ item.fragment }}">
+              <a id="{{ item.fragment + '-tab-header' }}" class="section-header" (click)="anchorLinkClick({event: $event, fragment: item.fragment})">{{ item.title }} <span>{{ item.category }}</span></a>
+              <div class="endpoint-content">
+                <div class="description">
+                  <div class="subtitle" i18n>Description</div>
+                  <div [innerHTML]="item.description.default" i18n></div>
+                </div>
+                <div class="description">
+                  <div class="subtitle" i18n>Payload</div>
+                  <pre><code [innerText]="item.payload"></code></pre>
+                </div>
+                <app-code-template [hostname]="hostname" [baseNetworkUrl]="baseNetworkUrl" [method]="item.httpRequestMethod" [code]="item.codeExample.default" [network]="network.val" [showCodeExample]="item.showJsExamples"></app-code-template>
+              </div>
+            </div>
           </div>
-          <app-code-template [method]="'websocket'" [hostname]="hostname" [code]="wsDocs" [network]="network.val" [showCodeExample]="wsDocs.showJsExamples"></app-code-template>
         </div>
       </div>
     </div>

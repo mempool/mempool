@@ -1,0 +1,31 @@
+.title-wrapper {
+  padding: 0 15px;
+}
+
+.graph-col {
+  height: 350px;
+  text-align: center;
+  padding: 0;
+  margin-left: 2px;
+  margin-right: 15px;
+}
+
+.table-col {
+  overflow: hidden;
+}
+
+.table {
+  font-size: 32px;
+
+  ::ng-deep .symbol {
+    font-size: 24px;
+  }
+
+  .spacer {
+    background: none;
+  }
+}
+
+.fiat {
+  display: block;
+}
