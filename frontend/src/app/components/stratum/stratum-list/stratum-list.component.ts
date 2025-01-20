@@ -8,8 +8,10 @@ import { SinglePoolStats } from '../../../interfaces/node-api.interface';
 
 type MerkleCellType = ' ' | '┬' | '├' | '└' | '│' | '─' | 'leaf';
 
+
 interface TaggedStratumJob extends StratumJob {
   tag: string;
+  merkleBranchIds: string[];
 }
 
 interface MerkleCell {
@@ -44,6 +46,18 @@ function parseTag(scriptSig: string): string {
     return 'SpiderPool/';
   }
   return (ascii.match(/\/.*\//)?.[0] || ascii).trim();
+}
+
+function getMerkleBranchIds(merkleBranches: string[], numBranches: number): string[] {
+  let lastHash = '';
+  const ids: string[] = [];
+  for (let i = 0; i < numBranches; i++) {
+    if (merkleBranches[i]) {
+      lastHash = merkleBranches[i];
+    }
+    ids.push(`${i}-${lastHash}`);
+  }
+  return ids;
 }
 
 @Component({
@@ -81,15 +95,14 @@ export class StratumList implements OnInit, OnDestroy {
   }
 
   processJobs(rawJobs: Record<string, StratumJob>): PoolRow[] {
+    const numBranches = Math.max(...Object.values(rawJobs).map(job => job.merkleBranches.length));
     const jobs: Record<string, TaggedStratumJob> = {};
     for (const [id, job] of Object.entries(rawJobs)) {
-      jobs[id] = { ...job, tag: parseTag(job.scriptsig) };
+      jobs[id] = { ...job, tag: parseTag(job.scriptsig), merkleBranchIds: getMerkleBranchIds(job.merkleBranches, numBranches) };
     }
     if (Object.keys(jobs).length === 0) {
       return [];
     }
-
-    const numBranches = Math.max(...Object.values(jobs).map(job => job.merkleBranches.length));
 
     let trees: MerkleTree[] = Object.keys(jobs).map(job => ({
       job,
@@ -100,12 +113,13 @@ export class StratumList implements OnInit, OnDestroy {
     for (let col = numBranches - 1; col >= 0; col--) {
       const groups: Record<string, MerkleTree[]> = {};
       for (const tree of trees) {
-        const hash = jobs[tree.job].merkleBranches[col];
-        if (!groups[hash]) {
-          groups[hash] = [];
+        const branchId = jobs[tree.job].merkleBranchIds[col];
+        if (!groups[branchId]) {
+          groups[branchId] = [];
         }
-        groups[hash].push(tree);
+        groups[branchId].push(tree);
       }
+
       trees = Object.values(groups).map(group => ({
         hash: jobs[group[0].job].merkleBranches[col],
         job: group[0].job,
