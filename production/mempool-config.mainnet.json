@@ -157,6 +157,6 @@
   },
   "STRATUM": {
     "ENABLED": true,
-    "API": "http://127.0.0.1:81"
+    "API": "http://127.0.0.1:81/api/v1/stratum/ws"
   }
 }
