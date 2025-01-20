@@ -470,3 +470,21 @@ dd {
     margin-left: 1em;
   }
 }
+
+code {
+  background-color: var(--bg);
+  font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New;
+}
+
+pre {
+  display: block;
+  font-size: 87.5%;
+  color: #f18920;
+  background-color: var(--bg);
+  padding: 30px;
+  code{
+    background-color: transparent;
+    white-space: break-spaces;
+    word-break: break-all;
+  }
+}

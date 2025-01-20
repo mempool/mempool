@@ -246,17 +246,22 @@ class AccelerationApi {
       this.startedWebsocketLoop = true;
       if (!this.ws) {
         this.ws = new WebSocket(this.websocketPath);
-        this.websocketConnected = true;
+        this.lastPing = 0;
 
         this.ws.on('open', () => {
           logger.info(`Acceleration websocket opened to ${this.websocketPath}`);
+          this.websocketConnected = true;
           this.ws?.send(JSON.stringify({
             'watch-accelerations': true
           }));
         });
 
         this.ws.on('error', (error) => {
-          logger.err(`Acceleration websocket error on ${this.websocketPath}: ` + error);
+          let errMsg = `Acceleration websocket error on ${this.websocketPath}: ${error['code']}`;
+          if (error['errors']) {
+            errMsg += ' - ' + error['errors'].join(' - ');
+          }
+          logger.err(errMsg);
           this.ws = null;
           this.websocketConnected = false;
         });
@@ -285,16 +290,28 @@ class AccelerationApi {
           logger.debug('received pong from acceleration websocket server');
           this.lastPong = Date.now();
         });
-      } else {
-        if (this.lastPing > this.lastPong && Date.now() - this.lastPing > 10000) {
+      } else if (this.websocketConnected) {
+        if (this.lastPing && this.lastPing > this.lastPong && (Date.now() - this.lastPing > 10000)) {
           logger.warn('No pong received within 10 seconds, terminating connection');
-          this.ws.terminate();
-          this.ws = null;
-          this.websocketConnected = false;
-        } else if (Date.now() - this.lastPing > 30000) {
+          try {
+            this.ws?.terminate();
+          } catch (e) {
+            logger.warn('failed to terminate acceleration websocket connection: ' + (e instanceof Error ? e.message : e));
+          } finally {
+            this.ws = null;
+            this.websocketConnected = false;
+            this.lastPing = 0;
+          }
+        } else if (!this.lastPing || (Date.now() - this.lastPing > 30000)) {
           logger.debug('sending ping to acceleration websocket server');
-          this.ws.ping();
-          this.lastPing = Date.now();
+          if (this.ws?.readyState === WebSocket.OPEN) {
+            try {
+              this.ws?.ping();
+              this.lastPing = Date.now();
+            } catch (e) {
+              logger.warn('failed to send ping to acceleration websocket server: ' + (e instanceof Error ? e.message : e));
+            }
+          }
         }
       }
       await new Promise(resolve => setTimeout(resolve, 5000));

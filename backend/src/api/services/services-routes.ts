@@ -1,6 +1,7 @@
 import { Application, Request, Response } from 'express';
 import config from '../../config';
 import WalletApi from './wallets';
+import { handleError } from '../../utils/api';
 
 class ServicesRoutes {
   public initRoutes(app: Application): void {
@@ -18,7 +19,7 @@ class ServicesRoutes {
       const wallet = await WalletApi.getWallet(walletId);
       res.status(200).send(wallet);
     } catch (e) {
-      res.status(500).send(e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get wallet');
     }
   }
 }

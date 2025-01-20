@@ -1,6 +1,6 @@
 <div class="container-xl" [class.liquid-address]="network === 'liquid' || network === 'liquidtestnet'">
   <div class="title-address">
-    <h1 i18n="shared.wallet">Wallet</h1>
+    <h1>{{ walletName }}</h1>
   </div>
 
   <div class="clearfix"></div>
@@ -73,6 +73,36 @@
       </div>
     </ng-container>
   </ng-container>
+
+  <br>
+
+  <div class="title-tx">
+    <h2 class="text-left" i18n="address.transactions">Transactions</h2>
+  </div>
+
+  <app-transactions-list [transactions]="transactions" [showConfirmations]="true" [addresses]="addressStrings" (loadMore)="loadMore()"></app-transactions-list>
+
+  <div class="text-center">
+    <ng-template [ngIf]="isLoadingTransactions">
+      <div class="header-bg box">
+        <div class="row" style="height: 107px;">
+          <div class="col-sm">
+            <span class="skeleton-loader"></span>
+          </div>
+          <div class="col-sm">
+            <span class="skeleton-loader"></span>
+          </div>
+        </div>
+      </div>
+
+    </ng-template>
+
+    <ng-template [ngIf]="retryLoadMore">
+      <br>
+      <button type="button" class="btn btn-outline-info btn-sm" (click)="loadMore()"><fa-icon [icon]="['fas', 'redo-alt']" [fixedWidth]="true"></fa-icon></button>
+    </ng-template>
+  </div>
+
 
   <ng-template #loadingTemplate>
 

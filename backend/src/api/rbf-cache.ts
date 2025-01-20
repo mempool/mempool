@@ -119,7 +119,11 @@ class RbfCache {
 
 
   public add(replaced: MempoolTransactionExtended[], newTxExtended: MempoolTransactionExtended): void {
-    if (!newTxExtended || !replaced?.length || this.txs.has(newTxExtended.txid)) {
+    if ( !newTxExtended
+      || !replaced?.length
+      || this.txs.has(newTxExtended.txid)
+      || !(replaced.some(tx => !this.replacedBy.has(tx.txid)))
+    ) {
       return;
     }
 

@@ -19,7 +19,7 @@
         <ng-container *ngFor="let channel of channels;">
           <tr>
             <td class="timestamp">
-              &lrm;{{ channel.closing_date | date:'yyyy-MM-dd HH:mm' }}
+              <app-timestamp [customFormat]="'yyyy-MM-dd HH:mm'" [unixTime]="channel.closing_date" [hideTimeSince]="true"></app-timestamp>
             </td>
             <td class="capacity text-right">
               <app-amount *ngIf="channel.capacity > 100000000; else smallnode" [satoshis]="channel.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>

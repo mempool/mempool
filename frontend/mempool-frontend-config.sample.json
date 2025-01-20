@@ -27,5 +27,6 @@
   "ACCELERATOR": false,
   "ACCELERATOR_BUTTON": true,
   "PUBLIC_ACCELERATIONS": false,
+  "STRATUM_ENABLED": false,
   "SERVICES_API": "https://mempool.space/api/v1/services"
 }

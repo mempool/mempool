@@ -64,8 +64,8 @@ export class MiningService {
       );
     }
   }
-  
-  /** 
+
+  /**
    * Get names and slugs of all pools
    */
   public getPools(): Observable<any[]> {
@@ -75,7 +75,6 @@ export class MiningService {
         return this.poolsData;
       })
     );
-    
   }
   /**
    * Set the hashrate power of ten we want to display

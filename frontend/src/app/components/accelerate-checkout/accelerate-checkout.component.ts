@@ -2,7 +2,7 @@
 import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, ChangeDetectorRef, SimpleChanges, HostListener } from '@angular/core';
 import { Subscription, tap, of, catchError, Observable, switchMap } from 'rxjs';
 import { ServicesApiServices } from '@app/services/services-api.service';
-import { md5, insecureRandomUUID } from '@app/shared/common.utils';
+import { md5 } from '@app/shared/common.utils';
 import { StateService } from '@app/services/state.service';
 import { AudioService } from '@app/services/audio.service';
 import { ETA, EtaService } from '@app/services/eta.service';
@@ -76,6 +76,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
   calculating = true;
   processing = false;
+  isCheckoutLocked = 0; // reference counter, 0 = unlocked, >0 = locked
+  isTokenizing = 0; // reference counter, 0 = false, >0 = true
   selectedOption: 'wait' | 'accel';
   cantPayReason = '';
   quoteError = ''; // error fetching estimate or initial data
@@ -94,7 +96,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   auth: IAuth | null = null;
 
   // accelerator stuff
-  accelerationUUID: string;
   accelerationSubscription: Subscription;
   difficultySubscription: Subscription;
   estimateSubscription: Subscription;
@@ -138,7 +139,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     private enterpriseService: EnterpriseService,
   ) {
     this.isProdDomain = this.stateService.env.PROD_DOMAINS.indexOf(document.location.hostname) > -1;
-    this.accelerationUUID = insecureRandomUUID();
 
     // Check if Apple Pay available
     // https://developer.apple.com/documentation/apple_pay_on_the_web/apple_pay_js_api/checking_for_apple_pay_availability#overview
@@ -156,7 +156,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         this.accelerateError = null;
         this.timePaid = 0;
         this.btcpayInvoiceFailed = false;
-        this.moveToStep('summary');
+        this.moveToStep('summary', true);
       } else {
         this.auth = auth;
       }
@@ -165,11 +165,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('cash_request_id')) { // Redirected from cashapp
-      this.moveToStep('processing');
+      this.moveToStep('processing', true);
       this.insertSquare();
       this.setupSquare();
     } else {
-      this.moveToStep('summary');
+      this.moveToStep('summary', true);
     }
 
     this.conversionsSubscription = this.stateService.conversions$.subscribe(
@@ -194,14 +194,18 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     }
     if (changes.accelerating && this.accelerating) {
       if (this.step === 'processing' || this.step === 'paid') {
-        this.moveToStep('success');
+        this.moveToStep('success', true);
       } else { // Edge case where the transaction gets accelerated by someone else or on another session
         this.closeModal();
       }
     }
   }
 
-  moveToStep(step: CheckoutStep): void {
+  moveToStep(step: CheckoutStep, force: boolean = false): void {
+    if (this.isCheckoutLocked > 0 && !force) {
+      return;
+    }
+    this.processing = false;
     this._step = step;
     if (this.timeoutTimer) {
       clearTimeout(this.timeoutTimer);
@@ -243,7 +247,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
   closeModal(): void {
     this.completed.emit(true);
-    this.moveToStep('summary');
+    this.moveToStep('summary', true);
   }
 
   /**
@@ -387,7 +391,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     this.accelerationSubscription = this.servicesApiService.accelerate$(
       this.tx.txid,
       this.userBid,
-      this.accelerationUUID
     ).subscribe({
       next: () => {
         this.processing = false;
@@ -395,7 +398,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         this.audioService.playSound('ascend-chime-cartoon');
         this.showSuccess = true;
         this.estimateSubscription.unsubscribe();
-        this.moveToStep('paid');
+        this.moveToStep('paid', true);
       },
       error: (response) => {
         this.processing = false;
@@ -505,57 +508,75 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           }
           this.loadingApplePay = false;
           applePayButton.addEventListener('click', async event => {
+            if (this.isCheckoutLocked > 0 || this.isTokenizing > 0) {
+              return;
+            }
             event.preventDefault();
-            const tokenResult = await this.applePay.tokenize();
-            if (tokenResult?.status === 'OK') {
-              const card = tokenResult.details?.card;
-              if (!card || !card.brand || !card.expMonth || !card.expYear || !card.last4) {
-                console.error(`Cannot retreive payment card details`);
-                this.accelerateError = 'apple_pay_no_card_details';
-                this.processing = false;
-                return;
-              }
-              const cardTag = md5(`${card.brand}${card.expMonth}${card.expYear}${card.last4}`.toLowerCase());
-              this.servicesApiService.accelerateWithApplePay$(
-                this.tx.txid,
-                tokenResult.token,
-                cardTag,
-                `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
-                this.accelerationUUID,
-                costUSD
-              ).subscribe({
-                next: () => {
+            try {
+              // lock the checkout UI and show a loading spinner until the square modals are finished
+              this.isCheckoutLocked++;
+              this.isTokenizing++;
+              const tokenResult = await this.applePay.tokenize();
+              if (tokenResult?.status === 'OK') {
+                const card = tokenResult.details?.card;
+                if (!card || !card.brand || !card.expMonth || !card.expYear || !card.last4) {
+                  console.error(`Cannot retreive payment card details`);
+                  this.accelerateError = 'apple_pay_no_card_details';
                   this.processing = false;
-                  this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
-                  this.audioService.playSound('ascend-chime-cartoon');
-                  if (this.applePay) {
-                    this.applePay.destroy();
-                  }
-                  setTimeout(() => {
-                    this.moveToStep('paid');
-                  }, 1000);
-                },
-                error: (response) => {
-                  this.processing = false;
-                  this.accelerateError = response.error;
-                  if (!(response.status === 403 && response.error === 'not_available')) {
-                    setTimeout(() => {
-                      // Reset everything by reloading the page :D, can be improved
-                      const urlParams = new URLSearchParams(window.location.search);
-                      window.location.assign(window.location.toString().replace(`?cash_request_id=${urlParams.get('cash_request_id')}`, ``));
-                    }, 10000);
-                  }
+                  return;
                 }
-              });
-            } else {
-              this.processing = false;
-              let errorMessage = `Tokenization failed with status: ${tokenResult.status}`;
-              if (tokenResult.errors) {
-                errorMessage += ` and errors: ${JSON.stringify(
-                  tokenResult.errors,
-                )}`;
+                const cardTag = md5(`${card.brand}${card.expMonth}${card.expYear}${card.last4}`.toLowerCase());
+                // keep checkout in loading state until the acceleration request completes
+                this.isTokenizing++;
+                this.isCheckoutLocked++;
+                this.servicesApiService.accelerateWithApplePay$(
+                  this.tx.txid,
+                  tokenResult.token,
+                  cardTag,
+                  `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
+                  costUSD
+                ).subscribe({
+                  next: () => {
+                    this.processing = false;
+                    this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
+                    this.audioService.playSound('ascend-chime-cartoon');
+                    if (this.applePay) {
+                      this.applePay.destroy();
+                    }
+                    setTimeout(() => {
+                      this.isTokenizing--;
+                      this.isCheckoutLocked--;
+                      this.moveToStep('paid', true);
+                    }, 1000);
+                  },
+                  error: (response) => {
+                    this.processing = false;
+                    this.accelerateError = response.error;
+                    if (!(response.status === 403 && response.error === 'not_available')) {
+                      setTimeout(() => {
+                        this.isTokenizing--;
+                        this.isCheckoutLocked--;
+                        // Reset everything by reloading the page :D, can be improved
+                        const urlParams = new URLSearchParams(window.location.search);
+                        window.location.assign(window.location.toString().replace(`?cash_request_id=${urlParams.get('cash_request_id')}`, ``));
+                      }, 10000);
+                    }
+                  }
+                });
+              } else {
+                this.processing = false;
+                let errorMessage = `Tokenization failed with status: ${tokenResult.status}`;
+                if (tokenResult.errors) {
+                  errorMessage += ` and errors: ${JSON.stringify(
+                    tokenResult.errors,
+                  )}`;
+                }
+                throw new Error(errorMessage);
               }
-              throw new Error(errorMessage);
+            } finally {
+              // always unlock the checkout once we're finished
+              this.isTokenizing--;
+              this.isCheckoutLocked--;
             }
           });
         } catch (e) {
@@ -605,57 +626,84 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         this.loadingGooglePay = false;
 
         document.getElementById('google-pay-button').addEventListener('click', async event => {
+          if (this.isCheckoutLocked > 0 || this.isTokenizing > 0) {
+            return;
+          }
           event.preventDefault();
-          const tokenResult = await this.googlePay.tokenize();
-          if (tokenResult?.status === 'OK') {
-            const card = tokenResult.details?.card;
-            if (!card || !card.brand || !card.expMonth || !card.expYear || !card.last4) {
-              console.error(`Cannot retreive payment card details`);
-              this.accelerateError = 'apple_pay_no_card_details';
-              this.processing = false;
-              return;
-            }
-            const cardTag = md5(`${card.brand}${card.expMonth}${card.expYear}${card.last4}`.toLowerCase());
-            this.servicesApiService.accelerateWithGooglePay$(
-              this.tx.txid,
-              tokenResult.token,
-              cardTag,
-              `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
-              this.accelerationUUID,
-              costUSD
-            ).subscribe({
-              next: () => {
+          try {
+            // lock the checkout UI and show a loading spinner until the square modals are finished
+            this.isCheckoutLocked++;
+            this.isTokenizing++;
+            const tokenResult = await this.googlePay.tokenize();
+            if (tokenResult?.status === 'OK') {
+              const card = tokenResult.details?.card;
+              if (!card || !card.brand || !card.expMonth || !card.expYear || !card.last4) {
+                console.error(`Cannot retreive payment card details`);
+                this.accelerateError = 'apple_pay_no_card_details';
                 this.processing = false;
-                this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
-                this.audioService.playSound('ascend-chime-cartoon');
-                if (this.googlePay) {
-                  this.googlePay.destroy();
-                }
-                setTimeout(() => {
-                  this.moveToStep('paid');
-                }, 1000);
-              },
-              error: (response) => {
-                this.processing = false;
-                this.accelerateError = response.error;
-                if (!(response.status === 403 && response.error === 'not_available')) {
-                  setTimeout(() => {
-                    // Reset everything by reloading the page :D, can be improved
-                    const urlParams = new URLSearchParams(window.location.search);
-                    window.location.assign(window.location.toString().replace(`?cash_request_id=${urlParams.get('cash_request_id')}`, ``));
-                  }, 10000);
-                }
+                return;
               }
-            });
-          } else {
-            this.processing = false;
-            let errorMessage = `Tokenization failed with status: ${tokenResult.status}`;
-            if (tokenResult.errors) {
-              errorMessage += ` and errors: ${JSON.stringify(
-                tokenResult.errors,
-              )}`;
+              const verificationToken = await this.$verifyBuyer(this.payments, tokenResult.token, tokenResult.details, costUSD.toFixed(2));
+              if (!verificationToken || !verificationToken.token) {
+                console.error(`SCA verification failed`);
+                this.accelerateError = 'SCA Verification Failed. Payment Declined.';
+                this.processing = false;
+                return;
+              }
+              const cardTag = md5(`${card.brand}${card.expMonth}${card.expYear}${card.last4}`.toLowerCase());
+              // keep checkout in loading state until the acceleration request completes
+              this.isCheckoutLocked++;
+              this.isTokenizing++;
+              this.servicesApiService.accelerateWithGooglePay$(
+                this.tx.txid,
+                tokenResult.token,
+                verificationToken.token,
+                cardTag,
+                `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
+                costUSD,
+                verificationToken.userChallenged
+              ).subscribe({
+                next: () => {
+                  this.processing = false;
+                  this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
+                  this.audioService.playSound('ascend-chime-cartoon');
+                  if (this.googlePay) {
+                    this.googlePay.destroy();
+                  }
+                  setTimeout(() => {
+                    this.isTokenizing--;
+                    this.isCheckoutLocked--;
+                    this.moveToStep('paid', true);
+                  }, 1000);
+                },
+                error: (response) => {
+                  this.processing = false;
+                  this.accelerateError = response.error;
+                  this.isTokenizing--;
+                  this.isCheckoutLocked--;
+                  if (!(response.status === 403 && response.error === 'not_available')) {
+                    setTimeout(() => {
+                      // Reset everything by reloading the page :D, can be improved
+                      const urlParams = new URLSearchParams(window.location.search);
+                      window.location.assign(window.location.toString().replace(`?cash_request_id=${urlParams.get('cash_request_id')}`, ``));
+                    }, 10000);
+                  }
+                }
+              });
+            } else {
+              this.processing = false;
+              let errorMessage = `Tokenization failed with status: ${tokenResult.status}`;
+              if (tokenResult.errors) {
+                errorMessage += ` and errors: ${JSON.stringify(
+                  tokenResult.errors,
+                )}`;
+              }
+              throw new Error(errorMessage);
             }
-            throw new Error(errorMessage);
+          } finally {
+            // always unlock the checkout once we're finished
+            this.isTokenizing--;
+            this.isCheckoutLocked--;
           }
         });
       }
@@ -712,7 +760,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               tokenResult.token,
               tokenResult.details.cashAppPay.cashtag,
               tokenResult.details.cashAppPay.referenceId,
-              this.accelerationUUID,
               costUSD
             ).subscribe({
               next: () => {
@@ -723,7 +770,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                   this.cashAppPay.destroy();
                 }
                 setTimeout(() => {
-                  this.moveToStep('paid');
+                  this.moveToStep('paid', true);
                   if (window.history.replaceState) {
                     const urlParams = new URLSearchParams(window.location.search);
                     window.history.replaceState(null, null, window.location.toString().replace(`?cash_request_id=${urlParams.get('cash_request_id')}`, ''));
@@ -749,6 +796,32 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   /**
+   * https://developer.squareup.com/docs/sca-overview
+   */
+  async $verifyBuyer(payments, token, details, amount): Promise<{token: string, userChallenged: boolean}> {
+    const verificationDetails = {
+      amount: amount,
+      currencyCode: 'USD',
+      intent: 'CHARGE',
+      billingContact: {
+        givenName: details.card?.billing?.givenName,
+        familyName: details.card?.billing?.familyName,
+        phone: details.card?.billing?.phone,
+        addressLines: details.card?.billing?.addressLines,
+        city: details.card?.billing?.city,
+        state: details.card?.billing?.state,
+        countryCode: details.card?.billing?.countryCode,
+      },
+    };
+
+    const verificationResults = await payments.verifyBuyer(
+      token,
+      verificationDetails,
+    );
+    return verificationResults;
+  }
+
+  /**
    * BTCPay
    */
   async requestBTCPayInvoice(): Promise<void> {
@@ -771,7 +844,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
     this.audioService.playSound('ascend-chime-cartoon');
     this.estimateSubscription.unsubscribe();
-    this.moveToStep('paid');
+    this.moveToStep('paid', true);
   }
 
   isLoggedIn(): boolean {

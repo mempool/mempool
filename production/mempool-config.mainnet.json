@@ -153,6 +153,6 @@
   },
   "WALLETS": {
     "ENABLED": true,
-    "WALLETS": ["BITB"]
+    "WALLETS": ["BITB", "3350"]
   }
 }
