@@ -104,6 +104,26 @@ td {
   }
 }
 
+@media (max-width: 800px) {
+  .stratum-table {
+    td {
+      &.tag {
+        display: none;
+      }
+    }
+  }
+}
+
+@media (max-width: 650px) {
+  .stratum-table {
+    td {
+      &.reward {
+        display: none;
+      }
+    }
+  }
+}
+
 .badge {
   position: relative;
   color: #FFF;
