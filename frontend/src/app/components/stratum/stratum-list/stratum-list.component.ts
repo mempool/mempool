@@ -196,6 +196,10 @@ export class StratumList implements OnInit, OnDestroy {
     }[type];
   }
 
+  reverseHash(hash: string) {
+    return hash.match(/../g).reverse().join('');
+  }
+
   ngOnDestroy(): void {
     this.websocketService.stopTrackStratum();
   }

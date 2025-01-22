@@ -267,7 +267,11 @@
                     <tbody>
                       <tr>
                         @for (branch of job.merkleBranches; track $index) {
-                          <td class="merkle" [style.background-color]="branch ? '#' + branch.slice(0, 6) : ''"></td>
+                          @if ($index === 0 && branch) {
+                            <a [routerLink]="['/tx' | relativeUrl, reverseHash(branch)]"><td class="merkle" [style.background-color]="branch ? '#' + branch.slice(0, 6) : ''"><fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 14px; color: white"></fa-icon></td></a>
+                          } @else {
+                            <td class="merkle" [style.background-color]="branch ? '#' + branch.slice(0, 6) : ''"></td>
+                          }
                         }
                         @for (_ of [].constructor(Math.max(0, 12 - job.merkleBranches.length)); track $index) {
                           <td class="merkle empty-branch"></td>

@@ -30,7 +30,13 @@
             </td>
             @for (cell of row.merkleCells; track $index) {
               <td class="merkle" [style.background-color]="cell.hash ? '#' + cell.hash.slice(0, 6) : ''">
-                <div class="pipe-segment" [class]="pipeToClass(cell.type)"></div>
+                @if ($index === 0 && cell.hash) {
+                  <a [routerLink]="['/tx' | relativeUrl, reverseHash(cell.hash)]" class="cell-link">
+                    <div class="pipe-segment" [class]="pipeToClass(cell.type)"></div>
+                  </a>
+                } @else {
+                  <div class="pipe-segment" [class]="pipeToClass(cell.type)"></div>
+                }
               </td>
             }
             <td class="pool">
