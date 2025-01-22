@@ -48,14 +48,16 @@ function parseTag(scriptSig: string): string {
   return (ascii.match(/\/.*\//)?.[0] || ascii).trim();
 }
 
-function getMerkleBranchIds(merkleBranches: string[], numBranches: number): string[] {
+function getMerkleBranchIds(merkleBranches: string[], numBranches: number, poolId: number): string[] {
   let lastHash = '';
   const ids: string[] = [];
   for (let i = 0; i < numBranches; i++) {
     if (merkleBranches[i]) {
       lastHash = merkleBranches[i];
+      ids.push(`${i}-${lastHash}`);
+    } else {
+      ids.push(`${i}-${lastHash}-${poolId}`);
     }
-    ids.push(`${i}-${lastHash}`);
   }
   return ids;
 }
@@ -98,7 +100,7 @@ export class StratumList implements OnInit, OnDestroy {
     const numBranches = Math.max(...Object.values(rawJobs).map(job => job.merkleBranches.length));
     const jobs: Record<string, TaggedStratumJob> = {};
     for (const [id, job] of Object.entries(rawJobs)) {
-      jobs[id] = { ...job, tag: parseTag(job.scriptsig), merkleBranchIds: getMerkleBranchIds(job.merkleBranches, numBranches) };
+      jobs[id] = { ...job, tag: parseTag(job.scriptsig), merkleBranchIds: getMerkleBranchIds(job.merkleBranches, numBranches, job.pool) };
     }
     if (Object.keys(jobs).length === 0) {
       return [];
