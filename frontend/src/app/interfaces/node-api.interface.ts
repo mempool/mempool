@@ -412,13 +412,13 @@ export interface Acceleration {
   feeDelta: number;
   blockHash: string;
   blockHeight: number;
-
   acceleratedFeeRate?: number;
   boost?: number;
   bidBoost?: number;
   boostCost?: number;
   boostRate?: number;
   minedByPoolUniqueId?: number;
+  canceled?: number;
 }
 
 export interface AccelerationHistoryParams {
