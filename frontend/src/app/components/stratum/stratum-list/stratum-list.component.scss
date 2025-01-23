@@ -92,6 +92,36 @@ td {
       }
     }
   }
+
+  .cell-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+@media (max-width: 800px) {
+  .stratum-table {
+    td {
+      &.tag {
+        display: none;
+      }
+    }
+  }
+}
+
+@media (max-width: 650px) {
+  .stratum-table {
+    td {
+      &.reward {
+        display: none;
+      }
+    }
+  }
 }
 
 .badge {

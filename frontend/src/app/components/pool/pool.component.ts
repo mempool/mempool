@@ -361,6 +361,10 @@ export class PoolComponent implements OnInit {
     return block.height;
   }
 
+  reverseHash(hash: string) {
+    return hash.match(/../g).reverse().join('');
+  }
+
   ngOnDestroy(): void {
     this.slugSubscription.unsubscribe();
   }

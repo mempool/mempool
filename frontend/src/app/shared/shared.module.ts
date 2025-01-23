@@ -125,6 +125,7 @@ import { TwitterLogin } from '@components/twitter-login/twitter-login.component'
 import { BitcoinInvoiceComponent } from '@components/bitcoin-invoice/bitcoin-invoice.component';
 
 import { OnlyVsizeDirective, OnlyWeightDirective } from '@app/shared/components/weight-directives/weight-directives';
+import { GithubLogin } from '../components/github-login.component/github-login.component';
 
 @NgModule({
   declarations: [
@@ -242,6 +243,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from '@app/shared/components/
     TwitterWidgetComponent,
     FaucetComponent,
     TwitterLogin,
+    GithubLogin,
     BitcoinInvoiceComponent,
   ],
   imports: [
@@ -376,6 +378,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from '@app/shared/components/
     HttpErrorComponent,
     TwitterWidgetComponent,
     TwitterLogin,
+    GithubLogin,
     BitcoinInvoiceComponent,
     BitcoinsatoshisPipe,
 
