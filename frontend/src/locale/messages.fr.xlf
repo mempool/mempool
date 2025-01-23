@@ -1567,7 +1567,7 @@
       </trans-unit>
       <trans-unit id="bdb8bbb38e4ca3c73e19dc4167fbe4aec316f818" datatype="html">
         <source>Total Bid Boost</source>
-        <target>Augmentation totale des frais</target>
+        <target>Total frais ajoutés</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-stats/acceleration-stats.component.html</context>
           <context context-type="linenumber">11</context>
@@ -1728,7 +1728,7 @@
       </trans-unit>
       <trans-unit id="57cde27765d527a0d9195212fa5a7ce06408c827" datatype="html">
         <source>Bid Boost</source>
-        <target>Augmentation des frais</target>
+        <target>Frais ajoutés</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">17</context>
@@ -6739,7 +6739,7 @@
       </trans-unit>
       <trans-unit id="date-base.just-now" datatype="html">
         <source>Just now</source>
-        <target>Juste maintenant</target>
+        <target>À l'instant</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
           <context context-type="linenumber">111</context>
