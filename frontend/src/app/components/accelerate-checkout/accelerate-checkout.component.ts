@@ -757,9 +757,9 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               billing: {
                 givenName: assumedGivenName,
                 familyName: assumedFamilyName,
-                addressLines: [cardOnFile.card.billing.addressLine1],
-                city: cardOnFile.card.billing.locality,
-                state: cardOnFile.card.billing.administrativeDistrictLevel1,
+                addressLines: [cardOnFile.card.billing.addressLine1 ?? ''],
+                city: cardOnFile.card.billing.locality ?? '',
+                state: cardOnFile.card.billing.administrativeDistrictLevel1 ?? '',
                 countyCode: cardOnFile.card.billing.country,
               }
             }
