@@ -1,4 +1,4 @@
-import { AddressTxSummary, Block, ChainStats, Transaction } from "./electrs.interface";
+import { AddressTxSummary, Block, ChainStats } from "./electrs.interface";
 
 export interface OptimizedMempoolStats {
   added: number;
@@ -143,6 +143,8 @@ export interface SinglePoolStats {
   rank: number;
   share: number;
   lastEstimatedHashrate: number;
+  lastEstimatedHashrate3d: number;
+  lastEstimatedHashrate1w: number;
   emptyBlockRatio: string;
   logo: string;
   slug: string;
@@ -152,6 +154,8 @@ export interface SinglePoolStats {
 export interface PoolsStats {
   blockCount: number;
   lastEstimatedHashrate: number;
+  lastEstimatedHashrate3d: number;
+  lastEstimatedHashrate1w: number;
   pools: SinglePoolStats[];
 }
 
@@ -408,13 +412,13 @@ export interface Acceleration {
   feeDelta: number;
   blockHash: string;
   blockHeight: number;
-
   acceleratedFeeRate?: number;
   boost?: number;
   bidBoost?: number;
   boostCost?: number;
   boostRate?: number;
   minedByPoolUniqueId?: number;
+  canceled?: number;
 }
 
 export interface AccelerationHistoryParams {

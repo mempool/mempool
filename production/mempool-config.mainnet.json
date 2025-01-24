@@ -153,6 +153,10 @@
   },
   "WALLETS": {
     "ENABLED": true,
-    "WALLETS": ["BITB"]
+    "WALLETS": ["BITB", "3350"]
+  },
+  "STRATUM": {
+    "ENABLED": true,
+    "API": "http://127.0.0.1:81/api/v1/stratum/ws"
   }
 }

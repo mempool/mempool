@@ -1,7 +1,7 @@
 import { Application, Request, Response } from 'express';
 import config from '../../config';
 import statisticsApi from './statistics-api';
-
+import { handleError } from '../../utils/api';
 class StatisticsRoutes {
   public initRoutes(app: Application) {
     app
@@ -65,7 +65,7 @@ class StatisticsRoutes {
       }
       res.json(result);
     } catch (e) {
-      res.status(500).send(e instanceof Error ? e.message : e);
+      handleError(req, res, 500, 'Failed to get statistics');
     }
   }
 }

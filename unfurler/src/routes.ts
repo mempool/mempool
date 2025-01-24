@@ -85,6 +85,13 @@ const routes = {
       return `Address: ${path[0]}`;
     }
   },
+  wallet: {
+    render: true,
+    params: 1,
+    getTitle(path) {
+      return `Wallet: ${path[0]}`;
+    }
+  },
   blocks: {
     title: "Blocks",
     fallbackImg: '/resources/previews/blocks.jpg',
@@ -263,12 +270,57 @@ export const networks = {
     routes: {} // no routes supported
   },
   onbtc: {
+    networkName: 'ONBTC',
     title: 'National Bitcoin Office of El Salvador',
     description: 'The National Bitcoin Office (ONBTC) of El Salvador under President @nayibbukele',
     fallbackImg: '/resources/onbtc/onbtc-preview.jpg',
     routes: { // only dynamic routes supported
       block: routes.block,
       address: routes.address,
+      tx: routes.tx,
+      mining: {
+        title: "Mining",
+        routes: {
+          pool: routes.mining.routes.pool,
+        }
+      },
+      lightning: {
+        title: "Lightning",
+        routes: routes.lightning.routes,
+      }
+    }
+  },
+  bitb: {
+    networkName: 'BITB',
+    title: 'BITB | Bitwise Bitcoin ETF',
+    description: 'BITB provides low-cost access to bitcoin through a professionally managed fund',
+    fallbackImg: '/resources/bitb/bitb-preview.jpg',
+    routes: { // only dynamic routes supported
+      block: routes.block,
+      address: routes.address,
+      wallet: routes.wallet,
+      tx: routes.tx,
+      mining: {
+        title: "Mining",
+        routes: {
+          pool: routes.mining.routes.pool,
+        }
+      },
+      lightning: {
+        title: "Lightning",
+        routes: routes.lightning.routes,
+      }
+    }
+  },
+  meta: {
+    networkName: 'Metaplanet',
+    title: 'Metaplanet Inc.',
+    description: 'Secure the Future with Bitcoin',
+    fallbackImg: '/resources/meta/meta-preview.png',
+    routes: { // only dynamic routes supported
+      block: routes.block,
+      address: routes.address,
+      wallet: routes.wallet,
       tx: routes.tx,
       mining: {
         title: "Mining",

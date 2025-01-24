@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { ServerModule } from '@angular/platform-server';
 
 import { ZONE_SERVICE } from '@app/injection-tokens';
-import { AppModule } from '@app/app.module';
+import { AppModule } from './app.module';
 import { AppComponent } from '@components/app/app.component';
 import { HttpCacheInterceptor } from '@app/services/http-cache.interceptor';
 import { ZoneService } from '@app/services/zone.service';

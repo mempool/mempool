@@ -21,10 +21,8 @@
       <div class="alert alert-mempool d-block text-center w-100">
         <div class="d-inline align-middle">
           <span>To use the faucet, please&nbsp;</span>
-          <a routerLink="/login" [queryParams]="{'redirectTo': '/testnet4/faucet'}">login</a>
-          <span class="mr-2">&nbsp;or</span>
         </div>
-        <app-twitter-login customClass="btn btn-sm" width="220px" redirectTo="/testnet4/faucet" buttonString="Sign up with Twitter"></app-twitter-login>
+        <app-github-login customClass="btn btn-sm" width="220px" redirectTo="/testnet4/faucet" buttonString="Sign up with Github"></app-github-login>
       </div>
     }
     @else if (user && user.status === 'pending' && !user.email && user.snsId) {
@@ -36,18 +34,18 @@
       </div>
     }
     @else if (error === 'not_available') {
-      <!-- User logged in but not a paid user or did not link its Twitter account -->
+      <!-- User logged in but not a paid user or did not link its Github account -->
       <div class="alert alert-mempool d-block text-center w-100">
         <div class="d-inline align-middle">
           <span class="mb-2 mr-2">To use the faucet, please</span>
         </div>
-        <app-twitter-login customClass="btn btn-sm" width="180px" redirectTo="/testnet4/faucet" buttonString="Link your Twitter"></app-twitter-login>
+        <app-github-login customClass="btn btn-sm" width="180px" redirectTo="/testnet4/faucet" buttonString="Link your Github"></app-github-login>
       </div>
     }
     @else if (error === 'account_limited') {
       <div class="alert alert-mempool d-block text-center w-100">
         <div class="d-inline align-middle">
-          <span class="mb-2 mr-2">Your Twitter account does not allow you to access the faucet</span>
+          <span class="mb-2 mr-2">Your account does not allow you to access the faucet</span>
         </div>
       </div>
     }

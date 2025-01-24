@@ -107,6 +107,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   pool: Pool | null;
   auditStatus: TxAuditStatus | null;
   isAcceleration: boolean = false;
+  accelerationCanceled: boolean = false;
   filters: Filter[] = [];
   showCpfpDetails = false;
   miningStats: MiningStats;
@@ -239,7 +240,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         retry({ count: 2, delay: 2000 }),
         // Try again until we either get a valid response, or the transaction is confirmed
         repeat({ delay: 2000 }),
-        filter((transactionTimes) => transactionTimes?.length && transactionTimes[0] > 0 && !this.tx.status?.confirmed),
+        filter((transactionTimes) => transactionTimes?.[0] > 0 || this.tx.status?.confirmed),
         take(1),
       )),
     )
@@ -360,16 +361,17 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     ).subscribe((accelerationHistory) => {
       for (const acceleration of accelerationHistory) {
         if (acceleration.txid === this.txId) {
-          if (acceleration.status === 'completed' || acceleration.status === 'completed_provisional') {
-            if (acceleration.pools.includes(acceleration.minedByPoolUniqueId)) {
-              const boostCost = acceleration.boostCost || acceleration.bidBoost;
-              acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
-              acceleration.boost = boostCost;
-              this.tx.acceleratedAt = acceleration.added;
-              this.accelerationInfo = acceleration;  
-            } else {
-              this.tx.feeDelta = undefined;
-            }
+          if ((acceleration.status === 'completed' || acceleration.status === 'completed_provisional') && acceleration.pools.includes(acceleration.minedByPoolUniqueId)) {
+            const boostCost = acceleration.boostCost || acceleration.bidBoost;
+            acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
+            acceleration.boost = boostCost;
+            this.tx.acceleratedAt = acceleration.added;
+            this.accelerationInfo = acceleration;  
+          }
+          if (acceleration.status === 'failed' || acceleration.status === 'failed_provisional') {
+            this.accelerationCanceled = true;
+            this.tx.acceleratedAt = acceleration.added;
+            this.accelerationInfo = acceleration;
           }
           this.waitingForAccelerationInfo = false;
           this.setIsAccelerated();
@@ -406,6 +408,30 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         const auditAvailable = this.isAuditAvailable(height);
         const isCoinbase = this.tx.vin.some(v => v.is_coinbase);
         const fetchAudit = auditAvailable && !isCoinbase;
+
+        const addFirstSeen = (audit: TxAuditStatus | null, hash: string, height: number, txid: string, useFullSummary: boolean) => {
+          if (
+            this.isFirstSeenAvailable(height)
+            && !audit?.firstSeen             // firstSeen is not already in audit
+            && (!audit || audit?.seen)       // audit is disabled or tx is already seen (meaning 'firstSeen' is in block summary)
+          ) {
+            return useFullSummary ?
+              this.apiService.getStrippedBlockTransactions$(hash).pipe(
+                map(strippedTxs => {
+                  return { audit, firstSeen: strippedTxs.find(tx => tx.txid === txid)?.time };
+                }),
+                catchError(() => of({ audit }))
+              ) :
+              this.apiService.getStrippedBlockTransaction$(hash, txid).pipe(
+                map(strippedTx => {
+                  return { audit, firstSeen: strippedTx?.time };
+                }),
+                catchError(() => of({ audit }))
+              );
+          }
+          return of({ audit });
+        };
+
         if (fetchAudit) {
         // If block audit is already cached, use it to get transaction audit
           const blockAuditLoaded = this.apiService.getBlockAuditLoaded(hash);
@@ -428,24 +454,31 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
                   accelerated: isAccelerated,
                   firstSeen,
                 };
+              }),
+              switchMap(audit => addFirstSeen(audit, hash, height, txid, true)),
+              catchError(() => {
+                return of({ audit: null });
               })
             )
           } else {
             return this.apiService.getBlockTxAudit$(hash, txid).pipe(
               retry({ count: 3, delay: 2000 }),
+              switchMap(audit => addFirstSeen(audit, hash, height, txid, false)),
               catchError(() => {
-                return of(null);
+                return of({ audit: null });
               })
             )
           }
         } else {
-          return of(isCoinbase ? { coinbase: true } : null);
+          const audit = isCoinbase ? { coinbase: true } : null;
+          return addFirstSeen(audit, hash, height, txid, this.apiService.getBlockSummaryLoaded(hash));
         }
       }),
     ).subscribe(auditStatus => {
-      this.auditStatus = auditStatus;
-      if (this.auditStatus?.firstSeen) {
-        this.transactionTime = this.auditStatus.firstSeen;
+      this.auditStatus = auditStatus?.audit;
+      const firstSeen = this.auditStatus?.firstSeen || auditStatus['firstSeen'];
+      if (firstSeen) {
+        this.transactionTime = firstSeen;
       }
       this.setIsAccelerated();
     });
@@ -847,6 +880,13 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.tx.acceleratedBy = cpfpInfo.acceleratedBy;
       this.tx.acceleratedAt = cpfpInfo.acceleratedAt;
       this.tx.feeDelta = cpfpInfo.feeDelta;
+      this.accelerationCanceled = false;
+      this.setIsAccelerated(firstCpfp);
+    } else if (cpfpInfo.acceleratedAt) { // Acceleration was cancelled: reset acceleration state
+      this.tx.acceleratedBy = cpfpInfo.acceleratedBy;
+      this.tx.acceleratedAt = cpfpInfo.acceleratedAt;
+      this.tx.feeDelta = cpfpInfo.feeDelta;
+      this.accelerationCanceled = true;
       this.setIsAccelerated(firstCpfp);
     }
     
@@ -870,7 +910,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   setIsAccelerated(initialState: boolean = false) {
-    this.isAcceleration = ((this.tx.acceleration && (!this.tx.status.confirmed || this.waitingForAccelerationInfo)) || (this.accelerationInfo && this.pool && this.accelerationInfo.pools.some(pool => (pool === this.pool.id))));
+    this.isAcceleration = 
+      (
+        (this.tx.acceleration && (!this.tx.status.confirmed || this.waitingForAccelerationInfo)) || 
+        (this.accelerationInfo && this.pool && this.accelerationInfo.pools.some(pool => (pool === this.pool.id)))
+      ) && 
+      !this.accelerationCanceled;
     if (this.isAcceleration) {
       if (initialState) {
         this.accelerationFlowCompleted = true;
@@ -922,6 +967,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           return false;
         }
         break;
+      case 'testnet4':
+        if (blockHeight < this.stateService.env.TESTNET4_BLOCK_AUDIT_START_HEIGHT) {
+          return false;
+        }
+        break;
       case 'signet':
         if (blockHeight < this.stateService.env.SIGNET_BLOCK_AUDIT_START_HEIGHT) {
           return false;
@@ -933,6 +983,34 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
     return true;
+  }
+
+  isFirstSeenAvailable(blockHeight: number): boolean {
+    if (this.stateService.env.BASE_MODULE !== 'mempool') {
+      return false;
+    }
+    switch (this.stateService.network) {
+      case 'testnet':
+        if (this.stateService.env.TESTNET_TX_FIRST_SEEN_START_HEIGHT && blockHeight >= this.stateService.env.TESTNET_TX_FIRST_SEEN_START_HEIGHT) {
+          return true;
+        }
+        break;
+      case 'testnet4':
+        if (this.stateService.env.TESTNET4_TX_FIRST_SEEN_START_HEIGHT && blockHeight >= this.stateService.env.TESTNET4_TX_FIRST_SEEN_START_HEIGHT) {
+          return true;
+        }
+        break;
+      case 'signet':
+        if (this.stateService.env.SIGNET_TX_FIRST_SEEN_START_HEIGHT && blockHeight >= this.stateService.env.SIGNET_TX_FIRST_SEEN_START_HEIGHT) {
+          return true;
+        }
+        break;
+      default:
+        if (this.stateService.env.MAINNET_TX_FIRST_SEEN_START_HEIGHT && blockHeight >= this.stateService.env.MAINNET_TX_FIRST_SEEN_START_HEIGHT) {
+          return true;
+        }
+    }
+    return false;
   }
 
   resetTransaction() {

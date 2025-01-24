@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, SecurityContext, ChangeDetectorRef } from '@angular/core';
 import { WebsocketService } from '@app/services/websocket.service';
-import { Observable, Subject, map } from 'rxjs';
+import { Observable, Subject, map, tap } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 import { HealthCheckHost } from '@interfaces/websocket.interface';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -13,7 +13,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 })
 export class ServerHealthComponent implements OnInit {
   hosts$: Observable<HealthCheckHost[]>;
-  tip$: Subject<number>;
+  maxHeight: number;
   interval: number;
   now: number = Date.now();
 
@@ -44,9 +44,14 @@ export class ServerHealthComponent implements OnInit {
           host.flag = this.parseFlag(host.host);
         }
         return hosts;
+      }),
+      tap(hosts => {
+        let newMaxHeight = 0;
+        for (const host of hosts) {
+          newMaxHeight = Math.max(newMaxHeight, host.latestHeight);
+        }
       })
     );
-    this.tip$ = this.stateService.chainTip$;
     this.websocketService.want(['mempool-blocks', 'stats', 'blocks', 'tomahawk']);
 
     this.interval = window.setInterval(() => {

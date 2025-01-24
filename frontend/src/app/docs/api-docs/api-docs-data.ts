@@ -13,96 +13,2442 @@ const emptyCodeSample = {
 const showJsExamplesDefault = { "": true, "testnet": true, "signet": true, "liquid": true, "liquidtestnet": false };
 const showJsExamplesDefaultFalse = { "": false, "testnet": false, "signet": false, "liquid": false, "liquidtestnet": false };
 
-export const wsApiDocsData = {
-  showJsExamples: showJsExamplesDefault,
-  codeTemplate: {
-    curl: `/api/v1/ws`,
-    commonJS: `
-        const { %{0}: { websocket } } = mempoolJS();
-
-        const ws = websocket.initClient({
-          options: ['blocks', 'stats', 'mempool-blocks', 'live-2h-chart'],
-        });
-
-        ws.addEventListener('message', function incoming({data}) {
-          const res = JSON.parse(data.toString());
-          if (res.block) {
-            document.getElementById("result-blocks").textContent = JSON.stringify(res.block, undefined, 2);
-          }
-          if (res.mempoolInfo) {
-            document.getElementById("result-mempool-info").textContent = JSON.stringify(res.mempoolInfo, undefined, 2);
-          }
-          if (res.transactions) {
-            document.getElementById("result-transactions").textContent = JSON.stringify(res.transactions, undefined, 2);
-          }
-          if (res["mempool-blocks"]) {
-            document.getElementById("result-mempool-blocks").textContent = JSON.stringify(res["mempool-blocks"], undefined, 2);
-          }
-        });
-  `,
-    esModule: `
-  const { %{0}: { websocket } } = mempoolJS();
-
-  const ws = websocket.initServer({
-    options: ["blocks", "stats", "mempool-blocks", "live-2h-chart"],
-  });
-
-  ws.on("message", function incoming(data) {
-    const res = JSON.parse(data.toString());
-    if (res.block) {
-      console.log(res.block);
-    }
-    if (res.mempoolInfo) {
-      console.log(res.mempoolInfo);
-    }
-    if (res.transactions) {
-      console.log(res.transactions);
-    }
-    if (res["mempool-blocks"]) {
-      console.log(res["mempool-blocks"]);
-    }
-  });
-    `,
-    python: `import websocket
-import _thread
-import time
-import rel
-import json
-
-rel.safe_read()
-
-def on_message(ws, message):
-    print(json.loads(message))
-
-def on_error(ws, error):
-    print(error)
-
-def on_close(ws, close_status_code, close_msg):
-    print("### closed ###")
-
-def on_open(ws):
-    message = { "action": "init" }
-    ws.send(json.dumps(message))
-    message = { "action": "want", "data": ['blocks', 'stats', 'mempool-blocks', 'live-2h-chart', 'watch-mempool'] }
-    ws.send(json.dumps(message))
-
-if __name__ == "__main__":
-    ws = websocket.WebSocketApp("wss://mempool.space/api/v1/ws",
-                              on_open=on_open,
-                              on_message=on_message,
-                              on_error=on_error,
-                              on_close=on_close)
-
-    ws.run_forever(dispatcher=rel)  # Set dispatcher to automatic reconnection
-    rel.signal(2, rel.abort)  # Keyboard Interrupt
-    rel.dispatch()
-    `,
+export const wsApiDocsData = [
+  {
+    type: "category",
+    category: "general",
+    fragment: "general",
+    title: "General",
+    showConditions: bitcoinNetworks.concat(liquidNetworks)
   },
-  codeSampleMainnet: emptyCodeSample,
-  codeSampleTestnet: emptyCodeSample,
-  codeSampleSignet: emptyCodeSample,
-  codeSampleLiquid: emptyCodeSample,
-};
+  {
+    type: "endpoint",
+    category: "general",
+    fragment: "live-data",
+    title: "Live Data",
+    description: {
+      default: "Subscribe to live data. Available: <code>blocks</code>, <code>mempool-block</code>, <code>live-2h-chart</code>, and <code>stats</code>."
+    },
+    payload: '{ "action": "want", "data": ["mempool-blocks", "stats"] }',
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: false,
+    codeExample: {
+      default: {
+        codeTemplate: {
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "mempool-blocks": [
+    {
+      "blockSize": 1801614,
+      "blockVSize": 997936.5,
+      "nTx": 3391,
+      "totalFees": 8170664,
+      "medianFee": 6.011217160720601,
+      "feeRange": [
+        4.584615384615384,
+        5,
+        5.100456621004566,
+        6.002319288751449,
+        7.235398230088496,
+        10.377668308702791,
+        200
+      ]
+    },
+    ...
+    {
+      "blockSize": 198543075,
+      "blockVSize": 101691348,
+      "nTx": 249402,
+      "totalFees": 135312667,
+      "medianFee": 1.2559438783834156,
+      "feeRange": [
+        1.000685629033809,
+        1.0020213063577312,
+        1.0019080827758888,
+        1.0227913345013278,
+        1.1188648002395873,
+        1.2559438783834156,
+        1.4077952614964329,
+        1.4079805737077244,
+        1.5106880342499638,
+        2.003440424869914,
+        2.2713888268854894
+      ]
+    }
+  ],
+  "mempoolInfo": {
+    "loaded": true,
+    "size": 264505,
+    "bytes": 108875402,
+    "usage": 649908688,
+    "total_fee": 1.61036575,
+    "maxmempool": 300000000,
+    "mempoolminfee": 0.00001858,
+    "minrelaytxfee": 0.00001,
+    "incrementalrelayfee": 0.00001,
+    "unbroadcastcount": 0,
+    "fullrbf": true
+  },
+  "vBytesPerSecond": 1651,
+  "fees": {
+    "fastestFee": 7,
+    "halfHourFee": 6,
+    "hourFee": 5,
+    "economyFee": 4,
+    "minimumFee": 2
+  },
+  "da": {
+    "progressPercent": 32.49007936507937,
+    "difficultyChange": 0.7843046881601534,
+    "estimatedRetargetDate": 1735514828279,
+    "remainingBlocks": 1361,
+    "remainingTime": 811481279,
+    "previousRetarget": 4.429396745461176,
+    "previousTime": 1734312810,
+    "nextRetargetHeight": 876960,
+    "timeAvg": 596239,
+    "adjustedTimeAvg": 596239,
+    "timeOffset": 0,
+    "expectedBlocks": 650.895
+  }
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "mempool-blocks": [
+    {
+      "blockSize": 1009960,
+      "blockVSize": 997827.25,
+      "nTx": 3545,
+      "totalFees": 2844117938,
+      "medianFee": 2524.178404298769,
+      "feeRange": [
+        2010.9044259140476,
+        2011.0887096774193,
+        2011.2914608327453,
+        2441.5893066980025,
+        3541.35960591133,
+        3936.6254416961133,
+        6031.746031746032
+      ]
+    },
+    ...
+  ],
+  "mempoolInfo": {
+    "loaded": true,
+    "size": 517666,
+    "bytes": 168219654,
+    "usage": 855583264,
+    "total_fee": 133.53837564,
+    "maxmempool": 4096000000,
+    "mempoolminfee": 0.00001,
+    "minrelaytxfee": 0.00001,
+    "incrementalrelayfee": 0.00001,
+    "unbroadcastcount": 0,
+    "fullrbf": true
+  },
+  "vBytesPerSecond": 358,
+  "fees": {
+    "fastestFee": 2525,
+    "halfHourFee": 2268,
+    "hourFee": 2082,
+    "economyFee": 2,
+    "minimumFee": 1
+  },
+  "da": {
+    "progressPercent": 45.882936507936506,
+    "difficultyChange": -51.21445794134847,
+    "estimatedRetargetDate": 1736046916382,
+    "remainingBlocks": 1091,
+    "remainingTime": 1343241382,
+    "previousRetarget": 255.61790932023905,
+    "previousTime": 1733564813,
+    "nextRetargetHeight": 3538080,
+    "timeAvg": 1200000,
+    "adjustedTimeAvg": 1231202,
+    "timeOffset": 0,
+    "expectedBlocks": 1898.1033333333332
+  }
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{"mempool-blocks": [
+    {
+      "blockSize": 1009960,
+      "blockVSize": 997827.25,
+      "nTx": 3545,
+      "totalFees": 2844117938,
+      "medianFee": 2524.178404298769,
+      "feeRange": [
+        2010.9044259140476,
+        2011.0887096774193,
+        2011.2914608327453,
+        2441.5893066980025,
+        3541.35960591133,
+        3936.6254416961133,
+        6031.746031746032
+      ]
+    },
+    ...
+  ],
+  "mempoolInfo": {
+    "loaded": true,
+    "size": 59,
+    "bytes": 9834,
+    "usage": 68832,
+    "total_fee": 0.00013935,
+    "maxmempool": 4096000000,
+    "mempoolminfee": 0.00001,
+    "minrelaytxfee": 0.00001,
+    "incrementalrelayfee": 0.00001,
+    "unbroadcastcount": 0,
+    "fullrbf": true
+  },
+  "vBytesPerSecond": 28,
+  "da": {
+    "progressPercent": 68.60119047619048,
+    "difficultyChange": -2.913529439274176,
+    "estimatedRetargetDate": 1735095294116,
+    "remainingBlocks": 633,
+    "remainingTime": 391480116,
+    "previousRetarget": 2.0685719720386118,
+    "previousTime": 1733848494,
+    "nextRetargetHeight": 227808,
+    "timeAvg": 618452,
+    "adjustedTimeAvg": 618452,
+    "timeOffset": 0,
+    "expectedBlocks": 1425.5333333333333
+  },
+  "fees": {
+    "fastestFee": 1,
+    "halfHourFee": 1,
+    "hourFee": 1,
+    "economyFee": 1,
+    "minimumFee": 1
+  },
+}`
+        },
+        codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "mempool-blocks": [
+    {
+      "blockSize": 27409,
+      "blockVSize": 7675,
+      "nTx": 2,
+      "totalFees": 769,
+      "medianFee": 0,
+      "feeRange": [
+        0.10012450036039577,
+        0.10012450036039577,
+        0.10012450036039577,
+        0.10012450036039577,
+        0.10012450036039577,
+        0.10012450036039577,
+        0.10012450036039577
+      ]
+    }
+  ],
+  "mempoolInfo": {
+    "loaded": true,
+    "size": 2,
+    "bytes": 7676,
+    "usage": 3568,
+    "total_fee": 0.00000769,
+    "maxmempool": 300000000,
+    "mempoolminfee": 0.000001,
+    "minrelaytxfee": 0.000001,
+    "unbroadcastcount": 0
+  },
+  "vBytesPerSecond": 60,
+  "fees": {
+    "fastestFee": 0.1,
+    "halfHourFee": 0.1,
+    "hourFee": 0.1,
+    "economyFee": 0.1,
+    "minimumFee": 0.1
+  },
+  "da": {
+    "progressPercent": 4.315476190476191,
+    "difficultyChange": null,
+    "estimatedRetargetDate": null,
+    "remainingBlocks": 1929,
+    "remainingTime": null,
+    "previousRetarget": null,
+    "previousTime": 1734698648,
+    "nextRetargetHeight": 3173184,
+    "timeAvg": 60448,
+    "adjustedTimeAvg": null,
+    "timeOffset": 0,
+    "expectedBlocks": 8.765
+  }
+}`
+        }
+      }
+    }
+  },
+  {
+    type: "category",
+    category: "addresses",
+    fragment: "addresses",
+    title: "Addresses",
+    showConditions: bitcoinNetworks.concat(liquidNetworks)
+  },
+  {
+    type: "endpoint",
+    category: "addresses",
+    fragment: "track-address",
+    title: "Track Address",
+    description: {
+      default: "Subscribe to a single address to receive live updates on new transactions having that address in input or output. <code>address-transactions</code> field contains new mempool transactions, and <code>block-transactions</code> contains new confirmed transactions."
+    },
+    payload: '{ "track-address": "bc1qeldw4mqns26wew8swgpkt3fs364w3ehs046w2f" }',
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: false,
+    codeExample: {
+      default: {
+        codeTemplate: {
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "block-transactions": [
+    {
+      "txid": "9d3ea0d131c45450c135d549b62032019bc47a80368e14edc72caf38f5a88033",
+      "version": 1,
+      "locktime": 0,
+      "vin": [
+        {
+          "txid": "69da555a9c69788a3a081958457894e56b1ee6766bc72cecf881b1b4f327f78b",
+          "vout": 0,
+          "prevout": {
+            "scriptpubkey": "a914c9848245ae4f5d5934b5cbdfb79e04cdd337470b87",
+            "scriptpubkey_asm": "OP_HASH160 OP_PUSHBYTES_20 c9848245ae4f5d5934b5cbdfb79e04cdd337470b OP_EQUAL",
+            "scriptpubkey_type": "p2sh",
+            "scriptpubkey_address": "3L4YUynB4X44rJBY9CmiLMN8Wjti49JCYB",
+            "value": 24962957
+          },
+          "scriptsig": "0048304502210099219ee0cd5da341650078e3c63885b3cc2211069f2551cf436e0100f421e1760220349b4ec284255b458d6da539fa17314e8330459e0a653c254f775d4ec8f32b3f0147304402203a8353c5ee76a2e266432e5f993f882e05725297e64c0833cf44719f7dda8d3b022058a2f72e7739efd21657b4943cac60a0a3c749e712787f0e85726da4c3adcf8e014c695221027f2a0df8e86535d08ca3e766a178f90c813d2dd1d55b0166e82518efbffb18c02103556a35844b517e2fc8216701e2e0a64dbcbe62ad420ac6dd73dc79e69efeb69521031ef21bd55171032b7aec21ec82932735fb986f1d4d8611feee62ab38acf4a6bb53ae",
+          "scriptsig_asm": "OP_0 OP_PUSHBYTES_72 304502210099219ee0cd5da341650078e3c63885b3cc2211069f2551cf436e0100f421e1760220349b4ec284255b458d6da539fa17314e8330459e0a653c254f775d4ec8f32b3f01 OP_PUSHBYTES_71 304402203a8353c5ee76a2e266432e5f993f882e05725297e64c0833cf44719f7dda8d3b022058a2f72e7739efd21657b4943cac60a0a3c749e712787f0e85726da4c3adcf8e01 OP_PUSHDATA1 5221027f2a0df8e86535d08ca3e766a178f90c813d2dd1d55b0166e82518efbffb18c02103556a35844b517e2fc8216701e2e0a64dbcbe62ad420ac6dd73dc79e69efeb69521031ef21bd55171032b7aec21ec82932735fb986f1d4d8611feee62ab38acf4a6bb53ae",
+          "is_coinbase": false,
+          "sequence": 4294967295,
+          "inner_redeemscript_asm": "OP_PUSHNUM_2 OP_PUSHBYTES_33 027f2a0df8e86535d08ca3e766a178f90c813d2dd1d55b0166e82518efbffb18c0 OP_PUSHBYTES_33 03556a35844b517e2fc8216701e2e0a64dbcbe62ad420ac6dd73dc79e69efeb695 OP_PUSHBYTES_33 031ef21bd55171032b7aec21ec82932735fb986f1d4d8611feee62ab38acf4a6bb OP_PUSHNUM_3 OP_CHECKMULTISIG"
+        },
+        ...
+        {
+          "txid": "43852d32c7ae6d362d446d090daa4d389f78ec77e6693f9248cd924dc0b1ecc3",
+          "vout": 1,
+          "prevout": {
+            "scriptpubkey": "a914a3aff5f5765f167c1582fd85517ddde83174118187",
+            "scriptpubkey_asm": "OP_HASH160 OP_PUSHBYTES_20 a3aff5f5765f167c1582fd85517ddde831741181 OP_EQUAL",
+            "scriptpubkey_type": "p2sh",
+            "scriptpubkey_address": "3GcWrnGFoNzbn1KaiP5czS5xPELdWcgDX2",
+            "value": 1719827
+          },
+          "scriptsig": "0047304402205f83d22a0476158aa0986682c96ce2b2dab26c814968dba62905cdfeef1b3ac7022059438a3439bb18bd49242010c8a276ea6f1810d523042e679fa6679d60e89e0201483045022100eb085df09e0fb4894090a5f39b9f2188392f7ac2847ed8255629baffc7371f170220120463b91d6c4bb8968fb3eda9012b88d13d8ca71de28e7a64b1dd88282ff144014c69522103650083cbc9cd1da1224e0780bce1ee8abd5150c5252defd0edeccd3521610b282102510ab30a6a97464ef0d61f71ec8b1d2325f12934ff15ba73579bfd0ac5f4fc1a2102985b3be77f56a9a29c5f68d3c893d6c4d76ec8c07792f0291d375c29b71ee2f853ae",
+          "scriptsig_asm": "OP_0 OP_PUSHBYTES_71 304402205f83d22a0476158aa0986682c96ce2b2dab26c814968dba62905cdfeef1b3ac7022059438a3439bb18bd49242010c8a276ea6f1810d523042e679fa6679d60e89e0201 OP_PUSHBYTES_72 3045022100eb085df09e0fb4894090a5f39b9f2188392f7ac2847ed8255629baffc7371f170220120463b91d6c4bb8968fb3eda9012b88d13d8ca71de28e7a64b1dd88282ff14401 OP_PUSHDATA1 522103650083cbc9cd1da1224e0780bce1ee8abd5150c5252defd0edeccd3521610b282102510ab30a6a97464ef0d61f71ec8b1d2325f12934ff15ba73579bfd0ac5f4fc1a2102985b3be77f56a9a29c5f68d3c893d6c4d76ec8c07792f0291d375c29b71ee2f853ae",
+          "is_coinbase": false,
+          "sequence": 4294967295,
+          "inner_redeemscript_asm": "OP_PUSHNUM_2 OP_PUSHBYTES_33 03650083cbc9cd1da1224e0780bce1ee8abd5150c5252defd0edeccd3521610b28 OP_PUSHBYTES_33 02510ab30a6a97464ef0d61f71ec8b1d2325f12934ff15ba73579bfd0ac5f4fc1a OP_PUSHBYTES_33 02985b3be77f56a9a29c5f68d3c893d6c4d76ec8c07792f0291d375c29b71ee2f8 OP_PUSHNUM_3 OP_CHECKMULTISIG"
+        }
+      ],
+      "vout": [
+        {
+          "scriptpubkey": "0014292fce548b228cd3df6334dd525fac62e7eb5f7a",
+          "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 292fce548b228cd3df6334dd525fac62e7eb5f7a",
+          "scriptpubkey_type": "v0_p2wpkh",
+          "scriptpubkey_address": "bc1q9yhuu4yty2xd8hmrxnw4yhavvtn7khm62uw38p",
+          "value": 57000
+        },
+        ...
+        {
+          "scriptpubkey": "0020e5c7c00d174631d2d1e365d6347b016fb87b6a0c08902d8e443989cb771fa7ec",
+          "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_32 e5c7c00d174631d2d1e365d6347b016fb87b6a0c08902d8e443989cb771fa7ec",
+          "scriptpubkey_type": "v0_p2wsh",
+          "scriptpubkey_address": "bc1quhruqrghgcca950rvhtrg7cpd7u8k6svpzgzmrjy8xyukacl5lkq0r8l2d",
+          "value": 17343523
+        }
+      ],
+      "size": 5514,
+      "weight": 22056,
+      "sigops": 208,
+      "fee": 44000,
+      "status": {
+        "confirmed": true,
+        "block_height": 875602,
+        "block_hash": "000000000000000000016c0639b6c1a34d6659c231aa2de5849ab3377ed75020",
+        "block_time": 1734704791
+      },
+      "order": 864069877,
+      "vsize": 5514,
+      "adjustedVsize": 5514,
+      "feePerVsize": 7.979688066739209,
+      "adjustedFeePerVsize": 7.979688066739209,
+      "effectiveFeePerVsize": 7.979688066739209,
+      "firstSeen": 1734704590,
+      "inputs": [],
+      "cpfpDirty": false,
+      "ancestors": [],
+      "descendants": [],
+      "bestDescendant": null,
+      "position": {
+        "block": 0,
+        "vsize": 191567
+      },
+      "flags": 1099511659526
+    }
+  ]
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "block-transactions": [
+    {
+      "txid": "9d3ea0d131c45450c135d549b62032019bc47a80368e14edc72caf38f5a88033",
+      "version": 1,
+      "locktime": 0,
+      "vin": [
+        {
+          "txid": "69da555a9c69788a3a081958457894e56b1ee6766bc72cecf881b1b4f327f78b",
+          "vout": 0,
+          "prevout": {
+            "scriptpubkey": "a914c9848245ae4f5d5934b5cbdfb79e04cdd337470b87",
+            "scriptpubkey_asm": "OP_HASH160 OP_PUSHBYTES_20 c9848245ae4f5d5934b5cbdfb79e04cdd337470b OP_EQUAL",
+            "scriptpubkey_type": "p2sh",
+            "scriptpubkey_address": "3L4YUynB4X44rJBY9CmiLMN8Wjti49JCYB",
+            "value": 24962957
+          },
+          "scriptsig": "0048304502210099219ee0cd5da341650078e3c63885b3cc2211069f2551cf436e0100f421e1760220349b4ec284255b458d6da539fa17314e8330459e0a653c254f775d4ec8f32b3f0147304402203a8353c5ee76a2e266432e5f993f882e05725297e64c0833cf44719f7dda8d3b022058a2f72e7739efd21657b4943cac60a0a3c749e712787f0e85726da4c3adcf8e014c695221027f2a0df8e86535d08ca3e766a178f90c813d2dd1d55b0166e82518efbffb18c02103556a35844b517e2fc8216701e2e0a64dbcbe62ad420ac6dd73dc79e69efeb69521031ef21bd55171032b7aec21ec82932735fb986f1d4d8611feee62ab38acf4a6bb53ae",
+          "scriptsig_asm": "OP_0 OP_PUSHBYTES_72 304502210099219ee0cd5da341650078e3c63885b3cc2211069f2551cf436e0100f421e1760220349b4ec284255b458d6da539fa17314e8330459e0a653c254f775d4ec8f32b3f01 OP_PUSHBYTES_71 304402203a8353c5ee76a2e266432e5f993f882e05725297e64c0833cf44719f7dda8d3b022058a2f72e7739efd21657b4943cac60a0a3c749e712787f0e85726da4c3adcf8e01 OP_PUSHDATA1 5221027f2a0df8e86535d08ca3e766a178f90c813d2dd1d55b0166e82518efbffb18c02103556a35844b517e2fc8216701e2e0a64dbcbe62ad420ac6dd73dc79e69efeb69521031ef21bd55171032b7aec21ec82932735fb986f1d4d8611feee62ab38acf4a6bb53ae",
+          "is_coinbase": false,
+          "sequence": 4294967295,
+          "inner_redeemscript_asm": "OP_PUSHNUM_2 OP_PUSHBYTES_33 027f2a0df8e86535d08ca3e766a178f90c813d2dd1d55b0166e82518efbffb18c0 OP_PUSHBYTES_33 03556a35844b517e2fc8216701e2e0a64dbcbe62ad420ac6dd73dc79e69efeb695 OP_PUSHBYTES_33 031ef21bd55171032b7aec21ec82932735fb986f1d4d8611feee62ab38acf4a6bb OP_PUSHNUM_3 OP_CHECKMULTISIG"
+        },
+        ...
+        {
+          "txid": "43852d32c7ae6d362d446d090daa4d389f78ec77e6693f9248cd924dc0b1ecc3",
+          "vout": 1,
+          "prevout": {
+            "scriptpubkey": "a914a3aff5f5765f167c1582fd85517ddde83174118187",
+            "scriptpubkey_asm": "OP_HASH160 OP_PUSHBYTES_20 a3aff5f5765f167c1582fd85517ddde831741181 OP_EQUAL",
+            "scriptpubkey_type": "p2sh",
+            "scriptpubkey_address": "3GcWrnGFoNzbn1KaiP5czS5xPELdWcgDX2",
+            "value": 1719827
+          },
+          "scriptsig": "0047304402205f83d22a0476158aa0986682c96ce2b2dab26c814968dba62905cdfeef1b3ac7022059438a3439bb18bd49242010c8a276ea6f1810d523042e679fa6679d60e89e0201483045022100eb085df09e0fb4894090a5f39b9f2188392f7ac2847ed8255629baffc7371f170220120463b91d6c4bb8968fb3eda9012b88d13d8ca71de28e7a64b1dd88282ff144014c69522103650083cbc9cd1da1224e0780bce1ee8abd5150c5252defd0edeccd3521610b282102510ab30a6a97464ef0d61f71ec8b1d2325f12934ff15ba73579bfd0ac5f4fc1a2102985b3be77f56a9a29c5f68d3c893d6c4d76ec8c07792f0291d375c29b71ee2f853ae",
+          "scriptsig_asm": "OP_0 OP_PUSHBYTES_71 304402205f83d22a0476158aa0986682c96ce2b2dab26c814968dba62905cdfeef1b3ac7022059438a3439bb18bd49242010c8a276ea6f1810d523042e679fa6679d60e89e0201 OP_PUSHBYTES_72 3045022100eb085df09e0fb4894090a5f39b9f2188392f7ac2847ed8255629baffc7371f170220120463b91d6c4bb8968fb3eda9012b88d13d8ca71de28e7a64b1dd88282ff14401 OP_PUSHDATA1 522103650083cbc9cd1da1224e0780bce1ee8abd5150c5252defd0edeccd3521610b282102510ab30a6a97464ef0d61f71ec8b1d2325f12934ff15ba73579bfd0ac5f4fc1a2102985b3be77f56a9a29c5f68d3c893d6c4d76ec8c07792f0291d375c29b71ee2f853ae",
+          "is_coinbase": false,
+          "sequence": 4294967295,
+          "inner_redeemscript_asm": "OP_PUSHNUM_2 OP_PUSHBYTES_33 03650083cbc9cd1da1224e0780bce1ee8abd5150c5252defd0edeccd3521610b28 OP_PUSHBYTES_33 02510ab30a6a97464ef0d61f71ec8b1d2325f12934ff15ba73579bfd0ac5f4fc1a OP_PUSHBYTES_33 02985b3be77f56a9a29c5f68d3c893d6c4d76ec8c07792f0291d375c29b71ee2f8 OP_PUSHNUM_3 OP_CHECKMULTISIG"
+        }
+      ],
+      "vout": [
+        {
+          "scriptpubkey": "0014292fce548b228cd3df6334dd525fac62e7eb5f7a",
+          "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 292fce548b228cd3df6334dd525fac62e7eb5f7a",
+          "scriptpubkey_type": "v0_p2wpkh",
+          "scriptpubkey_address": "bc1q9yhuu4yty2xd8hmrxnw4yhavvtn7khm62uw38p",
+          "value": 57000
+        },
+        ...
+        {
+          "scriptpubkey": "0020e5c7c00d174631d2d1e365d6347b016fb87b6a0c08902d8e443989cb771fa7ec",
+          "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_32 e5c7c00d174631d2d1e365d6347b016fb87b6a0c08902d8e443989cb771fa7ec",
+          "scriptpubkey_type": "v0_p2wsh",
+          "scriptpubkey_address": "bc1quhruqrghgcca950rvhtrg7cpd7u8k6svpzgzmrjy8xyukacl5lkq0r8l2d",
+          "value": 17343523
+        }
+      ],
+      "size": 5514,
+      "weight": 22056,
+      "sigops": 208,
+      "fee": 44000,
+      "status": {
+        "confirmed": true,
+        "block_height": 875602,
+        "block_hash": "000000000000000000016c0639b6c1a34d6659c231aa2de5849ab3377ed75020",
+        "block_time": 1734704791
+      },
+      "order": 864069877,
+      "vsize": 5514,
+      "adjustedVsize": 5514,
+      "feePerVsize": 7.979688066739209,
+      "adjustedFeePerVsize": 7.979688066739209,
+      "effectiveFeePerVsize": 7.979688066739209,
+      "firstSeen": 1734704590,
+      "inputs": [],
+      "cpfpDirty": false,
+      "ancestors": [],
+      "descendants": [],
+      "bestDescendant": null,
+      "position": {
+        "block": 0,
+        "vsize": 191567
+      },
+      "flags": 1099511659526
+    }
+  ]
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "block-transactions": [
+    {
+      "txid": "9d3ea0d131c45450c135d549b62032019bc47a80368e14edc72caf38f5a88033",
+      "version": 1,
+      "locktime": 0,
+      "vin": [
+        {
+          "txid": "69da555a9c69788a3a081958457894e56b1ee6766bc72cecf881b1b4f327f78b",
+          "vout": 0,
+          "prevout": {
+            "scriptpubkey": "a914c9848245ae4f5d5934b5cbdfb79e04cdd337470b87",
+            "scriptpubkey_asm": "OP_HASH160 OP_PUSHBYTES_20 c9848245ae4f5d5934b5cbdfb79e04cdd337470b OP_EQUAL",
+            "scriptpubkey_type": "p2sh",
+            "scriptpubkey_address": "3L4YUynB4X44rJBY9CmiLMN8Wjti49JCYB",
+            "value": 24962957
+          },
+          "scriptsig": "0048304502210099219ee0cd5da341650078e3c63885b3cc2211069f2551cf436e0100f421e1760220349b4ec284255b458d6da539fa17314e8330459e0a653c254f775d4ec8f32b3f0147304402203a8353c5ee76a2e266432e5f993f882e05725297e64c0833cf44719f7dda8d3b022058a2f72e7739efd21657b4943cac60a0a3c749e712787f0e85726da4c3adcf8e014c695221027f2a0df8e86535d08ca3e766a178f90c813d2dd1d55b0166e82518efbffb18c02103556a35844b517e2fc8216701e2e0a64dbcbe62ad420ac6dd73dc79e69efeb69521031ef21bd55171032b7aec21ec82932735fb986f1d4d8611feee62ab38acf4a6bb53ae",
+          "scriptsig_asm": "OP_0 OP_PUSHBYTES_72 304502210099219ee0cd5da341650078e3c63885b3cc2211069f2551cf436e0100f421e1760220349b4ec284255b458d6da539fa17314e8330459e0a653c254f775d4ec8f32b3f01 OP_PUSHBYTES_71 304402203a8353c5ee76a2e266432e5f993f882e05725297e64c0833cf44719f7dda8d3b022058a2f72e7739efd21657b4943cac60a0a3c749e712787f0e85726da4c3adcf8e01 OP_PUSHDATA1 5221027f2a0df8e86535d08ca3e766a178f90c813d2dd1d55b0166e82518efbffb18c02103556a35844b517e2fc8216701e2e0a64dbcbe62ad420ac6dd73dc79e69efeb69521031ef21bd55171032b7aec21ec82932735fb986f1d4d8611feee62ab38acf4a6bb53ae",
+          "is_coinbase": false,
+          "sequence": 4294967295,
+          "inner_redeemscript_asm": "OP_PUSHNUM_2 OP_PUSHBYTES_33 027f2a0df8e86535d08ca3e766a178f90c813d2dd1d55b0166e82518efbffb18c0 OP_PUSHBYTES_33 03556a35844b517e2fc8216701e2e0a64dbcbe62ad420ac6dd73dc79e69efeb695 OP_PUSHBYTES_33 031ef21bd55171032b7aec21ec82932735fb986f1d4d8611feee62ab38acf4a6bb OP_PUSHNUM_3 OP_CHECKMULTISIG"
+        },
+        ...
+        {
+          "txid": "43852d32c7ae6d362d446d090daa4d389f78ec77e6693f9248cd924dc0b1ecc3",
+          "vout": 1,
+          "prevout": {
+            "scriptpubkey": "a914a3aff5f5765f167c1582fd85517ddde83174118187",
+            "scriptpubkey_asm": "OP_HASH160 OP_PUSHBYTES_20 a3aff5f5765f167c1582fd85517ddde831741181 OP_EQUAL",
+            "scriptpubkey_type": "p2sh",
+            "scriptpubkey_address": "3GcWrnGFoNzbn1KaiP5czS5xPELdWcgDX2",
+            "value": 1719827
+          },
+          "scriptsig": "0047304402205f83d22a0476158aa0986682c96ce2b2dab26c814968dba62905cdfeef1b3ac7022059438a3439bb18bd49242010c8a276ea6f1810d523042e679fa6679d60e89e0201483045022100eb085df09e0fb4894090a5f39b9f2188392f7ac2847ed8255629baffc7371f170220120463b91d6c4bb8968fb3eda9012b88d13d8ca71de28e7a64b1dd88282ff144014c69522103650083cbc9cd1da1224e0780bce1ee8abd5150c5252defd0edeccd3521610b282102510ab30a6a97464ef0d61f71ec8b1d2325f12934ff15ba73579bfd0ac5f4fc1a2102985b3be77f56a9a29c5f68d3c893d6c4d76ec8c07792f0291d375c29b71ee2f853ae",
+          "scriptsig_asm": "OP_0 OP_PUSHBYTES_71 304402205f83d22a0476158aa0986682c96ce2b2dab26c814968dba62905cdfeef1b3ac7022059438a3439bb18bd49242010c8a276ea6f1810d523042e679fa6679d60e89e0201 OP_PUSHBYTES_72 3045022100eb085df09e0fb4894090a5f39b9f2188392f7ac2847ed8255629baffc7371f170220120463b91d6c4bb8968fb3eda9012b88d13d8ca71de28e7a64b1dd88282ff14401 OP_PUSHDATA1 522103650083cbc9cd1da1224e0780bce1ee8abd5150c5252defd0edeccd3521610b282102510ab30a6a97464ef0d61f71ec8b1d2325f12934ff15ba73579bfd0ac5f4fc1a2102985b3be77f56a9a29c5f68d3c893d6c4d76ec8c07792f0291d375c29b71ee2f853ae",
+          "is_coinbase": false,
+          "sequence": 4294967295,
+          "inner_redeemscript_asm": "OP_PUSHNUM_2 OP_PUSHBYTES_33 03650083cbc9cd1da1224e0780bce1ee8abd5150c5252defd0edeccd3521610b28 OP_PUSHBYTES_33 02510ab30a6a97464ef0d61f71ec8b1d2325f12934ff15ba73579bfd0ac5f4fc1a OP_PUSHBYTES_33 02985b3be77f56a9a29c5f68d3c893d6c4d76ec8c07792f0291d375c29b71ee2f8 OP_PUSHNUM_3 OP_CHECKMULTISIG"
+        }
+      ],
+      "vout": [
+        {
+          "scriptpubkey": "0014292fce548b228cd3df6334dd525fac62e7eb5f7a",
+          "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 292fce548b228cd3df6334dd525fac62e7eb5f7a",
+          "scriptpubkey_type": "v0_p2wpkh",
+          "scriptpubkey_address": "bc1q9yhuu4yty2xd8hmrxnw4yhavvtn7khm62uw38p",
+          "value": 57000
+        },
+        ...
+        {
+          "scriptpubkey": "0020e5c7c00d174631d2d1e365d6347b016fb87b6a0c08902d8e443989cb771fa7ec",
+          "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_32 e5c7c00d174631d2d1e365d6347b016fb87b6a0c08902d8e443989cb771fa7ec",
+          "scriptpubkey_type": "v0_p2wsh",
+          "scriptpubkey_address": "bc1quhruqrghgcca950rvhtrg7cpd7u8k6svpzgzmrjy8xyukacl5lkq0r8l2d",
+          "value": 17343523
+        }
+      ],
+      "size": 5514,
+      "weight": 22056,
+      "sigops": 208,
+      "fee": 44000,
+      "status": {
+        "confirmed": true,
+        "block_height": 875602,
+        "block_hash": "000000000000000000016c0639b6c1a34d6659c231aa2de5849ab3377ed75020",
+        "block_time": 1734704791
+      },
+      "order": 864069877,
+      "vsize": 5514,
+      "adjustedVsize": 5514,
+      "feePerVsize": 7.979688066739209,
+      "adjustedFeePerVsize": 7.979688066739209,
+      "effectiveFeePerVsize": 7.979688066739209,
+      "firstSeen": 1734704590,
+      "inputs": [],
+      "cpfpDirty": false,
+      "ancestors": [],
+      "descendants": [],
+      "bestDescendant": null,
+      "position": {
+        "block": 0,
+        "vsize": 191567
+      },
+      "flags": 1099511659526
+    }
+  ]
+}`
+        },
+        codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "block-transactions": [
+    {
+      "txid": "9d3ea0d131c45450c135d549b62032019bc47a80368e14edc72caf38f5a88033",
+      "version": 1,
+      "locktime": 0,
+      "vin": [
+        {
+          "txid": "69da555a9c69788a3a081958457894e56b1ee6766bc72cecf881b1b4f327f78b",
+          "vout": 0,
+          "prevout": {
+            "scriptpubkey": "a914c9848245ae4f5d5934b5cbdfb79e04cdd337470b87",
+            "scriptpubkey_asm": "OP_HASH160 OP_PUSHBYTES_20 c9848245ae4f5d5934b5cbdfb79e04cdd337470b OP_EQUAL",
+            "scriptpubkey_type": "p2sh",
+            "scriptpubkey_address": "3L4YUynB4X44rJBY9CmiLMN8Wjti49JCYB",
+            "value": 24962957
+          },
+          "scriptsig": "0048304502210099219ee0cd5da341650078e3c63885b3cc2211069f2551cf436e0100f421e1760220349b4ec284255b458d6da539fa17314e8330459e0a653c254f775d4ec8f32b3f0147304402203a8353c5ee76a2e266432e5f993f882e05725297e64c0833cf44719f7dda8d3b022058a2f72e7739efd21657b4943cac60a0a3c749e712787f0e85726da4c3adcf8e014c695221027f2a0df8e86535d08ca3e766a178f90c813d2dd1d55b0166e82518efbffb18c02103556a35844b517e2fc8216701e2e0a64dbcbe62ad420ac6dd73dc79e69efeb69521031ef21bd55171032b7aec21ec82932735fb986f1d4d8611feee62ab38acf4a6bb53ae",
+          "scriptsig_asm": "OP_0 OP_PUSHBYTES_72 304502210099219ee0cd5da341650078e3c63885b3cc2211069f2551cf436e0100f421e1760220349b4ec284255b458d6da539fa17314e8330459e0a653c254f775d4ec8f32b3f01 OP_PUSHBYTES_71 304402203a8353c5ee76a2e266432e5f993f882e05725297e64c0833cf44719f7dda8d3b022058a2f72e7739efd21657b4943cac60a0a3c749e712787f0e85726da4c3adcf8e01 OP_PUSHDATA1 5221027f2a0df8e86535d08ca3e766a178f90c813d2dd1d55b0166e82518efbffb18c02103556a35844b517e2fc8216701e2e0a64dbcbe62ad420ac6dd73dc79e69efeb69521031ef21bd55171032b7aec21ec82932735fb986f1d4d8611feee62ab38acf4a6bb53ae",
+          "is_coinbase": false,
+          "sequence": 4294967295,
+          "inner_redeemscript_asm": "OP_PUSHNUM_2 OP_PUSHBYTES_33 027f2a0df8e86535d08ca3e766a178f90c813d2dd1d55b0166e82518efbffb18c0 OP_PUSHBYTES_33 03556a35844b517e2fc8216701e2e0a64dbcbe62ad420ac6dd73dc79e69efeb695 OP_PUSHBYTES_33 031ef21bd55171032b7aec21ec82932735fb986f1d4d8611feee62ab38acf4a6bb OP_PUSHNUM_3 OP_CHECKMULTISIG"
+        },
+        ...
+        {
+          "txid": "43852d32c7ae6d362d446d090daa4d389f78ec77e6693f9248cd924dc0b1ecc3",
+          "vout": 1,
+          "prevout": {
+            "scriptpubkey": "a914a3aff5f5765f167c1582fd85517ddde83174118187",
+            "scriptpubkey_asm": "OP_HASH160 OP_PUSHBYTES_20 a3aff5f5765f167c1582fd85517ddde831741181 OP_EQUAL",
+            "scriptpubkey_type": "p2sh",
+            "scriptpubkey_address": "3GcWrnGFoNzbn1KaiP5czS5xPELdWcgDX2",
+            "value": 1719827
+          },
+          "scriptsig": "0047304402205f83d22a0476158aa0986682c96ce2b2dab26c814968dba62905cdfeef1b3ac7022059438a3439bb18bd49242010c8a276ea6f1810d523042e679fa6679d60e89e0201483045022100eb085df09e0fb4894090a5f39b9f2188392f7ac2847ed8255629baffc7371f170220120463b91d6c4bb8968fb3eda9012b88d13d8ca71de28e7a64b1dd88282ff144014c69522103650083cbc9cd1da1224e0780bce1ee8abd5150c5252defd0edeccd3521610b282102510ab30a6a97464ef0d61f71ec8b1d2325f12934ff15ba73579bfd0ac5f4fc1a2102985b3be77f56a9a29c5f68d3c893d6c4d76ec8c07792f0291d375c29b71ee2f853ae",
+          "scriptsig_asm": "OP_0 OP_PUSHBYTES_71 304402205f83d22a0476158aa0986682c96ce2b2dab26c814968dba62905cdfeef1b3ac7022059438a3439bb18bd49242010c8a276ea6f1810d523042e679fa6679d60e89e0201 OP_PUSHBYTES_72 3045022100eb085df09e0fb4894090a5f39b9f2188392f7ac2847ed8255629baffc7371f170220120463b91d6c4bb8968fb3eda9012b88d13d8ca71de28e7a64b1dd88282ff14401 OP_PUSHDATA1 522103650083cbc9cd1da1224e0780bce1ee8abd5150c5252defd0edeccd3521610b282102510ab30a6a97464ef0d61f71ec8b1d2325f12934ff15ba73579bfd0ac5f4fc1a2102985b3be77f56a9a29c5f68d3c893d6c4d76ec8c07792f0291d375c29b71ee2f853ae",
+          "is_coinbase": false,
+          "sequence": 4294967295,
+          "inner_redeemscript_asm": "OP_PUSHNUM_2 OP_PUSHBYTES_33 03650083cbc9cd1da1224e0780bce1ee8abd5150c5252defd0edeccd3521610b28 OP_PUSHBYTES_33 02510ab30a6a97464ef0d61f71ec8b1d2325f12934ff15ba73579bfd0ac5f4fc1a OP_PUSHBYTES_33 02985b3be77f56a9a29c5f68d3c893d6c4d76ec8c07792f0291d375c29b71ee2f8 OP_PUSHNUM_3 OP_CHECKMULTISIG"
+        }
+      ],
+      "vout": [
+        {
+          "scriptpubkey": "0014292fce548b228cd3df6334dd525fac62e7eb5f7a",
+          "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 292fce548b228cd3df6334dd525fac62e7eb5f7a",
+          "scriptpubkey_type": "v0_p2wpkh",
+          "scriptpubkey_address": "bc1q9yhuu4yty2xd8hmrxnw4yhavvtn7khm62uw38p",
+          "value": 57000
+        },
+        ...
+        {
+          "scriptpubkey": "0020e5c7c00d174631d2d1e365d6347b016fb87b6a0c08902d8e443989cb771fa7ec",
+          "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_32 e5c7c00d174631d2d1e365d6347b016fb87b6a0c08902d8e443989cb771fa7ec",
+          "scriptpubkey_type": "v0_p2wsh",
+          "scriptpubkey_address": "bc1quhruqrghgcca950rvhtrg7cpd7u8k6svpzgzmrjy8xyukacl5lkq0r8l2d",
+          "value": 17343523
+        }
+      ],
+      "size": 5514,
+      "weight": 22056,
+      "sigops": 208,
+      "fee": 44000,
+      "status": {
+        "confirmed": true,
+        "block_height": 875602,
+        "block_hash": "000000000000000000016c0639b6c1a34d6659c231aa2de5849ab3377ed75020",
+        "block_time": 1734704791
+      },
+      "order": 864069877,
+      "vsize": 5514,
+      "adjustedVsize": 5514,
+      "feePerVsize": 7.979688066739209,
+      "adjustedFeePerVsize": 7.979688066739209,
+      "effectiveFeePerVsize": 7.979688066739209,
+      "firstSeen": 1734704590,
+      "inputs": [],
+      "cpfpDirty": false,
+      "ancestors": [],
+      "descendants": [],
+      "bestDescendant": null,
+      "position": {
+        "block": 0,
+        "vsize": 191567
+      },
+      "flags": 1099511659526
+    }
+  ]
+}`
+        }
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "addresses",
+    fragment: "track-addresses",
+    title: "Track Addresses",
+    description: {
+      default: "Subscribe to multiple addresses to receive live updates on new transactions having these addresses in input or output. Limits on the maximum number of tracked addresses apply. For higher tracking limits, consider upgrading to an <a href='https://mempool.space/enterprise'>enterprise sponsorship</a>."
+    },
+    payload: `{
+  "track-addresses": [
+    "bc1qeldw4mqns26wew8swgpkt3fs364w3ehs046w2f",
+    "bc1qjj09853tfpztjgrk4jeyzj4ml59fv9cmslv3c4gxxf57u0k3kxmqllx29y"
+  ]
+}`,
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: false,
+    codeExample: {
+      default: {
+        codeTemplate: {
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "multi-address-transactions": {
+    "bc1qjj09853tfpztjgrk4jeyzj4ml59fv9cmslv3c4gxxf57u0k3kxmqllx29y": {
+      "mempool": [],
+      "confirmed": [
+        {
+          "txid": "1e4764f908f19b74284a889478b95d013c1bd36dc832dcb7eb36fe1801fed404",
+          "version": 2,
+          "locktime": 875625,
+          "vin": [
+            {
+              "txid": "ce361fed5996aec6d440556383164e9e4e5b8be8c2a213c4b36ae711efda3b3f",
+              "vout": 1,
+              "prevout": {
+                "scriptpubkey": "0014257ba1ebc987831dbe8ee560419282483bf68588",
+                "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 257ba1ebc987831dbe8ee560419282483bf68588",
+                "scriptpubkey_type": "v0_p2wpkh",
+                "scriptpubkey_address": "bc1qy4a6r67fs7p3m05wu4syry5zfqaldpvg8vsqzz",
+                "value": 1831200
+              },
+              "scriptsig": "",
+              "scriptsig_asm": "",
+              "witness": [
+                "3044022028363f66fe74bdddf46d204cbf9844d4ef99d6fcb801f93f3ea1666ff51514340220058eb99790dd002323bd12afa0b62903cf72465d48c40cb11366dfa4eebbd87a01",
+                "020e625e13a81995f29ee828e31500b8454bd0b115f84dfa07d994eecd733efffa"
+              ],
+              "is_coinbase": false,
+              "sequence": 4294967294
+            },
+            ...
+          ],
+          "vout": [
+            {
+              "scriptpubkey": "0020949e53d22b4844b92076acb2414abbfd0a96171b87d91c55063269ee3ed1b1b6",
+              "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_32 949e53d22b4844b92076acb2414abbfd0a96171b87d91c55063269ee3ed1b1b6",
+              "scriptpubkey_type": "v0_p2wsh",
+              "scriptpubkey_address": "bc1qjj09853tfpztjgrk4jeyzj4ml59fv9cmslv3c4gxxf57u0k3kxmqllx29y",
+              "value": 2546637
+            }
+          ],
+          "size": 351,
+          "weight": 756,
+          "sigops": 2,
+          "fee": 4206,
+          "status": {
+            "confirmed": true,
+            "block_height": 875626,
+            "block_hash": "0000000000000000000086de1f4815ff0f7f0411d846301c5efa1e437130dc22",
+            "block_time": 1734720142
+          },
+          "order": 81067521,
+          "vsize": 189,
+          "adjustedVsize": 189,
+          "feePerVsize": 22.253968253968253,
+          "adjustedFeePerVsize": 22.253968253968253,
+          "effectiveFeePerVsize": 22.253968253968253,
+          "firstSeen": 1734719830,
+          "inputs": [],
+          "cpfpDirty": false,
+          "ancestors": [],
+          "descendants": [],
+          "bestDescendant": null,
+          "position": {
+            "block": 0,
+            "vsize": 134866.5
+          },
+          "flags": 1099511640074
+        }
+      ],
+      "removed": []
+    }
+  }
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "multi-address-transactions": {
+    "bc1qjj09853tfpztjgrk4jeyzj4ml59fv9cmslv3c4gxxf57u0k3kxmqllx29y": {
+      "mempool": [],
+      "confirmed": [
+        {
+          "txid": "1e4764f908f19b74284a889478b95d013c1bd36dc832dcb7eb36fe1801fed404",
+          "version": 2,
+          "locktime": 875625,
+          "vin": [
+            {
+              "txid": "ce361fed5996aec6d440556383164e9e4e5b8be8c2a213c4b36ae711efda3b3f",
+              "vout": 1,
+              "prevout": {
+                "scriptpubkey": "0014257ba1ebc987831dbe8ee560419282483bf68588",
+                "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 257ba1ebc987831dbe8ee560419282483bf68588",
+                "scriptpubkey_type": "v0_p2wpkh",
+                "scriptpubkey_address": "bc1qy4a6r67fs7p3m05wu4syry5zfqaldpvg8vsqzz",
+                "value": 1831200
+              },
+              "scriptsig": "",
+              "scriptsig_asm": "",
+              "witness": [
+                "3044022028363f66fe74bdddf46d204cbf9844d4ef99d6fcb801f93f3ea1666ff51514340220058eb99790dd002323bd12afa0b62903cf72465d48c40cb11366dfa4eebbd87a01",
+                "020e625e13a81995f29ee828e31500b8454bd0b115f84dfa07d994eecd733efffa"
+              ],
+              "is_coinbase": false,
+              "sequence": 4294967294
+            },
+            ...
+          ],
+          "vout": [
+            {
+              "scriptpubkey": "0020949e53d22b4844b92076acb2414abbfd0a96171b87d91c55063269ee3ed1b1b6",
+              "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_32 949e53d22b4844b92076acb2414abbfd0a96171b87d91c55063269ee3ed1b1b6",
+              "scriptpubkey_type": "v0_p2wsh",
+              "scriptpubkey_address": "bc1qjj09853tfpztjgrk4jeyzj4ml59fv9cmslv3c4gxxf57u0k3kxmqllx29y",
+              "value": 2546637
+            }
+          ],
+          "size": 351,
+          "weight": 756,
+          "sigops": 2,
+          "fee": 4206,
+          "status": {
+            "confirmed": true,
+            "block_height": 875626,
+            "block_hash": "0000000000000000000086de1f4815ff0f7f0411d846301c5efa1e437130dc22",
+            "block_time": 1734720142
+          },
+          "order": 81067521,
+          "vsize": 189,
+          "adjustedVsize": 189,
+          "feePerVsize": 22.253968253968253,
+          "adjustedFeePerVsize": 22.253968253968253,
+          "effectiveFeePerVsize": 22.253968253968253,
+          "firstSeen": 1734719830,
+          "inputs": [],
+          "cpfpDirty": false,
+          "ancestors": [],
+          "descendants": [],
+          "bestDescendant": null,
+          "position": {
+            "block": 0,
+            "vsize": 134866.5
+          },
+          "flags": 1099511640074
+        }
+      ],
+      "removed": []
+    }
+  }
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "multi-address-transactions": {
+    "bc1qjj09853tfpztjgrk4jeyzj4ml59fv9cmslv3c4gxxf57u0k3kxmqllx29y": {
+      "mempool": [],
+      "confirmed": [
+        {
+          "txid": "1e4764f908f19b74284a889478b95d013c1bd36dc832dcb7eb36fe1801fed404",
+          "version": 2,
+          "locktime": 875625,
+          "vin": [
+            {
+              "txid": "ce361fed5996aec6d440556383164e9e4e5b8be8c2a213c4b36ae711efda3b3f",
+              "vout": 1,
+              "prevout": {
+                "scriptpubkey": "0014257ba1ebc987831dbe8ee560419282483bf68588",
+                "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 257ba1ebc987831dbe8ee560419282483bf68588",
+                "scriptpubkey_type": "v0_p2wpkh",
+                "scriptpubkey_address": "bc1qy4a6r67fs7p3m05wu4syry5zfqaldpvg8vsqzz",
+                "value": 1831200
+              },
+              "scriptsig": "",
+              "scriptsig_asm": "",
+              "witness": [
+                "3044022028363f66fe74bdddf46d204cbf9844d4ef99d6fcb801f93f3ea1666ff51514340220058eb99790dd002323bd12afa0b62903cf72465d48c40cb11366dfa4eebbd87a01",
+                "020e625e13a81995f29ee828e31500b8454bd0b115f84dfa07d994eecd733efffa"
+              ],
+              "is_coinbase": false,
+              "sequence": 4294967294
+            },
+            ...
+          ],
+          "vout": [
+            {
+              "scriptpubkey": "0020949e53d22b4844b92076acb2414abbfd0a96171b87d91c55063269ee3ed1b1b6",
+              "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_32 949e53d22b4844b92076acb2414abbfd0a96171b87d91c55063269ee3ed1b1b6",
+              "scriptpubkey_type": "v0_p2wsh",
+              "scriptpubkey_address": "bc1qjj09853tfpztjgrk4jeyzj4ml59fv9cmslv3c4gxxf57u0k3kxmqllx29y",
+              "value": 2546637
+            }
+          ],
+          "size": 351,
+          "weight": 756,
+          "sigops": 2,
+          "fee": 4206,
+          "status": {
+            "confirmed": true,
+            "block_height": 875626,
+            "block_hash": "0000000000000000000086de1f4815ff0f7f0411d846301c5efa1e437130dc22",
+            "block_time": 1734720142
+          },
+          "order": 81067521,
+          "vsize": 189,
+          "adjustedVsize": 189,
+          "feePerVsize": 22.253968253968253,
+          "adjustedFeePerVsize": 22.253968253968253,
+          "effectiveFeePerVsize": 22.253968253968253,
+          "firstSeen": 1734719830,
+          "inputs": [],
+          "cpfpDirty": false,
+          "ancestors": [],
+          "descendants": [],
+          "bestDescendant": null,
+          "position": {
+            "block": 0,
+            "vsize": 134866.5
+          },
+          "flags": 1099511640074
+        }
+      ],
+      "removed": []
+    }
+  }
+}`
+        },
+        codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "multi-address-transactions": {
+    "ex1qzq0h0wvnnh9xpd508fzxaft0nu9wjmdvzalu6f": {
+      "mempool": [],
+      "confirmed": [
+        {
+          "txid": "d61ad73b64895ccabd32816643554c676891bdb52da0fba2b37079e04c4c4b2c",
+          "version": 2,
+          "locktime": 3171528,
+          "vin": [
+            {
+              "txid": "4847a0627952a0bcad6c8947d46a0e5b13eefbcfbf76246ea16a1a7c82bcc49b",
+              "vout": 2,
+              "prevout": {
+                "scriptpubkey": "00144d72c2967e1a581c0e71e82d65e99523a9149d02",
+                "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 4d72c2967e1a581c0e71e82d65e99523a9149d02",
+                "scriptpubkey_type": "v0_p2wpkh",
+                "scriptpubkey_address": "ex1qf4ev99n7rfvpcrn3aqkkt6v4yw53f8gznv9paa",
+                "valuecommitment": "09af208bbc0b9809aff4368dee81f74f178f77f844e7dfc5d70615bc757fa8b2f9",
+                "assetcommitment": "0a2ca17c42fadd887373c371e44cf49c6cd64c3081e23eef3275bdace0b8c674b5"
+              },
+              "scriptsig": "",
+              "scriptsig_asm": "",
+              "witness": [
+                "30440220653c6e1bd3de5bd9a56cbb6eb246834724667a5c5d12dc07107edc7c72bd6634022008d1f770dc9ba624bb250bba3a5254aa633f01a9bcb2a85aedc5b251e338b7b301",
+                "03fb2f0245e19f9e886fce54894558bbbcf50bf9576245e60a4c9780f7447eaf22"
+              ],
+              "is_coinbase": false,
+              "sequence": 4294967294,
+              "is_pegin": false
+            },
+            {
+              "txid": "ea5f690853ece5549807862a153357092c4f7dbe10886b86b84f87a3201dd8dc",
+              "vout": 0,
+              "prevout": {
+                "scriptpubkey": "0014a5996021b4001325b1aa85c3bf400516855a6e05",
+                "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 a5996021b4001325b1aa85c3bf400516855a6e05",
+                "scriptpubkey_type": "v0_p2wpkh",
+                "scriptpubkey_address": "ex1q5kvkqgd5qqfjtvd2shpm7sq9z6z45ms9ma7ywz",
+                "valuecommitment": "09f36fde0f51390cdf2ee6830b3c696569c3f9c5855ce26bd4f6d0280a83b86ecf",
+                "assetcommitment": "0bfcd8fcfaebfa41b596a89aa55fbf2eaa8c383ec71e8d9d0d461ea645d8d1bc45"
+              },
+              "scriptsig": "",
+              "scriptsig_asm": "",
+              "witness": [
+                "30440220033208f3e37c35009ba00472a67899222afbd5cc12b0d3906d2eec6f50a058510220607d4c5de43459e38158ee1cbe5e6a74c155041cecdbf961a077a952ee1e543601",
+                "0394d6ecb2f5db9fdeb0f7ac5301ea148704fc6986fdb8181bddc1d2eec9e99c32"
+              ],
+              "is_coinbase": false,
+              "sequence": 4294967294,
+              "is_pegin": false
+            },
+            {
+              "txid": "23e63b888d5da3ce1193bb4a74a0762d78904cfa7a6307ff47e91054d961208b",
+              "vout": 2,
+              "prevout": {
+                "scriptpubkey": "00144990783e871e57fa2499f00c5f6f4ddc2602e7c8",
+                "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 4990783e871e57fa2499f00c5f6f4ddc2602e7c8",
+                "scriptpubkey_type": "v0_p2wpkh",
+                "scriptpubkey_address": "ex1qfxg8s058retl5fye7qx97m6dmsnq9e7gq0dcee",
+                "valuecommitment": "0816440695f0c47ce471c7e10a93d36aee4554b46ed269bfa8390dd9db69409537",
+                "assetcommitment": "0a5a0eb7cab779cb6ce5d6517c73e244075eea15fbd54a7beb34710862aef58359"
+              },
+              "scriptsig": "",
+              "scriptsig_asm": "",
+              "witness": [
+                "3044022051e5482a486f55cfd5ae25062b0252e13de9bfa11a9c7e5f608ac6e03c62dc8902201d2b47a27fc07999973ec44e4569b4b3fcc338b1c3977173cfeab9cccde0b3e301",
+                "025991a68daafc95494019c228855999db8f19c872fd3f58bac6ff149db7b53cff"
+              ],
+              "is_coinbase": false,
+              "sequence": 4294967294,
+              "is_pegin": false
+            },
+            {
+              "txid": "2bbeb9440d3c08a1d3cd9acf5959ee740a6a64ffcaa4aa2b43e30026a2a40334",
+              "vout": 2,
+              "prevout": {
+                "scriptpubkey": "00144d72c2967e1a581c0e71e82d65e99523a9149d02",
+                "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 4d72c2967e1a581c0e71e82d65e99523a9149d02",
+                "scriptpubkey_type": "v0_p2wpkh",
+                "scriptpubkey_address": "ex1qf4ev99n7rfvpcrn3aqkkt6v4yw53f8gznv9paa",
+                "valuecommitment": "09d0c574d61d50065a2e398fb7252315b65176bf97de1d180d337f3aadfaa0e53e",
+                "assetcommitment": "0b82ede6b9a6cb9505a7f6bcc76f72caa3228de193debf4e586d60baebeaef0ab5"
+              },
+              "scriptsig": "",
+              "scriptsig_asm": "",
+              "witness": [
+                "3044022033ab9ea81a21b0f917792097ed69ab3724957a5e5d3a0430a0b2a16e0a74d8750220202859dc7e53998f5dc4b424321b7a711e3ff6517422a099504b337e30ec8acb01",
+                "03fb2f0245e19f9e886fce54894558bbbcf50bf9576245e60a4c9780f7447eaf22"
+              ],
+              "is_coinbase": false,
+              "sequence": 4294967294,
+              "is_pegin": false
+            }
+          ],
+          "vout": [
+            {
+              "scriptpubkey": "a914e185d1192f34d55ba3fbd15408168f339683d80287",
+              "scriptpubkey_asm": "OP_HASH160 OP_PUSHBYTES_20 e185d1192f34d55ba3fbd15408168f339683d802 OP_EQUAL",
+              "scriptpubkey_type": "p2sh",
+              "scriptpubkey_address": "H3jyk9ipDU5efhHW9n52xCY78HNFAQTy78",
+              "valuecommitment": "08f676101a27d784f1f89765ff33ad5a1e95ab2081da76b29ef97bdfaf309e1318",
+              "assetcommitment": "0a115106f540daae5a0a7cf66dcf07a69dc2faffb917e82f340bcdfc7da143228b"
+            },
+            {
+              "scriptpubkey": "0014101f77b9939dca60b68f3a446ea56f9f0ae96dac",
+              "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 101f77b9939dca60b68f3a446ea56f9f0ae96dac",
+              "scriptpubkey_type": "v0_p2wpkh",
+              "scriptpubkey_address": "ex1qzq0h0wvnnh9xpd508fzxaft0nu9wjmdvzalu6f",
+              "valuecommitment": "09bec5886710680e125b52ac99f6aee452984847cddc57abaa96eb8cc360f80104",
+              "assetcommitment": "0adfd85f43988146c1878e98bc5e6206f368280cb03760c37e86ec0bd39005d0cd"
+            },
+            {
+              "scriptpubkey": "00140fe27684e78285d508073f2b8a3a6c884515d1a9",
+              "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 0fe27684e78285d508073f2b8a3a6c884515d1a9",
+              "scriptpubkey_type": "v0_p2wpkh",
+              "scriptpubkey_address": "ex1qpl38dp88s2za2zq88u4c5wnv3pz3t5dfha22k9",
+              "valuecommitment": "08bef8c28296cf050802c943d46aa539d2f5280e9b9471db928746480815cf5457",
+              "assetcommitment": "0a5a032f72df6fba7f1acd7230f44cdf41ce27926e48e262ffdfea18efd19e0439"
+            },
+            {
+              "scriptpubkey": "",
+              "scriptpubkey_asm": "",
+              "scriptpubkey_type": "fee",
+              "value": 394,
+              "asset": "6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d"
+            }
+          ],
+          "size": 13955,
+          "weight": 15713,
+          "sigops": 0,
+          "fee": 394,
+          "status": {
+            "confirmed": true,
+            "block_height": 3171530,
+            "block_hash": "400270631b0f66d70cd6a045f36bb3f37c9076688fd496669d5da2a7245392d9",
+            "block_time": 1734720368
+          },
+          "order": 743132236,
+          "vsize": 3929,
+          "adjustedVsize": 3928.25,
+          "feePerVsize": 0.10029911538216763,
+          "adjustedFeePerVsize": 0.10029911538216763,
+          "effectiveFeePerVsize": 0.10027996945787732,
+          "firstSeen": 1734720314,
+          "inputs": [],
+          "cpfpDirty": false,
+          "ancestors": [],
+          "descendants": [],
+          "bestDescendant": null,
+          "position": {
+            "block": 0,
+            "vsize": 6972.5
+          },
+          "flags": 1099511633962,
+          "cpfpChecked": true,
+          "cpfpUpdated": 1734720355424
+        }
+      ],
+      "removed": []
+    }
+  }
+}`
+        }
+      }
+    }
+  },
+  {
+    type: "category",
+    category: "transactions",
+    fragment: "transactions",
+    title: "Transactions",
+    showConditions: bitcoinNetworks.concat(liquidNetworks)
+  },
+  {
+    type: "endpoint",
+    category: "transactions",
+    fragment: "track-tx",
+    title: "Track Transaction",
+    description: {
+      default: "Subscribe to a transaction to receive live updates on its confirmation status and position in the mempool."
+    },
+    payload: '{ "track-tx": "8a4666c6d22ce74fa47e1c4fdb09af556a234cc6a606539a75caf66ba44a2d07" }',
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: false,
+    codeExample: {
+      default: {
+        codeTemplate: {
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "txPosition": {
+    "txid": [
+      "8a4666c6d22ce74fa47e1c4fdb09af556a234cc6a606539a75caf66ba44a2d07"
+    ],
+    "position": {
+      "block": 0,
+      "vsize": 726868
+    },
+    "cpfp": {
+      "ancestors": [
+        {
+          "txid": "d509a6b8f36149588f9f48dc25fa5e37fc00dee781aed6da1113066c56f04879",
+          "fee": 605,
+          "weight": 520
+        }
+      ],
+      "bestDescendant": null,
+      "descendants": [
+        {
+          "txid": "28d3c592a9a8103d53c784aa539908f4dc5f9c463e179f0eae5dc5f349bdb00f",
+          "fee": 2501,
+          "weight": 816
+        }
+      ],
+      "effectiveFeePerVsize": 5.12063778580024,
+      "sigops": 0,
+      "adjustedVsize": 130
+    }
+  }
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "txPosition": {
+    "txid": [
+      "8a4666c6d22ce74fa47e1c4fdb09af556a234cc6a606539a75caf66ba44a2d07"
+    ],
+    "position": {
+      "block": 0,
+      "vsize": 726868
+    },
+    "cpfp": {
+      "ancestors": [
+        {
+          "txid": "d509a6b8f36149588f9f48dc25fa5e37fc00dee781aed6da1113066c56f04879",
+          "fee": 605,
+          "weight": 520
+        }
+      ],
+      "bestDescendant": null,
+      "descendants": [
+        {
+          "txid": "28d3c592a9a8103d53c784aa539908f4dc5f9c463e179f0eae5dc5f349bdb00f",
+          "fee": 2501,
+          "weight": 816
+        }
+      ],
+      "effectiveFeePerVsize": 5.12063778580024,
+      "sigops": 0,
+      "adjustedVsize": 130
+    }
+  }
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "txPosition": {
+    "txid": [
+      "8a4666c6d22ce74fa47e1c4fdb09af556a234cc6a606539a75caf66ba44a2d07"
+    ],
+    "position": {
+      "block": 0,
+      "vsize": 726868
+    },
+    "cpfp": {
+      "ancestors": [
+        {
+          "txid": "d509a6b8f36149588f9f48dc25fa5e37fc00dee781aed6da1113066c56f04879",
+          "fee": 605,
+          "weight": 520
+        }
+      ],
+      "bestDescendant": null,
+      "descendants": [
+        {
+          "txid": "28d3c592a9a8103d53c784aa539908f4dc5f9c463e179f0eae5dc5f349bdb00f",
+          "fee": 2501,
+          "weight": 816
+        }
+      ],
+      "effectiveFeePerVsize": 5.12063778580024,
+      "sigops": 0,
+      "adjustedVsize": 130
+    }
+  }
+}`
+        },
+        codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "txPosition": {
+    "txid": [
+      "8a4666c6d22ce74fa47e1c4fdb09af556a234cc6a606539a75caf66ba44a2d07"
+    ],
+    "position": {
+      "block": 0,
+      "vsize": 726868
+    },
+    "cpfp": {
+      "ancestors": [
+        {
+          "txid": "d509a6b8f36149588f9f48dc25fa5e37fc00dee781aed6da1113066c56f04879",
+          "fee": 605,
+          "weight": 520
+        }
+      ],
+      "bestDescendant": null,
+      "descendants": [
+        {
+          "txid": "28d3c592a9a8103d53c784aa539908f4dc5f9c463e179f0eae5dc5f349bdb00f",
+          "fee": 2501,
+          "weight": 816
+        }
+      ],
+      "effectiveFeePerVsize": 5.12063778580024,
+      "sigops": 0,
+      "adjustedVsize": 130
+    }
+  }
+}`
+        }
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "transactions",
+    fragment: "track-txs",
+    title: "Track Transactions",
+    description: {
+      default: "Subscribe to multiple transactions to receive live updates on their status and position in the mempool. Limits on the maximum number of tracked addresses apply. For higher tracking limits, consider upgrading to an <a href='https://mempool.space/enterprise'>enterprise sponsorship</a>."
+    },
+    payload: `{
+      "track-txs": [
+        "8a4666c6d22ce74fa47e1c4fdb09af556a234cc6a606539a75caf66ba44a2d07",
+        "941df06064c290b4627e92bdbf3bff7c0e97aab33e273c2a20404f9cfd21b607"
+      ]
+    }`,    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: false,
+    codeExample: {
+      default: {
+        codeTemplate: {
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "tracked-txs": {
+    "8a4666c6d22ce74fa47e1c4fdb09af556a234cc6a606539a75caf66ba44a2d07": {
+      "position": {
+        "block": 0,
+        "vsize": 434494
+      },
+      "cpfp": {
+        "ancestors": [
+          {
+            "txid": "d509a6b8f36149588f9f48dc25fa5e37fc00dee781aed6da1113066c56f04879",
+            "fee": 605,
+            "weight": 520
+          }
+        ],
+        "bestDescendant": null,
+        "descendants": [
+          {
+          "txid": "28d3c592a9a8103d53c784aa539908f4dc5f9c463e179f0eae5dc5f349bdb00f",
+          "fee": 2501,
+          "weight": 816
+          }
+        ],
+        "effectiveFeePerVsize": 5.12063778580024,
+        "sigops": 0,
+        "adjustedVsize": 130
+      }
+    },
+    "941df06064c290b4627e92bdbf3bff7c0e97aab33e273c2a20404f9cfd21b607": {
+      "position": {
+        "block": 2,
+        "vsize": 932479.5
+      }
+    }
+  }
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "tracked-txs": {
+    "8a4666c6d22ce74fa47e1c4fdb09af556a234cc6a606539a75caf66ba44a2d07": {
+      "position": {
+        "block": 0,
+        "vsize": 434494
+      },
+      "cpfp": {
+        "ancestors": [
+          {
+            "txid": "d509a6b8f36149588f9f48dc25fa5e37fc00dee781aed6da1113066c56f04879",
+            "fee": 605,
+            "weight": 520
+          }
+        ],
+        "bestDescendant": null,
+        "descendants": [
+          {
+          "txid": "28d3c592a9a8103d53c784aa539908f4dc5f9c463e179f0eae5dc5f349bdb00f",
+          "fee": 2501,
+          "weight": 816
+          }
+        ],
+        "effectiveFeePerVsize": 5.12063778580024,
+        "sigops": 0,
+        "adjustedVsize": 130
+      }
+    },
+    "941df06064c290b4627e92bdbf3bff7c0e97aab33e273c2a20404f9cfd21b607": {
+      "position": {
+        "block": 2,
+        "vsize": 932479.5
+      }
+    }
+  }
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "tracked-txs": {
+    "8a4666c6d22ce74fa47e1c4fdb09af556a234cc6a606539a75caf66ba44a2d07": {
+      "position": {
+        "block": 0,
+        "vsize": 434494
+      },
+      "cpfp": {
+        "ancestors": [
+          {
+            "txid": "d509a6b8f36149588f9f48dc25fa5e37fc00dee781aed6da1113066c56f04879",
+            "fee": 605,
+            "weight": 520
+          }
+        ],
+        "bestDescendant": null,
+        "descendants": [
+          {
+          "txid": "28d3c592a9a8103d53c784aa539908f4dc5f9c463e179f0eae5dc5f349bdb00f",
+          "fee": 2501,
+          "weight": 816
+          }
+        ],
+        "effectiveFeePerVsize": 5.12063778580024,
+        "sigops": 0,
+        "adjustedVsize": 130
+      }
+    },
+    "941df06064c290b4627e92bdbf3bff7c0e97aab33e273c2a20404f9cfd21b607": {
+      "position": {
+        "block": 2,
+        "vsize": 932479.5
+      }
+    }
+  }
+}`
+        },
+        codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "tracked-txs": {
+    "8a4666c6d22ce74fa47e1c4fdb09af556a234cc6a606539a75caf66ba44a2d07": {
+      "position": {
+        "block": 0,
+        "vsize": 434494
+      },
+      "cpfp": {
+        "ancestors": [
+          {
+            "txid": "d509a6b8f36149588f9f48dc25fa5e37fc00dee781aed6da1113066c56f04879",
+            "fee": 605,
+            "weight": 520
+          }
+        ],
+        "bestDescendant": null,
+        "descendants": [
+          {
+          "txid": "28d3c592a9a8103d53c784aa539908f4dc5f9c463e179f0eae5dc5f349bdb00f",
+          "fee": 2501,
+          "weight": 816
+          }
+        ],
+        "effectiveFeePerVsize": 5.12063778580024,
+        "sigops": 0,
+        "adjustedVsize": 130
+      }
+    },
+    "941df06064c290b4627e92bdbf3bff7c0e97aab33e273c2a20404f9cfd21b607": {
+      "position": {
+        "block": 2,
+        "vsize": 932479.5
+      }
+    }
+  }
+}`
+        }
+      }
+    }
+  },
+  {
+    type: "category",
+    category: "mempool",
+    fragment: "mempool",
+    title: "Mempool",
+    showConditions: bitcoinNetworks.concat(liquidNetworks)
+  },
+  {
+    type: "endpoint",
+    category: "mempool",
+    fragment: "track-mempool",
+    title: "Track Mempool",
+    description: {
+      default: "Subscribe to new mempool events, such as new transactions entering the mempool. Available fields: <code>added</code>, <code>removed</code>, <code>mined</code>, <code>replaced</code>. <br> Because this is potentially a lot of data, consider using the <code>track-mempool-txids</code> endpoint described below instead, or upgrade to an <a href='https://mempool.space/enterprise'>enterprise sponsorship</a>."
+    },
+    payload: '{ "track-mempool": true }',
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: false,
+    codeExample: {
+      default: {
+        codeTemplate: {
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "mempool-transactions": {
+    "sequence": 81419,
+    "added": [
+      {
+        "txid": "6229c0784bc776be22a5ee84e0e3d9b8f9e17843f079a8444b03bdc98b77d229",
+        "version": 2,
+        "locktime": 0,
+        "vin": [
+          {
+            "txid": "b4b324e3bff7ee0a7e664e8c03df1fe3a0bd53e5685ea6b10abb5f89ba1b2ead",
+            "vout": 5,
+            "prevout": {
+              "scriptpubkey": "76a914b54afb58f0faa9d1bde2ed755bc56ef1e4a4e24188ac",
+              "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 b54afb58f0faa9d1bde2ed755bc56ef1e4a4e241 OP_EQUALVERIFY OP_CHECKSIG",
+              "scriptpubkey_type": "p2pkh",
+              "scriptpubkey_address": "1HXb8YtsgBhFWdYezjd6bt7Dw4UGKyZo54",
+              "value": 17000
+            },
+            "scriptsig": "4830450221008e9b91aae7b4705841c97dc99d6ab233f10ff9b97d7c139be08634d2f0f5f66f02205d67eae8c830ed0979e169403d13c0f43efd78edbb9a344390245f5a83649404012103cf9fad8b202384de9ef010129a62b8249920a6205fe53cc0efbea9eb0db595e7",
+            "scriptsig_asm": "OP_PUSHBYTES_72 30450221008e9b91aae7b4705841c97dc99d6ab233f10ff9b97d7c139be08634d2f0f5f66f02205d67eae8c830ed0979e169403d13c0f43efd78edbb9a344390245f5a8364940401 OP_PUSHBYTES_33 03cf9fad8b202384de9ef010129a62b8249920a6205fe53cc0efbea9eb0db595e7",
+            "is_coinbase": false,
+            "sequence": 4294967293
+          }
+        ],
+        "vout": [
+          {
+            "scriptpubkey": "76a91401603bd82a5d5a6e8c6df5d9ae662b9fc5db60f288ac",
+            "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 01603bd82a5d5a6e8c6df5d9ae662b9fc5db60f2 OP_EQUALVERIFY OP_CHECKSIG",
+            "scriptpubkey_type": "p2pkh",
+            "scriptpubkey_address": "18GxdcLgNtRUc8v5TNJtPnvoi8jMVWxvb",
+            "value": 10419
+          },
+          {
+            "scriptpubkey": "76a914338ad842d236486627834bf9f5e182c7a8aa937188ac",
+            "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 338ad842d236486627834bf9f5e182c7a8aa9371 OP_EQUALVERIFY OP_CHECKSIG",
+            "scriptpubkey_type": "p2pkh",
+            "scriptpubkey_address": "15hXntT6oUKNhtk4FWvuGPQJDX47wpbAaa",
+            "value": 5396
+          }
+        ],
+        "size": 226,
+        "weight": 904,
+        "sigops": 8,
+        "fee": 1185,
+        "status": {
+          "confirmed": false
+        },
+        "order": 701659019,
+        "vsize": 226,
+        "adjustedVsize": 226,
+        "feePerVsize": 5.243362831858407,
+        "adjustedFeePerVsize": 5.243362831858407,
+        "effectiveFeePerVsize": 5.243362831858407,
+        "firstSeen": 1734893382,
+        "uid": 429139,
+        "inputs": [],
+        "cpfpDirty": false,
+        "ancestors": [],
+        "descendants": [],
+        "bestDescendant": null,
+        "position": {
+          "block": 0,
+          "vsize": 125270
+        },
+        "flags": 1099511628809
+      },
+      ...
+    ],
+    "removed": [],
+    "mined": [],
+    "replaced": []
+  }
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "mempool-transactions": {
+    "sequence": 81419,
+    "added": [
+      {
+        "txid": "6229c0784bc776be22a5ee84e0e3d9b8f9e17843f079a8444b03bdc98b77d229",
+        "version": 2,
+        "locktime": 0,
+        "vin": [
+          {
+            "txid": "b4b324e3bff7ee0a7e664e8c03df1fe3a0bd53e5685ea6b10abb5f89ba1b2ead",
+            "vout": 5,
+            "prevout": {
+              "scriptpubkey": "76a914b54afb58f0faa9d1bde2ed755bc56ef1e4a4e24188ac",
+              "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 b54afb58f0faa9d1bde2ed755bc56ef1e4a4e241 OP_EQUALVERIFY OP_CHECKSIG",
+              "scriptpubkey_type": "p2pkh",
+              "scriptpubkey_address": "1HXb8YtsgBhFWdYezjd6bt7Dw4UGKyZo54",
+              "value": 17000
+            },
+            "scriptsig": "4830450221008e9b91aae7b4705841c97dc99d6ab233f10ff9b97d7c139be08634d2f0f5f66f02205d67eae8c830ed0979e169403d13c0f43efd78edbb9a344390245f5a83649404012103cf9fad8b202384de9ef010129a62b8249920a6205fe53cc0efbea9eb0db595e7",
+            "scriptsig_asm": "OP_PUSHBYTES_72 30450221008e9b91aae7b4705841c97dc99d6ab233f10ff9b97d7c139be08634d2f0f5f66f02205d67eae8c830ed0979e169403d13c0f43efd78edbb9a344390245f5a8364940401 OP_PUSHBYTES_33 03cf9fad8b202384de9ef010129a62b8249920a6205fe53cc0efbea9eb0db595e7",
+            "is_coinbase": false,
+            "sequence": 4294967293
+          }
+        ],
+        "vout": [
+          {
+            "scriptpubkey": "76a91401603bd82a5d5a6e8c6df5d9ae662b9fc5db60f288ac",
+            "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 01603bd82a5d5a6e8c6df5d9ae662b9fc5db60f2 OP_EQUALVERIFY OP_CHECKSIG",
+            "scriptpubkey_type": "p2pkh",
+            "scriptpubkey_address": "18GxdcLgNtRUc8v5TNJtPnvoi8jMVWxvb",
+            "value": 10419
+          },
+          {
+            "scriptpubkey": "76a914338ad842d236486627834bf9f5e182c7a8aa937188ac",
+            "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 338ad842d236486627834bf9f5e182c7a8aa9371 OP_EQUALVERIFY OP_CHECKSIG",
+            "scriptpubkey_type": "p2pkh",
+            "scriptpubkey_address": "15hXntT6oUKNhtk4FWvuGPQJDX47wpbAaa",
+            "value": 5396
+          }
+        ],
+        "size": 226,
+        "weight": 904,
+        "sigops": 8,
+        "fee": 1185,
+        "status": {
+          "confirmed": false
+        },
+        "order": 701659019,
+        "vsize": 226,
+        "adjustedVsize": 226,
+        "feePerVsize": 5.243362831858407,
+        "adjustedFeePerVsize": 5.243362831858407,
+        "effectiveFeePerVsize": 5.243362831858407,
+        "firstSeen": 1734893382,
+        "uid": 429139,
+        "inputs": [],
+        "cpfpDirty": false,
+        "ancestors": [],
+        "descendants": [],
+        "bestDescendant": null,
+        "position": {
+          "block": 0,
+          "vsize": 125270
+        },
+        "flags": 1099511628809
+      },
+      ...
+    ],
+    "removed": [],
+    "mined": [],
+    "replaced": []
+  }
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "mempool-transactions": {
+    "sequence": 81419,
+    "added": [
+      {
+        "txid": "6229c0784bc776be22a5ee84e0e3d9b8f9e17843f079a8444b03bdc98b77d229",
+        "version": 2,
+        "locktime": 0,
+        "vin": [
+          {
+            "txid": "b4b324e3bff7ee0a7e664e8c03df1fe3a0bd53e5685ea6b10abb5f89ba1b2ead",
+            "vout": 5,
+            "prevout": {
+              "scriptpubkey": "76a914b54afb58f0faa9d1bde2ed755bc56ef1e4a4e24188ac",
+              "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 b54afb58f0faa9d1bde2ed755bc56ef1e4a4e241 OP_EQUALVERIFY OP_CHECKSIG",
+              "scriptpubkey_type": "p2pkh",
+              "scriptpubkey_address": "1HXb8YtsgBhFWdYezjd6bt7Dw4UGKyZo54",
+              "value": 17000
+            },
+            "scriptsig": "4830450221008e9b91aae7b4705841c97dc99d6ab233f10ff9b97d7c139be08634d2f0f5f66f02205d67eae8c830ed0979e169403d13c0f43efd78edbb9a344390245f5a83649404012103cf9fad8b202384de9ef010129a62b8249920a6205fe53cc0efbea9eb0db595e7",
+            "scriptsig_asm": "OP_PUSHBYTES_72 30450221008e9b91aae7b4705841c97dc99d6ab233f10ff9b97d7c139be08634d2f0f5f66f02205d67eae8c830ed0979e169403d13c0f43efd78edbb9a344390245f5a8364940401 OP_PUSHBYTES_33 03cf9fad8b202384de9ef010129a62b8249920a6205fe53cc0efbea9eb0db595e7",
+            "is_coinbase": false,
+            "sequence": 4294967293
+          }
+        ],
+        "vout": [
+          {
+            "scriptpubkey": "76a91401603bd82a5d5a6e8c6df5d9ae662b9fc5db60f288ac",
+            "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 01603bd82a5d5a6e8c6df5d9ae662b9fc5db60f2 OP_EQUALVERIFY OP_CHECKSIG",
+            "scriptpubkey_type": "p2pkh",
+            "scriptpubkey_address": "18GxdcLgNtRUc8v5TNJtPnvoi8jMVWxvb",
+            "value": 10419
+          },
+          {
+            "scriptpubkey": "76a914338ad842d236486627834bf9f5e182c7a8aa937188ac",
+            "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 338ad842d236486627834bf9f5e182c7a8aa9371 OP_EQUALVERIFY OP_CHECKSIG",
+            "scriptpubkey_type": "p2pkh",
+            "scriptpubkey_address": "15hXntT6oUKNhtk4FWvuGPQJDX47wpbAaa",
+            "value": 5396
+          }
+        ],
+        "size": 226,
+        "weight": 904,
+        "sigops": 8,
+        "fee": 1185,
+        "status": {
+          "confirmed": false
+        },
+        "order": 701659019,
+        "vsize": 226,
+        "adjustedVsize": 226,
+        "feePerVsize": 5.243362831858407,
+        "adjustedFeePerVsize": 5.243362831858407,
+        "effectiveFeePerVsize": 5.243362831858407,
+        "firstSeen": 1734893382,
+        "uid": 429139,
+        "inputs": [],
+        "cpfpDirty": false,
+        "ancestors": [],
+        "descendants": [],
+        "bestDescendant": null,
+        "position": {
+          "block": 0,
+          "vsize": 125270
+        },
+        "flags": 1099511628809
+      },
+      ...
+    ],
+    "removed": [],
+    "mined": [],
+    "replaced": []
+  }
+}`
+        },
+        codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "mempool-transactions": {
+    "sequence": 81419,
+    "added": [
+      {
+        "txid": "6229c0784bc776be22a5ee84e0e3d9b8f9e17843f079a8444b03bdc98b77d229",
+        "version": 2,
+        "locktime": 0,
+        "vin": [
+          {
+            "txid": "b4b324e3bff7ee0a7e664e8c03df1fe3a0bd53e5685ea6b10abb5f89ba1b2ead",
+            "vout": 5,
+            "prevout": {
+              "scriptpubkey": "76a914b54afb58f0faa9d1bde2ed755bc56ef1e4a4e24188ac",
+              "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 b54afb58f0faa9d1bde2ed755bc56ef1e4a4e241 OP_EQUALVERIFY OP_CHECKSIG",
+              "scriptpubkey_type": "p2pkh",
+              "scriptpubkey_address": "1HXb8YtsgBhFWdYezjd6bt7Dw4UGKyZo54",
+              "value": 17000
+            },
+            "scriptsig": "4830450221008e9b91aae7b4705841c97dc99d6ab233f10ff9b97d7c139be08634d2f0f5f66f02205d67eae8c830ed0979e169403d13c0f43efd78edbb9a344390245f5a83649404012103cf9fad8b202384de9ef010129a62b8249920a6205fe53cc0efbea9eb0db595e7",
+            "scriptsig_asm": "OP_PUSHBYTES_72 30450221008e9b91aae7b4705841c97dc99d6ab233f10ff9b97d7c139be08634d2f0f5f66f02205d67eae8c830ed0979e169403d13c0f43efd78edbb9a344390245f5a8364940401 OP_PUSHBYTES_33 03cf9fad8b202384de9ef010129a62b8249920a6205fe53cc0efbea9eb0db595e7",
+            "is_coinbase": false,
+            "sequence": 4294967293
+          }
+        ],
+        "vout": [
+          {
+            "scriptpubkey": "76a91401603bd82a5d5a6e8c6df5d9ae662b9fc5db60f288ac",
+            "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 01603bd82a5d5a6e8c6df5d9ae662b9fc5db60f2 OP_EQUALVERIFY OP_CHECKSIG",
+            "scriptpubkey_type": "p2pkh",
+            "scriptpubkey_address": "18GxdcLgNtRUc8v5TNJtPnvoi8jMVWxvb",
+            "value": 10419
+          },
+          {
+            "scriptpubkey": "76a914338ad842d236486627834bf9f5e182c7a8aa937188ac",
+            "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 338ad842d236486627834bf9f5e182c7a8aa9371 OP_EQUALVERIFY OP_CHECKSIG",
+            "scriptpubkey_type": "p2pkh",
+            "scriptpubkey_address": "15hXntT6oUKNhtk4FWvuGPQJDX47wpbAaa",
+            "value": 5396
+          }
+        ],
+        "size": 226,
+        "weight": 904,
+        "sigops": 8,
+        "fee": 1185,
+        "status": {
+          "confirmed": false
+        },
+        "order": 701659019,
+        "vsize": 226,
+        "adjustedVsize": 226,
+        "feePerVsize": 5.243362831858407,
+        "adjustedFeePerVsize": 5.243362831858407,
+        "effectiveFeePerVsize": 5.243362831858407,
+        "firstSeen": 1734893382,
+        "uid": 429139,
+        "inputs": [],
+        "cpfpDirty": false,
+        "ancestors": [],
+        "descendants": [],
+        "bestDescendant": null,
+        "position": {
+          "block": 0,
+          "vsize": 125270
+        },
+        "flags": 1099511628809
+      },
+      ...
+    ],
+    "removed": [],
+    "mined": [],
+    "replaced": []
+  }
+}`
+        },
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mempool",
+    fragment: "track-mempool-txids",
+    title: "Track Mempool Txids",
+    description: {
+      default: "Low-bandwith substitute to the above command <code>track-mempool</code>: subscribe to new mempool events, such as new transactions entering the mempool, but only transaction IDs are returned to save bandwith. Available fields: <code>added</code>, <code>removed</code>, <code>mined</code>, <code>replaced</code>."
+    },
+    payload: '{ "track-mempool-txids": true }',
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: false,
+    codeExample: {
+      default: {
+        codeTemplate: {
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "mempool-txids": {
+    "sequence": 79919,
+    "added": [
+      "4bbb648ab194aaaf9188bccc6efcdcbb59c8485115a7384972c8287782206a0f",
+      "f7883f3784829d1e741e696bdceec488eeb53fe0b69b0eca574ac9f2e7e8e117",
+      "784e8e3b182c29798660bf42befb5c6479148c7d90c0d6eea032b89418e7cc3b",
+      "d3920a7be05269d859bd89b08a6546dc6d6dd523dbc5f7b62b9c0c5eedc43292",
+      "de6078d584cb5f4a27c3f0bb3d8bbb16b3d5f8303237391f390d0ee9e84d0099",
+      "39fcbd6e0ec0ad49405f19c72bb033f578147181b77dbe47044f80b0b7604ab5",
+      "47ed060004fab3fb5fa4885008aa2cadbe3335655f1303231abfe89b4b0c9bd9"
+    ],
+    "removed": [],
+    "mined": [],
+    "replaced": []
+  }
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "mempool-txids": {
+    "sequence": 79919,
+    "added": [
+      "4bbb648ab194aaaf9188bccc6efcdcbb59c8485115a7384972c8287782206a0f",
+      "f7883f3784829d1e741e696bdceec488eeb53fe0b69b0eca574ac9f2e7e8e117",
+      "784e8e3b182c29798660bf42befb5c6479148c7d90c0d6eea032b89418e7cc3b",
+      "d3920a7be05269d859bd89b08a6546dc6d6dd523dbc5f7b62b9c0c5eedc43292",
+      "de6078d584cb5f4a27c3f0bb3d8bbb16b3d5f8303237391f390d0ee9e84d0099",
+      "39fcbd6e0ec0ad49405f19c72bb033f578147181b77dbe47044f80b0b7604ab5",
+      "47ed060004fab3fb5fa4885008aa2cadbe3335655f1303231abfe89b4b0c9bd9"
+    ],
+    "removed": [],
+    "mined": [],
+    "replaced": []
+  }
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "mempool-txids": {
+    "sequence": 79919,
+    "added": [
+      "4bbb648ab194aaaf9188bccc6efcdcbb59c8485115a7384972c8287782206a0f",
+      "f7883f3784829d1e741e696bdceec488eeb53fe0b69b0eca574ac9f2e7e8e117",
+      "784e8e3b182c29798660bf42befb5c6479148c7d90c0d6eea032b89418e7cc3b",
+      "d3920a7be05269d859bd89b08a6546dc6d6dd523dbc5f7b62b9c0c5eedc43292",
+      "de6078d584cb5f4a27c3f0bb3d8bbb16b3d5f8303237391f390d0ee9e84d0099",
+      "39fcbd6e0ec0ad49405f19c72bb033f578147181b77dbe47044f80b0b7604ab5",
+      "47ed060004fab3fb5fa4885008aa2cadbe3335655f1303231abfe89b4b0c9bd9"
+    ],
+    "removed": [],
+    "mined": [],
+    "replaced": []
+  }
+}`
+        },
+        codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "mempool-txids": {
+    "sequence": 79919,
+    "added": [
+      "4bbb648ab194aaaf9188bccc6efcdcbb59c8485115a7384972c8287782206a0f",
+      "f7883f3784829d1e741e696bdceec488eeb53fe0b69b0eca574ac9f2e7e8e117",
+      "784e8e3b182c29798660bf42befb5c6479148c7d90c0d6eea032b89418e7cc3b",
+      "d3920a7be05269d859bd89b08a6546dc6d6dd523dbc5f7b62b9c0c5eedc43292",
+      "de6078d584cb5f4a27c3f0bb3d8bbb16b3d5f8303237391f390d0ee9e84d0099",
+      "39fcbd6e0ec0ad49405f19c72bb033f578147181b77dbe47044f80b0b7604ab5",
+      "47ed060004fab3fb5fa4885008aa2cadbe3335655f1303231abfe89b4b0c9bd9"
+    ],
+    "removed": [],
+    "mined": [],
+    "replaced": []
+  }
+}`
+        },
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mempool",
+    fragment: "track-mempool-block",
+    title: "Track Mempool Block",
+    description: {
+      default: "Subscribe to live mempool projected block template, index 0 being the first mempool block. <br> A full set of stripped transactions in that block is returned when the subscription starts, and deltas (removed and added transactions) are then sent every time the mempool changes."
+    },
+    payload: '{ "track-mempool-block": 0 }',
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: false,
+    codeExample: {
+      default: {
+        codeTemplate: {
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "projected-block-transactions": {
+    "index": 0,
+    "sequence": 80270,
+    "delta": {
+      "added": [
+        [
+          "172b34fb099d80f61b65d1c107c4f25665c8f50e30c1371b2e6fbced62991d58",
+          2000,
+          171.25,
+          5942725,
+          11.68,
+          1099511631877,
+          1734881537
+        ],
+        ...
+      ],
+      "removed": [
+        "956a6eee382214631c3299e0410565e05fbd6328c89fa746efab6371705aca2a",
+        ...
+        ],
+      "changed": []
+    }
+  }
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "projected-block-transactions": {
+    "index": 0,
+    "sequence": 80270,
+    "delta": {
+      "added": [
+        [
+          "172b34fb099d80f61b65d1c107c4f25665c8f50e30c1371b2e6fbced62991d58",
+          2000,
+          171.25,
+          5942725,
+          11.68,
+          1099511631877,
+          1734881537
+        ],
+        ...
+      ],
+      "removed": [
+        "956a6eee382214631c3299e0410565e05fbd6328c89fa746efab6371705aca2a",
+        ...
+        ],
+      "changed": []
+    }
+  }
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "projected-block-transactions": {
+    "index": 0,
+    "sequence": 80270,
+    "delta": {
+      "added": [
+        [
+          "172b34fb099d80f61b65d1c107c4f25665c8f50e30c1371b2e6fbced62991d58",
+          2000,
+          171.25,
+          5942725,
+          11.68,
+          1099511631877,
+          1734881537
+        ],
+        ...
+      ],
+      "removed": [
+        "956a6eee382214631c3299e0410565e05fbd6328c89fa746efab6371705aca2a",
+        ...
+        ],
+      "changed": []
+    }
+  }
+}`
+        },
+        codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "projected-block-transactions": {
+    "index": 0,
+    "sequence": 80270,
+    "delta": {
+      "added": [
+        [
+          "172b34fb099d80f61b65d1c107c4f25665c8f50e30c1371b2e6fbced62991d58",
+          2000,
+          171.25,
+          5942725,
+          11.68,
+          1099511631877,
+          1734881537
+        ],
+        ...
+      ],
+      "removed": [
+        "956a6eee382214631c3299e0410565e05fbd6328c89fa746efab6371705aca2a",
+        ...
+        ],
+      "changed": []
+    }
+  }
+}`
+        },
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mempool",
+    fragment: "track-rbf",
+    title: "Track Mempool RBF Transactions",
+    description: {
+      default: "Subscribe to new RBF events."
+    },
+    payload: '{ "track-rbf": "all" }',
+    showConditions: bitcoinNetworks,
+    showJsExamples: false,
+    codeExample: {
+      default: {
+        codeTemplate: {
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "rbfLatest": [
+    {
+      "tx": {
+        "txid": "cc6cb210f7ec32660fe4d46984ef64b64143fb02dc7ed70578c32b5f338ef6d6",
+        "fee": 8280,
+        "vsize": 204,
+        "value": 156397,
+        "rate": 10,
+        "time": 1734876576,
+        "rbf": true,
+        "fullRbf": false
+      },
+      "time": 1734876576,
+      "fullRbf": false,
+      "replaces": [
+        {
+          "tx": {
+            "txid": "4e94c23e075cf9c2b4ccaf32e3652b8b1bfecca6726390ccab821417f23b0876",
+            "fee": 4956,
+            "vsize": 204,
+            "value": 159721,
+            "rate": 9,
+            "time": 1734876204,
+            "rbf": true,
+            "fullRbf": false
+          },
+          "time": 1734876204,
+          "fullRbf": false,
+          "replaces": [
+            {
+              "tx": {
+                "txid": "9624fe4f9a183dcea2e8c6b640394eecaec37363aec883a64358f6953fba3145",
+                "fee": 1632,
+                "vsize": 204,
+                "value": 163045,
+                "rate": 8,
+                "time": 1734876081,
+                "rbf": true
+              },
+              "time": 1734876081,
+              "interval": 123,
+              "fullRbf": false,
+              "replaces": []
+            }
+          ],
+          "interval": 372
+        }
+      ]
+    },
+    ...
+  ]
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "rbfLatest": [
+    {
+      "tx": {
+        "txid": "cc6cb210f7ec32660fe4d46984ef64b64143fb02dc7ed70578c32b5f338ef6d6",
+        "fee": 8280,
+        "vsize": 204,
+        "value": 156397,
+        "rate": 10,
+        "time": 1734876576,
+        "rbf": true,
+        "fullRbf": false
+      },
+      "time": 1734876576,
+      "fullRbf": false,
+      "replaces": [
+        {
+          "tx": {
+            "txid": "4e94c23e075cf9c2b4ccaf32e3652b8b1bfecca6726390ccab821417f23b0876",
+            "fee": 4956,
+            "vsize": 204,
+            "value": 159721,
+            "rate": 9,
+            "time": 1734876204,
+            "rbf": true,
+            "fullRbf": false
+          },
+          "time": 1734876204,
+          "fullRbf": false,
+          "replaces": [
+            {
+              "tx": {
+                "txid": "9624fe4f9a183dcea2e8c6b640394eecaec37363aec883a64358f6953fba3145",
+                "fee": 1632,
+                "vsize": 204,
+                "value": 163045,
+                "rate": 8,
+                "time": 1734876081,
+                "rbf": true
+              },
+              "time": 1734876081,
+              "interval": 123,
+              "fullRbf": false,
+              "replaces": []
+            }
+          ],
+          "interval": 372
+        }
+      ]
+    },
+    ...
+  ]
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "rbfLatest": [
+    {
+      "tx": {
+        "txid": "cc6cb210f7ec32660fe4d46984ef64b64143fb02dc7ed70578c32b5f338ef6d6",
+        "fee": 8280,
+        "vsize": 204,
+        "value": 156397,
+        "rate": 10,
+        "time": 1734876576,
+        "rbf": true,
+        "fullRbf": false
+      },
+      "time": 1734876576,
+      "fullRbf": false,
+      "replaces": [
+        {
+          "tx": {
+            "txid": "4e94c23e075cf9c2b4ccaf32e3652b8b1bfecca6726390ccab821417f23b0876",
+            "fee": 4956,
+            "vsize": 204,
+            "value": 159721,
+            "rate": 9,
+            "time": 1734876204,
+            "rbf": true,
+            "fullRbf": false
+          },
+          "time": 1734876204,
+          "fullRbf": false,
+          "replaces": [
+            {
+              "tx": {
+                "txid": "9624fe4f9a183dcea2e8c6b640394eecaec37363aec883a64358f6953fba3145",
+                "fee": 1632,
+                "vsize": 204,
+                "value": 163045,
+                "rate": 8,
+                "time": 1734876081,
+                "rbf": true
+              },
+              "time": 1734876081,
+              "interval": 123,
+              "fullRbf": false,
+              "replaces": []
+            }
+          ],
+          "interval": 372
+        }
+      ]
+    },
+    ...
+  ]
+}`
+        },
+        codeSampleLiquid: emptyCodeSample
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mempool",
+    fragment: "track-full-rbf",
+    title: "Track Mempool Full RBF Transactions",
+    description: {
+      default: "Subscribe to new Full RBF events."
+    },
+    payload: '{ "track-rbf": "fullRbf" }',
+    showConditions: bitcoinNetworks,
+    showJsExamples: false,
+    codeExample: {
+      default: {
+        codeTemplate: {
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "rbfLatest": [
+    {
+      "tx": {
+        "txid": "ed9e1ec0e1635d465ee95c8872efff367d420fc2c4e624bada2c6e6e6c8e0629",
+        "fee": 4123,
+        "vsize": 587.75,
+        "value": 25545,
+        "rate": 7.014887282007656,
+        "time": 1734876941,
+        "rbf": false,
+        "fullRbf": true
+      },
+      "time": 1734876941,
+      "fullRbf": true,
+      "replaces": [
+        {
+          "tx": {
+            "txid": "495ad5d39d44286e99bc45d104605407325cd4790f842dc3287fbfdda8ee5795",
+            "fee": 1178,
+            "vsize": 587.25,
+            "value": 28490,
+            "rate": 2.0059599829714774,
+            "time": 1734853572,
+            "rbf": false,
+            "fullRbf": true
+          },
+          "time": 1734853572,
+          "fullRbf": true,
+          "replaces": [
+            {
+              "tx": {
+                "txid": "189751a7560a6c39deb9a93db2a27374842c646268d0007ba52aefa189833afa",
+                "fee": 589,
+                "vsize": 587.25,
+                "value": 29079,
+                "rate": 1.0029799914857387,
+                "time": 1734781955,
+                "rbf": false
+              },
+              "time": 1734781955,
+              "interval": 71617,
+              "fullRbf": true,
+              "replaces": []
+            }
+          ],
+          "interval": 23369
+        }
+      ]
+    },
+    ...
+  ]
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "rbfLatest": [
+    {
+      "tx": {
+        "txid": "ed9e1ec0e1635d465ee95c8872efff367d420fc2c4e624bada2c6e6e6c8e0629",
+        "fee": 4123,
+        "vsize": 587.75,
+        "value": 25545,
+        "rate": 7.014887282007656,
+        "time": 1734876941,
+        "rbf": false,
+        "fullRbf": true
+      },
+      "time": 1734876941,
+      "fullRbf": true,
+      "replaces": [
+        {
+          "tx": {
+            "txid": "495ad5d39d44286e99bc45d104605407325cd4790f842dc3287fbfdda8ee5795",
+            "fee": 1178,
+            "vsize": 587.25,
+            "value": 28490,
+            "rate": 2.0059599829714774,
+            "time": 1734853572,
+            "rbf": false,
+            "fullRbf": true
+          },
+          "time": 1734853572,
+          "fullRbf": true,
+          "replaces": [
+            {
+              "tx": {
+                "txid": "189751a7560a6c39deb9a93db2a27374842c646268d0007ba52aefa189833afa",
+                "fee": 589,
+                "vsize": 587.25,
+                "value": 29079,
+                "rate": 1.0029799914857387,
+                "time": 1734781955,
+                "rbf": false
+              },
+              "time": 1734781955,
+              "interval": 71617,
+              "fullRbf": true,
+              "replaces": []
+            }
+          ],
+          "interval": 23369
+        }
+      ]
+    },
+    ...
+  ]
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "rbfLatest": [
+    {
+      "tx": {
+        "txid": "ed9e1ec0e1635d465ee95c8872efff367d420fc2c4e624bada2c6e6e6c8e0629",
+        "fee": 4123,
+        "vsize": 587.75,
+        "value": 25545,
+        "rate": 7.014887282007656,
+        "time": 1734876941,
+        "rbf": false,
+        "fullRbf": true
+      },
+      "time": 1734876941,
+      "fullRbf": true,
+      "replaces": [
+        {
+          "tx": {
+            "txid": "495ad5d39d44286e99bc45d104605407325cd4790f842dc3287fbfdda8ee5795",
+            "fee": 1178,
+            "vsize": 587.25,
+            "value": 28490,
+            "rate": 2.0059599829714774,
+            "time": 1734853572,
+            "rbf": false,
+            "fullRbf": true
+          },
+          "time": 1734853572,
+          "fullRbf": true,
+          "replaces": [
+            {
+              "tx": {
+                "txid": "189751a7560a6c39deb9a93db2a27374842c646268d0007ba52aefa189833afa",
+                "fee": 589,
+                "vsize": 587.25,
+                "value": 29079,
+                "rate": 1.0029799914857387,
+                "time": 1734781955,
+                "rbf": false
+              },
+              "time": 1734781955,
+              "interval": 71617,
+              "fullRbf": true,
+              "replaces": []
+            }
+          ],
+          "interval": 23369
+        }
+      ]
+    },
+    ...
+  ]
+}`
+        },
+        codeSampleLiquid: emptyCodeSample
+      }
+    }
+  },
+
+];
 
 export const restApiDocsData = [
   {
@@ -9339,7 +11685,7 @@ export const restApiDocsData = [
     fragment: "accelerator-history",
     title: "GET Acceleration History",
     description: {
-      default: "<p>Returns the user's past acceleration requests.</p><p>Pass one of the following for <code>:status</code>: <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code>. Pass <code>true</code> in <code>:details</code> to get a detailed <code>history</code> of the acceleration request.</p>"
+      default: "<p>Returns the user's past acceleration requests.</p><p>Pass one of the following for <code>:status</code> (required): <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code>.<br>Pass <code>true</code> in <code>:details</code> to get a detailed <code>history</code> of the acceleration request.</p>"
     },
     urlString: "/v1/services/accelerator/history?status=:status&details=:details",
     showConditions: [""],
@@ -9445,6 +11791,36 @@ export const restApiDocsData = [
     ]
   }
 ]`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: "endpoint",
+    category: "accelerator-private",
+    httpRequestMethod: "POST",
+    fragment: "accelerator-cancel",
+    title: "POST Cancel Acceleration (Pro)",
+    description: {
+      default: "<p>Sends a request to cancel an acceleration in the <code>accelerating</code> status.<br>You can retreive eligible acceleration <code>id</code> using the history endpoint GET <code>/api/v1/services/accelerator/history?status=accelerating</code>."
+    },
+    urlString: "/v1/services/accelerator/cancel",
+    showConditions: [""],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/accelerator/cancel`, //custom interpolation technique handled in replaceCurlPlaceholder()
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ["id=42"],
+          headers: "X-Mempool-Auth: stacksats",
+          response: `HTTP/1.1 200 OK`,
         },
       }
     }
