@@ -19,10 +19,10 @@
     } @else if (!user) {
       <!-- User not logged in -->
       <div class="alert alert-mempool d-block text-center w-100">
-        <div class="d-inline align-middle">
-          <span>To use the faucet, please&nbsp;</span>
+        <div class="d-inline align-middle pr-2">
+          <span>To use the faucet, please</span>
         </div>
-        <app-github-login customClass="btn btn-sm" width="220px" redirectTo="/testnet4/faucet" buttonString="Sign up with Github"></app-github-login>
+        <app-github-login customClass="btn btn-sm" width="150px" redirectTo="/testnet4/faucet" buttonString="Sign up with"></app-github-login>
       </div>
     }
     @else if (user && user.status === 'pending' && !user.email && user.snsId) {
@@ -39,7 +39,7 @@
         <div class="d-inline align-middle">
           <span class="mb-2 mr-2">To use the faucet, please</span>
         </div>
-        <app-github-login customClass="btn btn-sm" width="180px" redirectTo="/testnet4/faucet" buttonString="Link your Github"></app-github-login>
+        <app-github-login customClass="btn btn-sm" width="180px" redirectTo="/testnet4/faucet" buttonString="Link your"></app-github-login>
       </div>
     }
     @else if (error === 'account_limited') {
