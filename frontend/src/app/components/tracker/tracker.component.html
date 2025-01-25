@@ -88,7 +88,7 @@
           <div class="field narrower mt-2">
             <div class="label" i18n="transaction.confirmed-at">Confirmed at</div>
             <div class="value">
-              &lrm;{{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }}
+              <app-timestamp [customFormat]="'yyyy-MM-dd HH:mm'" [unixTime]="tx.status.block_time" [hideTimeSince]="true"></app-timestamp>
               <div class="lg-inline">
                 <i class="symbol">(<app-time kind="since" [time]="tx.status.block_time" [fastRender]="true" [showTooltip]="true"></app-time>)</i>
               </div>
@@ -124,7 +124,6 @@
           <ng-container *ngIf="(ETA$ | async) as eta;">
             <app-accelerate-checkout
               *ngIf="(da$ | async) as da;"
-              [cashappEnabled]="cashappEligible"
               [advancedEnabled]="false"
               [forceMobile]="true"
               [tx]="tx"

@@ -10,7 +10,7 @@
       <h1 class="m-0 pt-1 pt-md-0">{{ poolStats.pool.name }}</h1>
     </div>
 
-    <div class="box">
+    <div class="box pool-details">
       <div class="row">
 
         <div class="col-lg-6">
@@ -173,7 +173,125 @@
     <div class="spinner-border text-light"></div>
   </div>
 
+  <!-- Stratum Job -->
+  <ng-container *ngIf="(job$ | async) as job;">
+    <h2 i18n="pool.next_block">Next block</h2>
+    <div class="box mb-3">
+      <div class="row" >
+        <div class="col">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td>
+                  <table class="job-table table table-xs table-borderless table-fixed table-data">
+                    <thead>
+                      <tr>
+                        <th class="data-title clip text-center height" i18n="latest-blocks.height">Height</th>
+                        <th class="data-title clip text-center expected" i18n="next-block.expected-time">Expected</th>
+                        <th class="data-title clip text-center reward" i18n="latest-blocks.reward">Reward</th>
+                        <th class="data-title clip text-center timestamp" i18n="next-block.timestamp">Timestamp</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="text-center height">
+                          {{ job.height }}
+                        </td>
+                        <td class="text-center expected">
+                          <ng-container *ngIf="(expectedBlockTime$ | async) as expectedBlockTime; else expectedPlaceholder">
+                            <app-time kind="until" [time]="expectedBlockTime" [fastRender]="false" [fixedRender]="true" [precision]="1" minUnit="minute"></app-time>
+                          </ng-container>
+                          <ng-template #expectedPlaceholder>~</ng-template>
+                        </td>
+                        <td class="text-center reward">
+                          <app-amount [satoshis]="job.reward"></app-amount>
+                        </td>
+                        <td class="text-center timestamp">
+                          <app-timestamp [customFormat]="'yyyy-MM-dd HH:mm:ss'" [unixTime]="job.timestamp" [precision]="1" minUnit="minute" [hideTimeSince]="true"></app-timestamp>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <table class="job-table table table-xs table-borderless table-fixed table-data">
+                    <thead>
+                      <tr>
+                        <th class="data-title clip text-center coinbase" i18n="latest-blocks.coinbasetag">Coinbase tag</th>
+                        <th class="data-title clip text-center clean" i18n="next-block.clean">Clean</th>
+                        <th class="data-title clip text-center prevhash" i18n="next-block.prevhash">Prevhash</th>
+                        <th class="data-title clip text-center job-received" i18n="next-block.job-received">Job Received</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="text-center coinbase">
+                          {{ job.scriptsig | hex2ascii }}
+                        </td>
+                        <td class="text-center clean">
+                          @if (job.cleanJobs) {
+                            <fa-icon [icon]="['fas', 'check-circle']" [fixedWidth]="true"></fa-icon>
+                          } @else {
+                            <fa-icon [icon]="['fas', 'times-circle']" [fixedWidth]="true"></fa-icon>
+                          }
+                        </td>
+                        <td class="text-center prevhash">
+                          <a [routerLink]="['/block' | relativeUrl, job.prevHash]">
+                            <app-truncate [text]="job.prevHash" [lastChars]="8"></app-truncate>
+                          </a>
+                        </td>
+                        <td class="text-center job-received">
+                          <app-timestamp [customFormat]="'yyyy-MM-dd HH:mm:ss'" [unixTime]="job.received / 1000" [precision]="1" minUnit="minute" [hideTimeSince]="true"></app-timestamp>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <table class="stratum-table">
+                    <thead>
+                      <tr>
+                        <th class="data-title clip text-center" [attr.colspan]="Math.max(job.merkleBranches.length, 12)">
+                          <a class="title-link" href="" [routerLink]="['/stratum' | relativeUrl]">
+                            Merkle Branches
+                            <span>&nbsp;</span>
+                            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
+                          </a>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        @for (branch of job.merkleBranches; track $index) {
+                          <td class="merkle" [style.background-color]="branch ? '#' + branch.slice(0, 6) : ''">
+                            @if ($index === 0 && branch) {
+                              <a [routerLink]="['/tx' | relativeUrl, reverseHash(branch)]" class="cell-link">
+                                <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 14px; color: white"></fa-icon>
+                              </a>
+                            }
+                          </td>
+                        }
+                        @for (_ of [].constructor(Math.max(0, 12 - job.merkleBranches.length)); track $index) {
+                          <td class="merkle empty-branch"></td>
+                        }
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
   <!-- Blocks list -->
+  <h2 i18n="master-page.blocks">Blocks</h2>
   <table class="table table-borderless" [alwaysCallback]="true" infiniteScroll [infiniteScrollDistance]="1.5"
     [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50" (scrolled)="loadMore()">
     <ng-container *ngIf="blocks$ | async as blocks; else skeleton">
@@ -194,7 +312,7 @@
             <a [routerLink]="['/block' | relativeUrl, block.id]">{{ block.height }}</a>
           </td>
           <td class="timestamp">
-            &lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm:ss' }}
+            <app-timestamp [customFormat]="'yyyy-MM-dd HH:mm:ss'" [unixTime]="block.timestamp" [hideTimeSince]="true"></app-timestamp>
           </td>
           <td class="mined">
             <app-time kind="since" [time]="block.timestamp" [fastRender]="true" [showTooltip]="true"></app-time>

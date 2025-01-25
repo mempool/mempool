@@ -21,6 +21,8 @@ export interface WebsocketResponse {
   rbfInfo?: RbfTree;
   rbfLatest?: RbfTree[];
   rbfLatestSummary?: ReplacementInfo[];
+  stratumJob?: StratumJob;
+  stratumJobs?: Record<number, StratumJob>;
   utxoSpent?: object;
   transactions?: TransactionStripped[];
   loadingIndicators?: ILoadingIndicators;
@@ -37,6 +39,7 @@ export interface WebsocketResponse {
   'track-rbf-summary'?: boolean;
   'track-accelerations'?: boolean;
   'track-wallet'?: string;
+  'track-stratum'?: string | number;
   'watch-mempool'?: boolean;
   'refresh-blocks'?: boolean;
 }
@@ -149,4 +152,25 @@ export interface HealthCheckHost {
     backend?: string;
     electrs?: string;
   }
+}
+
+export interface StratumJob {
+  pool: number;
+  height: number;
+  coinbase: string;
+  scriptsig: string;
+  reward: number;
+  jobId: string;
+  extraNonce: string;
+  extraNonce2Size: number;
+  prevHash: string;
+  coinbase1: string;
+  coinbase2: string;
+  merkleBranches: string[];
+  version: string;
+  bits: string;
+  time: string;
+  timestamp: number;
+  cleanJobs: boolean;
+  received: number;
 }

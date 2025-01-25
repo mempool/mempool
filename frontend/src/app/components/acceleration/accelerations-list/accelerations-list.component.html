@@ -14,7 +14,7 @@
           <th class="time text-right" i18n="accelerator.requested">Requested</th>
         </ng-container>
         <ng-container *ngIf="!pending">
-          <th class="fee text-right" i18n="transaction.bid-boost|Bid Boost">Bid Boost</th>
+          <th class="fee text-right text-truncate" i18n="transaction.bid-boost|Bid Boost">Bid Boost</th>
           <th class="block text-right" i18n="shared.block-title">Block</th>
           <th class="pool text-right" i18n="mining.pool-name" *ngIf="!this.widget">Pool</th>
           <th class="status text-right" i18n="transaction.status|Transaction Status">Status</th>
@@ -64,7 +64,8 @@
               <span *ngIf="acceleration.status === 'accelerating'" class="badge badge-warning" i18n="accelerator.pending">Pending</span>
               <span *ngIf="acceleration.status.includes('completed') && acceleration.minedByPoolUniqueId && pools[acceleration.minedByPoolUniqueId]" class="badge badge-success"><ng-container i18n="accelerator.completed">Completed</ng-container><span *ngIf="acceleration.status === 'completed_provisional'">&nbsp;⌛</span></span>
               <span *ngIf="acceleration.status.includes('completed') && (!acceleration.minedByPoolUniqueId || !pools[acceleration.minedByPoolUniqueId])" class="badge badge-success"><ng-container i18n="transaction.rbf.mined">Mined</ng-container><span *ngIf="acceleration.status === 'completed_provisional'">&nbsp;⌛</span></span>
-              <span *ngIf="acceleration.status.includes('failed')" class="badge badge-danger"><ng-container i18n="accelerator.canceled">Canceled</ng-container><span *ngIf="acceleration.status === 'failed_provisional'">&nbsp;⌛</span></span>
+              <span *ngIf="acceleration.status.includes('failed') && acceleration.canceled" class="badge badge-danger"><ng-container i18n="accelerator.canceled">Canceled</ng-container><span *ngIf="acceleration.status === 'failed_provisional'">&nbsp;⌛</span></span>
+              <span *ngIf="acceleration.status.includes('failed') && !acceleration.canceled" class="badge badge-danger"><ng-container i18n="accelerator.canceled">Failed</ng-container><span *ngIf="acceleration.status === 'failed_provisional'">&nbsp;⌛</span></span>
             </td>
             <td class="date text-right" *ngIf="!this.widget">
               <app-time kind="since" [time]="acceleration.added" [fastRender]="true" [showTooltip]="true"></app-time>

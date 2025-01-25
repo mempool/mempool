@@ -1,0 +1,55 @@
+<div class="container-xl" style="min-height: 335px">
+  <h1 class="float-left" i18n="master-page.blocks">Stratum Jobs</h1>
+
+  <div class="clearfix"></div>
+
+  <div style="min-height: 295px">
+    <table *ngIf="poolsReady && (rows$ | async) as rows;" class="stratum-table">
+      <thead>
+        <tr>
+          <td class="merkle" [attr.colspan]="rows[0]?.merkleCells?.length || 4">
+            Merkle Branches
+          </td>
+          <td class="pool">Pool</td>
+          <td class="tag">Coinbase Tag</td>
+          <td class="reward">Reward</td>
+          <td class="height">Height</td>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows; track row.job.pool) {
+          <tr>
+            @for (cell of row.merkleCells; track $index) {
+              <td class="merkle" [style.background-color]="cell.hash ? '#' + cell.hash.slice(0, 6) : ''">
+                @if ($index === 0 && cell.hash) {
+                  <a [routerLink]="['/tx' | relativeUrl, reverseHash(cell.hash)]" class="cell-link">
+                    <div class="pipe-segment" [class]="pipeToClass(cell.type)"></div>
+                  </a>
+                } @else {
+                  <div class="pipe-segment" [class]="pipeToClass(cell.type)"></div>
+                }
+              </td>
+            }
+            <td class="pool">
+              @if (pools[row.job.pool]) {
+                <a class="badge" [routerLink]="[('/mining/pool/' + pools[row.job.pool].slug) | relativeUrl]">
+                  <img class="pool-logo" [src]="'/resources/mining-pools/' + pools[row.job.pool].slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + pools[row.job.pool].name + ' mining pool'"> 
+                  {{ pools[row.job.pool].name}}
+                </a>
+              }
+            </td>
+            <td class="tag">
+              {{ row.job.tag }}
+            </td>
+            <td class="reward">
+              <app-amount [satoshis]="row.job.reward"></app-amount>
+            </td>
+            <td class="height">
+              {{ row.job.height }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

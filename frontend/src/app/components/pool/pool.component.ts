@@ -10,6 +10,9 @@ import { selectPowerOfTen } from '@app/bitcoin.utils';
 import { formatNumber } from '@angular/common';
 import { SeoService } from '@app/services/seo.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { StratumJob } from '../../interfaces/websocket.interface';
+import { WebsocketService } from '../../services/websocket.service';
+import { MiningService } from '../../services/mining.service';
 
 interface AccelerationTotal {
   cost: number,
@@ -27,12 +30,16 @@ export class PoolComponent implements OnInit {
   @Input() left: number | string = 75;
 
   gfg = true;
+  stratumEnabled = this.stateService.env.STRATUM_ENABLED;
 
   formatNumber = formatNumber;
+  Math = Math;
   slugSubscription: Subscription;
   poolStats$: Observable<PoolStat>;
   blocks$: Observable<BlockExtended[]>;
   oobFees$: Observable<AccelerationTotal[]>;
+  job$: Observable<StratumJob | null>;
+  expectedBlockTime$: Observable<number>;
   isLoading = true;
   error: HttpErrorResponse | null = null;
 
@@ -53,6 +60,8 @@ export class PoolComponent implements OnInit {
     private apiService: ApiService,
     private route: ActivatedRoute,
     public stateService: StateService,
+    private websocketService: WebsocketService,
+    private miningService: MiningService,
     private seoService: SeoService,
   ) {
     this.auditAvailable = this.stateService.env.AUDIT;
@@ -62,7 +71,7 @@ export class PoolComponent implements OnInit {
     this.slugSubscription = this.route.params.pipe(map((params) => params.slug)).subscribe((slug) => {
       this.isLoading = true;
       this.blocks = [];
-      this.chartOptions = {};  
+      this.chartOptions = {};
       this.slug = slug;
       this.initializeObservables();
     });
@@ -129,6 +138,31 @@ export class PoolComponent implements OnInit {
       }),
       filter(oob => oob.length === 3 && oob[2].count > 0)
     );
+
+    if (this.stratumEnabled) {
+      this.job$ = combineLatest([
+        this.poolStats$.pipe(
+          tap((poolStats) => {
+            this.websocketService.startTrackStratum(poolStats.pool.unique_id);
+          })
+        ),
+        this.stateService.stratumJobs$
+      ]).pipe(
+        map(([poolStats, jobs]) => {
+          return jobs[poolStats.pool.unique_id];
+        })
+      );
+
+      this.expectedBlockTime$ = combineLatest([
+        this.miningService.getMiningStats('1w'),
+        this.poolStats$,
+        this.stateService.difficultyAdjustment$
+      ]).pipe(
+        map(([miningStats, poolStat, da]) => {
+          return (da.timeAvg / ((poolStat.estimatedHashrate || 0) / (miningStats.lastEstimatedHashrate * 1_000_000_000_000_000_000))) + Date.now() + da.timeOffset;
+        })
+      );
+    }
   }
 
   prepareChartOptions(hashrate, share) {
@@ -325,6 +359,10 @@ export class PoolComponent implements OnInit {
 
   trackByBlock(index: number, block: BlockExtended) {
     return block.height;
+  }
+
+  reverseHash(hash: string) {
+    return hash.match(/../g).reverse().join('');
   }
 
   ngOnDestroy(): void {
