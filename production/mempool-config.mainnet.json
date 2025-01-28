@@ -30,7 +30,8 @@
   "CORE_RPC": {
     "PORT": 8332,
     "USERNAME": "__BITCOIN_RPC_USER__",
-    "PASSWORD": "__BITCOIN_RPC_PASS__"
+    "PASSWORD": "__BITCOIN_RPC_PASS__",
+    "DEBUG_LOG_PATH": "/bitcoin/debug.log"
   },
   "SECOND_CORE_RPC": {
     "PORT": 8302,
