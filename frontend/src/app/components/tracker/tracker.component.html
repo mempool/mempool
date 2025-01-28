@@ -8,7 +8,7 @@
           </a>
         } @else if (enterpriseInfo?.img || enterpriseInfo?.imageMd5) {
           <a [routerLink]="['/' | relativeUrl]">
-            <img [src]="enterpriseInfo.img || '/api/v1/services/enterprise/images/' + enterpriseInfo.name + '/logo?imageMd5=' + enterpriseInfo.imageMd5" class="subdomain_logo" [class]="{'rounded': enterpriseInfo.rounded_corner}">
+            <img [src]="enterpriseInfo.img || '/api/v1/services/enterprise/images/' + enterpriseInfo.name + '/logo'" class="subdomain_logo" [class]="{'rounded': enterpriseInfo.rounded_corner}">
           </a>
           <div class="vertical-line"></div>
         }

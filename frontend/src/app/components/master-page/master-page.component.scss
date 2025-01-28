@@ -269,7 +269,7 @@ nav {
   text-align: center;
   align-self: center;
   cursor: pointer;
-  &.anon {
+  .anon {
     border: 1.5px solid lightgrey;
     color: lightgrey;
     border-radius: 5px;
