@@ -211,7 +211,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     if (this.timeoutTimer) {
       clearTimeout(this.timeoutTimer);
     }
-    if (!this.estimate && ['quote', 'summary', 'checkout'].includes(this.step)) {
+    if (!this.estimate && ['quote', 'summary', 'checkout', 'processing'].includes(this.step)) {
       this.fetchEstimate();
     }
     if (this._step === 'checkout') {
@@ -838,7 +838,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         }
 
         const redirectHostname = document.location.hostname === 'localhost' ? `http://localhost:4200`: `https://${document.location.hostname}`;
-        const costUSD = this.step === 'processing' ? 69.69 : (this.cost / 100_000_000 * conversions.USD); // When we're redirected to this component, the payment data is already linked to the payment token, so does not matter what amonut we put in there, therefore it's 69.69
+        const costUSD = this.cost / 100_000_000 * conversions.USD;
         const paymentRequest = this.payments.paymentRequest({
           countryCode: 'US',
           currencyCode: 'USD',
