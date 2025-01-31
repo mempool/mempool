@@ -116,7 +116,7 @@ export class BlockViewComponent implements OnInit, OnDestroy {
         this.isLoadingBlock = false;
         this.isLoadingOverview = true;
       }),
-      shareReplay(1)
+      shareReplay({ bufferSize: 1, refCount: true })
     );
 
     this.overviewSubscription = block$.pipe(
@@ -175,6 +175,9 @@ export class BlockViewComponent implements OnInit, OnDestroy {
     }
     if (this.queryParamsSubscription) {
       this.queryParamsSubscription.unsubscribe();
+    }
+    if (this.blockGraph) {
+      this.blockGraph.destroy();
     }
   }
 }

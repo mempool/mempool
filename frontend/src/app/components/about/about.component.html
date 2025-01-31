@@ -217,7 +217,7 @@
           <ng-container>
             <ng-template ngFor let-sponsor [ngForOf]="profiles.whales">
               <a [href]="'https://x.com/' + sponsor.username" target="_blank" rel="sponsored" [title]="sponsor.username">
-                <img class="image" [src]="'/api/v1/services/account/images/' + sponsor.username + '/md5=' + sponsor.imageMd5" onError="this.src = '/resources/profile/grumpy.svg'; this.className = 'image unknown'"/>
+                <img class="image" [src]="'/api/v1/services/account/images/' + sponsor.username" onError="this.src = '/resources/profile/grumpy.svg'; this.className = 'image unknown'"/>
               </a>
             </ng-template>
           </ng-container>
@@ -229,7 +229,7 @@
         <div class="wrapper">
           <ng-template ngFor let-sponsor [ngForOf]="profiles.chads">
             <a [href]="'https://x.com/' + sponsor.username" target="_blank" rel="sponsored" [title]="sponsor.username">
-              <img class="image" [src]="'/api/v1/services/account/images/' + sponsor.username + '/md5=' + sponsor.imageMd5" onError="this.src = '/resources/profile/grumpy.svg'; this.className = 'image unknown'"/>
+              <img class="image" [src]="'/api/v1/services/account/images/' + sponsor.username" onError="this.src = '/resources/profile/grumpy.svg'; this.className = 'image unknown'"/>
             </a>
           </ng-template>
         </div>
