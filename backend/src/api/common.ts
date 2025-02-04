@@ -515,6 +515,7 @@ export class Common {
               flags = Common.isInscription(vin, flags);
             }
           } break;
+          case 'anchor': flags |= TransactionFlags.p2a; break;
         }
       } else {
         // no prevouts, optimistically check witness-bearing inputs
@@ -551,6 +552,7 @@ export class Common {
     let olgaSize = 0;
     for (const vout of tx.vout) {
       switch (vout.scriptpubkey_type) {
+        case 'anchor': flags |= TransactionFlags.p2a; break;
         case 'p2pk': {
           flags |= TransactionFlags.p2pk;
           // detect fake pubkey (i.e. not a valid DER point on the secp256k1 curve)

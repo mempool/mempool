@@ -378,6 +378,7 @@ export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replac
       rbf = true;
     }
     switch (vin.prevout?.scriptpubkey_type) {
+      case 'anchor': flags |= TransactionFlags.p2a; break;
       case 'p2pk': flags |= TransactionFlags.p2pk; break;
       case 'multisig': flags |= TransactionFlags.p2ms; break;
       case 'p2pkh': flags |= TransactionFlags.p2pkh; break;
@@ -429,6 +430,7 @@ export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replac
   let olgaSize = 0;
   for (const vout of tx.vout) {
     switch (vout.scriptpubkey_type) {
+      case 'anchor': flags |= TransactionFlags.p2a; break;
       case 'p2pk': {
         flags |= TransactionFlags.p2pk;
         // detect fake pubkey (i.e. not a valid DER point on the secp256k1 curve)
