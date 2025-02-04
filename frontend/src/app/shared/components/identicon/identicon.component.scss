@@ -1,0 +1,21 @@
+.identicon {
+  width: 16px;
+  height: 16px;
+  margin-left: .5em;
+  display: inline-block;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    transform: translate(0px, -1px);
+  }
+
+  @media( min-width: 576px){
+    width: 19px;
+    height: 19px;
+
+    svg {
+      transform: translate(0px, -2px);
+    }
+  }
+}
