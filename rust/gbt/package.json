@@ -9,9 +9,9 @@
     "build": "npm install --no-save @napi-rs/cli@2.18.0 && npm run check-cargo-version && napi build --platform",
     "build-debug": "npm run build",
     "build-release": "npm run build -- --release --strip",
-    "check-cargo-version": "VER=$(cat rust-toolchain) ; if ! cargo version | grep \"cargo $VER\" >/dev/null ; then echo -e \"\\033[1;35m[[[[WARNING]]]]: cargo version mismatch with ./rust-toolchain version ($VER)!!!\\033[0m\" >&2; fi",
-    "clean": "rm -rf ./target/ ./node_modules/ *.node package-lock.json",
-    "to-backend": "FD=${FD:-../../backend/rust-gbt/} ; rm -rf $FD && mkdir $FD && cp index.js index.d.ts package.json *.node $FD",
+    "check-cargo-version": "npx ts-node scripts/check.ts",
+    "clean": "npx ts-node scripts/clean.ts",
+    "to-backend": "npx ts-node scripts/backend.ts",
     "prepublishOnly": "napi prepublish -t npm",
     "test": "cargo test"
   },
@@ -28,5 +28,9 @@
   },
   "engines": {
     "node": ">= 12"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.0",
+    "fast-glob": "^3.3.3"
   }
 }
