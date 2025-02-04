@@ -95,6 +95,7 @@ import { BtcComponent } from '@app/shared/components/btc/btc.component';
 import { FeeRateComponent } from '@app/shared/components/fee-rate/fee-rate.component';
 import { AddressTypeComponent } from '@app/shared/components/address-type/address-type.component';
 import { AddressTextComponent } from '@app/shared/components/address-text/address-text.component';
+import { IdenticonComponent } from '@app/shared/components/identicon/identicon.component';
 import { TruncateComponent } from '@app/shared/components/truncate/truncate.component';
 import { SearchResultsComponent } from '@components/search-form/search-results/search-results.component';
 import { TimestampComponent } from '@app/shared/components/timestamp/timestamp.component';
@@ -216,6 +217,7 @@ import { GithubLogin } from '../components/github-login.component/github-login.c
     FeeRateComponent,
     AddressTypeComponent,
     AddressTextComponent,
+    IdenticonComponent,
     TruncateComponent,
     SearchResultsComponent,
     TimestampComponent,
@@ -363,6 +365,7 @@ import { GithubLogin } from '../components/github-login.component/github-login.c
     FeeRateComponent,
     AddressTypeComponent,
     AddressTextComponent,
+    IdenticonComponent,
     TruncateComponent,
     SearchResultsComponent,
     TimestampComponent,
