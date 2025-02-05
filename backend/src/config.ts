@@ -89,7 +89,7 @@ export interface IConfig {
     TIMEOUT: number;
     COOKIE: boolean;
     COOKIE_PATH: string;
-    DEBUG_LOG_PATH: string;
+    DEBUG_LOG_PATH: #5777 string;
   };
   SECOND_CORE_RPC: {
     HOST: string;
