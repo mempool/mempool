@@ -2,12 +2,5 @@
   "editor.tabSize": 2,
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.tsdk": "./backend/node_modules/typescript/lib",
-  "rust-analyzer.procMacro.ignored": {
-    "napi-derive": [
-      "napi"
-    ]
-  },
-  "githubPullRequests.ignoredPullRequestBranches": [
-    "master"
-  ]
+  "rust-analyzer.procMacro.ignored": { "napi-derive": ["napi"] }
 }
