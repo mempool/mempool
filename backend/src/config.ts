@@ -177,7 +177,7 @@ export interface IConfig {
 
 // Load configuration from file (if specified) or fall back to defaults
 const configFromFile = require(
-  process.env.MEMPOOL_CONFIG_FILE ? process.env.MEMPOOL_CONFIG_FILE : '../mempool-config.json'
+  process.env.MEMPOOL_CONFIG_FILE ?? '../mempool-config.json'
 );
 
 // Default configuration
