@@ -22,6 +22,8 @@ const MAX_STANDARD_P2WSH_SCRIPT_SIZE = 3600;
 const MAX_STANDARD_SCRIPTSIG_SIZE = 1650;
 const DUST_RELAY_TX_FEE = 3;
 const MAX_OP_RETURN_RELAY = 83;
+const MAX_TRUC_TX_VSIZE = 10000 // 10kVB
+const MAX_TRUC_DESCENDANT_VSIZE = 1000 // 1kVB
 const DEFAULT_PERMIT_BAREMULTISIG = true;
 
 export class Common {
@@ -438,6 +440,25 @@ export class Common {
     }
   }
 
+  // Do this after the CPFP flag checks.
+  static isTruc(flags: bigint, tx: TransactionExtended): boolean {
+    // Check that the TX Version is 3 (https://github.com/bitcoin/bips/blob/master/bip-0431.mediawiki#specification) Intro
+    if (tx.version !== 3) return false;
+    // Check that there for any reason isn't multiple in mempool chains of v3 (Parent, Child, Child, etc ...) as this isn't standard
+    let invalid_truc_mask: bigint = TransactionFlags.cpfp_child | TransactionFlags.cpfp_parent;
+    if (invalid_truc_mask === (flags & invalid_truc_mask)) return false;
+    // Becuase mempool policy is such that V3 can only have 1 other v3 ancestors / descendants in the mempool
+    // The only check neede is if there are such TXs currently in the mempool. If yes TRUC
+    if (((flags & TransactionFlags.cpfp_child) === TransactionFlags.cpfp_child) && (tx.vsize < MAX_TRUC_DESCENDANT_VSIZE)) {
+      return true 
+    } else if (((flags & TransactionFlags.cpfp_parent) === TransactionFlags.cpfp_parent) && (tx.vsize < MAX_TRUC_TX_VSIZE)) {
+      return true
+    }
+
+    // This state would only be achieved with a V3 that has no parents and no children
+    return false;
+  }
+
   static isBurnKey(pubkey: string): boolean {
     return [
       '022222222222222222222222222222222222222222222222222222222222222222',
@@ -492,6 +513,12 @@ export class Common {
     } else if (tx.version === 3) {
       flags |= TransactionFlags.v3;
     }
+
+    // Process TRUC BIP-0431 Flag
+    if (this.isTruc(flags, tx)) {
+      flags |= TransactionFlags.truc;
+    }
+
     const reusedInputAddresses: { [address: string ]: number } = {};
     const reusedOutputAddresses: { [address: string ]: number } = {};
     const inValues = {};
@@ -503,6 +530,7 @@ export class Common {
       }
       if (vin.prevout?.scriptpubkey_type) {
         switch (vin.prevout?.scriptpubkey_type) {
+          case 'anchor': flags |= TransactionFlags.p2a; break;
           case 'p2pk': flags |= TransactionFlags.p2pk; break;
           case 'multisig': flags |= TransactionFlags.p2ms; break;
           case 'p2pkh': flags |= TransactionFlags.p2pkh; break;
@@ -515,7 +543,6 @@ export class Common {
               flags = Common.isInscription(vin, flags);
             }
           } break;
-          case 'anchor': flags |= TransactionFlags.p2a; break;
         }
       } else {
         // no prevouts, optimistically check witness-bearing inputs
