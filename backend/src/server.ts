@@ -1,12 +1,32 @@
-import express, { Application, Request, Response, NextFunction } from 'express';
-import * as http from 'http';
-import * as WebSocket from 'ws';
+/**
+ * Mempool Server v4.0
+ * Enhanced with AI-PoW-R Mining & Stratum Support
+ * Last updated: 2025-02-05
+ * @josef edwards and @interchain.io ...
+ */
+
+import express, {
+  Application,
+  Request,
+  Response,
+  NextFunction,
+  json,
+  urlencoded,
+  text,
+} from 'express';
+import { Server as HttpServer } from 'http';
+import { Server as WebSocketServer } from 'ws';
 import cluster from 'cluster';
 import os from 'os';
 import { AxiosError } from 'axios';
 import v8 from 'v8';
+import { spawn } from 'child_process';
+import path from 'path';
 
-// Consolidated imports from our local modules
+// --- Import configurations, types, and services ---
+import { ServerConfig } from './types/config';
+import { MiningRequest, MiningResponse } from './types/mining';
+
 import bitcoinApi from './api/bitcoin/bitcoin-api-factory';
 import DB from './database';
 import config from './config';
@@ -23,60 +43,66 @@ import elementsParser from './api/liquid/elements-parser';
 import databaseMigration from './api/database-migration';
 import syncAssets from './sync-assets';
 import icons from './api/liquid/icons';
-import { Common } from './api/common';
-import poolsUpdater from './tasks/pools-updater';
-import indexer from './indexer';
-import nodesRoutes from './api/explorer/nodes.routes';
-import channelsRoutes from './api/explorer/channels.routes';
-import generalLightningRoutes from './api/explorer/general.routes';
-import lightningStatsUpdater from './tasks/lightning/stats-updater.service';
-import networkSyncService from './tasks/lightning/network-sync.service';
-import statisticsRoutes from './api/statistics/statistics.routes';
-import pricesRoutes from './api/prices/prices.routes';
-import miningRoutes from './api/mining/mining-routes';
-import liquidRoutes from './api/liquid/liquid.routes';
-import bitcoinRoutes from './api/bitcoin/bitcoin.routes';
-import servicesRoutes from './api/services/services-routes';
-import fundingTxFetcher from './tasks/lightning/sync-tasks/funding-tx-fetcher';
-import forensicsService from './tasks/lightning/forensics.service';
-import priceUpdater from './tasks/price-updater';
-import chainTips from './api/chain-tips';
-import { formatBytes, getBytesUnit } from './utils/format';
-import redisCache from './api/redis-cache';
-import accelerationApi from './api/services/acceleration';
-import bitcoinCoreRoutes from './api/bitcoin/bitcoin-core.routes';
-import bitcoinSecondClient from './api/bitcoin/bitcoin-second-client';
-import accelerationRoutes from './api/acceleration/acceleration.routes';
-import aboutRoutes from './api/about.routes';
-import mempoolBlocks from './api/mempool-blocks';
-import walletApi from './api/services/wallets';
-import stratumApi from './api/services/stratum';
 
-// Import the AI mining function
-import { mineAIBlock } from './miner/ai_powr_miner';
+import { Common } from './utils/common';
+import { formatBytes, getBytesUnit } from './utils/format';
+import { AsyncLock } from './utils/asyncLock';
+
+// --- Import route modules ---
+import bitcoinRoutes from './routes/bitcoinRoutes';
+import bitcoinCoreRoutes from './routes/bitcoinCoreRoutes';
+import pricesRoutes from './routes/pricesRoutes';
+import statisticsRoutes from './routes/statisticsRoutes';
+import miningRoutes from './routes/miningRoutes';
+import liquidRoutes from './routes/liquidRoutes';
+import generalLightningRoutes from './routes/generalLightningRoutes';
+import nodesRoutes from './routes/nodesRoutes';
+import channelsRoutes from './routes/channelsRoutes';
+import accelerationRoutes from './routes/accelerationRoutes';
+import servicesRoutes from './routes/servicesRoutes';
+import aboutRoutes from './routes/aboutRoutes';
+
+// --- Import mining modules ---
+import { AIPoWRMiner } from './mining/ai-powr';
+import { StratumServer } from './mining/stratum';
+
+interface ServerOptions {
+  port: number;
+  workers?: number;
+  stratumPort?: number;
+}
 
 class Server {
-  private app: Application;
-  private server: http.Server;
-  private wss?: WebSocket.Server;
-  private serverUnixSocket?: http.Server;
-  private wssUnixSocket?: WebSocket.Server;
+  private readonly app: Application;
+  private readonly httpServer: HttpServer;
+  private readonly wsServer?: WebSocketServer;
+  private readonly options: ServerOptions;
+  private readonly lock: AsyncLock;
+  private readonly miner: AIPoWRMiner;
+  private readonly stratum?: StratumServer;
 
-  // Cluster and health check fields
-  private currentBackendRetryInterval = 1;
-  private backendRetryCount = 0;
-  private maxHeapSize = 0;
-  private heapLogInterval = 60; // seconds
-  private warnedHeapCritical = false;
-  private lastHeapLogTime: number | null = null;
+  private memoryStats = {
+    maxHeapSize: 0,
+    warnThreshold: 0.8,
+    checkInterval: 2500, // milliseconds
+  };
 
-  constructor() {
+  constructor(options: ServerOptions) {
+    this.options = options;
     this.app = express();
+    this.httpServer = new HttpServer(this.app);
+    this.lock = new AsyncLock();
+    this.miner = new AIPoWRMiner();
 
-    // If clustering is enabled, fork workers
+    // If a Stratum port is provided, create the Stratum mining server
+    if (options.stratumPort) {
+      this.stratum = new StratumServer(options.stratumPort);
+    }
+
+    // If clustering is enabled, spawn worker processes
     if (config.MEMPOOL.SPAWN_CLUSTER_PROCS && cluster.isPrimary) {
       logger.notice(
-        `Mempool Server (Master) is running on port ${config.MEMPOOL.HTTP_PORT} (${backendInfo.getShortCommitHash()})`
+        `Mempool Server (Master) is running on port ${this.options.port} (${backendInfo.getShortCommitHash()})`
       );
       const numCPUs = config.MEMPOOL.SPAWN_CLUSTER_PROCS || os.cpus().length;
       for (let i = 0; i < numCPUs; i++) {
@@ -96,98 +122,49 @@ class Server {
         }, 10000);
       });
     } else {
-      // If not primary (or clustering disabled) then start server immediately
-      this.startServer(cluster.isWorker);
-    }
-  }
-
-  async startServer(isWorker: boolean = false): Promise<void> {
-    logger.notice(
-      `Starting Mempool Server${isWorker ? ' (worker)' : ''}... (${backendInfo.getShortCommitHash()})`
-    );
-
-    this.registerProcessListeners();
-    await this.initializeDatabase();
-    this.setupExpressMiddleware();
-    this.setupRoutes();
-    this.setupAIMiningRoute(); // Add the AI-PoW-R mining route
-
-    // Create HTTP server and optionally a Unix socket server
-    this.server = http.createServer(this.app);
-    this.wss = new WebSocket.Server({ server: this.server });
-    if (config.MEMPOOL.UNIX_SOCKET_PATH) {
-      this.serverUnixSocket = http.createServer(this.app);
-      this.wssUnixSocket = new WebSocket.Server({ server: this.serverUnixSocket });
-    }
-    this.setupWebSocketHandling();
-
-    // Update pools, sync assets and caches
-    await poolsUpdater.updatePoolsJson();
-    await syncAssets.syncAssets$();
-    await mempoolBlocks.updatePools$();
-    await this.loadCaches();
-
-    if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED && cluster.isPrimary) {
-      statistics.startStatistics();
-    }
-
-    if (Common.isLiquid()) {
-      this.initializeLiquidIcons();
-    }
-
-    if (config.FIAT_PRICE.ENABLED) {
-      await priceUpdater.$initializeLatestPriceWithDb();
-      priceUpdater.$run();
-    }
-    await chainTips.updateOrphanedBlocks();
-
-    // Additional HTTP API routes from various modules
-    this.setUpHttpApiRoutes();
-
-    // Start main mempool update loop
-    if (config.MEMPOOL.ENABLED) {
-      this.runMainUpdateLoop();
-    }
-
-    // Schedule periodic health checks
-    setInterval(() => this.healthCheck(), 2500);
-
-    // Start lightning backend if enabled
-    if (config.LIGHTNING.ENABLED) {
-      this.$runLightningBackend();
-    }
-
-    // Start listening on configured ports
-    this.server.listen(config.MEMPOOL.HTTP_PORT, () => {
-      if (isWorker) {
-        logger.info(`Mempool Server worker #${process.pid} started`);
-      } else {
-        logger.notice(`Mempool Server is running on port ${config.MEMPOOL.HTTP_PORT}`);
-      }
-    });
-    if (this.serverUnixSocket) {
-      this.serverUnixSocket.listen(config.MEMPOOL.UNIX_SOCKET_PATH, () => {
-        logger.notice(`Mempool Server is listening on ${config.MEMPOOL.UNIX_SOCKET_PATH}`);
+      // Start server immediately in non-cluster mode or in worker processes
+      this.setupServer().catch((error) => {
+        logger.error('Server setup failed:', error);
+        process.exit(1);
       });
     }
-
-    poolsUpdater.$startService();
   }
 
-  // Register listeners for process exit and errors.
-  private registerProcessListeners(): void {
-    ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGUSR1', 'SIGUSR2'].forEach((event) => {
-      process.on(event, () => this.onExit(event));
+  // Setup core components and start services
+  private async setupServer(): Promise<void> {
+    await this.initializeCore();
+    this.setupMiddleware();
+    this.setupRoutes();
+    this.setupAIMiningRoute();
+    this.startStratumServer();
+
+    this.setupWebSockets();
+
+    await this.startAuxiliaryServices();
+
+    this.setUpHttpApiRoutes();
+    this.runMainUpdateLoop();
+
+    this.setupMonitoring();
+
+    // Start listening on the configured port
+    await new Promise<void>((resolve, reject) => {
+      this.httpServer.listen(this.options.port, () => {
+        logger.info(`Server started on port ${this.options.port}`);
+        resolve();
+      });
+      this.httpServer.on('error', reject);
     });
-    process.on('uncaughtException', (error) => this.onUnhandledException('uncaughtException', error));
-    process.on('unhandledRejection', (reason) => this.onUnhandledException('unhandledRejection', reason));
   }
 
-  // Database initialization and migrations.
-  private async initializeDatabase(): Promise<void> {
+  // Initialize database, cache, and spawn workers if needed
+  private async initializeCore(): Promise<void> {
+    // Register process listeners for graceful shutdown
+    this.registerProcessListeners();
+
+    // Database initialization and migration
     if (config.DATABASE.ENABLED) {
-      DB.getPidLock();
-      await DB.checkDbConnection();
+      await DB.initialize();
       try {
         if (process.env.npm_config_reindex_blocks === 'true') {
           await databaseMigration.$blocksReindexingTruncate();
@@ -197,124 +174,20 @@ class Server {
         throw new Error(e instanceof Error ? e.message : 'Database initialization error');
       }
     }
+
+    // Initialize caches
+    await this.initializeCache();
   }
 
-  // Common Express middleware
-  private setupExpressMiddleware(): void {
-    this.app
-      .use((req: Request, res: Response, next: NextFunction) => {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        next();
-      })
-      .use(express.urlencoded({ extended: true }))
-      .use(express.text({ type: ['text/plain', 'application/base64'] }))
-      .use(express.json());
-  }
-
-  // Set up all HTTP routes from your various modules.
-  private setUpHttpApiRoutes(): void {
-    bitcoinRoutes.initRoutes(this.app);
-    if (config.MEMPOOL.OFFICIAL) {
-      bitcoinCoreRoutes.initRoutes(this.app);
-    }
-    pricesRoutes.initRoutes(this.app);
-    if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED && config.MEMPOOL.ENABLED) {
-      statisticsRoutes.initRoutes(this.app);
-    }
-    if (Common.indexingEnabled() && config.MEMPOOL.ENABLED) {
-      miningRoutes.initRoutes(this.app);
-    }
-    if (Common.isLiquid()) {
-      liquidRoutes.initRoutes(this.app);
-    }
-    if (config.LIGHTNING.ENABLED) {
-      generalLightningRoutes.initRoutes(this.app);
-      nodesRoutes.initRoutes(this.app);
-      channelsRoutes.initRoutes(this.app);
-    }
-    if (config.MEMPOOL_SERVICES.ACCELERATIONS) {
-      accelerationRoutes.initRoutes(this.app);
-    }
-    if (config.WALLETS.ENABLED) {
-      servicesRoutes.initRoutes(this.app);
-    }
-    if (!config.MEMPOOL.OFFICIAL) {
-      aboutRoutes.initRoutes(this.app);
-    }
-  }
-
-  // Add the AI-PoW-R mining endpoint.
-  private setupAIMiningRoute(): void {
-    this.app.post('/api/mining/submit', async (req: Request, res: Response) => {
-      const { blockData } = req.body;
-      if (!blockData) {
-        return res.status(400).json({ error: 'Missing blockData' });
-      }
-      try {
-        const minedHash = await mineAIBlock(blockData);
-        return res.json({ status: 'success', hash: minedHash });
-      } catch (error) {
-        logger.err('AI mining error: ' + (error instanceof Error ? error.message : error));
-        return res.status(500).json({ error: 'Mining failed' });
-      }
+  private registerProcessListeners(): void {
+    ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGUSR1', 'SIGUSR2'].forEach((event) => {
+      process.on(event, () => this.shutdown(event));
     });
+    process.on('uncaughtException', (error) => this.shutdown('uncaughtException', error));
+    process.on('unhandledRejection', (reason) => this.shutdown('unhandledRejection', reason));
   }
 
-  // Set up WebSocket servers and delegate connection handling.
-  private setupWebSocketHandling(): void {
-    if (this.wss) {
-      this.wss.on('connection', (ws) => {
-        logger.info('🌐 WebSocket Connection Established');
-        ws.on('message', async (message) => {
-          try {
-            const data = JSON.parse(message.toString());
-            // Process mining requests over WebSocket.
-            if (data.type === 'mine' && data.blockData) {
-              const minedHash = await mineAIBlock(data.blockData);
-              ws.send(JSON.stringify({ type: 'mined', hash: minedHash }));
-            }
-          } catch (err) {
-            logger.err('WebSocket message error: ' + (err instanceof Error ? err.message : err));
-          }
-        });
-      });
-    }
-    if (this.wssUnixSocket) {
-      this.wssUnixSocket.on('connection', (ws) => {
-        logger.info('🌐 WebSocket Unix Socket Connection Established');
-      });
-    }
-    // Let the shared websocketHandler take care of additional connections.
-    websocketHandler.setupConnectionHandling();
-    // Liquid-specific block callbacks.
-    if (Common.isLiquid() && config.DATABASE.ENABLED) {
-      blocks.setNewBlockCallback(async () => {
-        try {
-          await elementsParser.$parse();
-          await elementsParser.$updateFederationUtxos();
-        } catch (e) {
-          logger.warn('Elements parsing error: ' + (e instanceof Error ? e.message : e));
-        }
-      });
-    }
-    // Setup callbacks for mempool, statistics, and loading indicators.
-    if (config.MEMPOOL.ENABLED) {
-      statistics.setNewStatisticsEntryCallback(websocketHandler.handleNewStatistic.bind(websocketHandler));
-      memPool.setAsyncMempoolChangedCallback(websocketHandler.$handleMempoolChange.bind(websocketHandler));
-      blocks.setNewAsyncBlockCallback(websocketHandler.handleNewBlock.bind(websocketHandler));
-    }
-    if (config.FIAT_PRICE.ENABLED) {
-      priceUpdater.setRatesChangedCallback(websocketHandler.handleNewConversionRates.bind(websocketHandler));
-    }
-    loadingIndicators.setProgressChangedCallback(websocketHandler.handleLoadingChanged.bind(websocketHandler));
-    accelerationApi.connectWebsocket();
-    if (config.STRATUM.ENABLED) {
-      stratumApi.connectWebsocket();
-    }
-  }
-
-  // Load caches from disk or Redis as configured.
-  private async loadCaches(): Promise<void> {
+  private async initializeCache(): Promise<void> {
     if (config.MEMPOOL.ENABLED) {
       if (config.MEMPOOL.CACHE_ENABLED) {
         await diskCache.$loadMempoolCache();
@@ -324,42 +197,172 @@ class Server {
     }
   }
 
-  // Liquid icons loading and refresh.
-  private initializeLiquidIcons(): void {
-    try {
-      icons.loadIcons();
-    } catch (e) {
-      logger.err('Cannot load liquid icons. Ignoring. Reason: ' + (e instanceof Error ? e.message : e));
-    }
-    setInterval(() => {
-      try {
-        icons.loadIcons();
-      } catch (e) {
-        logger.err('Cannot load liquid icons on refresh. Reason: ' + (e instanceof Error ? e.message : e));
-      }
-    }, 3600_000);
+  private setupMiddleware(): void {
+    // Security and CORS headers
+    this.app.use((req: Request, res: Response, next: NextFunction) => {
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.setHeader('X-Frame-Options', 'DENY');
+      res.setHeader('X-XSS-Protection', '1; mode=block');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      next();
+    });
+    // Body parsers
+    this.app.use(json({ limit: '50mb' }));
+    this.app.use(urlencoded({ extended: true }));
+    this.app.use(text({ type: ['text/plain', 'application/base64'] }));
   }
 
-  // The main update loop that refreshes mempool info, blocks, etc.
-  async runMainUpdateLoop(): Promise<void> {
+  private setupRoutes(): void {
+    // Standard routes (grouped by module)
+    bitcoinRoutes.init(this.app);
+    if (config.MEMPOOL.OFFICIAL) {
+      bitcoinCoreRoutes.init(this.app);
+    }
+    if (config.STATISTICS.ENABLED) {
+      statisticsRoutes.init(this.app);
+    }
+    if (Common.indexingEnabled()) {
+      miningRoutes.init(this.app);
+    }
+    if (Common.isLiquid()) {
+      liquidRoutes.init(this.app);
+    }
+    if (config.LIGHTNING.ENABLED) {
+      generalLightningRoutes.init(this.app);
+      nodesRoutes.init(this.app);
+      channelsRoutes.init(this.app);
+    }
+    if (config.MEMPOOL_SERVICES.ACCELERATIONS) {
+      accelerationRoutes.init(this.app);
+    }
+    if (config.WALLETS.ENABLED) {
+      servicesRoutes.init(this.app);
+    }
+    if (!config.MEMPOOL.OFFICIAL) {
+      aboutRoutes.init(this.app);
+    }
+  }
+
+  // AI-PoW-R mining endpoint (HTTP)
+  private setupAIMiningRoute(): void {
+    this.app.post('/api/v1/mine', async (req: Request<MiningRequest>, res: Response<MiningResponse>) => {
+      const { blockData, difficulty } = req.body;
+      if (!blockData) {
+        return res.status(400).json({ success: false, error: 'Missing blockData' });
+      }
+      try {
+        const result = await this.miner.mine(blockData, difficulty);
+        res.json({
+          success: true,
+          hash: result.hash,
+          nonce: result.nonce,
+          timestamp: new Date().toISOString(),
+        });
+      } catch (error) {
+        logger.error('Mining failed:', error);
+        res.status(500).json({
+          success: false,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
+      }
+    });
+  }
+
+  // Start the Stratum mining server (if configured)
+  private startStratumServer(): void {
+    if (this.stratum) {
+      this.stratum.start().catch((error) => {
+        logger.error('Stratum server failed to start:', error);
+      });
+    }
+  }
+
+  // Setup WebSocket connections (for mining requests and notifications)
+  private setupWebSockets(): void {
+    const wsServer = new WebSocketServer({ server: this.httpServer });
+    wsServer.on('connection', (ws) => {
+      logger.info('WebSocket client connected');
+      ws.on('message', async (message) => {
+        try {
+          const data = JSON.parse(message.toString());
+          if (data.type === 'mine' && data.blockData) {
+            const result = await this.miner.mine(data.blockData, data.difficulty);
+            ws.send(JSON.stringify({ type: 'mined', ...result }));
+          }
+        } catch (error) {
+          logger.error('WebSocket error:', error);
+          ws.send(JSON.stringify({
+            type: 'error',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }));
+        }
+      });
+    });
+
+    // Let the shared websocketHandler also perform its setup.
+    websocketHandler.setupConnectionHandling();
+  }
+
+  // Start auxiliary services such as pools update, asset sync, etc.
+  private async startAuxiliaryServices(): Promise<void> {
+    await poolsUpdater.updatePoolsJson();
+    await syncAssets.syncAssets$();
+    await mempoolBlocks.updatePools$();
+
+    if (config.FIAT_PRICE.ENABLED) {
+      await priceUpdater.$initializeLatestPriceWithDb();
+      priceUpdater.$run();
+    }
+    await chainTips.updateOrphanedBlocks();
+
+    if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED && cluster.isPrimary) {
+      statistics.startStatistics();
+    }
+
+    // Liquid icons refresh
+    if (Common.isLiquid()) {
+      this.initializeLiquidIcons();
+    }
+  }
+
+  private setUpHttpApiRoutes(): void {
+    // Add any additional API endpoints that are not part of the core routes.
+    this.app.get('/health', (req: Request, res: Response) => {
+      res.json({
+        uptime: process.uptime(),
+        memory: process.memoryUsage(),
+        timestamp: new Date().toISOString(),
+      });
+    });
+  }
+
+  // Set up periodic monitoring (memory, health, etc.)
+  private setupMonitoring(): void {
+    setInterval(() => this.monitorMemory(), this.memoryStats.checkInterval);
+  }
+
+  private async monitorMemory(): Promise<void> {
+    const stats = v8.getHeapStatistics();
+    this.memoryStats.maxHeapSize = Math.max(stats.used_heap_size, this.memoryStats.maxHeapSize);
+    if (this.memoryStats.maxHeapSize > stats.heap_size_limit * this.memoryStats.warnThreshold) {
+      logger.warn(`Memory usage critical: ${formatBytes(this.memoryStats.maxHeapSize)}`);
+    }
+  }
+
+  // Main update loop for mempool info, blocks, and other periodic tasks.
+  private async runMainUpdateLoop(): Promise<void> {
     const start = Date.now();
     try {
-      try {
-        await memPool.$updateMemPoolInfo();
-      } catch (e) {
-        const msg = `updateMempoolInfo: ${(e instanceof Error ? e.message : e)}`;
-        if (config.MEMPOOL.USE_SECOND_NODE_FOR_MINFEE) {
-          logger.warn(msg);
-        } else {
-          logger.debug(msg);
-        }
-      }
+      await memPool.$updateMemPoolInfo();
       const newMempool = await bitcoinApi.$getRawMempool();
-      const minFeeMempool = memPool.limitGBT ? await bitcoinSecondClient.getRawMemPool() : null;
+      const minFeeMempool = memPool.limitGBT
+        ? await bitcoinSecondClient.getRawMemPool()
+        : null;
       const minFeeTip = memPool.limitGBT ? await bitcoinSecondClient.getBlockCount() : -1;
       const latestAccelerations = await accelerationApi.$updateAccelerations();
       const numHandledBlocks = await blocks.$updateBlocks();
       const pollRate = config.MEMPOOL.POLL_RATE_MS * (indexer.indexerIsRunning() ? 10 : 1);
+
       if (numHandledBlocks === 0) {
         await memPool.$updateMempool(newMempool, latestAccelerations, minFeeMempool, minFeeTip, pollRate);
       }
@@ -372,86 +375,86 @@ class Server {
       }
       const elapsed = Date.now() - start;
       const remainingTime = Math.max(0, pollRate - elapsed);
-      setTimeout(this.runMainUpdateLoop.bind(this), numHandledBlocks > 0 ? 0 : remainingTime);
-      this.backendRetryCount = 0;
-    } catch (e: any) {
-      this.backendRetryCount++;
-      let loggerMsg = `Exception in runMainUpdateLoop() (count: ${this.backendRetryCount}). Retrying in ${this.currentBackendRetryInterval} sec.`;
-      loggerMsg += ` Reason: ${(e instanceof Error ? e.message : e)}.`;
-      if (e?.stack) {
-        loggerMsg += ` Stack trace: ${e.stack}`;
-      }
-      if (this.backendRetryCount >= 5) {
-        logger.warn(loggerMsg);
-        mempool.setOutOfSync();
-      } else {
-        logger.debug(loggerMsg);
-      }
-      if (e instanceof AxiosError) {
-        logger.debug(`AxiosError: ${e?.message}`);
-      }
-      setTimeout(this.runMainUpdateLoop.bind(this), 1000 * this.currentBackendRetryInterval);
+      setTimeout(() => this.runMainUpdateLoop(), numHandledBlocks > 0 ? 0 : remainingTime);
+    } catch (error: any) {
+      logger.error(
+        `Exception in runMainUpdateLoop: ${error instanceof Error ? error.message : error}`
+      );
+      setTimeout(() => this.runMainUpdateLoop(), 1000 * this.options.workers || 1);
     } finally {
       diskCache.unlock();
     }
   }
 
-  // Lightning backend initialization.
-  async $runLightningBackend(): Promise<void> {
+  // Graceful shutdown
+  private async shutdown(event: string, error?: any): Promise<void> {
+    logger.info(`Shutdown initiated due to ${event}`);
+    if (error) {
+      logger.error('Shutdown error:', error);
+    }
+    await this.lock.acquire('shutdown', async () => {
+      this.wsServer?.close();
+      this.httpServer.close();
+      await this.stratum?.stop();
+      if (config.DATABASE.ENABLED) {
+        await DB.close();
+      }
+    });
+    process.exit(0);
+  }
+
+  // Public method to start the server (used if this module is run as main)
+  public async start(): Promise<void> {
     try {
-      await fundingTxFetcher.$init();
-      await networkSyncService.$startService();
-      await lightningStatsUpdater.$startService();
-      await forensicsService.$startService();
-    } catch (e) {
-      logger.err(`Exception in $runLightningBackend. Restarting in 1 minute. Reason: ${(e instanceof Error ? e.message : e)}`);
-      await Common.sleep$(1000 * 60);
-      this.$runLightningBackend();
+      await new Promise<void>((resolve, reject) => {
+        this.httpServer.listen(this.options.port, () => {
+          logger.info(`Server started on port ${this.options.port}`);
+          resolve();
+        });
+        this.httpServer.on('error', reject);
+      });
+    } catch (error) {
+      logger.error('Failed to start server:', error);
+      process.exit(1);
     }
   }
 
-  // Health check monitors memory usage and logs warnings if near the limit.
-  healthCheck(): void {
-    const now = Date.now();
-    const stats = v8.getHeapStatistics();
-    this.maxHeapSize = Math.max(stats.used_heap_size, this.maxHeapSize);
-    const warnThreshold = 0.8 * stats.heap_size_limit;
-    const byteUnits = getBytesUnit(Math.max(this.maxHeapSize, stats.heap_size_limit));
-    if (!this.warnedHeapCritical && this.maxHeapSize > warnThreshold) {
-      this.warnedHeapCritical = true;
-      logger.warn(
-        `Used ${(this.maxHeapSize / stats.heap_size_limit * 100).toFixed(2)}% of heap limit (${formatBytes(this.maxHeapSize, byteUnits, true)} / ${formatBytes(stats.heap_size_limit, byteUnits)})!`
-      );
+  // Public method to stop the server gracefully.
+  public async stop(): Promise<void> {
+    try {
+      await this.lock.acquire('shutdown', async () => {
+        this.wsServer?.close();
+        this.httpServer.close();
+        await this.stratum?.stop();
+        if (config.DATABASE.ENABLED) {
+          await DB.close();
+        }
+      });
+    } catch (error) {
+      logger.error('Error during shutdown:', error);
     }
-    if (this.lastHeapLogTime === null || (now - this.lastHeapLogTime) > (this.heapLogInterval * 1000)) {
-      logger.debug(`Memory usage: ${formatBytes(this.maxHeapSize, byteUnits)} / ${formatBytes(stats.heap_size_limit, byteUnits)}`);
-      this.warnedHeapCritical = false;
-      this.maxHeapSize = 0;
-      this.lastHeapLogTime = now;
-    }
-  }
-
-  // Graceful shutdown on exit signals.
-  onExit(exitEvent: string, code = 0): void {
-    logger.debug(`onExit for signal: ${exitEvent}`);
-    if (config.DATABASE.ENABLED) {
-      DB.releasePidLock();
-    }
-    this.server?.close();
-    this.serverUnixSocket?.close();
-    this.wss?.close();
-    if (this.wssUnixSocket) {
-      this.wssUnixSocket.close();
-    }
-    process.exit(code);
-  }
-
-  // Log and exit on unhandled errors.
-  onUnhandledException(type: string, error: any): void {
-    console.error(`${type}:`, error);
-    this.onExit(type, 1);
   }
 }
 
-// Start the server immediately.
-((): Server => new Server())();
+// --- Start the server if this module is the main module ---
+if (require.main === module) {
+  const server = new Server({
+    port: config.MEMPOOL.HTTP_PORT,
+    workers: config.MEMPOOL.SPAWN_CLUSTER_PROCS,
+    stratumPort: config.STRATUM?.PORT,
+  });
+  
+  server.start().catch((error) => {
+    logger.error('Failed to start server:', error);
+    process.exit(1);
+  });
+
+  // Handle graceful shutdown signals
+  process.on('SIGTERM', async () => {
+    logger.info('SIGTERM received. Starting graceful shutdown...');
+    await server.stop();
+    process.exit(0);
+  });
+}
+
+export default Server;
