@@ -133,9 +133,9 @@ class Server {
         res.setHeader('Access-Control-Allow-Origin', '*');
         next();
       })
-      .use(express.urlencoded({ extended: true }))
-      .use(express.text({ type: ['text/plain', 'application/base64'] }))
-      .use(express.json())
+      .use(express.urlencoded({ extended: true, limit: '10mb' }))
+      .use(express.text({ type: ['text/plain', 'application/base64'], limit: '10mb' }))
+      .use(express.json({ limit: '10mb' }))
       ;
 
     if (config.DATABASE.ENABLED && config.FIAT_PRICE.ENABLED) {
