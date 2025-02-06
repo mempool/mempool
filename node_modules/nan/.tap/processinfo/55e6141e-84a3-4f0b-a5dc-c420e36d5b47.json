@@ -1,0 +1,238 @@
+{
+  "date": "2024-10-10T12:11:05.155Z",
+  "argv": [
+    "/usr/local/Cellar/node/22.9.0_1/bin/node",
+    "/Users/bbyholm/dev/nan/test/js/accessors-test.js"
+  ],
+  "execArgv": [
+    "--import=file:///Users/bbyholm/dev/nan/node_modules/@isaacs/ts-node-temp-fork-for-pr-2009/import.mjs",
+    "--import=file:///Users/bbyholm/dev/nan/node_modules/@tapjs/mock/dist/esm/import.mjs",
+    "--enable-source-maps",
+    "--import=file:///Users/bbyholm/dev/nan/node_modules/@tapjs/processinfo/dist/esm/import.mjs"
+  ],
+  "NODE_OPTIONS": "\"--import=file:///Users/bbyholm/dev/nan/node_modules/@tapjs/processinfo/dist/esm/import.mjs\"",
+  "cwd": "/Users/bbyholm/dev/nan",
+  "pid": 15367,
+  "ppid": 15366,
+  "parent": null,
+  "uuid": "55e6141e-84a3-4f0b-a5dc-c420e36d5b47",
+  "files": [
+    "/Users/bbyholm/dev/nan/test/js/accessors-test.js",
+    "/Users/bbyholm/dev/nan/node_modules/@isaacs/ts-node-temp-fork-for-pr-2009/import.mjs",
+    "/Users/bbyholm/dev/nan/node_modules/@isaacs/ts-node-temp-fork-for-pr-2009/import-loader.mjs",
+    "/Users/bbyholm/dev/nan/node_modules/@tapjs/mock/dist/esm/import.mjs",
+    "/Users/bbyholm/dev/nan/node_modules/@tapjs/mock/dist/esm/mock-service.js",
+    "/Users/bbyholm/dev/nan/node_modules/@tapjs/stack/dist/esm/index.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/index.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/is-relative-require.js",
+    "/Users/bbyholm/dev/nan/node_modules/@tapjs/mock/dist/esm/export-line.js",
+    "/Users/bbyholm/dev/nan/node_modules/@tapjs/mock/dist/esm/munge-mocks.js",
+    "/Users/bbyholm/dev/nan/node_modules/@tapjs/mock/dist/esm/resolve-mock-entry-point.js",
+    "/Users/bbyholm/dev/nan/node_modules/@tapjs/mock/dist/esm/service-key.js",
+    "/Users/bbyholm/dev/nan/node_modules/@tapjs/stack/dist/esm/call-site-like.js",
+    "/Users/bbyholm/dev/nan/node_modules/@tapjs/stack/dist/esm/require-resolve.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/get-all-conditional-values.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/get-all-conditions.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/get-unique-condition-sets.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/resolve-all-exports.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/resolve-all-local-imports.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/resolve-conditional-value.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/resolve-import.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/is-windows.js",
+    "/Users/bbyholm/dev/nan/node_modules/@tapjs/stack/dist/esm/parse.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/get-conditional-values-list.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/errors.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/get-named-exports-list.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/read-pkg.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/resolve-export.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/star-glob.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/to-path.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/file-exists.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/find-dep-package.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/to-file-url.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/resolve-dependency-export.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/resolve-package-import.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/read-json.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/find-star-match.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/glob/dist/esm/index.js",
+    "/Users/bbyholm/dev/nan/node_modules/walk-up-path/dist/mjs/index.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/minimatch/dist/esm/index.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/glob/dist/esm/glob.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/glob/dist/esm/has-magic.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/glob/dist/esm/ignore.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/minimatch/dist/esm/assert-valid-pattern.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/minimatch/dist/esm/ast.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/minimatch/dist/esm/escape.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/minimatch/dist/esm/unescape.js",
+    "/Users/bbyholm/dev/nan/node_modules/path-scurry/dist/esm/index.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/glob/dist/esm/pattern.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/glob/dist/esm/walker.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/minimatch/dist/esm/brace-expressions.js",
+    "/Users/bbyholm/dev/nan/node_modules/lru-cache/dist/esm/index.js",
+    "/Users/bbyholm/dev/nan/node_modules/minipass/dist/esm/index.js",
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/glob/dist/esm/processor.js",
+    "/Users/bbyholm/dev/nan/node_modules/@tapjs/mock/dist/esm/loader.mjs",
+    "/Users/bbyholm/dev/nan/node_modules/@tapjs/mock/dist/esm/hooks.mjs",
+    "/Users/bbyholm/dev/nan/node_modules/@tapjs/mock/dist/esm/mock-service-client.js"
+  ],
+  "sources": {
+    "/Users/bbyholm/dev/nan/node_modules/@tapjs/mock/dist/esm/import.mjs": [
+      "/Users/bbyholm/dev/nan/node_modules/@tapjs/mock/src/import.mts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/@tapjs/mock/dist/esm/mock-service.js": [
+      "/Users/bbyholm/dev/nan/node_modules/@tapjs/mock/src/mock-service.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/@tapjs/stack/dist/esm/index.js": [
+      "/Users/bbyholm/dev/nan/node_modules/@tapjs/stack/src/index.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/index.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/src/index.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/is-relative-require.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/src/is-relative-require.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/@tapjs/mock/dist/esm/export-line.js": [
+      "/Users/bbyholm/dev/nan/node_modules/@tapjs/mock/src/export-line.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/@tapjs/mock/dist/esm/munge-mocks.js": [
+      "/Users/bbyholm/dev/nan/node_modules/@tapjs/mock/src/munge-mocks.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/@tapjs/mock/dist/esm/resolve-mock-entry-point.js": [
+      "/Users/bbyholm/dev/nan/node_modules/@tapjs/mock/src/resolve-mock-entry-point.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/@tapjs/mock/dist/esm/service-key.js": [
+      "/Users/bbyholm/dev/nan/node_modules/@tapjs/mock/src/service-key.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/@tapjs/stack/dist/esm/call-site-like.js": [
+      "/Users/bbyholm/dev/nan/node_modules/@tapjs/stack/src/call-site-like.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/@tapjs/stack/dist/esm/require-resolve.js": [
+      "/Users/bbyholm/dev/nan/node_modules/@tapjs/stack/src/require-resolve.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/get-all-conditional-values.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/src/get-all-conditional-values.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/get-all-conditions.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/src/get-all-conditions.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/get-unique-condition-sets.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/src/get-unique-condition-sets.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/resolve-all-exports.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/src/resolve-all-exports.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/resolve-all-local-imports.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/src/resolve-all-local-imports.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/resolve-conditional-value.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/src/resolve-conditional-value.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/resolve-import.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/src/resolve-import.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/is-windows.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/src/is-windows.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/@tapjs/stack/dist/esm/parse.js": [
+      "/Users/bbyholm/dev/nan/node_modules/@tapjs/stack/src/parse.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/get-conditional-values-list.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/src/get-conditional-values-list.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/errors.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/src/errors.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/get-named-exports-list.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/src/get-named-exports-list.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/read-pkg.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/src/read-pkg.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/resolve-export.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/src/resolve-export.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/star-glob.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/src/star-glob.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/to-path.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/src/to-path.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/file-exists.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/src/file-exists.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/find-dep-package.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/src/find-dep-package.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/to-file-url.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/src/to-file-url.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/resolve-dependency-export.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/src/resolve-dependency-export.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/resolve-package-import.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/src/resolve-package-import.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/read-json.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/src/read-json.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/dist/esm/find-star-match.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/src/find-star-match.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/glob/dist/esm/index.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/glob/src/index.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/walk-up-path/dist/mjs/index.js": [
+      "/Users/bbyholm/dev/nan/node_modules/walk-up-path/src/index.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/minimatch/dist/esm/index.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/minimatch/src/index.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/glob/dist/esm/glob.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/glob/src/glob.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/glob/dist/esm/has-magic.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/glob/src/has-magic.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/glob/dist/esm/ignore.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/glob/src/ignore.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/minimatch/dist/esm/assert-valid-pattern.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/minimatch/src/assert-valid-pattern.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/minimatch/dist/esm/ast.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/minimatch/src/ast.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/minimatch/dist/esm/escape.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/minimatch/src/escape.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/minimatch/dist/esm/unescape.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/minimatch/src/unescape.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/path-scurry/dist/esm/index.js": [
+      "/Users/bbyholm/dev/nan/node_modules/path-scurry/src/index.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/glob/dist/esm/pattern.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/glob/src/pattern.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/glob/dist/esm/walker.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/glob/src/walker.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/minimatch/dist/esm/brace-expressions.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/minimatch/src/brace-expressions.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/lru-cache/dist/esm/index.js": [
+      "/Users/bbyholm/dev/nan/node_modules/lru-cache/src/index.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/minipass/dist/esm/index.js": [
+      "/Users/bbyholm/dev/nan/node_modules/minipass/src/index.ts"
+    ],
+    "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/glob/dist/esm/processor.js": [
+      "/Users/bbyholm/dev/nan/node_modules/resolve-import/node_modules/glob/src/processor.ts"
+    ]
+  },
+  "root": "55e6141e-84a3-4f0b-a5dc-c420e36d5b47",
+  "externalID": "test/js/accessors-test.js",
+  "code": 0,
+  "signal": null,
+  "runtime": 2278.838699
+}

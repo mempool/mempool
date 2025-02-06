@@ -1,0 +1,28 @@
+{
+  "result": [
+    {
+      "scriptId": "642",
+      "url": "file:///Users/bbyholm/dev/nan/test/js/gc-fn.js",
+      "functions": [
+        {
+          "functionName": "",
+          "ranges": [
+            {
+              "startOffset": 0,
+              "endOffset": 190,
+              "count": 1
+            },
+            {
+              "startOffset": 15,
+              "endOffset": 58,
+              "count": 0
+            }
+          ],
+          "isBlockCoverage": true
+        }
+      ]
+    }
+  ],
+  "timestamp": 296481.848687,
+  "source-map-cache": {}
+}

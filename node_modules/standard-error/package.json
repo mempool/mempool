@@ -1,0 +1,32 @@
+{
+	"name": "standard-error",
+	"version": "1.1.0",
+	"description": "Tiny library that simplifies subclassing and inheriting from Error while keeping the correct name and stack. Also supports constructing from an object of properties. Saves you from boilerplate.",
+	"keywords": ["error", "exception"],
+	"homepage": "https://github.com/moll/js-standard-error",
+	"bugs": "https://github.com/moll/js-standard-error/issues",
+
+	"author": {
+		"name": "Andri Möll",
+		"email": "andri@dot.ee",
+		"url": "http://themoll.com"
+	},
+
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/moll/js-standard-error.git"
+	},
+
+	"licenses": [{
+		"type": "LAGPL",
+		"url": "https://github.com/moll/js-standard-error/blob/master/LICENSE"
+	}],
+
+	"main": "index.js",
+	"scripts": {"test": "make test"},
+
+	"devDependencies": {
+		"mocha": ">= 1.18.0 < 2",
+		"must": "< 1"
+	}
+}

@@ -1,5 +1,11 @@
 {
   "devDependencies": {
     "@types/node": "^22.13.1"
+  },
+  "dependencies": {
+    "bitcoin": "^3.0.3",
+    "bitcoin-cli": "^0.0.3",
+    "bitcoin-core": "^5.0.0",
+    "cli": "^1.0.1"
   }
 }
