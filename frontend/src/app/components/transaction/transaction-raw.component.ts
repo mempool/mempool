@@ -3,8 +3,7 @@ import { Transaction, Vout } from '@interfaces/electrs.interface';
 import { StateService } from '../../services/state.service';
 import { Filter, toFilters } from '../../shared/filters.utils';
 import { decodeRawTransaction, getTransactionFlags, addInnerScriptsToVin, countSigops } from '../../shared/transaction.utils';
-import { ETA, EtaService } from '../../services/eta.service';
-import { combineLatest, firstValueFrom, map, Observable, startWith, Subscription } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 import { WebsocketService } from '../../services/websocket.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
@@ -55,14 +54,12 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
   cpfpInfo: CpfpInfo | null;
   hasCpfp: boolean = false;
   showCpfpDetails = false;
-  ETA$: Observable<ETA | null>;
   mempoolBlocksSubscription: Subscription;
 
   constructor(
     public route: ActivatedRoute,
     public router: Router,
     public stateService: StateService,
-    public etaService: EtaService,
     public electrsApi: ElectrsApiService,
     public websocketService: WebsocketService,
     public formBuilder: UntypedFormBuilder,
@@ -194,24 +191,6 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
       this.setFlowEnabled();
     });
     this.setGraphSize();
-
-    this.ETA$ = combineLatest([
-      this.stateService.mempoolBlocks$.pipe(startWith(null)),
-      this.stateService.difficultyAdjustment$.pipe(startWith(null)),
-    ]).pipe(
-      map(([mempoolBlocks, da]) => {
-        return this.etaService.calculateETA(
-          this.stateService.network,
-          this.transaction,
-          mempoolBlocks,
-          null,
-          da,
-          null,
-          null,
-          null
-        );
-      })
-    );
 
     this.mempoolBlocksSubscription = this.stateService.mempoolBlocks$.subscribe(() => {
       if (this.transaction) {

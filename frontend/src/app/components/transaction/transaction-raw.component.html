@@ -58,6 +58,7 @@
     }
 
     <app-transaction-details
+      [unbroadcasted]="true"
       [network]="stateService.network"
       [tx]="transaction"
       [isLoadingTx]="false"
@@ -65,9 +66,6 @@
       [isLoadingFirstSeen]="false"
       [featuresEnabled]="true"
       [filters]="filters"
-      [hasEffectiveFeeRate]="false"
-      [cpfpInfo]="null"
-      [ETA$]="ETA$"
       [hasEffectiveFeeRate]="hasEffectiveFeeRate"
       [cpfpInfo]="cpfpInfo"
       [hasCpfp]="hasCpfp"
