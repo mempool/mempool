@@ -88,8 +88,8 @@ class PoolsUpdater {
 
       try {
         await DB.query('START TRANSACTION;');
-        await poolsParser.migratePoolsJson();
         await this.updateDBSha(githubSha);
+        await poolsParser.migratePoolsJson();
         await DB.query('COMMIT;');
       } catch (e) {
         logger.err(`Could not migrate mining pools, rolling back. Exception: ${JSON.stringify(e)}`, this.tag);
@@ -121,7 +121,7 @@ class PoolsUpdater {
   /**
    * Fetch our latest pools-v2.json sha from the db
    */
-  private async getShaFromDb(): Promise<string | null> {
+  public async getShaFromDb(): Promise<string | null> {
     try {
       const [rows]: any[] = await DB.query('SELECT string FROM state WHERE name="pools_json_sha"');
       return (rows.length > 0 ? rows[0].string : null);

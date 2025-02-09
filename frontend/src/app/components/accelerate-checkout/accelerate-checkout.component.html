@@ -1,10 +1,18 @@
-<div class="box card w-100" style="background: var(--box-bg)" id=acceleratePreviewAnchor>
+<div class="box card w-100 accelerate-checkout-inner" [class.input-disabled]="isCheckoutLocked > 0" style="background: var(--box-bg)" id=acceleratePreviewAnchor>
   @if (accelerateError) {
-    <div class="row mb-1 text-center">
-      <div class="col-sm">
-        <h1 style="font-size: larger;" i18n="accelerator.sorry-error-title">Sorry, something went wrong!</h1>
+    @if (accelerateError.includes('Payment declined')) {
+      <div class="row mb-1 text-center">
+        <div class="col-sm">
+          <h1 style="font-size: larger;">{{ accelerateError }}</h1>
+        </div>
       </div>
-    </div>
+    } @else {
+      <div class="row mb-1 text-center">
+        <div class="col-sm">
+          <h1 style="font-size: larger;" i18n="accelerator.sorry-error-title">Sorry, something went wrong!</h1>
+        </div>
+      </div>
+    }
     <div class="row text-center mt-1">
       <div class="col-sm">
         <div class="d-flex flex-row justify-content-center align-items-center">
@@ -357,11 +365,11 @@
           <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true" class="ml-2"></app-active-acceleration-box>
         </div>
       </div>
-      <div class="payment-area mt-2 p-2" style="font-size: 14px;">
+      <div class="payment-area" style="font-size: 14px;">
         <div class="row text-center justify-content-center mx-2">
-          <p i18n="accelerator.payment-to-mempool-space">Payment to mempool.space for acceleration of txid <a [routerLink]="'/tx/' + tx.txid" target="_blank">{{ tx.txid.substr(0, 10) }}..{{ tx.txid.substr(-10) }}</a></p>
+          <span i18n="accelerator.payment-to-mempool-space">Payment to mempool.space for acceleration of txid <a [routerLink]="'/tx/' + tx.txid" target="_blank">{{ tx.txid.substr(0, 10) }}..{{ tx.txid.substr(-10) }}</a></span>
         </div>
-        @if (canPayWithBalance || !(canPayWithBitcoin || canPayWithCashapp)) {
+        @if (canPayWithBalance || !(canPayWithBitcoin || canPayWithCashapp || canPayWithApplePay || canPayWithGooglePay)) {
           <div class="row">
             <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
               <p><ng-container i18n="accelerator.your-account-will-be-debited">Your account will be debited no more than</ng-container>&nbsp;<small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></p>
@@ -378,9 +386,12 @@
                   <p><ng-container i18n="transaction.pay|Pay button label">Pay</ng-container>&nbsp;<span><small style="font-family: monospace;">{{ ((invoice.btcDue * 100_000_000) || cost) | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span></p>
                   <app-bitcoin-invoice style="width: 100%;" [invoice]="invoice" [minimal]="true" (completed)="bitcoinPaymentCompleted()"></app-bitcoin-invoice>
                 } @else if (btcpayInvoiceFailed) {
-                  <p i18n="accelerator.failed-to-load-invoice">Failed to load invoice</p>
-                  <div class="d-flex flex-column align-items-center justify-content-center" style="width: 100%; height: 292px;">
-                    <fa-icon style="font-size: 24px; color: var(--red)" [icon]="['fas', 'circle-xmark']"></fa-icon>
+                  <div class="btcpay-invoice">
+                    <fa-icon style="font-size: 20px; color: var(--red)" [icon]="['fas', 'circle-xmark']"></fa-icon>
+                    <span i18n="accelerator.failed-to-load-invoice">Failed to load invoice</span>
+                    @if (!loadingBtcpayInvoice) {
+                      <button class="btn btn-sm btn-secondary mt-0 mt-md-1" (click)="requestBTCPayInvoice()">Retry ↻</button>
+                    }
                   </div>
                 } @else {
                   <p i18n="accelerator.loading-invoice">Loading invoice...</p>
@@ -389,13 +400,13 @@
                   </div>
                 }
               </div>
-              @if (canPayWithCashapp || canPayWithApplePay || canPayWithGooglePay) {
+              @if (canPayWithCashapp || canPayWithApplePay || canPayWithGooglePay || canPayWithCardOnFile) {
                 <div class="col-sm text-center flex-grow-0  d-flex flex-column justify-content-center align-items-center">
-                  <p class="text-nowrap">&mdash;<span i18n="or">OR</span>&mdash;</p>
+                  <p class="text-nowrap">&mdash;&mdash;<span i18n="or"> OR </span>&mdash;&mdash;</p>
                 </div>
               }
             }
-            @if (canPayWithCashapp || canPayWithApplePay || canPayWithGooglePay) {
+            @if (canPayWithCashapp || canPayWithApplePay || canPayWithGooglePay || canPayWithCardOnFile) {
               <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
                 <p><ng-container i18n="transaction.pay|Pay button label">Pay</ng-container>&nbsp;<app-fiat [value]="cost"></app-fiat> with</p>
                 @if (canPayWithCashapp) {
@@ -411,6 +422,17 @@
                   @if (canPayWithCashapp || canPayWithApplePay) { <span class="mt-1 mb-1"></span> }
                   <div class="paymentMethod mx-2" style="width: 200px; height: 55px" (click)="moveToStep('googlepay')">
                     <img src="/resources/google-pay.png" height=37>
+                  </div>
+                }
+                @if (canPayWithCardOnFile) {
+                  @if (canPayWithCashapp || canPayWithApplePay || canPayWithGooglePay) { <span class="mt-1 mb-1"></span> }
+                  <div class="paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px" (click)="moveToStep('cardonfile')">
+                    @if (['VISA', 'MASTERCARD', 'JCB', 'DISCOVER', 'DISCOVER_DINERS', 'AMERICAN_EXPRESS'].includes(estimate?.availablePaymentMethods?.cardOnFile?.card?.brand)) {
+                      <app-svg-images [name]="estimate?.availablePaymentMethods?.cardOnFile?.card?.brand" height="33" class="mr-2"></app-svg-images>
+                    } @else {
+                      <app-svg-images name="OTHER_BRAND" height="33" class="mr-2"></app-svg-images>
+                    }
+                    <span style="font-size: 22px; padding-bottom: 3px">{{ estimate?.availablePaymentMethods?.cardOnFile?.card?.last_4 }}</span>
                   </div>
                 }
               </div>
@@ -435,7 +457,7 @@
         <button type="button" class="mt-1 btn btn-secondary btn-sm rounded-pill align-self-center" style="width: 200px" (click)="moveToStep('summary')" i18n="go-back">Go back</button>
       </div>
     </div>
-  } @else if (step === 'cashapp' || step === 'applepay' || step === 'googlepay') {
+  } @else if (step === 'cashapp' || step === 'applepay' || step === 'googlepay' || step === 'cardonfile') {
     <!-- Show checkout page -->
     <div class="row mb-md-1 text-center" id="confirm-title">
       <div class="col-sm" id="confirm-payment-title">
@@ -451,7 +473,7 @@
       </div>
     </div>
 
-    @if (step === 'cashapp' && !loadingCashapp || step === 'applepay' && !loadingApplePay || step === 'googlepay' && !loadingGooglePay) {
+    @if (step === 'cashapp' && !loadingCashapp || step === 'applepay' && !loadingApplePay || step === 'googlepay' && !loadingGooglePay || step === 'cardonfile' && !loadingCardOnFile) {
       <div class="row text-center mt-1">
         <div class="col-sm">
           <div class="form-group w-100">
@@ -476,14 +498,24 @@
             <div id="cash-app-pay" class="d-inline-block" style="height: 50px" [style]="loadingCashapp ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
           } @else if (step === 'googlepay') {
             <div id="google-pay-button" class="d-inline-block" style="height: 50px" [style]="loadingGooglePay ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
+          } @else if (step === 'cardonfile') {
+            <div class="paymentMethod mx-2 d-flex justify-content-center align-items-center ml-auto mr-auto" style="width: 200px; height: 55px" (click)="requestCardOnFilePayment()" [style]="loadingCardOnFile ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''">
+              <fa-icon style="font-size: 24px; color: white" [icon]="['fas', 'credit-card']"></fa-icon>
+              <span class="ml-2" style="font-size: 22px">{{ estimate?.availablePaymentMethods?.cardOnFile?.card?.brand }} {{ estimate?.availablePaymentMethods?.cardOnFile?.card?.last_4 }}</span>
+            </div>
           }
-          @if (loadingCashapp || loadingApplePay || loadingGooglePay) {
+          @if (loadingCashapp || loadingApplePay || loadingGooglePay || loadingCardOnFile) {
           <div display="d-flex flex-row justify-content-center">
             <span i18n="accelerator.loading-payment-method">Loading payment method...</span>
             <div class="ml-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
           </div>
           }
         </div>
+        @if (isTokenizing > 0) {
+          <div class="d-flex flex-row justify-content-center">
+            <div class="ml-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
+          </div>
+        }
       </div>
     </div>
 

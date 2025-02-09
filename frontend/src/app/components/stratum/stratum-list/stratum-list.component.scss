@@ -1,0 +1,138 @@
+.stratum-table {
+  width: 100%;
+}
+
+td {
+  position: relative;
+  height: 2em;
+
+  &.height, &.reward, &.tag {
+    padding: 0 5px;
+  }
+
+  &.tag {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  &.pool {
+    padding-left: 5px;
+    padding-right: 20px;
+  }
+
+  &.merkle {
+    width: 100px;
+    .pipe-segment {
+      position: absolute;
+      border-color: white;
+      box-sizing: content-box;
+
+      &.vertical {
+        top: 0;
+        right: 0;
+        width: 50%;
+        height: 100%;
+        border-left: solid 4px;
+      }
+      &.horizontal {
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 50%;
+        border-top: solid 4px;
+      }
+      &.branch-top {
+        bottom: 0;
+        right: 0;
+        width: 100%;
+        height: 50%;
+        border-top: solid 4px;
+        &::after {
+          content: "";
+          position: absolute;
+          box-sizing: content-box;
+          top: -4px;
+          right: 0px;
+          bottom: 0;
+          width: 50%;
+          border-top: solid 4px;
+          border-left: solid 4px;
+          border-top-left-radius: 5px;
+        }
+      }
+      &.branch-mid {
+        bottom: 0;
+        right: 0px;
+        width: 50%;
+        height: 100%;
+        border-left: solid 4px;
+        &::after {
+          content: "";
+          position: absolute;
+          box-sizing: content-box;
+          top: -4px;
+          left: -4px;
+          width: 100%;
+          height: 50%;
+          border-bottom: solid 4px;
+          border-left: solid 4px;
+          border-bottom-left-radius: 5px;
+        }
+      }
+      &.branch-end {
+        top: -4px;
+        right: 0;
+        width: 50%;
+        height: 50%;
+        border-bottom-left-radius: 5px;
+        border-bottom: solid 4px;
+        border-left: solid 4px;
+      }
+    }
+  }
+
+  .cell-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+@media (max-width: 800px) {
+  .stratum-table {
+    td {
+      &.tag {
+        display: none;
+      }
+    }
+  }
+}
+
+@media (max-width: 650px) {
+  .stratum-table {
+    td {
+      &.reward {
+        display: none;
+      }
+    }
+  }
+}
+
+.badge {
+  position: relative;
+  color: #FFF;
+}
+
+.pool-logo {
+  width: 15px;
+  height: 15px;
+  position: relative;
+  top: -1px;
+  margin-right: 2px;
+}

@@ -4,7 +4,10 @@ import { NgbCollapseModule, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstra
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faClock, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
-  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft, faFastForward, faWallet, faUserClock, faWrench, faUserFriends, faQuestionCircle, faHistory, faSignOutAlt, faKey, faSuitcase, faIdCardAlt, faNetworkWired, faUserCheck, faCircleCheck, faUserCircle, faCheck, faRocket, faScaleBalanced, faHourglassStart, faHourglassHalf, faHourglassEnd, faWandMagicSparkles, faFaucetDrip, faTimeline, faCircleXmark, faCalendarCheck } from '@fortawesome/free-solid-svg-icons';
+  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft,
+  faFastForward, faWallet, faUserClock, faWrench, faUserFriends, faQuestionCircle, faHistory, faSignOutAlt, faKey, faSuitcase, faIdCardAlt, faNetworkWired, faUserCheck,
+  faCircleCheck, faUserCircle, faCheck, faRocket, faScaleBalanced, faHourglassStart, faHourglassHalf, faHourglassEnd, faWandMagicSparkles, faFaucetDrip, faTimeline,
+  faCircleXmark, faCalendarCheck, faMoneyBillTrendUp, faRobot, faShareNodes, faCreditCard, faMicroscope } from '@fortawesome/free-solid-svg-icons';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MenuComponent } from '@components/menu/menu.component';
 import { PreviewTitleComponent } from '@components/master-page-preview/preview-title.component';
@@ -80,6 +83,7 @@ import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { DifficultyAdjustmentsTable } from '@components/difficulty-adjustments-table/difficulty-adjustments-table.components';
 import { BlocksList } from '@components/blocks-list/blocks-list.component';
 import { RbfList } from '@components/rbf-list/rbf-list.component';
+import { StratumList } from '@components/stratum/stratum-list/stratum-list.component';
 import { RewardStatsComponent } from '@components/reward-stats/reward-stats.component';
 import { DataCyDirective } from '@app/data-cy.directive';
 import { LoadingIndicatorComponent } from '@components/loading-indicator/loading-indicator.component';
@@ -121,6 +125,7 @@ import { TwitterLogin } from '@components/twitter-login/twitter-login.component'
 import { BitcoinInvoiceComponent } from '@components/bitcoin-invoice/bitcoin-invoice.component';
 
 import { OnlyVsizeDirective, OnlyWeightDirective } from '@app/shared/components/weight-directives/weight-directives';
+import { GithubLogin } from '../components/github-login.component/github-login.component';
 
 @NgModule({
   declarations: [
@@ -198,6 +203,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from '@app/shared/components/
     DifficultyAdjustmentsTable,
     BlocksList,
     RbfList,
+    StratumList,
     DataCyDirective,
     RewardStatsComponent,
     LoadingIndicatorComponent,
@@ -237,6 +243,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from '@app/shared/components/
     TwitterWidgetComponent,
     FaucetComponent,
     TwitterLogin,
+    GithubLogin,
     BitcoinInvoiceComponent,
   ],
   imports: [
@@ -342,6 +349,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from '@app/shared/components/
     AmountShortenerPipe,
     DifficultyAdjustmentsTable,
     BlocksList,
+    StratumList,
     DataCyDirective,
     RewardStatsComponent,
     LoadingIndicatorComponent,
@@ -370,6 +378,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from '@app/shared/components/
     HttpErrorComponent,
     TwitterWidgetComponent,
     TwitterLogin,
+    GithubLogin,
     BitcoinInvoiceComponent,
     BitcoinsatoshisPipe,
 
@@ -451,5 +460,10 @@ export class SharedModule {
     library.addIcons(faTimeline);
     library.addIcons(faCircleXmark);
     library.addIcons(faCalendarCheck);
+    library.addIcons(faMoneyBillTrendUp);
+    library.addIcons(faRobot);
+    library.addIcons(faShareNodes);
+    library.addIcons(faCreditCard);
+    library.addIcons(faMicroscope);
   }
 }

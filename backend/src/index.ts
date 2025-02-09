@@ -48,6 +48,7 @@ import accelerationRoutes from './api/acceleration/acceleration.routes';
 import aboutRoutes from './api/about.routes';
 import mempoolBlocks from './api/mempool-blocks';
 import walletApi from './api/services/wallets';
+import stratumApi from './api/services/stratum';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -320,6 +321,9 @@ class Server {
     loadingIndicators.setProgressChangedCallback(websocketHandler.handleLoadingChanged.bind(websocketHandler));
 
     accelerationApi.connectWebsocket();
+    if (config.STRATUM.ENABLED) {
+      stratumApi.connectWebsocket();
+    }
   }
 
   setUpHttpApiRoutes(): void {

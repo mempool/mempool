@@ -38,6 +38,7 @@ interface AddressTransactions {
 import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
 import { calculateMempoolTxCpfp } from './cpfp';
 import { getRecentFirstSeen } from '../utils/file-read';
+import stratumApi, { StratumJob } from './services/stratum';
 
 // valid 'want' subscriptions
 const wantable = [
@@ -401,6 +402,16 @@ class WebsocketHandler {
             client['track-mempool'] = true;
           } else if (parsedMessage['track-mempool'] === false) {
             delete client['track-mempool'];
+          }
+
+          if (parsedMessage && parsedMessage['track-stratum'] != null) {
+            if (parsedMessage['track-stratum']) {
+              const sub = parsedMessage['track-stratum'];
+              client['track-stratum'] = sub;
+              response['stratumJobs'] = this.socketData['stratumJobs'];
+            } else {
+              client['track-stratum'] = false;
+            }
           }
 
           if (Object.keys(response).length) {
@@ -1382,6 +1393,23 @@ class WebsocketHandler {
     }
 
     await statistics.runStatistics();
+  }
+
+  public handleNewStratumJob(job: StratumJob): void {
+    this.updateSocketDataFields({ 'stratumJobs': stratumApi.getJobs() });
+
+    for (const server of this.webSocketServers) {
+      server.clients.forEach((client) => {
+        if (client.readyState !== WebSocket.OPEN) {
+          return;
+        }
+        if (client['track-stratum'] && (client['track-stratum'] === 'all' || client['track-stratum'] === job.pool)) {
+          client.send(JSON.stringify({
+            'stratumJob': job
+        }));
+        }
+      });
+    }
   }
 
   // takes a dictionary of JSON serialized values

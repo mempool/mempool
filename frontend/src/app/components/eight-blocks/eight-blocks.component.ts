@@ -162,6 +162,9 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
     this.cacheBlocksSubscription?.unsubscribe();
     this.networkChangedSubscription?.unsubscribe();
     this.queryParamsSubscription?.unsubscribe();
+    this.blockGraphs.forEach(graph => {
+      graph.destroy();
+    });
   }
 
   shiftTestBlocks(): void {

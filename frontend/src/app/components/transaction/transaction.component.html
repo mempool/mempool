@@ -24,6 +24,7 @@
           [height]="tx?.status?.block_height"
           [replaced]="replaced"
           [removed]="this.rbfInfo?.mined && !this.tx?.status?.confirmed"
+          [cached]="isCached"
         ></app-confirmations>
       </div>
     </ng-container>
@@ -81,7 +82,6 @@
 
       <app-accelerate-checkout
         *ngIf="(da$ | async) as da;"
-        [cashappEnabled]="cashappEligible"
         [advancedEnabled]="true"
         [tx]="tx"
         [accelerating]="isAcceleration"
