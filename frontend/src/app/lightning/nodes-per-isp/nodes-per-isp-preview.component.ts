@@ -19,6 +19,8 @@ export class NodesPerISPPreview implements OnInit {
   id: string;
   error: Error;
 
+  ogSession: number;
+
   constructor(
     private apiService: ApiService,
     private seoService: SeoService,
@@ -32,8 +34,8 @@ export class NodesPerISPPreview implements OnInit {
         switchMap((params: ParamMap) => {
           this.id = params.get('isp');
           this.isp = null;
-          this.openGraphService.waitFor('isp-map-' + this.id);
-          this.openGraphService.waitFor('isp-data-' + this.id);
+          this.ogSession = this.openGraphService.waitFor('isp-map-' + this.id);
+          this.ogSession = this.openGraphService.waitFor('isp-data-' + this.id);
           return this.apiService.getNodeForISP$(params.get('isp'));
         }),
         map(response => {
@@ -75,7 +77,7 @@ export class NodesPerISPPreview implements OnInit {
           }
           topCountry.flag = getFlagEmoji(topCountry.iso);
 
-          this.openGraphService.waitOver('isp-data-' + this.id);
+          this.openGraphService.waitOver({ event: 'isp-data-' + this.id, sessionId: this.ogSession });
 
           return {
             nodes: response.nodes,
@@ -87,8 +89,8 @@ export class NodesPerISPPreview implements OnInit {
         catchError(err => {
           this.error = err;
           this.seoService.logSoft404();
-          this.openGraphService.fail('isp-map-' + this.id);
-          this.openGraphService.fail('isp-data-' + this.id);
+          this.openGraphService.fail({ event: 'isp-map-' + this.id, sessionId: this.ogSession });
+          this.openGraphService.fail({ event: 'isp-data-' + this.id, sessionId: this.ogSession });
           return of({
             nodes: [],
             sumLiquidity: 0,
@@ -100,6 +102,6 @@ export class NodesPerISPPreview implements OnInit {
   }
 
   onMapReady() {
-    this.openGraphService.waitOver('isp-map-' + this.id);
+    this.openGraphService.waitOver({ event: 'isp-map-' + this.id, sessionId: this.ogSession });
   }
 }
