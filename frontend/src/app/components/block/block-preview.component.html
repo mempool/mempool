@@ -49,7 +49,7 @@
               </ng-template>
             </tr>
           </ng-template>
-          <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
+          <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet' && block?.extras?.pool">
             <td i18n="block.miner">Miner</td>
             <td *ngIf="stateService.env.MINING_DASHBOARD">
               <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]" class="badge" style="color: #FFF;padding:0;">
