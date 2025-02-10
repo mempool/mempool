@@ -30,7 +30,6 @@
       </span>
 
       <div class="container-buttons">
-        <button *ngIf="!successBroadcast" [disabled]="isLoadingBroadcast" type="button" class="btn btn-sm btn-primary" i18n="transaction.broadcast|Broadcast" (click)="postTx()">Broadcast</button>
         <button *ngIf="successBroadcast" type="button" class="btn btn-sm btn-success no-cursor" i18n="transaction.broadcasted|Broadcasted">Broadcasted</button>
         <button class="btn btn-sm" style="margin-left: 10px; padding: 0;" (click)="resetForm()">&#10005;</button>
       </div>
@@ -40,6 +39,16 @@
     <p class="red-color d-inline">{{ errorBroadcast }}</p>
 
     <div class="clearfix"></div>
+
+    <div *ngIf="!successBroadcast" class="alert alert-mempool" style="align-items: center;">
+      <span>
+        <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+        <ng-container i18n="transaction.local-tx|This transaction is stored locally in your browser.">
+          This transaction is stored locally in your browser. Broadcast it to add it to the mempool.
+        </ng-container>
+      </span>
+      <button [disabled]="isLoadingBroadcast" type="button" class="btn btn-sm btn-primary" i18n="transaction.broadcast|Broadcast" (click)="postTx()">Broadcast</button>
+    </div>
 
     @if (!hasPrevouts) {
       <div class="alert alert-mempool">
