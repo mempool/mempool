@@ -9,6 +9,7 @@
     "API_URL_PREFIX": "/api/v1/",
     "INDEXING_BLOCKS_AMOUNT": -1,
     "AUTOMATIC_POOLS_UPDATE": true,
+    "POOLS_UPDATE_DELAY": 3600,
     "AUDIT": true,
     "RUST_GBT": true,
     "POLL_RATE_MS": 1000,
