@@ -153,7 +153,7 @@
 
 <ng-template #etaRow>
   @if (!isLoadingTx) {
-    @if (!replaced && !isCached) {
+    @if (!replaced && !isCached && !unbroadcasted) {
       <tr>
         <td class="td-width align-items-center align-middle" i18n="transaction.eta|Transaction ETA">ETA</td>
         <td>
@@ -184,7 +184,7 @@
         </td>
       </tr>
     }
-  } @else {
+  } @else if (!unbroadcasted){
     <ng-container *ngTemplateOutlet="skeletonDetailsRow"></ng-container>
   }
 </ng-template>
@@ -213,11 +213,11 @@
   @if (!isLoadingTx) {
     <tr>
       <td class="td-width" i18n="transaction.fee|Transaction fee">Fee</td>
-      <td class="text-wrap">{{ tx.fee | number }} <span class="symbol" i18n="shared.sats">sats</span>
+      <td class="text-wrap">{{ (tx.fee | number) ?? '-' }} <span class="symbol" i18n="shared.sats">sats</span>
         @if (isAcceleration && accelerationInfo?.bidBoost ?? tx.feeDelta > 0) {
           <span class="oobFees" i18n-ngbTooltip="Acceleration Fees" ngbTooltip="Acceleration fees paid out-of-band"> +{{ accelerationInfo?.bidBoost ?? tx.feeDelta | number }} </span><span class="symbol" i18n="shared.sats">sats</span>
         }
-        <span class="fiat"><app-fiat [blockConversion]="tx.price" [value]="tx.fee + (isAcceleration ? ((accelerationInfo?.bidBoost ?? tx.feeDelta) || 0) : 0)"></app-fiat></span>
+        <span class="fiat"><app-fiat *ngIf="tx.fee >= 0" [blockConversion]="tx.price" [value]="tx.fee + (isAcceleration ? ((accelerationInfo?.bidBoost ?? tx.feeDelta) || 0) : 0)"></app-fiat></span>
       </td>
     </tr>
   } @else {
