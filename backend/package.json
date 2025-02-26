@@ -21,10 +21,10 @@
   ],
   "main": "index.ts",
   "scripts": {
-    "tsc": "./node_modules/typescript/bin/tsc -p tsconfig.build.json",
+    "tsc": "tsc -p tsconfig.build.json",
     "build": "npm run tsc && npm run create-resources",
-    "clean": "rm -rf ./dist/ ./node_modules/ ./package/ ./rust-gbt/",
-    "create-resources": "cp ./src/tasks/price-feeds/mtgox-weekly.json ./dist/tasks && node dist/api/fetch-version.js",
+    "clean": "shx rm -rf ./dist/ ./node_modules/ ./package/ ./rust-gbt/",
+    "create-resources": "shx cp ./src/tasks/price-feeds/mtgox-weekly.json ./dist/tasks && node dist/api/fetch-version.js",
     "package": "./npm_package.sh",
     "package-rm-build-deps": "./npm_package_rm_build_deps.sh",
     "preinstall": "cd ../rust/gbt && npm run build-release && npm run to-backend",
@@ -32,11 +32,11 @@
     "start-production": "node --max-old-space-size=16384 dist/index.js",
     "reindex-updated-pools": "npm run start-production --update-pools",
     "reindex-all-blocks": "npm run start-production --update-pools --reindex-blocks",
-    "test": "./node_modules/.bin/jest --coverage",
-    "test:ci": "CI=true ./node_modules/.bin/jest --coverage",
-    "lint": "./node_modules/.bin/eslint . --ext .ts",
-    "lint:fix": "./node_modules/.bin/eslint . --ext .ts --fix",
-    "prettier": "./node_modules/.bin/prettier --write \"src/**/*.{js,ts}\""
+    "test": "jest --coverage",
+    "test:ci": "CI=true jest --coverage",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "prettier": "prettier --write \"src/**/*.{js,ts}\""
   },
   "dependencies": {
     "@mempool/electrum-client": "1.1.9",
@@ -47,8 +47,8 @@
     "express": "~4.21.1",
     "maxmind": "~4.3.11",
     "mysql2": "~3.12.0",
-    "rust-gbt": "file:./rust-gbt",
     "redis": "^4.7.0",
+    "rust-gbt": "file:./rust-gbt",
     "socks-proxy-agent": "~7.0.0",
     "typescript": "~4.9.3",
     "ws": "~8.18.0"
@@ -65,6 +65,7 @@
     "eslint-config-prettier": "^8.8.0",
     "jest": "^29.5.0",
     "prettier": "^3.0.0",
+    "shx": "^0.3.4",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1"
   }
