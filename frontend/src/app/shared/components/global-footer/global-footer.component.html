@@ -13,13 +13,8 @@
         </div>
         @if (!enterpriseInfo?.footer_img) {
           <p class="explore-tagline-mobile">
-            @if (officialMempoolSpace) {
-              <ng-container i18n="@@7deec1c1520f06170e1f8e8ddfbe4532312f638f">Explore the full Bitcoin ecosystem</ng-container>
-              <ng-template [ngIf]="locale.substr(0, 2) === 'en'">&reg;</ng-template>  
-            } @else {
-              <ng-container i18n="shared.be-your-own-explorer">Be your own explorer</ng-container>
-              <ng-template [ngIf]="locale.substr(0, 2) === 'en'">&trade;</ng-template>
-            }
+            <ng-container i18n="shared.be-your-own-explorer">Be your own explorer</ng-container>
+            <ng-template [ngIf]="locale.substr(0, 2) === 'en'">&trade;</ng-template>
           </p>
         }
         <div class="site-options language-selector d-flex justify-content-center align-items-center" [class]="{'services': isServicesPage}">
@@ -57,13 +52,8 @@
             <span *ngIf="!user" i18n="shared.sign-in" class="nowrap">Sign In</span>
           </a>
           <p class="explore-tagline-desktop">
-            @if (officialMempoolSpace) {
-              <ng-container i18n="@@7deec1c1520f06170e1f8e8ddfbe4532312f638f">Explore the full Bitcoin ecosystem</ng-container>
-              <ng-template [ngIf]="locale.substr(0, 2) === 'en'">&reg;</ng-template>  
-            } @else {
-              <ng-container i18n="shared.be-your-own-explorer">Be your own explorer</ng-container>
-              <ng-template [ngIf]="locale.substr(0, 2) === 'en'">&trade;</ng-template>
-            }
+            <ng-container i18n="shared.be-your-own-explorer">Be your own explorer</ng-container>
+            <ng-template [ngIf]="locale.substr(0, 2) === 'en'">&trade;</ng-template>
           </p>
         }
       </div>
