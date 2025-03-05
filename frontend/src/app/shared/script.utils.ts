@@ -251,6 +251,11 @@ export function detectScriptTemplate(type: ScriptType, script_asm: string, witne
     return ScriptTemplates.multisig(multisig.m, multisig.n);
   }
 
+  const tapscriptMultisig = parseTapscriptMultisig(script_asm);
+  if (tapscriptMultisig) {
+    return ScriptTemplates.multisig(tapscriptMultisig.m, tapscriptMultisig.n);
+  }
+
   return;
 }
 
@@ -291,6 +296,62 @@ export function parseMultisigScript(script: string): undefined | { m: number, n:
     return;
   }
   const m = parseInt(opM.match(/[0-9]+/)?.[0] || '', 10);
+
+  if (ops.length) {
+    return;
+  }
+
+  return { m, n };
+}
+
+export function parseTapscriptMultisig(script: string): undefined | { m: number, n: number } {
+  if (!script) {
+    return;
+  }
+
+  const ops = script.split(' ');
+  // At minimum, one pubkey group (3 tokens) + m push + final opcode = 5 tokens
+  if (ops.length < 5) return;
+
+  const finalOp = ops.pop();
+  if (finalOp !== 'OP_NUMEQUAL' && finalOp !== 'OP_GREATERTHANOREQUAL') {
+    return;
+  }
+
+  let m: number;
+  if (['OP_PUSHBYTES_1', 'OP_PUSHBYTES_2'].includes(ops[ops.length - 2])) {
+    const data = ops.pop();
+    ops.pop();
+    m = parseInt(data.match(/../g).reverse().join(''), 16);
+  } else if (ops[ops.length - 1].startsWith('OP_PUSHNUM_') || ops[ops.length - 1] === 'OP_0') {
+    m = parseInt(ops.pop().match(/[0-9]+/)?.[0], 10);
+  } else {
+    return;
+  }
+
+  if (ops.length % 3 !== 0) {
+    return;
+  }
+  const n = ops.length / 3;
+  if (n < 1) {
+    return;
+  }
+
+  for (let i = 0; i < n; i++) {
+    const push = ops.shift();
+    const pubkey = ops.shift();
+    const sigOp = ops.shift();
+
+    if (push !== 'OP_PUSHBYTES_32') {
+      return;
+    }
+    if (!/^[0-9a-fA-F]{64}$/.test(pubkey)) {
+      return;
+    }
+    if (sigOp !== (i === 0 ? 'OP_CHECKSIG' : 'OP_CHECKSIGADD')) {
+      return;
+    }
+  }
 
   if (ops.length) {
     return;
