@@ -692,7 +692,7 @@ export function addInnerScriptsToVin(vin: Vin): void {
   if (vin.prevout.scriptpubkey_type === 'p2sh') {
     const redeemScript = vin.scriptsig_asm.split(' ').reverse()[0];
     vin.inner_redeemscript_asm = convertScriptSigAsm(redeemScript);
-    if (vin.witness && vin.witness.length > 2) {
+    if (vin.witness && vin.witness.length) {
       const witnessScript = vin.witness[vin.witness.length - 1];
       vin.inner_witnessscript_asm = convertScriptSigAsm(witnessScript);
     }
@@ -712,85 +712,14 @@ export function addInnerScriptsToVin(vin: Vin): void {
 }
 
 // Adapted from bitcoinjs-lib at https://github.com/bitcoinjs/bitcoinjs-lib/blob/32e08aa57f6a023e995d8c4f0c9fbdc5f11d1fa0/ts_src/transaction.ts#L78
-// Reads buffer of raw transaction data
-function fromBuffer(buffer: Uint8Array, network: string): Transaction {
+/**
+ * @param buffer The raw transaction data
+ * @param network
+ * @param inputs Additional information from a PSBT, if available
+ * @returns The decoded transaction object and the raw hex
+ */
+function fromBuffer(buffer: Uint8Array, network: string, inputs?: { key: Uint8Array; value: Uint8Array }[][]): { tx: Transaction, hex: string } {
   let offset = 0;
-
-  function readInt8(): number {
-    if (offset + 1 > buffer.length) {
-      throw new Error('Buffer out of bounds');
-    }
-    return buffer[offset++];
-  }
-
-  function readInt16() {
-    if (offset + 2 > buffer.length) {
-      throw new Error('Buffer out of bounds');
-    }
-    const value = buffer[offset] | (buffer[offset + 1] << 8);
-    offset += 2;
-    return value;
-  }
-
-  function readInt32(unsigned = false): number {
-    if (offset + 4 > buffer.length) {
-      throw new Error('Buffer out of bounds');
-    }
-    const value = buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24);
-    offset += 4;
-    if (unsigned) {
-      return value >>> 0;
-    }
-    return value;
-  }
-
-  function readInt64(): bigint {
-    if (offset + 8 > buffer.length) {
-      throw new Error('Buffer out of bounds');
-    }
-    const low = BigInt(buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24));
-    const high = BigInt(buffer[offset + 4] | (buffer[offset + 5] << 8) | (buffer[offset + 6] << 16) | (buffer[offset + 7] << 24));
-    offset += 8;
-    return (high << 32n) | (low & 0xffffffffn);
-  }
-
-  function readVarInt(): bigint {
-    const first = readInt8();
-    if (first < 0xfd) {
-      return BigInt(first);
-    } else if (first === 0xfd) {
-      return BigInt(readInt16());
-    } else if (first === 0xfe) {
-      return BigInt(readInt32(true));
-    } else if (first === 0xff) {
-      return readInt64();
-    } else {
-      throw new Error("Invalid VarInt prefix");
-    }
-  }
-
-  function readSlice(n: number | bigint): Uint8Array {
-    const length = Number(n);
-    if (offset + length > buffer.length) {
-      throw new Error('Cannot read slice out of bounds');
-    }
-    const slice = buffer.slice(offset, offset + length);
-    offset += length;
-    return slice;
-  }
-
-  function readVarSlice(): Uint8Array {
-    return readSlice(readVarInt());
-  }
-
-  function readVector(): Uint8Array[] {
-    const count = readVarInt();
-    const vector = [];
-    for (let i = 0; i < count; i++) {
-      vector.push(readVarSlice());
-    }
-    return vector;
-  }
 
   // Parse raw transaction
   const tx = {
@@ -802,39 +731,47 @@ function fromBuffer(buffer: Uint8Array, network: string): Transaction {
     }
   } as Transaction;
   
-  tx.version = readInt32();
+  [tx.version, offset] = readInt32(buffer, offset);
 
-  const marker = readInt8();
-  const flag = readInt8();
+  let marker, flag;
+  [marker, offset] = readInt8(buffer, offset);
+  [flag, offset] = readInt8(buffer, offset);
 
-  let hasWitnesses = false;
-  if (
-    marker === 0x00 &&
-    flag === 0x01
-  ) {
-    hasWitnesses = true;
+  let isLegacyTransaction = true;
+  if (marker === 0x00 && flag === 0x01) {
+    isLegacyTransaction = false;
   } else {
     offset -= 2;
   }
 
-  const vinLen = readVarInt();
+  let vinLen;
+  [vinLen, offset] = readVarInt(buffer, offset);
+  if (vinLen === 0) {
+    throw new Error('Transaction has no inputs');
+  }
   tx.vin = [];
   for (let i = 0; i < vinLen; ++i) {
-    const txid = uint8ArrayToHexString(readSlice(32).reverse());
-    const vout = readInt32(true);
-    const scriptsig = uint8ArrayToHexString(readVarSlice());
-    const sequence = readInt32(true);
+    let txid, vout, scriptsig, sequence;
+    [txid, offset] = readSlice(buffer, offset, 32);
+    txid = uint8ArrayToHexString(txid.reverse());
+    [vout, offset] = readInt32(buffer, offset, true);
+    [scriptsig, offset] = readVarSlice(buffer, offset);
+    scriptsig = uint8ArrayToHexString(scriptsig);
+    [sequence, offset] = readInt32(buffer, offset, true);
     const is_coinbase = txid === '0'.repeat(64);
     const scriptsig_asm = convertScriptSigAsm(scriptsig);
     tx.vin.push({ txid, vout, scriptsig, sequence, is_coinbase, scriptsig_asm, prevout: null });
   }
 
-  const voutLen = readVarInt();
+  let voutLen;
+  [voutLen, offset] = readVarInt(buffer, offset);
   tx.vout = [];
   for (let i = 0; i < voutLen; ++i) {
-    const value = Number(readInt64());
-    const scriptpubkeyArray = readVarSlice();
-    const scriptpubkey = uint8ArrayToHexString(scriptpubkeyArray)
+    let value, scriptpubkeyArray, scriptpubkey;
+    [value, offset] = readInt64(buffer, offset);
+    value = Number(value);
+    [scriptpubkeyArray, offset] = readVarSlice(buffer, offset);
+    scriptpubkey = uint8ArrayToHexString(scriptpubkeyArray);
     const scriptpubkey_asm = convertScriptSigAsm(scriptpubkey);
     const toAddress = scriptPubKeyToAddress(scriptpubkey, network);
     const scriptpubkey_type = toAddress.type;
@@ -842,47 +779,302 @@ function fromBuffer(buffer: Uint8Array, network: string): Transaction {
     tx.vout.push({ value, scriptpubkey, scriptpubkey_asm, scriptpubkey_type, scriptpubkey_address });
   }
 
-  let witnessSize = 0;
-  if (hasWitnesses) {
-    const startOffset = offset;
+  if (!isLegacyTransaction) {
     for (let i = 0; i < vinLen; ++i) {
-      tx.vin[i].witness = readVector().map(uint8ArrayToHexString);
+      let witness;
+      [witness, offset] = readVector(buffer, offset);
+      tx.vin[i].witness = witness.map(uint8ArrayToHexString);
     }
-    witnessSize = offset - startOffset + 2;
   }
 
-  tx.locktime = readInt32(true);
+  [tx.locktime, offset] = readInt32(buffer, offset, true);
 
   if (offset !== buffer.length) {
     throw new Error('Transaction has unexpected data');
   }
   
-  tx.size = buffer.length;
-  tx.weight = (tx.size - witnessSize) * 3 + tx.size;
+  // Optionally add data from PSBT: prevouts, redeem/witness scripts and signatures
+  if (inputs) {
+    for (let i = 0; i < tx.vin.length; i++) {
+      const vin = tx.vin[i];
+      const inputRecords = inputs[i];
 
-  tx.txid = txid(tx);
+      const groups = {
+        nonWitnessUtxo: null,
+        witnessUtxo: null,
+        finalScriptSig: null,
+        finalScriptWitness: null,
+        redeemScript: null,
+        witnessScript: null,
+        partialSigs: []
+      };
 
-  return tx;
-}
+      for (const record of inputRecords) {
+        switch (record.key[0]) {
+          case 0x00:
+            groups.nonWitnessUtxo = record;
+            break;
+          case 0x01:
+            groups.witnessUtxo = record;
+            break;
+          case 0x07:
+            groups.finalScriptSig = record;
+            break;
+          case 0x08:
+            groups.finalScriptWitness = record;
+            break;
+          case 0x04:
+            groups.redeemScript = record;
+            break;
+          case 0x05:
+            groups.witnessScript = record;
+            break;
+          case 0x02:
+            groups.partialSigs.push(record);
+            break;
+        }
+      }
 
-export function decodeRawTransaction(rawtx: string, network: string): Transaction {
-  if (!rawtx.length || rawtx.length % 2 !== 0 || !/^[0-9a-fA-F]*$/.test(rawtx)) {
-    throw new Error('Invalid hex string');
+      // Fill prevout
+      if (groups.witnessUtxo && !vin.prevout) {
+        let value, scriptpubkeyArray, scriptpubkey, outputOffset = 0;
+        [value, outputOffset] = readInt64(groups.witnessUtxo.value, outputOffset);
+        value = Number(value);
+        [scriptpubkeyArray, outputOffset] = readVarSlice(groups.witnessUtxo.value, outputOffset);
+        scriptpubkey = uint8ArrayToHexString(scriptpubkeyArray);
+        const scriptpubkey_asm = convertScriptSigAsm(scriptpubkey);
+        const toAddress = scriptPubKeyToAddress(scriptpubkey, network);
+        const scriptpubkey_type = toAddress.type;
+        const scriptpubkey_address = toAddress?.address;
+        vin.prevout = { value, scriptpubkey, scriptpubkey_asm, scriptpubkey_type, scriptpubkey_address };
+      }
+      if (groups.nonWitnessUtxo && !vin.prevout) {
+        const utxoTx = fromBuffer(groups.nonWitnessUtxo.value, network).tx;
+        vin.prevout = utxoTx.vout[vin.vout];
+      }
+
+      // Fill final scriptSig or witness
+      let finalizedScriptSig = false;
+      if (groups.finalScriptSig) {
+        vin.scriptsig = uint8ArrayToHexString(groups.finalScriptSig.value);
+        vin.scriptsig_asm = convertScriptSigAsm(vin.scriptsig);
+        finalizedScriptSig = true;
+      }
+      let finalizedWitness = false;
+      if (groups.finalScriptWitness) {
+        let witness = [];
+        let witnessOffset = 0;
+        [witness, witnessOffset] = readVector(groups.finalScriptWitness.value, witnessOffset);
+        vin.witness = witness.map(uint8ArrayToHexString);
+        finalizedWitness = true;
+      }
+      if (finalizedScriptSig && finalizedWitness) {
+        continue;
+      }
+
+      // Fill redeem script and/or witness script
+      if (groups.redeemScript && !finalizedScriptSig) {
+        const redeemScript = groups.redeemScript.value;
+        if (redeemScript.length > 520) {
+          throw new Error("Redeem script must be <= 520 bytes");
+        }
+        let pushOpcode;
+        if (redeemScript.length < 0x4c) {
+          pushOpcode = new Uint8Array([redeemScript.length]);
+        } else if (redeemScript.length <= 0xff) {
+          pushOpcode = new Uint8Array([0x4c, redeemScript.length]); // OP_PUSHDATA1
+        } else {
+          pushOpcode = new Uint8Array([0x4d, redeemScript.length & 0xff, redeemScript.length >> 8]); // OP_PUSHDATA2
+        }
+        vin.scriptsig = (vin.scriptsig || '') + uint8ArrayToHexString(pushOpcode) + uint8ArrayToHexString(redeemScript);
+        vin.scriptsig_asm = convertScriptSigAsm(vin.scriptsig);
+      }
+      if (groups.witnessScript && !finalizedWitness) {
+        vin.witness = (vin.witness || []).concat(uint8ArrayToHexString(groups.witnessScript.value));
+      }
+
+
+      // Fill partial signatures
+      for (const record of groups.partialSigs) {
+        const scriptpubkey_type = vin.prevout?.scriptpubkey_type;
+        if (scriptpubkey_type === 'v0_p2wsh' && !finalizedWitness) {
+          vin.witness = vin.witness || [];
+          vin.witness.unshift(uint8ArrayToHexString(record.value));
+        }
+        if (scriptpubkey_type === 'p2sh') {
+          const redeemScriptStr = vin.scriptsig_asm ? vin.scriptsig_asm.split(' ').reverse()[0] : '';
+          if (redeemScriptStr.startsWith('00') && redeemScriptStr.length === 68 && vin.witness?.length) {
+            if (!finalizedWitness) {
+              vin.witness.unshift(uint8ArrayToHexString(record.value));
+            }
+          } else {
+            if (!finalizedScriptSig) {
+              const signature = record.value;
+              if (signature.length > 73) {
+                throw new Error("Signature must be <= 73 bytes");
+              }
+              const pushOpcode = new Uint8Array([signature.length]);
+              vin.scriptsig = uint8ArrayToHexString(pushOpcode) + uint8ArrayToHexString(signature) + (vin.scriptsig || '');
+              vin.scriptsig_asm = convertScriptSigAsm(vin.scriptsig);
+            }
+          }
+        }
+      }
+    }    
   }
 
-  const buffer = new Uint8Array(rawtx.length / 2);
-  for (let i = 0; i < rawtx.length; i += 2) {
-    buffer[i / 2] = parseInt(rawtx.substring(i, i + 2), 16);
+  // Calculate final size, weight, and txid
+  const hasWitness = tx.vin.some(vin => vin.witness?.length);
+  let witnessSize = 0;
+  if (hasWitness) {
+    for (let i = 0; i < tx.vin.length; ++i) {
+      const witnessItems = tx.vin[i].witness || [];
+      witnessSize += getVarIntLength(witnessItems.length);
+      for (const item of witnessItems) {
+        const witnessItem = hexStringToUint8Array(item);
+        witnessSize += getVarIntLength(witnessItem.length);
+        witnessSize += witnessItem.length;
+      }
+    }
+    witnessSize += 2;
+  }
+
+  const rawHex = serializeTransaction(tx, hasWitness);
+  tx.size = rawHex.length;
+  tx.weight = (tx.size - witnessSize) * 3 + tx.size;
+  tx.txid = txid(tx);
+
+  return { tx, hex: uint8ArrayToHexString(rawHex) };
+}
+
+/**
+ * Decodes a PSBT buffer into the unsigned raw transaction and input map
+ * @param psbtBuffer
+ * @returns
+ *   - the unsigned transaction from a PSBT (txHex)
+ *   - the full input map for each input in to fill signatures and prevouts later (inputs)
+ */
+function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: { key: Uint8Array; value: Uint8Array }[][] } {
+  let offset = 0;
+
+  // magic: "psbt" in ASCII
+  const expectedMagic = [0x70, 0x73, 0x62, 0x74];
+  for (let i = 0; i < expectedMagic.length; i++) {
+    if (psbtBuffer[offset + i] !== expectedMagic[i]) {
+      throw new Error("Invalid PSBT magic bytes");
+    }
+  }
+  offset += expectedMagic.length;
+
+  const separator = psbtBuffer[offset];
+  offset += 1;
+  if (separator !== 0xff) {
+    throw new Error("Invalid PSBT separator");
+  }
+
+  // GLOBAL MAP
+  let rawTx: Uint8Array | null = null;
+  while (offset < psbtBuffer.length) {
+    const [keyLen, newOffset] = readVarInt(psbtBuffer, offset);
+    offset = newOffset;
+    // key length of 0 means the end of the global map
+    if (keyLen === 0) {
+      break;
+    }
+    const key = psbtBuffer.slice(offset, offset + keyLen);
+    offset += keyLen;
+    const [valLen, newOffset2] = readVarInt(psbtBuffer, offset);
+    offset = newOffset2;
+    const value = psbtBuffer.slice(offset, offset + valLen);
+    offset += valLen;
+
+    // Global key type 0x00 holds the unsigned transaction.
+    if (key[0] === 0x00) {
+      rawTx = value;
+    }
+  }
+
+  if (!rawTx) {
+    throw new Error("Unsigned transaction not found in PSBT");
+  }
+
+  let numInputs: number;
+  let txOffset = 0;
+  // Skip version (4 bytes)
+  txOffset += 4;
+  if (rawTx[txOffset] === 0x00 && rawTx[txOffset + 1] === 0x01) {
+    txOffset += 2;
+  }
+  const [inputCount, newTxOffset] = readVarInt(rawTx, txOffset);
+  txOffset = newTxOffset;
+  numInputs = inputCount;
+
+  // INPUT MAPS
+  const inputs: { key: Uint8Array; value: Uint8Array }[][] = [];
+  for (let i = 0; i < numInputs; i++) {
+    const inputRecords: { key: Uint8Array; value: Uint8Array }[] = [];
+    const seenKeys = new Set<string>();
+    while (offset < psbtBuffer.length) {
+      const [keyLen, newOffset] = readVarInt(psbtBuffer, offset);
+      offset = newOffset;
+      // key length of 0 means the end of the input map
+      if (keyLen === 0) {
+        break;
+      }
+      const key = psbtBuffer.slice(offset, offset + keyLen);
+      offset += keyLen;
+
+      const keyHex = uint8ArrayToHexString(key);
+      if (seenKeys.has(keyHex)) {
+        throw new Error(`Duplicate key in input map`);
+      }
+      seenKeys.add(keyHex);
+
+      const [valLen, newOffset2] = readVarInt(psbtBuffer, offset);
+      offset = newOffset2;
+      const value = psbtBuffer.slice(offset, offset + valLen);
+      offset += valLen;
+
+      inputRecords.push({ key, value });
+    }
+    inputs.push(inputRecords);
+  }
+
+  return { rawTx, inputs };
+}
+
+export function decodeRawTransaction(input: string, network: string): { tx: Transaction, hex: string } {
+  if (!input.length) {
+    throw new Error('Empty input');
+  }
+
+  let buffer: Uint8Array;
+  if (input.length % 2 === 0 && /^[0-9a-fA-F]+$/.test(input)) {
+    buffer = hexStringToUint8Array(input);
+  } else if (/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)|[A-Za-z0-9+/]{3}=)?$/.test(input)) {
+    buffer = base64ToUint8Array(input);
+  } else {
+    throw new Error('Invalid input: not a valid transaction or PSBT');
+  }
+
+  if (buffer[0] === 0x70 && buffer[1] === 0x73 && buffer[2] === 0x62 && buffer[3] === 0x74) { // PSBT magic bytes
+    const { rawTx, inputs } = decodePsbt(buffer);
+    return fromBuffer(rawTx, network, inputs);
   }
 
   return fromBuffer(buffer, network);
 }
 
-function serializeTransaction(tx: Transaction): Uint8Array {
+function serializeTransaction(tx: Transaction, includeWitness: boolean = true): Uint8Array {
   const result: number[] = [];
 
   // Add version
   result.push(...intToBytes(tx.version, 4));
+
+  if (includeWitness) {
+    // Add SegWit marker and flag bytes (0x00, 0x01)
+    result.push(0x00, 0x01);
+  }
 
   // Add input count and inputs
   result.push(...varIntToBytes(tx.vin.length));
@@ -904,6 +1096,18 @@ function serializeTransaction(tx: Transaction): Uint8Array {
     result.push(...scriptPubKey);
   }
 
+  if (includeWitness) {
+    for (const input of tx.vin) {
+      const witnessItems = input.witness || [];
+      result.push(...varIntToBytes(witnessItems.length));
+      for (const item of witnessItems) {
+        const witnessBytes = hexStringToUint8Array(item);
+        result.push(...varIntToBytes(witnessBytes.length));
+        result.push(...witnessBytes);
+      }
+    }
+  }
+
   // Add locktime
   result.push(...intToBytes(tx.locktime, 4));
 
@@ -911,7 +1115,7 @@ function serializeTransaction(tx: Transaction): Uint8Array {
 }
 
 function txid(tx: Transaction): string {
-  const serializedTx = serializeTransaction(tx);
+  const serializedTx = serializeTransaction(tx, false);
   const hash1 = new Hash().update(serializedTx).digest();
   const hash2 = new Hash().update(hash1).digest();
   return uint8ArrayToHexString(hash2.reverse());
@@ -1188,6 +1392,11 @@ function hexStringToUint8Array(hex: string): Uint8Array {
   return buf;
 }
 
+function base64ToUint8Array(base64: string): Uint8Array {
+  const binaryString = atob(base64);
+  return new Uint8Array([...binaryString].map(char => char.charCodeAt(0)));
+}
+
 function intToBytes(value: number, byteLength: number): number[] {
   const bytes = [];
   for (let i = 0; i < byteLength; i++) {
@@ -1228,6 +1437,88 @@ function varIntToBytes(value: number | bigint): number[] {
   }
 
   return bytes;
+}
+
+function readInt8(buffer: Uint8Array, offset: number): [number, number] {
+  if (offset + 1 > buffer.length) {
+    throw new Error('Buffer out of bounds');
+  }
+  return [buffer[offset], offset + 1];
+}
+
+function readInt16(buffer: Uint8Array, offset: number): [number, number] {
+  if (offset + 2 > buffer.length) {
+    throw new Error('Buffer out of bounds');
+  }
+  return [buffer[offset] | (buffer[offset + 1] << 8), offset + 2];
+}
+
+function readInt32(buffer: Uint8Array, offset: number, unsigned: boolean = false): [number, number] {
+  if (offset + 4 > buffer.length) {
+    throw new Error('Buffer out of bounds');
+  }
+  const value = buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24);
+  return [unsigned ? value >>> 0 : value, offset + 4];
+}
+
+function readInt64(buffer: Uint8Array, offset: number): [bigint, number] {
+  if (offset + 8 > buffer.length) {
+    throw new Error('Buffer out of bounds');
+  }
+  const low = BigInt(buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24));
+  const high = BigInt(buffer[offset + 4] | (buffer[offset + 5] << 8) | (buffer[offset + 6] << 16) | (buffer[offset + 7] << 24));
+  return [(high << 32n) | (low & 0xffffffffn), offset + 8];
+}
+
+function readVarInt(buffer: Uint8Array, offset: number): [number, number] {
+  const [first, newOffset] = readInt8(buffer, offset);
+
+  if (first < 0xfd) {
+    return [first, newOffset];
+  } else if (first === 0xfd) {
+    return readInt16(buffer, newOffset);
+  } else if (first === 0xfe) {
+    return readInt32(buffer, newOffset, true);
+  } else if (first === 0xff) {
+    const [bigValue, nextOffset] = readInt64(buffer, newOffset);
+
+    if (bigValue > Number.MAX_SAFE_INTEGER) {
+      throw new Error("VarInt exceeds safe integer range");
+    }
+
+    const numValue = Number(bigValue);
+    return [numValue, nextOffset];
+  } else {
+    throw new Error("Invalid VarInt prefix");
+  }
+}
+
+function readSlice(buffer: Uint8Array, offset: number, n: number | bigint): [Uint8Array, number] {
+  const length = Number(n);
+  if (offset + length > buffer.length) {
+    throw new Error('Cannot read slice out of bounds');
+  }
+  const slice = buffer.slice(offset, offset + length);
+  return [slice, offset + length];
+}
+
+function readVarSlice(buffer: Uint8Array, offset: number): [Uint8Array, number] {
+  const [length, newOffset] = readVarInt(buffer, offset);
+  return readSlice(buffer, newOffset, length);
+}
+
+function readVector(buffer: Uint8Array, offset: number): [Uint8Array[], number] {
+  const [count, newOffset] = readVarInt(buffer, offset);
+  let updatedOffset = newOffset;
+  const vector: Uint8Array[] = [];
+
+  for (let i = 0; i < count; i++) {
+    const [slice, nextOffset] = readVarSlice(buffer, updatedOffset);
+    vector.push(slice);
+    updatedOffset = nextOffset;
+  }
+
+  return [vector, updatedOffset];
 }
 
 // Inversed the opcodes object from https://github.com/mempool/mempool/blob/14e49126c3ca8416a8d7ad134a95c5e090324d69/backend/src/utils/bitcoin-script.ts#L1

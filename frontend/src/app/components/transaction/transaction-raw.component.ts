@@ -22,6 +22,7 @@ import { CpfpInfo } from '../../interfaces/node-api.interface';
 export class TransactionRawComponent implements OnInit, OnDestroy {
 
   pushTxForm: UntypedFormGroup;
+  rawHexTransaction: string;
   isLoading: boolean;
   isLoadingPrevouts: boolean;
   isLoadingCpfpInfo: boolean;
@@ -81,10 +82,10 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.resetState();
     this.isLoading = true;
     try {
-      const tx = decodeRawTransaction(this.pushTxForm.get('txRaw').value, this.stateService.network);
+      const { tx, hex } = decodeRawTransaction(this.pushTxForm.get('txRaw').value, this.stateService.network);
       await this.fetchPrevouts(tx);
       await this.fetchCpfpInfo(tx);
-      this.processTransaction(tx);
+      this.processTransaction(tx, hex);
     } catch (error) {
       this.error = error.message;
     } finally {
@@ -93,57 +94,60 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
   }
 
   async fetchPrevouts(transaction: Transaction): Promise<void> {
-    if (this.offlineMode) {
-      return;
-    }
+    const prevoutsToFetch = transaction.vin.filter(input => !input.prevout).map((input) => ({ txid: input.txid, vout: input.vout }));
 
-    const prevoutsToFetch = transaction.vin.map((input) => ({ txid: input.txid, vout: input.vout }));
+    if (!prevoutsToFetch.length || transaction.vin[0].is_coinbase || this.offlineMode) {
+      this.hasPrevouts = !prevoutsToFetch.length || transaction.vin[0].is_coinbase;
+      this.fetchCpfp = this.hasPrevouts && !this.offlineMode;
+    } else {
+      try {
+        this.missingPrevouts = [];
+        this.isLoadingPrevouts = true;
 
-    if (!prevoutsToFetch.length || transaction.vin[0].is_coinbase) {
-      this.hasPrevouts = true;
-      return;
-    }
+        const prevouts: { prevout: Vout, unconfirmed: boolean }[] = await firstValueFrom(this.apiService.getPrevouts$(prevoutsToFetch));
 
-    try {
-      this.missingPrevouts = [];
-      this.isLoadingPrevouts = true;
-
-      const prevouts: { prevout: Vout, unconfirmed: boolean }[] = await firstValueFrom(this.apiService.getPrevouts$(prevoutsToFetch));
-
-      if (prevouts?.length !== prevoutsToFetch.length) {
-        throw new Error();
-      }
-
-      transaction.vin = transaction.vin.map((input, index) => {
-        if (prevouts[index]) {
-          input.prevout = prevouts[index].prevout;
-          addInnerScriptsToVin(input);
-        } else {
-          this.missingPrevouts.push(`${input.txid}:${input.vout}`);
+        if (prevouts?.length !== prevoutsToFetch.length) {
+          throw new Error();
         }
-        return input;
-      });
 
-      if (this.missingPrevouts.length) {
-        throw new Error(`Some prevouts do not exist or are already spent (${this.missingPrevouts.length})`);
+        let fetchIndex = 0;
+        transaction.vin.forEach(input => {
+          if (!input.prevout) {
+            const fetched = prevouts[fetchIndex];
+            if (fetched) {
+              input.prevout = fetched.prevout;
+            } else {
+              this.missingPrevouts.push(`${input.txid}:${input.vout}`);
+            }
+            fetchIndex++;
+          }
+        });
+
+        if (this.missingPrevouts.length) {
+          throw new Error(`Some prevouts do not exist or are already spent (${this.missingPrevouts.length})`);
+        }
+
+        this.hasPrevouts = true;
+        this.isLoadingPrevouts = false;
+        this.fetchCpfp = prevouts.some(prevout => prevout?.unconfirmed);
+      } catch (error) {
+        console.log(error);
+        this.errorPrevouts = error?.error?.error || error?.message;
+        this.isLoadingPrevouts = false;
       }
+    }
 
+    if (this.hasPrevouts) {
       transaction.fee = transaction.vin.some(input => input.is_coinbase)
         ? 0
         : transaction.vin.reduce((fee, input) => {
           return fee + (input.prevout?.value || 0);
         }, 0) - transaction.vout.reduce((sum, output) => sum + output.value, 0);
       transaction.feePerVsize = transaction.fee / (transaction.weight / 4);
-      transaction.sigops = countSigops(transaction);
-
-      this.hasPrevouts = true;
-      this.isLoadingPrevouts = false;
-      this.fetchCpfp = prevouts.some(prevout => prevout?.unconfirmed);
-    } catch (error) {
-      console.log(error);
-      this.errorPrevouts = error?.error?.error || error?.message;
-      this.isLoadingPrevouts = false;
     }
+
+    transaction.vin.forEach(addInnerScriptsToVin);
+    transaction.sigops = countSigops(transaction);
   }
 
   async fetchCpfpInfo(transaction: Transaction): Promise<void> {
@@ -175,10 +179,11 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     }
   }
 
-  processTransaction(tx: Transaction): void {
+  processTransaction(tx: Transaction, hex: string): void {
     this.transaction = tx;
+    this.rawHexTransaction = hex;
 
-    this.transaction.flags = getTransactionFlags(this.transaction, null, null, null, this.stateService.network);
+    this.transaction.flags = getTransactionFlags(this.transaction, this.cpfpInfo, null, null, this.stateService.network);
     this.filters = this.transaction.flags ? toFilters(this.transaction.flags).filter(f => f.txPage) : [];
     if (this.transaction.sigops >= 0) {
       this.adjustedVsize = Math.max(this.transaction.weight / 4, this.transaction.sigops * 5);
@@ -206,7 +211,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.isLoadingBroadcast = true;
     this.errorBroadcast = null;
     return new Promise((resolve, reject) => {
-      this.apiService.postTransaction$(this.pushTxForm.get('txRaw').value)
+      this.apiService.postTransaction$(this.rawHexTransaction)
       .subscribe((result) => {
         this.isLoadingBroadcast = false;
         this.successBroadcast = true;
@@ -228,6 +233,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
 
   resetState() {
     this.transaction = null;
+    this.rawHexTransaction = null;
     this.error = null;
     this.errorPrevouts = null;
     this.errorBroadcast = null;
@@ -251,7 +257,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
 
   resetForm() {
     this.resetState();
-    this.pushTxForm.reset();
+    this.pushTxForm.get('txRaw').setValue('');
   }
 
   @HostListener('window:resize', ['$event'])

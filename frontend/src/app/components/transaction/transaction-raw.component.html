@@ -6,7 +6,7 @@
 
     <form [formGroup]="pushTxForm" (submit)="decodeTransaction()" novalidate>
       <div class="mb-3">
-        <textarea formControlName="txRaw" class="form-control" rows="5" i18n-placeholder="transaction.hex" placeholder="Transaction hex"></textarea>
+        <textarea formControlName="txRaw" class="form-control" rows="5" i18n-placeholder="transaction.hex-and-psbt" placeholder="Transaction hex or base64 encoded PSBT"></textarea>
       </div>
       <button [disabled]="isLoading" type="submit" class="btn btn-primary mr-2" i18n="shared.preview|Preview">Preview</button>
       <input type="checkbox" [checked]="!offlineMode" id="offline-mode" (change)="onOfflineModeChange($event)">
@@ -192,7 +192,7 @@
               </tr>
               <tr>
                 <td i18n="transaction.hex">Transaction hex</td>
-                <td><app-clipboard [text]="pushTxForm.get('txRaw').value" [leftPadding]="false"></app-clipboard></td>
+                <td><app-clipboard [text]="rawHexTransaction" [leftPadding]="false"></app-clipboard></td>
               </tr>
             </tbody>
           </table>
