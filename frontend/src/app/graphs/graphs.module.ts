@@ -26,7 +26,6 @@ import { StatisticsComponent } from '@components/statistics/statistics.component
 import { MempoolBlockComponent } from '@components/mempool-block/mempool-block.component';
 import { PoolRankingComponent } from '@components/pool-ranking/pool-ranking.component';
 import { PoolComponent } from '@components/pool/pool.component';
-import { TelevisionComponent } from '@components/television/television.component';
 import { DashboardComponent } from '@app/dashboard/dashboard.component';
 import { CustomDashboardComponent } from '@components/custom-dashboard/custom-dashboard.component';
 import { MiningDashboardComponent } from '@components/mining-dashboard/mining-dashboard.component';
@@ -56,7 +55,6 @@ import { CommonModule } from '@angular/common';
     AcceleratorDashboardComponent,
     PoolComponent,
     PoolRankingComponent,
-    TelevisionComponent,
 
     StatisticsComponent,
     GraphsComponent,
