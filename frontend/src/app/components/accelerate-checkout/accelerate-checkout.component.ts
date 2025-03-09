@@ -525,7 +525,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               if (tokenResult?.status === 'OK') {
                 const card = tokenResult.details?.card;
                 if (!card || !card.brand || !card.expMonth || !card.expYear || !card.last4) {
-                  console.error(`Cannot retreive payment card details`);
+                  console.error(`Cannot retrieve payment card details`);
                   this.accelerateError = 'apple_pay_no_card_details';
                   this.processing = false;
                   return;
@@ -643,7 +643,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             if (tokenResult?.status === 'OK') {
               const card = tokenResult.details?.card;
               if (!card || !card.brand || !card.expMonth || !card.expYear || !card.last4) {
-                console.error(`Cannot retreive payment card details`);
+                console.error(`Cannot retrieve payment card details`);
                 this.accelerateError = 'apple_pay_no_card_details';
                 this.processing = false;
                 return;
@@ -936,7 +936,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     this.loadingBtcpayInvoice = true;
     this.servicesApiService.generateBTCPayAcceleratorInvoice$(this.tx.txid, this.userBid).pipe(
       switchMap(response => {
-        return this.servicesApiService.retreiveInvoice$(response.btcpayInvoiceId);
+        return this.servicesApiService.retrieveInvoice$(response.btcpayInvoiceId);
       }),
       catchError(error => {
         console.log(error);
