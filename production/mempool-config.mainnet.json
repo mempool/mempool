@@ -14,6 +14,7 @@
     "BLOCKS_SUMMARIES_INDEXING": true,
     "GOGGLES_INDEXING": true,
     "AUTOMATIC_POOLS_UPDATE": true,
+    "POOLS_UPDATE_DELAY": 3600,
     "AUDIT": true,
     "CPFP_INDEXING": true,
     "RUST_GBT": true,
