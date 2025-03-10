@@ -164,6 +164,7 @@ interface IConfig {
   },
   WALLETS: {
     ENABLED: boolean;
+    AUTO: boolean;
     WALLETS: string[];
   },
   STRATUM: {
@@ -334,6 +335,7 @@ const defaults: IConfig = {
   },
   'WALLETS': {
     'ENABLED': false,
+    'AUTO': false,
     'WALLETS': [],
   },
   'STRATUM': {
