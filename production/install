@@ -562,7 +562,7 @@ zfsCreateFilesystems()
     zfs create -o "mountpoint=${MINFEE_HOME}" "${ZPOOL}/minfee"
     zfs create -o "mountpoint=${ELECTRS_HOME}" "${ZPOOL}/electrs"
     zfs create -o "mountpoint=${MEMPOOL_HOME}" "${ZPOOL}/mempool"
-    zfs create -o "mountpoint=${MYSQL_HOME}" "${ZPOOL}/mysql"
+    zfs create -o "mountpoint=${MYSQL_HOME}" "${ZPOOL}/mysql" || true
 
     zfs create -o "mountpoint=${BITCOIN_ELECTRS_HOME}" "${ZPOOL}/bitcoin/electrs"
 
@@ -1907,34 +1907,34 @@ esac
 sleep 10
 
 mysql << _EOF_
-create database mempool;
+create database if not exists mempool;
 grant all on mempool.* to '${MEMPOOL_MAINNET_USER}'@'localhost' identified by '${MEMPOOL_MAINNET_PASS}';
 
-create database mempool_testnet;
+create database if not exists mempool_testnet;
 grant all on mempool_testnet.* to '${MEMPOOL_TESTNET_USER}'@'localhost' identified by '${MEMPOOL_TESTNET_PASS}';
 
-create database mempool_testnet4;
+create database if not exists mempool_testnet4;
 grant all on mempool_testnet4.* to '${MEMPOOL_TESTNET4_USER}'@'localhost' identified by '${MEMPOOL_TESTNET4_PASS}';
 
-create database mempool_signet;
+create database if not exists mempool_signet;
 grant all on mempool_signet.* to '${MEMPOOL_SIGNET_USER}'@'localhost' identified by '${MEMPOOL_SIGNET_PASS}';
 
-create database mempool_mainnet_lightning;
+create database if not exists mempool_mainnet_lightning;
 grant all on mempool_mainnet_lightning.* to '${MEMPOOL_MAINNET_LIGHTNING_USER}'@'localhost' identified by '${MEMPOOL_MAINNET_LIGHTNING_PASS}';
 
-create database mempool_testnet_lightning;
+create database if not exists mempool_testnet_lightning;
 grant all on mempool_testnet_lightning.* to '${MEMPOOL_TESTNET_LIGHTNING_USER}'@'localhost' identified by '${MEMPOOL_TESTNET_LIGHTNING_PASS}';
 
-create database mempool_signet_lightning;
+create database if not exists mempool_signet_lightning;
 grant all on mempool_signet_lightning.* to '${MEMPOOL_SIGNET_LIGHTNING_USER}'@'localhost' identified by '${MEMPOOL_SIGNET_LIGHTNING_PASS}';
 
-create database mempool_liquid;
+create database if not exists mempool_liquid;
 grant all on mempool_liquid.* to '${MEMPOOL_LIQUID_USER}'@'localhost' identified by '${MEMPOOL_LIQUID_PASS}';
 
-create database mempool_liquidtestnet;
+create database if not exists mempool_liquidtestnet;
 grant all on mempool_liquidtestnet.* to '${MEMPOOL_LIQUIDTESTNET_USER}'@'localhost' identified by '${MEMPOOL_LIQUIDTESTNET_PASS}';
 
-create database mempool_bisq;
+create database if not exists mempool_bisq;
 grant all on mempool_bisq.* to '${MEMPOOL_BISQ_USER}'@'localhost' identified by '${MEMPOOL_BISQ_PASS}';
 _EOF_
 
