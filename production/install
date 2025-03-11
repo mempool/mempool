@@ -357,7 +357,7 @@ BITCOIN_REPO_URL=https://github.com/bitcoin/bitcoin
 BITCOIN_REPO_NAME=bitcoin
 BITCOIN_REPO_BRANCH=master
 #BITCOIN_LATEST_RELEASE=$(curl -s https://api.github.com/repos/bitcoin/bitcoin/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
-BITCOIN_LATEST_RELEASE=v28.0
+BITCOIN_LATEST_RELEASE=v28.1
 echo -n '.'
 
 BISQ_REPO_URL=https://github.com/bisq-network/bisq
@@ -378,7 +378,7 @@ ELEMENTS_REPO_URL=https://github.com/ElementsProject/elements
 ELEMENTS_REPO_NAME=elements
 ELEMENTS_REPO_BRANCH=master
 #ELEMENTS_LATEST_RELEASE=$(curl -s https://api.github.com/repos/ElementsProject/elements/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
-ELEMENTS_LATEST_RELEASE=elements-22.1.1
+ELEMENTS_LATEST_RELEASE=elements-23.2.6
 echo -n '.'
 
 BITCOIN_ELECTRS_REPO_URL=https://github.com/mempool/electrs
