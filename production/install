@@ -1378,6 +1378,8 @@ fi
 # Core Lightning for Bitcoin #
 ##############################
 
+if [ "${CLN_INSTALL}" = ON ];then
+
 echo "[*] Installing Core Lightning"
 case $OS in
     FreeBSD)
@@ -1418,6 +1420,7 @@ case $OS in
     ;;
 esac
 
+fi
 
 #####################
 # Bisq installation #
