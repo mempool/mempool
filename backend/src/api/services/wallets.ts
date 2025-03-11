@@ -30,6 +30,7 @@ const POLL_FREQUENCY = 5 * 60 * 1000; // 5 minutes
 class WalletApi {
   private wallets: Record<string, Wallet> = {};
   private syncing = false;
+  private lastSync = 0;
 
   constructor() {
     this.wallets = config.WALLETS.ENABLED ? (config.WALLETS.WALLETS as string[]).reduce((acc, wallet) => {
@@ -47,7 +48,38 @@ class WalletApi {
     if (!config.WALLETS.ENABLED || this.syncing) {
       return;
     }
+
     this.syncing = true;
+
+    if (config.WALLETS.AUTO && (Date.now() - this.lastSync) > POLL_FREQUENCY) {
+      try {
+        // update list of active wallets
+        this.lastSync = Date.now();
+        const response = await axios.get(config.MEMPOOL_SERVICES.API + `/wallets`);
+        const walletList: string[] = response.data;
+        if (walletList) {
+          // create a quick lookup dictionary of active wallets
+          const newWallets: Record<string, boolean> = Object.fromEntries(
+            walletList.map(wallet => [wallet, true])
+          );
+          for (const wallet of walletList) {
+            // don't overwrite existing wallets
+            if (!this.wallets[wallet]) {
+              this.wallets[wallet] = { name: wallet, addresses: {}, lastPoll: 0 };
+            }
+          }
+          // remove wallets that are no longer active
+          for (const wallet of Object.keys(this.wallets)) {
+            if (!newWallets[wallet]) {
+              delete this.wallets[wallet];
+            }
+          }
+        }
+      } catch (e) {
+        logger.err(`Error updating active wallets: ${(e instanceof Error ? e.message : e)}`);
+      }
+    }
+
     for (const walletKey of Object.keys(this.wallets)) {
       const wallet = this.wallets[walletKey];
       if (wallet.lastPoll < (Date.now() - POLL_FREQUENCY)) {
@@ -72,6 +104,7 @@ class WalletApi {
         }
       }
     }
+
     this.syncing = false;
   }
 
