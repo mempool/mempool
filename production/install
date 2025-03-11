@@ -1314,7 +1314,7 @@ if [ "${BITCOIN_ELECTRS_INSTALL}" = ON ];then
     case $OS in
         FreeBSD)
             echo "[*] Patching Bitcoin Electrs code for FreeBSD"
-            osSudo "${BITCOIN_USER}" sh -c "cd \"${BITCOIN_HOME}/.cargo/registry/src/index.crates.io-6f17d22bba15001f/sysconf-0.3.4\" && patch -p1 < \"${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/freebsd/sysconf.patch\""
+            osSudo "${BITCOIN_USER}" sh -c "cd \"${BITCOIN_HOME}/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sysconf-0.3.4\" && patch -p1 < \"${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/freebsd/sysconf.patch\""
             #osSudo "${BITCOIN_USER}" sh -c "cd \"${BITCOIN_ELECTRS_HOME}/src/new_index/\" && sed -i.bak -e s/Snappy/None/ db.rs && rm db.rs.bak"
             #osSudo "${BITCOIN_USER}" sh -c "cd \"${BITCOIN_ELECTRS_HOME}/src/bin/\" && sed -i.bak -e 's/from_secs(5)/from_secs(1)/' electrs.rs && rm electrs.rs.bak"
         ;;
@@ -1364,7 +1364,7 @@ if [ "${ELEMENTS_ELECTRS_INSTALL}" = ON ];then
     case $OS in
         FreeBSD)
             echo "[*] Patching Liquid Electrs code for FreeBSD"
-            osSudo "${ELEMENTS_USER}" sh -c "cd \"${ELEMENTS_HOME}/.cargo/registry/src/index.crates.io-6f17d22bba15001f/sysconf-0.3.4\" && patch -p1 < \"${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/freebsd/sysconf.patch\""
+            osSudo "${ELEMENTS_USER}" sh -c "cd \"${ELEMENTS_HOME}/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sysconf-0.3.4\" && patch -p1 < \"${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/freebsd/sysconf.patch\""
         ;;
         Debian)
         ;;
