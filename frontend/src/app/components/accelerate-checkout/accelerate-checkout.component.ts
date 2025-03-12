@@ -200,7 +200,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   moveToStep(step: CheckoutStep, force: boolean = false): void {
-    if (this.isCheckoutLocked > 0 && !force) {
+    if (this.isCheckoutLocked > 0 && !force || this.step === 'success') {
       return;
     }
     this.processing = false;
