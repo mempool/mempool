@@ -82,7 +82,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.resetState();
     this.isLoading = true;
     try {
-      const { tx, hex } = decodeRawTransaction(this.pushTxForm.get('txRaw').value, this.stateService.network);
+      const { tx, hex } = decodeRawTransaction(this.pushTxForm.get('txRaw').value.trim(), this.stateService.network);
       await this.fetchPrevouts(tx);
       await this.fetchCpfpInfo(tx);
       this.processTransaction(tx, hex);
