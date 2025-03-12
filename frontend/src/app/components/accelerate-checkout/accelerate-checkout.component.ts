@@ -870,7 +870,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               tokenResult.details.cashAppPay.referenceId,
               costUSD
             ).subscribe({
-              next: () => {
+              next: (response) => {
+                this.accelerationResponse = response;
                 this.processing = false;
                 this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
                 this.audioService.playSound('ascend-chime-cartoon');
