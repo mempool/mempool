@@ -316,7 +316,7 @@ export function parseTapscriptMultisig(script: string): undefined | { m: number,
   }
 
   const finalOp = ops.pop();
-  if (finalOp !== 'OP_NUMEQUAL' && finalOp !== 'OP_GREATERTHANOREQUAL') {
+  if (!['OP_NUMEQUAL', 'OP_NUMEQUALVERIFY', 'OP_GREATERTHANOREQUAL', 'OP_GREATERTHAN', 'OP_EQUAL', 'OP_EQUALVERIFY'].includes(finalOp)) {
     return;
   }
 
@@ -329,6 +329,10 @@ export function parseTapscriptMultisig(script: string): undefined | { m: number,
     m = parseInt(ops.pop().match(/[0-9]+/)?.[0], 10);
   } else {
     return;
+  }
+
+  if (finalOp === 'OP_GREATERTHAN') {
+    m += 1;
   }
 
   if (ops.length % 3 !== 0) {
