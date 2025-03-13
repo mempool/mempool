@@ -56,16 +56,16 @@ export class TwitterWidgetComponent implements OnChanges {
           + '&theme=dark'
           + '&transparent=true'
           + '&widgetsVersion=2615f7e52b7e0%3A1702314776716';
-    switch (this.handle.toLowerCase()) {
-      case 'nayibbukele':
-        url = 'https://bitcoin.gob.sv/twidget';
-        break;
-      case 'metaplanet_jp':
-        url = 'https://metaplanet.mempool.space/twidget';
-        break;
-      default:
-        break;
-    }
+    // switch (this.handle.toLowerCase()) {
+    //   case 'nayibbukele':
+    //     url = 'https://bitcoin.gob.sv/twidget';
+    //     break;
+    //   case 'metaplanet_jp':
+    //     url = 'https://metaplanet.mempool.space/twidget';
+    //     break;
+    //   default:
+    //     break;
+    // }
     this.iframeSrc = this.sanitizer.bypassSecurityTrustResourceUrl(this.sanitizer.sanitize(SecurityContext.URL, url));
   }
 
