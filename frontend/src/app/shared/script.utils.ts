@@ -310,8 +310,10 @@ export function parseTapscriptMultisig(script: string): undefined | { m: number,
   }
 
   const ops = script.split(' ');
-  // At minimum, one pubkey group (3 tokens) + m push + final opcode = 5 tokens
-  if (ops.length < 5) return;
+  // At minimum, 2 pubkey group (3 tokens) + m push + final opcode = 8 tokens
+  if (ops.length < 8) {
+    return;
+  }
 
   const finalOp = ops.pop();
   if (finalOp !== 'OP_NUMEQUAL' && finalOp !== 'OP_GREATERTHANOREQUAL') {
