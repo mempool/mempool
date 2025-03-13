@@ -87,6 +87,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   math = Math;
   isMobile: boolean = window.innerWidth <= 767.98;
   isProdDomain = false;
+  accelerationResponse: { receiptUrl: string | null } | undefined;
 
   private _step: CheckoutStep = 'summary';
   simpleMode: boolean = true;
@@ -194,16 +195,12 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.scrollToElement('acceleratePreviewAnchor', 'start');
     }
     if (changes.accelerating && this.accelerating) {
-      if (this.step === 'processing' || this.step === 'paid') {
-        this.moveToStep('success', true);
-      } else { // Edge case where the transaction gets accelerated by someone else or on another session
-        this.closeModal();
-      }
+      this.moveToStep('success', true);
     }
   }
 
   moveToStep(step: CheckoutStep, force: boolean = false): void {
-    if (this.isCheckoutLocked > 0 && !force) {
+    if (this.isCheckoutLocked > 0 && !force || this.step === 'success') {
       return;
     }
     this.processing = false;
@@ -541,7 +538,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                   `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
                   costUSD
                 ).subscribe({
-                  next: () => {
+                  next: (response) => {
+                    this.accelerationResponse = response;
                     this.processing = false;
                     this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
                     this.audioService.playSound('ascend-chime-cartoon');
@@ -668,7 +666,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                 costUSD,
                 verificationToken.userChallenged
               ).subscribe({
-                next: () => {
+                next: (response) => {
+                  this.accelerationResponse = response;
                   this.processing = false;
                   this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
                   this.audioService.playSound('ascend-chime-cartoon');
@@ -777,7 +776,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             costUSD,
             verificationToken.userChallenged
           ).subscribe({
-            next: () => {
+            next: (response) => {
+              this.accelerationResponse = response;
               this.processing = false;
               this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
               this.audioService.playSound('ascend-chime-cartoon');
@@ -870,7 +870,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               tokenResult.details.cashAppPay.referenceId,
               costUSD
             ).subscribe({
-              next: () => {
+              next: (response) => {
+                this.accelerationResponse = response;
                 this.processing = false;
                 this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
                 this.audioService.playSound('ascend-chime-cartoon');
