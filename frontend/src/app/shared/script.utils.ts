@@ -256,6 +256,11 @@ export function detectScriptTemplate(type: ScriptType, script_asm: string, witne
     return ScriptTemplates.multisig(tapscriptMultisig.m, tapscriptMultisig.n);
   }
 
+  const tapscriptUnanimousMultisig = parseTapscriptUnanimousMultisig(script_asm);
+  if (tapscriptUnanimousMultisig) {
+    return ScriptTemplates.multisig(tapscriptUnanimousMultisig, tapscriptUnanimousMultisig);
+  }
+
   return;
 }
 
@@ -364,6 +369,53 @@ export function parseTapscriptMultisig(script: string): undefined | { m: number,
   }
 
   return { m, n };
+}
+
+export function parseTapscriptUnanimousMultisig(script: string): undefined | number {
+  if (!script) {
+    return;
+  }
+
+  const ops = script.split(' ');
+  // At minimum, 2 pubkey group (3 tokens) = 6 tokens
+  if (ops.length < 6) {
+    return;
+  }
+
+  if (ops.length % 3 !== 0) {
+    return;
+  }
+
+  const n = ops.length / 3;
+
+  for (let i = 0; i < n; i++) {
+    const pushOp = ops.shift();
+    const pubkey = ops.shift();
+    const sigOp = ops.shift();
+
+    if (pushOp !== 'OP_PUSHBYTES_32') {
+      return;
+    }
+    if (!/^[0-9a-fA-F]{64}$/.test(pubkey)) {
+      return;
+    }
+    if (i < n - 1) {
+      if (sigOp !== 'OP_CHECKSIGVERIFY') {
+        return;
+      }
+    } else {
+      // Last opcode can be either CHECKSIG or CHECKSIGVERIFY
+      if (!(sigOp === 'OP_CHECKSIGVERIFY' || sigOp === 'OP_CHECKSIG')) {
+        return;
+      }
+    }
+  }
+
+  if (ops.length) {
+    return;
+  }
+
+  return n;
 }
 
 export function getVarIntLength(n: number): number {
