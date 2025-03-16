@@ -309,8 +309,7 @@ jobs:
             --key ${{ secrets.CYPRESS_RECORD_KEY }} \
             --parallel \
             --group "Tests on Chrome (${{ matrix.module }})" \
-            --ci-build-id "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}" \
-            --env "retryIntervals=0,1000,2000,5000,10000,20000"
+            --ci-build-id "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
         working-directory: ${{ matrix.module }}/frontend
         env:
           COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
@@ -328,8 +327,7 @@ jobs:
             --key ${{ secrets.CYPRESS_RECORD_KEY }} \
             --parallel \
             --group "Tests on Chrome (${{ matrix.module }})" \
-            --ci-build-id "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}" \
-            --env "retryIntervals=0,1000,2000,5000,10000,20000"
+            --ci-build-id "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
         working-directory: ${{ matrix.module }}/frontend
         env:
           COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
@@ -347,8 +345,7 @@ jobs:
             --key ${{ secrets.CYPRESS_RECORD_KEY }} \
             --parallel \
             --group "Tests on Chrome (${{ matrix.module }})" \
-            --ci-build-id "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}" \
-            --env "retryIntervals=0,1000,2000,5000,10000,20000"
+            --ci-build-id "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
         working-directory: ${{ matrix.module }}/frontend
         env:
           CYPRESS_REROUTE_TESTNET: true
