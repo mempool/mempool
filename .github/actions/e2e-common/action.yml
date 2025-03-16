@@ -1,111 +1,104 @@
 name: E2E Common Workflow
+description: "Runs the tests with the given parameters"
 
-on:
-  workflow_call:
-    inputs:
-      module:
-        description: "The module to run E2E tests for (mempool, liquid, testnet4)"
-        required: true
-        type: string
-      node-version:
-        description: "Node.js version to use"
-        required: true
-        type: string
-        default: "20"
-      cypress-spec:
-        description: "Cypress spec files to run"
-        required: true
-        type: string
-      cypress-env:
-        description: "Additional environment variables for Cypress"
-        required: false
-        type: string
-        default: ""
-    secrets:
-      cypress-record-key:
-        required: false
-      github-token:
-        required: false
-      cypress-project-id:
-        required: false
+inputs:
+  module:
+    description: "The module to run E2E tests for (mempool, liquid, testnet4)"
+    required: true
+  node-version:
+    description: "Node.js version to use"
+    required: true
+    default: "20"
+  cypress-spec:
+    description: "Cypress spec files to run"
+    required: true
+  cypress-env:
+    description: "Additional environment variables for Cypress"
+    required: false
+    default: ""
 
-jobs:
-  e2e-common:
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          path: ${{ inputs.module }}
+runs:
+  using: composite
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        path: ${{ inputs.module }}
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ inputs.node-version }}
-          cache: "npm"
-          cache-dependency-path: ${{ inputs.module }}/frontend/package-lock.json
+    - name: Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: "npm"
+        cache-dependency-path: ${{ inputs.module }}/frontend/package-lock.json
 
-      - name: Restore cached mining pool assets
-        continue-on-error: true
-        id: cache-mining-pool-restore
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            mining-pool-assets.zip
-          key: mining-pool-assets-cache
+    - name: Restore cached mining pool assets
+      continue-on-error: true
+      id: cache-mining-pool-restore
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          mining-pool-assets.zip
+        key: mining-pool-assets-cache
 
-      - name: Restore cached promo video assets
-        continue-on-error: true
-        id: cache-promo-video-restore
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            promo-video-assets.zip
-          key: promo-video-assets-cache
+    - name: Restore cached promo video assets
+      continue-on-error: true
+      id: cache-promo-video-restore
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          promo-video-assets.zip
+        key: promo-video-assets-cache
 
-      - name: Download artifact (mining-pool-assets)
-        uses: actions/download-artifact@v4
-        with:
-          name: mining-pool-assets
-          path: .
+    - name: Download artifact (mining-pool-assets)
+      uses: actions/download-artifact@v4
+      with:
+        name: mining-pool-assets
+        path: .
 
-      - name: Unzip mining pool assets
-        run: unzip -o mining-pool-assets.zip -d ${{ inputs.module }}/frontend/src/resources/mining-pools
+    - name: Unzip mining pool assets
+      shell: bash
+      run: unzip -o mining-pool-assets.zip -d ${{ inputs.module }}/frontend/src/resources/mining-pools
 
-      - name: Download artifact (promo-video-assets)
-        uses: actions/download-artifact@v4
-        with:
-          name: promo-video-assets
-          path: .
+    - name: Download artifact (promo-video-assets)
+      uses: actions/download-artifact@v4
+      with:
+        name: promo-video-assets
+        path: .
 
-      - name: Unzip promo video assets
-        run: unzip -o promo-video-assets.zip -d ${{ inputs.module }}/frontend/src/resources/promo-video
+    - name: Unzip promo video assets
+      shell: bash
+      run: unzip -o promo-video-assets.zip -d ${{ inputs.module }}/frontend/src/resources/promo-video
 
-      - name: Install dependencies
-        run: npm ci
-        working-directory: ${{ inputs.module }}/frontend
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
+      working-directory: ${{ inputs.module }}/frontend
 
-      - name: Build configuration
-        run: npm run config:defaults:${{ inputs.module == 'testnet4' && 'mempool' || inputs.module }}
-        working-directory: ${{ inputs.module }}/frontend
+    - name: Build configuration
+      shell: bash
+      run: npm run config:defaults:${{ inputs.module == 'testnet4' && 'mempool' || inputs.module }}
+      working-directory: ${{ inputs.module }}/frontend
 
-      - name: Start server in background
-        run: npm run start:local-staging & && ./node_modules/.bin/wait-on http://localhost:4200
-        working-directory: ${{ inputs.module }}/frontend
+    - name: Start server in background
+      shell: bash
+      run: npm run start:local-staging & && ./node_modules/.bin/wait-on http://localhost:4200
+      working-directory: ${{ inputs.module }}/frontend
 
-      - name: Run Cypress tests
-        run: |
-          npx cypress run \
-            --browser chrome \
-            --spec "${{ inputs.cypress-spec }}" \
-            ${{ secrets.cypress-record-key && '--record --key ' || '' }}${{ secrets.cypress-record-key || '' }} \
-            --parallel \
-            --group "Tests on Chrome (${{ inputs.module }})" \
-            --ci-build-id "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
-        working-directory: ${{ inputs.module }}/frontend
-        env: 
-          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
-          ${{ inputs.cypress-env }}
+    - name: Run Cypress tests
+      shell: bash
+      run: |
+        npx cypress run \
+          --browser chrome \
+          --spec "${{ inputs.cypress-spec }}" \
+          ${{ secrets.cypress-record-key && '--record --key ' || '' }}${{ secrets.cypress-record-key || '' }} \
+          --parallel \
+          --group "Tests on Chrome (${{ inputs.module }})" \
+          --ci-build-id "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
+      working-directory: ${{ inputs.module }}/frontend
+      env: 
+        COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
+        CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+        CYPRESS_REROUTE_TESTNET: ${{ inputs.cypress-env }}

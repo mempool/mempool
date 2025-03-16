@@ -280,7 +280,7 @@ jobs:
           module: "testnet4"
           node-version: "22"
           cypress-spec: "cypress/e2e/testnet4/*.spec.ts"
-          cypress-env: "CYPRESS_REROUTE_TESTNET=true"
+          cypress-env: "true"
 
   validate_docker_json:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
