@@ -239,14 +239,79 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      
-      - name: Run tests
-        uses: './.github/actions/e2e-common'
         with:
-          module: "mempool"
+          path: mempool
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
           node-version: "22"
-          cypress-spec: "cypress/e2e/mainnet/*.spec.ts,cypress/e2e/signet/*.spec.ts"
-          cypress-env: ""
+          cache: "npm"
+          cache-dependency-path: mempool/frontend/package-lock.json
+
+      - name: Restore cached mining pool assets
+        continue-on-error: true
+        id: cache-mining-pool-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            mining-pool-assets.zip
+          key: mining-pool-assets-cache
+
+      - name: Restore cached promo video assets
+        continue-on-error: true
+        id: cache-promo-video-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            promo-video-assets.zip
+          key: promo-video-assets-cache
+
+      - name: Download artifact (mining-pool-assets)
+        uses: actions/download-artifact@v4
+        with:
+          name: mining-pool-assets
+          path: .
+
+      - name: Unzip mining pool assets
+        run: unzip -o mining-pool-assets.zip -d mempool/frontend/src/resources/mining-pools
+
+      - name: Download artifact (promo-video-assets)
+        uses: actions/download-artifact@v4
+        with:
+          name: promo-video-assets
+          path: .
+
+      - name: Unzip promo video assets
+        run: unzip -o promo-video-assets.zip -d mempool/frontend/src/resources/promo-video
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: mempool/frontend
+
+      - name: Build configuration
+        run: npm run config:defaults:mempool
+        working-directory: mempool/frontend
+
+      - name: Start server in background
+        run: npm run start:local-staging & && ./node_modules/.bin/wait-on http://localhost:4200
+        working-directory: mempool/frontend
+
+      - name: Run Cypress tests
+        run: |
+          npx cypress run \
+            --browser chrome \
+            --spec "cypress/e2e/mainnet/*.spec.ts,cypress/e2e/signet/*.spec.ts" \
+            ${{ secrets.CYPRESS_RECORD_KEY && '--record --key ' || '' }}${{ secrets.CYPRESS_RECORD_KEY || '' }} \
+            --parallel \
+            --group "Tests on Chrome (mempool)" \
+            --ci-build-id "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
+        working-directory: mempool/frontend
+        env: 
+          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
 
   e2e-liquid:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
@@ -256,14 +321,79 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      
-      - name: Run tests
-        uses: './.github/actions/e2e-common'
         with:
-          module: "liquid"
+          path: liquid
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
           node-version: "22"
-          cypress-spec: "cypress/e2e/liquid/liquid.spec.ts,cypress/e2e/liquidtestnet/liquidtestnet.spec.ts"
-          cypress-env: ""
+          cache: "npm"
+          cache-dependency-path: liquid/frontend/package-lock.json
+
+      - name: Restore cached mining pool assets
+        continue-on-error: true
+        id: cache-mining-pool-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            mining-pool-assets.zip
+          key: mining-pool-assets-cache
+
+      - name: Restore cached promo video assets
+        continue-on-error: true
+        id: cache-promo-video-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            promo-video-assets.zip
+          key: promo-video-assets-cache
+
+      - name: Download artifact (mining-pool-assets)
+        uses: actions/download-artifact@v4
+        with:
+          name: mining-pool-assets
+          path: .
+
+      - name: Unzip mining pool assets
+        run: unzip -o mining-pool-assets.zip -d liquid/frontend/src/resources/mining-pools
+
+      - name: Download artifact (promo-video-assets)
+        uses: actions/download-artifact@v4
+        with:
+          name: promo-video-assets
+          path: .
+
+      - name: Unzip promo video assets
+        run: unzip -o promo-video-assets.zip -d liquid/frontend/src/resources/promo-video
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: liquid/frontend
+
+      - name: Build configuration
+        run: npm run config:defaults:liquid
+        working-directory: liquid/frontend
+
+      - name: Start server in background
+        run: npm run start:local-staging & && ./node_modules/.bin/wait-on http://localhost:4200
+        working-directory: liquid/frontend
+
+      - name: Run Cypress tests
+        run: |
+          npx cypress run \
+            --browser chrome \
+            --spec "cypress/e2e/liquid/liquid.spec.ts,cypress/e2e/liquidtestnet/liquidtestnet.spec.ts" \
+            ${{ secrets.CYPRESS_RECORD_KEY && '--record --key ' || '' }}${{ secrets.CYPRESS_RECORD_KEY || '' }} \
+            --parallel \
+            --group "Tests on Chrome (liquid)" \
+            --ci-build-id "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
+        working-directory: liquid/frontend
+        env: 
+          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
 
   e2e-testnet4:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
@@ -273,14 +403,80 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      
-      - name: Run tests
-        uses: './.github/actions/e2e-common'
         with:
-          module: "testnet4"
+          path: testnet4
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
           node-version: "22"
-          cypress-spec: "cypress/e2e/testnet4/*.spec.ts"
-          cypress-env: "true"
+          cache: "npm"
+          cache-dependency-path: testnet4/frontend/package-lock.json
+
+      - name: Restore cached mining pool assets
+        continue-on-error: true
+        id: cache-mining-pool-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            mining-pool-assets.zip
+          key: mining-pool-assets-cache
+
+      - name: Restore cached promo video assets
+        continue-on-error: true
+        id: cache-promo-video-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            promo-video-assets.zip
+          key: promo-video-assets-cache
+
+      - name: Download artifact (mining-pool-assets)
+        uses: actions/download-artifact@v4
+        with:
+          name: mining-pool-assets
+          path: .
+
+      - name: Unzip mining pool assets
+        run: unzip -o mining-pool-assets.zip -d testnet4/frontend/src/resources/mining-pools
+
+      - name: Download artifact (promo-video-assets)
+        uses: actions/download-artifact@v4
+        with:
+          name: promo-video-assets
+          path: .
+
+      - name: Unzip promo video assets
+        run: unzip -o promo-video-assets.zip -d testnet4/frontend/src/resources/promo-video
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: testnet4/frontend
+
+      - name: Build configuration
+        run: npm run config:defaults:mempool  # testnet4 uses mempool config
+        working-directory: testnet4/frontend
+
+      - name: Start server in background
+        run: npm run start:local-staging & && ./node_modules/.bin/wait-on http://localhost:4200
+        working-directory: testnet4/frontend
+
+      - name: Run Cypress tests
+        run: |
+          npx cypress run \
+            --browser chrome \
+            --spec "cypress/e2e/testnet4/*.spec.ts" \
+            ${{ secrets.CYPRESS_RECORD_KEY && '--record --key ' || '' }}${{ secrets.CYPRESS_RECORD_KEY || '' }} \
+            --parallel \
+            --group "Tests on Chrome (testnet4)" \
+            --ci-build-id "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
+        working-directory: testnet4/frontend
+        env: 
+          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+          CYPRESS_REROUTE_TESTNET: true
 
   validate_docker_json:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"

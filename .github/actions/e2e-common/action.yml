@@ -91,7 +91,7 @@ runs:
         npx cypress run \
           --browser chrome \
           --spec "${{ inputs.cypress-spec }}" \
-          ${{ secrets.cypress-record-key && '--record --key ' || '' }}${{ secrets.cypress-record-key || '' }} \
+          ${{ secrets.CYPRESS_RECORD_KEY && '--record --key ' || '' }}${{ secrets.CYPRESS_RECORD_KEY || '' }} \
           --parallel \
           --group "Tests on Chrome (${{ inputs.module }})" \
           --ci-build-id "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
