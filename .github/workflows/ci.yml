@@ -296,7 +296,7 @@ jobs:
         working-directory: ${{ matrix.module }}/frontend
 
       - name: Start server in background
-        run: npm run start:local-staging && ./node_modules/.bin/wait-on http://localhost:4200
+        run: npm run start:local-staging & && ./node_modules/.bin/wait-on http://localhost:4200
         working-directory: ${{ matrix.module }}/frontend
 
       - name: Run Cypress tests (mempool)
