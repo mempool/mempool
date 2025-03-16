@@ -237,7 +237,11 @@ jobs:
     needs: frontend
     name: E2E tests for mempool
     steps:
-      - uses: './.github/actions/e2e-common'
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Run tests
+        uses: './.github/actions/e2e-common'
         with:
           module: "mempool"
           node-version: "22"
@@ -250,7 +254,11 @@ jobs:
     needs: frontend
     name: E2E tests for liquid
     steps:
-      - uses: './.github/actions/e2e-common'
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Run tests
+        uses: './.github/actions/e2e-common'
         with:
           module: "liquid"
           node-version: "22"
@@ -263,7 +271,11 @@ jobs:
     needs: frontend
     name: E2E tests for testnet4
     steps:
-      - uses: './.github/actions/e2e-common'
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Run tests
+        uses: './.github/actions/e2e-common'
         with:
           module: "testnet4"
           node-version: "22"
