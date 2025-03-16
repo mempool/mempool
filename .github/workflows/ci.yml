@@ -294,7 +294,11 @@ jobs:
         working-directory: mempool/frontend
 
       - name: Start server in background
-        run: npm run start:local-staging & && ./node_modules/.bin/wait-on http://localhost:4200
+        run: npm run start:local-staging &
+        working-directory: mempool/frontend
+
+      - name: Wait for the server
+        run: ./node_modules/.bin/wait-on http://localhost:4200
         working-directory: mempool/frontend
 
       - name: Run Cypress tests
@@ -376,7 +380,11 @@ jobs:
         working-directory: liquid/frontend
 
       - name: Start server in background
-        run: npm run start:local-staging & && ./node_modules/.bin/wait-on http://localhost:4200
+        run: npm run start:local-staging & 
+        working-directory: liquid/frontend
+
+      - name: Wait for the server
+        run: ./node_modules/.bin/wait-on http://localhost:4200
         working-directory: liquid/frontend
 
       - name: Run Cypress tests
@@ -458,7 +466,11 @@ jobs:
         working-directory: testnet4/frontend
 
       - name: Start server in background
-        run: npm run start:local-staging & && ./node_modules/.bin/wait-on http://localhost:4200
+        run: npm run start:local-staging &
+        working-directory: testnet4/frontend
+    
+      - name: Wait for the server
+        run: ./node_modules/.bin/wait-on http://localhost:4200
         working-directory: testnet4/frontend
 
       - name: Run Cypress tests
