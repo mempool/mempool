@@ -237,7 +237,7 @@ jobs:
     needs: frontend
     name: E2E tests for mempool
     steps:
-      - uses: ./.github/workflows/e2e-common.yml
+      - uses: './.github/actions/e2e-common.yml'
         with:
           module: "mempool"
           node-version: "22"  # Updated from 20 to 22
@@ -254,7 +254,7 @@ jobs:
     needs: frontend
     name: E2E tests for liquid
     steps:
-      - uses: ./.github/workflows/e2e-common.yml
+      - uses: './.github/actions/e2e-common.yml'
         with:
           module: "liquid"
           node-version: "22"  # Updated from 20 to 22
@@ -271,7 +271,7 @@ jobs:
     needs: frontend
     name: E2E tests for testnet4
     steps:
-      - uses: ./.github/workflows/e2e-common.yml
+      - uses: './.github/actions/e2e-common.yml'
         with:
           module: "testnet4"
           node-version: "22"  # Updated from 20 to 22
