@@ -240,13 +240,9 @@ jobs:
       - uses: './.github/actions/e2e-common.yml'
         with:
           module: "mempool"
-          node-version: "22"  # Updated from 20 to 22
+          node-version: "22"
           cypress-spec: "cypress/e2e/mainnet/*.spec.ts,cypress/e2e/signet/*.spec.ts"
           cypress-env: ""
-        secrets:
-          cypress-record-key: ${{ secrets.CYPRESS_RECORD_KEY }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          cypress-project-id: ${{ secrets.CYPRESS_PROJECT_ID }}
 
   e2e-liquid:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
@@ -257,13 +253,9 @@ jobs:
       - uses: './.github/actions/e2e-common.yml'
         with:
           module: "liquid"
-          node-version: "22"  # Updated from 20 to 22
+          node-version: "22"
           cypress-spec: "cypress/e2e/liquid/liquid.spec.ts,cypress/e2e/liquidtestnet/liquidtestnet.spec.ts"
           cypress-env: ""
-        secrets:
-          cypress-record-key: ${{ secrets.CYPRESS_RECORD_KEY }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          cypress-project-id: ${{ secrets.CYPRESS_PROJECT_ID }}
 
   e2e-testnet4:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
@@ -274,13 +266,9 @@ jobs:
       - uses: './.github/actions/e2e-common.yml'
         with:
           module: "testnet4"
-          node-version: "22"  # Updated from 20 to 22
+          node-version: "22"
           cypress-spec: "cypress/e2e/testnet4/*.spec.ts"
           cypress-env: "CYPRESS_REROUTE_TESTNET=true"
-        secrets:
-          cypress-record-key: ${{ secrets.CYPRESS_RECORD_KEY }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          cypress-project-id: ${{ secrets.CYPRESS_PROJECT_ID }}
 
   validate_docker_json:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"

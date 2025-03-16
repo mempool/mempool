@@ -105,7 +105,7 @@ jobs:
         working-directory: ${{ inputs.module }}/frontend
         env: 
           COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
-          CYPRESS_RECORD_KEY: ${{ secrets.cypress-record-key }}
-          GITHUB_TOKEN: ${{ secrets.github-token }}
-          CYPRESS_PROJECT_ID: ${{ secrets.cypress-project-id }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
           ${{ inputs.cypress-env }}
