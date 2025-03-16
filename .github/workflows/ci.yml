@@ -61,7 +61,6 @@ jobs:
         run: npm run build
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/backend
 
-
   cache:
     name: "Cache assets for builds"
     runs-on: "ubuntu-latest"
@@ -106,10 +105,6 @@ jobs:
       - name: Unzip assets before building (src/resources)
         continue-on-error: true
         run: unzip -o promo-video-assets.zip -d assets/frontend/src/resources/promo-video
-
-      # - name: Unzip assets before building (dist)
-      #   continue-on-error: true
-      #   run: unzip assets.zip -d assets/frontend/dist/mempool/browser/resources
 
       - name: Sync-assets
         run: npm run sync-assets-dev
@@ -191,9 +186,6 @@ jobs:
         run: npm run lint
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/frontend
 
-      # - name: Test
-      #   run: npm run test
-
       - name: Restore cached mining pool assets
         continue-on-error: true
         id: cache-mining-pool-restore
@@ -228,9 +220,6 @@ jobs:
       - name: Unzip assets before building (src/resources)
         run: unzip -o promo-video-assets.zip -d ${{ matrix.node }}/${{ matrix.flavor }}/frontend/src/resources/promo-video
 
-      # - name: Unzip assets before building (dist)
-      #   run: unzip assets.zip -d ${{ matrix.node }}/${{ matrix.flavor }}/frontend/dist/mempool/browser/resources
-
       - name: Display resulting source tree
         run: ls -R
 
@@ -241,7 +230,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MEMPOOL_CDN: 1
           VERBOSE: 1
-  
   e2e:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
     runs-on: "ubuntu-latest"
@@ -258,7 +246,7 @@ jobs:
         with:
           path: ${{ matrix.module }}
 
-      - name: Setup node
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 20
@@ -299,74 +287,69 @@ jobs:
       - name: Unzip assets before building (src/resources)
         run: unzip -o promo-video-assets.zip -d ${{ matrix.module }}/frontend/src/resources/promo-video
 
-      # mempool
-      - name: Chrome browser tests (${{ matrix.module }})
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ${{ matrix.module }}/frontend
+
+      - name: Build configuration
+        run: npm run config:defaults:${{ matrix.module == 'testnet4' && 'mempool' || matrix.module }}
+        working-directory: ${{ matrix.module }}/frontend
+
+      - name: Start server in background
+        run: npm run start:local-staging &
+        working-directory: ${{ matrix.module }}/frontend
+
+      - name: Run Cypress tests (mempool)
         if: ${{ matrix.module == 'mempool' }}
-        uses: cypress-io/github-action@v5
-        with:
-          tag: ${{ github.event_name }}
-          working-directory: ${{ matrix.module }}/frontend
-          build: npm run config:defaults:${{ matrix.module }}
-          start: npm run start:local-staging
-          wait-on: "http://localhost:4200"
-          wait-on-timeout: 120
-          record: true
-          parallel: true
-          spec: |
-            cypress/e2e/mainnet/*.spec.ts
-            cypress/e2e/signet/*.spec.ts
-          group: Tests on Chrome (${{ matrix.module }})
-          browser: "chrome"
-          ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
+        run: |
+          npx cypress run \
+            --browser chrome \
+            --spec "cypress/e2e/mainnet/*.spec.ts,cypress/e2e/signet/*.spec.ts" \
+            --record \
+            --key ${{ secrets.CYPRESS_RECORD_KEY }} \
+            --parallel \
+            --group "Tests on Chrome (${{ matrix.module }})" \
+            --ci-build-id "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}" \
+            --env "retryIntervals=0,1000,2000,5000,10000,20000"
+        working-directory: ${{ matrix.module }}/frontend
         env:
           COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
 
-      # liquid
-      - name: Chrome browser tests (${{ matrix.module }})
+      - name: Run Cypress tests (liquid)
         if: ${{ matrix.module == 'liquid' }}
-        uses: cypress-io/github-action@v5
-        with:
-          tag: ${{ github.event_name }}
-          working-directory: ${{ matrix.module }}/frontend
-          build: npm run config:defaults:${{ matrix.module }}
-          start: npm run start:local-staging
-          wait-on: "http://localhost:4200"
-          wait-on-timeout: 120
-          record: true
-          parallel: true
-          spec: |
-            cypress/e2e/liquid/liquid.spec.ts
-            cypress/e2e/liquidtestnet/liquidtestnet.spec.ts
-          group: Tests on Chrome (${{ matrix.module }})
-          browser: "chrome"
-          ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
+        run: |
+          npx cypress run \
+            --browser chrome \
+            --spec "cypress/e2e/liquid/liquid.spec.ts,cypress/e2e/liquidtestnet/liquidtestnet.spec.ts" \
+            --record \
+            --key ${{ secrets.CYPRESS_RECORD_KEY }} \
+            --parallel \
+            --group "Tests on Chrome (${{ matrix.module }})" \
+            --ci-build-id "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}" \
+            --env "retryIntervals=0,1000,2000,5000,10000,20000"
+        working-directory: ${{ matrix.module }}/frontend
         env:
           COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
 
-      # testnet
-      - name: Chrome browser tests (${{ matrix.module }})
+      - name: Run Cypress tests (testnet4)
         if: ${{ matrix.module == 'testnet4' }}
-        uses: cypress-io/github-action@v5
-        with:
-          tag: ${{ github.event_name }}
-          working-directory: ${{ matrix.module }}/frontend
-          build: npm run config:defaults:mempool
-          start: npm run start:local-staging
-          wait-on: "http://localhost:4200"
-          wait-on-timeout: 120
-          record: true
-          parallel: true
-          spec: |
-            cypress/e2e/testnet4/*.spec.ts
-          group: Tests on Chrome (${{ matrix.module }})
-          browser: "chrome"
-          ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
+        run: |
+          npx cypress run \
+            --browser chrome \
+            --spec "cypress/e2e/testnet4/*.spec.ts" \
+            --record \
+            --key ${{ secrets.CYPRESS_RECORD_KEY }} \
+            --parallel \
+            --group "Tests on Chrome (${{ matrix.module }})" \
+            --ci-build-id "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}" \
+            --env "retryIntervals=0,1000,2000,5000,10000,20000"
+        working-directory: ${{ matrix.module }}/frontend
         env:
           CYPRESS_REROUTE_TESTNET: true
           COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
