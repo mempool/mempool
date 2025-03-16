@@ -11,7 +11,7 @@ on:
         description: "Node.js version to use"
         required: true
         type: string
-        default: "22"
+        default: "20"
       cypress-spec:
         description: "Cypress spec files to run"
         required: true
@@ -23,14 +23,11 @@ on:
         default: ""
     secrets:
       cypress-record-key:
-        description: "Cypress record key"
-        required: true
+        required: false
       github-token:
-        description: "GitHub token"
-        required: true
+        required: false
       cypress-project-id:
-        description: "Cypress project ID"
-        required: true
+        required: false
 
 jobs:
   e2e-common:
@@ -70,6 +67,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: mining-pool-assets
+          path: .
 
       - name: Unzip mining pool assets
         run: unzip -o mining-pool-assets.zip -d ${{ inputs.module }}/frontend/src/resources/mining-pools
@@ -78,6 +76,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: promo-video-assets
+          path: .
 
       - name: Unzip promo video assets
         run: unzip -o promo-video-assets.zip -d ${{ inputs.module }}/frontend/src/resources/promo-video
@@ -99,8 +98,7 @@ jobs:
           npx cypress run \
             --browser chrome \
             --spec "${{ inputs.cypress-spec }}" \
-            --record \
-            --key ${{ secrets.cypress-record-key }} \
+            ${{ secrets.cypress-record-key && '--record --key ' || '' }}${{ secrets.cypress-record-key || '' }} \
             --parallel \
             --group "Tests on Chrome (${{ inputs.module }})" \
             --ci-build-id "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"

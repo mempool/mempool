@@ -13,7 +13,6 @@ jobs:
         flavor: ["dev", "prod"]
       fail-fast: false
     runs-on: "ubuntu-latest"
-
     name: Backend (${{ matrix.flavor }}) - node ${{ matrix.node }}
     steps:
       - name: Checkout
@@ -29,7 +28,7 @@ jobs:
 
       - name: Read rust-toolchain file from repository
         id: gettoolchain
-        run: echo "::set-output name=toolchain::$(cat ./rust/gbt/rust-toolchain)"
+        run: echo "toolchain=$(cat ./rust/gbt/rust-toolchain)" >> $GITHUB_OUTPUT
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}
 
       - name: Install ${{ steps.gettoolchain.outputs.toolchain }} Rust toolchain
@@ -38,22 +37,22 @@ jobs:
           toolchain: ${{ steps.gettoolchain.outputs.toolchain }}
 
       - name: Install
-        if: ${{ matrix.flavor == 'dev'}}
+        if: ${{ matrix.flavor == 'dev' }}
         run: npm ci
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/backend
 
       - name: Install (Prod dependencies only)
-        if: ${{ matrix.flavor == 'prod'}}
+        if: ${{ matrix.flavor == 'prod' }}
         run: npm ci --omit=dev --omit=optional
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/backend
 
       - name: Lint
-        if: ${{ matrix.flavor == 'dev'}}
+        if: ${{ matrix.flavor == 'dev' }}
         run: npm run lint
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/backend
 
       - name: Unit Tests
-        if: ${{ matrix.flavor == 'dev'}}
+        if: ${{ matrix.flavor == 'dev' }}
         run: npm run test:ci
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/backend
 
@@ -73,7 +72,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node }}
+          node-version: "22"
           registry-url: "https://registry.npmjs.org"
 
       - name: Install (Prod dependencies only)
@@ -98,11 +97,13 @@ jobs:
             promo-video-assets.zip
           key: promo-video-assets-cache
 
-      - name: Unzip assets before building (src/resources)
+      - name: Unzip assets before building (mining-pools)
+        if: steps.cache-mining-pool-restore.outputs.cache-hit == 'true'
         continue-on-error: true
         run: unzip -o mining-pool-assets.zip -d assets/frontend/src/resources/mining-pools
 
-      - name: Unzip assets before building (src/resources)
+      - name: Unzip assets before building (promo-video)
+        if: steps.cache-promo-video-restore.outputs.cache-hit == 'true'
         continue-on-error: true
         run: unzip -o promo-video-assets.zip -d assets/frontend/src/resources/promo-video
 
@@ -157,7 +158,6 @@ jobs:
         flavor: ["dev", "prod"]
       fail-fast: false
     runs-on: "ubuntu-latest"
-
     name: Frontend (${{ matrix.flavor }}) - node ${{ matrix.node }}
     steps:
       - name: Checkout
@@ -172,17 +172,17 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Install (Prod dependencies only)
+        if: ${{ matrix.flavor == 'prod' }}
         run: npm ci --omit=dev --omit=optional
-        if: ${{ matrix.flavor == 'prod'}}
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/frontend
 
       - name: Install
-        if: ${{ matrix.flavor == 'dev'}}
+        if: ${{ matrix.flavor == 'dev' }}
         run: npm ci
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/frontend
 
       - name: Lint
-        if: ${{ matrix.flavor == 'dev'}}
+        if: ${{ matrix.flavor == 'dev' }}
         run: npm run lint
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/frontend
 
@@ -204,20 +204,20 @@ jobs:
             promo-video-assets.zip
           key: promo-video-assets-cache
 
-      - name: Download artifact
+      - name: Download artifact (mining-pool-assets)
         uses: actions/download-artifact@v4
         with:
           name: mining-pool-assets
 
-      - name: Unzip assets before building (src/resources)
+      - name: Unzip assets (mining-pools)
         run: unzip -o mining-pool-assets.zip -d ${{ matrix.node }}/${{ matrix.flavor }}/frontend/src/resources/mining-pools
 
-      - name: Download artifact
+      - name: Download artifact (promo-video-assets)
         uses: actions/download-artifact@v4
         with:
           name: promo-video-assets
 
-      - name: Unzip assets before building (src/resources)
+      - name: Unzip assets (promo-video)
         run: unzip -o promo-video-assets.zip -d ${{ matrix.node }}/${{ matrix.flavor }}/frontend/src/resources/promo-video
 
       - name: Display resulting source tree
@@ -237,11 +237,10 @@ jobs:
     needs: frontend
     name: E2E tests for mempool
     steps:
-      - name: Run E2E Tests for mempool
-        uses: ./.github/workflows/e2e-common.yml
+      - uses: ./.github/workflows/e2e-common.yml
         with:
           module: "mempool"
-          node-version: "22"
+          node-version: "22"  # Updated from 20 to 22
           cypress-spec: "cypress/e2e/mainnet/*.spec.ts,cypress/e2e/signet/*.spec.ts"
           cypress-env: ""
         secrets:
@@ -252,14 +251,13 @@ jobs:
   e2e-liquid:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
     runs-on: "ubuntu-latest"
-    needs: e2e-mempool
+    needs: frontend
     name: E2E tests for liquid
     steps:
-      - name: Run E2E Tests for liquid
-        uses: ./.github/workflows/e2e-common.yml
+      - uses: ./.github/workflows/e2e-common.yml
         with:
           module: "liquid"
-          node-version: "22"
+          node-version: "22"  # Updated from 20 to 22
           cypress-spec: "cypress/e2e/liquid/liquid.spec.ts,cypress/e2e/liquidtestnet/liquidtestnet.spec.ts"
           cypress-env: ""
         secrets:
@@ -270,14 +268,13 @@ jobs:
   e2e-testnet4:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
     runs-on: "ubuntu-latest"
-    needs: e2e-liquid
+    needs: frontend
     name: E2E tests for testnet4
     steps:
-      - name: Run E2E Tests for testnet4
-        uses: ./.github/workflows/e2e-common.yml
+      - uses: ./.github/workflows/e2e-common.yml
         with:
           module: "testnet4"
-          node-version: "22"
+          node-version: "22"  # Updated from 20 to 22
           cypress-spec: "cypress/e2e/testnet4/*.spec.ts"
           cypress-env: "CYPRESS_REROUTE_TESTNET=true"
         secrets:
@@ -289,7 +286,6 @@ jobs:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
     runs-on: "ubuntu-latest"
     name: Validate generated backend Docker JSON
-
     steps: 
       - name: Checkout
         uses: actions/checkout@v3
@@ -305,11 +301,9 @@ jobs:
         working-directory: docker/docker/backend
 
       - name: Run the script to generate the sample JSON
-        run: |
-          sh start_ci.sh
+        run: sh start_ci.sh
         working-directory: docker/docker/backend
 
       - name: Validate JSON syntax
-        run: |
-          cat mempool-config.json | jq
+        run: cat mempool-config.json | jq
         working-directory: docker/docker/backend
