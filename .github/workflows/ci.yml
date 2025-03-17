@@ -46,7 +46,7 @@ jobs:
 
       - name: Install (Prod dependencies only)
         if: ${{ matrix.flavor == 'prod'}}
-        run: npm ci --omit=dev --omit=optional
+        run: npm ci --omit=dev
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/backend
 
       - name: Lint
@@ -80,7 +80,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Install (Prod dependencies only)
-        run: npm ci --omit=dev --omit=optional
+        run: npm ci --omit=dev
         working-directory: assets/frontend
 
       - name: Restore cached mining pool assets
@@ -179,7 +179,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Install (Prod dependencies only)
-        run: npm ci --omit=dev --omit=optional
+        run: npm ci --omit=dev
         if: ${{ matrix.flavor == 'prod'}}
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/frontend
 
