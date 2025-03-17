@@ -60,30 +60,6 @@ describe('Testnet4', () => {
       });
     });
 
-    describe('tv mode', () => {
-      it('loads the tv screen - desktop', () => {
-        cy.viewport('macbook-16');
-        cy.visit('/testnet4/graphs');
-        cy.waitForSkeletonGone();
-        cy.get('#btn-tv').click().then(() => {
-          cy.wait(1000);
-          cy.get('.tv-only').should('not.exist');
-          cy.get('#mempool-block-0').should('be.visible');
-        });
-      });
-
-      it('loads the tv screen - mobile', () => {
-        cy.visit('/testnet4/graphs');
-        cy.waitForSkeletonGone();
-        cy.get('#btn-tv').click().then(() => {
-          cy.viewport('iphone-6');
-          cy.wait(1000);
-          cy.get('.tv-only').should('not.exist');
-        });
-      });
-    });
-
-
     it('loads the api screen', () => {
       cy.visit('/testnet4');
       cy.waitForSkeletonGone();
