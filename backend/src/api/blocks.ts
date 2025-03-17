@@ -1469,11 +1469,11 @@ class Blocks {
       if (rows && Array.isArray(rows)) {
         return rows.map(r => r.definition_hash);
       } else {
-        logger.debug(`Unable to retreive list of blocks.definition_hash from db (no result)`);
+        logger.debug(`Unable to retrieve list of blocks.definition_hash from db (no result)`);
         return null;
       }
     } catch (e) {
-      logger.debug(`Unable to retreive list of blocks.definition_hash from db (exception: ${e})`);
+      logger.debug(`Unable to retrieve list of blocks.definition_hash from db (exception: ${e})`);
       return null;
     }
   }
@@ -1484,11 +1484,11 @@ class Blocks {
       if (rows && Array.isArray(rows)) {
         return rows.map(r => r.hash);
       } else {
-        logger.debug(`Unable to retreive list of blocks for definition hash ${definitionHash} from db (no result)`);
+        logger.debug(`Unable to retrieve list of blocks for definition hash ${definitionHash} from db (no result)`);
         return null;
       }
     } catch (e) {
-      logger.debug(`Unable to retreive list of blocks for definition hash ${definitionHash} from db (exception: ${e})`);
+      logger.debug(`Unable to retrieve list of blocks for definition hash ${definitionHash} from db (exception: ${e})`);
       return null;
     }
   }

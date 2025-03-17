@@ -11803,7 +11803,7 @@ export const restApiDocsData = [
     fragment: "accelerator-cancel",
     title: "POST Cancel Acceleration (Pro)",
     description: {
-      default: "<p>Sends a request to cancel an acceleration in the <code>accelerating</code> status.<br>You can retreive eligible acceleration <code>id</code> using the history endpoint GET <code>/api/v1/services/accelerator/history?status=accelerating</code>."
+      default: "<p>Sends a request to cancel an acceleration in the <code>accelerating</code> status.<br>You can retrieve eligible acceleration <code>id</code> using the history endpoint GET <code>/api/v1/services/accelerator/history?status=accelerating</code>."
     },
     urlString: "/v1/services/accelerator/cancel",
     showConditions: [""],

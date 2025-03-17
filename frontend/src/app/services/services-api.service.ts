@@ -213,7 +213,7 @@ export class ServicesApiServices {
     return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/payments/bitcoin`, params);
   }
 
-  retreiveInvoice$(invoiceId: string): Observable<any[]> {
+  retrieveInvoice$(invoiceId: string): Observable<any[]> {
     return this.httpClient.get<any[]>(`${this.stateService.env.SERVICES_API}/payments/bitcoin/invoice?id=${invoiceId}`);
   }
 
