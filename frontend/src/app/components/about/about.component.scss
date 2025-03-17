@@ -171,6 +171,10 @@
     }
   }
 
+  .override-boundary svg {
+    overflow: visible;
+  }
+
   .community-sponsor .wrapper, .project-translators .wrapper {
     margin: 10px auto 20px;
     a img {
@@ -264,6 +268,6 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    max-width: 800px; 
+    max-width: 800px;
   }
 }
