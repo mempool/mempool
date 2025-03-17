@@ -44,6 +44,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
   @Input() right: number | string = 10;
   @Input() left: number | string = 70;
   @Input() widget: boolean = false;
+  @Input() label: string = '';
   @Input() defaultFiat: boolean = false;
   @Input() showLegend: boolean = true;
   @Input() showYAxis: boolean = true;
@@ -55,6 +56,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
   hoverData: any[] = [];
   conversions: any;
   allowZoom: boolean = false;
+  labelGraphic: any;
 
   selected = { [$localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`]: true, 'Fiat': false };
 
@@ -85,6 +87,18 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.isLoading = true;
+    this.labelGraphic = this.label ? {
+      type: 'text',
+      right: '36px',
+      bottom: '36px',
+      z: 100,
+      silent: true,
+      style: {
+        fill: '#fff',
+        text: this.label,
+        font: '24px sans-serif'
+      }
+    } : undefined;
     if (!this.addressSummary$ && (!this.address || !this.stats)) {
       return;
     }
@@ -205,6 +219,10 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         right: this.adjustedRight,
         left: this.adjustedLeft,
       },
+      graphic: this.labelGraphic ? [{
+        ...this.labelGraphic,
+        right: this.adjustedRight + 22 + 'px',
+      }] : undefined,
       legend: (this.showLegend && !this.stateService.isAnyTestnet()) ? {
         data: [
           {
@@ -443,6 +461,10 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         right: this.adjustedRight,
         left: this.adjustedLeft,
       },
+      graphic: this.labelGraphic ? [{
+        ...this.labelGraphic,
+        right: this.adjustedRight + 22 + 'px',
+      }] : undefined,
       legend: {
         selected: this.selected,
       },

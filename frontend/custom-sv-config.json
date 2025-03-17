@@ -34,7 +34,8 @@
         "mobileOrder": 2,
         "props": {
           "address": "32ixEdVJWo3kmvJGMTZq5jAQVZZeuwnqzo",
-          "period": "1m"
+          "period": "1m",
+          "label": "bitcoin.gob.sv"
         }
       },
       {
