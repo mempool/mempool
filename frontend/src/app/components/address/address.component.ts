@@ -115,6 +115,7 @@ export class AddressComponent implements OnInit, OnDestroy {
   addressLoadingStatus$: Observable<number>;
   addressInfo: null | AddressInformation = null;
   addressTypeInfo: null | AddressTypeInfo;
+  hasTapTree: boolean;
 
   fullyLoaded = false;
   chainStats: AddressStats;
@@ -287,6 +288,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           addressVin = addressVin.concat(tx.vin.map((v, index) => ({ ...v, vinId: `${tx.txid}:${index}` })).filter(v => v.prevout?.scriptpubkey_address === this.address.address));
         }
         this.addressTypeInfo.processInputs(addressVin);
+        this.hasTapTree = this.addressTypeInfo.tapscript && this.addressTypeInfo.scripts.values().next().value.scriptPath.length / 2 > 33;
         // hack to trigger change detection
         this.addressTypeInfo = this.addressTypeInfo.clone();
 

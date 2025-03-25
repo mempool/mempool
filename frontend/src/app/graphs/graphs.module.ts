@@ -41,7 +41,9 @@ import { AddressGraphComponent } from '@components/address-graph/address-graph.c
 import { UtxoGraphComponent } from '@components/utxo-graph/utxo-graph.component';
 import { ActiveAccelerationBox } from '@components/acceleration/active-acceleration-box/active-acceleration-box.component';
 import { AddressesTreemap } from '@components/addresses-treemap/addresses-treemap.component';
+import { TaprootAddressScriptsComponent } from '@components/taproot-address-scripts/taproot-address-scripts.component';
 import { CommonModule } from '@angular/common';
+import { AsmStylerPipe } from '@app/shared/pipes/asm-styler/asm-styler.pipe';
 
 @NgModule({
   declarations: [
@@ -85,6 +87,7 @@ import { CommonModule } from '@angular/common';
     UtxoGraphComponent,
     ActiveAccelerationBox,
     AddressesTreemap,
+    TaprootAddressScriptsComponent,
   ],
   imports: [
     CommonModule,
@@ -97,6 +100,9 @@ import { CommonModule } from '@angular/common';
   exports: [
     NgxEchartsModule,
     ActiveAccelerationBox,
+  ],
+  providers: [
+    AsmStylerPipe
   ]
 })
 export class GraphsModule { }

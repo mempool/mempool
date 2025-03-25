@@ -1,6 +1,6 @@
 // Import tree-shakeable echarts
 import * as echarts from 'echarts/core';
-import { LineChart, LinesChart, BarChart, TreemapChart, PieChart, ScatterChart, GaugeChart, CustomChart } from 'echarts/charts';
+import { LineChart, LinesChart, BarChart, TreemapChart, PieChart, ScatterChart, GaugeChart, CustomChart, TreeChart } from 'echarts/charts';
 import { TitleComponent, TooltipComponent, GridComponent, LegendComponent, GeoComponent, DataZoomComponent, VisualMapComponent, MarkLineComponent } from 'echarts/components';
 import { SVGRenderer, CanvasRenderer } from 'echarts/renderers';
 // Typescript interfaces
@@ -13,6 +13,6 @@ echarts.use([
   LegendComponent, GeoComponent, DataZoomComponent,
   VisualMapComponent, MarkLineComponent,
   LineChart, LinesChart, BarChart, TreemapChart, PieChart, ScatterChart, GaugeChart,
-  CustomChart,
+  CustomChart, TreeChart
 ]);
 export { echarts, EChartsOption, TreemapSeriesOption, LineSeriesOption, PieSeriesOption };
