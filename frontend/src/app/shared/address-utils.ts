@@ -157,8 +157,10 @@ export class AddressTypeInfo {
       for (const v of vin) {
         if (v.inner_witnessscript_asm) {
           this.tapscript = true;
-          const controlBlock = v.witness[v.witness.length - 1].startsWith('50') ? v.witness[v.witness.length - 2] : v.witness[v.witness.length - 1];
-          this.processScript(new ScriptInfo('inner_witnessscript', undefined, v.inner_witnessscript_asm, v.witness, controlBlock));
+          const hasAnnex = v.witness[v.witness.length - 1].startsWith('50');
+          const controlBlock = hasAnnex ? v.witness[v.witness.length - 2] : v.witness[v.witness.length - 1];
+          const scriptHex = hasAnnex ? v.witness[v.witness.length - 3] : v.witness[v.witness.length - 2];
+          this.processScript(new ScriptInfo('inner_witnessscript', scriptHex, v.inner_witnessscript_asm, v.witness, controlBlock));
         }
       }
     // for single-script types, if we've seen one input we've seen them all
