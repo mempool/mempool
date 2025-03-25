@@ -284,7 +284,7 @@ export class AddressComponent implements OnInit, OnDestroy {
 
         let addressVin: Vin[] = [];
         for (const tx of this.transactions) {
-          addressVin = addressVin.concat(tx.vin.filter(v => v.prevout?.scriptpubkey_address === this.address.address));
+          addressVin = addressVin.concat(tx.vin.map((v, index) => ({ ...v, vinId: `${tx.txid}:${index}` })).filter(v => v.prevout?.scriptpubkey_address === this.address.address));
         }
         this.addressTypeInfo.processInputs(addressVin);
         // hack to trigger change detection

@@ -160,7 +160,7 @@ export class AddressTypeInfo {
           const hasAnnex = v.witness[v.witness.length - 1].startsWith('50');
           const controlBlock = hasAnnex ? v.witness[v.witness.length - 2] : v.witness[v.witness.length - 1];
           const scriptHex = hasAnnex ? v.witness[v.witness.length - 3] : v.witness[v.witness.length - 2];
-          this.processScript(new ScriptInfo('inner_witnessscript', scriptHex, v.inner_witnessscript_asm, v.witness, controlBlock));
+          this.processScript(new ScriptInfo('inner_witnessscript', scriptHex, v.inner_witnessscript_asm, v.witness, controlBlock, v.vinId));
         }
       }
     // for single-script types, if we've seen one input we've seen them all
@@ -214,6 +214,9 @@ export class AddressTypeInfo {
   }
 
   private processScript(script: ScriptInfo): void {
+    if (this.scripts.has(script.key)) {
+      return;
+    }
     this.scripts.set(script.key, script);
     if (script.template?.type === 'multisig') {
       this.isMultisig = { m: script.template['m'], n: script.template['n'] };
