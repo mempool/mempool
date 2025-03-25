@@ -153,7 +153,9 @@ class Server {
 
     await poolsUpdater.updatePoolsJson(); // Needs to be done before loading the disk cache because we sometimes wipe it
     await syncAssets.syncAssets$();
-    await mempoolBlocks.updatePools$();
+    if (config.DATABASE.ENABLED) {
+      await mempoolBlocks.updatePools$();
+    }
     if (config.MEMPOOL.ENABLED) {
       if (config.MEMPOOL.CACHE_ENABLED) {
         await diskCache.$loadMempoolCache();
