@@ -14,6 +14,7 @@ import { StorageService } from '@app/services/storage.service';
 import { OrdApiService } from '@app/services/ord-api.service';
 import { Inscription } from '@app/shared/ord/inscription.utils';
 import { Etching, Runestone } from '@app/shared/ord/rune.utils';
+import { ADDRESS_SIMILARITY_THRESHOLD, AddressMatch, AddressSimilarity, AddressType, AddressTypeInfo, checkedCompareAddressStrings, detectAddressType } from '@app/shared/address-utils';
 
 @Component({
   selector: 'app-transactions-list',
@@ -37,6 +38,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   @Input() addresses: string[] = [];
   @Input() rowLimit = 12;
   @Input() blockTime: number = 0; // Used for price calculation if all the transactions are in the same block
+  @Input() txPreview = false;
 
   @Output() loadMore = new EventEmitter();
 
@@ -54,6 +56,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   showFullScript: { [vinIndex: number]: boolean } = {};
   showFullWitness: { [vinIndex: number]: { [witnessIndex: number]: boolean } } = {};
   showOrdData: { [key: string]: { show: boolean; inscriptions?: Inscription[]; runestone?: Runestone, runeInfo?: { [id: string]: { etching: Etching; txid: string; } }; } } = {};
+  similarityMatches: Map<string, Map<string, { score: number, match: AddressMatch, group: number }>> = new Map();
 
   constructor(
     public stateService: StateService,
@@ -81,7 +84,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       this.refreshOutspends$
         .pipe(
           switchMap((txIds) => {
-            if (!this.cached) {
+            if (!this.cached && !this.txPreview) {
               // break list into batches of 50 (maximum supported by esplora)
               const batches = [];
               for (let i = 0; i < txIds.length; i += 50) {
@@ -119,7 +122,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
         ),
         this.refreshChannels$
           .pipe(
-            filter(() => this.stateService.networkSupportsLightning()),
+            filter(() => this.stateService.networkSupportsLightning() && !this.txPreview),
             switchMap((txIds) => this.apiService.getChannelByTxIds$(txIds)),
             catchError((error) => {
               // handle 404
@@ -143,6 +146,8 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       this.currency = currency;
       this.refreshPrice();
     });
+
+    this.updateAddressSimilarities();
   }
 
   refreshPrice(): void {
@@ -182,12 +187,17 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       }
     }
     if (changes.transactions || changes.addresses) {
+      this.similarityMatches.clear();
+      this.updateAddressSimilarities();
       if (!this.transactions || !this.transactions.length) {
         return;
       }
 
       this.transactionsLength = this.transactions.length;
-      this.cacheService.setTxCache(this.transactions);
+      
+      if (!this.txPreview) {
+        this.cacheService.setTxCache(this.transactions);
+      }
 
       const confirmedTxs = this.transactions.filter((tx) => tx.status.confirmed).length;
       this.transactions.forEach((tx) => {
@@ -292,6 +302,56 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     }
   }
 
+  updateAddressSimilarities(): void {
+    if (!this.transactions || !this.transactions.length) {
+      return;
+    }
+    for (const tx of this.transactions) {
+      if (this.similarityMatches.get(tx.txid)) {
+        continue;
+      }
+
+      const similarityGroups: Map<string, number> = new Map();
+      let lastGroup = 0;
+
+      // Check for address poisoning similarity matches
+      this.similarityMatches.set(tx.txid, new Map());
+      const comparableVouts = [
+        ...tx.vout.slice(0, 20),
+        ...this.addresses.map(addr => ({ scriptpubkey_address: addr, scriptpubkey_type: detectAddressType(addr, this.stateService.network) }))
+      ].filter(v => ['p2pkh', 'p2sh', 'v0_p2wpkh', 'v0_p2wsh', 'v1_p2tr'].includes(v.scriptpubkey_type));
+      const comparableVins = tx.vin.slice(0, 20).map(v => v.prevout).filter(v => ['p2pkh', 'p2sh', 'v0_p2wpkh', 'v0_p2wsh', 'v1_p2tr'].includes(v?.scriptpubkey_type));
+      for (const vout of comparableVouts) {
+        const address = vout.scriptpubkey_address;
+        const addressType = vout.scriptpubkey_type;
+        if (this.similarityMatches.get(tx.txid)?.has(address)) {
+          continue;
+        }
+        for (const compareAddr of [
+          ...comparableVouts.filter(v => v.scriptpubkey_type === addressType && v.scriptpubkey_address !== address),
+          ...comparableVins.filter(v => v.scriptpubkey_type === addressType && v.scriptpubkey_address !== address)
+        ]) {
+          const similarity = checkedCompareAddressStrings(address, compareAddr.scriptpubkey_address, addressType as AddressType, this.stateService.network);
+          if (similarity?.status === 'comparable' && similarity.score > ADDRESS_SIMILARITY_THRESHOLD) {
+            let group = similarityGroups.get(address) || lastGroup++;
+            similarityGroups.set(address, group);
+            const bestVout = this.similarityMatches.get(tx.txid)?.get(address);
+            if (!bestVout || bestVout.score < similarity.score) {
+              this.similarityMatches.get(tx.txid)?.set(address, { score: similarity.score, match: similarity.left, group });
+            }
+            // opportunistically update the entry for the compared address
+            const bestCompare = this.similarityMatches.get(tx.txid)?.get(compareAddr.scriptpubkey_address);
+            if (!bestCompare || bestCompare.score < similarity.score) {
+              group = similarityGroups.get(compareAddr.scriptpubkey_address) || lastGroup++;
+              similarityGroups.set(compareAddr.scriptpubkey_address, group);
+              this.similarityMatches.get(tx.txid)?.set(compareAddr.scriptpubkey_address, { score: similarity.score, match: similarity.right, group });
+            }
+          }
+        }
+      }
+    }
+  }
+
   onScroll(): void {
     this.loadMore.emit();
   }
@@ -351,7 +411,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   }
 
   loadMoreInputs(tx: Transaction): void {
-    if (!tx['@vinLoaded']) {
+    if (!tx['@vinLoaded'] && !this.txPreview) {
       this.electrsApiService.getTransaction$(tx.txid)
         .subscribe((newTx) => {
           tx['@vinLoaded'] = true;
