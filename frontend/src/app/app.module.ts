@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { ModuleWithProviders, NgModule } from '@angular/core';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ZONE_SERVICE } from '@app/injection-tokens';
 import { AppRoutingModule } from './app-routing.module';
@@ -62,15 +62,19 @@ const providers = [
   declarations: [
     AppComponent,
   ],
+  bootstrap: [
+      AppComponent
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule,
     BrowserAnimationsModule,
-    SharedModule,
+    SharedModule
   ],
-  providers: providers,
-  bootstrap: [AppComponent]
+  providers: [
+    provideHttpClient(withInterceptorsFromDi()),
+    ...providers
+  ]
 })
 export class AppModule { }
 
