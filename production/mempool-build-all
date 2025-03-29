@@ -173,7 +173,7 @@ for repo in $frontend_repos;do
 done
 
 # notify everyone
-echo "${HOSTNAME} updated to \`${REF}\` @ \`${HASH}\`" | /usr/local/bin/keybase chat send --nonblock --channel general mempool.dev
-echo "${HOSTNAME} updated to \`${REF}\` @ \`${HASH}\`" | /usr/local/bin/keybase chat send --nonblock --channel general "mempool.ops.${LOCATION}"
+#echo "${HOSTNAME} updated to \`${REF}\` @ \`${HASH}\`" | /usr/local/bin/keybase chat send --nonblock --channel general mempool.dev
+#echo "${HOSTNAME} updated to \`${REF}\` @ \`${HASH}\`" | /usr/local/bin/keybase chat send --nonblock --channel general "mempool.ops.${LOCATION}"
 
 exit 0

@@ -38,6 +38,7 @@ export class TransactionDetailsComponent implements OnInit {
   @Input() replaced: boolean;
   @Input() isCached: boolean;
   @Input() ETA$: Observable<ETA>;
+  @Input() unbroadcasted: boolean;
 
   @Output() accelerateClicked = new EventEmitter<boolean>();
   @Output() toggleCpfp$ = new EventEmitter<void>();

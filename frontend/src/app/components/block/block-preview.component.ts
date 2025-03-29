@@ -35,6 +35,8 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
   overviewSubscription: Subscription;
   networkChangedSubscription: Subscription;
 
+  ogSession: number;
+
   @ViewChild('blockGraph') blockGraph: BlockOverviewGraphComponent;
 
   constructor(
@@ -53,8 +55,8 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
     const block$ = this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
         this.rawId = params.get('id') || '';
-        this.openGraphService.waitFor('block-viz-' + this.rawId);
-        this.openGraphService.waitFor('block-data-' + this.rawId);
+        this.ogSession = this.openGraphService.waitFor('block-viz-' + this.rawId);
+        this.ogSession = this.openGraphService.waitFor('block-data-' + this.rawId);
 
         const blockHash: string = params.get('id') || '';
         this.block = undefined;
@@ -86,8 +88,8 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
               catchError((err) => {
                 this.error = err;
                 this.seoService.logSoft404();
-                this.openGraphService.fail('block-data-' + this.rawId);
-                this.openGraphService.fail('block-viz-' + this.rawId);
+                this.openGraphService.fail({ event: 'block-data-' + this.rawId, sessionId: this.ogSession });
+                this.openGraphService.fail({ event: 'block-viz-' + this.rawId, sessionId: this.ogSession });
                 return of(null);
               }),
             );
@@ -114,7 +116,7 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
         this.isLoadingOverview = true;
         this.overviewError = null;
 
-        this.openGraphService.waitOver('block-data-' + this.rawId);
+        this.openGraphService.waitOver({ event: 'block-data-' + this.rawId, sessionId: this.ogSession });
       }),
       throttleTime(50, asyncScheduler, { leading: true, trailing: true }),
       shareReplay({ bufferSize: 1, refCount: true })
@@ -129,7 +131,7 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
               .pipe(
                 catchError((err) => {
                   this.overviewError = err;
-                  this.openGraphService.fail('block-viz-' + this.rawId);
+                  this.openGraphService.fail({ event: 'block-viz-' + this.rawId, sessionId: this.ogSession });
                   return of([]);
                 }),
                 switchMap((transactions) => {
@@ -138,7 +140,8 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
               ),
             this.stateService.env.ACCELERATOR === true && block.height > 819500
               ? this.servicesApiService.getAllAccelerationHistory$({ blockHeight: block.height })
-                .pipe(catchError(() => {
+                .pipe(
+                  catchError(() => {
                   return of([]);
                 }))
               : of([])
@@ -169,8 +172,8 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
       this.error = error;
       this.isLoadingOverview = false;
       this.seoService.logSoft404();
-      this.openGraphService.fail('block-viz-' + this.rawId);
-      this.openGraphService.fail('block-data-' + this.rawId);
+      this.openGraphService.fail({ event: 'block-viz-' + this.rawId, sessionId: this.ogSession });
+      this.openGraphService.fail({ event: 'block-data-' + this.rawId, sessionId: this.ogSession });
       if (this.blockGraph) {
         this.blockGraph.destroy();
       }
@@ -196,6 +199,6 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
   }
 
   onGraphReady(): void {
-    this.openGraphService.waitOver('block-viz-' + this.rawId);
+    this.openGraphService.waitOver({ event: 'block-viz-' + this.rawId, sessionId: this.ogSession });
   }
 }
