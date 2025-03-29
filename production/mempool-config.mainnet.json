@@ -159,6 +159,7 @@
   },
   "WALLETS": {
     "ENABLED": true,
+    "AUTO": true,
     "WALLETS": ["BITB", "3350"]
   },
   "STRATUM": {
