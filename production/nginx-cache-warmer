@@ -6,19 +6,19 @@ slugs=(`curl -sSL https://${hostname}/api/v1/mining/pools/3y|jq -r -S '(.pools[]
 warmSlurp()
 {
 	echo "$1"
-	curl -i -s -H 'User-Agent: Googlebot' "$1" | head -1
+	curl -o /dev/null -s -H 'User-Agent: Googlebot' "$1"
 }
 
 warmUnfurl()
 {
 	echo "$1"
-	curl -i -s -H 'User-Agent: Twitterbot' "$1" | head -1
+	curl -o /dev/null -s -H 'User-Agent: Twitterbot' "$1"
 }
 
 warm()
 {
 	echo "$1"
-	curl -i -s "$1" | head -1
+	curl -o /dev/null -s "$1"
 }
 
 warmSlurpURLs=(
