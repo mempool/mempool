@@ -406,8 +406,8 @@ class BitcoinRoutes {
 
       res.setHeader('Expires', new Date(Date.now() + 1000 * cacheDuration).toUTCString());
       res.json(block);
-    } catch (e) {
-      handleError(req, res, 500, 'Failed to get block');
+    } catch (e: any) {
+      handleError(req, res, e?.response?.status === 404 ? 404 : 500, 'Failed to get block');
     }
   }
 
