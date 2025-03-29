@@ -3,7 +3,7 @@ import { getVarIntLength, parseMultisigScript, isPoint } from '@app/shared/scrip
 import { Transaction, Vin } from '@interfaces/electrs.interface';
 import { CpfpInfo, RbfInfo, TransactionStripped } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
-import { Hash } from './sha256';
+import { hash, Hash } from './sha256';
 
 // Bitcoin Core default policy settings
 const MAX_STANDARD_TX_WEIGHT = 400_000;
@@ -1380,11 +1380,11 @@ function toWords(bytes) {
 }
 
 // Helper functions
-function uint8ArrayToHexString(uint8Array: Uint8Array): string {
+export function uint8ArrayToHexString(uint8Array: Uint8Array): string {
   return Array.from(uint8Array).map(byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
-function hexStringToUint8Array(hex: string): Uint8Array {
+export function hexStringToUint8Array(hex: string): Uint8Array {
   const buf = new Uint8Array(hex.length / 2);
   for (let i = 0; i < buf.length; i++) {
     buf[i] = parseInt(hex.substr(i * 2, 2), 16);
@@ -1519,6 +1519,32 @@ function readVector(buffer: Uint8Array, offset: number): [Uint8Array[], number] 
   }
 
   return [vector, updatedOffset];
+}
+
+// SHA256(SHA256(tag) || SHA256(tag) || dataHex)
+export function taggedHash(tag: string, dataHex: string): string {
+  const encoder = new TextEncoder();
+  const tagHash = hash(encoder.encode(tag));
+  return uint8ArrayToHexString(hash(new Uint8Array([...tagHash, ...tagHash, ...hexStringToUint8Array(dataHex)])));
+}
+
+export function compactSize(n: number): Uint8Array {
+  if (n <= 252) {
+    return new Uint8Array([n]);
+  } else if (n <= 0xffff) {
+    return new Uint8Array([0xfd, n & 0xff, (n >> 8) & 0xff]);
+  } else if (n <= 0xffffffff) {
+    return new Uint8Array([0xfe, n & 0xff, (n >> 8) & 0xff, (n >> 16) & 0xff, (n >> 24) & 0xff]);
+  } else {
+    const buffer = new Uint8Array(9);
+    buffer[0] = 0xff;
+    let num = BigInt(n);
+    for (let i = 1; i <= 8; i++) {
+      buffer[i] = Number(num & BigInt(0xff));
+      num >>= BigInt(8);
+    }
+    return buffer;
+  }
 }
 
 // Inversed the opcodes object from https://github.com/mempool/mempool/blob/14e49126c3ca8416a8d7ad134a95c5e090324d69/backend/src/utils/bitcoin-script.ts#L1

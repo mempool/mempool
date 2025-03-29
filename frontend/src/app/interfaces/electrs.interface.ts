@@ -76,6 +76,7 @@ export interface Vin {
   issuance?: Issuance;
   // Custom
   lazy?: boolean;
+  vinId?: string; // `txid:index` where txid links to the transaction this input is spent in, and index is the position of this input within this transaction
   // Ord
   isInscription?: boolean;
 }

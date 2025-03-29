@@ -1,0 +1,15 @@
+<div [style.maxHeight.px]="fullTreeShown ? height : maxHeight" [style.overflow]="height <= maxHeight ? 'visible' : 'hidden'">
+  <div class="echarts" *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions" (chartInit)="onChartInit($event)" [style.height.px]="height"></div>
+  <div class="text-center loadingGraphs" *ngIf="!stateService.isBrowser">
+    <div class="spinner-border text-light"></div>
+  </div>
+</div>
+<div [class.fade-out]="stateService.isBrowser && !fullTreeShown && height > maxHeight"></div>
+<div class="toggle-wrapper" *ngIf="stateService.isBrowser && (height > maxHeight || fullTreeShown)">
+  <button class="btn btn-sm btn-primary graph-toggle" (click)="fullTreeShown = true" *ngIf="!fullTreeShown; else collapseBtn">
+    <span i18n="show-all">Show all</span>
+  </button>
+  <ng-template #collapseBtn>
+    <button class="btn btn-sm btn-primary graph-toggle" (click)="fullTreeShown = false"><span i18n="show-less">Show less</span></button>
+  </ng-template>
+</div>
