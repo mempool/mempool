@@ -495,7 +495,7 @@ describe('Mainnet', () => {
       });
     });
 
-    describe.only('RBF transactions', () => {
+    describe('RBF transactions', () => {
       it('shows RBF transactions properly (mobile - details)', () => {
         cy.intercept('/api/v1/tx/21518a98d1aa9df524865d2f88c578499f524eb1d0c4d3e70312ab863508692f/cached', {
           fixture: 'mainnet_tx_cached.json'
