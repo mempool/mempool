@@ -1,0 +1,154 @@
+name: 'Parameterized e2e tests'
+
+on:
+  workflow_dispatch:
+    inputs:
+      mempool_hostname:
+        description: 'Mempool Hostname'
+        required: true
+        default: 'mempool.space'
+        type: string 
+      liquid_hostname:
+        description: 'Liquid Hostname'
+        required: true
+        default: 'liquid.network'
+        type: string 
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        module: ["mempool", "liquid", "testnet4"]
+
+    name: E2E tests for ${{ matrix.module }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: ${{ matrix.module }}
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: ${{ matrix.module }}/frontend/package-lock.json
+
+      - name: Restore cached mining pool assets
+        continue-on-error: true
+        id: cache-mining-pool-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            mining-pool-assets.zip
+          key: mining-pool-assets-cache
+
+      - name: Restore cached promo video assets
+        continue-on-error: true
+        id: cache-promo-video-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            promo-video-assets.zip
+          key: promo-video-assets-cache
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mining-pool-assets
+
+      - name: Unzip assets before building (src/resources)
+        run: unzip -o mining-pool-assets.zip -d ${{ matrix.module }}/frontend/src/resources/mining-pools
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: promo-video-assets
+
+      - name: Unzip assets before building (src/resources)
+        run: unzip -o promo-video-assets.zip -d ${{ matrix.module }}/frontend/src/resources/promo-video
+
+    # mempool
+      - name: Chrome browser tests (${{ matrix.module }})
+        if: ${{ matrix.module == 'mempool' }}
+        uses: cypress-io/github-action@v5
+        with:
+          tag: ${{ github.event_name }}
+          working-directory: ${{ matrix.module }}/frontend
+          build: npm run config:defaults:${{ matrix.module }}
+          start: npm run start:ci-parameterized
+          wait-on: "http://localhost:4200"
+          wait-on-timeout: 120
+          record: true
+          parallel: true
+          spec: |
+            cypress/e2e/mainnet/*.spec.ts
+            cypress/e2e/signet/*.spec.ts
+          group: Tests on Chrome (${{ matrix.module }})
+          browser: "chrome"
+          ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
+        env:
+          COMMIT_INFO_MESSAGE: ${{ github.event_name }} (${{ github.sha }}) - ${{ github.event.inputs.mempool_hostname }} - ${{ github.event.inputs.liquid_hostname }}
+          MEMPOOL_HOSTNAME: ${{ github.event.inputs.mempool_hostname }}
+          LIQUID_HOSTNAME: ${{ github.event.inputs.liquid_hostname }}
+          MEMPOOL_CI_API_KEY: ${{ secrets.MEMPOOL_CI_API_KEY }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+
+      # liquid
+      - name: Chrome browser tests (${{ matrix.module }})
+        if: ${{ matrix.module == 'liquid' }}
+        uses: cypress-io/github-action@v5
+        with:
+          tag: ${{ github.event_name }}
+          working-directory: ${{ matrix.module }}/frontend
+          build: npm run config:defaults:${{ matrix.module }}
+          start: npm run start:ci-parameterized
+          wait-on: "http://localhost:4200"
+          wait-on-timeout: 120
+          record: true
+          parallel: true
+          spec: |
+            cypress/e2e/liquid/liquid.spec.ts
+            cypress/e2e/liquidtestnet/liquidtestnet.spec.ts
+          group: Tests on Chrome (${{ matrix.module }})
+          browser: "chrome"
+          ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
+        env:
+          COMMIT_INFO_MESSAGE: ${{ github.event_name }} (${{ github.sha }}) - ${{ github.event.inputs.mempool_hostname }} - ${{ github.event.inputs.liquid_hostname }}
+          MEMPOOL_HOSTNAME: ${{ github.event.inputs.mempool_hostname }}
+          LIQUID_HOSTNAME: ${{ github.event.inputs.liquid_hostname }}
+          MEMPOOL_CI_API_KEY: ${{ secrets.MEMPOOL_CI_API_KEY }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+
+      # testnet
+      - name: Chrome browser tests (${{ matrix.module }})
+        if: ${{ matrix.module == 'testnet4' }}
+        uses: cypress-io/github-action@v5
+        with:
+          tag: ${{ github.event_name }}
+          working-directory: ${{ matrix.module }}/frontend
+          build: npm run config:defaults:mempool
+          start: npm run start:ci-parameterized
+          wait-on: "http://localhost:4200"
+          wait-on-timeout: 120
+          record: true
+          parallel: true
+          spec: |
+            cypress/e2e/testnet4/*.spec.ts
+          group: Tests on Chrome (${{ matrix.module }})
+          browser: "chrome"
+          ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
+        env:
+          COMMIT_INFO_MESSAGE: ${{ github.event_name }} (${{ github.sha }}) - ${{ github.event.inputs.mempool_hostname }} - ${{ github.event.inputs.liquid_hostname }}
+          MEMPOOL_HOSTNAME: ${{ github.event.inputs.mempool_hostname }}
+          LIQUID_HOSTNAME: ${{ github.event.inputs.liquid_hostname }}
+          MEMPOOL_CI_API_KEY: ${{ secrets.MEMPOOL_CI_API_KEY }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
