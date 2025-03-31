@@ -496,7 +496,7 @@ describe('Mainnet', () => {
     });
 
     describe('RBF transactions', () => {
-      it('shows RBF transactions properly (mobile)', () => {
+      it('shows RBF transactions properly (mobile - details)', () => {
         cy.intercept('/api/v1/tx/21518a98d1aa9df524865d2f88c578499f524eb1d0c4d3e70312ab863508692f/cached', {
           fixture: 'mainnet_tx_cached.json'
         }).as('cached_tx');
@@ -507,7 +507,7 @@ describe('Mainnet', () => {
 
         cy.viewport('iphone-xr');
         cy.mockMempoolSocket();
-        cy.visit('/tx/21518a98d1aa9df524865d2f88c578499f524eb1d0c4d3e70312ab863508692f');
+        cy.visit('/tx/21518a98d1aa9df524865d2f88c578499f524eb1d0c4d3e70312ab863508692f?mode=details');
 
         cy.waitForSkeletonGone();
 
@@ -525,7 +525,7 @@ describe('Mainnet', () => {
           }
         });
 
-        cy.get('.alert-replaced').should('be.visible');
+        cy.get('.alert-mempool').should('be.visible');
       });
 
       it('shows RBF transactions properly (desktop)', () => {
