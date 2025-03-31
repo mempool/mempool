@@ -21,7 +21,7 @@ jobs:
         service:
           - frontend
           - backend
-    runs-on: ubuntu-latest
+    runs-on: mempool-ci
     timeout-minutes: 120
     name: Build and push to DockerHub
     steps:

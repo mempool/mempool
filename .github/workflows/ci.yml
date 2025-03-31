@@ -12,7 +12,7 @@ jobs:
         node: ["20", "21"]
         flavor: ["dev", "prod"]
       fail-fast: false
-    runs-on: "ubuntu-latest"
+    runs-on: mempool-ci
 
     name: Backend (${{ matrix.flavor }}) - node ${{ matrix.node }}
     steps:
@@ -66,7 +66,7 @@ jobs:
 
   cache:
     name: "Cache assets for builds"
-    runs-on: "ubuntu-latest"
+    runs-on: mempool-ci
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -163,7 +163,7 @@ jobs:
         node: ["20", "21"]
         flavor: ["dev", "prod"]
       fail-fast: false
-    runs-on: "ubuntu-latest"
+    runs-on: mempool-ci
 
     name: Frontend (${{ matrix.flavor }}) - node ${{ matrix.node }}
     steps:
@@ -246,7 +246,7 @@ jobs:
   
   e2e:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
-    runs-on: "ubuntu-latest"
+    runs-on: mempool-ci
     needs: frontend
     strategy:
       fail-fast: false
@@ -378,7 +378,7 @@ jobs:
 
   validate_docker_json:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
-    runs-on: "ubuntu-latest"
+    runs-on: mempool-ci
     name: Validate generated backend Docker JSON
 
     steps: 
