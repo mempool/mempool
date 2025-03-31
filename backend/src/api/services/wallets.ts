@@ -118,8 +118,12 @@ class WalletApi {
     }
   }
 
-  public getWallet(wallet: string): Record<string, WalletAddress> {
-    return this.wallets?.[wallet]?.addresses || {};
+  public getWallet(wallet: string): Record<string, WalletAddress> | null {
+    if (wallet in this.wallets) {
+      return this.wallets?.[wallet]?.addresses || {};
+    } else {
+      return null;
+    }
   }
 
   // resync wallet addresses from the services backend
