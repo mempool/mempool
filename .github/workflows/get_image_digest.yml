@@ -10,7 +10,7 @@ on:
         type: string 
 jobs:
   print-images-sha:
-    runs-on: 'ubuntu-latest'
+    runs-on: mempool-ci
     name: Print digest for images
     steps:
       - name: Checkout
