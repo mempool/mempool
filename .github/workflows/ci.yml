@@ -12,7 +12,6 @@ jobs:
         node: ["20", "21"]
         flavor: ["dev", "prod"]
       fail-fast: false
-    runs-on: mempool-ci
     runs-on: ubuntu-latest
 
     name: Backend (${{ matrix.flavor }}) - node ${{ matrix.node }}
@@ -67,7 +66,6 @@ jobs:
 
   cache:
     name: "Cache assets for builds"
-    runs-on: mempool-ci
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -165,7 +163,6 @@ jobs:
         node: ["20", "21"]
         flavor: ["dev", "prod"]
       fail-fast: false
-    runs-on: mempool-ci
     runs-on: ubuntu-latest
 
     name: Frontend (${{ matrix.flavor }}) - node ${{ matrix.node }}
@@ -249,7 +246,6 @@ jobs:
   
   e2e:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
-    runs-on: mempool-ci
     runs-on: ubuntu-latest
     needs: frontend
     strategy:
@@ -313,7 +309,7 @@ jobs:
           tag: ${{ github.event_name }}
           working-directory: ${{ matrix.module }}/frontend
           build: npm run config:defaults:${{ matrix.module }}
-          start: npm run start:local-staging
+          start: npm run start:parameterized
           wait-on: "http://localhost:4200"
           wait-on-timeout: 120
           record: true
@@ -338,7 +334,7 @@ jobs:
           tag: ${{ github.event_name }}
           working-directory: ${{ matrix.module }}/frontend
           build: npm run config:defaults:${{ matrix.module }}
-          start: npm run start:local-staging
+          start: npm run start:parameterized
           wait-on: "http://localhost:4200"
           wait-on-timeout: 120
           record: true
@@ -363,7 +359,7 @@ jobs:
           tag: ${{ github.event_name }}
           working-directory: ${{ matrix.module }}/frontend
           build: npm run config:defaults:mempool
-          start: npm run start:local-staging
+          start: npm run start:parameterized
           wait-on: "http://localhost:4200"
           wait-on-timeout: 120
           record: true
@@ -382,7 +378,6 @@ jobs:
 
   validate_docker_json:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
-    runs-on: mempool-ci
     runs-on: ubuntu-latest
     name: Validate generated backend Docker JSON
 
