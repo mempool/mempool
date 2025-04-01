@@ -29,7 +29,8 @@ export class BlockchainComponent implements OnInit, OnDestroy, OnChanges {
   connected: boolean = true;
   blockDisplayMode: 'size' | 'fees';
 
-  flipped: boolean = false;
+  flipped: boolean = true;
+  readyToFlip: boolean = false;
 
   dividerOffset: number | null = null;
   mempoolOffset: number | null = null;
@@ -42,7 +43,22 @@ export class BlockchainComponent implements OnInit, OnDestroy, OnChanges {
     public stateService: StateService,
     public StorageService: StorageService,
     private cd: ChangeDetectorRef,
-  ) {}
+  ) {
+    if (this.StorageService.getValue('ap-flipped') !== null) {
+      this.flipped = false;
+    } else {
+      this.flipped = this.stateService.apFlipped;
+      if (this.flipped) {
+        setTimeout(() => {
+          this.flipped = false;
+          this.stateService.apFlipped = false;
+        }, 5000);
+      }
+      setTimeout(() => {
+        this.readyToFlip = true;
+      }, 500);
+    }
+  }
 
   ngOnInit(): void {
     this.onResize();
@@ -94,6 +110,7 @@ export class BlockchainComponent implements OnInit, OnDestroy, OnChanges {
   toggleBlockDisplayMode(): void {
     if (this.isA1()) {
       this.flipped = !this.flipped;
+      this.StorageService.setValue('ap-flipped', this.flipped ? 'true' : 'false');
     } else {
       if (this.blockDisplayMode === 'size') this.blockDisplayMode = 'fees';
       else this.blockDisplayMode = 'size';

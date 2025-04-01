@@ -21,10 +21,11 @@
   user-select: none; /* Standard */
 
 
-  transition: transform 2s;
-
   &.flipped {
     transform: rotate(180deg);
+  }
+  &.ready-to-flip {
+    transition: transform 2s;
   }
 }
 
