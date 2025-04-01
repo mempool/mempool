@@ -99,7 +99,7 @@ class PoolsUpdater {
 
     } catch (e) {
       // fast-forward lastRun to 10 minutes before the next scheduled update
-      this.lastRun = now - (config.MEMPOOL.POOLS_UPDATE_DELAY - 600);
+      this.lastRun = now - Math.max(config.MEMPOOL.POOLS_UPDATE_DELAY - 600, 600);
       logger.err(`PoolsUpdater failed. Will try again in 10 minutes. Exception: ${JSON.stringify(e)}`, this.tag);
     }
   }
