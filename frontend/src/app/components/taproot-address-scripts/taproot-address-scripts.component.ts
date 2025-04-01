@@ -171,7 +171,7 @@ export class TaprootAddressScriptsComponent implements OnChanges {
     if (depth === 0) {
       node.symbol = 'none';
       node.label = {
-        formatter: '{pill|TapRoot}',
+        formatter: '{pill|Taproot}',
         offset: [0, -5],
         rich: {
           pill: {
