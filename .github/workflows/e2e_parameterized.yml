@@ -3,6 +3,11 @@ name: 'Parameterized e2e tests'
 on:
   workflow_dispatch:
     inputs:
+      ref:
+        description: 'Branch name or Pull Request number (e.g., master or 6102)'
+        required: true
+        default: 'master'
+        type: string
       mempool_hostname:
         description: 'Mempool Hostname'
         required: true
@@ -15,8 +20,111 @@ on:
         type: string 
 
 jobs:
+  cache:
+    name: "Cache assets for builds"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Determine checkout ref
+        id: determine-ref
+        run: |
+          REF_INPUT="${{ github.event.inputs.ref }}"
+          if [[ "$REF_INPUT" =~ ^[0-9]+$ ]]; then
+            echo "ref=refs/pull/$REF_INPUT/head" >> $GITHUB_OUTPUT
+          else
+            echo "ref=$REF_INPUT" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ steps.determine-ref.outputs.ref }}
+          path: assets
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install (Prod dependencies only)
+        run: npm ci --omit=dev --omit=optional
+        working-directory: assets/frontend
+
+      - name: Restore cached mining pool assets
+        continue-on-error: true
+        id: cache-mining-pool-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            mining-pool-assets.zip
+          key: mining-pool-assets-cache
+
+      - name: Restore promo video assets
+        continue-on-error: true
+        id: cache-promo-video-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            promo-video-assets.zip
+          key: promo-video-assets-cache
+
+      - name: Unzip assets before building (src/resources)
+        continue-on-error: true
+        run: unzip -o mining-pool-assets.zip -d assets/frontend/src/resources/mining-pools
+
+      - name: Unzip assets before building (src/resources)
+        continue-on-error: true
+        run: unzip -o promo-video-assets.zip -d assets/frontend/src/resources/promo-video
+
+      # - name: Unzip assets before building (dist)
+      #   continue-on-error: true
+      #   run: unzip assets.zip -d assets/frontend/dist/mempool/browser/resources
+
+      - name: Sync-assets
+        run: npm run sync-assets-dev
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MEMPOOL_CDN: 1
+          VERBOSE: 1
+        working-directory: assets/frontend
+
+      - name: Zip mining-pool assets
+        run: zip -jrq mining-pool-assets.zip assets/frontend/src/resources/mining-pools/*
+
+      - name: Zip promo-video assets
+        run: zip -jrq promo-video-assets.zip assets/frontend/src/resources/promo-video/*
+
+      - name: Upload mining pool assets as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mining-pool-assets
+          path: mining-pool-assets.zip
+
+      - name: Upload promo video assets as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: promo-video-assets
+          path: promo-video-assets.zip
+
+      - name: Save mining pool assets cache
+        id: cache-mining-pool-save
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            mining-pool-assets.zip
+          key: mining-pool-assets-cache
+
+      - name: Save promo video assets cache
+        id: cache-promo-video-save
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            promo-video-assets.zip
+          key: promo-video-assets-cache
+
   e2e:
     runs-on: ubuntu-latest
+    needs: cache
     strategy:
       fail-fast: false
       matrix:
@@ -24,9 +132,20 @@ jobs:
 
     name: E2E tests for ${{ matrix.module }}
     steps:
+      - name: Determine checkout ref
+        id: determine-ref
+        run: |
+          REF_INPUT="${{ github.event.inputs.ref }}"
+          if [[ "$REF_INPUT" =~ ^[0-9]+$ ]]; then
+            echo "ref=refs/pull/$REF_INPUT/head" >> $GITHUB_OUTPUT
+          else
+            echo "ref=$REF_INPUT" >> $GITHUB_OUTPUT
+          fi
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
+          ref: ${{ steps.determine-ref.outputs.ref }}
           path: ${{ matrix.module }}
 
       - name: Setup node
@@ -78,7 +197,7 @@ jobs:
           tag: ${{ github.event_name }}
           working-directory: ${{ matrix.module }}/frontend
           build: npm run config:defaults:${{ matrix.module }}
-          start: npm run start:ci-parameterized
+          start: npm run start:parameterized
           wait-on: "http://localhost:4200"
           wait-on-timeout: 120
           record: true
@@ -90,7 +209,7 @@ jobs:
           browser: "chrome"
           ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
         env:
-          COMMIT_INFO_MESSAGE: ${{ github.event_name }} (${{ github.sha }}) - ${{ github.event.inputs.mempool_hostname }} - ${{ github.event.inputs.liquid_hostname }}
+          COMMIT_INFO_MESSAGE: ${{ github.event_name }} (${{ github.sha }}) - ref ${{ github.event.inputs.ref }} - ${{ github.event.inputs.mempool_hostname }} - ${{ github.event.inputs.liquid_hostname }}
           MEMPOOL_HOSTNAME: ${{ github.event.inputs.mempool_hostname }}
           LIQUID_HOSTNAME: ${{ github.event.inputs.liquid_hostname }}
           MEMPOOL_CI_API_KEY: ${{ secrets.MEMPOOL_CI_API_KEY }}
@@ -106,7 +225,7 @@ jobs:
           tag: ${{ github.event_name }}
           working-directory: ${{ matrix.module }}/frontend
           build: npm run config:defaults:${{ matrix.module }}
-          start: npm run start:ci-parameterized
+          start: npm run start:parameterized
           wait-on: "http://localhost:4200"
           wait-on-timeout: 120
           record: true
@@ -118,7 +237,7 @@ jobs:
           browser: "chrome"
           ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
         env:
-          COMMIT_INFO_MESSAGE: ${{ github.event_name }} (${{ github.sha }}) - ${{ github.event.inputs.mempool_hostname }} - ${{ github.event.inputs.liquid_hostname }}
+          COMMIT_INFO_MESSAGE: ${{ github.event_name }} (${{ github.sha }}) - ref ${{ github.event.inputs.ref }} - ${{ github.event.inputs.mempool_hostname }} - ${{ github.event.inputs.liquid_hostname }}
           MEMPOOL_HOSTNAME: ${{ github.event.inputs.mempool_hostname }}
           LIQUID_HOSTNAME: ${{ github.event.inputs.liquid_hostname }}
           MEMPOOL_CI_API_KEY: ${{ secrets.MEMPOOL_CI_API_KEY }}
@@ -134,7 +253,7 @@ jobs:
           tag: ${{ github.event_name }}
           working-directory: ${{ matrix.module }}/frontend
           build: npm run config:defaults:mempool
-          start: npm run start:ci-parameterized
+          start: npm run start:parameterized
           wait-on: "http://localhost:4200"
           wait-on-timeout: 120
           record: true
@@ -145,7 +264,7 @@ jobs:
           browser: "chrome"
           ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
         env:
-          COMMIT_INFO_MESSAGE: ${{ github.event_name }} (${{ github.sha }}) - ${{ github.event.inputs.mempool_hostname }} - ${{ github.event.inputs.liquid_hostname }}
+          COMMIT_INFO_MESSAGE: ${{ github.event_name }} (${{ github.sha }}) - ref ${{ github.event.inputs.ref }} - ${{ github.event.inputs.mempool_hostname }} - ${{ github.event.inputs.liquid_hostname }}
           MEMPOOL_HOSTNAME: ${{ github.event.inputs.mempool_hostname }}
           LIQUID_HOSTNAME: ${{ github.event.inputs.liquid_hostname }}
           MEMPOOL_CI_API_KEY: ${{ secrets.MEMPOOL_CI_API_KEY }}
