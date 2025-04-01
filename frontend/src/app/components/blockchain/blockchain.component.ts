@@ -29,6 +29,8 @@ export class BlockchainComponent implements OnInit, OnDestroy, OnChanges {
   connected: boolean = true;
   blockDisplayMode: 'size' | 'fees';
 
+  flipped: boolean = false;
+
   dividerOffset: number | null = null;
   mempoolOffset: number | null = null;
   positionStyle = {
@@ -90,10 +92,14 @@ export class BlockchainComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   toggleBlockDisplayMode(): void {
-    if (this.blockDisplayMode === 'size') this.blockDisplayMode = 'fees';
-    else this.blockDisplayMode = 'size';
-    this.StorageService.setValue('block-display-mode-preference', this.blockDisplayMode);
-    this.stateService.blockDisplayMode$.next(this.blockDisplayMode);
+    if (this.isA1()) {
+      this.flipped = !this.flipped;
+    } else {
+      if (this.blockDisplayMode === 'size') this.blockDisplayMode = 'fees';
+      else this.blockDisplayMode = 'size';
+      this.StorageService.setValue('block-display-mode-preference', this.blockDisplayMode);
+      this.stateService.blockDisplayMode$.next(this.blockDisplayMode);
+    }
   }
 
   onMempoolWidthChange(width): void {
@@ -124,6 +130,11 @@ export class BlockchainComponent implements OnInit, OnDestroy, OnChanges {
     if (changes.containerWidth) {
       this.onResize();
     }
+  }
+
+  isA1(): boolean {
+    const now = new Date();
+    return now.getMonth() === 3 && now.getDate() === 1;
   }
 
   onResize(): void {
