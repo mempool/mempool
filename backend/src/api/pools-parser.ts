@@ -45,6 +45,12 @@ class PoolsParser {
     let reindexUnknown = false;
     let clearCache = false;
 
+    const poolsDict: { [key: string]: PoolTag } = {};
+    for (const pool of this.miningPools) {
+      poolsDict[pool.id] = pool;
+    }
+    const dbPools = await PoolsRepository.$getPools();
+    const dbPoolsDict: { [key: string]: PoolTag } = {};
 
     for (const pool of this.miningPools) {
       if (!pool.id) {
@@ -74,7 +80,7 @@ class PoolsParser {
         logger.warn(`Mining pool ${pool.name} has no 'regexes' defined.`);
       }
 
-      const poolDB = await PoolsRepository.$getPoolByUniqueId(pool.id, false);
+      const poolDB = dbPoolsDict[pool.id];
       if (!poolDB) {
         // New mining pool
         const slug = pool.name.replace(/[^a-z0-9]/gi, '').toLowerCase();
@@ -105,6 +111,15 @@ class PoolsParser {
           clearCache = true;
           await this.$reindexBlocksForPool(poolDB.id);
         }
+      }
+    }
+
+    for (const pool of dbPools) {
+      if (!poolsDict[pool.id]) {
+        logger.notice(`Removing ${pool.name} mining pool from database.`);
+        await PoolsRepository.$deleteMiningPool(pool.id);
+        reindexUnknown = true;
+        clearCache = true;
       }
     }
 
