@@ -60,7 +60,7 @@
     "cypress:run:ci:parameterized": "node update-config.js TESTNET_ENABLED=true TESTNET4_ENABLED=true SIGNET_ENABLED=true LIQUID_ENABLED=true ITEMS_PER_PAGE=25 && npm run generate-config && start-server-and-test serve:parameterized 4200 cypress:run:record"
   },
   "dependencies": {
-    "@angular-devkit/build-angular": "^17.3.1",
+    "@angular-devkit/build-angular": "^19.2.5",
     "@angular/animations": "^17.3.1",
     "@angular/cli": "^17.3.1",
     "@angular/common": "^17.3.1",
