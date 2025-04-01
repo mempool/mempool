@@ -1,4 +1,4 @@
-<div class="text-center" class="blockchain-wrapper" [class.time-ltr]="timeLtr" [class.ltr-transition]="ltrTransitionEnabled" [class.flipped]="flipped && isA1()" #container>
+<div class="text-center" class="blockchain-wrapper" [class.time-ltr]="timeLtr" [class.ltr-transition]="ltrTransitionEnabled" [class.flipped]="flipped" [class.ready-to-flip]="readyToFlip" #container>
   <div #positionContainer class="position-container" [ngClass]="network ? network : ''" [style]="positionStyle">
     <span>
       <div class="blocks-wrapper">
