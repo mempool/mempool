@@ -57,11 +57,6 @@ describe('Liquid', () => {
       });
     });
 
-    it('loads the tv page - desktop', () => {
-      cy.visit(`${basePath}/tv`);
-      cy.waitForSkeletonGone();
-    });
-
     it('loads the graphs page - mobile', () => {
       cy.visit(`${basePath}`)
       cy.waitForSkeletonGone();

@@ -16,6 +16,11 @@
   <div class="header-bg box" [attr.data-cy]="'tx-' + i">
 
     <div *ngIf="errorUnblinded" class="error-unblinded">{{ errorUnblinded }}</div>
+    @if (similarityMatches.get(tx.txid)?.size) {
+      <div class="alert alert-mempool" role="alert">
+        <span i18n="transaction.poison.warning">Warning! This transaction involves deceptively similar addresses. It may be an address poisoning attack.</span>
+      </div>
+    }
     <div class="row">
       <div class="col">
         <table class="table table-fixed table-borderless smaller-text table-sm table-tx-vin">
@@ -68,9 +73,11 @@
                         </ng-template>
                       </ng-template>
                       <ng-template #defaultAddress>
-                        <a class="address" *ngIf="vin.prevout.scriptpubkey_address; else vinScriptPubkeyType" [routerLink]="['/address/' | relativeUrl, vin.prevout.scriptpubkey_address]" title="{{ vin.prevout.scriptpubkey_address }}">
-                          <app-truncate [text]="vin.prevout.scriptpubkey_address" [lastChars]="8"></app-truncate>
-                        </a>
+                        <app-address-text
+                          *ngIf="vin.prevout.scriptpubkey_address; else vinScriptPubkeyType"
+                          [address]="vin.prevout.scriptpubkey_address"
+                          [similarity]="similarityMatches.get(tx.txid)?.get(vin.prevout.scriptpubkey_address)"
+                        ></app-address-text>
                         <ng-template #vinScriptPubkeyType>
                           {{ vin.prevout.scriptpubkey_type?.toUpperCase() }}
                         </ng-template>
@@ -217,9 +224,11 @@
                 'highlight': this.addresses.length && ((vout.scriptpubkey_type !== 'p2pk' && addresses.includes(vout.scriptpubkey_address)) || this.addresses.includes(vout.scriptpubkey.slice(2, -2)))
               }">
                 <td class="address-cell">
-                  <a class="address" *ngIf="vout.scriptpubkey_address; else pubkey_type" [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey_address]" title="{{ vout.scriptpubkey_address }}">
-                    <app-truncate [text]="vout.scriptpubkey_address" [lastChars]="8"></app-truncate>
-                  </a>
+                  <app-address-text
+                    *ngIf="vout.scriptpubkey_address; else pubkey_type"
+                    [address]="vout.scriptpubkey_address"
+                    [similarity]="similarityMatches.get(tx.txid)?.get(vout.scriptpubkey_address)"
+                  ></app-address-text>
                   <ng-template #pubkey_type>
                     <ng-container *ngIf="vout.scriptpubkey_type === 'p2pk'; else scriptpubkey_type">
                       P2PK <a class="address p2pk-address" [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey.slice(2, -2)]" title="{{ vout.scriptpubkey.slice(2, -2) }}">

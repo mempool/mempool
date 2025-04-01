@@ -260,6 +260,11 @@ export function detectScriptTemplate(type: ScriptType, script_asm: string, witne
     return ScriptTemplates.multisig(tapscriptMultisig.m, tapscriptMultisig.n);
   }
 
+  const tapscriptUnanimousMultisig = parseTapscriptUnanimousMultisig(script_asm);
+  if (tapscriptUnanimousMultisig) {
+    return ScriptTemplates.multisig(tapscriptUnanimousMultisig, tapscriptUnanimousMultisig);
+  }
+
   return;
 }
 
@@ -314,11 +319,13 @@ export function parseTapscriptMultisig(script: string): undefined | { m: number,
   }
 
   const ops = script.split(' ');
-  // At minimum, one pubkey group (3 tokens) + m push + final opcode = 5 tokens
-  if (ops.length < 5) return;
+  // At minimum, 2 pubkey group (3 tokens) + m push + final opcode = 8 tokens
+  if (ops.length < 8) {
+    return;
+  }
 
   const finalOp = ops.pop();
-  if (finalOp !== 'OP_NUMEQUAL' && finalOp !== 'OP_GREATERTHANOREQUAL') {
+  if (!['OP_NUMEQUAL', 'OP_NUMEQUALVERIFY', 'OP_GREATERTHANOREQUAL', 'OP_GREATERTHAN', 'OP_EQUAL', 'OP_EQUALVERIFY'].includes(finalOp)) {
     return;
   }
 
@@ -331,6 +338,10 @@ export function parseTapscriptMultisig(script: string): undefined | { m: number,
     m = parseInt(ops.pop().match(/[0-9]+/)?.[0], 10);
   } else {
     return;
+  }
+
+  if (finalOp === 'OP_GREATERTHAN') {
+    m += 1;
   }
 
   if (ops.length % 3 !== 0) {
@@ -362,6 +373,53 @@ export function parseTapscriptMultisig(script: string): undefined | { m: number,
   }
 
   return { m, n };
+}
+
+export function parseTapscriptUnanimousMultisig(script: string): undefined | number {
+  if (!script) {
+    return;
+  }
+
+  const ops = script.split(' ');
+  // At minimum, 2 pubkey group (3 tokens) = 6 tokens
+  if (ops.length < 6) {
+    return;
+  }
+
+  if (ops.length % 3 !== 0) {
+    return;
+  }
+
+  const n = ops.length / 3;
+
+  for (let i = 0; i < n; i++) {
+    const pushOp = ops.shift();
+    const pubkey = ops.shift();
+    const sigOp = ops.shift();
+
+    if (pushOp !== 'OP_PUSHBYTES_32') {
+      return;
+    }
+    if (!/^[0-9a-fA-F]{64}$/.test(pubkey)) {
+      return;
+    }
+    if (i < n - 1) {
+      if (sigOp !== 'OP_CHECKSIGVERIFY') {
+        return;
+      }
+    } else {
+      // Last opcode can be either CHECKSIG or CHECKSIGVERIFY
+      if (!(sigOp === 'OP_CHECKSIGVERIFY' || sigOp === 'OP_CHECKSIG')) {
+        return;
+      }
+    }
+  }
+
+  if (ops.length) {
+    return;
+  }
+
+  return n;
 }
 
 export function getVarIntLength(n: number): number {

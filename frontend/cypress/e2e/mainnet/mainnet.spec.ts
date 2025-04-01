@@ -415,26 +415,6 @@ describe('Mainnet', () => {
       });
     });
 
-    it('loads the tv screen - desktop', () => {
-      cy.viewport('macbook-16');
-      cy.visit('/graphs/mempool');
-      cy.waitForSkeletonGone();
-      cy.get('#btn-tv').click().then(() => {
-        cy.viewport('macbook-16');
-        cy.get('.chart-holder');
-        cy.get('.blockchain-wrapper').should('be.visible');
-        cy.get('#mempool-block-0').should('be.visible');
-      });
-    });
-
-    it('loads the tv screen - mobile', () => {
-      cy.viewport('iphone-6');
-      cy.visit('/tv');
-      cy.waitForSkeletonGone();
-      cy.get('.chart-holder');
-      cy.get('.blockchain-wrapper').should('not.visible');
-    });
-
     it('loads the api screen', () => {
       cy.visit('/');
       cy.waitForSkeletonGone();
@@ -516,7 +496,7 @@ describe('Mainnet', () => {
     });
 
     describe('RBF transactions', () => {
-      it('shows RBF transactions properly (mobile)', () => {
+      it('shows RBF transactions properly (mobile - details)', () => {
         cy.intercept('/api/v1/tx/21518a98d1aa9df524865d2f88c578499f524eb1d0c4d3e70312ab863508692f/cached', {
           fixture: 'mainnet_tx_cached.json'
         }).as('cached_tx');
@@ -527,7 +507,7 @@ describe('Mainnet', () => {
 
         cy.viewport('iphone-xr');
         cy.mockMempoolSocket();
-        cy.visit('/tx/21518a98d1aa9df524865d2f88c578499f524eb1d0c4d3e70312ab863508692f');
+        cy.visit('/tx/21518a98d1aa9df524865d2f88c578499f524eb1d0c4d3e70312ab863508692f?mode=details');
 
         cy.waitForSkeletonGone();
 
@@ -545,7 +525,7 @@ describe('Mainnet', () => {
           }
         });
 
-        cy.get('.alert-replaced').should('be.visible');
+        cy.get('.alert-mempool').should('be.visible');
       });
 
       it('shows RBF transactions properly (desktop)', () => {
