@@ -1,15 +1,20 @@
-<div [style.maxHeight.px]="fullTreeShown ? height : maxHeight" [style.overflow]="height <= maxHeight ? 'visible' : 'hidden'">
+<div>
   <div class="echarts" *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions" (chartInit)="onChartInit($event)" [style.height.px]="height"></div>
   <div class="text-center loadingGraphs" *ngIf="!stateService.isBrowser">
     <div class="spinner-border text-light"></div>
   </div>
+  <div [class.fade-out]="stateService.isBrowser && !fullTreeShown && depthShown < depth"></div>
+  <div class="toggle-wrapper" *ngIf="stateService.isBrowser && (depthShown < depth || fullTreeShown)">
+    <button class="btn btn-sm btn-primary graph-toggle" (click)="toggleTree(true)" *ngIf="depthShown < depth && !fullTreeShown; else collapseBtn">
+      <span i18n="show-all">Show all</span>
+      (<ng-container *ngIf="(depth - depthShown) === 1"><ng-container *ngTemplateOutlet="xRemainingSingular"></ng-container></ng-container>
+      <ng-container *ngIf="(depth - depthShown) > 1"><ng-container *ngTemplateOutlet="xRemaining; context: {$implicit: depth - depthShown}"></ng-container></ng-container>)
+    </button>
+    <ng-template #collapseBtn>
+      <button class="btn btn-sm btn-primary graph-toggle" (click)="toggleTree(false)"><span i18n="show-less">Show less</span></button>
+    </ng-template>
+  </div>
 </div>
-<div [class.fade-out]="stateService.isBrowser && !fullTreeShown && height > maxHeight"></div>
-<div class="toggle-wrapper" *ngIf="stateService.isBrowser && (height > maxHeight || fullTreeShown)">
-  <button class="btn btn-sm btn-primary graph-toggle" (click)="fullTreeShown = true" *ngIf="!fullTreeShown; else collapseBtn">
-    <span i18n="show-all">Show all</span>
-  </button>
-  <ng-template #collapseBtn>
-    <button class="btn btn-sm btn-primary graph-toggle" (click)="fullTreeShown = false"><span i18n="show-less">Show less</span></button>
-  </ng-template>
-</div>
+
+<ng-template #xRemaining let-x i18n="x-levels-remaining">{{ x }} levels remaining</ng-template>
+<ng-template #xRemainingSingular let-x i18n="1-level-remaining">1 level remaining</ng-template>

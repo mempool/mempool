@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, Input, OnChanges, NgZone, SimpleChanges } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input, OnChanges, NgZone, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { AddressTypeInfo } from '@app/shared/address-utils';
@@ -35,10 +35,12 @@ export class TaprootAddressScriptsComponent implements OnChanges {
   @Input() address: AddressTypeInfo;
 
   tree: TaprootTree;
+  croppedTree: TaprootTree;
+  croppedTreeDepth: number = 7;
   depth: number = 0;
+  depthShown: number;
   height: number;
   fullTreeShown: boolean;
-  maxHeight: number = 400;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -50,6 +52,7 @@ export class TaprootAddressScriptsComponent implements OnChanges {
   constructor(
     public stateService: StateService,
     private asmStylerPipe: AsmStylerPipe,
+    private cd: ChangeDetectorRef,
     private location: Location,
     private relativeUrlPipe: RelativeUrlPipe,
     private router: Router,
@@ -60,18 +63,57 @@ export class TaprootAddressScriptsComponent implements OnChanges {
     if (changes.address?.currentValue.scripts) {
       this.buildTree();
       this.prepareTree(this.tree, 0);
-      this.prepareChartOptions();
+      this.cropTree();
+      this.toggleTree(this.fullTreeShown, false);
     }
   }
 
   buildTree(): void {
     if (this.address?.scripts.size) {
-      this.tree = { name: '' };
       for (const script of this.address.scripts.values()) {
         let { leafVersion, merklePath } = this.parseControlBlock(script.scriptPath);
         this.tree = this.addPathToTree(this.tree, script, leafVersion, merklePath);
       }
-      this.height = (this.depth + 1) * 40;
+    }
+  }
+
+  cropTree(): void {
+    const cropNode = (node: TaprootTree, currentDepth: number) => {
+      if (!node) {
+        return;
+      }
+      if (currentDepth === this.croppedTreeDepth && node.children) {
+        delete node.children;
+        return;
+      }
+      if (node.children) {
+        cropNode(node.children[0], currentDepth + 1);
+        cropNode(node.children[1], currentDepth + 1);
+      }
+    };
+    this.croppedTree = JSON.parse(JSON.stringify(this.tree));
+    cropNode(this.croppedTree, 0);
+  }
+
+  toggleTree(show: boolean, delay = true): void {
+    this.fullTreeShown = show;
+    this.depthShown = show ? this.depth : Math.min(this.depth, this.croppedTreeDepth);
+    if (show) {
+      this.height = (this.depthShown + 1) * 40;
+      setTimeout(() => {
+        this.prepareChartOptions(this.tree);
+        this.cd.markForCheck();
+      }, 115);
+    } else {
+      this.prepareChartOptions(this.croppedTree);
+      if (!delay) {
+        this.height = (this.depthShown + 1) * 40;
+      } else {
+        setTimeout(() => {
+          this.height = (this.depthShown + 1) * 40;
+          this.cd.markForCheck();
+        }, 200);
+      }
     }
   }
 
@@ -236,8 +278,8 @@ export class TaprootAddressScriptsComponent implements OnChanges {
     }
   }
 
-  prepareChartOptions() {
-    if (!this.tree) {
+  prepareChartOptions(tree: TaprootTree) {
+    if (!tree) {
       return;
     }
 
@@ -306,11 +348,12 @@ export class TaprootAddressScriptsComponent implements OnChanges {
       },
       series: [{
         type: 'tree',
-        data: [this.tree as any],
+        data: [tree as any],
         top: '20',
         bottom: '20',
         right: 0,
         left: 0,
+        height: Math.max(140, (this.depthShown) * 40),
         lineStyle: {
           curveness: 0.9,
           width: 2,
@@ -326,8 +369,8 @@ export class TaprootAddressScriptsComponent implements OnChanges {
         },
         orient: 'TB',
         expandAndCollapse: false,
-        animationDurationUpdate: 0,
-        animationDuration: 0,
+        animationDuration: 250,
+        animationDurationUpdate: 250,
       }],
     };
   }
