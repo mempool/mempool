@@ -29,9 +29,6 @@ export class BlockchainComponent implements OnInit, OnDestroy, OnChanges {
   connected: boolean = true;
   blockDisplayMode: 'size' | 'fees';
 
-  flipped: boolean = true;
-  readyToFlip: boolean = false;
-
   dividerOffset: number | null = null;
   mempoolOffset: number | null = null;
   positionStyle = {
@@ -43,22 +40,7 @@ export class BlockchainComponent implements OnInit, OnDestroy, OnChanges {
     public stateService: StateService,
     public StorageService: StorageService,
     private cd: ChangeDetectorRef,
-  ) {
-    if (this.StorageService.getValue('ap-flipped') !== null) {
-      this.flipped = false;
-    } else {
-      this.flipped = this.stateService.apFlipped;
-      if (this.flipped) {
-        setTimeout(() => {
-          this.flipped = false;
-          this.stateService.apFlipped = false;
-        }, 5000);
-      }
-      setTimeout(() => {
-        this.readyToFlip = true;
-      }, 500);
-    }
-  }
+  ) {}
 
   ngOnInit(): void {
     this.onResize();
@@ -108,15 +90,10 @@ export class BlockchainComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   toggleBlockDisplayMode(): void {
-    if (this.isA1()) {
-      this.flipped = !this.flipped;
-      this.StorageService.setValue('ap-flipped', this.flipped ? 'true' : 'false');
-    } else {
-      if (this.blockDisplayMode === 'size') this.blockDisplayMode = 'fees';
-      else this.blockDisplayMode = 'size';
-      this.StorageService.setValue('block-display-mode-preference', this.blockDisplayMode);
-      this.stateService.blockDisplayMode$.next(this.blockDisplayMode);
-    }
+    if (this.blockDisplayMode === 'size') this.blockDisplayMode = 'fees';
+    else this.blockDisplayMode = 'size';
+    this.StorageService.setValue('block-display-mode-preference', this.blockDisplayMode);
+    this.stateService.blockDisplayMode$.next(this.blockDisplayMode);
   }
 
   onMempoolWidthChange(width): void {
@@ -147,11 +124,6 @@ export class BlockchainComponent implements OnInit, OnDestroy, OnChanges {
     if (changes.containerWidth) {
       this.onResize();
     }
-  }
-
-  isA1(): boolean {
-    const now = new Date();
-    return now.getMonth() === 3 && now.getDate() === 1;
   }
 
   onResize(): void {

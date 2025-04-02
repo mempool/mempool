@@ -147,8 +147,6 @@ export class StateService {
   mempoolSequence: number;
   mempoolBlockState: { block: number, transactions: { [txid: string]: TransactionStripped} };
 
-  apFlipped = false;
-
   backend$ = new BehaviorSubject<'esplora' | 'electrum' | 'none'>('esplora');
   networkChanged$ = new ReplaySubject<string>(1);
   lightningChanged$ = new ReplaySubject<boolean>(1);
@@ -255,8 +253,6 @@ export class StateService {
         this.setLightningBasedonUrl(event.url);
       }
     });
-
-    this.apFlipped = true;
 
     this.liveMempoolBlockTransactions$ = this.mempoolBlockUpdate$.pipe(scan((acc: { block: number, transactions: { [txid: string]: TransactionStripped } }, change: MempoolBlockUpdate): { block: number, transactions: { [txid: string]: TransactionStripped } } => {
       if (isMempoolState(change)) {
