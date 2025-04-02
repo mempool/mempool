@@ -1,0 +1,60 @@
+{
+    "txSummary": {
+        "txid": "b6a53d8a8025c0c5b194345925a99741b645cae0b1f180f0613273029f2bf698",
+        "effectiveVsize": 224,
+        "effectiveFee": 960,
+        "ancestorCount": 1
+    },
+    "cost": 1000,
+    "targetFeeRate": 3,
+    "nextBlockFee": 672,
+    "userBalance": 0,
+    "mempoolBaseFee": 50000,
+    "vsizeFee": 0,
+    "pools": [
+        36,
+        102,
+        112,
+        44,
+        4,
+        2,
+        6,
+        94,
+        143,
+        43,
+        105,
+        115,
+        142,
+        111
+    ],
+    "options": [
+        {
+            "fee": 1000
+        },
+        {
+            "fee": 2000
+        },
+        {
+            "fee": 10000
+        }
+    ],
+    "hasAccess": false,
+    "availablePaymentMethods": {
+        "bitcoin": {
+            "enabled": true,
+            "min": 1000,
+            "max": 10000000
+        },
+        "applePay": {
+            "enabled": true,
+            "min": 10,
+            "max": 1000
+        },
+        "googlePay": {
+            "enabled": true,
+            "min": 10,
+            "max": 1000
+        }
+    },
+    "unavailable": false
+}
