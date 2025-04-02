@@ -1,4 +1,3 @@
-import { emitMempoolInfo, dropWebSocket } from '../../support/websocket';
 import { emitMempoolInfo, dropWebSocket, receiveWebSocketMessageFromServer } from '../../support/websocket';
 
 const baseModule = Cypress.env('BASE_MODULE');
@@ -218,30 +217,68 @@ describe('Mainnet', () => {
         cy.get('[data-cy="tx-1"] .table-tx-vout .highlight').invoke('text').should('contain', `${address}`);
       });
 
-      it('highlights potential address poisoning attacks', () => {
-        const txid = '152a5dea805f95d6f83e50a9fd082630f542a52a076ebabdb295723eaf53fa30';
-        const prefix = '1DonatePLease';
-        const infix1 = 'SenderAddressXVXCmAY';
-        const infix2 = '5btcToSenderXXWBoKhB';
+      describe('address poisoning', () => {
+        it('highlights potential address poisoning attacks on outputs, prefix and infix', () => {
+          const txid = '152a5dea805f95d6f83e50a9fd082630f542a52a076ebabdb295723eaf53fa30';
+          const prefix = '1DonatePLease';
+          const infix1 = 'SenderAddressXVXCmAY';
+          const infix2 = '5btcToSenderXXWBoKhB';
 
-        cy.visit(`/tx/${txid}`);
-        cy.waitForSkeletonGone();
-        cy.get('.alert-mempool').should('exist');
-        cy.get('.poison-alert').its('length').should('equal', 2);
+          cy.visit(`/tx/${txid}`);
+          cy.waitForSkeletonGone();
+          cy.get('.alert-mempool').should('exist');
+          cy.get('.poison-alert').its('length').should('equal', 2);
 
-        cy.get('.prefix')
-          .should('have.length', 2)
-          .each(($el) => {
-            cy.wrap($el).should('have.text', prefix);
-          });
+          cy.get('.prefix')
+            .should('have.length', 2)
+            .each(($el) => {
+              cy.wrap($el).should('have.text', prefix);
+            });
 
-        cy.get('.infix')
-          .should('have.length', 2)
-          .then(($infixes) => {
-            cy.wrap($infixes[0]).should('have.text', infix1);
-            cy.wrap($infixes[1]).should('have.text', infix2);
-          });
+          cy.get('.infix')
+            .should('have.length', 2)
+            .then(($infixes) => {
+              cy.wrap($infixes[0]).should('have.text', infix1);
+              cy.wrap($infixes[1]).should('have.text', infix2);
+            });
+        });
+
+        it('highlights potential address poisoning attacks on inputs and outputs, prefix, infix and postfix', () => {
+          const txid = '44544516084ea916ff1eb69c675c693e252addbbaf77102ffff86e3979ac6132';
+          const prefix = 'bc1qge8';
+          const infix1 = '6gqjnk8aqs3nvv7ejrvcd4zq6qur3';
+          const infix2 = 'xyxjex6zzzx5g8hh65vsel4e548p2';
+          const postfix1 = '6p6e3r';
+          const postfix2 = '6p6e3r';
+
+          cy.visit(`/tx/${txid}`);
+          cy.waitForSkeletonGone();
+          cy.get('.alert-mempool').should('exist');
+          cy.get('.poison-alert').its('length').should('equal', 2);
+
+          cy.get('.prefix')
+            .should('have.length', 2)
+            .each(($el) => {
+              cy.wrap($el).should('have.text', prefix);
+            });
+
+          cy.get('.infix')
+            .should('have.length', 2)
+            .then(($infixes) => {
+              cy.wrap($infixes[0]).should('have.text', infix1);
+              cy.wrap($infixes[1]).should('have.text', infix2);
+            });
+
+            cy.get('.postfix')
+            .should('have.length', 2)
+            .then(($postfixes) => {
+              cy.wrap($postfixes[0]).should('include.text', postfix1);
+              cy.wrap($postfixes[1]).should('include.text', postfix2);
+            });
+
+        });
       });
+
     });
 
     describe('blocks navigation', () => {
@@ -423,6 +460,7 @@ describe('Mainnet', () => {
         cy.get('#dropdownFees').should('be.visible');
         cy.get('.btn-group').should('be.visible');
       });
+
       it('check buttons - tablet', () => {
         cy.viewport('ipad-2');
         cy.visit('/graphs');
@@ -431,6 +469,7 @@ describe('Mainnet', () => {
         cy.get('#dropdownFees').should('be.visible');
         cy.get('.btn-group').should('be.visible');
       });
+
       it('check buttons - desktop', () => {
         cy.viewport('macbook-16');
         cy.visit('/graphs');
