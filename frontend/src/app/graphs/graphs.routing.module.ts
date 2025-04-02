@@ -16,7 +16,6 @@ import { PoolRankingComponent } from '@components/pool-ranking/pool-ranking.comp
 import { PoolComponent } from '@components/pool/pool.component';
 import { StartComponent } from '@components/start/start.component';
 import { StatisticsComponent } from '@components/statistics/statistics.component';
-import { TelevisionComponent } from '@components/television/television.component';
 import { DashboardComponent } from '@app/dashboard/dashboard.component';
 import { CustomDashboardComponent } from '@components/custom-dashboard/custom-dashboard.component';
 import { AccelerationFeesGraphComponent } from '@components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component';
@@ -179,11 +178,6 @@ const routes: Routes = [
         }]
       },
     ]
-  },
-  {
-    path: 'tv',
-    data: { networks: ['bitcoin', 'liquid'] },
-    component: TelevisionComponent
   },
 ];
 

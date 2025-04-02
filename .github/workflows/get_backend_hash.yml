@@ -4,7 +4,7 @@ on: [workflow_dispatch]
 
 jobs:
   print-backend-sha:
-    runs-on: 'ubuntu-latest'
+    runs-on: ubuntu-latest
     name: Print backend hashes
     steps:
       - name: Checkout

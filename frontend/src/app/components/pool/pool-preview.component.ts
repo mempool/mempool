@@ -30,6 +30,8 @@ export class PoolPreviewComponent implements OnInit {
 
   slug: string = undefined;
 
+  ogSession: number;
+
   constructor(
     @Inject(LOCALE_ID) public locale: string,
     private apiService: ApiService,
@@ -47,22 +49,22 @@ export class PoolPreviewComponent implements OnInit {
           this.isLoading = true;
           this.imageLoaded = false;
           this.slug = slug;
-          this.openGraphService.waitFor('pool-hash-' + this.slug);
-          this.openGraphService.waitFor('pool-stats-' + this.slug);
-          this.openGraphService.waitFor('pool-chart-' + this.slug);
-          this.openGraphService.waitFor('pool-img-' + this.slug);
+          this.ogSession = this.openGraphService.waitFor('pool-hash-' + this.slug);
+          this.ogSession = this.openGraphService.waitFor('pool-stats-' + this.slug);
+          this.ogSession = this.openGraphService.waitFor('pool-chart-' + this.slug);
+          this.ogSession = this.openGraphService.waitFor('pool-img-' + this.slug);
           return this.apiService.getPoolHashrate$(this.slug)
             .pipe(
               switchMap((data) => {
                 this.isLoading = false;
                 this.prepareChartOptions(data.map(val => [val.timestamp * 1000, val.avgHashrate]));
-                this.openGraphService.waitOver('pool-hash-' + this.slug);
+                this.openGraphService.waitOver({ event: 'pool-hash-' + this.slug, sessionId: this.ogSession });
                 return [slug];
               }),
               catchError(() => {
                 this.isLoading = false;
                 this.seoService.logSoft404();
-                this.openGraphService.fail('pool-hash-' + this.slug);
+                this.openGraphService.fail({ event: 'pool-hash-' + this.slug, sessionId: this.ogSession });
                 return of([slug]);
               })
             );
@@ -72,7 +74,7 @@ export class PoolPreviewComponent implements OnInit {
             catchError(() => {
               this.isLoading = false;
               this.seoService.logSoft404();
-              this.openGraphService.fail('pool-stats-' + this.slug);
+              this.openGraphService.fail({ event: 'pool-stats-' + this.slug, sessionId: this.ogSession });
               return of(null);
             })
           );
@@ -90,11 +92,11 @@ export class PoolPreviewComponent implements OnInit {
           }
           poolStats.pool.regexes = regexes.slice(0, -3);
 
-          this.openGraphService.waitOver('pool-stats-' + this.slug);
+          this.openGraphService.waitOver({ event: 'pool-stats-' + this.slug, sessionId: this.ogSession });
 
           const logoSrc = `/resources/mining-pools/` + poolStats.pool.slug + '.svg';
           if (logoSrc === this.lastImgSrc) {
-            this.openGraphService.waitOver('pool-img-' + this.slug);
+            this.openGraphService.waitOver({ event: 'pool-img-' + this.slug, sessionId: this.ogSession });
           }
           this.lastImgSrc = logoSrc;
           return Object.assign({
@@ -103,7 +105,7 @@ export class PoolPreviewComponent implements OnInit {
         }),
         catchError(() => {
           this.isLoading = false;
-          this.openGraphService.fail('pool-stats-' + this.slug);
+          this.openGraphService.fail({ event: 'pool-stats-' + this.slug, sessionId: this.ogSession });
           return of(null);
         })
       );
@@ -170,16 +172,16 @@ export class PoolPreviewComponent implements OnInit {
   }
 
   onChartReady(): void {
-    this.openGraphService.waitOver('pool-chart-' + this.slug);
+    this.openGraphService.waitOver({ event: 'pool-chart-' + this.slug, sessionId: this.ogSession });
   }
 
   onImageLoad(): void {
     this.imageLoaded = true;
-    this.openGraphService.waitOver('pool-img-' + this.slug);
+    this.openGraphService.waitOver({ event: 'pool-img-' + this.slug, sessionId: this.ogSession });
   }
 
   onImageFail(): void {
     this.imageLoaded = false;
-    this.openGraphService.waitOver('pool-img-' + this.slug);
+    this.openGraphService.waitOver({ event: 'pool-img-' + this.slug, sessionId: this.ogSession });
   }
 }

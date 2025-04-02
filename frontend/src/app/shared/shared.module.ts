@@ -3,11 +3,11 @@ import { CommonModule } from '@angular/common';
 import { NgbCollapseModule, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase, faExchangeAlt, faInfoCircle,
-  faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faClock, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
+  faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faClock, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
   faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft,
   faFastForward, faWallet, faUserClock, faWrench, faUserFriends, faQuestionCircle, faHistory, faSignOutAlt, faKey, faSuitcase, faIdCardAlt, faNetworkWired, faUserCheck,
   faCircleCheck, faUserCircle, faCheck, faRocket, faScaleBalanced, faHourglassStart, faHourglassHalf, faHourglassEnd, faWandMagicSparkles, faFaucetDrip, faTimeline,
-  faCircleXmark, faCalendarCheck, faMoneyBillTrendUp, faRobot, faShareNodes, faCreditCard } from '@fortawesome/free-solid-svg-icons';
+  faCircleXmark, faCalendarCheck, faMoneyBillTrendUp, faRobot, faShareNodes, faCreditCard, faMicroscope, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MenuComponent } from '@components/menu/menu.component';
 import { PreviewTitleComponent } from '@components/master-page-preview/preview-title.component';
@@ -94,6 +94,7 @@ import { SatsComponent } from '@app/shared/components/sats/sats.component';
 import { BtcComponent } from '@app/shared/components/btc/btc.component';
 import { FeeRateComponent } from '@app/shared/components/fee-rate/fee-rate.component';
 import { AddressTypeComponent } from '@app/shared/components/address-type/address-type.component';
+import { AddressTextComponent } from '@app/shared/components/address-text/address-text.component';
 import { TruncateComponent } from '@app/shared/components/truncate/truncate.component';
 import { SearchResultsComponent } from '@components/search-form/search-results/search-results.component';
 import { TimestampComponent } from '@app/shared/components/timestamp/timestamp.component';
@@ -214,6 +215,7 @@ import { GithubLogin } from '../components/github-login.component/github-login.c
     BtcComponent,
     FeeRateComponent,
     AddressTypeComponent,
+    AddressTextComponent,
     TruncateComponent,
     SearchResultsComponent,
     TimestampComponent,
@@ -360,6 +362,7 @@ import { GithubLogin } from '../components/github-login.component/github-login.c
     BtcComponent,
     FeeRateComponent,
     AddressTypeComponent,
+    AddressTextComponent,
     TruncateComponent,
     SearchResultsComponent,
     TimestampComponent,
@@ -395,7 +398,6 @@ export class SharedModule {
   constructor(library: FaIconLibrary) {
     library.addIcons(faInfoCircle);
     library.addIcons(faChartArea);
-    library.addIcons(faTv);
     library.addIcons(faClock);
     library.addIcons(faTachometerAlt);
     library.addIcons(faCubes);
@@ -464,5 +466,7 @@ export class SharedModule {
     library.addIcons(faRobot);
     library.addIcons(faShareNodes);
     library.addIcons(faCreditCard);
+    library.addIcons(faMicroscope);
+    library.addIcons(faExclamationTriangle);
   }
 }

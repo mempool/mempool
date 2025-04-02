@@ -16,9 +16,6 @@
               <a class="btn btn-primary btn-sm mb-0" [routerLink]="['/clock/mempool/0' | relativeUrl]" style="color: white" id="btn-clock">
                 <fa-icon [icon]="['fas', 'clock']" [fixedWidth]="true" i18n-title="master-page.clockview" i18n-title="footer.clock-mempool" title="Clock (Mempool)"></fa-icon>
               </a>
-              <a *ngIf="!isMobile()" class="btn btn-primary btn-sm mb-0" [routerLink]="['/tv' | relativeUrl]" style="color: white" id="btn-tv">
-                <fa-icon [icon]="['fas', 'tv']" [fixedWidth]="true" i18n-title="master-page.tvview" title="TV view"></fa-icon>
-              </a>
             </div>
             <div class="btn-toggle-rows" name="radioBasic">
               <div class="btn-group btn-group-toggle">
