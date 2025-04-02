@@ -1,4 +1,5 @@
 import { emitMempoolInfo, dropWebSocket } from '../../support/websocket';
+import { emitMempoolInfo, dropWebSocket, receiveWebSocketMessageFromServer } from '../../support/websocket';
 
 const baseModule = Cypress.env('BASE_MODULE');
 
