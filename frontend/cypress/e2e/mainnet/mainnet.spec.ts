@@ -216,6 +216,31 @@ describe('Mainnet', () => {
         cy.get('[data-cy="tx-1"] .table-tx-vout .highlight').its('length').should('equal', 2);
         cy.get('[data-cy="tx-1"] .table-tx-vout .highlight').invoke('text').should('contain', `${address}`);
       });
+
+      it('highlights potential address poisoning attacks', () => {
+        const txid = '152a5dea805f95d6f83e50a9fd082630f542a52a076ebabdb295723eaf53fa30';
+        const prefix = '1DonatePLease';
+        const infix1 = 'SenderAddressXVXCmAY';
+        const infix2 = '5btcToSenderXXWBoKhB';
+
+        cy.visit(`/tx/${txid}`);
+        cy.waitForSkeletonGone();
+        cy.get('.alert-mempool').should('exist');
+        cy.get('.poison-alert').its('length').should('equal', 2);
+
+        cy.get('.prefix')
+          .should('have.length', 2)
+          .each(($el) => {
+            cy.wrap($el).should('have.text', prefix);
+          });
+
+        cy.get('.infix')
+          .should('have.length', 2)
+          .then(($infixes) => {
+            cy.wrap($infixes[0]).should('have.text', infix1);
+            cy.wrap($infixes[1]).should('have.text', infix2);
+          });
+      });
     });
 
     describe('blocks navigation', () => {
