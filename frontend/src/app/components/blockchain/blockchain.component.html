@@ -1,4 +1,4 @@
-<div class="text-center" class="blockchain-wrapper" [class.time-ltr]="timeLtr" [class.ltr-transition]="ltrTransitionEnabled" [class.flipped]="flipped" [class.ready-to-flip]="readyToFlip" #container>
+<div class="text-center" class="blockchain-wrapper" [class.time-ltr]="timeLtr" [class.ltr-transition]="ltrTransitionEnabled" #container>
   <div #positionContainer class="position-container" [ngClass]="network ? network : ''" [style]="positionStyle">
     <span>
       <div class="blocks-wrapper">
@@ -10,7 +10,7 @@
         </ng-container>
       </div>
       <div id="divider" [hidden]="pageIndex > 0">
-        <button class="block-display-toggle" (click)="toggleBlockDisplayMode()"><fa-icon [icon]="['fas', isA1() ? 'arrows-rotate' : 'exchange-alt']" [fixedWidth]="true"></fa-icon></button>
+        <button class="block-display-toggle" (click)="toggleBlockDisplayMode()"><fa-icon [icon]="['fas', 'exchange-alt']" [fixedWidth]="true"></fa-icon></button>
         <button class="time-toggle" (click)="toggleTimeDirection()"><fa-icon [icon]="['fas', 'exchange-alt']" [fixedWidth]="true"></fa-icon></button>
       </div>
     </span>
