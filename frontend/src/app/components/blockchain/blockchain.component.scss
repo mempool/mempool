@@ -19,14 +19,6 @@
   -moz-user-select: none; /* Firefox */
   -ms-user-select: none; /* IE10+/Edge */
   user-select: none; /* Standard */
-
-
-  &.flipped {
-    transform: rotate(180deg);
-  }
-  &.ready-to-flip {
-    transition: transform 2s;
-  }
 }
 
 .position-container {
