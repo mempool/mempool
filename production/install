@@ -1116,8 +1116,8 @@ echo "[*] Installing nvm.sh from GitHub"
 osSudo "${MEMPOOL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh'
 
 echo "[*] Building NodeJS via nvm.sh"
-osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm install v20.12.0 --shared-zlib'
-osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm alias default 20.12.0'
+osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm install v22.14.0 --shared-zlib'
+osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm alias default 22.14.0'
 
 ####################
 # Tor installation #
@@ -1565,7 +1565,7 @@ EOF
             osSudo "${UNFURL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh'
 
             echo "[*] Building NodeJS via nvm.sh"
-            osSudo "${UNFURL_USER}" zsh -c 'source ~/.zshrc ; nvm install v20.12.0 --shared-zlib'
+            osSudo "${UNFURL_USER}" zsh -c 'source ~/.zshrc ; nvm install v22.14.0 --shared-zlib'
 
         ;;
     esac
