@@ -4,6 +4,7 @@ import { IEsploraApi } from '../bitcoin/esplora-api.interface';
 import bitcoinApi from '../bitcoin/bitcoin-api-factory';
 import axios from 'axios';
 import { TransactionExtended } from '../../mempool.interfaces';
+import { promises as fsPromises } from 'fs';
 
 interface WalletAddress {
   address: string;
@@ -31,16 +32,98 @@ class WalletApi {
   private wallets: Record<string, Wallet> = {};
   private syncing = false;
   private lastSync = 0;
+  private isSaving = false;
+  private cacheSchemaVersion = 1;
+
+  private static TMP_FILE_NAME = config.MEMPOOL.CACHE_DIR + '/tmp-wallets-cache.json';
+  private static FILE_NAME = config.MEMPOOL.CACHE_DIR + '/wallets-cache.json';
 
   constructor() {
     this.wallets = config.WALLETS.ENABLED ? (config.WALLETS.WALLETS as string[]).reduce((acc, wallet) => {
       acc[wallet] = { name: wallet, addresses: {}, lastPoll: 0 };
       return acc;
     }, {} as Record<string, Wallet>) : {};
+
+    // Load cache on startup
+    if (config.WALLETS.ENABLED) {
+      this.$loadCache();
+    }
   }
 
-  public getWallet(wallet: string): Record<string, WalletAddress> {
-    return this.wallets?.[wallet]?.addresses || {};
+  private async $loadCache(): Promise<void> {
+    try {
+      const cacheData = await fsPromises.readFile(WalletApi.FILE_NAME, 'utf8');
+      if (!cacheData) {
+        return;
+      }
+
+      const data = JSON.parse(cacheData);
+
+      if (data.cacheSchemaVersion !== this.cacheSchemaVersion) {
+        logger.notice('Wallets cache contains an outdated schema version. Clearing it.');
+        return this.$wipeCache();
+      }
+
+      this.wallets = data.wallets;
+      // Reset lastSync time to force transaction history refresh
+      for (const wallet of Object.values(this.wallets)) {
+        wallet.lastPoll = 0;
+        for (const address of Object.values(wallet.addresses)) {
+          address.lastSync = 0;
+        }
+      }
+      logger.info('Restored wallets data from disk cache');
+    } catch (e) {
+      logger.warn('Failed to parse wallets cache. Skipping. Reason: ' + (e instanceof Error ? e.message : e));
+    }
+  }
+
+  private async $saveCache(): Promise<void> {
+    if (this.isSaving || !config.WALLETS.ENABLED) {
+      return;
+    }
+
+    try {
+      this.isSaving = true;
+      logger.debug('Writing wallets data to disk cache...');
+
+      const cacheData = {
+        cacheSchemaVersion: this.cacheSchemaVersion,
+        wallets: this.wallets,
+      };
+
+      await fsPromises.writeFile(
+        WalletApi.TMP_FILE_NAME,
+        JSON.stringify(cacheData),
+        { flag: 'w' }
+      );
+
+      await fsPromises.rename(WalletApi.TMP_FILE_NAME, WalletApi.FILE_NAME);
+
+      logger.debug('Wallets data saved to disk cache');
+    } catch (e) {
+      logger.warn('Error writing to wallets cache file: ' + (e instanceof Error ? e.message : e));
+    } finally {
+      this.isSaving = false;
+    }
+  }
+
+  private async $wipeCache(): Promise<void> {
+    try {
+      await fsPromises.unlink(WalletApi.FILE_NAME);
+    } catch (e: any) {
+      if (e?.code !== 'ENOENT') {
+        logger.err(`Cannot wipe wallets cache file ${WalletApi.FILE_NAME}. Exception ${JSON.stringify(e)}`);
+      }
+    }
+  }
+
+  public getWallet(wallet: string): Record<string, WalletAddress> | null {
+    if (wallet in this.wallets) {
+      return this.wallets?.[wallet]?.addresses || {};
+    } else {
+      return null;
+    }
   }
 
   // resync wallet addresses from the services backend
@@ -99,6 +182,9 @@ class WalletApi {
           }
           wallet.lastPoll = Date.now();
           logger.debug(`Synced ${Object.keys(wallet.addresses).length} addresses for wallet ${wallet.name}`);
+
+          // Update cache
+          await this.$saveCache();
         } catch (e) {
           logger.err(`Error syncing wallet ${wallet.name}: ${(e instanceof Error ? e.message : e)}`);
         }
