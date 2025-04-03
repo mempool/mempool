@@ -8,6 +8,7 @@ import mining from './mining/mining';
 import transactionUtils from './transaction-utils';
 import BlocksRepository from '../repositories/BlocksRepository';
 import redisCache from './redis-cache';
+import blocks from './blocks';
 
 class PoolsParser {
   miningPools: any[] = [];
@@ -42,6 +43,14 @@ class PoolsParser {
     await this.$insertUnknownPool();
 
     let reindexUnknown = false;
+    let clearCache = false;
+
+    const poolsDict: { [key: string]: PoolTag } = {};
+    for (const pool of this.miningPools) {
+      poolsDict[pool.id] = pool;
+    }
+    const dbPools = await PoolsRepository.$getPools();
+    const dbPoolsDict: { [key: string]: PoolTag } = {};
 
     for (const pool of this.miningPools) {
       if (!pool.id) {
@@ -71,24 +80,27 @@ class PoolsParser {
         logger.warn(`Mining pool ${pool.name} has no 'regexes' defined.`);
       }
 
-      const poolDB = await PoolsRepository.$getPoolByUniqueId(pool.id, false);
+      const poolDB = dbPoolsDict[pool.id];
       if (!poolDB) {
         // New mining pool
         const slug = pool.name.replace(/[^a-z0-9]/gi, '').toLowerCase();
         logger.debug(`Inserting new mining pool ${pool.name}`);
         await PoolsRepository.$insertNewMiningPool(pool, slug);
         reindexUnknown = true;
+        clearCache = true;
       } else {
         if (poolDB.name !== pool.name) {
           // Pool has been renamed
           const newSlug = pool.name.replace(/[^a-z0-9]/gi, '').toLowerCase();
           logger.warn(`Renaming ${poolDB.name} mining pool to ${pool.name}. Slug has been updated. Maybe you want to make a redirection from 'https://mempool.space/mining/pool/${poolDB.slug}' to 'https://mempool.space/mining/pool/${newSlug}`);
           await PoolsRepository.$renameMiningPool(poolDB.id, newSlug, pool.name);
+          clearCache = true;
         }
         if (poolDB.link !== pool.link) {
           // Pool link has changed
           logger.debug(`Updating link for ${pool.name} mining pool`);
           await PoolsRepository.$updateMiningPoolLink(poolDB.id, pool.link);
+          clearCache = true;
         }
         if (JSON.stringify(pool.addresses) !== poolDB.addresses ||
           JSON.stringify(pool.regexes) !== poolDB.regexes) {
@@ -96,8 +108,18 @@ class PoolsParser {
           logger.notice(`Updating addresses and/or coinbase tags for ${pool.name} mining pool.`);
           await PoolsRepository.$updateMiningPoolTags(poolDB.id, pool.addresses, pool.regexes);
           reindexUnknown = true;
+          clearCache = true;
           await this.$reindexBlocksForPool(poolDB.id);
         }
+      }
+    }
+
+    for (const pool of dbPools) {
+      if (!poolsDict[pool.id]) {
+        logger.notice(`Removing ${pool.name} mining pool from database.`);
+        await PoolsRepository.$deleteMiningPool(pool.id);
+        reindexUnknown = true;
+        clearCache = true;
       }
     }
 
@@ -110,6 +132,19 @@ class PoolsParser {
         unknownPool = this.unknownPool;
       }
       await this.$reindexBlocksForPool(unknownPool.id);
+    }
+
+    // refresh the in-memory block cache with the reindexed data
+    if (clearCache) {
+      for (const block of blocks.getBlocks()) {
+        const reindexedBlock = await blocks.$indexBlock(block.height);
+        if (reindexedBlock.id === block.id) {
+          block.extras.pool = reindexedBlock.extras.pool;
+        }
+      }
+      // update persistent cache with the reindexed data
+      diskCache.$saveCacheToDisk();
+      redisCache.$updateBlocks(blocks.getBlocks());
     }
   }
 

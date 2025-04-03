@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 96;
+  private static currentVersion = 97;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -1134,6 +1134,12 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 96) {
       await this.$executeQuery(`ALTER TABLE blocks_audits MODIFY time timestamp NOT NULL DEFAULT 0`);
       await this.updateToSchemaVersion(96);
+    }
+
+    if (databaseSchemaVersion < 97) {
+      await this.$executeQuery('ALTER TABLE blocks DROP FOREIGN KEY IF EXISTS `blocks_ibfk_1`');
+      await this.$executeQuery('ALTER TABLE blocks ADD FOREIGN KEY (`pool_id`) REFERENCES `pools` (`id`) ON DELETE CASCADE');
+      await this.updateToSchemaVersion(97);
     }
   }
 

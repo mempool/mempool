@@ -163,6 +163,35 @@ class PoolsRepository {
   }
 
   /**
+   * Delete a mining pool from the database
+   * 
+   * @param poolId 
+   */
+  public async $deleteMiningPool(poolId: number): Promise<void> {
+    try {
+      const unknownPool = await this.$getUnknownPool();
+      if (!unknownPool) {
+        throw new Error('Cannot find Unknown pool');
+      }
+
+      await DB.query(`
+        UPDATE blocks
+        SET pool_id = ?
+        WHERE pool_id = ?`,
+        [unknownPool.id, poolId]
+      );
+
+      await DB.query(`
+        DELETE FROM pools
+        WHERE id = ?`,
+        [poolId]
+      );
+    } catch (e: any) {
+      logger.err(`Cannot delete mining pool id ${poolId}. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+  }
+
+  /**
    * Rename an existing mining pool
    * 
    * @param dbId
