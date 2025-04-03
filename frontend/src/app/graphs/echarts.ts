@@ -1,6 +1,5 @@
 // Import tree-shakeable echarts
 import * as echarts from 'echarts/core';
-
 import { LineChart, LinesChart, BarChart, TreemapChart, PieChart, ScatterChart, GaugeChart, CustomChart, TreeChart } from 'echarts/charts';
 import { TitleComponent, TooltipComponent, GridComponent, LegendComponent, GeoComponent, DataZoomComponent, VisualMapComponent, MarkLineComponent, GraphicComponent } from 'echarts/components';
 import { SVGRenderer, CanvasRenderer } from 'echarts/renderers';

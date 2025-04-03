@@ -40,6 +40,7 @@ export class TaprootAddressScriptsComponent implements OnChanges {
   depth: number = 0;
   depthShown: number;
   height: number;
+  levelHeight: number = 40;
   fullTreeShown: boolean;
 
   chartOptions: EChartsOption = {};
@@ -99,7 +100,7 @@ export class TaprootAddressScriptsComponent implements OnChanges {
     this.fullTreeShown = show;
     this.depthShown = show ? this.depth : Math.min(this.depth, this.croppedTreeDepth);
     if (show) {
-      this.height = (this.depthShown + 1) * 40;
+      this.height = (this.depthShown + 1) * this.levelHeight;
       setTimeout(() => {
         this.prepareChartOptions(this.tree);
         this.cd.markForCheck();
@@ -107,10 +108,10 @@ export class TaprootAddressScriptsComponent implements OnChanges {
     } else {
       this.prepareChartOptions(this.croppedTree);
       if (!delay) {
-        this.height = (this.depthShown + 1) * 40;
+        this.height = (this.depthShown + 1) * this.levelHeight;
       } else {
         setTimeout(() => {
-          this.height = (this.depthShown + 1) * 40;
+          this.height = (this.depthShown + 1) * this.levelHeight;
           this.cd.markForCheck();
         }, 200);
       }
@@ -150,16 +151,20 @@ export class TaprootAddressScriptsComponent implements OnChanges {
       const isFirstChild = left === k;
       const children: [TaprootTree, TaprootTree] = isFirstChild ? [node, { name: e }] : [{ name: e }, node];
 
-      if (this.mergeBranchAtDepth(masterTree, parentHash, children, isFirstChild, merklePath.length - i - 1)) {
+      // Try to merge the branch to the tree at current level
+      if (masterTree && this.mergeBranchAtDepth(masterTree, parentHash, children, isFirstChild, merklePath.length - i - 1)) {
         return masterTree;
       }
-
+      // If no merge is possible, go up one level and try again
       k = parentHash;
       node = { name: k, children };
-
     }
 
-    return node;
+    if (!masterTree) {
+      return node;
+    }
+    // We only end up here if we could not merge the script in masterTree due to malformed merkle path
+    console.error('Could not merge script in Taptree');
   }
 
   mergeBranchAtDepth(tree: TaprootTree, target: string, children: [TaprootTree, TaprootTree], first: boolean, targetDepth: number, currentDepth = 0): boolean {
@@ -353,7 +358,7 @@ export class TaprootAddressScriptsComponent implements OnChanges {
         bottom: '20',
         right: 0,
         left: 0,
-        height: Math.max(140, (this.depthShown) * 40),
+        height: Math.max(140, this.depthShown * this.levelHeight),
         lineStyle: {
           curveness: 0.9,
           width: 2,
