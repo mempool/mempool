@@ -17,7 +17,11 @@ class ServicesRoutes {
       res.setHeader('Expires', new Date(Date.now() + 1000 * 5).toUTCString());
       const walletId = req.params.walletId;
       const wallet = await WalletApi.getWallet(walletId);
-      res.status(200).send(wallet);
+      if (wallet === null) {
+        res.status(404).send('No such wallet');
+      } else {
+        res.status(200).send(wallet);
+      }
     } catch (e) {
       handleError(req, res, 500, 'Failed to get wallet');
     }
