@@ -1,0 +1,9 @@
+<div class="container-xl dashboard-container">
+  <div class="box">
+    <div class="row">
+      <div class="col-md" *ngIf="walletStats$ | async as walletStats">
+        <app-treasuries-graph [walletStats]="walletStats" [walletSummaries$]="walletSummaries$" [selectedWallets]="selectedWallets" [height]="400" [right]="10" [left]="70" [showLegend]="true" [showYAxis]="true" [widget]="false" [allowZoom]="false" period="1m" />
+      </div>
+    </div>
+  </div>
+</div>

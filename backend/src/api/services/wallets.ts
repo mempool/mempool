@@ -126,6 +126,10 @@ class WalletApi {
     }
   }
 
+  public getWallets(): string[] {
+    return Object.keys(this.wallets);
+  }
+
   // resync wallet addresses from the services backend
   async $syncWallets(): Promise<void> {
     if (!config.WALLETS.ENABLED || this.syncing) {

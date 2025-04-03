@@ -30,6 +30,7 @@ import { DashboardComponent } from '@app/dashboard/dashboard.component';
 import { CustomDashboardComponent } from '@components/custom-dashboard/custom-dashboard.component';
 import { MiningDashboardComponent } from '@components/mining-dashboard/mining-dashboard.component';
 import { AcceleratorDashboardComponent } from '@components/acceleration/accelerator-dashboard/accelerator-dashboard.component';
+import { TreasuriesComponent } from '@components/treasuries/treasuries.component';
 import { HashrateChartComponent } from '@components/hashrate-chart/hashrate-chart.component';
 import { HashrateChartPoolsComponent } from '@components/hashrates-chart-pools/hashrate-chart-pools.component';
 import { BlockHealthGraphComponent } from '@components/block-health-graph/block-health-graph.component';
@@ -37,6 +38,7 @@ import { AddressComponent } from '@components/address/address.component';
 import { WalletComponent } from '@components/wallet/wallet.component';
 import { WalletPreviewComponent } from '@components/wallet/wallet-preview.component';
 import { AddressGraphComponent } from '@components/address-graph/address-graph.component';
+import { TreasuriesGraphComponent } from '@components/treasuries/treasuries-graph/treasuries-graph.component';
 import { UtxoGraphComponent } from '@components/utxo-graph/utxo-graph.component';
 import { ActiveAccelerationBox } from '@components/acceleration/active-acceleration-box/active-acceleration-box.component';
 import { AddressesTreemap } from '@components/addresses-treemap/addresses-treemap.component';
@@ -57,7 +59,7 @@ import { AsmStylerPipe } from '@app/shared/pipes/asm-styler/asm-styler.pipe';
     AcceleratorDashboardComponent,
     PoolComponent,
     PoolRankingComponent,
-
+    TreasuriesComponent,
     StatisticsComponent,
     GraphsComponent,
     AccelerationFeesGraphComponent,
@@ -82,6 +84,7 @@ import { AsmStylerPipe } from '@app/shared/pipes/asm-styler/asm-styler.pipe';
     HashrateChartPoolsComponent,
     BlockHealthGraphComponent,
     AddressGraphComponent,
+    TreasuriesGraphComponent,
     UtxoGraphComponent,
     ActiveAccelerationBox,
     AddressesTreemap,

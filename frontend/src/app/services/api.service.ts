@@ -523,6 +523,12 @@ export class ApiService {
     );
   }
 
+  getWallets$(): Observable<string[]> {
+    return this.httpClient.get<string[]>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/wallets`
+    );
+  }
+
   getWallet$(walletName: string): Observable<Record<string, WalletAddress>> {
     return this.httpClient.get<Record<string, WalletAddress>>(
       this.apiBaseUrl + this.apiBasePath + `/api/v1/wallet/${walletName}`

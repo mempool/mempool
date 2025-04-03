@@ -18,6 +18,7 @@ import { StartComponent } from '@components/start/start.component';
 import { StatisticsComponent } from '@components/statistics/statistics.component';
 import { DashboardComponent } from '@app/dashboard/dashboard.component';
 import { CustomDashboardComponent } from '@components/custom-dashboard/custom-dashboard.component';
+import { TreasuriesComponent } from '@components/treasuries/treasuries.component';
 import { AccelerationFeesGraphComponent } from '@components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component';
 import { AccelerationsListComponent } from '@components/acceleration/accelerations-list/accelerations-list.component';
 import { AddressComponent } from '@components/address/address.component';
@@ -96,6 +97,18 @@ const routes: Routes = [
           ogImage: true,
           networkSpecific: true,
         }
+      },
+      {
+        path: 'treasuries',
+        component: StartComponent,
+        children: [{
+          path: '',
+          component: TreasuriesComponent,
+          data: {
+            networks: ['bitcoin'],
+            networkSpecific: true,
+          },
+        }]
       },
       {
         path: 'graphs',

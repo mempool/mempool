@@ -7,6 +7,7 @@ class ServicesRoutes {
   public initRoutes(app: Application): void {
     app
       .get(config.MEMPOOL.API_URL_PREFIX + 'wallet/:walletId', this.$getWallet)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'wallets', this.$getWallets)
     ;
   }
 
@@ -24,6 +25,15 @@ class ServicesRoutes {
       }
     } catch (e) {
       handleError(req, res, 500, 'Failed to get wallet');
+    }
+  }
+
+  private async $getWallets(req: Request, res: Response): Promise<void> {
+    try {
+      const wallets = await WalletApi.getWallets();
+      res.status(200).send(wallets);
+    } catch (e) {
+      handleError(req, res, 500, 'Failed to get wallets');
     }
   }
 }
