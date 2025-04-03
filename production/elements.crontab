@@ -8,3 +8,7 @@
 
 # hourly asset update and electrs restart
 6 * * * * cd $HOME/asset_registry_db && git pull --quiet origin master && cd $HOME/asset_registry_testnet_db && git pull --quiet origin master && killall electrs
+
+# daily update of popular-scripts
+32 03 * * * $HOME/electrs/start liquid popular-scripts >/dev/null 2>&1
+33 03 * * * $HOME/electrs/start liquidtestnet popular-scripts >/dev/null 2>&1
