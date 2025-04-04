@@ -84,74 +84,79 @@ div.scrollable {
       text-align: right;
     }
   }
+}
 
-  .progress {
-    background-color: var(--secondary);
+.progress {
+  background-color: var(--secondary);
+}
+
+.coinbase {
+  width: 20%;
+  @media (max-width: 875px) {
+    display: none;
   }
+}
 
-  .coinbase {
-    width: 20%;
-    @media (max-width: 875px) {
-      display: none;
-    }
+.health {
+  @media (max-width: 1150px) {
+  display: none;    
   }
+}
 
-  .height {
-    width: 10%;
+.height {
+  width: 10%;
+}
+
+.timestamp {
+  @media (max-width: 875px) {
+    padding-left: 50px;
   }
-
-  .timestamp {
-    @media (max-width: 875px) {
-      padding-left: 50px;
-    }
-    @media (max-width: 685px) {
-      display: none;
-    }
+  @media (max-width: 625px) {
+    display: none;
   }
+}
 
-  .mined {
-    width: 13%;
-    @media (max-width: 1100px) {
-      display: none;
-    }
+.mined {
+  width: 13%;
+}
+
+.txs {
+  @media (max-width: 938px) {
+    display: none;
   }
-
-  .txs {
-    padding-right: 40px;
-    @media (max-width: 1100px) {
-      padding-right: 10px;
-    }
-    @media (max-width: 875px) {
-      padding-right: 20px;
-    }
-    @media (max-width: 567px) {
-      padding-right: 10px;
-    }
+  padding-right: 40px;
+  @media (max-width: 1100px) {
+    padding-right: 10px;
   }
-
-  .size {
-    width: 12%;
-    @media (max-width: 1000px) {
-      width: 15%;
-    }
-    @media (max-width: 875px) {
-      width: 20%;
-    }
-    @media (max-width: 650px) {
-      width: 20%;
-    }
-    @media (max-width: 450px) {
-      display: none;
-    }
+  @media (max-width: 875px) {
+    padding-right: 20px;
   }
+  @media (max-width: 567px) {
+    padding-right: 10px;
+  }
+}
 
-  .scriptmessage {
-    overflow: hidden;
-    display: inline-block;
-    text-overflow: ellipsis;
-    vertical-align: middle;
-    width: auto;
-    text-align: left;
+.size {
+  min-width: 80px;
+  width: 12%;
+  @media (max-width: 1000px) {
+    width: 15%;
+  }
+}
+
+.scriptmessage {
+  max-width: 340px;
+  overflow: hidden;
+  display: inline-block;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  width: auto;
+  text-align: left;
+}
+
+.reward {
+  @media (max-width: 1035px) {
+    display: none;
   }
 }
 
