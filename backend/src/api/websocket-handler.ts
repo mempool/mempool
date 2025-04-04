@@ -1011,15 +1011,19 @@ class WebsocketHandler {
     const blockTransactions = structuredClone(transactions);
 
     this.printLogs();
-    await statistics.runStatistics();
+    if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {
+      await statistics.runStatistics();
+    }
 
     const _memPool = memPool.getMempool();
     const candidateTxs = await memPool.getMempoolCandidates();
     let candidates: GbtCandidates | undefined = (memPool.limitGBT && candidateTxs) ? { txs: candidateTxs, added: [], removed: [] } : undefined;
     let transactionIds: string[] = (memPool.limitGBT) ? Object.keys(candidates?.txs || {}) : Object.keys(_memPool);
 
-    const accelerations = Object.values(mempool.getAccelerations());
-    await accelerationRepository.$indexAccelerationsForBlock(block, accelerations, structuredClone(transactions));
+    if (config.DATABASE.ENABLED) {
+      const accelerations = Object.values(mempool.getAccelerations());
+      await accelerationRepository.$indexAccelerationsForBlock(block, accelerations, structuredClone(transactions));
+    }
 
     const rbfTransactions = Common.findMinedRbfTransactions(transactions, memPool.getSpendMap());
     memPool.handleRbfTransactions(rbfTransactions);
@@ -1095,7 +1099,9 @@ class WebsocketHandler {
     if (config.CORE_RPC.DEBUG_LOG_PATH && block.extras) {
       const firstSeen = getRecentFirstSeen(block.id);
       if (firstSeen) {
-        BlocksRepository.$saveFirstSeenTime(block.id, firstSeen);
+        if (config.DATABASE.ENABLED) {
+          BlocksRepository.$saveFirstSeenTime(block.id, firstSeen);
+        }
         block.extras.firstSeen = firstSeen;
       }
     }
@@ -1392,7 +1398,9 @@ class WebsocketHandler {
     });
     }
 
-    await statistics.runStatistics();
+    if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {
+      await statistics.runStatistics();
+    }
   }
 
   public handleNewStratumJob(job: StratumJob): void {
