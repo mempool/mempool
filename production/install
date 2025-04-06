@@ -418,7 +418,7 @@ DEBIAN_UNFURL_PKG+=(libxdamage-dev libxrandr-dev libgbm-dev libpango1.0-dev liba
 FREEBSD_PKG=()
 FREEBSD_PKG+=(zsh sudo git git-lfs screen curl wget calc neovim)
 FREEBSD_PKG+=(openssh-portable py311-pip rust llvm17 jq base64 libzmq4)
-FREEBSD_PKG+=(boost-libs autoconf automake gmake gcc libevent libtool pkgconf)
+FREEBSD_PKG+=(boost-libs autoconf automake gmake gcc13 libevent libtool pkgconf)
 FREEBSD_PKG+=(nginx rsync py311-certbot-nginx mariadb1011-server)
 FREEBSD_PKG+=(geoipupdate redis)
 
