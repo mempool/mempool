@@ -8,7 +8,7 @@ WORKDIR /build
 RUN apt-get update && \
     apt-get install -y curl ca-certificates && \
     curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
-    apt-get install -y nodejs build-essential python3 pkg-config && \
+    apt-get install -y nodejs=22.14.0-1nodesource1 build-essential python3 pkg-config && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -29,7 +29,7 @@ FROM rust:1.84-bookworm AS runtime
 RUN apt-get update && \
     apt-get install -y curl ca-certificates && \
     curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
-    apt-get install -y nodejs && \
+    apt-get install -y nodejs=22.14.0-1nodesource1 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
