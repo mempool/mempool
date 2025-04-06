@@ -378,7 +378,7 @@ ELEMENTS_REPO_URL=https://github.com/ElementsProject/elements
 ELEMENTS_REPO_NAME=elements
 ELEMENTS_REPO_BRANCH=master
 #ELEMENTS_LATEST_RELEASE=$(curl -s https://api.github.com/repos/ElementsProject/elements/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
-ELEMENTS_LATEST_RELEASE=elements-23.2.6
+ELEMENTS_LATEST_RELEASE=elements-23.2.7
 echo -n '.'
 
 BITCOIN_ELECTRS_REPO_URL=https://github.com/mempool/electrs
@@ -1113,11 +1113,11 @@ echo "[*] Installing Mempool crontab"
 osSudo "${ROOT_USER}" crontab -u "${MEMPOOL_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/mempool.crontab"
 
 echo "[*] Installing nvm.sh from GitHub"
-osSudo "${MEMPOOL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh'
+osSudo "${MEMPOOL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | zsh'
 
 echo "[*] Building NodeJS via nvm.sh"
-osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm install v20.12.0 --shared-zlib'
-osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm alias default 20.12.0'
+osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; CC=gcc CXX=g++ nvm install v22.14.0 --shared-zlib'
+osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm alias default 22.14.0'
 
 ####################
 # Tor installation #
@@ -1565,7 +1565,7 @@ EOF
             osSudo "${UNFURL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh'
 
             echo "[*] Building NodeJS via nvm.sh"
-            osSudo "${UNFURL_USER}" zsh -c 'source ~/.zshrc ; nvm install v20.12.0 --shared-zlib'
+            osSudo "${UNFURL_USER}" zsh -c 'source ~/.zshrc ; nvm install v22.14.0 --shared-zlib'
 
         ;;
     esac
