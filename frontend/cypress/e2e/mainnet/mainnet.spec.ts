@@ -561,6 +561,43 @@ describe('Mainnet', () => {
     });
 
     describe('RBF transactions', () => {
+      it('RBF page gets updated over websockets', () => {
+        cy.intercept('/api/v1/replacements', {
+          statusCode: 200,
+          body: []
+        });
+
+        cy.intercept('/api/v1/fullrbf/replacements', {
+          statusCode: 200,
+          body: []
+        });
+
+        cy.mockMempoolSocketV2();
+
+        cy.visit('/rbf');
+        cy.get('.no-replacements');
+        cy.get('.tree').should('have.length', 0);
+
+        receiveWebSocketMessageFromServer({
+          params: {
+            file: {
+              path: 'rbf_page/rbf_01.json'
+            }
+          }
+        });
+
+        cy.get('.tree').should('have.length', 1);
+
+        receiveWebSocketMessageFromServer({
+          params: {
+            file: {
+              path: 'rbf_page/rbf_02.json'
+            }
+          }
+        });
+        cy.get('.tree').should('have.length', 2);
+      });
+
       it('shows RBF transactions properly (mobile - details)', () => {
         cy.intercept('/api/v1/tx/21518a98d1aa9df524865d2f88c578499f524eb1d0c4d3e70312ab863508692f/cached', {
           fixture: 'mainnet_tx_cached.json'
