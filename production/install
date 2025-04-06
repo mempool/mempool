@@ -1264,12 +1264,13 @@ install_ckpool_cron() {
     local network=$1
     local network_label=$2
     local network_cmd=$3
+    local port=$4
 
     echo "[*] Installing CKPool ${network_label} Cron for 'ckpool' user"
     case $OS in
         FreeBSD)
             osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_HOME} && (crontab -l > ${TEMP_CRON_FILE} 2>/dev/null || echo \"\" > ${TEMP_CRON_FILE})"
-            osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_HOME} && echo '@reboot screen -dmS ckpool-${network} sh -c \"while true; do ${CKPOOL_HOME}/${CKPOOL_REPO_NAME}/start ${network_cmd}; sleep 1; done\"' >> ${TEMP_CRON_FILE}"
+            osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_HOME} && echo '@reboot screen -dmS ckpool-${network} sh -c \"while true; do ${CKPOOL_HOME}/${CKPOOL_REPO_NAME}/start ${network_cmd} ${port}; sleep 1; done\"' >> ${TEMP_CRON_FILE}"
             osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_HOME} && crontab ${TEMP_CRON_FILE}"
             osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_HOME} && rm -f ${TEMP_CRON_FILE}"
         ;;
@@ -1312,15 +1313,15 @@ if [ "${CKPOOL_INSTALL}" = ON ]; then
     TEMP_CRON_FILE="tmp_cron"
 
     if [ "${BITCOIN_MAINNET_CKPOOL}" = ON ]; then
-        install_ckpool_cron "mainnet" "Mainnet" "bitcoin"
+        install_ckpool_cron "mainnet" "Mainnet" "bitcoin" 2333
     fi
 
     if [ "${BITCOIN_TESTNET_CKPOOL}" = ON ]; then
-        install_ckpool_cron "testnet" "Testnet" "testnet"
+        install_ckpool_cron "testnet" "Testnet" "testnet" 2334
     fi
 
     if [ "${BITCOIN_TESTNET4_CKPOOL}" = ON ]; then
-        install_ckpool_cron "testnet4" "Testnet4" "testnet3"
+        install_ckpool_cron "testnet4" "Testnet4" "testnet4" 2335
     fi
 fi
 
