@@ -36,7 +36,7 @@ class FailoverRouter {
   maxHeight: number = 0;
   hosts: FailoverHost[];
   multihost: boolean;
-  gitHashInterval: number = 600000; // 10 minutes
+  gitHashInterval: number = 60000; // 1 minute
   pollInterval: number = 60000; // 1 minute
   pollTimer: NodeJS.Timeout | null = null;
   pollConnection = axios.create();
