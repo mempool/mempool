@@ -111,7 +111,7 @@ class FailoverRouter {
     for (const host of this.hosts) {
       try {
         const result = await (host.socket
-          ? this.pollConnection.get<number>('/blocks/tip/height', { socketPath: host.host, timeout: config.ESPLORA.FALLBACK_TIMEOUT })
+          ? this.pollConnection.get<number>('http://api/blocks/tip/height', { socketPath: host.host, timeout: config.ESPLORA.FALLBACK_TIMEOUT })
           : this.pollConnection.get<number>(host.host + '/blocks/tip/height', { timeout: config.ESPLORA.FALLBACK_TIMEOUT })
         );
         if (result) {
@@ -288,7 +288,7 @@ class FailoverRouter {
     let url;
     if (host.socket) {
       axiosConfig = { socketPath: host.host, timeout: config.ESPLORA.REQUEST_TIMEOUT, responseType };
-      url = path;
+      url = 'http://api' + path;
     } else {
       axiosConfig = { timeout: config.ESPLORA.REQUEST_TIMEOUT, responseType };
       url = host.host + path;
