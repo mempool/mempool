@@ -27,7 +27,7 @@ li.nav-item {
   padding-left: 10px;
   padding-right: 10px;
   align-content: center;
-  &.mining .svg-wrapper {
+  &.mining .svg-wrapper, &.enterprise .svg-wrapper {
     height: 19.2px;
     width: auto;
     margin-bottom: 8px;
@@ -40,6 +40,9 @@ li.nav-item {
       height: 25.6px;
       width: auto;
       margin-bottom: 0;
+    }
+    &.enterprise {
+      display: none;
     }
   }
   @media (max-width: 429px) {

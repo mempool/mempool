@@ -99,6 +99,9 @@
       <li class="nav-item" routerLinkActive="active" id="btn-graphs">
         <a class="nav-link" [routerLink]="['/graphs' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'chart-area']" [fixedWidth]="true" i18n-title="master-page.graphs" title="Graphs"></fa-icon></a>
       </li>
+      <li class="nav-item enterprise" routerLinkActive="active" id="btn-enterprise" *ngIf="stateService.env.OFFICIAL_MEMPOOL_SPACE">
+        <a class="nav-link" [routerLink]="['/enterprise' | relativeUrl]" (click)="collapse()"><div class="svg-wrapper"><app-svg-images name="enterprise-nav-logo"></app-svg-images></div></a>
+      </li>
       <li class="nav-item" routerLinkActive="active" id="btn-faucet" *ngIf="stateService.isMempoolSpaceBuild && stateService.env.OFFICIAL_MEMPOOL_SPACE && stateService.network === 'testnet4'">
         <a class="nav-link" [routerLink]="['/faucet' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'faucet-drip']" [fixedWidth]="true" i18n-title="master-page.faucet" title="Faucet"></fa-icon></a>
       </li>
