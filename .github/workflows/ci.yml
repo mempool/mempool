@@ -12,7 +12,7 @@ jobs:
     if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
     strategy:
       matrix:
-        node: ["22"]
+        node: ["22.14.0"]
         flavor: ["dev", "prod"]
       fail-fast: false
     runs-on: ubuntu-latest
@@ -163,7 +163,7 @@ jobs:
     if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
     strategy:
       matrix:
-        node: ["22"]
+        node: ["22.14.0"]
         flavor: ["dev", "prod"]
       fail-fast: false
     runs-on: ubuntu-latest
