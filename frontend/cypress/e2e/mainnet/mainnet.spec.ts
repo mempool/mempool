@@ -1,4 +1,4 @@
-import { emitMempoolInfo, dropWebSocket } from '../../support/websocket';
+import { emitMempoolInfo, dropWebSocket, receiveWebSocketMessageFromServer } from '../../support/websocket';
 
 const baseModule = Cypress.env('BASE_MODULE');
 
@@ -216,6 +216,69 @@ describe('Mainnet', () => {
         cy.get('[data-cy="tx-1"] .table-tx-vout .highlight').its('length').should('equal', 2);
         cy.get('[data-cy="tx-1"] .table-tx-vout .highlight').invoke('text').should('contain', `${address}`);
       });
+
+      describe('address poisoning', () => {
+        it('highlights potential address poisoning attacks on outputs, prefix and infix', () => {
+          const txid = '152a5dea805f95d6f83e50a9fd082630f542a52a076ebabdb295723eaf53fa30';
+          const prefix = '1DonatePLease';
+          const infix1 = 'SenderAddressXVXCmAY';
+          const infix2 = '5btcToSenderXXWBoKhB';
+
+          cy.visit(`/tx/${txid}`);
+          cy.waitForSkeletonGone();
+          cy.get('.alert-mempool').should('exist');
+          cy.get('.poison-alert').its('length').should('equal', 2);
+
+          cy.get('.prefix')
+            .should('have.length', 2)
+            .each(($el) => {
+              cy.wrap($el).should('have.text', prefix);
+            });
+
+          cy.get('.infix')
+            .should('have.length', 2)
+            .then(($infixes) => {
+              cy.wrap($infixes[0]).should('have.text', infix1);
+              cy.wrap($infixes[1]).should('have.text', infix2);
+            });
+        });
+
+        it('highlights potential address poisoning attacks on inputs and outputs, prefix, infix and postfix', () => {
+          const txid = '44544516084ea916ff1eb69c675c693e252addbbaf77102ffff86e3979ac6132';
+          const prefix = 'bc1qge8';
+          const infix1 = '6gqjnk8aqs3nvv7ejrvcd4zq6qur3';
+          const infix2 = 'xyxjex6zzzx5g8hh65vsel4e548p2';
+          const postfix1 = '6p6e3r';
+          const postfix2 = '6p6e3r';
+
+          cy.visit(`/tx/${txid}`);
+          cy.waitForSkeletonGone();
+          cy.get('.alert-mempool').should('exist');
+          cy.get('.poison-alert').its('length').should('equal', 2);
+
+          cy.get('.prefix')
+            .should('have.length', 2)
+            .each(($el) => {
+              cy.wrap($el).should('have.text', prefix);
+            });
+
+          cy.get('.infix')
+            .should('have.length', 2)
+            .then(($infixes) => {
+              cy.wrap($infixes[0]).should('have.text', infix1);
+              cy.wrap($infixes[1]).should('have.text', infix2);
+            });
+
+            cy.get('.postfix')
+            .should('have.length', 2)
+            .then(($postfixes) => {
+              cy.wrap($postfixes[0]).should('include.text', postfix1);
+              cy.wrap($postfixes[1]).should('include.text', postfix2);
+            });
+
+        });
+      });
+
     });
 
     describe('blocks navigation', () => {
@@ -397,6 +460,7 @@ describe('Mainnet', () => {
         cy.get('#dropdownFees').should('be.visible');
         cy.get('.btn-group').should('be.visible');
       });
+
       it('check buttons - tablet', () => {
         cy.viewport('ipad-2');
         cy.visit('/graphs');
@@ -405,6 +469,7 @@ describe('Mainnet', () => {
         cy.get('#dropdownFees').should('be.visible');
         cy.get('.btn-group').should('be.visible');
       });
+
       it('check buttons - desktop', () => {
         cy.viewport('macbook-16');
         cy.visit('/graphs');
@@ -496,6 +561,43 @@ describe('Mainnet', () => {
     });
 
     describe('RBF transactions', () => {
+      it('RBF page gets updated over websockets', () => {
+        cy.intercept('/api/v1/replacements', {
+          statusCode: 200,
+          body: []
+        });
+
+        cy.intercept('/api/v1/fullrbf/replacements', {
+          statusCode: 200,
+          body: []
+        });
+
+        cy.mockMempoolSocketV2();
+
+        cy.visit('/rbf');
+        cy.get('.no-replacements');
+        cy.get('.tree').should('have.length', 0);
+
+        receiveWebSocketMessageFromServer({
+          params: {
+            file: {
+              path: 'rbf_page/rbf_01.json'
+            }
+          }
+        });
+
+        cy.get('.tree').should('have.length', 1);
+
+        receiveWebSocketMessageFromServer({
+          params: {
+            file: {
+              path: 'rbf_page/rbf_02.json'
+            }
+          }
+        });
+        cy.get('.tree').should('have.length', 2);
+      });
+
       it('shows RBF transactions properly (mobile - details)', () => {
         cy.intercept('/api/v1/tx/21518a98d1aa9df524865d2f88c578499f524eb1d0c4d3e70312ab863508692f/cached', {
           fixture: 'mainnet_tx_cached.json'
@@ -526,6 +628,119 @@ describe('Mainnet', () => {
         });
 
         cy.get('.alert-mempool').should('be.visible');
+      });
+
+      it('shows RBF transactions properly (mobile - tracker)', () => {
+        cy.mockMempoolSocketV2();
+        cy.viewport('iphone-xr');
+
+        // API Mocks
+        cy.intercept('/api/v1/mining/pools/1w', {
+          fixture: 'details_rbf/api_mining_pools_1w.json'
+        }).as('api_mining_1w');
+
+        cy.intercept('/api/tx/242f3fff9ca7d5aea7a7a57d886f3fa7329e24fac948598a991b3a3dd631cd29', {
+          statusCode: 404,
+          body: 'Transaction not found'
+        }).as('api_tx01_404');
+
+        cy.intercept('/api/v1/tx/242f3fff9ca7d5aea7a7a57d886f3fa7329e24fac948598a991b3a3dd631cd29/cached', {
+          fixture: 'details_rbf/tx01_api_cached.json'
+        }).as('api_tx01_cached');
+
+        cy.intercept('/api/v1/tx/242f3fff9ca7d5aea7a7a57d886f3fa7329e24fac948598a991b3a3dd631cd29/rbf', {
+          fixture: 'details_rbf/tx01_api_rbf.json'
+        }).as('api_tx01_rbf');
+
+        cy.visit('/tx/242f3fff9ca7d5aea7a7a57d886f3fa7329e24fac948598a991b3a3dd631cd29?mode=tracker');
+        cy.wait('@api_tx01_rbf');
+
+        // Start sending mocked WS messages
+        receiveWebSocketMessageFromServer({
+          params: {
+            file: {
+              path: 'details_rbf/tx01_ws_stratum_jobs.json'
+            }
+          }
+        });
+
+        receiveWebSocketMessageFromServer({
+          params: {
+            file: {
+              path: 'details_rbf/tx01_ws_blocks_01.json'
+            }
+          }
+        });
+
+        receiveWebSocketMessageFromServer({
+          params: {
+            file: {
+              path: 'details_rbf/tx01_ws_tx_replaced.json'
+            }
+          }
+        });
+
+        receiveWebSocketMessageFromServer({
+          params: {
+            file: {
+              path: 'details_rbf/tx01_ws_mempool_blocks_01.json'
+            }
+          }
+        });
+
+        cy.get('.alert-replaced').should('be.visible');
+        cy.get('.explainer').should('be.visible');
+        cy.get('svg[data-icon=timeline]').should('be.visible');
+
+        // Second TX setup
+        cy.intercept('/api/tx/b6a53d8a8025c0c5b194345925a99741b645cae0b1f180f0613273029f2bf698', {
+          fixture: 'details_rbf/tx02_api_tx.json'
+        }).as('tx02_api');
+
+        cy.intercept('/api/v1/transaction-times?txId%5B%5D=b6a53d8a8025c0c5b194345925a99741b645cae0b1f180f0613273029f2bf698', {
+          fixture: 'details_rbf/tx02_api_tx_times.json'
+        }).as('tx02_api_tx_times');
+
+        cy.intercept('/api/v1/tx/b6a53d8a8025c0c5b194345925a99741b645cae0b1f180f0613273029f2bf698/rbf', {
+          fixture: 'details_rbf/tx02_api_rbf.json'
+        }).as('tx02_api_rbf');
+
+        cy.intercept('/api/v1/cpfp/b6a53d8a8025c0c5b194345925a99741b645cae0b1f180f0613273029f2bf698', {
+          fixture: 'details_rbf/tx02_api_cpfp.json'
+        }).as('tx02_api_cpfp');
+
+        // Go to the replacement tx
+        cy.get('.alert-replaced a').click();
+
+        cy.wait('@tx02_api_cpfp');
+
+        receiveWebSocketMessageFromServer({
+          params: {
+            file: {
+              path: 'details_rbf/tx02_ws_tx_position.json'
+            }
+          }
+        });
+
+        receiveWebSocketMessageFromServer({
+          params: {
+            file: {
+              path: 'details_rbf/tx02_ws_mempool_blocks_01.json'
+            }
+          }
+        });
+
+        cy.get('svg[data-icon=hourglass-half]').should('be.visible');
+
+        receiveWebSocketMessageFromServer({
+          params: {
+            file: {
+              path: 'details_rbf/tx02_ws_block.json'
+            }
+          }
+        });
+        cy.get('app-confirmations');
+        cy.get('svg[data-icon=circle-check]').should('be.visible');
       });
 
       it('shows RBF transactions properly (desktop)', () => {

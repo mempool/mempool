@@ -1,0 +1,68 @@
+{
+  "rbfLatest": [
+    {
+      "tx": {
+        "txid": "d313b479acfbae719afb488a078e0fe0e052a67b9f65f73f7c75d3d95fd36acc",
+        "fee": 672,
+        "vsize": 167.25,
+        "value": 29996328,
+        "rate": 4.017937219730942,
+        "time": 1743587365,
+        "rbf": true,
+        "fullRbf": false
+      },
+      "time": 1743587365,
+      "fullRbf": false,
+      "replaces": [
+        {
+          "tx": {
+            "txid": "eb5aa786cabda307cc9642cfb9c41a3b405ac20a391eefbe54be7930bea61865",
+            "fee": 336,
+            "vsize": 167.5,
+            "value": 29996664,
+            "rate": 2.005970149253731,
+            "time": 1743586424,
+            "rbf": true
+          },
+          "time": 1743586424,
+          "interval": 941,
+          "fullRbf": false,
+          "replaces": []
+        }
+      ]
+    },
+    {
+      "tx": {
+        "txid": "f4bae4f626036250fd00d68490e572f65f66417452003a0f4c4d76f17a9fde68",
+        "fee": 1185,
+        "vsize": 223,
+        "value": 41729,
+        "rate": 5.313901345291479,
+        "time": 1743587177,
+        "rbf": true,
+        "fullRbf": false,
+        "mined": true
+      },
+      "time": 1743587177,
+      "fullRbf": true,
+      "replaces": [
+        {
+          "tx": {
+            "txid": "12945412dfc455e0ed6049dc2ee8737756c8d9e2d9a2eb26f366cd5019a0369f",
+            "fee": 504,
+            "vsize": 222,
+            "value": 42410,
+            "rate": 2.27027027027027,
+            "time": 1743586081,
+            "rbf": true
+          },
+          "time": 1743586081,
+          "interval": 1096,
+          "fullRbf": false,
+          "replaces": []
+        }
+      ],
+      "mined": true
+    }
+  ]
+}
