@@ -61,7 +61,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   @Input() accelerating: boolean = false;
   @Input() miningStats: MiningStats;
   @Input() eta: ETA;
-  @Input() scrollEvent: boolean;
   @Input() applePayEnabled: boolean = false;
   @Input() googlePayEnabled: boolean = true;
   @Input() cardOnFileEnabled: boolean = true;
@@ -191,9 +190,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.scrollEvent && this.scrollEvent) {
-      this.scrollToElement('acceleratePreviewAnchor', 'start');
-    }
     if (changes.accelerating && this.accelerating) {
       this.moveToStep('success', true);
     }
@@ -214,6 +210,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     if (this._step === 'checkout') {
       this.insertSquare();
       this.enterpriseService.goal(8);
+      this.scrollToElementWithTimeout('acceleratePreviewAnchor', 'start', 100);
     }
     if (this._step === 'checkout' && this.canPayWithBitcoin) {
       this.btcpayInvoiceFailed = false;
