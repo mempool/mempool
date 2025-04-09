@@ -3,6 +3,7 @@ import { TransactionStripped } from "@interfaces/node-api.interface";
 import { AmountShortenerPipe } from "@app/shared/pipes/amount-shortener.pipe";
 import { Router, ActivatedRoute } from '@angular/router';
 const amountShortenerPipe = new AmountShortenerPipe();
+import { isDevMode } from '@angular/core';
 
 export function isMobile(): boolean {
   return (window.innerWidth <= 767.98);
@@ -279,4 +280,22 @@ export function md5(inputString): string {
         b=ii(b,c,d,a,x[i+ 9],21, -343485551);a=ad(a,olda);b=ad(b,oldb);c=ad(c,oldc);d=ad(d,oldd);
     }
     return rh(a)+rh(b)+rh(c)+rh(d);
+}
+
+export function injectSquare(isProdDomain): void {
+    if (!isProdDomain && !isDevMode()) {
+      return;
+    }
+    if (window['Square']) {
+      return;
+    }
+    let statsUrl = 'https://sandbox.web.squarecdn.com/v1/square.js';
+    if (isProdDomain) {
+      statsUrl = '/square/v1/square.js';
+    }
+
+    (function(): void {
+      const d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+      g.type='text/javascript'; g.src=statsUrl; s.parentNode.insertBefore(g, s);
+    })();
 }
