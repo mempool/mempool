@@ -15,6 +15,7 @@ import { OrdApiService } from '@app/services/ord-api.service';
 import { Inscription } from '@app/shared/ord/inscription.utils';
 import { Etching, Runestone } from '@app/shared/ord/rune.utils';
 import { ADDRESS_SIMILARITY_THRESHOLD, AddressMatch, AddressSimilarity, AddressType, AddressTypeInfo, checkedCompareAddressStrings, detectAddressType } from '@app/shared/address-utils';
+import { processInputSignatures, Sighash, SigInfo } from '../../shared/transaction.utils';
 
 @Component({
   selector: 'app-transactions-list',
@@ -39,6 +40,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   @Input() rowLimit = 12;
   @Input() blockTime: number = 0; // Used for price calculation if all the transactions are in the same block
   @Input() txPreview = false;
+  @Input() signatures = true;
 
   @Output() loadMore = new EventEmitter();
 
@@ -57,6 +59,18 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   showFullWitness: { [vinIndex: number]: { [witnessIndex: number]: boolean } } = {};
   showOrdData: { [key: string]: { show: boolean; inscriptions?: Inscription[]; runestone?: Runestone, runeInfo?: { [id: string]: { etching: Etching; txid: string; } }; } } = {};
   similarityMatches: Map<string, Map<string, { score: number, match: AddressMatch, group: number }>> = new Map();
+
+  selectedSig: { txIndex: number, vindex: number, sig: SigInfo } | null = null;
+  sigHighlights: { vin: boolean[], vout: boolean[] } = { vin: [], vout: [] };
+  sighashLabels: { [sighash: string]: string } = {
+    '0': 'SIGHASH_DEFAULT',
+    '1': 'SIGHASH_ALL',
+    '2': 'SIGHASH_NONE',
+    '3': 'SIGHASH_SINGLE',
+    '129': 'SIGHASH_ALL | ACP',
+    '130': 'SIGHASH_NONE | ACP',
+    '131': 'SIGHASH_SINGLE | ACP',
+  };
 
   constructor(
     public stateService: StateService,
@@ -278,6 +292,9 @@ export class TransactionsListComponent implements OnInit, OnChanges {
               break;
             }
           }
+
+          // process signature data
+          tx['_sigs'] = tx.vin.map(vin => processInputSignatures(vin));
         }
 
         tx.largeInput = tx.largeInput || tx.vin.some(vin => (vin?.prevout?.value > 1000000000));
@@ -498,6 +515,32 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       this.showOrdData[key].show = !this.showOrdData[key].show;
 
     }
+  }
+
+  showSigInfo(txIndex: number, vindex: number, sig: SigInfo): void {
+    this.selectedSig = { txIndex, vindex, sig };
+    this.sigHighlights = { vin: [], vout: [] };
+    for (let i = 0; i < this.transactions[txIndex].vin.length; i++) {
+      this.sigHighlights.vin.push(
+        i === vindex ||
+        !(Sighash.isACP(sig.sighash))
+      );
+    }
+    for (let i = 0; i < this.transactions[txIndex].vout.length; i++) {
+      this.sigHighlights.vout.push(
+        !(Sighash.isNone(sig.sighash)) && (
+          !(Sighash.isSingle(sig.sighash)) ||
+          i === vindex
+        )
+      );
+    }
+    this.ref.markForCheck();
+  }
+
+  hideSigInfo(): void {
+    this.selectedSig = null;
+    this.sigHighlights = { vin: [], vout: [] };
+    this.ref.markForCheck();
   }
 
   ngOnDestroy(): void {

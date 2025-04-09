@@ -28,7 +28,8 @@
             <ng-template ngFor let-vin let-vindex="index" [ngForOf]="tx.vin.slice(0, getVinLimit(tx))" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="{
                 'assetBox': (assetsMinimal && vin.prevout && assetsMinimal[vin.prevout.asset] && !vin.is_coinbase && vin.prevout.scriptpubkey_address && tx._unblinded) || inputIndex === vindex,
-                'highlight': this.addresses.length && ((vin.prevout?.scriptpubkey_type !== 'p2pk' && addresses.includes(vin.prevout?.scriptpubkey_address)) || this.addresses.includes(vin.prevout?.scriptpubkey.slice(2, -2)))
+                'highlight': this.addresses.length && ((vin.prevout?.scriptpubkey_type !== 'p2pk' && addresses.includes(vin.prevout?.scriptpubkey_address)) || this.addresses.includes(vin.prevout?.scriptpubkey.slice(2, -2))),
+                'sigged': selectedSig && selectedSig.txIndex === i && sigHighlights.vin[vindex],
               }">
                 <td class="arrow-td">
                   <ng-template [ngIf]="vin.prevout === null && !vin.is_pegin" [ngIfElse]="hasPrevout">
@@ -54,6 +55,30 @@
                     </ng-template>
                   </ng-template>
                 </td>
+                @if (signatures) {
+                  <td class="sig-td">
+                    <div class="sig-stack">
+                      @if (tx['_sigs'][vindex].length === 0) {
+                        <span class="sig-key sig-no-lock" title="unsigned">
+                          <fa-icon [icon]="['fas', 'lock-open']" [fixedWidth]="true"></fa-icon>
+                        </span>
+                      } @else {
+                        @for (sig of tx['_sigs'][vindex]; track sig.signature; let idx = $index) {
+                          @if (idx < 10) {
+                            <span class="sig-key sighash-{{sig.sighash}}" (mouseenter)="showSigInfo(i, vindex, sig)" (mouseleave)="hideSigInfo()" [title]="sighashLabels[sig.sighash]">
+                              <fa-icon [icon]="['fas', 'key']" [fixedWidth]="true"></fa-icon>
+                            </span>
+                          }
+                        }
+                        @if (tx['_sigs'][vindex].length > 10) {
+                          <span class="sig-key sig-overflow">
+                            +{{ tx['_sigs'][vindex].length - 10 }}
+                          </span>
+                        }
+                      }
+                    </div>
+                  </td>
+                }
                 <td class="address-cell">
                   <div [ngSwitch]="true">
                     <ng-container *ngSwitchCase="vin.is_coinbase"><span i18n="transactions-list.coinbase">Coinbase</span><ng-template [ngIf]="network !== 'liquid' && network !== 'liquidtestnet'">&nbsp;<span i18n="transactions-list.newly-generated-coins">(Newly Generated Coins)</span></ng-template><br /><a placement="bottom" [ngbTooltip]="vin.scriptsig | hex2ascii"><span class="badge badge-secondary scriptmessage longer">{{ vin.scriptsig | hex2ascii }}</span></a></ng-container>
@@ -106,15 +131,19 @@
               </tr>
               <tr *ngIf="showOrdData[tx.txid + '-vin-' + vindex]?.show" [ngClass]="{
                 'assetBox': (assetsMinimal && vin.prevout && assetsMinimal[vin.prevout.asset] && !vin.is_coinbase && vin.prevout.scriptpubkey_address && tx._unblinded) || inputIndex === vindex,
-                'highlight': addresses?.length && (addresses.includes(vin.prevout?.scriptpubkey_address) || (vin.prevout?.scriptpubkey_type === 'p2pk' && addresses.includes(vin.prevout?.scriptpubkey.slice(2, -2))))
+                'highlight': addresses?.length && (addresses.includes(vin.prevout?.scriptpubkey_address) || (vin.prevout?.scriptpubkey_type === 'p2pk' && addresses.includes(vin.prevout?.scriptpubkey.slice(2, -2)))),
+                'sigged': selectedSig && selectedSig.txIndex === i && sigHighlights.vin[vindex],
               }">
                 <td></td>
+                @if (signatures) {
+                  <td></td>
+                }
                 <td colspan="2">
                   <app-ord-data [inscriptions]="showOrdData[tx.txid + '-vin-' + vindex]['inscriptions']" [type]="'vin'"></app-ord-data>
                 </td>
               </tr>
               <tr *ngIf="(showDetails$ | async) === true">
-                <td colspan="3" class="details-container" >
+                <td [attr.colspan]="signatures ? 4 : 3" class="details-container" >
                   <table class="table table-striped table-fixed table-borderless details-table mb-3">
                     <tbody>
                       <ng-template [ngIf]="vin.scriptsig">
@@ -201,7 +230,7 @@
               </tr>
             </ng-template>
             <tr *ngIf="tx.vin.length > getVinLimit(tx)">
-              <td colspan="3" class="text-center">
+              <td [attr.colspan]="signatures ? 4 : 3" class="text-center">
                 <button class="btn btn-sm btn-primary mt-2" (click)="showMoreInputs(tx)">
                   <span *ngIf="getVinLimit(tx, true) >= tx.vin.length; else showMoreInputsLabel" i18n="show-all">Show all</span>
                   <ng-template #showMoreInputsLabel>
@@ -221,7 +250,8 @@
             <ng-template ngFor let-vout let-vindex="index" [ngForOf]="tx.vout.slice(0, getVoutLimit(tx))" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="{
                 'assetBox': assetsMinimal && assetsMinimal[vout.asset] && vout.scriptpubkey_address && tx.vin && !tx.vin[0].is_coinbase && tx._unblinded || outputIndex === vindex,
-                'highlight': this.addresses.length && ((vout.scriptpubkey_type !== 'p2pk' && addresses.includes(vout.scriptpubkey_address)) || this.addresses.includes(vout.scriptpubkey.slice(2, -2)))
+                'highlight': this.addresses.length && ((vout.scriptpubkey_type !== 'p2pk' && addresses.includes(vout.scriptpubkey_address)) || this.addresses.includes(vout.scriptpubkey.slice(2, -2))),
+                'sigged': selectedSig && selectedSig.txIndex === i && sigHighlights.vout[vindex],
               }">
                 <td class="address-cell">
                   <app-address-text
@@ -303,14 +333,15 @@
 
               <tr *ngIf="showOrdData[tx.txid + '-vout-' + vindex]?.show" [ngClass]="{
                 'assetBox': assetsMinimal && assetsMinimal[vout.asset] && vout.scriptpubkey_address && tx.vin && !tx.vin[0].is_coinbase && tx._unblinded || outputIndex === vindex,
-                'highlight': addresses?.length && (addresses.includes(vout.scriptpubkey_address) || (vout.scriptpubkey_type === 'p2pk' && addresses.includes(vout.scriptpubkey.slice(2, -2))))
+                'highlight': addresses?.length && (addresses.includes(vout.scriptpubkey_address) || (vout.scriptpubkey_type === 'p2pk' && addresses.includes(vout.scriptpubkey.slice(2, -2)))),
+                'sigged': selectedSig && selectedSig.txIndex === i && sigHighlights.vout[vindex],
               }">
                 <td colspan="3">
                     <app-ord-data [runestone]="showOrdData[tx.txid + '-vout-' + vindex]['runestone']" [runeInfo]="showOrdData[tx.txid + '-vout-' + vindex]['runeInfo']" [type]="'vout'"></app-ord-data>
                 </td>
               </tr>
               <tr *ngIf="(showDetails$ | async) === true">
-                <td colspan="3" class=" details-container" >
+                <td [attr.colspan]="signatures ? 4 : 3" class=" details-container" >
                   <table class="table table-striped table-borderless details-table mb-3">
                     <tbody>
                       <tr>
@@ -335,7 +366,7 @@
               </tr>
             </ng-template>
             <tr *ngIf="tx.vout.length > getVoutLimit(tx)">
-              <td colspan="3" class="text-center">
+              <td [attr.colspan]="3" class="text-center">
                 <button class="btn btn-sm btn-primary mt-2" (click)="showMoreOutputs(tx)">
                   <span *ngIf="getVoutLimit(tx, true) >= tx.vout.length; else showMoreOutputsLabel" i18n="show-all">Show all</span>
                   <ng-template #showMoreOutputsLabel>
