@@ -86,11 +86,13 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
         const hex = params.get('hex');
         if (hex) {
           this.pushTxForm.get('txRaw').setValue(hex);
-          this.decodeTransaction();
         }
         const offline = params.get('offline');
         if (offline) {
           this.offlineMode = offline === 'true';
+        }
+        if (this.pushTxForm.get('txRaw').value) {
+          this.decodeTransaction();
         }
       }
     });
@@ -281,7 +283,6 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.filters = [];
     this.hasPrevouts = false;
     this.missingPrevouts = [];
-    this.offlineMode = false;
     this.stateService.markBlock$.next({});
     this.mempoolBlocksSubscription?.unsubscribe();
     this.broadcastSubscription?.unsubscribe();
@@ -290,6 +291,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
   resetForm() {
     this.resetState();
     this.pushTxForm.get('txRaw').setValue('');
+    this.offlineMode = false;
     this.router.navigate([], {
       fragment: '',
       replaceUrl: true

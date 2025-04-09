@@ -220,7 +220,7 @@
                     <thead>
                       <tr>
                         <th class="data-title clip text-center coinbase" i18n="latest-blocks.coinbasetag">
-                          <a class="title-link" [routerLink]="['/tx/preview' | relativeUrl]" [fragment]="'hex=' + job.coinbase">
+                          <a class="title-link" [routerLink]="['/tx/preview' | relativeUrl]" [fragment]="'offline=true&hex=' + job.coinbase">
                             Coinbase tag <span>&nbsp;</span>
                             <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
                           </a>
