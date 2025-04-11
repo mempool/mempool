@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { switchMap, catchError, map, tap, shareReplay, startWith, scan } from 'rxjs/operators';
 import { Address, AddressTxSummary, ChainStats, Transaction } from '@interfaces/electrs.interface';
 import { WebsocketService } from '@app/services/websocket.service';
@@ -11,6 +11,8 @@ import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { WalletAddress } from '@interfaces/node-api.interface';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { AudioService } from '@app/services/audio.service';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
+
 
 class WalletStats implements ChainStats {
   addresses: string[];
@@ -134,12 +136,14 @@ export class WalletComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private websocketService: WebsocketService,
     private stateService: StateService,
     private apiService: ApiService,
     private electrsApiService: ElectrsApiService,
     private audioService: AudioService,
     private seoService: SeoService,
+    private relativeUrlPipe: RelativeUrlPipe,
   ) { }
 
   ngOnInit(): void {
@@ -156,8 +160,11 @@ export class WalletComponent implements OnInit, OnDestroy {
       switchMap((walletName: string) => this.apiService.getWallet$(walletName).pipe(
         catchError((err) => {
           this.error = err;
-          this.seoService.logSoft404();
           console.log(err);
+          if (err.status === 404) {
+            this.seoService.logSoft404();
+            this.router.navigate([this.relativeUrlPipe.transform('')]);
+          }
           return of({});
         })
       )),
