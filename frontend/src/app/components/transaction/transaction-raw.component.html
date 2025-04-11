@@ -19,7 +19,11 @@
 
   @if (transaction && !error && !isLoading) {
     <div class="title-block">
-      <h1 i18n="shared.preview-transaction|Preview Transaction">Preview Transaction</h1>
+      @if (isCoinbase) {
+        <h1 i18n="shared.preview-coinbase|Preview Coinbase">Preview Coinbase</h1>
+      } @else {
+        <h1 i18n="shared.preview-transaction|Preview Transaction">Preview Transaction</h1>
+      }
 
       <span class="tx-link">
         <span class="txid">
@@ -39,19 +43,21 @@
 
     <div class="clearfix"></div>
 
-    <div class="alert alert-mempool" style="align-items: center;">
-      <span>
-        <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
-        <ng-container *ngIf="!successBroadcast" i18n="transaction.local-tx|This transaction is stored locally in your browser.">
-          This transaction is stored locally in your browser. Broadcast it to add it to the mempool.
-        </ng-container>
-        <ng-container *ngIf="successBroadcast" i18n="transaction.redirecting|Redirecting to transaction page...">
-          Redirecting to transaction page...
-        </ng-container>
-      </span>
-      <button *ngIf="!successBroadcast" [disabled]="isLoadingBroadcast" type="button" class="btn btn-sm btn-primary btn-broadcast" i18n="transaction.broadcast|Broadcast" (click)="postTx()">Broadcast</button>
-      <button *ngIf="successBroadcast" type="button" class="btn btn-sm btn-success no-cursor btn-broadcast" i18n="transaction.broadcasted|Broadcasted">Broadcasted</button>
-    </div>
+    @if (!isCoinbase) {
+      <div class="alert alert-mempool" style="align-items: center;">
+        <span>
+          <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+          <ng-container *ngIf="!successBroadcast" i18n="transaction.local-tx|This transaction is stored locally in your browser.">
+            This transaction is stored locally in your browser. Broadcast it to add it to the mempool.
+          </ng-container>
+          <ng-container *ngIf="successBroadcast" i18n="transaction.redirecting|Redirecting to transaction page...">
+            Redirecting to transaction page...
+          </ng-container>
+        </span>
+        <button *ngIf="!successBroadcast" [disabled]="isLoadingBroadcast" type="button" class="btn btn-sm btn-primary btn-broadcast" i18n="transaction.broadcast|Broadcast" (click)="postTx()">Broadcast</button>
+        <button *ngIf="successBroadcast" type="button" class="btn btn-sm btn-success no-cursor btn-broadcast" i18n="transaction.broadcasted|Broadcasted">Broadcasted</button>
+      </div>
+    }
 
     @if (!hasPrevouts) {
       <div class="alert alert-mempool">

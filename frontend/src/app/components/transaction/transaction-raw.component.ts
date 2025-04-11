@@ -36,7 +36,9 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
   isLoadingBroadcast: boolean;
   errorBroadcast: string;
   successBroadcast: boolean;
+  isCoinbase: boolean;
   broadcastSubscription: Subscription;
+  fragmentSubscription: Subscription;
 
   isMobile: boolean;
   @ViewChild('graphContainer')
@@ -76,6 +78,23 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.websocketService.want(['blocks', 'mempool-blocks']);
     this.pushTxForm = this.formBuilder.group({
       txRaw: ['', Validators.required],
+    });
+
+    this.fragmentSubscription = this.route.fragment.subscribe((fragment) => {
+      if (fragment) {
+        const params = new URLSearchParams(fragment);
+        const hex = params.get('hex');
+        if (hex) {
+          this.pushTxForm.get('txRaw').setValue(hex);
+        }
+        const offline = params.get('offline');
+        if (offline) {
+          this.offlineMode = offline === 'true';
+        }
+        if (this.pushTxForm.get('txRaw').value) {
+          this.decodeTransaction();
+        }
+      }
     });
   }
 
@@ -184,6 +203,14 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.transaction = tx;
     this.rawHexTransaction = hex;
 
+    this.isCoinbase = this.transaction.vin[0].is_coinbase;
+
+    // Update URL fragment with hex data
+    this.router.navigate([], {
+      fragment: this.getCurrentFragments(),
+      replaceUrl: true
+    });
+
     this.transaction.flags = getTransactionFlags(this.transaction, this.cpfpInfo, null, null, this.stateService.network);
     this.filters = this.transaction.flags ? toFilters(this.transaction.flags).filter(f => f.txPage) : [];
     if (this.transaction.sigops >= 0) {
@@ -264,6 +291,11 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
   resetForm() {
     this.resetState();
     this.pushTxForm.get('txRaw').setValue('');
+    this.offlineMode = false;
+    this.router.navigate([], {
+      fragment: '',
+      replaceUrl: true
+    });
   }
 
   @HostListener('window:resize', ['$event'])
@@ -306,8 +338,24 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.graphHeight = Math.min(360, this.maxInOut * 80);
   }
 
+  getCurrentFragments() {
+    // build a fragment param string from current state
+    const params = new URLSearchParams();
+    if (this.offlineMode) {
+      params.set('offline', 'true');
+    }
+    if (this.rawHexTransaction) {
+      params.set('hex', this.rawHexTransaction);
+    }
+    return params.toString();
+  }
+
   onOfflineModeChange(e): void {
     this.offlineMode = !e.target.checked;
+    this.router.navigate([], {
+      fragment: this.getCurrentFragments(),
+      replaceUrl: true
+    });
   }
 
   ngOnDestroy(): void {
@@ -315,6 +363,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.flowPrefSubscription?.unsubscribe();
     this.stateService.markBlock$.next({});
     this.broadcastSubscription?.unsubscribe();
+    this.fragmentSubscription?.unsubscribe();
   }
 
 }
