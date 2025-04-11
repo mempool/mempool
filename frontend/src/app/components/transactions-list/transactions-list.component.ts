@@ -194,7 +194,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       }
 
       this.transactionsLength = this.transactions.length;
-      
+
       if (!this.txPreview) {
         this.cacheService.setTxCache(this.transactions);
       }
@@ -316,10 +316,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
 
       // Check for address poisoning similarity matches
       this.similarityMatches.set(tx.txid, new Map());
-      const comparableVouts = [
-        ...tx.vout.slice(0, 20),
-        ...this.addresses.map(addr => ({ scriptpubkey_address: addr, scriptpubkey_type: detectAddressType(addr, this.stateService.network) }))
-      ].filter(v => ['p2pkh', 'p2sh', 'v0_p2wpkh', 'v0_p2wsh', 'v1_p2tr'].includes(v.scriptpubkey_type));
+      const comparableVouts = tx.vout.slice(0, 20).filter(v => ['p2pkh', 'p2sh', 'v0_p2wpkh', 'v0_p2wsh', 'v1_p2tr'].includes(v.scriptpubkey_type));
       const comparableVins = tx.vin.slice(0, 20).map(v => v.prevout).filter(v => ['p2pkh', 'p2sh', 'v0_p2wpkh', 'v0_p2wsh', 'v1_p2tr'].includes(v?.scriptpubkey_type));
       for (const vout of comparableVouts) {
         const address = vout.scriptpubkey_address;
