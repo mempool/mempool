@@ -43,6 +43,9 @@ CLN_INSTALL=ON
 # install UNFURL
 UNFURL_INSTALL=ON
 
+# install CKPOOL
+CKPOOL_MAINNET_INSTALL=ON
+
 # configure 4 network instances
 BITCOIN_MAINNET_ENABLE=ON
 BITCOIN_MAINNET_MINFEE_ENABLE=ON
@@ -55,6 +58,11 @@ BITCOIN_SIGNET_LIGHTNING_ENABLE=ON
 BISQ_MAINNET_ENABLE=ON
 ELEMENTS_LIQUID_ENABLE=ON
 ELEMENTS_LIQUIDTESTNET_ENABLE=ON
+
+# configure 3 CKPool instances
+BITCOIN_MAINNET_CKPOOL=ON
+BITCOIN_TESTNET_CKPOOL=ON
+BITCOIN_TESTNET4_CKPOOL=ON
 
 # enable lightmode and disable compaction to fit on 1TB SSD drive
 BITCOIN_ELECTRS_INSTALL=ON
@@ -197,6 +205,18 @@ MEMPOOL_SIGNET_HTTP_PORT=8995
 MEMPOOL_LIQUIDTESTNET_HTTP_HOST=127.0.0.1
 MEMPOOL_LIQUIDTESTNET_HTTP_PORT=8994
 
+# set CKPool bitcoin mainnet port
+CKPOOL_MAINNET_STRATUM_HOST=127.0.0.1
+CKPOOL_MAINNET_STRATUM_PORT=3333
+
+# set CKPool bitcoin mainnet port
+CKPOOL_TESTNET_STRATUM_HOST=127.0.0.1
+CKPOOL_TESTNET_STRATUM_PORT=3334
+
+# set CKPool bitcoin mainnet port
+CKPOOL_TESTNET4_STRATUM_HOST=127.0.0.1
+CKPOOL_TESTNET4_STRATUM_PORT=3335
+
 ##### OS options, should be automatically detected
 
 case $OS in
@@ -283,6 +303,11 @@ BITCOIN_GROUP=bitcoin
 # bitcoin core data folder, needs about 300GB
 BITCOIN_HOME=/bitcoin
 
+# ckpool user/group
+CKPOOL_HOME=/ckpool
+CKPOOL_USER=ckpool
+CKPOOL_GROUP=ckpool
+
 # bitcoin testnet data
 BITCOIN_TESTNET_DATA=${BITCOIN_HOME}/testnet3
 # bitcoin testnet4 data
@@ -367,6 +392,12 @@ BISQ_REPO_BRANCH=master
 BISQ_LATEST_RELEASE=master
 echo -n '.'
 
+CKPOOL_URL=https://github.com/mempool/ckpool
+CKPOOL_REPO_NAME=ckpool
+CKPOOL_REPO_BRANCH=master
+CKPOOL_LATEST_RELEASE=$(curl -s https://api.github.com/repos/mempool/ckpool/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
+echo -n '.'
+
 UNFURL_REPO_URL=https://github.com/mempool/mempool
 UNFURL_REPO_NAME=unfurl
 UNFURL_REPO_BRANCH=master
@@ -378,7 +409,7 @@ ELEMENTS_REPO_URL=https://github.com/ElementsProject/elements
 ELEMENTS_REPO_NAME=elements
 ELEMENTS_REPO_BRANCH=master
 #ELEMENTS_LATEST_RELEASE=$(curl -s https://api.github.com/repos/ElementsProject/elements/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
-ELEMENTS_LATEST_RELEASE=elements-23.2.6
+ELEMENTS_LATEST_RELEASE=elements-23.2.7
 echo -n '.'
 
 BITCOIN_ELECTRS_REPO_URL=https://github.com/mempool/electrs
@@ -418,9 +449,10 @@ DEBIAN_UNFURL_PKG+=(libxdamage-dev libxrandr-dev libgbm-dev libpango1.0-dev liba
 FREEBSD_PKG=()
 FREEBSD_PKG+=(zsh sudo git git-lfs screen curl wget calc neovim)
 FREEBSD_PKG+=(openssh-portable py311-pip rust llvm17 jq base64 libzmq4)
-FREEBSD_PKG+=(boost-libs autoconf automake gmake gcc libevent libtool pkgconf)
+FREEBSD_PKG+=(boost-libs autoconf automake gmake gcc13 libevent libtool pkgconf)
 FREEBSD_PKG+=(nginx rsync py311-certbot-nginx mariadb1011-server)
 FREEBSD_PKG+=(geoipupdate redis)
+FREEBSD_PKG+=(libepoll-shim)
 
 FREEBSD_UNFURL_PKG=()
 FREEBSD_UNFURL_PKG+=(nvidia-driver-470 chromium xinit xterm twm ja-sourcehansans-otf)
@@ -1113,11 +1145,11 @@ echo "[*] Installing Mempool crontab"
 osSudo "${ROOT_USER}" crontab -u "${MEMPOOL_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/mempool.crontab"
 
 echo "[*] Installing nvm.sh from GitHub"
-osSudo "${MEMPOOL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh'
+osSudo "${MEMPOOL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash'
 
 echo "[*] Building NodeJS via nvm.sh"
-osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm install v20.12.0 --shared-zlib'
-osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm alias default 20.12.0'
+osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; CC=gcc CXX=g++ nvm install v22.14.0 --shared-zlib'
+osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm alias default 22.14.0'
 
 ####################
 # Tor installation #
@@ -1223,6 +1255,76 @@ if [ "${BITCOIN_INSTALL}" = ON ];then
     osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${MINFEE_HOME}/bitcoin.conf"
 fi
 
+#######################
+# CKPool Installation #
+#######################
+
+#CKPool cronjob installer
+install_ckpool_cron() {
+    local network=$1
+    local network_label=$2
+    local network_cmd=$3
+    local port=$4
+
+    echo "[*] Installing CKPool ${network_label} Cron for 'ckpool' user"
+    case $OS in
+        FreeBSD)
+            osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_HOME} && (crontab -l > ${TEMP_CRON_FILE} 2>/dev/null || echo \"\" > ${TEMP_CRON_FILE})"
+            osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_HOME} && echo '@reboot screen -dmS ckpool-${network} sh -c \"while true; do ${CKPOOL_HOME}/${CKPOOL_REPO_NAME}/start ${network_cmd} ${port}; sleep 1; done\"' >> ${TEMP_CRON_FILE}"
+            osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_HOME} && crontab ${TEMP_CRON_FILE}"
+            osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_HOME} && rm -f ${TEMP_CRON_FILE}"
+        ;;
+        Debian)
+        ;;
+    esac
+}
+
+#CKPool binary Installer
+if [ "${CKPOOL_INSTALL}" = ON ]; then
+    echo "[*] Creating 'ckpool' user"
+    osGroupCreate "${CKPOOL_GROUP}"
+    osUserCreate  "${CKPOOL_USER}" "${CKPOOL_HOME}" "${CKPOOL_GROUP}"
+    osSudo "${ROOT_USER}" chsh -s `which zsh` "${CKPOOL_USER}"
+
+    echo "[*] Creating 'ckpool' data folder"
+    osSudo "${ROOT_USER}" mkdir -p "${CKPOOL_HOME}"
+    osSudo "${ROOT_USER}" chown -R "${CKPOOL_USER}:${CKPOOL_GROUP}" "${CKPOOL_HOME}"
+    osSudo "${CKPOOL_USER}" touch "${CKPOOL_HOME}/.zshrc"
+
+    echo "[*] Creating '.ckpool' directory in ckpool user's home to store config files"
+    osSudo "${ROOT_USER}" mkdir -p "${CKPOOL_HOME}/.ckpool"
+    osSudo "${ROOT_USER}" chown "${CKPOOL_USER}:${CKPOOL_GROUP}" "${CKPOOL_HOME}/.ckpool"
+
+    echo "[*] Cloning Mempool CKPool repo from ${CKPOOL_REPO_URL}"
+    osSudo "${CKPOOL_USER}" git config --global advice.detachedHead false
+    osSudo "${CKPOOL_USER}" git clone --branch "${CKPOOL_REPO_BRANCH}" "${CKPOOL_REPO_URL}" "${CKPOOL_HOME}/${CKPOOL_REPO_NAME}"
+
+    echo "[*] Checking out CKPOOL ${CKPOOL_LATEST_RELEASE}"
+    osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_HOME}/${CKPOOL_REPO_NAME} && git checkout ${CKPOOL_LATEST_RELEASE}"
+
+    echo "[*] Building CKPool from source repo"
+    osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_REPO_NAME} && ./autogen.sh --quiet"
+    osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_REPO_NAME} && ./configure CFLAGS='-O3 -march=native -flto -Wall -I/usr/local/include/libepoll-shim' LDFLAGS='-L/usr/local/lib -lepoll-shim -lpthread'"
+    osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_REPO_NAME} && gmake -j${NPROC}"
+
+    echo "[*] Copy CKPool binarary into OS"
+    osSudo "${ROOT_USER}" sh -c "cd ${CKPOOL_HOME}/${CKPOOL_REPO_NAME} && cp src/ckpool /usr/local/bin"
+
+    TEMP_CRON_FILE="tmp_cron"
+
+    if [ "${BITCOIN_MAINNET_CKPOOL}" = ON ]; then
+        install_ckpool_cron "mainnet" "Mainnet" "bitcoin" 2333
+    fi
+
+    if [ "${BITCOIN_TESTNET_CKPOOL}" = ON ]; then
+        install_ckpool_cron "testnet" "Testnet" "testnet" 2334
+    fi
+
+    if [ "${BITCOIN_TESTNET4_CKPOOL}" = ON ]; then
+        install_ckpool_cron "testnet4" "Testnet4" "testnet4" 2335
+    fi
+fi
+
 #########################
 # Elements installation #
 #########################
@@ -1314,7 +1416,7 @@ if [ "${BITCOIN_ELECTRS_INSTALL}" = ON ];then
     case $OS in
         FreeBSD)
             echo "[*] Patching Bitcoin Electrs code for FreeBSD"
-            osSudo "${BITCOIN_USER}" sh -c "cd \"${BITCOIN_HOME}/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sysconf-0.3.4\" && patch -p1 < \"${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/freebsd/sysconf.patch\""
+            osSudo "${BITCOIN_USER}" sh -c "cd \"${BITCOIN_HOME}/.cargo/registry/src/index.crates.io-6f17d22bba15001f/sysconf-0.3.4\" && patch -p1 < \"${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/freebsd/sysconf.patch\""
             #osSudo "${BITCOIN_USER}" sh -c "cd \"${BITCOIN_ELECTRS_HOME}/src/new_index/\" && sed -i.bak -e s/Snappy/None/ db.rs && rm db.rs.bak"
             #osSudo "${BITCOIN_USER}" sh -c "cd \"${BITCOIN_ELECTRS_HOME}/src/bin/\" && sed -i.bak -e 's/from_secs(5)/from_secs(1)/' electrs.rs && rm electrs.rs.bak"
         ;;
@@ -1565,7 +1667,7 @@ EOF
             osSudo "${UNFURL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh'
 
             echo "[*] Building NodeJS via nvm.sh"
-            osSudo "${UNFURL_USER}" zsh -c 'source ~/.zshrc ; nvm install v20.12.0 --shared-zlib'
+            osSudo "${UNFURL_USER}" zsh -c 'source ~/.zshrc ; nvm install v22.14.0 --shared-zlib'
 
         ;;
     esac

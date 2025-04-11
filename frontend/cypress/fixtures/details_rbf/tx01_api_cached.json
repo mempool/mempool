@@ -1,0 +1,55 @@
+{
+    "txid": "242f3fff9ca7d5aea7a7a57d886f3fa7329e24fac948598a991b3a3dd631cd29",
+    "version": 2,
+    "locktime": 0,
+    "vin": [
+        {
+            "txid": "fb16c141d22a3a7af5e44e7478a8663866c35d554cd85107ec8a99b97e5a72e9",
+            "vout": 0,
+            "prevout": {
+                "scriptpubkey": "76a914099f831c49289c7b9cc07a9a632867ecd51a105a88ac",
+                "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 099f831c49289c7b9cc07a9a632867ecd51a105a OP_EQUALVERIFY OP_CHECKSIG",
+                "scriptpubkey_type": "p2pkh",
+                "scriptpubkey_address": "1stAprEZapjCYGUACUcXohQqSHF9MU5Kj",
+                "value": 50000
+            },
+            "scriptsig": "483045022100f44a50e894c30b28400933da120b872ff15bd2e66dd034ffbbb925fd054dd60f02206ba477a9da3fae68a9f420f53bc25493270bd987d13b75fef39cf514aea9cdb3014104ea83ffe426ee6b6827029c72fbdcb0a1602829c1fe384637a7d178aa62a6a1e3d7f29250e001ee708a93ca9771f50ee638aaaaef8941c8a7e2bad5494b23e0df",
+            "scriptsig_asm": "OP_PUSHBYTES_72 3045022100f44a50e894c30b28400933da120b872ff15bd2e66dd034ffbbb925fd054dd60f02206ba477a9da3fae68a9f420f53bc25493270bd987d13b75fef39cf514aea9cdb301 OP_PUSHBYTES_65 04ea83ffe426ee6b6827029c72fbdcb0a1602829c1fe384637a7d178aa62a6a1e3d7f29250e001ee708a93ca9771f50ee638aaaaef8941c8a7e2bad5494b23e0df",
+            "is_coinbase": false,
+            "sequence": 4294967293
+        }
+    ],
+    "vout": [
+        {
+            "scriptpubkey": "5120a2fc5cb445755389eed295ab9d594b0facd3e00840a3e477fa7c025412c53795",
+            "scriptpubkey_asm": "OP_PUSHNUM_1 OP_PUSHBYTES_32 a2fc5cb445755389eed295ab9d594b0facd3e00840a3e477fa7c025412c53795",
+            "scriptpubkey_type": "v1_p2tr",
+            "scriptpubkey_address": "bc1p5t79edz9w4fcnmkjjk4e6k2tp7kd8cqggz37gal60sp9gyk9x72sk4mk0f",
+            "value": 49394
+        }
+    ],
+    "size": 233,
+    "weight": 932,
+    "sigops": 0,
+    "fee": 606,
+    "status": {
+        "confirmed": false
+    },
+    "order": 701313494,
+    "vsize": 233,
+    "adjustedVsize": 233,
+    "feePerVsize": 2.6008583690987126,
+    "adjustedFeePerVsize": 2.6008583690987126,
+    "effectiveFeePerVsize": 2.6008583690987126,
+    "firstSeen": 1743541407,
+    "inputs": [],
+    "cpfpDirty": false,
+    "ancestors": [],
+    "descendants": [],
+    "bestDescendant": null,
+    "position": {
+        "block": 0,
+        "vsize": 318595.5
+    },
+    "flags": 1099511645193
+}

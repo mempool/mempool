@@ -1,85 +1,49 @@
-name: CI Pipeline for the Backend and Frontend
+name: 'Parameterized e2e tests'
 
 on:
-  pull_request:
-    types: [opened, review_requested, synchronize]
-  push:
-    branches:
-      - master
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch name or Pull Request number (e.g., master or 6102)'
+        required: true
+        default: 'master'
+        type: string
+      mempool_hostname:
+        description: 'Mempool Hostname'
+        required: true
+        default: 'mempool.space'
+        type: string 
+      liquid_hostname:
+        description: 'Liquid Hostname'
+        required: true
+        default: 'liquid.network'
+        type: string 
 
 jobs:
-  backend:
-    if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
-    strategy:
-      matrix:
-        node: ["22.14.0"]
-        flavor: ["dev", "prod"]
-      fail-fast: false
-    runs-on: ubuntu-latest
-
-    name: Backend (${{ matrix.flavor }}) - node ${{ matrix.node }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          path: ${{ matrix.node }}/${{ matrix.flavor }}
-
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node }}
-          registry-url: "https://registry.npmjs.org"
-
-      - name: Read rust-toolchain file from repository
-        id: gettoolchain
-        run: echo "::set-output name=toolchain::$(cat ./rust/gbt/rust-toolchain)"
-        working-directory: ${{ matrix.node }}/${{ matrix.flavor }}
-
-      - name: Install ${{ steps.gettoolchain.outputs.toolchain }} Rust toolchain
-        # Latest version available on this commit is 1.71.1
-        # Commit date is Aug 3, 2023
-        uses: dtolnay/rust-toolchain@d8352f6b1d2e870bc5716e7a6d9b65c4cc244a1a
-        with:
-          toolchain: ${{ steps.gettoolchain.outputs.toolchain }}
-
-      - name: Install
-        if: ${{ matrix.flavor == 'dev'}}
-        run: npm ci
-        working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/backend
-
-      - name: Install (Prod dependencies only)
-        if: ${{ matrix.flavor == 'prod'}}
-        run: npm ci --omit=dev --omit=optional
-        working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/backend
-
-      - name: Lint
-        if: ${{ matrix.flavor == 'dev'}}
-        run: npm run lint
-        working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/backend
-
-      - name: Unit Tests
-        if: ${{ matrix.flavor == 'dev'}}
-        run: npm run test:ci
-        working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/backend
-
-      - name: Build
-        run: npm run build
-        working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/backend
-
-
   cache:
     name: "Cache assets for builds"
     runs-on: ubuntu-latest
     steps:
+      - name: Determine checkout ref
+        id: determine-ref
+        run: |
+          REF_INPUT="${{ github.event.inputs.ref }}"
+          if [[ "$REF_INPUT" =~ ^[0-9]+$ ]]; then
+            echo "ref=refs/pull/$REF_INPUT/head" >> $GITHUB_OUTPUT
+          else
+            echo "ref=$REF_INPUT" >> $GITHUB_OUTPUT
+          fi
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
+          ref: ${{ steps.determine-ref.outputs.ref }}
           path: assets
 
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 22.14.0
           registry-url: "https://registry.npmjs.org"
 
       - name: Install (Prod dependencies only)
@@ -158,99 +122,9 @@ jobs:
             promo-video-assets.zip
           key: promo-video-assets-cache
 
-  frontend:
-    needs: cache
-    if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
-    strategy:
-      matrix:
-        node: ["22.14.0"]
-        flavor: ["dev", "prod"]
-      fail-fast: false
-    runs-on: ubuntu-latest
-
-    name: Frontend (${{ matrix.flavor }}) - node ${{ matrix.node }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          path: ${{ matrix.node }}/${{ matrix.flavor }}
-
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node }}
-          registry-url: "https://registry.npmjs.org"
-
-      - name: Install (Prod dependencies only)
-        run: npm ci --omit=dev --omit=optional
-        if: ${{ matrix.flavor == 'prod'}}
-        working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/frontend
-
-      - name: Install
-        if: ${{ matrix.flavor == 'dev'}}
-        run: npm ci
-        working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/frontend
-
-      - name: Lint
-        if: ${{ matrix.flavor == 'dev'}}
-        run: npm run lint
-        working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/frontend
-
-      # - name: Test
-      #   run: npm run test
-
-      - name: Restore cached mining pool assets
-        continue-on-error: true
-        id: cache-mining-pool-restore
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            mining-pool-assets.zip
-          key: mining-pool-assets-cache
-
-      - name: Restore promo video assets
-        continue-on-error: true
-        id: cache-promo-video-restore
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            promo-video-assets.zip
-          key: promo-video-assets-cache
-
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: mining-pool-assets
-
-      - name: Unzip assets before building (src/resources)
-        run: unzip -o mining-pool-assets.zip -d ${{ matrix.node }}/${{ matrix.flavor }}/frontend/src/resources/mining-pools
-
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: promo-video-assets
-
-      - name: Unzip assets before building (src/resources)
-        run: unzip -o promo-video-assets.zip -d ${{ matrix.node }}/${{ matrix.flavor }}/frontend/src/resources/promo-video
-
-      # - name: Unzip assets before building (dist)
-      #   run: unzip assets.zip -d ${{ matrix.node }}/${{ matrix.flavor }}/frontend/dist/mempool/browser/resources
-
-      - name: Display resulting source tree
-        run: ls -R
-
-      - name: Build
-        run: npm run build
-        working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/frontend
-        env: 
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MEMPOOL_CDN: 1
-          VERBOSE: 1
-  
   e2e:
-    if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
     runs-on: ubuntu-latest
-    needs: frontend
+    needs: cache
     strategy:
       fail-fast: false
       matrix:
@@ -258,15 +132,26 @@ jobs:
 
     name: E2E tests for ${{ matrix.module }}
     steps:
+      - name: Determine checkout ref
+        id: determine-ref
+        run: |
+          REF_INPUT="${{ github.event.inputs.ref }}"
+          if [[ "$REF_INPUT" =~ ^[0-9]+$ ]]; then
+            echo "ref=refs/pull/$REF_INPUT/head" >> $GITHUB_OUTPUT
+          else
+            echo "ref=$REF_INPUT" >> $GITHUB_OUTPUT
+          fi
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
+          ref: ${{ steps.determine-ref.outputs.ref }}
           path: ${{ matrix.module }}
 
       - name: Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: 22
+          node-version: 22.14.0
           cache: "npm"
           cache-dependency-path: ${{ matrix.module }}/frontend/package-lock.json
 
@@ -278,7 +163,7 @@ jobs:
           path: |
             mining-pool-assets.zip
           key: mining-pool-assets-cache
-  
+
       - name: Restore cached promo video assets
         continue-on-error: true
         id: cache-promo-video-restore
@@ -304,7 +189,7 @@ jobs:
       - name: Unzip assets before building (src/resources)
         run: unzip -o promo-video-assets.zip -d ${{ matrix.module }}/frontend/src/resources/promo-video
 
-      # mempool
+    # mempool
       - name: Chrome browser tests (${{ matrix.module }})
         if: ${{ matrix.module == 'mempool' }}
         uses: cypress-io/github-action@v5
@@ -324,7 +209,10 @@ jobs:
           browser: "chrome"
           ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
         env:
-          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
+          COMMIT_INFO_MESSAGE: ${{ github.event_name }} (${{ github.sha }}) - ref ${{ github.event.inputs.ref }} - ${{ github.event.inputs.mempool_hostname }} - ${{ github.event.inputs.liquid_hostname }}
+          MEMPOOL_HOSTNAME: ${{ github.event.inputs.mempool_hostname }}
+          LIQUID_HOSTNAME: ${{ github.event.inputs.liquid_hostname }}
+          MEMPOOL_CI_API_KEY: ${{ secrets.MEMPOOL_CI_API_KEY }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
@@ -349,7 +237,10 @@ jobs:
           browser: "chrome"
           ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
         env:
-          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
+          COMMIT_INFO_MESSAGE: ${{ github.event_name }} (${{ github.sha }}) - ref ${{ github.event.inputs.ref }} - ${{ github.event.inputs.mempool_hostname }} - ${{ github.event.inputs.liquid_hostname }}
+          MEMPOOL_HOSTNAME: ${{ github.event.inputs.mempool_hostname }}
+          LIQUID_HOSTNAME: ${{ github.event.inputs.liquid_hostname }}
+          MEMPOOL_CI_API_KEY: ${{ secrets.MEMPOOL_CI_API_KEY }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
@@ -373,36 +264,10 @@ jobs:
           browser: "chrome"
           ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
         env:
-          CYPRESS_REROUTE_TESTNET: true
-          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
+          COMMIT_INFO_MESSAGE: ${{ github.event_name }} (${{ github.sha }}) - ref ${{ github.event.inputs.ref }} - ${{ github.event.inputs.mempool_hostname }} - ${{ github.event.inputs.liquid_hostname }}
+          MEMPOOL_HOSTNAME: ${{ github.event.inputs.mempool_hostname }}
+          LIQUID_HOSTNAME: ${{ github.event.inputs.liquid_hostname }}
+          MEMPOOL_CI_API_KEY: ${{ secrets.MEMPOOL_CI_API_KEY }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
-  validate_docker_json:
-    if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
-    runs-on: ubuntu-latest
-    name: Validate generated backend Docker JSON
-
-    steps: 
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          path: docker
-      
-      - name: Install jq
-        run: sudo apt-get install jq -y
-
-      - name: Create new start script to run on CI
-        run: |
-          sed '$d' start.sh > start_ci.sh
-        working-directory: docker/docker/backend
-
-      - name: Run the script to generate the sample JSON
-        run: |
-          sh start_ci.sh
-        working-directory: docker/docker/backend
-
-      - name: Validate JSON syntax
-        run: |
-          cat mempool-config.json | jq
-        working-directory: docker/docker/backend
