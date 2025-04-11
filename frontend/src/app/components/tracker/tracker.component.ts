@@ -121,7 +121,6 @@ export class TrackerComponent implements OnInit, OnDestroy {
   acceleratorAvailable: boolean = this.stateService.env.ACCELERATOR && this.stateService.network === '';
   eligibleForAcceleration: boolean = false;
   accelerationFlowCompleted = false;
-  scrollIntoAccelPreview = false;
   auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
 
   enterpriseInfo: any;
@@ -735,9 +734,6 @@ export class TrackerComponent implements OnInit, OnDestroy {
       return;
     }
     this.accelerationFlowCompleted = false;
-    if (this.showAccelerationSummary) {
-      this.scrollIntoAccelPreview = true;
-    }
     return false;
   }
 
