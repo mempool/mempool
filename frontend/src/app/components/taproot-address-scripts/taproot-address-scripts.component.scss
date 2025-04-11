@@ -1,0 +1,31 @@
+.fade-out {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 40px;
+    top: -40px;
+    background: linear-gradient(to top,
+        var(--fade-out-box-bg-end) 0%,
+        var(--fade-out-box-bg-end) 30%,
+        var(--fade-out-box-bg-start) 100%);
+    z-index: 10000000;
+  }
+}
+
+.toggle-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+}
+
+.graph-toggle {
+  margin-top: 10px;
+}

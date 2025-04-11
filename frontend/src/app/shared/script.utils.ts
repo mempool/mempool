@@ -174,14 +174,18 @@ export class ScriptInfo {
   scriptPath?: string;
   hex?: string;
   asm?: string;
+  vinId?: string;
   template: ScriptTemplate;
 
-  constructor(type: ScriptType, hex?: string, asm?: string, witness?: string[], scriptPath?: string) {
+  constructor(type: ScriptType, hex?: string, asm?: string, witness?: string[], scriptPath?: string, vinId?: string) {
     this.type = type;
     this.hex = hex;
     this.asm = asm;
     if (scriptPath) {
       this.scriptPath = scriptPath;
+    }
+    if (vinId) {
+      this.vinId = vinId;
     }
     if (this.asm) {
       this.template = detectScriptTemplate(this.type, this.asm, witness);

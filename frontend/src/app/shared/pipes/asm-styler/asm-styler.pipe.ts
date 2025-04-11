@@ -5,7 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class AsmStylerPipe implements PipeTransform {
 
-  transform(asm: string, showAll = true): string {
+  transform(asm: string, crop: number = 0): string {
     const instructions = asm.split('OP_');
     let out = '';
     let chars = -3;
@@ -13,7 +13,7 @@ export class AsmStylerPipe implements PipeTransform {
       if (instruction === '') {
         continue;
       }
-      if (!showAll && chars > 1000) {
+      if (crop && chars > crop) {
         break;
       }
       chars += instruction.length + 3;
