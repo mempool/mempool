@@ -11,10 +11,7 @@ import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pi
 
 interface TaprootTree {
   name: string; // the TapBranch hash or TapLeaf script hash
-  value?: {
-    leafVersion: number;
-    script: ScriptInfo;
-  };
+  value?: LeafNode;
   depth?: number;
   children?: [TaprootTree, TaprootTree];
   // ECharts properties
@@ -23,6 +20,12 @@ interface TaprootTree {
   symbolOffset?: number[];
   label?: any;
   tooltip?: { label: string, content?: string }[];
+}
+
+interface LeafNode {
+  leafVersion: number;
+  script: ScriptInfo;
+  merklePath: string[];
 }
 
 @Component({
@@ -61,21 +64,82 @@ export class TaprootAddressScriptsComponent implements OnChanges {
   ) { }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.address?.currentValue.scripts) {
-      this.buildTree();
+    if (changes.address?.currentValue.scripts && changes.address.currentValue.scripts.size) {
+      this.buildTree(Array.from(this.address.scripts.values()));
       this.prepareTree(this.tree, 0);
       this.cropTree();
       this.toggleTree(this.fullTreeShown, false);
     }
   }
 
-  buildTree(): void {
-    if (this.address?.scripts.size) {
-      for (const script of this.address.scripts.values()) {
-        let { leafVersion, merklePath } = this.parseControlBlock(script.scriptPath);
-        this.tree = this.addPathToTree(this.tree, script, leafVersion, merklePath);
+  buildTree(scripts: ScriptInfo[]): void {
+    // Parse script paths into merklePaths list and calculate depth
+    const merklePaths: { leafVersion: number, merklePath: string[] }[] = [];
+    this.depth = 0;
+    for (const script of scripts) {
+      const controlBlock = script.scriptPath;
+      const m = ((controlBlock.length / 2) - 33) / 32;
+      if (!Number.isInteger(m) || m <= 0) {
+        throw new Error("Merkle path length must be >= 1");
+      }
+      const leafVersion = parseInt(controlBlock.slice(0, 2), 16) & 0xfe;
+      const merklePath = [];
+      for (let i = 0; i < m; i++) {
+        merklePath.push(controlBlock.slice(66 + i * 64, 66 + (i + 1) * 64));
+      }
+      if (merklePath.length > this.depth) {
+        this.depth = merklePath.length;
+      }
+      merklePaths.push({ leafVersion, merklePath });
+    }
+
+    // treeStructure is a list of maps, where each map contains as keys the hashes of the nodes at that depth, and as values the hashes of its two children
+    const treeStructure: Map<string, [string, string]>[] = [];
+    for (let i = 0; i < this.depth; i++) {
+      treeStructure.push(new Map<string, [string, string]>());
+    }
+    const leaves = new Map<string, LeafNode>();
+
+    for (let i = 0; i < scripts.length; i++) {
+      const script = scripts[i];
+      const merklePath = merklePaths[i].merklePath;
+      const leafVersion = merklePaths[i].leafVersion;
+      const tapLeaf = taggedHash('TapLeaf', leafVersion.toString(16) + uint8ArrayToHexString(compactSize(script.hex.length / 2)) + script.hex);
+      leaves.set(tapLeaf, { leafVersion, script, merklePath });
+      let k = tapLeaf;
+      for (let j = 0; j < merklePath.length; j++) {
+        const e = merklePath[j];
+        const [firstChild, secondChild] = [k, e].sort((a, b) => a.localeCompare(b));
+        const parentHash = taggedHash('TapBranch', firstChild + secondChild);
+        treeStructure[merklePath.length - j - 1].set(parentHash, [firstChild, secondChild]);
+        k = parentHash;
       }
     }
+
+    // Build the tree recursively
+    const recursiveBuild = (hash: string, depth: number): TaprootTree => {
+      const node: TaprootTree = {
+        name: hash,
+        depth: depth
+      };
+
+      if (leaves.has(hash)) {
+        node.value = leaves.get(hash);
+        return node;
+      }
+
+      if (depth < treeStructure.length && treeStructure[depth].has(hash)) {
+        const [firstChild, secondChild] = treeStructure[depth].get(hash);
+        node.children = [
+          recursiveBuild(firstChild, depth + 1),
+          recursiveBuild(secondChild, depth + 1)
+        ];
+      }
+
+      return node;
+    };
+    const root = treeStructure[0].keys().next().value;
+    this.tree = recursiveBuild(root, 0);
   }
 
   cropTree(): void {
@@ -118,85 +182,6 @@ export class TaprootAddressScriptsComponent implements OnChanges {
     }
   }
 
-  parseControlBlock(controlBlock: string): { leafVersion: number, merklePath: string[] } {
-
-    const m = ((controlBlock.length / 2) - 33) / 32;
-    if (!Number.isInteger(m)) {
-      throw new Error("Invalid scriptPath: length does not match the expected format.");
-    }
-
-    const leafVersion = parseInt(controlBlock.slice(0, 2), 16) & 0xfe;
-    const merklePath = [];
-    for (let i = 0; i < m; i++) {
-      merklePath.push(controlBlock.slice(66 + i * 64, 66 + (i + 1) * 64));
-    }
-
-    if (merklePath.length > this.depth) {
-      this.depth = merklePath.length;
-    }
-
-    return { leafVersion, merklePath };
-  }
-
-  addPathToTree(masterTree: TaprootTree, script: ScriptInfo, leafVersion: number, merklePath: string[]): TaprootTree {
-    // See https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki
-    let k = taggedHash('TapLeaf', leafVersion.toString(16) + uint8ArrayToHexString(compactSize(script.hex.length / 2)) + script.hex);
-    let node: TaprootTree = { name: k, value: { leafVersion, script } };
-
-    // Start from the leaf and go up until we can merge in the current tree
-    for (let i = 0; i < merklePath.length; i++) {
-      const e = merklePath[i];
-      const [left, right] = [k, e].sort((a, b) => a.localeCompare(b));
-      const parentHash = taggedHash('TapBranch', left + right);
-      const isFirstChild = left === k;
-      const children: [TaprootTree, TaprootTree] = isFirstChild ? [node, { name: e }] : [{ name: e }, node];
-
-      // Try to merge the branch to the tree at current level
-      if (masterTree && this.mergeBranchAtDepth(masterTree, parentHash, children, isFirstChild, merklePath.length - i - 1)) {
-        return masterTree;
-      }
-      // If no merge is possible, go up one level and try again
-      k = parentHash;
-      node = { name: k, children };
-    }
-
-    if (!masterTree) {
-      return node;
-    }
-    // We only end up here if we could not merge the script in masterTree due to malformed merkle path
-    console.error('Could not merge script in Taptree');
-  }
-
-  mergeBranchAtDepth(tree: TaprootTree, target: string, children: [TaprootTree, TaprootTree], first: boolean, targetDepth: number, currentDepth = 0): boolean {
-    if (!tree) {
-      return false;
-    }
-
-    if (currentDepth === targetDepth) {
-      if (tree.name === target) {
-        if (!tree.children) {
-          tree.children = children;
-        } else {
-          if (first) {
-            tree.children[0] = children[0];
-          } else {
-            tree.children[1] = children[1];
-          }
-        }
-        return true;
-      }
-      return false;
-    }
-
-    if (tree.children) {
-      for (const child of tree.children) {
-        if (this.mergeBranchAtDepth(child, target, children, first, targetDepth, currentDepth + 1)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
 
   prepareTree(node: TaprootTree, depth: number): void {
     if (!node) {
