@@ -327,6 +327,8 @@ export class StateService {
 
     this.networkChanged$.subscribe((network) => {
       this.transactions$ = new BehaviorSubject<TransactionStripped[]>(null);
+      this.stratumJobs$ = new BehaviorSubject<Record<string, StratumJob>>({});
+      this.stratumJobUpdate$.next({ state: {} });
       this.blocksSubject$.next([]);
     });
 
