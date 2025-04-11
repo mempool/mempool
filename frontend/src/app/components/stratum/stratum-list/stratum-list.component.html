@@ -45,7 +45,9 @@
               <app-amount [satoshis]="row.job.reward"></app-amount>
             </td>
             <td class="height">
-              {{ row.job.height }}
+              <a [routerLink]="['/tx/preview' | relativeUrl]" [fragment]="'offline=true&hex=' + row.job.coinbase">
+                {{ row.job.height }}
+              </a>
             </td>
           </tr>
         }
