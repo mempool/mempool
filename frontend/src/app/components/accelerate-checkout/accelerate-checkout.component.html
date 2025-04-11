@@ -499,9 +499,13 @@
           } @else if (step === 'googlepay') {
             <div id="google-pay-button" class="d-inline-block" style="height: 50px" [style]="loadingGooglePay ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
           } @else if (step === 'cardonfile') {
-            <div class="paymentMethod mx-2 d-flex justify-content-center align-items-center ml-auto mr-auto" style="width: 200px; height: 55px" (click)="requestCardOnFilePayment()" [style]="loadingCardOnFile ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''">
-              <fa-icon style="font-size: 24px; color: white" [icon]="['fas', 'credit-card']"></fa-icon>
-              <span class="ml-2" style="font-size: 22px">{{ estimate?.availablePaymentMethods?.cardOnFile?.card?.brand }} {{ estimate?.availablePaymentMethods?.cardOnFile?.card?.last_4 }}</span>
+            <div class="ml-auto mr-auto paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px" (click)="requestCardOnFilePayment()" [style]="loadingCardOnFile ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''">
+              @if (['VISA', 'MASTERCARD', 'JCB', 'DISCOVER', 'DISCOVER_DINERS', 'AMERICAN_EXPRESS'].includes(estimate?.availablePaymentMethods?.cardOnFile?.card?.brand)) {
+                <app-svg-images [name]="estimate?.availablePaymentMethods?.cardOnFile?.card?.brand" height="33" class="mr-2"></app-svg-images>
+              } @else {
+                <app-svg-images name="OTHER_BRAND" height="33" class="mr-2"></app-svg-images>
+              }
+              <span style="font-size: 22px; padding-bottom: 3px">{{ estimate?.availablePaymentMethods?.cardOnFile?.card?.last_4 }}</span>
             </div>
           }
           @if (loadingCashapp || loadingApplePay || loadingGooglePay || loadingCardOnFile) {
