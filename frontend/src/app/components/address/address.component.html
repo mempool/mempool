@@ -73,6 +73,20 @@
       </div>
     </div>
 
+    <ng-container *ngIf="hasTapTree"> 
+      <br>
+      <div class="title-tx">
+        <h2 class="text-left" i18n="address.taproot-tree">Taproot Tree</h2>
+      </div>
+      <div class="box">
+        <div class="row">
+          <div class="col-md">
+            <app-taproot-address-scripts [address]="addressTypeInfo"></app-taproot-address-scripts> 
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
     <ng-container *ngIf="(stateService.backend$ | async) === 'esplora' && address && transactions && transactions.length > 2">
       <br>
       <div class="title-tx">
@@ -288,7 +302,7 @@
     <span placement="bottom" class="badge badge-primary">
       <app-address-type [address]="addressTypeInfo"></app-address-type>
     </span>
-    <app-address-labels [channel]="exampleChannel" [address]="addressTypeInfo" class="ml-1"></app-address-labels>
+    <app-address-labels *ngIf="!hasTapTree" [channel]="exampleChannel" [address]="addressTypeInfo" class="ml-1"></app-address-labels>
   </td>
 </ng-template>
 

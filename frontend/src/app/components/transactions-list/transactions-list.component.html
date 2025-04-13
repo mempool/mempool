@@ -171,7 +171,7 @@
                           <td i18n="transactions-list.p2wsh-witness-script">P2WSH witness script</td>
                         </ng-template>
                         <td style="text-align: left;">
-                          <div [innerHTML]="vin.inner_witnessscript_asm | asmStyler:showFullScript[vindex]"></div>
+                          <div [innerHTML]="vin.inner_witnessscript_asm | asmStyler: (showFullScript[vindex] ? 0 : 1000)"></div>
                           <div *ngIf="vin.inner_witnessscript_asm.length > 1000" style="display: flex;">
                             <span *ngIf="!showFullScript[vindex]">...</span>
                             <label class="btn btn-sm btn-primary mt-2" (click)="toggleShowFullScript(vindex)" style="margin-left: auto;">

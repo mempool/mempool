@@ -152,14 +152,17 @@ export class AddressTypeInfo {
     return cloned;
   }
 
-  public processInputs(vin: Vin[] = []): void {
+  public processInputs(vin: Vin[] = [], vinIds: string[] = []): void {
     // taproot can have multiple script paths
     if (this.type === 'v1_p2tr') {
-      for (const v of vin) {
+      for (let i = 0; i < vin.length; i++) {
+        const v = vin[i];
         if (v.inner_witnessscript_asm) {
           this.tapscript = true;
-          const controlBlock = v.witness[v.witness.length - 1].startsWith('50') ? v.witness[v.witness.length - 2] : v.witness[v.witness.length - 1];
-          this.processScript(new ScriptInfo('inner_witnessscript', undefined, v.inner_witnessscript_asm, v.witness, controlBlock));
+          const hasAnnex = v.witness[v.witness.length - 1].startsWith('50');
+          const controlBlock = hasAnnex ? v.witness[v.witness.length - 2] : v.witness[v.witness.length - 1];
+          const scriptHex = hasAnnex ? v.witness[v.witness.length - 3] : v.witness[v.witness.length - 2];
+          this.processScript(new ScriptInfo('inner_witnessscript', scriptHex, v.inner_witnessscript_asm, v.witness, controlBlock, vinIds?.[i]));
         }
       }
     // for single-script types, if we've seen one input we've seen them all
@@ -225,6 +228,9 @@ export class AddressTypeInfo {
   }
 
   private processScript(script: ScriptInfo): void {
+    if (this.scripts.has(script.key)) {
+      return;
+    }
     this.scripts.set(script.key, script);
     if (script.template?.type === 'multisig') {
       this.isMultisig = { m: script.template['m'], n: script.template['n'] };
