@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 96;
+  private static currentVersion = 97;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -1121,7 +1121,7 @@ class DatabaseMigration {
 
     // blocks pools-v2.json hash
     if (databaseSchemaVersion < 95) {
-      let poolJsonSha = 'f737d86571d190cf1a1a3cf5fd86b33ba9624254';
+      let poolJsonSha = 'f737d86571d190cf1a1a3cf5fd86b33ba9624254'; // https://github.com/mempool/mining-pools/commit/f737d86571d190cf1a1a3cf5fd86b33ba9624254
       const [poolJsonShaDb]: any[] = await DB.query(`SELECT string FROM state WHERE name = 'pools_json_sha'`);
       if (poolJsonShaDb?.length > 0) {
         poolJsonSha = poolJsonShaDb[0].string;
@@ -1134,6 +1134,17 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 96) {
       await this.$executeQuery(`ALTER TABLE blocks_audits MODIFY time timestamp NOT NULL DEFAULT 0`);
       await this.updateToSchemaVersion(96);
+    }
+
+    // Make definition_hash nullable
+    if (databaseSchemaVersion < 97) {
+      let poolJsonSha = '895cf0903e771beb647d0c1356bb4b8f4f123af7'; // https://github.com/mempool/mining-pools/commit/895cf0903e771beb647d0c1356bb4b8f4f123af7
+      const [poolJsonShaDb]: any[] = await DB.query(`SELECT string FROM state WHERE name = 'pools_json_sha'`);
+      if (poolJsonShaDb?.length > 0) {
+        poolJsonSha = poolJsonShaDb[0].string;
+      }
+      await this.$executeQuery(`ALTER TABLE blocks MODIFY COLUMN definition_hash varchar(255) NULL DEFAULT "${poolJsonSha}"`);
+      await this.updateToSchemaVersion(97);
     }
   }
 
