@@ -43,8 +43,8 @@ CLN_INSTALL=ON
 # install UNFURL
 UNFURL_INSTALL=ON
 
-# install CKPOOL
-CKPOOL_MAINNET_INSTALL=ON
+# install CKPool
+CKPOOL_INSTALL=ON
 
 # configure 4 network instances
 BITCOIN_MAINNET_ENABLE=ON
@@ -58,11 +58,6 @@ BITCOIN_SIGNET_LIGHTNING_ENABLE=ON
 BISQ_MAINNET_ENABLE=ON
 ELEMENTS_LIQUID_ENABLE=ON
 ELEMENTS_LIQUIDTESTNET_ENABLE=ON
-
-# configure 3 CKPool instances
-BITCOIN_MAINNET_CKPOOL=ON
-BITCOIN_TESTNET_CKPOOL=ON
-BITCOIN_TESTNET4_CKPOOL=ON
 
 # enable lightmode and disable compaction to fit on 1TB SSD drive
 BITCOIN_ELECTRS_INSTALL=ON
@@ -392,10 +387,10 @@ BISQ_REPO_BRANCH=master
 BISQ_LATEST_RELEASE=master
 echo -n '.'
 
-CKPOOL_URL=https://github.com/mempool/ckpool
+CKPOOL_REPO_URL=https://github.com/mempool/ckpool
 CKPOOL_REPO_NAME=ckpool
 CKPOOL_REPO_BRANCH=master
-CKPOOL_LATEST_RELEASE=$(curl -s https://api.github.com/repos/mempool/ckpool/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
+CKPOOL_LATEST_RELEASE=master
 echo -n '.'
 
 UNFURL_REPO_URL=https://github.com/mempool/mempool
@@ -434,7 +429,7 @@ LIQUIDTESTNET_ASSET_REGISTRY_DB_NAME=asset_registry_testnet_db
 # packages needed for mempool ecosystem
 DEBIAN_PKG=()
 DEBIAN_PKG+=(zsh vim curl screen openssl python3 dialog cron)
-DEBIAN_PKG+=(build-essential git git-lfs clang cmake jq)
+DEBIAN_PKG+=(build-essential git clang cmake jq)
 DEBIAN_PKG+=(autotools-dev autoconf automake pkg-config bsdmainutils)
 DEBIAN_PKG+=(libevent-dev libdb-dev libssl-dev libtool autotools-dev)
 DEBIAN_PKG+=(libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-test-dev libboost-thread-dev)
@@ -447,11 +442,11 @@ DEBIAN_UNFURL_PKG+=(libxdamage-dev libxrandr-dev libgbm-dev libpango1.0-dev liba
 
 # packages needed for mempool ecosystem
 FREEBSD_PKG=()
-FREEBSD_PKG+=(zsh sudo git git-lfs screen curl wget calc neovim)
+FREEBSD_PKG+=(zsh sudo git screen curl wget calc neovim)
 FREEBSD_PKG+=(openssh-portable py311-pip rust llvm17 jq base64 libzmq4)
 FREEBSD_PKG+=(boost-libs autoconf automake gmake gcc13 libevent libtool pkgconf)
 FREEBSD_PKG+=(nginx rsync py311-certbot-nginx mariadb1011-server)
-FREEBSD_PKG+=(geoipupdate redis)
+FREEBSD_PKG+=(redis)
 FREEBSD_PKG+=(libepoll-shim)
 
 FREEBSD_UNFURL_PKG=()
@@ -856,6 +851,7 @@ returncode=0
 
 $CUT >$input <<-EOF
 Tor:Enable Tor v3 HS Onion:ON
+CKPool:Enable CKPool Stratum Interface:ON
 Mainnet:Enable Bitcoin Mainnet:ON
 Mainnet-Minfee:Enable Bitcoin Mainnet Minfee:ON
 LN-Mainnet:Enable Bitcoin Mainnet Lightning:ON
@@ -892,6 +888,12 @@ if grep Tor $tempfile >/dev/null 2>&1;then
     TOR_INSTALL=ON
 else
     TOR_INSTALL=OFF
+fi
+
+if grep CKPool $tempfile >/dev/null 2>&1;then
+    CKPOOL_INSTALL=ON
+else
+    CKPOOL_INSTALL=OFF
 fi
 
 if grep Mainnet $tempfile >/dev/null 2>&1;then
@@ -1304,7 +1306,7 @@ if [ "${CKPOOL_INSTALL}" = ON ]; then
 
     echo "[*] Building CKPool from source repo"
     osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_REPO_NAME} && ./autogen.sh --quiet"
-    osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_REPO_NAME} && ./configure CFLAGS='-O3 -march=native -flto -Wall -I/usr/local/include/libepoll-shim' LDFLAGS='-L/usr/local/lib -lepoll-shim -lpthread'"
+    osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_REPO_NAME} && ./configure CFLAGS=\"-g3 -O0 -fno-inline -fno-omit-frame-pointer -fno-eliminate-unused-debug-types -fno-eliminate-unused-debug-symbols -Wall -I/usr/local/include/libepoll-shim\" LDFLAGS=\"-L/usr/local/lib -lepoll-shim -lpthread\""
     osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_REPO_NAME} && gmake -j${NPROC}"
 
     echo "[*] Copy CKPool binarary into OS"
@@ -1312,15 +1314,15 @@ if [ "${CKPOOL_INSTALL}" = ON ]; then
 
     TEMP_CRON_FILE="tmp_cron"
 
-    if [ "${BITCOIN_MAINNET_CKPOOL}" = ON ]; then
+    if [ "${BITCOIN_MAINNET_ENABLE}" = ON ]; then
         install_ckpool_cron "mainnet" "Mainnet" "bitcoin" 2333
     fi
 
-    if [ "${BITCOIN_TESTNET_CKPOOL}" = ON ]; then
+    if [ "${BITCOIN_TESTNET_ENABLE}" = ON ]; then
         install_ckpool_cron "testnet" "Testnet" "testnet" 2334
     fi
 
-    if [ "${BITCOIN_TESTNET4_CKPOOL}" = ON ]; then
+    if [ "${BITCOIN_TESTNET4_ENABLE}" = ON ]; then
         install_ckpool_cron "testnet4" "Testnet4" "testnet4" 2335
     fi
 fi
@@ -1414,11 +1416,14 @@ if [ "${BITCOIN_ELECTRS_INSTALL}" = ON ];then
     osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_ELECTRS_HOME} && cargo run --release --bin electrs -- --version" || true
 
     case $OS in
-        FreeBSD)
+        FreeBSD*)
             echo "[*] Patching Bitcoin Electrs code for FreeBSD"
-            osSudo "${BITCOIN_USER}" sh -c "cd \"${BITCOIN_HOME}/.cargo/registry/src/index.crates.io-6f17d22bba15001f/sysconf-0.3.4\" && patch -p1 < \"${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/freebsd/sysconf.patch\""
-            #osSudo "${BITCOIN_USER}" sh -c "cd \"${BITCOIN_ELECTRS_HOME}/src/new_index/\" && sed -i.bak -e s/Snappy/None/ db.rs && rm db.rs.bak"
-            #osSudo "${BITCOIN_USER}" sh -c "cd \"${BITCOIN_ELECTRS_HOME}/src/bin/\" && sed -i.bak -e 's/from_secs(5)/from_secs(1)/' electrs.rs && rm electrs.rs.bak"
+            SYSCONF_DIR=$(find "${BITCOIN_HOME}/.cargo/registry/src" -type d -name "sysconf-0.3.4" | head -n 1)
+            if [ -n "$SYSCONF_DIR" ]; then
+                osSudo "${BITCOIN_USER}" sh -c "cd \"$SYSCONF_DIR\" && patch -p1 < \"${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/freebsd/sysconf.patch\""
+            else
+                echo "Warning: Could not find sysconf-0.3.4 directory"
+            fi
         ;;
         Debian)
         ;;
