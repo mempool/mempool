@@ -446,6 +446,7 @@ FREEBSD_PKG+=(zsh sudo git screen curl wget calc neovim)
 FREEBSD_PKG+=(openssh-portable py311-pip rust llvm17 jq base64 libzmq4)
 FREEBSD_PKG+=(boost-libs autoconf automake gmake gcc13 libevent libtool pkgconf)
 FREEBSD_PKG+=(nginx rsync py311-certbot-nginx mariadb1011-server)
+FREEBSD_PKG+=(redis)
 FREEBSD_PKG+=(libepoll-shim)
 
 FREEBSD_UNFURL_PKG=()
@@ -1416,13 +1417,13 @@ if [ "${BITCOIN_ELECTRS_INSTALL}" = ON ];then
 
     case $OS in
         FreeBSD*)
-        echo "[*] Patching Bitcoin Electrs code for FreeBSD"
-        SYSCONF_DIR=$(find "${BITCOIN_HOME}/.cargo/registry/src" -type d -name "sysconf-0.3.4" | head -n 1)
-        if [ -n "$SYSCONF_DIR" ]; then
-        osSudo "${BITCOIN_USER}" sh -c "cd \"$SYSCONF_DIR\" && patch -p1 < \"${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/freebsd/sysconf.patch\""
-        else
-        echo "Warning: Could not find sysconf-0.3.4 directory"
-        fi
+            echo "[*] Patching Bitcoin Electrs code for FreeBSD"
+            SYSCONF_DIR=$(find "${BITCOIN_HOME}/.cargo/registry/src" -type d -name "sysconf-0.3.4" | head -n 1)
+            if [ -n "$SYSCONF_DIR" ]; then
+                osSudo "${BITCOIN_USER}" sh -c "cd \"$SYSCONF_DIR\" && patch -p1 < \"${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/freebsd/sysconf.patch\""
+            else
+                echo "Warning: Could not find sysconf-0.3.4 directory"
+            fi
         ;;
         Debian)
         ;;
@@ -1453,7 +1454,7 @@ if [ "${ELEMENTS_ELECTRS_INSTALL}" = ON ];then
     osSudo "${ELEMENTS_USER}" git config --global advice.detachedHead false
     osSudo "${ELEMENTS_USER}" git clone --branch "${ELEMENTS_ELECTRS_REPO_BRANCH}" "${ELEMENTS_ELECTRS_REPO_URL}" "${ELEMENTS_HOME}/${ELEMENTS_ELECTRS_REPO_NAME}"
 
-    echo "[*] Checking out Liquid Electrs ${ELEMENTS_ELECTRS_LATEST_RELEASE}"
+    echo "[*] Checking out LiquiFREEBSD_PKG+=(redis)d Electrs ${ELEMENTS_ELECTRS_LATEST_RELEASE}"
     osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_HOME}/${ELEMENTS_ELECTRS_REPO_NAME} && git checkout ${ELEMENTS_ELECTRS_LATEST_RELEASE}"
 
     echo "[*] Cloning Liquid Asset Registry repo from ${LIQUID_ASSET_REGISTRY_DB_URL}"
