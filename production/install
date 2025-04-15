@@ -1454,7 +1454,7 @@ if [ "${ELEMENTS_ELECTRS_INSTALL}" = ON ];then
     osSudo "${ELEMENTS_USER}" git config --global advice.detachedHead false
     osSudo "${ELEMENTS_USER}" git clone --branch "${ELEMENTS_ELECTRS_REPO_BRANCH}" "${ELEMENTS_ELECTRS_REPO_URL}" "${ELEMENTS_HOME}/${ELEMENTS_ELECTRS_REPO_NAME}"
 
-    echo "[*] Checking out LiquiFREEBSD_PKG+=(redis)d Electrs ${ELEMENTS_ELECTRS_LATEST_RELEASE}"
+    echo "[*] Checking out Liquid Electrs ${ELEMENTS_ELECTRS_LATEST_RELEASE}"
     osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_HOME}/${ELEMENTS_ELECTRS_REPO_NAME} && git checkout ${ELEMENTS_ELECTRS_LATEST_RELEASE}"
 
     echo "[*] Cloning Liquid Asset Registry repo from ${LIQUID_ASSET_REGISTRY_DB_URL}"
