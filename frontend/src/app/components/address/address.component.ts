@@ -164,6 +164,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.utxos = null;
           this.addressInfo = null;
           this.exampleChannel = null;
+          this.hasTapTree = false;
           document.body.scrollTo(0, 0);
           this.addressString = params.get('id') || '';
           if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}$/.test(this.addressString)) {
