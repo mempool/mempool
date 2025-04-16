@@ -59,19 +59,25 @@
                   <td class="sig-td">
                     <div class="sig-stack">
                       @if (tx['_sigs'][vindex].length === 0) {
-                        <span class="sig-key sig-no-lock" title="unsigned">
+                        <span class="sig sig-key sig-no-lock" title="unsigned">
                           <fa-icon [icon]="['fas', 'lock-open']" [fixedWidth]="true"></fa-icon>
                         </span>
                       } @else {
                         @for (sig of tx['_sigs'][vindex]; track sig.signature; let idx = $index) {
                           @if (idx < 10) {
-                            <span class="sig-key sighash-{{sig.sighash}}" (mouseenter)="showSigInfo(i, vindex, sig)" (mouseleave)="hideSigInfo()" [title]="sighashLabels[sig.sighash]">
+                            <span
+                              class="sig sig-key sighash-{{sig.sighash}}"
+                              (mouseenter)="showSigInfo(i, vindex, sig)"
+                              (mouseleave)="hideSigInfo()"
+                              [title]="sighashLabels[sig.sighash]"
+                              [class.hovered]="selectedSig && selectedSig.txIndex === i && selectedSig.vindex === vindex && selectedSig.sig === sig"
+                            >
                               <fa-icon [icon]="['fas', 'key']" [fixedWidth]="true"></fa-icon>
                             </span>
                           }
                         }
                         @if (tx['_sigs'][vindex].length > 10) {
-                          <span class="sig-key sig-overflow">
+                          <span class="sig sig-key sig-overflow">
                             +{{ tx['_sigs'][vindex].length - 10 }}
                           </span>
                         }
@@ -159,27 +165,47 @@
                       <tr *ngIf="vin.witness" class="vin-witness">
                         <td i18n="transactions-list.witness">Witness</td>
                         <td style="text-align: left;">
-                          <ng-container *ngFor="let witness of vin.witness; index as i">
+                          <ng-container *ngFor="let witness of vin.witness; index as windex">
                             <p class="witness-item">
+                              <ng-container *ngIf="signatures && tx['_sigmap'][witness] as sigInfo">
+                                <span class="sig sig-key sig-inline sighash-{{sigInfo.sig.sighash}}"
+                                      [class.hovered]="selectedSig && selectedSig.txIndex === i && selectedSig.vindex === vindex && selectedSig.sig === sigInfo.sig"
+                                      (mouseenter)="showSigInfo(i, vindex, sigInfo.sig)" 
+                                      (mouseleave)="hideSigInfo()" 
+                                      [title]="sighashLabels[sigInfo.sig.sighash]">
+                                  <fa-icon [icon]="['fas', 'key']" [fixedWidth]="true"></fa-icon>
+                                </span>
+                              </ng-container>
                               @if (witness.length > 1000) {
-                                @if (!showFullWitness[vindex][i]) {
+                                @if (!showFullWitness[vindex][windex]) {
                                   {{ witness | slice:0:1000 }}
                                 } @else {
                                   {{ witness }}
                                 }
                               } @else if (witness) {
-                                {{ witness }}
+                                <ng-container *ngIf="signatures && tx['_sigmap'][witness]?.sig.sighash !== 0 && tx['_sigmap'][witness] as sigInfo; else plainSig">
+                                  <span class="witness">
+                                    {{witness.slice(0, -2)}}<span class="sig sighash-{{sigInfo.sig.sighash}}" 
+                                          [class.hovered]="selectedSig && selectedSig.txIndex === i && selectedSig.vindex === vindex && selectedSig.sig === sigInfo.sig"
+                                          (mouseenter)="showSigInfo(i, vindex, sigInfo.sig)" 
+                                          (mouseleave)="hideSigInfo()" 
+                                          [title]="sighashLabels[sigInfo.sig.sighash]">{{witness.slice(-2)}}</span>
+                                  </span>
+                                </ng-container>
+                                <ng-template #plainSig>
+                                  {{ witness }}
+                                </ng-template>
                               } @else {
                                 &lt;empty&gt;
                               }
                             </p>
                             @if (witness.length > 1000) {
                               <div style="display: flex;">
-                                @if (!showFullWitness[vindex][i]) {
+                                @if (!showFullWitness[vindex][windex]) {
                                   <span>...</span>
                                 }
-                                <label class="btn btn-sm btn-primary mt-2" (click)="toggleShowFullWitness(vindex, i)" style="margin-left: auto;">
-                                  @if (!showFullWitness[vindex][i]) {
+                                <label class="btn btn-sm btn-primary mt-2" (click)="toggleShowFullWitness(vindex, windex)" style="margin-left: auto;">
+                                  @if (!showFullWitness[vindex][windex]) {
                                     <span i18n="show-all">Show all</span>
                                   } @else {
                                     <span i18n="show-less">Show less</span>

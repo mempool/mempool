@@ -295,6 +295,12 @@ export class TransactionsListComponent implements OnInit, OnChanges {
 
           // process signature data
           tx['_sigs'] = tx.vin.map(vin => processInputSignatures(vin));
+          tx['_sigmap'] = tx['_sigs'].reduce((map, sigs, vindex) => {
+            sigs.forEach(sig => {
+              map[sig.signature] = { sig, vindex };
+            });
+            return map;
+          }, {});
         }
 
         tx.largeInput = tx.largeInput || tx.vin.some(vin => (vin?.prevout?.value > 1000000000));

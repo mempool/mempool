@@ -61,63 +61,69 @@
 	}
 }
 
-.sig-key {
-	position: absolute;
-	top: 0;
-	left: 0;
+.sig {
 	cursor: pointer;
-	transition: transform 0.2s ease;
-	pointer-events: none;
-	// opacity: 0.8;
+	
 
 	&.sighash-0 {
-		--keycolor: var(--green);
+		--sigColor: var(--green);
 	}
 	&.sighash-1 {
-		--keycolor: var(--green);
+		--sigColor: var(--green);
 	}
 	&.sighash-2 {
-		--keycolor: gold;
+		--sigColor: gold;
 	}
 	&.sighash-3 {
-		--keycolor: cornflowerblue;
+		--sigColor: cornflowerblue;
 	}
 	&.sighash-129 {
-		--keycolor: darkviolet;
+		--sigColor: darkviolet;
 	}
 	&.sighash-130 {
-		--keycolor: darkorange;
+		--sigColor: darkorange;
 	}
 	&.sighash-131 {
-		--keycolor: var(--pink);
+		--sigColor: var(--pink);
 	}
 	&.sig-no-lock {
-		--keycolor: var(--red);
+		--sigColor: var(--red);
 	}
-	color: var(--keycolor);
+	color: var(--sigColor);
 
-	@for $i from 1 through 3 {
+	@for $i from 1 through 10 {
 		&:nth-child(#{$i}) {
 			transform: translate(#{($i - 1) * 3}px, #{($i - 1) * 3}px);
-			color: color-mix(in srgb, var(--keycolor) #{100 - ($i - 1) * 20} + '%', white);
+			color: color-mix(in srgb, var(--sigColor) #{100 - ($i - 1) * 10} + '%', black);
 			z-index: #{10 - $i};
 		}
 	}
 	@for $i from 4 through 10 {
 		&:nth-child(#{$i}) {
 			transform: translate(9px, 9px);
-			color: color-mix(in srgb, var(--keycolor) 60%, white);
-			z-index: #{10 - $i};
 		}
 	}
 
-	&:hover {
-		// opacity: 1;
-		color: color-mix(in srgb, var(--keycolor) 80%, black);
+	&:hover, &.hovered {
+		color: color-mix(in srgb, var(--sigColor) 80%, white);
 	}
 
 	::ng-deep svg path {
 		pointer-events: auto;
+	}
+}
+
+.sig-key {
+	position: absolute;
+	top: 0;
+	left: 0;
+	transition: transform 0.2s ease;
+	pointer-events: none;
+
+	&.sig-inline {
+		position: relative;
+		pointer-events: auto;
+		margin-right: -5px;
 	}
 }
 
