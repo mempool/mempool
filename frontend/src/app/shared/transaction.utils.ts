@@ -224,9 +224,16 @@ export function processInputSignatures(vin: Vin): SigInfo[] {
     case 'v0_p2wsh':
       signatures = extractDERSignaturesWitness(vin.witness || []);
       break;
-    case 'v1_p2tr':
-      signatures = extractSchnorrSignatures(vin.witness.slice(0, vin.witness.length - ((vin.witness.length > 1 && vin.witness[vin.witness.length - 1].startsWith('50')) ? 1 : 0)));
-      break;
+    case 'v1_p2tr': {
+      const hasAnnex = vin.witness[vin.witness.length - 1].startsWith('50');
+      const isKeyspend = vin.witness.length === (hasAnnex ? 2 : 1);
+      if (isKeyspend) {
+        signatures = extractSchnorrSignatures(vin.witness);
+      } else {
+        const stackItems = vin.witness.slice(0, hasAnnex ? -3 : -2);
+        signatures = extractSchnorrSignatures(stackItems);
+      }
+    } break;
     default:
       // non-signed input types?
       break;
