@@ -25,10 +25,29 @@ li.nav-item {
   margin: auto 10px;
   padding-left: 10px;
   padding-right: 10px;
+  align-content: center;
+  .svg-wrapper {
+    height: 19.2px;
+    width: auto;
+    margin-bottom: 8px;
+  }
+  @media (max-width: 991px) {
+    margin: 0;
+    padding-left: 8px;
+    padding-right: 8px;
+    .svg-wrapper {
+      height: 25.6px;
+      width: auto;
+      margin-bottom: 0;
+    }
+    .nav-link {
+      padding: 12px 0;
+    }
+  }
   @media (max-width: 429px) {
-    margin: auto 5px;
-    padding-left: 6px;
-    padding-right: 6px;
+    margin: auto 2px;
+    padding-left: 12px;
+    padding-right: 12px;
   }
 }
 
@@ -54,9 +73,13 @@ li.nav-item {
   box-shadow: 0px 0px 15px 0px #000;
   flex-direction: row;
   left: 0;
-  justify-content: center;
+  justify-content: space-between;
   position: fixed;
   width: 100%;
+  li {
+    flex-grow: 1;
+    text-align: center;
+  }
   @media (min-width: 992px) {
     background: transparent;
     box-shadow: none;
