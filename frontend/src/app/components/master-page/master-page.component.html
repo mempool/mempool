@@ -79,34 +79,49 @@
     <ul class="navbar-nav {{ network.val }}">
 
       <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" id="btn-home">
-        <a class="nav-link" [routerLink]="['/' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'tachometer-alt']" [fixedWidth]="true" i18n-title="master-page.dashboard" title="Dashboard"></fa-icon></a>
+        <a class="nav-link" [routerLink]="['/' | relativeUrl]" (click)="collapse()">
+          <div class="svg-wrapper"><app-svg-images name="nav-tachometer" width="21.59" height="100%"></app-svg-images></div>
+        </a>
       </li>
       <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" id="btn-home" *ngIf="network.val === '' && stateService.env.ACCELERATOR">
         <a class="nav-link" [routerLink]="['/acceleration' | relativeUrl]" (click)="collapse()">
-          <fa-icon [icon]="['fas', 'rocket']" [fixedWidth]="true" i18n-title="master-page.accelerator-dashboard" title="Accelerator Dashboard"></fa-icon>
+          <div class="svg-wrapper"><app-svg-images name="nav-rocket" width="21.59" height="100%"></app-svg-images></div>
         </a>
       </li>
       <li class="nav-item mining" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" id="btn-pools" *ngIf="stateService.env.MINING_DASHBOARD">
-        <a class="nav-link" [routerLink]="['/mining' | relativeUrl]" (click)="collapse()"><div class="svg-wrapper"><app-svg-images name="pickaxe" width="21.59" height="100%"></app-svg-images></div></a>
+        <a class="nav-link" [routerLink]="['/mining' | relativeUrl]" (click)="collapse()">
+          <div class="svg-wrapper"><app-svg-images name="nav-pickaxe" width="21.59" height="100%"></app-svg-images></div>
+        </a>
       </li>
       <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" id="btn-lightning" *ngIf="stateService.networkSupportsLightning()">
-        <a class="nav-link" [routerLink]="['/lightning' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'bolt']" [fixedWidth]="true" i18n-title="master-page.lightning" title="Lightning Explorer"></fa-icon>
+        <a class="nav-link" [routerLink]="['/lightning' | relativeUrl]" (click)="collapse()">
+          <div class="svg-wrapper"><app-svg-images name="nav-bolt" width="21.59" height="100%"></app-svg-images></div>
         </a>
       </li>
       <li class="nav-item" routerLinkActive="active" id="btn-blocks" *ngIf="!stateService.env.MINING_DASHBOARD">
-        <a class="nav-link" [routerLink]="['/blocks' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'cubes']" [fixedWidth]="true" i18n-title="master-page.blocks" title="Blocks"></fa-icon></a>
+        <a class="nav-link" [routerLink]="['/blocks' | relativeUrl]" (click)="collapse()">
+          <div class="svg-wrapper"><app-svg-images name="nav-cubes" width="21.59" height="100%"></app-svg-images></div>
+        </a>
       </li>
       <li class="nav-item" routerLinkActive="active" id="btn-graphs">
-        <a class="nav-link" [routerLink]="['/graphs' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'chart-area']" [fixedWidth]="true" i18n-title="master-page.graphs" title="Graphs"></fa-icon></a>
+        <a class="nav-link" [routerLink]="['/graphs' | relativeUrl]" (click)="collapse()">
+          <div class="svg-wrapper"><app-svg-images name="nav-chart-area" width="21.59" height="100%"></app-svg-images></div>
+        </a>
       </li>
       <li class="nav-item" routerLinkActive="active" id="btn-faucet" *ngIf="stateService.isMempoolSpaceBuild && stateService.env.OFFICIAL_MEMPOOL_SPACE && stateService.network === 'testnet4'">
-        <a class="nav-link" [routerLink]="['/faucet' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'faucet-drip']" [fixedWidth]="true" i18n-title="master-page.faucet" title="Faucet"></fa-icon></a>
+        <a class="nav-link" [routerLink]="['/faucet' | relativeUrl]" (click)="collapse()">
+          <div class="svg-wrapper"><app-svg-images name="nav-faucet-drip" width="21.59" height="100%"></app-svg-images></div>
+        </a>
       </li>
       <li class="nav-item" routerLinkActive="active" id="btn-docs">
-        <a class="nav-link" [routerLink]="['/docs' | relativeUrl ]" (click)="collapse()"><fa-icon [icon]="['fas', 'book']" [fixedWidth]="true" i18n-title="documentation.title" title="Documentation"></fa-icon></a>
+        <a class="nav-link" [routerLink]="['/docs' | relativeUrl ]" (click)="collapse()">
+          <div class="svg-wrapper"><app-svg-images name="nav-book" width="21.59" height="100%"></app-svg-images></div>
+        </a>
       </li>
       <li class="nav-item" routerLinkActive="active" id="btn-about">
-        <a class="nav-link" [routerLink]="['/about']" (click)="collapse()"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true" i18n-title="master-page.about" title="About"></fa-icon></a>
+        <a class="nav-link" [routerLink]="['/about']" (click)="collapse()">
+          <div class="svg-wrapper"><app-svg-images name="nav-info-circle" width="21.59" height="100%"></app-svg-images></div>
+        </a>
       </li>
     </ul>
     <app-search-form [hamburgerOpen]="enterpriseInfo === null && user != null" class="search-form-container" location="top" (searchTriggered)="collapse()"></app-search-form>

@@ -27,20 +27,24 @@ li.nav-item {
   padding-left: 10px;
   padding-right: 10px;
   align-content: center;
-  &.mining .svg-wrapper {
+  .svg-wrapper {
     height: 19.2px;
     width: auto;
     margin-bottom: 8px;
   }
-  @media (max-width: 992px) {
+  @media (max-width: 991px) {
     margin: 0;
     padding-left: 8px;
     padding-right: 8px;
-    &.mining .svg-wrapper {
+    .svg-wrapper {
       height: 25.6px;
       width: auto;
       margin-bottom: 0;
     }
+    .nav-link {
+      padding: 12px 0;
+    }
+
   }
   @media (max-width: 429px) {
     margin: 0;
@@ -184,7 +188,7 @@ nav {
   align-items: center;
 }
 
-@media (min-width: 992px) {
+@media (min-width: 991px) {
   .search-form-container {
     width: 100%;
     max-width: 500px;
