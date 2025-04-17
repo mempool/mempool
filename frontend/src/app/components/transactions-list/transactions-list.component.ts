@@ -15,7 +15,7 @@ import { OrdApiService } from '@app/services/ord-api.service';
 import { Inscription } from '@app/shared/ord/inscription.utils';
 import { Etching, Runestone } from '@app/shared/ord/rune.utils';
 import { ADDRESS_SIMILARITY_THRESHOLD, AddressMatch, AddressSimilarity, AddressType, AddressTypeInfo, checkedCompareAddressStrings, detectAddressType } from '@app/shared/address-utils';
-import { processInputSignatures, Sighash, SigInfo } from '../../shared/transaction.utils';
+import { processInputSignatures, Sighash, SigInfo, SighashLabels } from '@app/shared/transaction.utils';
 
 @Component({
   selector: 'app-transactions-list',
@@ -62,15 +62,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
 
   selectedSig: { txIndex: number, vindex: number, sig: SigInfo } | null = null;
   sigHighlights: { vin: boolean[], vout: boolean[] } = { vin: [], vout: [] };
-  sighashLabels: { [sighash: string]: string } = {
-    '0': 'SIGHASH_DEFAULT',
-    '1': 'SIGHASH_ALL',
-    '2': 'SIGHASH_NONE',
-    '3': 'SIGHASH_SINGLE',
-    '129': 'SIGHASH_ALL | ACP',
-    '130': 'SIGHASH_NONE | ACP',
-    '131': 'SIGHASH_SINGLE | ACP',
-  };
+  sighashLabels = SighashLabels;
 
   constructor(
     public stateService: StateService,

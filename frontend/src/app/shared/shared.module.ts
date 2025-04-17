@@ -18,6 +18,7 @@ import { Hex2asciiPipe } from '@app/shared/pipes/hex2ascii/hex2ascii.pipe';
 import { Decimal2HexPipe } from '@app/shared/pipes/decimal2hex/decimal2hex.pipe';
 import { FeeRoundingPipe } from '@app/shared/pipes/fee-rounding/fee-rounding.pipe';
 import { AsmStylerPipe } from '@app/shared/pipes/asm-styler/asm-styler.pipe';
+import { AsmComponent } from '@app/shared/components/asm/asm.component';
 import { AbsolutePipe } from '@app/shared/pipes/absolute/absolute.pipe';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { ScriptpubkeyTypePipe } from '@app/shared/pipes/scriptpubkey-type-pipe/scriptpubkey-type.pipe';
@@ -147,6 +148,7 @@ import { GithubLogin } from '../components/github-login.component/github-login.c
     NoSanitizePipe,
     Hex2asciiPipe,
     AsmStylerPipe,
+    AsmComponent,
     AbsolutePipe,
     BytesPipe,
     VbytesPipe,

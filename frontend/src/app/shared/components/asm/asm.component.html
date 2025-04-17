@@ -1,0 +1,30 @@
+<div class="asm">
+  @for (instruction of instructions; track instruction.instruction) {
+    <span [class]='opcodeStyles.get(instruction.instruction)'>OP_{{instruction.instruction}}</span>
+    @for (arg of instruction.args; track arg) {
+      <ng-container *ngIf="annotations.signatures[arg] as sigInfo; else plainArg">
+        <span class="sig sig-key sig-inline sighash-{{sigInfo.sig.sighash}}"
+              [class.hovered]="annotations.selectedSig && annotations.selectedSig === sigInfo.sig"
+              (mouseenter)="doShowSigInfo(sigInfo.sig)"
+              (mouseleave)="doHideSigInfo()"
+              [title]="sighashLabels[sigInfo.sig.sighash]">
+          <fa-icon [icon]="['fas', 'key']" [fixedWidth]="true"></fa-icon>
+        </span>
+        <ng-container *ngIf="sigInfo.sig.sighash !== 0; else plainSig">
+            {{arg.slice(0, -2)}}<span class="sig sighash-{{sigInfo.sig.sighash}}"
+                [class.hovered]="annotations.selectedSig && annotations.selectedSig === sigInfo.sig"
+                (mouseenter)="doShowSigInfo(sigInfo.sig)"
+                (mouseleave)="doHideSigInfo()"
+                [title]="sighashLabels[sigInfo.sig.sighash]">{{arg.slice(-2)}}</span>
+        </ng-container>
+        <ng-template #plainSig>
+          {{ arg }}
+        </ng-template>
+      </ng-container>
+      <ng-template #plainArg>
+        {{ arg }}
+      </ng-template>
+    }
+    <br>
+  }
+</div>

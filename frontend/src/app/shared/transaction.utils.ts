@@ -104,6 +104,16 @@ export type SighashValue =
   (SighashFlag.SINGLE & SighashFlag.ANYONECANPAY) |
   (SighashFlag.ALL & SighashFlag.NONE);
 
+export const SighashLabels: Record<number, string> = {
+  '0': 'SIGHASH_DEFAULT',
+  '1': 'SIGHASH_ALL',
+  '2': 'SIGHASH_NONE',
+  '3': 'SIGHASH_SINGLE',
+  '129': 'SIGHASH_ALL | ACP',
+  '130': 'SIGHASH_NONE | ACP',
+  '131': 'SIGHASH_SINGLE | ACP',
+};
+
 export interface SigInfo {
   signature: string;
   sighash: SighashValue;
@@ -172,7 +182,7 @@ export function extractDERSignaturesASM(script_asm: string): SigInfo[] {
       if (isDERSig(hexData)) {
         const sighash = decodeSighashFlag(parseInt(hexData.slice(-2), 16));
         signatures.push({
-          signature: hexData.slice(0, -2), // Remove sighash byte
+          signature: hexData,
           sighash
         });
       }

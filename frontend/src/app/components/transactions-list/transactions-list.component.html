@@ -155,7 +155,14 @@
                       <ng-template [ngIf]="vin.scriptsig">
                         <tr>
                           <td i18n="transactions-list.scriptsig.asm|ScriptSig (ASM)">ScriptSig (ASM)</td>
-                          <td style="text-align: left;" [innerHTML]="vin.scriptsig_asm | asmStyler"></td>
+                          <td style="text-align: left;">
+                            <app-asm
+                              [asm]="vin.scriptsig_asm"
+                              [annotations]="{ signatures: tx['_sigmap'], selectedSig: selectedSig?.txIndex === i && selectedSig?.vindex === vindex ? selectedSig.sig : null }"
+                              (showSigInfo)="showSigInfo(i, vindex, $event)"
+                              (hideSigInfo)="hideSigInfo()"
+                            ></app-asm>
+                          </td>
                         </tr>
                         <tr>
                           <td i18n="transactions-list.scriptsig.hex|ScriptSig (HEX)">ScriptSig (HEX)</td>
