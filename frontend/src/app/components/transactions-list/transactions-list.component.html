@@ -63,8 +63,8 @@
                           <fa-icon [icon]="['fas', 'lock-open']" [fixedWidth]="true"></fa-icon>
                         </span>
                       } @else {
-                        @for (sig of tx['_sigs'][vindex]; track sig.signature; let idx = $index) {
-                          @if (idx < 10) {
+                        @for (sig of tx['_sigs'][vindex].slice(0, 7); track sig.signature; let idx = $index) {
+                          @if (idx < 7) {
                             <span
                               class="sig sig-key sighash-{{sig.sighash}}"
                               (mouseenter)="showSigInfo(i, vindex, sig)"
@@ -76,9 +76,9 @@
                             </span>
                           }
                         }
-                        @if (tx['_sigs'][vindex].length > 10) {
+                        @if (tx['_sigs'][vindex].length > 7) {
                           <span class="sig sig-key sig-overflow">
-                            +{{ tx['_sigs'][vindex].length - 10 }}
+                            +{{ tx['_sigs'][vindex].length - 7 }}
                           </span>
                         }
                       }

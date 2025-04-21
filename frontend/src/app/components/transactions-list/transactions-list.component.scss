@@ -52,11 +52,16 @@
 .sig-td:hover {
 	.sig-stack {	
 		.sig-key {
-			@for $i from 1 through 10 {
+			@for $i from 1 through 8 {
 				&:nth-child(#{$i}) {
 					transform: translate(#{($i - 1) * 6}px, #{($i - 1) * 6}px);
 				}
 			}
+		}
+
+		.sig-overflow {
+			opacity: 1;
+			transform: translate(30px, 40px);
 		}
 	}
 }
@@ -64,6 +69,9 @@
 .sig {
 	cursor: pointer;
 	
+	&.sig-overflow {
+		opacity: 0;
+	}
 
 	&.sighash-0 {
 		--sigColor: var(--green);
@@ -91,16 +99,18 @@
 	}
 	color: var(--sigColor);
 
-	@for $i from 1 through 10 {
-		&:nth-child(#{$i}) {
-			transform: translate(#{($i - 1) * 3}px, #{($i - 1) * 3}px);
-			color: color-mix(in srgb, var(--sigColor) #{100 - ($i - 1) * 10} + '%', black);
-			z-index: #{10 - $i};
+	&.sig-key {
+		@for $i from 1 through 8 {
+			&:nth-child(#{$i}) {
+				transform: translate(#{($i - 1) * 3}px, #{($i - 1) * 3}px);
+				color: color-mix(in srgb, var(--sigColor) #{100 - ($i - 1) * 10} + '%', black);
+				z-index: #{10 - $i};
+			}
 		}
-	}
-	@for $i from 4 through 10 {
-		&:nth-child(#{$i}) {
-			transform: translate(9px, 9px);
+		@for $i from 4 through 8 {
+			&:nth-child(#{$i}) {
+				transform: translate(9px, 9px);
+			}
 		}
 	}
 
@@ -131,14 +141,13 @@
 	// background-color: var(--tertiary);
 	color: white;
 	border-radius: 50%;
-	width: 20px;
-	height: 20px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
 	font-size: 10px;
 	font-weight: bold;
-	z-index: 1;
+	padding: 5px;
+	margin-left: 10px;
+	margin-right: 10px;
+	display: block;
+	transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 .mobile-bottomcol {
