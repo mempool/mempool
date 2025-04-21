@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { NgbCollapseModule, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faCogs, faDatabase, faExchangeAlt, faInfoCircle,
-  faLink, faList, faSearch, faCaretUp, faCaretDown, faThList, faTint, faClock, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
+  faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faClock, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
   faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft,
   faFastForward, faWallet, faUserClock, faWrench, faUserFriends, faQuestionCircle, faHistory, faSignOutAlt, faKey, faSuitcase, faIdCardAlt, faNetworkWired, faUserCheck,
-  faCircleCheck, faUserCircle, faCheck, faScaleBalanced, faHourglassStart, faHourglassHalf, faHourglassEnd, faWandMagicSparkles, faTimeline,
+  faCircleCheck, faUserCircle, faCheck, faRocket, faScaleBalanced, faHourglassStart, faHourglassHalf, faHourglassEnd, faWandMagicSparkles, faTimeline,
   faCircleXmark, faCalendarCheck, faMoneyBillTrendUp, faRobot, faShareNodes, faCreditCard, faMicroscope, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MenuComponent } from '@components/menu/menu.component';
@@ -398,6 +398,7 @@ export class SharedModule {
   constructor(library: FaIconLibrary) {
     library.addIcons(faInfoCircle);
     library.addIcons(faClock);
+    library.addIcons(faTachometerAlt);
     library.addIcons(faCogs);
     library.addIcons(faThList);
     library.addIcons(faList);
@@ -446,6 +447,7 @@ export class SharedModule {
     library.addIcons(faCircleCheck);
     library.addIcons(faUserCircle);
     library.addIcons(faCheck);
+    library.addIcons(faRocket);
     library.addIcons(faScaleBalanced);
     library.addIcons(faHourglassStart);
     library.addIcons(faHourglassHalf);
