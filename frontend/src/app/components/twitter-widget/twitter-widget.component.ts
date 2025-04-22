@@ -37,7 +37,7 @@ export class TwitterWidgetComponent implements OnChanges {
     if (!this.handle) {
       return;
     }
-    let url = `/twidget/${this.handle}`;
+    let url = `/api/v1/services/x/${this.handle}`;
     this.iframeSrc = this.sanitizer.bypassSecurityTrustResourceUrl(this.sanitizer.sanitize(SecurityContext.URL, url));
   }
 
