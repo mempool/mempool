@@ -2,11 +2,11 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbCollapseModule, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faDatabase, faExchangeAlt, faInfoCircle,
+import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faCogs, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faClock, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
-  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft,
+  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft,
   faFastForward, faWallet, faUserClock, faWrench, faUserFriends, faQuestionCircle, faHistory, faSignOutAlt, faKey, faSuitcase, faIdCardAlt, faNetworkWired, faUserCheck,
-  faCircleCheck, faUserCircle, faCheck, faRocket, faScaleBalanced, faHourglassStart, faHourglassHalf, faHourglassEnd, faWandMagicSparkles, faFaucetDrip, faTimeline,
+  faCircleCheck, faUserCircle, faCheck, faRocket, faScaleBalanced, faHourglassStart, faHourglassHalf, faHourglassEnd, faWandMagicSparkles, faTimeline,
   faCircleXmark, faCalendarCheck, faMoneyBillTrendUp, faRobot, faShareNodes, faCreditCard, faMicroscope, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MenuComponent } from '@components/menu/menu.component';
@@ -397,14 +397,11 @@ import { GithubLogin } from '../components/github-login.component/github-login.c
 export class SharedModule {
   constructor(library: FaIconLibrary) {
     library.addIcons(faInfoCircle);
-    library.addIcons(faChartArea);
     library.addIcons(faClock);
     library.addIcons(faTachometerAlt);
-    library.addIcons(faCubes);
     library.addIcons(faCogs);
     library.addIcons(faThList);
     library.addIcons(faList);
-    library.addIcons(faTachometerAlt);
     library.addIcons(faDatabase);
     library.addIcons(faSearch);
     library.addIcons(faLink);
@@ -428,7 +425,6 @@ export class SharedModule {
     library.addIcons(faCaretDown);
     library.addIcons(faAngleRight);
     library.addIcons(faAngleLeft);
-    library.addIcons(faBook);
     library.addIcons(faListUl);
     library.addIcons(faDownload);
     library.addIcons(faQrcode);
@@ -457,7 +453,6 @@ export class SharedModule {
     library.addIcons(faHourglassHalf);
     library.addIcons(faHourglassEnd);
     library.addIcons(faWandMagicSparkles);
-    library.addIcons(faFaucetDrip);
     library.addIcons(faTimeline);
     library.addIcons(faCircleXmark);
     library.addIcons(faCalendarCheck);
