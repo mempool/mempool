@@ -38,6 +38,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
   @Input() walletStats: Record<string, WalletStats>;
   @Input() walletSummaries$: Observable<Record<string, AddressTxSummary[]>>;
   @Input() selectedWallets: Record<string, boolean> = {};
+  @Input() wallets: string[] = [];
   @Input() height: number = 400;
   @Input() right: number | string = 10;
   @Input() left: number | string = 70;
@@ -66,11 +67,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
 
   // Color palette for multiple wallets
   colorPalette = [
-    '#2196F3',
-    '#9C27B0',
-    '#F44336',
-    '#FDD835',
-    '#4CAF50'
+    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40',
   ];
 
   constructor(
@@ -174,7 +171,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
 
   prepareChartOptions(): void {
     // Prepare legend data
-    const legendData = Object.keys(this.walletData).map(walletId => ({
+    const legendData = this.wallets.map(walletId => ({
       name: walletId,
       inactiveColor: 'var(--grey)',
       textStyle: {
@@ -187,12 +184,15 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
     let maxValue = 0;
     let minValue = Number.MAX_SAFE_INTEGER;
 
-    Object.values(this.walletData).forEach(data => {
-      data.forEach(point => {
-        const value = point[1] || (point.value && point.value[1]) || 0;
-        maxValue = Math.max(maxValue, Math.abs(value));
-        minValue = Math.min(minValue, Math.abs(value));
-      });
+    this.wallets.forEach(walletId => {
+      const data = this.walletData[walletId];
+      if (data) {
+        data.forEach(point => {
+          const value = point[1] || (point.value && point.value[1]) || 0;
+          maxValue = Math.max(maxValue, Math.abs(value));
+          minValue = Math.min(minValue, Math.abs(value));
+        });
+      }
     });
 
     if (minValue === Number.MAX_SAFE_INTEGER) {
@@ -200,13 +200,13 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     // Prepare series data
-    const series: SeriesOption[] = Object.entries(this.walletData).map(([walletId, data], index) => ({
+    const series: SeriesOption[] = this.wallets.map((walletId, index) => ({
       name: walletId,
       yAxisIndex: 0,
       showSymbol: false,
       symbol: 'circle',
       symbolSize: 8,
-      data: data,
+      data: this.walletData[walletId] || [],
       areaStyle: undefined,
       triggerLineEvent: true,
       type: 'line',

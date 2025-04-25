@@ -30,6 +30,16 @@
 
 .skeleton-loader {
   max-width: 100%;
+  background-color: var(--secondary);
+  border-radius: 3px;
+}
+
+.skeleton-loader-transactions {
+  max-width: 250px;
+  position: relative;
+  top: 2px;
+  margin-bottom: -3px;
+  height: 18px;
 }
 
 .more-padding {
@@ -74,5 +84,71 @@
   }
   .less-padding {
     padding: 20px 20px;
+  }
+}
+
+.treasury-leaderboard-table {
+  width: 100%;
+  text-align: left;
+  table-layout: fixed;
+  tr, td, th {
+    border: 0px;
+    padding-top: 0.65rem !important;
+    padding-bottom: 0.7rem !important;
+  }
+  td {
+    overflow: hidden;
+  }
+  .clickable-row {
+    cursor: pointer;
+    &:hover {
+      background-color: var(--secondary);
+    }
+  }
+  .table-cell-position {
+    width: 10%;
+    text-align: center;
+    .position-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .color-swatch {
+        width: 16px;
+        height: 16px;
+        border-radius: 3px;
+        display: inline-block;
+      }
+      .position-number {
+        min-width: 20px;
+      }
+    }
+  }
+  .table-cell-name {
+    width: 40%;
+    text-align: left;
+  }
+  .table-cell-balance {
+    width: 25%;
+    text-align: right;
+  }
+  .table-cell-value {
+    width: 25%;
+    text-align: right;
+  }
+}
+
+.position-container {
+  .skeleton-loader {
+    &.color-swatch {
+      width: 16px;
+      height: 16px;
+      min-width: 16px;
+    }
+    &.position-number {
+      width: 20px;
+      height: 18px;
+      min-width: 20px;
+      margin-left: 8px;
+    }
   }
 }

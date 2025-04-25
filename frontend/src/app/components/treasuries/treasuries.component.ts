@@ -6,6 +6,7 @@ import { StateService } from '@app/services/state.service';
 import { catchError, map, scan, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 import { WalletStats } from '@app/shared/wallet-stats';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-treasuries',
@@ -19,6 +20,7 @@ export class TreasuriesComponent implements OnInit, OnDestroy {
   isLoading = true;
   error: any;
   walletSubscriptions: Subscription[] = [];
+  currentSortedWallets: string[] = [];
 
   // Individual wallet data
   walletObservables: Record<string, Observable<Record<string, any>>> = {};
@@ -26,11 +28,13 @@ export class TreasuriesComponent implements OnInit, OnDestroy {
   individualWalletSummaries: Record<string, Observable<AddressTxSummary[]>> = {};
   walletStatsObservables: Record<string, Observable<WalletStats>> = {};
   walletStats$: Observable<Record<string, WalletStats>>;
+  sortedWallets$: Observable<string[]>;
 
   constructor(
     private apiService: ApiService,
     private stateService: StateService,
     private electrsApiService: ElectrsApiService,
+    private router: Router,
   ) {}
 
   ngOnInit() {
@@ -227,6 +231,25 @@ export class TreasuriesComponent implements OnInit, OnDestroy {
         return of({});
       })
     );
+
+    this.sortedWallets$ = this.walletStats$.pipe(
+      map(walletStats => {
+        return [...this.wallets].sort((a, b) => {
+          const balanceA = walletStats[a]?.balance || 0;
+          const balanceB = walletStats[b]?.balance || 0;
+          return balanceB - balanceA;
+        });
+      }),
+      tap(sortedWallets => {
+        // Update selectedWallets to maintain the same order
+        const newSelectedWallets: Record<string, boolean> = {};
+        sortedWallets.forEach(wallet => {
+          newSelectedWallets[wallet] = this.selectedWallets[wallet] ?? true;
+        });
+        this.selectedWallets = newSelectedWallets;
+        this.currentSortedWallets = sortedWallets;
+      })
+    );
   }
 
   private deduplicateWalletTransactions(walletTransactions: AddressTxSummary[]): AddressTxSummary[] {
@@ -244,6 +267,19 @@ export class TreasuriesComponent implements OnInit, OnDestroy {
       }
       return b.height - a.height;
     });
+  }
+
+  getWalletColor(wallet: string): string {
+    // Use a consistent color for each wallet based on its position in the sorted list
+    const colors = [
+      '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40',
+    ];
+    const index = this.currentSortedWallets.indexOf(wallet);
+    return colors[index % colors.length];
+  }
+
+  navigateToWallet(wallet: string): void {
+    this.router.navigate(['/wallet', wallet]);
   }
 
   ngOnDestroy() {
