@@ -355,6 +355,28 @@ export const networks = {
         routes: routes.lightning.routes,
       }
     }
+  },
+  strategy: {
+    networkName: 'Strategy',
+    title: 'Strategy | The world\'s first and largest Bitcoin Treasury Company',
+    description: 'The world\'s first and largest Bitcoin Treasury Company',
+    fallbackImg: '/resources/strategy/strategy-preview.jpg',
+    routes: { // only dynamic routes supported
+      block: routes.block,
+      address: routes.address,
+      wallet: routes.wallet,
+      tx: routes.tx,
+      mining: {
+        title: "Mining",
+        routes: {
+          pool: routes.mining.routes.pool,
+        }
+      },
+      lightning: {
+        title: "Lightning",
+        routes: routes.lightning.routes,
+      }
+    }
   }
 };
 
