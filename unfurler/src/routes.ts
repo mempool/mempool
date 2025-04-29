@@ -377,6 +377,28 @@ export const networks = {
         routes: routes.lightning.routes,
       }
     }
+  },
+  generic: {
+    networkName: null,
+    title: null,
+    description: null,
+    fallbackImg: null,
+    routes: { // only dynamic routes supported
+      block: routes.block,
+      address: routes.address,
+      wallet: routes.wallet,
+      tx: routes.tx,
+      mining: {
+        title: "Mining",
+        routes: {
+          pool: routes.mining.routes.pool,
+        }
+      },
+      lightning: {
+        title: "Lightning",
+        routes: routes.lightning.routes,
+      }
+    }
   }
 };
 
@@ -398,7 +420,7 @@ export function matchRoute(network: string, path: string, matchFor: string = 're
     match.networkMode = parts.shift() || 'mainnet';
   }
 
-  let route = networks[network] || networks.bitcoin;
+  let route = config.ENTERPRISE.ENABLED ? networks.generic : (networks[network] || networks.bitcoin);
   match.fallbackImg = route.fallbackImg;
   match.title = route.title;
   match.description = route.description;

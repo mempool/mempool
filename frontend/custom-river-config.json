@@ -1,4 +1,7 @@
 {
+  "domains": [
+    "river.mempool.space"
+  ],
   "theme": "wiz",
   "enterprise": "river",
   "branding": {
