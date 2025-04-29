@@ -15,10 +15,10 @@ import { StateService } from '@app/services/state.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 
 @Component({
-  selector: 'app-hashrate-chart',
-  templateUrl: './hashrate-chart.component.html',
-  styleUrls: ['./hashrate-chart.component.scss'],
-  styles: [`
+    selector: 'app-hashrate-chart',
+    templateUrl: './hashrate-chart.component.html',
+    styleUrls: ['./hashrate-chart.component.scss'],
+    styles: [`
     .loadingGraphs {
       position: absolute;
       top: 50%;
@@ -26,7 +26,8 @@ import { seoDescriptionNetwork } from '@app/shared/common.utils';
       z-index: 99;
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class HashrateChartComponent implements OnInit {
   @Input() tableOnly = false;

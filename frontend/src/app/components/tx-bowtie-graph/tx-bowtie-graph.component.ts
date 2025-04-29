@@ -39,9 +39,10 @@ interface Xput {
 }
 
 @Component({
-  selector: 'tx-bowtie-graph',
-  templateUrl: './tx-bowtie-graph.component.html',
-  styleUrls: ['./tx-bowtie-graph.component.scss'],
+    selector: 'tx-bowtie-graph',
+    templateUrl: './tx-bowtie-graph.component.html',
+    styleUrls: ['./tx-bowtie-graph.component.scss'],
+    standalone: false
 })
 export class TxBowtieGraphComponent implements OnInit, OnChanges {
   @Input() tx: Transaction;

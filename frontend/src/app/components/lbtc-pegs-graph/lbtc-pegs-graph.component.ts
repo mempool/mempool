@@ -4,8 +4,8 @@ import { EChartsOption } from '@app/graphs/echarts';
 import { StateService } from '@app/services/state.service';
 
 @Component({
-  selector: 'app-lbtc-pegs-graph',
-  styles: [`
+    selector: 'app-lbtc-pegs-graph',
+    styles: [`
   ::ng-deep .tx-wrapper-tooltip-chart { width: 135px; }
   .loadingGraphs {
       position: absolute;
@@ -14,8 +14,9 @@ import { StateService } from '@app/services/state.service';
       z-index: 99;
     }
   `],
-  templateUrl: './lbtc-pegs-graph.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    templateUrl: './lbtc-pegs-graph.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class LbtcPegsGraphComponent implements OnInit, OnChanges {
   @Input() data: any;

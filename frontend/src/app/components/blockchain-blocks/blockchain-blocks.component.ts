@@ -12,10 +12,11 @@ interface BlockchainBlock extends BlockExtended {
 }
 
 @Component({
-  selector: 'app-blockchain-blocks',
-  templateUrl: './blockchain-blocks.component.html',
-  styleUrls: ['./blockchain-blocks.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-blockchain-blocks',
+    templateUrl: './blockchain-blocks.component.html',
+    styleUrls: ['./blockchain-blocks.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   @Input() static: boolean = false;

@@ -7,10 +7,11 @@ import { OpenGraphService } from '@app/services/opengraph.service';
 import { LightningApiService } from '@app/lightning/lightning-api.service';
 
 @Component({
-  selector: 'app-channel-preview',
-  templateUrl: './channel-preview.component.html',
-  styleUrls: ['./channel-preview.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-channel-preview',
+    templateUrl: './channel-preview.component.html',
+    styleUrls: ['./channel-preview.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ChannelPreviewComponent implements OnInit {
   channel$: Observable<any>;

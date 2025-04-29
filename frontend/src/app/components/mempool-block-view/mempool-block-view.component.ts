@@ -19,9 +19,10 @@ function bestFitResolution(min, max, n): number {
 }
 
 @Component({
-  selector: 'app-mempool-block-view',
-  templateUrl: './mempool-block-view.component.html',
-  styleUrls: ['./mempool-block-view.component.scss']
+    selector: 'app-mempool-block-view',
+    templateUrl: './mempool-block-view.component.html',
+    styleUrls: ['./mempool-block-view.component.scss'],
+    standalone: false
 })
 export class MempoolBlockViewComponent implements OnInit, OnDestroy {
   autofit: boolean = false;

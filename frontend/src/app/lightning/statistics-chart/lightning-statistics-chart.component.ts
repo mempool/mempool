@@ -14,10 +14,10 @@ import { isMobile } from '@app/shared/common.utils';
 import { StateService } from '@app/services/state.service';
 
 @Component({
-  selector: 'app-lightning-statistics-chart',
-  templateUrl: './lightning-statistics-chart.component.html',
-  styleUrls: ['./lightning-statistics-chart.component.scss'],
-  styles: [`
+    selector: 'app-lightning-statistics-chart',
+    templateUrl: './lightning-statistics-chart.component.html',
+    styleUrls: ['./lightning-statistics-chart.component.scss'],
+    styles: [`
     .loadingGraphs {
       position: absolute;
       top: 50%;
@@ -25,6 +25,7 @@ import { StateService } from '@app/services/state.service';
       z-index: 99;
     }
   `],
+    standalone: false
 })
 export class LightningStatisticsChartComponent implements OnInit, OnChanges {
   @Input() height: number = 150;

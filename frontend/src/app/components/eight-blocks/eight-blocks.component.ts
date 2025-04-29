@@ -31,20 +31,21 @@ interface BlockInfo extends BlockExtended {
 }
 
 @Component({
-  selector: 'app-eight-blocks',
-  templateUrl: './eight-blocks.component.html',
-  styleUrls: ['./eight-blocks.component.scss'],
-  animations: [
-    trigger('infoChange', [
-      transition(':enter', [
-        style({ opacity: 0 }),
-        animate('1000ms', style({ opacity: 1 })),
-      ]),
-      transition(':leave', [
-        animate('1000ms 500ms', style({ opacity: 0 }))
-      ])
-    ]),
-  ],
+    selector: 'app-eight-blocks',
+    templateUrl: './eight-blocks.component.html',
+    styleUrls: ['./eight-blocks.component.scss'],
+    animations: [
+        trigger('infoChange', [
+            transition(':enter', [
+                style({ opacity: 0 }),
+                animate('1000ms', style({ opacity: 1 })),
+            ]),
+            transition(':leave', [
+                animate('1000ms 500ms', style({ opacity: 0 }))
+            ])
+        ]),
+    ],
+    standalone: false
 })
 export class EightBlocksComponent implements OnInit, OnDestroy {
   network = '';

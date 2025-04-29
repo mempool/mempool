@@ -7,10 +7,11 @@ import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { PreloadService } from '@app/services/preload.service';
 
 @Component({
-  selector: 'app-block-transactions',
-  templateUrl: './block-transactions.component.html',
-  styleUrl: './block-transactions.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-block-transactions',
+    templateUrl: './block-transactions.component.html',
+    styleUrl: './block-transactions.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class BlockTransactionsComponent implements OnInit {
   @Input() txCount: number;

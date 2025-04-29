@@ -6,10 +6,11 @@ import { isMobile } from '@app/shared/common.utils';
 import { LightningApiService } from '@app/lightning/lightning-api.service';
 
 @Component({
-  selector: 'app-channels-list',
-  templateUrl: './channels-list.component.html',
-  styleUrls: ['./channels-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-channels-list',
+    templateUrl: './channels-list.component.html',
+    styleUrls: ['./channels-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ChannelsListComponent implements OnInit, OnChanges {
   @Input() publicKey: string;

@@ -2,10 +2,11 @@ import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core
 import { Observable, combineLatest, map, of } from 'rxjs';
 
 @Component({
-  selector: 'app-federation-addresses-stats',
-  templateUrl: './federation-addresses-stats.component.html',
-  styleUrls: ['./federation-addresses-stats.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-federation-addresses-stats',
+    templateUrl: './federation-addresses-stats.component.html',
+    styleUrls: ['./federation-addresses-stats.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FederationAddressesStatsComponent implements OnInit {
   @Input() federationAddressesNumber$: Observable<number>;

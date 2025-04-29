@@ -32,9 +32,10 @@ const unmatchedContrastAuditColors = {
 };
 
 @Component({
-  selector: 'app-block-overview-graph',
-  templateUrl: './block-overview-graph.component.html',
-  styleUrls: ['./block-overview-graph.component.scss'],
+    selector: 'app-block-overview-graph',
+    templateUrl: './block-overview-graph.component.html',
+    styleUrls: ['./block-overview-graph.component.scss'],
+    standalone: false
 })
 export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, OnChanges {
   @Input() isLoading: boolean;

@@ -12,9 +12,10 @@ interface NodeGroup {
 }
 
 @Component({
-  selector: 'app-group-preview',
-  templateUrl: './group-preview.component.html',
-  styleUrls: ['./group-preview.component.scss']
+    selector: 'app-group-preview',
+    templateUrl: './group-preview.component.html',
+    styleUrls: ['./group-preview.component.scss'],
+    standalone: false
 })
 export class GroupPreviewComponent implements OnInit {
   nodes$: Observable<any>;

@@ -5,10 +5,11 @@ import { ApiService } from '@app/services/api.service';
 import { StateService } from '@app/services/state.service';
 
 @Component({
-  selector: 'app-reward-stats',
-  templateUrl: './reward-stats.component.html',
-  styleUrls: ['./reward-stats.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-reward-stats',
+    templateUrl: './reward-stats.component.html',
+    styleUrls: ['./reward-stats.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class RewardStatsComponent implements OnInit {
   public $rewardStats: Observable<any>;

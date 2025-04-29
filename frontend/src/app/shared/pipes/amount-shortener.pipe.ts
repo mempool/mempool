@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'amountShortener'
+    name: 'amountShortener',
+    standalone: false
 })
 export class AmountShortenerPipe implements PipeTransform {
   transform(num: number, ...args: any[]): unknown {

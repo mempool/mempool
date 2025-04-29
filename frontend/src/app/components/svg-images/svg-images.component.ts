@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 @Component({
-  selector: 'app-svg-images',
-  templateUrl: './svg-images.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-svg-images',
+    templateUrl: './svg-images.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class SvgImagesComponent {
   randomId = Math.floor(Math.random() * 10000);

@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'decimal2hex'
+    name: 'decimal2hex',
+    standalone: false
 })
 export class Decimal2HexPipe implements PipeTransform {
   transform(decimal: number): string {

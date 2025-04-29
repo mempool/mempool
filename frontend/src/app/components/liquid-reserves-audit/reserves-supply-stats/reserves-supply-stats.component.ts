@@ -4,10 +4,11 @@ import { Env, StateService } from '@app/services/state.service';
 import { CurrentPegs } from '@interfaces/node-api.interface';
 
 @Component({
-  selector: 'app-reserves-supply-stats',
-  templateUrl: './reserves-supply-stats.component.html',
-  styleUrls: ['./reserves-supply-stats.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-reserves-supply-stats',
+    templateUrl: './reserves-supply-stats.component.html',
+    styleUrls: ['./reserves-supply-stats.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ReservesSupplyStatsComponent implements OnInit {
   @Input() currentReserves$: Observable<CurrentPegs>;

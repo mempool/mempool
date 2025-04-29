@@ -7,10 +7,11 @@ import { selectPowerOfTen } from '@app/bitcoin.utils';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-fee-distribution-graph',
-  templateUrl: './fee-distribution-graph.component.html',
-  styleUrls: ['./fee-distribution-graph.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-fee-distribution-graph',
+    templateUrl: './fee-distribution-graph.component.html',
+    styleUrls: ['./fee-distribution-graph.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FeeDistributionGraphComponent implements OnInit, OnChanges, OnDestroy {
   @Input() feeRange: number[];

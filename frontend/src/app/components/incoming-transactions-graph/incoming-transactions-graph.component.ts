@@ -10,9 +10,9 @@ import { Subscription } from 'rxjs';
 const OUTLIERS_MEDIAN_MULTIPLIER = 4;
 
 @Component({
-  selector: 'app-incoming-transactions-graph',
-  templateUrl: './incoming-transactions-graph.component.html',
-  styles: [`
+    selector: 'app-incoming-transactions-graph',
+    templateUrl: './incoming-transactions-graph.component.html',
+    styles: [`
     .loadingGraphs {
       position: absolute;
       top: 50%;
@@ -20,7 +20,8 @@ const OUTLIERS_MEDIAN_MULTIPLIER = 4;
       z-index: 99;
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, OnDestroy {
   @Input() data: any;

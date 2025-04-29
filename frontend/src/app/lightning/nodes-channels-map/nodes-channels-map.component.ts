@@ -13,10 +13,11 @@ import { getFlagEmoji } from '@app/shared/common.utils';
 import { lerpColor } from '@app/shared/graphs.utils';
 
 @Component({
-  selector: 'app-nodes-channels-map',
-  templateUrl: './nodes-channels-map.component.html',
-  styleUrls: ['./nodes-channels-map.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-nodes-channels-map',
+    templateUrl: './nodes-channels-map.component.html',
+    styleUrls: ['./nodes-channels-map.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class NodesChannelsMap implements OnInit {
   @Input() style: 'graph' | 'nodepage' | 'widget' | 'channelpage' = 'graph';

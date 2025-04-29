@@ -3,10 +3,11 @@ import { Observable, map, of } from 'rxjs';
 import { FederationUtxo } from '@interfaces/node-api.interface';
 
 @Component({
-  selector: 'app-expired-utxos-stats',
-  templateUrl: './expired-utxos-stats.component.html',
-  styleUrls: ['./expired-utxos-stats.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-expired-utxos-stats',
+    templateUrl: './expired-utxos-stats.component.html',
+    styleUrls: ['./expired-utxos-stats.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ExpiredUtxosStatsComponent implements OnInit {
   @Input() expiredUtxos$: Observable<FederationUtxo[]>;

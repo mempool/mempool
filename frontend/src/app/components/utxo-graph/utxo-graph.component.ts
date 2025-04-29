@@ -40,10 +40,10 @@ function sortedInsert(positions: { c1: Circle, c2: Circle, d: number, p: number,
   positions.splice(left, 0, newPosition, {...newPosition, side: true });
 }
 @Component({
-  selector: 'app-utxo-graph',
-  templateUrl: './utxo-graph.component.html',
-  styleUrls: ['./utxo-graph.component.scss'],
-  styles: [`
+    selector: 'app-utxo-graph',
+    templateUrl: './utxo-graph.component.html',
+    styleUrls: ['./utxo-graph.component.scss'],
+    styles: [`
     .loadingGraphs {
       position: absolute;
       top: 50%;
@@ -51,7 +51,8 @@ function sortedInsert(positions: { c1: Circle, c2: Circle, d: number, p: number,
       z-index: 99;
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class UtxoGraphComponent implements OnChanges, OnDestroy {
   @Input() utxos: Utxo[];

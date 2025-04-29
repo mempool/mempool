@@ -8,10 +8,11 @@ import { StateService } from '@app/services/state.service';
 import { LightningApiService } from '@app/lightning/lightning-api.service';
 
 @Component({
-  selector: 'app-lightning-dashboard',
-  templateUrl: './lightning-dashboard.component.html',
-  styleUrls: ['./lightning-dashboard.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-lightning-dashboard',
+    templateUrl: './lightning-dashboard.component.html',
+    styleUrls: ['./lightning-dashboard.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class LightningDashboardComponent implements OnInit, AfterViewInit {
   statistics$: Observable<INodesStatistics>;

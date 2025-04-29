@@ -4,10 +4,11 @@ import { Observable, Subscription } from 'rxjs';
 import { Price } from '@app/services/price.service';
 
 @Component({
-  selector: 'app-amount',
-  templateUrl: './amount.component.html',
-  styleUrls: ['./amount.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-amount',
+    templateUrl: './amount.component.html',
+    styleUrls: ['./amount.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class AmountComponent implements OnInit, OnDestroy {
   conversions$: Observable<any>;

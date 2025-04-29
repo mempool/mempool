@@ -36,10 +36,11 @@ interface DiffShape {
 const EPOCH_BLOCK_LENGTH = 2016; // Bitcoin mainnet
 
 @Component({
-  selector: 'app-difficulty',
-  templateUrl: './difficulty.component.html',
-  styleUrls: ['./difficulty.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-difficulty',
+    templateUrl: './difficulty.component.html',
+    styleUrls: ['./difficulty.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class DifficultyComponent implements OnInit {
   @Input() showProgress = true;

@@ -20,10 +20,10 @@ import { PreloadService } from '@app/services/preload.service';
 import { identifyPrioritizedTransactions } from '@app/shared/transaction.utils';
 
 @Component({
-  selector: 'app-block',
-  templateUrl: './block.component.html',
-  styleUrls: ['./block.component.scss'],
-  styles: [`
+    selector: 'app-block',
+    templateUrl: './block.component.html',
+    styleUrls: ['./block.component.scss'],
+    styles: [`
     .loadingGraphs {
       position: absolute;
       top: 50%;
@@ -31,6 +31,7 @@ import { identifyPrioritizedTransactions } from '@app/shared/transaction.utils';
       z-index: 100;
     }
   `],
+    standalone: false
 })
 export class BlockComponent implements OnInit, OnDestroy {
   network = '';

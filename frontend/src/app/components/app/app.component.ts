@@ -8,10 +8,11 @@ import { ThemeService } from '@app/services/theme.service';
 import { SeoService } from '@app/services/seo.service';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
-  providers: [NgbTooltipConfig]
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+    providers: [NgbTooltipConfig],
+    standalone: false
 })
 export class AppComponent implements OnInit {
   constructor(

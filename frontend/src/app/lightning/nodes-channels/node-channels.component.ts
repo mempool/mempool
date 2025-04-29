@@ -10,10 +10,11 @@ import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pip
 import { StateService } from '@app/services/state.service';
 
 @Component({
-  selector: 'app-node-channels',
-  templateUrl: './node-channels.component.html',
-  styleUrls: ['./node-channels.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-node-channels',
+    templateUrl: './node-channels.component.html',
+    styleUrls: ['./node-channels.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class NodeChannels implements OnChanges {
   @Input() publicKey: string;

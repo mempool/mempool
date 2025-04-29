@@ -2,10 +2,11 @@ import { ChangeDetectionStrategy, Component, Input, OnChanges } from '@angular/c
 
 
 @Component({
-  selector: 'app-confirmations',
-  templateUrl: './confirmations.component.html',
-  styleUrls: ['./confirmations.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-confirmations',
+    templateUrl: './confirmations.component.html',
+    styleUrls: ['./confirmations.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ConfirmationsComponent implements OnChanges {
   @Input() chainTip: number;

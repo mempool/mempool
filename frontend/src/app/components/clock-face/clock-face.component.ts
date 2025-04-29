@@ -3,10 +3,11 @@ import { Subscription, tap, timer } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 
 @Component({
-  selector: 'app-clock-face',
-  templateUrl: './clock-face.component.html',
-  styleUrls: ['./clock-face.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-clock-face',
+    templateUrl: './clock-face.component.html',
+    styleUrls: ['./clock-face.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ClockFaceComponent implements OnInit, OnChanges, OnDestroy {
   @Input() size: number = 300;

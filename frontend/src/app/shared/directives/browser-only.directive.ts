@@ -2,7 +2,8 @@ import { Directive, TemplateRef, ViewContainerRef, Inject, PLATFORM_ID } from '@
 import { isPlatformBrowser } from '@angular/common';
 
 @Directive({
-  selector: '[browserOnly]'
+    selector: '[browserOnly]',
+    standalone: false
 })
 export class BrowserOnlyDirective {
   constructor(

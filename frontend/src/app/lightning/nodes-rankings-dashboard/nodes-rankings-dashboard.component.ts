@@ -5,10 +5,11 @@ import { SeoService } from '@app/services/seo.service';
 import { LightningApiService } from '@app/lightning/lightning-api.service';
 
 @Component({
-  selector: 'app-nodes-rankings-dashboard',
-  templateUrl: './nodes-rankings-dashboard.component.html',
-  styleUrls: ['./nodes-rankings-dashboard.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-nodes-rankings-dashboard',
+    templateUrl: './nodes-rankings-dashboard.component.html',
+    styleUrls: ['./nodes-rankings-dashboard.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class NodesRankingsDashboard implements OnInit {
   nodesRanking$: Observable<INodesRanking>;

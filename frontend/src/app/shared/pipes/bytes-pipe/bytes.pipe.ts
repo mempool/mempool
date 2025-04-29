@@ -5,7 +5,8 @@ import { isNumberFinite, isPositive, isInteger, toDecimal, toSigFigs } from '@ap
 export type ByteUnit = 'B' | 'kB' | 'MB' | 'GB' | 'TB';
 
 @Pipe({
-    name: 'bytes'
+    name: 'bytes',
+    standalone: false
 })
 export class BytesPipe implements PipeTransform {
 

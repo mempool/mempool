@@ -3,10 +3,11 @@ import { firstValueFrom, Subscription } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 
 @Component({
-  selector: 'app-clockchain',
-  templateUrl: './clockchain.component.html',
-  styleUrls: ['./clockchain.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-clockchain',
+    templateUrl: './clockchain.component.html',
+    styleUrls: ['./clockchain.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ClockchainComponent implements OnInit, OnChanges, OnDestroy {
   @Input() width: number = 300;

@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 
 @Component({
-  selector: 'app-acceleration-sparkles',
-  templateUrl: './acceleration-sparkles.component.html',
-  styleUrls: ['./acceleration-sparkles.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-acceleration-sparkles',
+    templateUrl: './acceleration-sparkles.component.html',
+    styleUrls: ['./acceleration-sparkles.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class AccelerationSparklesComponent implements OnChanges {
   @Input() arrow: ElementRef<HTMLDivElement>;

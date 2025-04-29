@@ -5,7 +5,8 @@ import { isNumberFinite, isPositive, isInteger, toDecimal } from '@app/shared/pi
 export type ByteUnit = 'vB' | 'kvB' | 'MvB' | 'GvB' | 'TvB';
 
 @Pipe({
-    name: 'vbytes'
+    name: 'vbytes',
+    standalone: false
 })
 export class VbytesPipe implements PipeTransform {
 

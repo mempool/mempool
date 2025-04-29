@@ -6,9 +6,10 @@ import { EnterpriseService } from '@app/services/enterprise.service';
 import { NavigationService } from '@app/services/navigation.service';
 
 @Component({
-  selector: 'app-liquid-master-page',
-  templateUrl: './liquid-master-page.component.html',
-  styleUrls: ['./liquid-master-page.component.scss'],
+    selector: 'app-liquid-master-page',
+    templateUrl: './liquid-master-page.component.html',
+    styleUrls: ['./liquid-master-page.component.scss'],
+    standalone: false
 })
 export class LiquidMasterPageComponent implements OnInit {
   env: Env;

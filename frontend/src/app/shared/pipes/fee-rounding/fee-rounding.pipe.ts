@@ -2,7 +2,8 @@ import { formatNumber } from "@angular/common";
 import { Inject, LOCALE_ID, Pipe, PipeTransform } from "@angular/core";
 
 @Pipe({
-  name: "feeRounding",
+    name: "feeRounding",
+    standalone: false
 })
 export class FeeRoundingPipe implements PipeTransform {
   constructor(

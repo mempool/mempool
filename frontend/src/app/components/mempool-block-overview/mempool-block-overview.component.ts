@@ -13,9 +13,10 @@ import TxView from '@components/block-overview-graph/tx-view';
 import { FilterMode, GradientMode } from '@app/shared/filters.utils';
 
 @Component({
-  selector: 'app-mempool-block-overview',
-  templateUrl: './mempool-block-overview.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-mempool-block-overview',
+    templateUrl: './mempool-block-overview.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
   @Input() index: number;

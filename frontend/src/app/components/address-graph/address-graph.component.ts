@@ -21,10 +21,10 @@ const periodSeconds = {
 };
 
 @Component({
-  selector: 'app-address-graph',
-  templateUrl: './address-graph.component.html',
-  styleUrls: ['./address-graph.component.scss'],
-  styles: [`
+    selector: 'app-address-graph',
+    templateUrl: './address-graph.component.html',
+    styleUrls: ['./address-graph.component.scss'],
+    styles: [`
     .loadingGraphs {
       position: absolute;
       top: 50%;
@@ -32,7 +32,8 @@ const periodSeconds = {
       z-index: 99;
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class AddressGraphComponent implements OnChanges, OnDestroy {
   @Input() address: string;

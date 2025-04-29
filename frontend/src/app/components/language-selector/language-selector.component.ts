@@ -5,10 +5,11 @@ import { languages } from '@app/app.constants';
 import { LanguageService } from '@app/services/language.service';
 
 @Component({
-  selector: 'app-language-selector',
-  templateUrl: './language-selector.component.html',
-  styleUrls: ['./language-selector.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-language-selector',
+    templateUrl: './language-selector.component.html',
+    styleUrls: ['./language-selector.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class LanguageSelectorComponent implements OnInit {
   languageForm: UntypedFormGroup;

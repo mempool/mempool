@@ -5,7 +5,8 @@ import { isNumberFinite, isPositive, isInteger, toDecimal } from '@app/shared/pi
 export type ByteUnit = 'WU' | 'kWU' | 'MWU' | 'GWU' | 'TWU';
 
 @Pipe({
-    name: 'wuBytes'
+    name: 'wuBytes',
+    standalone: false
 })
 export class WuBytesPipe implements PipeTransform {
 

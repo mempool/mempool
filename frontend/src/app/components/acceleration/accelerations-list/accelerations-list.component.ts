@@ -9,10 +9,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MiningService } from '@app/services/mining.service';
 
 @Component({
-  selector: 'app-accelerations-list',
-  templateUrl: './accelerations-list.component.html',
-  styleUrls: ['./accelerations-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-accelerations-list',
+    templateUrl: './accelerations-list.component.html',
+    styleUrls: ['./accelerations-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class AccelerationsListComponent implements OnInit, OnDestroy {
   @Input() widget: boolean = false;

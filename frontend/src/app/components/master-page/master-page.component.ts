@@ -9,9 +9,10 @@ import { MenuComponent } from '@components/menu/menu.component';
 import { StorageService } from '@app/services/storage.service';
 
 @Component({
-  selector: 'app-master-page',
-  templateUrl: './master-page.component.html',
-  styleUrls: ['./master-page.component.scss'],
+    selector: 'app-master-page',
+    templateUrl: './master-page.component.html',
+    styleUrls: ['./master-page.component.scss'],
+    standalone: false
 })
 export class MasterPageComponent implements OnInit, OnDestroy {
   @Input() headerVisible = true;

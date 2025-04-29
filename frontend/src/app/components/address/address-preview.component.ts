@@ -13,9 +13,10 @@ import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { AddressInformation } from '@interfaces/node-api.interface';
 
 @Component({
-  selector: 'app-address-preview',
-  templateUrl: './address-preview.component.html',
-  styleUrls: ['./address-preview.component.scss']
+    selector: 'app-address-preview',
+    templateUrl: './address-preview.component.html',
+    styleUrls: ['./address-preview.component.scss'],
+    standalone: false
 })
 export class AddressPreviewComponent implements OnInit, OnDestroy {
   network = '';

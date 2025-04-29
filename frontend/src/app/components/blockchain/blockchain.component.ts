@@ -4,10 +4,11 @@ import { StateService } from '@app/services/state.service';
 import { StorageService } from '@app/services/storage.service';
 
 @Component({
-  selector: 'app-blockchain',
-  templateUrl: './blockchain.component.html',
-  styleUrls: ['./blockchain.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-blockchain',
+    templateUrl: './blockchain.component.html',
+    styleUrls: ['./blockchain.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class BlockchainComponent implements OnInit, OnDestroy, OnChanges {
   @Input() pages: any[] = [];

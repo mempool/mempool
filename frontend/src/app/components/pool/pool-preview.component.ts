@@ -11,10 +11,11 @@ import { SeoService } from '@app/services/seo.service';
 import { OpenGraphService } from '@app/services/opengraph.service';
 
 @Component({
-  selector: 'app-pool-preview',
-  templateUrl: './pool-preview.component.html',
-  styleUrls: ['./pool-preview.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-pool-preview',
+    templateUrl: './pool-preview.component.html',
+    styleUrls: ['./pool-preview.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class PoolPreviewComponent implements OnInit {
   formatNumber = formatNumber;

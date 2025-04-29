@@ -11,10 +11,11 @@ import { WebsocketService } from '@app/services/websocket.service';
 import { EnterpriseService } from '@app/services/enterprise.service';
 
 @Component({
-  selector: 'app-global-footer',
-  templateUrl: './global-footer.component.html',
-  styleUrls: ['./global-footer.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-global-footer',
+    templateUrl: './global-footer.component.html',
+    styleUrls: ['./global-footer.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class GlobalFooterComponent implements OnInit, OnDestroy, OnChanges {
   @Input() user: any = undefined;

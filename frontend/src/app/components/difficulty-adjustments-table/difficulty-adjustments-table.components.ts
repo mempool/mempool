@@ -7,10 +7,10 @@ import { selectPowerOfTen } from '@app/bitcoin.utils';
 import { StateService } from '@app/services/state.service';
 
 @Component({
-  selector: 'app-difficulty-adjustments-table',
-  templateUrl: './difficulty-adjustments-table.component.html',
-  styleUrls: ['./difficulty-adjustments-table.component.scss'],
-  styles: [`
+    selector: 'app-difficulty-adjustments-table',
+    templateUrl: './difficulty-adjustments-table.component.html',
+    styleUrls: ['./difficulty-adjustments-table.component.scss'],
+    styles: [`
     .loadingGraphs {
       position: absolute;
       top: 50%;
@@ -18,6 +18,7 @@ import { StateService } from '@app/services/state.service';
       z-index: 99;
     }
   `],
+    standalone: false
 })
 export class DifficultyAdjustmentsTable implements OnInit {
   hashrateObservable$: Observable<any>;

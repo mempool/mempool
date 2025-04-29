@@ -4,10 +4,11 @@ import { StorageService } from '@app/services/storage.service';
 import { StateService } from '@app/services/state.service';
 
 @Component({
-  selector: 'app-amount-selector',
-  templateUrl: './amount-selector.component.html',
-  styleUrls: ['./amount-selector.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-amount-selector',
+    templateUrl: './amount-selector.component.html',
+    styleUrls: ['./amount-selector.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class AmountSelectorComponent implements OnInit {
   amountForm: UntypedFormGroup;

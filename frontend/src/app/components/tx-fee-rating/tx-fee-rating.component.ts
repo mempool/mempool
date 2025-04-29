@@ -6,10 +6,11 @@ import { BlockExtended } from '@interfaces/node-api.interface';
 import { CacheService } from '@app/services/cache.service';
 
 @Component({
-  selector: 'app-tx-fee-rating',
-  templateUrl: './tx-fee-rating.component.html',
-  styleUrls: ['./tx-fee-rating.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-tx-fee-rating',
+    templateUrl: './tx-fee-rating.component.html',
+    styleUrls: ['./tx-fee-rating.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TxFeeRatingComponent implements OnInit, OnChanges, OnDestroy {
   @Input() tx: Transaction;

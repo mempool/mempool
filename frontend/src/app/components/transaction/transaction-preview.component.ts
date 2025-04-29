@@ -20,9 +20,10 @@ import { CpfpInfo } from '@interfaces/node-api.interface';
 import { LiquidUnblinding } from '@components/transaction/liquid-ublinding';
 
 @Component({
-  selector: 'app-transaction-preview',
-  templateUrl: './transaction-preview.component.html',
-  styleUrls: ['./transaction-preview.component.scss'],
+    selector: 'app-transaction-preview',
+    templateUrl: './transaction-preview.component.html',
+    styleUrls: ['./transaction-preview.component.scss'],
+    standalone: false
 })
 export class TransactionPreviewComponent implements OnInit, OnDestroy {
   network = '';

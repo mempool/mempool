@@ -8,10 +8,11 @@ import { MiningStats } from '@app/services/mining.service';
 import { Filter } from '@app/shared/filters.utils';
 
 @Component({
-  selector: 'app-transaction-details',
-  templateUrl: './transaction-details.component.html',
-  styleUrls: ['./transaction-details.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-transaction-details',
+    templateUrl: './transaction-details.component.html',
+    styleUrls: ['./transaction-details.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TransactionDetailsComponent implements OnInit {
   @Input() network: string;

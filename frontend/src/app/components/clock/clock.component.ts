@@ -8,10 +8,11 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
-  selector: 'app-clock',
-  templateUrl: './clock.component.html',
-  styleUrls: ['./clock.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-clock',
+    templateUrl: './clock.component.html',
+    styleUrls: ['./clock.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ClockComponent implements OnInit {
   hideStats: boolean = false;

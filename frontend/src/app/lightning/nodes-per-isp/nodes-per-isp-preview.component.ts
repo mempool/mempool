@@ -8,10 +8,11 @@ import { getFlagEmoji } from '@app/shared/common.utils';
 import { GeolocationData } from '@app/shared/components/geolocation/geolocation.component';
 
 @Component({
-  selector: 'app-nodes-per-isp-preview',
-  templateUrl: './nodes-per-isp-preview.component.html',
-  styleUrls: ['./nodes-per-isp-preview.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-nodes-per-isp-preview',
+    templateUrl: './nodes-per-isp-preview.component.html',
+    styleUrls: ['./nodes-per-isp-preview.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class NodesPerISPPreview implements OnInit {
   nodes$: Observable<any>;

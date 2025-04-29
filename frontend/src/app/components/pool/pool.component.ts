@@ -20,10 +20,11 @@ interface AccelerationTotal {
 }
 
 @Component({
-  selector: 'app-pool',
-  templateUrl: './pool.component.html',
-  styleUrls: ['./pool.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-pool',
+    templateUrl: './pool.component.html',
+    styleUrls: ['./pool.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class PoolComponent implements OnInit {
   @Input() right: number | string = 45;

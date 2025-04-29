@@ -6,9 +6,10 @@ import { retry, tap } from 'rxjs/operators';
 import { ServicesApiServices } from '@app/services/services-api.service';
 
 @Component({
-  selector: 'app-bitcoin-invoice',
-  templateUrl: './bitcoin-invoice.component.html',
-  styleUrls: ['./bitcoin-invoice.component.scss']
+    selector: 'app-bitcoin-invoice',
+    templateUrl: './bitcoin-invoice.component.html',
+    styleUrls: ['./bitcoin-invoice.component.scss'],
+    standalone: false
 })
 export class BitcoinInvoiceComponent implements OnInit, OnChanges, OnDestroy {
   @Input() invoice;

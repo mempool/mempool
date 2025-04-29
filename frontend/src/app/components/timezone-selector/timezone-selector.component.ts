@@ -6,10 +6,11 @@ import { timezones } from '@app/app.constants';
 
 
 @Component({
-  selector: 'app-timezone-selector',
-  templateUrl: './timezone-selector.component.html',
-  styleUrls: ['./timezone-selector.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-timezone-selector',
+    templateUrl: './timezone-selector.component.html',
+    styleUrls: ['./timezone-selector.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TimezoneSelectorComponent implements OnInit {
   timezoneForm: UntypedFormGroup;

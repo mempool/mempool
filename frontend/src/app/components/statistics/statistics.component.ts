@@ -16,9 +16,10 @@ import { MempoolGraphComponent } from '@components/mempool-graph/mempool-graph.c
 import { IncomingTransactionsGraphComponent } from '@components/incoming-transactions-graph/incoming-transactions-graph.component';
 
 @Component({
-  selector: 'app-statistics',
-  templateUrl: './statistics.component.html',
-  styleUrls: ['./statistics.component.scss']
+    selector: 'app-statistics',
+    templateUrl: './statistics.component.html',
+    styleUrls: ['./statistics.component.scss'],
+    standalone: false
 })
 export class StatisticsComponent implements OnInit {
   @ViewChild('mempoolgraph') mempoolGraph: MempoolGraphComponent;

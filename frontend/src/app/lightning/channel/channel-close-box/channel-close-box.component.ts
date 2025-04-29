@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
-  selector: 'app-channel-close-box',
-  templateUrl: './channel-close-box.component.html',
-  styleUrls: ['./channel-close-box.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-channel-close-box',
+    templateUrl: './channel-close-box.component.html',
+    styleUrls: ['./channel-close-box.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ChannelCloseBoxComponent implements OnChanges {
   @Input() channel: any;

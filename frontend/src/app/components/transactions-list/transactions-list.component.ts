@@ -17,10 +17,11 @@ import { Etching, Runestone } from '@app/shared/ord/rune.utils';
 import { ADDRESS_SIMILARITY_THRESHOLD, AddressMatch, AddressSimilarity, AddressType, AddressTypeInfo, checkedCompareAddressStrings, detectAddressType } from '@app/shared/address-utils';
 
 @Component({
-  selector: 'app-transactions-list',
-  templateUrl: './transactions-list.component.html',
-  styleUrls: ['./transactions-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-transactions-list',
+    templateUrl: './transactions-list.component.html',
+    styleUrls: ['./transactions-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TransactionsListComponent implements OnInit, OnChanges {
   network = '';

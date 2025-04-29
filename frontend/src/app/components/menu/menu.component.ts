@@ -8,9 +8,10 @@ import { IUser, ServicesApiServices } from '@app/services/services-api.service';
 import { AuthServiceMempool } from '@app/services/auth.service';
 
 @Component({
-  selector: 'app-menu',
-  templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.scss']
+    selector: 'app-menu',
+    templateUrl: './menu.component.html',
+    styleUrls: ['./menu.component.scss'],
+    standalone: false
 })
 
 export class MenuComponent implements OnInit, OnDestroy {

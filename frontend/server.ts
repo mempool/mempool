@@ -1,7 +1,7 @@
 import 'zone.js';
 import './src/resources/config.js';
 
-import { CommonEngine } from '@angular/ssr';
+import { CommonEngine } from '@angular/ssr/node';
 import * as express from 'express';
 import * as fs from 'fs';
 import * as path from 'path';

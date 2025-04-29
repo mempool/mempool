@@ -16,10 +16,10 @@ import { StorageService } from '@app/services/storage.service';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
-  selector: 'app-block-fees-subsidy-graph',
-  templateUrl: './block-fees-subsidy-graph.component.html',
-  styleUrls: ['./block-fees-subsidy-graph.component.scss'],
-  styles: [`
+    selector: 'app-block-fees-subsidy-graph',
+    templateUrl: './block-fees-subsidy-graph.component.html',
+    styleUrls: ['./block-fees-subsidy-graph.component.scss'],
+    styles: [`
     .loadingGraphs {
       position: absolute;
       top: 50%;
@@ -27,7 +27,8 @@ import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pip
       z-index: 99;
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class BlockFeesSubsidyGraphComponent implements OnInit {
   @Input() right: number | string = 45;

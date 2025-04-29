@@ -2,10 +2,11 @@ import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core
 import { Observable, map } from 'rxjs';
 
 @Component({
-  selector: 'app-reserves-ratio-stats',
-  templateUrl: './reserves-ratio-stats.component.html',
-  styleUrls: ['./reserves-ratio-stats.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-reserves-ratio-stats',
+    templateUrl: './reserves-ratio-stats.component.html',
+    styleUrls: ['./reserves-ratio-stats.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ReservesRatioStatsComponent implements OnInit {
   @Input() fullHistory$: Observable<any>;

@@ -8,10 +8,10 @@ import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { StateService } from '@app/services/state.service';
 
 @Component({
-  selector: 'app-node-fee-chart',
-  templateUrl: './node-fee-chart.component.html',
-  styleUrls: ['./node-fee-chart.component.scss'],
-  styles: [`
+    selector: 'app-node-fee-chart',
+    templateUrl: './node-fee-chart.component.html',
+    styleUrls: ['./node-fee-chart.component.scss'],
+    styles: [`
     .loadingGraphs {
       position: absolute;
       top: 50%;
@@ -19,6 +19,7 @@ import { StateService } from '@app/services/state.service';
       z-index: 99;
     }
   `],
+    standalone: false
 })
 export class NodeFeeChartComponent implements OnInit {
   chartOptions: EChartsOption = {};

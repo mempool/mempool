@@ -12,10 +12,11 @@ import { SearchResultsComponent } from '@components/search-form/search-results/s
 import { Network, findOtherNetworks, getRegex, getTargetUrl, needBaseModuleChange } from '@app/shared/regex.utils';
 
 @Component({
-  selector: 'app-search-form',
-  templateUrl: './search-form.component.html',
-  styleUrls: ['./search-form.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-search-form',
+    templateUrl: './search-form.component.html',
+    styleUrls: ['./search-form.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class SearchFormComponent implements OnInit {
   @Input() hamburgerOpen = false;

@@ -15,10 +15,10 @@ import { StateService } from '@app/services/state.service';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
-  selector: 'app-acceleration-fees-graph',
-  templateUrl: './acceleration-fees-graph.component.html',
-  styleUrls: ['./acceleration-fees-graph.component.scss'],
-  styles: [`
+    selector: 'app-acceleration-fees-graph',
+    templateUrl: './acceleration-fees-graph.component.html',
+    styleUrls: ['./acceleration-fees-graph.component.scss'],
+    styles: [`
     .loadingGraphs {
       position: absolute;
       top: 50%;
@@ -26,7 +26,8 @@ import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pip
       z-index: 99;
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDestroy {
   @Input() widget: boolean = false;

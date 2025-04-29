@@ -6,10 +6,11 @@ import { StateService } from '@app/services/state.service';
 import { WebsocketService } from '@app/services/websocket.service';
 
 @Component({
-  selector: 'app-calculator',
-  templateUrl: './calculator.component.html',
-  styleUrls: ['./calculator.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-calculator',
+    templateUrl: './calculator.component.html',
+    styleUrls: ['./calculator.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CalculatorComponent implements OnInit {
   satoshis = 10000;

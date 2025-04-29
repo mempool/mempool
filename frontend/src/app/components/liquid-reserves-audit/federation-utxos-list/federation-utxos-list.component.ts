@@ -8,10 +8,11 @@ import { AuditStatus, CurrentPegs, FederationUtxo } from '@interfaces/node-api.i
 import { WebsocketService } from '@app/services/websocket.service';
 
 @Component({
-  selector: 'app-federation-utxos-list',
-  templateUrl: './federation-utxos-list.component.html',
-  styleUrls: ['./federation-utxos-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-federation-utxos-list',
+    templateUrl: './federation-utxos-list.component.html',
+    styleUrls: ['./federation-utxos-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FederationUtxosListComponent implements OnInit {
   @Input() widget: boolean = false;

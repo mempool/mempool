@@ -23,10 +23,11 @@ interface AccelerationBlock extends BlockExtended {
 }
 
 @Component({
-  selector: 'app-accelerator-dashboard',
-  templateUrl: './accelerator-dashboard.component.html',
-  styleUrls: ['./accelerator-dashboard.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-accelerator-dashboard',
+    templateUrl: './accelerator-dashboard.component.html',
+    styleUrls: ['./accelerator-dashboard.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class AcceleratorDashboardComponent implements OnInit, OnDestroy {
   blocks$: Observable<AccelerationBlock[]>;

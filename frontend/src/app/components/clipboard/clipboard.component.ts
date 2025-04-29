@@ -1,10 +1,11 @@
 import { Component, Input, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 
 @Component({
-  selector: 'app-clipboard',
-  templateUrl: './clipboard.component.html',
-  styleUrls: ['./clipboard.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-clipboard',
+    templateUrl: './clipboard.component.html',
+    styleUrls: ['./clipboard.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ClipboardComponent {
   @Input() button = false;

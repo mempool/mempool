@@ -6,10 +6,11 @@ import { StateService } from '@app/services/state.service';
 import { EventType, NavigationStart, Router } from '@angular/router';
 
 @Component({
-  selector: 'app-mining-dashboard',
-  templateUrl: './mining-dashboard.component.html',
-  styleUrls: ['./mining-dashboard.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-mining-dashboard',
+    templateUrl: './mining-dashboard.component.html',
+    styleUrls: ['./mining-dashboard.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class MiningDashboardComponent implements OnInit, AfterViewInit {
   hashrateGraphHeight = 335;

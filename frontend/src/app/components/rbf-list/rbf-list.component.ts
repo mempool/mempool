@@ -11,10 +11,11 @@ import { OpenGraphService } from '@app/services/opengraph.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 
 @Component({
-  selector: 'app-rbf-list',
-  templateUrl: './rbf-list.component.html',
-  styleUrls: ['./rbf-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-rbf-list',
+    templateUrl: './rbf-list.component.html',
+    styleUrls: ['./rbf-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class RbfList implements OnInit, OnDestroy {
   rbfTrees$: Observable<RbfTree[]>;

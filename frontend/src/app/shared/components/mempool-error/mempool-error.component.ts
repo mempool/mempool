@@ -40,8 +40,9 @@ export function isMempoolError(error: string) {
 }
 
 @Component({
-  selector: 'app-mempool-error',
-  templateUrl: './mempool-error.component.html'
+    selector: 'app-mempool-error',
+    templateUrl: './mempool-error.component.html',
+    standalone: false
 })
 export class MempoolErrorComponent implements OnInit {
   @ViewChild('lowBalance', { static: true }) lowBalance!: TemplateRef<any>;

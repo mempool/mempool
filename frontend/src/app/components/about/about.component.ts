@@ -13,10 +13,11 @@ import { DOCUMENT } from '@angular/common';
 import { EnterpriseService } from '@app/services/enterprise.service';
 
 @Component({
-  selector: 'app-about',
-  templateUrl: './about.component.html',
-  styleUrls: ['./about.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-about',
+    templateUrl: './about.component.html',
+    styleUrls: ['./about.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class AboutComponent implements OnInit {
   @ViewChild('promoVideo') promoVideo: ElementRef;

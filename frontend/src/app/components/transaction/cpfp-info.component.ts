@@ -3,10 +3,11 @@ import { CpfpInfo } from '@interfaces/node-api.interface';
 import { Transaction } from '@interfaces/electrs.interface';
 
 @Component({
-  selector: 'app-cpfp-info',
-  templateUrl: './cpfp-info.component.html',
-  styleUrls: ['./cpfp-info.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-cpfp-info',
+    templateUrl: './cpfp-info.component.html',
+    styleUrls: ['./cpfp-info.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CpfpInfoComponent implements OnInit {
   @Input() cpfpInfo: CpfpInfo;

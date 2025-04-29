@@ -18,9 +18,10 @@ function isTimelineCell(val: RbfTree | TimelineCell): boolean {
 }
 
 @Component({
-  selector: 'app-rbf-timeline',
-  templateUrl: './rbf-timeline.component.html',
-  styleUrls: ['./rbf-timeline.component.scss'],
+    selector: 'app-rbf-timeline',
+    templateUrl: './rbf-timeline.component.html',
+    styleUrls: ['./rbf-timeline.component.scss'],
+    standalone: false
 })
 export class RbfTimelineComponent implements OnInit, OnChanges {
   @Input() replacements: RbfTree;

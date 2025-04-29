@@ -13,9 +13,10 @@ import { BlockOverviewGraphComponent } from '@components/block-overview-graph/bl
 import { ServicesApiServices } from '@app/services/services-api.service';
 
 @Component({
-  selector: 'app-block-preview',
-  templateUrl: './block-preview.component.html',
-  styleUrls: ['./block-preview.component.scss']
+    selector: 'app-block-preview',
+    templateUrl: './block-preview.component.html',
+    styleUrls: ['./block-preview.component.scss'],
+    standalone: false
 })
 export class BlockPreviewComponent implements OnInit, OnDestroy {
   network = '';

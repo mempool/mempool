@@ -11,9 +11,9 @@ import { feeLevels, chartColors } from '@app/app.constants';
 import { download, formatterXAxis, formatterXAxisLabel } from '@app/shared/graphs.utils';
 
 @Component({
-  selector: 'app-mempool-graph',
-  templateUrl: './mempool-graph.component.html',
-  styles: [`
+    selector: 'app-mempool-graph',
+    templateUrl: './mempool-graph.component.html',
+    styles: [`
     .loadingGraphs {
       position: absolute;
       top: 50%;
@@ -21,7 +21,8 @@ import { download, formatterXAxis, formatterXAxisLabel } from '@app/shared/graph
       z-index: 99;
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class MempoolGraphComponent implements OnInit, OnChanges {
   @Input() data: any[];

@@ -3,9 +3,10 @@ import { Observable } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 
 @Component({
-  selector: 'app-fee-rate',
-  templateUrl: './fee-rate.component.html',
-  styleUrls: ['./fee-rate.component.scss']
+    selector: 'app-fee-rate',
+    templateUrl: './fee-rate.component.html',
+    styleUrls: ['./fee-rate.component.scss'],
+    standalone: false
 })
 export class FeeRateComponent implements OnInit {
   @Input() fee: number | undefined;

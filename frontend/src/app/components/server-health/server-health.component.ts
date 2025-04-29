@@ -6,10 +6,11 @@ import { HealthCheckHost } from '@interfaces/websocket.interface';
 import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-server-health',
-  templateUrl: './server-health.component.html',
-  styleUrls: ['./server-health.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-server-health',
+    templateUrl: './server-health.component.html',
+    styleUrls: ['./server-health.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ServerHealthComponent implements OnInit {
   hosts$: Observable<HealthCheckHost[]>;

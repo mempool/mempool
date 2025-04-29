@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { SeoService } from '@app/services/seo.service';
 
 @Component({
-  selector: 'app-federation-wallet',
-  templateUrl: './federation-wallet.component.html',
-  styleUrls: ['./federation-wallet.component.scss']
+    selector: 'app-federation-wallet',
+    templateUrl: './federation-wallet.component.html',
+    styleUrls: ['./federation-wallet.component.scss'],
+    standalone: false
 })
 export class FederationWalletComponent implements OnInit {
 

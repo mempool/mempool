@@ -6,9 +6,10 @@ import { Filter, FilterMode, TransactionFlags, toFilters } from '@app/shared/fil
 import { Block } from '@interfaces/electrs.interface.js';
 
 @Component({
-  selector: 'app-block-overview-tooltip',
-  templateUrl: './block-overview-tooltip.component.html',
-  styleUrls: ['./block-overview-tooltip.component.scss'],
+    selector: 'app-block-overview-tooltip',
+    templateUrl: './block-overview-tooltip.component.html',
+    styleUrls: ['./block-overview-tooltip.component.scss'],
+    standalone: false
 })
 export class BlockOverviewTooltipComponent implements OnChanges {
   @Input() tx: TransactionStripped | void;

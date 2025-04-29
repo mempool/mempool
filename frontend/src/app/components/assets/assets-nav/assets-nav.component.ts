@@ -12,9 +12,10 @@ import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pip
 import { environment } from '@environments/environment';
 
 @Component({
-  selector: 'app-assets-nav',
-  templateUrl: './assets-nav.component.html',
-  styleUrls: ['./assets-nav.component.scss']
+    selector: 'app-assets-nav',
+    templateUrl: './assets-nav.component.html',
+    styleUrls: ['./assets-nav.component.scss'],
+    standalone: false
 })
 export class AssetsNavComponent implements OnInit {
   @ViewChild('instance', {static: true}) instance: NgbTypeahead;

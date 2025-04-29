@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'scriptpubkeyType'
+    name: 'scriptpubkeyType',
+    standalone: false
 })
 export class ScriptpubkeyTypePipe implements PipeTransform {
 

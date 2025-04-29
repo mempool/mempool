@@ -4,10 +4,11 @@ import { Transaction } from '@interfaces/electrs.interface';
 import { StateService } from '@app/services/state.service';
 
 @Component({
-  selector: 'app-tx-features',
-  templateUrl: './tx-features.component.html',
-  styleUrls: ['./tx-features.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-tx-features',
+    templateUrl: './tx-features.component.html',
+    styleUrls: ['./tx-features.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TxFeaturesComponent implements OnChanges {
   @Input() tx: Transaction;

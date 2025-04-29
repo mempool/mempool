@@ -3,10 +3,11 @@ import { Runestone, Etching } from '@app/shared/ord/rune.utils';
 import { Inscription } from '@app/shared/ord/inscription.utils';
 
 @Component({
-  selector: 'app-ord-data',
-  templateUrl: './ord-data.component.html',
-  styleUrls: ['./ord-data.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-ord-data',
+    templateUrl: './ord-data.component.html',
+    styleUrls: ['./ord-data.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class OrdDataComponent implements OnChanges {
   @Input() inscriptions: Inscription[];

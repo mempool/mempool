@@ -6,9 +6,10 @@ import { SeoService } from '@app/services/seo.service';
 import { OpenGraphService } from '@app/services/opengraph.service';
 
 @Component({
-  selector: 'app-docs',
-  templateUrl: './docs.component.html',
-  styleUrls: ['./docs.component.scss']
+    selector: 'app-docs',
+    templateUrl: './docs.component.html',
+    styleUrls: ['./docs.component.scss'],
+    standalone: false
 })
 export class DocsComponent implements OnInit {
 

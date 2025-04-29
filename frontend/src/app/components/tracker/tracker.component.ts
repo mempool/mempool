@@ -52,10 +52,11 @@ interface AuditStatus {
 }
 
 @Component({
-  selector: 'app-tracker',
-  templateUrl: './tracker.component.html',
-  styleUrls: ['./tracker.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-tracker',
+    templateUrl: './tracker.component.html',
+    styleUrls: ['./tracker.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TrackerComponent implements OnInit, OnDestroy {
   network = '';

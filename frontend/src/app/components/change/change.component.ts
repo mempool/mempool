@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges } from '@angular/core';
 
 @Component({
-  selector: 'app-change',
-  templateUrl: './change.component.html',
-  styleUrls: ['./change.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-change',
+    templateUrl: './change.component.html',
+    styleUrls: ['./change.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ChangeComponent implements OnChanges {
   @Input() current: number;

@@ -8,10 +8,11 @@ import { SeoService } from '@app/services/seo.service';
 import { LightningApiService } from '@app/lightning/lightning-api.service';
 
 @Component({
-  selector: 'app-channel',
-  templateUrl: './channel.component.html',
-  styleUrls: ['./channel.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-channel',
+    templateUrl: './channel.component.html',
+    styleUrls: ['./channel.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ChannelComponent implements OnInit {
   channel$: Observable<any>;

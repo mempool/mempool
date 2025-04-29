@@ -90,9 +90,10 @@ class AddressStats implements ChainStats {
 }
 
 @Component({
-  selector: 'app-address',
-  templateUrl: './address.component.html',
-  styleUrls: ['./address.component.scss']
+    selector: 'app-address',
+    templateUrl: './address.component.html',
+    styleUrls: ['./address.component.scss'],
+    standalone: false
 })
 export class AddressComponent implements OnInit, OnDestroy {
   network = '';

@@ -15,9 +15,10 @@ import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pip
 import { CpfpInfo } from '../../interfaces/node-api.interface';
 
 @Component({
-  selector: 'app-transaction-raw',
-  templateUrl: './transaction-raw.component.html',
-  styleUrls: ['./transaction-raw.component.scss'],
+    selector: 'app-transaction-raw',
+    templateUrl: './transaction-raw.component.html',
+    styleUrls: ['./transaction-raw.component.scss'],
+    standalone: false
 })
 export class TransactionRawComponent implements OnInit, OnDestroy {
 

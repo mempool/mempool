@@ -14,10 +14,10 @@ import { isMobile } from '@app/shared/common.utils';
 import { StateService } from '@app/services/state.service';
 
 @Component({
-  selector: 'app-nodes-networks-chart',
-  templateUrl: './nodes-networks-chart.component.html',
-  styleUrls: ['./nodes-networks-chart.component.scss'],
-  styles: [`
+    selector: 'app-nodes-networks-chart',
+    templateUrl: './nodes-networks-chart.component.html',
+    styleUrls: ['./nodes-networks-chart.component.scss'],
+    styles: [`
     .loadingGraphs {
       position: absolute;
       top: 50%;
@@ -25,7 +25,8 @@ import { StateService } from '@app/services/state.service';
       z-index: 99;
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class NodesNetworksChartComponent implements OnInit, OnChanges {
   @Input() height: number = 150;

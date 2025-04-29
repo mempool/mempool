@@ -15,10 +15,10 @@ import { FiatCurrencyPipe } from '@app/shared/pipes/fiat-currency.pipe';
 import { StateService } from '@app/services/state.service';
 
 @Component({
-  selector: 'app-block-fees-graph',
-  templateUrl: './block-fees-graph.component.html',
-  styleUrls: ['./block-fees-graph.component.scss'],
-  styles: [`
+    selector: 'app-block-fees-graph',
+    templateUrl: './block-fees-graph.component.html',
+    styleUrls: ['./block-fees-graph.component.scss'],
+    styles: [`
     .loadingGraphs {
       position: absolute;
       top: 50%;
@@ -26,7 +26,8 @@ import { StateService } from '@app/services/state.service';
       z-index: 99;
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class BlockFeesGraphComponent implements OnInit {
   @Input() right: number | string = 45;

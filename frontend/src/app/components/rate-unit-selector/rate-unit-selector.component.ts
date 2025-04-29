@@ -5,10 +5,11 @@ import { StateService } from '@app/services/state.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-rate-unit-selector',
-  templateUrl: './rate-unit-selector.component.html',
-  styleUrls: ['./rate-unit-selector.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-rate-unit-selector',
+    templateUrl: './rate-unit-selector.component.html',
+    styleUrls: ['./rate-unit-selector.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class RateUnitSelectorComponent implements OnInit, OnDestroy {
   rateUnitForm: UntypedFormGroup;

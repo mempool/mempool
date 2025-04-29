@@ -3,10 +3,11 @@ import { LanguageService } from '@app/services/language.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-twitter-widget',
-  templateUrl: './twitter-widget.component.html',
-  styleUrls: ['./twitter-widget.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-twitter-widget',
+    templateUrl: './twitter-widget.component.html',
+    styleUrls: ['./twitter-widget.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TwitterWidgetComponent implements OnChanges {
   @Input() handle: string;

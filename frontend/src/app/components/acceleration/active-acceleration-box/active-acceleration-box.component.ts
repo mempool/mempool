@@ -17,10 +17,11 @@ function toRGB({r,g,b}): string {
 }
 
 @Component({
-  selector: 'app-active-acceleration-box',
-  templateUrl: './active-acceleration-box.component.html',
-  styleUrls: ['./active-acceleration-box.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-active-acceleration-box',
+    templateUrl: './active-acceleration-box.component.html',
+    styleUrls: ['./active-acceleration-box.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ActiveAccelerationBox implements OnChanges {
   @Input() acceleratedBy?: number[];

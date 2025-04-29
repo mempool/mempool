@@ -6,10 +6,11 @@ import { HealthCheckHost } from '@interfaces/websocket.interface';
 import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-server-status',
-  templateUrl: './server-status.component.html',
-  styleUrls: ['./server-status.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-server-status',
+    templateUrl: './server-status.component.html',
+    styleUrls: ['./server-status.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ServerStatusComponent implements OnInit, OnDestroy {
   tip$: Subject<number>;

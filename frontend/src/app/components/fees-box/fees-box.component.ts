@@ -7,10 +7,11 @@ import { map, startWith, tap } from 'rxjs/operators';
 import { ThemeService } from '@app/services/theme.service';
 
 @Component({
-  selector: 'app-fees-box',
-  templateUrl: './fees-box.component.html',
-  styleUrls: ['./fees-box.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-fees-box',
+    templateUrl: './fees-box.component.html',
+    styleUrls: ['./fees-box.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FeesBoxComponent implements OnInit, OnDestroy {
   isLoading$: Observable<boolean>;

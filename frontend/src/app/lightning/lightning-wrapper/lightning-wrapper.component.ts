@@ -4,10 +4,11 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { handleDemoRedirect } from '../../shared/common.utils';
 
 @Component({
-  selector: 'app-lightning-wrapper',
-  templateUrl: './lightning-wrapper.component.html',
-  styleUrls: ['./lightning-wrapper.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-lightning-wrapper',
+    templateUrl: './lightning-wrapper.component.html',
+    styleUrls: ['./lightning-wrapper.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class LightningWrapperComponent implements OnInit {
 

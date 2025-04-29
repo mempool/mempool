@@ -20,10 +20,10 @@ interface Hashrate {
 }
 
 @Component({
-  selector: 'app-hashrate-chart-pools',
-  templateUrl: './hashrate-chart-pools.component.html',
-  styleUrls: ['./hashrate-chart-pools.component.scss'],
-  styles: [`
+    selector: 'app-hashrate-chart-pools',
+    templateUrl: './hashrate-chart-pools.component.html',
+    styleUrls: ['./hashrate-chart-pools.component.scss'],
+    styles: [`
     .loadingGraphs {
       position: absolute;
       top: 50%;
@@ -31,7 +31,8 @@ interface Hashrate {
       z-index: 99;
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class HashrateChartPoolsComponent implements OnInit {
   @Input() right: number | string = 45;

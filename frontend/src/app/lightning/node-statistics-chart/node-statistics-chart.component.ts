@@ -11,10 +11,10 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { StateService } from '@app/services/state.service';
 
 @Component({
-  selector: 'app-node-statistics-chart',
-  templateUrl: './node-statistics-chart.component.html',
-  styleUrls: ['./node-statistics-chart.component.scss'],
-  styles: [`
+    selector: 'app-node-statistics-chart',
+    templateUrl: './node-statistics-chart.component.html',
+    styleUrls: ['./node-statistics-chart.component.scss'],
+    styles: [`
     .loadingGraphs {
       position: absolute;
       top: 50%;
@@ -22,6 +22,7 @@ import { StateService } from '@app/services/state.service';
       z-index: 99;
     }
   `],
+    standalone: false
 })
 export class NodeStatisticsChartComponent implements OnInit {
   @Input() publicKey: string;

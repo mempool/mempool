@@ -101,9 +101,10 @@ class WalletStats implements ChainStats {
 }
 
 @Component({
-  selector: 'app-wallet',
-  templateUrl: './wallet.component.html',
-  styleUrls: ['./wallet.component.scss']
+    selector: 'app-wallet',
+    templateUrl: './wallet.component.html',
+    styleUrls: ['./wallet.component.scss'],
+    standalone: false
 })
 export class WalletComponent implements OnInit, OnDestroy {
   network = '';

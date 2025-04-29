@@ -7,10 +7,11 @@ import { GeolocationData } from '@app/shared/components/geolocation/geolocation.
 import { LightningApiService } from '@app/lightning/lightning-api.service';
 
 @Component({
-  selector: 'app-top-nodes-per-channels',
-  templateUrl: './top-nodes-per-channels.component.html',
-  styleUrls: ['./top-nodes-per-channels.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-top-nodes-per-channels',
+    templateUrl: './top-nodes-per-channels.component.html',
+    styleUrls: ['./top-nodes-per-channels.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TopNodesPerChannels implements OnInit {
   @Input() nodes$: Observable<INodesRanking>;

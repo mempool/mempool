@@ -5,10 +5,11 @@ import { StateService } from '@app/services/state.service';
 import { WebsocketService } from '@app/services/websocket.service';
 
 @Component({
-  selector: 'app-loading-indicator',
-  templateUrl: './loading-indicator.component.html',
-  styleUrls: ['./loading-indicator.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-loading-indicator',
+    templateUrl: './loading-indicator.component.html',
+    styleUrls: ['./loading-indicator.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class LoadingIndicatorComponent implements OnInit {
   @Input() name: string;

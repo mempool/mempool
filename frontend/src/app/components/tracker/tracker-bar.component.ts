@@ -3,10 +3,11 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges
 export type TrackerStage = 'waiting' | 'pending' | 'soon' | 'next' | 'confirmed' | 'replaced';
 
 @Component({
-  selector: 'app-tracker-bar',
-  templateUrl: './tracker-bar.component.html',
-  styleUrls: ['./tracker-bar.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-tracker-bar',
+    templateUrl: './tracker-bar.component.html',
+    styleUrls: ['./tracker-bar.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TrackerBarComponent implements OnInit, OnChanges {
   @Input() stage: TrackerStage = 'waiting';

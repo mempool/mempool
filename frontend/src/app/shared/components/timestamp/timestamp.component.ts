@@ -2,10 +2,11 @@ import { ChangeDetectionStrategy, Component, Input, OnChanges } from '@angular/c
 import { StateService } from '@app/services/state.service';
 
 @Component({
-  selector: 'app-timestamp',
-  templateUrl: './timestamp.component.html',
-  styleUrls: ['./timestamp.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-timestamp',
+    templateUrl: './timestamp.component.html',
+    styleUrls: ['./timestamp.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TimestampComponent implements OnChanges {
   @Input() unixTime: number;

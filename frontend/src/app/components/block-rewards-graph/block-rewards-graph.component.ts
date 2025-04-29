@@ -15,10 +15,10 @@ import { FiatCurrencyPipe } from '@app/shared/pipes/fiat-currency.pipe';
 import { StateService } from '@app/services/state.service';
 
 @Component({
-  selector: 'app-block-rewards-graph',
-  templateUrl: './block-rewards-graph.component.html',
-  styleUrls: ['./block-rewards-graph.component.scss'],
-  styles: [`
+    selector: 'app-block-rewards-graph',
+    templateUrl: './block-rewards-graph.component.html',
+    styleUrls: ['./block-rewards-graph.component.scss'],
+    styles: [`
     .loadingGraphs {
       position: absolute;
       top: 50%;
@@ -26,7 +26,8 @@ import { StateService } from '@app/services/state.service';
       z-index: 99;
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class BlockRewardsGraphComponent implements OnInit {
   @Input() right: number | string = 45;

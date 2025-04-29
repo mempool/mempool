@@ -11,10 +11,11 @@ import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { WebsocketService } from '@app/services/websocket.service';
 
 @Component({
-  selector: 'app-mempool-block',
-  templateUrl: './mempool-block.component.html',
-  styleUrls: ['./mempool-block.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-mempool-block',
+    templateUrl: './mempool-block.component.html',
+    styleUrls: ['./mempool-block.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class MempoolBlockComponent implements OnInit, OnDestroy {
   network$: Observable<string>;

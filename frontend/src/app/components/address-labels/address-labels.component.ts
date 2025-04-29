@@ -4,10 +4,11 @@ import { StateService } from '@app/services/state.service';
 import { AddressType, AddressTypeInfo } from '@app/shared/address-utils';
 
 @Component({
-  selector: 'app-address-labels',
-  templateUrl: './address-labels.component.html',
-  styleUrls: ['./address-labels.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-address-labels',
+    templateUrl: './address-labels.component.html',
+    styleUrls: ['./address-labels.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class AddressLabelsComponent implements OnChanges {
   network = '';

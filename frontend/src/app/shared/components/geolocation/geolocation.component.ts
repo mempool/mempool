@@ -9,9 +9,10 @@ export interface GeolocationData {
 }
 
 @Component({
-  selector: 'app-geolocation',
-  templateUrl: './geolocation.component.html',
-  styleUrls: ['./geolocation.component.scss']
+    selector: 'app-geolocation',
+    templateUrl: './geolocation.component.html',
+    styleUrls: ['./geolocation.component.scss'],
+    standalone: false
 })
 export class GeolocationComponent implements OnChanges {
   @Input() data: GeolocationData;

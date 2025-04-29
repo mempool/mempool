@@ -52,9 +52,10 @@ export const MAX_BID_RATIO = 4;
 type CheckoutStep = 'quote' | 'summary' | 'checkout' | 'cashapp' | 'applepay' | 'googlepay' | 'cardonfile' | 'processing' | 'paid' | 'success';
 
 @Component({
-  selector: 'app-accelerate-checkout',
-  templateUrl: './accelerate-checkout.component.html',
-  styleUrls: ['./accelerate-checkout.component.scss']
+    selector: 'app-accelerate-checkout',
+    templateUrl: './accelerate-checkout.component.html',
+    styleUrls: ['./accelerate-checkout.component.scss'],
+    standalone: false
 })
 export class AccelerateCheckout implements OnInit, OnDestroy {
   @Input() tx: Transaction;

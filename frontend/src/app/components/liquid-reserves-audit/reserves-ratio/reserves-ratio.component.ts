@@ -4,10 +4,11 @@ import { CurrentPegs } from '@interfaces/node-api.interface';
 
 
 @Component({
-  selector: 'app-reserves-ratio',
-  templateUrl: './reserves-ratio.component.html',
-  styleUrls: ['./reserves-ratio.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-reserves-ratio',
+    templateUrl: './reserves-ratio.component.html',
+    styleUrls: ['./reserves-ratio.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ReservesRatioComponent implements OnInit, OnChanges {
   @Input() currentPeg: CurrentPegs;

@@ -2,9 +2,10 @@ import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core
 import { StateService } from '@app/services/state.service';
 
 @Component({
-  selector: 'app-search-results',
-  templateUrl: './search-results.component.html',
-  styleUrls: ['./search-results.component.scss'],
+    selector: 'app-search-results',
+    templateUrl: './search-results.component.html',
+    styleUrls: ['./search-results.component.scss'],
+    standalone: false
 })
 export class SearchResultsComponent implements OnChanges {
   @Input() results: any = {};

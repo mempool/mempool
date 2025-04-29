@@ -1,10 +1,11 @@
 import { Component, Input, Output, ChangeDetectionStrategy, EventEmitter, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 
 @Component({
-  selector: 'app-toggle',
-  templateUrl: './toggle.component.html',
-  styleUrls: ['./toggle.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-toggle',
+    templateUrl: './toggle.component.html',
+    styleUrls: ['./toggle.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ToggleComponent implements AfterViewInit {
   @Output() toggleStatusChanged = new EventEmitter<boolean>();

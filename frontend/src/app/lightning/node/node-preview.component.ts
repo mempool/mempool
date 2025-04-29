@@ -9,10 +9,11 @@ import { LightningApiService } from '@app/lightning/lightning-api.service';
 import { isMobile } from '@app/shared/common.utils';
 
 @Component({
-  selector: 'app-node-preview',
-  templateUrl: './node-preview.component.html',
-  styleUrls: ['./node-preview.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-node-preview',
+    templateUrl: './node-preview.component.html',
+    styleUrls: ['./node-preview.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class NodePreviewComponent implements OnInit {
   node$: Observable<any>;

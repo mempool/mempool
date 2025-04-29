@@ -3,10 +3,11 @@ import * as QRCode from 'qrcode';
 import { StateService } from '@app/services/state.service';
 
 @Component({
-  selector: 'app-qrcode',
-  templateUrl: './qrcode.component.html',
-  styleUrls: ['./qrcode.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-qrcode',
+    templateUrl: './qrcode.component.html',
+    styleUrls: ['./qrcode.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class QrcodeComponent implements AfterViewInit {
   @Input() data: string;

@@ -12,10 +12,11 @@ import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pip
 import { getFlagEmoji } from '@app/shared/common.utils';
 
 @Component({
-  selector: 'app-nodes-per-country-chart',
-  templateUrl: './nodes-per-country-chart.component.html',
-  styleUrls: ['./nodes-per-country-chart.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-nodes-per-country-chart',
+    templateUrl: './nodes-per-country-chart.component.html',
+    styleUrls: ['./nodes-per-country-chart.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class NodesPerCountryChartComponent implements OnInit {
   miningWindowPreference: string;

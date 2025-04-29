@@ -30,10 +30,11 @@ interface MempoolStatsData {
 }
 
 @Component({
-  selector: 'app-custom-dashboard',
-  templateUrl: './custom-dashboard.component.html',
-  styleUrls: ['./custom-dashboard.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-custom-dashboard',
+    templateUrl: './custom-dashboard.component.html',
+    styleUrls: ['./custom-dashboard.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   network$: Observable<string>;

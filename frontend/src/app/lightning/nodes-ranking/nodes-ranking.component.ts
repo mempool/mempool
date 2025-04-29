@@ -6,10 +6,11 @@ import { Observable } from 'rxjs';
 import { INodesStatistics } from '@interfaces/node-api.interface';
 
 @Component({
-  selector: 'app-nodes-ranking',
-  templateUrl: './nodes-ranking.component.html',
-  styleUrls: ['./nodes-ranking.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-nodes-ranking',
+    templateUrl: './nodes-ranking.component.html',
+    styleUrls: ['./nodes-ranking.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class NodesRanking implements OnInit {
   type: string;

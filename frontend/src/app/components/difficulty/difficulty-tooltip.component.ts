@@ -19,9 +19,10 @@ interface EpochProgress {
 const EPOCH_BLOCK_LENGTH = 2016; // Bitcoin mainnet
 
 @Component({
-  selector: 'app-difficulty-tooltip',
-  templateUrl: './difficulty-tooltip.component.html',
-  styleUrls: ['./difficulty-tooltip.component.scss'],
+    selector: 'app-difficulty-tooltip',
+    templateUrl: './difficulty-tooltip.component.html',
+    styleUrls: ['./difficulty-tooltip.component.scss'],
+    standalone: false
 })
 export class DifficultyTooltipComponent implements OnChanges {
   @Input() status: string | void;

@@ -14,10 +14,11 @@ import { download } from '@app/shared/graphs.utils';
 import { isMobile } from '@app/shared/common.utils';
 
 @Component({
-  selector: 'app-pool-ranking',
-  templateUrl: './pool-ranking.component.html',
-  styleUrls: ['./pool-ranking.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-pool-ranking',
+    templateUrl: './pool-ranking.component.html',
+    styleUrls: ['./pool-ranking.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class PoolRankingComponent implements OnInit {
   @Input() height: number = 300;

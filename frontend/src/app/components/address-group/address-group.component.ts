@@ -12,9 +12,10 @@ import { SeoService } from '@app/services/seo.service';
 import { AddressInformation } from '@interfaces/node-api.interface';
 
 @Component({
-  selector: 'app-address-group',
-  templateUrl: './address-group.component.html',
-  styleUrls: ['./address-group.component.scss']
+    selector: 'app-address-group',
+    templateUrl: './address-group.component.html',
+    styleUrls: ['./address-group.component.scss'],
+    standalone: false
 })
 export class AddressGroupComponent implements OnInit, OnDestroy {
   network = '';

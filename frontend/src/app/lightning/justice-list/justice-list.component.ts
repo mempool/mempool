@@ -6,10 +6,11 @@ import { Transaction } from '@interfaces/electrs.interface';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 
 @Component({
-  selector: 'app-justice-list',
-  templateUrl: './justice-list.component.html',
-  styleUrls: ['./justice-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-justice-list',
+    templateUrl: './justice-list.component.html',
+    styleUrls: ['./justice-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class JusticeList implements OnInit, OnDestroy {
   justiceChannels$: Observable<any[]>;

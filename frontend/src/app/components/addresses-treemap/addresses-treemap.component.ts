@@ -10,10 +10,11 @@ import { Address } from '@interfaces/electrs.interface';
 import { formatNumber } from '@angular/common';
 
 @Component({
-  selector: 'app-addresses-treemap',
-  templateUrl: './addresses-treemap.component.html',
-  styleUrls: ['./addresses-treemap.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-addresses-treemap',
+    templateUrl: './addresses-treemap.component.html',
+    styleUrls: ['./addresses-treemap.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class AddressesTreemap implements OnChanges {
   @Input() addresses: Address[];

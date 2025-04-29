@@ -16,10 +16,11 @@ interface CustomRecord {
 }
 
 @Component({
-  selector: 'app-node',
-  templateUrl: './node.component.html',
-  styleUrls: ['./node.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-node',
+    templateUrl: './node.component.html',
+    styleUrls: ['./node.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class NodeComponent implements OnInit {
   node$: Observable<any>;

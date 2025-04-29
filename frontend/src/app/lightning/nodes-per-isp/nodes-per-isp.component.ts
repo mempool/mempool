@@ -7,10 +7,11 @@ import { getFlagEmoji } from '@app/shared/common.utils';
 import { GeolocationData } from '@app/shared/components/geolocation/geolocation.component';
 
 @Component({
-  selector: 'app-nodes-per-isp',
-  templateUrl: './nodes-per-isp.component.html',
-  styleUrls: ['./nodes-per-isp.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-nodes-per-isp',
+    templateUrl: './nodes-per-isp.component.html',
+    styleUrls: ['./nodes-per-isp.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class NodesPerISP implements OnInit {
   nodes$: Observable<any>;

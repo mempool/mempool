@@ -3,10 +3,11 @@ import { Observable } from 'rxjs';
 import { PegsVolume } from '@interfaces/node-api.interface';
 
 @Component({
-  selector: 'app-recent-pegs-stats',
-  templateUrl: './recent-pegs-stats.component.html',
-  styleUrls: ['./recent-pegs-stats.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-recent-pegs-stats',
+    templateUrl: './recent-pegs-stats.component.html',
+    styleUrls: ['./recent-pegs-stats.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class RecentPegsStatsComponent implements OnInit {
   @Input() pegsVolume$: Observable<PegsVolume[]>;

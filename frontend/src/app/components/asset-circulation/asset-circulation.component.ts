@@ -7,10 +7,11 @@ import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { environment } from '@environments/environment';
 
 @Component({
-  selector: 'app-asset-circulation',
-  templateUrl: './asset-circulation.component.html',
-  styleUrls: ['./asset-circulation.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-asset-circulation',
+    templateUrl: './asset-circulation.component.html',
+    styleUrls: ['./asset-circulation.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class AssetCirculationComponent implements OnInit {
   @Input() assetId: string;

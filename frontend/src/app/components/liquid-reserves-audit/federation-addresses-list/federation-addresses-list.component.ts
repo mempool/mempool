@@ -7,10 +7,11 @@ import { AuditStatus, CurrentPegs, FederationAddress } from '@interfaces/node-ap
 import { WebsocketService } from '@app/services/websocket.service';
 
 @Component({
-  selector: 'app-federation-addresses-list',
-  templateUrl: './federation-addresses-list.component.html',
-  styleUrls: ['./federation-addresses-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-federation-addresses-list',
+    templateUrl: './federation-addresses-list.component.html',
+    styleUrls: ['./federation-addresses-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FederationAddressesListComponent implements OnInit {
   @Input() widget: boolean = false;

@@ -9,10 +9,11 @@ import { WebsocketService } from '@app/services/websocket.service';
 import { SeoService } from '@app/services/seo.service';
 
 @Component({
-  selector: 'app-recent-pegs-list',
-  templateUrl: './recent-pegs-list.component.html',
-  styleUrls: ['./recent-pegs-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-recent-pegs-list',
+    templateUrl: './recent-pegs-list.component.html',
+    styleUrls: ['./recent-pegs-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class RecentPegsListComponent implements OnInit {
   @Input() widget: boolean = false;

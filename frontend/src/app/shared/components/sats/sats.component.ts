@@ -3,9 +3,10 @@ import { Subscription } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 
 @Component({
-  selector: 'app-sats',
-  templateUrl: './sats.component.html',
-  styleUrls: ['./sats.component.scss']
+    selector: 'app-sats',
+    templateUrl: './sats.component.html',
+    styleUrls: ['./sats.component.scss'],
+    standalone: false
 })
 export class SatsComponent implements OnInit {
   @Input() satoshis: number;

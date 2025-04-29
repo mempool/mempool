@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 @Component({
-  selector: 'app-channel-box',
-  templateUrl: './channel-box.component.html',
-  styleUrls: ['./channel-box.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-channel-box',
+    templateUrl: './channel-box.component.html',
+    styleUrls: ['./channel-box.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ChannelBoxComponent {
   @Input() channel: any;

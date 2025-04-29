@@ -3,9 +3,10 @@ import { StateService } from '@app/services/state.service';
 import { TimeService } from '@app/services/time.service';
 
 @Component({
-  selector: 'app-time',
-  templateUrl: './time.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-time',
+    templateUrl: './time.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TimeComponent implements OnInit, OnChanges, OnDestroy {
   interval: number;

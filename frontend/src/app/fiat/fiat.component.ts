@@ -4,10 +4,11 @@ import { Price } from '@app/services/price.service';
 import { StateService } from '@app/services/state.service';
 
 @Component({
-  selector: 'app-fiat',
-  templateUrl: './fiat.component.html',
-  styleUrls: [],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-fiat',
+    templateUrl: './fiat.component.html',
+    styleUrls: [],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FiatComponent implements OnInit, OnDestroy {
   conversions$: Observable<any>;

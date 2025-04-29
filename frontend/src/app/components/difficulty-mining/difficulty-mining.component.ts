@@ -20,10 +20,11 @@ interface EpochProgress {
 }
 
 @Component({
-  selector: 'app-difficulty-mining',
-  templateUrl: './difficulty-mining.component.html',
-  styleUrls: ['./difficulty-mining.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-difficulty-mining',
+    templateUrl: './difficulty-mining.component.html',
+    styleUrls: ['./difficulty-mining.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class DifficultyMiningComponent implements OnInit {
   isLoadingWebSocket$: Observable<boolean>;

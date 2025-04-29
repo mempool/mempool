@@ -12,10 +12,11 @@ import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
-  selector: 'app-nodes-per-isp-chart',
-  templateUrl: './nodes-per-isp-chart.component.html',
-  styleUrls: ['./nodes-per-isp-chart.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-nodes-per-isp-chart',
+    templateUrl: './nodes-per-isp-chart.component.html',
+    styleUrls: ['./nodes-per-isp-chart.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class NodesPerISPChartComponent implements OnInit {
   @Input() height: number = 300;

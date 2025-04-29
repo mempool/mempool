@@ -13,10 +13,10 @@ import { download, formatterXAxis } from '@app/shared/graphs.utils';
 import { StateService } from '@app/services/state.service';
 
 @Component({
-  selector: 'app-block-sizes-weights-graph',
-  templateUrl: './block-sizes-weights-graph.component.html',
-  styleUrls: ['./block-sizes-weights-graph.component.scss'],
-  styles: [`
+    selector: 'app-block-sizes-weights-graph',
+    templateUrl: './block-sizes-weights-graph.component.html',
+    styleUrls: ['./block-sizes-weights-graph.component.scss'],
+    styles: [`
     .loadingGraphs {
       position: absolute;
       top: 50%;
@@ -24,7 +24,8 @@ import { StateService } from '@app/services/state.service';
       z-index: 99;
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class BlockSizesWeightsGraphComponent implements OnInit {
   @Input() right: number | string = 45;

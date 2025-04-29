@@ -12,10 +12,11 @@ import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
-  selector: 'app-blocks-list',
-  templateUrl: './blocks-list.component.html',
-  styleUrls: ['./blocks-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-blocks-list',
+    templateUrl: './blocks-list.component.html',
+    styleUrls: ['./blocks-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class BlocksList implements OnInit {
   @Input() widget: boolean = false;

@@ -7,9 +7,10 @@ import { faqData, restApiDocsData, wsApiDocsData } from '@app/docs/api-docs/api-
 import { FaqTemplateDirective } from '@app/docs/faq-template/faq-template.component';
 
 @Component({
-  selector: 'app-api-docs',
-  templateUrl: './api-docs.component.html',
-  styleUrls: ['./api-docs.component.scss']
+    selector: 'app-api-docs',
+    templateUrl: './api-docs.component.html',
+    styleUrls: ['./api-docs.component.scss'],
+    standalone: false
 })
 export class ApiDocsComponent implements OnInit, AfterViewInit {
   private destroy$: Subject<any> = new Subject<any>();

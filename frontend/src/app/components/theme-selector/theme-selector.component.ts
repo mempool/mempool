@@ -4,10 +4,11 @@ import { ThemeService } from '@app/services/theme.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-theme-selector',
-  templateUrl: './theme-selector.component.html',
-  styleUrls: ['./theme-selector.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-theme-selector',
+    templateUrl: './theme-selector.component.html',
+    styleUrls: ['./theme-selector.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ThemeSelectorComponent implements OnInit {
   themeForm: UntypedFormGroup;

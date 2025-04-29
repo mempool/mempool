@@ -2,9 +2,10 @@ import { Component, Input } from '@angular/core';
 import { EnterpriseService } from '@app/services/enterprise.service';
 
 @Component({
-  selector: 'app-about-sponsors',
-  templateUrl: './about-sponsors.component.html',
-  styleUrls: ['./about-sponsors.component.scss'],
+    selector: 'app-about-sponsors',
+    templateUrl: './about-sponsors.component.html',
+    styleUrls: ['./about-sponsors.component.scss'],
+    standalone: false
 })
 export class AboutSponsorsComponent {
   @Input() host = 'https://mempool.space';

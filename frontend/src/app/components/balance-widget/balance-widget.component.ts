@@ -5,10 +5,11 @@ import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { Observable, catchError, of } from 'rxjs';
 
 @Component({
-  selector: 'app-balance-widget',
-  templateUrl: './balance-widget.component.html',
-  styleUrls: ['./balance-widget.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-balance-widget',
+    templateUrl: './balance-widget.component.html',
+    styleUrls: ['./balance-widget.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class BalanceWidgetComponent implements OnInit, OnChanges {
   @Input() address: string;

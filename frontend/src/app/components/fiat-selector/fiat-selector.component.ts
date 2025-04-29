@@ -5,10 +5,11 @@ import { fiatCurrencies } from '@app/app.constants';
 import { StateService } from '@app/services/state.service';
 
 @Component({
-  selector: 'app-fiat-selector',
-  templateUrl: './fiat-selector.component.html',
-  styleUrls: ['./fiat-selector.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-fiat-selector',
+    templateUrl: './fiat-selector.component.html',
+    styleUrls: ['./fiat-selector.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FiatSelectorComponent implements OnInit {
   fiatForm: UntypedFormGroup;

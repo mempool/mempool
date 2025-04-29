@@ -7,10 +7,11 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { handleDemoRedirect } from '../../shared/common.utils';
 
 @Component({
-  selector: 'app-start',
-  templateUrl: './start.component.html',
-  styleUrls: ['./start.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-start',
+    templateUrl: './start.component.html',
+    styleUrls: ['./start.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
   @Input() showLoadingIndicator = false;

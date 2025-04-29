@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-closing-type',
-  templateUrl: './closing-type.component.html',
-  styleUrls: ['./closing-type.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-closing-type',
+    templateUrl: './closing-type.component.html',
+    styleUrls: ['./closing-type.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ClosingTypeComponent implements OnChanges {
   @Input() type = 0;

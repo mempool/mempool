@@ -5,9 +5,10 @@ import { Subscription } from 'rxjs';
 
 
 @Component({
-  selector: 'app-block-filters',
-  templateUrl: './block-filters.component.html',
-  styleUrls: ['./block-filters.component.scss'],
+    selector: 'app-block-filters',
+    templateUrl: './block-filters.component.html',
+    styleUrls: ['./block-filters.component.scss'],
+    standalone: false
 })
 export class BlockFiltersComponent implements OnInit, OnChanges, OnDestroy {
   @Input() cssWidth: number = 800;

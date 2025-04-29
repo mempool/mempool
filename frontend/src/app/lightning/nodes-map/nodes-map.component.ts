@@ -12,10 +12,11 @@ import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { getFlagEmoji } from '@app/shared/common.utils';
 
 @Component({
-  selector: 'app-nodes-map',
-  templateUrl: './nodes-map.component.html',
-  styleUrls: ['./nodes-map.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-nodes-map',
+    templateUrl: './nodes-map.component.html',
+    styleUrls: ['./nodes-map.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class NodesMap implements OnInit, OnChanges {
   @Input() widget: boolean = false;

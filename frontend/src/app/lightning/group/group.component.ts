@@ -6,9 +6,10 @@ import { GeolocationData } from '@app/shared/components/geolocation/geolocation.
 import { LightningApiService } from '@app/lightning/lightning-api.service';
 
 @Component({
-  selector: 'app-group',
-  templateUrl: './group.component.html',
-  styleUrls: ['./group.component.scss']
+    selector: 'app-group',
+    templateUrl: './group.component.html',
+    styleUrls: ['./group.component.scss'],
+    standalone: false
 })
 export class GroupComponent implements OnInit {
   nodes$: Observable<any>;

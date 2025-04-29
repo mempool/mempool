@@ -6,10 +6,11 @@ import { IOldestNodes } from '@interfaces/node-api.interface';
 import { LightningApiService } from '@app/lightning/lightning-api.service';
 
 @Component({
-  selector: 'app-oldest-nodes',
-  templateUrl: './oldest-nodes.component.html',
-  styleUrls: ['./oldest-nodes.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-oldest-nodes',
+    templateUrl: './oldest-nodes.component.html',
+    styleUrls: ['./oldest-nodes.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class OldestNodes implements OnInit {
   @Input() widget: boolean = false;

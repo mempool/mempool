@@ -15,10 +15,10 @@ import { StateService } from '@app/services/state.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-  selector: 'app-block-fee-rates-graph',
-  templateUrl: './block-fee-rates-graph.component.html',
-  styleUrls: ['./block-fee-rates-graph.component.scss'],
-  styles: [`
+    selector: 'app-block-fee-rates-graph',
+    templateUrl: './block-fee-rates-graph.component.html',
+    styleUrls: ['./block-fee-rates-graph.component.scss'],
+    styles: [`
     .loadingGraphs {
       position: absolute;
       top: 50%;
@@ -26,7 +26,8 @@ import { ActivatedRoute, Router } from '@angular/router';
       z-index: 99;
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class BlockFeeRatesGraphComponent implements OnInit {
   @Input() widget = false;

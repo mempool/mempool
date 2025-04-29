@@ -1,7 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 @Component({
-  selector: 'app-github-login',
-  templateUrl: './github-login.component.html',
+    selector: 'app-github-login',
+    templateUrl: './github-login.component.html',
+    standalone: false
 })
 export class GithubLogin {
   @Input() width: string | null = null;
