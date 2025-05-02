@@ -225,10 +225,10 @@ yarn add @mempool/liquid.js`;
         return this.replaceCurlPlaceholder(code.codeTemplate.curl, code.codeSampleSignet);
       }
       if (this.network === 'liquid') {
-        return this.replaceCurlPlaceholder(code.codeTemplate.curl, code.codeSampleLiquid);
+        return this.replaceCurlPlaceholder(code.codeTemplate.hasOwnProperty('curlLiquid') ? code.codeTemplate.curlLiquid : code.codeTemplate.curl, code.codeSampleLiquid);
       }
       if (this.network === 'liquidtestnet') {
-        return this.replaceCurlPlaceholder(code.codeTemplate.curl, code.codeSampleLiquidTestnet);
+        return this.replaceCurlPlaceholder(code.codeTemplate.hasOwnProperty('curlLiquid') ? code.codeTemplate.curlLiquid : code.codeTemplate.curl, code.codeSampleLiquidTestnet);
       }
       if (this.network === '' || this.network === 'main') {
         return this.replaceCurlPlaceholder(code.codeTemplate.curl, code.codeSampleMainnet);

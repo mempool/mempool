@@ -3750,12 +3750,14 @@ export const restApiDocsData = [
       liquid: "Returns details about a block. Available fields: <code>id</code>, <code>height</code>, <code>version</code>, <code>timestamp</code>, <code>bits</code>, <code>nonce</code>, <code>merkle_root</code>, <code>tx_count</code>, <code>size</code>, <code>weight</code>,<code>proof</code>, and <code>previousblockhash</code>."
     },
     urlString: "/v1/block/:hash",
+    urlStringLiquid: "/block/:hash",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
           curl: `/api/v1/block/%{1}`,
+          curlLiquid: `/api/block/%{1}`,
           commonJS: `
         const { %{0}: { blocks } } = mempoolJS();
 
