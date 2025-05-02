@@ -10,6 +10,12 @@ import { StateService } from '@app/services/state.service';
 import { FiatCurrencyPipe } from '@app/shared/pipes/fiat-currency.pipe';
 import { SeriesOption } from 'echarts';
 import { WalletStats } from '@app/shared/wallet-stats';
+import { chartColors } from '@app/app.constants';
+
+
+// export const treasuriesPalette = [
+//   '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40',
+// ];
 
 const periodSeconds = {
   '1d': (60 * 60 * 24),
@@ -64,11 +70,6 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
   error: any;
   isLoading = true;
   chartInstance: any = undefined;
-
-  // Color palette for multiple wallets
-  colorPalette = [
-    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40',
-  ];
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
@@ -215,7 +216,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
     }));
 
     this.chartOptions = {
-      color: this.colorPalette,
+      color: chartColors,
       animation: false,
       grid: {
         top: 20,
@@ -260,11 +261,12 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
           tooltip += `<div><b style="color: white; margin-left: 2px">${date}</b><br>`;
 
           // Get all active wallet IDs from the selected wallets
-          const activeWalletIds = Object.keys(this.selectedWallets)
-            .filter(walletId => this.selectedWallets[walletId] && this.walletData[walletId]);
+          const activeWalletIds: { walletId: string, index: number }[] = this.wallets
+            .map((walletId, index) => ({ walletId, index }))
+            .filter(({ walletId }) => this.selectedWallets[walletId] && this.walletData[walletId]);
 
           // For each active wallet, find and display the most recent balance
-          activeWalletIds.forEach((walletId, index) => {
+          activeWalletIds.forEach(({ walletId, index }) => {
             const walletPoints = this.walletData[walletId];
             if (!walletPoints || !walletPoints.length) {
               return;
@@ -274,7 +276,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
             let mostRecentPoint: any = null;
             for (let i = 0; i < walletPoints.length; i++) {
               const point: any = walletPoints[i];
-              const pointTime = Array.isArray(point) ? point[0] : 
+              const pointTime = Array.isArray(point) ? point[0] :
                 (point && typeof point === 'object' && 'value' in point ? point.value[0] : null);
 
               if (pointTime && pointTime <= tooltipTime) {
@@ -293,11 +295,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
                 (mostRecentPoint && typeof mostRecentPoint === 'object' && 'value' in mostRecentPoint ? mostRecentPoint.value[1] : null);
 
               if (balance !== null && !isNaN(balance)) {
-                // Create a marker for this series using the color from colorPalette
-                const colorIndex = index % this.colorPalette.length;
-
-                // Get color for marker - use direct color from palette
-                const markerColor = this.colorPalette[colorIndex];
+                const markerColor = chartColors[index % chartColors.length];
 
                 const marker = `<span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:${markerColor};"></span>`;
 

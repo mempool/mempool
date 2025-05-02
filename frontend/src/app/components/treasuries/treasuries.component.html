@@ -1,5 +1,6 @@
 <div class="container-xl dashboard-container">
-  <div class="row">
+
+  <div class="row row-cols-1 row-cols-md-2">
     <div class="col">
       <div class="card">
         <div class="card-body">
@@ -12,47 +13,68 @@
               <th class="table-cell-value" i18n="dashboard.treasury-leaderboard.value">USD Value</th>
             </thead>
             <tbody *ngIf="walletStats$ | async as walletStats; else leaderboardSkeleton">
-              <tr *ngFor="let wallet of sortedWallets$ | async; let i = index" 
-                  (click)="navigateToWallet(wallet)"
-                  class="clickable-row">
-                <td class="table-cell-position">
-                  <div class="position-container">
-                    <div class="color-swatch" [style.background-color]="getWalletColor(wallet)"></div>
-                    <span class="position-number">{{i + 1}}</span>
-                  </div>
-                </td>
-                <td class="table-cell-name">{{wallet}}</td>
-                <td class="table-cell-balance">
-                  <app-amount [satoshis]="walletStats[wallet]?.balance || 0" digitsInfo="1.2-4" [noFiat]="true"></app-amount>
-                </td>
-                <td class="table-cell-value">
-                  <app-fiat [value]="walletStats[wallet]?.balance || 0" digitsInfo="1.0-0"></app-fiat>
-                </td>
-              </tr>
+              <ng-container *ngIf="(sortedWallets$ | async) as sortedWallets">
+                <tr *ngFor="let wallet of sortedWallets.slice(0, 7); let i = index"
+                    (click)="navigateToWallet(wallet)"
+                    class="clickable-row">
+                  <td class="table-cell-position">
+                    <div class="position-container">
+                      <div class="color-swatch" [style.background-color]="getWalletColor(wallet)"></div>
+                      <span class="position-number">{{i + 1}}</span>
+                    </div>
+                  </td>
+                  <td class="table-cell-name">{{wallet}}</td>
+                  <td class="table-cell-balance">
+                    <app-amount [satoshis]="walletStats[wallet]?.balance || 0" digitsInfo="1.2-4" [noFiat]="true"></app-amount>
+                  </td>
+                  <td class="table-cell-value">
+                    <app-fiat [value]="walletStats[wallet]?.balance || 0" digitsInfo="1.0-0"></app-fiat>
+                  </td>
+                </tr>
+              </ng-container>
             </tbody>
           </table>
         </div>
       </div>
     </div>
-  </div>
-  <div class="row">
     <div class="col">
       <div class="card">
-        <div class="card-body">
+        <div class="card-body pl-2 pr-2">
+          <h5 class="card-title" i18n="dashboard.treasury-distribution">Treasury Distribution</h5>
           <div *ngIf="walletStats$ | async as walletStats">
-            <app-treasuries-graph 
-              [walletStats]="walletStats" 
-              [walletSummaries$]="walletSummaries$" 
-              [selectedWallets]="selectedWallets" 
+            <app-treasuries-pie
+              [walletStats]="walletStats"
+              [walletSummaries$]="walletSummaries$"
+              [selectedWallets]="selectedWallets"
               [wallets]="currentSortedWallets"
-              [height]="400" 
-              [right]="10" 
-              [left]="70" 
-              [showLegend]="true" 
-              [showYAxis]="true" 
-              [widget]="false" 
-              [allowZoom]="false" 
-              period="all" 
+              [height]="375"
+              mode="relative"
+              (navigateToWallet)="onNavigateToWallet($event)"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title" i18n="dashboard.balance-history">Balance History</h5>
+          <div *ngIf="walletStats$ | async as walletStats">
+            <app-treasuries-graph
+              [walletStats]="walletStats"
+              [walletSummaries$]="walletSummaries$"
+              [selectedWallets]="selectedWallets"
+              [wallets]="currentSortedWallets"
+              [height]="400"
+              [right]="10"
+              [left]="70"
+              [showLegend]="true"
+              [showYAxis]="true"
+              [widget]="false"
+              [allowZoom]="false"
+              period="all"
             />
           </div>
         </div>

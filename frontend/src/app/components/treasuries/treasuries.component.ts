@@ -7,7 +7,7 @@ import { catchError, map, scan, shareReplay, startWith, switchMap, tap } from 'r
 import { WalletStats } from '@app/shared/wallet-stats';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { Router } from '@angular/router';
-
+import { chartColors } from '@app/app.constants';
 @Component({
   selector: 'app-treasuries',
   templateUrl: './treasuries.component.html',
@@ -83,8 +83,8 @@ export class TreasuriesComponent implements OnInit, OnDestroy {
               mempool_stats: {
                 funded_txo_count: 0,
                 funded_txo_sum: 0,
-                spent_txo_count: 0, 
-                spent_txo_sum: 0, 
+                spent_txo_count: 0,
+                spent_txo_sum: 0,
                 tx_count: 0
               },
             };
@@ -270,12 +270,12 @@ export class TreasuriesComponent implements OnInit, OnDestroy {
   }
 
   getWalletColor(wallet: string): string {
-    // Use a consistent color for each wallet based on its position in the sorted list
-    const colors = [
-      '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40',
-    ];
     const index = this.currentSortedWallets.indexOf(wallet);
-    return colors[index % colors.length];
+    return chartColors[index % chartColors.length];
+  }
+
+  onNavigateToWallet(wallet: string): void {
+    this.navigateToWallet(wallet);
   }
 
   navigateToWallet(wallet: string): void {

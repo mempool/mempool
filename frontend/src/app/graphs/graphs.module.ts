@@ -39,6 +39,7 @@ import { WalletComponent } from '@components/wallet/wallet.component';
 import { WalletPreviewComponent } from '@components/wallet/wallet-preview.component';
 import { AddressGraphComponent } from '@components/address-graph/address-graph.component';
 import { TreasuriesGraphComponent } from '@components/treasuries/treasuries-graph/treasuries-graph.component';
+import { TreasuriesPieComponent } from '@components/treasuries/treasuries-pie/treasuries-pie.component';
 import { UtxoGraphComponent } from '@components/utxo-graph/utxo-graph.component';
 import { ActiveAccelerationBox } from '@components/acceleration/active-acceleration-box/active-acceleration-box.component';
 import { AddressesTreemap } from '@components/addresses-treemap/addresses-treemap.component';
@@ -85,6 +86,7 @@ import { AsmStylerPipe } from '@app/shared/pipes/asm-styler/asm-styler.pipe';
     BlockHealthGraphComponent,
     AddressGraphComponent,
     TreasuriesGraphComponent,
+    TreasuriesPieComponent,
     UtxoGraphComponent,
     ActiveAccelerationBox,
     AddressesTreemap,

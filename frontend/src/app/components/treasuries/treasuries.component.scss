@@ -107,11 +107,13 @@
   }
   .table-cell-position {
     width: 10%;
+    min-width: 50px;
     text-align: center;
     .position-container {
       display: flex;
       align-items: center;
       justify-content: center;
+      min-width: 40px;
       .color-swatch {
         width: 16px;
         height: 16px;
@@ -124,7 +126,7 @@
     }
   }
   .table-cell-name {
-    width: 40%;
+    width: 25%;
     text-align: left;
   }
   .table-cell-balance {
@@ -134,6 +136,12 @@
   .table-cell-value {
     width: 25%;
     text-align: right;
+  }
+
+  @media (max-width: 1080px) {
+    .table-cell-value {
+      display: none;
+    }
   }
 }
 
