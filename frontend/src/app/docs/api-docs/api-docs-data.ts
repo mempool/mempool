@@ -3749,13 +3749,13 @@ export const restApiDocsData = [
       default: "Returns details about a block.",
       liquid: "Returns details about a block. Available fields: <code>id</code>, <code>height</code>, <code>version</code>, <code>timestamp</code>, <code>bits</code>, <code>nonce</code>, <code>merkle_root</code>, <code>tx_count</code>, <code>size</code>, <code>weight</code>,<code>proof</code>, and <code>previousblockhash</code>."
     },
-    urlString: "/block/:hash",
+    urlString: "/v1/block/:hash",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
-          curl: `/api/block/%{1}`,
+          curl: `/api/v1/block/%{1}`,
           commonJS: `
         const { %{0}: { blocks } } = mempoolJS();
 
@@ -3777,54 +3777,75 @@ export const restApiDocsData = [
           commonJS: ['000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce'],
           curl: ['000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce'],
           response: `{
+  "id": "000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce",
+  "height": 363366,
+  "version": 2,
+  "timestamp": 1435766771,
+  "bits": 404111758,
+  "nonce": 2892644888,
+  "difficulty": 49402014931.22746,
+  "merkle_root": "9d3cb87bf05ebae366b4262ed5f768ce8c62fc385c3886c9cb097647b04b686c",
+  "tx_count": 494,
+  "size": 286494,
+  "weight": 1145976,
+  "previousblockhash": "000000000000000010c545b6fa3ef1f7cf45a2a8760b1ee9f2e89673218207ce",
+  "mediantime": 1435763435,
   "extras": {
-    "reward": 638307429,
-    "coinbaseTx": {
-      "vin": [
-        {
-          "scriptsig": "03ad3e0b2cfabe6d6df8fb5429a5de5fc2bd1bafffbc90d33c77eb73307d51931d247f21d7bccde51710000000f09f909f092f4632506f6f6c2f6b0000000000000000000000000000000000000000000000000000000000000000000000050086411100"
-        }
-      ],
-      "vout": [
-        {
-          "scriptpubkey_address": "1KFHE7w8BhaENAswwryaoccDb6qcT6DbYY",
-          "value": 638307429
-        }
-      ]
-    },
-    "coinbaseRaw": "03ad3e0b2cfabe6d6df8fb5429a5de5fc2bd1bafffbc90d33c77eb73307d51931d247f21d7bccde51710000000f09f909f092f4632506f6f6c2f6b0000000000000000000000000000000000000000000000000000000000000000000000050086411100",
-    "medianFee": 10,
+    "totalFees": 5949764,
+    "medianFee": 14,
     "feeRange": [
+      0,
+      0,
       1,
-      8,
-      9,
-      10,
-      15,
-      21,
-      348
+      14,
+      38,
+      48,
+      261
     ],
-    "totalFees": 13307429,
-    "avgFee": 5591,
-    "avgFeeRate": 13,
+    "reward": 2505949764,
     "pool": {
-      "id": 36,
-      "name": "F2Pool",
-      "slug": "f2pool"
+      "id": 0,
+      "name": "Unknown",
+      "slug": "unknown",
+      "minerNames": null
     },
-    "matchRate": 93
-  },
-  "id": "00000000000000000007566f8f035a1dc38b351e6f54778b311fe6dbabd79b46",
-  "height": 736941,
-  "version": 536870916,
-  "timestamp": 1652891466,
-  "bits": 386466234,
-  "nonce": 3514220842,
-  "difficulty": 31251101365711.12,
-  "merkle_root": "4a3072f98f60cbb639bb7f46180b8843d17c7502627ffb633db0ed86610cdd71",
-  "tx_count": 2381,
-  "size": 1709571,
-  "weight": 3997770,
-  "previousblockhash": "00000000000000000005ef14db0b4befcbbe1e9b8676eec67fcf810a899c4d5e"
+    "avgFee": 12068,
+    "avgFeeRate": 20,
+    "coinbaseRaw": "03668b050455940ee2ebbc03100000046d",
+    "coinbaseAddress": "17JJ3oZyF4ShQMGukDjpMWhmooCjEvoVVB",
+    "coinbaseAddresses": [
+      "17JJ3oZyF4ShQMGukDjpMWhmooCjEvoVVB"
+    ],
+    "coinbaseSignature": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 45160ea9d45f6edefef3977ac0b2cdcc29aa594a OP_EQUALVERIFY OP_CHECKSIG",
+    "coinbaseSignatureAscii": "\\u0003f\\u008b\\u0005\\u0004U\\u0094\\u000eâë¼\\u0003\\u0010\\u0000\\u0000\\u0004m",
+    "avgTxSize": 579.57,
+    "totalInputs": 1424,
+    "totalOutputs": 1764,
+    "totalOutputAmt": 531126071491,
+    "medianFeeAmt": 10000,
+    "feePercentiles": [
+      0,
+      735,
+      10000,
+      10000,
+      10000,
+      20000,
+      300000
+    ],
+    "segwitTotalTxs": 0,
+    "segwitTotalSize": 0,
+    "segwitTotalWeight": 0,
+    "header": "02000000ce0782217396e8f2e91e0b76a8a245cff7f13efab645c51000000000000000006c684bb0477609cbc986385c38fc628cce68f7d52e26b466e3ba5ef07bb83c9df30f94558e41161818426aac",
+    "utxoSetChange": 340,
+    "utxoSetSize": 21180314,
+    "totalInputAmt": 531132021255,
+    "virtualSize": 286494,
+    "firstSeen": null,
+    "orphans": [],
+    "matchRate": null,
+    "expectedFees": null,
+    "expectedWeight": null
+  }
 }`
         },
         codeSampleTestnet: {
@@ -3832,19 +3853,67 @@ export const restApiDocsData = [
           commonJS: ['000000000000009c08dc77c3f224d9f5bbe335a78b996ec1e0701e065537ca81'],
           curl: ['000000000000009c08dc77c3f224d9f5bbe335a78b996ec1e0701e065537ca81'],
           response: `{
-  id: "000000000000009c08dc77c3f224d9f5bbe335a78b996ec1e0701e065537ca81",
-  height: 2091140,
-  version: 543162372,
-  timestamp: 1630625150,
-  tx_count: 2,
-  size: 575,
-  weight: 1865,
-  merkle_root: "5d10d8d158bb8eb217d01fecc435bd10eda028043a913dc2bfe0ccf536a51cc9",
-  previousblockhash: "0000000000000073f95d1fc0a93d449f82a754410c635e46264ec6c7c4d5741e",
-  mediantime: 1630621997,
-  nonce: 1600805744,
-  bits: 436273151,
-  difficulty: 16777216
+  "id": "000000000000009c08dc77c3f224d9f5bbe335a78b996ec1e0701e065537ca81",
+  "height": 2091140,
+  "version": 543162372,
+  "timestamp": 1630625150,
+  "bits": 436273151,
+  "nonce": 1600805744,
+  "difficulty": 16777216,
+  "merkle_root": "5d10d8d158bb8eb217d01fecc435bd10eda028043a913dc2bfe0ccf536a51cc9",
+  "tx_count": 2,
+  "size": 575,
+  "weight": 1865,
+  "previousblockhash": "0000000000000073f95d1fc0a93d449f82a754410c635e46264ec6c7c4d5741e",
+  "mediantime": 1630621997,
+  "extras": {
+    "totalFees": 877,
+    "medianFee": 5,
+    "feeRange": [
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5
+    ],
+    "reward": 9766502,
+    "pool": {
+      "id": 0,
+      "name": "Unknown",
+      "slug": "unknown",
+      "minerNames": null
+    },
+    "avgFee": 877,
+    "avgFeeRate": 5,
+    "coinbaseRaw": "0384e81f047e5d3161425443506f6f6cfabe6d6dfc481b6989a49bad403c75b0abfcdb7796b42489514a8c2d2294d7e5b2c93c05020000007296cd10010022583d1d000000000000",
+    "coinbaseAddress": "2N4YXTxKEso3yeYXNn5h42Vqu3FzTTQ8Lq5",
+    "coinbaseAddresses": [
+      "2N4YXTxKEso3yeYXNn5h42Vqu3FzTTQ8Lq5"
+    ],
+    "coinbaseSignature": "OP_HASH160 OP_PUSHBYTES_20 7bef0b4a4dafa77b2ec52b81659cbcf0d9a91487 OP_EQUAL",
+    "coinbaseSignatureAscii": "\\u0003\\u0084è\\u001f\\u0004~]1aBTCPoolú¾mmüH\\u001bi\\u0089¤\\u009b­@<u°«üÛw\\u0096´$\\u0089QJ\\u008c-"\\u0094×å²É<\\u0005\\u0002\\u0000\\u0000\\u0000r\\u0096Í\\u0010\\u0001\\u0000\"X=\\u001d\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000",
+    "avgTxSize": 128,
+    "totalInputs": 1,
+    "totalOutputs": 5,
+    "totalOutputAmt": 4728937,
+    "medianFeeAmt": null,
+    "feePercentiles": null,
+    "segwitTotalTxs": 1,
+    "segwitTotalSize": 256,
+    "segwitTotalWeight": 697,
+    "header": "040060201e74d5c4c7c64e26465e630c4154a7829f443da9c01f5df97300000000000000c91ca536f5cce0bfc23d913a0428a0ed10bd35c4ec1fd017b28ebb58d1d8105d7e5d3161ffff001a705b6a5f",
+    "utxoSetChange": 4,
+    "utxoSetSize": 26144301,
+    "totalInputAmt": 4729814,
+    "virtualSize": 466.25,
+    "firstSeen": null,
+    "orphans": [],
+    "matchRate": null,
+    "expectedFees": null,
+    "expectedWeight": null
+  }
 }`
         },
         codeSampleSignet: {
@@ -3852,19 +3921,67 @@ export const restApiDocsData = [
           commonJS: ['000000ca66fab8083d4f0370d499c3d602e78af5fa69b2427cda15a3f0d96152'],
           curl: ['000000ca66fab8083d4f0370d499c3d602e78af5fa69b2427cda15a3f0d96152'],
           response: `{
-  id: "000000ca66fab8083d4f0370d499c3d602e78af5fa69b2427cda15a3f0d96152",
-  height: 53745,
-  version: 536870912,
-  timestamp: 1630624390,
-  tx_count: 1,
-  size: 343,
-  weight: 1264,
-  merkle_root: "2c1984132841b9f98270274012b22beb7d4ade778cf058e9a44d38de5a111362",
-  previousblockhash: "000001497bffdc2347656847647f343afc0eee441a849259335b8a1d79b6aa4a",
-  mediantime: 1630621400,
-  nonce: 19642021,
-  bits: 503404179,
-  difficulty: 0
+  "id": "000000ca66fab8083d4f0370d499c3d602e78af5fa69b2427cda15a3f0d96152",
+  "height": 53745,
+  "version": 536870912,
+  "timestamp": 1630624390,
+  "bits": 503404179,
+  "nonce": 19642021,
+  "difficulty": 0.002919030932507782,
+  "merkle_root": "2c1984132841b9f98270274012b22beb7d4ade778cf058e9a44d38de5a111362",
+  "tx_count": 1,
+  "size": 343,
+  "weight": 1264,
+  "previousblockhash": "000001497bffdc2347656847647f343afc0eee441a849259335b8a1d79b6aa4a",
+  "mediantime": 1630621400,
+  "extras": {
+    "totalFees": 0,
+    "medianFee": 0,
+    "feeRange": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "reward": 5000000000,
+    "pool": {
+      "id": 0,
+      "name": "Unknown",
+      "slug": "unknown",
+      "minerNames": null
+    },
+    "avgFee": 0,
+    "avgFeeRate": 0,
+    "coinbaseRaw": "03f1d100",
+    "coinbaseAddress": "tb1pqk4mdqzp8kpu2g6nrahwd9j0muacyjfadk99tvmpf5vqya8rt5fq2dxx99",
+    "coinbaseAddresses": [
+      "tb1pqk4mdqzp8kpu2g6nrahwd9j0muacyjfadk99tvmpf5vqya8rt5fq2dxx99"
+    ],
+    "coinbaseSignature": "OP_PUSHNUM_1 OP_PUSHBYTES_32 05abb680413d83c523531f6ee6964fdf3b82493d6d8a55b3614d180274e35d12",
+    "coinbaseSignatureAscii": "\\u0003ñÑ\\u0000",
+    "avgTxSize": 0,
+    "totalInputs": 0,
+    "totalOutputs": 2,
+    "totalOutputAmt": 0,
+    "medianFeeAmt": null,
+    "feePercentiles": null,
+    "segwitTotalTxs": 0,
+    "segwitTotalSize": 0,
+    "segwitTotalWeight": 0,
+    "header": "000000204aaab6791d8a5b335992841a44ee0efc3a347f644768654723dcff7b490100006213115ade384da4e958f08c77de4a7deb2bb21240277082f9b941281384192c865a31619356011ea5b62b01",
+    "utxoSetChange": 2,
+    "utxoSetSize": 302621,
+    "totalInputAmt": 0,
+    "virtualSize": 316,
+    "firstSeen": null,
+    "orphans": [],
+    "matchRate": null,
+    "expectedFees": null,
+    "expectedWeight": null
+  }
 }`
         },
         codeSampleLiquid: {
