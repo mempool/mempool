@@ -5,22 +5,22 @@ import { ApiService } from '@app/services/api.service';
 import { StateService } from '@app/services/state.service';
 import { catchError, map, scan, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 import { WalletStats } from '@app/shared/wallet-stats';
-import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { Router } from '@angular/router';
 import { chartColors } from '@app/app.constants';
+import { Treasury } from '@interfaces/node-api.interface';
 @Component({
   selector: 'app-treasuries',
   templateUrl: './treasuries.component.html',
   styleUrls: ['./treasuries.component.scss']
 })
 export class TreasuriesComponent implements OnInit, OnDestroy {
-  wallets: string[] = [];
+  treasuries: Treasury[] = [];
   walletSummaries$: Observable<Record<string, AddressTxSummary[]>>;
   selectedWallets: Record<string, boolean> = {};
   isLoading = true;
   error: any;
   walletSubscriptions: Subscription[] = [];
-  currentSortedWallets: string[] = [];
+  currentSortedTreasuries: Treasury[] = [];
 
   // Individual wallet data
   walletObservables: Record<string, Observable<Record<string, any>>> = {};
@@ -28,28 +28,27 @@ export class TreasuriesComponent implements OnInit, OnDestroy {
   individualWalletSummaries: Record<string, Observable<AddressTxSummary[]>> = {};
   walletStatsObservables: Record<string, Observable<WalletStats>> = {};
   walletStats$: Observable<Record<string, WalletStats>>;
-  sortedWallets$: Observable<string[]>;
+  sortedTreasuries$: Observable<Treasury[]>;
 
   constructor(
     private apiService: ApiService,
     private stateService: StateService,
-    private electrsApiService: ElectrsApiService,
     private router: Router,
   ) {}
 
   ngOnInit() {
     // Fetch the list of wallets from the API
-    this.apiService.getWallets$().pipe(
+    this.apiService.getTreasuries$().pipe(
       catchError(err => {
-        console.error('Error loading wallets list:', err);
+        console.error('Error loading treasuries list:', err);
         return of([]);
       })
-    ).subscribe(wallets => {
-      this.wallets = wallets;
+    ).subscribe(treasuries => {
+      this.treasuries = treasuries;
 
       // Initialize all wallets as enabled by default
-      this.wallets.forEach(wallet => {
-        this.selectedWallets[wallet] = true;
+      this.treasuries.forEach(treasury => {
+        this.selectedWallets[treasury.wallet] = true;
       });
 
       // Set up wallet data after we have the wallet list
@@ -58,16 +57,16 @@ export class TreasuriesComponent implements OnInit, OnDestroy {
   }
 
   private setupWalletData() {
-    this.wallets.forEach(walletName => {
-      this.walletObservables[walletName] = this.apiService.getWallet$(walletName).pipe(
+    this.treasuries.forEach(treasury => {
+      this.walletObservables[treasury.wallet] = this.apiService.getWallet$(treasury.wallet).pipe(
         catchError((err) => {
-          console.log(`Error loading wallet ${walletName}:`, err);
+          console.log(`Error loading wallet ${treasury.wallet}:`, err);
           return of({});
         }),
         shareReplay(1),
       );
 
-      this.walletAddressesObservables[walletName] = this.walletObservables[walletName].pipe(
+      this.walletAddressesObservables[treasury.wallet] = this.walletObservables[treasury.wallet].pipe(
         map(wallet => {
           const walletInfo: Record<string, Address> = {};
           for (const address of Object.keys(wallet || {})) {
@@ -127,7 +126,7 @@ export class TreasuriesComponent implements OnInit, OnDestroy {
         )),
       );
 
-      this.individualWalletSummaries[walletName] = this.walletObservables[walletName].pipe(
+      this.individualWalletSummaries[treasury.wallet] = this.walletObservables[treasury.wallet].pipe(
         switchMap(wallet => this.stateService.walletTransactions$.pipe(
           startWith([]),
           scan((summaries, newTransactions: Transaction[]) => {
@@ -174,7 +173,7 @@ export class TreasuriesComponent implements OnInit, OnDestroy {
         ))
       );
 
-      this.walletStatsObservables[walletName] = this.walletObservables[walletName].pipe(
+      this.walletStatsObservables[treasury.wallet] = this.walletObservables[treasury.wallet].pipe(
         switchMap(wallet => {
           const walletStats = new WalletStats(
             Object.values(wallet || {}).map(w => w?.stats || {}),
@@ -232,22 +231,22 @@ export class TreasuriesComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.sortedWallets$ = this.walletStats$.pipe(
+    this.sortedTreasuries$ = this.walletStats$.pipe(
       map(walletStats => {
-        return [...this.wallets].sort((a, b) => {
-          const balanceA = walletStats[a]?.balance || 0;
-          const balanceB = walletStats[b]?.balance || 0;
+        return [...this.treasuries].sort((a, b) => {
+          const balanceA = walletStats[a.wallet]?.balance || 0;
+          const balanceB = walletStats[b.wallet]?.balance || 0;
           return balanceB - balanceA;
         });
       }),
       tap(sortedWallets => {
         // Update selectedWallets to maintain the same order
         const newSelectedWallets: Record<string, boolean> = {};
-        sortedWallets.forEach(wallet => {
-          newSelectedWallets[wallet] = this.selectedWallets[wallet] ?? true;
+        sortedWallets.forEach(treasury => {
+          newSelectedWallets[treasury.wallet] = this.selectedWallets[treasury.wallet] ?? true;
         });
         this.selectedWallets = newSelectedWallets;
-        this.currentSortedWallets = sortedWallets;
+        this.currentSortedTreasuries = sortedWallets;
       })
     );
   }
@@ -269,17 +268,17 @@ export class TreasuriesComponent implements OnInit, OnDestroy {
     });
   }
 
-  getWalletColor(wallet: string): string {
-    const index = this.currentSortedWallets.indexOf(wallet);
+  getTreasuryColor(treasury: Treasury): string {
+    const index = this.currentSortedTreasuries.indexOf(treasury);
     return chartColors[index % chartColors.length];
   }
 
-  onNavigateToWallet(wallet: string): void {
-    this.navigateToWallet(wallet);
+  onNavigateToTreasury(treasury: Treasury): void {
+    this.navigateToTreasury(treasury);
   }
 
-  navigateToWallet(wallet: string): void {
-    this.router.navigate(['/wallet', wallet]);
+  navigateToTreasury(treasury: Treasury): void {
+    this.router.navigate(['/wallet', treasury.wallet]);
   }
 
   ngOnDestroy() {

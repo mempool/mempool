@@ -1,16 +1,14 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, NgZone, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { echarts, EChartsOption } from '@app/graphs/echarts';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { EChartsOption } from '@app/graphs/echarts';
 import { BehaviorSubject, Observable, Subscription, combineLatest } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { AddressTxSummary } from '@interfaces/electrs.interface';
 import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
-import { Router } from '@angular/router';
-import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from '@app/services/state.service';
-import { FiatCurrencyPipe } from '@app/shared/pipes/fiat-currency.pipe';
 import { SeriesOption } from 'echarts';
 import { WalletStats } from '@app/shared/wallet-stats';
 import { chartColors } from '@app/app.constants';
+import { Treasury } from '../../../interfaces/node-api.interface';
 
 
 // export const treasuriesPalette = [
@@ -44,7 +42,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
   @Input() walletStats: Record<string, WalletStats>;
   @Input() walletSummaries$: Observable<Record<string, AddressTxSummary[]>>;
   @Input() selectedWallets: Record<string, boolean> = {};
-  @Input() wallets: string[] = [];
+  @Input() treasuries: Treasury[] = [];
   @Input() height: number = 400;
   @Input() right: number | string = 10;
   @Input() left: number | string = 70;
@@ -57,6 +55,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
   adjustedLeft: number = 70;
   adjustedRight: number = 10;
   walletData: Record<string, any[]> = {};
+  seriesNameToLabel: Record<string, string> = {};
   hoverData: any[] = [];
 
   subscription: Subscription;
@@ -74,12 +73,8 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     @Inject(LOCALE_ID) public locale: string,
     public stateService: StateService,
-    private router: Router,
     private amountShortenerPipe: AmountShortenerPipe,
     private cd: ChangeDetectorRef,
-    private relativeUrlPipe: RelativeUrlPipe,
-    private fiatCurrencyPipe: FiatCurrencyPipe,
-    private zone: NgZone,
   ) {}
 
   ngOnInit() {
@@ -122,13 +117,13 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
   processWalletData(walletSummaries: Record<string, AddressTxSummary[]>): void {
     this.walletData = {};
 
-    Object.entries(walletSummaries).forEach(([walletId, summary]) => {
-      if (!summary || !summary.length) return;
+    this.treasuries.forEach(treasury => {
+      if (!walletSummaries[treasury.wallet] || !walletSummaries[treasury.wallet].length) return;
 
-      const total = this.walletStats[walletId] ? this.walletStats[walletId].balance : summary.reduce((acc, tx) => acc + tx.value, 0);
+      const total = this.walletStats[treasury.wallet] ? this.walletStats[treasury.wallet].balance : walletSummaries[treasury.wallet].reduce((acc, tx) => acc + tx.value, 0);
 
       let runningTotal = total;
-      const processedData = summary.map(tx => {
+      const processedData = walletSummaries[treasury.wallet].map(tx => {
         const balance = runningTotal;
         runningTotal -= tx.value;
         return {
@@ -138,7 +133,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
         };
       }).reverse();
 
-      this.walletData[walletId] = processedData
+      this.walletData[treasury.wallet] = processedData
         .filter(({ tx }) => tx.txid !== undefined)
         .map(({ time, balance, tx }) => [time, balance, tx]);
 
@@ -146,11 +141,11 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
         const now = Date.now();
         const start = now - (periodSeconds[this.period] * 1000);
 
-        const fullData = [...this.walletData[walletId]];
+        const fullData = [...this.walletData[treasury.wallet]];
 
-        this.walletData[walletId] = this.walletData[walletId].filter(d => d[0] >= start);
+        this.walletData[treasury.wallet] = this.walletData[treasury.wallet].filter(d => d[0] >= start);
 
-        if (this.walletData[walletId].length === 0 || this.walletData[walletId][0][0] > start) {
+        if (this.walletData[treasury.wallet].length === 0 || this.walletData[treasury.wallet][0][0] > start) {
           // Find the most recent balance at or before the period start
           let startBalance = 0;
           for (let i = fullData.length - 1; i >= 0; i--) {
@@ -161,19 +156,25 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
           }
 
           // Add a data point at the period start with the correct historical balance
-          this.walletData[walletId].unshift([start, startBalance, { placeholder: true }]);
+          this.walletData[treasury.wallet].unshift([start, startBalance, { placeholder: true }]);
         }
       }
 
       // Add current point
-      this.walletData[walletId].push([Date.now(), total, { current: true }]);
+      this.walletData[treasury.wallet].push([Date.now(), total, { current: true }]);
     });
   }
 
   prepareChartOptions(): void {
     // Prepare legend data
-    const legendData = this.wallets.map(walletId => ({
-      name: walletId,
+
+    this.seriesNameToLabel = {};
+    for (const treasury of this.treasuries) {
+      this.seriesNameToLabel[treasury.wallet] = treasury.enterprise || treasury.name;
+    }
+
+    const legendData = this.treasuries.map(treasury => ({
+      name: treasury.wallet,
       inactiveColor: 'var(--grey)',
       textStyle: {
         color: 'white',
@@ -185,8 +186,8 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
     let maxValue = 0;
     let minValue = Number.MAX_SAFE_INTEGER;
 
-    this.wallets.forEach(walletId => {
-      const data = this.walletData[walletId];
+    this.treasuries.forEach(treasury => {
+      const data = this.walletData[treasury.wallet];
       if (data) {
         data.forEach(point => {
           const value = point[1] || (point.value && point.value[1]) || 0;
@@ -201,13 +202,13 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     // Prepare series data
-    const series: SeriesOption[] = this.wallets.map((walletId, index) => ({
-      name: walletId,
+    const series: SeriesOption[] = this.treasuries.map((treasury, index) => ({
+      name: treasury.wallet,
       yAxisIndex: 0,
       showSymbol: false,
       symbol: 'circle',
       symbolSize: 8,
-      data: this.walletData[walletId] || [],
+      data: this.walletData[treasury.wallet] || [],
       areaStyle: undefined,
       triggerLineEvent: true,
       type: 'line',
@@ -227,8 +228,8 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
       legend: this.showLegend ? {
         data: legendData,
         selected: this.selectedWallets,
-        formatter: function (name) {
-          return name;
+        formatter: (name) => {
+          return this.seriesNameToLabel[name];
         }
       } : undefined,
       tooltip: {
@@ -261,13 +262,13 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
           tooltip += `<div><b style="color: white; margin-left: 2px">${date}</b><br>`;
 
           // Get all active wallet IDs from the selected wallets
-          const activeWalletIds: { walletId: string, index: number }[] = this.wallets
-            .map((walletId, index) => ({ walletId, index }))
-            .filter(({ walletId }) => this.selectedWallets[walletId] && this.walletData[walletId]);
+          const activeTreasuries: { treasury: Treasury, index: number }[] = this.treasuries
+            .map((treasury, index) => ({ treasury, index }))
+            .filter(({ treasury }) => this.selectedWallets[treasury.wallet] && this.walletData[treasury.wallet]);
 
           // For each active wallet, find and display the most recent balance
-          activeWalletIds.forEach(({ walletId, index }) => {
-            const walletPoints = this.walletData[walletId];
+          activeTreasuries.forEach(({ treasury, index }) => {
+            const walletPoints = this.walletData[treasury.wallet];
             if (!walletPoints || !walletPoints.length) {
               return;
             }
@@ -300,7 +301,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
                 const marker = `<span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:${markerColor};"></span>`;
 
                 tooltip += `<div style="display: flex; justify-content: space-between;">
-                  <span style="text-align: left; margin-right: 10px;">${marker} ${walletId}:</span>
+                  <span style="text-align: left; margin-right: 10px;">${marker} ${treasury.enterprise || treasury.name}:</span>
                   <span style="text-align: right;">${this.formatBTC(balance)}</span>
                 </div>`;
               }

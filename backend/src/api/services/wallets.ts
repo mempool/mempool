@@ -26,9 +26,17 @@ interface Wallet {
   lastPoll: number;
 }
 
+interface Treasury {
+  id: number,
+  name: string,
+  wallet: string,
+  enterprise: string,
+}
+
 const POLL_FREQUENCY = 5 * 60 * 1000; // 5 minutes
 
 class WalletApi {
+  private treasuries: Treasury[] = [];
   private wallets: Record<string, Wallet> = {};
   private syncing = false;
   private lastSync = 0;
@@ -65,6 +73,8 @@ class WalletApi {
       }
 
       this.wallets = data.wallets;
+      this.treasuries = data.treasuries || [];
+
       // Reset lastSync time to force transaction history refresh
       for (const wallet of Object.values(this.wallets)) {
         wallet.lastPoll = 0;
@@ -90,6 +100,7 @@ class WalletApi {
       const cacheData = {
         cacheSchemaVersion: this.cacheSchemaVersion,
         wallets: this.wallets,
+        treasuries: this.treasuries,
       };
 
       await fsPromises.writeFile(
@@ -130,6 +141,10 @@ class WalletApi {
     return Object.keys(this.wallets);
   }
 
+  public getTreasuries(): Treasury[] {
+    return this.treasuries?.filter(treasury => !!this.wallets[treasury.wallet]) || [];
+  }
+
   // resync wallet addresses from the services backend
   async $syncWallets(): Promise<void> {
     if (!config.WALLETS.ENABLED || this.syncing) {
@@ -162,8 +177,25 @@ class WalletApi {
             }
           }
         }
+
+        // update list of treasuries
+        const treasuriesResponse = await axios.get(config.MEMPOOL_SERVICES.API + `/treasuries`);
+        console.log(treasuriesResponse.data);
+        this.treasuries = treasuriesResponse.data || [];
       } catch (e) {
         logger.err(`Error updating active wallets: ${(e instanceof Error ? e.message : e)}`);
+      }
+
+      try {
+        // update list of active treasuries
+        this.lastSync = Date.now();
+        const response = await axios.get(config.MEMPOOL_SERVICES.API + `/treasuries`);
+        const treasuries: Treasury[] = response.data;
+        if (treasuries) {
+          this.treasuries = treasuries;
+        }
+      } catch (e) {
+        logger.err(`Error updating active treasuries: ${(e instanceof Error ? e.message : e)}`);
       }
     }
 

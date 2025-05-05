@@ -1,15 +1,14 @@
-import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, Input, NgZone, OnChanges, SimpleChanges, ChangeDetectorRef, EventEmitter, Output } from '@angular/core';
-import { Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, Input, OnChanges, SimpleChanges, ChangeDetectorRef, EventEmitter, Output } from '@angular/core';
 import { EChartsOption, PieSeriesOption } from '@app/graphs/echarts';
 import { BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs';
 import { StateService } from '@app/services/state.service';
-import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { download } from '@app/shared/graphs.utils';
 import { isMobile } from '@app/shared/common.utils';
 import { WalletStats } from '@app/shared/wallet-stats';
 import { AddressTxSummary } from '@interfaces/electrs.interface';
 import { chartColors } from '@app/app.constants';
 import { formatNumber } from '@angular/common';
+import { Treasury } from '@interfaces/node-api.interface';
 
 @Component({
   selector: 'app-treasuries-pie',
@@ -23,8 +22,8 @@ export class TreasuriesPieComponent implements OnChanges {
   @Input() walletStats: Record<string, WalletStats>;
   @Input() walletSummaries$: Observable<Record<string, AddressTxSummary[]>>;
   @Input() selectedWallets: Record<string, boolean> = {};
-  @Input() wallets: string[] = [];
-  @Output() navigateToWallet: EventEmitter<string> = new EventEmitter();
+  @Input() treasuries: Treasury[] = [];
+  @Output() navigateToTreasury: EventEmitter<Treasury> = new EventEmitter();
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -41,8 +40,6 @@ export class TreasuriesPieComponent implements OnChanges {
   constructor(
     @Inject(LOCALE_ID) public locale: string,
     public stateService: StateService,
-    private router: Router,
-    private zone: NgZone,
     private cd: ChangeDetectorRef,
   ) {
   }
@@ -81,13 +78,13 @@ export class TreasuriesPieComponent implements OnChanges {
 
   processWalletData(walletSummaries: Record<string, AddressTxSummary[]>): void {
     this.walletBalance = {};
-
-    Object.entries(walletSummaries).forEach(([walletId, summary]) => {
+    for (const treasury of this.treasuries) {
+      const summary = walletSummaries[treasury.wallet];
       if (summary?.length) {
-        const total = this.walletStats[walletId] ? this.walletStats[walletId].balance : summary.reduce((acc, tx) => acc + tx.value, 0);
-        this.walletBalance[walletId] = total;
+        const total = this.walletStats[treasury.wallet] ? this.walletStats[treasury.wallet].balance : summary.reduce((acc, tx) => acc + tx.value, 0);
+        this.walletBalance[treasury.wallet] = total;
       }
-    });
+    }
   }
 
   generateChartSeriesData(): PieSeriesOption[] {
@@ -108,15 +105,25 @@ export class TreasuriesPieComponent implements OnChanges {
     const treasuriesTotal = Object.values(this.walletBalance).reduce((acc, v) => acc + v, 0);
     const total = this.mode === 'relative' ? treasuriesTotal : 2099999997690000;
 
-    const entries = this.wallets.map((id, index) => ({
-      id,
-      balance: this.walletBalance[id],
-      share: (this.walletBalance[id] / total) * 100,
+    const entries: {
+      treasury?: any,
+      id: string,
+      label: string,
+      balance: number,
+      share: number,
+      color: string,
+    }[] = this.treasuries.map((treasury, index) => ({
+      treasury,
+      id: treasury.wallet,
+      label: treasury.enterprise || treasury.name,
+      balance: this.walletBalance[treasury.wallet],
+      share: (this.walletBalance[treasury.wallet] / total) * 100,
       color: chartColors[index % chartColors.length],
     }));
     if (this.mode === 'all') {
       entries.unshift({
         id: 'remaining',
+        label: 'Remaining',
         balance: (total - treasuriesTotal),
         share: ((total - treasuriesTotal) / total) * 100,
         color: 'orange'
@@ -125,7 +132,7 @@ export class TreasuriesPieComponent implements OnChanges {
       console.log('ALL! ', entries);
     }
 
-    const otherEntry = { id: 'other', balance: 0, share: 0 };
+    const otherEntry = { id: 'other', label: 'Other', balance: 0, share: 0 };
 
     entries.forEach((entry) => {
       if (entry.share < sliceThreshold) {
@@ -144,6 +151,9 @@ export class TreasuriesPieComponent implements OnChanges {
           color: 'var(--tooltip-grey)',
           alignTo: 'edge',
           edgeDistance: edgeDistance,
+          formatter: () => {
+            return entry.label;
+          }
         },
         tooltip: {
           show: !isMobile(),
@@ -155,11 +165,11 @@ export class TreasuriesPieComponent implements OnChanges {
           },
           borderColor: '#000',
           formatter: () => {
-            return `<b style="color: white">${entry.id} (${entry.share.toFixed(2)}%)</b><br>
+            return `<b style="color: white">${entry.label} (${entry.share.toFixed(2)}%)</b><br>
             ${formatNumber(entry.balance / 100_000_000, this.locale, '1.3-3')} BTC<br>`;
           }
         },
-        data: entry.id as any,
+        data: entry.treasury,
       } as PieSeriesOption);
     });
 
@@ -191,7 +201,6 @@ export class TreasuriesPieComponent implements OnChanges {
             ${formatNumber(otherEntry.balance, this.locale, '1.3-3')}<br>`;
           }
         },
-        data: 9999 as any,
       } as PieSeriesOption);
     }
 
@@ -254,10 +263,10 @@ export class TreasuriesPieComponent implements OnChanges {
 
     this.chartInstance = ec;
     this.chartInstance.on('click', (e) => {
-      if (e.data.data === 9999) { // "Other"
+      if (!e.data.data) {
         return;
       }
-      this.navigateToWallet.emit(e.data.data);
+      this.navigateToTreasury.emit(e.data.data);
     });
   }
 
