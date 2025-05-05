@@ -72,7 +72,7 @@ export class ServicesApiServices {
         this.userSubject$.next(user);
       }),
       catchError((e) => {
-        if (e.error === 'User does not exists') {
+        if (e.error === 'invalid_user') {
           this.userSubject$.next(null);
           this.logout$().subscribe();
           return of(null);
