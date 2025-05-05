@@ -3819,7 +3819,7 @@ export const restApiDocsData = [
       "17JJ3oZyF4ShQMGukDjpMWhmooCjEvoVVB"
     ],
     "coinbaseSignature": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 45160ea9d45f6edefef3977ac0b2cdcc29aa594a OP_EQUALVERIFY OP_CHECKSIG",
-    "coinbaseSignatureAscii": "\\u0003f\\u008b\\u0005\\u0004U\\u0094\\u000eâë¼\\u0003\\u0010\\u0000\\u0000\\u0004m",
+    "coinbaseSignatureAscii": "...",
     "avgTxSize": 579.57,
     "totalInputs": 1424,
     "totalOutputs": 1764,
@@ -3895,7 +3895,7 @@ export const restApiDocsData = [
       "2N4YXTxKEso3yeYXNn5h42Vqu3FzTTQ8Lq5"
     ],
     "coinbaseSignature": "OP_HASH160 OP_PUSHBYTES_20 7bef0b4a4dafa77b2ec52b81659cbcf0d9a91487 OP_EQUAL",
-    "coinbaseSignatureAscii": "\\u0003\\u0084è\\u001f\\u0004~]1aBTCPoolú¾mmüH\\u001bi\\u0089¤\\u009b­@<u°«üÛw\\u0096´$\\u0089QJ\\u008c-"\\u0094×å²É<\\u0005\\u0002\\u0000\\u0000\\u0000r\\u0096Í\\u0010\\u0001\\u0000\"X=\\u001d\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000",
+    "coinbaseSignatureAscii": "...",
     "avgTxSize": 128,
     "totalInputs": 1,
     "totalOutputs": 5,
@@ -3963,7 +3963,7 @@ export const restApiDocsData = [
       "tb1pqk4mdqzp8kpu2g6nrahwd9j0muacyjfadk99tvmpf5vqya8rt5fq2dxx99"
     ],
     "coinbaseSignature": "OP_PUSHNUM_1 OP_PUSHBYTES_32 05abb680413d83c523531f6ee6964fdf3b82493d6d8a55b3614d180274e35d12",
-    "coinbaseSignatureAscii": "\\u0003ñÑ\\u0000",
+    "coinbaseSignatureAscii": "...",
     "avgTxSize": 0,
     "totalInputs": 0,
     "totalOutputs": 2,
