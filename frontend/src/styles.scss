@@ -1408,3 +1408,7 @@ a {
 .btn-small-height {
 	line-height: 1;
 }
+
+button {
+  touch-action: manipulation;
+}
