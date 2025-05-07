@@ -14,7 +14,7 @@ try {
 
 interface IConfig {
   SERVER: {
-    HOST: 'http://localhost';
+    HOST: string;
     HTTP_PORT: number;
     STDOUT_LOG_MIN_PRIORITY: string;
   };
@@ -33,7 +33,11 @@ interface IConfig {
   API: {
     MEMPOOL: string;
     ESPLORA: string;
-  }
+    SERVICES: string;
+  };
+  ENTERPRISE: {
+    ENABLED: boolean;
+  };
   SYSLOG: {
     ENABLED: boolean;
     HOST: string;
@@ -60,6 +64,10 @@ const defaults: IConfig = {
   'API': {
     'MEMPOOL': 'https://mempool.space/api/v1',
     'ESPLORA': 'https://mempool.space/api',
+    'SERVICES': 'https://mempool.space/api/v1/services',
+  },
+  'ENTERPRISE': {
+    'ENABLED': false,
   },
   'SYSLOG': {
     'ENABLED': true,
@@ -75,6 +83,7 @@ class Config implements IConfig {
   MEMPOOL: IConfig['MEMPOOL'];
   PUPPETEER: IConfig['PUPPETEER'];
   API: IConfig['API'];
+  ENTERPRISE: IConfig['ENTERPRISE'];
   SYSLOG: IConfig['SYSLOG'];
 
   constructor() {
@@ -83,6 +92,7 @@ class Config implements IConfig {
     this.MEMPOOL = configs.MEMPOOL;
     this.PUPPETEER = configs.PUPPETEER;
     this.API = configs.API;
+    this.ENTERPRISE = configs.ENTERPRISE;
     this.SYSLOG = configs.SYSLOG;
   }
 

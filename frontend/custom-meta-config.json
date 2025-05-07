@@ -1,4 +1,7 @@
 {
+  "domains": [
+    "metaplanet.mempool.space"
+  ],
   "theme": "contrast",
   "enterprise": "meta",
   "branding": {

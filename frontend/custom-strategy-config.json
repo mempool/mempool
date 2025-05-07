@@ -1,4 +1,7 @@
 {
+  "domains": [
+    "strategy.mempool.space"
+  ],
   "theme": "wiz",
   "enterprise": "strategy",
   "branding": {
