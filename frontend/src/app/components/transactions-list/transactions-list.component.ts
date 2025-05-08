@@ -575,8 +575,10 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
 
   updateSignaturesMode(): void {
     this.signaturesMode = this.signaturesOverride || this.forceSignaturesMode || this.signaturesPreference || 'interesting';
-    for (const tx of this.transactions) {
-      tx['_showSignatures'] = this.shouldShowSignatures(tx);
+    if (this.transactions?.length) {
+      for (const tx of this.transactions) {
+        tx['_showSignatures'] = this.shouldShowSignatures(tx);
+      }
     }
   }
 
