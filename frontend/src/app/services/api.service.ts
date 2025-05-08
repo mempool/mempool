@@ -420,7 +420,7 @@ export class ApiService {
   }
 
   getEnterpriseInfo$(name: string): Observable<any> {
-    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + `/api/v1/services/enterprise/info/` + name);
+    return this.httpClient.get<any>(this.apiBaseUrl + `/api/v1/services/enterprise/info/` + name);
   }
 
   getChannelByTxIds$(txIds: string[]): Observable<any[]> {
