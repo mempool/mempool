@@ -1,0 +1,162 @@
+.dashboard-container {
+  text-align: center;
+  margin-top: 0.5rem;
+  .col {
+    margin-bottom: 1.5rem;
+  }
+}
+
+.card {
+  background-color: var(--bg);
+  height: 100%;
+}
+
+.card-title {
+  color: var(--title-fg);
+  font-size: 1rem;
+}
+
+.progress {
+  display: inline-flex;
+  width: 100%;
+  background-color: var(--secondary);
+  height: 1.1rem;
+  max-width: 180px;
+}
+
+.bg-warning {
+  background-color: #b58800 !important;
+}
+
+.skeleton-loader {
+  max-width: 100%;
+  background-color: var(--secondary);
+  border-radius: 3px;
+}
+
+.skeleton-loader-transactions {
+  max-width: 250px;
+  position: relative;
+  top: 2px;
+  margin-bottom: -3px;
+  height: 18px;
+}
+
+.more-padding {
+  padding: 18px;
+}
+
+.graph-card {
+  height: 100%;
+  @media (min-width: 768px) {
+    height: 415px;
+  }
+  @media (min-width: 992px) {
+    height: 510px;
+  }
+}
+
+.main-title {
+  position: relative;
+  color: #ffffff91;
+  margin-top: -13px;
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 500;
+  text-align: center;
+  padding-bottom: 3px;
+}
+
+.card-wrapper {
+  .card {
+    height: auto !important;
+  }
+  .card-body {
+    display: flex;
+    flex: inherit;
+    text-align: center;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 22px 20px;
+    &.liquid {
+      height: 124.5px;
+    }
+  }
+  .less-padding {
+    padding: 20px 20px;
+  }
+}
+
+.treasury-leaderboard-table {
+  width: 100%;
+  text-align: left;
+  table-layout: fixed;
+  tr, td, th {
+    border: 0px;
+    padding-top: 0.65rem !important;
+    padding-bottom: 0.7rem !important;
+  }
+  td {
+    overflow: hidden;
+  }
+  .clickable-row {
+    cursor: pointer;
+    &:hover {
+      background-color: var(--secondary);
+    }
+  }
+  .table-cell-position {
+    width: 10%;
+    min-width: 50px;
+    text-align: center;
+    .position-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 40px;
+      .color-swatch {
+        width: 16px;
+        height: 16px;
+        border-radius: 3px;
+        display: inline-block;
+      }
+      .position-number {
+        min-width: 20px;
+      }
+    }
+  }
+  .table-cell-name {
+    width: 25%;
+    text-align: left;
+  }
+  .table-cell-balance {
+    width: 25%;
+    text-align: right;
+  }
+  .table-cell-value {
+    width: 25%;
+    text-align: right;
+  }
+
+  @media (max-width: 1080px) {
+    .table-cell-value {
+      display: none;
+    }
+  }
+}
+
+.position-container {
+  .skeleton-loader {
+    &.color-swatch {
+      width: 16px;
+      height: 16px;
+      min-width: 16px;
+    }
+    &.position-number {
+      width: 20px;
+      height: 18px;
+      min-width: 20px;
+      margin-left: 8px;
+    }
+  }
+}

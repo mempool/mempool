@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators, PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights,
-  RbfTree, BlockAudit, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume, AccelerationInfo, TestMempoolAcceptResult, WalletAddress, SubmitPackageResult } from '../interfaces/node-api.interface';
+  RbfTree, BlockAudit, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume, AccelerationInfo, TestMempoolAcceptResult, WalletAddress, Treasury, SubmitPackageResult } from '../interfaces/node-api.interface';
 import { BehaviorSubject, Observable, catchError, filter, map, of, shareReplay, take, tap } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 import { Transaction } from '@interfaces/electrs.interface';
@@ -520,6 +520,12 @@ export class ApiService {
     return this.httpClient.get<Conversion>(
       `${this.apiBaseUrl}${this.apiBasePath}/api/v1/historical-price` +
         (queryParams.length > 0 ? `?${queryParams.join('&')}` : '')
+    );
+  }
+
+  getTreasuries$(): Observable<Treasury[]> {
+    return this.httpClient.get<Treasury[]>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/treasuries`
     );
   }
 
