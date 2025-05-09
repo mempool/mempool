@@ -1,0 +1,7 @@
+<div>
+  <div class="container pb-lg-0">
+    <div class="chart-widget" *browserOnly [style]="{ height: (height + 'px'), opacity: isLoading ? 0.5 : 1 }" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+      (chartInit)="onChartInit($event)">
+    </div>
+  </div>
+</div>

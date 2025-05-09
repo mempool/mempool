@@ -1,0 +1,135 @@
+.card-header {
+  border-bottom: 0;
+  font-size: 18px;
+  @media (min-width: 465px) {
+    font-size: 20px;
+  }
+}
+
+.full-container {
+  padding: 0px 15px;
+  width: 100%;
+  height: calc(100% - 140px);
+  padding-bottom: 20px;
+  @media (max-width: 992px) {
+    height: calc(100% - 190px);
+  };
+  @media (max-width: 575px) {
+    height: calc(100% - 230px);
+  };
+}
+
+.chart {
+  max-height: 400px;
+  @media (max-width: 767.98px) {
+    max-height: 230px;
+  }
+  margin-bottom: 20px;
+}
+.chart-widget {
+  width: 100%;
+  height: 100%;
+  @media (max-width: 767px) {
+    max-height: 240px;
+  }
+  @media (max-width: 485px) {
+    max-height: 200px;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .pools-table th,
+  .pools-table td {
+    padding: .3em !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .pool-name {
+    max-width: 110px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .health-column {
+    display: none;
+  }
+}
+
+.loadingGraphs {
+  position: absolute;
+  top: 50%;
+  left: calc(50% - 15px);
+  z-index: 99;
+}
+
+.pool-distribution {
+  min-height: 56px;
+  display: block;
+  @media (min-width: 485px) {
+    display: flex;
+    flex-direction: row;
+  }
+  h5 {
+    margin-bottom: 5px;
+  }
+  .item {
+    max-width: 160px;
+    width: 50%;
+    display: inline-block;
+    margin: 0px auto 20px;
+    &:nth-child(2) {
+      order: 2;
+      @media (min-width: 485px) {
+        order: 3;
+      }
+    }
+    &:nth-child(3) {
+      width: 50%;
+      order: 3;
+      @media (min-width: 485px) {
+        order: 2;
+        display: block;
+      }
+      @media (min-width: 768px) {
+        display: none;
+      }
+      @media (min-width: 992px) {
+        display: block;
+      }
+    }
+    .card-title {
+      font-size: 1rem;
+      color: var(--title-fg);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .card-text {
+      font-size: 18px;
+      span {
+        color: var(--transparent-fg);
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+.skeleton-loader {
+  width: 100%;
+  display: block;
+  max-width: 80px;
+  margin: 15px auto 3px;
+}
+
+
+td {
+  .difference {
+    &.positive {
+      color: rgb(66, 183, 71);
+    }
+    &.negative {
+      color: rgb(183, 66, 66);
+    }
+  }
+}
