@@ -335,7 +335,7 @@ export class StateService {
       this.blocksSubject$.next([]);
     });
 
-    this.signaturesMode$ = new BehaviorSubject<SignaturesMode>(this.storageService.getValue('signatures-enabled') as SignaturesMode || null);
+    this.signaturesMode$ = new BehaviorSubject<SignaturesMode>(this.storageService.getValue('signatures-mode') as SignaturesMode || null);
 
     this.blockVSize = this.env.BLOCK_WEIGHT_UNITS / 4;
 

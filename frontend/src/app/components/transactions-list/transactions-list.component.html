@@ -58,11 +58,11 @@
                 @if (tx['_showSignatures']) {
                   <td class="sig-td">
                     <div class="sig-stack">
-                      @if (tx['_sigs'][vindex].length === 0 && signaturesMode === 'all') {
+                      @if (!tx['_sigs']?.[vindex]?.length) {
                         <span class="sig sig-key sig-no-lock" ngbTooltip="unsigned">
                           <fa-icon [icon]="['fas', 'lock-open']" [fixedWidth]="true"></fa-icon>
                         </span>
-                      } @else if (showSig(tx['_sigs'][vindex])) {
+                      } @else {
                         @for (sig of tx['_sigs'][vindex].slice(0, 7); track sig.signature; let idx = $index) {
                           @if (idx < 7) {
                             <span

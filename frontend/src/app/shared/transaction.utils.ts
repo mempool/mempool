@@ -235,7 +235,7 @@ export function processInputSignatures(vin: Vin): SigInfo[] {
       signatures = extractDERSignaturesWitness(vin.witness || []);
       break;
     case 'v1_p2tr': {
-      const hasAnnex = vin.witness[vin.witness.length - 1].startsWith('50');
+      const hasAnnex = vin.witness.length > 1 &&vin.witness[vin.witness.length - 1].startsWith('50');
       const isKeyspend = vin.witness.length === (hasAnnex ? 2 : 1);
       if (isKeyspend) {
         signatures = extractSchnorrSignatures(vin.witness);
