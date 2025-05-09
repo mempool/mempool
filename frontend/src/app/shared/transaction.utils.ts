@@ -4,6 +4,7 @@ import { Transaction, Vin } from '@interfaces/electrs.interface';
 import { CpfpInfo, RbfInfo, TransactionStripped } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 import { hash, Hash } from './sha256';
+import { AddressType } from './address-utils';
 
 // Bitcoin Core default policy settings
 const MAX_STANDARD_TX_WEIGHT = 400_000;
@@ -83,6 +84,171 @@ export function isDERSig(w: string): boolean {
     && ['01', '02', '03', '81', '82', '83'].includes(w.slice(-2)) // signature must end with a valid sighash flag
     && (w.length === (2 * parseInt(w.slice(2, 4), 16)) + 6) // second byte encodes the combined length of the R and S components
   );
+}
+
+export enum SighashFlag {
+  DEFAULT = 0,
+  ALL = 1,
+  NONE = 2,
+  SINGLE = 3,
+  ANYONECANPAY = 0x80
+}
+
+export type SighashValue =
+  SighashFlag.DEFAULT |
+  SighashFlag.ALL |
+  SighashFlag.NONE |
+  SighashFlag.SINGLE |
+  (SighashFlag.ALL & SighashFlag.ANYONECANPAY) |
+  (SighashFlag.NONE & SighashFlag.ANYONECANPAY) |
+  (SighashFlag.SINGLE & SighashFlag.ANYONECANPAY) |
+  (SighashFlag.ALL & SighashFlag.NONE);
+
+export const SighashLabels: Record<number, string> = {
+  '0': 'SIGHASH_DEFAULT',
+  '1': 'SIGHASH_ALL',
+  '2': 'SIGHASH_NONE',
+  '3': 'SIGHASH_SINGLE',
+  '129': 'SIGHASH_ALL | ACP',
+  '130': 'SIGHASH_NONE | ACP',
+  '131': 'SIGHASH_SINGLE | ACP',
+};
+
+export interface SigInfo {
+  signature: string;
+  sighash: SighashValue;
+}
+
+export class Sighash {
+  static isACP(val: SighashValue): boolean {
+    return val >= SighashFlag.ANYONECANPAY;
+  }
+
+  static isNone(val: SighashValue): boolean {
+    return (val & 0x7F) === SighashFlag.NONE;
+  }
+
+  static isSingle(val: SighashValue): boolean {
+    return (val & 0x7F) === SighashFlag.SINGLE;
+  }
+
+  static isAll(val: SighashValue): boolean {
+    return (val & 0x7F) === SighashFlag.ALL;
+  }
+
+  static isDefault(val: SighashValue): boolean {
+    return val === SighashFlag.DEFAULT;
+  }
+}
+
+export function decodeSighashFlag(sighash: number): SighashValue {
+  if (sighash >= 0 && sighash <= 0x03 || sighash > 0x80 && sighash <= 0x83) {
+    return sighash as SighashValue;
+  }
+  return SighashFlag.DEFAULT;
+}
+
+export function extractDERSignaturesWitness(witness: string[]): SigInfo[] {
+  if (!witness?.length) {
+    return [];
+  }
+
+  const signatures: SigInfo[] = [];
+
+  for (const w of witness) {
+    if (isDERSig(w)) {
+      signatures.push({
+        signature: w,
+        sighash: decodeSighashFlag(parseInt(w.slice(-2), 16)),
+      });
+    }
+  }
+
+  return signatures;
+}
+
+export function extractDERSignaturesASM(script_asm: string): SigInfo[] {
+  if (!script_asm) {
+    return [];
+  }
+
+  const signatures: SigInfo[] = [];
+  const ops = script_asm.split(' ');
+
+  for (let i = 0; i < ops.length - 1; i++) {
+    // Look for OP_PUSHBYTES_N followed by a hex string
+    if (ops[i].startsWith('OP_PUSHBYTES_')) {
+      const hexData = ops[i + 1];
+      if (isDERSig(hexData)) {
+        const sighash = decodeSighashFlag(parseInt(hexData.slice(-2), 16));
+        signatures.push({
+          signature: hexData,
+          sighash
+        });
+      }
+    }
+  }
+
+  return signatures;
+}
+
+export function extractSchnorrSignatures(witnesses: string[]): SigInfo[] {
+  if (!witnesses?.length) {
+    return [];
+  }
+
+  const signatures: SigInfo[] = [];
+
+  for (const witness of witnesses) {
+    if (witness.length === 130) {
+      signatures.push({
+        signature: witness,
+        sighash: decodeSighashFlag(parseInt(witness.slice(-2), 16)),
+      });
+    } else if (witness.length === 128) {
+      signatures.push({
+        signature: witness,
+        sighash: SighashFlag.DEFAULT,
+      });
+    }
+  }
+
+  return signatures;
+}
+
+export function processInputSignatures(vin: Vin): SigInfo[] {
+  const addressType = vin.prevout?.scriptpubkey_type as AddressType;
+  let signatures: SigInfo[] = [];
+  switch(addressType) {
+    case 'p2pk':
+    case 'multisig':
+    case 'p2pkh':
+      signatures = extractDERSignaturesASM(vin.scriptsig_asm);
+      break;
+    case 'p2sh':
+      signatures = [...extractDERSignaturesASM(vin.scriptsig_asm), ...extractDERSignaturesASM(vin.inner_redeemscript_asm), ...extractDERSignaturesWitness(vin.witness || [])];
+      break;
+    case 'v0_p2wpkh':
+      signatures = extractDERSignaturesWitness(vin.witness || []);
+      break;
+    case 'v0_p2wsh':
+      signatures = extractDERSignaturesWitness(vin.witness || []);
+      break;
+    case 'v1_p2tr': {
+      const hasAnnex = vin.witness[vin.witness.length - 1].startsWith('50');
+      const isKeyspend = vin.witness.length === (hasAnnex ? 2 : 1);
+      if (isKeyspend) {
+        signatures = extractSchnorrSignatures(vin.witness);
+      } else {
+        const stackItems = vin.witness.slice(0, hasAnnex ? -3 : -2);
+        signatures = extractSchnorrSignatures(stackItems);
+      }
+    } break;
+    default:
+      // non-signed input types?
+      break;
+  }
+  return signatures;
 }
 
 /**

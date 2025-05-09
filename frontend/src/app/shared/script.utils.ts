@@ -1,3 +1,6 @@
+import { Vin } from "../interfaces/electrs.interface";
+import { AddressType, detectAddressType } from "./address-utils";
+
 const opcodes = {
   OP_FALSE: 0,
   OP_0: 0,
