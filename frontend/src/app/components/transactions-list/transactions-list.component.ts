@@ -91,13 +91,13 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit(): void {
     this.latestBlock$ = this.stateService.blocks$.pipe(map((blocks) => blocks[0]));
     this.networkSubscription = this.stateService.networkChanged$.subscribe((network) => this.network = network);
+
     this.signaturesSubscription = this.stateService.signaturesMode$.subscribe((mode) => {
-      this.signaturesMode = mode;
+      this.signaturesPreference = mode;
       this.updateSignaturesMode();
     });
 
     this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
-      console.log('query params', params);
       if (params['sigs'] && ['all', 'interesting', 'none'].includes(params['sigs'])) {
         this.signaturesOverride = params['sigs'] as SignaturesMode;
         this.updateSignaturesMode();
@@ -313,16 +313,19 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
           }
 
           // process signature data
-          tx['_sigs'] = tx.vin.map(vin => processInputSignatures(vin));
-          tx['_sigmap'] = tx['_sigs'].reduce((map, sigs, vindex) => {
-            sigs.forEach(sig => {
-              map[sig.signature] = { sig, vindex };
-            });
-            return map;
-          }, {});
+          if (tx.vin.length && !tx.vin[0].is_coinbase) {
+            tx['_sigs'] = tx.vin.map(vin => processInputSignatures(vin));
+            tx['_sigmap'] = tx['_sigs'].reduce((map, sigs, vindex) => {
+              sigs.forEach(sig => {
+                map[sig.signature] = { sig, vindex };
+              });
+              return map;
+            }, {});
 
-          if (!tx['_interestingSignatures']) {
-            tx['_interestingSignatures'] = tx['_sigs'].some(sigs => sigs.some(sig => this.sigIsInteresting(sig)));
+            if (!tx['_interestingSignatures']) {
+              tx['_interestingSignatures'] = tx['_sigs'].some(sigs => sigs.some(sig => this.sigIsInteresting(sig)))
+                || tx['_sigs'].every(sigs => !sigs?.length);
+            }
           }
           tx['_showSignatures'] = this.shouldShowSignatures(tx);
         }
