@@ -183,6 +183,11 @@
                                   <fa-icon [icon]="['fas', 'key']" [fixedWidth]="true"></fa-icon>
                                 </span>
                               </ng-container>
+                              @if (vin.witness.length > 1 && windex === vin.witness.length - 1 && witness.slice(0, 2) === '50') {
+                                <span class="annex" ngbTooltip="annex">
+                                  <fa-icon [icon]="['fas', 'paperclip']" [fixedWidth]="true"></fa-icon>
+                                </span>
+                              }
                               @if (witness.length > 1000) {
                                 @if (!showFullWitness[vindex][windex]) {
                                   {{ witness | slice:0:1000 }}
