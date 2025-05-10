@@ -312,7 +312,32 @@ export function isNonStandard(tx: Transaction, height?: number, network?: string
     } else if (isNonStandardAnchor(tx, height, network)) {
       return true;
     }
-    // TODO: bad-witness-nonstandard
+    // bad-witness-nonstandard
+    if (vin.prevout?.scriptpubkey_type === 'v1_p2tr' && vin.witness?.length) {
+      const hasAnnex = vin.witness.length > 1 && vin.witness[vin.witness.length - 1].startsWith('50');
+      // annex is non-standard
+      if (hasAnnex) {
+        return true;
+      }
+      if (vin.witness.length > (hasAnnex ? 2 : 1)) {
+        // script path spend
+        const controlBlock = vin.witness[vin.witness.length - (hasAnnex ? 2 : 1)];
+        // control block is required
+        if (!controlBlock.length) {
+          return false;
+        } else {
+          // Leaf version must be 0xc0 (aka Tapscript, see BIP 342)
+          if ((parseInt(controlBlock.slice(0, 2), 16) & 0xfe) !== 0xc0) {
+            return false;
+          }
+        }
+        // remaining witness items (except for the script) must be within MAX_STANDARD_TAPSCRIPT_STACK_ITEM_SIZE limit
+        if (vin.witness.slice(0, vin.witness.length - (hasAnnex ? 3 : 2)).some(v => v.length > 160)) {
+          return false;
+        }
+      }
+    }
+    // TODO: other bad-witness-nonstandard cases
   }
 
   // output validation
@@ -568,6 +593,9 @@ export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replac
               flags |= TransactionFlags.inscription;
             }
           }
+          if (hasAnnex) {
+            flags |= TransactionFlags.annex;
+          }
         }
       } break;
     }
@@ -640,7 +668,7 @@ export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replac
   if (hasFakePubkey) {
     flags |= TransactionFlags.fake_pubkey;
   }
-  
+
   // fast but bad heuristic to detect possible coinjoins
   // (at least 5 inputs and 5 outputs, less than half of which are unique amounts, with no address reuse)
   const addressReuse = Object.keys(reusedOutputAddresses).reduce((acc, key) => Math.max(acc, (reusedInputAddresses[key] || 0) + (reusedOutputAddresses[key] || 0)), 0) > 1;
