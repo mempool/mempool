@@ -86,6 +86,54 @@ export function isDERSig(w: string): boolean {
   );
 }
 
+// enforce canonical DER-encoded signature format
+// <0x30> <total len> <0x02> <len R> <R> <0x02> <len S> <S> <hashtype>
+// see https://github.com/bitcoin/bitcoin/blob/9a05b45da60d214cb1e5a50c3d2293b1defc9bb0/src/script/interpreter.cpp#L97-L106
+export function isCanonicalDERSig(w: string): boolean {
+  // minimum DER signature length is 8 bytes + sighash flag (see https://mempool.space/testnet/tx/c6c232a36395fa338da458b86ff1327395a9afc28c5d2daa4273e410089fd433)
+  if (w.length < 18) {
+    return false;
+  }
+
+  // first byte is 0x30 ("SEQUENCE")
+  if (!w.startsWith('30')) {
+    return false;
+  }
+
+  // second byte encodes the total length of the sequence (not including sighash flag)
+  const compoundLength = parseInt(w.slice(2, 4), 16);
+  if (w.length !== (compoundLength * 2) + 6) {
+    return false;
+  }
+
+  // third byte is 0x02 ("INTEGER")
+  if (w.slice(4, 6) !== '02') {
+    return false;
+  }
+
+  // fourth byte encodes the length of the R component
+  const rLength = parseInt(w.slice(6, 8), 16);
+  // rLength doesn't overflow remaining space
+  if (w.length < (rLength * 2) + 10) {
+    return false;
+  }
+  const sEnd = 8 + (rLength * 2);
+
+  // next byte after R is 0x02 ("INTEGER")
+  if (w.slice(sEnd, sEnd + 2) !== '02') {
+    return false;
+  }
+
+  // next byte encodes the length of the S component
+  const sLength = parseInt(w.slice(sEnd + 2, sEnd + 4), 16);
+  // R + S lengths exactly fit the length of the signature
+  if (w.length !== ((rLength + sLength) * 2) + 14) {
+    return false;
+  }
+
+  return true;
+}
+
 export enum SighashFlag {
   DEFAULT = 0,
   ALL = 1,
@@ -156,7 +204,7 @@ export function extractDERSignaturesWitness(witness: string[]): SigInfo[] {
   const signatures: SigInfo[] = [];
 
   for (const w of witness) {
-    if (isDERSig(w)) {
+    if (isCanonicalDERSig(w)) {
       signatures.push({
         signature: w,
         sighash: decodeSighashFlag(parseInt(w.slice(-2), 16)),
@@ -179,7 +227,7 @@ export function extractDERSignaturesASM(script_asm: string): SigInfo[] {
     // Look for OP_PUSHBYTES_N followed by a hex string
     if (ops[i].startsWith('OP_PUSHBYTES_')) {
       const hexData = ops[i + 1];
-      if (isDERSig(hexData)) {
+      if (isCanonicalDERSig(hexData)) {
         const sighash = decodeSighashFlag(parseInt(hexData.slice(-2), 16));
         signatures.push({
           signature: hexData,
@@ -225,9 +273,13 @@ export function processInputSignatures(vin: Vin): SigInfo[] {
     case 'p2pkh':
       signatures = extractDERSignaturesASM(vin.scriptsig_asm);
       break;
-    case 'p2sh':
-      signatures = [...extractDERSignaturesASM(vin.scriptsig_asm), ...extractDERSignaturesASM(vin.inner_redeemscript_asm), ...extractDERSignaturesWitness(vin.witness || [])];
-      break;
+    case 'p2sh': {
+      if (vin.witness?.length) {
+        signatures = extractDERSignaturesWitness(vin.witness || []);
+      } else {
+        signatures = [...extractDERSignaturesASM(vin.scriptsig_asm), ...extractDERSignaturesASM(vin.inner_redeemscript_asm)];
+      }
+    } break;
     case 'v0_p2wpkh':
       signatures = extractDERSignaturesWitness(vin.witness || []);
       break;
@@ -464,7 +516,7 @@ export function getNonWitnessSize(tx: Transaction): number {
 
 export function setSegwitSighashFlags(flags: bigint, witness: string[]): bigint {
   for (const w of witness) {
-    if (isDERSig(w)) {
+    if (isCanonicalDERSig(w)) {
       flags |= setSighashFlags(flags, w);
     }
   }
@@ -478,7 +530,7 @@ export function setLegacySighashFlags(flags: bigint, scriptsig_asm: string): big
       continue;
     }
     // check pushed data
-    if (isDERSig(item)) {
+    if (isCanonicalDERSig(item)) {
       flags |= setSighashFlags(flags, item);
     }
   }
