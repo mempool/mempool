@@ -69,7 +69,7 @@
                   </ng-template>
                   <ng-template #default_link_example>
                     <ng-container *ngIf="item.httpRequestMethod === 'GET'">
-                      <a [href]="wrapUrl(network.val, item.codeExample.default)" target="_blank" rel="nofollow" *ngIf="item.fragment !== 'get-cpfp'">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ item.urlString }}</a>
+                      <a [href]="wrapUrl(network.val, item.codeExample.default)" target="_blank" rel="nofollow" *ngIf="item.fragment !== 'get-cpfp'">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ env.BASE_MODULE == 'liquid' && item.hasOwnProperty('urlStringLiquid') ? item.urlStringLiquid : item.urlString }}</a>
                       <p *ngIf="item.fragment === 'get-cpfp'">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ item.urlString }}</p>
                     </ng-container>
                   </ng-template>

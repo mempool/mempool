@@ -200,7 +200,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
       curlNetwork = '';
     }
 
-    let text = code.codeTemplate.curl;
+    let text = ( this.env.BASE_MODULE == 'liquid' && code.codeTemplate.hasOwnProperty("curlLiquid") ) ? code.codeTemplate.curlLiquid : code.codeTemplate.curl;
     for (let index = 0; index < curlResponse.length; index++) {
       const curlText = curlResponse[index];
       const indexNumber = index + 1;
