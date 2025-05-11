@@ -150,6 +150,13 @@
 	transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
+.annex {
+	margin-right: -5px;
+	position: relative;
+	left: 0px;
+	top: 0px;
+}
+
 .mobile-bottomcol {
 	margin-top: 15px;
 	@media (min-width: 992px) {
