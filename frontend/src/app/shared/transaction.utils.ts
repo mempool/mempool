@@ -17,6 +17,8 @@ const MAX_STANDARD_P2WSH_STACK_ITEM_SIZE = 80;
 const MAX_STANDARD_TAPSCRIPT_STACK_ITEM_SIZE = 80;
 const MAX_STANDARD_P2WSH_SCRIPT_SIZE = 3600;
 const MAX_STANDARD_SCRIPTSIG_SIZE = 1650;
+const MAX_TRUC_TX_VSIZE = 10000 // 10kVB
+const MAX_TRUC_DESCENDANT_VSIZE = 1000 // 1kVB
 const DUST_RELAY_TX_FEE = 3;
 const MAX_OP_RETURN_RELAY = 83;
 const DEFAULT_PERMIT_BAREMULTISIG = true;
@@ -497,6 +499,19 @@ export function setSighashFlags(flags: bigint, signature: string): bigint {
   }
 }
 
+export function isTruc(flags: bigint, tx: Transaction): boolean {
+  if (tx.version !== 3) return false;
+  let invalid_truc_mask: bigint = BigInt(TransactionFlags.cpfp_child) | BigInt(TransactionFlags.cpfp_parent);
+  if (invalid_truc_mask === (flags & invalid_truc_mask)) return false;
+  if (((flags & TransactionFlags.cpfp_child) === TransactionFlags.cpfp_child) && (tx.size < MAX_TRUC_DESCENDANT_VSIZE)) {
+    return true 
+  } else if (((flags & TransactionFlags.cpfp_parent) === TransactionFlags.cpfp_parent) && (tx.size < MAX_TRUC_TX_VSIZE)) {
+    return true
+  }
+
+  return false;
+}
+
 export function isBurnKey(pubkey: string): boolean {
   return [
     '022222222222222222222222222222222222222222222222222222222222222222',
@@ -509,7 +524,7 @@ export function isBurnKey(pubkey: string): boolean {
 export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replacement?: boolean, height?: number, network?: string): bigint {
   let flags = tx.flags ? BigInt(tx.flags) : 0n;
 
-  // Update variable flags (CPFP, RBF)
+  // Update variable flags (CPFP, RBF, TRUC)
   if (cpfpInfo) {
     if (cpfpInfo.ancestors.length) {
       flags |= TransactionFlags.cpfp_child;
@@ -520,6 +535,11 @@ export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replac
   }
   if (replacement) {
     flags |= TransactionFlags.replacement;
+  }
+
+  // Process TRUC BIP-0431 Flag
+  if (isTruc(flags, tx)) {
+    flags |= TransactionFlags.truc;
   }
 
   // Already processed static flags, no need to do it again
@@ -545,6 +565,7 @@ export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replac
       rbf = true;
     }
     switch (vin.prevout?.scriptpubkey_type) {
+      case 'anchor': flags |= TransactionFlags.p2a; break;
       case 'p2pk': flags |= TransactionFlags.p2pk; break;
       case 'multisig': flags |= TransactionFlags.p2ms; break;
       case 'p2pkh': flags |= TransactionFlags.p2pkh; break;
@@ -596,6 +617,7 @@ export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replac
   let olgaSize = 0;
   for (const vout of tx.vout) {
     switch (vout.scriptpubkey_type) {
+      case 'anchor': flags |= TransactionFlags.p2a; break;
       case 'p2pk': {
         flags |= TransactionFlags.p2pk;
         // detect fake pubkey (i.e. not a valid DER point on the secp256k1 curve)
