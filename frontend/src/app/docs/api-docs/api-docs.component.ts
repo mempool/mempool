@@ -28,6 +28,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
   wsDocs: any;
   screenWidth: number;
   officialMempoolInstance: boolean;
+  runningElectrs: boolean;
   auditEnabled: boolean;
   mobileViewport: boolean = false;
   showMobileEnterpriseUpsell: boolean = true;
@@ -70,6 +71,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.env = this.stateService.env;
     this.officialMempoolInstance = this.env.OFFICIAL_MEMPOOL_SPACE;
+    this.runningElectrs = !!(this.stateService.backend == 'esplora');
     this.auditEnabled = this.env.AUDIT;
     this.network$ = merge(of(''), this.stateService.networkChanged$).pipe(
       tap((network: string) => {
