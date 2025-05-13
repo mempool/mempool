@@ -83,12 +83,15 @@ class Logger {
         msg = msg.slice(0, msg.length - 1);
       }
     }
-    const network = this.network ? ' <' + this.network + '-unfurler>' : '';
+    let label = this.network ? ' <' + this.network + '-unfurler>' : '';
+    if (config.ENTERPRISE.ENABLED) {
+      label = ' <enterprise-unfurler>';
+    }
     prionum = Logger.priorities[priority] || Logger.priorities.info;
-    consolemsg = `${this.ts()} [${process.pid}] ${priority.toUpperCase()}:${network} ${msg}`;
+    consolemsg = `${this.ts()} [${process.pid}] ${priority.toUpperCase()}:${label} ${msg}`;
 
     if (config.SYSLOG.ENABLED && Logger.priorities[priority] <= Logger.priorities[config.SYSLOG.MIN_PRIORITY]) {
-      syslogmsg = `<${(Logger.facilities[config.SYSLOG.FACILITY] * 8 + prionum)}> ${this.name}[${process.pid}]: ${priority.toUpperCase()}${network} ${msg}`;
+      syslogmsg = `<${(Logger.facilities[config.SYSLOG.FACILITY] * 8 + prionum)}> ${this.name}[${process.pid}]: ${priority.toUpperCase()}${label} ${msg}`;
       this.syslog(syslogmsg);
     }
     if (quiet || Logger.priorities[priority] > Logger.priorities[config.SERVER.STDOUT_LOG_MIN_PRIORITY]) {

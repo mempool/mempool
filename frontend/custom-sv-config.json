@@ -1,4 +1,7 @@
 {
+  "domains": [
+    "bitcoin.gob.sv"
+  ],
   "theme": "bukele",
   "enterprise": "onbtc",
   "branding": {

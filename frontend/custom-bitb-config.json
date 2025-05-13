@@ -1,4 +1,7 @@
 {
+  "domains": [
+    "bitwise.mempool.space"
+  ],
   "theme": "wiz",
   "enterprise": "bitb",
   "branding": {
