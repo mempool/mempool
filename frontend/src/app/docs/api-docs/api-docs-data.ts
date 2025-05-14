@@ -5555,16 +5555,28 @@ export const restApiDocsData = [
           curl: ['1472246'],
           response: `[
   {
-    id: "0bd348c08101fef863b7263b2b44b2f6575f707f1e397da95cfe2afdd5e9ccdb",
-    height: 1472246,
-    version: 570425344,
-    timestamp: 1630642018,
-    tx_count: 2,
-    size: 10838,
-    weight: 16901,
-    merkle_root: "a8cdc1ba96d1f862ca7c9aec4133a6efd14138f54c17efdbc968632a6b9cb8c8",
-    previousblockhash: "a06c327cdd76301de57ba0cf86c5ae8b1fd8a785945065ac9e2128322bd01f31",
-    mediantime: 1630641718
+    "id": "0bd348c08101fef863b7263b2b44b2f6575f707f1e397da95cfe2afdd5e9ccdb",
+    "height": 1472246,
+    "version": 570425344,
+    "timestamp": 1630642018,
+    "tx_count": 2,
+    "size": 10838,
+    "weight": 16901,
+    "merkle_root": "a8cdc1ba96d1f862ca7c9aec4133a6efd14138f54c17efdbc968632a6b9cb8c8",
+    "previousblockhash": "a06c327cdd76301de57ba0cf86c5ae8b1fd8a785945065ac9e2128322bd01f31",
+    "mediantime": 1630641718
+  },
+  {
+    "id": "a06c327cdd76301de57ba0cf86c5ae8b1fd8a785945065ac9e2128322bd01f31",
+    "height": 1472245,
+    "version": 570425344,
+    "timestamp": 1630641958,
+    "tx_count": 2,
+    "size": 10838,
+    "weight": 16901,
+    "merkle_root": "d3c370aabe96147b59f2e40511b0d8b7ee56eeb08d45816af6c4cae710643ce7",
+    "previousblockhash": "2ec34bb6f0730aa19d7c72346d6e3382620509de048a3b03658af7db19355240",
+    "mediantime": 1630641658
   },
   ...
 ]`
@@ -5575,16 +5587,127 @@ export const restApiDocsData = [
           curl: ['150000'],
           response: `[
   {
-    id: "67d5eb1aee63c6c2058a088985503ff0626fd3f7f8022bdc74fab36a359164db",
-    height: 150000,
-    version: 536870912,
-    timestamp: 1640871913,
-    tx_count: 2,
-    size: 3527,
-    weight: 7430,
-    merkle_root: "40538ff1fcac07c65e36fcc230fc60f58e3a885ce9898e41bc27bcf28227e5ff",
-    previousblockhash: "2d8c28042b03219e7e9bc6853cc3ae536e36be5639869c545a0f3dbd1309e2a5",
-    mediantime: 1640871614
+    "id": "67d5eb1aee63c6c2058a088985503ff0626fd3f7f8022bdc74fab36a359164db",
+    "height": 150000,
+    "version": 536870912,
+    "timestamp": 1640871913,
+    "tx_count": 2,
+    "size": 3527,
+    "weight": 7430,
+    "merkle_root": "40538ff1fcac07c65e36fcc230fc60f58e3a885ce9898e41bc27bcf28227e5ff",
+    "previousblockhash": "2d8c28042b03219e7e9bc6853cc3ae536e36be5639869c545a0f3dbd1309e2a5",
+    "mediantime": 1640871614
+  },
+  {
+    "id": "2d8c28042b03219e7e9bc6853cc3ae536e36be5639869c545a0f3dbd1309e2a5",
+    "height": 149999,
+    "version": 536870912,
+    "timestamp": 1640871853,
+    "tx_count": 3,
+    "size": 4380,
+    "weight": 8097,
+    "merkle_root": "38495212acd5e3ad4fdce7cce29c8c892b20c3ffacbcd73ecb2b234c6aca67c2",
+    "previousblockhash": "7bd9ed9ff823d4605a476a12554c75087ab7f55fa6273a1b4b1115b09bb9586e",
+    "mediantime": 1640871554
+  },
+  ...
+]`
+        },
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "blocks",
+    httpRequestMethod: "GET",
+    fragment: "get-blocks-v1",
+    title: "GET Blocks (v1)",
+    description: {
+      default: "Returns details on the past 15 blocks from Mempool's Node.js backend. If <code>:startHeight</code> is specified, the past 15 blocks before (and including) <code>:startHeight</code> are returned."
+    },
+    urlString: "/v1/blocks[/:startHeight]",
+    showConditions: liquidNetworks,
+    showJsExamples: showJsExamplesDefault,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/blocks/%{1}`,
+          commonJS: `
+        const { %{0}: { blocks } } = mempoolJS();
+
+        const getBlocks = await blocks.getBlocks({ startHeight: %{1} });
+
+        document.getElementById("result").textContent = JSON.stringify(getBlocks, undefined, 2);
+        `,
+          esModule: `
+  const { %{0}: { blocks } } = mempoolJS();
+
+  const getBlocks = await blocks.getBlocks({ startHeight: %{1} });
+  console.log(getBlocks);
+          `,
+        },
+        codeSampleMainnet: emptyCodeSample,
+        codeSampleTestnet: emptyCodeSample,
+        codeSampleSignet: emptyCodeSample,
+        codeSampleLiquid: {
+          esModule: ['1472246'],
+          commonJS: ['1472246'],
+          curl: ['1472246'],
+          response: `[
+  {
+    "id": "0bd348c08101fef863b7263b2b44b2f6575f707f1e397da95cfe2afdd5e9ccdb",
+    "height": 1472246,
+    "version": 570425344,
+    "timestamp": 1630642018,
+    "tx_count": 2,
+    "size": 10838,
+    "weight": 16901,
+    "merkle_root": "a8cdc1ba96d1f862ca7c9aec4133a6efd14138f54c17efdbc968632a6b9cb8c8",
+    "previousblockhash": "a06c327cdd76301de57ba0cf86c5ae8b1fd8a785945065ac9e2128322bd01f31",
+    "mediantime": 1630641718,
+    "ext": {
+      "challenge": "5b21026a2a106ec32c8a1e8052e5d02a7b0a150423dbd9b116fc48d46630ff6e6a05b92102791646a8b49c2740352b4495c118d876347bf47d0551c01c4332fdc2df526f1a2102888bda53a424466b0451627df22090143bbf7c060e9eacb1e38426f6b07f2ae12102aee8967150dee220f613de3b239320355a498808084a93eaf39a34dcd62024852102d46e9259d0a0bb2bcbc461a3e68f34adca27b8d08fbe985853992b4b104e27412102e9944e35e5750ab621e098145b8e6cf373c273b7c04747d1aa020be0af40ccd62102f9a9d4b10a6d6c56d8c955c547330c589bb45e774551d46d415e51cd9ad5116321033b421566c124dfde4db9defe4084b7aa4e7f36744758d92806b8f72c2e943309210353dcc6b4cf6ad28aceb7f7b2db92a4bf07ac42d357adf756f3eca790664314b621037f55980af0455e4fb55aad9b85a55068bb6dc4740ea87276dc693f4598db45fa210384001daa88dabd23db878dbb1ce5b4c2a5fa72c3113e3514bf602325d0c37b8e21039056d089f2fe72dbc0a14780b4635b0dc8a1b40b7a59106325dd1bc45cc70493210397ab8ea7b0bf85bc7fc56bb27bf85e75502e94e76a6781c409f3f2ec3d1122192103b00e3b5b77884bf3cae204c4b4eac003601da75f96982ffcb3dcb29c5ee419b92103c1f3c0874cfe34b8131af34699589aacec4093399739ae352e8a46f80a6f68375fae",
+      "solution": "0046304402206263bb35516e8ad806f3626d228dec7929e89202522b219257e7e5eedb64e8ff022036c5bfd2b16e43c5162d35fbc64041630e98f4574775ce3ebe8fc135c84234a646304402200450dabc776fe95cdecef09171141f56c26a0f4a9c5f9256f1d8e67aedb956a40220048d27e08acf5f002d823b2359a58b7b7df57b2121b5c64460dbc0f7807b31f6473045022100b763029e99a6debe765f640128eeaeb7bf721f5fd0a90d72457dffe6b6d97db5022015d492f8bbec838d7b90f5fbe4a0041766ca797e1b61069eef213dd064ede42146304402200a6342eeee2be815c3bf68321692b8f0cbe605cd0d626784f61def9e733164d202200f67b624626e25077db19b098543681e064f45f9eb8ae6888eb78de5af1bb621473045022100c1101245ccf45308d6cf92af9a43c34073aa9be59c6f78c86df8ef7f3a5c5fe0022056098b793ca730cc8e623bd7f9cbd2ba548cb10ba6976e56fcee5ab37e59ad9046304402205d74c5fd7037fe653045d57622bd69b10da7a5de9526996e065b6a6a7c5814f802207a0f6169c85e89a0cb18f908440ec67a63367327e0e3ea45adfa7a3e81f6bb1c473045022100808f8cd8a45b734c6c49afcbdfba8abac16ba4884f201b21a2e146f5ba1b90570220267a207cf36c98c844a353dfd4760053bc132c1271eb52a95219b5075e006c5d473045022100a90a1a40f8dce2085503adc845902db7400dfcfc201cd12cdde8c29694ddd8c40220505f562d7325abbebd263823fd96380fbe000aac3f821de4842a880477cf8e22473045022100b330af409638f2480b3cb931449a513014b9345875ec6e6407187a2beddb522a022069f3b65961c8e920f7ae07be0eb249ef9e7d0a173c7ab3eb236d0e52863f8dfd463044022012149a50dff010d49d1aaa9d25c187dc8c42a713fde49e4e705de9210acd6f1102202a7e63ac3ea01e4a36f0c15044ee2e8b6614c568a442d89cdb0d65c33795ab7d46304402200e7fe3f26c3579b376401f2f650482bd435e0c3cea436041c5a7b8add31543190220368a35ef33d44a6d3dbd97c68cd19042f041c9204e858c42a20014827f0762a7"
+    }
+  },
+  ...
+]`
+        },
+        codeSampleLiquidTestnet: {
+          esModule: ['150000'],
+          commonJS: ['150000'],
+          curl: ['150000'],
+          response: `[
+  {
+    "id": "67d5eb1aee63c6c2058a088985503ff0626fd3f7f8022bdc74fab36a359164db",
+    "height": 150000,
+    "version": 536870912,
+    "timestamp": 1640871913,
+    "tx_count": 2,
+    "size": 3527,
+    "weight": 7430,
+    "merkle_root": "40538ff1fcac07c65e36fcc230fc60f58e3a885ce9898e41bc27bcf28227e5ff",
+    "previousblockhash": "2d8c28042b03219e7e9bc6853cc3ae536e36be5639869c545a0f3dbd1309e2a5",
+    "mediantime": 1640871614,
+    "ext": {
+      "current": {
+        "extension_space": [
+          "02fcba7ecf41bc7e1be4ee122d9d22e3333671eb0a3a87b5cdf099d59874e1940f02fcba7ecf41bc7e1be4ee122d9d22e3333671eb0a3a87b5cdf099d59874e1940f"
+        ],
+        "fedpeg_program": "a91472c44f957fc011d97e3406667dca5b1c930c402687",
+        "fedpegscript": "51",
+        "signblock_witness_limit": 150,
+        "signblockscript": "0020e9e4117540f7f23b3edd7c2cad660a17fb33c7959b8c37cf61d92b189133929a"
+      },
+      "proposed": {
+
+      },
+      "signblock_witness": [
+        [],
+        [48, 68, 2, 32, 19, 152, 101, 5, 73, 58, 8, 11, 11, 62, 1, 201, 143, 107, 66, 185, 6, 95, 214, 77, 245, 159, 76, 23, 142, 153, 237, 165, 123, 120, 81, 38, 2, 32, 69, 126, 115, 140, 254, 188, 41, 52, 195, 99, 228, 176, 248, 113, 234, 84, 23, 134, 83, 245, 153, 218, 242, 16, 184, 101, 163, 30, 221, 28, 216, 195, 1],
+        [81, 33, 2, 23, 228, 3, 221, 177, 129, 135, 44, 50, 160, 205, 70, 140, 113, 0, 64, 178, 245, 61, 140, 172, 105, 241, 141, 173, 7, 152, 94, 227, 126, 154, 113, 81, 174]
+      ]
+    }
   },
   ...
 ]`
