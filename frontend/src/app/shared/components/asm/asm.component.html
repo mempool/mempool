@@ -2,7 +2,7 @@
   @for (instruction of instructions; track instruction.instruction) {
     <span [class]='opcodeStyles.get(instruction.instruction)'>OP_{{instruction.instruction}}</span>
     @for (arg of instruction.args; track arg) {
-      <ng-container *ngIf="annotations.signatures[arg] as sigInfo; else plainArg">
+      <ng-container *ngIf="annotations.signatures?.[arg] as sigInfo; else plainArg">
         <span class="sig sig-key sig-inline sighash-{{sigInfo.sig.sighash}}"
               [class.hovered]="annotations.selectedSig && annotations.selectedSig === sigInfo.sig"
               (mouseenter)="doShowSigInfo(sigInfo.sig)"
