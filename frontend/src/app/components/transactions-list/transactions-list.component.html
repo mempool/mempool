@@ -174,7 +174,7 @@
                         <td style="text-align: left;">
                           <ng-container *ngFor="let witness of vin.witness; index as windex">
                             <p class="witness-item">
-                              <ng-container *ngIf="tx['_sigmap'][witness] as sigInfo">
+                              <ng-container *ngIf="tx['_sigmap']?.[witness] as sigInfo">
                                 <span class="sig sig-key sig-inline sighash-{{sigInfo.sig.sighash}}"
                                       [class.hovered]="selectedSig && selectedSig.txIndex === i && selectedSig.vindex === vindex && selectedSig.sig === sigInfo.sig"
                                       (mouseenter)="showSigInfo(i, vindex, sigInfo.sig)" 
@@ -195,7 +195,7 @@
                                   {{ witness }}
                                 }
                               } @else if (witness) {
-                                <ng-container *ngIf="tx['_sigmap'][witness]?.sig.sighash !== 0 && tx['_sigmap'][witness] as sigInfo; else plainSig">
+                                <ng-container *ngIf="tx['_sigmap']?.[witness]?.sig.sighash !== 0 && tx['_sigmap']?.[witness] as sigInfo; else plainSig">
                                   <span class="witness">
                                     {{witness.slice(0, -2)}}<span class="sig sighash-{{sigInfo.sig.sighash}}" 
                                           [class.hovered]="selectedSig && selectedSig.txIndex === i && selectedSig.vindex === vindex && selectedSig.sig === sigInfo.sig"
