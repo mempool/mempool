@@ -251,7 +251,7 @@ export class PriceService {
   }
 
   getPriceByBulk$(timestamps: number[], currency: string): Observable<Price[]> {
-    if (this.stateService.env.BASE_MODULE !== 'mempool' || !this.stateService.env.HISTORICAL_PRICE) {
+    if (!this.stateService.env.HISTORICAL_PRICE) {
       return of([]);
     }
 

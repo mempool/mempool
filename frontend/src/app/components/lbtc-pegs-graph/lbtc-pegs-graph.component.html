@@ -1,4 +1,4 @@
-<div class="echarts" *browserOnly echarts [initOpts]="pegsChartInitOption" [options]="pegsChartOptions" (chartRendered)="rendered()"></div>
+<div class="echarts" *browserOnly echarts [initOpts]="pegsChartInitOption" [options]="pegsChartOptions" (chartInit)="onChartInit($event)" (chartRendered)="rendered()"></div>
 <div class="text-center loadingGraphs" *ngIf="!stateService.isBrowser || isLoading">
   <div class="spinner-border text-light"></div>
 </div>
