@@ -499,15 +499,21 @@ osUserCreate()
 {
     case $OS in
         FreeBSD)
-            # pw useradd -d /mempool -g mempool [-G additional_group] -n mampool
-            if [ $# -eq 3 ] ; then
-                osSudo "${ROOT_USER}" pw useradd -d "$2" -g "$3" -n "$1"
-            elif [ $# -eq 4 ]; then
-                osSudo "${ROOT_USER}" pw useradd -d "$2" -g "$3" -G "$4" -n "$1"
+          if id "$USERNAME" >/dev/null 2>&1; then
+            echo "User '$USERNAME' already exists."
             else
-                echo "Illegal number of parameters"
-                exit 1
-           fi
+                echo "Creating user '$USERNAME'..."
+                # pw useradd -d /mempool -g mempool [-G additional_group] -n mampool
+                if [ $# -eq 3 ] ; then
+                    osSudo "${ROOT_USER}" pw useradd -d "$2" -g "$3" -n "$1"
+                elif [ $# -eq 4 ]; then
+                    osSudo "${ROOT_USER}" pw useradd -d "$2" -g "$3" -G "$4" -n "$1"
+                else
+                    echo "Illegal number of parameters"
+                    exit 1
+            fi
+        fi
+
         ;;
         Debian)
             # useradd -d /mempool -g mempool [-G additional_group] mempool
@@ -527,7 +533,12 @@ osGroupCreate()
 {
     case $OS in
         FreeBSD)
-            osSudo "${ROOT_USER}" pw groupadd $*
+            if pw groupshow $1 >/dev/null 2>&1; then
+                echo "Group already exists"
+            else
+                echo "Creating "${$1}" group..."
+                osSudo "${ROOT_USER}" pw groupadd $*
+            fi
         ;;
         Debian)
             osSudo "${ROOT_USER}" groupadd $*
@@ -551,119 +562,169 @@ osCertbotDryRun()
     fi
 }
 
+zfsCleanupDataset()
+{
+  DATASET="$1"
+  echo "Cleaning up dataset: $DATASET"
+  if zfs list -H -o name "$DATASET" >/dev/null 2>&1; then
+    echo "Destroying existing dataset: $DATASET"
+    zfs unmount -f "$DATASET"
+    zfs destroy -r "$DATASET"
+  fi
+}
+
 zfsCreateFilesystems()
 {
+    zfsCleanupDataset "${ZPOOL}/backup"
     zfs create -o "mountpoint=/backup" "${ZPOOL}/backup"
+    zfsCleanupDataset "${ZPOOL}/cache"
     zfs create -o "mountpoint=/var/cache/nginx" "${ZPOOL}/cache"
 
+    zfsCleanupDataset "${ZPOOL}/elements"
     zfs create -o "mountpoint=${ELEMENTS_HOME}" "${ZPOOL}/elements"
+
+    zfsCleanupDataset "${ZPOOL}/bitcoin"
     zfs create -o "mountpoint=${BITCOIN_HOME}" "${ZPOOL}/bitcoin"
+
+    zfsCleanupDataset "${ZPOOL}/minfee"
     zfs create -o "mountpoint=${MINFEE_HOME}" "${ZPOOL}/minfee"
+
+    zfsCleanupDataset "${ZPOOL}/electrs"
     zfs create -o "mountpoint=${ELECTRS_HOME}" "${ZPOOL}/electrs"
+
+    zfsCleanupDataset "${ZPOOL}/mempool"
     zfs create -o "mountpoint=${MEMPOOL_HOME}" "${ZPOOL}/mempool"
+
+    zfsCleanupDataset "${ZPOOL}/mysql"
     zfs create -o "mountpoint=${MYSQL_HOME}" "${ZPOOL}/mysql" || true
 
+    zfsCleanupDataset  "${ZPOOL}/bitcoin/electrs"
     zfs create -o "mountpoint=${BITCOIN_ELECTRS_HOME}" "${ZPOOL}/bitcoin/electrs"
 
+    zfsCleanupDataset "${ZPOOL}/elements/liquidv1"
     zfs create -o "mountpoint=${ELEMENTS_HOME}/liquidv1" "${ZPOOL}/elements/liquidv1"
+
+    zfsCleanupDataset "${ZPOOL}/elements/electrs"
     zfs create -o "mountpoint=${ELEMENTS_ELECTRS_HOME}" "${ZPOOL}/elements/electrs"
 
     # create /bitcoin/socket with custom ACL for electrs unix sockets
+    zfsCleanupDataset "${ZPOOL}/bitcoin/socket"
     zfs create -o "mountpoint=${BITCOIN_HOME}/socket" "${ZPOOL}/bitcoin/socket"
 
     # create /elements/socket with custom ACL for electrs unix sockets
+    zfsCleanupDataset "${ZPOOL}/elements/socket"
     zfs create -o "mountpoint=${ELEMENTS_HOME}/socket" "${ZPOOL}/elements/socket"
 
     # Bitcoin Mainnet
     if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
         for folder in chainstate indexes blocks
         do
+            zfsCleanupDataset "${ZPOOL}/bitcoin/${folder}"
             zfs create -o "mountpoint=${BITCOIN_HOME}/${folder}" "${ZPOOL}/bitcoin/${folder}"
         done
     fi
 
     # Bitcoin Testnet
     if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
+        zfsCleanupDataset "${ZPOOL}/bitcoin/testnet"
         zfs create -o "mountpoint=${BITCOIN_TESTNET_DATA}" "${ZPOOL}/bitcoin/testnet"
         for folder in chainstate indexes blocks
         do
+            zfsCleanupDataset "${ZPOOL}/bitcoin/testnet/${folder}"
             zfs create -o "mountpoint=${BITCOIN_TESTNET_DATA}/${folder}" "${ZPOOL}/bitcoin/testnet/${folder}"
         done
     fi
 
     # Bitcoin Testnet4
     if [ "${BITCOIN_TESTNET4_ENABLE}" = ON ];then
+        zfsCleanupDataset "${ZPOOL}/bitcoin/testnet4"
         zfs create -o "mountpoint=${BITCOIN_TESTNET4_DATA}" "${ZPOOL}/bitcoin/testnet4"
         for folder in chainstate indexes blocks
         do
+            zfsCleanupDataset "${ZPOOL}/bitcoin/testnet4/${folder}"
             zfs create -o "mountpoint=${BITCOIN_TESTNET4_DATA}/${folder}" "${ZPOOL}/bitcoin/testnet4/${folder}"
         done
     fi
 
     # Bitcoin Signet
     if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
+        zfsCleanupDataset "${ZPOOL}/bitcoin/signet"
         zfs create -o "mountpoint=${BITCOIN_SIGNET_DATA}" "${ZPOOL}/bitcoin/signet"
         for folder in chainstate indexes blocks
         do
+            zfsCleanupDataset "${ZPOOL}/bitcoin/signet/${folder}"
             zfs create -o "mountpoint=${BITCOIN_SIGNET_DATA}/${folder}" "${ZPOOL}/bitcoin/signet/${folder}"
         done
     fi
 
     # electrs mainnet data
     if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
+        zfsCleanupDataset "${ELECTRS_MAINNET_ZPOOL}/electrs/mainnet"
         zfs create -o "mountpoint=${ELECTRS_MAINNET_DATA}" "${ELECTRS_MAINNET_ZPOOL}/electrs/mainnet"
         for folder in cache history txstore
         do
+            zfsCleanupDataset "${ELECTRS_MAINNET_ZPOOL}/electrs/mainnet/${folder}"
             zfs create -o "mountpoint=${ELECTRS_MAINNET_DATA}/newindex/${folder}" "${ELECTRS_MAINNET_ZPOOL}/electrs/mainnet/${folder}"
         done
     fi
 
     # electrs testnet data
     if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
+        zfsCleanupDataset "${ELECTRS_TESTNET_ZPOOL}/electrs/testnet"
         zfs create -o "mountpoint=${ELECTRS_TESTNET_DATA}" "${ELECTRS_TESTNET_ZPOOL}/electrs/testnet"
         for folder in cache history txstore
         do
+            zfsCleanupDataset "${ELECTRS_TESTNET_ZPOOL}/electrs/testnet/${folder}"
             zfs create -o "mountpoint=${ELECTRS_TESTNET_DATA}/newindex/${folder}" "${ELECTRS_TESTNET_ZPOOL}/electrs/testnet/${folder}"
         done
     fi
 
     # electrs testnet4 data
     if [ "${BITCOIN_TESTNET4_ENABLE}" = ON ];then
+        zfsCleanupDataset "${ELECTRS_TESTNET4_ZPOOL}/electrs/testnet4"
         zfs create -o "mountpoint=${ELECTRS_TESTNET4_DATA}" "${ELECTRS_TESTNET4_ZPOOL}/electrs/testnet4"
         for folder in cache history txstore
         do
+            zfsCleanupDataset "${ELECTRS_TESTNET4_ZPOOL}/electrs/testnet4/${folder}"
             zfs create -o "mountpoint=${ELECTRS_TESTNET4_DATA}/newindex/${folder}" "${ELECTRS_TESTNET4_ZPOOL}/electrs/testnet4/${folder}"
         done
     fi
 
     # electrs signet data
     if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
+        zfsCleanupDataset "${ELECTRS_SIGNET_ZPOOL}/electrs/signet"
         zfs create -o "mountpoint=${ELECTRS_SIGNET_DATA}" "${ELECTRS_SIGNET_ZPOOL}/electrs/signet"
         for folder in cache history txstore
         do
+            zfsCleanupDataset "${ELECTRS_SIGNET_ZPOOL}/electrs/signet/${folder}"
             zfs create -o "mountpoint=${ELECTRS_SIGNET_DATA}/newindex/${folder}" "${ELECTRS_SIGNET_ZPOOL}/electrs/signet/${folder}"
         done
     fi
 
     # electrs liquid data
     if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
+        zfsCleanupDataset "${ELECTRS_LIQUID_ZPOOL}/electrs/liquid"
         zfs create -o "mountpoint=${ELECTRS_LIQUID_DATA}" "${ELECTRS_LIQUID_ZPOOL}/electrs/liquid"
         for folder in cache history txstore
         do
+            zfsCleanupDataset "${ELECTRS_LIQUID_ZPOOL}/electrs/liquid/${folder}"
             zfs create -o "mountpoint=${ELECTRS_LIQUID_DATA}/newindex/${folder}" "${ELECTRS_LIQUID_ZPOOL}/electrs/liquid/${folder}"
         done
     fi
 
     # electrs liquidtestnet data
     if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
+        zfsCleanupDataset "${ELECTRS_LIQUIDTESTNET_ZPOOL}/electrs/liquidtestnet"
         zfs create -o "mountpoint=${ELECTRS_LIQUIDTESTNET_DATA}" "${ELECTRS_LIQUIDTESTNET_ZPOOL}/electrs/liquidtestnet"
         for folder in cache history txstore
         do
+            zfsCleanupDataset "${ELECTRS_LIQUIDTESTNET_ZPOOL}/electrs/liquidtestnet/${folder}"
             zfs create -o "mountpoint=${ELECTRS_LIQUIDTESTNET_DATA}/newindex/${folder}" "${ELECTRS_LIQUIDTESTNET_ZPOOL}/electrs/liquidtestnet/${folder}"
         done
     fi
 
     if [ "${CLN_INSTALL}" = ON ];then
+        zfsCleanupDataset "${ZPOOL}/cln"
         zfs create -o "mountpoint=${CLN_HOME}" "${ZPOOL}/cln"
     fi
 }
