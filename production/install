@@ -1162,12 +1162,17 @@ esac
 echo "[*] Installing Mempool crontab"
 osSudo "${ROOT_USER}" crontab -u "${MEMPOOL_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/mempool.crontab"
 
-echo "[*] Installing nvm.sh from GitHub"
-osSudo "${MEMPOOL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash'
+if [ "$(uname -m)" = "arm64" ]; then
+  echo "[*] Installing nodejs from the packages"
+  osPackageInstall node22-22.14.0 npm-node22-10.9.2
+else
+  echo "[*] Installing nvm.sh from GitHub"
+  osSudo "${MEMPOOL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash'
 
-echo "[*] Building NodeJS via nvm.sh"
-osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; CC=gcc CXX=g++ nvm install v22.14.0 --shared-zlib'
-osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm alias default 22.14.0'
+  echo "[*] Building NodeJS via nvm.sh"
+  osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; CC=gcc CXX=g++ nvm install v22.14.0 --shared-zlib'
+  osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm alias default 22.14.0'
+fi
 
 ####################
 # Tor installation #
