@@ -28,7 +28,7 @@ export class AsmComponent {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['asm']) {
+    if (changes['asm'] || changes['crop']) {
       this.parseASM();
     }
   }
@@ -82,6 +82,7 @@ export class AsmComponent {
     ['ELSE', 'control'],
     ['ENDIF', 'control'],
     ['VERIFY', 'control'],
+    ['RETURN', 'control'],
     ...Array.from({length: 70}, (_, i) => [`RETURN_${i + 186}`, 'control']),
 
     // Stack
