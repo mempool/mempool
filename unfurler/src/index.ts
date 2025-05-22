@@ -271,7 +271,7 @@ class Server {
   async clusterTask({ page, data: { host, url, path, action, reqUrl } }) {
     const start = Date.now();
     try {
-      logger.info(`rendering "${reqUrl}" on tab ${page.clusterGroup}:${page.index}`);
+      logger.info(`rendering "${reqUrl}" on tab ${page.clusterGroup}:${page.index} for host ${host}`);
       const urlParts = parseLanguageUrl(path);
       if (page.language !== urlParts.lang || host !== page.host) {
         // switch language
@@ -382,6 +382,8 @@ class Server {
       const rawPath = req.params[0];
 
       const host = config.ENTERPRISE.ENABLED ? req.hostname : this.mempoolHost;
+      const hostPrefix = config.ENTERPRISE.ENABLED ? (this.secureHost ? 'https://' : 'http://') + req.hostname : this.mempoolHost;
+      const customConfig = config.ENTERPRISE.ENABLED ? this.customConfigs[host] : null;
 
       let img = null;
 
@@ -390,16 +392,38 @@ class Server {
 
       // don't bother unless the route is definitely renderable
       if (rawPath.includes('/preview/') && matchedRoute.render) {
-        img = await this.cluster?.execute({ host, url: host + rawPath, path: rawPath, action: 'screenshot', reqUrl: req.url });
+        img = await this.cluster?.execute({ host: hostPrefix, url: hostPrefix + rawPath, path: rawPath, action: 'screenshot', reqUrl: req.url });
         logger.info(`unfurl returned "${req.url}" in ${Date.now() - start}ms | ${this.unfurlQueueLength - 1} tasks in queue`);
       } else {
         logger.info('rendering not enabled for page "' + req.url + '"');
       }
 
       if (!img) {
-        // send local fallback image file
         res.set('Cache-control', 'no-cache');
-        res.sendFile(nodejsPath.join(__dirname, matchedRoute.fallbackImg));
+        if (customConfig) {
+          // proxy fallback image from the services backend
+          logger.info('proxying resource "' + req.url + '"');
+          try {
+            if (this.secureMempoolHost) {
+              https.get(hostPrefix + customConfig.previewFallbackImg, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => {
+                res.writeHead(got.statusCode, got.headers);
+                return got.pipe(res);
+              });
+            } else {
+              http.get(hostPrefix + customConfig.previewFallbackImg, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => {
+                res.writeHead(got.statusCode, got.headers);
+                return got.pipe(res);
+              });
+            }
+            return;
+          } catch (e) {
+            logger.err(`failed to proxy resource "${req.url}": ` + (e instanceof Error ? e.message : `${e}`));
+            res.status(500).send();
+          }
+        } else {
+          // send local fallback image file
+          res.sendFile(nodejsPath.join(__dirname, matchedRoute.fallbackImg));
+        }
       } else {
         res.contentType('image/png');
         res.send(img);
@@ -417,7 +441,6 @@ class Server {
 
     const host = config.ENTERPRISE.ENABLED ? req.hostname : null;
     const hostPrefix = config.ENTERPRISE.ENABLED ? this.protocol + host : this.mempoolHost;
-
 
     // drop requests for static files
     const rawPath = req.params[0];
@@ -461,7 +484,7 @@ class Server {
       } else {
         this.seoQueueLength++;
         const start = Date.now();
-        result = await this.renderSEOPage(host, rawPath, req.url);
+        result = await this.renderSEOPage(hostPrefix, rawPath, req.url);
         logger.info(`slurp returned "${req.url}" in ${Date.now() - start}ms | ${this.seoQueueLength - 1} tasks in queue`);
       }
       if (result && result.length) {

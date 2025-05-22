@@ -12,6 +12,11 @@
     "footer_img": "/resources/onbtclogo.svg",
     "rounded_corner": true
   },
+  "meta": {
+    "title": "National Bitcoin Office of El Salvador",
+    "description": "The National Bitcoin Office (ONBTC) of El Salvador under President @nayibbukele",
+    "previewFallbackImg": "/resources/onbtc/onbtc-preview.jpg"
+  },
   "dashboard": {
     "widgets": [
       {
