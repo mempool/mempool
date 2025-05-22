@@ -499,11 +499,11 @@ osUserCreate()
 {
     case $OS in
         FreeBSD)
-          if id "$USERNAME" >/dev/null 2>&1; then
-            echo "User '$USERNAME' already exists."
+          if id "$1" >/dev/null 2>&1; then
+            echo "User '$1' already exists."
             else
-                echo "Creating user '$USERNAME'..."
-                # pw useradd -d /mempool -g mempool [-G additional_group] -n mampool
+                echo "Creating user '$1'..."
+                # pw useradd -d /mempool -g mempool [-G additional_group] -n mempool
                 if [ $# -eq 3 ] ; then
                     osSudo "${ROOT_USER}" pw useradd -d "$2" -g "$3" -n "$1"
                 elif [ $# -eq 4 ]; then
@@ -536,7 +536,7 @@ osGroupCreate()
             if pw groupshow $1 >/dev/null 2>&1; then
                 echo "Group already exists"
             else
-                echo "Creating "${$1}" group..."
+                echo "Creating "$1" group..."
                 osSudo "${ROOT_USER}" pw groupadd $*
             fi
         ;;
