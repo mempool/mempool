@@ -1,4 +1,7 @@
 {
+  "domains": [
+    "river.mempool.space"
+  ],
   "theme": "wiz",
   "enterprise": "river",
   "branding": {
@@ -7,6 +10,11 @@
     "site_id": 22,
     "header_img": "/resources/riverlogo.svg",
     "footer_img": "/resources/riverlogo.svg"
+  },
+  "meta": {
+    "title": "River | Invest in Bitcoin with confidence",
+    "description": "Easily buy Bitcoin in minutes. Zero fees on recurring buys. Invest in Bitcoin with confidence with world-class security.",
+    "previewFallbackImg": "/resources/river/river-preview.jpg"
   },
   "dashboard": {
     "widgets": [

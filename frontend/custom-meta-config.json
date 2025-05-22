@@ -1,4 +1,7 @@
 {
+  "domains": [
+    "metaplanet.mempool.space"
+  ],
   "theme": "contrast",
   "enterprise": "meta",
   "branding": {
@@ -7,6 +10,11 @@
     "site_id": 21,
     "header_img": "/resources/metalogo.svg",
     "footer_img": "/resources/metalogo.svg"
+  },
+  "meta": {
+    "title": "Metaplanet Inc.",
+    "description": "Secure the Future with Bitcoin",
+    "previewFallbackImg": "/resources/meta/meta-preview.png"
   },
   "dashboard": {
     "widgets": [
