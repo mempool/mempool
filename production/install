@@ -1921,7 +1921,12 @@ echo "[*] Adding MySQL configuration"
 case $OS in
 
     FreeBSD)
-        osSudo "${ROOT_USER}" service mysql-server onestart
+        if ! osSudo "${ROOT_USER}" service mysql-server status >/dev/null 2>&1; then
+            echo "MySQL is not running. Starting..."
+            osSudo "${ROOT_USER}" service mysql-server onestart
+        else
+            echo "MySQL is already running."
+        fi
     ;;
     Debian)
         osSudo "${ROOT_USER}" service mysql start
