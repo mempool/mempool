@@ -1,4 +1,4 @@
-FROM node:22.14.0-bookworm-slim AS builder
+FROM node:22.16.0-bookworm-slim AS builder
 
 ARG commitHash
 ENV DOCKER_COMMIT_HASH=${commitHash}
