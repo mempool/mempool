@@ -364,8 +364,11 @@ export class HashrateChartComponent implements OnInit {
         {
           type: 'value',
           position: 'right',
-          min: (_) => {
+          min: (value) => {
             const firstYAxisMin = this.chartInstance.getModel().getComponent('yAxis', 0).axis.scale.getExtent()[0];
+            if (firstYAxisMin === Infinity) {
+              return value.min;
+            }
             const selectedPowerOfTen: any = selectPowerOfTen(firstYAxisMin);
             const newMin = Math.floor(firstYAxisMin / selectedPowerOfTen.divider / 10)
             return 600 / 2 ** 32 * newMin * selectedPowerOfTen.divider * 10;
