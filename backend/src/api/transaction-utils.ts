@@ -145,7 +145,7 @@ class TransactionUtils {
 
   private bitcoinJsTransactionToMempoolTransaction(tx: bitcoinjs.Transaction): IEsploraApi.Transaction {
     const vin: IEsploraApi.Vin[] = tx.ins.map(input => ({
-      txid: input.hash.reverse().toString('hex'),
+      txid: Buffer.from(input.hash).reverse().toString('hex'),
       vout: input.index,
       is_coinbase: tx.isCoinbase(),
       scriptsig: input.script.toString('hex'),
@@ -171,25 +171,14 @@ class TransactionUtils {
       };
     });
 
-    const txid = tx.getId();
-    return {
-      txid,
+    const transaction: IEsploraApi.Transaction = {
+      txid: tx.getId(),
       version: tx.version,
       locktime: tx.locktime,
       size: tx.byteLength(true),
       weight: tx.weight(),
       fee: 0, // This needs to be calculated from input/output values
-      sigops: this.countSigops({
-        txid,
-        vin,
-        vout,
-        version: tx.version,
-        locktime: tx.locktime,
-        size: tx.byteLength(false),
-        weight: tx.weight(),
-        fee: 0,
-        status: { confirmed: false }
-      }),
+      sigops: 0,
       vin,
       vout,
       status: {
@@ -197,6 +186,8 @@ class TransactionUtils {
       },
       hex: tx.toHex()
     };
+    transaction.sigops = this.countSigops(transaction);
+    return transaction;
   }
 
   public hex2ascii(hex: string) {

@@ -383,7 +383,7 @@ class Mempool {
         // parse any raw hex txs, ready to inject into the mempool cache
         if (acceleration.hex && !acceleration.txData && !this.mempoolCache[acceleration.txid]) {
           acceleration.txData = transactionUtils.parseTransaction(acceleration.hex);
-          // inject any missing but fully loaded accelerator transactions into the mempool cache
+          // inject any missing transactions into the mempool cache
           // (tx will be missing prevouts at this stage, but hopefully we'll fill them in below)
           this.injectTx(acceleration.txData);
         }
@@ -412,7 +412,7 @@ class Mempool {
 
       // Delete evicted transactions from mempool
       for (const tx in this.mempoolCache) {
-        if (!transactionsObject[tx]) {
+        if (!transactionsObject[tx] && !this.injectedTxs.has(tx)) {
           deletedTransactions.push(this.mempoolCache[tx]);
         }
       }
@@ -646,6 +646,9 @@ class Mempool {
 
   private async updateInjectedTxPrevouts(tx: MempoolTransactionExtended): Promise<void> {
     let anyMissing = false;
+    if (tx.fee) {
+      return;
+    }
     for (const input of tx.vin) {
       if (!input.prevout) {
         // try to fetch the inner transaction from the acceleration cache, mempool cache, recent lookup cache, or backend
