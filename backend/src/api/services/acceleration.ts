@@ -1,10 +1,12 @@
 import { WebSocket } from 'ws';
 import config from '../../config';
 import logger from '../../logger';
-import { BlockExtended } from '../../mempool.interfaces';
+import { BlockExtended, MempoolTransactionExtended, TransactionExtended } from '../../mempool.interfaces';
 import axios from 'axios';
 import mempool from '../mempool';
 import websocketHandler from '../websocket-handler';
+import transactionUtils from '../transaction-utils';
+import { IEsploraApi } from '../bitcoin/esplora-api.interface';
 
 type MyAccelerationStatus = 'requested' | 'accelerating' | 'done';
 
@@ -21,6 +23,8 @@ export interface Acceleration {
       vbytes: number,
     },
   },
+  hex?: string,
+  txData?: MempoolTransactionExtended
 };
 
 export interface AccelerationHistory {
@@ -147,6 +151,10 @@ class AccelerationApi {
     return this._accelerations;
   }
 
+  public getPublicTx(txid: string): TransactionExtended | null {
+    return this._accelerations[txid]?.txData || null;
+  }
+
   public async $fetchAccelerationHistory(page?: number, status?: string): Promise<AccelerationHistory[] | null> {
     if (config.MEMPOOL_SERVICES.ACCELERATIONS) {
       try {
@@ -182,10 +190,11 @@ class AccelerationApi {
     const mempoolCache = mempool.getMempool();
 
     for (const acceleration of Object.values(newAccelerationMap)) {
-      // skip transactions we don't know about
-      if (!mempoolCache[acceleration.txid]) {
+      // skip transactions we don't know about, unless they include their own tx data
+      if (!mempoolCache[acceleration.txid] && !acceleration.hex) {
         continue;
       }
+
       if (oldAccelerationMap[acceleration.txid] == null) {
         // new acceleration
         changed.push(acceleration.txid);
