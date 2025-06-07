@@ -1037,7 +1037,15 @@ class WebsocketHandler {
       if (config.MEMPOOL.RUST_GBT) {
         const added = memPool.limitGBT ? (candidates?.added || []) : [];
         const removed = memPool.limitGBT ? (candidates?.removed || []) : [];
-        projectedBlocks = await mempoolBlocks.$rustUpdateBlockTemplates(transactionIds, auditMempool, added, removed, candidates, isAccelerated, block.extras.pool.id);
+        const injectedAccelerations = memPool.getInjectedTxids();
+        const accelerationsForPool = accelerations.filter(acc => acc.pools.includes(block.extras.pool.id));
+        const anyInjectedMissingFromPool = injectedAccelerations.some(txid => !accelerationsForPool.some(acc => acc.txid === txid));
+        if (anyInjectedMissingFromPool) {
+          // this pool would have been missing some injected accelerator transactions, so we need to reset the GBT mempool state
+          projectedBlocks = await mempoolBlocks.$rustMakeBlockTemplates(transactionIds, auditMempool, candidates, false, isAccelerated, block.extras.pool.id);
+        } else {
+          projectedBlocks = await mempoolBlocks.$rustUpdateBlockTemplates(transactionIds, auditMempool, added, removed, candidates, isAccelerated, block.extras.pool.id);
+        }
       } else {
         projectedBlocks = await mempoolBlocks.$makeBlockTemplates(transactionIds, auditMempool, candidates, false, isAccelerated, block.extras.pool.id);
       }
