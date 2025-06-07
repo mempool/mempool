@@ -5,8 +5,6 @@ import { BlockExtended, MempoolTransactionExtended, TransactionExtended } from '
 import axios from 'axios';
 import mempool from '../mempool';
 import websocketHandler from '../websocket-handler';
-import transactionUtils from '../transaction-utils';
-import { IEsploraApi } from '../bitcoin/esplora-api.interface';
 
 type MyAccelerationStatus = 'requested' | 'accelerating' | 'done';
 
