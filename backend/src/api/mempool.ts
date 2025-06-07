@@ -13,14 +13,20 @@ import { Acceleration } from './services/acceleration';
 import accelerationApi from './services/acceleration';
 import redisCache from './redis-cache';
 import blocks from './blocks';
+import { IEsploraApi } from './bitcoin/esplora-api.interface';
 
 class Mempool {
   private inSync: boolean = false;
   private mempoolCacheDelta: number = -1;
   private mempoolCache: { [txId: string]: MempoolTransactionExtended } = {};
   private mempoolCandidates: { [txid: string ]: boolean } = {};
+  private injectedTxs: Set<string> = new Set(); // txids of transactions manually injected into the mempool from other sources than the regular backend
   private spendMap = new Map<string, MempoolTransactionExtended>();
   private recentlyDeleted: MempoolTransactionExtended[][] = []; // buffer of transactions deleted in recent mempool updates
+  private recentlyMined: Record<string, number> = {}; // txids of transactions mined in recent blocks, by height
+  private recentlyMinedNumBlocks: number = 10;
+  private recentTxCache: Record<string, TransactionExtended> = {};
+  private recentTxCacheList: string[] = [];
   private mempoolInfo: IBitcoinApi.MempoolInfo = { loaded: false, size: 0, bytes: 0, usage: 0, total_fee: 0,
                                                     maxmempool: 300000000, mempoolminfee: Common.isLiquid() ? 0.00000100 : 0.00001000, minrelaytxfee: Common.isLiquid() ? 0.00000100 : 0.00001000 };
   private mempoolChangedCallback: ((newMempool: {[txId: string]: MempoolTransactionExtended; }, newTransactions: MempoolTransactionExtended[],
@@ -39,7 +45,7 @@ class Mempool {
   private mempoolProtection = 0;
   private latestTransactions: any[] = [];
 
-  private ESPLORA_MISSING_TX_WARNING_THRESHOLD = 100; 
+  private ESPLORA_MISSING_TX_WARNING_THRESHOLD = 100;
   private SAMPLE_TIME = 10000; // In ms
   private timer = new Date().getTime();
   private missingTxCount = 0;
@@ -96,6 +102,35 @@ class Mempool {
 
   public getFromSpendMap(txid, index): MempoolTransactionExtended | void {
     return this.spendMap.get(`${txid}:${index}`);
+  }
+
+  // manually inject a transaction into the mempool
+  public injectTx(tx: MempoolTransactionExtended): void {
+    if (!this.mempoolCache[tx.txid]) {
+      this.mempoolCache[tx.txid] = tx;
+      this.injectedTxs.add(tx.txid);
+    }
+  }
+
+  // mark a previously injected transaction as belonging to the regular mempool
+  private naturalizeTx(txid: string): void {
+    this.injectedTxs.delete(txid);
+  }
+
+  // remove an injected transaction from the mempool
+  public uninjectTx(txid: string): void {
+    if (this.injectedTxs.has(txid)) {
+      delete this.mempoolCache[txid];
+      this.injectedTxs.delete(txid);
+    }
+  }
+
+  public isInjected(txid: string): boolean {
+    return this.injectedTxs.has(txid);
+  }
+
+  public getInjectedTxids(): string[] {
+    return Array.from(this.injectedTxs);
   }
 
   public async $setMempool(mempoolData: { [txId: string]: MempoolTransactionExtended }) {
@@ -208,7 +243,7 @@ class Mempool {
     return txTimes;
   }
 
-  public async $updateMempool(transactions: string[], accelerations: Record<string, Acceleration> | null, minFeeMempool: string[], minFeeTip: number, pollRate: number): Promise<void> {
+  public async $updateMempool(transactions: string[], minFeeMempool: string[], minFeeTip: number, pollRate: number): Promise<void> {
     logger.debug(`Updating mempool...`);
 
     // warn if this run stalls the main loop for more than 2 minutes
@@ -330,6 +365,43 @@ class Mempool {
       }, 1000 * 60 * config.MEMPOOL.CLEAR_PROTECTION_MINUTES);
     }
 
+
+    // handle injected accelerator transactions
+    // naturalize anything that was injected but has since entered the regular mempool
+    for (const tx of newTransactions) {
+      if (this.injectedTxs.has(tx.txid)) {
+        this.naturalizeTx(tx.txid);
+      }
+    }
+    const latestAccelerations = await accelerationApi.$updateAccelerations();
+    if (latestAccelerations) {
+      for (const acceleration of Object.values(latestAccelerations)) {
+        // skip anything we know has already been mined
+        if (this.recentlyMined[acceleration.txid]) {
+          continue;
+        }
+        // parse any raw hex txs, ready to inject into the mempool cache
+        if (acceleration.hex && !acceleration.txData && !this.mempoolCache[acceleration.txid]) {
+          acceleration.txData = transactionUtils.parseTransaction(acceleration.hex);
+          // inject any missing but fully loaded accelerator transactions into the mempool cache
+          // (tx will be missing prevouts at this stage, but hopefully we'll fill them in below)
+          this.injectTx(acceleration.txData);
+        }
+      }
+      for (const acceleration of Object.values(latestAccelerations)) {
+        // attempt to fill in prevouts for injected accelerator transactions
+        if (acceleration.txData) {
+          await this.updateInjectedTxPrevouts(acceleration.txData);
+        }
+      }
+      // remove anything that was injected but has since been removed from the accelerator cache
+      for (const txid of this.injectedTxs) {
+        if (!latestAccelerations?.[txid]) {
+          this.uninjectTx(txid);
+        }
+      }
+    }
+
     const deletedTransactions: MempoolTransactionExtended[] = [];
 
     if (this.mempoolProtection !== 1) {
@@ -355,7 +427,7 @@ class Mempool {
     const newTransactionsStripped = newTransactions.map((tx) => Common.stripTransaction(tx));
     this.latestTransactions = newTransactionsStripped.concat(this.latestTransactions).slice(0, 6);
 
-    const accelerationDelta = accelerations != null ? await this.updateAccelerations(accelerations) : [];
+    const accelerationDelta = latestAccelerations != null ? await this.updateAccelerations(latestAccelerations) : [];
     if (accelerationDelta.length) {
       hasChange = true;
     }
@@ -510,8 +582,10 @@ class Mempool {
 
   public addToSpendMap(transactions: MempoolTransactionExtended[]): void {
     for (const tx of transactions) {
-      for (const vin of tx.vin) {
-        this.spendMap.set(`${vin.txid}:${vin.vout}`, tx);
+      if (!this.injectedTxs.has(tx.txid)) {
+        for (const vin of tx.vin) {
+          this.spendMap.set(`${vin.txid}:${vin.vout}`, tx);
+        }
       }
     }
   }
@@ -524,6 +598,21 @@ class Mempool {
           this.spendMap.delete(key);
         }
       }
+    }
+  }
+
+  // maintain a simple rolling cache of txids mined in recent blocks
+  // ** not reorg-aware **
+  public recordMinedBlock(height: number, txs: string[]): void {
+    // delete anything that was mined more than recentlyMinedNumBlocks blocks ago
+    for (const txid of Object.keys(this.recentlyMined)) {
+      if (this.recentlyMined[txid] < height - this.recentlyMinedNumBlocks) {
+        delete this.recentlyMined[txid];
+      }
+    }
+    // record txs from the new block
+    for (const txid of txs) {
+      this.recentlyMined[txid] = height;
     }
   }
 
@@ -553,6 +642,59 @@ class Mempool {
       });
     }
     return bitcoinClient.getMempoolInfo();
+  }
+
+  private async updateInjectedTxPrevouts(tx: MempoolTransactionExtended): Promise<void> {
+    let anyMissing = false;
+    for (const input of tx.vin) {
+      if (!input.prevout) {
+        // try to fetch the inner transaction from the acceleration cache, mempool cache, recent lookup cache, or backend
+        const innerTx = await this.findTx(input.txid);
+        // add prevout if successful
+        if (innerTx) {
+          input.prevout = innerTx.vout[input.vout] as IEsploraApi.Vout;
+          transactionUtils.addInnerScriptsToVin(input);
+        } else {
+          anyMissing = true;
+        }
+      }
+    }
+    // update fee
+    if (!anyMissing) {
+      const totalIn = tx.vin.reduce((p, input) => p + (input.prevout?.value || 0), 0);
+      const totalOut = tx.vout.reduce((p, output) => p + output.value, 0);
+      tx.fee = totalIn - totalOut;
+    }
+  }
+
+  private async findTx(txid: string): Promise<TransactionExtended | null> {
+    let found: TransactionExtended | null = this.mempoolCache[txid] || this.recentTxCache[txid];
+    if (!found) {
+      found = await transactionUtils.$getTransactionExtended(txid);
+      this.addToRecentTxCache(found);
+    } else {
+      this.promoteRecentTxInCache(txid);
+    }
+    return found;
+  }
+
+  private addToRecentTxCache(tx: TransactionExtended): void {
+    this.recentTxCache[tx.txid] = tx;
+    this.recentTxCacheList.push(tx.txid);
+    while (this.recentTxCacheList.length > 100) {
+      const expired = this.recentTxCacheList.shift();
+      if (expired) {
+        delete this.recentTxCache[expired];
+      }
+    }
+  }
+
+  private promoteRecentTxInCache(txid: string): void {
+    const index = this.recentTxCacheList.indexOf(txid);
+    if (index > 0) {
+      this.recentTxCacheList.splice(index, 1);
+      this.recentTxCacheList.unshift(txid);
+    }
   }
 }
 

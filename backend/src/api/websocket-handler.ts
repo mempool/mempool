@@ -619,7 +619,7 @@ class WebsocketHandler {
     const mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
     const mempoolInfo = memPool.getMempoolInfo();
     const vBytesPerSecond = memPool.getVBytesPerSecond();
-    const rbfTransactions = Common.findRbfTransactions(newTransactions, recentlyDeletedTransactions.flat());
+    const rbfTransactions = Common.findRbfTransactions(newTransactions.filter(tx => !memPool.isInjected(tx.txid)), recentlyDeletedTransactions.flat().filter(tx => !memPool.isInjected(tx.txid)));
     const da = difficultyAdjustment.getDifficultyAdjustment();
     const accelerations = accelerationApi.getAccelerations();
     memPool.handleRbfTransactions(rbfTransactions);
@@ -1020,8 +1020,8 @@ class WebsocketHandler {
     let candidates: GbtCandidates | undefined = (memPool.limitGBT && candidateTxs) ? { txs: candidateTxs, added: [], removed: [] } : undefined;
     let transactionIds: string[] = (memPool.limitGBT) ? Object.keys(candidates?.txs || {}) : Object.keys(_memPool);
 
+    const accelerations = Object.values(mempool.getAccelerations());
     if (config.DATABASE.ENABLED) {
-      const accelerations = Object.values(mempool.getAccelerations());
       await accelerationRepository.$indexAccelerationsForBlock(block, accelerations, structuredClone(transactions));
     }
 
@@ -1111,9 +1111,11 @@ class WebsocketHandler {
     // Update mempool to remove transactions included in the new block
     for (const txId of txIds) {
       delete _memPool[txId];
+      memPool.uninjectTx(txId);
       rbfCache.mined(txId);
       confirmedTxids[txId] = true;
     }
+    memPool.recordMinedBlock(block.height, txIds);
 
     if (memPool.limitGBT) {
       const minFeeMempool = memPool.limitGBT ? await bitcoinSecondClient.getRawMemPool() : null;
