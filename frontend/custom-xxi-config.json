@@ -1,0 +1,48 @@
+{
+  "theme": "wiz",
+  "enterprise": "xxi",
+  "branding": {
+    "name": "xxi",
+    "title": "Twenty One",
+    "site_id": 23,
+    "header_img": "/resources/xxi/xxilogo.png",
+    "footer_img": "/resources/xxi/xxilogo.png"
+  },
+  "dashboard": {
+    "widgets": [
+      {
+        "component": "fees",
+        "mobileOrder": 4
+      },
+      {
+        "component": "walletBalance",
+        "mobileOrder": 1,
+        "props": {
+          "wallet": "xxi"
+        }
+      },
+      {
+        "component": "goggles",
+        "mobileOrder": 5
+      },
+      {
+        "component": "wallet",
+        "mobileOrder": 2,
+        "props": {
+          "wallet": "xxi",
+          "period": "all"
+        }
+      },
+      {
+        "component": "blocks"
+      },
+      {
+        "component": "walletTransactions",
+        "mobileOrder": 3,
+        "props": {
+          "wallet": "xxi"
+        }
+      }
+    ]
+  }
+}
