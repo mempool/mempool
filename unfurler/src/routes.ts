@@ -377,6 +377,28 @@ export const networks = {
         routes: routes.lightning.routes,
       }
     }
+    },
+  xxi: {
+    networkName: 'XXI',
+    title: 'Twenty One | The Institutional Standard for Bitcoin',
+    description: 'The Institutional Standard for Bitcoin',
+    fallbackImg: '/resources/xxi/xxi-preview.png',
+    routes: { // only dynamic routes supported
+      block: routes.block,
+      address: routes.address,
+      wallet: routes.wallet,
+      tx: routes.tx,
+      mining: {
+        title: "Mining",
+        routes: {
+          pool: routes.mining.routes.pool,
+        }
+      },
+      lightning: {
+        title: "Lightning",
+        routes: routes.lightning.routes,
+      }
+    }
   }
 };
 
