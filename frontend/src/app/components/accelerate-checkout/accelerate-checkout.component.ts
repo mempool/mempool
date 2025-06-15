@@ -72,6 +72,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   @Output() completed = new EventEmitter<boolean>();
   @Output() hasDetails = new EventEmitter<boolean>();
   @Output() changeMode = new EventEmitter<boolean>();
+  @Output() paymentReceipt = new EventEmitter<string>();
 
   calculating = true;
   processing = false;
@@ -543,6 +544,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                     if (this.applePay) {
                       this.applePay.destroy();
                     }
+                    this.paymentReceipt.emit(this.accelerationResponse?.receiptUrl);
                     setTimeout(() => {
                       this.isTokenizing--;
                       this.isCheckoutLocked--;
@@ -671,6 +673,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                   if (this.googlePay) {
                     this.googlePay.destroy();
                   }
+                  this.paymentReceipt.emit(this.accelerationResponse?.receiptUrl);
                   setTimeout(() => {
                     this.isTokenizing--;
                     this.isCheckoutLocked--;
@@ -778,6 +781,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               this.processing = false;
               this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
               this.audioService.playSound('ascend-chime-cartoon');
+              this.paymentReceipt.emit(this.accelerationResponse?.receiptUrl);
               setTimeout(() => {
                 this.isCheckoutLocked--;
                 this.isTokenizing--;
@@ -875,6 +879,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                 if (this.cashAppPay) {
                   this.cashAppPay.destroy();
                 }
+                this.paymentReceipt.emit(this.accelerationResponse?.receiptUrl);
                 setTimeout(() => {
                   this.moveToStep('paid', true);
                   if (window.history.replaceState) {

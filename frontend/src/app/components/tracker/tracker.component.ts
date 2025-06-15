@@ -121,6 +121,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
   acceleratorAvailable: boolean = this.stateService.env.ACCELERATOR && this.stateService.network === '';
   eligibleForAcceleration: boolean = false;
   accelerationFlowCompleted = false;
+  paymentReceiptUrl: string | null = null;
   auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
 
   enterpriseInfo: any;
@@ -710,6 +711,12 @@ export class TrackerComponent implements OnInit, OnDestroy {
         }
     }
     return true;
+  }
+
+  paymentReceipt(ev) {
+    if (ev?.length) {
+      this.paymentReceiptUrl = ev;
+    }
   }
 
   setIsAccelerated(initialState: boolean = false) {
