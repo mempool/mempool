@@ -131,6 +131,7 @@
               [miningStats]="miningStats"
               [eta]="eta"
               (unavailable)="eligibleForAcceleration = false"
+              (paymentReceipt)="paymentReceipt($event)"
               class="w-100"
             ></app-accelerate-checkout>
           </ng-container>
@@ -141,6 +142,9 @@
               <fa-icon [icon]="['fas', 'wand-magic-sparkles']" [fixedWidth]="true"></fa-icon>
             </div>
             <span class="explainer" i18n="tracker.explain.accelerated">Your transaction has been accelerated</span>
+            @if (paymentReceiptUrl) {
+              <span class="explainer" i18n="accelerator.receipt-label"><a [href]="paymentReceiptUrl" target="_blank">Get a receipt.</a></span>
+            }
           } @else {
             @switch (trackerStage) {
               @case ('waiting') {
@@ -172,6 +176,9 @@
                   <fa-icon [icon]="['fas', 'circle-check']" [fixedWidth]="true"></fa-icon>
                 </div>
                 <span class="explainer" i18n="tracker.explain.confirmed">Your transaction is confirmed!</span>
+                @if (paymentReceiptUrl) {
+                  <span class="explainer" i18n="accelerator.receipt-label"><a [href]="paymentReceiptUrl" target="_blank">Get a receipt.</a></span>
+                }
               }
               @case ('replaced') {
                 <div class="progress-icon">
