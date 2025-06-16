@@ -39,11 +39,11 @@
         }
       },
       {
-        "component": "simpleproof",
+        "component": "simpleproof_cubo",
         "mobileOrder": 6,
         "props": {
-          "label": "Executive Decrees",
-          "key": "el_salvador_decretos"
+          "label": "CUBO+ Certificates",
+          "key": "cubo_certificates"
         }
       },
       {

@@ -15,6 +15,7 @@ import { ServerHealthComponent } from '@components/server-health/server-health.c
 import { ServerStatusComponent } from '@components/server-health/server-status.component';
 import { FaucetComponent } from '@components/faucet/faucet.component';
 import { SimpleProofWidgetComponent } from './components/simpleproof-widget/simpleproof-widget.component';
+import { SimpleProofCuboWidgetComponent } from './components/simpleproof-widget/simpleproof-cubo-widget.component';
 
 const browserWindow = window || {};
 // @ts-ignore
@@ -146,6 +147,13 @@ if (window['__env']?.customize?.dashboard.widgets?.some(w => w.component ==='sim
   routes[0].children.push({
     path: 'sp/verified',
     component: SimpleProofWidgetComponent,
+  });
+}
+
+if (window['__env']?.customize?.dashboard.widgets?.some(w => w.component ==='simpleproof_cubo')) {
+  routes[0].children.push({
+    path: 'sp/cubo',
+    component: SimpleProofCuboWidgetComponent,
   });
 }
 
