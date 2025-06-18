@@ -291,11 +291,11 @@
         @if (pool) {
           <td class="wrap-cell">
             <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, pool.slug]" class="badge" style="color: #FFF;padding:0;">
-              <span class="miner-name" *ngIf="pool.minerNames?.length > 1 && pool.minerNames[1] != ''">
-                @if (pool.minerNames[1].length > 16) {
-                  {{ pool.minerNames[1].slice(0, 15) }}…
+              <span class="miner-name" *ngIf="pool.minerName">
+                @if (pool.minerName.length > 16) {
+                  {{ pool.minerName.slice(0, 15) }}…
                 } @else {
-                  {{ pool.minerNames[1] }}
+                  {{ pool.minerName }}
                 }
               </span>
               <img class="pool-logo" [src]="'/resources/mining-pools/' + pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + pool.name + ' mining pool'">

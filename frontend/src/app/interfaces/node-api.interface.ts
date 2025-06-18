@@ -213,6 +213,7 @@ export interface BlockExtension {
 
 export interface BlockExtended extends Block {
   extras?: BlockExtension;
+  minerName?: string;
 }
 
 export interface BlockAudit extends BlockExtended {

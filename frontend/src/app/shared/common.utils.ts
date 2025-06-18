@@ -1,5 +1,5 @@
 import { MempoolBlockDelta, MempoolBlockDeltaCompressed, MempoolDeltaChange, TransactionCompressed } from "../interfaces/websocket.interface";
-import { TransactionStripped } from "@interfaces/node-api.interface";
+import { BlockExtended, TransactionStripped } from "@interfaces/node-api.interface";
 import { AmountShortenerPipe } from "@app/shared/pipes/amount-shortener.pipe";
 import { Router, ActivatedRoute } from '@angular/router';
 const amountShortenerPipe = new AmountShortenerPipe();
@@ -279,4 +279,70 @@ export function md5(inputString): string {
         b=ii(b,c,d,a,x[i+ 9],21, -343485551);a=ad(a,olda);b=ad(b,oldb);c=ad(c,oldc);d=ad(d,oldd);
     }
     return rh(a)+rh(b)+rh(c)+rh(d);
+}
+
+export function parseMinerName(block: BlockExtended): string | null {
+  if (block.extras?.pool?.minerNames?.[1]) {
+    return block.extras.pool.minerNames[1];
+  }
+
+  if (!block.extras?.coinbaseRaw) {
+    return null;
+  }
+
+  const tag = extractMinerTag(block.extras.coinbaseRaw);
+  return tag ? parseMinerTag(tag) : null;
+}
+
+function extractMinerTag(hex: string): string | null {
+  const bytes = hexToBytes(hex);
+  let pos = 0;
+
+  // Skip block height
+  const heightPushSize = bytes[pos];
+  pos += heightPushSize + 1;
+  if (pos >= bytes.length) {
+    return null;
+  }
+
+  // Get miner tag bytes
+  const tagPushSize = bytes[pos];
+  pos++;
+
+  // Extract and decode tag bytes
+  const tagBytes = bytes.slice(pos, pos + tagPushSize);
+  return byteToUtf8(tagBytes);
+}
+
+function hexToBytes(hex: string): number[] {
+  const bytes: number[] = [];
+  for (let i = 0; i < hex.length; i += 2) {
+    bytes.push(parseInt(hex.slice(i, i + 2), 16));
+  }
+  return bytes;
+}
+
+function byteToUtf8(bytes: number[]): string {
+  try {
+    return new TextDecoder('utf-8', { fatal: true }).decode(new Uint8Array(bytes));
+  } catch {
+    return bytes
+      .filter(byte => byte >= 32 && byte <= 126)
+      .map(byte => String.fromCharCode(byte))
+      .join('');
+  }
+}
+
+/**
+ * Parses a miner tag string in the format "/<miner-tag>/(<hasher-tag>/)?"
+ * Returns the hasher tag if present, removing any "Mined by " prefix
+ */
+function parseMinerTag(tag: string): string | null {
+  const match = tag.match(/\/[^/]+\/([^/]+\/)/);
+  if (!match) {
+    return null;
+  }
+
+  const hasherTag = match[1].slice(0, -1).replace(/^Mined by /, '');
+  return hasherTag;
 }

@@ -24,7 +24,7 @@ import { AudioService } from '@app/services/audio.service';
 import { ApiService } from '@app/services/api.service';
 import { SeoService } from '@app/services/seo.service';
 import { StorageService } from '@app/services/storage.service';
-import { seoDescriptionNetwork } from '@app/shared/common.utils';
+import { parseMinerName, seoDescriptionNetwork } from '@app/shared/common.utils';
 import { getTransactionFlags, getUnacceleratedFeeRate } from '@app/shared/transaction.utils';
 import { Filter, TransactionFlags, toFilters } from '@app/shared/filters.utils';
 import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration, AccelerationPosition } from '@interfaces/node-api.interface';
@@ -43,6 +43,7 @@ export interface Pool {
   name: string;
   slug: string;
   minerNames: string[] | null;
+  minerName?: string;
 }
 
 export interface TxAuditStatus {
@@ -384,8 +385,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       }),
       switchMap(({ hash, height }) => {
         const foundBlock = this.cacheService.getCachedBlock(height) || null;
-        return foundBlock ? of(foundBlock.extras.pool) : this.apiService.getBlock$(hash).pipe(
-          map(block => block.extras.pool),
+        return foundBlock ? of({ ...foundBlock.extras.pool, minerName: parseMinerName(foundBlock) }) : this.apiService.getBlock$(hash).pipe(
+          map(block => ({ ...block.extras.pool, minerName: parseMinerName(block) })),
           retry({ count: 3, delay: 2000 }),
           catchError(() => of(null))
         );
@@ -719,6 +720,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           block_time: block.timestamp,
         };
         this.pool = block.extras.pool;
+        this.pool.minerName = parseMinerName(block);
         this.txChanged$.next(true);
         this.stateService.markBlock$.next({ blockHeight: block.height });
         if (this.tx.acceleration || (this.accelerationInfo && ['accelerating', 'completed_provisional', 'completed'].includes(this.accelerationInfo.status))) {

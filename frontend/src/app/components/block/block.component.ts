@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChildren, QueryList, ChangeDetectorRe
 import { Location } from '@angular/common';
 import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
-import { switchMap, tap, throttleTime, catchError, map, shareReplay, startWith, filter, take } from 'rxjs/operators';
+import { switchMap, tap, throttleTime, catchError, map, shareReplay, startWith, filter } from 'rxjs/operators';
 import { Observable, of, Subscription, asyncScheduler, EMPTY, combineLatest, forkJoin } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 import { SeoService } from '@app/services/seo.service';
@@ -12,7 +12,7 @@ import { Acceleration, BlockAudit, BlockExtended, TransactionStripped } from '@i
 import { ApiService } from '@app/services/api.service';
 import { BlockOverviewGraphComponent } from '@components/block-overview-graph/block-overview-graph.component';
 import { detectWebGL } from '@app/shared/graphs.utils';
-import { seoDescriptionNetwork } from '@app/shared/common.utils';
+import { seoDescriptionNetwork, parseMinerName } from '@app/shared/common.utils';
 import { PriceService, Price } from '@app/services/price.service';
 import { CacheService } from '@app/services/cache.service';
 import { ServicesApiServices } from '@app/services/services-api.service';
@@ -144,6 +144,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         for (const block of blocks) {
           if (block.id === this.blockHash) {
             this.block = block;
+            this.block.minerName = parseMinerName(block);
             if (block.extras) {
               block.extras.minFee = this.getMinBlockFee(block);
               block.extras.maxFee = this.getMaxBlockFee(block);
@@ -250,6 +251,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         }
         this.updateAuditAvailableFromBlockHeight(block.height);
         this.block = block;
+        this.block.minerName = parseMinerName(block);
         if (block.extras) {
           block.extras.minFee = this.getMinBlockFee(block);
           block.extras.maxFee = this.getMaxBlockFee(block);

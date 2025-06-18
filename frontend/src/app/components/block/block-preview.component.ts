@@ -8,7 +8,7 @@ import { SeoService } from '@app/services/seo.service';
 import { OpenGraphService } from '@app/services/opengraph.service';
 import { BlockExtended, TransactionStripped } from '@interfaces/node-api.interface';
 import { ApiService } from '@app/services/api.service';
-import { seoDescriptionNetwork } from '@app/shared/common.utils';
+import { seoDescriptionNetwork, parseMinerName } from '@app/shared/common.utils';
 import { BlockOverviewGraphComponent } from '@components/block-overview-graph/block-overview-graph.component';
 import { ServicesApiServices } from '@app/services/services-api.service';
 
@@ -99,6 +99,7 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
       filter((block: BlockExtended | void) => block != null),
       tap((block: BlockExtended) => {
         this.block = block;
+        this.block.minerName = parseMinerName(block);
         this.blockHeight = block.height;
 
         this.seoService.setTitle($localize`:@@block.component.browser-title:Block ${block.height}:BLOCK_HEIGHT:: ${block.id}:BLOCK_ID:`);
