@@ -398,12 +398,8 @@
                       <tr>
                         <td i18n="transactions-list.scriptpubkey.hex|ScriptPubKey (HEX)">ScriptPubKey (HEX)</td>
                         <td style="text-align: left;">
-                          @if (vout.scriptpubkey.length > 1000) {
-                            @if (!showFullScriptPubkeyHex[vindex]) {
-                              {{ vout.scriptpubkey | slice:0:1000 }}
-                            } @else {
-                              {{ vout.scriptpubkey }}
-                            }
+                          @if (!showFullScriptPubkeyHex[vindex]) {
+                            {{ vout.scriptpubkey | slice:0:1000 }}
                           } @else {
                             {{ vout.scriptpubkey }}
                           }
@@ -419,16 +415,12 @@
                       <tr *ngIf="vout.scriptpubkey_type == 'op_return'">
                         <td>OP_RETURN <span>data</span></td>
                         <td style="text-align: left; word-break: break-word;">
-                          @if (vout.scriptpubkey_asm.length > 1000) {
-                            @if (!showFullOpReturnData[vindex]) {
-                              {{ (vout.scriptpubkey_asm | slice:0:1000 | hex2ascii) }}
-                            } @else {
-                              {{ vout.scriptpubkey_asm | hex2ascii }}
-                            }
+                          @if (!showFullOpReturnData[vindex]) {
+                            {{ (vout.scriptpubkey_asm | hex2ascii | slice:0:1000) }}
                           } @else {
                             {{ vout.scriptpubkey_asm | hex2ascii }}
                           }
-                          <div *ngIf="vout.scriptpubkey_asm.length > 1000" style="display: flex;">
+                          <div *ngIf="(vout.scriptpubkey_asm | hex2ascii).length > 1000" style="display: flex;">
                             <span *ngIf="!showFullOpReturnData[vindex]">...</span>
                             <label class="btn btn-sm btn-primary mt-2" (click)="toggleShowFullOpReturnData(vindex)" style="margin-left: auto;">
                               <span *ngIf="!showFullOpReturnData[vindex]" i18n="show-all">Show all</span>
