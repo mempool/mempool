@@ -481,3 +481,10 @@ export interface WalletAddress {
   stats: ChainStats;
   transactions: AddressTxSummary[];
 }
+
+export interface Treasury {
+  id: number,
+  name: string,
+  wallet: string,
+  enterprise: string,
+}

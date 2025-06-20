@@ -192,3 +192,11 @@
   cursor: default !important;
   pointer-events: none;
 }
+
+.btn-broadcast {
+  margin-left: 5px;
+  @media (max-width: 567px) {
+    margin-left: 0;
+    margin-top: 5px;
+  }
+}

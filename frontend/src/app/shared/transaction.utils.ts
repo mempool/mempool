@@ -3,7 +3,8 @@ import { getVarIntLength, parseMultisigScript, isPoint } from '@app/shared/scrip
 import { Transaction, Vin } from '@interfaces/electrs.interface';
 import { CpfpInfo, RbfInfo, TransactionStripped } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
-import { Hash } from './sha256';
+import { hash, Hash } from './sha256';
+import { AddressType } from './address-utils';
 
 // Bitcoin Core default policy settings
 const MAX_STANDARD_TX_WEIGHT = 400_000;
@@ -85,6 +86,223 @@ export function isDERSig(w: string): boolean {
   );
 }
 
+// enforce canonical DER-encoded signature format
+// <0x30> <total len> <0x02> <len R> <R> <0x02> <len S> <S> <hashtype>
+// see https://github.com/bitcoin/bitcoin/blob/9a05b45da60d214cb1e5a50c3d2293b1defc9bb0/src/script/interpreter.cpp#L97-L106
+export function isCanonicalDERSig(w: string): boolean {
+  // minimum DER signature length is 8 bytes + sighash flag (see https://mempool.space/testnet/tx/c6c232a36395fa338da458b86ff1327395a9afc28c5d2daa4273e410089fd433)
+  if (w.length < 18) {
+    return false;
+  }
+
+  // first byte is 0x30 ("SEQUENCE")
+  if (!w.startsWith('30')) {
+    return false;
+  }
+
+  // second byte encodes the total length of the sequence (not including sighash flag)
+  const compoundLength = parseInt(w.slice(2, 4), 16);
+  if (w.length !== (compoundLength * 2) + 6) {
+    return false;
+  }
+
+  // third byte is 0x02 ("INTEGER")
+  if (w.slice(4, 6) !== '02') {
+    return false;
+  }
+
+  // fourth byte encodes the length of the R component
+  const rLength = parseInt(w.slice(6, 8), 16);
+  // rLength doesn't overflow remaining space
+  if (w.length < (rLength * 2) + 10) {
+    return false;
+  }
+  const sEnd = 8 + (rLength * 2);
+
+  // next byte after R is 0x02 ("INTEGER")
+  if (w.slice(sEnd, sEnd + 2) !== '02') {
+    return false;
+  }
+
+  // next byte encodes the length of the S component
+  const sLength = parseInt(w.slice(sEnd + 2, sEnd + 4), 16);
+  // R + S lengths exactly fit the length of the signature
+  if (w.length !== ((rLength + sLength) * 2) + 14) {
+    return false;
+  }
+
+  return true;
+}
+
+export enum SighashFlag {
+  DEFAULT = 0,
+  ALL = 1,
+  NONE = 2,
+  SINGLE = 3,
+  ANYONECANPAY = 0x80
+}
+
+export type SighashValue =
+  SighashFlag.DEFAULT |
+  SighashFlag.ALL |
+  SighashFlag.NONE |
+  SighashFlag.SINGLE |
+  (SighashFlag.ALL & SighashFlag.ANYONECANPAY) |
+  (SighashFlag.NONE & SighashFlag.ANYONECANPAY) |
+  (SighashFlag.SINGLE & SighashFlag.ANYONECANPAY) |
+  (SighashFlag.ALL & SighashFlag.NONE);
+
+export const SighashLabels: Record<number, string> = {
+  '0': 'SIGHASH_DEFAULT',
+  '1': 'SIGHASH_ALL',
+  '2': 'SIGHASH_NONE',
+  '3': 'SIGHASH_SINGLE',
+  '129': 'SIGHASH_ALL | ACP',
+  '130': 'SIGHASH_NONE | ACP',
+  '131': 'SIGHASH_SINGLE | ACP',
+};
+
+export interface SigInfo {
+  signature: string;
+  sighash: SighashValue;
+}
+
+export class Sighash {
+  static isACP(val: SighashValue): boolean {
+    return val >= SighashFlag.ANYONECANPAY;
+  }
+
+  static isNone(val: SighashValue): boolean {
+    return (val & 0x7F) === SighashFlag.NONE;
+  }
+
+  static isSingle(val: SighashValue): boolean {
+    return (val & 0x7F) === SighashFlag.SINGLE;
+  }
+
+  static isAll(val: SighashValue): boolean {
+    return (val & 0x7F) === SighashFlag.ALL;
+  }
+
+  static isDefault(val: SighashValue): boolean {
+    return val === SighashFlag.DEFAULT;
+  }
+}
+
+export function decodeSighashFlag(sighash: number): SighashValue {
+  if (sighash >= 0 && sighash <= 0x03 || sighash > 0x80 && sighash <= 0x83) {
+    return sighash as SighashValue;
+  }
+  return SighashFlag.DEFAULT;
+}
+
+export function extractDERSignaturesWitness(witness: string[]): SigInfo[] {
+  if (!witness?.length) {
+    return [];
+  }
+
+  const signatures: SigInfo[] = [];
+
+  for (const w of witness) {
+    if (isCanonicalDERSig(w)) {
+      signatures.push({
+        signature: w,
+        sighash: decodeSighashFlag(parseInt(w.slice(-2), 16)),
+      });
+    }
+  }
+
+  return signatures;
+}
+
+export function extractDERSignaturesASM(script_asm: string): SigInfo[] {
+  if (!script_asm) {
+    return [];
+  }
+
+  const signatures: SigInfo[] = [];
+  const ops = script_asm.split(' ');
+
+  for (let i = 0; i < ops.length - 1; i++) {
+    // Look for OP_PUSHBYTES_N followed by a hex string
+    if (ops[i].startsWith('OP_PUSHBYTES_')) {
+      const hexData = ops[i + 1];
+      if (isCanonicalDERSig(hexData)) {
+        const sighash = decodeSighashFlag(parseInt(hexData.slice(-2), 16));
+        signatures.push({
+          signature: hexData,
+          sighash
+        });
+      }
+    }
+  }
+
+  return signatures;
+}
+
+export function extractSchnorrSignatures(witnesses: string[]): SigInfo[] {
+  if (!witnesses?.length) {
+    return [];
+  }
+
+  const signatures: SigInfo[] = [];
+
+  for (const witness of witnesses) {
+    if (witness.length === 130) {
+      signatures.push({
+        signature: witness,
+        sighash: decodeSighashFlag(parseInt(witness.slice(-2), 16)),
+      });
+    } else if (witness.length === 128) {
+      signatures.push({
+        signature: witness,
+        sighash: SighashFlag.DEFAULT,
+      });
+    }
+  }
+
+  return signatures;
+}
+
+export function processInputSignatures(vin: Vin): SigInfo[] {
+  const addressType = vin.prevout?.scriptpubkey_type as AddressType;
+  let signatures: SigInfo[] = [];
+  switch(addressType) {
+    case 'p2pk':
+    case 'multisig':
+    case 'p2pkh':
+      signatures = extractDERSignaturesASM(vin.scriptsig_asm);
+      break;
+    case 'p2sh': {
+      if (vin.witness?.length) {
+        signatures = extractDERSignaturesWitness(vin.witness || []);
+      } else {
+        signatures = [...extractDERSignaturesASM(vin.scriptsig_asm), ...extractDERSignaturesASM(vin.inner_redeemscript_asm)];
+      }
+    } break;
+    case 'v0_p2wpkh':
+      signatures = extractDERSignaturesWitness(vin.witness || []);
+      break;
+    case 'v0_p2wsh':
+      signatures = extractDERSignaturesWitness(vin.witness || []);
+      break;
+    case 'v1_p2tr': {
+      const hasAnnex = vin.witness.length > 1 &&vin.witness[vin.witness.length - 1].startsWith('50');
+      const isKeyspend = vin.witness.length === (hasAnnex ? 2 : 1);
+      if (isKeyspend) {
+        signatures = extractSchnorrSignatures(vin.witness);
+      } else {
+        const stackItems = vin.witness.slice(0, hasAnnex ? -3 : -2);
+        signatures = extractSchnorrSignatures(stackItems);
+      }
+    } break;
+    default:
+      // non-signed input types?
+      break;
+  }
+  return signatures;
+}
+
 /**
  * Validates most standardness rules
  *
@@ -146,7 +364,32 @@ export function isNonStandard(tx: Transaction, height?: number, network?: string
     } else if (isNonStandardAnchor(tx, height, network)) {
       return true;
     }
-    // TODO: bad-witness-nonstandard
+    // bad-witness-nonstandard
+    if (vin.prevout?.scriptpubkey_type === 'v1_p2tr' && vin.witness?.length) {
+      const hasAnnex = vin.witness.length > 1 && vin.witness[vin.witness.length - 1].startsWith('50');
+      // annex is non-standard
+      if (hasAnnex) {
+        return true;
+      }
+      if (vin.witness.length > (hasAnnex ? 2 : 1)) {
+        // script path spend
+        const controlBlock = vin.witness[vin.witness.length - (hasAnnex ? 2 : 1)];
+        // control block is required
+        if (!controlBlock.length) {
+          return false;
+        } else {
+          // Leaf version must be 0xc0 (aka Tapscript, see BIP 342)
+          if ((parseInt(controlBlock.slice(0, 2), 16) & 0xfe) !== 0xc0) {
+            return false;
+          }
+        }
+        // remaining witness items (except for the script) must be within MAX_STANDARD_TAPSCRIPT_STACK_ITEM_SIZE limit
+        if (vin.witness.slice(0, vin.witness.length - (hasAnnex ? 3 : 2)).some(v => v.length > 160)) {
+          return false;
+        }
+      }
+    }
+    // TODO: other bad-witness-nonstandard cases
   }
 
   // output validation
@@ -298,7 +541,7 @@ export function getNonWitnessSize(tx: Transaction): number {
 
 export function setSegwitSighashFlags(flags: bigint, witness: string[]): bigint {
   for (const w of witness) {
-    if (isDERSig(w)) {
+    if (isCanonicalDERSig(w)) {
       flags |= setSighashFlags(flags, w);
     }
   }
@@ -312,7 +555,7 @@ export function setLegacySighashFlags(flags: bigint, scriptsig_asm: string): big
       continue;
     }
     // check pushed data
-    if (isDERSig(item)) {
+    if (isCanonicalDERSig(item)) {
       flags |= setSighashFlags(flags, item);
     }
   }
@@ -402,6 +645,9 @@ export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replac
               flags |= TransactionFlags.inscription;
             }
           }
+          if (hasAnnex) {
+            flags |= TransactionFlags.annex;
+          }
         }
       } break;
     }
@@ -474,7 +720,7 @@ export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replac
   if (hasFakePubkey) {
     flags |= TransactionFlags.fake_pubkey;
   }
-  
+
   // fast but bad heuristic to detect possible coinjoins
   // (at least 5 inputs and 5 outputs, less than half of which are unique amounts, with no address reuse)
   const addressReuse = Object.keys(reusedOutputAddresses).reduce((acc, key) => Math.max(acc, (reusedInputAddresses[key] || 0) + (reusedOutputAddresses[key] || 0)), 0) > 1;
@@ -1380,11 +1626,11 @@ function toWords(bytes) {
 }
 
 // Helper functions
-function uint8ArrayToHexString(uint8Array: Uint8Array): string {
+export function uint8ArrayToHexString(uint8Array: Uint8Array): string {
   return Array.from(uint8Array).map(byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
-function hexStringToUint8Array(hex: string): Uint8Array {
+export function hexStringToUint8Array(hex: string): Uint8Array {
   const buf = new Uint8Array(hex.length / 2);
   for (let i = 0; i < buf.length; i++) {
     buf[i] = parseInt(hex.substr(i * 2, 2), 16);
@@ -1519,6 +1765,32 @@ function readVector(buffer: Uint8Array, offset: number): [Uint8Array[], number] 
   }
 
   return [vector, updatedOffset];
+}
+
+// SHA256(SHA256(tag) || SHA256(tag) || dataHex)
+export function taggedHash(tag: string, dataHex: string): string {
+  const encoder = new TextEncoder();
+  const tagHash = hash(encoder.encode(tag));
+  return uint8ArrayToHexString(hash(new Uint8Array([...tagHash, ...tagHash, ...hexStringToUint8Array(dataHex)])));
+}
+
+export function compactSize(n: number): Uint8Array {
+  if (n <= 252) {
+    return new Uint8Array([n]);
+  } else if (n <= 0xffff) {
+    return new Uint8Array([0xfd, n & 0xff, (n >> 8) & 0xff]);
+  } else if (n <= 0xffffffff) {
+    return new Uint8Array([0xfe, n & 0xff, (n >> 8) & 0xff, (n >> 16) & 0xff, (n >> 24) & 0xff]);
+  } else {
+    const buffer = new Uint8Array(9);
+    buffer[0] = 0xff;
+    let num = BigInt(n);
+    for (let i = 1; i <= 8; i++) {
+      buffer[i] = Number(num & BigInt(0xff));
+      num >>= BigInt(8);
+    }
+    return buffer;
+  }
 }
 
 // Inversed the opcodes object from https://github.com/mempool/mempool/blob/14e49126c3ca8416a8d7ad134a95c5e090324d69/backend/src/utils/bitcoin-script.ts#L1

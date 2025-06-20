@@ -16,6 +16,11 @@
   <div class="header-bg box" [attr.data-cy]="'tx-' + i">
 
     <div *ngIf="errorUnblinded" class="error-unblinded">{{ errorUnblinded }}</div>
+    @if (similarityMatches.get(tx.txid)?.size) {
+      <div class="alert alert-mempool" role="alert">
+        <span i18n="transaction.poison.warning">Warning! This transaction involves deceptively similar addresses. It may be an address poisoning attack.</span>
+      </div>
+    }
     <div class="row">
       <div class="col">
         <table class="table table-fixed table-borderless smaller-text table-sm table-tx-vin">
@@ -23,7 +28,8 @@
             <ng-template ngFor let-vin let-vindex="index" [ngForOf]="tx.vin.slice(0, getVinLimit(tx))" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="{
                 'assetBox': (assetsMinimal && vin.prevout && assetsMinimal[vin.prevout.asset] && !vin.is_coinbase && vin.prevout.scriptpubkey_address && tx._unblinded) || inputIndex === vindex,
-                'highlight': this.addresses.length && ((vin.prevout?.scriptpubkey_type !== 'p2pk' && addresses.includes(vin.prevout?.scriptpubkey_address)) || this.addresses.includes(vin.prevout?.scriptpubkey.slice(2, -2)))
+                'highlight': this.addresses.length && ((vin.prevout?.scriptpubkey_type !== 'p2pk' && addresses.includes(vin.prevout?.scriptpubkey_address)) || this.addresses.includes(vin.prevout?.scriptpubkey.slice(2, -2))),
+                'sigged': selectedSig && selectedSig.txIndex === i && sigHighlights.vin[vindex],
               }">
                 <td class="arrow-td">
                   <ng-template [ngIf]="vin.prevout === null && !vin.is_pegin" [ngIfElse]="hasPrevout">
@@ -49,6 +55,36 @@
                     </ng-template>
                   </ng-template>
                 </td>
+                @if (tx['_showSignatures']) {
+                  <td class="sig-td">
+                    <div class="sig-stack">
+                      @if (!tx['_sigs']?.[vindex]?.length) {
+                        <span class="sig sig-key sig-no-lock" ngbTooltip="unsigned">
+                          <fa-icon [icon]="['fas', 'lock-open']" [fixedWidth]="true"></fa-icon>
+                        </span>
+                      } @else {
+                        @for (sig of tx['_sigs'][vindex].slice(0, 7); track sig.signature; let idx = $index) {
+                          @if (idx < 7) {
+                            <span
+                              class="sig sig-key sighash-{{sig.sighash}}"
+                              (mouseenter)="showSigInfo(i, vindex, sig)"
+                              (mouseleave)="hideSigInfo()"
+                              [ngbTooltip]="sighashLabels[sig.sighash]"
+                              [class.hovered]="selectedSig && selectedSig.txIndex === i && selectedSig.vindex === vindex && selectedSig.sig === sig"
+                            >
+                              <fa-icon [icon]="['fas', 'key']" [fixedWidth]="true"></fa-icon>
+                            </span>
+                          }
+                        }
+                        @if (tx['_sigs'][vindex].length > 7) {
+                          <span class="sig sig-overflow">
+                            +{{ tx['_sigs'][vindex].length - 7 }}
+                          </span>
+                        }
+                      }
+                    </div>
+                  </td>
+                }
                 <td class="address-cell">
                   <div [ngSwitch]="true">
                     <ng-container *ngSwitchCase="vin.is_coinbase"><span i18n="transactions-list.coinbase">Coinbase</span><ng-template [ngIf]="network !== 'liquid' && network !== 'liquidtestnet'">&nbsp;<span i18n="transactions-list.newly-generated-coins">(Newly Generated Coins)</span></ng-template><br /><a placement="bottom" [ngbTooltip]="vin.scriptsig | hex2ascii"><span class="badge badge-secondary scriptmessage longer">{{ vin.scriptsig | hex2ascii }}</span></a></ng-container>
@@ -68,9 +104,11 @@
                         </ng-template>
                       </ng-template>
                       <ng-template #defaultAddress>
-                        <a class="address" *ngIf="vin.prevout.scriptpubkey_address; else vinScriptPubkeyType" [routerLink]="['/address/' | relativeUrl, vin.prevout.scriptpubkey_address]" title="{{ vin.prevout.scriptpubkey_address }}">
-                          <app-truncate [text]="vin.prevout.scriptpubkey_address" [lastChars]="8"></app-truncate>
-                        </a>
+                        <app-address-text
+                          *ngIf="vin.prevout.scriptpubkey_address; else vinScriptPubkeyType"
+                          [address]="vin.prevout.scriptpubkey_address"
+                          [similarity]="similarityMatches.get(tx.txid)?.get(vin.prevout.scriptpubkey_address)"
+                        ></app-address-text>
                         <ng-template #vinScriptPubkeyType>
                           {{ vin.prevout.scriptpubkey_type?.toUpperCase() }}
                         </ng-template>
@@ -99,21 +137,32 @@
               </tr>
               <tr *ngIf="showOrdData[tx.txid + '-vin-' + vindex]?.show" [ngClass]="{
                 'assetBox': (assetsMinimal && vin.prevout && assetsMinimal[vin.prevout.asset] && !vin.is_coinbase && vin.prevout.scriptpubkey_address && tx._unblinded) || inputIndex === vindex,
-                'highlight': addresses?.length && (addresses.includes(vin.prevout?.scriptpubkey_address) || (vin.prevout?.scriptpubkey_type === 'p2pk' && addresses.includes(vin.prevout?.scriptpubkey.slice(2, -2))))
+                'highlight': addresses?.length && (addresses.includes(vin.prevout?.scriptpubkey_address) || (vin.prevout?.scriptpubkey_type === 'p2pk' && addresses.includes(vin.prevout?.scriptpubkey.slice(2, -2)))),
+                'sigged': selectedSig && selectedSig.txIndex === i && sigHighlights.vin[vindex],
               }">
                 <td></td>
+                @if (tx['_showSignatures']) {
+                  <td></td>
+                }
                 <td colspan="2">
                   <app-ord-data [inscriptions]="showOrdData[tx.txid + '-vin-' + vindex]['inscriptions']" [type]="'vin'"></app-ord-data>
                 </td>
               </tr>
               <tr *ngIf="(showDetails$ | async) === true">
-                <td colspan="3" class="details-container" >
+                <td [attr.colspan]="tx['_showSignatures'] ? 4 : 3" class="details-container" >
                   <table class="table table-striped table-fixed table-borderless details-table mb-3">
                     <tbody>
                       <ng-template [ngIf]="vin.scriptsig">
                         <tr>
                           <td i18n="transactions-list.scriptsig.asm|ScriptSig (ASM)">ScriptSig (ASM)</td>
-                          <td style="text-align: left;" [innerHTML]="vin.scriptsig_asm | asmStyler"></td>
+                          <td style="text-align: left;">
+                            <app-asm
+                              [asm]="vin.scriptsig_asm"
+                              [annotations]="{ signatures: tx['_sigmap'], selectedSig: selectedSig?.txIndex === i && selectedSig?.vindex === vindex ? selectedSig.sig : null }"
+                              (showSigInfo)="showSigInfo(i, vindex, $event)"
+                              (hideSigInfo)="hideSigInfo()"
+                            ></app-asm>
+                          </td>
                         </tr>
                         <tr>
                           <td i18n="transactions-list.scriptsig.hex|ScriptSig (HEX)">ScriptSig (HEX)</td>
@@ -123,27 +172,52 @@
                       <tr *ngIf="vin.witness" class="vin-witness">
                         <td i18n="transactions-list.witness">Witness</td>
                         <td style="text-align: left;">
-                          <ng-container *ngFor="let witness of vin.witness; index as i">
+                          <ng-container *ngFor="let witness of vin.witness; index as windex">
                             <p class="witness-item">
+                              <ng-container *ngIf="tx['_sigmap']?.[witness] as sigInfo">
+                                <span class="sig sig-key sig-inline sighash-{{sigInfo.sig.sighash}}"
+                                      [class.hovered]="selectedSig && selectedSig.txIndex === i && selectedSig.vindex === vindex && selectedSig.sig === sigInfo.sig"
+                                      (mouseenter)="showSigInfo(i, vindex, sigInfo.sig)" 
+                                      (mouseleave)="hideSigInfo()" 
+                                      [ngbTooltip]="sighashLabels[sigInfo.sig.sighash]">
+                                  <fa-icon [icon]="['fas', 'key']" [fixedWidth]="true"></fa-icon>
+                                </span>
+                              </ng-container>
+                              @if (vin.witness.length > 1 && windex === vin.witness.length - 1 && witness.slice(0, 2) === '50') {
+                                <span class="annex" ngbTooltip="annex">
+                                  <fa-icon [icon]="['fas', 'paperclip']" [fixedWidth]="true"></fa-icon>
+                                </span>
+                              }
                               @if (witness.length > 1000) {
-                                @if (!showFullWitness[vindex][i]) {
+                                @if (!showFullWitness[vindex][windex]) {
                                   {{ witness | slice:0:1000 }}
                                 } @else {
                                   {{ witness }}
                                 }
                               } @else if (witness) {
-                                {{ witness }}
+                                <ng-container *ngIf="tx['_sigmap']?.[witness]?.sig.sighash !== 0 && tx['_sigmap']?.[witness] as sigInfo; else plainSig">
+                                  <span class="witness">
+                                    {{witness.slice(0, -2)}}<span class="sig sighash-{{sigInfo.sig.sighash}}" 
+                                          [class.hovered]="selectedSig && selectedSig.txIndex === i && selectedSig.vindex === vindex && selectedSig.sig === sigInfo.sig"
+                                          (mouseenter)="showSigInfo(i, vindex, sigInfo.sig)" 
+                                          (mouseleave)="hideSigInfo()" 
+                                          [ngbTooltip]="sighashLabels[sigInfo.sig.sighash]">{{witness.slice(-2)}}</span>
+                                  </span>
+                                </ng-container>
+                                <ng-template #plainSig>
+                                  {{ witness }}
+                                </ng-template>
                               } @else {
                                 &lt;empty&gt;
                               }
                             </p>
                             @if (witness.length > 1000) {
                               <div style="display: flex;">
-                                @if (!showFullWitness[vindex][i]) {
+                                @if (!showFullWitness[vindex][windex]) {
                                   <span>...</span>
                                 }
-                                <label class="btn btn-sm btn-primary mt-2" (click)="toggleShowFullWitness(vindex, i)" style="margin-left: auto;">
-                                  @if (!showFullWitness[vindex][i]) {
+                                <label class="btn btn-sm btn-primary mt-2" (click)="toggleShowFullWitness(vindex, windex)" style="margin-left: auto;">
+                                  @if (!showFullWitness[vindex][windex]) {
                                     <span i18n="show-all">Show all</span>
                                   } @else {
                                     <span i18n="show-less">Show less</span>
@@ -164,7 +238,7 @@
                           <td i18n="transactions-list.p2wsh-witness-script">P2WSH witness script</td>
                         </ng-template>
                         <td style="text-align: left;">
-                          <div [innerHTML]="vin.inner_witnessscript_asm | asmStyler:showFullScript[vindex]"></div>
+                          <div [innerHTML]="vin.inner_witnessscript_asm | asmStyler: (showFullScript[vindex] ? 0 : 1000)"></div>
                           <div *ngIf="vin.inner_witnessscript_asm.length > 1000" style="display: flex;">
                             <span *ngIf="!showFullScript[vindex]">...</span>
                             <label class="btn btn-sm btn-primary mt-2" (click)="toggleShowFullScript(vindex)" style="margin-left: auto;">
@@ -194,7 +268,7 @@
               </tr>
             </ng-template>
             <tr *ngIf="tx.vin.length > getVinLimit(tx)">
-              <td colspan="3" class="text-center">
+              <td [attr.colspan]="tx['_showSignatures'] ? 4 : 3" class="text-center">
                 <button class="btn btn-sm btn-primary mt-2" (click)="showMoreInputs(tx)">
                   <span *ngIf="getVinLimit(tx, true) >= tx.vin.length; else showMoreInputsLabel" i18n="show-all">Show all</span>
                   <ng-template #showMoreInputsLabel>
@@ -214,12 +288,15 @@
             <ng-template ngFor let-vout let-vindex="index" [ngForOf]="tx.vout.slice(0, getVoutLimit(tx))" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="{
                 'assetBox': assetsMinimal && assetsMinimal[vout.asset] && vout.scriptpubkey_address && tx.vin && !tx.vin[0].is_coinbase && tx._unblinded || outputIndex === vindex,
-                'highlight': this.addresses.length && ((vout.scriptpubkey_type !== 'p2pk' && addresses.includes(vout.scriptpubkey_address)) || this.addresses.includes(vout.scriptpubkey.slice(2, -2)))
+                'highlight': this.addresses.length && ((vout.scriptpubkey_type !== 'p2pk' && addresses.includes(vout.scriptpubkey_address)) || this.addresses.includes(vout.scriptpubkey.slice(2, -2))),
+                'sigged': selectedSig && selectedSig.txIndex === i && sigHighlights.vout[vindex],
               }">
                 <td class="address-cell">
-                  <a class="address" *ngIf="vout.scriptpubkey_address; else pubkey_type" [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey_address]" title="{{ vout.scriptpubkey_address }}">
-                    <app-truncate [text]="vout.scriptpubkey_address" [lastChars]="8"></app-truncate>
-                  </a>
+                  <app-address-text
+                    *ngIf="vout.scriptpubkey_address; else pubkey_type"
+                    [address]="vout.scriptpubkey_address"
+                    [similarity]="similarityMatches.get(tx.txid)?.get(vout.scriptpubkey_address)"
+                  ></app-address-text>
                   <ng-template #pubkey_type>
                     <ng-container *ngIf="vout.scriptpubkey_type === 'p2pk'; else scriptpubkey_type">
                       P2PK <a class="address p2pk-address" [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey.slice(2, -2)]" title="{{ vout.scriptpubkey.slice(2, -2) }}">
@@ -294,14 +371,15 @@
 
               <tr *ngIf="showOrdData[tx.txid + '-vout-' + vindex]?.show" [ngClass]="{
                 'assetBox': assetsMinimal && assetsMinimal[vout.asset] && vout.scriptpubkey_address && tx.vin && !tx.vin[0].is_coinbase && tx._unblinded || outputIndex === vindex,
-                'highlight': addresses?.length && (addresses.includes(vout.scriptpubkey_address) || (vout.scriptpubkey_type === 'p2pk' && addresses.includes(vout.scriptpubkey.slice(2, -2))))
+                'highlight': addresses?.length && (addresses.includes(vout.scriptpubkey_address) || (vout.scriptpubkey_type === 'p2pk' && addresses.includes(vout.scriptpubkey.slice(2, -2)))),
+                'sigged': selectedSig && selectedSig.txIndex === i && sigHighlights.vout[vindex],
               }">
                 <td colspan="3">
                     <app-ord-data [runestone]="showOrdData[tx.txid + '-vout-' + vindex]['runestone']" [runeInfo]="showOrdData[tx.txid + '-vout-' + vindex]['runeInfo']" [type]="'vout'"></app-ord-data>
                 </td>
               </tr>
               <tr *ngIf="(showDetails$ | async) === true">
-                <td colspan="3" class=" details-container" >
+                <td [attr.colspan]="3" class="details-container">
                   <table class="table table-striped table-borderless details-table mb-3">
                     <tbody>
                       <tr>
@@ -326,7 +404,7 @@
               </tr>
             </ng-template>
             <tr *ngIf="tx.vout.length > getVoutLimit(tx)">
-              <td colspan="3" class="text-center">
+              <td [attr.colspan]="3" class="text-center">
                 <button class="btn btn-sm btn-primary mt-2" (click)="showMoreOutputs(tx)">
                   <span *ngIf="getVoutLimit(tx, true) >= tx.vout.length; else showMoreOutputsLabel" i18n="show-all">Show all</span>
                   <ng-template #showMoreOutputsLabel>

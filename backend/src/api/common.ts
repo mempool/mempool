@@ -255,7 +255,32 @@ export class Common {
       } else if (this.isNonStandardAnchor(tx, height)) {
         return true;
       }
-      // TODO: bad-witness-nonstandard
+      // bad-witness-nonstandard
+      if (vin.prevout?.scriptpubkey_type === 'v1_p2tr' && vin.witness?.length) {
+        const hasAnnex = vin.witness.length > 1 && vin.witness[vin.witness.length - 1].startsWith('50');
+        // annex is non-standard
+        if (hasAnnex) {
+          return true;
+        }
+        if (vin.witness.length > (hasAnnex ? 2 : 1)) {
+          // script path spend
+          const controlBlock = vin.witness[vin.witness.length - (hasAnnex ? 2 : 1)];
+          // control block is required
+          if (!controlBlock.length) {
+            return false;
+          } else {
+            // Leaf version must be 0xc0 (aka Tapscript, see BIP 342)
+            if ((parseInt(controlBlock.slice(0, 2), 16) & 0xfe) !== 0xc0) {
+              return false;
+            }
+          }
+          // remaining witness items (except for the script) must be within MAX_STANDARD_TAPSCRIPT_STACK_ITEM_SIZE limit
+          if (vin.witness.slice(0, vin.witness.length - (hasAnnex ? 3 : 2)).some(v => v.length > 160)) {
+            return false;
+          }
+        }
+      }
+      // TODO: other bad-witness-nonstandard cases
     }
 
     // output validation
@@ -513,6 +538,10 @@ export class Common {
             flags |= TransactionFlags.p2tr;
             if (vin.witness?.length) {
               flags = Common.isInscription(vin, flags);
+              const hasAnnex = vin.witness.length > 1 && vin.witness[vin.witness.length - 1].startsWith('50');
+              if (hasAnnex) {
+                flags |= TransactionFlags.annex;
+              }
             }
           } break;
         }
@@ -719,6 +748,13 @@ export class Common {
     return (
       Common.indexingEnabled() &&
       config.MEMPOOL.BLOCKS_SUMMARIES_INDEXING === true
+    );
+  }
+
+  static auditIndexingEnabled(): boolean {
+    return (
+      Common.indexingEnabled() &&
+      config.MEMPOOL.AUDIT === true
     );
   }
 

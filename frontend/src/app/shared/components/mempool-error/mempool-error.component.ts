@@ -33,6 +33,8 @@ export const MempoolErrors = {
   'faucet_above_maximum': `Requested amount is too high`,
   'payment_method_not_allowed': `You are not allowed to use this payment method`,
   'payment_method_not_allowed_out_of_bound': `You are not allowed to use this payment method with this amount`,
+  'invalid_credentials': `Invalid credentials`,
+  'forbidden': `You are not allowed to do this.`,
 } as { [error: string]: string };
 
 export function isMempoolError(error: string) {

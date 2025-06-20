@@ -36,12 +36,14 @@ CERTBOT_INSTALL=ON
 
 # install 4 network daemons
 BITCOIN_INSTALL=ON
-BISQ_INSTALL=ON
 ELEMENTS_INSTALL=ON
 CLN_INSTALL=ON
 
 # install UNFURL
 UNFURL_INSTALL=ON
+
+# install CKPool
+CKPOOL_INSTALL=ON
 
 # configure 4 network instances
 BITCOIN_MAINNET_ENABLE=ON
@@ -52,7 +54,6 @@ BITCOIN_SIGNET_ENABLE=ON
 BITCOIN_MAINNET_LIGHTNING_ENABLE=ON
 BITCOIN_TESTNET_LIGHTNING_ENABLE=ON
 BITCOIN_SIGNET_LIGHTNING_ENABLE=ON
-BISQ_MAINNET_ENABLE=ON
 ELEMENTS_LIQUID_ENABLE=ON
 ELEMENTS_LIQUIDTESTNET_ENABLE=ON
 
@@ -84,7 +85,7 @@ MD5=md5sum
 ##### P2P / RPC / HTTP network communication #####
 ##################################################
 
-# used for bisq and firewall configuration
+# used for firewall configuration
 BITCOIN_MAINNET_P2P_HOST=127.0.0.1
 BITCOIN_MAINNET_P2P_PORT=8333
 # used for RPC communication
@@ -117,10 +118,6 @@ BITCOIN_SIGNET_RPC_PORT=18332
 # generate random hex string
 BITCOIN_SIGNET_RPC_USER=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 BITCOIN_SIGNET_RPC_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
-
-# used by bisq to receive notifications from bitcoin about new blocks
-BISQ_BLOCKNOTIFY_HOST=127.0.0.1
-BISQ_BLOCKNOTIFY_PORT=5120
 
 # used for firewall configuration
 ELEMENTS_LIQUID_P2P_HOST=127.0.0.1
@@ -183,11 +180,6 @@ MEMPOOL_TESTNET4_HTTP_HOST=127.0.0.1
 MEMPOOL_TESTNET4_HTTP_PORT=8990
 
 # set either socket or TCP host/port, not both
-#MEMPOOL_BISQ_HTTP_SOCK=/tmp/bitcoin.bisq.mempool
-MEMPOOL_BISQ_HTTP_HOST=127.0.0.1
-MEMPOOL_BISQ_HTTP_PORT=8996
-
-# set either socket or TCP host/port, not both
 #MEMPOOL_SIGNET_HTTP_SOCK=/tmp/bitcoin.bisq.mempool
 MEMPOOL_SIGNET_HTTP_HOST=127.0.0.1
 MEMPOOL_SIGNET_HTTP_PORT=8995
@@ -196,6 +188,18 @@ MEMPOOL_SIGNET_HTTP_PORT=8995
 #MEMPOOL_LIQUIDTESTNET_HTTP_SOCK=/tmp/bitcoin.bisq.mempool
 MEMPOOL_LIQUIDTESTNET_HTTP_HOST=127.0.0.1
 MEMPOOL_LIQUIDTESTNET_HTTP_PORT=8994
+
+# set CKPool bitcoin mainnet port
+CKPOOL_MAINNET_STRATUM_HOST=127.0.0.1
+CKPOOL_MAINNET_STRATUM_PORT=3333
+
+# set CKPool bitcoin mainnet port
+CKPOOL_TESTNET_STRATUM_HOST=127.0.0.1
+CKPOOL_TESTNET_STRATUM_PORT=3334
+
+# set CKPool bitcoin mainnet port
+CKPOOL_TESTNET4_STRATUM_HOST=127.0.0.1
+CKPOOL_TESTNET4_STRATUM_PORT=3335
 
 ##### OS options, should be automatically detected
 
@@ -256,7 +260,6 @@ MEMPOOL_TESTNET_LIGHTNING_USER='mempool_testnet_lightning'
 MEMPOOL_SIGNET_LIGHTNING_USER='mempool_signet_lightning'
 MEMPOOL_LIQUID_USER='mempool_liquid'
 MEMPOOL_LIQUIDTESTNET_USER='mempool_liquidtestnet'
-MEMPOOL_BISQ_USER='mempool_bisq'
 # generate random hex string
 MEMPOOL_MAINNET_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 MEMPOOL_TESTNET_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
@@ -267,7 +270,6 @@ MEMPOOL_TESTNET_LIGHTNING_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $
 MEMPOOL_SIGNET_LIGHTNING_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 MEMPOOL_LIQUID_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 MEMPOOL_LIQUIDTESTNET_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
-MEMPOOL_BISQ_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 
 # mempool data folder and user/group
 MEMPOOL_HOME=/mempool
@@ -282,6 +284,11 @@ BITCOIN_USER=bitcoin
 BITCOIN_GROUP=bitcoin
 # bitcoin core data folder, needs about 300GB
 BITCOIN_HOME=/bitcoin
+
+# ckpool user/group
+CKPOOL_HOME=/ckpool
+CKPOOL_USER=ckpool
+CKPOOL_GROUP=ckpool
 
 # bitcoin testnet data
 BITCOIN_TESTNET_DATA=${BITCOIN_HOME}/testnet3
@@ -320,14 +327,6 @@ CLN_GROUP=cln
 # Core Lightning home folder
 CLN_HOME=/cln
 
-# bisq user/group
-BISQ_USER=bisq
-BISQ_GROUP=bisq
-# bisq home folder, needs about 1GB
-BISQ_HOME=/bisq
-# tor HS folder
-BISQ_TOR_HS=bisq
-
 # liquid user/group
 ELEMENTS_USER=elements
 ELEMENTS_GROUP=elements
@@ -357,14 +356,13 @@ BITCOIN_REPO_URL=https://github.com/bitcoin/bitcoin
 BITCOIN_REPO_NAME=bitcoin
 BITCOIN_REPO_BRANCH=master
 #BITCOIN_LATEST_RELEASE=$(curl -s https://api.github.com/repos/bitcoin/bitcoin/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
-BITCOIN_LATEST_RELEASE=v28.0
+BITCOIN_LATEST_RELEASE=v28.1
 echo -n '.'
 
-BISQ_REPO_URL=https://github.com/bisq-network/bisq
-BISQ_REPO_NAME=bisq
-BISQ_REPO_BRANCH=master
-#BISQ_LATEST_RELEASE=$(curl -s https://api.github.com/repos/bisq-network/bisq/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
-BISQ_LATEST_RELEASE=master
+CKPOOL_REPO_URL=https://github.com/mempool/ckpool
+CKPOOL_REPO_NAME=ckpool
+CKPOOL_REPO_BRANCH=master
+CKPOOL_LATEST_RELEASE=master
 echo -n '.'
 
 UNFURL_REPO_URL=https://github.com/mempool/mempool
@@ -378,7 +376,7 @@ ELEMENTS_REPO_URL=https://github.com/ElementsProject/elements
 ELEMENTS_REPO_NAME=elements
 ELEMENTS_REPO_BRANCH=master
 #ELEMENTS_LATEST_RELEASE=$(curl -s https://api.github.com/repos/ElementsProject/elements/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
-ELEMENTS_LATEST_RELEASE=elements-22.1.1
+ELEMENTS_LATEST_RELEASE=elements-23.2.7
 echo -n '.'
 
 BITCOIN_ELECTRS_REPO_URL=https://github.com/mempool/electrs
@@ -403,7 +401,7 @@ LIQUIDTESTNET_ASSET_REGISTRY_DB_NAME=asset_registry_testnet_db
 # packages needed for mempool ecosystem
 DEBIAN_PKG=()
 DEBIAN_PKG+=(zsh vim curl screen openssl python3 dialog cron)
-DEBIAN_PKG+=(build-essential git git-lfs clang cmake jq)
+DEBIAN_PKG+=(build-essential git clang cmake jq)
 DEBIAN_PKG+=(autotools-dev autoconf automake pkg-config bsdmainutils)
 DEBIAN_PKG+=(libevent-dev libdb-dev libssl-dev libtool autotools-dev)
 DEBIAN_PKG+=(libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-test-dev libboost-thread-dev)
@@ -416,11 +414,12 @@ DEBIAN_UNFURL_PKG+=(libxdamage-dev libxrandr-dev libgbm-dev libpango1.0-dev liba
 
 # packages needed for mempool ecosystem
 FREEBSD_PKG=()
-FREEBSD_PKG+=(zsh sudo git git-lfs screen curl wget calc neovim)
+FREEBSD_PKG+=(zsh sudo git screen curl wget calc neovim)
 FREEBSD_PKG+=(openssh-portable py311-pip rust llvm17 jq base64 libzmq4)
-FREEBSD_PKG+=(boost-libs autoconf automake gmake gcc libevent libtool pkgconf)
+FREEBSD_PKG+=(boost-libs autoconf automake gmake gcc gcc13 libevent libtool pkgconf)
 FREEBSD_PKG+=(nginx rsync py311-certbot-nginx mariadb1011-server)
-FREEBSD_PKG+=(geoipupdate redis)
+FREEBSD_PKG+=(redis)
+FREEBSD_PKG+=(libepoll-shim)
 
 FREEBSD_UNFURL_PKG=()
 FREEBSD_UNFURL_PKG+=(nvidia-driver-470 chromium xinit xterm twm ja-sourcehansans-otf)
@@ -562,7 +561,7 @@ zfsCreateFilesystems()
     zfs create -o "mountpoint=${MINFEE_HOME}" "${ZPOOL}/minfee"
     zfs create -o "mountpoint=${ELECTRS_HOME}" "${ZPOOL}/electrs"
     zfs create -o "mountpoint=${MEMPOOL_HOME}" "${ZPOOL}/mempool"
-    zfs create -o "mountpoint=${MYSQL_HOME}" "${ZPOOL}/mysql"
+    zfs create -o "mountpoint=${MYSQL_HOME}" "${ZPOOL}/mysql" || true
 
     zfs create -o "mountpoint=${BITCOIN_ELECTRS_HOME}" "${ZPOOL}/bitcoin/electrs"
 
@@ -667,10 +666,6 @@ zfsCreateFilesystems()
     if [ "${CLN_INSTALL}" = ON ];then
         zfs create -o "mountpoint=${CLN_HOME}" "${ZPOOL}/cln"
     fi
-
-    if [ "${BISQ_INSTALL}" = ON ];then
-        zfs create -o "mountpoint=${BISQ_HOME}" "${ZPOOL}/bisq"
-    fi
 }
 
 ext4CreateDir()
@@ -769,10 +764,6 @@ ext4CreateDir()
     if [ "${CLN_INSTALL}" = ON ];then
         mkdir -p "${CLN_HOME}"
     fi
-
-    if [ "${BISQ_INSTALL}" = ON ];then
-        mkdir -p "${BISQ_HOME}"
-    fi
 }
 
 
@@ -824,6 +815,7 @@ returncode=0
 
 $CUT >$input <<-EOF
 Tor:Enable Tor v3 HS Onion:ON
+CKPool:Enable CKPool Stratum Interface:ON
 Mainnet:Enable Bitcoin Mainnet:ON
 Mainnet-Minfee:Enable Bitcoin Mainnet Minfee:ON
 LN-Mainnet:Enable Bitcoin Mainnet Lightning:ON
@@ -835,7 +827,6 @@ Signet:Enable Bitcoin Signet:ON
 Liquid:Enable Elements Liquid:ON
 Liquidtestnet:Enable Elements Liquidtestnet:ON
 CoreLN:Enable Core Lightning:ON
-Bisq:Enable Bisq:ON
 Unfurl:Enable Unfurl:ON
 EOF
 
@@ -860,6 +851,12 @@ if grep Tor $tempfile >/dev/null 2>&1;then
     TOR_INSTALL=ON
 else
     TOR_INSTALL=OFF
+fi
+
+if grep CKPool $tempfile >/dev/null 2>&1;then
+    CKPOOL_INSTALL=ON
+else
+    CKPOOL_INSTALL=OFF
 fi
 
 if grep Mainnet $tempfile >/dev/null 2>&1;then
@@ -950,14 +947,6 @@ if [ "${ELEMENTS_LIQUID_ENABLE}" = ON -o "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON
     ELEMENTS_ELECTRS_INSTALL=ON
 else
     ELEMENTS_ELECTRS_INSTALL=OFF
-fi
-
-if grep Bisq $tempfile >/dev/null 2>&1;then
-    BISQ_INSTALL=ON
-    BISQ_MAINNET_ENABLE=ON
-else
-    BISQ_INSTALL=OFF
-    BISQ_MAINNET_ENABLE=OFF
 fi
 
 if grep Unfurl $tempfile >/dev/null 2>&1;then
@@ -1113,11 +1102,11 @@ echo "[*] Installing Mempool crontab"
 osSudo "${ROOT_USER}" crontab -u "${MEMPOOL_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/mempool.crontab"
 
 echo "[*] Installing nvm.sh from GitHub"
-osSudo "${MEMPOOL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh'
+osSudo "${MEMPOOL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash'
 
 echo "[*] Building NodeJS via nvm.sh"
-osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm install v20.12.0 --shared-zlib'
-osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm alias default 20.12.0'
+osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; CC=gcc CXX=g++ nvm install v22.14.0 --shared-zlib'
+osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm alias default 22.14.0'
 
 ####################
 # Tor installation #
@@ -1131,15 +1120,6 @@ if [ "${TOR_INSTALL}" = ON ];then
     echo "[*] Installing Tor base configuration"
     osSudo "${ROOT_USER}" install -c -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/torrc" "${TOR_CONFIGURATION}"
     osSudo "${ROOT_USER}" sed -i.orig "s!__TOR_RESOURCES__!${TOR_RESOURCES}!" "${TOR_CONFIGURATION}"
-
-    echo "[*] Adding Tor HS configuration for Bisq"
-    if [ "${BISQ_MAINNET_ENABLE}" = "ON" ];then
-        if ! grep "${BISQ_TOR_HS}" "${TOR_CONFIGURATION}" >/dev/null 2>&1;then
-            osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServiceDir ${TOR_RESOURCES}/${BISQ_TOR_HS}/ >> ${TOR_CONFIGURATION}"
-            osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServicePort 80 127.0.0.1:82 >> ${TOR_CONFIGURATION}"
-            osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServiceVersion 3 >> ${TOR_CONFIGURATION}"
-        fi
-    fi
 
     echo "[*] Adding Tor HS configuration for Liquid"
     if [ "${ELEMENTS_LIQUID_ENABLE}" = "ON" ];then
@@ -1221,6 +1201,76 @@ if [ "${BITCOIN_INSTALL}" = ON ];then
     osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${BITCOIN_HOME}/bitcoin.conf"
     osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${MINFEE_HOME}/bitcoin.conf"
     osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${MINFEE_HOME}/bitcoin.conf"
+fi
+
+#######################
+# CKPool Installation #
+#######################
+
+#CKPool cronjob installer
+install_ckpool_cron() {
+    local network=$1
+    local network_label=$2
+    local network_cmd=$3
+    local port=$4
+
+    echo "[*] Installing CKPool ${network_label} Cron for 'ckpool' user"
+    case $OS in
+        FreeBSD)
+            osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_HOME} && (crontab -l > ${TEMP_CRON_FILE} 2>/dev/null || echo \"\" > ${TEMP_CRON_FILE})"
+            osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_HOME} && echo '@reboot screen -dmS ckpool-${network} sh -c \"while true; do ${CKPOOL_HOME}/${CKPOOL_REPO_NAME}/start ${network_cmd} ${port}; sleep 1; done\"' >> ${TEMP_CRON_FILE}"
+            osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_HOME} && crontab ${TEMP_CRON_FILE}"
+            osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_HOME} && rm -f ${TEMP_CRON_FILE}"
+        ;;
+        Debian)
+        ;;
+    esac
+}
+
+#CKPool binary Installer
+if [ "${CKPOOL_INSTALL}" = ON ]; then
+    echo "[*] Creating 'ckpool' user"
+    osGroupCreate "${CKPOOL_GROUP}"
+    osUserCreate  "${CKPOOL_USER}" "${CKPOOL_HOME}" "${CKPOOL_GROUP}"
+    osSudo "${ROOT_USER}" chsh -s `which zsh` "${CKPOOL_USER}"
+
+    echo "[*] Creating 'ckpool' data folder"
+    osSudo "${ROOT_USER}" mkdir -p "${CKPOOL_HOME}"
+    osSudo "${ROOT_USER}" chown -R "${CKPOOL_USER}:${CKPOOL_GROUP}" "${CKPOOL_HOME}"
+    osSudo "${CKPOOL_USER}" touch "${CKPOOL_HOME}/.zshrc"
+
+    echo "[*] Creating '.ckpool' directory in ckpool user's home to store config files"
+    osSudo "${ROOT_USER}" mkdir -p "${CKPOOL_HOME}/.ckpool"
+    osSudo "${ROOT_USER}" chown "${CKPOOL_USER}:${CKPOOL_GROUP}" "${CKPOOL_HOME}/.ckpool"
+
+    echo "[*] Cloning Mempool CKPool repo from ${CKPOOL_REPO_URL}"
+    osSudo "${CKPOOL_USER}" git config --global advice.detachedHead false
+    osSudo "${CKPOOL_USER}" git clone --branch "${CKPOOL_REPO_BRANCH}" "${CKPOOL_REPO_URL}" "${CKPOOL_HOME}/${CKPOOL_REPO_NAME}"
+
+    echo "[*] Checking out CKPOOL ${CKPOOL_LATEST_RELEASE}"
+    osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_HOME}/${CKPOOL_REPO_NAME} && git checkout ${CKPOOL_LATEST_RELEASE}"
+
+    echo "[*] Building CKPool from source repo"
+    osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_REPO_NAME} && ./autogen.sh --quiet"
+    osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_REPO_NAME} && ./configure CFLAGS=\"-g3 -O0 -fno-inline -fno-omit-frame-pointer -fno-eliminate-unused-debug-types -fno-eliminate-unused-debug-symbols -Wall -I/usr/local/include/libepoll-shim\" LDFLAGS=\"-L/usr/local/lib -lepoll-shim -lpthread\""
+    osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_REPO_NAME} && gmake -j${NPROC}"
+
+    echo "[*] Copy CKPool binarary into OS"
+    osSudo "${ROOT_USER}" sh -c "cd ${CKPOOL_HOME}/${CKPOOL_REPO_NAME} && cp src/ckpool /usr/local/bin"
+
+    TEMP_CRON_FILE="tmp_cron"
+
+    if [ "${BITCOIN_MAINNET_ENABLE}" = ON ]; then
+        install_ckpool_cron "mainnet" "Mainnet" "bitcoin" 2333
+    fi
+
+    if [ "${BITCOIN_TESTNET_ENABLE}" = ON ]; then
+        install_ckpool_cron "testnet" "Testnet" "testnet" 2334
+    fi
+
+    if [ "${BITCOIN_TESTNET4_ENABLE}" = ON ]; then
+        install_ckpool_cron "testnet4" "Testnet4" "testnet4" 2335
+    fi
 fi
 
 #########################
@@ -1312,11 +1362,14 @@ if [ "${BITCOIN_ELECTRS_INSTALL}" = ON ];then
     osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_ELECTRS_HOME} && cargo run --release --bin electrs -- --version" || true
 
     case $OS in
-        FreeBSD)
+        FreeBSD*)
             echo "[*] Patching Bitcoin Electrs code for FreeBSD"
-            osSudo "${BITCOIN_USER}" sh -c "cd \"${BITCOIN_HOME}/.cargo/registry/src/index.crates.io-6f17d22bba15001f/sysconf-0.3.4\" && patch -p1 < \"${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/freebsd/sysconf.patch\""
-            #osSudo "${BITCOIN_USER}" sh -c "cd \"${BITCOIN_ELECTRS_HOME}/src/new_index/\" && sed -i.bak -e s/Snappy/None/ db.rs && rm db.rs.bak"
-            #osSudo "${BITCOIN_USER}" sh -c "cd \"${BITCOIN_ELECTRS_HOME}/src/bin/\" && sed -i.bak -e 's/from_secs(5)/from_secs(1)/' electrs.rs && rm electrs.rs.bak"
+            SYSCONF_DIR=$(find "${BITCOIN_HOME}/.cargo/registry/src" -type d -name "sysconf-0.3.4" | head -n 1)
+            if [ -n "$SYSCONF_DIR" ]; then
+                osSudo "${BITCOIN_USER}" sh -c "cd \"$SYSCONF_DIR\" && patch -p1 < \"${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/freebsd/sysconf.patch\""
+            else
+                echo "Warning: Could not find sysconf-0.3.4 directory"
+            fi
         ;;
         Debian)
         ;;
@@ -1364,7 +1417,7 @@ if [ "${ELEMENTS_ELECTRS_INSTALL}" = ON ];then
     case $OS in
         FreeBSD)
             echo "[*] Patching Liquid Electrs code for FreeBSD"
-            osSudo "${ELEMENTS_USER}" sh -c "cd \"${ELEMENTS_HOME}/.cargo/registry/src/index.crates.io-6f17d22bba15001f/sysconf-0.3.4\" && patch -p1 < \"${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/freebsd/sysconf.patch\""
+            osSudo "${ELEMENTS_USER}" sh -c "cd \"${ELEMENTS_HOME}/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sysconf-0.3.4\" && patch -p1 < \"${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/freebsd/sysconf.patch\""
         ;;
         Debian)
         ;;
@@ -1377,6 +1430,8 @@ fi
 ##############################
 # Core Lightning for Bitcoin #
 ##############################
+
+if [ "${CLN_INSTALL}" = ON ];then
 
 echo "[*] Installing Core Lightning"
 case $OS in
@@ -1418,86 +1473,6 @@ case $OS in
     ;;
 esac
 
-
-#####################
-# Bisq installation #
-#####################
-
-if [ "${BISQ_INSTALL}" = ON ];then
-
-    echo "[*] Creating Bisq user with Tor access"
-    osGroupCreate "${BISQ_GROUP}"
-    if [ "${TOR_INSTALL}" = ON ];then
-        osUserCreate "${BISQ_USER}" "${BISQ_HOME}" "${BISQ_GROUP}" "${TOR_GROUP}"
-    else
-        osUserCreate "${BISQ_USER}" "${BISQ_HOME}" "${BISQ_GROUP}"
-    fi
-    osSudo "${ROOT_USER}" chsh -s `which zsh` "${BISQ_USER}"
-
-    echo "[*] Creating Bisq data folder"
-    osSudo "${ROOT_USER}" mkdir -p "${BISQ_HOME}"
-    osSudo "${ROOT_USER}" chown -R "${BISQ_USER}:${BISQ_GROUP}" "${BISQ_HOME}"
-    osSudo "${BISQ_USER}" touch "${BISQ_HOME}/.zshrc"
-
-    echo "[*] Building Bisq"
-    case $OS in
-
-        FreeBSD)
-            echo "[*] FIXME: Bisq must be installed manually on FreeBSD"
-        ;;
-
-        Debian)
-            echo "[*] Cloning Bisq top-level repo"
-            osSudo "${BISQ_USER}" git clone --branch "${BISQ_REPO_BRANCH}" "${BISQ_REPO_URL}" "${BISQ_HOME}/${BISQ_REPO_NAME}"
-
-            echo "[*] Installing OpenJDK from Bisq install_java_linux.sh script"
-            osSudo "${ROOT_USER}" "${BISQ_HOME}/${BISQ_REPO_NAME}/scripts/install_java_linux.sh"
-
-            echo "[*] Checking out Bisq ${BISQ_LATEST_RELEASE}"
-            osSudo "${BISQ_USER}" sh -c "cd ${BISQ_HOME}/${BISQ_REPO_NAME} && git checkout ${BISQ_LATEST_RELEASE}"
-
-            echo "[*] Performing Git LFS pull"
-            osSudo "${BISQ_USER}" sh -c "cd ${BISQ_HOME}/${BISQ_REPO_NAME} && git lfs pull"
-
-            echo "[*] Building Bisq from source"
-            osSudo "${BISQ_USER}" sh -c "cd ${BISQ_HOME}/${BISQ_REPO_NAME} && ./gradlew build -x test < /dev/null" # redirect from /dev/null is necessary to workaround gradlew non-interactive shell hanging issue
-
-        ;;
-    esac
-
-    echo "[*] Configuring Bisq"
-    case $OS in
-
-        FreeBSD)
-            echo "[*] FIXME: Bisq must be configured manually on FreeBSD"
-        ;;
-
-        Debian)
-            osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${BISQ_HOME}/${BISQ_REPO_NAME}/seednode/bisq.service" "${DEBIAN_SERVICE_HOME}/bisq.service"
-            osSudo "${ROOT_USER}" sed -i.orig "s/#Requires=bitcoin.service/Requires=bitcoin.service/" "${DEBIAN_SERVICE_HOME}/bisq.service"
-            osSudo "${ROOT_USER}" sed -i.orig "s/#BindsTo=bitcoin.service/BindsTo=bitcoin.service/" "${DEBIAN_SERVICE_HOME}/bisq.service"
-            osSudo "${ROOT_USER}" sed -i.orig "s/__BISQ_REPO_NAME__/${BISQ_REPO_NAME}/" "${DEBIAN_SERVICE_HOME}/bisq.service"
-            osSudo "${ROOT_USER}" sed -i.orig "s!__BISQ_HOME__!${BISQ_HOME}!" "${DEBIAN_SERVICE_HOME}/bisq.service"
-
-            echo "[*] Installing Bisq environment file"
-            osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${BISQ_HOME}/${BISQ_REPO_NAME}/seednode/bisq.env" "${DEBIAN_ENV_HOME}/bisq.env"
-            osSudo "${ROOT_USER}" sed -i.orig "s!__BISQ_APP_NAME__!${BISQ_APP_NAME}!" "${DEBIAN_ENV_HOME}/bisq.env"
-            osSudo "${ROOT_USER}" sed -i.orig "s!__BISQ_HOME__!${BISQ_HOME}!" "${DEBIAN_ENV_HOME}/bisq.env"
-
-            echo "[*] Configuring Bisq environment file with Bitcoin RPC credentials"
-            osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_P2P_HOST__/${BITCOIN_MAINNET_P2P_HOST}/" "${DEBIAN_ENV_HOME}/bisq.env"
-            osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_P2P_PORT__/${BITCOIN_MAINNET_P2P_PORT}/" "${DEBIAN_ENV_HOME}/bisq.env"
-            osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_HOST__/${BITCOIN_MAINNET_RPC_HOST}/" "${DEBIAN_ENV_HOME}/bisq.env"
-            osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PORT__/${BITCOIN_MAINNET_RPC_PORT}/" "${DEBIAN_ENV_HOME}/bisq.env"
-            osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${DEBIAN_ENV_HOME}/bisq.env"
-            osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${DEBIAN_ENV_HOME}/bisq.env"
-
-            #echo "[*] Updating Bitcoin configuration for Bisq"
-            #osSudo "${ROOT_USER}" sed -i.orig "s/#blocknotify/blocknotify/" "${BITCOIN_HOME}/bitcoin.conf"
-            #osSudo "${BITCOIN_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 755 "${BISQ_HOME}/${BISQ_REPO_NAME}/seednode/blocknotify.sh" "${BITCOIN_HOME}/blocknotify.sh"
-        ;;
-
-    esac
 fi
 
 #######################
@@ -1562,7 +1537,7 @@ EOF
             osSudo "${UNFURL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh'
 
             echo "[*] Building NodeJS via nvm.sh"
-            osSudo "${UNFURL_USER}" zsh -c 'source ~/.zshrc ; nvm install v20.12.0 --shared-zlib'
+            osSudo "${UNFURL_USER}" zsh -c 'source ~/.zshrc ; nvm install v22.14.0 --shared-zlib'
 
         ;;
     esac
@@ -1791,13 +1766,6 @@ case $OS in
     ;;
 esac
 
-#####################################
-# Bisq instance for Bitcoin Mainnet #
-#####################################
-
-if [ "${BISQ_MAINNET_ENABLE}" = ON ];then
-fi
-
 ##### Mempool -> Bitcoin Mainnet instance
 
 if [ "${BITCOIN_MAINNET_ENABLE}" = ON -o "${BITCOIN_TESTNET_ENABLE}" = ON -o "${BITCOIN_TESTNET4_ENABLE}" = ON -o "${BITCOIN_SIGNET_ENABLE}" = ON ];then
@@ -1881,15 +1849,6 @@ if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
     osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/liquidtestnet && git checkout ${MEMPOOL_LATEST_RELEASE}"
 fi
 
-if [ "${BISQ_INSTALL}" = ON ];then
-    echo "[*] Creating Mempool instance for Bisq"
-    osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
-    osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/bisq"
-
-    echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Bisq"
-    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/bisq && git checkout ${MEMPOOL_LATEST_RELEASE}"
-fi
-
 ##### mariadb
 
 echo "[*] Adding MySQL configuration"
@@ -1907,35 +1866,33 @@ esac
 sleep 10
 
 mysql << _EOF_
-create database mempool;
+create database if not exists mempool;
 grant all on mempool.* to '${MEMPOOL_MAINNET_USER}'@'localhost' identified by '${MEMPOOL_MAINNET_PASS}';
 
-create database mempool_testnet;
+create database if not exists mempool_testnet;
 grant all on mempool_testnet.* to '${MEMPOOL_TESTNET_USER}'@'localhost' identified by '${MEMPOOL_TESTNET_PASS}';
 
-create database mempool_testnet4;
+create database if not exists mempool_testnet4;
 grant all on mempool_testnet4.* to '${MEMPOOL_TESTNET4_USER}'@'localhost' identified by '${MEMPOOL_TESTNET4_PASS}';
 
-create database mempool_signet;
+create database if not exists mempool_signet;
 grant all on mempool_signet.* to '${MEMPOOL_SIGNET_USER}'@'localhost' identified by '${MEMPOOL_SIGNET_PASS}';
 
-create database mempool_mainnet_lightning;
+create database if not exists mempool_mainnet_lightning;
 grant all on mempool_mainnet_lightning.* to '${MEMPOOL_MAINNET_LIGHTNING_USER}'@'localhost' identified by '${MEMPOOL_MAINNET_LIGHTNING_PASS}';
 
-create database mempool_testnet_lightning;
+create database if not exists mempool_testnet_lightning;
 grant all on mempool_testnet_lightning.* to '${MEMPOOL_TESTNET_LIGHTNING_USER}'@'localhost' identified by '${MEMPOOL_TESTNET_LIGHTNING_PASS}';
 
-create database mempool_signet_lightning;
+create database if not exists mempool_signet_lightning;
 grant all on mempool_signet_lightning.* to '${MEMPOOL_SIGNET_LIGHTNING_USER}'@'localhost' identified by '${MEMPOOL_SIGNET_LIGHTNING_PASS}';
 
-create database mempool_liquid;
+create database if not exists mempool_liquid;
 grant all on mempool_liquid.* to '${MEMPOOL_LIQUID_USER}'@'localhost' identified by '${MEMPOOL_LIQUID_PASS}';
 
-create database mempool_liquidtestnet;
+create database if not exists mempool_liquidtestnet;
 grant all on mempool_liquidtestnet.* to '${MEMPOOL_LIQUIDTESTNET_USER}'@'localhost' identified by '${MEMPOOL_LIQUIDTESTNET_PASS}';
 
-create database mempool_bisq;
-grant all on mempool_bisq.* to '${MEMPOOL_BISQ_USER}'@'localhost' identified by '${MEMPOOL_BISQ_PASS}';
 _EOF_
 
 echo "[*] save MySQL credentials"
@@ -1958,8 +1915,6 @@ declare -x MEMPOOL_LIQUID_USER="${MEMPOOL_LIQUID_USER}"
 declare -x MEMPOOL_LIQUID_PASS="${MEMPOOL_LIQUID_PASS}"
 declare -x MEMPOOL_LIQUIDTESTNET_USER="${MEMPOOL_LIQUIDTESTNET_USER}"
 declare -x MEMPOOL_LIQUIDTESTNET_PASS="${MEMPOOL_LIQUIDTESTNET_PASS}"
-declare -x MEMPOOL_BISQ_USER="${MEMPOOL_BISQ_USER}"
-declare -x MEMPOOL_BISQ_PASS="${MEMPOOL_BISQ_PASS}"
 _EOF_
 chown "${MEMPOOL_USER}:${MEMPOOL_GROUP}" "${MEMPOOL_MYSQL_CREDENTIALS}"
 
@@ -1982,10 +1937,6 @@ osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_ETC_FOLDER__!${NGINX_ETC_FOLDER}!" 
 #        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_LIQUID_ONION__!${NGINX_LIQUID_ONIONi%.onion}!" "${NGINX_CONFIGURATION}"
 #    fi
 #
-#    if [ "${BISQ_MAINNET_ENABLE}" = "ON" ];then
-#        NGINX_BISQ_ONION=$(cat "${TOR_RESOURCES}/bisq/hostname")
-#        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_BISQ_ONION__!${NGINX_BISQ_ONION%.onion}!" "${NGINX_CONFIGURATION}"
-#    fi
 #fi
 
 ##### OS systemd
@@ -2051,9 +2002,6 @@ EOF
         fi
         if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
             osSudo "${ROOT_USER}" systemctl enable bitcoin-signet.service
-        fi
-        if [ "${BISQ_MAINNET_ENABLE}" = ON ];then
-            osSudo "${ROOT_USER}" systemctl enable bisq.service
         fi
         if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
             osSudo "${ROOT_USER}" systemctl enable elements-liquid.service
@@ -2171,7 +2119,6 @@ osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME} && ./upgrade" || true
 #if [ "${TOR_INSTALL}" = ON ];then
 #    echo "Your auto-generated Tor addresses are:"
 #    echo "${NGINX_MEMPOOL_ONION}"
-#    echo "${NGINX_BISQ_ONION}"
 #    echo "${NGINX_LIQUID_ONION}"
 #fi
 

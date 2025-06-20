@@ -3,7 +3,7 @@ import { Transaction, Vout } from '@interfaces/electrs.interface';
 import { StateService } from '../../services/state.service';
 import { Filter, toFilters } from '../../shared/filters.utils';
 import { decodeRawTransaction, getTransactionFlags, addInnerScriptsToVin, countSigops } from '../../shared/transaction.utils';
-import { firstValueFrom, Subscription } from 'rxjs';
+import { catchError, firstValueFrom, Subscription, switchMap, tap, throwError, timer } from 'rxjs';
 import { WebsocketService } from '../../services/websocket.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
@@ -36,6 +36,9 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
   isLoadingBroadcast: boolean;
   errorBroadcast: string;
   successBroadcast: boolean;
+  isCoinbase: boolean;
+  broadcastSubscription: Subscription;
+  fragmentSubscription: Subscription;
 
   isMobile: boolean;
   @ViewChild('graphContainer')
@@ -76,13 +79,30 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.pushTxForm = this.formBuilder.group({
       txRaw: ['', Validators.required],
     });
+
+    this.fragmentSubscription = this.route.fragment.subscribe((fragment) => {
+      if (fragment) {
+        const params = new URLSearchParams(fragment);
+        const hex = params.get('hex');
+        if (hex) {
+          this.pushTxForm.get('txRaw').setValue(hex);
+        }
+        const offline = params.get('offline');
+        if (offline) {
+          this.offlineMode = offline === 'true';
+        }
+        if (this.pushTxForm.get('txRaw').value) {
+          this.decodeTransaction();
+        }
+      }
+    });
   }
 
   async decodeTransaction(): Promise<void> {
     this.resetState();
     this.isLoading = true;
     try {
-      const { tx, hex } = decodeRawTransaction(this.pushTxForm.get('txRaw').value, this.stateService.network);
+      const { tx, hex } = decodeRawTransaction(this.pushTxForm.get('txRaw').value.trim(), this.stateService.network);
       await this.fetchPrevouts(tx);
       await this.fetchCpfpInfo(tx);
       this.processTransaction(tx, hex);
@@ -183,6 +203,14 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.transaction = tx;
     this.rawHexTransaction = hex;
 
+    this.isCoinbase = this.transaction.vin[0].is_coinbase;
+
+    // Update URL fragment with hex data
+    this.router.navigate([], {
+      fragment: this.getCurrentFragments(),
+      replaceUrl: true
+    });
+
     this.transaction.flags = getTransactionFlags(this.transaction, this.cpfpInfo, null, null, this.stateService.network);
     this.filters = this.transaction.flags ? toFilters(this.transaction.flags).filter(f => f.txPage) : [];
     if (this.transaction.sigops >= 0) {
@@ -207,18 +235,22 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     });
   }
 
-  async postTx(): Promise<string> {
+  postTx(): void {
     this.isLoadingBroadcast = true;
     this.errorBroadcast = null;
-    return new Promise((resolve, reject) => {
-      this.apiService.postTransaction$(this.rawHexTransaction)
-      .subscribe((result) => {
+
+    this.broadcastSubscription = this.apiService.postTransaction$(this.rawHexTransaction).pipe(
+      tap((txid: string) => {
         this.isLoadingBroadcast = false;
         this.successBroadcast = true;
-        this.transaction.txid = result;
-        resolve(result);
-      },
-      (error) => {
+        this.transaction.txid = txid;
+      }),
+      switchMap((txid: string) =>
+        timer(2000).pipe(
+          tap(() => this.router.navigate([this.relativeUrlPipe.transform('/tx/' + txid)])),
+        )
+      ),
+      catchError((error) => {
         if (typeof error.error === 'string') {
           const matchText = error.error.replace(/\\/g, '').match('"message":"(.*?)"');
           this.errorBroadcast = 'Failed to broadcast transaction, reason: ' + (matchText && matchText[1] || error.error);
@@ -226,9 +258,9 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
           this.errorBroadcast = 'Failed to broadcast transaction, reason: ' + error.message;
         }
         this.isLoadingBroadcast = false;
-        reject(this.error);
-      });
-    });
+        return throwError(() => error);
+      })
+    ).subscribe();
   }
 
   resetState() {
@@ -253,11 +285,17 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.missingPrevouts = [];
     this.stateService.markBlock$.next({});
     this.mempoolBlocksSubscription?.unsubscribe();
+    this.broadcastSubscription?.unsubscribe();
   }
 
   resetForm() {
     this.resetState();
     this.pushTxForm.get('txRaw').setValue('');
+    this.offlineMode = false;
+    this.router.navigate([], {
+      fragment: '',
+      replaceUrl: true
+    });
   }
 
   @HostListener('window:resize', ['$event'])
@@ -300,14 +338,32 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.graphHeight = Math.min(360, this.maxInOut * 80);
   }
 
+  getCurrentFragments() {
+    // build a fragment param string from current state
+    const params = new URLSearchParams();
+    if (this.offlineMode) {
+      params.set('offline', 'true');
+    }
+    if (this.rawHexTransaction) {
+      params.set('hex', this.rawHexTransaction);
+    }
+    return params.toString();
+  }
+
   onOfflineModeChange(e): void {
     this.offlineMode = !e.target.checked;
+    this.router.navigate([], {
+      fragment: this.getCurrentFragments(),
+      replaceUrl: true
+    });
   }
 
   ngOnDestroy(): void {
     this.mempoolBlocksSubscription?.unsubscribe();
     this.flowPrefSubscription?.unsubscribe();
     this.stateService.markBlock$.next({});
+    this.broadcastSubscription?.unsubscribe();
+    this.fragmentSubscription?.unsubscribe();
   }
 
 }

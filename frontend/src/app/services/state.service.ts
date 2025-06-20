@@ -42,6 +42,8 @@ export interface Customization {
   };
 }
 
+export type SignaturesMode = 'all' | 'interesting' | 'none' | null;
+
 export interface Env {
   MAINNET_ENABLED: boolean;
   TESTNET_ENABLED: boolean;
@@ -150,6 +152,7 @@ export class StateService {
   backend$ = new BehaviorSubject<'esplora' | 'electrum' | 'none'>('esplora');
   networkChanged$ = new ReplaySubject<string>(1);
   lightningChanged$ = new ReplaySubject<boolean>(1);
+  signaturesMode$: BehaviorSubject<SignaturesMode>;
   blocksSubject$ = new BehaviorSubject<BlockExtended[]>([]);
   blocks$: Observable<BlockExtended[]>;
   transactions$ = new BehaviorSubject<TransactionStripped[]>(null);
@@ -327,8 +330,12 @@ export class StateService {
 
     this.networkChanged$.subscribe((network) => {
       this.transactions$ = new BehaviorSubject<TransactionStripped[]>(null);
+      this.stratumJobs$ = new BehaviorSubject<Record<string, StratumJob>>({});
+      this.stratumJobUpdate$.next({ state: {} });
       this.blocksSubject$.next([]);
     });
+
+    this.signaturesMode$ = new BehaviorSubject<SignaturesMode>(this.storageService.getValue('signatures-mode') as SignaturesMode || null);
 
     this.blockVSize = this.env.BLOCK_WEIGHT_UNITS / 4;
 

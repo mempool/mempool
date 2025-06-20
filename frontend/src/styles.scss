@@ -1347,7 +1347,7 @@ app-master-page, app-liquid-master-page {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding-bottom: 56px;
+  padding-bottom: 48px;
   @media (min-width: 992px) {
     padding-bottom: 0px;
   }
@@ -1372,7 +1372,7 @@ app-global-footer {
 .dropdown-menu {
   background-color: var(--bg);
   color: var(--fg);
-  .dropdown-item:hover, .dropdown-item:focus { 
+  .dropdown-item:hover, .dropdown-item:focus {
     background-color: var(--active-bg);
     color: var(--fg);
   }
@@ -1399,7 +1399,7 @@ a {
   background-color: var(--info);
 }
 
-.btn-primary { 
+.btn-primary {
   color: var(--fg);
   background-color: var(--primary);
   border-color: var(--primary);
@@ -1407,4 +1407,8 @@ a {
 
 .btn-small-height {
 	line-height: 1;
+}
+
+button {
+  touch-action: manipulation;
 }
