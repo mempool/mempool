@@ -1,6 +1,9 @@
 <div class="container-xl" style="min-height: 335px" [ngClass]="{'widget': widget, 'full-height': !widget}">
   <div *ngIf="!widget" class="float-left" style="display: flex; width: 100%; align-items: center;">
-    <h1>{{ label }}</h1>
+    <h1>
+      <img src="/resources/cubo.svg" style="width: 1.1em; height: 1.1em; margin-right: 0.1em; transform: translateY(-0.1em);">
+      {{ label }}
+    </h1>
     <div *ngIf="!widget && isLoading" class="spinner-border" role="status"></div>
   </div>
 
