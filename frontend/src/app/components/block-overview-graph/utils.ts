@@ -65,7 +65,7 @@ const defaultColors: { [key: string]: ColorPalette } = {
     base: defaultMempoolFeeColors.map(hexToColor),
     audit: [],
     marginal: [],
-    baseLevel: (tx: TxView, rate: number) => feeLevels.findIndex((feeLvl) => Math.max(1, rate) < feeLvl) - 1
+    baseLevel: (tx: TxView, rate: number) => feeLevels.findIndex((feeLvl) => Math.max(0, rate) < feeLvl) - 1
   },
 }
 for (const key in defaultColors) {
@@ -96,7 +96,7 @@ const contrastColors: { [key: string]: ColorPalette } = {
     base: contrastMempoolFeeColors.map(hexToColor),
     audit: [],
     marginal: [],
-    baseLevel: (tx: TxView, rate: number) => feeLevels.findIndex((feeLvl) => Math.max(1, rate) < feeLvl) - 1
+    baseLevel: (tx: TxView, rate: number) => feeLevels.findIndex((feeLvl) => Math.max(0, rate) < feeLvl) - 1
   },
 }
 for (const key in contrastColors) {
