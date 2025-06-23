@@ -83,7 +83,7 @@ export const contrastMempoolFeeColors = [
  ];
 
 export const chartColors = [
-  "#D81B60",
+  "#A81524",
   "#D81B60",
   "#8E24AA",
   "#5E35B1",

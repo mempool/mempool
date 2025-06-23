@@ -406,6 +406,7 @@ export interface Statistic {
   fee_data: string;
   min_fee: number;
 
+  vsize_0: number;
   vsize_1: number;
   vsize_2: number;
   vsize_3: number;
