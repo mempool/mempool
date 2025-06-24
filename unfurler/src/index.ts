@@ -3,27 +3,17 @@ import { Application, Request, Response, NextFunction } from 'express';
 import * as http from 'http';
 import * as https from 'https';
 import config from './config';
-import { Cluster } from 'puppeteer-cluster';
-import ReusablePage from './concurrency/ReusablePage';
-import ReusableSSRPage from './concurrency/ReusableSSRPage';
 import { parseLanguageUrl } from './language/lang';
 import { matchRoute, networks } from './routes';
 import nodejsPath from 'path';
 import logger from './logger';
-import { TimeoutError } from "puppeteer";
-const puppeteerConfig = require('../puppeteer.config.json');
+import { Renderer } from "./renderer";
+import { SeoRenderer } from "./seoRenderer";
 
-if (config.PUPPETEER.EXEC_PATH) {
-  puppeteerConfig.executablePath = config.PUPPETEER.EXEC_PATH;
-}
-
-const puppeteerEnabled = config.PUPPETEER.ENABLED && (config.PUPPETEER.CLUSTER_SIZE > 0);
 
 class Server {
   private server: http.Server | undefined;
   private app: Application;
-  cluster?: Cluster;
-  ssrCluster?: Cluster;
   mempoolHost: string;
   mempoolUrl: URL;
   network: string;
@@ -31,9 +21,13 @@ class Server {
   secureMempoolHost = true;
   canonicalHost: string;
   networkName: string;
+  renderer?: Renderer;
+  renderingEnabled = false;
+  seoRenderer?: SeoRenderer;
+  seoRenderingEnabled = false;
 
-  seoQueueLength: number = 0;
-  unfurlQueueLength: number = 0;
+  seoQueueLength = 0;
+  unfurlQueueLength = 0;
 
   constructor() {
     this.app = express();
@@ -43,6 +37,8 @@ class Server {
     this.secureMempoolHost = config.MEMPOOL.HTTP_HOST.startsWith('https');
     this.network = config.MEMPOOL.NETWORK || 'bitcoin';
     this.networkName = networks[this.network].networkName || capitalize(this.network);
+
+    this.loadOptionalDependencies();
 
     let canonical;
     switch(config.MEMPOOL.NETWORK) {
@@ -66,6 +62,23 @@ class Server {
     }, 3600_000 * (1 + Math.random()))
   }
 
+  private loadOptionalDependencies() {
+    // Try Puppeteer
+    try {
+      if (config.PUPPETEER.ENABLED && config.PUPPETEER.CLUSTER_SIZE > 0) {
+        this.renderer = require('./puppeteer/renderer').default;
+        this.renderingEnabled = true;
+        this.seoRenderer = require('./puppeteer/seoRenderer').default;
+        this.seoRenderingEnabled = true;
+        console.log('Puppeteer dependencies loaded');
+        logger.info('Puppeteer dependencies loaded');
+      }
+    } catch (error) {
+      console.log('Puppeteer not available');
+      logger.info('Puppeteer not available');
+    }
+  }
+
   async startServer() {
     this.app
       .use((req: Request, res: Response, next: NextFunction) => {
@@ -76,19 +89,11 @@ class Server {
       .use(express.text())
       ;
 
-    if (puppeteerEnabled) {
-      this.cluster = await Cluster.launch({
-          concurrency: ReusablePage,
-          maxConcurrency: config.PUPPETEER.CLUSTER_SIZE,
-          puppeteerOptions: puppeteerConfig,
-      });
-      await this.cluster?.task(async (args) => { return this.clusterTask(args) });
-      this.ssrCluster = await Cluster.launch({
-        concurrency: ReusableSSRPage,
-        maxConcurrency: config.PUPPETEER.CLUSTER_SIZE,
-        puppeteerOptions: puppeteerConfig,
-      });
-      await this.ssrCluster?.task(async (args) => { return this.ssrClusterTask(args) });
+    if (this.renderingEnabled) {
+      await this.renderer?.init(this.mempoolHost);
+    }
+    if (this.seoRenderingEnabled) {
+      await this.seoRenderer?.init(this.mempoolHost);
     }
 
     this.setUpRoutes();
@@ -101,23 +106,15 @@ class Server {
   }
 
   async stopServer() {
-    if (this.cluster) {
-      await this.cluster.idle();
-      await this.cluster.close();
-    }
-    if (this.ssrCluster) {
-      await this.ssrCluster.idle();
-      await this.ssrCluster.close();
-    }
-    if (this.server) {
-      await this.server.close();
-    }
+    await this.renderer?.stop();
+    await this.seoRenderer?.stop();
+    await this.server?.close();
   }
 
   setUpRoutes() {
     this.app.set('view engine', 'ejs');
 
-    if (puppeteerEnabled) {
+    if (this.renderingEnabled) {
       this.app.get('/unfurl/render*', async (req, res) => { return this.renderPreview(req, res) })
       this.app.get('/render*', async (req, res) => { return this.renderPreview(req, res) })
     } else {
@@ -130,107 +127,6 @@ class Server {
     this.app.get('*', (req, res) => { return this.renderHTML(req, res, false) })
   }
 
-  async clusterTask({ page, data: { url, path, action, reqUrl } }) {
-    const start = Date.now();
-    try {
-      logger.info(`rendering "${reqUrl}" on tab ${page.clusterGroup}:${page.index}`);
-      const urlParts = parseLanguageUrl(path);
-      if (page.language !== urlParts.lang) {
-        // switch language
-        page.language = urlParts.lang;
-        const localizedUrl = urlParts.lang ? `${this.mempoolHost}/${urlParts.lang}${urlParts.path}` : `${this.mempoolHost}${urlParts.path}` ;
-        await page.goto(localizedUrl, { waitUntil: "load" });
-      } else {
-        const loaded = await page.evaluate(async (path) => {
-          if (window['ogService']) {
-            window['ogService'].loadPage(path);
-            return true;
-          } else {
-            return false;
-          }
-        }, urlParts.path);
-        if (!loaded) {
-          throw new Error('failed to access open graph service');
-        }
-      }
-
-      // wait for preview component to initialize
-      let success;
-      await page.waitForSelector('meta[property="og:preview:loading"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 })
-      success = await Promise.race([
-        page.waitForSelector('meta[property="og:preview:ready"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => true),
-        page.waitForSelector('meta[property="og:preview:fail"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => false)
-      ])
-      if (success === true) {
-        const screenshot = await page.screenshot({
-          captureBeyondViewport: false,
-          clip: { width: 1200, height: 600, x: 0, y: 0, scale: 1 },
-        });
-        logger.info(`rendered unfurl img in ${Date.now() - start}ms for "${reqUrl}" on tab ${page.clusterGroup}:${page.index}`);
-        return screenshot;
-      } else if (success === false) {
-        logger.warn(`failed to render ${reqUrl} for ${action} due to client-side error, e.g. requested an invalid txid`);
-        page.repairRequested = true;
-      } else {
-        logger.warn(`failed to render ${reqUrl} for ${action} due to puppeteer timeout`);
-        page.repairRequested = true;
-      }
-    } catch (e) {
-      logger.err(`failed to render ${reqUrl} for ${action}: ` + (e instanceof Error ? e.message : `${e}`));
-      page.repairRequested = true;
-    }
-  }
-
-  async ssrClusterTask({ page, data: { url, path, action, reqUrl } }) {
-    const start = Date.now();
-    try {
-      logger.info(`slurping "${reqUrl}" on tab ${page.clusterGroup}:${page.index}`);
-      const urlParts = parseLanguageUrl(path);
-      if (page.language !== urlParts.lang) {
-        // switch language
-        page.language = urlParts.lang;
-        const localizedUrl = urlParts.lang ? `${this.mempoolHost}/${urlParts.lang}${urlParts.path}` : `${this.mempoolHost}${urlParts.path}`;
-        await page.goto(localizedUrl, { waitUntil: "load" });
-      } else {
-        const loaded = await page.evaluate(async (path) => {
-          if (window['ogService']) {
-            window['ogService'].loadPage(path);
-            return true;
-          } else {
-            return false;
-          }
-        }, urlParts.path);
-        if (!loaded) {
-          throw new Error('failed to access open graph service');
-        }
-      }
-
-      await page.waitForNetworkIdle({
-        timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000,
-      });
-      const is404 = await page.evaluate(async () => {
-        return !!window['soft404'];
-      });
-      if (is404) {
-        logger.info(`slurp 404 in ${Date.now() - start}ms for "${reqUrl}" on tab ${page.clusterGroup}:${page.index}`);
-        return '404';
-      } else {
-        let html = await page.content();
-        logger.info(`rendered slurp in ${Date.now() - start}ms for "${reqUrl}" on tab ${page.clusterGroup}:${page.index}`);
-        return html;
-      }
-    } catch (e) {
-      if (e instanceof TimeoutError) {
-        let html = await page.content();
-        logger.info(`rendered partial slurp in ${Date.now() - start}ms for "${reqUrl}" on tab ${page.clusterGroup}:${page.index}`);
-        return html;
-      } else {
-        logger.err(`failed to render ${reqUrl} for ${action}: ` + (e instanceof Error ? e.message : `${e}`));
-        page.repairRequested = true;
-      }
-    }
-  }
-
   async renderDisabled(req, res) {
     res.status(500).send("preview rendering disabled");
   }
@@ -241,14 +137,14 @@ class Server {
       const start = Date.now();
       const rawPath = req.params[0];
 
-      let img = null;
+      let img: Uint8Array | undefined = undefined;
 
       const { lang, path } = parseLanguageUrl(rawPath);
       const matchedRoute = matchRoute(this.network, path);
 
       // don't bother unless the route is definitely renderable
       if (rawPath.includes('/preview/') && matchedRoute.render) {
-        img = await this.cluster?.execute({ url: this.mempoolHost + rawPath, path: rawPath, action: 'screenshot', reqUrl: req.url });
+        img = await this.renderer?.render(rawPath, req.url);
         logger.info(`unfurl returned "${req.url}" in ${Date.now() - start}ms | ${this.unfurlQueueLength - 1} tasks in queue`);
       } else {
         logger.info('rendering not enabled for page "' + req.url + '"');
@@ -305,7 +201,7 @@ class Server {
       if (unfurl) {
         logger.info('unfurling "' + req.url + '"');
         result = await this.renderUnfurlMeta(rawPath);
-      } else {
+      } else if (this.seoRenderingEnabled) {
         this.seoQueueLength++;
         const start = Date.now();
         result = await this.renderSEOPage(rawPath, req.url);
@@ -374,7 +270,7 @@ class Server {
   }
 
   async renderSEOPage(rawPath: string, reqUrl: string): Promise<string> {
-    let html = await this.ssrCluster?.execute({ url: this.mempoolHost + rawPath, path: rawPath, action: 'ssr', reqUrl });
+    let html = await this.seoRenderer?.render(rawPath, reqUrl) || '';
     // remove javascript to prevent double hydration
     if (html && html.length) {
       html = html.replaceAll(/<script.*<\/script>/g, "");

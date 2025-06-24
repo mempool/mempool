@@ -1,4 +1,4 @@
-import fetch from 'node-fetch-commonjs';
+import fetch from 'node-fetch';
 import config from './config';
 import http from 'node:http';
 import https from 'node:https';
