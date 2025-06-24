@@ -1,4 +1,7 @@
 {
+  "domains": [
+    "strategy.mempool.space"
+  ],
   "theme": "wiz",
   "enterprise": "strategy",
   "branding": {
@@ -7,6 +10,11 @@
     "site_id": 22,
     "header_img": "/resources/strategylogo.svg",
     "footer_img": "/resources/strategylogo.svg"
+  },
+  "meta": {
+    "title": "Strategy | The world's first and largest Bitcoin Treasury Company",
+    "description": "The world's first and largest Bitcoin Treasury Company",
+    "previewFallbackImg": "/resources/strategy/strategy-preview.jpg"
   },
   "dashboard": {
     "widgets": [

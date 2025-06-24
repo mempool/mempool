@@ -11,6 +11,8 @@ import { matchRoute, networks } from './routes';
 import nodejsPath from 'path';
 import logger from './logger';
 import { TimeoutError } from "puppeteer";
+import * as fs from 'fs';
+import * as path from 'path';
 const puppeteerConfig = require('../puppeteer.config.json');
 
 if (config.PUPPETEER.EXEC_PATH) {
@@ -31,6 +33,17 @@ class Server {
   secureMempoolHost = true;
   canonicalHost: string;
   networkName: string;
+  protocol: string;
+
+  customConfigs: Record<string, {
+    canonicalHost: string;
+    networkName: string;
+    title: string;
+    description: string;
+    previewFallbackImg: string;
+  }> = {}; // hostname -> config
+  legacyDomains: string[] = [];
+  refreshingConfigs: boolean = false;
 
   seoQueueLength: number = 0;
   unfurlQueueLength: number = 0;
@@ -41,8 +54,11 @@ class Server {
     this.mempoolUrl = new URL(this.mempoolHost);
     this.secureHost = config.SERVER.HOST.startsWith('https');
     this.secureMempoolHost = config.MEMPOOL.HTTP_HOST.startsWith('https');
+    this.protocol = this.secureHost ? 'https://' : 'http://';
     this.network = config.MEMPOOL.NETWORK || 'bitcoin';
     this.networkName = networks[this.network].networkName || capitalize(this.network);
+
+    this.loadEnterpriseConfigs();
 
     let canonical;
     switch(config.MEMPOOL.NETWORK) {
@@ -59,11 +75,133 @@ class Server {
 
     this.startServer();
 
+    setInterval(async () => {
+      await this.refreshEnterpriseConfigs();
+    }, 600_000);
+    this.refreshEnterpriseConfigs();
+
     setTimeout(async () => {
       logger.info(`killing myself now`);
       await this.stopServer();
       process.exit(0);
     }, 3600_000 * (1 + Math.random()))
+  }
+
+  loadEnterpriseConfigs() {
+    if (config.ENTERPRISE.ENABLED) {
+      // Load cached custom configs from customConfig.json (if it exists)
+      const customConfigPath = './customConfig.json';
+      if (fs.existsSync(customConfigPath)) {
+        logger.info(`Loading cached custom configs from ${customConfigPath}`);
+        try {
+          const cachedConfig = JSON.parse(fs.readFileSync(customConfigPath, 'utf8'));
+          this.customConfigs = cachedConfig;
+        } catch (e) {
+          logger.err(`Failed to load cached custom config: ${e instanceof Error ? e.message : e}`);
+        }
+      }
+
+      // Load legacy custom config files from frontend directory
+      const frontendConfigPath = '../frontend';
+      if (fs.existsSync(frontendConfigPath)) {
+        const files = fs.readdirSync(frontendConfigPath);
+        for (const file of files) {
+          const match = file.match(/^custom-(.*)-config\.json$/);
+          if (match) {
+            const key = match[1];
+            try {
+              const configContent = JSON.parse(fs.readFileSync(path.join(frontendConfigPath, file), 'utf8'));
+              for (const hostname of configContent.domains) {
+                this.customConfigs[hostname] = {
+                  canonicalHost: hostname,
+                  networkName: capitalize(configContent.enterprise),
+                  title: configContent.meta?.title || configContent.branding?.title,
+                  description: configContent.meta?.description || configContent.dashboard?.description,
+                  previewFallbackImg: configContent.meta?.previewFallbackImg || `/resources/${configContent.enterprise}/${configContent.enterprise}-preview.jpg`,
+                }
+                this.legacyDomains.push(hostname);
+              }
+            } catch (e) {
+              logger.err(`Failed to load custom config for ${key}: ${e instanceof Error ? e.message : e}`);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  async refreshEnterpriseConfigs() {
+    if (!config.ENTERPRISE.ENABLED || this.refreshingConfigs) {
+      return;
+    }
+    this.refreshingConfigs = true;
+    logger.info('refreshing enterprise configs');
+
+    try {
+      // Fetch list of active enterprises
+      const listResponse = await fetch(`${config.API.SERVICES}/internal/enterprise/dashboard/list`, {
+        headers: { 'user-agent': 'mempoolunfurl' }
+      });
+      if (!listResponse.ok) {
+        throw new Error(`Failed to fetch enterprise list: ${listResponse.statusText}`);
+      }
+      const enterprises = await listResponse.json();
+
+      // Track all active domains
+      const activeDomains = new Set<string>();
+
+      // Fetch and process each enterprise config
+      for (const enterprise of enterprises) {
+        const configResponse = await fetch(`${config.API.SERVICES}/internal/enterprise/dashboard/${enterprise}`, {
+          headers: { 'user-agent': 'mempoolunfurl' }
+        });
+        if (!configResponse.ok) {
+          logger.err(`Failed to fetch config for enterprise ${enterprise}: ${configResponse.statusText}`);
+          continue;
+        }
+        const configContent = await configResponse.json();
+
+        // Process each domain in the enterprise config
+        for (const hostname of configContent.domains) {
+          activeDomains.add(hostname);
+          
+          this.customConfigs[hostname] = {
+            canonicalHost: hostname,
+            networkName: capitalize(configContent.enterprise),
+            title: configContent.meta?.title || configContent.branding?.title,
+            description: configContent.meta?.description || configContent.dashboard?.description,
+            previewFallbackImg: configContent.meta?.previewFallbackImg,
+          };
+        }
+      }
+
+      // Remove any configs that are no longer active
+      for (const domain of this.legacyDomains) {
+        activeDomains.add(domain);
+      }
+      for (const hostname of Object.keys(this.customConfigs)) {
+        if (!activeDomains.has(hostname)) {
+          delete this.customConfigs[hostname];
+        }
+      }
+
+      // Create a filtered version of customConfigs without legacy domains for caching
+      const cacheConfigs = { ...this.customConfigs };
+      for (const legacyDomain of this.legacyDomains) {
+        delete cacheConfigs[legacyDomain];
+      }
+
+      // Save updated configs to file (excluding legacy domains)
+      const customConfigPath = './customConfig.json';
+      logger.info(`Saving updated configs to ${customConfigPath}`);
+      await fs.promises.writeFile(customConfigPath, JSON.stringify(cacheConfigs, null, 2), 'utf8');
+
+      logger.info(`Successfully refreshed enterprise configs. Active domains: ${Array.from(activeDomains).join(', ')}`);
+    } catch (e) {
+      logger.err(`Failed to refresh enterprise configs: ${e instanceof Error ? e.message : e}`);
+    } finally {
+      this.refreshingConfigs = false;
+    }
   }
 
   async startServer() {
@@ -130,15 +268,16 @@ class Server {
     this.app.get('*', (req, res) => { return this.renderHTML(req, res, false) })
   }
 
-  async clusterTask({ page, data: { url, path, action, reqUrl } }) {
+  async clusterTask({ page, data: { host, url, path, action, reqUrl } }) {
     const start = Date.now();
     try {
-      logger.info(`rendering "${reqUrl}" on tab ${page.clusterGroup}:${page.index}`);
+      logger.info(`rendering "${reqUrl}" on tab ${page.clusterGroup}:${page.index} for host ${host}`);
       const urlParts = parseLanguageUrl(path);
-      if (page.language !== urlParts.lang) {
+      if (page.language !== urlParts.lang || host !== page.host) {
         // switch language
         page.language = urlParts.lang;
-        const localizedUrl = urlParts.lang ? `${this.mempoolHost}/${urlParts.lang}${urlParts.path}` : `${this.mempoolHost}${urlParts.path}` ;
+        page.host = host;
+        const localizedUrl = urlParts.lang ? `${host}/${urlParts.lang}${urlParts.path}` : `${host}${urlParts.path}` ;
         await page.goto(localizedUrl, { waitUntil: "load" });
       } else {
         const loaded = await page.evaluate(async (path) => {
@@ -181,15 +320,16 @@ class Server {
     }
   }
 
-  async ssrClusterTask({ page, data: { url, path, action, reqUrl } }) {
+  async ssrClusterTask({ page, data: { host, url, path, action, reqUrl } }) {
     const start = Date.now();
     try {
       logger.info(`slurping "${reqUrl}" on tab ${page.clusterGroup}:${page.index}`);
       const urlParts = parseLanguageUrl(path);
-      if (page.language !== urlParts.lang) {
+      if (page.language !== urlParts.lang || host !== page.host) {
         // switch language
         page.language = urlParts.lang;
-        const localizedUrl = urlParts.lang ? `${this.mempoolHost}/${urlParts.lang}${urlParts.path}` : `${this.mempoolHost}${urlParts.path}`;
+        page.host = host;
+        const localizedUrl = urlParts.lang ? `${host}/${urlParts.lang}${urlParts.path}` : `${host}${urlParts.path}`;
         await page.goto(localizedUrl, { waitUntil: "load" });
       } else {
         const loaded = await page.evaluate(async (path) => {
@@ -241,6 +381,10 @@ class Server {
       const start = Date.now();
       const rawPath = req.params[0];
 
+      const host = config.ENTERPRISE.ENABLED ? req.hostname : this.mempoolHost;
+      const hostPrefix = config.ENTERPRISE.ENABLED ? (this.secureHost ? 'https://' : 'http://') + req.hostname : this.mempoolHost;
+      const customConfig = config.ENTERPRISE.ENABLED ? this.customConfigs[host] : null;
+
       let img = null;
 
       const { lang, path } = parseLanguageUrl(rawPath);
@@ -248,16 +392,38 @@ class Server {
 
       // don't bother unless the route is definitely renderable
       if (rawPath.includes('/preview/') && matchedRoute.render) {
-        img = await this.cluster?.execute({ url: this.mempoolHost + rawPath, path: rawPath, action: 'screenshot', reqUrl: req.url });
+        img = await this.cluster?.execute({ host: hostPrefix, url: hostPrefix + rawPath, path: rawPath, action: 'screenshot', reqUrl: req.url });
         logger.info(`unfurl returned "${req.url}" in ${Date.now() - start}ms | ${this.unfurlQueueLength - 1} tasks in queue`);
       } else {
         logger.info('rendering not enabled for page "' + req.url + '"');
       }
 
       if (!img) {
-        // send local fallback image file
         res.set('Cache-control', 'no-cache');
-        res.sendFile(nodejsPath.join(__dirname, matchedRoute.fallbackImg));
+        if (customConfig) {
+          // proxy fallback image from the services backend
+          logger.info('proxying resource "' + req.url + '"');
+          try {
+            if (this.secureMempoolHost) {
+              https.get(hostPrefix + customConfig.previewFallbackImg, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => {
+                res.writeHead(got.statusCode, got.headers);
+                return got.pipe(res);
+              });
+            } else {
+              http.get(hostPrefix + customConfig.previewFallbackImg, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => {
+                res.writeHead(got.statusCode, got.headers);
+                return got.pipe(res);
+              });
+            }
+            return;
+          } catch (e) {
+            logger.err(`failed to proxy resource "${req.url}": ` + (e instanceof Error ? e.message : `${e}`));
+            res.status(500).send();
+          }
+        } else {
+          // send local fallback image file
+          res.sendFile(nodejsPath.join(__dirname, matchedRoute.fallbackImg));
+        }
       } else {
         res.contentType('image/png');
         res.send(img);
@@ -271,6 +437,11 @@ class Server {
   }
 
   async renderHTML(req, res, unfurl: boolean = false) {
+    logger.info('req: ' + req);
+
+    const host = config.ENTERPRISE.ENABLED ? req.hostname : null;
+    const hostPrefix = config.ENTERPRISE.ENABLED ? this.protocol + host : this.mempoolHost;
+
     // drop requests for static files
     const rawPath = req.params[0];
     const match = rawPath.match(/\.[\w]+$/);
@@ -285,18 +456,23 @@ class Server {
         return;
       } else {
         logger.info('proxying resource "' + req.url + '"');
-        if (this.secureMempoolHost) {
-          https.get(this.mempoolHost + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => {
-            res.writeHead(got.statusCode, got.headers);
-            return got.pipe(res);
-          });
-        } else {
-          http.get(this.mempoolHost + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => {
-            res.writeHead(got.statusCode, got.headers);
-            return got.pipe(res);
-          });
+        try {
+          if (this.secureMempoolHost) {
+            https.get(hostPrefix + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => {
+              res.writeHead(got.statusCode, got.headers);
+              return got.pipe(res);
+            });
+          } else {
+            http.get(hostPrefix + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => {
+              res.writeHead(got.statusCode, got.headers);
+              return got.pipe(res);
+            });
+          }
+          return;
+        } catch (e) {
+          logger.err(`failed to proxy resource "${req.url}": ` + (e instanceof Error ? e.message : `${e}`));
+          res.status(500).send();
         }
-        return;
       }
     }
 
@@ -304,11 +480,11 @@ class Server {
     try {
       if (unfurl) {
         logger.info('unfurling "' + req.url + '"');
-        result = await this.renderUnfurlMeta(rawPath);
+        result = await this.renderUnfurlMeta(host, rawPath);
       } else {
         this.seoQueueLength++;
         const start = Date.now();
-        result = await this.renderSEOPage(rawPath, req.url);
+        result = await this.renderSEOPage(hostPrefix, rawPath, req.url);
         logger.info(`slurp returned "${req.url}" in ${Date.now() - start}ms | ${this.seoQueueLength - 1} tasks in queue`);
       }
       if (result && result.length) {
@@ -330,23 +506,38 @@ class Server {
     }
   }
 
-  async renderUnfurlMeta(rawPath: string): Promise<string> {
+  async renderUnfurlMeta(host: string, rawPath: string): Promise<string> {
+    const customConfig = config.ENTERPRISE.ENABLED ? this.customConfigs[host] : null;
+
     const { lang, path } = parseLanguageUrl(rawPath);
     const matchedRoute = matchRoute(this.network, path);
+
     let ogImageUrl = config.SERVER.HOST + (matchedRoute.staticImg || matchedRoute.fallbackImg);
     let ogTitle = 'The Mempool Open Source Project®';
     let ogDescription = 'Explore the full Bitcoin ecosystem with mempool.space';
+    let hostPrefix = config.SERVER.HOST;
+    let canonicalHost = this.canonicalHost;
+    let networkName = this.networkName;
 
-    const canonical = this.canonicalHost + rawPath;
+    if (config.ENTERPRISE.ENABLED && customConfig) {
+      hostPrefix = this.protocol + host;
+      ogImageUrl = hostPrefix + customConfig.previewFallbackImg;
+      ogTitle = customConfig.title;
+      ogDescription = customConfig.description;
+      canonicalHost = customConfig.canonicalHost;
+      networkName = customConfig.networkName;
+    }
+
+    const canonical = canonicalHost + rawPath;
 
     if (matchedRoute.render) {
-      ogImageUrl = `${config.SERVER.HOST}/render/${lang || 'en'}/preview${path}`;
-      ogTitle = `${this.networkName} ${matchedRoute.networkMode !== 'mainnet' ? capitalize(matchedRoute.networkMode) + ' ' : ''}${matchedRoute.title}`;
+      ogImageUrl = `${hostPrefix}/render/${lang || 'en'}/preview${path}`;
+      ogTitle = `${networkName} ${matchedRoute.networkMode !== 'mainnet' ? capitalize(matchedRoute.networkMode) + ' ' : ''}${matchedRoute.title || ogTitle}`;
     } else {
-      ogTitle = networks[this.network].title;
+      ogTitle = networks[this.network].title || ogTitle;
     }
     if (matchedRoute.description) {
-      ogDescription = matchedRoute.description;
+      ogDescription = matchedRoute.description || ogDescription;
     }
 
     return `<!doctype html>
@@ -373,12 +564,18 @@ class Server {
 </html>`;
   }
 
-  async renderSEOPage(rawPath: string, reqUrl: string): Promise<string> {
-    let html = await this.ssrCluster?.execute({ url: this.mempoolHost + rawPath, path: rawPath, action: 'ssr', reqUrl });
+  async renderSEOPage(host: string, rawPath: string, reqUrl: string): Promise<string> {
+    let canonicalHost = this.canonicalHost;
+    const customConfig = config.ENTERPRISE.ENABLED ? this.customConfigs[host] : null;
+    if (customConfig) {
+      canonicalHost = customConfig.canonicalHost;
+    }
+
+    let html = await this.ssrCluster?.execute({ host, url: host + rawPath, path: rawPath, action: 'ssr', reqUrl });
     // remove javascript to prevent double hydration
     if (html && html.length) {
       html = html.replaceAll(/<script.*<\/script>/g, "");
-      html = html.replaceAll(this.mempoolHost, this.canonicalHost);
+      html = html.replaceAll(host, canonicalHost);
     }
     return html;
   }
@@ -389,14 +586,29 @@ class Server {
     const { lang, path } = parseLanguageUrl(rawPath);
     const matchedRoute = matchRoute(this.network, path, 'sip');
 
+    const host = config.ENTERPRISE.ENABLED ? req.hostname : this.mempoolHost;
+    const customConfig = config.ENTERPRISE.ENABLED ? this.customConfigs[host] : null;
+
+
     let ogImageUrl = config.SERVER.HOST + (matchedRoute.staticImg || matchedRoute.fallbackImg);
     let ogTitle = 'The Mempool Open Source Project®';
+    let hostPrefix = config.SERVER.HOST;
+    let canonicalHost = this.canonicalHost;
+    let networkName = this.networkName;
 
-    const canonical = this.canonicalHost + rawPath;
+    if (config.ENTERPRISE.ENABLED && customConfig) {
+      hostPrefix = this.protocol + host;
+      ogImageUrl = hostPrefix + customConfig.previewFallbackImg;
+      ogTitle = customConfig.title;
+      canonicalHost = customConfig.canonicalHost;
+      networkName = customConfig.networkName;
+    }
+
+    const canonical = canonicalHost + rawPath;
 
     if (matchedRoute.render) {
-      ogImageUrl = `${config.SERVER.HOST}/render/${lang || 'en'}/preview${path}`;
-      ogTitle = `${this.networkName} ${matchedRoute.networkMode !== 'mainnet' ? capitalize(matchedRoute.networkMode) + ' ' : ''}${matchedRoute.title}`;
+      ogImageUrl = `${hostPrefix}/render/${lang || 'en'}/preview${path}`;
+      ogTitle = `${networkName} ${matchedRoute.networkMode !== 'mainnet' ? capitalize(matchedRoute.networkMode) + ' ' : ''}${matchedRoute.title || ogTitle}`;
     }
 
     if (matchedRoute.sip) {
@@ -404,7 +616,7 @@ class Server {
       try {
         const data = await matchedRoute.sip.getData(matchedRoute.params);
         logger.info(`sip data fetched for "${req.url}" in ${Date.now() - start}ms`);
-        res.render(matchedRoute.sip.template, { canonicalHost: this.canonicalHost, canonical, ogImageUrl, ogTitle, matchedRoute, data });
+        res.render(matchedRoute.sip.template, { canonicalHost, canonical, ogImageUrl, ogTitle, matchedRoute, data });
         logger.info(`sip returned "${req.url}" in ${Date.now() - start}ms`);
       } catch (e) {
         logger.err(`failed to sip ${req.url}: ` + (e instanceof Error ? e.message : `${e}`));
