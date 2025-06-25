@@ -20,7 +20,7 @@
     </div>
   } @else {
     <div style="min-height: 295px">
-      <div class="search-container mb-3">
+      <div *ngIf="!widget" class="search-container mb-3">
         <input
           type="text"
           class="form-control"
@@ -36,6 +36,19 @@
           <th class="proof text-right" [ngClass]="{'widget': widget}" i18n="simpleproof.proof">Proof</th>
         </thead>
         <tbody *ngIf="verifiedPage; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
+          <tr *ngIf="widget" class="search-row">
+            <td colspan="3" class="p-0" style="padding: 0 0 6px !important;">
+              <div class="search-container">
+                <input
+                  type="text"
+                  class="form-control"
+                  (input)="applyFilter($event)"
+                  placeholder="Search by student name or ID..."
+                  i18n-placeholder="simpleproof.search_placeholder"
+                >
+              </div>
+            </td>
+          </tr>
           <tr *ngFor="let item of verifiedPage">
             <td class="filename text-left" [class]="widget ? 'widget' : ''">{{ item.student_name }}</td>
             <td class="id text-left" [class]="widget ? 'widget' : ''">
@@ -51,7 +64,7 @@
               }
             </td>
             <td class="proof text-right" [class]="widget ? 'widget' : ''">
-              <a [href]="item.sanitized_simpleproof_url" target="_blank" class="badge badge-primary badge-verify">
+              <a [href]="item.sanitized_simpleproof_url" target="_blank" class="badge badge-primary badge-verify" style="font-size: 1.035em;">
                 <span class="icon">
                   <img class="icon-img" src="/resources/sp.svg">
                 </span>
