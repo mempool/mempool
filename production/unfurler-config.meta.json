@@ -9,7 +9,7 @@
     "NETWORK": "meta"
   },
   "PUPPETEER": {
-    "CLUSTER_SIZE": 8,
+    "CLUSTER_SIZE": 2,
     "EXEC_PATH": "/usr/local/bin/chrome",
     "MAX_PAGE_AGE": 86400,
     "RENDER_TIMEOUT": 3000

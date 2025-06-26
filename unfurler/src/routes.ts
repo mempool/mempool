@@ -333,6 +333,72 @@ export const networks = {
         routes: routes.lightning.routes,
       }
     }
+  },
+  river: {
+    networkName: 'River',
+    title: 'River | Invest in Bitcoin with confidence',
+    description: 'Easily buy Bitcoin in minutes. Zero fees on recurring buys. Invest in Bitcoin with confidence with world-class security.',
+    fallbackImg: '/resources/river/river-preview.jpg',
+    routes: { // only dynamic routes supported
+      block: routes.block,
+      address: routes.address,
+      wallet: routes.wallet,
+      tx: routes.tx,
+      mining: {
+        title: "Mining",
+        routes: {
+          pool: routes.mining.routes.pool,
+        }
+      },
+      lightning: {
+        title: "Lightning",
+        routes: routes.lightning.routes,
+      }
+    }
+  },
+  strategy: {
+    networkName: 'Strategy',
+    title: 'Strategy | The world\'s first and largest Bitcoin Treasury Company',
+    description: 'The world\'s first and largest Bitcoin Treasury Company',
+    fallbackImg: '/resources/strategy/strategy-preview.jpg',
+    routes: { // only dynamic routes supported
+      block: routes.block,
+      address: routes.address,
+      wallet: routes.wallet,
+      tx: routes.tx,
+      mining: {
+        title: "Mining",
+        routes: {
+          pool: routes.mining.routes.pool,
+        }
+      },
+      lightning: {
+        title: "Lightning",
+        routes: routes.lightning.routes,
+      }
+    }
+    },
+  xxi: {
+    networkName: 'XXI',
+    title: 'Twenty One | The Institutional Standard for Bitcoin',
+    description: 'The Institutional Standard for Bitcoin',
+    fallbackImg: '/resources/xxi/xxi-preview.png',
+    routes: { // only dynamic routes supported
+      block: routes.block,
+      address: routes.address,
+      wallet: routes.wallet,
+      tx: routes.tx,
+      mining: {
+        title: "Mining",
+        routes: {
+          pool: routes.mining.routes.pool,
+        }
+      },
+      lightning: {
+        title: "Lightning",
+        routes: routes.lightning.routes,
+      }
+    }
   }
 };
 

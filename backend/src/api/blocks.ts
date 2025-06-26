@@ -1391,7 +1391,7 @@ class Blocks {
   }
 
   public async $getBlockAuditSummary(hash: string): Promise<BlockAudit | null> {
-    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) {
+    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) && Common.auditIndexingEnabled()) {
       return BlocksAuditsRepository.$getBlockAudit(hash);
     } else {
       return null;
@@ -1399,7 +1399,7 @@ class Blocks {
   }
 
   public async $getBlockTxAuditSummary(hash: string, txid: string): Promise<TransactionAudit | null> {
-    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) {
+    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) && Common.auditIndexingEnabled()) {
       return BlocksAuditsRepository.$getBlockTxAudit(hash, txid);
     } else {
       return null;
@@ -1469,11 +1469,11 @@ class Blocks {
       if (rows && Array.isArray(rows)) {
         return rows.map(r => r.definition_hash);
       } else {
-        logger.debug(`Unable to retreive list of blocks.definition_hash from db (no result)`);
+        logger.debug(`Unable to retrieve list of blocks.definition_hash from db (no result)`);
         return null;
       }
     } catch (e) {
-      logger.debug(`Unable to retreive list of blocks.definition_hash from db (exception: ${e})`);
+      logger.debug(`Unable to retrieve list of blocks.definition_hash from db (exception: ${e})`);
       return null;
     }
   }
@@ -1484,11 +1484,11 @@ class Blocks {
       if (rows && Array.isArray(rows)) {
         return rows.map(r => r.hash);
       } else {
-        logger.debug(`Unable to retreive list of blocks for definition hash ${definitionHash} from db (no result)`);
+        logger.debug(`Unable to retrieve list of blocks for definition hash ${definitionHash} from db (no result)`);
         return null;
       }
     } catch (e) {
-      logger.debug(`Unable to retreive list of blocks for definition hash ${definitionHash} from db (exception: ${e})`);
+      logger.debug(`Unable to retrieve list of blocks for definition hash ${definitionHash} from db (exception: ${e})`);
       return null;
     }
   }

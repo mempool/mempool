@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 export NVM_DIR="$HOME/.nvm"
 source "$NVM_DIR/nvm.sh"
-nvm use v20.12.0
+nvm use v22.14.0
 
 # start all mempool backends that exist
 for site in mainnet mainnet-lightning testnet testnet-lightning testnet4 signet signet-lightning liquid liquidtestnet;do
@@ -16,7 +16,7 @@ screen -dmS x startx
 sleep 3
 
 # start unfurlers for each frontend
-for site in mainnet liquid onbtc bitb meta;do
+for site in mainnet liquid onbtc bitb meta river strategy xxi;do
     cd "$HOME/${site}/unfurler" && \
     echo "starting mempool unfurler: ${site}" && \
     screen -dmS "unfurler-${site}" sh -c 'while true;do npm run unfurler;sleep 2;done'

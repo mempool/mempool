@@ -16,9 +16,9 @@ import { PoolRankingComponent } from '@components/pool-ranking/pool-ranking.comp
 import { PoolComponent } from '@components/pool/pool.component';
 import { StartComponent } from '@components/start/start.component';
 import { StatisticsComponent } from '@components/statistics/statistics.component';
-import { TelevisionComponent } from '@components/television/television.component';
 import { DashboardComponent } from '@app/dashboard/dashboard.component';
 import { CustomDashboardComponent } from '@components/custom-dashboard/custom-dashboard.component';
+import { TreasuriesComponent } from '@components/treasuries/treasuries.component';
 import { AccelerationFeesGraphComponent } from '@components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component';
 import { AccelerationsListComponent } from '@components/acceleration/accelerations-list/accelerations-list.component';
 import { AddressComponent } from '@components/address/address.component';
@@ -180,12 +180,22 @@ const routes: Routes = [
       },
     ]
   },
-  {
-    path: 'tv',
-    data: { networks: ['bitcoin', 'liquid'] },
-    component: TelevisionComponent
-  },
 ];
+
+if (window['__env']?.OFFICIAL_MEMPOOL_SPACE) {
+  routes[0].children?.push({
+    path: 'treasuries',
+    component: StartComponent,
+    children: [{
+      path: '',
+      component: TreasuriesComponent,
+      data: {
+        networks: ['bitcoin'],
+        networkSpecific: true,
+      },
+    }]
+  });
+}
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],

@@ -155,7 +155,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   accelerationFlowCompleted = false;
   showAccelerationDetails = false;
   hasAccelerationDetails = false;
-  scrollIntoAccelPreview = false;
   auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
   isMempoolSpaceBuild = this.stateService.isMempoolSpaceBuild;
 
@@ -831,7 +830,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
     document.location.hash = '#accelerate';
     this.openAccelerator();
-    this.scrollIntoAccelPreview = true;
     return false;
   }
 
@@ -1047,10 +1045,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   leaveTransaction() {
     this.websocketService.stopTrackingTransaction();
     this.stateService.markBlock$.next({});
-  }
-
-  roundToOneDecimal(cpfpTx: any): number {
-    return +(cpfpTx.fee / (cpfpTx.weight / 4)).toFixed(1);
   }
 
   setupGraph() {

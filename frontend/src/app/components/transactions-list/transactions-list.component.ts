@@ -1,5 +1,5 @@
-import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import { StateService } from '@app/services/state.service';
+import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { StateService, SignaturesMode } from '@app/services/state.service';
 import { CacheService } from '@app/services/cache.service';
 import { Observable, ReplaySubject, BehaviorSubject, merge, Subscription, of, forkJoin } from 'rxjs';
 import { Outspend, Transaction, Vin, Vout } from '@interfaces/electrs.interface';
@@ -14,6 +14,10 @@ import { StorageService } from '@app/services/storage.service';
 import { OrdApiService } from '@app/services/ord-api.service';
 import { Inscription } from '@app/shared/ord/inscription.utils';
 import { Etching, Runestone } from '@app/shared/ord/rune.utils';
+import { ADDRESS_SIMILARITY_THRESHOLD, AddressMatch, AddressSimilarity, AddressType, AddressTypeInfo, checkedCompareAddressStrings, detectAddressType } from '@app/shared/address-utils';
+import { processInputSignatures, Sighash, SigInfo, SighashLabels } from '@app/shared/transaction.utils';
+import { ActivatedRoute } from '@angular/router';
+import { SighashFlag } from '../../shared/transaction.utils';
 
 @Component({
   selector: 'app-transactions-list',
@@ -21,7 +25,7 @@ import { Etching, Runestone } from '@app/shared/ord/rune.utils';
   styleUrls: ['./transactions-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TransactionsListComponent implements OnInit, OnChanges {
+export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   network = '';
   nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;
   showMoreIncrement = 1000;
@@ -37,12 +41,17 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   @Input() addresses: string[] = [];
   @Input() rowLimit = 12;
   @Input() blockTime: number = 0; // Used for price calculation if all the transactions are in the same block
+  @Input() txPreview = false;
+  @Input() forceSignaturesMode: SignaturesMode = null;
 
   @Output() loadMore = new EventEmitter();
 
   latestBlock$: Observable<BlockExtended>;
   outspendsSubscription: Subscription;
   currencyChangeSubscription: Subscription;
+  networkSubscription: Subscription;
+  signaturesSubscription: Subscription;
+  queryParamsSubscription: Subscription;
   currency: string;
   refreshOutspends$: ReplaySubject<string[]> = new ReplaySubject();
   refreshChannels$: ReplaySubject<string[]> = new ReplaySubject();
@@ -53,7 +62,19 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   outputRowLimit: number = 12;
   showFullScript: { [vinIndex: number]: boolean } = {};
   showFullWitness: { [vinIndex: number]: { [witnessIndex: number]: boolean } } = {};
+  showFullScriptPubkeyAsm: { [voutIndex: number]: boolean } = {};
+  showFullScriptPubkeyHex: { [voutIndex: number]: boolean } = {};
+  showFullOpReturnData: { [voutIndex: number]: boolean } = {};
   showOrdData: { [key: string]: { show: boolean; inscriptions?: Inscription[]; runestone?: Runestone, runeInfo?: { [id: string]: { etching: Etching; txid: string; } }; } } = {};
+  similarityMatches: Map<string, Map<string, { score: number, match: AddressMatch, group: number }>> = new Map();
+
+  selectedSig: { txIndex: number, vindex: number, sig: SigInfo } | null = null;
+  sigHighlights: { vin: boolean[], vout: boolean[] } = { vin: [], vout: [] };
+  sighashLabels = SighashLabels;
+
+  signaturesPreference: SignaturesMode = null;
+  signaturesOverride: SignaturesMode = null;
+  signaturesMode: SignaturesMode = 'interesting';
 
   constructor(
     public stateService: StateService,
@@ -65,11 +86,29 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     private ref: ChangeDetectorRef,
     private priceService: PriceService,
     private storageService: StorageService,
-  ) { }
+    private route: ActivatedRoute,
+  ) {
+    this.signaturesMode = this.forceSignaturesMode || this.stateService.signaturesMode$.value;
+  }
 
   ngOnInit(): void {
     this.latestBlock$ = this.stateService.blocks$.pipe(map((blocks) => blocks[0]));
-    this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    this.networkSubscription = this.stateService.networkChanged$.subscribe((network) => this.network = network);
+
+    this.signaturesSubscription = this.stateService.signaturesMode$.subscribe((mode) => {
+      this.signaturesPreference = mode;
+      this.updateSignaturesMode();
+    });
+
+    this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
+      if (params['sigs'] && ['all', 'interesting', 'none'].includes(params['sigs'])) {
+        this.signaturesOverride = params['sigs'] as SignaturesMode;
+        this.updateSignaturesMode();
+      } else {
+        this.signaturesOverride = null;
+        this.updateSignaturesMode();
+      }
+    });
 
     if (this.network === 'liquid' || this.network === 'liquidtestnet') {
       this.assetsService.getAssetsMinimalJson$.subscribe((assets) => {
@@ -81,7 +120,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       this.refreshOutspends$
         .pipe(
           switchMap((txIds) => {
-            if (!this.cached) {
+            if (!this.cached && !this.txPreview) {
               // break list into batches of 50 (maximum supported by esplora)
               const batches = [];
               for (let i = 0; i < txIds.length; i += 50) {
@@ -119,7 +158,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
         ),
         this.refreshChannels$
           .pipe(
-            filter(() => this.stateService.networkSupportsLightning()),
+            filter(() => this.stateService.networkSupportsLightning() && !this.txPreview),
             switchMap((txIds) => this.apiService.getChannelByTxIds$(txIds)),
             catchError((error) => {
               // handle 404
@@ -143,6 +182,8 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       this.currency = currency;
       this.refreshPrice();
     });
+
+    this.updateAddressSimilarities();
   }
 
   refreshPrice(): void {
@@ -182,20 +223,25 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       }
     }
     if (changes.transactions || changes.addresses) {
+      this.similarityMatches.clear();
+      this.updateAddressSimilarities();
       if (!this.transactions || !this.transactions.length) {
         return;
       }
 
       this.transactionsLength = this.transactions.length;
-      this.cacheService.setTxCache(this.transactions);
+
+      if (!this.txPreview) {
+        this.cacheService.setTxCache(this.transactions);
+      }
 
       const confirmedTxs = this.transactions.filter((tx) => tx.status.confirmed).length;
+
       this.transactions.forEach((tx) => {
         tx['@voutLimit'] = true;
         tx['@vinLimit'] = true;
-        if (tx['addressValue'] !== undefined) {
-          return;
-        }
+        tx['_showSignatures'] = false;
+        tx['_interestingSignatures'] = false;
 
         if (this.addresses?.length) {
           const addressIn = tx.vout.map(v => {
@@ -268,6 +314,23 @@ export class TransactionsListComponent implements OnInit, OnChanges {
               break;
             }
           }
+
+          // process signature data
+          if (tx.vin.length && !tx.vin[0].is_coinbase) {
+            tx['_sigs'] = tx.vin.map(vin => processInputSignatures(vin));
+            tx['_sigmap'] = tx['_sigs'].reduce((map, sigs, vindex) => {
+              sigs.forEach(sig => {
+                map[sig.signature] = { sig, vindex };
+              });
+              return map;
+            }, {});
+
+            if (!tx['_interestingSignatures']) {
+              tx['_interestingSignatures'] = tx['_sigs'].some(sigs => sigs.some(sig => this.sigIsInteresting(sig)))
+                || tx['_sigs'].every(sigs => !sigs?.length);
+            }
+          }
+          tx['_showSignatures'] = this.shouldShowSignatures(tx);
         }
 
         tx.largeInput = tx.largeInput || tx.vin.some(vin => (vin?.prevout?.value > 1000000000));
@@ -287,6 +350,53 @@ export class TransactionsListComponent implements OnInit, OnChanges {
         const txIds = this.transactions.filter((tx) => !tx._channels).map((tx) => tx.txid);
         if (txIds.length) {
           this.refreshChannels$.next(txIds);
+        }
+      }
+    }
+  }
+
+  updateAddressSimilarities(): void {
+    if (!this.transactions || !this.transactions.length) {
+      return;
+    }
+    for (const tx of this.transactions) {
+      if (this.similarityMatches.get(tx.txid)) {
+        continue;
+      }
+
+      const similarityGroups: Map<string, number> = new Map();
+      let lastGroup = 0;
+
+      // Check for address poisoning similarity matches
+      this.similarityMatches.set(tx.txid, new Map());
+      const comparableVouts = tx.vout.slice(0, 20).filter(v => ['p2pkh', 'p2sh', 'v0_p2wpkh', 'v0_p2wsh', 'v1_p2tr'].includes(v.scriptpubkey_type));
+      const comparableVins = tx.vin.slice(0, 20).map(v => v.prevout).filter(v => ['p2pkh', 'p2sh', 'v0_p2wpkh', 'v0_p2wsh', 'v1_p2tr'].includes(v?.scriptpubkey_type));
+      for (const vout of comparableVouts) {
+        const address = vout.scriptpubkey_address;
+        const addressType = vout.scriptpubkey_type;
+        if (this.similarityMatches.get(tx.txid)?.has(address)) {
+          continue;
+        }
+        for (const compareAddr of [
+          ...comparableVouts.filter(v => v.scriptpubkey_type === addressType && v.scriptpubkey_address !== address),
+          ...comparableVins.filter(v => v.scriptpubkey_type === addressType && v.scriptpubkey_address !== address)
+        ]) {
+          const similarity = checkedCompareAddressStrings(address, compareAddr.scriptpubkey_address, addressType as AddressType, this.stateService.network);
+          if (similarity?.status === 'comparable' && similarity.score > ADDRESS_SIMILARITY_THRESHOLD) {
+            let group = similarityGroups.get(address) || lastGroup++;
+            similarityGroups.set(address, group);
+            const bestVout = this.similarityMatches.get(tx.txid)?.get(address);
+            if (!bestVout || bestVout.score < similarity.score) {
+              this.similarityMatches.get(tx.txid)?.set(address, { score: similarity.score, match: similarity.left, group });
+            }
+            // opportunistically update the entry for the compared address
+            const bestCompare = this.similarityMatches.get(tx.txid)?.get(compareAddr.scriptpubkey_address);
+            if (!bestCompare || bestCompare.score < similarity.score) {
+              group = similarityGroups.get(compareAddr.scriptpubkey_address) || lastGroup++;
+              similarityGroups.set(compareAddr.scriptpubkey_address, group);
+              this.similarityMatches.get(tx.txid)?.set(compareAddr.scriptpubkey_address, { score: similarity.score, match: similarity.right, group });
+            }
+          }
         }
       }
     }
@@ -351,7 +461,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   }
 
   loadMoreInputs(tx: Transaction): void {
-    if (!tx['@vinLoaded']) {
+    if (!tx['@vinLoaded'] && !this.txPreview) {
       this.electrsApiService.getTransaction$(tx.txid)
         .subscribe((newTx) => {
           tx['@vinLoaded'] = true;
@@ -409,6 +519,18 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     this.showFullWitness[vinIndex][witnessIndex] = !this.showFullWitness[vinIndex][witnessIndex];
   }
 
+  toggleShowFullScriptPubkeyAsm(voutIndex: number): void {
+    this.showFullScriptPubkeyAsm[voutIndex] = !this.showFullScriptPubkeyAsm[voutIndex];
+  }
+
+  toggleShowFullScriptPubkeyHex(voutIndex: number): void {
+    this.showFullScriptPubkeyHex[voutIndex] = !this.showFullScriptPubkeyHex[voutIndex];
+  }
+
+  toggleShowFullOpReturnData(voutIndex: number): void {
+    this.showFullOpReturnData[voutIndex] = !this.showFullOpReturnData[voutIndex];
+  }
+
   toggleOrdData(txid: string, type: 'vin' | 'vout', index: number) {
     const tx = this.transactions.find((tx) => tx.txid === txid);
     if (!tx) {
@@ -443,8 +565,64 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     }
   }
 
+  showSigInfo(txIndex: number, vindex: number, sig: SigInfo): void {
+    this.selectedSig = { txIndex, vindex, sig };
+    this.sigHighlights = { vin: [], vout: [] };
+    for (let i = 0; i < this.transactions[txIndex].vin.length; i++) {
+      this.sigHighlights.vin.push(
+        i === vindex ||
+        !(Sighash.isACP(sig.sighash))
+      );
+    }
+    for (let i = 0; i < this.transactions[txIndex].vout.length; i++) {
+      this.sigHighlights.vout.push(
+        !(Sighash.isNone(sig.sighash)) && (
+          !(Sighash.isSingle(sig.sighash)) ||
+          i === vindex
+        )
+      );
+    }
+    this.ref.markForCheck();
+  }
+
+  hideSigInfo(): void {
+    this.selectedSig = null;
+    this.sigHighlights = { vin: [], vout: [] };
+    this.ref.markForCheck();
+  }
+
+  updateSignaturesMode(): void {
+    this.signaturesMode = this.signaturesOverride || this.forceSignaturesMode || this.signaturesPreference || 'interesting';
+    if (this.transactions?.length) {
+      for (const tx of this.transactions) {
+        tx['_showSignatures'] = this.shouldShowSignatures(tx);
+      }
+    }
+  }
+
+  showSig(sigs: SigInfo[]): boolean {
+    return this.signaturesMode === 'all' || (this.signaturesMode === 'interesting' && sigs.some(sig => this.sigIsInteresting(sig)));
+  }
+
+  sigIsInteresting(sig: SigInfo): boolean {
+    return sig.sighash !== SighashFlag.DEFAULT && sig.sighash !== SighashFlag.ALL;
+  }
+
+  shouldShowSignatures(tx): boolean {
+    switch (this.signaturesMode) {
+      case 'all':
+        return true;
+      case 'interesting':
+        return tx['_interestingSignatures'];
+      default:
+        return false;
+    }
+  }
+
   ngOnDestroy(): void {
     this.outspendsSubscription.unsubscribe();
     this.currencyChangeSubscription?.unsubscribe();
+    this.networkSubscription.unsubscribe();
+    this.signaturesSubscription.unsubscribe();
   }
 }

@@ -19,9 +19,9 @@
             <tr>
               <td i18n="mempool-block.fee-span">Fee span</td>
               <td><span class="yellow-color">
-                <app-fee-rate [fee]="mempoolBlock.feeRange[0]" [showUnit]="false" rounding="1.0-0"></app-fee-rate>
+                <app-fee-rate [fee]="mempoolBlock.feeRange[0]" [showUnit]="false"></app-fee-rate>
                 -
-                <app-fee-rate [fee]="mempoolBlock.feeRange[mempoolBlock.feeRange.length - 1]" rounding="1.0-0"></app-fee-rate>
+                <app-fee-rate [fee]="mempoolBlock.feeRange[mempoolBlock.feeRange.length - 1]"></app-fee-rate>
               </span></td>
             </tr>
             <tr>

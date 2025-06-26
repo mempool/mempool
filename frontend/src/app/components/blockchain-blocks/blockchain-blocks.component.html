@@ -32,9 +32,9 @@
             </ng-template>
             <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-fee-span'" class="fee-span"
               *ngIf="block?.extras?.minFee != null && block?.extras?.maxFee != null; else emptyfeespan">
-              <app-fee-rate [fee]="block?.extras?.minFee" [showUnit]="false" rounding="1.0-0" unitClass=""></app-fee-rate>
+              <app-fee-rate [fee]="block?.extras?.minFee" [showUnit]="false" unitClass=""></app-fee-rate>
               -
-              <app-fee-rate [fee]="block?.extras?.maxFee" rounding="1.0-0" unitClass=""></app-fee-rate>
+              <app-fee-rate [fee]="block?.extras?.maxFee" unitClass=""></app-fee-rate>
             </div>
             <ng-template #emptyfeespan>
               <div [attr.data-cy]="'bitcoin-block-offset=' + offset + '-index-' + i + '-fees'" class="fee-span">

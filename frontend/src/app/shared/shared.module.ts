@@ -1,13 +1,15 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { NgbCollapseModule, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase, faExchangeAlt, faInfoCircle,
-  faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faClock, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
-  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft,
+import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faCogs, faDatabase, faExchangeAlt, faInfoCircle,
+  faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faClock, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
+  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft,
   faFastForward, faWallet, faUserClock, faWrench, faUserFriends, faQuestionCircle, faHistory, faSignOutAlt, faKey, faSuitcase, faIdCardAlt, faNetworkWired, faUserCheck,
-  faCircleCheck, faUserCircle, faCheck, faRocket, faScaleBalanced, faHourglassStart, faHourglassHalf, faHourglassEnd, faWandMagicSparkles, faFaucetDrip, faTimeline,
-  faCircleXmark, faCalendarCheck, faMoneyBillTrendUp, faRobot, faShareNodes, faCreditCard, faMicroscope } from '@fortawesome/free-solid-svg-icons';
+  faCircleCheck, faUserCircle, faCheck, faRocket, faScaleBalanced, faHourglassStart, faHourglassHalf, faHourglassEnd, faWandMagicSparkles, faTimeline,
+  faCircleXmark, faCalendarCheck, faMoneyBillTrendUp, faRobot, faShareNodes, faCreditCard, faMicroscope, faExclamationTriangle, faLockOpen, faPaperclip, faAddressCard,
+  faMedal, faBug, faFilePdf } from '@fortawesome/free-solid-svg-icons';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MenuComponent } from '@components/menu/menu.component';
 import { PreviewTitleComponent } from '@components/master-page-preview/preview-title.component';
@@ -18,6 +20,7 @@ import { Hex2asciiPipe } from '@app/shared/pipes/hex2ascii/hex2ascii.pipe';
 import { Decimal2HexPipe } from '@app/shared/pipes/decimal2hex/decimal2hex.pipe';
 import { FeeRoundingPipe } from '@app/shared/pipes/fee-rounding/fee-rounding.pipe';
 import { AsmStylerPipe } from '@app/shared/pipes/asm-styler/asm-styler.pipe';
+import { AsmComponent } from '@app/shared/components/asm/asm.component';
 import { AbsolutePipe } from '@app/shared/pipes/absolute/absolute.pipe';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { ScriptpubkeyTypePipe } from '@app/shared/pipes/scriptpubkey-type-pipe/scriptpubkey-type.pipe';
@@ -94,6 +97,7 @@ import { SatsComponent } from '@app/shared/components/sats/sats.component';
 import { BtcComponent } from '@app/shared/components/btc/btc.component';
 import { FeeRateComponent } from '@app/shared/components/fee-rate/fee-rate.component';
 import { AddressTypeComponent } from '@app/shared/components/address-type/address-type.component';
+import { AddressTextComponent } from '@app/shared/components/address-text/address-text.component';
 import { TruncateComponent } from '@app/shared/components/truncate/truncate.component';
 import { SearchResultsComponent } from '@components/search-form/search-results/search-results.component';
 import { TimestampComponent } from '@app/shared/components/timestamp/timestamp.component';
@@ -120,6 +124,8 @@ import { CalculatorComponent } from '@components/calculator/calculator.component
 import { BitcoinsatoshisPipe } from '@app/shared/pipes/bitcoinsatoshis.pipe';
 import { HttpErrorComponent } from '@app/shared/components/http-error/http-error.component';
 import { TwitterWidgetComponent } from '@components/twitter-widget/twitter-widget.component';
+import { SimpleProofWidgetComponent } from '@components/simpleproof-widget/simpleproof-widget.component';
+import { SimpleProofCuboWidgetComponent } from '@components/simpleproof-widget/simpleproof-cubo-widget.component';
 import { FaucetComponent } from '@components/faucet/faucet.component';
 import { TwitterLogin } from '@components/twitter-login/twitter-login.component';
 import { BitcoinInvoiceComponent } from '@components/bitcoin-invoice/bitcoin-invoice.component';
@@ -146,6 +152,7 @@ import { GithubLogin } from '../components/github-login.component/github-login.c
     NoSanitizePipe,
     Hex2asciiPipe,
     AsmStylerPipe,
+    AsmComponent,
     AbsolutePipe,
     BytesPipe,
     VbytesPipe,
@@ -214,6 +221,7 @@ import { GithubLogin } from '../components/github-login.component/github-login.c
     BtcComponent,
     FeeRateComponent,
     AddressTypeComponent,
+    AddressTextComponent,
     TruncateComponent,
     SearchResultsComponent,
     TimestampComponent,
@@ -241,6 +249,8 @@ import { GithubLogin } from '../components/github-login.component/github-login.c
     OrdDataComponent,
     HttpErrorComponent,
     TwitterWidgetComponent,
+    SimpleProofWidgetComponent,
+    SimpleProofCuboWidgetComponent,
     FaucetComponent,
     TwitterLogin,
     GithubLogin,
@@ -360,6 +370,7 @@ import { GithubLogin } from '../components/github-login.component/github-login.c
     BtcComponent,
     FeeRateComponent,
     AddressTypeComponent,
+    AddressTextComponent,
     TruncateComponent,
     SearchResultsComponent,
     TimestampComponent,
@@ -377,6 +388,8 @@ import { GithubLogin } from '../components/github-login.component/github-login.c
     OrdDataComponent,
     HttpErrorComponent,
     TwitterWidgetComponent,
+    SimpleProofWidgetComponent,
+    SimpleProofCuboWidgetComponent,
     TwitterLogin,
     GithubLogin,
     BitcoinInvoiceComponent,
@@ -394,16 +407,11 @@ import { GithubLogin } from '../components/github-login.component/github-login.c
 export class SharedModule {
   constructor(library: FaIconLibrary) {
     library.addIcons(faInfoCircle);
-    library.addIcons(faChartArea);
-    library.addIcons(faTv);
     library.addIcons(faClock);
     library.addIcons(faTachometerAlt);
-    library.addIcons(faCubes);
-    library.addIcons(faHammer);
     library.addIcons(faCogs);
     library.addIcons(faThList);
     library.addIcons(faList);
-    library.addIcons(faTachometerAlt);
     library.addIcons(faDatabase);
     library.addIcons(faSearch);
     library.addIcons(faLink);
@@ -427,7 +435,6 @@ export class SharedModule {
     library.addIcons(faCaretDown);
     library.addIcons(faAngleRight);
     library.addIcons(faAngleLeft);
-    library.addIcons(faBook);
     library.addIcons(faListUl);
     library.addIcons(faDownload);
     library.addIcons(faQrcode);
@@ -456,7 +463,6 @@ export class SharedModule {
     library.addIcons(faHourglassHalf);
     library.addIcons(faHourglassEnd);
     library.addIcons(faWandMagicSparkles);
-    library.addIcons(faFaucetDrip);
     library.addIcons(faTimeline);
     library.addIcons(faCircleXmark);
     library.addIcons(faCalendarCheck);
@@ -465,5 +471,12 @@ export class SharedModule {
     library.addIcons(faShareNodes);
     library.addIcons(faCreditCard);
     library.addIcons(faMicroscope);
+    library.addIcons(faExclamationTriangle);
+    library.addIcons(faLockOpen);
+    library.addIcons(faPaperclip);
+    library.addIcons(faMedal);
+    library.addIcons(faAddressCard);
+    library.addIcons(faBug);
+    library.addIcons(faFilePdf);
   }
 }

@@ -1,0 +1,42 @@
+{
+  "theme": "wiz",
+  "enterprise": "strategy",
+  "branding": {
+    "name": "strategy",
+    "title": "strategy",
+    "site_id": 22,
+    "header_img": "/resources/strategylogo.svg",
+    "footer_img": "/resources/strategylogo.svg"
+  },
+  "dashboard": {
+    "widgets": [
+      {
+        "component": "fees",
+        "mobileOrder": 1
+      },
+      {
+        "component": "difficulty",
+        "mobileOrder": 4
+      },
+      {
+        "component": "twitter",
+        "mobileOrder": 2,
+        "props": {
+          "handle": "MicroStrategy"
+        }
+      },
+      {
+        "component": "goggles",
+        "mobileOrder": 3
+      },
+      {
+        "component": "blocks",
+        "mobileOrder": 5
+      },
+      {
+        "component": "transactions",
+        "mobileOrder": 6
+      }
+    ]
+  }
+}

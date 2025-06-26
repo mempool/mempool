@@ -158,7 +158,7 @@
 
                     <!-- MEMPOOL BASE FEE -->
                     <tr>
-                      <td class="item" i18n="accelerator.mempool-accelerator-fees">Mempool Accelerator™ fees</td>
+                      <td class="item" i18n="accelerator.mempool-accelerator-fees">Mempool Accelerator® fees</td>
                     </tr>
                     <tr class="info" [class.group-last]="!estimate.vsizeFee" [class.dashed-bottom]="!estimate.vsizeFee">
                       <td class="info">
@@ -499,9 +499,13 @@
           } @else if (step === 'googlepay') {
             <div id="google-pay-button" class="d-inline-block" style="height: 50px" [style]="loadingGooglePay ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
           } @else if (step === 'cardonfile') {
-            <div class="paymentMethod mx-2 d-flex justify-content-center align-items-center ml-auto mr-auto" style="width: 200px; height: 55px" (click)="requestCardOnFilePayment()" [style]="loadingCardOnFile ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''">
-              <fa-icon style="font-size: 24px; color: white" [icon]="['fas', 'credit-card']"></fa-icon>
-              <span class="ml-2" style="font-size: 22px">{{ estimate?.availablePaymentMethods?.cardOnFile?.card?.brand }} {{ estimate?.availablePaymentMethods?.cardOnFile?.card?.last_4 }}</span>
+            <div class="ml-auto mr-auto paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px" (click)="requestCardOnFilePayment()" [style]="loadingCardOnFile ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''">
+              @if (['VISA', 'MASTERCARD', 'JCB', 'DISCOVER', 'DISCOVER_DINERS', 'AMERICAN_EXPRESS'].includes(estimate?.availablePaymentMethods?.cardOnFile?.card?.brand)) {
+                <app-svg-images [name]="estimate?.availablePaymentMethods?.cardOnFile?.card?.brand" height="33" class="mr-2"></app-svg-images>
+              } @else {
+                <app-svg-images name="OTHER_BRAND" height="33" class="mr-2"></app-svg-images>
+              }
+              <span style="font-size: 22px; padding-bottom: 3px">{{ estimate?.availablePaymentMethods?.cardOnFile?.card?.last_4 }}</span>
             </div>
           }
           @if (loadingCashapp || loadingApplePay || loadingGooglePay || loadingCardOnFile) {
@@ -567,14 +571,29 @@
   } @else if (step === 'success') {
     <div class="row mb-1 text-center">
       <div class="col-sm">
-        <h1 style="font-size: larger;"><ng-content select="[slot='accelerated-title']"></ng-content><span class="default-slot" i18n="accelerator.success-message">Your transaction is being accelerated!</span></h1>
+        <h1 style="font-size: larger;"><ng-content select="[slot='accelerated-title']"></ng-content>
+          @if (accelerationResponse) {
+            <span class="default-slot" i18n="accelerator.success-message">Your transaction is being accelerated!</span>
+          } @else {
+            <span class="default-slot" i18n="accelerator.success-message-third-party">Transaction is already being accelerated!</span>
+          }
+        </h1>
       </div>
     </div>
     <div class="row text-center mt-1">
       <div class="col-sm">
         <div class="d-flex flex-row justify-content-center align-items-center">
-          <span i18n="accelerator.confirmed-acceleration-with-miners">Your transaction has been accepted for acceleration by our mining pool partners.</span>
+          @if (accelerationResponse) {        
+            <span i18n="accelerator.confirmed-acceleration-with-miners">Your transaction has been accepted for acceleration by our mining pool partners.</span>
+          } @else {
+            <span i18n="accelerator.confirmed-acceleration-with-miners-third-party">Transaction has already been accepted for acceleration by our mining pool partners.</span>
+          }
         </div>
+        @if (accelerationResponse?.receiptUrl) {
+          <div class="d-flex flex-row justify-content-center align-items-center">
+            <span i18n="accelerator.receipt-label"><a [href]="accelerationResponse.receiptUrl" target="_blank">Get a receipt.</a></span>
+          </div>
+        }
       </div>
     </div>
     <hr>

@@ -131,7 +131,7 @@ export NVM_DIR="${HOME}/.nvm"
 source "${NVM_DIR}/nvm.sh"
 
 # what to look for
-frontends=(mainnet liquid onbtc bitb meta)
+frontends=(mainnet liquid onbtc bitb meta river strategy xxi)
 backends=(mainnet testnet testnet4 signet liquid liquidtestnet onbtc bitb)
 frontend_repos=()
 backend_repos=()
@@ -173,7 +173,7 @@ for repo in $frontend_repos;do
 done
 
 # notify everyone
-echo "${HOSTNAME} updated to \`${REF}\` @ \`${HASH}\`" | /usr/local/bin/keybase chat send --nonblock --channel general mempool.dev
-echo "${HOSTNAME} updated to \`${REF}\` @ \`${HASH}\`" | /usr/local/bin/keybase chat send --nonblock --channel general "mempool.ops.${LOCATION}"
+#echo "${HOSTNAME} updated to \`${REF}\` @ \`${HASH}\`" | /usr/local/bin/keybase chat send --nonblock --channel general mempool.dev
+#echo "${HOSTNAME} updated to \`${REF}\` @ \`${HASH}\`" | /usr/local/bin/keybase chat send --nonblock --channel general "mempool.ops.${LOCATION}"
 
 exit 0

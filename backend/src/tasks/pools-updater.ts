@@ -45,13 +45,13 @@ class PoolsUpdater {
     this.lastRun = now;
 
     try {
+      if (config.DATABASE.ENABLED === true) {
+        this.currentSha = await this.getShaFromDb();
+      }
+
       const githubSha = await this.fetchPoolsSha(); // Fetch pools-v2.json sha from github
       if (githubSha === null) {
         return;
-      }
-
-      if (config.DATABASE.ENABLED === true) {
-        this.currentSha = await this.getShaFromDb();
       }
 
       logger.debug(`pools-v2.json sha | Current: ${this.currentSha} | Github: ${githubSha}`, this.tag);
@@ -98,7 +98,8 @@ class PoolsUpdater {
       logger.info(`Mining pools-v2.json (${githubSha}) import completed`, this.tag);
 
     } catch (e) {
-      this.lastRun = now - 600; // Try again in 10 minutes
+      // fast-forward lastRun to 10 minutes before the next scheduled update
+      this.lastRun = now - Math.max(config.MEMPOOL.POOLS_UPDATE_DELAY - 600, 600);
       logger.err(`PoolsUpdater failed. Will try again in 10 minutes. Exception: ${JSON.stringify(e)}`, this.tag);
     }
   }

@@ -16,9 +16,9 @@
                 ~<app-fee-rate [fee]="projectedBlock.medianFee" unitClass="" rounding="1.0-0"></app-fee-rate>
               </div>
               <div [attr.data-cy]="'mempool-block-' + i + '-fee-span'" class="fee-span">
-                <app-fee-rate [fee]="projectedBlock.feeRange[0]" [showUnit]="false" rounding="1.0-0" unitClass=""></app-fee-rate>
+                <app-fee-rate [fee]="projectedBlock.feeRange[0]" [showUnit]="false" unitClass=""></app-fee-rate>
                 -
-                <app-fee-rate [fee]="projectedBlock.feeRange[projectedBlock.feeRange.length - 1]" rounding="1.0-0" unitClass=""></app-fee-rate>
+                <app-fee-rate [fee]="projectedBlock.feeRange[projectedBlock.feeRange.length - 1]" unitClass=""></app-fee-rate>
               </div>
               <div *ngIf="blockDisplayMode === 'fees'; else noMiningInfo" class="block-size">
                 <app-amount [attr.data-cy]="'mempool-block-' + i + '-total-fees'" [satoshis]="projectedBlock.totalFees" digitsInfo="1.2-3" [noFiat]="true"></app-amount>

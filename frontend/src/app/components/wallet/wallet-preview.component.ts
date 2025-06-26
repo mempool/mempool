@@ -125,6 +125,8 @@ export class WalletPreviewComponent implements OnInit, OnDestroy {
   sent = 0;
   chainBalance = 0;
 
+  ogSession: number;
+
   constructor(
     private route: ActivatedRoute,
     private stateService: StateService,
@@ -141,9 +143,9 @@ export class WalletPreviewComponent implements OnInit, OnDestroy {
       map((params: ParamMap) => params.get('wallet') as string),
       tap((walletName: string) => {
         this.walletName = walletName;
-        this.openGraphService.waitFor('wallet-addresses-' + this.walletName);
-        this.openGraphService.waitFor('wallet-data-' + this.walletName);
-        this.openGraphService.waitFor('wallet-txs-' + this.walletName);
+        this.ogSession = this.openGraphService.waitFor('wallet-addresses-' + this.walletName);
+        this.ogSession = this.openGraphService.waitFor('wallet-data-' + this.walletName);
+        this.ogSession = this.openGraphService.waitFor('wallet-txs-' + this.walletName);
         this.seoService.setTitle($localize`:@@wallet.component.browser-title:Wallet: ${walletName}:INTERPOLATION:`);
         this.seoService.setDescription($localize`:@@meta.description.bitcoin.wallet:See mempool transactions, confirmed transactions, balance, and more for ${this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'}${seoDescriptionNetwork(this.stateService.network)} wallet ${walletName}:INTERPOLATION:.`);
       }),
@@ -152,9 +154,9 @@ export class WalletPreviewComponent implements OnInit, OnDestroy {
           this.error = err;
           this.seoService.logSoft404();
           console.log(err);
-          this.openGraphService.fail('wallet-addresses-' + this.walletName);
-          this.openGraphService.fail('wallet-data-' + this.walletName);
-          this.openGraphService.fail('wallet-txs-' + this.walletName);
+          this.openGraphService.fail({ event: 'wallet-addresses-' + this.walletName, sessionId: this.ogSession });
+          this.openGraphService.fail({ event: 'wallet-data-' + this.walletName, sessionId: this.ogSession });
+          this.openGraphService.fail({ event: 'wallet-txs-' + this.walletName, sessionId: this.ogSession });
           return of({});
         })
       )),
@@ -185,13 +187,13 @@ export class WalletPreviewComponent implements OnInit, OnDestroy {
     this.walletSubscription = this.walletAddresses$.subscribe(wallet => {
       this.addressStrings = Object.keys(wallet);
       this.addresses = Object.values(wallet);
-      this.openGraphService.waitOver('wallet-addresses-' + this.walletName);
+      this.openGraphService.waitOver({ event: 'wallet-addresses-' + this.walletName, sessionId: this.ogSession });
     });
 
     this.walletSummary$ = this.wallet$.pipe(
       map(wallet => this.deduplicateWalletTransactions(Object.values(wallet).flatMap(address => address.transactions))),
       tap(() => {
-        this.openGraphService.waitOver('wallet-txs-' + this.walletName);
+        this.openGraphService.waitOver({ event: 'wallet-txs-' + this.walletName, sessionId: this.ogSession });
       })
     );
 
@@ -209,7 +211,7 @@ export class WalletPreviewComponent implements OnInit, OnDestroy {
         );
       }),
       tap(() => {
-        this.openGraphService.waitOver('wallet-data-' + this.walletName);
+        this.openGraphService.waitOver({ event: 'wallet-data-' + this.walletName, sessionId: this.ogSession });
       })
     );
   }
