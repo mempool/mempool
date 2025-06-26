@@ -130,7 +130,7 @@
     <ng-container *ngIf="block && !isLoadingBlock; else loadingRest">
       <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
         <td i18n="mempool-block.fee-span">Fee span</td>
-        <td><app-fee-rate [fee]="block.extras?.minFee" [showUnit]="false" rounding="1.0-0"></app-fee-rate> - <app-fee-rate [fee]="block.extras?.maxFee" rounding="1.0-0"></app-fee-rate></td>
+        <td><app-fee-rate [fee]="block.extras?.minFee" [showUnit]="false"></app-fee-rate> - <app-fee-rate [fee]="block.extras?.maxFee"></app-fee-rate></td>
       </tr>
       <tr *ngIf="block.extras?.medianFee != undefined">
         <td class="td-width" i18n="block.median-fee">Median fee</td>
