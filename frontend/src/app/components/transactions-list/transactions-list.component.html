@@ -327,7 +327,7 @@
                         @if (vout.isRunestone) {
                           <button (click)="toggleOrdData(tx.txid, 'vout', vindex)" type="button" class="btn btn-sm badge badge-ord">Runestone</button>
                         } @else {
-                          <a placement="bottom" [ngbTooltip]="vout.scriptpubkey_asm | hex2ascii"><span *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" class="badge badge-secondary scriptmessage">{{ vout.scriptpubkey_asm | hex2ascii }}</span></a>
+                          <a placement="bottom" [ngbTooltip]="vout.scriptpubkey_asm | slice:0:200 | hex2ascii"><span *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" class="badge badge-secondary scriptmessage">{{ vout.scriptpubkey_asm | slice:0:200 | hex2ascii }}</span></a>
                         }
                       </ng-template>
                       <ng-template #otherPubkeyType>{{ vout.scriptpubkey_type | scriptpubkeyType }}</ng-template>
@@ -384,15 +384,50 @@
                     <tbody>
                       <tr>
                         <td i18n="transactions-list.scriptpubkey.asm|ScriptPubKey (ASM)">ScriptPubKey (ASM)</td>
-                        <td style="text-align: left;" [innerHTML]="vout.scriptpubkey_asm | asmStyler"></td>
+                        <td style="text-align: left;">
+                          <app-asm [asm]="vout.scriptpubkey_asm" [crop]="showFullScriptPubkeyAsm[vindex] ? 0 : 1000"></app-asm>
+                          <div *ngIf="vout.scriptpubkey_asm.length > 1000" style="display: flex;">
+                            <span *ngIf="!showFullScriptPubkeyAsm[vindex]">...</span>
+                            <label class="btn btn-sm btn-primary mt-2" (click)="toggleShowFullScriptPubkeyAsm(vindex)" style="margin-left: auto;">
+                              <span *ngIf="!showFullScriptPubkeyAsm[vindex]" i18n="show-all">Show all</span>
+                              <span *ngIf="showFullScriptPubkeyAsm[vindex]" i18n="show-less">Show less</span>
+                            </label>
+                          </div>
+                        </td>
                       </tr>
                       <tr>
                         <td i18n="transactions-list.scriptpubkey.hex|ScriptPubKey (HEX)">ScriptPubKey (HEX)</td>
-                        <td style="text-align: left;">{{ vout.scriptpubkey }}</td>
+                        <td style="text-align: left;">
+                          @if (!showFullScriptPubkeyHex[vindex]) {
+                            {{ vout.scriptpubkey | slice:0:1000 }}
+                          } @else {
+                            {{ vout.scriptpubkey }}
+                          }
+                          <div *ngIf="vout.scriptpubkey.length > 1000" style="display: flex;">
+                            <span *ngIf="!showFullScriptPubkeyHex[vindex]">...</span>
+                            <label class="btn btn-sm btn-primary mt-2" (click)="toggleShowFullScriptPubkeyHex(vindex)" style="margin-left: auto;">
+                              <span *ngIf="!showFullScriptPubkeyHex[vindex]" i18n="show-all">Show all</span>
+                              <span *ngIf="showFullScriptPubkeyHex[vindex]" i18n="show-less">Show less</span>
+                            </label>
+                          </div>
+                        </td>
                       </tr>
                       <tr *ngIf="vout.scriptpubkey_type == 'op_return'">
                         <td>OP_RETURN <span>data</span></td>
-                        <td style="text-align: left;">{{ vout.scriptpubkey_asm | hex2ascii }}</td>
+                        <td style="text-align: left; word-break: break-word;">
+                          @if (!showFullOpReturnData[vindex]) {
+                            {{ (vout.scriptpubkey_asm | hex2ascii | slice:0:1000) }}
+                          } @else {
+                            {{ vout.scriptpubkey_asm | hex2ascii }}
+                          }
+                          <div *ngIf="(vout.scriptpubkey_asm | hex2ascii).length > 1000" style="display: flex;">
+                            <span *ngIf="!showFullOpReturnData[vindex]">...</span>
+                            <label class="btn btn-sm btn-primary mt-2" (click)="toggleShowFullOpReturnData(vindex)" style="margin-left: auto;">
+                              <span *ngIf="!showFullOpReturnData[vindex]" i18n="show-all">Show all</span>
+                              <span *ngIf="showFullOpReturnData[vindex]" i18n="show-less">Show less</span>
+                            </label>
+                          </div>
+                        </td>
                       </tr>
                       <tr *ngIf="vout.scriptpubkey_type">
                         <td i18n="transactions-list.vout.scriptpubkey-type">Type</td>

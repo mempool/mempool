@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { NgbCollapseModule, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faCogs, faDatabase, faExchangeAlt, faInfoCircle,
@@ -7,7 +8,8 @@ import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, fa
   faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft,
   faFastForward, faWallet, faUserClock, faWrench, faUserFriends, faQuestionCircle, faHistory, faSignOutAlt, faKey, faSuitcase, faIdCardAlt, faNetworkWired, faUserCheck,
   faCircleCheck, faUserCircle, faCheck, faRocket, faScaleBalanced, faHourglassStart, faHourglassHalf, faHourglassEnd, faWandMagicSparkles, faTimeline,
-  faCircleXmark, faCalendarCheck, faMoneyBillTrendUp, faRobot, faShareNodes, faCreditCard, faMicroscope, faExclamationTriangle, faLockOpen, faPaperclip } from '@fortawesome/free-solid-svg-icons';
+  faCircleXmark, faCalendarCheck, faMoneyBillTrendUp, faRobot, faShareNodes, faCreditCard, faMicroscope, faExclamationTriangle, faLockOpen, faPaperclip, faAddressCard,
+  faMedal, faBug, faFilePdf } from '@fortawesome/free-solid-svg-icons';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MenuComponent } from '@components/menu/menu.component';
 import { PreviewTitleComponent } from '@components/master-page-preview/preview-title.component';
@@ -122,6 +124,8 @@ import { CalculatorComponent } from '@components/calculator/calculator.component
 import { BitcoinsatoshisPipe } from '@app/shared/pipes/bitcoinsatoshis.pipe';
 import { HttpErrorComponent } from '@app/shared/components/http-error/http-error.component';
 import { TwitterWidgetComponent } from '@components/twitter-widget/twitter-widget.component';
+import { SimpleProofWidgetComponent } from '@components/simpleproof-widget/simpleproof-widget.component';
+import { SimpleProofCuboWidgetComponent } from '@components/simpleproof-widget/simpleproof-cubo-widget.component';
 import { FaucetComponent } from '@components/faucet/faucet.component';
 import { TwitterLogin } from '@components/twitter-login/twitter-login.component';
 import { BitcoinInvoiceComponent } from '@components/bitcoin-invoice/bitcoin-invoice.component';
@@ -245,6 +249,8 @@ import { GithubLogin } from '../components/github-login.component/github-login.c
     OrdDataComponent,
     HttpErrorComponent,
     TwitterWidgetComponent,
+    SimpleProofWidgetComponent,
+    SimpleProofCuboWidgetComponent,
     FaucetComponent,
     TwitterLogin,
     GithubLogin,
@@ -382,6 +388,8 @@ import { GithubLogin } from '../components/github-login.component/github-login.c
     OrdDataComponent,
     HttpErrorComponent,
     TwitterWidgetComponent,
+    SimpleProofWidgetComponent,
+    SimpleProofCuboWidgetComponent,
     TwitterLogin,
     GithubLogin,
     BitcoinInvoiceComponent,
@@ -466,5 +474,9 @@ export class SharedModule {
     library.addIcons(faExclamationTriangle);
     library.addIcons(faLockOpen);
     library.addIcons(faPaperclip);
+    library.addIcons(faMedal);
+    library.addIcons(faAddressCard);
+    library.addIcons(faBug);
+    library.addIcons(faFilePdf);
   }
 }

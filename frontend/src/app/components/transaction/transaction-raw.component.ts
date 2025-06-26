@@ -91,7 +91,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
         if (offline) {
           this.offlineMode = offline === 'true';
         }
-        if (this.pushTxForm.get('txRaw').value) {
+        if (hex && this.pushTxForm.get('txRaw').value) {
           this.decodeTransaction();
         }
       }
