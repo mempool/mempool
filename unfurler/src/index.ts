@@ -70,12 +70,21 @@ class Server {
         this.renderingEnabled = true;
         this.seoRenderer = require('./puppeteer/seoRenderer').default;
         this.seoRenderingEnabled = true;
-        console.log('Puppeteer dependencies loaded');
         logger.info('Puppeteer dependencies loaded');
       }
     } catch (error) {
-      console.log('Puppeteer not available');
       logger.info('Puppeteer not available');
+    }
+
+    if (!this.renderingEnabled && config.CANVAS.ENABLED) {
+      // Try Canvas Renderer
+      try {
+          this.renderer = require('./canvas/renderer').default;
+          this.renderingEnabled = true;
+          logger.info('Canvas Renderer dependencies loaded');
+      } catch (error) {
+        logger.info('Canvas Renderer not available');
+      }
     }
   }
 
@@ -144,7 +153,7 @@ class Server {
 
       // don't bother unless the route is definitely renderable
       if (rawPath.includes('/preview/') && matchedRoute.render) {
-        img = await this.renderer?.render(rawPath, req.url);
+        img = await this.renderer?.render(rawPath, req.url, matchedRoute);
         logger.info(`unfurl returned "${req.url}" in ${Date.now() - start}ms | ${this.unfurlQueueLength - 1} tasks in queue`);
       } else {
         logger.info('rendering not enabled for page "' + req.url + '"');

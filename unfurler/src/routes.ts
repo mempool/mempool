@@ -13,7 +13,7 @@ const agentSelector = function(_parsedURL: any) {
     }
 }
 
-interface Match {
+export interface Match {
   render: boolean;
   title: string;
   description: string;
@@ -22,6 +22,7 @@ interface Match {
   networkMode: string;
   params?: string[];
   sip?: SipTemplate;
+  canvasView?: string;
 }
 
 interface SipTemplate {
@@ -76,7 +77,8 @@ const routes = {
           };
         }
       }
-    }
+    },
+    canvasView: 'block',
   },
   address: {
     render: true,
@@ -441,6 +443,7 @@ export function matchRoute(network: string, path: string, matchFor: string = 're
   if (route[matchFor] && parts.length >= route.params) {
     match.render = route.render;
     match.sip = route.sip;
+    match.canvasView = route.canvasView;
     match.params = parts;
   }
   // only use set a static image for exact matches
