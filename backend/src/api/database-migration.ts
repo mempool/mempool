@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 98;
+  private static currentVersion = 99;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -1153,6 +1153,12 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 98 && config.MEMPOOL.NETWORK === 'mainnet') {
       await this.$executeQuery('UPDATE blocks_summaries SET version = 0 WHERE height >= 896070;');
       await this.updateToSchemaVersion(98);
+    }
+
+    // Add vsize_0 to statistics table
+    if (databaseSchemaVersion < 99) {
+      await this.$executeQuery('ALTER TABLE statistics ADD COLUMN vsize_0 int(11) NOT NULL DEFAULT 0');
+      await this.updateToSchemaVersion(99);
     }
   }
 
