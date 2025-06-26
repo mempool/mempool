@@ -39,7 +39,12 @@
         }
       },
       {
-        "component": "blocks"
+        "component": "simpleproof_cubo",
+        "mobileOrder": 6,
+        "props": {
+          "label": "CUBO+ Certificates",
+          "key": "cubo_certificates"
+        }
       },
       {
         "component": "walletTransactions",
