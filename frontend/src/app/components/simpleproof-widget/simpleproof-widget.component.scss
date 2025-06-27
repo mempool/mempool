@@ -53,7 +53,7 @@ tr, td, th {
 }
 
 .filename {
-  width: 50%;
+  width: 35%;
   max-width: 300px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -61,7 +61,7 @@ tr, td, th {
 }
 
 .hash {
-  width: 25%;
+  width: 20%;
   max-width: 700px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -81,10 +81,12 @@ td.hash {
 
 .id {
   width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .verified {
-  width: 25%;
+  width: 20%;
 }
 td.verified {
   color: var(--tertiary);
@@ -92,6 +94,7 @@ td.verified {
 
 .proof {
   width: 25%;
+  padding-left: 0;
 }
 
 .badge-verify {
