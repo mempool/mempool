@@ -6,7 +6,7 @@ import { download } from '@app/shared/graphs.utils';
 import { isMobile } from '@app/shared/common.utils';
 import { WalletStats } from '@app/shared/wallet-stats';
 import { AddressTxSummary } from '@interfaces/electrs.interface';
-import { chartColors } from '@app/app.constants';
+import { originalChartColors as chartColors } from '@app/app.constants';
 import { formatNumber } from '@angular/common';
 import { Treasury } from '@interfaces/node-api.interface';
 
