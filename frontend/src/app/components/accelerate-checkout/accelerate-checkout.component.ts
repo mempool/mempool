@@ -68,6 +68,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   @Input() forceMobile: boolean = false;
   @Input() showDetails: boolean = false;
   @Input() noCTA: boolean = false;
+  @Input() shareCode: string | undefined;
   @Output() unavailable = new EventEmitter<boolean>();
   @Output() completed = new EventEmitter<boolean>();
   @Output() hasDetails = new EventEmitter<boolean>();
@@ -534,7 +535,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                   tokenResult.token,
                   cardTag,
                   `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
-                  costUSD
+                  costUSD,
+                  this.shareCode
                 ).subscribe({
                   next: (response) => {
                     this.accelerationResponse = response;
@@ -663,7 +665,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                 cardTag,
                 `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
                 costUSD,
-                verificationToken.userChallenged
+                verificationToken.userChallenged,
+                this.shareCode
               ).subscribe({
                 next: (response) => {
                   this.accelerationResponse = response;
@@ -774,7 +777,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             verificationToken.token,
             `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
             costUSD,
-            verificationToken.userChallenged
+            verificationToken.userChallenged,
+            this.shareCode
           ).subscribe({
             next: (response) => {
               this.accelerationResponse = response;
@@ -869,7 +873,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               tokenResult.token,
               tokenResult.details.cashAppPay.cashtag,
               tokenResult.details.cashAppPay.referenceId,
-              costUSD
+              costUSD,
+              this.shareCode
             ).subscribe({
               next: (response) => {
                 this.accelerationResponse = response;
