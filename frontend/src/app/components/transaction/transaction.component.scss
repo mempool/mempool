@@ -66,10 +66,6 @@
   color: white;
 }
 
-.btn-small-height {
-	line-height: 1;
-}
-
 .arrow-green {
 	color: var(--success);
 }
@@ -227,18 +223,6 @@
       margin-top: 0;
       margin-bottom: 8px;
       margin-left: 8px;
-    }
-  }
-}
-
-.cpfp-details {
-  .txids {
-    width: 60%;
-  }
-
-  @media (max-width: 500px) {
-    .txids {
-      width: 40%;
     }
   }
 }

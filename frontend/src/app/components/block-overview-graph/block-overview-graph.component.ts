@@ -172,13 +172,19 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   ngOnDestroy(): void {
     if (this.animationFrameRequest) {
       cancelAnimationFrame(this.animationFrameRequest);
-      clearTimeout(this.animationHeartBeat);
     }
+    clearTimeout(this.animationHeartBeat);
     if (this.canvas) {
       this.canvas.nativeElement.removeEventListener('webglcontextlost', this.handleContextLost);
       this.canvas.nativeElement.removeEventListener('webglcontextrestored', this.handleContextRestored);
-      this.themeChangedSubscription?.unsubscribe();
     }
+    if (this.scene) {
+      this.scene.destroy();
+    }
+    this.vertexArray.destroy();
+    this.vertexArray = null;
+    this.themeChangedSubscription?.unsubscribe();
+    this.searchSubscription?.unsubscribe();
   }
 
   clear(direction): void {
@@ -447,7 +453,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     }
     this.applyQueuedUpdates();
     // skip re-render if there's no change to the scene
-    if (this.scene && this.gl) {
+    if (this.scene && this.gl && this.vertexArray) {
       /* SET UP SHADER UNIFORMS */
       // screen dimensions
       this.gl.uniform2f(this.gl.getUniformLocation(this.shaderProgram, 'screenSize'), this.displayWidth, this.displayHeight);
@@ -489,9 +495,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     if (this.running && this.scene && now <= (this.scene.animateUntil + 500)) {
       this.doRun();
     } else {
-      if (this.animationHeartBeat) {
-        clearTimeout(this.animationHeartBeat);
-      }
+      clearTimeout(this.animationHeartBeat);
       this.animationHeartBeat = window.setTimeout(() => {
         this.start();
       }, 1000);

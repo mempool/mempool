@@ -27,6 +27,8 @@ export class NodePreviewComponent implements OnInit {
 
   publicKeySize = 99;
 
+  ogSession: number;
+
   constructor(
     private lightningApiService: LightningApiService,
     private activatedRoute: ActivatedRoute,
@@ -43,8 +45,8 @@ export class NodePreviewComponent implements OnInit {
       .pipe(
         switchMap((params: ParamMap) => {
           this.publicKey = params.get('public_key');
-          this.openGraphService.waitFor('node-map-' + this.publicKey);
-          this.openGraphService.waitFor('node-data-' + this.publicKey);
+          this.ogSession = this.openGraphService.waitFor('node-map-' + this.publicKey);
+          this.ogSession = this.openGraphService.waitFor('node-data-' + this.publicKey);
           return this.lightningApiService.getNode$(params.get('public_key'));
         }),
         map((node) => {
@@ -76,15 +78,15 @@ export class NodePreviewComponent implements OnInit {
           this.socketTypes = Object.keys(socketTypesMap);
           node.avgCapacity = node.capacity / Math.max(1, node.active_channel_count);
 
-          this.openGraphService.waitOver('node-data-' + this.publicKey);
+          this.openGraphService.waitOver({ event: 'node-data-' + this.publicKey, sessionId: this.ogSession });
 
           return node;
         }),
         catchError(err => {
           this.error = err;
           this.seoService.logSoft404();
-          this.openGraphService.fail('node-map-' + this.publicKey);
-          this.openGraphService.fail('node-data-' + this.publicKey);
+          this.openGraphService.fail({ event: 'node-map-' + this.publicKey, sessionId: this.ogSession });
+          this.openGraphService.fail({ event: 'node-data-' + this.publicKey, sessionId: this.ogSession });
           return [{
             alias: this.publicKey,
             public_key: this.publicKey,
@@ -102,6 +104,6 @@ export class NodePreviewComponent implements OnInit {
   }
 
   onMapReady() {
-    this.openGraphService.waitOver('node-map-' + this.publicKey);
+    this.openGraphService.waitOver({ event: 'node-map-' + this.publicKey, sessionId: this.ogSession });
   }
 }

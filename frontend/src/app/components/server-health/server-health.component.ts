@@ -82,6 +82,10 @@ export class ServerHealthComponent implements OnInit {
       return '🇺🇸';
     } else if (host.includes('.va1.')) {
       return '🇺🇸';
+    } else if (host.includes('.sg1.')) {
+      return '🇸🇬';
+    } else if (host.includes('.hnl.')) {
+      return '🤙';
     } else {
       return '';
     }

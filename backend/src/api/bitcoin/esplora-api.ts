@@ -1,12 +1,12 @@
 import config from '../../config';
-import axios, { AxiosResponse, isAxiosError } from 'axios';
+import axios, { isAxiosError } from 'axios';
 import http from 'http';
 import { AbstractBitcoinApi, HealthCheckHost } from './bitcoin-api-abstract-factory';
 import { IEsploraApi } from './esplora-api.interface';
 import logger from '../../logger';
 import { Common } from '../common';
 import { SubmitPackageResult, TestMempoolAcceptResult } from './bitcoin-api.interface';
-
+import os from 'os';
 interface FailoverHost {
   host: string,
   rtts: number[],
@@ -20,6 +20,13 @@ interface FailoverHost {
   preferred?: boolean,
   checked: boolean,
   lastChecked?: number,
+  publicDomain: string,
+  hashes: {
+    frontend?: string,
+    backend?: string,
+    electrs?: string,
+    lastUpdated: number,
+  }
 }
 
 class FailoverRouter {
@@ -29,14 +36,21 @@ class FailoverRouter {
   maxHeight: number = 0;
   hosts: FailoverHost[];
   multihost: boolean;
-  pollInterval: number = 60000;
+  gitHashInterval: number = 60000; // 1 minute
+  pollInterval: number = 60000; // 1 minute
   pollTimer: NodeJS.Timeout | null = null;
   pollConnection = axios.create();
+  localHostname: string = 'localhost';
   requestConnection = axios.create({
     httpAgent: new http.Agent({ keepAlive: true })
   });
 
   constructor() {
+    try {
+      this.localHostname = os.hostname();
+    } catch (e) {
+      logger.warn('Failed to set local hostname, using "localhost"');
+    }
     // setup list of hosts
     this.hosts = (config.ESPLORA.FALLBACK || []).map(domain => {
       return {
@@ -45,6 +59,10 @@ class FailoverRouter {
         rtts: [],
         rtt: Infinity,
         failures: 0,
+        publicDomain: 'https://' + this.extractPublicDomain(domain),
+        hashes: {
+          lastUpdated: 0,
+        },
       };
     });
     this.activeHost = {
@@ -55,6 +73,10 @@ class FailoverRouter {
       socket: !!config.ESPLORA.UNIX_SOCKET_PATH,
       preferred: true,
       checked: false,
+      publicDomain: `http://${this.localHostname}`,
+      hashes: {
+        lastUpdated: 0,
+      },
     };
     this.fallbackHost = this.activeHost;
     this.hosts.unshift(this.activeHost);
@@ -89,7 +111,7 @@ class FailoverRouter {
     for (const host of this.hosts) {
       try {
         const result = await (host.socket
-          ? this.pollConnection.get<number>('/blocks/tip/height', { socketPath: host.host, timeout: config.ESPLORA.FALLBACK_TIMEOUT })
+          ? this.pollConnection.get<number>('http://api/blocks/tip/height', { socketPath: host.host, timeout: config.ESPLORA.FALLBACK_TIMEOUT })
           : this.pollConnection.get<number>(host.host + '/blocks/tip/height', { timeout: config.ESPLORA.FALLBACK_TIMEOUT })
         );
         if (result) {
@@ -106,6 +128,24 @@ class FailoverRouter {
             host.outOfSync = false;
           }
           host.unreachable = false;
+
+          // update esplora git hash using the x-powered-by header from the height check
+          const poweredBy = result.headers['x-powered-by'];
+          if (poweredBy) {
+            const match = poweredBy.match(/([a-fA-F0-9]{5,40})/);
+            if (match && match[1]?.length) {
+              host.hashes.electrs = match[1];
+            }
+          }
+
+          // Check front and backend git hashes less often
+          if (Date.now() - host.hashes.lastUpdated > this.gitHashInterval) {
+            await Promise.all([
+              this.$updateFrontendGitHash(host),
+              this.$updateBackendGitHash(host)
+            ]);
+            host.hashes.lastUpdated = Date.now();
+          }
         } else {
           host.outOfSync = true;
           host.unreachable = true;
@@ -202,12 +242,53 @@ class FailoverRouter {
     }
   }
 
+  // methods for retrieving git hashes by host
+  private async $updateFrontendGitHash(host: FailoverHost): Promise<void> {
+    try {
+      const url = `${host.publicDomain}/resources/config.js`;
+      const response = await this.pollConnection.get<string>(url, { timeout: config.ESPLORA.FALLBACK_TIMEOUT });
+      const match = response.data.match(/GIT_COMMIT_HASH\s*=\s*['"](.*?)['"]/);
+      if (match && match[1]?.length) {
+        host.hashes.frontend = match[1];
+      }
+    } catch (e) {
+      // failed to get frontend build hash - do nothing
+    }
+  }
+
+  private async $updateBackendGitHash(host: FailoverHost): Promise<void> {
+    try {
+      const url = `${host.publicDomain}/api/v1/backend-info`;
+      const response = await this.pollConnection.get<any>(url, { timeout: config.ESPLORA.FALLBACK_TIMEOUT });
+      if (response.data?.gitCommit) {
+        host.hashes.backend = response.data.gitCommit;
+      }
+    } catch (e) {
+      // failed to get backend build hash - do nothing
+    }
+  }
+
+  // returns the public mempool domain corresponding to an esplora server url
+  // (a bit of a hack to avoid manually specifying frontend & backend URLs for each esplora server)
+  private extractPublicDomain(url: string): string {
+    // force the url to start with a valid protocol
+    const urlWithProtocol = url.startsWith('http') ? url : `https://${url}`;
+    // parse as URL and extract the hostname
+    try {
+      const parsed = new URL(urlWithProtocol);
+      return parsed.hostname;
+    } catch (e) {
+      // fallback to the original url
+      return url;
+    }
+  }
+
   private async $query<T>(method: 'get'| 'post', path, data: any, responseType = 'json', host = this.activeHost, retry: boolean = true): Promise<T> {
     let axiosConfig;
     let url;
     if (host.socket) {
       axiosConfig = { socketPath: host.host, timeout: config.ESPLORA.REQUEST_TIMEOUT, responseType };
-      url = path;
+      url = 'http://api' + path;
     } else {
       axiosConfig = { timeout: config.ESPLORA.REQUEST_TIMEOUT, responseType };
       url = host.host + path;
@@ -381,6 +462,7 @@ class ElectrsApi implements AbstractBitcoinApi {
         unreachable: !!host.unreachable,
         checked: !!host.checked,
         lastChecked: host.lastChecked || 0,
+        hashes: host.hashes,
       }));
     } else {
       return [];

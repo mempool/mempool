@@ -33,8 +33,8 @@ import AccelerationRepository from '../repositories/AccelerationRepository';
 import { calculateFastBlockCpfp, calculateGoodBlockCpfp } from './cpfp';
 import mempool from './mempool';
 import CpfpRepository from '../repositories/CpfpRepository';
-import accelerationApi from './services/acceleration';
 import { parseDATUMTemplateCreator } from '../utils/bitcoin-script';
+import database from '../database';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -1224,6 +1224,11 @@ class Blocks {
     return summary.transactions;
   }
 
+  public async $getSingleTxFromSummary(hash: string, txid: string): Promise<TransactionClassified | null> {
+    const txs = await this.$getStrippedBlockTransactions(hash);
+    return txs.find(tx => tx.txid === txid) || null;
+  }
+
   /**
    * Get 15 blocks
    * 
@@ -1386,7 +1391,7 @@ class Blocks {
   }
 
   public async $getBlockAuditSummary(hash: string): Promise<BlockAudit | null> {
-    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) {
+    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) && Common.auditIndexingEnabled()) {
       return BlocksAuditsRepository.$getBlockAudit(hash);
     } else {
       return null;
@@ -1394,7 +1399,7 @@ class Blocks {
   }
 
   public async $getBlockTxAuditSummary(hash: string, txid: string): Promise<TransactionAudit | null> {
-    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) {
+    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) && Common.auditIndexingEnabled()) {
       return BlocksAuditsRepository.$getBlockTxAudit(hash, txid);
     } else {
       return null;
@@ -1455,6 +1460,36 @@ class Blocks {
       }
     } catch (e) {
       // not a fatal error, we'll try again next time the indexer runs
+    }
+  }
+
+  public async $getBlockDefinitionHashes(): Promise<string[] | null> {
+    try {
+      const [rows]: any = await database.query(`SELECT DISTINCT(definition_hash) FROM blocks`);
+      if (rows && Array.isArray(rows)) {
+        return rows.map(r => r.definition_hash);
+      } else {
+        logger.debug(`Unable to retrieve list of blocks.definition_hash from db (no result)`);
+        return null;
+      }
+    } catch (e) {
+      logger.debug(`Unable to retrieve list of blocks.definition_hash from db (exception: ${e})`);
+      return null;
+    }
+  }
+
+  public async $getBlocksByDefinitionHash(definitionHash: string): Promise<string[] | null> {
+    try {
+      const [rows]: any = await database.query(`SELECT hash FROM blocks WHERE definition_hash = ?`, [definitionHash]);
+      if (rows && Array.isArray(rows)) {
+        return rows.map(r => r.hash);
+      } else {
+        logger.debug(`Unable to retrieve list of blocks for definition hash ${definitionHash} from db (no result)`);
+        return null;
+      }
+    } catch (e) {
+      logger.debug(`Unable to retrieve list of blocks for definition hash ${definitionHash} from db (exception: ${e})`);
+      return null;
     }
   }
 }

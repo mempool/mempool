@@ -24,6 +24,7 @@
           [height]="tx?.status?.block_height"
           [replaced]="replaced"
           [removed]="this.rbfInfo?.mined && !this.tx?.status?.confirmed"
+          [cached]="isCached"
         ></app-confirmations>
       </div>
     </ng-container>
@@ -52,7 +53,6 @@
       [hasEffectiveFeeRate]="hasEffectiveFeeRate"
       [cpfpInfo]="cpfpInfo"
       [hasCpfp]="hasCpfp"
-      [showCpfpDetails]="showCpfpDetails"
       [accelerationInfo]="accelerationInfo"
       [replaced]="replaced"
       [isCached]="isCached"
@@ -67,62 +67,7 @@
   <ng-template [ngIf]="!isLoadingTx && !error">
 
     <!-- CPFP Details -->
-    <ng-template [ngIf]="showCpfpDetails">
-      <br>
-      <h2 class="text-left">CPFP <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true" size="xs"></fa-icon></h2>
-      <div class="box cpfp-details">
-        <table class="table table-fixed table-borderless table-striped">
-          <thead>
-            <tr>
-              <th i18n="transactions-list.vout.scriptpubkey-type">Type</th>
-              <th class="txids" i18n="dashboard.latest-transactions.txid">TXID</th>
-              <th *only-vsize class="d-none d-lg-table-cell" i18n="transaction.vsize|Transaction Virtual Size">Virtual size</th>
-              <th *only-weight class="d-none d-lg-table-cell" i18n="transaction.weight|Transaction Weight">Weight</th>
-              <th i18n="transaction.fee-rate|Transaction fee rate">Fee rate</th>
-              <th class="d-none d-lg-table-cell"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <ng-template [ngIf]="cpfpInfo?.descendants?.length">
-              <tr *ngFor="let cpfpTx of cpfpInfo.descendants">
-                <td><span class="badge badge-primary" i18n="transaction.descendant|Descendant">Descendant</span></td>
-                <td>
-                  <app-truncate [text]="cpfpTx.txid" [link]="['/tx' | relativeUrl, cpfpTx.txid]"></app-truncate>
-                </td>
-                <td *only-vsize class="d-none d-lg-table-cell" [innerHTML]="cpfpTx.weight / 4 | vbytes: 2"></td>
-                <td *only-weight class="d-none d-lg-table-cell" [innerHTML]="cpfpTx.weight | wuBytes: 2"></td>
-                <td><app-fee-rate [fee]="cpfpTx.fee" [weight]="cpfpTx.weight"></app-fee-rate></td>
-                <td class="d-none d-lg-table-cell"><fa-icon  *ngIf="roundToOneDecimal(cpfpTx) > roundToOneDecimal(tx)"  class="arrow-green" [icon]="['fas', 'angle-double-up']" [fixedWidth]="true"></fa-icon></td>
-              </tr>
-            </ng-template>
-            <ng-template [ngIf]="cpfpInfo?.bestDescendant">
-              <tr>
-                <td><span class="badge badge-success" i18n="transaction.descendant|Descendant">Descendant</span></td>
-                <td class="txids">
-                  <app-truncate [text]="cpfpInfo.bestDescendant.txid" [link]="['/tx' | relativeUrl, cpfpInfo.bestDescendant.txid]"></app-truncate>
-                </td>
-                <td *only-vsize class="d-none d-lg-table-cell" [innerHTML]="cpfpInfo.bestDescendant.weight / 4 | vbytes: 2"></td>
-                <td *only-weight class="d-none d-lg-table-cell" [innerHTML]="cpfpInfo.bestDescendant.weight | wuBytes: 2"></td>
-                <td><app-fee-rate [fee]="cpfpInfo.bestDescendant.fee" [weight]="cpfpInfo.bestDescendant.weight"></app-fee-rate></td>
-                <td class="d-none d-lg-table-cell"><fa-icon class="arrow-green" [icon]="['fas', 'angle-double-up']" [fixedWidth]="true"></fa-icon></td>
-              </tr>
-            </ng-template>
-            <ng-template [ngIf]="cpfpInfo?.ancestors?.length">
-              <tr *ngFor="let cpfpTx of cpfpInfo.ancestors">
-                <td><span class="badge badge-primary" i18n="transaction.ancestor|Transaction Ancestor">Ancestor</span></td>
-                <td class="txids">
-                  <app-truncate [text]="cpfpTx.txid" [link]="['/tx' | relativeUrl, cpfpTx.txid]"></app-truncate>
-                </td>
-                <td *only-vsize class="d-none d-lg-table-cell" [innerHTML]="cpfpTx.weight / 4 | vbytes: 2"></td>
-                <td *only-weight class="d-none d-lg-table-cell" [innerHTML]="cpfpTx.weight | wuBytes: 2"></td>
-                <td><app-fee-rate [fee]="cpfpTx.fee" [weight]="cpfpTx.weight"></app-fee-rate></td>
-                <td class="d-none d-lg-table-cell"><fa-icon *ngIf="roundToOneDecimal(cpfpTx) < roundToOneDecimal(tx)" class="arrow-red" [icon]="['fas', 'angle-double-down']" [fixedWidth]="true"></fa-icon></td>
-              </tr>
-            </ng-template>
-          </tbody>
-        </table>
-      </div>
-    </ng-template>
+    <app-cpfp-info *ngIf="showCpfpDetails" [cpfpInfo]="cpfpInfo" [tx]="tx"></app-cpfp-info>
 
     <!-- Accelerator -->
     <ng-container *ngIf="!tx?.status?.confirmed && showAccelerationSummary && (ETA$ | async) as eta;">
@@ -137,13 +82,11 @@
 
       <app-accelerate-checkout
         *ngIf="(da$ | async) as da;"
-        [cashappEnabled]="cashappEligible"
         [advancedEnabled]="true"
         [tx]="tx"
         [accelerating]="isAcceleration"
         [eta]="eta"
         [miningStats]="miningStats"
-        [scrollEvent]="scrollIntoAccelPreview"
         [showDetails]="showAccelerationDetails"
         [noCTA]="true"
         (hasDetails)="setHasAccelerationDetails($event)"
@@ -164,12 +107,12 @@
       <br>
     </ng-container>
 
-    <ng-container *ngIf="transactionTime > 0 && tx.acceleratedAt > 0 && isAcceleration">
+    <ng-container *ngIf="transactionTime > 0 && tx.acceleratedAt > 0 && (isAcceleration || accelerationCanceled)">
       <div class="title float-left">
         <h2 id="acceleration-timeline" i18n="transaction.acceleration-timeline|Acceleration Timeline">Acceleration Timeline</h2>
       </div>
       <div class="clearfix"></div>
-      <app-acceleration-timeline [transactionTime]="transactionTime" [acceleratedAt]="tx.acceleratedAt" [tx]="tx" [accelerationInfo]="accelerationInfo" [eta]="(ETA$ | async)"></app-acceleration-timeline>
+      <app-acceleration-timeline [transactionTime]="transactionTime" [acceleratedAt]="tx.acceleratedAt" [tx]="tx" [accelerationInfo]="accelerationInfo" [eta]="(ETA$ | async)" [canceled]="accelerationCanceled"></app-acceleration-timeline>
       <br>
     </ng-container>
 

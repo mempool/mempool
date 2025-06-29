@@ -26,12 +26,15 @@ export const MempoolErrors = {
   'unauthorized': `You are not authorized to do this`,
   'faucet_too_soon': `You cannot request any more coins right now. Try again later.`,
   'faucet_not_available': `The faucet is not available right now. Try again later.`,
+  'faucet_not_available_no_utxo': `The faucet is not available right now. Please try again once a new block has been mined.`,
   'faucet_maximum_reached': `You are not allowed to request more coins`,
   'faucet_address_not_allowed': `You cannot use this address`,
   'faucet_below_minimum': `Requested amount is too small`,
   'faucet_above_maximum': `Requested amount is too high`,
   'payment_method_not_allowed': `You are not allowed to use this payment method`,
   'payment_method_not_allowed_out_of_bound': `You are not allowed to use this payment method with this amount`,
+  'invalid_credentials': `Invalid credentials`,
+  'forbidden': `You are not allowed to do this.`,
 } as { [error: string]: string };
 
 export function isMempoolError(error: string) {

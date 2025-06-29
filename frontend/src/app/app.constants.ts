@@ -1,4 +1,5 @@
 export const defaultMempoolFeeColors = [
+  '497d2b',
   '557d00',
   '5d7d01',
   '637d02',
@@ -40,6 +41,7 @@ export const defaultMempoolFeeColors = [
 ];
 
 export const contrastMempoolFeeColors = [
+  '007be9',
   '0082e6',
   '0984df',
   '1285d9',
@@ -81,6 +83,7 @@ export const contrastMempoolFeeColors = [
  ];
 
 export const chartColors = [
+  "#A81524",
   "#D81B60",
   "#8E24AA",
   "#5E35B1",
@@ -120,12 +123,13 @@ export const chartColors = [
   "#263238",
   "#801313",
 ];
+export const originalChartColors = chartColors.slice(1);
 
 export const poolsColor = {
   'unknown': '#FDD835',
 };
 
-export const feeLevels = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
+export const feeLevels = [0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
   250, 300, 350, 400, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000];
 
 export interface Language {
@@ -440,3 +444,38 @@ export const fiatCurrencies = {
     indexed: true,
   },
 };
+
+export interface Timezone {
+  offset: string;
+  name: string;
+}
+
+export const timezones: Timezone[] = [
+  { offset: '-12', name: 'Anywhere on Earth (AoE)' },
+  { offset: '-11', name: 'Samoa Standard Time (SST)' },
+  { offset: '-10', name: 'Hawaii Standard Time (HST)' },
+  { offset: '-9', name: 'Alaska Standard Time (AKST)' },
+  { offset: '-8', name: 'Pacific Standard Time (PST)' },
+  { offset: '-7', name: 'Mountain Standard Time (MST)' },
+  { offset: '-6', name: 'Central Standard Time (CST)' },
+  { offset: '-5', name: 'Eastern Standard Time (EST)' },
+  { offset: '-4', name: 'Atlantic Standard Time (AST)' },
+  { offset: '-3', name: 'Argentina Time (ART)' },
+  { offset: '-2', name: 'Fernando de Noronha Time (FNT)' },
+  { offset: '-1', name: 'Azores Time (AZOT)' },
+  { offset: '+0', name: 'Greenwich Mean Time (GMT)' },
+  { offset: '+1', name: 'Central European Time (CET)' },
+  { offset: '+2', name: 'Eastern European Time (EET)' },
+  { offset: '+3', name: 'Moscow Standard Time (MSK)' },
+  { offset: '+4', name: 'Armenia Time (AMT)' },
+  { offset: '+5', name: 'Pakistan Standard Time (PKT)' },
+  { offset: '+6', name: 'Xinjiang Time (XJT)' },
+  { offset: '+7', name: 'Indochina Time (ICT)' },
+  { offset: '+8', name: 'Hong Kong Time (HKT)' },
+  { offset: '+9', name: 'Japan Standard Time (JST)' },
+  { offset: '+10', name: 'Australian Eastern Standard Time (AEST)' },
+  { offset: '+11', name: 'Norfolk Time (NFT)' },
+  { offset: '+12', name: 'New Zealand Standard Time (NZST)' },
+  { offset: '+13', name: 'Tonga Time (TOT)' },
+  { offset: '+14', name: 'Line Islands Time (LINT)' }
+];

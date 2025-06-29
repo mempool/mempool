@@ -43,6 +43,8 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
   opReturns: Vout[];
   extraData: 'none' | 'coinbase' | 'opreturn';
 
+  ogSession: number;
+
   constructor(
     private route: ActivatedRoute,
     private electrsApiService: ElectrsApiService,
@@ -75,7 +77,7 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
       )
       .subscribe((cpfpInfo) => {
         this.cpfpInfo = cpfpInfo;
-        this.openGraphService.waitOver('cpfp-data-' + this.txId);
+        this.openGraphService.waitOver({ event: 'cpfp-data-' + this.txId, sessionId: this.ogSession });
       });
 
     this.subscription = this.route.paramMap
@@ -83,8 +85,8 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
         switchMap((params: ParamMap) => {
           const urlMatch = (params.get('id') || '').split(':');
           this.txId = urlMatch[0];
-          this.openGraphService.waitFor('tx-data-' + this.txId);
-          this.openGraphService.waitFor('tx-time-' + this.txId);
+          this.ogSession = this.openGraphService.waitFor('tx-data-' + this.txId);
+          this.ogSession = this.openGraphService.waitFor('tx-time-' + this.txId);
           this.seoService.setTitle(
             $localize`:@@bisq.transaction.browser-title:Transaction: ${this.txId}:INTERPOLATION:`
           );
@@ -138,7 +140,7 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
       .subscribe((tx: Transaction) => {
           if (!tx) {
             this.seoService.logSoft404();
-            this.openGraphService.fail('tx-data-' + this.txId);
+            this.openGraphService.fail({ event: 'tx-data-' + this.txId, sessionId: this.ogSession });
             return;
           }
 
@@ -155,10 +157,10 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
 
           if (tx.status.confirmed) {
             this.transactionTime = tx.status.block_time;
-            this.openGraphService.waitOver('tx-time-' + this.txId);
+            this.openGraphService.waitOver({ event: 'tx-time-' + this.txId, sessionId: this.ogSession });
           } else if (!tx.status.confirmed && tx.firstSeen) {
             this.transactionTime = tx.firstSeen;
-            this.openGraphService.waitOver('tx-time-' + this.txId);
+            this.openGraphService.waitOver({ event: 'tx-time-' + this.txId, sessionId: this.ogSession });
           } else {
             this.getTransactionTime();
           }
@@ -184,11 +186,11 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
             }
           }
 
-          this.openGraphService.waitOver('tx-data-' + this.txId);
+          this.openGraphService.waitOver({ event: 'tx-data-' + this.txId, sessionId: this.ogSession });
         },
         (error) => {
           this.seoService.logSoft404();
-          this.openGraphService.fail('tx-data-' + this.txId);
+          this.openGraphService.fail({ event: 'tx-data-' + this.txId, sessionId: this.ogSession });
           this.error = error;
           this.isLoadingTx = false;
         }
@@ -205,7 +207,7 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
       )
       .subscribe((transactionTimes) => {
         this.transactionTime = transactionTimes[0];
-        this.openGraphService.waitOver('tx-time-' + this.txId);
+        this.openGraphService.waitOver({ event: 'tx-time-' + this.txId, sessionId: this.ogSession });
       });
   }
 

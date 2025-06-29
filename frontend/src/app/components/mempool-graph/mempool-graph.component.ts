@@ -117,7 +117,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     let feesArray: number[][] = [];
 
     let maxTier = 0;
-    for (let index = 37; index > -1; index--) {
+    for (let index = 38; index > -1; index--) {
       feesArray = [];
       mempoolStats.forEach((stats) => {
         if (stats.vsizes[index] >= this.filterSize) {

@@ -13,96 +13,2442 @@ const emptyCodeSample = {
 const showJsExamplesDefault = { "": true, "testnet": true, "signet": true, "liquid": true, "liquidtestnet": false };
 const showJsExamplesDefaultFalse = { "": false, "testnet": false, "signet": false, "liquid": false, "liquidtestnet": false };
 
-export const wsApiDocsData = {
-  showJsExamples: showJsExamplesDefault,
-  codeTemplate: {
-    curl: `/api/v1/ws`,
-    commonJS: `
-        const { %{0}: { websocket } } = mempoolJS();
-
-        const ws = websocket.initClient({
-          options: ['blocks', 'stats', 'mempool-blocks', 'live-2h-chart'],
-        });
-
-        ws.addEventListener('message', function incoming({data}) {
-          const res = JSON.parse(data.toString());
-          if (res.block) {
-            document.getElementById("result-blocks").textContent = JSON.stringify(res.block, undefined, 2);
-          }
-          if (res.mempoolInfo) {
-            document.getElementById("result-mempool-info").textContent = JSON.stringify(res.mempoolInfo, undefined, 2);
-          }
-          if (res.transactions) {
-            document.getElementById("result-transactions").textContent = JSON.stringify(res.transactions, undefined, 2);
-          }
-          if (res["mempool-blocks"]) {
-            document.getElementById("result-mempool-blocks").textContent = JSON.stringify(res["mempool-blocks"], undefined, 2);
-          }
-        });
-  `,
-    esModule: `
-  const { %{0}: { websocket } } = mempoolJS();
-
-  const ws = websocket.initServer({
-    options: ["blocks", "stats", "mempool-blocks", "live-2h-chart"],
-  });
-
-  ws.on("message", function incoming(data) {
-    const res = JSON.parse(data.toString());
-    if (res.block) {
-      console.log(res.block);
-    }
-    if (res.mempoolInfo) {
-      console.log(res.mempoolInfo);
-    }
-    if (res.transactions) {
-      console.log(res.transactions);
-    }
-    if (res["mempool-blocks"]) {
-      console.log(res["mempool-blocks"]);
-    }
-  });
-    `,
-    python: `import websocket
-import _thread
-import time
-import rel
-import json
-
-rel.safe_read()
-
-def on_message(ws, message):
-    print(json.loads(message))
-
-def on_error(ws, error):
-    print(error)
-
-def on_close(ws, close_status_code, close_msg):
-    print("### closed ###")
-
-def on_open(ws):
-    message = { "action": "init" }
-    ws.send(json.dumps(message))
-    message = { "action": "want", "data": ['blocks', 'stats', 'mempool-blocks', 'live-2h-chart', 'watch-mempool'] }
-    ws.send(json.dumps(message))
-
-if __name__ == "__main__":
-    ws = websocket.WebSocketApp("wss://mempool.space/api/v1/ws",
-                              on_open=on_open,
-                              on_message=on_message,
-                              on_error=on_error,
-                              on_close=on_close)
-
-    ws.run_forever(dispatcher=rel)  # Set dispatcher to automatic reconnection
-    rel.signal(2, rel.abort)  # Keyboard Interrupt
-    rel.dispatch()
-    `,
+export const wsApiDocsData = [
+  {
+    type: "category",
+    category: "general",
+    fragment: "general",
+    title: "General",
+    showConditions: bitcoinNetworks.concat(liquidNetworks)
   },
-  codeSampleMainnet: emptyCodeSample,
-  codeSampleTestnet: emptyCodeSample,
-  codeSampleSignet: emptyCodeSample,
-  codeSampleLiquid: emptyCodeSample,
-};
+  {
+    type: "endpoint",
+    category: "general",
+    fragment: "live-data",
+    title: "Live Data",
+    description: {
+      default: "Subscribe to live data. Available: <code>blocks</code>, <code>mempool-block</code>, <code>live-2h-chart</code>, and <code>stats</code>."
+    },
+    payload: '{ "action": "want", "data": ["mempool-blocks", "stats"] }',
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: false,
+    codeExample: {
+      default: {
+        codeTemplate: {
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "mempool-blocks": [
+    {
+      "blockSize": 1801614,
+      "blockVSize": 997936.5,
+      "nTx": 3391,
+      "totalFees": 8170664,
+      "medianFee": 6.011217160720601,
+      "feeRange": [
+        4.584615384615384,
+        5,
+        5.100456621004566,
+        6.002319288751449,
+        7.235398230088496,
+        10.377668308702791,
+        200
+      ]
+    },
+    ...
+    {
+      "blockSize": 198543075,
+      "blockVSize": 101691348,
+      "nTx": 249402,
+      "totalFees": 135312667,
+      "medianFee": 1.2559438783834156,
+      "feeRange": [
+        1.000685629033809,
+        1.0020213063577312,
+        1.0019080827758888,
+        1.0227913345013278,
+        1.1188648002395873,
+        1.2559438783834156,
+        1.4077952614964329,
+        1.4079805737077244,
+        1.5106880342499638,
+        2.003440424869914,
+        2.2713888268854894
+      ]
+    }
+  ],
+  "mempoolInfo": {
+    "loaded": true,
+    "size": 264505,
+    "bytes": 108875402,
+    "usage": 649908688,
+    "total_fee": 1.61036575,
+    "maxmempool": 300000000,
+    "mempoolminfee": 0.00001858,
+    "minrelaytxfee": 0.00001,
+    "incrementalrelayfee": 0.00001,
+    "unbroadcastcount": 0,
+    "fullrbf": true
+  },
+  "vBytesPerSecond": 1651,
+  "fees": {
+    "fastestFee": 7,
+    "halfHourFee": 6,
+    "hourFee": 5,
+    "economyFee": 4,
+    "minimumFee": 2
+  },
+  "da": {
+    "progressPercent": 32.49007936507937,
+    "difficultyChange": 0.7843046881601534,
+    "estimatedRetargetDate": 1735514828279,
+    "remainingBlocks": 1361,
+    "remainingTime": 811481279,
+    "previousRetarget": 4.429396745461176,
+    "previousTime": 1734312810,
+    "nextRetargetHeight": 876960,
+    "timeAvg": 596239,
+    "adjustedTimeAvg": 596239,
+    "timeOffset": 0,
+    "expectedBlocks": 650.895
+  }
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "mempool-blocks": [
+    {
+      "blockSize": 1009960,
+      "blockVSize": 997827.25,
+      "nTx": 3545,
+      "totalFees": 2844117938,
+      "medianFee": 2524.178404298769,
+      "feeRange": [
+        2010.9044259140476,
+        2011.0887096774193,
+        2011.2914608327453,
+        2441.5893066980025,
+        3541.35960591133,
+        3936.6254416961133,
+        6031.746031746032
+      ]
+    },
+    ...
+  ],
+  "mempoolInfo": {
+    "loaded": true,
+    "size": 517666,
+    "bytes": 168219654,
+    "usage": 855583264,
+    "total_fee": 133.53837564,
+    "maxmempool": 4096000000,
+    "mempoolminfee": 0.00001,
+    "minrelaytxfee": 0.00001,
+    "incrementalrelayfee": 0.00001,
+    "unbroadcastcount": 0,
+    "fullrbf": true
+  },
+  "vBytesPerSecond": 358,
+  "fees": {
+    "fastestFee": 2525,
+    "halfHourFee": 2268,
+    "hourFee": 2082,
+    "economyFee": 2,
+    "minimumFee": 1
+  },
+  "da": {
+    "progressPercent": 45.882936507936506,
+    "difficultyChange": -51.21445794134847,
+    "estimatedRetargetDate": 1736046916382,
+    "remainingBlocks": 1091,
+    "remainingTime": 1343241382,
+    "previousRetarget": 255.61790932023905,
+    "previousTime": 1733564813,
+    "nextRetargetHeight": 3538080,
+    "timeAvg": 1200000,
+    "adjustedTimeAvg": 1231202,
+    "timeOffset": 0,
+    "expectedBlocks": 1898.1033333333332
+  }
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{"mempool-blocks": [
+    {
+      "blockSize": 1009960,
+      "blockVSize": 997827.25,
+      "nTx": 3545,
+      "totalFees": 2844117938,
+      "medianFee": 2524.178404298769,
+      "feeRange": [
+        2010.9044259140476,
+        2011.0887096774193,
+        2011.2914608327453,
+        2441.5893066980025,
+        3541.35960591133,
+        3936.6254416961133,
+        6031.746031746032
+      ]
+    },
+    ...
+  ],
+  "mempoolInfo": {
+    "loaded": true,
+    "size": 59,
+    "bytes": 9834,
+    "usage": 68832,
+    "total_fee": 0.00013935,
+    "maxmempool": 4096000000,
+    "mempoolminfee": 0.00001,
+    "minrelaytxfee": 0.00001,
+    "incrementalrelayfee": 0.00001,
+    "unbroadcastcount": 0,
+    "fullrbf": true
+  },
+  "vBytesPerSecond": 28,
+  "da": {
+    "progressPercent": 68.60119047619048,
+    "difficultyChange": -2.913529439274176,
+    "estimatedRetargetDate": 1735095294116,
+    "remainingBlocks": 633,
+    "remainingTime": 391480116,
+    "previousRetarget": 2.0685719720386118,
+    "previousTime": 1733848494,
+    "nextRetargetHeight": 227808,
+    "timeAvg": 618452,
+    "adjustedTimeAvg": 618452,
+    "timeOffset": 0,
+    "expectedBlocks": 1425.5333333333333
+  },
+  "fees": {
+    "fastestFee": 1,
+    "halfHourFee": 1,
+    "hourFee": 1,
+    "economyFee": 1,
+    "minimumFee": 1
+  },
+}`
+        },
+        codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "mempool-blocks": [
+    {
+      "blockSize": 27409,
+      "blockVSize": 7675,
+      "nTx": 2,
+      "totalFees": 769,
+      "medianFee": 0,
+      "feeRange": [
+        0.10012450036039577,
+        0.10012450036039577,
+        0.10012450036039577,
+        0.10012450036039577,
+        0.10012450036039577,
+        0.10012450036039577,
+        0.10012450036039577
+      ]
+    }
+  ],
+  "mempoolInfo": {
+    "loaded": true,
+    "size": 2,
+    "bytes": 7676,
+    "usage": 3568,
+    "total_fee": 0.00000769,
+    "maxmempool": 300000000,
+    "mempoolminfee": 0.000001,
+    "minrelaytxfee": 0.000001,
+    "unbroadcastcount": 0
+  },
+  "vBytesPerSecond": 60,
+  "fees": {
+    "fastestFee": 0.1,
+    "halfHourFee": 0.1,
+    "hourFee": 0.1,
+    "economyFee": 0.1,
+    "minimumFee": 0.1
+  },
+  "da": {
+    "progressPercent": 4.315476190476191,
+    "difficultyChange": null,
+    "estimatedRetargetDate": null,
+    "remainingBlocks": 1929,
+    "remainingTime": null,
+    "previousRetarget": null,
+    "previousTime": 1734698648,
+    "nextRetargetHeight": 3173184,
+    "timeAvg": 60448,
+    "adjustedTimeAvg": null,
+    "timeOffset": 0,
+    "expectedBlocks": 8.765
+  }
+}`
+        }
+      }
+    }
+  },
+  {
+    type: "category",
+    category: "addresses",
+    fragment: "addresses",
+    title: "Addresses",
+    showConditions: bitcoinNetworks.concat(liquidNetworks)
+  },
+  {
+    type: "endpoint",
+    category: "addresses",
+    fragment: "track-address",
+    title: "Track Address",
+    description: {
+      default: "Subscribe to a single address to receive live updates on new transactions having that address in input or output. <code>address-transactions</code> field contains new mempool transactions, and <code>block-transactions</code> contains new confirmed transactions."
+    },
+    payload: '{ "track-address": "bc1qeldw4mqns26wew8swgpkt3fs364w3ehs046w2f" }',
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: false,
+    codeExample: {
+      default: {
+        codeTemplate: {
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "block-transactions": [
+    {
+      "txid": "9d3ea0d131c45450c135d549b62032019bc47a80368e14edc72caf38f5a88033",
+      "version": 1,
+      "locktime": 0,
+      "vin": [
+        {
+          "txid": "69da555a9c69788a3a081958457894e56b1ee6766bc72cecf881b1b4f327f78b",
+          "vout": 0,
+          "prevout": {
+            "scriptpubkey": "a914c9848245ae4f5d5934b5cbdfb79e04cdd337470b87",
+            "scriptpubkey_asm": "OP_HASH160 OP_PUSHBYTES_20 c9848245ae4f5d5934b5cbdfb79e04cdd337470b OP_EQUAL",
+            "scriptpubkey_type": "p2sh",
+            "scriptpubkey_address": "3L4YUynB4X44rJBY9CmiLMN8Wjti49JCYB",
+            "value": 24962957
+          },
+          "scriptsig": "0048304502210099219ee0cd5da341650078e3c63885b3cc2211069f2551cf436e0100f421e1760220349b4ec284255b458d6da539fa17314e8330459e0a653c254f775d4ec8f32b3f0147304402203a8353c5ee76a2e266432e5f993f882e05725297e64c0833cf44719f7dda8d3b022058a2f72e7739efd21657b4943cac60a0a3c749e712787f0e85726da4c3adcf8e014c695221027f2a0df8e86535d08ca3e766a178f90c813d2dd1d55b0166e82518efbffb18c02103556a35844b517e2fc8216701e2e0a64dbcbe62ad420ac6dd73dc79e69efeb69521031ef21bd55171032b7aec21ec82932735fb986f1d4d8611feee62ab38acf4a6bb53ae",
+          "scriptsig_asm": "OP_0 OP_PUSHBYTES_72 304502210099219ee0cd5da341650078e3c63885b3cc2211069f2551cf436e0100f421e1760220349b4ec284255b458d6da539fa17314e8330459e0a653c254f775d4ec8f32b3f01 OP_PUSHBYTES_71 304402203a8353c5ee76a2e266432e5f993f882e05725297e64c0833cf44719f7dda8d3b022058a2f72e7739efd21657b4943cac60a0a3c749e712787f0e85726da4c3adcf8e01 OP_PUSHDATA1 5221027f2a0df8e86535d08ca3e766a178f90c813d2dd1d55b0166e82518efbffb18c02103556a35844b517e2fc8216701e2e0a64dbcbe62ad420ac6dd73dc79e69efeb69521031ef21bd55171032b7aec21ec82932735fb986f1d4d8611feee62ab38acf4a6bb53ae",
+          "is_coinbase": false,
+          "sequence": 4294967295,
+          "inner_redeemscript_asm": "OP_PUSHNUM_2 OP_PUSHBYTES_33 027f2a0df8e86535d08ca3e766a178f90c813d2dd1d55b0166e82518efbffb18c0 OP_PUSHBYTES_33 03556a35844b517e2fc8216701e2e0a64dbcbe62ad420ac6dd73dc79e69efeb695 OP_PUSHBYTES_33 031ef21bd55171032b7aec21ec82932735fb986f1d4d8611feee62ab38acf4a6bb OP_PUSHNUM_3 OP_CHECKMULTISIG"
+        },
+        ...
+        {
+          "txid": "43852d32c7ae6d362d446d090daa4d389f78ec77e6693f9248cd924dc0b1ecc3",
+          "vout": 1,
+          "prevout": {
+            "scriptpubkey": "a914a3aff5f5765f167c1582fd85517ddde83174118187",
+            "scriptpubkey_asm": "OP_HASH160 OP_PUSHBYTES_20 a3aff5f5765f167c1582fd85517ddde831741181 OP_EQUAL",
+            "scriptpubkey_type": "p2sh",
+            "scriptpubkey_address": "3GcWrnGFoNzbn1KaiP5czS5xPELdWcgDX2",
+            "value": 1719827
+          },
+          "scriptsig": "0047304402205f83d22a0476158aa0986682c96ce2b2dab26c814968dba62905cdfeef1b3ac7022059438a3439bb18bd49242010c8a276ea6f1810d523042e679fa6679d60e89e0201483045022100eb085df09e0fb4894090a5f39b9f2188392f7ac2847ed8255629baffc7371f170220120463b91d6c4bb8968fb3eda9012b88d13d8ca71de28e7a64b1dd88282ff144014c69522103650083cbc9cd1da1224e0780bce1ee8abd5150c5252defd0edeccd3521610b282102510ab30a6a97464ef0d61f71ec8b1d2325f12934ff15ba73579bfd0ac5f4fc1a2102985b3be77f56a9a29c5f68d3c893d6c4d76ec8c07792f0291d375c29b71ee2f853ae",
+          "scriptsig_asm": "OP_0 OP_PUSHBYTES_71 304402205f83d22a0476158aa0986682c96ce2b2dab26c814968dba62905cdfeef1b3ac7022059438a3439bb18bd49242010c8a276ea6f1810d523042e679fa6679d60e89e0201 OP_PUSHBYTES_72 3045022100eb085df09e0fb4894090a5f39b9f2188392f7ac2847ed8255629baffc7371f170220120463b91d6c4bb8968fb3eda9012b88d13d8ca71de28e7a64b1dd88282ff14401 OP_PUSHDATA1 522103650083cbc9cd1da1224e0780bce1ee8abd5150c5252defd0edeccd3521610b282102510ab30a6a97464ef0d61f71ec8b1d2325f12934ff15ba73579bfd0ac5f4fc1a2102985b3be77f56a9a29c5f68d3c893d6c4d76ec8c07792f0291d375c29b71ee2f853ae",
+          "is_coinbase": false,
+          "sequence": 4294967295,
+          "inner_redeemscript_asm": "OP_PUSHNUM_2 OP_PUSHBYTES_33 03650083cbc9cd1da1224e0780bce1ee8abd5150c5252defd0edeccd3521610b28 OP_PUSHBYTES_33 02510ab30a6a97464ef0d61f71ec8b1d2325f12934ff15ba73579bfd0ac5f4fc1a OP_PUSHBYTES_33 02985b3be77f56a9a29c5f68d3c893d6c4d76ec8c07792f0291d375c29b71ee2f8 OP_PUSHNUM_3 OP_CHECKMULTISIG"
+        }
+      ],
+      "vout": [
+        {
+          "scriptpubkey": "0014292fce548b228cd3df6334dd525fac62e7eb5f7a",
+          "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 292fce548b228cd3df6334dd525fac62e7eb5f7a",
+          "scriptpubkey_type": "v0_p2wpkh",
+          "scriptpubkey_address": "bc1q9yhuu4yty2xd8hmrxnw4yhavvtn7khm62uw38p",
+          "value": 57000
+        },
+        ...
+        {
+          "scriptpubkey": "0020e5c7c00d174631d2d1e365d6347b016fb87b6a0c08902d8e443989cb771fa7ec",
+          "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_32 e5c7c00d174631d2d1e365d6347b016fb87b6a0c08902d8e443989cb771fa7ec",
+          "scriptpubkey_type": "v0_p2wsh",
+          "scriptpubkey_address": "bc1quhruqrghgcca950rvhtrg7cpd7u8k6svpzgzmrjy8xyukacl5lkq0r8l2d",
+          "value": 17343523
+        }
+      ],
+      "size": 5514,
+      "weight": 22056,
+      "sigops": 208,
+      "fee": 44000,
+      "status": {
+        "confirmed": true,
+        "block_height": 875602,
+        "block_hash": "000000000000000000016c0639b6c1a34d6659c231aa2de5849ab3377ed75020",
+        "block_time": 1734704791
+      },
+      "order": 864069877,
+      "vsize": 5514,
+      "adjustedVsize": 5514,
+      "feePerVsize": 7.979688066739209,
+      "adjustedFeePerVsize": 7.979688066739209,
+      "effectiveFeePerVsize": 7.979688066739209,
+      "firstSeen": 1734704590,
+      "inputs": [],
+      "cpfpDirty": false,
+      "ancestors": [],
+      "descendants": [],
+      "bestDescendant": null,
+      "position": {
+        "block": 0,
+        "vsize": 191567
+      },
+      "flags": 1099511659526
+    }
+  ]
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "block-transactions": [
+    {
+      "txid": "9d3ea0d131c45450c135d549b62032019bc47a80368e14edc72caf38f5a88033",
+      "version": 1,
+      "locktime": 0,
+      "vin": [
+        {
+          "txid": "69da555a9c69788a3a081958457894e56b1ee6766bc72cecf881b1b4f327f78b",
+          "vout": 0,
+          "prevout": {
+            "scriptpubkey": "a914c9848245ae4f5d5934b5cbdfb79e04cdd337470b87",
+            "scriptpubkey_asm": "OP_HASH160 OP_PUSHBYTES_20 c9848245ae4f5d5934b5cbdfb79e04cdd337470b OP_EQUAL",
+            "scriptpubkey_type": "p2sh",
+            "scriptpubkey_address": "3L4YUynB4X44rJBY9CmiLMN8Wjti49JCYB",
+            "value": 24962957
+          },
+          "scriptsig": "0048304502210099219ee0cd5da341650078e3c63885b3cc2211069f2551cf436e0100f421e1760220349b4ec284255b458d6da539fa17314e8330459e0a653c254f775d4ec8f32b3f0147304402203a8353c5ee76a2e266432e5f993f882e05725297e64c0833cf44719f7dda8d3b022058a2f72e7739efd21657b4943cac60a0a3c749e712787f0e85726da4c3adcf8e014c695221027f2a0df8e86535d08ca3e766a178f90c813d2dd1d55b0166e82518efbffb18c02103556a35844b517e2fc8216701e2e0a64dbcbe62ad420ac6dd73dc79e69efeb69521031ef21bd55171032b7aec21ec82932735fb986f1d4d8611feee62ab38acf4a6bb53ae",
+          "scriptsig_asm": "OP_0 OP_PUSHBYTES_72 304502210099219ee0cd5da341650078e3c63885b3cc2211069f2551cf436e0100f421e1760220349b4ec284255b458d6da539fa17314e8330459e0a653c254f775d4ec8f32b3f01 OP_PUSHBYTES_71 304402203a8353c5ee76a2e266432e5f993f882e05725297e64c0833cf44719f7dda8d3b022058a2f72e7739efd21657b4943cac60a0a3c749e712787f0e85726da4c3adcf8e01 OP_PUSHDATA1 5221027f2a0df8e86535d08ca3e766a178f90c813d2dd1d55b0166e82518efbffb18c02103556a35844b517e2fc8216701e2e0a64dbcbe62ad420ac6dd73dc79e69efeb69521031ef21bd55171032b7aec21ec82932735fb986f1d4d8611feee62ab38acf4a6bb53ae",
+          "is_coinbase": false,
+          "sequence": 4294967295,
+          "inner_redeemscript_asm": "OP_PUSHNUM_2 OP_PUSHBYTES_33 027f2a0df8e86535d08ca3e766a178f90c813d2dd1d55b0166e82518efbffb18c0 OP_PUSHBYTES_33 03556a35844b517e2fc8216701e2e0a64dbcbe62ad420ac6dd73dc79e69efeb695 OP_PUSHBYTES_33 031ef21bd55171032b7aec21ec82932735fb986f1d4d8611feee62ab38acf4a6bb OP_PUSHNUM_3 OP_CHECKMULTISIG"
+        },
+        ...
+        {
+          "txid": "43852d32c7ae6d362d446d090daa4d389f78ec77e6693f9248cd924dc0b1ecc3",
+          "vout": 1,
+          "prevout": {
+            "scriptpubkey": "a914a3aff5f5765f167c1582fd85517ddde83174118187",
+            "scriptpubkey_asm": "OP_HASH160 OP_PUSHBYTES_20 a3aff5f5765f167c1582fd85517ddde831741181 OP_EQUAL",
+            "scriptpubkey_type": "p2sh",
+            "scriptpubkey_address": "3GcWrnGFoNzbn1KaiP5czS5xPELdWcgDX2",
+            "value": 1719827
+          },
+          "scriptsig": "0047304402205f83d22a0476158aa0986682c96ce2b2dab26c814968dba62905cdfeef1b3ac7022059438a3439bb18bd49242010c8a276ea6f1810d523042e679fa6679d60e89e0201483045022100eb085df09e0fb4894090a5f39b9f2188392f7ac2847ed8255629baffc7371f170220120463b91d6c4bb8968fb3eda9012b88d13d8ca71de28e7a64b1dd88282ff144014c69522103650083cbc9cd1da1224e0780bce1ee8abd5150c5252defd0edeccd3521610b282102510ab30a6a97464ef0d61f71ec8b1d2325f12934ff15ba73579bfd0ac5f4fc1a2102985b3be77f56a9a29c5f68d3c893d6c4d76ec8c07792f0291d375c29b71ee2f853ae",
+          "scriptsig_asm": "OP_0 OP_PUSHBYTES_71 304402205f83d22a0476158aa0986682c96ce2b2dab26c814968dba62905cdfeef1b3ac7022059438a3439bb18bd49242010c8a276ea6f1810d523042e679fa6679d60e89e0201 OP_PUSHBYTES_72 3045022100eb085df09e0fb4894090a5f39b9f2188392f7ac2847ed8255629baffc7371f170220120463b91d6c4bb8968fb3eda9012b88d13d8ca71de28e7a64b1dd88282ff14401 OP_PUSHDATA1 522103650083cbc9cd1da1224e0780bce1ee8abd5150c5252defd0edeccd3521610b282102510ab30a6a97464ef0d61f71ec8b1d2325f12934ff15ba73579bfd0ac5f4fc1a2102985b3be77f56a9a29c5f68d3c893d6c4d76ec8c07792f0291d375c29b71ee2f853ae",
+          "is_coinbase": false,
+          "sequence": 4294967295,
+          "inner_redeemscript_asm": "OP_PUSHNUM_2 OP_PUSHBYTES_33 03650083cbc9cd1da1224e0780bce1ee8abd5150c5252defd0edeccd3521610b28 OP_PUSHBYTES_33 02510ab30a6a97464ef0d61f71ec8b1d2325f12934ff15ba73579bfd0ac5f4fc1a OP_PUSHBYTES_33 02985b3be77f56a9a29c5f68d3c893d6c4d76ec8c07792f0291d375c29b71ee2f8 OP_PUSHNUM_3 OP_CHECKMULTISIG"
+        }
+      ],
+      "vout": [
+        {
+          "scriptpubkey": "0014292fce548b228cd3df6334dd525fac62e7eb5f7a",
+          "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 292fce548b228cd3df6334dd525fac62e7eb5f7a",
+          "scriptpubkey_type": "v0_p2wpkh",
+          "scriptpubkey_address": "bc1q9yhuu4yty2xd8hmrxnw4yhavvtn7khm62uw38p",
+          "value": 57000
+        },
+        ...
+        {
+          "scriptpubkey": "0020e5c7c00d174631d2d1e365d6347b016fb87b6a0c08902d8e443989cb771fa7ec",
+          "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_32 e5c7c00d174631d2d1e365d6347b016fb87b6a0c08902d8e443989cb771fa7ec",
+          "scriptpubkey_type": "v0_p2wsh",
+          "scriptpubkey_address": "bc1quhruqrghgcca950rvhtrg7cpd7u8k6svpzgzmrjy8xyukacl5lkq0r8l2d",
+          "value": 17343523
+        }
+      ],
+      "size": 5514,
+      "weight": 22056,
+      "sigops": 208,
+      "fee": 44000,
+      "status": {
+        "confirmed": true,
+        "block_height": 875602,
+        "block_hash": "000000000000000000016c0639b6c1a34d6659c231aa2de5849ab3377ed75020",
+        "block_time": 1734704791
+      },
+      "order": 864069877,
+      "vsize": 5514,
+      "adjustedVsize": 5514,
+      "feePerVsize": 7.979688066739209,
+      "adjustedFeePerVsize": 7.979688066739209,
+      "effectiveFeePerVsize": 7.979688066739209,
+      "firstSeen": 1734704590,
+      "inputs": [],
+      "cpfpDirty": false,
+      "ancestors": [],
+      "descendants": [],
+      "bestDescendant": null,
+      "position": {
+        "block": 0,
+        "vsize": 191567
+      },
+      "flags": 1099511659526
+    }
+  ]
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "block-transactions": [
+    {
+      "txid": "9d3ea0d131c45450c135d549b62032019bc47a80368e14edc72caf38f5a88033",
+      "version": 1,
+      "locktime": 0,
+      "vin": [
+        {
+          "txid": "69da555a9c69788a3a081958457894e56b1ee6766bc72cecf881b1b4f327f78b",
+          "vout": 0,
+          "prevout": {
+            "scriptpubkey": "a914c9848245ae4f5d5934b5cbdfb79e04cdd337470b87",
+            "scriptpubkey_asm": "OP_HASH160 OP_PUSHBYTES_20 c9848245ae4f5d5934b5cbdfb79e04cdd337470b OP_EQUAL",
+            "scriptpubkey_type": "p2sh",
+            "scriptpubkey_address": "3L4YUynB4X44rJBY9CmiLMN8Wjti49JCYB",
+            "value": 24962957
+          },
+          "scriptsig": "0048304502210099219ee0cd5da341650078e3c63885b3cc2211069f2551cf436e0100f421e1760220349b4ec284255b458d6da539fa17314e8330459e0a653c254f775d4ec8f32b3f0147304402203a8353c5ee76a2e266432e5f993f882e05725297e64c0833cf44719f7dda8d3b022058a2f72e7739efd21657b4943cac60a0a3c749e712787f0e85726da4c3adcf8e014c695221027f2a0df8e86535d08ca3e766a178f90c813d2dd1d55b0166e82518efbffb18c02103556a35844b517e2fc8216701e2e0a64dbcbe62ad420ac6dd73dc79e69efeb69521031ef21bd55171032b7aec21ec82932735fb986f1d4d8611feee62ab38acf4a6bb53ae",
+          "scriptsig_asm": "OP_0 OP_PUSHBYTES_72 304502210099219ee0cd5da341650078e3c63885b3cc2211069f2551cf436e0100f421e1760220349b4ec284255b458d6da539fa17314e8330459e0a653c254f775d4ec8f32b3f01 OP_PUSHBYTES_71 304402203a8353c5ee76a2e266432e5f993f882e05725297e64c0833cf44719f7dda8d3b022058a2f72e7739efd21657b4943cac60a0a3c749e712787f0e85726da4c3adcf8e01 OP_PUSHDATA1 5221027f2a0df8e86535d08ca3e766a178f90c813d2dd1d55b0166e82518efbffb18c02103556a35844b517e2fc8216701e2e0a64dbcbe62ad420ac6dd73dc79e69efeb69521031ef21bd55171032b7aec21ec82932735fb986f1d4d8611feee62ab38acf4a6bb53ae",
+          "is_coinbase": false,
+          "sequence": 4294967295,
+          "inner_redeemscript_asm": "OP_PUSHNUM_2 OP_PUSHBYTES_33 027f2a0df8e86535d08ca3e766a178f90c813d2dd1d55b0166e82518efbffb18c0 OP_PUSHBYTES_33 03556a35844b517e2fc8216701e2e0a64dbcbe62ad420ac6dd73dc79e69efeb695 OP_PUSHBYTES_33 031ef21bd55171032b7aec21ec82932735fb986f1d4d8611feee62ab38acf4a6bb OP_PUSHNUM_3 OP_CHECKMULTISIG"
+        },
+        ...
+        {
+          "txid": "43852d32c7ae6d362d446d090daa4d389f78ec77e6693f9248cd924dc0b1ecc3",
+          "vout": 1,
+          "prevout": {
+            "scriptpubkey": "a914a3aff5f5765f167c1582fd85517ddde83174118187",
+            "scriptpubkey_asm": "OP_HASH160 OP_PUSHBYTES_20 a3aff5f5765f167c1582fd85517ddde831741181 OP_EQUAL",
+            "scriptpubkey_type": "p2sh",
+            "scriptpubkey_address": "3GcWrnGFoNzbn1KaiP5czS5xPELdWcgDX2",
+            "value": 1719827
+          },
+          "scriptsig": "0047304402205f83d22a0476158aa0986682c96ce2b2dab26c814968dba62905cdfeef1b3ac7022059438a3439bb18bd49242010c8a276ea6f1810d523042e679fa6679d60e89e0201483045022100eb085df09e0fb4894090a5f39b9f2188392f7ac2847ed8255629baffc7371f170220120463b91d6c4bb8968fb3eda9012b88d13d8ca71de28e7a64b1dd88282ff144014c69522103650083cbc9cd1da1224e0780bce1ee8abd5150c5252defd0edeccd3521610b282102510ab30a6a97464ef0d61f71ec8b1d2325f12934ff15ba73579bfd0ac5f4fc1a2102985b3be77f56a9a29c5f68d3c893d6c4d76ec8c07792f0291d375c29b71ee2f853ae",
+          "scriptsig_asm": "OP_0 OP_PUSHBYTES_71 304402205f83d22a0476158aa0986682c96ce2b2dab26c814968dba62905cdfeef1b3ac7022059438a3439bb18bd49242010c8a276ea6f1810d523042e679fa6679d60e89e0201 OP_PUSHBYTES_72 3045022100eb085df09e0fb4894090a5f39b9f2188392f7ac2847ed8255629baffc7371f170220120463b91d6c4bb8968fb3eda9012b88d13d8ca71de28e7a64b1dd88282ff14401 OP_PUSHDATA1 522103650083cbc9cd1da1224e0780bce1ee8abd5150c5252defd0edeccd3521610b282102510ab30a6a97464ef0d61f71ec8b1d2325f12934ff15ba73579bfd0ac5f4fc1a2102985b3be77f56a9a29c5f68d3c893d6c4d76ec8c07792f0291d375c29b71ee2f853ae",
+          "is_coinbase": false,
+          "sequence": 4294967295,
+          "inner_redeemscript_asm": "OP_PUSHNUM_2 OP_PUSHBYTES_33 03650083cbc9cd1da1224e0780bce1ee8abd5150c5252defd0edeccd3521610b28 OP_PUSHBYTES_33 02510ab30a6a97464ef0d61f71ec8b1d2325f12934ff15ba73579bfd0ac5f4fc1a OP_PUSHBYTES_33 02985b3be77f56a9a29c5f68d3c893d6c4d76ec8c07792f0291d375c29b71ee2f8 OP_PUSHNUM_3 OP_CHECKMULTISIG"
+        }
+      ],
+      "vout": [
+        {
+          "scriptpubkey": "0014292fce548b228cd3df6334dd525fac62e7eb5f7a",
+          "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 292fce548b228cd3df6334dd525fac62e7eb5f7a",
+          "scriptpubkey_type": "v0_p2wpkh",
+          "scriptpubkey_address": "bc1q9yhuu4yty2xd8hmrxnw4yhavvtn7khm62uw38p",
+          "value": 57000
+        },
+        ...
+        {
+          "scriptpubkey": "0020e5c7c00d174631d2d1e365d6347b016fb87b6a0c08902d8e443989cb771fa7ec",
+          "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_32 e5c7c00d174631d2d1e365d6347b016fb87b6a0c08902d8e443989cb771fa7ec",
+          "scriptpubkey_type": "v0_p2wsh",
+          "scriptpubkey_address": "bc1quhruqrghgcca950rvhtrg7cpd7u8k6svpzgzmrjy8xyukacl5lkq0r8l2d",
+          "value": 17343523
+        }
+      ],
+      "size": 5514,
+      "weight": 22056,
+      "sigops": 208,
+      "fee": 44000,
+      "status": {
+        "confirmed": true,
+        "block_height": 875602,
+        "block_hash": "000000000000000000016c0639b6c1a34d6659c231aa2de5849ab3377ed75020",
+        "block_time": 1734704791
+      },
+      "order": 864069877,
+      "vsize": 5514,
+      "adjustedVsize": 5514,
+      "feePerVsize": 7.979688066739209,
+      "adjustedFeePerVsize": 7.979688066739209,
+      "effectiveFeePerVsize": 7.979688066739209,
+      "firstSeen": 1734704590,
+      "inputs": [],
+      "cpfpDirty": false,
+      "ancestors": [],
+      "descendants": [],
+      "bestDescendant": null,
+      "position": {
+        "block": 0,
+        "vsize": 191567
+      },
+      "flags": 1099511659526
+    }
+  ]
+}`
+        },
+        codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "block-transactions": [
+    {
+      "txid": "9d3ea0d131c45450c135d549b62032019bc47a80368e14edc72caf38f5a88033",
+      "version": 1,
+      "locktime": 0,
+      "vin": [
+        {
+          "txid": "69da555a9c69788a3a081958457894e56b1ee6766bc72cecf881b1b4f327f78b",
+          "vout": 0,
+          "prevout": {
+            "scriptpubkey": "a914c9848245ae4f5d5934b5cbdfb79e04cdd337470b87",
+            "scriptpubkey_asm": "OP_HASH160 OP_PUSHBYTES_20 c9848245ae4f5d5934b5cbdfb79e04cdd337470b OP_EQUAL",
+            "scriptpubkey_type": "p2sh",
+            "scriptpubkey_address": "3L4YUynB4X44rJBY9CmiLMN8Wjti49JCYB",
+            "value": 24962957
+          },
+          "scriptsig": "0048304502210099219ee0cd5da341650078e3c63885b3cc2211069f2551cf436e0100f421e1760220349b4ec284255b458d6da539fa17314e8330459e0a653c254f775d4ec8f32b3f0147304402203a8353c5ee76a2e266432e5f993f882e05725297e64c0833cf44719f7dda8d3b022058a2f72e7739efd21657b4943cac60a0a3c749e712787f0e85726da4c3adcf8e014c695221027f2a0df8e86535d08ca3e766a178f90c813d2dd1d55b0166e82518efbffb18c02103556a35844b517e2fc8216701e2e0a64dbcbe62ad420ac6dd73dc79e69efeb69521031ef21bd55171032b7aec21ec82932735fb986f1d4d8611feee62ab38acf4a6bb53ae",
+          "scriptsig_asm": "OP_0 OP_PUSHBYTES_72 304502210099219ee0cd5da341650078e3c63885b3cc2211069f2551cf436e0100f421e1760220349b4ec284255b458d6da539fa17314e8330459e0a653c254f775d4ec8f32b3f01 OP_PUSHBYTES_71 304402203a8353c5ee76a2e266432e5f993f882e05725297e64c0833cf44719f7dda8d3b022058a2f72e7739efd21657b4943cac60a0a3c749e712787f0e85726da4c3adcf8e01 OP_PUSHDATA1 5221027f2a0df8e86535d08ca3e766a178f90c813d2dd1d55b0166e82518efbffb18c02103556a35844b517e2fc8216701e2e0a64dbcbe62ad420ac6dd73dc79e69efeb69521031ef21bd55171032b7aec21ec82932735fb986f1d4d8611feee62ab38acf4a6bb53ae",
+          "is_coinbase": false,
+          "sequence": 4294967295,
+          "inner_redeemscript_asm": "OP_PUSHNUM_2 OP_PUSHBYTES_33 027f2a0df8e86535d08ca3e766a178f90c813d2dd1d55b0166e82518efbffb18c0 OP_PUSHBYTES_33 03556a35844b517e2fc8216701e2e0a64dbcbe62ad420ac6dd73dc79e69efeb695 OP_PUSHBYTES_33 031ef21bd55171032b7aec21ec82932735fb986f1d4d8611feee62ab38acf4a6bb OP_PUSHNUM_3 OP_CHECKMULTISIG"
+        },
+        ...
+        {
+          "txid": "43852d32c7ae6d362d446d090daa4d389f78ec77e6693f9248cd924dc0b1ecc3",
+          "vout": 1,
+          "prevout": {
+            "scriptpubkey": "a914a3aff5f5765f167c1582fd85517ddde83174118187",
+            "scriptpubkey_asm": "OP_HASH160 OP_PUSHBYTES_20 a3aff5f5765f167c1582fd85517ddde831741181 OP_EQUAL",
+            "scriptpubkey_type": "p2sh",
+            "scriptpubkey_address": "3GcWrnGFoNzbn1KaiP5czS5xPELdWcgDX2",
+            "value": 1719827
+          },
+          "scriptsig": "0047304402205f83d22a0476158aa0986682c96ce2b2dab26c814968dba62905cdfeef1b3ac7022059438a3439bb18bd49242010c8a276ea6f1810d523042e679fa6679d60e89e0201483045022100eb085df09e0fb4894090a5f39b9f2188392f7ac2847ed8255629baffc7371f170220120463b91d6c4bb8968fb3eda9012b88d13d8ca71de28e7a64b1dd88282ff144014c69522103650083cbc9cd1da1224e0780bce1ee8abd5150c5252defd0edeccd3521610b282102510ab30a6a97464ef0d61f71ec8b1d2325f12934ff15ba73579bfd0ac5f4fc1a2102985b3be77f56a9a29c5f68d3c893d6c4d76ec8c07792f0291d375c29b71ee2f853ae",
+          "scriptsig_asm": "OP_0 OP_PUSHBYTES_71 304402205f83d22a0476158aa0986682c96ce2b2dab26c814968dba62905cdfeef1b3ac7022059438a3439bb18bd49242010c8a276ea6f1810d523042e679fa6679d60e89e0201 OP_PUSHBYTES_72 3045022100eb085df09e0fb4894090a5f39b9f2188392f7ac2847ed8255629baffc7371f170220120463b91d6c4bb8968fb3eda9012b88d13d8ca71de28e7a64b1dd88282ff14401 OP_PUSHDATA1 522103650083cbc9cd1da1224e0780bce1ee8abd5150c5252defd0edeccd3521610b282102510ab30a6a97464ef0d61f71ec8b1d2325f12934ff15ba73579bfd0ac5f4fc1a2102985b3be77f56a9a29c5f68d3c893d6c4d76ec8c07792f0291d375c29b71ee2f853ae",
+          "is_coinbase": false,
+          "sequence": 4294967295,
+          "inner_redeemscript_asm": "OP_PUSHNUM_2 OP_PUSHBYTES_33 03650083cbc9cd1da1224e0780bce1ee8abd5150c5252defd0edeccd3521610b28 OP_PUSHBYTES_33 02510ab30a6a97464ef0d61f71ec8b1d2325f12934ff15ba73579bfd0ac5f4fc1a OP_PUSHBYTES_33 02985b3be77f56a9a29c5f68d3c893d6c4d76ec8c07792f0291d375c29b71ee2f8 OP_PUSHNUM_3 OP_CHECKMULTISIG"
+        }
+      ],
+      "vout": [
+        {
+          "scriptpubkey": "0014292fce548b228cd3df6334dd525fac62e7eb5f7a",
+          "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 292fce548b228cd3df6334dd525fac62e7eb5f7a",
+          "scriptpubkey_type": "v0_p2wpkh",
+          "scriptpubkey_address": "bc1q9yhuu4yty2xd8hmrxnw4yhavvtn7khm62uw38p",
+          "value": 57000
+        },
+        ...
+        {
+          "scriptpubkey": "0020e5c7c00d174631d2d1e365d6347b016fb87b6a0c08902d8e443989cb771fa7ec",
+          "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_32 e5c7c00d174631d2d1e365d6347b016fb87b6a0c08902d8e443989cb771fa7ec",
+          "scriptpubkey_type": "v0_p2wsh",
+          "scriptpubkey_address": "bc1quhruqrghgcca950rvhtrg7cpd7u8k6svpzgzmrjy8xyukacl5lkq0r8l2d",
+          "value": 17343523
+        }
+      ],
+      "size": 5514,
+      "weight": 22056,
+      "sigops": 208,
+      "fee": 44000,
+      "status": {
+        "confirmed": true,
+        "block_height": 875602,
+        "block_hash": "000000000000000000016c0639b6c1a34d6659c231aa2de5849ab3377ed75020",
+        "block_time": 1734704791
+      },
+      "order": 864069877,
+      "vsize": 5514,
+      "adjustedVsize": 5514,
+      "feePerVsize": 7.979688066739209,
+      "adjustedFeePerVsize": 7.979688066739209,
+      "effectiveFeePerVsize": 7.979688066739209,
+      "firstSeen": 1734704590,
+      "inputs": [],
+      "cpfpDirty": false,
+      "ancestors": [],
+      "descendants": [],
+      "bestDescendant": null,
+      "position": {
+        "block": 0,
+        "vsize": 191567
+      },
+      "flags": 1099511659526
+    }
+  ]
+}`
+        }
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "addresses",
+    fragment: "track-addresses",
+    title: "Track Addresses",
+    description: {
+      default: "Subscribe to multiple addresses to receive live updates on new transactions having these addresses in input or output. Limits on the maximum number of tracked addresses apply. For higher tracking limits, consider upgrading to an <a href='https://mempool.space/enterprise'>enterprise sponsorship</a>."
+    },
+    payload: `{
+  "track-addresses": [
+    "bc1qeldw4mqns26wew8swgpkt3fs364w3ehs046w2f",
+    "bc1qjj09853tfpztjgrk4jeyzj4ml59fv9cmslv3c4gxxf57u0k3kxmqllx29y"
+  ]
+}`,
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: false,
+    codeExample: {
+      default: {
+        codeTemplate: {
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "multi-address-transactions": {
+    "bc1qjj09853tfpztjgrk4jeyzj4ml59fv9cmslv3c4gxxf57u0k3kxmqllx29y": {
+      "mempool": [],
+      "confirmed": [
+        {
+          "txid": "1e4764f908f19b74284a889478b95d013c1bd36dc832dcb7eb36fe1801fed404",
+          "version": 2,
+          "locktime": 875625,
+          "vin": [
+            {
+              "txid": "ce361fed5996aec6d440556383164e9e4e5b8be8c2a213c4b36ae711efda3b3f",
+              "vout": 1,
+              "prevout": {
+                "scriptpubkey": "0014257ba1ebc987831dbe8ee560419282483bf68588",
+                "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 257ba1ebc987831dbe8ee560419282483bf68588",
+                "scriptpubkey_type": "v0_p2wpkh",
+                "scriptpubkey_address": "bc1qy4a6r67fs7p3m05wu4syry5zfqaldpvg8vsqzz",
+                "value": 1831200
+              },
+              "scriptsig": "",
+              "scriptsig_asm": "",
+              "witness": [
+                "3044022028363f66fe74bdddf46d204cbf9844d4ef99d6fcb801f93f3ea1666ff51514340220058eb99790dd002323bd12afa0b62903cf72465d48c40cb11366dfa4eebbd87a01",
+                "020e625e13a81995f29ee828e31500b8454bd0b115f84dfa07d994eecd733efffa"
+              ],
+              "is_coinbase": false,
+              "sequence": 4294967294
+            },
+            ...
+          ],
+          "vout": [
+            {
+              "scriptpubkey": "0020949e53d22b4844b92076acb2414abbfd0a96171b87d91c55063269ee3ed1b1b6",
+              "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_32 949e53d22b4844b92076acb2414abbfd0a96171b87d91c55063269ee3ed1b1b6",
+              "scriptpubkey_type": "v0_p2wsh",
+              "scriptpubkey_address": "bc1qjj09853tfpztjgrk4jeyzj4ml59fv9cmslv3c4gxxf57u0k3kxmqllx29y",
+              "value": 2546637
+            }
+          ],
+          "size": 351,
+          "weight": 756,
+          "sigops": 2,
+          "fee": 4206,
+          "status": {
+            "confirmed": true,
+            "block_height": 875626,
+            "block_hash": "0000000000000000000086de1f4815ff0f7f0411d846301c5efa1e437130dc22",
+            "block_time": 1734720142
+          },
+          "order": 81067521,
+          "vsize": 189,
+          "adjustedVsize": 189,
+          "feePerVsize": 22.253968253968253,
+          "adjustedFeePerVsize": 22.253968253968253,
+          "effectiveFeePerVsize": 22.253968253968253,
+          "firstSeen": 1734719830,
+          "inputs": [],
+          "cpfpDirty": false,
+          "ancestors": [],
+          "descendants": [],
+          "bestDescendant": null,
+          "position": {
+            "block": 0,
+            "vsize": 134866.5
+          },
+          "flags": 1099511640074
+        }
+      ],
+      "removed": []
+    }
+  }
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "multi-address-transactions": {
+    "bc1qjj09853tfpztjgrk4jeyzj4ml59fv9cmslv3c4gxxf57u0k3kxmqllx29y": {
+      "mempool": [],
+      "confirmed": [
+        {
+          "txid": "1e4764f908f19b74284a889478b95d013c1bd36dc832dcb7eb36fe1801fed404",
+          "version": 2,
+          "locktime": 875625,
+          "vin": [
+            {
+              "txid": "ce361fed5996aec6d440556383164e9e4e5b8be8c2a213c4b36ae711efda3b3f",
+              "vout": 1,
+              "prevout": {
+                "scriptpubkey": "0014257ba1ebc987831dbe8ee560419282483bf68588",
+                "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 257ba1ebc987831dbe8ee560419282483bf68588",
+                "scriptpubkey_type": "v0_p2wpkh",
+                "scriptpubkey_address": "bc1qy4a6r67fs7p3m05wu4syry5zfqaldpvg8vsqzz",
+                "value": 1831200
+              },
+              "scriptsig": "",
+              "scriptsig_asm": "",
+              "witness": [
+                "3044022028363f66fe74bdddf46d204cbf9844d4ef99d6fcb801f93f3ea1666ff51514340220058eb99790dd002323bd12afa0b62903cf72465d48c40cb11366dfa4eebbd87a01",
+                "020e625e13a81995f29ee828e31500b8454bd0b115f84dfa07d994eecd733efffa"
+              ],
+              "is_coinbase": false,
+              "sequence": 4294967294
+            },
+            ...
+          ],
+          "vout": [
+            {
+              "scriptpubkey": "0020949e53d22b4844b92076acb2414abbfd0a96171b87d91c55063269ee3ed1b1b6",
+              "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_32 949e53d22b4844b92076acb2414abbfd0a96171b87d91c55063269ee3ed1b1b6",
+              "scriptpubkey_type": "v0_p2wsh",
+              "scriptpubkey_address": "bc1qjj09853tfpztjgrk4jeyzj4ml59fv9cmslv3c4gxxf57u0k3kxmqllx29y",
+              "value": 2546637
+            }
+          ],
+          "size": 351,
+          "weight": 756,
+          "sigops": 2,
+          "fee": 4206,
+          "status": {
+            "confirmed": true,
+            "block_height": 875626,
+            "block_hash": "0000000000000000000086de1f4815ff0f7f0411d846301c5efa1e437130dc22",
+            "block_time": 1734720142
+          },
+          "order": 81067521,
+          "vsize": 189,
+          "adjustedVsize": 189,
+          "feePerVsize": 22.253968253968253,
+          "adjustedFeePerVsize": 22.253968253968253,
+          "effectiveFeePerVsize": 22.253968253968253,
+          "firstSeen": 1734719830,
+          "inputs": [],
+          "cpfpDirty": false,
+          "ancestors": [],
+          "descendants": [],
+          "bestDescendant": null,
+          "position": {
+            "block": 0,
+            "vsize": 134866.5
+          },
+          "flags": 1099511640074
+        }
+      ],
+      "removed": []
+    }
+  }
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "multi-address-transactions": {
+    "bc1qjj09853tfpztjgrk4jeyzj4ml59fv9cmslv3c4gxxf57u0k3kxmqllx29y": {
+      "mempool": [],
+      "confirmed": [
+        {
+          "txid": "1e4764f908f19b74284a889478b95d013c1bd36dc832dcb7eb36fe1801fed404",
+          "version": 2,
+          "locktime": 875625,
+          "vin": [
+            {
+              "txid": "ce361fed5996aec6d440556383164e9e4e5b8be8c2a213c4b36ae711efda3b3f",
+              "vout": 1,
+              "prevout": {
+                "scriptpubkey": "0014257ba1ebc987831dbe8ee560419282483bf68588",
+                "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 257ba1ebc987831dbe8ee560419282483bf68588",
+                "scriptpubkey_type": "v0_p2wpkh",
+                "scriptpubkey_address": "bc1qy4a6r67fs7p3m05wu4syry5zfqaldpvg8vsqzz",
+                "value": 1831200
+              },
+              "scriptsig": "",
+              "scriptsig_asm": "",
+              "witness": [
+                "3044022028363f66fe74bdddf46d204cbf9844d4ef99d6fcb801f93f3ea1666ff51514340220058eb99790dd002323bd12afa0b62903cf72465d48c40cb11366dfa4eebbd87a01",
+                "020e625e13a81995f29ee828e31500b8454bd0b115f84dfa07d994eecd733efffa"
+              ],
+              "is_coinbase": false,
+              "sequence": 4294967294
+            },
+            ...
+          ],
+          "vout": [
+            {
+              "scriptpubkey": "0020949e53d22b4844b92076acb2414abbfd0a96171b87d91c55063269ee3ed1b1b6",
+              "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_32 949e53d22b4844b92076acb2414abbfd0a96171b87d91c55063269ee3ed1b1b6",
+              "scriptpubkey_type": "v0_p2wsh",
+              "scriptpubkey_address": "bc1qjj09853tfpztjgrk4jeyzj4ml59fv9cmslv3c4gxxf57u0k3kxmqllx29y",
+              "value": 2546637
+            }
+          ],
+          "size": 351,
+          "weight": 756,
+          "sigops": 2,
+          "fee": 4206,
+          "status": {
+            "confirmed": true,
+            "block_height": 875626,
+            "block_hash": "0000000000000000000086de1f4815ff0f7f0411d846301c5efa1e437130dc22",
+            "block_time": 1734720142
+          },
+          "order": 81067521,
+          "vsize": 189,
+          "adjustedVsize": 189,
+          "feePerVsize": 22.253968253968253,
+          "adjustedFeePerVsize": 22.253968253968253,
+          "effectiveFeePerVsize": 22.253968253968253,
+          "firstSeen": 1734719830,
+          "inputs": [],
+          "cpfpDirty": false,
+          "ancestors": [],
+          "descendants": [],
+          "bestDescendant": null,
+          "position": {
+            "block": 0,
+            "vsize": 134866.5
+          },
+          "flags": 1099511640074
+        }
+      ],
+      "removed": []
+    }
+  }
+}`
+        },
+        codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "multi-address-transactions": {
+    "ex1qzq0h0wvnnh9xpd508fzxaft0nu9wjmdvzalu6f": {
+      "mempool": [],
+      "confirmed": [
+        {
+          "txid": "d61ad73b64895ccabd32816643554c676891bdb52da0fba2b37079e04c4c4b2c",
+          "version": 2,
+          "locktime": 3171528,
+          "vin": [
+            {
+              "txid": "4847a0627952a0bcad6c8947d46a0e5b13eefbcfbf76246ea16a1a7c82bcc49b",
+              "vout": 2,
+              "prevout": {
+                "scriptpubkey": "00144d72c2967e1a581c0e71e82d65e99523a9149d02",
+                "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 4d72c2967e1a581c0e71e82d65e99523a9149d02",
+                "scriptpubkey_type": "v0_p2wpkh",
+                "scriptpubkey_address": "ex1qf4ev99n7rfvpcrn3aqkkt6v4yw53f8gznv9paa",
+                "valuecommitment": "09af208bbc0b9809aff4368dee81f74f178f77f844e7dfc5d70615bc757fa8b2f9",
+                "assetcommitment": "0a2ca17c42fadd887373c371e44cf49c6cd64c3081e23eef3275bdace0b8c674b5"
+              },
+              "scriptsig": "",
+              "scriptsig_asm": "",
+              "witness": [
+                "30440220653c6e1bd3de5bd9a56cbb6eb246834724667a5c5d12dc07107edc7c72bd6634022008d1f770dc9ba624bb250bba3a5254aa633f01a9bcb2a85aedc5b251e338b7b301",
+                "03fb2f0245e19f9e886fce54894558bbbcf50bf9576245e60a4c9780f7447eaf22"
+              ],
+              "is_coinbase": false,
+              "sequence": 4294967294,
+              "is_pegin": false
+            },
+            {
+              "txid": "ea5f690853ece5549807862a153357092c4f7dbe10886b86b84f87a3201dd8dc",
+              "vout": 0,
+              "prevout": {
+                "scriptpubkey": "0014a5996021b4001325b1aa85c3bf400516855a6e05",
+                "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 a5996021b4001325b1aa85c3bf400516855a6e05",
+                "scriptpubkey_type": "v0_p2wpkh",
+                "scriptpubkey_address": "ex1q5kvkqgd5qqfjtvd2shpm7sq9z6z45ms9ma7ywz",
+                "valuecommitment": "09f36fde0f51390cdf2ee6830b3c696569c3f9c5855ce26bd4f6d0280a83b86ecf",
+                "assetcommitment": "0bfcd8fcfaebfa41b596a89aa55fbf2eaa8c383ec71e8d9d0d461ea645d8d1bc45"
+              },
+              "scriptsig": "",
+              "scriptsig_asm": "",
+              "witness": [
+                "30440220033208f3e37c35009ba00472a67899222afbd5cc12b0d3906d2eec6f50a058510220607d4c5de43459e38158ee1cbe5e6a74c155041cecdbf961a077a952ee1e543601",
+                "0394d6ecb2f5db9fdeb0f7ac5301ea148704fc6986fdb8181bddc1d2eec9e99c32"
+              ],
+              "is_coinbase": false,
+              "sequence": 4294967294,
+              "is_pegin": false
+            },
+            {
+              "txid": "23e63b888d5da3ce1193bb4a74a0762d78904cfa7a6307ff47e91054d961208b",
+              "vout": 2,
+              "prevout": {
+                "scriptpubkey": "00144990783e871e57fa2499f00c5f6f4ddc2602e7c8",
+                "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 4990783e871e57fa2499f00c5f6f4ddc2602e7c8",
+                "scriptpubkey_type": "v0_p2wpkh",
+                "scriptpubkey_address": "ex1qfxg8s058retl5fye7qx97m6dmsnq9e7gq0dcee",
+                "valuecommitment": "0816440695f0c47ce471c7e10a93d36aee4554b46ed269bfa8390dd9db69409537",
+                "assetcommitment": "0a5a0eb7cab779cb6ce5d6517c73e244075eea15fbd54a7beb34710862aef58359"
+              },
+              "scriptsig": "",
+              "scriptsig_asm": "",
+              "witness": [
+                "3044022051e5482a486f55cfd5ae25062b0252e13de9bfa11a9c7e5f608ac6e03c62dc8902201d2b47a27fc07999973ec44e4569b4b3fcc338b1c3977173cfeab9cccde0b3e301",
+                "025991a68daafc95494019c228855999db8f19c872fd3f58bac6ff149db7b53cff"
+              ],
+              "is_coinbase": false,
+              "sequence": 4294967294,
+              "is_pegin": false
+            },
+            {
+              "txid": "2bbeb9440d3c08a1d3cd9acf5959ee740a6a64ffcaa4aa2b43e30026a2a40334",
+              "vout": 2,
+              "prevout": {
+                "scriptpubkey": "00144d72c2967e1a581c0e71e82d65e99523a9149d02",
+                "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 4d72c2967e1a581c0e71e82d65e99523a9149d02",
+                "scriptpubkey_type": "v0_p2wpkh",
+                "scriptpubkey_address": "ex1qf4ev99n7rfvpcrn3aqkkt6v4yw53f8gznv9paa",
+                "valuecommitment": "09d0c574d61d50065a2e398fb7252315b65176bf97de1d180d337f3aadfaa0e53e",
+                "assetcommitment": "0b82ede6b9a6cb9505a7f6bcc76f72caa3228de193debf4e586d60baebeaef0ab5"
+              },
+              "scriptsig": "",
+              "scriptsig_asm": "",
+              "witness": [
+                "3044022033ab9ea81a21b0f917792097ed69ab3724957a5e5d3a0430a0b2a16e0a74d8750220202859dc7e53998f5dc4b424321b7a711e3ff6517422a099504b337e30ec8acb01",
+                "03fb2f0245e19f9e886fce54894558bbbcf50bf9576245e60a4c9780f7447eaf22"
+              ],
+              "is_coinbase": false,
+              "sequence": 4294967294,
+              "is_pegin": false
+            }
+          ],
+          "vout": [
+            {
+              "scriptpubkey": "a914e185d1192f34d55ba3fbd15408168f339683d80287",
+              "scriptpubkey_asm": "OP_HASH160 OP_PUSHBYTES_20 e185d1192f34d55ba3fbd15408168f339683d802 OP_EQUAL",
+              "scriptpubkey_type": "p2sh",
+              "scriptpubkey_address": "H3jyk9ipDU5efhHW9n52xCY78HNFAQTy78",
+              "valuecommitment": "08f676101a27d784f1f89765ff33ad5a1e95ab2081da76b29ef97bdfaf309e1318",
+              "assetcommitment": "0a115106f540daae5a0a7cf66dcf07a69dc2faffb917e82f340bcdfc7da143228b"
+            },
+            {
+              "scriptpubkey": "0014101f77b9939dca60b68f3a446ea56f9f0ae96dac",
+              "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 101f77b9939dca60b68f3a446ea56f9f0ae96dac",
+              "scriptpubkey_type": "v0_p2wpkh",
+              "scriptpubkey_address": "ex1qzq0h0wvnnh9xpd508fzxaft0nu9wjmdvzalu6f",
+              "valuecommitment": "09bec5886710680e125b52ac99f6aee452984847cddc57abaa96eb8cc360f80104",
+              "assetcommitment": "0adfd85f43988146c1878e98bc5e6206f368280cb03760c37e86ec0bd39005d0cd"
+            },
+            {
+              "scriptpubkey": "00140fe27684e78285d508073f2b8a3a6c884515d1a9",
+              "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 0fe27684e78285d508073f2b8a3a6c884515d1a9",
+              "scriptpubkey_type": "v0_p2wpkh",
+              "scriptpubkey_address": "ex1qpl38dp88s2za2zq88u4c5wnv3pz3t5dfha22k9",
+              "valuecommitment": "08bef8c28296cf050802c943d46aa539d2f5280e9b9471db928746480815cf5457",
+              "assetcommitment": "0a5a032f72df6fba7f1acd7230f44cdf41ce27926e48e262ffdfea18efd19e0439"
+            },
+            {
+              "scriptpubkey": "",
+              "scriptpubkey_asm": "",
+              "scriptpubkey_type": "fee",
+              "value": 394,
+              "asset": "6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d"
+            }
+          ],
+          "size": 13955,
+          "weight": 15713,
+          "sigops": 0,
+          "fee": 394,
+          "status": {
+            "confirmed": true,
+            "block_height": 3171530,
+            "block_hash": "400270631b0f66d70cd6a045f36bb3f37c9076688fd496669d5da2a7245392d9",
+            "block_time": 1734720368
+          },
+          "order": 743132236,
+          "vsize": 3929,
+          "adjustedVsize": 3928.25,
+          "feePerVsize": 0.10029911538216763,
+          "adjustedFeePerVsize": 0.10029911538216763,
+          "effectiveFeePerVsize": 0.10027996945787732,
+          "firstSeen": 1734720314,
+          "inputs": [],
+          "cpfpDirty": false,
+          "ancestors": [],
+          "descendants": [],
+          "bestDescendant": null,
+          "position": {
+            "block": 0,
+            "vsize": 6972.5
+          },
+          "flags": 1099511633962,
+          "cpfpChecked": true,
+          "cpfpUpdated": 1734720355424
+        }
+      ],
+      "removed": []
+    }
+  }
+}`
+        }
+      }
+    }
+  },
+  {
+    type: "category",
+    category: "transactions",
+    fragment: "transactions",
+    title: "Transactions",
+    showConditions: bitcoinNetworks.concat(liquidNetworks)
+  },
+  {
+    type: "endpoint",
+    category: "transactions",
+    fragment: "track-tx",
+    title: "Track Transaction",
+    description: {
+      default: "Subscribe to a transaction to receive live updates on its confirmation status and position in the mempool."
+    },
+    payload: '{ "track-tx": "8a4666c6d22ce74fa47e1c4fdb09af556a234cc6a606539a75caf66ba44a2d07" }',
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: false,
+    codeExample: {
+      default: {
+        codeTemplate: {
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "txPosition": {
+    "txid": [
+      "8a4666c6d22ce74fa47e1c4fdb09af556a234cc6a606539a75caf66ba44a2d07"
+    ],
+    "position": {
+      "block": 0,
+      "vsize": 726868
+    },
+    "cpfp": {
+      "ancestors": [
+        {
+          "txid": "d509a6b8f36149588f9f48dc25fa5e37fc00dee781aed6da1113066c56f04879",
+          "fee": 605,
+          "weight": 520
+        }
+      ],
+      "bestDescendant": null,
+      "descendants": [
+        {
+          "txid": "28d3c592a9a8103d53c784aa539908f4dc5f9c463e179f0eae5dc5f349bdb00f",
+          "fee": 2501,
+          "weight": 816
+        }
+      ],
+      "effectiveFeePerVsize": 5.12063778580024,
+      "sigops": 0,
+      "adjustedVsize": 130
+    }
+  }
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "txPosition": {
+    "txid": [
+      "8a4666c6d22ce74fa47e1c4fdb09af556a234cc6a606539a75caf66ba44a2d07"
+    ],
+    "position": {
+      "block": 0,
+      "vsize": 726868
+    },
+    "cpfp": {
+      "ancestors": [
+        {
+          "txid": "d509a6b8f36149588f9f48dc25fa5e37fc00dee781aed6da1113066c56f04879",
+          "fee": 605,
+          "weight": 520
+        }
+      ],
+      "bestDescendant": null,
+      "descendants": [
+        {
+          "txid": "28d3c592a9a8103d53c784aa539908f4dc5f9c463e179f0eae5dc5f349bdb00f",
+          "fee": 2501,
+          "weight": 816
+        }
+      ],
+      "effectiveFeePerVsize": 5.12063778580024,
+      "sigops": 0,
+      "adjustedVsize": 130
+    }
+  }
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "txPosition": {
+    "txid": [
+      "8a4666c6d22ce74fa47e1c4fdb09af556a234cc6a606539a75caf66ba44a2d07"
+    ],
+    "position": {
+      "block": 0,
+      "vsize": 726868
+    },
+    "cpfp": {
+      "ancestors": [
+        {
+          "txid": "d509a6b8f36149588f9f48dc25fa5e37fc00dee781aed6da1113066c56f04879",
+          "fee": 605,
+          "weight": 520
+        }
+      ],
+      "bestDescendant": null,
+      "descendants": [
+        {
+          "txid": "28d3c592a9a8103d53c784aa539908f4dc5f9c463e179f0eae5dc5f349bdb00f",
+          "fee": 2501,
+          "weight": 816
+        }
+      ],
+      "effectiveFeePerVsize": 5.12063778580024,
+      "sigops": 0,
+      "adjustedVsize": 130
+    }
+  }
+}`
+        },
+        codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "txPosition": {
+    "txid": [
+      "8a4666c6d22ce74fa47e1c4fdb09af556a234cc6a606539a75caf66ba44a2d07"
+    ],
+    "position": {
+      "block": 0,
+      "vsize": 726868
+    },
+    "cpfp": {
+      "ancestors": [
+        {
+          "txid": "d509a6b8f36149588f9f48dc25fa5e37fc00dee781aed6da1113066c56f04879",
+          "fee": 605,
+          "weight": 520
+        }
+      ],
+      "bestDescendant": null,
+      "descendants": [
+        {
+          "txid": "28d3c592a9a8103d53c784aa539908f4dc5f9c463e179f0eae5dc5f349bdb00f",
+          "fee": 2501,
+          "weight": 816
+        }
+      ],
+      "effectiveFeePerVsize": 5.12063778580024,
+      "sigops": 0,
+      "adjustedVsize": 130
+    }
+  }
+}`
+        }
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "transactions",
+    fragment: "track-txs",
+    title: "Track Transactions",
+    description: {
+      default: "Subscribe to multiple transactions to receive live updates on their status and position in the mempool. Limits on the maximum number of tracked addresses apply. For higher tracking limits, consider upgrading to an <a href='https://mempool.space/enterprise'>enterprise sponsorship</a>."
+    },
+    payload: `{
+      "track-txs": [
+        "8a4666c6d22ce74fa47e1c4fdb09af556a234cc6a606539a75caf66ba44a2d07",
+        "941df06064c290b4627e92bdbf3bff7c0e97aab33e273c2a20404f9cfd21b607"
+      ]
+    }`,    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: false,
+    codeExample: {
+      default: {
+        codeTemplate: {
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "tracked-txs": {
+    "8a4666c6d22ce74fa47e1c4fdb09af556a234cc6a606539a75caf66ba44a2d07": {
+      "position": {
+        "block": 0,
+        "vsize": 434494
+      },
+      "cpfp": {
+        "ancestors": [
+          {
+            "txid": "d509a6b8f36149588f9f48dc25fa5e37fc00dee781aed6da1113066c56f04879",
+            "fee": 605,
+            "weight": 520
+          }
+        ],
+        "bestDescendant": null,
+        "descendants": [
+          {
+          "txid": "28d3c592a9a8103d53c784aa539908f4dc5f9c463e179f0eae5dc5f349bdb00f",
+          "fee": 2501,
+          "weight": 816
+          }
+        ],
+        "effectiveFeePerVsize": 5.12063778580024,
+        "sigops": 0,
+        "adjustedVsize": 130
+      }
+    },
+    "941df06064c290b4627e92bdbf3bff7c0e97aab33e273c2a20404f9cfd21b607": {
+      "position": {
+        "block": 2,
+        "vsize": 932479.5
+      }
+    }
+  }
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "tracked-txs": {
+    "8a4666c6d22ce74fa47e1c4fdb09af556a234cc6a606539a75caf66ba44a2d07": {
+      "position": {
+        "block": 0,
+        "vsize": 434494
+      },
+      "cpfp": {
+        "ancestors": [
+          {
+            "txid": "d509a6b8f36149588f9f48dc25fa5e37fc00dee781aed6da1113066c56f04879",
+            "fee": 605,
+            "weight": 520
+          }
+        ],
+        "bestDescendant": null,
+        "descendants": [
+          {
+          "txid": "28d3c592a9a8103d53c784aa539908f4dc5f9c463e179f0eae5dc5f349bdb00f",
+          "fee": 2501,
+          "weight": 816
+          }
+        ],
+        "effectiveFeePerVsize": 5.12063778580024,
+        "sigops": 0,
+        "adjustedVsize": 130
+      }
+    },
+    "941df06064c290b4627e92bdbf3bff7c0e97aab33e273c2a20404f9cfd21b607": {
+      "position": {
+        "block": 2,
+        "vsize": 932479.5
+      }
+    }
+  }
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "tracked-txs": {
+    "8a4666c6d22ce74fa47e1c4fdb09af556a234cc6a606539a75caf66ba44a2d07": {
+      "position": {
+        "block": 0,
+        "vsize": 434494
+      },
+      "cpfp": {
+        "ancestors": [
+          {
+            "txid": "d509a6b8f36149588f9f48dc25fa5e37fc00dee781aed6da1113066c56f04879",
+            "fee": 605,
+            "weight": 520
+          }
+        ],
+        "bestDescendant": null,
+        "descendants": [
+          {
+          "txid": "28d3c592a9a8103d53c784aa539908f4dc5f9c463e179f0eae5dc5f349bdb00f",
+          "fee": 2501,
+          "weight": 816
+          }
+        ],
+        "effectiveFeePerVsize": 5.12063778580024,
+        "sigops": 0,
+        "adjustedVsize": 130
+      }
+    },
+    "941df06064c290b4627e92bdbf3bff7c0e97aab33e273c2a20404f9cfd21b607": {
+      "position": {
+        "block": 2,
+        "vsize": 932479.5
+      }
+    }
+  }
+}`
+        },
+        codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "tracked-txs": {
+    "8a4666c6d22ce74fa47e1c4fdb09af556a234cc6a606539a75caf66ba44a2d07": {
+      "position": {
+        "block": 0,
+        "vsize": 434494
+      },
+      "cpfp": {
+        "ancestors": [
+          {
+            "txid": "d509a6b8f36149588f9f48dc25fa5e37fc00dee781aed6da1113066c56f04879",
+            "fee": 605,
+            "weight": 520
+          }
+        ],
+        "bestDescendant": null,
+        "descendants": [
+          {
+          "txid": "28d3c592a9a8103d53c784aa539908f4dc5f9c463e179f0eae5dc5f349bdb00f",
+          "fee": 2501,
+          "weight": 816
+          }
+        ],
+        "effectiveFeePerVsize": 5.12063778580024,
+        "sigops": 0,
+        "adjustedVsize": 130
+      }
+    },
+    "941df06064c290b4627e92bdbf3bff7c0e97aab33e273c2a20404f9cfd21b607": {
+      "position": {
+        "block": 2,
+        "vsize": 932479.5
+      }
+    }
+  }
+}`
+        }
+      }
+    }
+  },
+  {
+    type: "category",
+    category: "mempool",
+    fragment: "mempool",
+    title: "Mempool",
+    showConditions: bitcoinNetworks.concat(liquidNetworks)
+  },
+  {
+    type: "endpoint",
+    category: "mempool",
+    fragment: "track-mempool",
+    title: "Track Mempool",
+    description: {
+      default: "Subscribe to new mempool events, such as new transactions entering the mempool. Available fields: <code>added</code>, <code>removed</code>, <code>mined</code>, <code>replaced</code>. <br> Because this is potentially a lot of data, consider using the <code>track-mempool-txids</code> endpoint described below instead, or upgrade to an <a href='https://mempool.space/enterprise'>enterprise sponsorship</a>."
+    },
+    payload: '{ "track-mempool": true }',
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: false,
+    codeExample: {
+      default: {
+        codeTemplate: {
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "mempool-transactions": {
+    "sequence": 81419,
+    "added": [
+      {
+        "txid": "6229c0784bc776be22a5ee84e0e3d9b8f9e17843f079a8444b03bdc98b77d229",
+        "version": 2,
+        "locktime": 0,
+        "vin": [
+          {
+            "txid": "b4b324e3bff7ee0a7e664e8c03df1fe3a0bd53e5685ea6b10abb5f89ba1b2ead",
+            "vout": 5,
+            "prevout": {
+              "scriptpubkey": "76a914b54afb58f0faa9d1bde2ed755bc56ef1e4a4e24188ac",
+              "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 b54afb58f0faa9d1bde2ed755bc56ef1e4a4e241 OP_EQUALVERIFY OP_CHECKSIG",
+              "scriptpubkey_type": "p2pkh",
+              "scriptpubkey_address": "1HXb8YtsgBhFWdYezjd6bt7Dw4UGKyZo54",
+              "value": 17000
+            },
+            "scriptsig": "4830450221008e9b91aae7b4705841c97dc99d6ab233f10ff9b97d7c139be08634d2f0f5f66f02205d67eae8c830ed0979e169403d13c0f43efd78edbb9a344390245f5a83649404012103cf9fad8b202384de9ef010129a62b8249920a6205fe53cc0efbea9eb0db595e7",
+            "scriptsig_asm": "OP_PUSHBYTES_72 30450221008e9b91aae7b4705841c97dc99d6ab233f10ff9b97d7c139be08634d2f0f5f66f02205d67eae8c830ed0979e169403d13c0f43efd78edbb9a344390245f5a8364940401 OP_PUSHBYTES_33 03cf9fad8b202384de9ef010129a62b8249920a6205fe53cc0efbea9eb0db595e7",
+            "is_coinbase": false,
+            "sequence": 4294967293
+          }
+        ],
+        "vout": [
+          {
+            "scriptpubkey": "76a91401603bd82a5d5a6e8c6df5d9ae662b9fc5db60f288ac",
+            "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 01603bd82a5d5a6e8c6df5d9ae662b9fc5db60f2 OP_EQUALVERIFY OP_CHECKSIG",
+            "scriptpubkey_type": "p2pkh",
+            "scriptpubkey_address": "18GxdcLgNtRUc8v5TNJtPnvoi8jMVWxvb",
+            "value": 10419
+          },
+          {
+            "scriptpubkey": "76a914338ad842d236486627834bf9f5e182c7a8aa937188ac",
+            "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 338ad842d236486627834bf9f5e182c7a8aa9371 OP_EQUALVERIFY OP_CHECKSIG",
+            "scriptpubkey_type": "p2pkh",
+            "scriptpubkey_address": "15hXntT6oUKNhtk4FWvuGPQJDX47wpbAaa",
+            "value": 5396
+          }
+        ],
+        "size": 226,
+        "weight": 904,
+        "sigops": 8,
+        "fee": 1185,
+        "status": {
+          "confirmed": false
+        },
+        "order": 701659019,
+        "vsize": 226,
+        "adjustedVsize": 226,
+        "feePerVsize": 5.243362831858407,
+        "adjustedFeePerVsize": 5.243362831858407,
+        "effectiveFeePerVsize": 5.243362831858407,
+        "firstSeen": 1734893382,
+        "uid": 429139,
+        "inputs": [],
+        "cpfpDirty": false,
+        "ancestors": [],
+        "descendants": [],
+        "bestDescendant": null,
+        "position": {
+          "block": 0,
+          "vsize": 125270
+        },
+        "flags": 1099511628809
+      },
+      ...
+    ],
+    "removed": [],
+    "mined": [],
+    "replaced": []
+  }
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "mempool-transactions": {
+    "sequence": 81419,
+    "added": [
+      {
+        "txid": "6229c0784bc776be22a5ee84e0e3d9b8f9e17843f079a8444b03bdc98b77d229",
+        "version": 2,
+        "locktime": 0,
+        "vin": [
+          {
+            "txid": "b4b324e3bff7ee0a7e664e8c03df1fe3a0bd53e5685ea6b10abb5f89ba1b2ead",
+            "vout": 5,
+            "prevout": {
+              "scriptpubkey": "76a914b54afb58f0faa9d1bde2ed755bc56ef1e4a4e24188ac",
+              "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 b54afb58f0faa9d1bde2ed755bc56ef1e4a4e241 OP_EQUALVERIFY OP_CHECKSIG",
+              "scriptpubkey_type": "p2pkh",
+              "scriptpubkey_address": "1HXb8YtsgBhFWdYezjd6bt7Dw4UGKyZo54",
+              "value": 17000
+            },
+            "scriptsig": "4830450221008e9b91aae7b4705841c97dc99d6ab233f10ff9b97d7c139be08634d2f0f5f66f02205d67eae8c830ed0979e169403d13c0f43efd78edbb9a344390245f5a83649404012103cf9fad8b202384de9ef010129a62b8249920a6205fe53cc0efbea9eb0db595e7",
+            "scriptsig_asm": "OP_PUSHBYTES_72 30450221008e9b91aae7b4705841c97dc99d6ab233f10ff9b97d7c139be08634d2f0f5f66f02205d67eae8c830ed0979e169403d13c0f43efd78edbb9a344390245f5a8364940401 OP_PUSHBYTES_33 03cf9fad8b202384de9ef010129a62b8249920a6205fe53cc0efbea9eb0db595e7",
+            "is_coinbase": false,
+            "sequence": 4294967293
+          }
+        ],
+        "vout": [
+          {
+            "scriptpubkey": "76a91401603bd82a5d5a6e8c6df5d9ae662b9fc5db60f288ac",
+            "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 01603bd82a5d5a6e8c6df5d9ae662b9fc5db60f2 OP_EQUALVERIFY OP_CHECKSIG",
+            "scriptpubkey_type": "p2pkh",
+            "scriptpubkey_address": "18GxdcLgNtRUc8v5TNJtPnvoi8jMVWxvb",
+            "value": 10419
+          },
+          {
+            "scriptpubkey": "76a914338ad842d236486627834bf9f5e182c7a8aa937188ac",
+            "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 338ad842d236486627834bf9f5e182c7a8aa9371 OP_EQUALVERIFY OP_CHECKSIG",
+            "scriptpubkey_type": "p2pkh",
+            "scriptpubkey_address": "15hXntT6oUKNhtk4FWvuGPQJDX47wpbAaa",
+            "value": 5396
+          }
+        ],
+        "size": 226,
+        "weight": 904,
+        "sigops": 8,
+        "fee": 1185,
+        "status": {
+          "confirmed": false
+        },
+        "order": 701659019,
+        "vsize": 226,
+        "adjustedVsize": 226,
+        "feePerVsize": 5.243362831858407,
+        "adjustedFeePerVsize": 5.243362831858407,
+        "effectiveFeePerVsize": 5.243362831858407,
+        "firstSeen": 1734893382,
+        "uid": 429139,
+        "inputs": [],
+        "cpfpDirty": false,
+        "ancestors": [],
+        "descendants": [],
+        "bestDescendant": null,
+        "position": {
+          "block": 0,
+          "vsize": 125270
+        },
+        "flags": 1099511628809
+      },
+      ...
+    ],
+    "removed": [],
+    "mined": [],
+    "replaced": []
+  }
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "mempool-transactions": {
+    "sequence": 81419,
+    "added": [
+      {
+        "txid": "6229c0784bc776be22a5ee84e0e3d9b8f9e17843f079a8444b03bdc98b77d229",
+        "version": 2,
+        "locktime": 0,
+        "vin": [
+          {
+            "txid": "b4b324e3bff7ee0a7e664e8c03df1fe3a0bd53e5685ea6b10abb5f89ba1b2ead",
+            "vout": 5,
+            "prevout": {
+              "scriptpubkey": "76a914b54afb58f0faa9d1bde2ed755bc56ef1e4a4e24188ac",
+              "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 b54afb58f0faa9d1bde2ed755bc56ef1e4a4e241 OP_EQUALVERIFY OP_CHECKSIG",
+              "scriptpubkey_type": "p2pkh",
+              "scriptpubkey_address": "1HXb8YtsgBhFWdYezjd6bt7Dw4UGKyZo54",
+              "value": 17000
+            },
+            "scriptsig": "4830450221008e9b91aae7b4705841c97dc99d6ab233f10ff9b97d7c139be08634d2f0f5f66f02205d67eae8c830ed0979e169403d13c0f43efd78edbb9a344390245f5a83649404012103cf9fad8b202384de9ef010129a62b8249920a6205fe53cc0efbea9eb0db595e7",
+            "scriptsig_asm": "OP_PUSHBYTES_72 30450221008e9b91aae7b4705841c97dc99d6ab233f10ff9b97d7c139be08634d2f0f5f66f02205d67eae8c830ed0979e169403d13c0f43efd78edbb9a344390245f5a8364940401 OP_PUSHBYTES_33 03cf9fad8b202384de9ef010129a62b8249920a6205fe53cc0efbea9eb0db595e7",
+            "is_coinbase": false,
+            "sequence": 4294967293
+          }
+        ],
+        "vout": [
+          {
+            "scriptpubkey": "76a91401603bd82a5d5a6e8c6df5d9ae662b9fc5db60f288ac",
+            "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 01603bd82a5d5a6e8c6df5d9ae662b9fc5db60f2 OP_EQUALVERIFY OP_CHECKSIG",
+            "scriptpubkey_type": "p2pkh",
+            "scriptpubkey_address": "18GxdcLgNtRUc8v5TNJtPnvoi8jMVWxvb",
+            "value": 10419
+          },
+          {
+            "scriptpubkey": "76a914338ad842d236486627834bf9f5e182c7a8aa937188ac",
+            "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 338ad842d236486627834bf9f5e182c7a8aa9371 OP_EQUALVERIFY OP_CHECKSIG",
+            "scriptpubkey_type": "p2pkh",
+            "scriptpubkey_address": "15hXntT6oUKNhtk4FWvuGPQJDX47wpbAaa",
+            "value": 5396
+          }
+        ],
+        "size": 226,
+        "weight": 904,
+        "sigops": 8,
+        "fee": 1185,
+        "status": {
+          "confirmed": false
+        },
+        "order": 701659019,
+        "vsize": 226,
+        "adjustedVsize": 226,
+        "feePerVsize": 5.243362831858407,
+        "adjustedFeePerVsize": 5.243362831858407,
+        "effectiveFeePerVsize": 5.243362831858407,
+        "firstSeen": 1734893382,
+        "uid": 429139,
+        "inputs": [],
+        "cpfpDirty": false,
+        "ancestors": [],
+        "descendants": [],
+        "bestDescendant": null,
+        "position": {
+          "block": 0,
+          "vsize": 125270
+        },
+        "flags": 1099511628809
+      },
+      ...
+    ],
+    "removed": [],
+    "mined": [],
+    "replaced": []
+  }
+}`
+        },
+        codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "mempool-transactions": {
+    "sequence": 81419,
+    "added": [
+      {
+        "txid": "6229c0784bc776be22a5ee84e0e3d9b8f9e17843f079a8444b03bdc98b77d229",
+        "version": 2,
+        "locktime": 0,
+        "vin": [
+          {
+            "txid": "b4b324e3bff7ee0a7e664e8c03df1fe3a0bd53e5685ea6b10abb5f89ba1b2ead",
+            "vout": 5,
+            "prevout": {
+              "scriptpubkey": "76a914b54afb58f0faa9d1bde2ed755bc56ef1e4a4e24188ac",
+              "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 b54afb58f0faa9d1bde2ed755bc56ef1e4a4e241 OP_EQUALVERIFY OP_CHECKSIG",
+              "scriptpubkey_type": "p2pkh",
+              "scriptpubkey_address": "1HXb8YtsgBhFWdYezjd6bt7Dw4UGKyZo54",
+              "value": 17000
+            },
+            "scriptsig": "4830450221008e9b91aae7b4705841c97dc99d6ab233f10ff9b97d7c139be08634d2f0f5f66f02205d67eae8c830ed0979e169403d13c0f43efd78edbb9a344390245f5a83649404012103cf9fad8b202384de9ef010129a62b8249920a6205fe53cc0efbea9eb0db595e7",
+            "scriptsig_asm": "OP_PUSHBYTES_72 30450221008e9b91aae7b4705841c97dc99d6ab233f10ff9b97d7c139be08634d2f0f5f66f02205d67eae8c830ed0979e169403d13c0f43efd78edbb9a344390245f5a8364940401 OP_PUSHBYTES_33 03cf9fad8b202384de9ef010129a62b8249920a6205fe53cc0efbea9eb0db595e7",
+            "is_coinbase": false,
+            "sequence": 4294967293
+          }
+        ],
+        "vout": [
+          {
+            "scriptpubkey": "76a91401603bd82a5d5a6e8c6df5d9ae662b9fc5db60f288ac",
+            "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 01603bd82a5d5a6e8c6df5d9ae662b9fc5db60f2 OP_EQUALVERIFY OP_CHECKSIG",
+            "scriptpubkey_type": "p2pkh",
+            "scriptpubkey_address": "18GxdcLgNtRUc8v5TNJtPnvoi8jMVWxvb",
+            "value": 10419
+          },
+          {
+            "scriptpubkey": "76a914338ad842d236486627834bf9f5e182c7a8aa937188ac",
+            "scriptpubkey_asm": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 338ad842d236486627834bf9f5e182c7a8aa9371 OP_EQUALVERIFY OP_CHECKSIG",
+            "scriptpubkey_type": "p2pkh",
+            "scriptpubkey_address": "15hXntT6oUKNhtk4FWvuGPQJDX47wpbAaa",
+            "value": 5396
+          }
+        ],
+        "size": 226,
+        "weight": 904,
+        "sigops": 8,
+        "fee": 1185,
+        "status": {
+          "confirmed": false
+        },
+        "order": 701659019,
+        "vsize": 226,
+        "adjustedVsize": 226,
+        "feePerVsize": 5.243362831858407,
+        "adjustedFeePerVsize": 5.243362831858407,
+        "effectiveFeePerVsize": 5.243362831858407,
+        "firstSeen": 1734893382,
+        "uid": 429139,
+        "inputs": [],
+        "cpfpDirty": false,
+        "ancestors": [],
+        "descendants": [],
+        "bestDescendant": null,
+        "position": {
+          "block": 0,
+          "vsize": 125270
+        },
+        "flags": 1099511628809
+      },
+      ...
+    ],
+    "removed": [],
+    "mined": [],
+    "replaced": []
+  }
+}`
+        },
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mempool",
+    fragment: "track-mempool-txids",
+    title: "Track Mempool Txids",
+    description: {
+      default: "Low-bandwith substitute to the above command <code>track-mempool</code>: subscribe to new mempool events, such as new transactions entering the mempool, but only transaction IDs are returned to save bandwith. Available fields: <code>added</code>, <code>removed</code>, <code>mined</code>, <code>replaced</code>."
+    },
+    payload: '{ "track-mempool-txids": true }',
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: false,
+    codeExample: {
+      default: {
+        codeTemplate: {
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "mempool-txids": {
+    "sequence": 79919,
+    "added": [
+      "4bbb648ab194aaaf9188bccc6efcdcbb59c8485115a7384972c8287782206a0f",
+      "f7883f3784829d1e741e696bdceec488eeb53fe0b69b0eca574ac9f2e7e8e117",
+      "784e8e3b182c29798660bf42befb5c6479148c7d90c0d6eea032b89418e7cc3b",
+      "d3920a7be05269d859bd89b08a6546dc6d6dd523dbc5f7b62b9c0c5eedc43292",
+      "de6078d584cb5f4a27c3f0bb3d8bbb16b3d5f8303237391f390d0ee9e84d0099",
+      "39fcbd6e0ec0ad49405f19c72bb033f578147181b77dbe47044f80b0b7604ab5",
+      "47ed060004fab3fb5fa4885008aa2cadbe3335655f1303231abfe89b4b0c9bd9"
+    ],
+    "removed": [],
+    "mined": [],
+    "replaced": []
+  }
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "mempool-txids": {
+    "sequence": 79919,
+    "added": [
+      "4bbb648ab194aaaf9188bccc6efcdcbb59c8485115a7384972c8287782206a0f",
+      "f7883f3784829d1e741e696bdceec488eeb53fe0b69b0eca574ac9f2e7e8e117",
+      "784e8e3b182c29798660bf42befb5c6479148c7d90c0d6eea032b89418e7cc3b",
+      "d3920a7be05269d859bd89b08a6546dc6d6dd523dbc5f7b62b9c0c5eedc43292",
+      "de6078d584cb5f4a27c3f0bb3d8bbb16b3d5f8303237391f390d0ee9e84d0099",
+      "39fcbd6e0ec0ad49405f19c72bb033f578147181b77dbe47044f80b0b7604ab5",
+      "47ed060004fab3fb5fa4885008aa2cadbe3335655f1303231abfe89b4b0c9bd9"
+    ],
+    "removed": [],
+    "mined": [],
+    "replaced": []
+  }
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "mempool-txids": {
+    "sequence": 79919,
+    "added": [
+      "4bbb648ab194aaaf9188bccc6efcdcbb59c8485115a7384972c8287782206a0f",
+      "f7883f3784829d1e741e696bdceec488eeb53fe0b69b0eca574ac9f2e7e8e117",
+      "784e8e3b182c29798660bf42befb5c6479148c7d90c0d6eea032b89418e7cc3b",
+      "d3920a7be05269d859bd89b08a6546dc6d6dd523dbc5f7b62b9c0c5eedc43292",
+      "de6078d584cb5f4a27c3f0bb3d8bbb16b3d5f8303237391f390d0ee9e84d0099",
+      "39fcbd6e0ec0ad49405f19c72bb033f578147181b77dbe47044f80b0b7604ab5",
+      "47ed060004fab3fb5fa4885008aa2cadbe3335655f1303231abfe89b4b0c9bd9"
+    ],
+    "removed": [],
+    "mined": [],
+    "replaced": []
+  }
+}`
+        },
+        codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "mempool-txids": {
+    "sequence": 79919,
+    "added": [
+      "4bbb648ab194aaaf9188bccc6efcdcbb59c8485115a7384972c8287782206a0f",
+      "f7883f3784829d1e741e696bdceec488eeb53fe0b69b0eca574ac9f2e7e8e117",
+      "784e8e3b182c29798660bf42befb5c6479148c7d90c0d6eea032b89418e7cc3b",
+      "d3920a7be05269d859bd89b08a6546dc6d6dd523dbc5f7b62b9c0c5eedc43292",
+      "de6078d584cb5f4a27c3f0bb3d8bbb16b3d5f8303237391f390d0ee9e84d0099",
+      "39fcbd6e0ec0ad49405f19c72bb033f578147181b77dbe47044f80b0b7604ab5",
+      "47ed060004fab3fb5fa4885008aa2cadbe3335655f1303231abfe89b4b0c9bd9"
+    ],
+    "removed": [],
+    "mined": [],
+    "replaced": []
+  }
+}`
+        },
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mempool",
+    fragment: "track-mempool-block",
+    title: "Track Mempool Block",
+    description: {
+      default: "Subscribe to live mempool projected block template, index 0 being the first mempool block. <br> A full set of stripped transactions in that block is returned when the subscription starts, and deltas (removed and added transactions) are then sent every time the mempool changes."
+    },
+    payload: '{ "track-mempool-block": 0 }',
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: false,
+    codeExample: {
+      default: {
+        codeTemplate: {
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "projected-block-transactions": {
+    "index": 0,
+    "sequence": 80270,
+    "delta": {
+      "added": [
+        [
+          "172b34fb099d80f61b65d1c107c4f25665c8f50e30c1371b2e6fbced62991d58",
+          2000,
+          171.25,
+          5942725,
+          11.68,
+          1099511631877,
+          1734881537
+        ],
+        ...
+      ],
+      "removed": [
+        "956a6eee382214631c3299e0410565e05fbd6328c89fa746efab6371705aca2a",
+        ...
+        ],
+      "changed": []
+    }
+  }
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "projected-block-transactions": {
+    "index": 0,
+    "sequence": 80270,
+    "delta": {
+      "added": [
+        [
+          "172b34fb099d80f61b65d1c107c4f25665c8f50e30c1371b2e6fbced62991d58",
+          2000,
+          171.25,
+          5942725,
+          11.68,
+          1099511631877,
+          1734881537
+        ],
+        ...
+      ],
+      "removed": [
+        "956a6eee382214631c3299e0410565e05fbd6328c89fa746efab6371705aca2a",
+        ...
+        ],
+      "changed": []
+    }
+  }
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "projected-block-transactions": {
+    "index": 0,
+    "sequence": 80270,
+    "delta": {
+      "added": [
+        [
+          "172b34fb099d80f61b65d1c107c4f25665c8f50e30c1371b2e6fbced62991d58",
+          2000,
+          171.25,
+          5942725,
+          11.68,
+          1099511631877,
+          1734881537
+        ],
+        ...
+      ],
+      "removed": [
+        "956a6eee382214631c3299e0410565e05fbd6328c89fa746efab6371705aca2a",
+        ...
+        ],
+      "changed": []
+    }
+  }
+}`
+        },
+        codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "projected-block-transactions": {
+    "index": 0,
+    "sequence": 80270,
+    "delta": {
+      "added": [
+        [
+          "172b34fb099d80f61b65d1c107c4f25665c8f50e30c1371b2e6fbced62991d58",
+          2000,
+          171.25,
+          5942725,
+          11.68,
+          1099511631877,
+          1734881537
+        ],
+        ...
+      ],
+      "removed": [
+        "956a6eee382214631c3299e0410565e05fbd6328c89fa746efab6371705aca2a",
+        ...
+        ],
+      "changed": []
+    }
+  }
+}`
+        },
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mempool",
+    fragment: "track-rbf",
+    title: "Track Mempool RBF Transactions",
+    description: {
+      default: "Subscribe to new RBF events."
+    },
+    payload: '{ "track-rbf": "all" }',
+    showConditions: bitcoinNetworks,
+    showJsExamples: false,
+    codeExample: {
+      default: {
+        codeTemplate: {
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "rbfLatest": [
+    {
+      "tx": {
+        "txid": "cc6cb210f7ec32660fe4d46984ef64b64143fb02dc7ed70578c32b5f338ef6d6",
+        "fee": 8280,
+        "vsize": 204,
+        "value": 156397,
+        "rate": 10,
+        "time": 1734876576,
+        "rbf": true,
+        "fullRbf": false
+      },
+      "time": 1734876576,
+      "fullRbf": false,
+      "replaces": [
+        {
+          "tx": {
+            "txid": "4e94c23e075cf9c2b4ccaf32e3652b8b1bfecca6726390ccab821417f23b0876",
+            "fee": 4956,
+            "vsize": 204,
+            "value": 159721,
+            "rate": 9,
+            "time": 1734876204,
+            "rbf": true,
+            "fullRbf": false
+          },
+          "time": 1734876204,
+          "fullRbf": false,
+          "replaces": [
+            {
+              "tx": {
+                "txid": "9624fe4f9a183dcea2e8c6b640394eecaec37363aec883a64358f6953fba3145",
+                "fee": 1632,
+                "vsize": 204,
+                "value": 163045,
+                "rate": 8,
+                "time": 1734876081,
+                "rbf": true
+              },
+              "time": 1734876081,
+              "interval": 123,
+              "fullRbf": false,
+              "replaces": []
+            }
+          ],
+          "interval": 372
+        }
+      ]
+    },
+    ...
+  ]
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "rbfLatest": [
+    {
+      "tx": {
+        "txid": "cc6cb210f7ec32660fe4d46984ef64b64143fb02dc7ed70578c32b5f338ef6d6",
+        "fee": 8280,
+        "vsize": 204,
+        "value": 156397,
+        "rate": 10,
+        "time": 1734876576,
+        "rbf": true,
+        "fullRbf": false
+      },
+      "time": 1734876576,
+      "fullRbf": false,
+      "replaces": [
+        {
+          "tx": {
+            "txid": "4e94c23e075cf9c2b4ccaf32e3652b8b1bfecca6726390ccab821417f23b0876",
+            "fee": 4956,
+            "vsize": 204,
+            "value": 159721,
+            "rate": 9,
+            "time": 1734876204,
+            "rbf": true,
+            "fullRbf": false
+          },
+          "time": 1734876204,
+          "fullRbf": false,
+          "replaces": [
+            {
+              "tx": {
+                "txid": "9624fe4f9a183dcea2e8c6b640394eecaec37363aec883a64358f6953fba3145",
+                "fee": 1632,
+                "vsize": 204,
+                "value": 163045,
+                "rate": 8,
+                "time": 1734876081,
+                "rbf": true
+              },
+              "time": 1734876081,
+              "interval": 123,
+              "fullRbf": false,
+              "replaces": []
+            }
+          ],
+          "interval": 372
+        }
+      ]
+    },
+    ...
+  ]
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "rbfLatest": [
+    {
+      "tx": {
+        "txid": "cc6cb210f7ec32660fe4d46984ef64b64143fb02dc7ed70578c32b5f338ef6d6",
+        "fee": 8280,
+        "vsize": 204,
+        "value": 156397,
+        "rate": 10,
+        "time": 1734876576,
+        "rbf": true,
+        "fullRbf": false
+      },
+      "time": 1734876576,
+      "fullRbf": false,
+      "replaces": [
+        {
+          "tx": {
+            "txid": "4e94c23e075cf9c2b4ccaf32e3652b8b1bfecca6726390ccab821417f23b0876",
+            "fee": 4956,
+            "vsize": 204,
+            "value": 159721,
+            "rate": 9,
+            "time": 1734876204,
+            "rbf": true,
+            "fullRbf": false
+          },
+          "time": 1734876204,
+          "fullRbf": false,
+          "replaces": [
+            {
+              "tx": {
+                "txid": "9624fe4f9a183dcea2e8c6b640394eecaec37363aec883a64358f6953fba3145",
+                "fee": 1632,
+                "vsize": 204,
+                "value": 163045,
+                "rate": 8,
+                "time": 1734876081,
+                "rbf": true
+              },
+              "time": 1734876081,
+              "interval": 123,
+              "fullRbf": false,
+              "replaces": []
+            }
+          ],
+          "interval": 372
+        }
+      ]
+    },
+    ...
+  ]
+}`
+        },
+        codeSampleLiquid: emptyCodeSample
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mempool",
+    fragment: "track-full-rbf",
+    title: "Track Mempool Full RBF Transactions",
+    description: {
+      default: "Subscribe to new Full RBF events."
+    },
+    payload: '{ "track-rbf": "fullRbf" }',
+    showConditions: bitcoinNetworks,
+    showJsExamples: false,
+    codeExample: {
+      default: {
+        codeTemplate: {
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "rbfLatest": [
+    {
+      "tx": {
+        "txid": "ed9e1ec0e1635d465ee95c8872efff367d420fc2c4e624bada2c6e6e6c8e0629",
+        "fee": 4123,
+        "vsize": 587.75,
+        "value": 25545,
+        "rate": 7.014887282007656,
+        "time": 1734876941,
+        "rbf": false,
+        "fullRbf": true
+      },
+      "time": 1734876941,
+      "fullRbf": true,
+      "replaces": [
+        {
+          "tx": {
+            "txid": "495ad5d39d44286e99bc45d104605407325cd4790f842dc3287fbfdda8ee5795",
+            "fee": 1178,
+            "vsize": 587.25,
+            "value": 28490,
+            "rate": 2.0059599829714774,
+            "time": 1734853572,
+            "rbf": false,
+            "fullRbf": true
+          },
+          "time": 1734853572,
+          "fullRbf": true,
+          "replaces": [
+            {
+              "tx": {
+                "txid": "189751a7560a6c39deb9a93db2a27374842c646268d0007ba52aefa189833afa",
+                "fee": 589,
+                "vsize": 587.25,
+                "value": 29079,
+                "rate": 1.0029799914857387,
+                "time": 1734781955,
+                "rbf": false
+              },
+              "time": 1734781955,
+              "interval": 71617,
+              "fullRbf": true,
+              "replaces": []
+            }
+          ],
+          "interval": 23369
+        }
+      ]
+    },
+    ...
+  ]
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "rbfLatest": [
+    {
+      "tx": {
+        "txid": "ed9e1ec0e1635d465ee95c8872efff367d420fc2c4e624bada2c6e6e6c8e0629",
+        "fee": 4123,
+        "vsize": 587.75,
+        "value": 25545,
+        "rate": 7.014887282007656,
+        "time": 1734876941,
+        "rbf": false,
+        "fullRbf": true
+      },
+      "time": 1734876941,
+      "fullRbf": true,
+      "replaces": [
+        {
+          "tx": {
+            "txid": "495ad5d39d44286e99bc45d104605407325cd4790f842dc3287fbfdda8ee5795",
+            "fee": 1178,
+            "vsize": 587.25,
+            "value": 28490,
+            "rate": 2.0059599829714774,
+            "time": 1734853572,
+            "rbf": false,
+            "fullRbf": true
+          },
+          "time": 1734853572,
+          "fullRbf": true,
+          "replaces": [
+            {
+              "tx": {
+                "txid": "189751a7560a6c39deb9a93db2a27374842c646268d0007ba52aefa189833afa",
+                "fee": 589,
+                "vsize": 587.25,
+                "value": 29079,
+                "rate": 1.0029799914857387,
+                "time": 1734781955,
+                "rbf": false
+              },
+              "time": 1734781955,
+              "interval": 71617,
+              "fullRbf": true,
+              "replaces": []
+            }
+          ],
+          "interval": 23369
+        }
+      ]
+    },
+    ...
+  ]
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "rbfLatest": [
+    {
+      "tx": {
+        "txid": "ed9e1ec0e1635d465ee95c8872efff367d420fc2c4e624bada2c6e6e6c8e0629",
+        "fee": 4123,
+        "vsize": 587.75,
+        "value": 25545,
+        "rate": 7.014887282007656,
+        "time": 1734876941,
+        "rbf": false,
+        "fullRbf": true
+      },
+      "time": 1734876941,
+      "fullRbf": true,
+      "replaces": [
+        {
+          "tx": {
+            "txid": "495ad5d39d44286e99bc45d104605407325cd4790f842dc3287fbfdda8ee5795",
+            "fee": 1178,
+            "vsize": 587.25,
+            "value": 28490,
+            "rate": 2.0059599829714774,
+            "time": 1734853572,
+            "rbf": false,
+            "fullRbf": true
+          },
+          "time": 1734853572,
+          "fullRbf": true,
+          "replaces": [
+            {
+              "tx": {
+                "txid": "189751a7560a6c39deb9a93db2a27374842c646268d0007ba52aefa189833afa",
+                "fee": 589,
+                "vsize": 587.25,
+                "value": 29079,
+                "rate": 1.0029799914857387,
+                "time": 1734781955,
+                "rbf": false
+              },
+              "time": 1734781955,
+              "interval": 71617,
+              "fullRbf": true,
+              "replaces": []
+            }
+          ],
+          "interval": 23369
+        }
+      ]
+    },
+    ...
+  ]
+}`
+        },
+        codeSampleLiquid: emptyCodeSample
+      }
+    }
+  },
+
+];
 
 export const restApiDocsData = [
   {
@@ -1394,6 +3740,7 @@ export const restApiDocsData = [
     showConditions: bitcoinNetworks.concat(liquidNetworks)
   },
   {
+    options: { electrsOnly: true },
     type: "endpoint",
     category: "blocks",
     httpRequestMethod: "GET",
@@ -1401,7 +3748,6 @@ export const restApiDocsData = [
     title: "GET Block",
     description: {
       default: "Returns details about a block.",
-      liquid: "Returns details about a block. Available fields: <code>id</code>, <code>height</code>, <code>version</code>, <code>timestamp</code>, <code>bits</code>, <code>nonce</code>, <code>merkle_root</code>, <code>tx_count</code>, <code>size</code>, <code>weight</code>,<code>proof</code>, and <code>previousblockhash</code>."
     },
     urlString: "/block/:hash",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
@@ -1431,54 +3777,19 @@ export const restApiDocsData = [
           commonJS: ['000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce'],
           curl: ['000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce'],
           response: `{
-  "extras": {
-    "reward": 638307429,
-    "coinbaseTx": {
-      "vin": [
-        {
-          "scriptsig": "03ad3e0b2cfabe6d6df8fb5429a5de5fc2bd1bafffbc90d33c77eb73307d51931d247f21d7bccde51710000000f09f909f092f4632506f6f6c2f6b0000000000000000000000000000000000000000000000000000000000000000000000050086411100"
-        }
-      ],
-      "vout": [
-        {
-          "scriptpubkey_address": "1KFHE7w8BhaENAswwryaoccDb6qcT6DbYY",
-          "value": 638307429
-        }
-      ]
-    },
-    "coinbaseRaw": "03ad3e0b2cfabe6d6df8fb5429a5de5fc2bd1bafffbc90d33c77eb73307d51931d247f21d7bccde51710000000f09f909f092f4632506f6f6c2f6b0000000000000000000000000000000000000000000000000000000000000000000000050086411100",
-    "medianFee": 10,
-    "feeRange": [
-      1,
-      8,
-      9,
-      10,
-      15,
-      21,
-      348
-    ],
-    "totalFees": 13307429,
-    "avgFee": 5591,
-    "avgFeeRate": 13,
-    "pool": {
-      "id": 36,
-      "name": "F2Pool",
-      "slug": "f2pool"
-    },
-    "matchRate": 93
-  },
-  "id": "00000000000000000007566f8f035a1dc38b351e6f54778b311fe6dbabd79b46",
-  "height": 736941,
-  "version": 536870916,
-  "timestamp": 1652891466,
-  "bits": 386466234,
-  "nonce": 3514220842,
-  "difficulty": 31251101365711.12,
-  "merkle_root": "4a3072f98f60cbb639bb7f46180b8843d17c7502627ffb633db0ed86610cdd71",
-  "tx_count": 2381,
-  "size": 1709571,
-  "weight": 3997770,
-  "previousblockhash": "00000000000000000005ef14db0b4befcbbe1e9b8676eec67fcf810a899c4d5e"
+  "id": "000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce",
+  "height": 363366,
+  "version": 2,
+  "timestamp": 1435766771,
+  "tx_count": 494,
+  "size": 286494,
+  "weight": 1145976,
+  "merkle_root": "9d3cb87bf05ebae366b4262ed5f768ce8c62fc385c3886c9cb097647b04b686c",
+  "previousblockhash": "000000000000000010c545b6fa3ef1f7cf45a2a8760b1ee9f2e89673218207ce",
+  "mediantime": 1435763435,
+  "nonce": 2892644888,
+  "bits": 404111758,
+  "difficulty": 49402014931.2275
 }`
         },
         codeSampleTestnet: {
@@ -1558,6 +3869,291 @@ export const restApiDocsData = [
   previousblockhash: "2745fd72a5bd2b256c9d2044631032d2cd872f1f0001c3db52e26604a6423526",
   mediantime: 1641153964,
   ext: {...}
+}`,
+        },
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "blocks",
+    httpRequestMethod: "GET",
+    fragment: "get-block-v1",
+    title: "GET Block (v1)",
+    description: {
+      default: "Returns details about a block using Mempool's Node.js backend.",
+    },
+    urlString: "/v1/block/:hash",
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/block/%{1}`,
+          commonJS: `
+        const { %{0}: { blocks } } = mempoolJS();
+
+        const hash = '%{1}';
+        const block = await blocks.getBlock({ hash });
+
+        document.getElementById("result").textContent = JSON.stringify(block, undefined, 2);
+        `,
+          esModule: `
+  const { %{0}: { blocks } } = mempoolJS();
+
+  const hash = '%{1}';
+  const block = await blocks.getBlock({ hash });
+  console.log(block);
+          `,
+        },
+        codeSampleMainnet: {
+          esModule: ['000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce'],
+          commonJS: ['000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce'],
+          curl: ['000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce'],
+          response: `{
+  "id": "000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce",
+  "height": 363366,
+  "version": 2,
+  "timestamp": 1435766771,
+  "bits": 404111758,
+  "nonce": 2892644888,
+  "difficulty": 49402014931.22746,
+  "merkle_root": "9d3cb87bf05ebae366b4262ed5f768ce8c62fc385c3886c9cb097647b04b686c",
+  "tx_count": 494,
+  "size": 286494,
+  "weight": 1145976,
+  "previousblockhash": "000000000000000010c545b6fa3ef1f7cf45a2a8760b1ee9f2e89673218207ce",
+  "mediantime": 1435763435,
+  "extras": {
+    "totalFees": 5949764,
+    "medianFee": 14,
+    "feeRange": [
+      0,
+      0,
+      1,
+      14,
+      38,
+      48,
+      261
+    ],
+    "reward": 2505949764,
+    "pool": {
+      "id": 0,
+      "name": "Unknown",
+      "slug": "unknown",
+      "minerNames": null
+    },
+    "avgFee": 12068,
+    "avgFeeRate": 20,
+    "coinbaseRaw": "03668b050455940ee2ebbc03100000046d",
+    "coinbaseAddress": "17JJ3oZyF4ShQMGukDjpMWhmooCjEvoVVB",
+    "coinbaseAddresses": [
+      "17JJ3oZyF4ShQMGukDjpMWhmooCjEvoVVB"
+    ],
+    "coinbaseSignature": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 45160ea9d45f6edefef3977ac0b2cdcc29aa594a OP_EQUALVERIFY OP_CHECKSIG",
+    "coinbaseSignatureAscii": "...",
+    "avgTxSize": 579.57,
+    "totalInputs": 1424,
+    "totalOutputs": 1764,
+    "totalOutputAmt": 531126071491,
+    "medianFeeAmt": 10000,
+    "feePercentiles": [
+      0,
+      735,
+      10000,
+      10000,
+      10000,
+      20000,
+      300000
+    ],
+    "segwitTotalTxs": 0,
+    "segwitTotalSize": 0,
+    "segwitTotalWeight": 0,
+    "header": "02000000ce0782217396e8f2e91e0b76a8a245cff7f13efab645c51000000000000000006c684bb0477609cbc986385c38fc628cce68f7d52e26b466e3ba5ef07bb83c9df30f94558e41161818426aac",
+    "utxoSetChange": 340,
+    "utxoSetSize": 21180314,
+    "totalInputAmt": 531132021255,
+    "virtualSize": 286494,
+    "firstSeen": null,
+    "orphans": [],
+    "matchRate": null,
+    "expectedFees": null,
+    "expectedWeight": null
+  }
+}`
+        },
+        codeSampleTestnet: {
+          esModule: ['000000000000009c08dc77c3f224d9f5bbe335a78b996ec1e0701e065537ca81'],
+          commonJS: ['000000000000009c08dc77c3f224d9f5bbe335a78b996ec1e0701e065537ca81'],
+          curl: ['000000000000009c08dc77c3f224d9f5bbe335a78b996ec1e0701e065537ca81'],
+          response: `{
+  "id": "000000000000009c08dc77c3f224d9f5bbe335a78b996ec1e0701e065537ca81",
+  "height": 2091140,
+  "version": 543162372,
+  "timestamp": 1630625150,
+  "bits": 436273151,
+  "nonce": 1600805744,
+  "difficulty": 16777216,
+  "merkle_root": "5d10d8d158bb8eb217d01fecc435bd10eda028043a913dc2bfe0ccf536a51cc9",
+  "tx_count": 2,
+  "size": 575,
+  "weight": 1865,
+  "previousblockhash": "0000000000000073f95d1fc0a93d449f82a754410c635e46264ec6c7c4d5741e",
+  "mediantime": 1630621997,
+  "extras": {
+    "totalFees": 877,
+    "medianFee": 5,
+    "feeRange": [
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5
+    ],
+    "reward": 9766502,
+    "pool": {
+      "id": 0,
+      "name": "Unknown",
+      "slug": "unknown",
+      "minerNames": null
+    },
+    "avgFee": 877,
+    "avgFeeRate": 5,
+    "coinbaseRaw": "0384e81f047e5d3161425443506f6f6cfabe6d6dfc481b6989a49bad403c75b0abfcdb7796b42489514a8c2d2294d7e5b2c93c05020000007296cd10010022583d1d000000000000",
+    "coinbaseAddress": "2N4YXTxKEso3yeYXNn5h42Vqu3FzTTQ8Lq5",
+    "coinbaseAddresses": [
+      "2N4YXTxKEso3yeYXNn5h42Vqu3FzTTQ8Lq5"
+    ],
+    "coinbaseSignature": "OP_HASH160 OP_PUSHBYTES_20 7bef0b4a4dafa77b2ec52b81659cbcf0d9a91487 OP_EQUAL",
+    "coinbaseSignatureAscii": "...",
+    "avgTxSize": 128,
+    "totalInputs": 1,
+    "totalOutputs": 5,
+    "totalOutputAmt": 4728937,
+    "medianFeeAmt": null,
+    "feePercentiles": null,
+    "segwitTotalTxs": 1,
+    "segwitTotalSize": 256,
+    "segwitTotalWeight": 697,
+    "header": "040060201e74d5c4c7c64e26465e630c4154a7829f443da9c01f5df97300000000000000c91ca536f5cce0bfc23d913a0428a0ed10bd35c4ec1fd017b28ebb58d1d8105d7e5d3161ffff001a705b6a5f",
+    "utxoSetChange": 4,
+    "utxoSetSize": 26144301,
+    "totalInputAmt": 4729814,
+    "virtualSize": 466.25,
+    "firstSeen": null,
+    "orphans": [],
+    "matchRate": null,
+    "expectedFees": null,
+    "expectedWeight": null
+  }
+}`
+        },
+        codeSampleSignet: {
+          esModule: ['000000ca66fab8083d4f0370d499c3d602e78af5fa69b2427cda15a3f0d96152'],
+          commonJS: ['000000ca66fab8083d4f0370d499c3d602e78af5fa69b2427cda15a3f0d96152'],
+          curl: ['000000ca66fab8083d4f0370d499c3d602e78af5fa69b2427cda15a3f0d96152'],
+          response: `{
+  "id": "000000ca66fab8083d4f0370d499c3d602e78af5fa69b2427cda15a3f0d96152",
+  "height": 53745,
+  "version": 536870912,
+  "timestamp": 1630624390,
+  "bits": 503404179,
+  "nonce": 19642021,
+  "difficulty": 0.002919030932507782,
+  "merkle_root": "2c1984132841b9f98270274012b22beb7d4ade778cf058e9a44d38de5a111362",
+  "tx_count": 1,
+  "size": 343,
+  "weight": 1264,
+  "previousblockhash": "000001497bffdc2347656847647f343afc0eee441a849259335b8a1d79b6aa4a",
+  "mediantime": 1630621400,
+  "extras": {
+    "totalFees": 0,
+    "medianFee": 0,
+    "feeRange": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "reward": 5000000000,
+    "pool": {
+      "id": 0,
+      "name": "Unknown",
+      "slug": "unknown",
+      "minerNames": null
+    },
+    "avgFee": 0,
+    "avgFeeRate": 0,
+    "coinbaseRaw": "03f1d100",
+    "coinbaseAddress": "tb1pqk4mdqzp8kpu2g6nrahwd9j0muacyjfadk99tvmpf5vqya8rt5fq2dxx99",
+    "coinbaseAddresses": [
+      "tb1pqk4mdqzp8kpu2g6nrahwd9j0muacyjfadk99tvmpf5vqya8rt5fq2dxx99"
+    ],
+    "coinbaseSignature": "OP_PUSHNUM_1 OP_PUSHBYTES_32 05abb680413d83c523531f6ee6964fdf3b82493d6d8a55b3614d180274e35d12",
+    "coinbaseSignatureAscii": "...",
+    "avgTxSize": 0,
+    "totalInputs": 0,
+    "totalOutputs": 2,
+    "totalOutputAmt": 0,
+    "medianFeeAmt": null,
+    "feePercentiles": null,
+    "segwitTotalTxs": 0,
+    "segwitTotalSize": 0,
+    "segwitTotalWeight": 0,
+    "header": "000000204aaab6791d8a5b335992841a44ee0efc3a347f644768654723dcff7b490100006213115ade384da4e958f08c77de4a7deb2bb21240277082f9b941281384192c865a31619356011ea5b62b01",
+    "utxoSetChange": 2,
+    "utxoSetSize": 302621,
+    "totalInputAmt": 0,
+    "virtualSize": 316,
+    "firstSeen": null,
+    "orphans": [],
+    "matchRate": null,
+    "expectedFees": null,
+    "expectedWeight": null
+  }
+}`
+        },
+        codeSampleLiquid: {
+          esModule: [`86aefdd3cf7be8e5781f783fe5d80513e8b3f52f2f1ef61e8e056b7faffc4b78`],
+          commonJS: [`86aefdd3cf7be8e5781f783fe5d80513e8b3f52f2f1ef61e8e056b7faffc4b78`],
+          curl: [`86aefdd3cf7be8e5781f783fe5d80513e8b3f52f2f1ef61e8e056b7faffc4b78`],
+          response: `{
+  "id": "86aefdd3cf7be8e5781f783fe5d80513e8b3f52f2f1ef61e8e056b7faffc4b78",
+  "height": 1471971,
+  "version": 570425344,
+  "timestamp": 1630625518,
+  "bits": null,
+  "merkle_root": "7e40735e103d6015c90d285d09b535498c0a26df9ca8118b1b4d68aaf80ccf48",
+  "tx_count": 2,
+  "size": 10841,
+  "weight": 16913,
+  "previousblockhash": "944fa8ffd906b3531af95f3d9b052dfdef0b60657c3c8def2c3591384f083424",
+  "mediantime": 1630625218,
+  "stale": false
+}`,
+        },
+        codeSampleLiquidTestnet: {
+          esModule: [`8f7cb70f32e2069724212c986f34462fc40180eabf189b44486faf6989824f9a`],
+          commonJS: [`8f7cb70f32e2069724212c986f34462fc40180eabf189b44486faf6989824f9a`],
+          curl: [`8f7cb70f32e2069724212c986f34462fc40180eabf189b44486faf6989824f9a`],
+          response: `{
+  "id": "8f7cb70f32e2069724212c986f34462fc40180eabf189b44486faf6989824f9a",
+  "height": 154705,
+  "version": 536870912,
+  "timestamp": 1641154264,
+  "bits": null,
+  "merkle_root": "e7cc1145b3b074be73a84119485a504de77967aabe415240caca0e2c41a8b9b4",
+  "tx_count": 2,
+  "size": 5137,
+  "weight": 7012,
+  "previousblockhash": "2745fd72a5bd2b256c9d2044631032d2cd872f1f0001c3db52e26604a6423526",
+  "mediantime": 1641153964,
+  "stale": false
 }`,
         },
       }
@@ -2335,13 +4931,163 @@ export const restApiDocsData = [
     }
   },
   {
+    options: { electrsOnly: true },
     type: "endpoint",
     category: "blocks",
     httpRequestMethod: "GET",
     fragment: "get-blocks",
     title: "GET Blocks",
     description: {
-      default: "Returns details on the past 15 blocks with fee and mining details in an <code>extras</code> field. If <code>:startHeight</code> is specified, the past 15 blocks before (and including) <code>:startHeight</code> are returned."
+      default: "Returns details on the past 10 blocks. If <code>:startHeight</code> is specified, the 10 blocks before (and including) <code>:startHeight</code> are returned."
+    },
+    urlString: "/blocks[/:startHeight]",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefault,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/blocks/%{1}`,
+          commonJS: `
+        const { %{0}: { blocks } } = mempoolJS();
+
+        const getBlocks = await blocks.getBlocks({ startHeight: %{1} });
+
+        document.getElementById("result").textContent = JSON.stringify(getBlocks, undefined, 2);
+        `,
+          esModule: `
+  const { %{0}: { blocks } } = mempoolJS();
+
+  const getBlocks = await blocks.getBlocks({ startHeight: %{1} });
+  console.log(getBlocks);
+          `,
+        },
+        codeSampleMainnet: {
+          esModule: ['730000'],
+          commonJS: ['730000'],
+          curl: ['730000'],
+          response: `[
+  {
+    "id": "0000000000000000000384f28cb3b9cf4377a39cfd6c29ae9466951de38c0529",
+    "height": 730000,
+    "version": 536870912,
+    "timestamp": 1648829449,
+    "tx_count": 1627,
+    "size": 1210916,
+    "weight": 3993515,
+    "merkle_root": "efa344bcd6c0607f93b709515dd6dc5496178112d680338ebea459e3de7b4fbc",
+    "previousblockhash": "00000000000000000008b6f6fb83f8d74512ef1e0af29e642dd20daddd7d318f",
+    "mediantime": 1648827418,
+    "nonce": 3580664066,
+    "bits": 386521239,
+    "difficulty": 28587155782195.1
+  },
+  {
+    "id": "00000000000000000008b6f6fb83f8d74512ef1e0af29e642dd20daddd7d318f",
+    "height": 729999,
+    "version": 793796608,
+    "timestamp": 1648828946,
+    "tx_count": 2574,
+    "size": 1481957,
+    "weight": 3993485,
+    "merkle_root": "d84f9cc1823bd069c505061b1f6faabd809d67ab5354e9f6234312dc4bdb1ecf",
+    "previousblockhash": "000000000000000000071e6c86c2175aa86817cae2a77acd95372b55c1103d89",
+    "mediantime": 1648827210,
+    "nonce": 3477019455,
+    "bits": 386521239,
+    "difficulty": 28587155782195.1
+  },
+  ...
+]`,
+        },
+        codeSampleTestnet: {
+          esModule: ['2091187'],
+          commonJS: ['2091187'],
+          curl: ['2091187'],
+          response: `[
+  {
+    "id": "00000000000000533f63df886281a9fd74da163e84a21445153ff480e5f57970",
+    "height": 2091187,
+    "version": 545259520,
+    "timestamp": 1630641890,
+    "tx_count": 26,
+    "size": 8390,
+    "weight": 22985,
+    "merkle_root": "4d6df12a4af11bb928c7b2930e0a4d2c3e268c6dc6a07462943ad1c4b6b96468",
+    "previousblockhash": "0000000000000079103da7d296e1480295df795b7379e7dffd27743e214b0b32",
+    "mediantime": 1630639627,
+    "nonce": 309403673,
+    "bits": 436273151,
+    "difficulty": 16777216
+  },
+  {
+    "id": "0000000000000079103da7d296e1480295df795b7379e7dffd27743e214b0b32",
+    "height": 2091186,
+    "version": 541065216,
+    "timestamp": 1630641655,
+    "tx_count": 43,
+    "size": 11427,
+    "weight": 32472,
+    "merkle_root": "c70fa944f2863dc0828ee93ec0407bb8473e3b9bb94854ffd3fa1ccb9855d76a",
+    "previousblockhash": "00000000000000f015cb6ce3c007b56a053c4b3c3c86a36130e63310da787a30",
+    "mediantime": 1630639598,
+    "nonce": 2671302918,
+    "bits": 436273151,
+    "difficulty": 16777216
+  },
+  ...
+]`
+        },
+        codeSampleSignet: {
+          esModule: ['53783'],
+          commonJS: ['53783'],
+          curl: ['53783'],
+          response: `[
+  {
+    "id": "0000010eeacb878340bae34af4e13551413d76a172ec302f7e50b62cb45374f2",
+    "height": 53783,
+    "version": 536870912,
+    "timestamp": 1630641504,
+    "tx_count": 1,
+    "size": 343,
+    "weight": 1264,
+    "merkle_root": "3063ff3802c920eea68bdc9303957f3e7bfd0a03c93547fd7dad14b77a07d4e8",
+    "previousblockhash": "00000109a7ea774fcc2d173f9a1da9595a47ff401dac67ca9edea149954210fa",
+    "mediantime": 1630638966,
+    "nonce": 11753379,
+    "bits": 503404179,
+    "difficulty": 0.00291903093250778
+  },
+  {
+    "id": "00000109a7ea774fcc2d173f9a1da9595a47ff401dac67ca9edea149954210fa",
+    "height": 53782,
+    "version": 536870912,
+    "timestamp": 1630640959,
+    "tx_count": 10,
+    "size": 1837,
+    "weight": 5545,
+    "merkle_root": "888cf13ad83ba4c9d44dee7984a1dafee6c78d329178c51bf0ffe61d98df40f3",
+    "previousblockhash": "000001508377eba43e83abb169ee1454daed14697267b9baf970b3fd556191e3",
+    "mediantime": 1630638721,
+    "nonce": 1074604,
+    "bits": 503404179,
+    "difficulty": 0.00291903093250778
+  },
+  ...
+]`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "blocks",
+    httpRequestMethod: "GET",
+    fragment: "get-blocks-v1",
+    title: "GET Blocks (v1)",
+    description: {
+      default: "Returns details on the past 15 blocks from Mempool's Node.js backend. Includes fee and mining details in an <code>extras</code> field. If <code>:startHeight</code> is specified, the past 15 blocks before (and including) <code>:startHeight</code> are returned."
     },
     urlString: "/v1/blocks[/:startHeight]",
     showConditions: bitcoinNetworks,
@@ -2371,74 +5117,57 @@ export const restApiDocsData = [
           response: `[
   {
     "id": "0000000000000000000384f28cb3b9cf4377a39cfd6c29ae9466951de38c0529",
-    "timestamp": 1648829449,
     "height": 730000,
     "version": 536870912,
+    "timestamp": 1648829449,
     "bits": 386521239,
     "nonce": 3580664066,
-    "difficulty": 28587155782195.14,
+    "difficulty": 28587155782195.1,
     "merkle_root": "efa344bcd6c0607f93b709515dd6dc5496178112d680338ebea459e3de7b4fbc",
     "tx_count": 1627,
     "size": 1210916,
     "weight": 3993515,
     "previousblockhash": "00000000000000000008b6f6fb83f8d74512ef1e0af29e642dd20daddd7d318f",
+    "mediantime": 1648827418,
     "extras": {
-      "coinbaseRaw": "0390230b1362696e616e63652f383038e0006f02cd583765fabe6d6d686355577affaad03015e732428a927a5d2d842471b350394139616bcb4401d804000000000000001a750000c9ad0000",
-      "medianFee": 11,
-      "feeRange": [
-        1,
-        11,
-        11,
-        11,
-        18,
-        21,
-        660
-      ],
-      "reward": 641321983,
       "totalFees": 16321983,
+      "medianFee": 11,
+      "feeRange": [1, 11, 11, 11, 18, 21, 660],
+      "reward": 641321983,
+      "pool": {
+        "id": 105,
+        "name": "Binance Pool",
+        "slug": "binancepool",
+        "minerNames": null
+      },
       "avgFee": 10038,
       "avgFeeRate": 16,
-      "pool": {
-        "id": 105,
-        "name": "Binance Pool",
-        "slug": "binancepool"
-      }
-    }
-  },
-  {
-    "id": "00000000000000000008b6f6fb83f8d74512ef1e0af29e642dd20daddd7d318f",
-    "timestamp": 1648828946,
-    "height": 729999,
-    "version": 793796608,
-    "bits": 386521239,
-    "nonce": 3477019455,
-    "difficulty": 28587155782195.14,
-    "merkle_root": "d84f9cc1823bd069c505061b1f6faabd809d67ab5354e9f6234312dc4bdb1ecf",
-    "tx_count": 2574,
-    "size": 1481957,
-    "weight": 3993485,
-    "previousblockhash": "000000000000000000071e6c86c2175aa86817cae2a77acd95372b55c1103d89",
-    "extras": {
-      "coinbaseRaw": "038f230b1362696e616e63652f373739d8002900ca5de7a9fabe6d6dda31112c36c10a523154eae76847579755cd4ae558ee2e6f9f200b05dd32a0bf04000000000000006372000000020000",
-      "medianFee": 17,
-      "feeRange": [
-        2,
-        11,
-        14,
-        17,
-        19,
-        28,
-        502
+      "coinbaseRaw": "0390230b1362696e616e63652f383038e0006f02cd583765fabe6d6d686355577affaad03015e732428a927a5d2d842471b350394139616bcb4401d804000000000000001a750000c9ad0000",
+      "coinbaseAddress": "1JvXhnHCi6XqcanvrZJ5s2Qiv4tsmm2UMy",
+      "coinbaseAddresses": [
+        "1JvXhnHCi6XqcanvrZJ5s2Qiv4tsmm2UMy"
       ],
-      "reward": 649090210,
-      "totalFees": 24090210,
-      "avgFee": 9362,
-      "avgFeeRate": 24,
-      "pool": {
-        "id": 105,
-        "name": "Binance Pool",
-        "slug": "binancepool"
-      }
+      "coinbaseSignature": "OP_DUP OP_HASH160 OP_PUSHBYTES_20 c499d0604392cc2051d7476056647d1c1bfc3f38 OP_EQUALVERIFY OP_CHECKSIG",
+      "coinbaseSignatureAscii": "...",
+      "avgTxSize": 744,
+      "totalInputs": 6249,
+      "totalOutputs": 6768,
+      "totalOutputAmt": 1314305994870,
+      "medianFeeAmt": 3182,
+      "feePercentiles": [313, 2086, 2538, 3182, 5625, 14136, 990660],
+      "segwitTotalTxs": 1314,
+      "segwitTotalSize": 1031785,
+      "segwitTotalWeight": 3277099,
+      "header": "000000208f317dddad0dd22d649ef20a1eef1245d7f883fbf6b608000000000000000000bc4f7bdee359a4be8e3380d61281179654dcd65d5109b7937f60c0d6bc44a3ef0924476297d8091702996cd5",
+      "utxoSetChange": 519,
+      "utxoSetSize": 80390138,
+      "totalInputAmt": 1314322316853,
+      "virtualSize": 998378.75,
+      "firstSeen": null,
+      "orphans": [],
+      "matchRate": null,
+      "expectedFees": null,
+      "expectedWeight": null
     }
   },
   ...
@@ -2449,11 +5178,11 @@ export const restApiDocsData = [
           commonJS: ['2091187'],
           curl: ['2091187'],
           response: `[
-   {
+  {
     "id": "00000000000000533f63df886281a9fd74da163e84a21445153ff480e5f57970",
-    "timestamp": 1630641890,
     "height": 2091187,
     "version": 545259520,
+    "timestamp": 1630641890,
     "bits": 436273151,
     "nonce": 309403673,
     "difficulty": 16777216,
@@ -2462,27 +5191,46 @@ export const restApiDocsData = [
     "size": 8390,
     "weight": 22985,
     "previousblockhash": "0000000000000079103da7d296e1480295df795b7379e7dffd27743e214b0b32",
+    "mediantime": 1630639627,
     "extras": {
-      "coinbaseRaw": "03b3e81f3a205468697320626c6f636b20776173206d696e65642077697468206120636172626f6e206e6567617469766520706f77657220736f75726365201209687a2009092009020de601d7986a040000",
-      "medianFee": 1,
-      "feeRange": [
-        1,
-        1,
-        1,
-        1,
-        5,
-        56,
-        5053
-      ],
-      "reward": 10547567,
       "totalFees": 781942,
+      "medianFee": 1,
+      "feeRange": [1, 1, 1, 1, 5, 56, 5053],
+      "reward": 10547567,
+      "pool": {
+        "id": 0,
+        "name": "Unknown",
+        "slug": "unknown",
+        "minerNames": null
+      },
       "avgFee": 31277,
       "avgFeeRate": 143,
-      "pool": {
-        "id": 137,
-        "name": "Unknown",
-        "slug": "unknown"
-      }
+      "coinbaseRaw": "03b3e81f3a205468697320626c6f636b20776173206d696e65642077697468206120636172626f6e206e6567617469766520706f77657220736f75726365201209687a2009092009020de601d7986a040000",
+      "coinbaseAddress": "2MtzNEqm2D9jcbPJ5mW7Z3AUNwqt3afZH66",
+      "coinbaseAddresses": [
+        "2MtzNEqm2D9jcbPJ5mW7Z3AUNwqt3afZH66"
+      ],
+      "coinbaseSignature": "OP_HASH160 OP_PUSHBYTES_20 1320e6542e2146ea486700f4091aa793e7360788 OP_EQUAL",
+      "coinbaseSignatureAscii": "...",
+      "avgTxSize": 310.04,
+      "totalInputs": 33,
+      "totalOutputs": 64,
+      "totalOutputAmt": 30223143847,
+      "medianFeeAmt": null,
+      "feePercentiles": null,
+      "segwitTotalTxs": 24,
+      "segwitTotalSize": 7709,
+      "segwitTotalWeight": 20369,
+      "header": "00008020320b4b213e7427fddfe779735b79df950248e196d2a73d1079000000000000006864b9b6c4d13a946274a0c66d8c263e2c4d0a0e93b2c728b91bf14a2af16d4de29e3161ffff001a19207112",
+      "utxoSetChange": 31,
+      "utxoSetSize": 26145554,
+      "totalInputAmt": 30223925789,
+      "virtualSize": 5746.25,
+      "firstSeen": null,
+      "orphans": [],
+      "matchRate": null,
+      "expectedFees": null,
+      "expectedWeight": null
     }
   },
   ...
@@ -2495,38 +5243,57 @@ export const restApiDocsData = [
           response: `[
   {
     "id": "0000010eeacb878340bae34af4e13551413d76a172ec302f7e50b62cb45374f2",
-    "timestamp": 1630641504,
     "height": 53783,
     "version": 536870912,
+    "timestamp": 1630641504,
     "bits": 503404179,
     "nonce": 11753379,
-    "difficulty": 0.002919030932507782,
+    "difficulty": 0.00291903093250778,
     "merkle_root": "3063ff3802c920eea68bdc9303957f3e7bfd0a03c93547fd7dad14b77a07d4e8",
     "tx_count": 1,
     "size": 343,
     "weight": 1264,
     "previousblockhash": "00000109a7ea774fcc2d173f9a1da9595a47ff401dac67ca9edea149954210fa",
+    "mediantime": 1630638966,
     "extras": {
-      "coinbaseRaw": "0317d200",
-      "medianFee": 0,
-      "feeRange": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "reward": 5000000000,
       "totalFees": 0,
+      "medianFee": 0,
+      "feeRange": [0, 0, 0, 0, 0, 0, 0],
+      "reward": 5000000000,
+      "pool": {
+        "id": 0,
+        "name": "Unknown",
+        "slug": "unknown",
+        "minerNames": null
+      },
       "avgFee": 0,
       "avgFeeRate": 0,
-      "pool": {
-        "id": 137,
-        "name": "Unknown",
-        "slug": "unknown"
-      }
+      "coinbaseRaw": "0317d200",
+      "coinbaseAddress": "tb1p95clr67qe8s3l27nd2cry22fdhmque3fgze08urhc099pml0rwmqddz08l",
+      "coinbaseAddresses": [
+        "tb1p95clr67qe8s3l27nd2cry22fdhmque3fgze08urhc099pml0rwmqddz08l"
+      ],
+      "coinbaseSignature": "OP_PUSHNUM_1 OP_PUSHBYTES_32 2d31f1ebc0c9e11fabd36ab03229496df60e662940b2f3f077c3ca50efef1bb6",
+      "coinbaseSignatureAscii": "...",
+      "avgTxSize": 0,
+      "totalInputs": 0,
+      "totalOutputs": 2,
+      "totalOutputAmt": 0,
+      "medianFeeAmt": null,
+      "feePercentiles": null,
+      "segwitTotalTxs": 0,
+      "segwitTotalSize": 0,
+      "segwitTotalWeight": 0,
+      "header": "00000020fa10429549a1de9eca67ac1d40ff475a59a91d9a3f172dcc4f77eaa709010000e8d4077ab714ad7dfd4735c9030afd7b3e7f950393dc8ba6ee20c90238ff6330609d31619356011ea357b300",
+      "utxoSetChange": 2,
+      "utxoSetSize": 303088,
+      "totalInputAmt": 0,
+      "virtualSize": 316,
+      "firstSeen": null,
+      "orphans": [],
+      "matchRate": null,
+      "expectedFees": null,
+      "expectedWeight": null
     }
   },
   ...
@@ -2788,16 +5555,28 @@ export const restApiDocsData = [
           curl: ['1472246'],
           response: `[
   {
-    id: "0bd348c08101fef863b7263b2b44b2f6575f707f1e397da95cfe2afdd5e9ccdb",
-    height: 1472246,
-    version: 570425344,
-    timestamp: 1630642018,
-    tx_count: 2,
-    size: 10838,
-    weight: 16901,
-    merkle_root: "a8cdc1ba96d1f862ca7c9aec4133a6efd14138f54c17efdbc968632a6b9cb8c8",
-    previousblockhash: "a06c327cdd76301de57ba0cf86c5ae8b1fd8a785945065ac9e2128322bd01f31",
-    mediantime: 1630641718
+    "id": "0bd348c08101fef863b7263b2b44b2f6575f707f1e397da95cfe2afdd5e9ccdb",
+    "height": 1472246,
+    "version": 570425344,
+    "timestamp": 1630642018,
+    "tx_count": 2,
+    "size": 10838,
+    "weight": 16901,
+    "merkle_root": "a8cdc1ba96d1f862ca7c9aec4133a6efd14138f54c17efdbc968632a6b9cb8c8",
+    "previousblockhash": "a06c327cdd76301de57ba0cf86c5ae8b1fd8a785945065ac9e2128322bd01f31",
+    "mediantime": 1630641718
+  },
+  {
+    "id": "a06c327cdd76301de57ba0cf86c5ae8b1fd8a785945065ac9e2128322bd01f31",
+    "height": 1472245,
+    "version": 570425344,
+    "timestamp": 1630641958,
+    "tx_count": 2,
+    "size": 10838,
+    "weight": 16901,
+    "merkle_root": "d3c370aabe96147b59f2e40511b0d8b7ee56eeb08d45816af6c4cae710643ce7",
+    "previousblockhash": "2ec34bb6f0730aa19d7c72346d6e3382620509de048a3b03658af7db19355240",
+    "mediantime": 1630641658
   },
   ...
 ]`
@@ -2808,16 +5587,127 @@ export const restApiDocsData = [
           curl: ['150000'],
           response: `[
   {
-    id: "67d5eb1aee63c6c2058a088985503ff0626fd3f7f8022bdc74fab36a359164db",
-    height: 150000,
-    version: 536870912,
-    timestamp: 1640871913,
-    tx_count: 2,
-    size: 3527,
-    weight: 7430,
-    merkle_root: "40538ff1fcac07c65e36fcc230fc60f58e3a885ce9898e41bc27bcf28227e5ff",
-    previousblockhash: "2d8c28042b03219e7e9bc6853cc3ae536e36be5639869c545a0f3dbd1309e2a5",
-    mediantime: 1640871614
+    "id": "67d5eb1aee63c6c2058a088985503ff0626fd3f7f8022bdc74fab36a359164db",
+    "height": 150000,
+    "version": 536870912,
+    "timestamp": 1640871913,
+    "tx_count": 2,
+    "size": 3527,
+    "weight": 7430,
+    "merkle_root": "40538ff1fcac07c65e36fcc230fc60f58e3a885ce9898e41bc27bcf28227e5ff",
+    "previousblockhash": "2d8c28042b03219e7e9bc6853cc3ae536e36be5639869c545a0f3dbd1309e2a5",
+    "mediantime": 1640871614
+  },
+  {
+    "id": "2d8c28042b03219e7e9bc6853cc3ae536e36be5639869c545a0f3dbd1309e2a5",
+    "height": 149999,
+    "version": 536870912,
+    "timestamp": 1640871853,
+    "tx_count": 3,
+    "size": 4380,
+    "weight": 8097,
+    "merkle_root": "38495212acd5e3ad4fdce7cce29c8c892b20c3ffacbcd73ecb2b234c6aca67c2",
+    "previousblockhash": "7bd9ed9ff823d4605a476a12554c75087ab7f55fa6273a1b4b1115b09bb9586e",
+    "mediantime": 1640871554
+  },
+  ...
+]`
+        },
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "blocks",
+    httpRequestMethod: "GET",
+    fragment: "get-blocks-v1",
+    title: "GET Blocks (v1)",
+    description: {
+      default: "Returns details on the past 15 blocks from Mempool's Node.js backend. If <code>:startHeight</code> is specified, the past 15 blocks before (and including) <code>:startHeight</code> are returned."
+    },
+    urlString: "/v1/blocks[/:startHeight]",
+    showConditions: liquidNetworks,
+    showJsExamples: showJsExamplesDefault,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/blocks/%{1}`,
+          commonJS: `
+        const { %{0}: { blocks } } = mempoolJS();
+
+        const getBlocks = await blocks.getBlocks({ startHeight: %{1} });
+
+        document.getElementById("result").textContent = JSON.stringify(getBlocks, undefined, 2);
+        `,
+          esModule: `
+  const { %{0}: { blocks } } = mempoolJS();
+
+  const getBlocks = await blocks.getBlocks({ startHeight: %{1} });
+  console.log(getBlocks);
+          `,
+        },
+        codeSampleMainnet: emptyCodeSample,
+        codeSampleTestnet: emptyCodeSample,
+        codeSampleSignet: emptyCodeSample,
+        codeSampleLiquid: {
+          esModule: ['1472246'],
+          commonJS: ['1472246'],
+          curl: ['1472246'],
+          response: `[
+  {
+    "id": "0bd348c08101fef863b7263b2b44b2f6575f707f1e397da95cfe2afdd5e9ccdb",
+    "height": 1472246,
+    "version": 570425344,
+    "timestamp": 1630642018,
+    "tx_count": 2,
+    "size": 10838,
+    "weight": 16901,
+    "merkle_root": "a8cdc1ba96d1f862ca7c9aec4133a6efd14138f54c17efdbc968632a6b9cb8c8",
+    "previousblockhash": "a06c327cdd76301de57ba0cf86c5ae8b1fd8a785945065ac9e2128322bd01f31",
+    "mediantime": 1630641718,
+    "ext": {
+      "challenge": "5b21026a2a106ec32c8a1e8052e5d02a7b0a150423dbd9b116fc48d46630ff6e6a05b92102791646a8b49c2740352b4495c118d876347bf47d0551c01c4332fdc2df526f1a2102888bda53a424466b0451627df22090143bbf7c060e9eacb1e38426f6b07f2ae12102aee8967150dee220f613de3b239320355a498808084a93eaf39a34dcd62024852102d46e9259d0a0bb2bcbc461a3e68f34adca27b8d08fbe985853992b4b104e27412102e9944e35e5750ab621e098145b8e6cf373c273b7c04747d1aa020be0af40ccd62102f9a9d4b10a6d6c56d8c955c547330c589bb45e774551d46d415e51cd9ad5116321033b421566c124dfde4db9defe4084b7aa4e7f36744758d92806b8f72c2e943309210353dcc6b4cf6ad28aceb7f7b2db92a4bf07ac42d357adf756f3eca790664314b621037f55980af0455e4fb55aad9b85a55068bb6dc4740ea87276dc693f4598db45fa210384001daa88dabd23db878dbb1ce5b4c2a5fa72c3113e3514bf602325d0c37b8e21039056d089f2fe72dbc0a14780b4635b0dc8a1b40b7a59106325dd1bc45cc70493210397ab8ea7b0bf85bc7fc56bb27bf85e75502e94e76a6781c409f3f2ec3d1122192103b00e3b5b77884bf3cae204c4b4eac003601da75f96982ffcb3dcb29c5ee419b92103c1f3c0874cfe34b8131af34699589aacec4093399739ae352e8a46f80a6f68375fae",
+      "solution": "0046304402206263bb35516e8ad806f3626d228dec7929e89202522b219257e7e5eedb64e8ff022036c5bfd2b16e43c5162d35fbc64041630e98f4574775ce3ebe8fc135c84234a646304402200450dabc776fe95cdecef09171141f56c26a0f4a9c5f9256f1d8e67aedb956a40220048d27e08acf5f002d823b2359a58b7b7df57b2121b5c64460dbc0f7807b31f6473045022100b763029e99a6debe765f640128eeaeb7bf721f5fd0a90d72457dffe6b6d97db5022015d492f8bbec838d7b90f5fbe4a0041766ca797e1b61069eef213dd064ede42146304402200a6342eeee2be815c3bf68321692b8f0cbe605cd0d626784f61def9e733164d202200f67b624626e25077db19b098543681e064f45f9eb8ae6888eb78de5af1bb621473045022100c1101245ccf45308d6cf92af9a43c34073aa9be59c6f78c86df8ef7f3a5c5fe0022056098b793ca730cc8e623bd7f9cbd2ba548cb10ba6976e56fcee5ab37e59ad9046304402205d74c5fd7037fe653045d57622bd69b10da7a5de9526996e065b6a6a7c5814f802207a0f6169c85e89a0cb18f908440ec67a63367327e0e3ea45adfa7a3e81f6bb1c473045022100808f8cd8a45b734c6c49afcbdfba8abac16ba4884f201b21a2e146f5ba1b90570220267a207cf36c98c844a353dfd4760053bc132c1271eb52a95219b5075e006c5d473045022100a90a1a40f8dce2085503adc845902db7400dfcfc201cd12cdde8c29694ddd8c40220505f562d7325abbebd263823fd96380fbe000aac3f821de4842a880477cf8e22473045022100b330af409638f2480b3cb931449a513014b9345875ec6e6407187a2beddb522a022069f3b65961c8e920f7ae07be0eb249ef9e7d0a173c7ab3eb236d0e52863f8dfd463044022012149a50dff010d49d1aaa9d25c187dc8c42a713fde49e4e705de9210acd6f1102202a7e63ac3ea01e4a36f0c15044ee2e8b6614c568a442d89cdb0d65c33795ab7d46304402200e7fe3f26c3579b376401f2f650482bd435e0c3cea436041c5a7b8add31543190220368a35ef33d44a6d3dbd97c68cd19042f041c9204e858c42a20014827f0762a7"
+    }
+  },
+  ...
+]`
+        },
+        codeSampleLiquidTestnet: {
+          esModule: ['150000'],
+          commonJS: ['150000'],
+          curl: ['150000'],
+          response: `[
+  {
+    "id": "67d5eb1aee63c6c2058a088985503ff0626fd3f7f8022bdc74fab36a359164db",
+    "height": 150000,
+    "version": 536870912,
+    "timestamp": 1640871913,
+    "tx_count": 2,
+    "size": 3527,
+    "weight": 7430,
+    "merkle_root": "40538ff1fcac07c65e36fcc230fc60f58e3a885ce9898e41bc27bcf28227e5ff",
+    "previousblockhash": "2d8c28042b03219e7e9bc6853cc3ae536e36be5639869c545a0f3dbd1309e2a5",
+    "mediantime": 1640871614,
+    "ext": {
+      "current": {
+        "extension_space": [
+          "02fcba7ecf41bc7e1be4ee122d9d22e3333671eb0a3a87b5cdf099d59874e1940f02fcba7ecf41bc7e1be4ee122d9d22e3333671eb0a3a87b5cdf099d59874e1940f"
+        ],
+        "fedpeg_program": "a91472c44f957fc011d97e3406667dca5b1c930c402687",
+        "fedpegscript": "51",
+        "signblock_witness_limit": 150,
+        "signblockscript": "0020e9e4117540f7f23b3edd7c2cad660a17fb33c7959b8c37cf61d92b189133929a"
+      },
+      "proposed": {
+
+      },
+      "signblock_witness": [
+        [],
+        [48, 68, 2, 32, 19, 152, 101, 5, 73, 58, 8, 11, 11, 62, 1, 201, 143, 107, 66, 185, 6, 95, 214, 77, 245, 159, 76, 23, 142, 153, 237, 165, 123, 120, 81, 38, 2, 32, 69, 126, 115, 140, 254, 188, 41, 52, 195, 99, 228, 176, 248, 113, 234, 84, 23, 134, 83, 245, 153, 218, 242, 16, 184, 101, 163, 30, 221, 28, 216, 195, 1],
+        [81, 33, 2, 23, 228, 3, 221, 177, 129, 135, 44, 50, 160, 205, 70, 140, 113, 0, 64, 178, 245, 61, 140, 172, 105, 241, 141, 173, 7, 152, 94, 227, 126, 154, 113, 81, 174]
+      ]
+    }
   },
   ...
 ]`
@@ -9339,7 +12229,7 @@ export const restApiDocsData = [
     fragment: "accelerator-history",
     title: "GET Acceleration History",
     description: {
-      default: "<p>Returns the user's past acceleration requests.</p><p>Pass one of the following for <code>:status</code>: <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code>. Pass <code>true</code> in <code>:details</code> to get a detailed <code>history</code> of the acceleration request.</p>"
+      default: "<p>Returns the user's past acceleration requests.</p><p>Pass one of the following for <code>:status</code> (required): <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code>.<br>Pass <code>true</code> in <code>:details</code> to get a detailed <code>history</code> of the acceleration request.</p>"
     },
     urlString: "/v1/services/accelerator/history?status=:status&details=:details",
     showConditions: [""],
@@ -9445,6 +12335,36 @@ export const restApiDocsData = [
     ]
   }
 ]`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: "endpoint",
+    category: "accelerator-private",
+    httpRequestMethod: "POST",
+    fragment: "accelerator-cancel",
+    title: "POST Cancel Acceleration (Pro)",
+    description: {
+      default: "<p>Sends a request to cancel an acceleration in the <code>accelerating</code> status.<br>You can retrieve eligible acceleration <code>id</code> using the history endpoint GET <code>/api/v1/services/accelerator/history?status=accelerating</code>."
+    },
+    urlString: "/v1/services/accelerator/cancel",
+    showConditions: [""],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/accelerator/cancel`, //custom interpolation technique handled in replaceCurlPlaceholder()
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ["id=42"],
+          headers: "X-Mempool-Auth: stacksats",
+          response: `HTTP/1.1 200 OK`,
         },
       }
     }

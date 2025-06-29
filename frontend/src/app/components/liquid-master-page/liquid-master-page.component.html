@@ -62,27 +62,34 @@
   <div class="navbar-collapse" id="navbarCollapse">
     <ul class="navbar-nav {{ network.val }}">
       <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" id="btn-home">
-        <a class="nav-link" [routerLink]="['/' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'tachometer-alt']" [fixedWidth]="true" i18n-title="master-page.dashboard" title="Dashboard"></fa-icon></a>
+        <a class="nav-link" [routerLink]="['/' | relativeUrl]" (click)="collapse()">
+          <div class="svg-wrapper"><app-svg-images name="nav-tachometer" width="21.59" height="100%"></app-svg-images></div>
+        </a>
       </li>
       <li class="nav-item" routerLinkActive="active" id="btn-blocks">
-        <a class="nav-link" [routerLink]="['/blocks' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'cubes']" [fixedWidth]="true" i18n-title="master-page.blocks" title="Blocks"></fa-icon></a>
+        <a class="nav-link" [routerLink]="['/blocks' | relativeUrl]" (click)="collapse()">
+          <div class="svg-wrapper"><app-svg-images name="nav-cubes" width="21.59" height="100%"></app-svg-images></div>
+        </a>
       </li>
       <li class="nav-item" routerLinkActive="active" id="btn-graphs">
-        <a class="nav-link" [routerLink]="['/graphs' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'chart-area']" [fixedWidth]="true" i18n-title="master-page.graphs" title="Graphs"></fa-icon></a>
+        <a class="nav-link" [routerLink]="['/graphs' | relativeUrl]" (click)="collapse()">
+          <div class="svg-wrapper"><app-svg-images name="nav-chart-area" width="21.59" height="100%"></app-svg-images></div>
+        </a>
       </li>
-      <!--
-      <li class="nav-item d-none d-lg-block" routerLinkActive="active">
-        <a class="nav-link" [routerLink]="['/tv' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'tv']" [fixedWidth]="true" i18n-title="master-page.tvview" title="TV view"></fa-icon></a>
-      </li>
-      -->
       <li class="nav-item" routerLinkActive="active" id="btn-assets">
-        <a class="nav-link" [routerLink]="['/assets' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'database']" [fixedWidth]="true" i18n-title="master-page.assets" title="Assets"></fa-icon></a>
+        <a class="nav-link" [routerLink]="['/assets' | relativeUrl]" (click)="collapse()">
+          <div class="svg-wrapper"><app-svg-images name="nav-database" width="21.59" height="100%"></app-svg-images></div>
+        </a>
       </li>
-      <li class="nav-item mr-2" routerLinkActive="active" id="btn-docs">
-        <a class="nav-link" [routerLink]="['/docs' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'book']" [fixedWidth]="true" i18n-title="documentation.title" title="Documentation"></fa-icon></a>
+      <li class="nav-item" routerLinkActive="active" id="btn-docs">
+        <a class="nav-link" [routerLink]="['/docs' | relativeUrl]" (click)="collapse()">
+          <div class="svg-wrapper"><app-svg-images name="nav-book" width="21.59" height="100%"></app-svg-images></div>
+        </a>
       </li>
       <li class="nav-item" routerLinkActive="active" id="btn-about">
-        <a class="nav-link" [routerLink]="['/about']" (click)="collapse()"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true" i18n-title="master-page.about" title="About"></fa-icon></a>
+        <a class="nav-link" [routerLink]="['/about']" (click)="collapse()">
+          <div class="svg-wrapper"><app-svg-images name="nav-info-circle" width="21.59" height="100%"></app-svg-images></div>
+        </a>
       </li>
     </ul>
     <app-search-form class="search-form-container" location="top" (searchTriggered)="collapse()"></app-search-form>

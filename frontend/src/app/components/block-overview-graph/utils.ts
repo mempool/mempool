@@ -12,7 +12,7 @@ export function hexToColor(hex: string): Color {
 }
 
 export function colorToHex(color: Color): string {
-  return [color.r, color.g, color.b].map(c => Math.round(c * 255).toString(16)).join('');
+  return [color.r, color.g, color.b].map(c => Math.max(0, Math.min(Math.round(c * 255), 255)).toString(16)).join('');
 }
 
 export function desaturate(color: Color, amount: number): Color {
@@ -35,6 +35,8 @@ export function darken(color: Color, amount: number): Color {
 }
 
 export function mix(color1: Color, color2: Color, amount: number): Color {
+  // clamp to 0-1
+  amount = Math.max(0, Math.min(amount, 1));
   return {
     r: color1.r * (1 - amount) + color2.r * amount,
     g: color1.g * (1 - amount) + color2.g * amount,
@@ -63,7 +65,7 @@ const defaultColors: { [key: string]: ColorPalette } = {
     base: defaultMempoolFeeColors.map(hexToColor),
     audit: [],
     marginal: [],
-    baseLevel: (tx: TxView, rate: number) => feeLevels.findIndex((feeLvl) => Math.max(1, rate) < feeLvl) - 1
+    baseLevel: (tx: TxView, rate: number) => feeLevels.findIndex((feeLvl) => Math.max(0, rate) < feeLvl) - 1
   },
 }
 for (const key in defaultColors) {
@@ -94,7 +96,7 @@ const contrastColors: { [key: string]: ColorPalette } = {
     base: contrastMempoolFeeColors.map(hexToColor),
     audit: [],
     marginal: [],
-    baseLevel: (tx: TxView, rate: number) => feeLevels.findIndex((feeLvl) => Math.max(1, rate) < feeLvl) - 1
+    baseLevel: (tx: TxView, rate: number) => feeLevels.findIndex((feeLvl) => Math.max(0, rate) < feeLvl) - 1
   },
 }
 for (const key in contrastColors) {

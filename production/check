@@ -18,28 +18,40 @@ check_mempoolfoss_frontend_md5_hash() {
 check_mempool_electrs_git_hash() {
 	echo -n $(curl -s -i https://node${1}.${2}.mempool.space/api/mempool|grep -i x-powered-by|cut -d ' ' -f3|cut -d '-' -f3|tr -d '\r'|tr -d '\n')
 }
+check_mempool_electrs_negative_balance() {
+	echo -n $(curl -s https://node${1}.${2}.mempool.space/api/address/35Ty15fzBPGQvKnXZMLYvr41Fq2FTdU54a|jq .chain_stats.spent_txo_sum|tr -d '\r'|tr -d '\n')
+}
 check_liquid_electrs_git_hash() {
 	echo -n $(curl -s -i --connect-to "::node${1}.${2}.mempool.space:443" https://liquid.network/api/mempool|grep -i x-powered-by|cut -d ' ' -f3|cut -d '-' -f3|tr -d '\r'|tr -d '\n')
 }
-for site in fmt va1 fra tk7;do
+check_contributors_md5_hash() {
+	echo -n $(curl -s --connect-to "::node${1}.${2}.mempool.space:443" https://mempool.space/api/v1/contributors|md5|cut -c1-8)
+}
+for site in va1 fra tk7 sg1 hnl;do
 	echo "${site}"
 	for node in 201 202 203 204 205 206 207 208 209 210 211 212 213 214;do
+		[ "${site}" = "fmt" ] && [ "${node}" = 203 ] && continue
+		[ "${site}" = "sg1" ] && [ "${node}" -gt 204 ] && continue
+		[ "${site}" = "hnl" ] && [ "${node}" -gt 204 ] && continue
 		[ "${site}" = "fmt" ] && [ "${node}" -gt 206 ] && continue
 		[ "${site}" = "tk7" ] && [ "${node}" -gt 206 ] && continue
 		echo -n "node${node}.${site}: "
-		check_mempoolspace_frontend_git_hash $node $site
-		echo -n " "
-		check_mempoolfoss_frontend_git_hash $node $site
-		echo -n " "
-		check_mempoolfoss_backend_git_hash $node $site
-		echo -n " "
-		check_mempoolspace_frontend_md5_hash $node $site
-		echo -n " "
-		check_mempoolfoss_frontend_md5_hash $node $site
-		echo -n " "
+#		check_mempoolspace_frontend_git_hash $node $site
+#		echo -n " "
+#		check_mempoolfoss_frontend_git_hash $node $site
+#		echo -n " "
+#		check_mempoolfoss_backend_git_hash $node $site
+#		echo -n " "
+#		check_mempoolspace_frontend_md5_hash $node $site
+#		echo -n " "
+#		check_mempoolfoss_frontend_md5_hash $node $site
+#		echo -n " "
 		check_mempool_electrs_git_hash $node $site
 		echo -n " "
-		check_liquid_electrs_git_hash $node $site
+#		check_liquid_electrs_git_hash $node $site
+#		echo -n " "
+#		check_contributors_md5_hash $node $site
+		check_mempool_electrs_negative_balance $node $site
 		echo
 	done
 done

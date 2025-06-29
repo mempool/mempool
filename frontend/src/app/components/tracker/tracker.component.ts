@@ -121,7 +121,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
   acceleratorAvailable: boolean = this.stateService.env.ACCELERATOR && this.stateService.network === '';
   eligibleForAcceleration: boolean = false;
   accelerationFlowCompleted = false;
-  scrollIntoAccelPreview = false;
+  paymentReceiptUrl: string | null = null;
   auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
 
   enterpriseInfo: any;
@@ -713,6 +713,12 @@ export class TrackerComponent implements OnInit, OnDestroy {
     return true;
   }
 
+  paymentReceipt(ev) {
+    if (ev?.length) {
+      this.paymentReceiptUrl = ev;
+    }
+  }
+
   setIsAccelerated(initialState: boolean = false) {
     this.isAcceleration = (this.tx.acceleration || (this.accelerationInfo && this.pool && this.accelerationInfo.pools.some(pool => (pool === this.pool.id))));
     if (this.isAcceleration) {
@@ -735,9 +741,6 @@ export class TrackerComponent implements OnInit, OnDestroy {
       return;
     }
     this.accelerationFlowCompleted = false;
-    if (this.showAccelerationSummary) {
-      this.scrollIntoAccelPreview = true;
-    }
     return false;
   }
 
@@ -754,10 +757,6 @@ export class TrackerComponent implements OnInit, OnDestroy {
     } else {
       this.eligibleForAcceleration = false;
     }
-  }
-
-  get cashappEligible(): boolean {
-    return this.mempoolPosition?.block > 0 && this.tx.weight < 4000;
   }
 
   get showAccelerationSummary(): boolean {

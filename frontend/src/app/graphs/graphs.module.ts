@@ -26,21 +26,26 @@ import { StatisticsComponent } from '@components/statistics/statistics.component
 import { MempoolBlockComponent } from '@components/mempool-block/mempool-block.component';
 import { PoolRankingComponent } from '@components/pool-ranking/pool-ranking.component';
 import { PoolComponent } from '@components/pool/pool.component';
-import { TelevisionComponent } from '@components/television/television.component';
 import { DashboardComponent } from '@app/dashboard/dashboard.component';
 import { CustomDashboardComponent } from '@components/custom-dashboard/custom-dashboard.component';
 import { MiningDashboardComponent } from '@components/mining-dashboard/mining-dashboard.component';
 import { AcceleratorDashboardComponent } from '@components/acceleration/accelerator-dashboard/accelerator-dashboard.component';
+import { TreasuriesComponent } from '@components/treasuries/treasuries.component';
 import { HashrateChartComponent } from '@components/hashrate-chart/hashrate-chart.component';
 import { HashrateChartPoolsComponent } from '@components/hashrates-chart-pools/hashrate-chart-pools.component';
 import { BlockHealthGraphComponent } from '@components/block-health-graph/block-health-graph.component';
 import { AddressComponent } from '@components/address/address.component';
 import { WalletComponent } from '@components/wallet/wallet.component';
+import { WalletPreviewComponent } from '@components/wallet/wallet-preview.component';
 import { AddressGraphComponent } from '@components/address-graph/address-graph.component';
+import { TreasuriesGraphComponent } from '@components/treasuries/treasuries-graph/treasuries-graph.component';
+import { TreasuriesPieComponent } from '@components/treasuries/treasuries-pie/treasuries-pie.component';
 import { UtxoGraphComponent } from '@components/utxo-graph/utxo-graph.component';
 import { ActiveAccelerationBox } from '@components/acceleration/active-acceleration-box/active-acceleration-box.component';
 import { AddressesTreemap } from '@components/addresses-treemap/addresses-treemap.component';
+import { TaprootAddressScriptsComponent } from '@components/taproot-address-scripts/taproot-address-scripts.component';
 import { CommonModule } from '@angular/common';
+import { AsmStylerPipe } from '@app/shared/pipes/asm-styler/asm-styler.pipe';
 
 @NgModule({
   declarations: [
@@ -49,13 +54,13 @@ import { CommonModule } from '@angular/common';
     MempoolBlockComponent,
     AddressComponent,
     WalletComponent,
+    WalletPreviewComponent,
 
     MiningDashboardComponent,
     AcceleratorDashboardComponent,
     PoolComponent,
     PoolRankingComponent,
-    TelevisionComponent,
-
+    TreasuriesComponent,
     StatisticsComponent,
     GraphsComponent,
     AccelerationFeesGraphComponent,
@@ -80,9 +85,12 @@ import { CommonModule } from '@angular/common';
     HashrateChartPoolsComponent,
     BlockHealthGraphComponent,
     AddressGraphComponent,
+    TreasuriesGraphComponent,
+    TreasuriesPieComponent,
     UtxoGraphComponent,
     ActiveAccelerationBox,
     AddressesTreemap,
+    TaprootAddressScriptsComponent,
   ],
   imports: [
     CommonModule,
@@ -95,6 +103,9 @@ import { CommonModule } from '@angular/common';
   exports: [
     NgxEchartsModule,
     ActiveAccelerationBox,
+  ],
+  providers: [
+    AsmStylerPipe
   ]
 })
 export class GraphsModule { }

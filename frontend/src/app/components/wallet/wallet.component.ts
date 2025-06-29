@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { switchMap, catchError, map, tap, shareReplay, startWith, scan } from 'rxjs/operators';
 import { Address, AddressTxSummary, ChainStats, Transaction } from '@interfaces/electrs.interface';
 import { WebsocketService } from '@app/services/websocket.service';
@@ -9,93 +9,10 @@ import { of, Observable, Subscription } from 'rxjs';
 import { SeoService } from '@app/services/seo.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { WalletAddress } from '@interfaces/node-api.interface';
-
-class WalletStats implements ChainStats {
-  addresses: string[];
-  funded_txo_count: number;
-  funded_txo_sum: number;
-  spent_txo_count: number;
-  spent_txo_sum: number;
-  tx_count: number;
-
-  constructor (stats: ChainStats[], addresses: string[]) {
-    Object.assign(this, stats.reduce((acc, stat) => {
-        acc.funded_txo_count += stat.funded_txo_count;
-        acc.funded_txo_sum += stat.funded_txo_sum;
-        acc.spent_txo_count += stat.spent_txo_count;
-        acc.spent_txo_sum += stat.spent_txo_sum;
-        return acc;
-      }, {
-        funded_txo_count: 0,
-        funded_txo_sum: 0,
-        spent_txo_count: 0,
-        spent_txo_sum: 0,
-        tx_count: 0,
-      })
-    );
-    this.addresses = addresses;
-  }
-
-  public addTx(tx: Transaction): void {
-    for (const vin of tx.vin) {
-      if (this.addresses.includes(vin.prevout?.scriptpubkey_address)) {
-        this.spendTxo(vin.prevout.value);
-      }
-    }
-    for (const vout of tx.vout) {
-      if (this.addresses.includes(vout.scriptpubkey_address)) {
-        this.fundTxo(vout.value);
-      }
-    }
-    this.tx_count++;
-  }
-
-  public removeTx(tx: Transaction): void {
-    for (const vin of tx.vin) {
-      if (this.addresses.includes(vin.prevout?.scriptpubkey_address)) {
-        this.unspendTxo(vin.prevout.value);
-      }
-    }
-    for (const vout of tx.vout) {
-      if (this.addresses.includes(vout.scriptpubkey_address)) {
-        this.unfundTxo(vout.value);
-      }
-    }
-    this.tx_count--;
-  }
-
-  private fundTxo(value: number): void {
-    this.funded_txo_sum += value;
-    this.funded_txo_count++;
-  }
-
-  private unfundTxo(value: number): void {
-    this.funded_txo_sum -= value;
-    this.funded_txo_count--;
-  }
-
-  private spendTxo(value: number): void {
-    this.spent_txo_sum += value;
-    this.spent_txo_count++;
-  }
-
-  private unspendTxo(value: number): void {
-    this.spent_txo_sum -= value;
-    this.spent_txo_count--;
-  }
-
-  get balance(): number {
-    return this.funded_txo_sum - this.spent_txo_sum;
-  }
-
-  get totalReceived(): number {
-    return this.funded_txo_sum;
-  }
-
-  get utxos(): number {
-    return this.funded_txo_count - this.spent_txo_count;
-  }
-}
+import { ElectrsApiService } from '@app/services/electrs-api.service';
+import { AudioService } from '@app/services/audio.service';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
+import { WalletStats } from '@app/shared/wallet-stats';
 
 @Component({
   selector: 'app-wallet',
@@ -109,12 +26,17 @@ export class WalletComponent implements OnInit, OnDestroy {
   addressStrings: string[] = [];
   walletName: string;
   isLoadingWallet = true;
+  isLoadingTransactions = true;
+  transactions: Transaction[];
+  totalTransactionCount: number;
+  retryLoadMore = false;
   wallet$: Observable<Record<string, WalletAddress>>;
   walletAddresses$: Observable<Record<string, Address>>;
   walletSummary$: Observable<AddressTxSummary[]>;
   walletStats$: Observable<WalletStats>;
   error: any;
   walletSubscription: Subscription;
+  transactionSubscription: Subscription;
 
   collapseAddresses: boolean = true;
 
@@ -126,10 +48,14 @@ export class WalletComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private websocketService: WebsocketService,
     private stateService: StateService,
     private apiService: ApiService,
+    private electrsApiService: ElectrsApiService,
+    private audioService: AudioService,
     private seoService: SeoService,
+    private relativeUrlPipe: RelativeUrlPipe,
   ) { }
 
   ngOnInit(): void {
@@ -146,8 +72,11 @@ export class WalletComponent implements OnInit, OnDestroy {
       switchMap((walletName: string) => this.apiService.getWallet$(walletName).pipe(
         catchError((err) => {
           this.error = err;
-          this.seoService.logSoft404();
           console.log(err);
+          if (err.status === 404) {
+            this.seoService.logSoft404();
+            this.router.navigate([this.relativeUrlPipe.transform('')]);
+          }
           return of({});
         })
       )),
@@ -172,6 +101,21 @@ export class WalletComponent implements OnInit, OnDestroy {
       }),
       switchMap(initial => this.stateService.walletTransactions$.pipe(
         startWith(null),
+        tap((transactions) => {
+          if (!transactions?.length) {
+            return;
+          }
+          for (const transaction of transactions) {
+            const tx = this.transactions.find((t) => t.txid === transaction.txid);
+            if (tx) {
+              tx.status = transaction.status;
+            } else {
+              this.transactions.unshift(transaction);
+            }
+          }
+          this.transactions = this.transactions.slice();
+          this.audioService.playSound('magic');
+        }),
         scan((wallet, walletTransactions) => {
           for (const tx of (walletTransactions || [])) {
             const funded: Record<string, number> = {};
@@ -267,8 +211,57 @@ export class WalletComponent implements OnInit, OnDestroy {
             return stats;
           }, walletStats),
         );
-      }),
+      })
     );
+
+    this.transactionSubscription = this.wallet$.pipe(
+      switchMap(wallet => {
+        const addresses = Object.keys(wallet).map(addr => this.normalizeAddress(addr));
+        return this.electrsApiService.getAddressesTransactions$(addresses);
+      }),
+      map(transactions => {
+        // only confirmed transactions supported for now
+        return transactions.filter(tx => tx.status.confirmed).sort((a, b) => b.status.block_height - a.status.block_height);
+      }),
+      catchError((error) => {
+        console.log(error);
+        this.error = error;
+        this.seoService.logSoft404();
+        this.isLoadingWallet = false;
+        return of([]);
+      })
+    ).subscribe((transactions: Transaction[] | null) => {
+      if (!transactions) {
+        return;
+      }
+      this.transactions = transactions;
+      this.isLoadingTransactions = false;
+    });
+  }
+
+  loadMore(): void {
+    if (this.isLoadingTransactions || this.fullyLoaded) {
+      return;
+    }
+    this.isLoadingTransactions = true;
+    this.retryLoadMore = false;
+    this.electrsApiService.getAddressesTransactions$(this.addressStrings, this.transactions[this.transactions.length - 1].txid)
+      .subscribe((transactions: Transaction[]) => {
+        if (transactions && transactions.length) {
+          this.transactions = this.transactions.concat(transactions.sort((a, b) => b.status.block_height - a.status.block_height));
+        } else {
+          this.fullyLoaded = true;
+        }
+        this.isLoadingTransactions = false;
+      },
+      (error) => {
+        this.isLoadingTransactions = false;
+        this.retryLoadMore = true;
+        // In the unlikely event of the txid wasn't found in the mempool anymore and we must reload the page.
+        if (error.status === 422) {
+          window.location.reload();
+        }
+      });
   }
 
   deduplicateWalletTransactions(walletTransactions: AddressTxSummary[]): AddressTxSummary[] {
@@ -299,5 +292,6 @@ export class WalletComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.websocketService.stopTrackingWallet();
     this.walletSubscription.unsubscribe();
+    this.transactionSubscription.unsubscribe();
   }
 }

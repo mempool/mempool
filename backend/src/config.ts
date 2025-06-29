@@ -164,7 +164,12 @@ interface IConfig {
   },
   WALLETS: {
     ENABLED: boolean;
+    AUTO: boolean;
     WALLETS: string[];
+  },
+  STRATUM: {
+    ENABLED: boolean;
+    API: string;
   }
 }
 
@@ -330,8 +335,13 @@ const defaults: IConfig = {
   },
   'WALLETS': {
     'ENABLED': false,
+    'AUTO': false,
     'WALLETS': [],
   },
+  'STRATUM': {
+    'ENABLED': false,
+    'API': 'http://localhost:1234',
+  }
 };
 
 class Config implements IConfig {
@@ -354,6 +364,7 @@ class Config implements IConfig {
   REDIS: IConfig['REDIS'];
   FIAT_PRICE: IConfig['FIAT_PRICE'];
   WALLETS: IConfig['WALLETS'];
+  STRATUM: IConfig['STRATUM'];
 
   constructor() {
     const configs = this.merge(configFromFile, defaults);
@@ -376,6 +387,7 @@ class Config implements IConfig {
     this.REDIS = configs.REDIS;
     this.FIAT_PRICE = configs.FIAT_PRICE;
     this.WALLETS = configs.WALLETS;
+    this.STRATUM = configs.STRATUM;
   }
 
   merge = (...objects: object[]): IConfig => {

@@ -29,7 +29,6 @@ export class TransactionDetailsComponent implements OnInit {
   @Input() hasEffectiveFeeRate: boolean;
   @Input() cpfpInfo: CpfpInfo;
   @Input() hasCpfp: boolean;
-  @Input() showCpfpDetails: boolean;
   @Input() accelerationInfo: Acceleration;
   @Input() acceleratorAvailable: boolean;
   @Input() accelerateCtaType: string;
@@ -39,6 +38,7 @@ export class TransactionDetailsComponent implements OnInit {
   @Input() replaced: boolean;
   @Input() isCached: boolean;
   @Input() ETA$: Observable<ETA>;
+  @Input() unbroadcasted: boolean;
 
   @Output() accelerateClicked = new EventEmitter<boolean>();
   @Output() toggleCpfp$ = new EventEmitter<void>();
@@ -51,7 +51,7 @@ export class TransactionDetailsComponent implements OnInit {
     this.accelerateClicked.emit(true);
   }
 
-    toggleCpfp(): void {
+  toggleCpfp(): void {
     this.toggleCpfp$.emit();
   }
 }

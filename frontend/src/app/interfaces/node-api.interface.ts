@@ -1,4 +1,4 @@
-import { AddressTxSummary, Block, ChainStats, Transaction } from "./electrs.interface";
+import { AddressTxSummary, Block, ChainStats } from "./electrs.interface";
 
 export interface OptimizedMempoolStats {
   added: number;
@@ -412,13 +412,13 @@ export interface Acceleration {
   feeDelta: number;
   blockHash: string;
   blockHeight: number;
-
   acceleratedFeeRate?: number;
   boost?: number;
   bidBoost?: number;
   boostCost?: number;
   boostRate?: number;
   minedByPoolUniqueId?: number;
+  canceled?: number;
 }
 
 export interface AccelerationHistoryParams {
@@ -480,4 +480,11 @@ export interface WalletAddress {
   active: boolean;
   stats: ChainStats;
   transactions: AddressTxSummary[];
+}
+
+export interface Treasury {
+  id: number,
+  name: string,
+  wallet: string,
+  enterprise: string,
 }

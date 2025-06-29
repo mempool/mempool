@@ -9,6 +9,7 @@ import { WebsocketService } from '@app/services/websocket.service';
 import { SeoService } from '@app/services/seo.service';
 import { OpenGraphService } from '@app/services/opengraph.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
   selector: 'app-blocks-list',
@@ -49,6 +50,7 @@ export class BlocksList implements OnInit {
     private ogService: OpenGraphService,
     private route: ActivatedRoute,
     private router: Router,
+    private relativeUrlPipe: RelativeUrlPipe,
     @Inject(LOCALE_ID) private locale: string,
   ) {
     this.isMempoolModule = this.stateService.env.BASE_MODULE === 'mempool';
@@ -182,7 +184,7 @@ export class BlocksList implements OnInit {
   }
 
   pageChange(page: number): void {
-    this.router.navigate(['blocks', page]);
+    this.router.navigate([this.relativeUrlPipe.transform('/blocks/'), page]);
   }
 
   trackByBlock(index: number, block: BlockExtended): number {

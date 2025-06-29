@@ -38,6 +38,7 @@ interface AddressTransactions {
 import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
 import { calculateMempoolTxCpfp } from './cpfp';
 import { getRecentFirstSeen } from '../utils/file-read';
+import stratumApi, { StratumJob } from './services/stratum';
 
 // valid 'want' subscriptions
 const wantable = [
@@ -401,6 +402,16 @@ class WebsocketHandler {
             client['track-mempool'] = true;
           } else if (parsedMessage['track-mempool'] === false) {
             delete client['track-mempool'];
+          }
+
+          if (parsedMessage && parsedMessage['track-stratum'] != null) {
+            if (parsedMessage['track-stratum']) {
+              const sub = parsedMessage['track-stratum'];
+              client['track-stratum'] = sub;
+              response['stratumJobs'] = this.socketData['stratumJobs'];
+            } else {
+              client['track-stratum'] = false;
+            }
           }
 
           if (Object.keys(response).length) {
@@ -1000,15 +1011,19 @@ class WebsocketHandler {
     const blockTransactions = structuredClone(transactions);
 
     this.printLogs();
-    await statistics.runStatistics();
+    if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {
+      await statistics.runStatistics();
+    }
 
     const _memPool = memPool.getMempool();
     const candidateTxs = await memPool.getMempoolCandidates();
     let candidates: GbtCandidates | undefined = (memPool.limitGBT && candidateTxs) ? { txs: candidateTxs, added: [], removed: [] } : undefined;
     let transactionIds: string[] = (memPool.limitGBT) ? Object.keys(candidates?.txs || {}) : Object.keys(_memPool);
 
-    const accelerations = Object.values(mempool.getAccelerations());
-    await accelerationRepository.$indexAccelerationsForBlock(block, accelerations, structuredClone(transactions));
+    if (config.DATABASE.ENABLED) {
+      const accelerations = Object.values(mempool.getAccelerations());
+      await accelerationRepository.$indexAccelerationsForBlock(block, accelerations, structuredClone(transactions));
+    }
 
     const rbfTransactions = Common.findMinedRbfTransactions(transactions, memPool.getSpendMap());
     memPool.handleRbfTransactions(rbfTransactions);
@@ -1084,7 +1099,9 @@ class WebsocketHandler {
     if (config.CORE_RPC.DEBUG_LOG_PATH && block.extras) {
       const firstSeen = getRecentFirstSeen(block.id);
       if (firstSeen) {
-        BlocksRepository.$saveFirstSeenTime(block.id, firstSeen);
+        if (config.DATABASE.ENABLED) {
+          BlocksRepository.$saveFirstSeenTime(block.id, firstSeen);
+        }
         block.extras.firstSeen = firstSeen;
       }
     }
@@ -1381,7 +1398,26 @@ class WebsocketHandler {
     });
     }
 
-    await statistics.runStatistics();
+    if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {
+      await statistics.runStatistics();
+    }
+  }
+
+  public handleNewStratumJob(job: StratumJob): void {
+    this.updateSocketDataFields({ 'stratumJobs': stratumApi.getJobs() });
+
+    for (const server of this.webSocketServers) {
+      server.clients.forEach((client) => {
+        if (client.readyState !== WebSocket.OPEN) {
+          return;
+        }
+        if (client['track-stratum'] && (client['track-stratum'] === 'all' || client['track-stratum'] === job.pool)) {
+          client.send(JSON.stringify({
+            'stratumJob': job
+        }));
+        }
+      });
+    }
   }
 
   // takes a dictionary of JSON serialized values

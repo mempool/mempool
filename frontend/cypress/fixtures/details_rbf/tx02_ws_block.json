@@ -1,0 +1,116 @@
+{
+    "block": {
+        "id": "000000000000000000019bfe551da67e0d93dda4b355d16f1fdb4031ba7e5d61",
+        "height": 890448,
+        "version": 626941952,
+        "timestamp": 1743541850,
+        "bits": 386038124,
+        "nonce": 1177284424,
+        "difficulty": 113757508810854,
+        "merkle_root": "563d862ef4ec95ea97735ca5561e347ca6e216cb56bd451e8bedb1014078d6c3",
+        "tx_count": 2229,
+        "size": 1763153,
+        "weight": 3993275,
+        "previousblockhash": "0000000000000000000004cc6260ec7065ee8f65591864fb4c720ec110e3e2ab",
+        "mediantime": 1743537197,
+        "stale": false,
+        "extras": {
+            "reward": 315498786,
+            "coinbaseRaw": "0350960d0f2f736c7573682fe500c702ff43d142fabe6d6def42d9effd800b9839c832dcfdc6899e137547f15c8a598dbe3a1363f999a0a310000000000000000000e9a2050064dc00000000",
+            "orphans": [],
+            "medianFee": 2.144206217858874,
+            "feeRange": [
+                1.0845921450151057,
+                2,
+                2.2448979591836733,
+                3,
+                3.5985915492957745,
+                6,
+                217.0212765957447
+            ],
+            "totalFees": 2998786,
+            "avgFee": 1345,
+            "avgFeeRate": 3,
+            "utxoSetChange": -3073,
+            "avgTxSize": 790.84,
+            "totalInputs": 9558,
+            "totalOutputs": 6485,
+            "totalOutputAmt": 442206797883,
+            "segwitTotalTxs": 1986,
+            "segwitTotalSize": 1676431,
+            "segwitTotalWeight": 3646495,
+            "feePercentiles": null,
+            "virtualSize": 998318.75,
+            "coinbaseAddress": "34XC8GbijKCCvppNvhw4Ra8QZdWsg8tC11",
+            "coinbaseAddresses": [
+                "34XC8GbijKCCvppNvhw4Ra8QZdWsg8tC11"
+            ],
+            "coinbaseSignature": "OP_HASH160 OP_PUSHBYTES_20 1f0cbbec8bc4c945e4e16249b11eee911eded55f OP_EQUAL",
+            "coinbaseSignatureAscii": "\u0003P\r\u000f/slush/å\u0000Ç\u0002ÿCÑBú¾mmïBÙïý\u000b9È2ÜýÆ\u0013uGñ\\Y¾:\u0013cù £\u0010\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000é¢\u0005\u0000dÜ\u0000\u0000\u0000\u0000",
+            "header": "00605e25abe2e310c10e724cfb641859658fee6570ec6062cc0400000000000000000000c3d6784001b1ed8b1e45bd56cb16e2a67c341e56a55c7397ea95ecf42e863d565a56ec676c79021748ef2b46",
+            "utxoSetSize": null,
+            "totalInputAmt": null,
+            "pool": {
+                "id": 43,
+                "name": "Braiins Pool",
+                "slug": "braiinspool",
+                "minerNames": null
+            },
+            "matchRate": 100,
+            "expectedFees": 3287140,
+            "expectedWeight": 3991809,
+            "similarity": 0.9079894021278392
+        }
+    },
+    "mempool-blocks": [
+        {
+            "blockSize": 1979907,
+            "blockVSize": 997974.75,
+            "nTx": 461,
+            "totalFees": 1429178,
+            "medianFee": 1.1020797417745662,
+            "feeRange": [
+                1.0666666666666667,
+                1.0746847720659554,
+                1.102059530141031,
+                3,
+                3.4233409610983982,
+                5.017605633802817,
+                148.4084084084084
+            ]
+        },
+        {
+            "blockSize": 1363691,
+            "blockVSize": 997986.5,
+            "nTx": 1080,
+            "totalFees": 1023741,
+            "medianFee": 1.014827018121911,
+            "feeRange": [
+                1,
+                1.0036011703803736,
+                1.0054683365672958,
+                1.0186757215619695,
+                1.0548148148148149,
+                1.0548148148148149,
+                1.068146618482189
+            ]
+        },
+        {
+            "blockSize": 1337253,
+            "blockVSize": 563516.25,
+            "nTx": 901,
+            "totalFees": 564834,
+            "medianFee": 1.0028011204481793,
+            "feeRange": [
+                1,
+                1,
+                1,
+                1.0025062656641603,
+                1.004231311706629,
+                1.0053475935828877,
+                1.0068649885583525
+            ]
+        }
+    ],
+    "txConfirmed": "b6a53d8a8025c0c5b194345925a99741b645cae0b1f180f0613273029f2bf698"
+}

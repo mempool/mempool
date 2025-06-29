@@ -8,7 +8,7 @@ import { SeoService } from '@app/services/seo.service';
 import { StorageService } from '@app//services/storage.service';
 import { MiningService, MiningStats } from '@app/services/mining.service';
 import { StateService } from '@app/services/state.service';
-import { chartColors, poolsColor } from '@app/app.constants';
+import { originalChartColors as chartColors, poolsColor } from '@app/app.constants';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { download } from '@app/shared/graphs.utils';
 import { isMobile } from '@app/shared/common.utils';

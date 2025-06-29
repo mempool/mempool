@@ -14,6 +14,7 @@
     "BLOCKS_SUMMARIES_INDEXING": true,
     "GOGGLES_INDEXING": true,
     "AUTOMATIC_POOLS_UPDATE": true,
+    "POOLS_UPDATE_DELAY": 3600,
     "AUDIT": true,
     "CPFP_INDEXING": true,
     "RUST_GBT": true,
@@ -30,7 +31,8 @@
   "CORE_RPC": {
     "PORT": 8332,
     "USERNAME": "__BITCOIN_RPC_USER__",
-    "PASSWORD": "__BITCOIN_RPC_PASS__"
+    "PASSWORD": "__BITCOIN_RPC_PASS__",
+    "DEBUG_LOG_PATH": "/bitcoin/debug.log"
   },
   "SECOND_CORE_RPC": {
     "PORT": 8302,
@@ -40,12 +42,14 @@
   "ESPLORA": {
     "UNIX_SOCKET_PATH": "/bitcoin/socket/esplora-bitcoin-mainnet",
     "FALLBACK": [
-      "http://node201.fmt.mempool.space:3000",
-      "http://node202.fmt.mempool.space:3000",
-      "http://node203.fmt.mempool.space:3000",
-      "http://node204.fmt.mempool.space:3000",
-      "http://node205.fmt.mempool.space:3000",
-      "http://node206.fmt.mempool.space:3000",
+      "http://node201.hnl.mempool.space:3000",
+      "http://node202.hnl.mempool.space:3000",
+      "http://node203.hnl.mempool.space:3000",
+      "http://node204.hnl.mempool.space:3000",
+      "http://node201.sg1.mempool.space:3000",
+      "http://node202.sg1.mempool.space:3000",
+      "http://node203.sg1.mempool.space:3000",
+      "http://node204.sg1.mempool.space:3000",
       "http://node201.va1.mempool.space:3000",
       "http://node202.va1.mempool.space:3000",
       "http://node203.va1.mempool.space:3000",
@@ -101,12 +105,14 @@
     "STATISTICS": true,
     "STATISTICS_START_TIME": "24h",
     "SERVERS": [
-      "node201.fmt.mempool.space",
-      "node202.fmt.mempool.space",
-      "node203.fmt.mempool.space",
-      "node204.fmt.mempool.space",
-      "node205.fmt.mempool.space",
-      "node206.fmt.mempool.space",
+      "node201.hnl.mempool.space",
+      "node202.hnl.mempool.space",
+      "node203.hnl.mempool.space",
+      "node204.hnl.mempool.space",
+      "node201.sg1.mempool.space",
+      "node202.sg1.mempool.space",
+      "node203.sg1.mempool.space",
+      "node204.sg1.mempool.space",
       "node201.va1.mempool.space",
       "node202.va1.mempool.space",
       "node203.va1.mempool.space",
@@ -153,6 +159,11 @@
   },
   "WALLETS": {
     "ENABLED": true,
-    "WALLETS": ["BITB"]
+    "AUTO": true,
+    "WALLETS": ["BITB", "3350"]
+  },
+  "STRATUM": {
+    "ENABLED": true,
+    "API": "http://127.0.0.1:81/api/v1/stratum/ws"
   }
 }

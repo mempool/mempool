@@ -1,0 +1,37 @@
+{
+  "rbfLatest": [
+    {
+      "tx": {
+        "txid": "f4bae4f626036250fd00d68490e572f65f66417452003a0f4c4d76f17a9fde68",
+        "fee": 1185,
+        "vsize": 223,
+        "value": 41729,
+        "rate": 5.313901345291479,
+        "time": 1743587177,
+        "rbf": true,
+        "fullRbf": false,
+        "mined": true
+      },
+      "time": 1743587177,
+      "fullRbf": true,
+      "replaces": [
+        {
+          "tx": {
+            "txid": "12945412dfc455e0ed6049dc2ee8737756c8d9e2d9a2eb26f366cd5019a0369f",
+            "fee": 504,
+            "vsize": 222,
+            "value": 42410,
+            "rate": 2.27027027027027,
+            "time": 1743586081,
+            "rbf": true
+          },
+          "time": 1743586081,
+          "interval": 1096,
+          "fullRbf": false,
+          "replaces": []
+        }
+      ],
+      "mined": true
+    }
+  ]
+}
