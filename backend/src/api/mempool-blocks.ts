@@ -241,7 +241,14 @@ class MempoolBlocks {
       this.resetUids();
     }
 
-    const transactions = txids.map(txid => newMempool[txid]).filter(tx => tx != null);
+    const accelerations = useAccelerations ? mempool.getAccelerations() : {};
+    const acceleratedList = accelerationPool ? Object.values(accelerations).filter(acc => newMempool[acc.txid] && acc.pools.includes(accelerationPool)) : Object.values(accelerations).filter(acc => newMempool[acc.txid]);
+    const acceptedAccelerations = {};
+    for (const acc of acceleratedList) {
+      acceptedAccelerations[acc.txid] = true;
+    }
+
+    const transactions = txids.map(txid => newMempool[txid]).filter(tx => tx != null && (!mempool.isInjected(tx.txid) || acceptedAccelerations[tx.txid]));
     // set missing short ids
     for (const tx of transactions) {
       this.setUid(tx, !saveResults);
@@ -251,8 +258,6 @@ class MempoolBlocks {
       tx.inputs = tx.vin.map(v => this.getUid(newMempool[v.txid])).filter(uid => (uid !== null && uid !== undefined)) as number[];
     }
 
-    const accelerations = useAccelerations ? mempool.getAccelerations() : {};
-    const acceleratedList = accelerationPool ? Object.values(accelerations).filter(acc => newMempool[acc.txid] && acc.pools.includes(accelerationPool)) : Object.values(accelerations).filter(acc => newMempool[acc.txid]);
     const convertedAccelerations = acceleratedList.map(acc => {
       this.setUid(newMempool[acc.txid], true);
       return {
