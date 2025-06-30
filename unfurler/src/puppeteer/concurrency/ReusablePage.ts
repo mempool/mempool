@@ -1,9 +1,9 @@
 import * as puppeteer from 'puppeteer';
 import ConcurrencyImplementation from 'puppeteer-cluster/dist/concurrency/ConcurrencyImplementation';
 import { timeoutExecute } from 'puppeteer-cluster/dist/util';
-import logger from '../logger';
+import logger from '../../logger';
 
-import config from '../config';
+import config from '../../config';
 const mempoolHost = config.MEMPOOL.HTTP_HOST + (config.MEMPOOL.HTTP_PORT ? ':' + config.MEMPOOL.HTTP_PORT : '');
 
 const BROWSER_TIMEOUT = 8000;
