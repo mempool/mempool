@@ -1289,7 +1289,7 @@ function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: { key:
   return { rawTx, inputs };
 }
 
-export function decodeRawTransaction(input: string, network: string): { tx: Transaction, hex: string } {
+export function decodeRawTransaction(input: string, network: string): { tx: Transaction, hex: string, psbt?: string } {
   if (!input.length) {
     throw new Error('Empty input');
   }
@@ -1305,7 +1305,7 @@ export function decodeRawTransaction(input: string, network: string): { tx: Tran
 
   if (buffer[0] === 0x70 && buffer[1] === 0x73 && buffer[2] === 0x62 && buffer[3] === 0x74) { // PSBT magic bytes
     const { rawTx, inputs } = decodePsbt(buffer);
-    return fromBuffer(rawTx, network, inputs);
+    return { ...fromBuffer(rawTx, network, inputs), psbt: uint8ArrayToHexString(buffer) };
   }
 
   return fromBuffer(buffer, network);

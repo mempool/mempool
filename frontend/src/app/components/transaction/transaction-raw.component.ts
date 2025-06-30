@@ -23,6 +23,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
 
   pushTxForm: UntypedFormGroup;
   rawHexTransaction: string;
+  psbt: string;
   isLoading: boolean;
   isLoadingPrevouts: boolean;
   isLoadingCpfpInfo: boolean;
@@ -83,15 +84,15 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.fragmentSubscription = this.route.fragment.subscribe((fragment) => {
       if (fragment) {
         const params = new URLSearchParams(fragment);
-        const hex = params.get('hex');
-        if (hex) {
-          this.pushTxForm.get('txRaw').setValue(hex);
+        const txData = params.get('tx');
+        if (txData) {
+          this.pushTxForm.get('txRaw').setValue(txData);
         }
         const offline = params.get('offline');
         if (offline) {
           this.offlineMode = offline === 'true';
         }
-        if (hex && this.pushTxForm.get('txRaw').value && !this.transaction) {
+        if (txData && this.pushTxForm.get('txRaw').value && !this.transaction) {
           this.decodeTransaction();
         }
       }
@@ -102,10 +103,10 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.resetState();
     this.isLoading = true;
     try {
-      const { tx, hex } = decodeRawTransaction(this.pushTxForm.get('txRaw').value.trim(), this.stateService.network);
+      const { tx, hex, psbt } = decodeRawTransaction(this.pushTxForm.get('txRaw').value.trim(), this.stateService.network);
       await this.fetchPrevouts(tx);
       await this.fetchCpfpInfo(tx);
-      this.processTransaction(tx, hex);
+      this.processTransaction(tx, hex, psbt);
     } catch (error) {
       this.error = error.message;
     } finally {
@@ -199,13 +200,14 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     }
   }
 
-  processTransaction(tx: Transaction, hex: string): void {
+  processTransaction(tx: Transaction, hex: string, psbt: string): void {
     this.transaction = tx;
     this.rawHexTransaction = hex;
+    this.psbt = psbt;
 
     this.isCoinbase = this.transaction.vin[0].is_coinbase;
 
-    // Update URL fragment with hex data
+    // Update URL fragment with hex or psbt data
     this.router.navigate([], {
       fragment: this.getCurrentFragments(),
       replaceUrl: true
@@ -266,6 +268,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
   resetState() {
     this.transaction = null;
     this.rawHexTransaction = null;
+    this.psbt = null;
     this.error = null;
     this.errorPrevouts = null;
     this.errorBroadcast = null;
@@ -345,7 +348,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
       params.set('offline', 'true');
     }
     if (this.rawHexTransaction) {
-      params.set('hex', this.rawHexTransaction);
+      params.set('tx', this.psbt || this.rawHexTransaction); // use PSBT in fragment if available
     }
     return params.toString();
   }
