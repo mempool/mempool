@@ -938,7 +938,7 @@ export function addInnerScriptsToVin(vin: Vin): void {
   if (vin.prevout.scriptpubkey_type === 'p2sh') {
     const redeemScript = vin.scriptsig_asm.split(' ').reverse()[0];
     vin.inner_redeemscript_asm = convertScriptSigAsm(redeemScript);
-    if (vin.witness && vin.witness.length) {
+    if (vin.witness && vin.witness.length > 2) {
       const witnessScript = vin.witness[vin.witness.length - 1];
       vin.inner_witnessscript_asm = convertScriptSigAsm(witnessScript);
     }
@@ -1134,9 +1134,11 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: { key: Uint8Ar
         }
         vin.scriptsig = (vin.scriptsig || '') + uint8ArrayToHexString(pushOpcode) + uint8ArrayToHexString(redeemScript);
         vin.scriptsig_asm = convertScriptSigAsm(vin.scriptsig);
+        vin.inner_redeemscript_asm = vin.scriptsig_asm.split(' ').reverse()[0];
       }
       if (groups.witnessScript && !finalizedWitness) {
         vin.witness = (vin.witness || []).concat(uint8ArrayToHexString(groups.witnessScript.value));
+        vin.inner_witnessscript_asm = convertScriptSigAsm(vin.witness[vin.witness.length - 1]);
       }
 
 
