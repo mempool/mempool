@@ -1141,31 +1141,38 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: { key: Uint8Ar
         vin.inner_witnessscript_asm = convertScriptSigAsm(vin.witness[vin.witness.length - 1]);
       }
 
-
       // Fill partial signatures
       for (const record of groups.partialSigs) {
+        const signature = record.value;
         const scriptpubkey_type = vin.prevout?.scriptpubkey_type;
-        if (scriptpubkey_type === 'v0_p2wsh' && !finalizedWitness) {
-          vin.witness = vin.witness || [];
-          vin.witness.unshift(uint8ArrayToHexString(record.value));
+        if (scriptpubkey_type === 'multisig' && !finalizedScriptSig) {
+          if (signature.length > 74) {
+            throw new Error("Signature must be <= 74 bytes");
+          }
+          const pushOpcode = new Uint8Array([signature.length]);
+          vin.scriptsig = uint8ArrayToHexString(pushOpcode) + uint8ArrayToHexString(signature) + (vin.scriptsig || '');
+          vin.scriptsig_asm = convertScriptSigAsm(vin.scriptsig);
         }
         if (scriptpubkey_type === 'p2sh') {
           const redeemScriptStr = vin.scriptsig_asm ? vin.scriptsig_asm.split(' ').reverse()[0] : '';
           if (redeemScriptStr.startsWith('00') && redeemScriptStr.length === 68 && vin.witness?.length) {
             if (!finalizedWitness) {
-              vin.witness.unshift(uint8ArrayToHexString(record.value));
+              vin.witness.unshift(uint8ArrayToHexString(signature));
             }
           } else {
             if (!finalizedScriptSig) {
-              const signature = record.value;
-              if (signature.length > 73) {
-                throw new Error("Signature must be <= 73 bytes");
+              if (signature.length > 74) {
+                throw new Error("Signature must be <= 74 bytes");
               }
               const pushOpcode = new Uint8Array([signature.length]);
               vin.scriptsig = uint8ArrayToHexString(pushOpcode) + uint8ArrayToHexString(signature) + (vin.scriptsig || '');
               vin.scriptsig_asm = convertScriptSigAsm(vin.scriptsig);
             }
           }
+        }
+        if (scriptpubkey_type === 'v0_p2wsh' && !finalizedWitness) {
+          vin.witness = vin.witness || [];
+          vin.witness.unshift(uint8ArrayToHexString(signature));
         }
       }
     }    
