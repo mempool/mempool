@@ -22,7 +22,7 @@ import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository
 import Audit from './audit';
 import priceUpdater from '../tasks/price-updater';
 import { ApiPrice } from '../repositories/PricesRepository';
-import { Acceleration } from './services/acceleration';
+import { Acceleration, AccelerationDelta } from './services/acceleration';
 import accelerationApi from './services/acceleration';
 import mempool from './mempool';
 import statistics from './statistics/statistics';
@@ -509,23 +509,18 @@ class WebsocketHandler {
     }
   }
 
-  handleAccelerationsChanged(accelerations: Record<string, Acceleration>): void {
+  handleAccelerationsChanged(accelerations: Record<string, Acceleration>, delta?: AccelerationDelta): void {
     if (!this.webSocketServers.length) {
       throw new Error('No WebSocket.Server has been set');
     }
 
-    const websocketAccelerationDelta = accelerationApi.getAccelerationDelta(this.accelerations, accelerations);
-    this.accelerations = accelerations;
+    const accelerationUpdate = delta || accelerationApi.getAccelerationDelta(this.accelerations, accelerations || {});
+    this.accelerations = accelerations || {};
 
-    if (!websocketAccelerationDelta.length) {
+    if (!accelerationUpdate.added.length && !accelerationUpdate.removed.length && !accelerationUpdate.changed.length) {
+      // no change
       return;
     }
-
-    // pre-compute acceleration delta
-    const accelerationUpdate = {
-      added: websocketAccelerationDelta.map(txid => accelerations[txid]).filter(acc => acc != null),
-      removed: websocketAccelerationDelta.filter(txid => !accelerations[txid]),
-    };
 
     try {
       const response = JSON.stringify({
@@ -591,7 +586,7 @@ class WebsocketHandler {
    * @param candidates
    */
   async $handleMempoolChange(newMempool: { [txid: string]: MempoolTransactionExtended }, mempoolSize: number,
-    newTransactions: MempoolTransactionExtended[], recentlyDeletedTransactions: MempoolTransactionExtended[][], accelerationDelta: string[],
+    newTransactions: MempoolTransactionExtended[], recentlyDeletedTransactions: MempoolTransactionExtended[][], accelerationDelta: AccelerationDelta,
     candidates?: GbtCandidates): Promise<void> {
     if (!this.webSocketServers.length) {
       throw new Error('No WebSocket.Server have been set');
@@ -729,14 +724,8 @@ class WebsocketHandler {
     const addressCache = this.makeAddressCache(newTransactions);
     const removedAddressCache = this.makeAddressCache(deletedTransactions);
 
-    const websocketAccelerationDelta = accelerationApi.getAccelerationDelta(this.accelerations, accelerations);
+    const accelerationUpdate = accelerationApi.getAccelerationDelta(this.accelerations, accelerations);
     this.accelerations = accelerations;
-
-    // pre-compute acceleration delta
-    const accelerationUpdate = {
-      added: websocketAccelerationDelta.map(txid => accelerations[txid]).filter(acc => acc != null),
-      removed: websocketAccelerationDelta.filter(txid => !accelerations[txid]),
-    };
 
     // TODO - Fix indentation after PR is merged
     for (const server of this.webSocketServers) {

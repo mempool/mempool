@@ -25,6 +25,30 @@ export interface Acceleration {
   txData?: MempoolTransactionExtended
 };
 
+export interface AccelerationDelta {
+  added: Acceleration[],
+  removed: string[],
+  changed: Acceleration[],
+};
+
+type FullAccelerationMessage = {
+  accelerations: Acceleration[],
+};
+
+type DeltaAccelerationMessage = {
+  delta: AccelerationDelta,
+};
+
+type AccelerationMessage = FullAccelerationMessage | DeltaAccelerationMessage;
+
+function isFullAccelerationMessage(msg: AccelerationMessage): msg is FullAccelerationMessage {
+  return 'accelerations' in msg;
+}
+
+function isDeltaAccelerationMessage(msg: AccelerationMessage): msg is DeltaAccelerationMessage {
+  return 'delta' in msg;
+}
+
 export interface AccelerationHistory {
   txid: string,
   status: string,
@@ -183,8 +207,10 @@ class AccelerationApi {
   }
 
   // get a list of accelerations that have changed between two sets of accelerations
-  public getAccelerationDelta(oldAccelerationMap: Record<string, Acceleration>, newAccelerationMap: Record<string, Acceleration>): string[] {
-    const changed: string[] = [];
+  public getAccelerationDelta(oldAccelerationMap: Record<string, Acceleration>, newAccelerationMap: Record<string, Acceleration>): AccelerationDelta {
+    const added: Acceleration[] = [];
+    const removed: string[] = [];
+    const changed: Acceleration[] = [];
     const mempoolCache = mempool.getMempool();
 
     for (const acceleration of Object.values(newAccelerationMap)) {
@@ -195,11 +221,11 @@ class AccelerationApi {
 
       if (oldAccelerationMap[acceleration.txid] == null) {
         // new acceleration
-        changed.push(acceleration.txid);
+        added.push(acceleration);
       } else {
         if (oldAccelerationMap[acceleration.txid].feeDelta !== acceleration.feeDelta) {
           // feeDelta changed
-          changed.push(acceleration.txid);
+          changed.push(acceleration);
         } else if (oldAccelerationMap[acceleration.txid].pools?.length) {
           let poolsChanged = false;
           const pools = new Set();
@@ -218,7 +244,7 @@ class AccelerationApi {
           }
           if (poolsChanged) {
             // pools changed
-            changed.push(acceleration.txid);
+            changed.push(acceleration);
           }
         }
       }
@@ -227,20 +253,37 @@ class AccelerationApi {
     for (const oldTxid of Object.keys(oldAccelerationMap)) {
       if (!newAccelerationMap[oldTxid]) {
         // removed
-        changed.push(oldTxid);
+        removed.push(oldTxid);
       }
     }
 
-    return changed;
+    return { added, removed, changed };
   }
 
-  private handleWebsocketMessage(msg: any): void {
-    if (msg?.accelerations !== null) {
+  private handleWebsocketMessage(msg: AccelerationMessage): void {
+    let changed = false;
+    if (isFullAccelerationMessage(msg)) {
       const latestAccelerations = {};
-      for (const acc of msg?.accelerations || []) {
+      for (const acc of msg.accelerations) {
         latestAccelerations[acc.txid] = acc;
       }
       this._accelerations = latestAccelerations;
+      changed = true;
+    } else if (isDeltaAccelerationMessage(msg)) {
+      for (const acc of msg.delta.added) {
+        this._accelerations[acc.txid] = acc;
+        changed = true;
+      }
+      for (const txid of msg.delta.removed) {
+        delete this._accelerations[txid];
+        changed = true;
+      }
+      for (const acc of msg.delta.changed) {
+        this._accelerations[acc.txid] = acc;
+        changed = true;
+      }
+    }
+    if (changed) {
       websocketHandler.handleAccelerationsChanged(this._accelerations);
     }
   }
