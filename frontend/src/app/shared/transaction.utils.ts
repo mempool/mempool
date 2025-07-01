@@ -1052,7 +1052,10 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: { key: Uint8Ar
         finalScriptWitness: null,
         redeemScript: null,
         witnessScript: null,
-        partialSigs: []
+        partialSigs: [],
+        tapLeafScripts: [],
+        tapScriptSigs: [],
+        tapInternalKey: null,
       };
 
       for (const record of inputRecords) {
@@ -1078,6 +1081,14 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: { key: Uint8Ar
           case 0x02:
             groups.partialSigs.push(record);
             break;
+          case 0x14:
+            groups.tapScriptSigs.push(record);
+            break;
+          case 0x15:
+            groups.tapLeafScripts.push(record);
+            break;
+          case 0x17:
+            groups.tapInternalKey = record;
         }
       }
 
@@ -1173,6 +1184,61 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: { key: Uint8Ar
         if (scriptpubkey_type === 'v0_p2wsh' && !finalizedWitness) {
           vin.witness = vin.witness || [];
           vin.witness.unshift(uint8ArrayToHexString(signature));
+        }
+      }
+
+      if (groups.tapLeafScripts.length && groups.tapInternalKey && !finalizedWitness) {
+        // If no signature is present, assume key spend *except* if internal key is provably unspendable
+        if (!groups.tapScriptSigs.length) {
+          if (uint8ArrayToHexString(groups.tapInternalKey.value) === '50929b74c1a04954b78b4b6035e97a5e078a5a0f28ec96d547bfee9ace803ac0') {
+            // unspendable internal key, use the first tap leaf script provided
+            const record = groups.tapLeafScripts[0];
+            const controlBlock = uint8ArrayToHexString(record.key.slice(1));
+            const tapLeaf = uint8ArrayToHexString(record.value.slice(0, -1));
+            vin.witness = vin.witness || [];
+            vin.witness.unshift(tapLeaf, controlBlock);
+            vin.inner_witnessscript_asm = convertScriptSigAsm(tapLeaf);
+          }
+        } else {
+          // get the hash with the most signatures
+          const leafScriptSignatures: { [leafHash: string]: number } = {};
+          let maxSignatures = 0;
+          let scriptMostSigs = '';
+
+          for (const record of groups.tapScriptSigs) {
+            const leafHash = uint8ArrayToHexString(record.key.slice(33));
+            if (!leafScriptSignatures[leafHash]) {
+              leafScriptSignatures[leafHash] = 0;
+            }
+            leafScriptSignatures[leafHash]++;
+            if (leafScriptSignatures[leafHash] > maxSignatures) {
+              maxSignatures = leafScriptSignatures[leafHash];
+              scriptMostSigs = leafHash;
+            }
+          }
+
+          // find the script with most signatures
+          for (const record of groups.tapLeafScripts) {
+            const leafVersion = uint8ArrayToHexString(record.value.slice(-1));
+            const script = uint8ArrayToHexString(record.value.slice(0, -1));
+            const scriptSize = uint8ArrayToHexString(compactSize(record.value.length - 1));
+            if (taggedHash('TapLeaf', leafVersion + scriptSize + script) === scriptMostSigs) {
+              // add the script
+              const controlBlock = uint8ArrayToHexString(record.key.slice(1));
+              const tapLeaf = uint8ArrayToHexString(record.value.slice(0, -1));
+              vin.witness = vin.witness || [];
+              vin.witness.unshift(tapLeaf, controlBlock);
+              vin.inner_witnessscript_asm = convertScriptSigAsm(tapLeaf);
+              // add the signatures that are part of this script
+              for (const sigRecord of groups.tapScriptSigs) {
+                const sigLeafHash = uint8ArrayToHexString(sigRecord.key.slice(33));
+                if (sigLeafHash === scriptMostSigs) {
+                  vin.witness.unshift(uint8ArrayToHexString(sigRecord.value));
+                }
+              }
+              break;
+            }
+          }
         }
       }
     }    
