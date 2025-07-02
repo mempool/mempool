@@ -1,5 +1,5 @@
 export const defaultMempoolFeeColors = [
-  '557d00',
+  '497d2b',
   '557d00',
   '5d7d01',
   '637d02',
@@ -41,7 +41,7 @@ export const defaultMempoolFeeColors = [
 ];
 
 export const contrastMempoolFeeColors = [
-  '0082e6',
+  '007be9',
   '0082e6',
   '0984df',
   '1285d9',
@@ -123,6 +123,7 @@ export const chartColors = [
   "#263238",
   "#801313",
 ];
+export const originalChartColors = chartColors.slice(1);
 
 export const poolsColor = {
   'unknown': '#FDD835',

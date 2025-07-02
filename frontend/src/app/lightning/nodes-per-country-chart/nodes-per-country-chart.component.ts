@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, HostBinding, NgZone } from 
 import { Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from '@app/graphs/echarts';
 import { map, Observable, share, tap } from 'rxjs';
-import { chartColors } from '@app/app.constants';
+import { originalChartColors as chartColors } from '@app/app.constants';
 import { ApiService } from '@app/services/api.service';
 import { SeoService } from '@app/services/seo.service';
 import { StateService } from '@app/services/state.service';

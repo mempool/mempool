@@ -7,7 +7,7 @@ import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { StateService } from '@app/services/state.service';
 import { SeriesOption } from 'echarts';
 import { WalletStats } from '@app/shared/wallet-stats';
-import { chartColors } from '@app/app.constants';
+import { originalChartColors as chartColors } from '@app/app.constants';
 import { Treasury } from '../../../interfaces/node-api.interface';
 
 
