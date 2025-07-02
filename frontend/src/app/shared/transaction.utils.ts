@@ -1,5 +1,5 @@
 import { TransactionFlags } from '@app/shared/filters.utils';
-import { getVarIntLength, parseMultisigScript, isPoint } from '@app/shared/script.utils';
+import { getVarIntLength, parseMultisigScript, isPoint, parseTapscriptMultisig, parseTapscriptUnanimousMultisig } from '@app/shared/script.utils';
 import { Transaction, Vin } from '@interfaces/electrs.interface';
 import { CpfpInfo, RbfInfo, TransactionStripped } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
@@ -287,12 +287,12 @@ export function processInputSignatures(vin: Vin): SigInfo[] {
       signatures = extractDERSignaturesWitness(vin.witness || []);
       break;
     case 'v1_p2tr': {
-      const hasAnnex = vin.witness.length > 1 &&vin.witness[vin.witness.length - 1].startsWith('50');
-      const isKeyspend = vin.witness.length === (hasAnnex ? 2 : 1);
+      const hasAnnex = vin.witness?.length > 1 && vin.witness[vin.witness.length - 1].startsWith('50');
+      const isKeyspend = vin.witness?.length === (hasAnnex ? 2 : 1);
       if (isKeyspend) {
         signatures = extractSchnorrSignatures(vin.witness);
       } else {
-        const stackItems = vin.witness.slice(0, hasAnnex ? -3 : -2);
+        const stackItems = vin.witness?.slice(0, hasAnnex ? -3 : -2);
         signatures = extractSchnorrSignatures(stackItems);
       }
     } break;
@@ -301,6 +301,156 @@ export function processInputSignatures(vin: Vin): SigInfo[] {
       break;
   }
   return signatures;
+}
+
+/*  
+ * returns the number of missing signatures, the number of bytes to add to the transaction
+ * and whether these should benefit from witness discounting
+ * - Add a DER sig     in scriptsig/witness: 71 bytes signature + 1 push or witness size byte = 72 bytes
+ * - Add a public key  in scriptsig/witness: 33 bytes pubkey    + 1 push or witness size byte = 34 bytes
+ * - Add a Schnorr sig in           witness: 64 bytes signature + 1 witness size byte         = 65 bytes
+*/
+export function fillUnsignedInput(vin: Vin): { missingSigs: number, bytes: number, addToWitness: boolean } {
+  let missingSigs = 0;
+  let bytes = 0;
+  let addToWitness = false;
+
+  const addressType = vin.prevout?.scriptpubkey_type as AddressType;
+  let signatures: SigInfo[] = [];
+  let multisig: { m: number, n: number } | null = null;
+  switch (addressType) {
+    case 'p2pk':
+      signatures = extractDERSignaturesASM(vin.scriptsig_asm);
+      if (!signatures.length) {
+        missingSigs = 1;
+        bytes = 72;
+      }
+      break;
+    case 'multisig':
+      signatures = extractDERSignaturesASM(vin.scriptsig_asm);
+      multisig = parseMultisigScript(vin.prevout.scriptpubkey_asm);
+      if (multisig && multisig.m - signatures.length > 0) {
+        missingSigs = multisig.m - signatures.length;
+        bytes = 72 * missingSigs + 1; // add empty stack item required for OP_CHECKMULTISIG
+        const scriptsigLength = vin.scriptsig.length / 2;
+        const newLength = scriptsigLength + bytes;
+        if (scriptsigLength < 253 && newLength >= 253) {
+          bytes += 2; // Increase scriptsig's compact size from 1 to 3 bytes
+        }
+      }
+      break;
+    case 'p2pkh':
+      signatures = extractDERSignaturesASM(vin.scriptsig_asm);
+      if (!signatures.length) {
+        missingSigs = 1;
+        bytes = 106; // 72 + 34 (sig + public key)
+      }
+      break;
+    case 'p2sh':
+      // Check for P2SH multisig
+      multisig = parseMultisigScript(vin.inner_redeemscript_asm);
+      if (multisig) {
+        signatures = extractDERSignaturesASM(vin.scriptsig_asm);
+        if (multisig.m - signatures.length > 0) {
+          missingSigs = multisig.m - signatures.length;
+          bytes = 72 * missingSigs + 1; // empty push required for OP_CHECKMULTISIG
+          const scriptsigLength = vin.scriptsig.length / 2;
+          const newLength = scriptsigLength + bytes;
+          if (scriptsigLength < 253 && newLength >= 253) {
+            bytes += 2; // Increase scriptsig's compact size from 1 to 3 bytes
+          }
+        }
+      }
+
+      // P2SH-P2WSH
+      if (/OP_0 OP_PUSHBYTES_32 [a-fA-F0-9]{64}/.test(vin.inner_redeemscript_asm) && vin.inner_witnessscript_asm) {
+        // Check for P2WSH multisig
+        multisig = parseMultisigScript(vin.inner_witnessscript_asm);
+        if (multisig) {
+          signatures = extractDERSignaturesWitness(vin.witness || []);
+          if (multisig.m - signatures.length > 0) {
+            missingSigs = multisig.m - signatures.length;
+            bytes = 72 * missingSigs + 1; // empty push required for OP_CHECKMULTISIG
+            addToWitness = true;
+          }
+        }
+      }
+
+      // P2SH-P2WPKH
+      if (/OP_0 OP_PUSHBYTES_20 [a-fA-F0-9]{40}/.test(vin.inner_redeemscript_asm)) {
+        signatures = extractDERSignaturesWitness(vin.witness || []);
+        if (!signatures.length) {
+          missingSigs = 1;
+          bytes = 106; // 72 + 34 (sig + public key)
+          addToWitness = true;
+        }
+      }
+      break;
+    case 'v0_p2wpkh':
+      signatures = extractDERSignaturesWitness(vin.witness || []);
+      if (!signatures.length) {
+        missingSigs = 1;
+        bytes = 106; // 72 + 34 (sig + public key)
+        addToWitness = true;
+      }
+      break;
+    case 'v0_p2wsh':
+      signatures = extractDERSignaturesWitness(vin.witness || []);
+      multisig = parseMultisigScript(vin.inner_witnessscript_asm);
+      if (multisig) {
+        signatures = extractDERSignaturesWitness(vin.witness || []);
+        if (multisig.m - signatures.length > 0) {
+          missingSigs = multisig.m - signatures.length;
+          bytes = 72 * missingSigs + 1; // empty push required for OP_CHECKMULTISIG
+          addToWitness = true;
+        }
+      }
+      break;
+    case 'v1_p2tr':
+      const hasAnnex = vin.witness?.length > 1 && vin.witness[vin.witness.length - 1].startsWith('50');
+      if (vin.inner_witnessscript_asm) {
+        const stackItems = vin.witness.slice(0, hasAnnex ? -3 : -2);
+        if (/^OP_PUSHBYTES_32 [a-fA-F0-9]{64} OP_CHECKSIG$/.test(vin.inner_witnessscript_asm)) {
+          signatures = extractSchnorrSignatures(stackItems);
+          if (!signatures.length) {
+            missingSigs = 1;
+            bytes = 65;
+            addToWitness = true;
+          }
+        }
+
+        multisig = parseTapscriptMultisig(vin.inner_witnessscript_asm);
+        if (multisig) {
+          signatures = extractSchnorrSignatures(stackItems);
+          if (multisig.m - signatures.length > 0) {
+            missingSigs = multisig.m - signatures.length;
+            bytes = 65 * missingSigs + (multisig.n - multisig.m); // empty witness items for each non-signing keys
+            addToWitness = true;
+          }
+        }
+
+        let unanimousMultisig = parseTapscriptUnanimousMultisig(vin.inner_witnessscript_asm);
+        if (unanimousMultisig) {
+          signatures = extractSchnorrSignatures(stackItems);
+          if (unanimousMultisig - signatures.length > 0) {
+            missingSigs = unanimousMultisig - signatures.length;
+            bytes = 65 * missingSigs;
+            addToWitness = true;
+          }
+        }
+      } else { // Assume keyspend
+        signatures = extractSchnorrSignatures(vin.witness?.slice(0, hasAnnex ? -1 : undefined) || []);
+        if (!signatures.length) {
+          missingSigs = 1;
+          bytes = 65;
+          addToWitness = true;
+        }
+      }
+      break;
+    default:
+      break;
+  }
+  return { missingSigs, bytes, addToWitness };
 }
 
 /**
