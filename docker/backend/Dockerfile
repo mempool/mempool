@@ -6,42 +6,40 @@ ENV MEMPOOL_COMMIT_HASH=${commitHash}
 WORKDIR /build
 
 RUN apt-get update && \
-    apt-get install -y curl ca-certificates && \
-    curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
-    apt-get install -y nodejs=22.14.0-1nodesource1 build-essential python3 pkg-config && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install -y curl ca-certificates
 
 COPY . .
 
-ENV PATH="/usr/local/cargo/bin:$PATH"
+ADD --chmod=750 https://deb.nodesource.com/setup_22.x setup_node.sh
+RUN ./setup_node.sh
+
+RUN apt-get update && \
+    install -y nodejs=22.14.0-1nodesource1 build-essential python3 pkg-config
 
 COPY --from=backend . .
 COPY --from=rustgbt . ../rust/
-ENV FD=/build/rust-gbt
-RUN npm install --omit=dev --omit=optional
 
-WORKDIR /build
+ENV FD=/build/rust-gbt
+
+RUN npm install --omit=dev --omit=optional
 RUN npm run package
 
-FROM rust:1.84-bookworm AS runtime
+#TODO: strip binary
 
-RUN apt-get update && \
-    apt-get install -y curl ca-certificates && \
-    curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
-    apt-get install -y nodejs=22.14.0-1nodesource1 && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+FROM rust:1.84-bookworm AS runtime
 
 WORKDIR /backend
 
 RUN chown 1000:1000 ./
-COPY --from=builder --chown=1000:1000 /build/package ./package/
-COPY --from=builder --chown=1000:1000 /build/GeoIP ./GeoIP/
-COPY --from=builder --chown=1000:1000 /build/mempool-config.json /build/start.sh /build/wait-for-it.sh ./
+
+COPY --chmod=750 ./start.sh ./
+COPY ./mempool-config.json  ./
+
+COPY --from=builder /usr/bin/node                     /usr/bin/node
+COPY --from=builder --chown=1000:1000 /build/package  ./package/
+COPY --from=builder --chown=1000:1000 /build/GeoIP    ./GeoIP/
 
 USER 1000
-
 EXPOSE 8999
 
-CMD ["/backend/start.sh"]
+CMD ["./start.sh"]

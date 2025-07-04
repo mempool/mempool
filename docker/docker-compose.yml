@@ -2,45 +2,57 @@ version: "3.7"
 
 services:
   web:
-    environment:
-      FRONTEND_HTTP_PORT: "8080"
-      BACKEND_MAINNET_HTTP_HOST: "api"
     image: mempool/frontend:latest
-    user: "1000:1000"
-    restart: on-failure
-    stop_grace_period: 1m
-    command: "./wait-for db:3306 --timeout=720 -- nginx -g 'daemon off;'"
+    # container_name:
+    environment:
+      FRONTEND_HTTP_PORT: 8080
+      BACKEND_MAINNET_HTTP_HOST: api
+    # volumes:
+    # secrets:
+    # networks:
     ports:
       - 80:8080
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: always
+    init: true
+    user: "1000:1000"
+
   api:
-    environment:
-      MEMPOOL_BACKEND: "none"
-      CORE_RPC_HOST: "172.27.0.1"
-      CORE_RPC_PORT: "8332"
-      CORE_RPC_USERNAME: "mempool"
-      CORE_RPC_PASSWORD: "mempool"
-      DATABASE_ENABLED: "true"
-      DATABASE_HOST: "db"
-      DATABASE_DATABASE: "mempool"
-      DATABASE_USERNAME: "mempool"
-      DATABASE_PASSWORD: "mempool"
-      STATISTICS_ENABLED: "true"
     image: mempool/backend:latest
-    user: "1000:1000"
-    restart: on-failure
-    stop_grace_period: 1m
-    command: "./wait-for-it.sh db:3306 --timeout=720 --strict -- ./start.sh"
+    # container_name:
+    env_file: api.env
     volumes:
-      - ./data:/backend/cache
+      - ./data:/backend/cache:rw
+    # secrets:
+    # networks:
+    # ports:
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: always
+    init: true
+    user: "1000:1000"
+
   db:
-    environment:
-      MYSQL_DATABASE: "mempool"
-      MYSQL_USER: "mempool"
-      MYSQL_PASSWORD: "mempool"
-      MYSQL_ROOT_PASSWORD: "admin"
     image: mariadb:10.5.21
-    user: "1000:1000"
-    restart: on-failure
-    stop_grace_period: 1m
+    # container_name:
+    environment:
+      MYSQL_DATABASE: mempool
+      MYSQL_USER: mempool
+      MYSQL_PASSWORD: mempool
+      MYSQL_ROOT_PASSWORD: admin
     volumes:
-      - ./mysql/data:/var/lib/mysql
+      - ./mysql/data:/var/lib/mysql:rw
+    # secrets:
+    # networks:
+    # ports:
+    # depends_on:
+    restart: always
+    init: true
+    user: "1000:1000"
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-u", "root", "-padmin"]
+
+#TODO use named volumes instead of bind mounts. better UX, entirely managed by docker. (but permission dilemma)
