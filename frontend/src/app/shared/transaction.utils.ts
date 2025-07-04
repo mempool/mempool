@@ -938,7 +938,7 @@ export function addInnerScriptsToVin(vin: Vin): void {
   if (vin.prevout.scriptpubkey_type === 'p2sh') {
     const redeemScript = vin.scriptsig_asm.split(' ').reverse()[0];
     vin.inner_redeemscript_asm = convertScriptSigAsm(redeemScript);
-    if (vin.witness && vin.witness.length) {
+    if (vin.witness && vin.witness.length > 2) {
       const witnessScript = vin.witness[vin.witness.length - 1];
       vin.inner_witnessscript_asm = convertScriptSigAsm(witnessScript);
     }
@@ -1052,7 +1052,10 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: { key: Uint8Ar
         finalScriptWitness: null,
         redeemScript: null,
         witnessScript: null,
-        partialSigs: []
+        partialSigs: [],
+        tapLeafScripts: [],
+        tapScriptSigs: [],
+        tapInternalKey: null,
       };
 
       for (const record of inputRecords) {
@@ -1078,6 +1081,14 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: { key: Uint8Ar
           case 0x02:
             groups.partialSigs.push(record);
             break;
+          case 0x14:
+            groups.tapScriptSigs.push(record);
+            break;
+          case 0x15:
+            groups.tapLeafScripts.push(record);
+            break;
+          case 0x17:
+            groups.tapInternalKey = record;
         }
       }
 
@@ -1134,34 +1145,98 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: { key: Uint8Ar
         }
         vin.scriptsig = (vin.scriptsig || '') + uint8ArrayToHexString(pushOpcode) + uint8ArrayToHexString(redeemScript);
         vin.scriptsig_asm = convertScriptSigAsm(vin.scriptsig);
+        vin.inner_redeemscript_asm = vin.scriptsig_asm.split(' ').reverse()[0];
       }
       if (groups.witnessScript && !finalizedWitness) {
         vin.witness = (vin.witness || []).concat(uint8ArrayToHexString(groups.witnessScript.value));
+        vin.inner_witnessscript_asm = convertScriptSigAsm(vin.witness[vin.witness.length - 1]);
       }
-
 
       // Fill partial signatures
       for (const record of groups.partialSigs) {
+        const signature = record.value;
         const scriptpubkey_type = vin.prevout?.scriptpubkey_type;
-        if (scriptpubkey_type === 'v0_p2wsh' && !finalizedWitness) {
-          vin.witness = vin.witness || [];
-          vin.witness.unshift(uint8ArrayToHexString(record.value));
+        if (scriptpubkey_type === 'multisig' && !finalizedScriptSig) {
+          if (signature.length > 74) {
+            throw new Error("Signature must be <= 74 bytes");
+          }
+          const pushOpcode = new Uint8Array([signature.length]);
+          vin.scriptsig = uint8ArrayToHexString(pushOpcode) + uint8ArrayToHexString(signature) + (vin.scriptsig || '');
+          vin.scriptsig_asm = convertScriptSigAsm(vin.scriptsig);
         }
         if (scriptpubkey_type === 'p2sh') {
           const redeemScriptStr = vin.scriptsig_asm ? vin.scriptsig_asm.split(' ').reverse()[0] : '';
           if (redeemScriptStr.startsWith('00') && redeemScriptStr.length === 68 && vin.witness?.length) {
             if (!finalizedWitness) {
-              vin.witness.unshift(uint8ArrayToHexString(record.value));
+              vin.witness.unshift(uint8ArrayToHexString(signature));
             }
           } else {
             if (!finalizedScriptSig) {
-              const signature = record.value;
-              if (signature.length > 73) {
-                throw new Error("Signature must be <= 73 bytes");
+              if (signature.length > 74) {
+                throw new Error("Signature must be <= 74 bytes");
               }
               const pushOpcode = new Uint8Array([signature.length]);
               vin.scriptsig = uint8ArrayToHexString(pushOpcode) + uint8ArrayToHexString(signature) + (vin.scriptsig || '');
               vin.scriptsig_asm = convertScriptSigAsm(vin.scriptsig);
+            }
+          }
+        }
+        if (scriptpubkey_type === 'v0_p2wsh' && !finalizedWitness) {
+          vin.witness = vin.witness || [];
+          vin.witness.unshift(uint8ArrayToHexString(signature));
+        }
+      }
+
+      if (groups.tapLeafScripts.length && groups.tapInternalKey && !finalizedWitness) {
+        // If no signature is present, assume key spend *except* if internal key is provably unspendable
+        if (!groups.tapScriptSigs.length) {
+          if (uint8ArrayToHexString(groups.tapInternalKey.value) === '50929b74c1a04954b78b4b6035e97a5e078a5a0f28ec96d547bfee9ace803ac0') {
+            // unspendable internal key, use the first tap leaf script provided
+            const record = groups.tapLeafScripts[0];
+            const controlBlock = uint8ArrayToHexString(record.key.slice(1));
+            const tapLeaf = uint8ArrayToHexString(record.value.slice(0, -1));
+            vin.witness = vin.witness || [];
+            vin.witness.unshift(tapLeaf, controlBlock);
+            vin.inner_witnessscript_asm = convertScriptSigAsm(tapLeaf);
+          }
+        } else {
+          // get the hash with the most signatures
+          const leafScriptSignatures: { [leafHash: string]: number } = {};
+          let maxSignatures = 0;
+          let scriptMostSigs = '';
+
+          for (const record of groups.tapScriptSigs) {
+            const leafHash = uint8ArrayToHexString(record.key.slice(33));
+            if (!leafScriptSignatures[leafHash]) {
+              leafScriptSignatures[leafHash] = 0;
+            }
+            leafScriptSignatures[leafHash]++;
+            if (leafScriptSignatures[leafHash] > maxSignatures) {
+              maxSignatures = leafScriptSignatures[leafHash];
+              scriptMostSigs = leafHash;
+            }
+          }
+
+          // find the script with most signatures
+          for (const record of groups.tapLeafScripts) {
+            const leafVersion = uint8ArrayToHexString(record.value.slice(-1));
+            const script = uint8ArrayToHexString(record.value.slice(0, -1));
+            const scriptSize = uint8ArrayToHexString(compactSize(record.value.length - 1));
+            if (taggedHash('TapLeaf', leafVersion + scriptSize + script) === scriptMostSigs) {
+              // add the script
+              const controlBlock = uint8ArrayToHexString(record.key.slice(1));
+              const tapLeaf = uint8ArrayToHexString(record.value.slice(0, -1));
+              vin.witness = vin.witness || [];
+              vin.witness.unshift(tapLeaf, controlBlock);
+              vin.inner_witnessscript_asm = convertScriptSigAsm(tapLeaf);
+              // add the signatures that are part of this script
+              for (const sigRecord of groups.tapScriptSigs) {
+                const sigLeafHash = uint8ArrayToHexString(sigRecord.key.slice(33));
+                if (sigLeafHash === scriptMostSigs) {
+                  vin.witness.unshift(uint8ArrayToHexString(sigRecord.value));
+                }
+              }
+              break;
             }
           }
         }
@@ -1289,7 +1364,7 @@ function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: { key:
   return { rawTx, inputs };
 }
 
-export function decodeRawTransaction(input: string, network: string): { tx: Transaction, hex: string } {
+export function decodeRawTransaction(input: string, network: string): { tx: Transaction, hex: string, psbt?: string } {
   if (!input.length) {
     throw new Error('Empty input');
   }
@@ -1305,7 +1380,7 @@ export function decodeRawTransaction(input: string, network: string): { tx: Tran
 
   if (buffer[0] === 0x70 && buffer[1] === 0x73 && buffer[2] === 0x62 && buffer[3] === 0x74) { // PSBT magic bytes
     const { rawTx, inputs } = decodePsbt(buffer);
-    return fromBuffer(rawTx, network, inputs);
+    return { ...fromBuffer(rawTx, network, inputs), psbt: uint8ArrayToHexString(buffer) };
   }
 
   return fromBuffer(buffer, network);
