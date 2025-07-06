@@ -892,14 +892,16 @@ export class Common {
     }
   }
 
-  static calcEffectiveFeeStatistics(transactions: { weight: number, fee: number, effectiveFeePerVsize?: number, txid: string, acceleration?: boolean }[]): EffectiveFeeStats {
+  static calcEffectiveFeeStatistics(transactions: { weight: number, fee?: number, effectiveFeePerVsize?: number, txid: string, acceleration?: boolean }[]): EffectiveFeeStats {
     const sortedTxs = transactions.map(tx => { return { txid: tx.txid, weight: tx.weight, rate: tx.effectiveFeePerVsize || ((tx.fee || 0) / (tx.weight / 4)) }; }).sort((a, b) => a.rate - b.rate);
+    const totalWeight = transactions.reduce((acc, tx) => acc + tx.weight, 0);
 
-    let weightCount = 0;
+    // include any unused space
+    let weightCount = config.MEMPOOL.BLOCK_WEIGHT_UNITS - totalWeight;
     let medianFee = 0;
     let medianWeight = 0;
 
-    // calculate the "medianFee" as the average fee rate of the middle 0.25% weight units of transactions
+    // calculate the "medianFee" as the average fee rate of the middle 0.25% weight units of the conceptual block
     const halfWidth = config.MEMPOOL.BLOCK_WEIGHT_UNITS / 800;
     const leftBound = Math.floor((config.MEMPOOL.BLOCK_WEIGHT_UNITS / 2) - halfWidth);
     const rightBound = Math.ceil((config.MEMPOOL.BLOCK_WEIGHT_UNITS / 2) + halfWidth);
