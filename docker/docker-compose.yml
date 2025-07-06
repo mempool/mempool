@@ -24,7 +24,7 @@ services:
     # container_name:
     env_file: api.env
     volumes:
-      - ./data:/backend/cache:rw
+      - api-data:/backend/cache:rw
     # secrets:
     # networks:
     # ports:
@@ -34,6 +34,9 @@ services:
     restart: always
     init: true
     user: "1000:1000"
+    post_start:
+      - command: ["chown", "-R", "1000:1000", "/backend/cache"]
+        user: "root"
 
   db:
     image: mariadb:10.5.21
@@ -44,7 +47,7 @@ services:
       MYSQL_PASSWORD: mempool
       MYSQL_ROOT_PASSWORD: admin
     volumes:
-      - ./mysql/data:/var/lib/mysql:rw
+      - db-data:/var/lib/mysql:rw
     # secrets:
     # networks:
     # ports:
@@ -54,5 +57,10 @@ services:
     user: "1000:1000"
     healthcheck:
       test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-u", "root", "-padmin"]
+    post_start:
+      - command: ["chown", "-R", "1000:1000", "/var/lib/mysql"]
+        user: "root"
 
-#TODO use named volumes instead of bind mounts. better UX, entirely managed by docker. (but permission dilemma)
+volumes:
+  db-data:
+  api-data:
