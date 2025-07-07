@@ -33,6 +33,50 @@ function getNetworkLogo(network: string, size: number = 24) {
   }
 }
 
+function addWidthHeightToSVG(svgContent: string, size: number = 32): string {
+  const hasWidth = /width\s*=\s*"[^"]+"/.test(svgContent);
+  const hasHeight = /height\s*=\s*"[^"]+"/.test(svgContent);
+
+  if (!hasWidth || !hasHeight) {
+    svgContent = svgContent.replace(/<svg([^>]*)>/, (match, p1) => {
+      let newTag = `<svg${p1}`;
+      if (!hasWidth) newTag += ` width="${size}"`;
+      if (!hasHeight) newTag += ` height="${size}"`;
+      newTag += '>';
+      return newTag;
+    });
+  }
+  return svgContent;
+}
+
+function loadMiningPoolLogos(): Array<{ key: string; svg: string }> {
+  const miningPoolsDir = path.join(__dirname, '../../../frontend/src/resources/mining-pools');
+  
+  if (!fs.existsSync(miningPoolsDir)) {
+    logger.warn(`Mining pools directory not found: ${miningPoolsDir}`);
+    return [];
+  }
+
+  const files = fs.readdirSync(miningPoolsDir);
+  return files
+    .filter(file => file.endsWith('.svg'))
+    .map(file => {
+      try {
+        const filePath = path.join(miningPoolsDir, file);
+        const svgContent = fs.readFileSync(filePath, 'utf-8');
+        const svg = addWidthHeightToSVG(svgContent);
+        return {
+          key: `mining-pool-${path.basename(file, path.extname(file))}`,
+          svg: svg
+        };
+      } catch (error) {
+        logger.err(`Error loading mining pool SVG ${file}: ${error}`);
+        return null;
+      }
+    })
+    .filter(Boolean) as Array<{ key: string; svg: string }>;
+}
+
 const imageMap: Map<string, Image | Array<{ resolve: (img: Image) => void; reject: (error: Error) => void }>> = new Map();
 
 const localImages = [
@@ -66,6 +110,7 @@ const literalImages = [
     key: 'bitcoin-testnet4-logo',
     svg: getNetworkLogo('testnet4', 64),
   },
+  ...loadMiningPoolLogos()
 ]
 
 // Preload images at module level

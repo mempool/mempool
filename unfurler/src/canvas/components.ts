@@ -7,6 +7,7 @@ import { getImage } from "./images";
 import { renderBlockViz } from "./block-viz/block-viz";
 import { themes } from "./themes";
 import { CanvasRenderingContext2D } from 'canvas';
+import { formatNumber, formatWeightUnit } from "./utils";
 
 export interface Rect {
   x: number;
@@ -157,9 +158,28 @@ export const components: Record<string, (...args: any[]) => Component> = {
       ],
       children: [
         components.blockViz(id, { x: bounds.x + bounds.w - 48 - 480, y: bounds.y + bounds.h - 16 - 480, w: 480, h: 480 }),
+        components.table(id, { x: bounds.x + 48, y: bounds.y + 130 }, 'block')
       ],
       render: async (ctx: CanvasRenderingContext2D, data: any, props: any = {}): Promise<void> => {
-        // not yet implemented
+        const blockData = data[`extended_block_${id}`];
+
+        const blockHeight = blockData.height.toString()
+        ctx.font = 'bold 65px Segoe UI,Roboto';
+        ctx.fillStyle = themes.default.fg;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        const blockNumberWidth = ctx.measureText(blockHeight).width;
+        ctx.fillText(blockHeight, bounds.x + 48, bounds.y + 10);
+
+        ctx.font = '32px Courier New,Roboto';
+        ctx.fillStyle = themes.default.fg;
+        const charWidth = ctx.measureText('A').width;
+        const availableHashWidth = bounds.w - 96 - blockNumberWidth - 34 - 480 - 10;
+        const maxChars = Math.floor(availableHashWidth / charWidth) - 1;
+        const hashFirstHalf = blockData.id.slice(0, maxChars) + '…';
+        const hashSecondHalf = '…' + blockData.id.slice(-maxChars);
+        ctx.fillText(hashFirstHalf, bounds.x + 48 + blockNumberWidth + 32, bounds.y + 20);
+        ctx.fillText(hashSecondHalf, bounds.x + 48 + blockNumberWidth + 32, bounds.y + 55);
       }
     }
   },
@@ -175,7 +195,108 @@ export const components: Record<string, (...args: any[]) => Component> = {
       const summary = data['block_summary_' + id];
       return renderBlockViz(ctx, summary, bounds, 'default', false);
     }
-  })
+  }),
+
+  table: (id: string, position: Position, type: string): Component => ({
+    type: 'table',
+    data: [],
+    render: async (ctx: CanvasRenderingContext2D, data: any, props: any = {}): Promise<void> => {
+      // Set rows depending on type
+      let rows: { label: string, value: any }[] = [];
+      if (type === 'block') {
+        const blockData = data[`extended_block_${id}`];
+        rows = [
+          { label: 'Timestamp', value: new Date(blockData.timestamp * 1000).toLocaleString('sv-SE').replace(',', '').slice(0, 16) },
+          { label: 'Weight', value: formatWeightUnit(blockData.weight, 2) },
+          { label: 'Median fee', value: { num: '~' + formatNumber(blockData.extras.medianFee, '1.0-0'), unit: 'sat/vB' } },
+          { label: 'Total fees', value: { num: formatNumber(blockData.extras.totalFees / 100000000, '1.2-3'), unit: 'BTC' } },
+          { label: 'Miner', value: blockData.extras.pool }
+        ];
+      }
+
+      // Build the table
+      let yOffset = position.y;
+      const rowHeight = 72;
+      const rowWidth = 610;
+      const labelPadding = 15;
+      const valuePadding = 50;
+
+      // measure all label widths to find the maximum
+      ctx.font = '32px Segoe UI,Roboto';
+      let maxLabelWidth = 0;
+      for (const row of rows) {
+        const labelWidth = ctx.measureText(row.label).width;
+        maxLabelWidth = Math.max(maxLabelWidth, labelWidth);
+      }
+      const valueXPosition = position.x + labelPadding + maxLabelWidth + valuePadding;
+
+      for (let index = 0; index < rows.length; index++) {
+        const row = rows[index];
+
+        if (index % 2 === 0) {
+          ctx.fillStyle = themes.default.box;
+          ctx.fillRect(position.x, yOffset, rowWidth, rowHeight);
+        }
+
+        // label
+        ctx.font = '32px Segoe UI,Roboto';
+        ctx.fillStyle = themes.default.fg;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(row.label, position.x + labelPadding, yOffset + rowHeight / 2);
+
+        // value based on type: string, { num: number, unit: string }, or pool data
+        if (typeof (row.value) === 'string') {
+          ctx.font = '32px Segoe UI,Roboto';
+          ctx.textAlign = 'left';
+          ctx.fillText(row.value, valueXPosition, yOffset + rowHeight / 2);
+        } else if (row.value.num && row.value.unit) {
+          ctx.font = '32px Segoe UI,Roboto';
+          ctx.textAlign = 'left';
+          ctx.fillStyle = themes.default.fg;
+          ctx.fillText(row.value.num, valueXPosition, yOffset + rowHeight / 2);
+          const numWidth = ctx.measureText(row.value.num).width;
+          ctx.font = '24px Segoe UI,Roboto';
+          ctx.fillStyle = themes.default.symbol;
+          ctx.fillText(row.value.unit, valueXPosition + numWidth + 6, yOffset + 4 + rowHeight / 2);
+        } else if (row.value.slug) {
+          const poolLogo = await getImage(`mining-pool-${row.value.slug}`);
+          if (poolLogo) {
+            let leftSpacing = 0;
+            if (row.value.minerNames?.length > 1 && row.value.minerNames[1] != '') {
+              let minerName = '';
+              if (row.value.minerNames[1].length > 16) {
+                minerName = row.value.minerNames[1].slice(0, 15) + '…';
+              } else {
+                minerName = row.value.minerNames[1];
+              }
+              ctx.font = 'bold 26px Segoe UI,Roboto';
+              ctx.fillStyle = themes.default.fg;
+              ctx.textAlign = 'left';
+              ctx.textBaseline = 'middle';
+              leftSpacing = ctx.measureText(minerName).width + 6;
+              ctx.fillText(minerName, valueXPosition, yOffset + rowHeight / 2);
+            }
+            const maxHeight = 26;
+            const scale = maxHeight / poolLogo.height;
+            const logoWidth = poolLogo.width * scale;
+            const logoHeight = poolLogo.height * scale;
+            ctx.font = 'bold 26px Segoe UI,Roboto';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.drawImage(poolLogo, valueXPosition + leftSpacing, yOffset + rowHeight / 2 - logoHeight / 2 + 2, logoWidth, logoHeight);
+
+            ctx.fillStyle = themes.default.fg;
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(row.value.name, valueXPosition + leftSpacing + logoWidth + 6, yOffset + rowHeight / 2);
+          }
+        }
+
+        yOffset += rowHeight;
+      }
+    }
+  }),
 };
 
 // Views
