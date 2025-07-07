@@ -98,19 +98,51 @@ export const components: Record<string, (...args: any[]) => Component> = {
       ctx.fillStyle = themes.default.fg;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
+
+      const networkName = props.networkName; // bitcoin, liquid, onbtc...
+      if (networkName !== 'liquid') {
+        title = 'Bitcoin Block';
+      }
+
       ctx.fillText(title, bounds.x + bounds.w / 2, bounds.y + bounds.h / 2);
 
-      const logo = await getImage('mempool-logo');
-      if (logo) {
-        const maxHeight = 60;
-        const scale = maxHeight / logo.height;
-        const logoWidth = logo.width * scale;
-        const logoHeight = logo.height * scale;
+      const mempoolLogo = await getImage('mempool-logo');
+      if (mempoolLogo) {
+        const maxHeight = 50;
+        const scale = maxHeight / mempoolLogo.height;
+        const logoWidth = mempoolLogo.width * scale;
+        const logoHeight = mempoolLogo.height * scale;
 
-        const logoX = bounds.x + 20;
+        const logoX = bounds.x + 49;
         const logoY = bounds.y + (bounds.h - logoHeight) / 2;
         
-        ctx.drawImage(logo, logoX, logoY, logoWidth, logoHeight);
+        ctx.drawImage(mempoolLogo, logoX, logoY, logoWidth, logoHeight);
+      }
+
+      const networkMode = props.networkMode; // mainnet, testnet4, ...
+      const networkLogo = await getImage(`${networkName}-${networkMode}-logo`);
+
+      const capitalizedNetworkMode = networkMode.charAt(0).toUpperCase() + networkMode.slice(1);
+      ctx.font = 'bold 27px Segoe UI,Roboto';
+      const textWidth = ctx.measureText(capitalizedNetworkMode).width;
+      const spacing = 8;
+      const rightMargin = 48;
+
+      if (networkLogo) {
+        const maxHeight = 35;
+        const scale = maxHeight / networkLogo.height;
+        const logoWidth = networkLogo.width * scale;
+        const logoHeight = networkLogo.height * scale;
+        const logoX = bounds.w - logoWidth - textWidth - spacing - rightMargin;
+        const logoY = bounds.y + (bounds.h - logoHeight) / 2;
+        ctx.drawImage(networkLogo, logoX, logoY, logoWidth, logoHeight);
+
+        ctx.fillStyle = themes.default.fg;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        const textX = logoX + logoWidth + spacing;
+        const textY = bounds.y + bounds.h / 2;
+        ctx.fillText(capitalizedNetworkMode, textX, textY);
       }
     }
   }),
