@@ -356,7 +356,7 @@ BITCOIN_REPO_URL=https://github.com/bitcoin/bitcoin
 BITCOIN_REPO_NAME=bitcoin
 BITCOIN_REPO_BRANCH=master
 #BITCOIN_LATEST_RELEASE=$(curl -s https://api.github.com/repos/bitcoin/bitcoin/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
-BITCOIN_LATEST_RELEASE=v28.1
+BITCOIN_LATEST_RELEASE=v29.0
 echo -n '.'
 
 CKPOOL_REPO_URL=https://github.com/mempool/ckpool
@@ -416,9 +416,9 @@ DEBIAN_UNFURL_PKG+=(libxdamage-dev libxrandr-dev libgbm-dev libpango1.0-dev liba
 FREEBSD_PKG=()
 FREEBSD_PKG+=(zsh sudo git screen curl wget calc neovim)
 FREEBSD_PKG+=(openssh-portable py311-pip rust llvm17 jq base64 libzmq4)
-FREEBSD_PKG+=(boost-libs autoconf automake gmake gcc gcc13 libevent libtool pkgconf)
+FREEBSD_PKG+=(boost-libs autoconf automake gmake gcc gcc13 libevent libtool pkgconf cmake)
 FREEBSD_PKG+=(nginx rsync py311-certbot-nginx mariadb1011-server)
-FREEBSD_PKG+=(redis)
+FREEBSD_PKG+=(redis sqlite3 libzmq4)
 FREEBSD_PKG+=(libepoll-shim)
 
 FREEBSD_UNFURL_PKG=()
@@ -1183,12 +1183,22 @@ if [ "${BITCOIN_INSTALL}" = ON ];then
     osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_HOME}/${BITCOIN_REPO_NAME} && git checkout ${BITCOIN_LATEST_RELEASE}"
 
     echo "[*] Building Bitcoin from source repo"
-    osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && ./autogen.sh --quiet"
-    osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && MAKE=gmake CC=cc CXX=c++ CPPFLAGS=-I/usr/local/include ./configure --with-gui=no --disable-wallet --disable-tests"
-    osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && gmake -j${NPROC}"
 
-    echo "[*] Installing Bitcoin binaries into OS"
-    osSudo "${ROOT_USER}" sh -c "cd ${BITCOIN_HOME}/${BITCOIN_REPO_NAME} && gmake install"
+    # use cmake if > v28
+    if [ "${BITCOIN_LATEST_RELEASE:1:2}" -gt "28" ];then
+        osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && cmake -B build -DWITH_GUI=OFF -DENABLE_WALLET=OFF -DBUILD_BITCOIN_TESTS=OFF"
+        osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && cmake --build build -j${NPROC}"
+
+        echo "[*] Installing Bitcoin binaries into OS"
+        osSudo "${ROOT_USER}" sh -c "cd ${BITCOIN_HOME}/${BITCOIN_REPO_NAME}/build && cmake --install ."
+    else # use gmake if <= v28
+        osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && ./autogen.sh --quiet"
+        osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && MAKE=gmake CC=cc CXX=c++ CPPFLAGS=-I/usr/local/include ./configure --with-gui=no --disable-wallet --disable-tests"
+        osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && gmake -j${NPROC}"
+
+        echo "[*] Installing Bitcoin binaries into OS"
+        osSudo "${ROOT_USER}" sh -c "cd ${BITCOIN_HOME}/${BITCOIN_REPO_NAME} && gmake install"
+    fi
 
     echo "[*] Installing Bitcoin configuration"
     osSudo "${ROOT_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin.conf" "${BITCOIN_HOME}/bitcoin.conf"
