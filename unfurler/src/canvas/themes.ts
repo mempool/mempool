@@ -7,6 +7,7 @@ export const themes = {
     primary: '#105fb0',
     secondary: '#2d3348',
     tertiary: '#653b9c',
+    symbol: '#7e7e7e',
   },
   // contrast: {}
   // etc
