@@ -37,7 +37,8 @@ class CanvasRenderer implements Renderer {
 
       const dataRequirements = this.collectDataRequirements(view);
       const data = await this.fetchData(dataRequirements);
-      const png = await this.renderView(view, data, matchedRoute.params);
+      const params = { networkName: this.networkName, networkMode: matchedRoute.networkMode, params: matchedRoute.params }
+      const png = await this.renderView(view, data, params);
       return png;
     } catch (error: any) {
       logger.err(`Failed to render canvas for ${reqUrl}: ${error.message}`);
