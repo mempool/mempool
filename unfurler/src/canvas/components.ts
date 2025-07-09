@@ -6,7 +6,7 @@ import { fetchJSON } from "../api/api";
 import { getImage } from "./images";
 import { renderBlockViz } from "./block-viz/block-viz";
 import { themes } from "./themes";
-import { CanvasRenderingContext2D } from 'canvas';
+import { CanvasRenderingContext2D, Image } from 'canvas';
 import { formatNumber, formatWeightUnit } from "./utils";
 
 export interface Rect {
@@ -258,7 +258,12 @@ export const components: Record<string, (...args: any[]) => Component> = {
           ctx.fillStyle = themes.default.symbol;
           ctx.fillText(row.value.unit, valueXPosition + numWidth + 6, yOffset + 2 + rowHeight / 2);
         } else if (row.value.slug) {
-          const poolLogo = await getImage(`mining-pool-${row.value.slug}`);
+          let poolLogo: Image;
+          try {
+            poolLogo = await getImage(`mining-pool-${row.value.slug}`);
+          } catch {
+            poolLogo = await getImage('mining-pool-default');
+          }
           if (poolLogo) {
             let leftSpacing = 0;
             if (row.value.minerNames?.length > 1 && row.value.minerNames[1] != '') {
