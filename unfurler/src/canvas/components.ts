@@ -95,7 +95,7 @@ export const components: Record<string, (...args: any[]) => Component> = {
       const bounds = { ...position, w: 1200, h: 80 };
       ctx.fillStyle = themes.default.header;
       ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
-      ctx.font = 'bold 38.4px Segoe UI,Roboto';
+      ctx.font = 'bold 38.4px Roboto';
       ctx.fillStyle = themes.default.fg;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
@@ -124,7 +124,7 @@ export const components: Record<string, (...args: any[]) => Component> = {
       const networkLogo = await getImage(`${networkName}-${networkMode}-logo`);
 
       const capitalizedNetworkMode = networkMode.charAt(0).toUpperCase() + networkMode.slice(1);
-      ctx.font = 'bold 27px Segoe UI,Roboto';
+      ctx.font = 'bold 26px Roboto';
       const textWidth = ctx.measureText(capitalizedNetworkMode).width;
       const spacing = 8;
       const rightMargin = 48;
@@ -140,7 +140,6 @@ export const components: Record<string, (...args: any[]) => Component> = {
 
         ctx.fillStyle = themes.default.fg;
         ctx.textAlign = 'left';
-        ctx.textBaseline = 'middle';
         const textX = logoX + logoWidth + spacing;
         const textY = bounds.y + bounds.h / 2;
         ctx.fillText(capitalizedNetworkMode, textX, textY);
@@ -158,18 +157,17 @@ export const components: Record<string, (...args: any[]) => Component> = {
       ],
       children: [
         components.blockViz(id, { x: bounds.x + bounds.w - 48 - 480, y: bounds.y + bounds.h - 16 - 480, w: 480, h: 480 }),
-        components.table(id, { x: bounds.x + 48, y: bounds.y + 130 }, 'block')
+        components.table(id, { x: bounds.x + 48, y: bounds.y + 129 }, 'block')
       ],
       render: async (ctx: CanvasRenderingContext2D, data: any, props: any = {}): Promise<void> => {
         const blockData = data[`extended_block_${id}`];
 
         const blockHeight = blockData.height.toString()
-        ctx.font = 'bold 65px Segoe UI,Roboto';
+        ctx.font = 'bold 66px Roboto';
         ctx.fillStyle = themes.default.fg;
         ctx.textAlign = 'left';
-        ctx.textBaseline = 'top';
         const blockNumberWidth = ctx.measureText(blockHeight).width;
-        ctx.fillText(blockHeight, bounds.x + 48, bounds.y + 10);
+        ctx.fillText(blockHeight, bounds.x + 48, bounds.y + 60);
 
         ctx.font = '32px Courier New,Roboto';
         ctx.fillStyle = themes.default.fg;
@@ -178,8 +176,8 @@ export const components: Record<string, (...args: any[]) => Component> = {
         const maxChars = Math.floor(availableHashWidth / charWidth) - 1;
         const hashFirstHalf = blockData.id.slice(0, maxChars) + '…';
         const hashSecondHalf = '…' + blockData.id.slice(-maxChars);
-        ctx.fillText(hashFirstHalf, bounds.x + 48 + blockNumberWidth + 32, bounds.y + 20);
-        ctx.fillText(hashSecondHalf, bounds.x + 48 + blockNumberWidth + 32, bounds.y + 55);
+        ctx.fillText(hashFirstHalf, bounds.x + 48 + blockNumberWidth + 32, bounds.y + 38);
+        ctx.fillText(hashSecondHalf, bounds.x + 48 + blockNumberWidth + 32, bounds.y + 73);
       }
     }
   },
@@ -216,13 +214,13 @@ export const components: Record<string, (...args: any[]) => Component> = {
 
       // Build the table
       let yOffset = position.y;
-      const rowHeight = 72;
+      const rowHeight = 75;
       const rowWidth = 610;
       const labelPadding = 15;
       const valuePadding = 50;
 
       // measure all label widths to find the maximum
-      ctx.font = '32px Segoe UI,Roboto';
+      ctx.font = '32px Roboto';
       let maxLabelWidth = 0;
       for (const row of rows) {
         const labelWidth = ctx.measureText(row.label).width;
@@ -239,7 +237,7 @@ export const components: Record<string, (...args: any[]) => Component> = {
         }
 
         // label
-        ctx.font = '32px Segoe UI,Roboto';
+        ctx.font = '32px Roboto';
         ctx.fillStyle = themes.default.fg;
         ctx.textAlign = 'left';
         ctx.textBaseline = 'middle';
@@ -247,18 +245,18 @@ export const components: Record<string, (...args: any[]) => Component> = {
 
         // value based on type: string, { num: number, unit: string }, or pool data
         if (typeof (row.value) === 'string') {
-          ctx.font = '32px Segoe UI,Roboto';
+          ctx.font = '32px Roboto';
           ctx.textAlign = 'left';
           ctx.fillText(row.value, valueXPosition, yOffset + rowHeight / 2);
         } else if (row.value.num && row.value.unit) {
-          ctx.font = '32px Segoe UI,Roboto';
+          ctx.font = '32px Roboto';
           ctx.textAlign = 'left';
           ctx.fillStyle = themes.default.fg;
           ctx.fillText(row.value.num, valueXPosition, yOffset + rowHeight / 2);
           const numWidth = ctx.measureText(row.value.num).width;
-          ctx.font = '24px Segoe UI,Roboto';
+          ctx.font = '24px Roboto';
           ctx.fillStyle = themes.default.symbol;
-          ctx.fillText(row.value.unit, valueXPosition + numWidth + 6, yOffset + 4 + rowHeight / 2);
+          ctx.fillText(row.value.unit, valueXPosition + numWidth + 6, yOffset + 2 + rowHeight / 2);
         } else if (row.value.slug) {
           const poolLogo = await getImage(`mining-pool-${row.value.slug}`);
           if (poolLogo) {
@@ -270,7 +268,7 @@ export const components: Record<string, (...args: any[]) => Component> = {
               } else {
                 minerName = row.value.minerNames[1];
               }
-              ctx.font = 'bold 26px Segoe UI,Roboto';
+              ctx.font = 'bold 26px Roboto';
               ctx.fillStyle = themes.default.fg;
               ctx.textAlign = 'left';
               ctx.textBaseline = 'middle';
@@ -281,10 +279,10 @@ export const components: Record<string, (...args: any[]) => Component> = {
             const scale = maxHeight / poolLogo.height;
             const logoWidth = poolLogo.width * scale;
             const logoHeight = poolLogo.height * scale;
-            ctx.font = 'bold 26px Segoe UI,Roboto';
+            ctx.font = 'bold 26px Roboto';
             ctx.textAlign = 'left';
             ctx.textBaseline = 'middle';
-            ctx.drawImage(poolLogo, valueXPosition + leftSpacing, yOffset + rowHeight / 2 - logoHeight / 2 + 2, logoWidth, logoHeight);
+            ctx.drawImage(poolLogo, valueXPosition + leftSpacing, yOffset + rowHeight / 2 - logoHeight / 2, logoWidth, logoHeight);
 
             ctx.fillStyle = themes.default.fg;
             ctx.textAlign = 'left';
