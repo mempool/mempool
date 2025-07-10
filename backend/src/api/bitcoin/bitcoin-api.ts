@@ -95,6 +95,10 @@ class BitcoinApi implements AbstractBitcoinApi {
       });
   }
 
+  $getTransactionMerkleProof(txId: string): Promise<IEsploraApi.MerkleProof> {
+    throw new Error('Method getTransactionMerkleProof not supported by the Bitcoin RPC API.');
+  }
+
   $getBlockHeightTip(): Promise<number> {
     return this.bitcoindClient.getBlockCount();
   }
