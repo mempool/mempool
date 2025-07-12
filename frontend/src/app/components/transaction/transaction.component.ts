@@ -930,7 +930,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.segwitEnabled = !this.tx.status.confirmed || isFeatureActive(this.stateService.network, this.tx.status.block_height, 'segwit');
       this.taprootEnabled = !this.tx.status.confirmed || isFeatureActive(this.stateService.network, this.tx.status.block_height, 'taproot');
       this.rbfEnabled = !this.tx.status.confirmed || isFeatureActive(this.stateService.network, this.tx.status.block_height, 'rbf');
-      this.tx.flags = getTransactionFlags(this.tx, null, null, this.tx.status?.block_time, this.stateService.network);
+      this.tx.flags = getTransactionFlags(this.tx, null, null, this.tx.status?.block_height || (this.stateService.latestBlockHeight + 1), this.stateService.network);
       this.filters = this.tx.flags ? toFilters(this.tx.flags).filter(f => f.txPage) : [];
       this.checkAccelerationEligibility();
     } else {
