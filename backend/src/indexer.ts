@@ -11,6 +11,7 @@ import auditReplicator from './replication/AuditReplication';
 import statisticsReplicator from './replication/StatisticsReplication';
 import AccelerationRepository from './repositories/AccelerationRepository';
 import BlocksAuditsRepository from './repositories/BlocksAuditsRepository';
+import BlocksRepository from './repositories/BlocksRepository';
 
 export interface CoreIndex {
   name: string;
@@ -194,6 +195,7 @@ class Indexer {
       await statisticsReplicator.$sync();
       await AccelerationRepository.$indexPastAccelerations();
       await BlocksAuditsRepository.$migrateAuditsV0toV1();
+      await BlocksRepository.$migrateBlocks();
       // do not wait for classify blocks to finish
       blocks.$classifyBlocks();
     } catch (e) {

@@ -337,6 +337,7 @@ export interface BlockExtension {
 export interface BlockExtended extends IEsploraApi.Block {
   extras: BlockExtension;
   canonical?: string;
+  indexVersion?: number;
 }
 
 export interface BlockSummary {
