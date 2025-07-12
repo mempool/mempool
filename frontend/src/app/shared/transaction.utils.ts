@@ -654,8 +654,8 @@ export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replac
         // created before taproot activation don't need to have any witness data
         // (see https://mempool.space/tx/b10c007c60e14f9d087e0291d4d0c7869697c6681d979c6639dbd960792b4d41)
         if (vin.witness?.length) {
-          // in taproot, if the last witness item begins with 0x50, it's an annex
-          const hasAnnex = vin.witness?.[vin.witness.length - 1].startsWith('50');
+          // in taproot, if there are at least two witness elements, and the first byte of the last element is 0x50, that last element is an annex
+          const hasAnnex = vin.witness?.length > 1 &&  vin.witness?.[vin.witness.length - 1].startsWith('50');
           // script spends have more than one witness item, not counting the annex (if present)
           if (vin.witness.length > (hasAnnex ? 2 : 1)) {
             // the script itself is the second-to-last witness item, not counting the annex
