@@ -186,4 +186,10 @@ export namespace IEsploraApi {
     time: number;
     tx_position?: number;
   }
+
+  export interface MerkleProof {
+    merkle: string[];
+    block_height: number;
+    pos: number;
+  }
 }
