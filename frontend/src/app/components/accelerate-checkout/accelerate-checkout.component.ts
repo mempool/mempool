@@ -12,6 +12,7 @@ import { IAuth, AuthServiceMempool } from '@app/services/auth.service';
 import { EnterpriseService } from '@app/services/enterprise.service';
 import { ApiService } from '@app/services/api.service';
 import { isDevMode } from '@angular/core';
+import { StorageService } from '@app/services/storage.service';
 
 export type PaymentMethod = 'balance' | 'bitcoin' | 'cashapp' | 'applePay' | 'googlePay' | 'cardOnFile';
 
@@ -68,6 +69,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   @Input() forceMobile: boolean = false;
   @Input() showDetails: boolean = false;
   @Input() noCTA: boolean = false;
+  @Input() shareCode: string | undefined;
   @Output() unavailable = new EventEmitter<boolean>();
   @Output() completed = new EventEmitter<boolean>();
   @Output() hasDetails = new EventEmitter<boolean>();
@@ -139,6 +141,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef,
     private authService: AuthServiceMempool,
     private enterpriseService: EnterpriseService,
+    private storageService: StorageService
   ) {
     this.isProdDomain = this.stateService.env.PROD_DOMAINS.indexOf(document.location.hostname) > -1;
 
@@ -534,9 +537,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                   tokenResult.token,
                   cardTag,
                   `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
-                  costUSD
+                  costUSD,
+                  this.shareCode
                 ).subscribe({
                   next: (response) => {
+                    this.storageService.removeItem('share_code'); // Consume localStorage share_code
                     this.accelerationResponse = response;
                     this.processing = false;
                     this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
@@ -663,9 +668,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                 cardTag,
                 `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
                 costUSD,
-                verificationToken.userChallenged
+                verificationToken.userChallenged,
+                this.shareCode
               ).subscribe({
                 next: (response) => {
+                  this.storageService.removeItem('share_code'); // Consume localStorage share_code
                   this.accelerationResponse = response;
                   this.processing = false;
                   this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
@@ -774,9 +781,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             verificationToken.token,
             `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
             costUSD,
-            verificationToken.userChallenged
+            verificationToken.userChallenged,
+            this.shareCode
           ).subscribe({
             next: (response) => {
+              this.storageService.removeItem('share_code'); // Consume localStorage share_code
               this.accelerationResponse = response;
               this.processing = false;
               this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
@@ -869,9 +878,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               tokenResult.token,
               tokenResult.details.cashAppPay.cashtag,
               tokenResult.details.cashAppPay.referenceId,
-              costUSD
+              costUSD,
+              this.shareCode
             ).subscribe({
               next: (response) => {
+                this.storageService.removeItem('share_code'); // Consume localStorage share_code
                 this.accelerationResponse = response;
                 this.processing = false;
                 this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
@@ -937,7 +948,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
    */
   async requestBTCPayInvoice(): Promise<void> {
     this.loadingBtcpayInvoice = true;
-    this.servicesApiService.generateBTCPayAcceleratorInvoice$(this.tx.txid, this.userBid).pipe(
+    this.servicesApiService.generateBTCPayAcceleratorInvoice$(this.tx.txid, this.userBid, this.shareCode).pipe(
       switchMap(response => {
         return this.servicesApiService.retrieveInvoice$(response.btcpayInvoiceId);
       }),
