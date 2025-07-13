@@ -328,7 +328,7 @@ export class Common {
         }
         if (vout.value < (dustSize * DUST_RELAY_TX_FEE)) {
           // under minimum output size
-          return true;
+          return !Common.isStandardEphemeralDust(tx, height);
         }
       }
     }
@@ -402,6 +402,26 @@ export class Common {
       && height <= this.ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
     ) {
       // anchor outputs were non-standard to spend before v28.x (scheduled for 2024/09/30 https://github.com/bitcoin/bitcoin/issues/29891)
+      return true;
+    }
+    return false;
+  }
+
+  // Ephemeral dust is a new concept that allows a single dust output in a transaction, provided the transaction is zero fee
+  static EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT = {
+    'testnet4': 90_500,
+    'testnet': 4_550_000,
+    'signet': 260_000,
+    '': 905_000,
+  };
+  static isStandardEphemeralDust(tx: TransactionExtended, height?: number): boolean {
+    if (
+      tx.fee === 0
+      && (height == null || (
+        this.EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+        && height >= this.EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+      ))
+    ) {
       return true;
     }
     return false;
