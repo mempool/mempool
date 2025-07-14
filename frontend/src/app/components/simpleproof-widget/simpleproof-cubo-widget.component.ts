@@ -13,6 +13,9 @@ export interface SimpleProofCubo {
   parsed?: { type: string; year: number; studentNumber: number };
 }
 
+export type SortField = 'student_name' | 'id_code' | null;
+export type SortDirection = 'asc' | 'desc';
+
 @Component({
   selector: 'app-simpleproof-cubo-widget',
   templateUrl: './simpleproof-cubo-widget.component.html',
@@ -35,6 +38,8 @@ export class SimpleProofCuboWidgetComponent implements OnChanges {
   lastPage = 1;
   itemsPerPage = 15;
   paginationMaxSize = window.innerWidth <= 767.98 ? 3 : 5;
+  sortField: SortField = null;
+  sortDirection: SortDirection = 'asc';
 
   constructor(
     private servicesApiService: ServicesApiServices,
@@ -122,6 +127,11 @@ export class SimpleProofCuboWidgetComponent implements OnChanges {
     } else {
       this.filteredVerified = this.verified;
     }
+
+    if (this.sortField) {
+      this.applySort();
+    }
+
     this.page = 1;
     this.updatePage();
   }
@@ -133,5 +143,57 @@ export class SimpleProofCuboWidgetComponent implements OnChanges {
   pageChange(page: number): void {
     this.page = page;
     this.updatePage();
+  }
+
+  sortBy(field: SortField, direction?: SortDirection): boolean {
+    if (field && direction) {
+      this.sortField = field;
+      this.sortDirection = direction;
+    } else {
+      if (this.sortField === field) {
+        if (this.sortDirection === 'asc') {
+          this.sortDirection = 'desc';
+        } else {
+          this.sortField = null;
+        }
+      } else {
+        this.sortField = field;
+        this.sortDirection = 'asc';
+      }
+    }
+
+    this.applySort();
+    this.page = 1;
+    this.updatePage();
+    return false;
+  }
+
+  applySort(): void {
+    // default to ascending sort by id
+    const sortByField = this.sortField || 'id_code';
+    const sortDirection = this.sortField ? this.sortDirection : 'asc';
+
+    const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+
+    this.filteredVerified.sort((a, b) => {
+      let comparison = 0;
+      if (sortByField === 'student_name') {
+        comparison = collator.compare(a.student_name, b.student_name);
+      } else if (sortByField === 'id_code') {
+        // For ID sorting, try to use the parsed Cubo key logic first
+        if (a.parsed && b.parsed) {
+          if (a.parsed.year !== b.parsed.year) {
+            comparison = a.parsed.year - b.parsed.year;
+          } else if (a.parsed.type !== b.parsed.type) {
+            comparison = a.parsed.type.localeCompare(b.parsed.type);
+          } else {
+            comparison = a.parsed.studentNumber - b.parsed.studentNumber;
+          }
+        } else {
+          comparison = collator.compare(a.id_code, b.id_code);
+        }
+      }
+      return sortDirection === 'asc' ? comparison : -comparison;
+    });
   }
 }
