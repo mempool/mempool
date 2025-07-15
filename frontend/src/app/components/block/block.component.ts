@@ -600,7 +600,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         // set transaction statuses
         for (const tx of blockAudit.template) {
           tx.context = 'projected';
-          if (isCensored[tx.txid]) {
+          if (isCensored[tx.txid] && tx.rate >= 1) {
             tx.status = 'censored';
           } else if (inBlock[tx.txid]) {
             tx.status = 'found';

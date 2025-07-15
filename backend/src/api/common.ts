@@ -328,7 +328,7 @@ export class Common {
         }
         if (vout.value < (dustSize * DUST_RELAY_TX_FEE)) {
           // under minimum output size
-          return true;
+          return !Common.isStandardEphemeralDust(tx, height);
         }
       }
     }
@@ -402,6 +402,26 @@ export class Common {
       && height <= this.ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
     ) {
       // anchor outputs were non-standard to spend before v28.x (scheduled for 2024/09/30 https://github.com/bitcoin/bitcoin/issues/29891)
+      return true;
+    }
+    return false;
+  }
+
+  // Ephemeral dust is a new concept that allows a single dust output in a transaction, provided the transaction is zero fee
+  static EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT = {
+    'testnet4': 90_500,
+    'testnet': 4_550_000,
+    'signet': 260_000,
+    '': 905_000,
+  };
+  static isStandardEphemeralDust(tx: TransactionExtended, height?: number): boolean {
+    if (
+      tx.fee === 0
+      && (height == null || (
+        this.EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+        && height >= this.EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+      ))
+    ) {
       return true;
     }
     return false;
@@ -892,14 +912,16 @@ export class Common {
     }
   }
 
-  static calcEffectiveFeeStatistics(transactions: { weight: number, fee: number, effectiveFeePerVsize?: number, txid: string, acceleration?: boolean }[]): EffectiveFeeStats {
+  static calcEffectiveFeeStatistics(transactions: { weight: number, fee?: number, effectiveFeePerVsize?: number, txid: string, acceleration?: boolean }[]): EffectiveFeeStats {
     const sortedTxs = transactions.map(tx => { return { txid: tx.txid, weight: tx.weight, rate: tx.effectiveFeePerVsize || ((tx.fee || 0) / (tx.weight / 4)) }; }).sort((a, b) => a.rate - b.rate);
+    const totalWeight = transactions.reduce((acc, tx) => acc + tx.weight, 0);
 
-    let weightCount = 0;
+    // include any unused space
+    let weightCount = config.MEMPOOL.BLOCK_WEIGHT_UNITS - totalWeight;
     let medianFee = 0;
     let medianWeight = 0;
 
-    // calculate the "medianFee" as the average fee rate of the middle 0.25% weight units of transactions
+    // calculate the "medianFee" as the average fee rate of the middle 0.25% weight units of the conceptual block
     const halfWidth = config.MEMPOOL.BLOCK_WEIGHT_UNITS / 800;
     const leftBound = Math.floor((config.MEMPOOL.BLOCK_WEIGHT_UNITS / 2) - halfWidth);
     const rightBound = Math.ceil((config.MEMPOOL.BLOCK_WEIGHT_UNITS / 2) + halfWidth);
