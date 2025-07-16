@@ -8,6 +8,7 @@ import transactionUtils from './transaction-utils';
 import { isPoint } from '../utils/secp256k1';
 import logger from '../logger';
 import { getVarIntLength, opcodes, parseMultisigScript } from '../utils/bitcoin-script';
+import { IEsploraApi } from './bitcoin/esplora-api.interface';
 
 // Bitcoin Core default policy settings
 const MAX_STANDARD_TX_WEIGHT = 400_000;
@@ -507,6 +508,51 @@ export class Common {
     return flags;
   }
 
+  static inputIsMaybeInscription(vin: IEsploraApi.Vin): boolean {
+    // check if this is actually a taproot input
+    let isTaproot = false;
+    let isNotTaproot = false;
+
+    // taproot inputs have no scriptsig (otherwise probably wrapped segwit)
+    if (vin.scriptsig?.length) {
+      isNotTaproot = true;
+    }
+
+    // p2wpkh consist of a DER-encoded signature followed by a compressed pubkey
+    if (!isNotTaproot
+      && this.isDERSig(vin.witness[0])
+      && (vin.witness[1].startsWith('02') || vin.witness[1].startsWith('03'))
+      && vin.witness[1].length === 66) {
+      isNotTaproot = true;
+    }
+
+    // p2wsh could be almost anything, but ends with a script which
+    // probably doesn't match a valid taproot control block length (32 + 33m)
+    if (!isNotTaproot
+      && vin.witness.length >= 2
+    ) {
+      const hasAnnex = vin.witness[vin.witness.length - 1].startsWith('50');
+      const controlBlock = vin.witness[vin.witness.length - (hasAnnex ? 2 : 1)];
+      if ((controlBlock.length - 66) % 64 === 0) {
+        isNotTaproot = true;
+      }
+    }
+
+    // signed taproot inscriptions should have 3 non-annex witness items:
+    //  1) schnorr signature
+    //  2) inscription script
+    //  3) control block (length 33 + 32m)
+    if (!isTaproot
+      && vin.witness.length >= 3
+      && vin.witness[0].length === 128 || vin.witness[0].length === 130
+      && (vin.witness[2].length - 66) % 64 === 0
+    ) {
+      isTaproot = true;
+    }
+
+    return isTaproot || !isNotTaproot;
+  }
+
   static getTransactionFlags(tx: TransactionExtended, height?: number): number {
     let flags = tx.flags ? BigInt(tx.flags) : 0n;
 
@@ -567,7 +613,8 @@ export class Common {
         }
       } else {
         // no prevouts, optimistically check witness-bearing inputs
-        if (vin.witness?.length >= 2) {
+        if (vin.witness?.length >= 2 && Common.inputIsMaybeInscription(vin)) {
+          // try to parse the witness as a taproot inscription
           try {
             flags = Common.isInscription(vin, flags);
           } catch {

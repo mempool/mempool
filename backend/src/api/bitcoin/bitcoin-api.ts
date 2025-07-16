@@ -6,6 +6,7 @@ import blocks from '../blocks';
 import mempool from '../mempool';
 import { TransactionExtended } from '../../mempool.interfaces';
 import transactionUtils from '../transaction-utils';
+import { Common } from '../common';
 
 class BitcoinApi implements AbstractBitcoinApi {
   private rawMempoolCache: IBitcoinApi.RawMempool | null = null;
@@ -360,6 +361,7 @@ class BitcoinApi implements AbstractBitcoinApi {
   }
 
   protected async $addPrevouts(transaction: TransactionExtended): Promise<TransactionExtended> {
+    let addedPrevouts = false;
     for (const vin of transaction.vin) {
       if (vin.prevout) {
         continue;
@@ -367,6 +369,12 @@ class BitcoinApi implements AbstractBitcoinApi {
       const innerTx = await this.$getRawTransaction(vin.txid, false, false);
       vin.prevout = innerTx.vout[vin.vout];
       transactionUtils.addInnerScriptsToVin(vin);
+      addedPrevouts = true;
+    }
+    if (addedPrevouts) {
+      // re-calculate transaction flags now that we have full prevout data
+      transaction.flags = undefined; // clear existing flags to force full classification
+      transaction.flags = Common.getTransactionFlags(transaction, transaction.status?.block_height ?? blocks.getCurrentBlockHeight());
     }
     return transaction;
   }
