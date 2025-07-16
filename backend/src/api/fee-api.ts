@@ -1,4 +1,5 @@
 import { MempoolBlock } from '../mempool.interfaces';
+import { IBitcoinApi } from './bitcoin/bitcoin-api.interface';
 import config from '../config';
 import mempool from './mempool';
 import projectedBlocks from './mempool-blocks';
@@ -22,6 +23,11 @@ class FeeApi {
   public getRecommendedFee(): RecommendedFees {
     const pBlocks = projectedBlocks.getMempoolBlocks();
     const mPool = mempool.getMempoolInfo();
+
+    return this.calculateRecommendedFee(pBlocks, mPool);
+  }
+
+  public calculateRecommendedFee(pBlocks: MempoolBlock[], mPool: IBitcoinApi.MempoolInfo): RecommendedFees {
     const minimumFee = this.roundUpToNearest(mPool.mempoolminfee * 100000, this.minimumIncrement);
     const defaultMinFee = Math.max(minimumFee, this.defaultFee);
 
