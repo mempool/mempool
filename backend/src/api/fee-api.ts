@@ -70,7 +70,7 @@ class FeeApi {
 
   private optimizeMedianFee(pBlock: MempoolBlock, nextBlock: MempoolBlock | undefined, previousFee?: number): number {
     const useFee = previousFee ? (pBlock.medianFee + previousFee) / 2 : pBlock.medianFee;
-    if (pBlock.blockVSize <= 500000) {
+    if (pBlock.blockVSize <= 500000 || pBlock.medianFee < 1) {
       return this.defaultFee;
     }
     if (pBlock.blockVSize <= 950000 && !nextBlock) {
