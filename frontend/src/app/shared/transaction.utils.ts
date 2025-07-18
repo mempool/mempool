@@ -511,7 +511,7 @@ export function isNonStandard(tx: Transaction, height?: number, network?: string
       }
     } else if (['unknown', 'provably_unspendable', 'empty'].includes(vin.prevout?.scriptpubkey_type || '')) {
       return true;
-    } else if (isNonStandardAnchor(tx, height, network)) {
+    } else if (vin.prevout?.scriptpubkey_type === 'anchor' && isNonStandardAnchor(vin, height, network)) {
       return true;
     }
     // bad-witness-nonstandard
@@ -634,12 +634,13 @@ const ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT = {
   'signet': 211_000,
   '': 863_500,
 };
-function isNonStandardAnchor(tx: Transaction, height?: number, network?: string): boolean {
+function isNonStandardAnchor(vin: Vin, height?: number, network?: string): boolean {
   if (
     height != null
     && network != null
     && ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT[network]
     && height <= ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT[network]
+    && vin.prevout?.scriptpubkey === '51024e73'
   ) {
     // anchor outputs were non-standard to spend before v28.x (scheduled for 2024/09/30 https://github.com/bitcoin/bitcoin/issues/29891)
     return true;
