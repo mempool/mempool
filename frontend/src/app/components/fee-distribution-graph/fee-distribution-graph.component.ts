@@ -60,6 +60,8 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges, OnDestr
   prepareChart(): void {
     if (this.simple) {
       this.data = this.feeRange.map((rate, index) => [index * 10, rate]);
+      this.minValue = this.data.length ? this.data.reduce((min, val) => Math.min(min, val[1]), Infinity) : 0;
+      this.maxValue = this.data.length ? this.data.reduce((max, val) => Math.max(max, val[1]), 0) : 0;
       this.labelInterval = 1;
       return;
     }
@@ -69,8 +71,8 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges, OnDestr
     }
     const samples = [];
     const txs = this.transactions.map(tx => { return { vsize: tx.vsize, rate: tx.rate ?? (tx.fee / tx.vsize) }; }).sort((a, b) => { return b.rate - a.rate; });
-    this.maxValue = txs.reduce((max, tx) => Math.max(max, tx.rate), 0);
-    this.minValue = txs.reduce((min, tx) => Math.min(min, tx.rate), Infinity);
+    this.maxValue = txs.length ? txs.reduce((max, tx) => Math.max(max, tx.rate), 0) : 0;
+    this.minValue = txs.length ? txs.reduce((min, tx) => Math.min(min, tx.rate), Infinity) : 0;
     const maxBlockVSize = this.stateService.env.BLOCK_WEIGHT_UNITS / 4;
     const sampleInterval = maxBlockVSize / this.numSamples;
     let cumVSize = 0;
