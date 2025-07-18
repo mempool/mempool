@@ -253,7 +253,7 @@ export class Common {
         }
       } else if (['unknown', 'provably_unspendable', 'empty'].includes(vin.prevout?.scriptpubkey_type || '')) {
         return true;
-      } else if (this.isNonStandardAnchor(tx, height)) {
+      } else if (vin.prevout?.scriptpubkey_type === 'anchor' && this.isNonStandardAnchor(vin, height)) {
         return true;
       }
       // bad-witness-nonstandard
@@ -396,11 +396,12 @@ export class Common {
     'signet': 211_000,
     '': 863_500,
   };
-  static isNonStandardAnchor(tx: TransactionExtended, height?: number): boolean {
+  static isNonStandardAnchor(vin: IEsploraApi.Vin, height?: number): boolean {
     if (
       height != null
       && this.ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
       && height <= this.ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+      && vin.prevout?.scriptpubkey === '51024e73'
     ) {
       // anchor outputs were non-standard to spend before v28.x (scheduled for 2024/09/30 https://github.com/bitcoin/bitcoin/issues/29891)
       return true;

@@ -270,7 +270,8 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
       replaceUrl: true
     });
 
-    this.transaction.flags = getTransactionFlags(this.transaction, this.cpfpInfo, null, this.transaction.status?.block_height || (this.stateService.latestBlockHeight + 1), this.stateService.network);
+    const txHeight = this.transaction.status?.block_height || (this.stateService.latestBlockHeight >= 0 ? this.stateService.latestBlockHeight + 1 : null);
+    this.transaction.flags = getTransactionFlags(this.transaction, this.cpfpInfo, null, txHeight, this.stateService.network);
     this.filters = this.transaction.flags ? toFilters(this.transaction.flags).filter(f => f.txPage) : [];
 
     this.setupGraph();
