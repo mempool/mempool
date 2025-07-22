@@ -7,7 +7,7 @@ import { ScriptInfo } from '@app/shared/script.utils';
 import { compactSize, taggedHash, uint8ArrayToHexString } from '@app/shared/transaction.utils';
 import { StateService } from '@app/services/state.service';
 import { AsmStylerPipe } from '@app/shared/pipes/asm-styler/asm-styler.pipe';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 
 interface TaprootTree {
   name: string; // the TapBranch hash or TapLeaf script hash
