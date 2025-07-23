@@ -152,6 +152,7 @@ export type ScriptType = 'scriptpubkey'
   | 'scriptsig'
   | 'inner_witnessscript'
   | 'inner_redeemscript'
+  | 'inner_simplicityscript'
 
 export interface ScriptTemplate {
   type: string;

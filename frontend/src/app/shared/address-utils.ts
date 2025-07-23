@@ -162,7 +162,15 @@ export class AddressTypeInfo {
           const hasAnnex = v.witness[v.witness.length - 1].startsWith('50');
           const controlBlock = hasAnnex ? v.witness[v.witness.length - 2] : v.witness[v.witness.length - 1];
           const scriptHex = hasAnnex ? v.witness[v.witness.length - 3] : v.witness[v.witness.length - 2];
-          this.processScript(new ScriptInfo('inner_witnessscript', scriptHex, v.inner_witnessscript_asm, v.witness, controlBlock, vinIds?.[i]));
+
+          if ((this.network === 'liquid' || this.network === 'liquidtestnet')
+            && (controlBlock.startsWith('be') || controlBlock.startsWith('bf'))
+          ) {
+            v.inner_simplicityscript = scriptHex;
+            this.processScript(new ScriptInfo('inner_simplicityscript', scriptHex, null, v.witness, controlBlock, vinIds?.[i]));
+          } else {
+            this.processScript(new ScriptInfo('inner_witnessscript', scriptHex, v.inner_witnessscript_asm, v.witness, controlBlock, vinIds?.[i]));
+          }
         }
       }
     // for single-script types, if we've seen one input we've seen them all

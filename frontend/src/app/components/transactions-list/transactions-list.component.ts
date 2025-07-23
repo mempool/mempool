@@ -28,6 +28,7 @@ import { SighashFlag } from '../../shared/transaction.utils';
 export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   network = '';
   nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;
+  isLiquid = this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet';
   showMoreIncrement = 1000;
 
   @Input() transactions: Transaction[];
@@ -93,7 +94,10 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit(): void {
     this.latestBlock$ = this.stateService.blocks$.pipe(map((blocks) => blocks[0]));
-    this.networkSubscription = this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    this.networkSubscription = this.stateService.networkChanged$.subscribe((network) => {
+      this.network = network;
+      this.isLiquid = network === 'liquid' || network === 'liquidtestnet';
+    });
 
     this.signaturesSubscription = this.stateService.signaturesMode$.subscribe((mode) => {
       this.signaturesPreference = mode;
@@ -331,6 +335,21 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
             }
           }
           tx['_showSignatures'] = this.shouldShowSignatures(tx);
+        } else { // check for simplicity script spends
+          for (const vin of tx.vin) {
+            if (vin.prevout.scriptpubkey_type === 'v1_p2tr' && vin.inner_witnessscript_asm) {
+              const hasAnnex = vin.witness?.[vin.witness.length - 1].startsWith('50');
+              // script spend
+              if (vin.witness.length > (hasAnnex ? 2 : 1)) {
+                const controlBlock = vin.witness[vin.witness.length - (hasAnnex ? 2 : 1)];
+                const script = vin.witness[vin.witness.length - (hasAnnex ? 3 : 2)];
+                // simplicity tapleaf version
+                if (controlBlock.startsWith('be') || controlBlock.startsWith('bf')) {
+                  vin.inner_simplicityscript = script;
+                }
+              }
+            }
+          }
         }
 
         tx.largeInput = tx.largeInput || tx.vin.some(vin => (vin?.prevout?.value > 1000000000));
