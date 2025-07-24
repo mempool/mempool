@@ -13,6 +13,7 @@ import { download } from '@app/shared/graphs.utils';
 import { ActivatedRoute } from '@angular/router';
 import { StateService } from '@app/services/state.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
+import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 
 @Component({
   selector: 'app-hashrate-chart',
@@ -60,6 +61,7 @@ export class HashrateChartComponent implements OnInit {
     private storageService: StorageService,
     private miningService: MiningService,
     private route: ActivatedRoute,
+    private amountShortenerPipe: AmountShortenerPipe,
     public stateService: StateService
   ) {
   }
@@ -250,29 +252,19 @@ export class HashrateChartComponent implements OnInit {
           let hashrateString = '';
           let difficultyString = '';
           let hashrateStringMA = '';
-          let hashratePowerOfTen: any = selectPowerOfTen(1);
 
           for (const tick of ticks) {
             if (tick.seriesIndex === 0) { // Hashrate
-              let hashrate = tick.data[1];
-              hashratePowerOfTen = selectPowerOfTen(tick.data[1], 10);
-              hashrate = tick.data[1] / hashratePowerOfTen.divider;
-              hashrateString = `${tick.marker} ${tick.seriesName}: ${formatNumber(hashrate, this.locale, '1.0-0')} ${hashratePowerOfTen.unit}H/s<br>`;
+              hashrateString = `${tick.marker} ${tick.seriesName}: ${this.amountShortenerPipe.transform(tick.data[1], 3, 'H/s', false, true)}<br>`;
             } else if (tick.seriesIndex === 1) { // Difficulty
-              let difficultyPowerOfTen = hashratePowerOfTen;
               let difficulty = tick.data[1];
               if (difficulty === null) {
                 difficultyString = `${tick.marker} ${tick.seriesName}: No data<br>`;
               } else {
-                difficultyPowerOfTen = selectPowerOfTen(tick.data[1]);
-                difficulty = tick.data[1] / difficultyPowerOfTen.divider;
-                difficultyString = `${tick.marker} ${tick.seriesName}: ${formatNumber(difficulty, this.locale, '1.2-2')} ${difficultyPowerOfTen.unit}<br>`;
+                difficultyString = `${tick.marker} ${tick.seriesName}: ${this.amountShortenerPipe.transform(tick.data[1], 2, '', false)}<br>`;
               }
             } else if (tick.seriesIndex === 2) { // Hashrate MA
-              let hashrate = tick.data[1];
-              hashratePowerOfTen = selectPowerOfTen(tick.data[1], 10);
-              hashrate = tick.data[1] / hashratePowerOfTen.divider;
-              hashrateStringMA = `${tick.marker} ${tick.seriesName}: ${formatNumber(hashrate, this.locale, '1.0-0')} ${hashratePowerOfTen.unit}H/s`;
+              hashrateStringMA = `${tick.marker} ${tick.seriesName}: ${this.amountShortenerPipe.transform(tick.data[1], 3, 'H/s', false, true)}<br>`;
             }
           }
 
@@ -346,9 +338,7 @@ export class HashrateChartComponent implements OnInit {
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: (val): string => {
-              const selectedPowerOfTen: any = selectPowerOfTen(val);
-              const newVal = Math.round(val / selectedPowerOfTen.divider);
-              return `${newVal} ${selectedPowerOfTen.unit}H/s`;
+              return this.amountShortenerPipe.transform(val, 3, 'H/s', false, true).toString();
             },
             showMinLabel: false,
             showMaxLabel: false,
@@ -384,9 +374,7 @@ export class HashrateChartComponent implements OnInit {
               if (this.stateService.network === 'signet') {
                 return `${val}`;
               }
-              const selectedPowerOfTen: any = selectPowerOfTen(val);
-              const newVal = Math.round(val / selectedPowerOfTen.divider);
-              return `${newVal} ${selectedPowerOfTen.unit}`;
+              return this.amountShortenerPipe.transform(val, 3, '', false, true).toString();
             },
             showMinLabel: false,
             showMaxLabel: false,
