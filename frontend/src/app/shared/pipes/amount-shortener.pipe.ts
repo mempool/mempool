@@ -30,7 +30,9 @@ export class AmountShortenerPipe implements PipeTransform {
       { value: 1e9, symbol: isMoney ? 'B' : 'G' },
       { value: 1e12, symbol: 'T' },
       { value: 1e15, symbol: 'P' },
-      { value: 1e18, symbol: 'E' }
+      { value: 1e18, symbol: 'E' },
+      { value: 1e21, symbol: 'Z' },
+      { value: 1e24, symbol: 'Y' }
     ];
     const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
     const item = lookup.slice().reverse().find((item) => num >= item.value);
