@@ -337,7 +337,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
           tx['_showSignatures'] = this.shouldShowSignatures(tx);
         } else { // check for simplicity script spends
           for (const vin of tx.vin) {
-            if (vin.prevout.scriptpubkey_type === 'v1_p2tr' && vin.inner_witnessscript_asm) {
+            if (vin.prevout?.scriptpubkey_type === 'v1_p2tr' && vin.inner_witnessscript_asm) {
               const hasAnnex = vin.witness?.[vin.witness.length - 1].startsWith('50');
               // script spend
               if (vin.witness.length > (hasAnnex ? 2 : 1)) {
