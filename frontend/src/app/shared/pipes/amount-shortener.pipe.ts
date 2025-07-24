@@ -11,10 +11,16 @@ export class AmountShortenerPipe implements PipeTransform {
     const sigfigs = args[3] || false; // if true, "digits" is the number of significant digits, not the number of decimal places
 
     if (num < 1000) {
+      let formattedNum: string;
       if (sigfigs) {
-        return Number(num.toPrecision(digits));
+        formattedNum = Number(num.toPrecision(digits)).toString();
+      } else {
+        formattedNum = num.toFixed(digits);
       }
-      return num.toFixed(digits);
+
+      return unit !== undefined
+        ? formattedNum + ' ' + unit
+        : formattedNum;
     }
 
     const lookup = [
