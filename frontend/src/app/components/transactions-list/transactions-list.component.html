@@ -234,7 +234,7 @@
                       </tr>
                       <tr *ngIf="vin.inner_witnessscript_asm">
                         @if (isLiquid && vin.inner_simplicityscript) {
-                          <td i18n="transactions-list.p2tr-simplicity-tapscript">P2TR Simplicity tapscript</td>
+                          <td i18n="transactions-list.p2tr-simplicity-script">P2TR Simplicity script</td>
                           <td style="text-align: left;">
                             <div [innerHTML]="showFullScript[vindex] ? vin.inner_simplicityscript : vin.inner_simplicityscript.slice(0, 1000)"></div>
                             <div *ngIf="vin.inner_simplicityscript.length > 1000" style="display: flex;">

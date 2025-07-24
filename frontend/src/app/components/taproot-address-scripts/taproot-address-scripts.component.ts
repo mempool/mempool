@@ -320,7 +320,7 @@ export class TaprootAddressScriptsComponent implements OnChanges {
             const hex = node.value.script.hex.slice(0, 300);
             asmContent = `
               <div style="margin-top: 10px; border-top: 1px solid #333; padding-top: 5px; word-break: break-all; white-space: normal; font-family: monospace; font-size: 12px;">
-                <td>Simplicity tapscript: ${hex} ${node.value.script.hex.length > 300 ? '...' : ''}</td>
+                <td>Simplicity script: ${hex} ${node.value.script.hex.length > 300 ? '...' : ''}</td>
               </div>`;
           }
 

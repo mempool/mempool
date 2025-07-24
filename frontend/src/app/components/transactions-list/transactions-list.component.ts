@@ -338,14 +338,15 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
         } else { // check for simplicity script spends
           for (const vin of tx.vin) {
             if (vin.prevout?.scriptpubkey_type === 'v1_p2tr' && vin.inner_witnessscript_asm) {
-              const hasAnnex = vin.witness?.[vin.witness.length - 1].startsWith('50');
-              // script spend
-              if (vin.witness.length > (hasAnnex ? 2 : 1)) {
-                const controlBlock = vin.witness[vin.witness.length - (hasAnnex ? 2 : 1)];
-                const script = vin.witness[vin.witness.length - (hasAnnex ? 3 : 2)];
-                // simplicity tapleaf version
-                if (controlBlock.startsWith('be') || controlBlock.startsWith('bf')) {
-                  vin.inner_simplicityscript = script;
+              const hasAnnex = vin.witness[vin.witness.length - 1].startsWith('50');
+              const isScriptSpend = vin.witness.length > (hasAnnex ? 2 : 1);
+              if (isScriptSpend) {
+                const controlBlock = hasAnnex ? vin.witness[vin.witness.length - 2] : vin.witness[vin.witness.length - 1];
+                const scriptHex = hasAnnex ? vin.witness[vin.witness.length - 3] : vin.witness[vin.witness.length - 2];
+                const tapleafVersion = parseInt(controlBlock.slice(0, 2), 16) & 0xfe;
+                // simplicity script spend
+                if (tapleafVersion === 0xbe) {
+                  vin.inner_simplicityscript = scriptHex;
                 }
               }
             }
