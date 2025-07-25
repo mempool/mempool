@@ -316,6 +316,12 @@ export class TaprootAddressScriptsComponent implements OnChanges {
               <div style="margin-top: 10px; border-top: 1px solid #333; padding-top: 5px; word-break: break-all; white-space: normal; font-family: monospace; font-size: 12px;">
                 <td>${asm} ${node.value.script.asm.length > 300 ? '...' : ''}</td>
               </div>`;
+          } else if (node.value?.script?.type === 'inner_simplicityscript') {
+            const hex = node.value.script.hex.slice(0, 300);
+            asmContent = `
+              <div style="margin-top: 10px; border-top: 1px solid #333; padding-top: 5px; word-break: break-all; white-space: normal; font-family: monospace; font-size: 12px;">
+                <td>Simplicity script: ${hex} ${node.value.script.hex.length > 300 ? '...' : ''}</td>
+              </div>`;
           }
 
           let hiddenScriptsMessage = '';

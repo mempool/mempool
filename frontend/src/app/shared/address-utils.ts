@@ -128,6 +128,7 @@ export class AddressTypeInfo {
   // flags
   isMultisig?: { m: number, n: number };
   tapscript?: boolean;
+  simplicity?: boolean;
 
   constructor (network: string, address: string, type?: AddressType, vin?: Vin[], vout?: Vout) {
     this.network = network;
@@ -157,12 +158,21 @@ export class AddressTypeInfo {
     if (this.type === 'v1_p2tr') {
       for (let i = 0; i < vin.length; i++) {
         const v = vin[i];
-        if (v.inner_witnessscript_asm) {
-          this.tapscript = true;
-          const hasAnnex = v.witness[v.witness.length - 1].startsWith('50');
+        const hasAnnex = v.witness[v.witness.length - 1].startsWith('50');
+        const isScriptSpend = v.witness.length > (hasAnnex ? 2 : 1);
+        if (isScriptSpend) {
           const controlBlock = hasAnnex ? v.witness[v.witness.length - 2] : v.witness[v.witness.length - 1];
           const scriptHex = hasAnnex ? v.witness[v.witness.length - 3] : v.witness[v.witness.length - 2];
-          this.processScript(new ScriptInfo('inner_witnessscript', scriptHex, v.inner_witnessscript_asm, v.witness, controlBlock, vinIds?.[i]));
+          const tapleafVersion = parseInt(controlBlock.slice(0, 2), 16) & 0xfe;
+
+          if (tapleafVersion === 0xc0 && v.inner_witnessscript_asm) {
+            this.tapscript = true;
+            this.processScript(new ScriptInfo('inner_witnessscript', scriptHex, v.inner_witnessscript_asm, v.witness, controlBlock, vinIds?.[i]));
+          } else if (this.network === 'liquid' || this.network === 'liquidtestnet' && tapleafVersion === 0xbe) {
+            this.simplicity = true;
+            v.inner_simplicityscript = scriptHex;
+            this.processScript(new ScriptInfo('inner_simplicityscript', scriptHex, null, v.witness, controlBlock, vinIds?.[i]));
+          }
         }
       }
     // for single-script types, if we've seen one input we've seen them all
