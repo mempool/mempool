@@ -7,7 +7,7 @@
       <div class="item">
         <h5 class="card-title" i18n="mining.hashrate">Hashrate (1w)</h5>
         <p class="card-text">
-          {{ hashrates.currentHashrate | amountShortener: 1 : 'H/s' }}
+          {{ hashrates.currentHashrate | amountShortener: 3 : 'H/s' : false : true }}
         </p>
       </div>
       <div class="item">
