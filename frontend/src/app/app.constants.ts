@@ -274,7 +274,12 @@ export const specialBlocks = {
     labelEvent: 'Bitcoin\'s 15th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 0.00152587 BTC per block',
     networks: ['mainnet', 'testnet', 'testnet4'],
-  }
+  },
+  '3477600': {
+    labelEvent: 'Simplicity activation',
+    labelEventCompleted: 'Simplicity has been activated!',
+    networks: ['liquid'],
+  },
 };
 
 export const fiatCurrencies = {
