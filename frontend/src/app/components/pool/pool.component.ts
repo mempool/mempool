@@ -10,9 +10,9 @@ import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { formatNumber } from '@angular/common';
 import { SeoService } from '@app/services/seo.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { StratumJob } from '../../interfaces/websocket.interface';
-import { WebsocketService } from '../../services/websocket.service';
-import { MiningService } from '../../services/mining.service';
+import { StratumJob } from '@interfaces/websocket.interface';
+import { WebsocketService } from '@app/services/websocket.service';
+import { MiningService } from '@app/services/mining.service';
 
 interface AccelerationTotal {
   cost: number,

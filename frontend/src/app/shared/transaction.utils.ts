@@ -3,8 +3,8 @@ import { getVarIntLength, parseMultisigScript, isPoint, parseTapscriptMultisig, 
 import { Transaction, Vin } from '@interfaces/electrs.interface';
 import { CpfpInfo, RbfInfo, TransactionStripped } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
-import { hash, Hash } from './sha256';
-import { AddressType } from './address-utils';
+import { hash, Hash } from '@app/shared/sha256';
+import { AddressType } from '@app/shared/address-utils';
 
 // Bitcoin Core default policy settings
 const MAX_STANDARD_TX_WEIGHT = 400_000;

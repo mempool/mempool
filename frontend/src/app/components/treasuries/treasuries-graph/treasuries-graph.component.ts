@@ -8,7 +8,7 @@ import { StateService } from '@app/services/state.service';
 import { SeriesOption } from 'echarts';
 import { WalletStats } from '@app/shared/wallet-stats';
 import { originalChartColors as chartColors } from '@app/app.constants';
-import { Treasury } from '../../../interfaces/node-api.interface';
+import { Treasury } from '@interfaces/node-api.interface';
 
 
 // export const treasuriesPalette = [

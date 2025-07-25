@@ -1,21 +1,21 @@
 import { Component, OnInit, HostListener, ViewChild, ElementRef, OnDestroy } from '@angular/core';
-import { BytesPipe } from '../../shared/pipes/bytes-pipe/bytes.pipe';
-import { VbytesPipe } from '../../shared/pipes/bytes-pipe/vbytes.pipe';
-import { WuBytesPipe } from '../../shared/pipes/bytes-pipe/wubytes.pipe';
+import { BytesPipe } from '@app/shared/pipes/bytes-pipe/bytes.pipe';
+import { VbytesPipe } from '@app/shared/pipes/bytes-pipe/vbytes.pipe';
+import { WuBytesPipe } from '@app/shared/pipes/bytes-pipe/wubytes.pipe';
 import { Transaction, Vout } from '@interfaces/electrs.interface';
-import { StateService } from '../../services/state.service';
-import { Filter, toFilters } from '../../shared/filters.utils';
-import { decodeRawTransaction, getTransactionFlags, addInnerScriptsToVin, countSigops, fillUnsignedInput } from '../../shared/transaction.utils';
+import { StateService } from '@app/services/state.service';
+import { Filter, toFilters } from '@app/shared/filters.utils';
+import { decodeRawTransaction, getTransactionFlags, addInnerScriptsToVin, countSigops, fillUnsignedInput } from '@app/shared/transaction.utils';
 import { catchError, firstValueFrom, Subscription, switchMap, tap, throwError, timer } from 'rxjs';
-import { WebsocketService } from '../../services/websocket.service';
+import { WebsocketService } from '@app/services/websocket.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { ElectrsApiService } from '../../services/electrs-api.service';
-import { SeoService } from '../../services/seo.service';
+import { ElectrsApiService } from '@app/services/electrs-api.service';
+import { SeoService } from '@app/services/seo.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
-import { ApiService } from '../../services/api.service';
+import { ApiService } from '@app/services/api.service';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
-import { CpfpInfo } from '../../interfaces/node-api.interface';
+import { CpfpInfo } from '@interfaces/node-api.interface';
 
 @Component({
   selector: 'app-transaction-raw',

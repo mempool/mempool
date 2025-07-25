@@ -3,7 +3,7 @@ import { formatDate, formatNumber } from '@angular/common';
 import { EChartsOption } from '@app/graphs/echarts';
 import { StateService } from '@app/services/state.service';
 import { map, Subscription, switchMap } from 'rxjs';
-import { PriceService } from '../../services/price.service';
+import { PriceService } from '@app/services/price.service';
 import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 
 @Component({
