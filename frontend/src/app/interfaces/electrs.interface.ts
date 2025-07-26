@@ -78,6 +78,8 @@ export interface Vin {
   lazy?: boolean;
   // Ord
   isInscription?: boolean;
+  // temporary field for extracted raw simplicity scripts
+  inner_simplicityscript?: string;
 }
 
 interface Issuance {

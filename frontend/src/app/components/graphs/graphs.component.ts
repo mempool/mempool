@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { StateService } from '@app/services/state.service';
 import { WebsocketService } from '@app/services/websocket.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { handleDemoRedirect } from '../../shared/common.utils';
+import { handleDemoRedirect } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-graphs',

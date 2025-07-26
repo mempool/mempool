@@ -1,8 +1,8 @@
 <div class="fee-estimation-container">
   <div class="item">
-    <h5 class="card-title" i18n="dashboard.lbtc-pegs-in-circulation">L-BTC in circulation</h5>
+    <h5 class="card-title" i18n="dashboard.lbtc-pegs-in-circulation">LBTC in circulation</h5>
     <div *ngIf="(currentPeg$ | async) as currentPeg; else loadingData" class="card-text">
-      <div class="fee-text">{{ (+currentPeg.amount) / 100000000 | number: '1.2-2' }} <span>L-BTC</span></div>
+      <div class="fee-text">{{ (+currentPeg.amount) / 100000000 | number: '1.2-2' }} <span>LBTC</span></div>
       <span class="fiat">
         <span><ng-container i18n="shared.as-of-block">As of block</ng-container>&nbsp;<a [routerLink]="['/block', currentPeg.hash]">{{ currentPeg.lastBlockUpdate }}</a></span>
       </span>

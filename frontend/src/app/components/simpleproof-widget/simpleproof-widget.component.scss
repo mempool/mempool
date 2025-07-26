@@ -60,6 +60,14 @@ tr, td, th {
   white-space: nowrap;
 }
 
+.student {
+  width: 50%;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .hash {
   width: 20%;
   max-width: 700px;
@@ -70,9 +78,7 @@ tr, td, th {
 td.hash {
   font-family: monospace;
 }
-.widget .hash {
-  display: none;
-}
+
 @media (max-width: 1200px) {
   .hash {
     display: none;
@@ -93,8 +99,50 @@ td.verified {
 }
 
 .proof {
-  width: 25%;
+  width: 120px;
   padding-left: 0;
+}
+
+.widget {
+  &.id, &.hash {
+    display: none;
+  }
+  &.student {
+    width: 100%;
+  }
+  &.proof {
+    width: 120px;
+  }
+}
+
+.sortable {
+  user-select: none;
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+}
+
+.sort-icons {
+  display: inline-flex;
+  line-height: 1;
+  flex-direction: column;
+  width: 1em;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+
+  fa-icon {
+    transition: color 0.2s ease;
+    margin: -0.25em 0;
+    pointer-events: all;
+    color: var(--secondary);
+    &.active {
+      color: var(--info);
+    }
+  }
 }
 
 .badge-verify {

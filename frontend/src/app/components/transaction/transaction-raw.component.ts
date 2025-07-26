@@ -1,18 +1,21 @@
 import { Component, OnInit, HostListener, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { BytesPipe } from '@app/shared/pipes/bytes-pipe/bytes.pipe';
+import { VbytesPipe } from '@app/shared/pipes/bytes-pipe/vbytes.pipe';
+import { WuBytesPipe } from '@app/shared/pipes/bytes-pipe/wubytes.pipe';
 import { Transaction, Vout } from '@interfaces/electrs.interface';
-import { StateService } from '../../services/state.service';
-import { Filter, toFilters } from '../../shared/filters.utils';
-import { decodeRawTransaction, getTransactionFlags, addInnerScriptsToVin, countSigops } from '../../shared/transaction.utils';
+import { StateService } from '@app/services/state.service';
+import { Filter, toFilters } from '@app/shared/filters.utils';
+import { decodeRawTransaction, getTransactionFlags, addInnerScriptsToVin, countSigops, fillUnsignedInput } from '@app/shared/transaction.utils';
 import { catchError, firstValueFrom, Subscription, switchMap, tap, throwError, timer } from 'rxjs';
-import { WebsocketService } from '../../services/websocket.service';
+import { WebsocketService } from '@app/services/websocket.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { ElectrsApiService } from '../../services/electrs-api.service';
-import { SeoService } from '../../services/seo.service';
+import { ElectrsApiService } from '@app/services/electrs-api.service';
+import { SeoService } from '@app/services/seo.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
-import { ApiService } from '../../services/api.service';
+import { ApiService } from '@app/services/api.service';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
-import { CpfpInfo } from '../../interfaces/node-api.interface';
+import { CpfpInfo } from '@interfaces/node-api.interface';
 
 @Component({
   selector: 'app-transaction-raw',
@@ -23,6 +26,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
 
   pushTxForm: UntypedFormGroup;
   rawHexTransaction: string;
+  psbt: string;
   isLoading: boolean;
   isLoadingPrevouts: boolean;
   isLoadingCpfpInfo: boolean;
@@ -39,6 +43,12 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
   isCoinbase: boolean;
   broadcastSubscription: Subscription;
   fragmentSubscription: Subscription;
+  weightFromMissingSig: number = 0;
+  sizeFromMissingSig: number = 0;
+  missingSignatures: boolean;
+  tooltipSize: string;
+  tooltipVsize: string;
+  tooltipWeight: string;
 
   isMobile: boolean;
   @ViewChild('graphContainer')
@@ -70,6 +80,9 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     public seoService: SeoService,
     public apiService: ApiService,
     public relativeUrlPipe: RelativeUrlPipe,
+    public bytesPipe: BytesPipe,
+    public vbytesPipe: VbytesPipe,
+    public wuBytesPipe: WuBytesPipe,
   ) {}
 
   ngOnInit(): void {
@@ -83,15 +96,15 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.fragmentSubscription = this.route.fragment.subscribe((fragment) => {
       if (fragment) {
         const params = new URLSearchParams(fragment);
-        const hex = params.get('hex');
-        if (hex) {
-          this.pushTxForm.get('txRaw').setValue(hex);
+        const txData = params.get('tx');
+        if (txData) {
+          this.pushTxForm.get('txRaw').setValue(txData);
         }
         const offline = params.get('offline');
         if (offline) {
           this.offlineMode = offline === 'true';
         }
-        if (hex && this.pushTxForm.get('txRaw').value) {
+        if (txData && this.pushTxForm.get('txRaw').value && !this.transaction) {
           this.decodeTransaction();
         }
       }
@@ -102,10 +115,11 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.resetState();
     this.isLoading = true;
     try {
-      const { tx, hex } = decodeRawTransaction(this.pushTxForm.get('txRaw').value.trim(), this.stateService.network);
+      const { tx, hex, psbt } = decodeRawTransaction(this.pushTxForm.get('txRaw').value.trim(), this.stateService.network);
       await this.fetchPrevouts(tx);
+      this.checkSignatures(tx, hex);
       await this.fetchCpfpInfo(tx);
-      this.processTransaction(tx, hex);
+      this.processTransaction(tx, hex, psbt);
     } catch (error) {
       this.error = error.message;
     } finally {
@@ -156,6 +170,45 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
         this.isLoadingPrevouts = false;
       }
     }
+  }
+
+  checkSignatures(transaction: Transaction, hex: string): void {
+    let missingWitnessBytes = 0;
+    let missingNonWitnessBytes = 0;
+
+    let isSegwitTransaction = hex.substring(8, 10) === '00' && hex.substring(10, 12) === '01';
+    let segwitFlagSet = false;
+
+    transaction.vin.forEach(vin => {
+      addInnerScriptsToVin(vin);
+      const result = fillUnsignedInput(vin);
+      vin['_missingSigs'] = result.missingSigs;
+      if (result.addToWitness) {
+        missingWitnessBytes += result.bytes;
+      } else {
+        missingNonWitnessBytes += result.bytes;
+      }
+      if (!isSegwitTransaction && result.addToWitness) {
+        segwitFlagSet = true;
+        isSegwitTransaction = true;
+      }
+    });
+
+    if (segwitFlagSet) { // we just added witness to a legacy transaction: need to add weight corresponding to segwit flag and compact sizes
+      missingWitnessBytes += 2; // marker and flag
+      missingWitnessBytes += transaction.vin.length; // 1 byte compact size per input (assume witness stack count < 253)
+    }
+
+    this.sizeFromMissingSig = missingWitnessBytes + missingNonWitnessBytes;
+    this.weightFromMissingSig = missingWitnessBytes + 4 * missingNonWitnessBytes;
+
+    if (this.weightFromMissingSig) {
+      this.tooltipSize = `Includes ${this.bytesPipe.transform(this.sizeFromMissingSig, 2, undefined, undefined, true)} added for missing signatures`;
+      this.tooltipVsize = `Includes ${this.vbytesPipe.transform(this.weightFromMissingSig / 4, 2, undefined, undefined, true)} added for missing signatures`;
+      this.tooltipWeight = `Includes ${this.wuBytesPipe.transform(this.weightFromMissingSig, 2, undefined, undefined, true)} added for missing signatures`;
+    }
+
+    this.missingSignatures = transaction.vin.some(input => input['_missingSigs'] > 0);
 
     if (this.hasPrevouts) {
       transaction.fee = transaction.vin.some(input => input.is_coinbase)
@@ -163,11 +216,16 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
         : transaction.vin.reduce((fee, input) => {
           return fee + (input.prevout?.value || 0);
         }, 0) - transaction.vout.reduce((sum, output) => sum + output.value, 0);
-      transaction.feePerVsize = transaction.fee / (transaction.weight / 4);
+      transaction.feePerVsize = transaction.fee / ((transaction.weight + this.weightFromMissingSig) / 4);
+      transaction.sigops = countSigops(transaction);
+      this.adjustedVsize = Math.max((transaction.weight + this.weightFromMissingSig) / 4, transaction.sigops * 5);
+      const adjustedFeePerVsize = transaction.fee / this.adjustedVsize;
+      if (adjustedFeePerVsize !== transaction.feePerVsize) {
+        transaction.effectiveFeePerVsize = adjustedFeePerVsize;
+        this.cpfpInfo = { ancestors: [], effectiveFeePerVsize: adjustedFeePerVsize };
+        this.hasEffectiveFeeRate = true;
+      }
     }
-
-    transaction.vin.forEach(addInnerScriptsToVin);
-    transaction.sigops = countSigops(transaction);
   }
 
   async fetchCpfpInfo(transaction: Transaction): Promise<void> {
@@ -177,7 +235,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
         this.isLoadingCpfpInfo = true;
         const cpfpInfo: CpfpInfo[] = await firstValueFrom(this.apiService.getCpfpLocalTx$([{
           txid: transaction.txid,
-          weight: transaction.weight,
+          weight: transaction.weight + this.weightFromMissingSig,
           sigops: transaction.sigops,
           fee: transaction.fee,
           vin: transaction.vin,
@@ -199,23 +257,22 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     }
   }
 
-  processTransaction(tx: Transaction, hex: string): void {
+  processTransaction(tx: Transaction, hex: string, psbt: string): void {
     this.transaction = tx;
     this.rawHexTransaction = hex;
+    this.psbt = psbt;
 
     this.isCoinbase = this.transaction.vin[0].is_coinbase;
 
-    // Update URL fragment with hex data
+    // Update URL fragment with hex or psbt data
     this.router.navigate([], {
       fragment: this.getCurrentFragments(),
       replaceUrl: true
     });
 
-    this.transaction.flags = getTransactionFlags(this.transaction, this.cpfpInfo, null, null, this.stateService.network);
+    const txHeight = this.transaction.status?.block_height || (this.stateService.latestBlockHeight >= 0 ? this.stateService.latestBlockHeight + 1 : null);
+    this.transaction.flags = getTransactionFlags(this.transaction, this.cpfpInfo, null, txHeight, this.stateService.network);
     this.filters = this.transaction.flags ? toFilters(this.transaction.flags).filter(f => f.txPage) : [];
-    if (this.transaction.sigops >= 0) {
-      this.adjustedVsize = Math.max(this.transaction.weight / 4, this.transaction.sigops * 5);
-    }
 
     this.setupGraph();
     this.setFlowEnabled();
@@ -266,6 +323,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
   resetState() {
     this.transaction = null;
     this.rawHexTransaction = null;
+    this.psbt = null;
     this.error = null;
     this.errorPrevouts = null;
     this.errorBroadcast = null;
@@ -283,6 +341,12 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.filters = [];
     this.hasPrevouts = false;
     this.missingPrevouts = [];
+    this.weightFromMissingSig = 0;
+    this.sizeFromMissingSig = 0;
+    this.missingSignatures = false;
+    this.tooltipSize = null;
+    this.tooltipVsize = null;
+    this.tooltipWeight = null;
     this.stateService.markBlock$.next({});
     this.mempoolBlocksSubscription?.unsubscribe();
     this.broadcastSubscription?.unsubscribe();
@@ -345,7 +409,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
       params.set('offline', 'true');
     }
     if (this.rawHexTransaction) {
-      params.set('hex', this.rawHexTransaction);
+      params.set('tx', this.psbt || this.rawHexTransaction); // use PSBT in fragment if available
     }
     return params.toString();
   }

@@ -55,7 +55,7 @@ class Audit {
         } else if (mempool[txid]?.lastBoosted != null && (now - (mempool[txid]?.lastBoosted || 0)) <= PROPAGATION_MARGIN) {
           // tx was recently cpfp'd, miner may not have the latest effective rate
           fresh.push(txid);
-        } else {
+        } else if (mempool[txid].effectiveFeePerVsize >= 1) { // transactions paying < 1 sat/vbyte are never considered censored
           isCensored[txid] = true;
         }
         displacedWeight += mempool[txid]?.weight || 0;

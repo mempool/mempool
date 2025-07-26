@@ -14,8 +14,8 @@ import { StratumList } from '@components/stratum/stratum-list/stratum-list.compo
 import { ServerHealthComponent } from '@components/server-health/server-health.component';
 import { ServerStatusComponent } from '@components/server-health/server-status.component';
 import { FaucetComponent } from '@components/faucet/faucet.component';
-import { SimpleProofWidgetComponent } from './components/simpleproof-widget/simpleproof-widget.component';
-import { SimpleProofCuboWidgetComponent } from './components/simpleproof-widget/simpleproof-cubo-widget.component';
+import { SimpleProofWidgetComponent } from '@components/simpleproof-widget/simpleproof-widget.component';
+import { SimpleProofCuboWidgetComponent } from '@components/simpleproof-widget/simpleproof-cubo-widget.component';
 
 const browserWindow = window || {};
 // @ts-ignore

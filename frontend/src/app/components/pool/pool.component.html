@@ -98,7 +98,7 @@
                     </thead>
                     <tbody>
                       <td class="text-center"><app-amount [satoshis]="poolStats.totalReward" digitsInfo="1.0-0" [noFiat]="true" [ignoreViewMode]="true"></app-amount></td>
-                      <td class="text-center">{{ poolStats.estimatedHashrate | amountShortener : 1 : 'H/s' }}</td>
+                      <td class="text-center">{{ poolStats.estimatedHashrate | amountShortener : 3 : 'H/s' : false : true }}</td>
                       <td class="text-center" *ngIf="auditAvailable; else emptyTd"><span class="health-badge badge" [class.badge-success]="poolStats.avgBlockHealth >= 99"
                           [class.badge-warning]="poolStats.avgBlockHealth >= 75 && poolStats.avgBlockHealth < 99" [class.badge-danger]="poolStats.avgBlockHealth < 75"
                           *ngIf="poolStats.avgBlockHealth != null; else nullHealth">{{ poolStats.avgBlockHealth }}%</span>
@@ -220,7 +220,7 @@
                     <thead>
                       <tr>
                         <th class="data-title clip text-center coinbase" i18n="latest-blocks.coinbasetag">
-                          <a class="title-link" [routerLink]="['/tx/preview' | relativeUrl]" [fragment]="'offline=true&hex=' + job.coinbase">
+                          <a class="title-link" [routerLink]="['/tx/preview' | relativeUrl]" [fragment]="'offline=true&tx=' + job.coinbase">
                             Coinbase tag <span>&nbsp;</span>
                             <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
                           </a>

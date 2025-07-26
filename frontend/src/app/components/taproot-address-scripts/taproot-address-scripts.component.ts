@@ -7,7 +7,7 @@ import { ScriptInfo } from '@app/shared/script.utils';
 import { compactSize, taggedHash, uint8ArrayToHexString } from '@app/shared/transaction.utils';
 import { StateService } from '@app/services/state.service';
 import { AsmStylerPipe } from '@app/shared/pipes/asm-styler/asm-styler.pipe';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 
 interface TaprootTree {
   name: string; // the TapBranch hash or TapLeaf script hash
@@ -315,6 +315,12 @@ export class TaprootAddressScriptsComponent implements OnChanges {
             asmContent = `
               <div style="margin-top: 10px; border-top: 1px solid #333; padding-top: 5px; word-break: break-all; white-space: normal; font-family: monospace; font-size: 12px;">
                 <td>${asm} ${node.value.script.asm.length > 300 ? '...' : ''}</td>
+              </div>`;
+          } else if (node.value?.script?.type === 'inner_simplicityscript') {
+            const hex = node.value.script.hex.slice(0, 300);
+            asmContent = `
+              <div style="margin-top: 10px; border-top: 1px solid #333; padding-top: 5px; word-break: break-all; white-space: normal; font-family: monospace; font-size: 12px;">
+                <td>Simplicity script: ${hex} ${node.value.script.hex.length > 300 ? '...' : ''}</td>
               </div>`;
           }
 
