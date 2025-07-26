@@ -342,16 +342,20 @@
                           <button (click)="toggleOrdData(tx.txid, 'vout', vindex)" type="button" class="btn btn-sm badge badge-ord">Runestone</button>
                         } @else {
                           <a placement="bottom" style="cursor: pointer;">
-                            <span *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" class="badge badge-secondary scriptmessage" (click)="toggleShowFullOpReturnPreview(vindex)">{{ vout.scriptpubkey_asm | hex2ascii | slice:0:200 }}</span>
-                            <ng-container *ngIf="(showDetails$ | async) === false">
-                              @if ((vout.scriptpubkey_asm | hex2ascii).length > 200) {
-                                @if (!showFullOpReturnPreview[vindex]) {
-                                  <span class="badge badge-primary" (click)="toggleShowFullOpReturnPreview(vindex)">Show more</span>
-                                } @else {
-                                  <span class="badge badge-primary" (click)="toggleShowFullOpReturnPreview(vindex)">Show less</span>
+                            @if ((vout.scriptpubkey_asm | hex2ascii).length > 200) {
+                              <span *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" class="badge badge-secondary scriptmessage opreturn-msg" (click)="toggleShowFullOpReturnPreview(vindex)">{{ vout.scriptpubkey_asm | hex2ascii | slice:0:200 }}</span>
+                              <ng-container *ngIf="(showDetails$ | async) === false">
+                                @if ((vout.scriptpubkey_asm | hex2ascii).length > 200) {
+                                  @if (!showFullOpReturnPreview[vindex]) {
+                                    <span class="badge badge-primary" (click)="toggleShowFullOpReturnPreview(vindex)">Show more</span>
+                                  } @else {
+                                    <span class="badge badge-primary" (click)="toggleShowFullOpReturnPreview(vindex)">Show less</span>
+                                  }
                                 }
-                              }
-                            </ng-container>
+                              </ng-container>
+                            } @else {
+                              <span *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" [ngbTooltip]="vout.scriptpubkey_asm | hex2ascii" class="badge badge-secondary scriptmessage">{{ vout.scriptpubkey_asm | hex2ascii }}</span>
+                            }
                           </a>
                         }
                       </ng-template>

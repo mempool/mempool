@@ -553,9 +553,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   toggleShowFullOpReturnPreview(voutIndex: number): void {
-    console.log('toggleShowFullOpReturnPreview', voutIndex);
     this.showFullOpReturnPreview[voutIndex] = !this.showFullOpReturnPreview[voutIndex];
-    console.log(this.showFullOpReturnPreview[voutIndex]);
   }
 
   toggleOrdData(txid: string, type: 'vin' | 'vout', index: number) {
