@@ -66,6 +66,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   showFullScriptPubkeyAsm: { [voutIndex: number]: boolean } = {};
   showFullScriptPubkeyHex: { [voutIndex: number]: boolean } = {};
   showFullOpReturnData: { [voutIndex: number]: boolean } = {};
+  showFullOpReturnPreview: { [voutIndex: number]: boolean } = {};
   showOrdData: { [key: string]: { show: boolean; inscriptions?: Inscription[]; runestone?: Runestone, runeInfo?: { [id: string]: { etching: Etching; txid: string; } }; } } = {};
   similarityMatches: Map<string, Map<string, { score: number, match: AddressMatch, group: number }>> = new Map();
 
@@ -549,6 +550,12 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
 
   toggleShowFullOpReturnData(voutIndex: number): void {
     this.showFullOpReturnData[voutIndex] = !this.showFullOpReturnData[voutIndex];
+  }
+
+  toggleShowFullOpReturnPreview(voutIndex: number): void {
+    console.log('toggleShowFullOpReturnPreview', voutIndex);
+    this.showFullOpReturnPreview[voutIndex] = !this.showFullOpReturnPreview[voutIndex];
+    console.log(this.showFullOpReturnPreview[voutIndex]);
   }
 
   toggleOrdData(txid: string, type: 'vin' | 'vout', index: number) {
