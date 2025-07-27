@@ -13,7 +13,7 @@
       <label class="label" for="offline-mode">
         <span i18n="transaction.fetch-prevout-data">Fetch missing prevouts</span>
       </label>
-      <p *ngIf="error" class="red-color d-inline">Error decoding transaction, reason: {{ error }}</p>
+      <p *ngIf="error" class="red-color d-inline" i18n="transaction.error-decoding">Error decoding transaction, reason: {{ error }}</p>
     </form>
   }
 
