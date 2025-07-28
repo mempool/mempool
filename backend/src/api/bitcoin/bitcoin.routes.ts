@@ -99,7 +99,7 @@ class BitcoinRoutes {
   }
 
   private async generateHealthReport(req: Request, res: Response): Promise<void> {
-    let response = {
+    const response = {
       core: {
         height: -1
       },
@@ -110,10 +110,10 @@ class BitcoinRoutes {
           blocks: {
             count: -1,
             progress: -1,
-            withCpfp: {
+            withCpfp: req.query.withCpfp ? { // this is very slow to generate on the fly so we make it optional
               count: -1,
               progress: -1,
-            },
+            } : undefined,
             withCoinStats: {
               count: -1,
               progress: -1,
@@ -122,7 +122,7 @@ class BitcoinRoutes {
         }
       },
     };
-    
+
     try {
       // Bitcoin Core
       let bitcoinCoreIndexes: number | string;
@@ -147,8 +147,13 @@ class BitcoinRoutes {
         const computeProgress = (count: number): number => Math.min(1.0, Math.round(count / indexingBlockAmount * 100) / 100);
         response.mempool.indexing.blocks.count = await BlocksRepository.$getIndexedBlockCount();
         response.mempool.indexing.blocks.progress = computeProgress(response.mempool.indexing.blocks.count);
-        response.mempool.indexing.blocks.withCpfp.count = await BlocksRepository.$getIndexedCpfpBlockCount();
-        response.mempool.indexing.blocks.withCpfp.progress = computeProgress(response.mempool.indexing.blocks.withCpfp.count);
+        if (req.query.withCpfp) {
+          const withCpfpCount = await BlocksRepository.$getIndexedCpfpBlockCount();
+          response.mempool.indexing.blocks['withCpfp'] = {
+            count: withCpfpCount,
+            progress: computeProgress(withCpfpCount)
+          };
+        }
         response.mempool.indexing.blocks.withCoinStats.count = await BlocksRepository.$getIndexedCoinStatsBlockCount();
         response.mempool.indexing.blocks.withCoinStats.progress = computeProgress(response.mempool.indexing.blocks.withCoinStats.count);
       }
