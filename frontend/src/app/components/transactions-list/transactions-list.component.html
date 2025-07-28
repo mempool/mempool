@@ -120,7 +120,7 @@
                   </div>
                 </td>
                 <td class="text-right nowrap amount" [class]="{large: tx.largeInput}">
-                  <button *ngIf="vin.isInscription" (click)="toggleOrdData(tx.txid, 'vin', vindex)" type="button" class="btn btn-sm badge badge-ord primary" style="margin-right: 10px;">Inscription</button>
+                  <button *ngIf="vin.isInscription" (click)="toggleOrdData(tx.txid, 'vin', vindex)" type="button" class="btn btn-sm badge badge-ord primary" style="margin-right: 10px;" i18n="transaction.inscription-tag">Inscription</button>
                   <ng-template [ngIf]="vin.prevout && vin.prevout.asset && vin.prevout.asset !== nativeAssetId" [ngIfElse]="defaultOutput">
                     <div *ngIf="assetsMinimal && assetsMinimal[vin.prevout.asset] else assetVinNotFound">
                       <ng-container *ngTemplateOutlet="assetBox; context:{ $implicit: vin.prevout }"></ng-container>
@@ -233,20 +233,34 @@
                         <td style="text-align: left;" [innerHTML]="vin.inner_redeemscript_asm | asmStyler"></td>
                       </tr>
                       <tr *ngIf="vin.inner_witnessscript_asm">
-                        <td *ngIf="vin.prevout && vin.prevout.scriptpubkey_type == 'v1_p2tr'; else p2wsh" i18n="transactions-list.p2tr-tapscript">P2TR tapscript</td>
-                        <ng-template #p2wsh>
-                          <td i18n="transactions-list.p2wsh-witness-script">P2WSH witness script</td>
-                        </ng-template>
-                        <td style="text-align: left;">
-                          <div [innerHTML]="vin.inner_witnessscript_asm | asmStyler: (showFullScript[vindex] ? 0 : 1000)"></div>
-                          <div *ngIf="vin.inner_witnessscript_asm.length > 1000" style="display: flex;">
-                            <span *ngIf="!showFullScript[vindex]">...</span>
-                            <label class="btn btn-sm btn-primary mt-2" (click)="toggleShowFullScript(vindex)" style="margin-left: auto;">
-                              <span *ngIf="!showFullScript[vindex]" i18n="show-all">Show all</span>
-                              <span *ngIf="showFullScript[vindex]" i18n="show-less">Show less</span>
-                            </label>
-                          </div>
-                        </td>
+                        @if (isLiquid && vin.inner_simplicityscript) {
+                          <td i18n="transactions-list.p2tr-simplicity-script">P2TR Simplicity script</td>
+                          <td style="text-align: left;">
+                            <div [innerHTML]="showFullScript[vindex] ? vin.inner_simplicityscript : vin.inner_simplicityscript.slice(0, 1000)"></div>
+                            <div *ngIf="vin.inner_simplicityscript.length > 1000" style="display: flex;">
+                              <span *ngIf="!showFullScript[vindex]">...</span>
+                              <label class="btn btn-sm btn-primary mt-2" (click)="toggleShowFullScript(vindex)" style="margin-left: auto;">
+                                <span *ngIf="!showFullScript[vindex]" i18n="show-all">Show all</span>
+                                <span *ngIf="showFullScript[vindex]" i18n="show-less">Show less</span>
+                              </label>
+                            </div>
+                          </td>
+                        } @else {
+                          <td *ngIf="vin.prevout && vin.prevout.scriptpubkey_type == 'v1_p2tr'; else p2wsh" i18n="transactions-list.p2tr-tapscript">P2TR tapscript</td>
+                          <ng-template #p2wsh>
+                            <td i18n="transactions-list.p2wsh-witness-script">P2WSH witness script</td>
+                          </ng-template>
+                          <td style="text-align: left;">
+                            <div [innerHTML]="vin.inner_witnessscript_asm | asmStyler: (showFullScript[vindex] ? 0 : 1000)"></div>
+                            <div *ngIf="vin.inner_witnessscript_asm.length > 1000" style="display: flex;">
+                              <span *ngIf="!showFullScript[vindex]">...</span>
+                              <label class="btn btn-sm btn-primary mt-2" (click)="toggleShowFullScript(vindex)" style="margin-left: auto;">
+                                <span *ngIf="!showFullScript[vindex]" i18n="show-all">Show all</span>
+                                <span *ngIf="showFullScript[vindex]" i18n="show-less">Show less</span>
+                              </label>
+                            </div>
+                          </td>
+                        }
                       </tr>
                       <tr>
                         <td i18n="transactions-list.nsequence">nSequence</td>

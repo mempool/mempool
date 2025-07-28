@@ -25,6 +25,8 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges, OnDestr
 
   simple: boolean = false;
   data: number[][];
+  maxValue: number = 0;
+  minValue: number = 0;
   labelInterval: number = 50;
   smallScreen: boolean = window.innerWidth < 450;
 
@@ -58,6 +60,8 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges, OnDestr
   prepareChart(): void {
     if (this.simple) {
       this.data = this.feeRange.map((rate, index) => [index * 10, rate]);
+      this.minValue = this.data.length ? this.data.reduce((min, val) => Math.min(min, val[1]), Infinity) : 0;
+      this.maxValue = this.data.length ? this.data.reduce((max, val) => Math.max(max, val[1]), 0) : 0;
       this.labelInterval = 1;
       return;
     }
@@ -66,7 +70,9 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges, OnDestr
       return;
     }
     const samples = [];
-    const txs = this.transactions.map(tx => { return { vsize: tx.vsize, rate: tx.rate || (tx.fee / tx.vsize) }; }).sort((a, b) => { return b.rate - a.rate; });
+    const txs = this.transactions.map(tx => { return { vsize: tx.vsize, rate: tx.rate ?? (tx.fee / tx.vsize) }; }).sort((a, b) => { return b.rate - a.rate; });
+    this.maxValue = txs.length ? txs.reduce((max, tx) => Math.max(max, tx.rate), 0) : 0;
+    this.minValue = txs.length ? txs.reduce((min, tx) => Math.min(min, tx.rate), Infinity) : 0;
     const maxBlockVSize = this.stateService.env.BLOCK_WEIGHT_UNITS / 4;
     const sampleInterval = maxBlockVSize / this.numSamples;
     let cumVSize = 0;
@@ -83,7 +89,7 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges, OnDestr
       }
 
       while (txs[txIndex] && nextSample < cumVSize + txs[txIndex].vsize) {
-        samples.push([(1 - (sampleIndex / this.numSamples)) * 100, txs[txIndex].rate || 0.000001]);
+        samples.push([(1 - (sampleIndex / this.numSamples)) * 100, txs[txIndex].rate ?? 0.000001]);
         nextSample += sampleInterval;
         sampleIndex++;
       }
@@ -121,8 +127,8 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges, OnDestr
       },
       yAxis: {
         type: 'log',
-        min: 1,
-        max: this.data.reduce((min, val) => Math.max(min, val[1]), 1),
+        min: this.minValue >= 1 ? 1 : 0.1,
+        max: this.maxValue,
         // name: 'Effective Fee Rate s/vb',
         // nameLocation: 'middle',
         splitLine: {
@@ -138,7 +144,15 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges, OnDestr
             const unitValue = this.weightMode ? value / 4 : value;
             const selectedPowerOfTen = selectPowerOfTen(unitValue);
             const scaledValue = unitValue / selectedPowerOfTen.divider;
-            const newVal = scaledValue >= 100 ? Math.round(scaledValue) : scaledValue.toPrecision(3);
+            let newVal = '';
+            switch (true) {
+              case scaledValue >= 100:
+                return Math.round(scaledValue).toString();
+              case scaledValue >= 10:
+                return scaledValue.toFixed(1);
+              default:
+                return scaledValue.toFixed(2);
+            }
             return `${newVal}${selectedPowerOfTen.unit}`;
           },
         },
