@@ -267,6 +267,26 @@
           <context context-type="linenumber">14</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="355c7916ce5b451444ac730e335fb7a8f45ad8ee" datatype="html">
+        <source>Be your own explorer</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
+          <context context-type="linenumber">64</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
+          <context context-type="linenumber">89</context>
+        </context-group>
+        <note priority="1" from="description">shared.be-your-own-explorer</note>
+      </trans-unit>
       <trans-unit id="a24b1c6a9c4334ba204e4cec2dd9f32ea33d043f" datatype="html">
         <source>Enterprise Sponsors 🚀</source>
         <context-group purpose="location">
@@ -996,19 +1016,19 @@
         </context-group>
         <note priority="1" from="description">accelerator.confirmed-acceleration-with-miners-third-party</note>
       </trans-unit>
-      <trans-unit id="fc467176b90af7bbb5150b7c79c1048753745990" datatype="html">
-        <source><x id="START_LINK" ctype="x-a" equiv-text="Get a receipt.&lt;/a&gt;&lt;/span&gt;"/>Get a receipt.<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
+      <trans-unit id="54e27b9841ce10e2650f61dbaa3a07a08a3e9fac" datatype="html">
+        <source>Get a receipt.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-checkout.component.html</context>
-          <context context-type="linenumber">594,595</context>
+          <context context-type="linenumber">594</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker.component.html</context>
-          <context context-type="linenumber">146,147</context>
+          <context context-type="linenumber">146</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker.component.html</context>
-          <context context-type="linenumber">180,181</context>
+          <context context-type="linenumber">180</context>
         </context-group>
         <note priority="1" from="description">accelerator.receipt-label</note>
       </trans-unit>
@@ -1074,6 +1094,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">87</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
+          <context context-type="linenumber">178</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tracker/tracker-bar.component.html</context>
@@ -5958,14 +5982,6 @@
         </context-group>
         <note priority="1" from="description">1m</note>
       </trans-unit>
-      <trans-unit id="2796adb5348671bc16fda1227f538f5d6ad70af5" datatype="html">
-        <source>Next block</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
-          <context context-type="linenumber">178</context>
-        </context-group>
-        <note priority="1" from="description">pool.next_block</note>
-      </trans-unit>
       <trans-unit id="d7bb114523b22ee8330164224b11d75e62966539" datatype="html">
         <source>Coinbase tag</source>
         <context-group purpose="location">
@@ -7750,21 +7766,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/group/group.component.html</context>
           <context context-type="linenumber">17</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="4a644e4f9d05a952008365bd18185c6251aa89b7" datatype="html">
-        <source>Websocket service</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">127</context>
-        </context-group>
-        <note priority="1" from="description">api-docs.title-websocket</note>
-      </trans-unit>
-      <trans-unit id="a9641728698315cfe217d6cbee60471dc0c0af26" datatype="html">
-        <source>Payload</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">141</context>
         </context-group>
       </trans-unit>
       <trans-unit id="0a668c1c2a17e557a18fc06619998e002f50df1e" datatype="html">
@@ -9853,18 +9854,6 @@
         <note priority="1" from="description">sat/WU</note>
         <note priority="1" from="meaning">shared.sat-weight-units</note>
       </trans-unit>
-      <trans-unit id="355c7916ce5b451444ac730e335fb7a8f45ad8ee" datatype="html">
-        <source>Be your own explorer</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
-          <context context-type="linenumber">20</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
-          <context context-type="linenumber">64</context>
-        </context-group>
-        <note priority="1" from="description">shared.be-your-own-explorer</note>
-      </trans-unit>
       <trans-unit id="5ce2bda884ea801c34a1a6c23627d9a5e08f0a82" datatype="html">
         <source>My Account</source>
         <context-group purpose="location">
@@ -9949,14 +9938,6 @@
           <context context-type="linenumber">88</context>
         </context-group>
         <note priority="1" from="description">faq.why-isnt-my-transaction-confirming</note>
-      </trans-unit>
-      <trans-unit id="51e29f32829c8a9997eb4fbf73d5a9ad17bd5bfa" datatype="html">
-        <source>Be your own explorer™</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
-          <context context-type="linenumber">89</context>
-        </context-group>
-        <note priority="1" from="description">faq.be-your-own-explorer</note>
       </trans-unit>
       <trans-unit id="03f766a5a2abdbfbdcc2b6135691b9fb1f2ed530" datatype="html">
         <source>More FAQs »</source>
