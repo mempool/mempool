@@ -86,7 +86,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`:@@meta.title.preview-tx:Preview Transaction`);
+    this.seoService.setTitle($localize`:@@d7f92e6fe26fba6fff568cbdae5db4a5c8c6a55c:Preview Transaction`);
     this.seoService.setDescription($localize`:@@meta.description.preview-tx:Preview a transaction to the Bitcoin${seoDescriptionNetwork(this.stateService.network)} network using the transaction's raw hex data.`);
     this.websocketService.want(['blocks', 'mempool-blocks']);
     this.pushTxForm = this.formBuilder.group({

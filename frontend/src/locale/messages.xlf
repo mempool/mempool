@@ -1111,11 +1111,39 @@
           <context context-type="linenumber">91</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="1158292946432597388" datatype="html">
-        <source>accelerated</source>
+      <trans-unit id="b484583f0ce10f3341ab36750d05271d9d22c9a1" datatype="html">
+        <source>Accelerated</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-checkout/accelerate-fee-graph.component.ts</context>
           <context context-type="linenumber">91</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline-tooltip.component.html</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline.component.html</context>
+          <context context-type="linenumber">92</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline.component.html</context>
+          <context context-type="linenumber">96</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
+          <context context-type="linenumber">89</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
+          <context context-type="linenumber">97</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction-details/transaction-details.component.html</context>
+          <context context-type="linenumber">201</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/filters.utils.ts</context>
+          <context context-type="linenumber">100</context>
         </context-group>
       </trans-unit>
       <trans-unit id="aa28c3afcb8b1a556fc1e1842e48a57f24fd643f" datatype="html">
@@ -1211,38 +1239,6 @@
         </context-group>
         <note priority="1" from="description">Transaction first seen</note>
         <note priority="1" from="meaning">transaction.first-seen</note>
-      </trans-unit>
-      <trans-unit id="b484583f0ce10f3341ab36750d05271d9d22c9a1" datatype="html">
-        <source>Accelerated</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline-tooltip.component.html</context>
-          <context context-type="linenumber">16</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline.component.html</context>
-          <context context-type="linenumber">92</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/acceleration-timeline/acceleration-timeline.component.html</context>
-          <context context-type="linenumber">96</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
-          <context context-type="linenumber">89</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
-          <context context-type="linenumber">97</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction-details/transaction-details.component.html</context>
-          <context context-type="linenumber">201</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/shared/filters.utils.ts</context>
-          <context context-type="linenumber">100</context>
-        </context-group>
-        <note priority="1" from="description">transaction.audit.accelerated</note>
       </trans-unit>
       <trans-unit id="65d447765db0bf3390e9b3ecce142bf34bb602a3" datatype="html">
         <source>Mined</source>
@@ -3645,6 +3641,10 @@
           <context context-type="sourcefile">src/app/services/api.service.ts</context>
           <context context-type="linenumber">288</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/address-type/address-type.component.html</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
         <note priority="1" from="description">unknown</note>
       </trans-unit>
       <trans-unit id="b2cb12c1680a46464cae5aa0d0d1d6914733a75d" datatype="html">
@@ -4165,6 +4165,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">282</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/confirmations/confirmations.component.html</context>
+          <context context-type="linenumber">18</context>
         </context-group>
         <note priority="1" from="description">Unconfirmed count</note>
         <note priority="1" from="meaning">dashboard.unconfirmed</note>
@@ -4964,6 +4968,10 @@
           <context context-type="sourcefile">src/app/lightning/nodes-channels-map/nodes-channels-map.component.html</context>
           <context context-type="linenumber">20</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-channels-map/nodes-channels-map.component.ts</context>
+          <context context-type="linenumber">73</context>
+        </context-group>
         <note priority="1" from="description">lightning.nodes-channels-world-map</note>
       </trans-unit>
       <trans-unit id="cad77115d6fd3adb4383841223f9feae57e1ee86" datatype="html">
@@ -5739,11 +5747,15 @@
         </context-group>
         <note priority="1" from="description">mining.all-miners</note>
       </trans-unit>
-      <trans-unit id="mining.mining-pools" datatype="html">
+      <trans-unit id="fe5317c6c60dd7e0e86f04d22f566f67cf04d404" datatype="html">
         <source>Mining Pools</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">59</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
+          <context context-type="linenumber">47</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.pool-ranking" datatype="html">
@@ -6060,6 +6072,10 @@
           <context context-type="linenumber">8</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/push-transaction/push-transaction.component.ts</context>
+          <context context-type="linenumber">57</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">77</context>
         </context-group>
@@ -6150,13 +6166,6 @@
           <context context-type="linenumber">29</context>
         </context-group>
         <note priority="1" from="description">test-tx.rejection-reason</note>
-      </trans-unit>
-      <trans-unit id="meta.title.push-tx" datatype="html">
-        <source>Broadcast Transaction</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/push-transaction/push-transaction.component.ts</context>
-          <context context-type="linenumber">57</context>
-        </context-group>
       </trans-unit>
       <trans-unit id="meta.description.push-tx" datatype="html">
         <source>Broadcast a transaction to the <x id="PH" equiv-text="this.stateService.network===&apos;liquid&apos;||this.stateService.network===&apos;liquidtestnet&apos;?&apos;Liquid&apos;:&apos;Bitcoin&apos;"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> network using the transaction&apos;s hash.</source>
@@ -6389,14 +6398,6 @@
           <context context-type="linenumber">39</context>
         </context-group>
         <note priority="1" from="description">search.bitcoin-addresses</note>
-      </trans-unit>
-      <trans-unit id="fe5317c6c60dd7e0e86f04d22f566f67cf04d404" datatype="html">
-        <source>Mining Pools</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
-          <context context-type="linenumber">47</context>
-        </context-group>
-        <note priority="1" from="description">search.mining-pools</note>
       </trans-unit>
       <trans-unit id="67f25165b857428d046fe5eb67fc44c5c3d94e87" datatype="html">
         <source>Lightning Nodes</source>
@@ -6960,6 +6961,10 @@
           <context context-type="linenumber">25</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction-raw.component.ts</context>
+          <context context-type="linenumber">89</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">79</context>
         </context-group>
@@ -7167,21 +7172,6 @@
         </context-group>
         <note priority="1" from="description">Transaction Sigops</note>
         <note priority="1" from="meaning">transaction.sigops</note>
-      </trans-unit>
-      <trans-unit id="4872776e00a30a01a5ccbd320fe5b1352a927d22" datatype="html">
-        <source> Loading <x id="INTERPOLATION" equiv-text="{{ isLoadingPrevouts ? &apos;transaction prevouts&apos; : isLoadingCpfpInfo ? &apos;CPFP&apos; : &apos;&apos; }}"/> </source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction-raw.component.html</context>
-          <context context-type="linenumber">228,230</context>
-        </context-group>
-        <note priority="1" from="description">transaction.error.loading-prevouts</note>
-      </trans-unit>
-      <trans-unit id="meta.title.preview-tx" datatype="html">
-        <source>Preview Transaction</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction-raw.component.ts</context>
-          <context context-type="linenumber">89</context>
-        </context-group>
       </trans-unit>
       <trans-unit id="meta.description.preview-tx" datatype="html">
         <source>Preview a transaction to the Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> network using the transaction&apos;s raw hex data.</source>
@@ -7720,12 +7710,20 @@
           <context context-type="linenumber">364</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
+          <context context-type="linenumber">133</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">102</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.html</context>
           <context context-type="linenumber">52</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
+          <context context-type="linenumber">123</context>
         </context-group>
         <note priority="1" from="description">lightning.indexing-in-progress</note>
       </trans-unit>
@@ -9045,13 +9043,6 @@
         </context-group>
         <note priority="1" from="description">lightning.tor-nodes-excluded</note>
       </trans-unit>
-      <trans-unit id="8199511328474154549" datatype="html">
-        <source>Lightning Nodes Channels World Map</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/nodes-channels-map/nodes-channels-map.component.ts</context>
-          <context context-type="linenumber">73</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="meta.description.lightning.node-map" datatype="html">
         <source>See the channels of non-Tor Lightning network nodes visualized on a world map. Hover/tap on points on the map for node names and details.</source>
         <context-group purpose="location">
@@ -9086,17 +9077,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">74</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="6391724349488018234" datatype="html">
-        <source>Indexing in progress</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
-          <context context-type="linenumber">133</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
-          <context context-type="linenumber">123</context>
         </context-group>
       </trans-unit>
       <trans-unit id="599038141003770125" datatype="html">
@@ -9797,14 +9777,6 @@
         </context-group>
         <note priority="1" from="description">address.bare-multisig</note>
       </trans-unit>
-      <trans-unit id="290e4c9ad42dc6e9176656c864a5faed8053f406" datatype="html">
-        <source>unknown</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/shared/components/address-type/address-type.component.html</context>
-          <context context-type="linenumber">27</context>
-        </context-group>
-        <note priority="1" from="description">unknown</note>
-      </trans-unit>
       <trans-unit id="8e623d3cfecb7c560c114390db53c1f430ffd0de" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> confirmation</source>
         <context-group purpose="location">
@@ -9831,15 +9803,6 @@
         </context-group>
         <note priority="1" from="description">Transaction replaced state</note>
         <note priority="1" from="meaning">transaction.replaced</note>
-      </trans-unit>
-      <trans-unit id="ef772ce5cf98a47b29175e3d46b8a9816c7990a2" datatype="html">
-        <source>Unconfirmed</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/shared/components/confirmations/confirmations.component.html</context>
-          <context context-type="linenumber">18</context>
-        </context-group>
-        <note priority="1" from="description">Transaction unconfirmed state</note>
-        <note priority="1" from="meaning">transaction.unconfirmed</note>
       </trans-unit>
       <trans-unit id="57a6f49237ac457ecc67fabdf1361a112ccdbf93" datatype="html">
         <source>sat/WU</source>
