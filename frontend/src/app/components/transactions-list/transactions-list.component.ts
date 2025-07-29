@@ -342,10 +342,10 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
               const isScriptSpend = vin.witness.length > (hasAnnex ? 2 : 1);
               if (isScriptSpend) {
                 const controlBlock = hasAnnex ? vin.witness[vin.witness.length - 2] : vin.witness[vin.witness.length - 1];
-                const scriptHex = hasAnnex ? vin.witness[vin.witness.length - 3] : vin.witness[vin.witness.length - 2];
                 const tapleafVersion = parseInt(controlBlock.slice(0, 2), 16) & 0xfe;
                 // simplicity script spend
                 if (tapleafVersion === 0xbe) {
+                  const scriptHex = vin.witness[1]; // simplicity program is the second witness element
                   vin.inner_simplicityscript = scriptHex;
                 }
               }
