@@ -346,8 +346,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
                 const tapleafVersion = parseInt(controlBlock.slice(0, 2), 16) & 0xfe;
                 // simplicity script spend
                 if (tapleafVersion === 0xbe) {
-                  const scriptHex = vin.witness[1]; // simplicity program is the second witness element
-                  vin.inner_simplicityscript = scriptHex;
+                  vin.inner_simplicityscript = vin.witness[1]; // simplicity program is the second witness element
                 }
               }
             }
