@@ -170,7 +170,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
 
     this.seriesNameToLabel = {};
     for (const treasury of this.treasuries) {
-      this.seriesNameToLabel[treasury.wallet] = treasury.enterprise || treasury.name;
+      this.seriesNameToLabel[treasury.wallet] = treasury.name || treasury.enterprise || treasury.wallet;
     }
 
     const legendData = this.treasuries.map(treasury => ({
@@ -301,7 +301,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
                 const marker = `<span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:${markerColor};"></span>`;
 
                 tooltip += `<div style="display: flex; justify-content: space-between;">
-                  <span style="text-align: left; margin-right: 10px;">${marker} ${treasury.enterprise || treasury.name}:</span>
+                  <span style="text-align: left; margin-right: 10px;">${marker} ${treasury.name || treasury.enterprise || treasury.wallet}:</span>
                   <span style="text-align: right;">${this.formatBTC(balance)}</span>
                 </div>`;
               }
