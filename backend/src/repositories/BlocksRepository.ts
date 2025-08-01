@@ -887,7 +887,9 @@ class BlocksRepository {
         SELECT UNIX_TIMESTAMP(blocks.blockTimestamp) as timestamp, blocks.height
         FROM blocks
         LEFT JOIN blocks_prices ON blocks.height = blocks_prices.height
+        LEFT JOIN prices ON blocks_prices.price_id = prices.id
         WHERE blocks_prices.height IS NULL
+          OR prices.id IS NULL
         ORDER BY blocks.height
       `);
       return rows;
@@ -907,6 +909,7 @@ class BlocksRepository {
         query += ` (${price.height}, ${price.priceId}),`;
       }
       query = query.slice(0, -1);
+      query += ` ON DUPLICATE KEY UPDATE price_id = VALUES(price_id)`;
       await DB.query(query);
     } catch (e: any) {
       if (e.errno === 1062) { // ER_DUP_ENTRY - This scenario is possible upon node backend restart
