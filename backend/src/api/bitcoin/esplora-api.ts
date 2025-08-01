@@ -1,6 +1,7 @@
 import config from '../../config';
 import axios, { isAxiosError } from 'axios';
 import http from 'http';
+import https from 'https';
 import { AbstractBitcoinApi, HealthCheckHost } from './bitcoin-api-abstract-factory';
 import { IEsploraApi } from './esplora-api.interface';
 import logger from '../../logger';
@@ -23,6 +24,7 @@ interface FailoverHost {
   publicDomain: string,
   hashes: {
     frontend?: string,
+    hybrid?: string,
     backend?: string,
     electrs?: string,
     lastUpdated: number,
@@ -142,7 +144,8 @@ class FailoverRouter {
           if (Date.now() - host.hashes.lastUpdated > this.gitHashInterval) {
             await Promise.all([
               this.$updateFrontendGitHash(host),
-              this.$updateBackendGitHash(host)
+              this.$updateBackendGitHash(host),
+              config.MEMPOOL.OFFICIAL ? this.$updateHybridGitHash(host) : Promise.resolve(),
             ]);
             host.hashes.lastUpdated = Date.now();
           }
@@ -250,6 +253,47 @@ class FailoverRouter {
       const match = response.data.match(/GIT_COMMIT_HASH\s*=\s*['"](.*?)['"]/);
       if (match && match[1]?.length) {
         host.hashes.frontend = match[1];
+      }
+      const hybridMatch = response.data.match(/GIT_COMMIT_HASH_MEMPOOL_SPACE\s*=\s*['"](.*?)['"]/);
+      if (hybridMatch && hybridMatch[1]?.length) {
+        host.hashes.hybrid = hybridMatch[1];
+      }
+    } catch (e) {
+      // failed to get frontend build hash - do nothing
+    }
+  }
+
+  private async $updateHybridGitHash(host: FailoverHost): Promise<void> {
+    try {
+      const response: string = await new Promise((resolve, reject) => {
+        const req = https.request({
+          hostname: host.publicDomain.replace('https://', '').replace('http://', ''),
+          port: 443,
+          path: '/en-US/resources/config.js',
+          method: 'GET',
+          headers: {
+            'Host': 'mempool.space'
+          },
+          timeout: config.ESPLORA.FALLBACK_TIMEOUT,
+        }, (res) => {
+          let data = '';
+          res.on('data', chunk => data += chunk);
+          res.on('end', () => {
+            if (res.statusCode === 200) {
+              resolve(data);
+            } else {
+              reject(new Error(`Failed to get hybrid git hash: ${res.statusCode}`));
+            }
+          });
+        });
+        req.on('error', (e) => {
+          reject(e);
+        });
+        req.end();
+      });
+      const match = response.match(/GIT_COMMIT_HASH_MEMPOOL_SPACE\s*=\s*['"](.*?)['"]/);
+      if (match && match[1]?.length) {
+        host.hashes.hybrid = match[1];
       }
     } catch (e) {
       // failed to get frontend build hash - do nothing

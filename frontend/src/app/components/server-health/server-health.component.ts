@@ -17,6 +17,13 @@ export class ServerHealthComponent implements OnInit {
   interval: number;
   now: number = Date.now();
 
+  repoMap = {
+    frontend: 'mempool',
+    hybrid: 'mempool.space',
+    backend: 'mempool',
+    electrs: 'electrs',
+  };
+
   constructor(
     private websocketService: WebsocketService,
     private stateService: StateService,
