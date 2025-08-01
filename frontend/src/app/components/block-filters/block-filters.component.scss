@@ -94,6 +94,15 @@
     }
   }
 
+  &.none-mode {
+    .filter-tag {
+      border: solid 1px var(--danger);
+      &.selected {
+        background-color: var(--danger);
+      }
+    }
+  }
+
   .btn-group {
     font-size: 0.9em;
     margin-right: 0.25em;
@@ -124,6 +133,12 @@
       border: solid 1px var(--success);
       &.active {
         background: var(--success);
+      }
+    }
+    &.red {
+      border: solid 1px var(--danger);
+      &.active {
+        background: var(--danger);
       }
     }
     &.yellow {
