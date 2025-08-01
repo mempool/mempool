@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 100;
+  private static currentVersion = 101;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -1297,6 +1297,10 @@ class DatabaseMigration {
     if (version < 58) {
       queries.push(`DELETE FROM state WHERE name = 'last_hashrates_indexing'`);
       queries.push(`DELETE FROM state WHERE name = 'last_weekly_hashrates_indexing'`);
+    }
+
+    if (version < 101) {
+      queries.push(`DELETE FROM prices WHERE USD = -1`);
     }
 
     return queries;
