@@ -294,7 +294,7 @@ class BitcoinApi implements AbstractBitcoinApi {
         is_coinbase: !!vin.coinbase,
         prevout: null,
         scriptsig: vin.scriptSig && vin.scriptSig.hex || vin.coinbase || '',
-        scriptsig_asm: vin.scriptSig && transactionUtils.convertScriptSigAsm(vin.scriptSig.hex) || '',
+        scriptsig_asm: vin.scriptSig ? transactionUtils.convertScriptSigAsm(vin.scriptSig.hex) : (vin.coinbase ? transactionUtils.convertScriptSigAsm(vin.coinbase) : ''),
         sequence: vin.sequence,
         txid: vin.txid || '',
         vout: vin.vout || 0,
