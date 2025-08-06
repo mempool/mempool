@@ -273,16 +273,16 @@ class PriceUpdater {
     this.latestPrices.time = Math.round(new Date().getTime() / 1000);
     logger.info(`Latest BTC fiat averaged price: ${JSON.stringify(this.latestPrices)}`);
 
-    if (this.ratesChangedCallback) {
-      this.ratesChangedCallback(this.latestPrices);
-    }
-
     if (!forceUpdate) {
       this.cyclePosition++;
     }
 
     if (this.latestPrices.USD === -1) {
       this.latestPrices = await PricesRepository.$getLatestConversionRates();
+    }
+
+    if (this.ratesChangedCallback) {
+      this.ratesChangedCallback(this.latestPrices);
     }
   }
 
