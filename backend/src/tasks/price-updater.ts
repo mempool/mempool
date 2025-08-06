@@ -282,7 +282,7 @@ class PriceUpdater {
       logger.warn(`No BTC price available, falling back to latest known price: ${JSON.stringify(this.latestPrices)}`);
     }
 
-    if (this.ratesChangedCallback) {
+    if (this.ratesChangedCallback && this.latestPrices.USD > 0) {
       this.ratesChangedCallback(this.latestPrices);
     }
   }
