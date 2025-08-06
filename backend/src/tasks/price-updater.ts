@@ -279,6 +279,7 @@ class PriceUpdater {
 
     if (this.latestPrices.USD === -1) {
       this.latestPrices = await PricesRepository.$getLatestConversionRates();
+      logger.warn(`No BTC price available, falling back to latest known price: ${JSON.stringify(this.latestPrices)}`);
     }
 
     if (this.ratesChangedCallback) {
