@@ -1,7 +1,7 @@
 import * as puppeteer from 'puppeteer';
 import { timeoutExecute } from 'puppeteer-cluster/dist/util';
-import logger from '../logger';
-import config from '../config';
+import logger from '../../logger';
+import config from '../../config';
 import ReusablePage, { RepairablePage } from './ReusablePage';
 const mempoolHost = config.MEMPOOL.HTTP_HOST + (config.MEMPOOL.HTTP_PORT ? ':' + config.MEMPOOL.HTTP_PORT : '');
 
