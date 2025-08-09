@@ -2,6 +2,7 @@
   <div class="row row-cols-1 row-cols-md-2">
     <ng-container>
       <div class="col">
+        <app-treasuries-verify-progress [treasuries]="currentSortedTreasuries" [walletStats]="walletStats$ | async"></app-treasuries-verify-progress>
       </div>
       <div class="col">
         <app-treasuries-supply [walletSummaries$]="walletSummaries$" [treasuries]="currentSortedTreasuries" [walletStats]="walletStats$ | async"></app-treasuries-supply>
