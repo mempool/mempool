@@ -128,8 +128,6 @@ export class TreasuriesPieComponent implements OnChanges {
         share: ((total - treasuriesTotal) / total) * 100,
         color: 'orange'
       });
-
-      console.log('ALL! ', entries);
     }
 
     const otherEntry = { id: 'other', label: 'Other', balance: 0, share: 0 };
