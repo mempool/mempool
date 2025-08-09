@@ -487,4 +487,6 @@ export interface Treasury {
   name: string,
   wallet: string,
   enterprise: string,
+  verifiedAddresses: string[];
+  balances?: { balance: number, time: number }[];
 }
