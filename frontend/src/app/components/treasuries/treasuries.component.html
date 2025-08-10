@@ -62,9 +62,7 @@
         </div>
       </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-12">
+    <div class="col">
       <div class="card">
         <div class="card-body">
           <h5 class="card-title" i18n="dashboard.balance-history">Balance History</h5>
@@ -84,6 +82,14 @@
               period="all"
             />
           </div>
+        </div>
+      </div>
+    </div>
+    <div class="col" style="margin-bottom: 1.47rem">
+      <div class="card">
+        <div class="card-body pl-lg-3 pr-lg-3 pl-2 pr-2">
+          <app-price-chart [height]="335" [widget]="true"></app-price-chart>
+          <div class="mt-1"><a [routerLink]="['/graphs/price' | relativeUrl]" fragment="1y" i18n="dashboard.view-more">View more &raquo;</a></div>
         </div>
       </div>
     </div>

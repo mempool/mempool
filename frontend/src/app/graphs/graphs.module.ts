@@ -6,6 +6,7 @@ import { SharedModule } from '@app/shared/shared.module';
 import { AccelerationFeesGraphComponent } from '@components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component';
 import { BlockFeesGraphComponent } from '@components/block-fees-graph/block-fees-graph.component';
 import { BlockFeesSubsidyGraphComponent } from '@components/block-fees-subsidy-graph/block-fees-subsidy-graph.component';
+import { PriceChartComponent } from '@components/price-chart/price-chart.component';
 import { BlockRewardsGraphComponent } from '@components/block-rewards-graph/block-rewards-graph.component';
 import { BlockFeeRatesGraphComponent } from '@components/block-fee-rates-graph/block-fee-rates-graph.component';
 import { BlockSizesWeightsGraphComponent } from '@components/block-sizes-weights-graph/block-sizes-weights-graph.component';
@@ -68,6 +69,7 @@ import { AsmStylerPipe } from '@app/shared/pipes/asm-styler/asm-styler.pipe';
     AccelerationFeesGraphComponent,
     BlockFeesGraphComponent,
     BlockFeesSubsidyGraphComponent,
+    PriceChartComponent,
     BlockRewardsGraphComponent,
     BlockFeeRatesGraphComponent,
     BlockSizesWeightsGraphComponent,
