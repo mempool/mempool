@@ -665,7 +665,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
           matches = flags === 0n || (tx.bigintFlags & flags) > 0n;
           break;
         case 'nor':
-          matches = flags === 0n || (tx.bigintFlags & flags) === 0n;
+          matches = (tx.bigintFlags & flags) === 0n;
           break;
       }
       if (matches) {
