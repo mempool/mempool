@@ -1,5 +1,5 @@
 <div class="addresses-treemap-container">
-  <div *ngIf="addresses" style="height: 300px">
+  <div *ngIf="addresses" style="height: 240px">
     <div *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions" (chartInit)="onChartInit($event)">
     </div>
   </div>
