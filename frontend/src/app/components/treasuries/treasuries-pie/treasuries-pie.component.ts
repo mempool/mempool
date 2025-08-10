@@ -88,9 +88,9 @@ export class TreasuriesPieComponent implements OnChanges {
   }
 
   generateChartSeriesData(): PieSeriesOption[] {
-    let sliceThreshold = 1;
+    let sliceThreshold = 0.5;
     if (isMobile()) {
-      sliceThreshold = 2;
+      sliceThreshold = 1;
     }
 
     const data: object[] = [];
@@ -195,8 +195,8 @@ export class TreasuriesPieComponent implements OnChanges {
           },
           borderColor: '#000',
           formatter: () => {
-            return `<b style="color: white">${otherEntry.id} (${otherEntry.share}%)</b><br>
-            ${formatNumber(otherEntry.balance, this.locale, '1.3-3')}<br>`;
+            return `<b style="color: white">${otherEntry.label} (${otherEntry.share.toFixed(2)}%)</b><br>
+            ${formatNumber(otherEntry.balance / 100_000_000, this.locale, '1.3-3')} BTC<br>`;
           }
         },
       } as PieSeriesOption);
