@@ -32,7 +32,7 @@
                   </td>
                   <td class="table-cell-name">{{ treasury.name || treasury.enterprise || treasury.wallet }}</td>
                   <td class="table-cell-balance">
-                    <app-amount [satoshis]="walletStats[treasury.wallet]?.balance || 0" digitsInfo="1.2-4" [noFiat]="true"></app-amount>
+                    <app-amount [satoshis]="walletStats[treasury.wallet]?.balance || 0" digitsInfo="1.0-0" [noFiat]="true"></app-amount>
                   </td>
                   <td class="table-cell-value">
                     <app-fiat [value]="walletStats[treasury.wallet]?.balance || 0" digitsInfo="1.0-0"></app-fiat>
