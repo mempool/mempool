@@ -8,7 +8,6 @@
   "SIGNET_ENABLED": true,
   "MEMPOOL_WEBSITE_URL": "https://mempool.space",
   "LIQUID_WEBSITE_URL": "https://liquid.network",
-  "BISQ_WEBSITE_URL": "https://bisq.markets",
   "MAINNET_BLOCK_AUDIT_START_HEIGHT": 773911,
   "TESTNET_BLOCK_AUDIT_START_HEIGHT": 2417829,
   "SIGNET_BLOCK_AUDIT_START_HEIGHT": 127609,
