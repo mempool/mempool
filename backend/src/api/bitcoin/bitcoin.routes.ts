@@ -48,6 +48,7 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/:height', this.getBlocks.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash', this.getBlock)
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/summary', this.getStrippedBlockTransactions)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/status', this.getBlockStatus)
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/tx/:txid/summary', this.getStrippedBlockTransaction)
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/audit-summary', this.getBlockAuditSummary)
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/tx/:txid/audit', this.$getBlockTxAuditSummary)
@@ -408,6 +409,19 @@ class BitcoinRoutes {
       res.json(block);
     } catch (e: any) {
       handleError(req, res, e?.response?.status === 404 ? 404 : 500, 'Failed to get block');
+    }
+  }
+
+  private async getBlockStatus(req: Request, res: Response): Promise<void> {
+    if (!BLOCK_HASH_REGEX.test(req.params.hash)) {
+      handleError(req, res, 501, `Invalid block hash`);
+      return;
+    }
+    try {
+      const status = await bitcoinApi.$getBlockStatus(req.params.hash);
+      res.json(status);
+    } catch (e) {
+      handleError(req, res, 500, 'Failed to get block status');
     }
   }
 

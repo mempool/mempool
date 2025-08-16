@@ -186,4 +186,10 @@ export namespace IEsploraApi {
     time: number;
     tx_position?: number;
   }
+
+  export interface BlockStatus {
+    in_best_chain: boolean;
+    next_best?: string;
+    height?: number;
+  }
 }
