@@ -1,10 +1,10 @@
 # start elements on reboot
-@reboot sleep 5 ; /usr/local/bin/elementsd -chain=liquidv1 >/dev/null 2>&1
-@reboot sleep 5 ; /usr/local/bin/elementsd -chain=liquidtestnet >/dev/null 2>&1
+@reboot sleep 15 ; /usr/local/bin/elementsd -chain=liquidv1 >/dev/null 2>&1
+@reboot sleep 25 ; /usr/local/bin/elementsd -chain=liquidtestnet >/dev/null 2>&1
 
 # start electrs on reboot
-@reboot sleep 20 ; screen -dmS liquidv1 /elements/electrs/start liquid
-@reboot sleep 20 ; screen -dmS liquidtestnet /elements/electrs/start liquidtestnet
+@reboot sleep 35 ; screen -dmS liquidv1 /elements/electrs/start liquid
+@reboot sleep 45 ; screen -dmS liquidtestnet /elements/electrs/start liquidtestnet
 
 # hourly asset update and electrs restart
 6 * * * * cd $HOME/asset_registry_db && git pull --quiet origin master && cd $HOME/asset_registry_testnet_db && git pull --quiet origin master && killall electrs
