@@ -197,6 +197,11 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
     }
   }
 
+  async $getTransactionMerkleProof(txId: string): Promise<IEsploraApi.MerkleProof> {
+    const tx = await this.$getRawTransaction(txId);
+    return this.electrumClient.blockchainTransaction_getMerkle(txId, tx.status.block_height);
+  }
+
   private $getScriptHashBalance(scriptHash: string): Promise<IElectrumApi.ScriptHashBalance> {
     return this.electrumClient.blockchainScripthash_getBalance(this.encodeScriptHash(scriptHash));
   }
