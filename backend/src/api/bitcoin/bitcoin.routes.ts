@@ -76,6 +76,7 @@ class BitcoinRoutes {
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/hex', this.getRawTransaction)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/status', this.getTransactionStatus)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/outspends', this.getTransactionOutspends)
+          .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/merkle-proof', this.getTransactionMerkleProof)
           .get(config.MEMPOOL.API_URL_PREFIX + 'txs/outspends', this.$getBatchedOutspends)
           .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/header', this.getBlockHeader)
           .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/hash', this.getBlockTipHash)
@@ -918,6 +919,19 @@ class BitcoinRoutes {
       res.json(result);
     } catch (e) {
       handleError(req, res, 500, 'Failed to get transaction outspends');
+    }
+  }
+
+  private async getTransactionMerkleProof(req: Request, res: Response): Promise<void> {
+    if (!TXID_REGEX.test(req.params.txId)) {
+      handleError(req, res, 501, `Invalid transaction ID`);
+      return;
+    }
+    try {
+      const result = await bitcoinApi.$getTransactionMerkleProof(req.params.txId);
+      res.json(result);
+    } catch (e) {
+      handleError(req, res, 500, e instanceof Error ? e.message : 'Failed to get transaction merkle proof');
     }
   }
 
