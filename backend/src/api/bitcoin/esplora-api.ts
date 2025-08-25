@@ -420,6 +420,10 @@ class ElectrsApi implements AbstractBitcoinApi {
     return this.failoverRouter.$get<string>('/block/' + hash + '/header');
   }
 
+  $getBlockStatus(hash: string): Promise<IEsploraApi.BlockStatus> {
+    return this.failoverRouter.$get<IEsploraApi.BlockStatus>('/block/' + hash + '/status');
+  }
+
   $getBlock(hash: string): Promise<IEsploraApi.Block> {
     return this.failoverRouter.$get<IEsploraApi.Block>('/block/' + hash);
   }
