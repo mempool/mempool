@@ -23,10 +23,12 @@
             <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
           </a>
           <div class="quick-filter">
-            <div class="btn-group btn-group-toggle">
-              <label class="btn btn-primary btn-xs" [class.active]="filter.index === goggleIndex"  *ngFor="let filter of goggleCycle">
-                <input type="radio" [value]="'3m'" fragment="3m" (click)="setFilter(filter.index)" [attr.data-cy]="'3m'"> {{ filter.name }}
-              </label>
+            <div class="btn-group" role="group">
+              <ng-container *ngFor="let filter of goggleCycle">
+                <input type="radio" class="btn-check" [value]="'3m'" [id]="'btn-radio-' + filter.index"
+                  [checked]="filter.index === goggleIndex" (click)="setFilter(filter.index)" [attr.data-cy]="'3m'">
+                <label class="btn btn-primary btn-xs" [for]="'btn-radio-' + filter.index">{{ filter.name }}</label>
+              </ng-container>
             </div>
           </div>
           <div class="mempool-block-wrapper" *ngIf="webGlEnabled">

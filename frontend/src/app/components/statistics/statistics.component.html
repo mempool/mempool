@@ -18,44 +18,31 @@
               </a>
             </div>
             <div class="btn-toggle-rows" name="radioBasic">
-              <div class="btn-group btn-group-toggle">
-                <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '2h'">
-                  <input type="radio" [value]="'2h'" [routerLink]="['/graphs' | relativeUrl]" fragment="2h" formControlName="dateSpan"> 2H
-                  (LIVE)
-                </label>
-                <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '24h'">
-                  <input type="radio" [value]="'24h'" [routerLink]="['/graphs' | relativeUrl]" fragment="24h" formControlName="dateSpan">
-                  24H
-                </label>
-                <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '1w'">
-                  <input type="radio" [value]="'1w'" [routerLink]="['/graphs' | relativeUrl]" fragment="1w" formControlName="dateSpan"> 1W
-                </label>
-                <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '1m'">
-                  <input type="radio" [value]="'1m'" [routerLink]="['/graphs' | relativeUrl]" fragment="1m" formControlName="dateSpan"> 1M
-                </label>
-                <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '3m'">
-                  <input type="radio" [value]="'3m'" [routerLink]="['/graphs' | relativeUrl]" fragment="3m" formControlName="dateSpan"> 3M
-                </label>
+              <div class="btn-group" role="group">
+                <input type="radio" class="btn-check" id="dateSpan-2h" [value]="'2h'" [routerLink]="['/graphs' | relativeUrl]" fragment="2h" formControlName="dateSpan">
+                <label class="btn btn-primary btn-sm" for="dateSpan-2h">2H (LIVE)</label>
+                <input type="radio" class="btn-check" id="dateSpan-24h" [value]="'24h'" [routerLink]="['/graphs' | relativeUrl]" fragment="24h" formControlName="dateSpan">
+                <label class="btn btn-primary btn-sm" for="dateSpan-24h">24H</label>
+                <input type="radio" class="btn-check" id="dateSpan-1w" [value]="'1w'" [routerLink]="['/graphs' | relativeUrl]" fragment="1w" formControlName="dateSpan">
+                <label class="btn btn-primary btn-sm" for="dateSpan-1w">1W</label>
+                <input type="radio" class="btn-check" id="dateSpan-1m" [value]="'1m'" [routerLink]="['/graphs' | relativeUrl]" fragment="1m" formControlName="dateSpan">
+                <label class="btn btn-primary btn-sm" for="dateSpan-1m">1M</label>
+                <input type="radio" class="btn-check" id="dateSpan-3m" [value]="'3m'" [routerLink]="['/graphs' | relativeUrl]"fragment="3m" formControlName="dateSpan">
+                <label class="btn btn-primary btn-sm" for="dateSpan-3m">3M</label>
               </div>
-              <div class="btn-group btn-group-toggle">
-                <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '6m'">
-                  <input type="radio" [value]="'6m'" [routerLink]="['/graphs' | relativeUrl]" fragment="6m" formControlName="dateSpan"> 6M
-                </label>
-                <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '1y'">
-                  <input type="radio" [value]="'1y'" [routerLink]="['/graphs' | relativeUrl]" fragment="1y" formControlName="dateSpan"> 1Y
-                </label>
-                <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '2y'">
-                  <input type="radio" [value]="'2y'" [routerLink]="['/graphs' | relativeUrl]" fragment="2y" formControlName="dateSpan"> 2Y
-                </label>
-                <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '3y'">
-                  <input type="radio" [value]="'3y'" [routerLink]="['/graphs' | relativeUrl]" fragment="3y" formControlName="dateSpan"> 3Y
-                </label>
-                <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '4y'">
-                  <input type="radio" [value]="'4y'" [routerLink]="['/graphs' | relativeUrl]" fragment="4y" formControlName="dateSpan"> 4Y
-                </label>
-                <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === 'all'">
-                  <input type="radio" [value]="'all'" [routerLink]="['/graphs' | relativeUrl]" fragment="all" formControlName="dateSpan"><span i18n="all">All</span>
-                </label>
+              <div class="btn-group" role="group">
+                <input type="radio" class="btn-check" id="dateSpan-6m" [value]="'6m'" [routerLink]="['/graphs' | relativeUrl]" fragment="6m" formControlName="dateSpan">
+                <label class="btn btn-primary btn-sm" for="dateSpan-6m">6M</label>
+                <input type="radio" class="btn-check" id="dateSpan-1y" [value]="'1y'" [routerLink]="['/graphs' | relativeUrl]" fragment="1y" formControlName="dateSpan">
+                <label class="btn btn-primary btn-sm" for="dateSpan-1y">1Y</label>
+                <input type="radio" class="btn-check" id="dateSpan-2y" [value]="'2y'" [routerLink]="['/graphs' | relativeUrl]" fragment="2y" formControlName="dateSpan">
+                <label class="btn btn-primary btn-sm" for="dateSpan-2y">2Y</label>
+                <input type="radio" class="btn-check" id="dateSpan-3y" [value]="'3y'" [routerLink]="['/graphs' | relativeUrl]" fragment="3y" formControlName="dateSpan">
+                <label class="btn btn-primary btn-sm" for="dateSpan-3y">3Y</label>
+                <input type="radio" class="btn-check" id="dateSpan-4y" [value]="'4y'" [routerLink]="['/graphs' | relativeUrl]" fragment="4y" formControlName="dateSpan">
+                <label class="btn btn-primary btn-sm" for="dateSpan-4y">4Y</label>
+                <input type="radio" class="btn-check" id="dateSpan-all" [value]="'all'" [routerLink]="['/graphs' | relativeUrl]" fragment="all" formControlName="dateSpan">
+                <label class="btn btn-primary btn-sm" for="dateSpan-all"><span i18n="all">All</span></label>
               </div>
             </div>
             <div class="small-buttons">

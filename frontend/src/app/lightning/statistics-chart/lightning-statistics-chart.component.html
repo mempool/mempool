@@ -9,35 +9,33 @@
     </div>
 
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(capacityObservable$ | async) as stats">
-      <div class="btn-group btn-group-toggle" name="radioBasic">
-        <label class="btn btn-primary btn-sm" *ngIf="stats.days >= 30" [class.active]="radioGroupForm.get('dateSpan').value === '1m'">
-          <input type="radio" [value]="'1m'" fragment="1m"
-            [routerLink]="['/graphs/lightning/capacity' | relativeUrl]" formControlName="dateSpan"> 1M
-        </label>
-        <label class="btn btn-primary btn-sm" *ngIf="stats.days >= 90" [class.active]="radioGroupForm.get('dateSpan').value === '3m'">
-          <input type="radio" [value]="'3m'" fragment="3m"
-            [routerLink]="['/graphs/lightning/capacity' | relativeUrl]" formControlName="dateSpan"> 3M
-        </label>
-        <label class="btn btn-primary btn-sm" *ngIf="stats.days >= 180" [class.active]="radioGroupForm.get('dateSpan').value === '6m'">
-          <input type="radio" [value]="'6m'" fragment="6m"
-            [routerLink]="['/graphs/lightning/capacity' | relativeUrl]" formControlName="dateSpan"> 6M
-        </label>
-        <label class="btn btn-primary btn-sm" *ngIf="stats.days >= 365" [class.active]="radioGroupForm.get('dateSpan').value === '1y'">
-          <input type="radio" [value]="'1y'" fragment="1y"
-            [routerLink]="['/graphs/lightning/capacity' | relativeUrl]" formControlName="dateSpan"> 1Y
-        </label>
-        <label class="btn btn-primary btn-sm" *ngIf="stats.days >= 730" [class.active]="radioGroupForm.get('dateSpan').value === '2y'">
-          <input type="radio" [value]="'2y'" fragment="2y"
-            [routerLink]="['/graphs/lightning/capacity' | relativeUrl]" formControlName="dateSpan"> 2Y
-        </label>
-        <label class="btn btn-primary btn-sm" *ngIf="stats.days >= 1095" [class.active]="radioGroupForm.get('dateSpan').value === '3y'">
-          <input type="radio" [value]="'3y'" fragment="3y"
-            [routerLink]="['/graphs/lightning/capacity' | relativeUrl]" formControlName="dateSpan"> 3Y
-        </label>
-        <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === 'all'">
-          <input type="radio" [value]="'all'" fragment="all"
-            [routerLink]="['/graphs/lightning/capacity' | relativeUrl]" formControlName="dateSpan"> ALL
-        </label>
+      <div class="btn-group" role="group" name="radioBasic">
+        <ng-container *ngIf="stats.days >= 30">
+          <input type="radio" class="btn-check" id="statisticschart-1m" [value]="'1m'" fragment="1m" [routerLink]="['/graphs/lightning/capacity' | relativeUrl]" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="statisticschart-1m">1M</label>
+        </ng-container>
+        <ng-container *ngIf="stats.days >= 90">
+          <input type="radio" class="btn-check" id="statisticschart-3m" [value]="'3m'" fragment="3m" [routerLink]="['/graphs/lightning/capacity' | relativeUrl]" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="statisticschart-3m">3M</label>
+        </ng-container>
+        <ng-container *ngIf="stats.days >= 180">
+          <input type="radio" class="btn-check" id="statisticschart-6m" [value]="'6m'" fragment="6m" [routerLink]="['/graphs/lightning/capacity' | relativeUrl]" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="statisticschart-6m">6M</label>
+        </ng-container>
+        <ng-container *ngIf="stats.days >= 365">
+          <input type="radio" class="btn-check" id="statisticschart-1y" [value]="'1y'" fragment="1y" [routerLink]="['/graphs/lightning/capacity' | relativeUrl]" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="statisticschart-1y">1Y</label>
+        </ng-container>
+        <ng-container *ngIf="stats.days >= 730">
+          <input type="radio" class="btn-check" id="statisticschart-2y" [value]="'2y'" fragment="2y" [routerLink]="['/graphs/lightning/capacity' | relativeUrl]" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="statisticschart-2y">2Y</label>
+        </ng-container>
+        <ng-container *ngIf="stats.days >= 1095">
+          <input type="radio" class="btn-check" id="statisticschart-3y" [value]="'3y'" fragment="3y" [routerLink]="['/graphs/lightning/capacity' | relativeUrl]" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="statisticschart-3y">3Y</label>
+        </ng-container>
+        <input type="radio" class="btn-check" id="statisticschart-all" [value]="'all'" fragment="all" [routerLink]="['/graphs/lightning/capacity' | relativeUrl]" formControlName="dateSpan">
+        <label class="btn btn-primary btn-sm" for="statisticschart-all">ALL</label>
       </div>
     </form>
   </div>
