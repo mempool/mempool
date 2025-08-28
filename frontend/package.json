@@ -80,7 +80,7 @@
     "@mempool/mempool.js": "2.3.0",
     "@ng-bootstrap/ng-bootstrap": "^16.0.0",
     "@types/qrcode": "~1.5.0",
-    "bootstrap": "~4.6.2",
+    "bootstrap": "~5.0.0",
     "browserify": "^17.0.0",
     "clipboard": "^2.0.11",
     "domino": "^2.1.6",
