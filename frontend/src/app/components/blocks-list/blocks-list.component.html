@@ -39,13 +39,13 @@
                   onError="this.onerror=null; this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'">
                 <span class="pool-name">{{ block.extras.pool.name }}</span>
               </a>
-              <span *ngIf="!widget" class="tooltiptext badge badge-secondary scriptmessage">{{ block.extras.coinbaseRaw | hex2ascii }}</span>
+              <span *ngIf="!widget" class="tooltiptext badge bg-secondary scriptmessage">{{ block.extras.coinbaseRaw | hex2ascii }}</span>
             </div>
             <div *ngIf="!indexingAvailable" class="tooltip-custom">
               <img width="22" height="22" src="{{ block.extras.pool['logo'] }}"
                 onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'">
               <span class="pool-name">{{ block.extras.pool.name }}</span>
-              <span *ngIf="!widget" class="tooltiptext badge badge-secondary scriptmessage">{{ block.extras.coinbaseRaw | hex2ascii }}</span>
+              <span *ngIf="!widget" class="tooltiptext badge bg-secondary scriptmessage">{{ block.extras.coinbaseRaw | hex2ascii }}</span>
             </div>
           </td>
           <td class="timestamp" *ngIf="!widget" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
@@ -55,14 +55,14 @@
             <a
               *ngIf="block?.extras?.matchRate != null; else nullHealth"
               class="health-badge badge"
-              [class.badge-success]="block.extras.matchRate >= 99"
-              [class.badge-warning]="block.extras.matchRate >= 75 && block.extras.matchRate < 99"
-              [class.badge-danger]="block.extras.matchRate < 75"
+              [class.bg-success]="block.extras.matchRate >= 99"
+              [class.bg-warning]="block.extras.matchRate >= 75 && block.extras.matchRate < 99"
+              [class.bg-danger]="block.extras.matchRate < 75"
               [routerLink]="block.extras.matchRate != null ? ['/block/' | relativeUrl, block.id] : null"
               [state]="{ data: { block: block } }"
             >{{ block.extras.matchRate }}%</a>
             <ng-template #nullHealth>
-              <span class="health-badge badge badge-secondary" i18n="unknown">Unknown</span>
+              <span class="health-badge badge bg-secondary" i18n="unknown">Unknown</span>
             </ng-template>
           </td>
           <td *ngIf="isMempoolModule" class="reward text-end" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">

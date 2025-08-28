@@ -38,8 +38,8 @@
         </svg>
       </div>
       <div class="connection-badge">
-        <div class="badge badge-warning" *ngIf="connectionState.val === 0" i18n="master-page.offline">Offline</div>
-        <div class="badge badge-warning" *ngIf="connectionState.val === 1" i18n="master-page.reconnecting">Reconnecting...</div>
+        <div class="badge bg-warning" *ngIf="connectionState.val === 0" i18n="master-page.offline">Offline</div>
+        <div class="badge bg-warning" *ngIf="connectionState.val === 1" i18n="master-page.reconnecting">Reconnecting...</div>
       </div>
     </ng-container>
   </a>

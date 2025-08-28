@@ -299,7 +299,7 @@
 <ng-template #typeRow>
   <td i18n="address.type">Type</td>
   <td class="wrap-cell">
-    <span placement="bottom" class="badge badge-primary">
+    <span placement="bottom" class="badge bg-primary">
       <app-address-type [address]="addressTypeInfo"></app-address-type>
     </span>
     <app-address-labels *ngIf="!hasTapTree" [channel]="exampleChannel" [address]="addressTypeInfo" class="ms-1"></app-address-labels>

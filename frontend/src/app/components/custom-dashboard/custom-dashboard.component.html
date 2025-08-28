@@ -118,9 +118,9 @@
                       <td class="table-cell-old-fee"><app-fee-rate [fee]="replacement.oldFee" [weight]="replacement.oldVsize * 4"></app-fee-rate></td>
                       <td class="table-cell-new-fee"><app-fee-rate [fee]="replacement.newFee" [weight]="replacement.newVsize * 4"></app-fee-rate></td>
                       <td class="table-cell-badges">
-                        <span *ngIf="replacement.mined" class="badge badge-success" i18n="transaction.rbf.mined">Mined</span>
-                        <span *ngIf="replacement.fullRbf" class="badge badge-info" i18n="transaction.full-rbf">Full RBF</span>
-                        <span *ngIf="!replacement.fullRbf" class="badge badge-success" i18n="tx-features.tag.rbf|RBF">RBF</span>
+                        <span *ngIf="replacement.mined" class="badge bg-success" i18n="transaction.rbf.mined">Mined</span>
+                        <span *ngIf="replacement.fullRbf" class="badge bg-info" i18n="transaction.full-rbf">Full RBF</span>
+                        <span *ngIf="!replacement.fullRbf" class="badge bg-success" i18n="tx-features.tag.rbf|RBF">RBF</span>
                       </td>
                     </tr>
                   </tbody>

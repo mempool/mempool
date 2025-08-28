@@ -124,22 +124,22 @@
           <td class="wrap-cell">
             <ng-container>
               @if (auditStatus.coinbase) {
-                <span class="badge badge-primary mr-1" i18n="transactions-list.coinbase">Coinbase</span>
+                <span class="badge bg-primary me-1" i18n="transactions-list.coinbase">Coinbase</span>
               } @else if (auditStatus.expected) {
-                <span class="badge badge-success mr-1" i18n-ngbTooltip="Expected in block tooltip" ngbTooltip="This transaction was projected to be included in the block" placement="bottom" i18n="tx-features.tag.expected|Expected in Block">Expected in Block</span>
+                <span class="badge bg-success me-1" i18n-ngbTooltip="Expected in block tooltip" ngbTooltip="This transaction was projected to be included in the block" placement="bottom" i18n="tx-features.tag.expected|Expected in Block">Expected in Block</span>
               } @else if (auditStatus.seen) {
-                <span class="badge badge-success mr-1" i18n-ngbTooltip="Seen in mempool tooltip" ngbTooltip="This transaction was seen in the mempool prior to mining" placement="bottom" i18n="tx-features.tag.seen|Seen in Mempool">Seen in Mempool</span>
+                <span class="badge bg-success me-1" i18n-ngbTooltip="Seen in mempool tooltip" ngbTooltip="This transaction was seen in the mempool prior to mining" placement="bottom" i18n="tx-features.tag.seen|Seen in Mempool">Seen in Mempool</span>
               } @else if (!auditStatus.conflict) {
-                <span class="badge badge-warning mr-1" i18n-ngbTooltip="Not seen in mempool tooltip" ngbTooltip="This transaction was missing from our mempool prior to mining" placement="bottom" i18n="tx-features.tag.not-seen|Not seen in Mempool">Not seen in Mempool</span>
+                <span class="badge bg-warning me-1" i18n-ngbTooltip="Not seen in mempool tooltip" ngbTooltip="This transaction was missing from our mempool prior to mining" placement="bottom" i18n="tx-features.tag.not-seen|Not seen in Mempool">Not seen in Mempool</span>
               }
               @if (auditStatus.added) {
-                <span class="badge badge-warning mr-1" i18n-ngbTooltip="Added transaction tooltip" ngbTooltip="This transaction may have been added out-of-band" placement="bottom" i18n="tx-features.tag.added|Added">Added</span>
+                <span class="badge bg-warning me-1" i18n-ngbTooltip="Added transaction tooltip" ngbTooltip="This transaction may have been added out-of-band" placement="bottom" i18n="tx-features.tag.added|Added">Added</span>
               }
               @if (auditStatus.prioritized) {
-                <span class="badge badge-warning mr-1" i18n-ngbTooltip="Prioritized transaction tooltip" ngbTooltip="This transaction may have been prioritized out-of-band" placement="bottom" i18n="tx-features.tag.prioritized|Prioritized">Prioritized</span>
+                <span class="badge bg-warning me-1" i18n-ngbTooltip="Prioritized transaction tooltip" ngbTooltip="This transaction may have been prioritized out-of-band" placement="bottom" i18n="tx-features.tag.prioritized|Prioritized">Prioritized</span>
               }
               @if (auditStatus.conflict) {
-                <span class="badge badge-warning mr-1" i18n-ngbTooltip="Conflict in mempool tooltip" ngbTooltip="This transaction conflicted with another version in our mempool" placement="bottom" i18n="tx-features.tag.conflict|Conflict">Conflict</span>
+                <span class="badge bg-warning me-1" i18n-ngbTooltip="Conflict in mempool tooltip" ngbTooltip="This transaction conflicted with another version in our mempool" placement="bottom" i18n="tx-features.tag.conflict|Conflict">Conflict</span>
               }
             </ng-container>
           </td>

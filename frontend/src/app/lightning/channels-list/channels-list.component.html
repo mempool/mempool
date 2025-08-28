@@ -19,7 +19,7 @@
     </tbody>
   </table>
   
-  <ngb-pagination *ngIf="response.channels.length > 0" class="pagination-container float-right"
+  <ngb-pagination *ngIf="response.channels.length > 0" class="pagination-container float-end"
     [size]="paginationSize" [collectionSize]="response.totalItems" [rotate]="true"
     [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)"
     [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false">
@@ -65,10 +65,10 @@
     </div>
   </td>
   <td class="status">
-    <span class="badge rounded-pill badge-secondary" *ngIf="channel.status === 0" i18n="status.inactive">Inactive</span>
-    <span class="badge rounded-pill badge-success" *ngIf="channel.status === 1" i18n="status.active">Active</span>
+    <span class="badge rounded-pill bg-secondary" *ngIf="channel.status === 0" i18n="status.inactive">Inactive</span>
+    <span class="badge rounded-pill bg-success" *ngIf="channel.status === 1" i18n="status.active">Active</span>
     <ng-template [ngIf]="channel.status === 2">
-      <span class="badge rounded-pill badge-secondary" *ngIf="!channel.closing_reason; else closingReason" i18n="status.closed">Closed</span>
+      <span class="badge rounded-pill bg-secondary" *ngIf="!channel.closing_reason; else closingReason" i18n="status.closed">Closed</span>
       <ng-template #closingReason>
         <app-closing-type [type]="channel.closing_reason"></app-closing-type>
       </ng-template>

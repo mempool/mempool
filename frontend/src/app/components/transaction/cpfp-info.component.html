@@ -17,7 +17,7 @@
     <tbody>
       <ng-template [ngIf]="cpfpInfo?.descendants?.length">
         <tr *ngFor="let cpfpTx of cpfpInfo.descendants">
-          <td><span class="badge badge-primary" i18n="transaction.descendant|Descendant">Descendant</span></td>
+          <td><span class="badge bg-primary" i18n="transaction.descendant|Descendant">Descendant</span></td>
           <td>
             <app-truncate [text]="cpfpTx.txid" [link]="['/tx' | relativeUrl, cpfpTx.txid]"></app-truncate>
           </td>
@@ -29,7 +29,7 @@
       </ng-template>
       <ng-template [ngIf]="cpfpInfo?.bestDescendant">
         <tr>
-          <td><span class="badge badge-success" i18n="transaction.descendant|Descendant">Descendant</span></td>
+          <td><span class="badge bg-success" i18n="transaction.descendant|Descendant">Descendant</span></td>
           <td class="txids">
             <app-truncate [text]="cpfpInfo.bestDescendant.txid" [link]="['/tx' | relativeUrl, cpfpInfo.bestDescendant.txid]"></app-truncate>
           </td>
@@ -41,7 +41,7 @@
       </ng-template>
       <ng-template [ngIf]="cpfpInfo?.ancestors?.length">
         <tr *ngFor="let cpfpTx of cpfpInfo.ancestors">
-          <td><span class="badge badge-primary" i18n="transaction.ancestor|Transaction Ancestor">Ancestor</span></td>
+          <td><span class="badge bg-primary" i18n="transaction.ancestor|Transaction Ancestor">Ancestor</span></td>
           <td class="txids">
             <app-truncate [text]="cpfpTx.txid" [link]="['/tx' | relativeUrl, cpfpTx.txid]"></app-truncate>
           </td>

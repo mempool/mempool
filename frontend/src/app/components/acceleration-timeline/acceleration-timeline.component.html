@@ -29,7 +29,7 @@
             <div class="shape"></div>
           </div>
           @if (canceled) {
-          <div class="status"><span class="badge badge-danger" i18n="accelerator.canceled">Canceled</span></div>
+          <div class="status"><span class="badge bg-danger" i18n="accelerator.canceled">Canceled</span></div>
           } @else {
             <div class="status"><span class="badge badge-waiting" i18n="transaction.rbf.mined">Mined</span></div>
           }
@@ -63,7 +63,7 @@
           <div class="shape-border hovering" (pointerover)="onHover($event, 'seen');" (pointerout)="onBlur($event);">
             <div class="shape"></div>
           </div>
-          <div class="status"><span class="badge badge-primary" i18n="transaction.first-seen|Transaction first seen">First seen</span></div>
+          <div class="status"><span class="badge bg-primary" i18n="transaction.first-seen|Transaction first seen">First seen</span></div>
           <div class="time">
             @if (useAbsoluteTime) {
             <span>{{ transactionTime * 1000 | date }}</span>
@@ -122,7 +122,7 @@
             <div class="shape"></div>
           </div>
           @if (tx.status.confirmed) {
-          <div class="status"><span class="badge badge-success" i18n="transaction.rbf.mined">Mined</span></div>
+          <div class="status"><span class="badge bg-success" i18n="transaction.rbf.mined">Mined</span></div>
           <div class="time">
             @if (useAbsoluteTime) {
             <span>{{ tx.status.block_time * 1000 | date }}</span>

@@ -1390,13 +1390,18 @@ a {
   }
 }
 
-.badge-primary {
+.bg-primary {
   color: var(--fg);
   background-color: var(--primary);
 }
 
-.badge-info {
+.bg-info {
+  color: var(--bg);
   background-color: var(--info);
+}
+
+.bg-warning {
+  color: var(--bg);
 }
 
 .btn-primary {

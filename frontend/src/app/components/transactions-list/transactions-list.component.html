@@ -87,7 +87,7 @@
                 }
                 <td class="address-cell">
                   <div [ngSwitch]="true">
-                    <ng-container *ngSwitchCase="vin.is_coinbase"><span i18n="transactions-list.coinbase">Coinbase</span><ng-template [ngIf]="network !== 'liquid' && network !== 'liquidtestnet'">&nbsp;<span i18n="transactions-list.newly-generated-coins">(Newly Generated Coins)</span></ng-template><br /><a placement="bottom" [ngbTooltip]="vin.scriptsig | hex2ascii"><span class="badge badge-secondary scriptmessage longer">{{ vin.scriptsig | hex2ascii }}</span></a></ng-container>
+                    <ng-container *ngSwitchCase="vin.is_coinbase"><span i18n="transactions-list.coinbase">Coinbase</span><ng-template [ngIf]="network !== 'liquid' && network !== 'liquidtestnet'">&nbsp;<span i18n="transactions-list.newly-generated-coins">(Newly Generated Coins)</span></ng-template><br /><a placement="bottom" [ngbTooltip]="vin.scriptsig | hex2ascii"><span class="badge bg-secondary scriptmessage longer">{{ vin.scriptsig | hex2ascii }}</span></a></ng-container>
                     <ng-container *ngSwitchCase="vin.is_pegin">
                       <span i18n="transactions-list.peg-in">Peg-in</span>
                     </ng-container>
@@ -343,18 +343,18 @@
                         } @else {
                           <a placement="bottom" style="cursor: pointer;">
                             @if ((vout.scriptpubkey_asm | hex2ascii).length > 200) {
-                              <span *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" class="badge badge-secondary scriptmessage opreturn-msg" (click)="toggleShowFullOpReturnPreview(vindex)">{{ vout.scriptpubkey_asm | hex2ascii | slice:0:200 }}</span>
+                              <span *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" class="badge bg-secondary scriptmessage opreturn-msg" (click)="toggleShowFullOpReturnPreview(vindex)">{{ vout.scriptpubkey_asm | hex2ascii | slice:0:200 }}</span>
                               <ng-container *ngIf="(showDetails$ | async) === false">
                                 @if ((vout.scriptpubkey_asm | hex2ascii).length > 200) {
                                   @if (!showFullOpReturnPreview[vindex]) {
-                                    <span class="badge badge-primary" (click)="toggleShowFullOpReturnPreview(vindex)">Show more</span>
+                                    <span class="badge bg-primary" (click)="toggleShowFullOpReturnPreview(vindex)">Show more</span>
                                   } @else {
-                                    <span class="badge badge-primary" (click)="toggleShowFullOpReturnPreview(vindex)">Show less</span>
+                                    <span class="badge bg-primary" (click)="toggleShowFullOpReturnPreview(vindex)">Show less</span>
                                   }
                                 }
                               </ng-container>
                             } @else {
-                              <span *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" [ngbTooltip]="vout.scriptpubkey_asm | hex2ascii" class="badge badge-secondary scriptmessage">{{ vout.scriptpubkey_asm | hex2ascii }}</span>
+                              <span *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" [ngbTooltip]="vout.scriptpubkey_asm | hex2ascii" class="badge bg-secondary scriptmessage">{{ vout.scriptpubkey_asm | hex2ascii }}</span>
                             }
                           </a>
                         }

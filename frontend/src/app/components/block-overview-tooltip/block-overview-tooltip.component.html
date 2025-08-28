@@ -67,25 +67,25 @@
         <td class="label" i18n="transaction.audit-status">Audit status</td>
         <td class="value">
           <ng-container [ngSwitch]="tx?.status">
-            <span *ngSwitchCase="'found'" class="badge badge-success" i18n="transaction.audit.match">Match</span>
-            <span *ngSwitchCase="'censored'" class="badge badge-danger" i18n="transaction.audit.removed|Transaction removed state">Removed</span>
-            <span *ngSwitchCase="'missing'" class="badge badge-warning" i18n="transaction.audit.marginal">Marginal fee rate</span>
-            <span *ngSwitchCase="'sigop'" class="badge badge-warning" i18n="transaction.audit.sigop">High sigop count</span>
-            <span *ngSwitchCase="'fresh'" class="badge badge-warning" i18n="transaction.audit.recently-broadcasted">Recently broadcasted</span>
-            <span *ngSwitchCase="'freshcpfp'" class="badge badge-warning" i18n="transaction.audit.recently-cpfped">Recently CPFP'd</span>
-            <span *ngSwitchCase="'added'" class="badge badge-warning" i18n="tx-features.tag.added|Added">Added</span>
-            <span *ngSwitchCase="'prioritized'" class="badge badge-warning" i18n="tx-features.tag.prioritized|Prioritized">Prioritized</span>
+            <span *ngSwitchCase="'found'" class="badge bg-success" i18n="transaction.audit.match">Match</span>
+            <span *ngSwitchCase="'censored'" class="badge bg-danger" i18n="transaction.audit.removed|Transaction removed state">Removed</span>
+            <span *ngSwitchCase="'missing'" class="badge bg-warning" i18n="transaction.audit.marginal">Marginal fee rate</span>
+            <span *ngSwitchCase="'sigop'" class="badge bg-warning" i18n="transaction.audit.sigop">High sigop count</span>
+            <span *ngSwitchCase="'fresh'" class="badge bg-warning" i18n="transaction.audit.recently-broadcasted">Recently broadcasted</span>
+            <span *ngSwitchCase="'freshcpfp'" class="badge bg-warning" i18n="transaction.audit.recently-cpfped">Recently CPFP'd</span>
+            <span *ngSwitchCase="'added'" class="badge bg-warning" i18n="tx-features.tag.added|Added">Added</span>
+            <span *ngSwitchCase="'prioritized'" class="badge bg-warning" i18n="tx-features.tag.prioritized|Prioritized">Prioritized</span>
             <ng-container *ngSwitchCase="'added_prioritized'">
-              <span class="badge badge-warning" i18n="tx-features.tag.added|Added">Added</span>
-              <span class="badge badge-warning ml-1" i18n="tx-features.tag.prioritized|Prioritized">Prioritized</span>
+              <span class="badge bg-warning" i18n="tx-features.tag.added|Added">Added</span>
+              <span class="badge bg-warning ms-1" i18n="tx-features.tag.prioritized|Prioritized">Prioritized</span>
             </ng-container>
-            <span *ngSwitchCase="'deprioritized'" class="badge badge-warning" i18n="tx-features.tag.prioritized|Deprioritized">Deprioritized</span>
+            <span *ngSwitchCase="'deprioritized'" class="badge bg-warning" i18n="tx-features.tag.prioritized|Deprioritized">Deprioritized</span>
             <ng-container *ngSwitchCase="'added_deprioritized'">
-              <span class="badge badge-warning" i18n="tx-features.tag.added|Added">Added</span>
-              <span class="badge badge-warning ml-1" i18n="tx-features.tag.prioritized|Deprioritized">Deprioritized</span>
+              <span class="badge bg-warning" i18n="tx-features.tag.added|Added">Added</span>
+              <span class="badge bg-warning ms-1" i18n="tx-features.tag.prioritized|Deprioritized">Deprioritized</span>
             </ng-container>
-            <span *ngSwitchCase="'selected'" class="badge badge-warning" i18n="transaction.audit.marginal">Marginal fee rate</span>
-            <span *ngSwitchCase="'rbf'" class="badge badge-warning" i18n="tx-features.tag.conflict|Conflict">Conflict</span>
+            <span *ngSwitchCase="'selected'" class="badge bg-warning" i18n="transaction.audit.marginal">Marginal fee rate</span>
+            <span *ngSwitchCase="'rbf'" class="badge bg-warning" i18n="tx-features.tag.conflict|Conflict">Conflict</span>
             <span *ngSwitchCase="'accelerated'" class="badge badge-accelerated" i18n="transaction.audit.accelerated">Accelerated</span>
           </ng-container>
         </td>

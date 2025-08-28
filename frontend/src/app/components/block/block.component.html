@@ -63,14 +63,14 @@
                 <td>
                   <span
                     class="health-badge badge"
-                    [class.badge-success]="blockAudit?.matchRate >= 99"
-                    [class.badge-warning]="blockAudit?.matchRate >= 75 && blockAudit?.matchRate < 99"
-                    [class.badge-danger]="blockAudit?.matchRate < 75"
+                    [class.bg-success]="blockAudit?.matchRate >= 99"
+                    [class.bg-warning]="blockAudit?.matchRate >= 75 && blockAudit?.matchRate < 99"
+                    [class.bg-danger]="blockAudit?.matchRate < 75"
                     *ngIf="blockAudit?.matchRate != null && blockAudit?.id === block.id; else nullHealth"
                   >{{ blockAudit?.matchRate }}%</span>
                   <ng-template #nullHealth>
                     <ng-container *ngIf="!isLoadingOverview && blockAudit?.id === block.id; else loadingHealth">
-                      <span class="health-badge badge badge-secondary" i18n="unknown">Unknown</span>
+                      <span class="health-badge badge bg-secondary" i18n="unknown">Unknown</span>
                     </ng-container>
                   </ng-template>
                   <ng-template #loadingHealth>
@@ -195,7 +195,7 @@
         </td>
         <td *ngIf="!stateService.env.MINING_DASHBOARD && stateService.env.BASE_MODULE === 'mempool'">
           <span placement="bottom" class="badge"
-            [class]="block.extras.pool.slug === 'unknown' ? 'badge-secondary' : 'badge-primary'">
+            [class]="block.extras.pool.slug === 'unknown' ? 'bg-secondary' : 'bg-primary'">
             {{ block.extras.pool.name }}
         </span>
         </td>
@@ -278,7 +278,7 @@
               <tbody>
                 <tr>
                   <td class="td-width" i18n="transaction.version">Version</td>
-                  <td>{{ block.version | decimal2hex }} <span *ngIf="displayTaprootStatus() && hasTaproot(block.version)" class="badge badge-success ml-1" i18n="tx-features.tag.taproot|Taproot">Taproot</span></td>
+                  <td>{{ block.version | decimal2hex }} <span *ngIf="displayTaprootStatus() && hasTaproot(block.version)" class="badge bg-success ms-1" i18n="tx-features.tag.taproot|Taproot">Taproot</span></td>
                 </tr>
                 <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
                   <td i18n="block.bits">Bits</td>
@@ -380,7 +380,7 @@
 <ng-template #emptyBlockInfo>
   <a
     *ngIf="network === '' && block && block.height > 100000 && block.tx_count <= 1"
-    class="info-bubble-link badge badge-primary"
+    class="info-bubble-link badge bg-primary"
     [routerLink]="['/docs/faq/' | relativeUrl]"
     fragment="why-empty-blocks"
   >
