@@ -36,7 +36,7 @@ $pagination-hover-bg:              $hover-bg;
 $pagination-hover-border-color:     $bg;
 $pagination-disabled-bg:          $bg;
 
-$custom-select-indicator-color: $fg;
+$form-select-indicator-color: $fg;
 
 .input-group-text {
   background-color: #1c2031 !important;
@@ -113,6 +113,8 @@ $dropdown-link-active-bg: $active-bg;
   --search-button-border: #472a6e;
   --search-button-focus: #533180;
   --search-button-shadow: #7c58ab80;
+  
+  --bs-border-radius: 0.25rem;
 }
 
 html, body {
@@ -1392,7 +1394,7 @@ a {
 
 .bg-primary {
   color: var(--fg);
-  background-color: var(--primary);
+  background-color: var(--primary) !important;
 }
 
 .bg-info {
@@ -1416,4 +1418,90 @@ a {
 
 button {
   touch-action: manipulation;
+}
+
+.btn-success {
+  color: #fff;
+  &:focus, &:hover, &:active {
+    color: #fff;
+  }
+}
+
+.badge {
+  padding: 0.25em 0.4em;
+}
+
+.table th, .table td {
+  padding: 0.75rem;
+}
+
+.table-sm th, .table-sm td {
+  padding: 0.3rem;
+}
+
+.card-header {
+  padding: 0.75rem 1.25rem;
+  background-color: unset;
+}
+
+.card-body {
+  padding: 1.25rem;
+}
+
+.card-title {
+  margin-bottom: 0.75rem;
+}
+
+.container-xxl, .container-xl, .container-lg, .container-md, .container-sm, .container {
+  padding-right: 15px;
+  padding-left: 15px;
+  @media (min-width: 1400px) {
+    max-width: 1140px;
+  }
+}
+
+.row {
+  --bs-gutter-x: 30px;
+}
+
+.progress {
+  line-height: 0;
+}
+
+.rounded-pill {
+  padding-right: 0.6em;
+  padding-left: 0.6em;
+  border-radius: 10rem;
+}
+
+.btn-check:focus+.btn {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.table>:not(caption)>*>* {
+  border-bottom-width: 0px;
+  color: unset;
+  background-color: unset;
+}
+
+.tooltip-inner {
+  color: unset;
+}
+
+.form-control::placeholder {
+  color: var(--grey);
+}
+
+.navbar {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+}
+
+.nav-tabs .nav-link.active {
+  color: #fff;
 }

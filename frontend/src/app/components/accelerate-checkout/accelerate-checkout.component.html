@@ -290,7 +290,7 @@
               <div class="form-group form-check mb-2">
                 <input type="radio" [checked]="selectedOption === 'wait'"  class="form-check-input" id="wait" name="accel" (change)="selectedOptionChanged($event)">
                 <label class="form-check-label d-flex flex-column" for="wait">
-                  <span class="font-weight-bold" i18n="accelerator.wait">Wait</span>
+                  <span class="fw-bold" i18n="accelerator.wait">Wait</span>
                   @if (eta.blocks < 7) {
                     <span class="checkout-text"><ng-container i18n="accelerator.confirmation-expected">Confirmation expected</ng-container>&nbsp;<app-time kind="within" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time></span>
                   } @else {

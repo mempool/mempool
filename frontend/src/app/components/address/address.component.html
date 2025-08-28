@@ -277,8 +277,8 @@
 </ng-template>
 
 <ng-template #pendingBalanceRow>
-  <td i18n="accelerator.pending-state" class="font-italic">Pending</td>
-  <td *ngIf="mempoolStats.funded_txo_sum !== undefined; else confidentialTd" class="font-italic wrap-cell"><app-amount [satoshis]="mempoolStats.balance" [noFiat]="true" [addPlus]="true"></app-amount> <span class="fiat"><app-fiat [value]="mempoolStats.balance"></app-fiat></span></td>
+  <td i18n="accelerator.pending-state" class="fst-italic">Pending</td>
+  <td *ngIf="mempoolStats.funded_txo_sum !== undefined; else confidentialTd" class="fst-italic wrap-cell"><app-amount [satoshis]="mempoolStats.balance" [noFiat]="true" [addPlus]="true"></app-amount> <span class="fiat"><app-fiat [value]="mempoolStats.balance"></app-fiat></span></td>
 </ng-template>
 
 <ng-template #utxoRow>
@@ -287,8 +287,8 @@
 </ng-template>
 
 <ng-template #pendingUtxoRow>
-  <td i18n="address.pending-utxos" class="font-italic">Pending UTXOs</td>
-  <td class="font-italic wrap-cell">{{ mempoolStats.utxos > 0 ? '+' : ''}}{{ mempoolStats.utxos }}</td>
+  <td i18n="address.pending-utxos" class="fst-italic">Pending UTXOs</td>
+  <td class="fst-italic wrap-cell">{{ mempoolStats.utxos > 0 ? '+' : ''}}{{ mempoolStats.utxos }}</td>
 </ng-template>
 
 <ng-template #volumeRow>
