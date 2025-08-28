@@ -20,7 +20,7 @@
       <td class="pie-chart" rowspan="2" *ngIf="!chartPositionLeft">
         <div class="d-flex justify-content-between align-items-start">
           @if (hasCpfp) {
-            <button type="button" class="btn btn-outline-info btn-sm btn-small-height float-right mt-0" (click)="onToggleCpfp()">CPFP</button>
+            <button type="button" class="btn btn-outline-info btn-sm btn-small-height float-end mt-0" (click)="onToggleCpfp()">CPFP</button>
           }
           <ng-container *ngTemplateOutlet="pieChart"></ng-container>
         </div>
@@ -36,7 +36,7 @@
       <tr>
         <td colspan="3" class="pt-0">
           <div class="d-flex justify-content-end align-items-start">
-            <button type="button" class="btn btn-outline-info btn-sm btn-small-height float-right mt-0" (click)="onToggleCpfp()">CPFP</button>
+            <button type="button" class="btn btn-outline-info btn-sm btn-small-height float-end mt-0" (click)="onToggleCpfp()">CPFP</button>
           </div>
         </td>
       </tr>

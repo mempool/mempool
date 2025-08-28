@@ -1,7 +1,7 @@
 
 
 <div class="container-xl full-height" style="min-height: 335px">
-  <h1 class="float-left" i18n="lightning.liquidity-ranking">Penalties</h1>
+  <h1 class="float-start" i18n="lightning.liquidity-ranking">Penalties</h1>
 
   <div class="clearfix"></div>
 
@@ -9,10 +9,10 @@
     <table class="table table-borderless">
       <thead>
         <th class="timestamp" i18n="lightning.closed-at">Closed</th>
-        <th class="channels text-right" i18n="lightning.capacity">Capacity</th>
-        <th class="node text-right"></th>
-        <th class="node text-right" i18n="lightning.node">Nodes</th>
-        <th class="channelid text-right" i18n="channels.id">Channel ID</th>
+        <th class="channels text-end" i18n="lightning.capacity">Capacity</th>
+        <th class="node text-end"></th>
+        <th class="node text-end" i18n="lightning.node">Nodes</th>
+        <th class="channelid text-end" i18n="channels.id">Channel ID</th>
         <th></th>
       </thead>
       <tbody *ngIf="justiceChannels$ | async as channels">
@@ -21,23 +21,23 @@
             <td class="timestamp">
               <app-timestamp [customFormat]="'yyyy-MM-dd HH:mm'" [unixTime]="channel.closing_date" [hideTimeSince]="true"></app-timestamp>
             </td>
-            <td class="capacity text-right">
+            <td class="capacity text-end">
               <app-amount *ngIf="channel.capacity > 100000000; else smallnode" [satoshis]="channel.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
               <ng-template #smallnode>
                 {{ channel.capacity | amountShortener: 1 }}
                 <span class="sats" i18n="shared.sats">sats</span>
               </ng-template>
             </td>
-            <td class="alias text-right">
+            <td class="alias text-end">
               <app-truncate [text]="channel.alias_left || '?'" [maxWidth]="200" [lastChars]="6" textAlign="end" [inline]="true"></app-truncate>
             </td>
-            <td class="alias text-right">
+            <td class="alias text-end">
               <app-truncate [text]="channel.alias_right || '?'" [maxWidth]="200" [lastChars]="6" textAlign="end" [inline]="true"></app-truncate>
             </td>
-            <td class="channelid text-right">
+            <td class="channelid text-end">
               <a [routerLink]="['/lightning/channel' | relativeUrl, channel.id]">{{ channel.short_id }}</a>
              </td>
-             <td class="text-right">
+             <td class="text-end">
               <button type="button" class="btn btn-outline-info details-button btn-sm" (click)="toggleDetails(channel)"
                 i18n="transaction.details|Transaction Details">Details</button>
              </td>

@@ -19,6 +19,6 @@
     </tr>
   </table>
   <div *ngIf="addressStrings.length > itemsPerPage" class="pagination">
-    <ngb-pagination class="pagination-container float-right" [collectionSize]="addressStrings.length" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="pageIndex" (pageChange)="pageChange(pageIndex)" [boundaryLinks]="false" [ellipses]="false"></ngb-pagination>
+    <ngb-pagination class="pagination-container float-end" [collectionSize]="addressStrings.length" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="pageIndex" (pageChange)="pageChange(pageIndex)" [boundaryLinks]="false" [ellipses]="false"></ngb-pagination>
   </div>
 </div>

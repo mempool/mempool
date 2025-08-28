@@ -170,7 +170,7 @@
                 @if (!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !showAccelerationSummary && notAcceleratedOnLoad) {
                   <div class="d-flex accelerate">
                     <a class="btn btn-sm accelerateDeepMempool btn-small-height" [class.disabled]="!eligibleForAcceleration" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
-                    <a *ngIf="!eligibleForAcceleration" href="https://mempool.space/accelerator#why-cant-accelerate" target="_blank" class="info-badges ml-1" i18n-ngbTooltip="Mempool Accelerator&reg; tooltip" ngbTooltip="This transaction cannot be accelerated">
+                    <a *ngIf="!eligibleForAcceleration" href="https://mempool.space/accelerator#why-cant-accelerate" target="_blank" class="info-badges ms-1" i18n-ngbTooltip="Mempool Accelerator&reg; tooltip" ngbTooltip="This transaction cannot be accelerated">
                         <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
                     </a>
                   </div>
@@ -198,10 +198,10 @@
         </td>
         <td class="wrap-cell">
           @if (isAcceleration) {
-            <span class="badge badge-accelerated mr-1" i18n="transaction.audit.accelerated">Accelerated</span>
+            <span class="badge badge-accelerated me-1" i18n="transaction.audit.accelerated">Accelerated</span>
           }
           <ng-container *ngFor="let filter of filters;">
-            <span class="badge badge-primary filter-tag mr-1">{{ filter.label }}</span>
+            <span class="badge bg-primary filter-tag me-1">{{ filter.label }}</span>
           </ng-container>
         </td>
       </tr>
@@ -260,11 +260,11 @@
             }
 
             @if (tx?.status?.confirmed && !tx.acceleration && !accelerationInfo && tx.fee && tx.effectiveFeePerVsize) {
-              <app-tx-fee-rating class="ml-2 mr-2 effective-fee-rating" [tx]="tx"></app-tx-fee-rating>
+              <app-tx-fee-rating class="ms-2 me-2 effective-fee-rating" [tx]="tx"></app-tx-fee-rating>
             }
           </div>
           @if (hasCpfp) {
-            <button type="button" class="btn btn-outline-info btn-sm btn-small-height float-right" (click)="toggleCpfp()">CPFP</button>
+            <button type="button" class="btn btn-outline-info btn-sm btn-small-height float-end" (click)="toggleCpfp()">CPFP</button>
           }
         </td>
       </tr>

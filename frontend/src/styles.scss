@@ -890,7 +890,7 @@ th {
     transform: scaleX(-1);
   }
 
-  .btn.ml-2 {
+  .btn.ms-2 {
     margin-right: 0.5rem !important;
   }
 
@@ -1004,32 +1004,32 @@ th {
     text-align: right;
   }
 
-  .mr-3 {
-    @extend .ml-3;
+  .me-3 {
+    @extend .ms-3;
     margin-right: 0 !important;
   }
 
-  .mr-1 {
-      @extend .ml-1;
+  .me-1 {
+      @extend .ms-1;
   }
 
-  .mr-2 {
-    @extend .ml-2;
+  .me-2 {
+    @extend .ms-2;
   }
 
-  .float-left {
+  .float-start {
     float: right !important;
   }
 
-  .float-right {
+  .float-end {
     float: left !important;
   }
 
-  .text-left {
+  .text-start {
     text-align: right !important;
   }
 
-  .text-right {
+  .text-end {
     text-align: left !important;
   }
 

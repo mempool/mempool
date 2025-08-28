@@ -314,7 +314,7 @@
       </div>
     </div>
 
-    <div class="text-right mt-3 toggle-btns">
+    <div class="text-end mt-3 toggle-btns">
       <button
         *ngIf="webGlEnabled && auditAvailable"
         type="button"
@@ -337,12 +337,12 @@
     } @placeholder {
       <div>
         <div class="block-tx-title">
-          <h2 class="text-left">
+          <h2 class="text-start">
             <ng-container *ngTemplateOutlet="block.tx_count === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: block.tx_count | number}"></ng-container>
             <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
             <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
           </h2>
-          <ngb-pagination class="pagination-container float-right" [disabled]="true" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="stateService.env.ITEMS_PER_PAGE" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
+          <ngb-pagination class="pagination-container float-end" [disabled]="true" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="stateService.env.ITEMS_PER_PAGE" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
         </div>
         <div class="clearfix"></div>
         <div class="tx-skeleton">

@@ -21,7 +21,7 @@
         @case ('goggles') {
           <div class="col" [style.order]="isMobile && widget.mobileOrder || 8">
             <div class="card graph-card">
-              <div class="card-body pl-lg-3 pr-lg-3 pl-2 pr-2">
+              <div class="card-body ps-lg-3 pe-lg-3 ps-2 pe-2">
                 <a class="title-link mb-0" style="margin-top: -2px" href="" [routerLink]="['/mempool-block/0' | relativeUrl]">
                   <h5 class="card-title d-inline"><span>Mempool Goggles&trade;</span> : {{ goggleCycle[goggleIndex].name }}</h5>
                   <span>&nbsp;</span>
@@ -294,7 +294,7 @@
         @case ('twitter') {
           <div class="col" style="min-height:410px" [style.order]="isMobile && widget.mobileOrder || 8">
             <div class="card graph-card">
-              <div class="card-body pl-lg-3 pr-lg-3 pl-2 pr-2 d-flex flex-column">
+              <div class="card-body ps-lg-3 pe-lg-3 ps-2 pe-2 d-flex flex-column">
                 <a class="title-link" [href]="'https://x.com/' + widget.props?.handle" target="_blank">
                   <h5 class="card-title d-inline" i18n="dashboard.x-timeline">X Timeline</h5>
                   <span>&nbsp;</span>

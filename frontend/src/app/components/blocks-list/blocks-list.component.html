@@ -1,7 +1,7 @@
 <app-indexing-progress *ngIf="!widget"></app-indexing-progress>
 
 <div class="container-xl" style="min-height: 335px" [ngClass]="{'widget': widget, 'full-height': !widget, 'legacy': !isMempoolModule}">
-  <div *ngIf="!widget" class="float-left" style="display: flex; width: 100%; align-items: center;">
+  <div *ngIf="!widget" class="float-start" style="display: flex; width: 100%; align-items: center;">
     <h1 i18n="master-page.blocks">Blocks</h1>
     <app-svg-images name="blocks-2-3" style="width: 275px; max-width: 90%; margin-top: -10px"></app-svg-images>
     <div *ngIf="!widget && isLoading" class="spinner-border" role="status"></div>
@@ -12,27 +12,27 @@
   <div style="min-height: 295px">
     <table class="table table-borderless">
       <thead>
-        <th class="height text-left" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}" i18n="latest-blocks.height">Height</th>
-        <th *ngIf="isMempoolModule" class="pool text-left" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}" i18n="mining.pool-name"
+        <th class="height text-start" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}" i18n="latest-blocks.height">Height</th>
+        <th *ngIf="isMempoolModule" class="pool text-start" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}" i18n="mining.pool-name"
           i18n-ngbTooltip="mining.pool-name" ngbTooltip="Pool" placement="bottom" #miningpool [disableTooltip]="!isEllipsisActive(miningpool)">Pool</th>
         <th class="timestamp" i18n="latest-blocks.timestamp" *ngIf="!widget" [class]="isMempoolModule ? '' : 'legacy'">Timestamp</th>
-        <th *ngIf="auditAvailable" class="health text-right" i18n="latest-blocks.health" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}"
+        <th *ngIf="auditAvailable" class="health text-end" i18n="latest-blocks.health" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}"
           i18n-ngbTooltip="latest-blocks.health" ngbTooltip="Health" placement="bottom" #health [disableTooltip]="!isEllipsisActive(health)">Health</th>
-        <th *ngIf="isMempoolModule" class="reward text-right" i18n="latest-blocks.reward" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}"
+        <th *ngIf="isMempoolModule" class="reward text-end" i18n="latest-blocks.reward" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}"
           i18n-ngbTooltip="latest-blocks.reward" ngbTooltip="Reward" placement="bottom" #reward [disableTooltip]="!isEllipsisActive(reward)">Reward</th>
-        <th *ngIf="isMempoolModule && !auditAvailable || isMempoolModule && !widget" class="fees text-right" i18n="latest-blocks.fees" [class]="isMempoolModule ? '' : 'legacy'">Fees</th>
+        <th *ngIf="isMempoolModule && !auditAvailable || isMempoolModule && !widget" class="fees text-end" i18n="latest-blocks.fees" [class]="isMempoolModule ? '' : 'legacy'">Fees</th>
         <th *ngIf="auditAvailable && !widget" class="fee-delta" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}"></th>
-        <th *ngIf="isMempoolModule" class="txs text-right" i18n="dashboard.txs" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}"
+        <th *ngIf="isMempoolModule" class="txs text-end" i18n="dashboard.txs" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}"
           i18n-ngbTooltip="dashboard.txs" ngbTooltip="TXs" placement="bottom" #txs [disableTooltip]="!isEllipsisActive(txs)">TXs</th>
-        <th *ngIf="!isMempoolModule" class="txs text-right" i18n="dashboard.txs" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">Transactions</th>
+        <th *ngIf="!isMempoolModule" class="txs text-end" i18n="dashboard.txs" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">Transactions</th>
         <th class="size" i18n="latest-blocks.size" *ngIf="!widget" [class]="isMempoolModule ? '' : 'legacy'">Size</th>
       </thead>
       <tbody *ngIf="blocks$ | async as blocks; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
         <tr *ngFor="let block of blocks; let i= index; trackBy: trackByBlock">
-          <td class="height text-left" [class]="widget ? 'widget' : ''">
+          <td class="height text-start" [class]="widget ? 'widget' : ''">
             <a [routerLink]="['/block' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a>
           </td>
-          <td  *ngIf="isMempoolModule" class="pool text-left" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
+          <td  *ngIf="isMempoolModule" class="pool text-start" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
             <div *ngIf="indexingAvailable" class="tooltip-custom">
               <a class="clear-link" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]">
                 <img width="22" height="22" src="{{ block.extras.pool['logo'] }}"
@@ -51,7 +51,7 @@
           <td class="timestamp" *ngIf="!widget" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
             <app-timestamp [customFormat]="'yyyy-MM-dd HH:mm:ss'" [unixTime]="block.timestamp" [hideTimeSince]="true"></app-timestamp>
           </td>
-          <td *ngIf="auditAvailable" class="health text-right" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
+          <td *ngIf="auditAvailable" class="health text-end" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
             <a
               *ngIf="block?.extras?.matchRate != null; else nullHealth"
               class="health-badge badge"
@@ -65,10 +65,10 @@
               <span class="health-badge badge badge-secondary" i18n="unknown">Unknown</span>
             </ng-template>
           </td>
-          <td *ngIf="isMempoolModule" class="reward text-right" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
+          <td *ngIf="isMempoolModule" class="reward text-end" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
             <app-amount [satoshis]="block.extras.reward" [noFiat]="true" digitsInfo="1.2-2"></app-amount>
           </td>
-          <td *ngIf="isMempoolModule && !auditAvailable || isMempoolModule && !widget" class="fees text-right" [class]="isMempoolModule ? '' : 'legacy'">
+          <td *ngIf="isMempoolModule && !auditAvailable || isMempoolModule && !widget" class="fees text-end" [class]="isMempoolModule ? '' : 'legacy'">
             <app-amount [satoshis]="block.extras.totalFees" [noFiat]="true" digitsInfo="1.2-2"></app-amount>
           </td>
           <td *ngIf="auditAvailable" class="fee-delta" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
@@ -76,7 +76,7 @@
               {{ block.extras.feeDelta > 0 ? '+' : '' }}{{ (block.extras.feeDelta * 100) | amountShortener: 2 }}%
             </span>
           </td>
-          <td class="txs text-right" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
+          <td class="txs text-end" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
             {{ block.tx_count | number }}
           </td>
           <td class="size" *ngIf="!widget" [class]="isMempoolModule ? '' : 'legacy'">
@@ -91,28 +91,28 @@
       <ng-template #skeleton>
         <tbody>
           <tr *ngFor="let item of skeletonLines">
-            <td class="height text-left" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
+            <td class="height text-start" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
               <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
-            <td *ngIf="isMempoolModule" class="pool text-left" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
+            <td *ngIf="isMempoolModule" class="pool text-start" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
               <span class="skeleton-loader" style="max-width: 150px"></span>
             </td>
             <td class="timestamp" *ngIf="!widget" [class]="isMempoolModule ? '' : 'legacy'">
               <span class="skeleton-loader" style="max-width: 150px"></span>
             </td>
-            <td *ngIf="auditAvailable" class="health text-right" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
+            <td *ngIf="auditAvailable" class="health text-end" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
               <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
-            <td *ngIf="isMempoolModule" class="reward text-right" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
+            <td *ngIf="isMempoolModule" class="reward text-end" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
               <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
-            <td *ngIf="isMempoolModule && !auditAvailable || isMempoolModule && !widget" class="fees text-right" [class]="isMempoolModule ? '' : 'legacy'">
+            <td *ngIf="isMempoolModule && !auditAvailable || isMempoolModule && !widget" class="fees text-end" [class]="isMempoolModule ? '' : 'legacy'">
               <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
             <td *ngIf="auditAvailable && !widget" class="fee-delta" [class]="isMempoolModule ? '' : 'legacy'">
               <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
-            <td class="txs text-right" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
+            <td class="txs text-end" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
               <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
             <td class="size" *ngIf="!widget" [class]="isMempoolModule ? '' : 'legacy'">
@@ -123,7 +123,7 @@
       </ng-template>
     </table>
 
-    <ngb-pagination *ngIf="!widget" class="pagination-container float-right mt-2" [class]="isLoading ? 'disabled' : ''"
+    <ngb-pagination *ngIf="!widget" class="pagination-container float-end mt-2" [class]="isLoading ? 'disabled' : ''"
       [collectionSize]="blocksCount" [rotate]="true" [maxSize]="maxSize" [pageSize]="15" [(page)]="page"
       (pageChange)="pageChange(page)" [boundaryLinks]="true" [ellipses]="false">
     </ngb-pagination>

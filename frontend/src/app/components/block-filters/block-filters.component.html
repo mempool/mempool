@@ -1,5 +1,5 @@
 <div class="block-filters" [class.filters-active]="activeFilters.length > 0" [class.any-mode]="filterMode === 'or'" [class.none-mode]="filterMode === 'nor'" [class.menu-open]="menuOpen" [class.small]="cssWidth < 500" [class.vsmall]="cssWidth < 400" [class.tiny]="cssWidth < 200">
-  <a *ngIf="menuOpen" [routerLink]="['/docs/faq' | relativeUrl]" fragment="how-do-mempool-goggles-work" class="info-badges float-right" i18n-ngbTooltip="Mempool Goggles&trade; tooltip" ngbTooltip="select filter categories to highlight matching transactions">
+  <a *ngIf="menuOpen" [routerLink]="['/docs/faq' | relativeUrl]" fragment="how-do-mempool-goggles-work" class="info-badges float-end" i18n-ngbTooltip="Mempool Goggles&trade; tooltip" ngbTooltip="select filter categories to highlight matching transactions">
     <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true" size="lg"></fa-icon>
   </a>
   <div class="filter-bar">

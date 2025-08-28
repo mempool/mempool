@@ -6,7 +6,7 @@
   <div *ngIf="poolStats$ | async as poolStats; else loadingMain">
     <div style="display:flex" class="mb-3">
       <img width="50" height="50" src="{{ poolStats['logo'] }}" [alt]="poolStats.pool.name + ' mining pool logo'"
-        onError="this.onerror=null; this.src = '/resources/mining-pools/default.svg'" class="mr-3">
+        onError="this.onerror=null; this.src = '/resources/mining-pools/default.svg'" class="me-3">
       <h1 class="m-0 pt-1 pt-md-0">{{ poolStats.pool.name }}</h1>
     </div>
 
@@ -63,7 +63,7 @@
                   <span class="label" i18n="mining.addresses">Addresses</span>
                   <div *ngIf="poolStats.pool.addresses.length else nodatamobile">
                     <button *ngIf="poolStats.pool.addresses.length >= 2" type="button"
-                      class="btn btn-sm btn-primary float-right small-button mobile" (click)="collapse.toggle()"
+                      class="btn btn-sm btn-primary float-end small-button mobile" (click)="collapse.toggle()"
                       [attr.aria-expanded]="!gfg" aria-controls="collapseExample">
                       <span i18n="show-all">Show all</span> ({{ poolStats.pool.addresses.length }})
                     </button>
@@ -91,19 +91,19 @@
                   <table class="table table-xs table-data">
                     <thead>
                       <tr>
-                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.reward">Reward</th>
-                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.hashrate">Hashrate (24h)</th>
-                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="latest-blocks.avg_health" *ngIf="auditAvailable">Avg Health</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%; padding: 0.1rem;" i18n="mining.reward">Reward</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%; padding: 0.1rem;" i18n="mining.hashrate">Hashrate (24h)</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%; padding: 0.1rem;" i18n="latest-blocks.avg_health" *ngIf="auditAvailable">Avg Health</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <td class="text-center"><app-amount [satoshis]="poolStats.totalReward" digitsInfo="1.0-0" [noFiat]="true" [ignoreViewMode]="true"></app-amount></td>
-                      <td class="text-center">{{ poolStats.estimatedHashrate | amountShortener : 3 : 'H/s' : false : true }}</td>
-                      <td class="text-center" *ngIf="auditAvailable; else emptyTd"><span class="health-badge badge" [class.badge-success]="poolStats.avgBlockHealth >= 99"
-                          [class.badge-warning]="poolStats.avgBlockHealth >= 75 && poolStats.avgBlockHealth < 99" [class.badge-danger]="poolStats.avgBlockHealth < 75"
+                      <td class="text-center" style="padding: 0.1rem;"><app-amount [satoshis]="poolStats.totalReward" digitsInfo="1.0-0" [noFiat]="true" [ignoreViewMode]="true"></app-amount></td>
+                      <td class="text-center" style="padding: 0.1rem;">{{ poolStats.estimatedHashrate | amountShortener : 3 : 'H/s' : false : true }}</td>
+                      <td class="text-center" style="padding: 0.1rem;" *ngIf="auditAvailable; else emptyTd"><span class="health-badge badge" [class.bg-success]="poolStats.avgBlockHealth >= 99"
+                          [class.bg-warning]="poolStats.avgBlockHealth >= 75 && poolStats.avgBlockHealth < 99" [class.bg-danger]="poolStats.avgBlockHealth < 75"
                           *ngIf="poolStats.avgBlockHealth != null; else nullHealth">{{ poolStats.avgBlockHealth }}%</span>
                           <ng-template #nullHealth>
-                            <span class="health-badge badge badge-secondary" i18n="unknown">Unknown</span>
+                            <span class="health-badge badge bg-secondary" i18n="unknown">Unknown</span>
                           </ng-template>
                       </td>
                     </tbody>
@@ -117,17 +117,17 @@
                   <table class="table table-xs table-data">
                     <thead>
                       <tr>
-                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="24h">Blocks (24h)</th>
-                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="1w">1w</th>
-                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="all">All</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%; padding: 0.1rem;" i18n="24h">Blocks (24h)</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%; padding: 0.1rem;" i18n="1w">1w</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%; padding: 0.1rem;" i18n="all">All</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <td class="text-center">{{ formatNumber(poolStats.blockCount['24h'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
+                      <td class="text-center" style="padding: 0.1rem;">{{ formatNumber(poolStats.blockCount['24h'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
                         poolStats.blockShare['24h'], this.locale, '1.0-0') }}%)</td>
-                      <td class="text-center">{{ formatNumber(poolStats.blockCount['1w'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
+                      <td class="text-center" style="padding: 0.1rem;">{{ formatNumber(poolStats.blockCount['1w'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
                         poolStats.blockShare['1w'], this.locale, '1.0-0') }}%)</td>
-                      <td class="text-center">{{ formatNumber(poolStats.blockCount['all'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
+                      <td class="text-center" style="padding: 0.1rem;">{{ formatNumber(poolStats.blockCount['all'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
                         poolStats.blockShare['all'], this.locale, '1.0-0') }}%)</td>
                     </tbody>
                   </table>
@@ -140,13 +140,13 @@
                   <table class="table table-xs table-data">
                     <thead>
                       <tr>
-                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="1w">Out-of-band Fees (1w)</th>
-                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="1m">1m</th>
-                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="all">All</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%; padding: 0.1rem;" i18n="1w">Out-of-band Fees (1w)</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%; padding: 0.1rem;" i18n="1m">1m</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%; padding: 0.1rem;" i18n="all">All</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <td *ngFor="let total of oob" class="text-center clip"><app-amount [satoshis]="total.cost" [digitsInfo]="isMobile() ? '1.2-4' : '1.8-8'" [ignoreViewMode]="true"></app-amount></td>
+                      <td *ngFor="let total of oob" class="text-center clip" style="padding: 0.1rem;"><app-amount [satoshis]="total.cost" [digitsInfo]="isMobile() ? '1.2-4' : '1.8-8'" [ignoreViewMode]="true"></app-amount></td>
                     </tbody>
                   </table>
                 </td>
@@ -303,11 +303,11 @@
         <th class="height" i18n="latest-blocks.height">Height</th>
         <th class="timestamp" i18n="latest-blocks.timestamp">Timestamp</th>
         <th class="mined" i18n="latest-blocks.mined">Mined</th>
-        <th class="coinbase text-left" i18n="latest-blocks.coinbasetag">Coinbase tag</th>
-        <th *ngIf="auditAvailable" class="health text-right" i18n="latest-blocks.health">Health</th>
-        <th class="reward text-right" i18n="latest-blocks.reward">Reward</th>
-        <th *ngIf="!auditAvailable" class="fees text-right" i18n="latest-blocks.fees">Fees</th>
-        <th class="txs text-right" i18n="dashboard.txs">TXs</th>
+        <th class="coinbase text-start" i18n="latest-blocks.coinbasetag">Coinbase tag</th>
+        <th *ngIf="auditAvailable" class="health text-end" i18n="latest-blocks.health">Health</th>
+        <th class="reward text-end" i18n="latest-blocks.reward">Reward</th>
+        <th *ngIf="!auditAvailable" class="fees text-end" i18n="latest-blocks.fees">Fees</th>
+        <th class="txs text-end" i18n="dashboard.txs">TXs</th>
         <th class="size" i18n="latest-blocks.size">Size</th>
       </thead>
       <tbody [style]="isLoading ? 'opacity: 0.75' : ''">
@@ -322,31 +322,31 @@
             <app-time kind="since" [time]="block.timestamp" [fastRender]="true" [showTooltip]="true"></app-time>
           </td>
           <td class="coinbase">
-            <span class="badge badge-secondary scriptmessage longer">
+            <span class="badge bg-secondary scriptmessage longer">
               {{ block.extras.coinbaseRaw | hex2ascii }}
             </span>
           </td>
-          <td *ngIf="auditAvailable" class="health text-right">
+          <td *ngIf="auditAvailable" class="health text-end">
             <a
               class="health-badge badge"
-              [class.badge-success]="block.extras.matchRate >= 99"
-              [class.badge-warning]="block.extras.matchRate >= 75 && block.extras.matchRate < 99"
-              [class.badge-danger]="block.extras.matchRate < 75"
+              [class.bg-success]="block.extras.matchRate >= 99"
+              [class.bg-warning]="block.extras.matchRate >= 75 && block.extras.matchRate < 99"
+              [class.bg-danger]="block.extras.matchRate < 75"
               [routerLink]="block.extras.matchRate != null ? ['/block/' | relativeUrl, block.id] : null"
               [state]="{ data: { block: block } }"
               *ngIf="block.extras.matchRate != null; else nullHealth"
             >{{ block.extras.matchRate }}%</a>
             <ng-template #nullHealth>
-              <span class="health-badge badge badge-secondary" i18n="unknown">Unknown</span>
+              <span class="health-badge badge bg-secondary" i18n="unknown">Unknown</span>
             </ng-template>
           </td>
-          <td class="reward text-right">
+          <td class="reward text-end">
             <app-amount [satoshis]="block.extras.reward" digitsInfo="1.2-2" [noFiat]="true" [ignoreViewMode]="true"></app-amount>
           </td>
-          <td *ngIf="!auditAvailable" class="fees text-right">
+          <td *ngIf="!auditAvailable" class="fees text-end">
             <app-amount [satoshis]="block.extras.totalFees" digitsInfo="1.2-2" [noFiat]="true" [ignoreViewMode]="true"></app-amount>
           </td>
-          <td class="txs text-right">
+          <td class="txs text-end">
             {{ block.tx_count | number }}
           </td>
           <td class="size">
@@ -365,10 +365,10 @@
         <th class="height" i18n="latest-blocks.height">Height</th>
         <th class="timestamp" i18n="latest-blocks.timestamp">Timestamp</th>
         <th class="mined" i18n="latest-blocks.mined">Mined</th>
-        <th class="coinbase text-left" i18n="latest-blocks.coinbasetag">Coinbase tag</th>
-        <th class="reward text-right" i18n="latest-blocks.reward">Reward</th>
-        <th class="fees text-right" i18n="latest-blocks.fees">Fees</th>
-        <th class="txs text-right" i18n="dashboard.txs">TXs</th>
+        <th class="coinbase text-start" i18n="latest-blocks.coinbasetag">Coinbase tag</th>
+        <th class="reward text-end" i18n="latest-blocks.reward">Reward</th>
+        <th class="fees text-end" i18n="latest-blocks.fees">Fees</th>
+        <th class="txs text-end" i18n="dashboard.txs">TXs</th>
         <th class="size" i18n="latest-blocks.size">Size</th>
       </thead>
       <tbody>
@@ -385,16 +385,16 @@
           <td class="coinbase">
             <span class="skeleton-loader"></span>
           </td>
-          <td class="reward text-right">
+          <td class="reward text-end">
             <span class="skeleton-loader"></span>
           </td>
-          <td class="fees text-right">
+          <td class="fees text-end">
             <span class="skeleton-loader"></span>
           </td>
-          <td class="txs text-right">
+          <td class="txs text-end">
             <span class="skeleton-loader"></span>
           </td>
-          <td class="size text-right">
+          <td class="size text-end">
             <span class="skeleton-loader"></span>
           </td>
         </tr>
@@ -408,7 +408,7 @@
 <ng-template #loadingMain>
   <div>
     <div class="mb-3" style="display:flex; position: relative">
-      <div class="skeleton-loader mr-3" style="width: 50px; height: 50px"></div>
+      <div class="skeleton-loader me-3" style="width: 50px; height: 50px"></div>
       <h1 class="m-0 pt-1 pt-md-0">
         <div class="skeleton-loader" style="position: absolute; top: 32%; width: 150px; height: 20px"></div>
       </h1>
