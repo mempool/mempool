@@ -25,6 +25,17 @@
   font-weight: normal;
 }
 
+.timestamp-info {
+  color: #fff;
+  position: relative;
+  z-index: 11;
+  font-size: 14px;
+  margin-left: 4px;
+  transition: color 0.15s ease-in-out;
+  &:hover {
+    color: var(--info);
+  }
+}
 
 .on-pool {
   align-items: center;
