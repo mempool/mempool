@@ -184,7 +184,7 @@ class PriceUpdater {
 
   private setLatestPrice(currency, price): void {
     this.latestPrices[currency] = price;
-    if (price ?? price > -1) {
+    if (price > 0) {
       this.latestGoodPrices[currency] = price;
       this.latestGoodPrices.time = Math.round(new Date().getTime() / 1000);
     }
