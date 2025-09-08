@@ -1,4 +1,5 @@
 import logger from '../logger';
+import { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import bitcoinClient from './bitcoin/bitcoin-client';
 
 export interface ChainTip {
@@ -17,6 +18,7 @@ export interface OrphanedBlock {
 
 class ChainTips {
   private chainTips: ChainTip[] = [];
+  private maybeOrphanedBlocks: { [hash: string]: boolean } = {};
   private orphanedBlocks: { [hash: string]: OrphanedBlock } = {};
   private blockCache: { [hash: string]: OrphanedBlock } = {};
   private orphansByHeight: { [height: number]: OrphanedBlock[] } = {};
@@ -28,7 +30,7 @@ class ChainTips {
       const start = Date.now();
       const breakAt = start + 10000;
       let newOrphans = 0;
-      this.orphanedBlocks = {};
+      const newOrphanedBlocks = {};
 
       for (const chain of this.chainTips) {
         if (chain.status === 'valid-fork' || chain.status === 'valid-headers') {
@@ -37,12 +39,12 @@ class ChainTips {
           do {
             let orphan = this.blockCache[hash];
             if (!orphan) {
-              const block = await bitcoinClient.getBlock(hash);
-              if (block && block.confirmations === -1) {
+              const block = await bitcoinCoreApi.$getBlock(hash);
+              if (block && block.stale) {
                 newOrphans++;
                 orphan = {
                   height: block.height,
-                  hash: block.hash,
+                  hash: block.id,
                   status: chain.status,
                   prevhash: block.previousblockhash,
                 };
@@ -55,7 +57,7 @@ class ChainTips {
             hash = orphan?.prevhash;
           } while (hash && (Date.now() < breakAt));
           for (const orphan of orphans) {
-            this.orphanedBlocks[orphan.hash] = orphan;
+            newOrphanedBlocks[orphan.hash] = orphan;
           }
         }
         if (Date.now() >= breakAt) {
@@ -65,6 +67,7 @@ class ChainTips {
       }
 
       this.orphansByHeight = {};
+      this.orphanedBlocks = newOrphanedBlocks;
       const allOrphans = Object.values(this.orphanedBlocks);
       for (const orphan of allOrphans) {
         if (!this.orphansByHeight[orphan.height]) {
@@ -89,6 +92,10 @@ class ChainTips {
 
   public getChainTips(): ChainTip[] {
     return this.chainTips;
+  }
+
+  public isOrphaned(hash: string): boolean {
+    return !!this.orphanedBlocks[hash] || this.blockCache[hash]?.status === 'valid-fork' || this.blockCache[hash]?.status === 'valid-headers';
   }
 }
 
