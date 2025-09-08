@@ -474,9 +474,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     if (this.processing) {
       return;
     }
-    if (this.conversionsSubscription) {
-      this.conversionsSubscription.unsubscribe();
-    }
 
     this.processing = true;
 
@@ -591,9 +588,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   async requestGooglePayPayment(): Promise<void> {
     if (this.processing) {
       return;
-    }
-    if (this.conversionsSubscription) {
-      this.conversionsSubscription.unsubscribe();
     }
     
     this.processing = true;
@@ -713,9 +707,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     if (this.processing) {
       return;
     }
-    if (this.conversionsSubscription) {
-      this.conversionsSubscription.unsubscribe();
-    }
     
     this.processing = true;
 
@@ -812,9 +803,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   async requestCashAppPayment(): Promise<void> {
     if (this.processing) {
       return;
-    }
-    if (this.conversionsSubscription) {
-      this.conversionsSubscription.unsubscribe();
     }
 
     this.processing = true;
