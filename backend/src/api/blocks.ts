@@ -267,7 +267,7 @@ class Blocks {
       extras.segwitTotalSize = 0;
       extras.segwitTotalWeight = 0;
     } else {
-      const stats: IBitcoinApi.BlockStats = await bitcoinClient.getBlockStats(block.id);
+      const stats: IBitcoinApi.BlockStats = await this.$getBlockStats(block, transactions);
       let feeStats = {
         medianFee: stats.feerate_percentiles[2], // 50th percentiles
         feeRange: [stats.minfeerate, stats.feerate_percentiles, stats.maxfeerate].flat(),
@@ -366,6 +366,79 @@ class Blocks {
 
     blk.extras = <BlockExtension>extras;
     return <BlockExtended>blk;
+  }
+
+  private async $getBlockStats(block: IEsploraApi.Block, transactions: TransactionExtended[]): Promise<IBitcoinApi.BlockStats> {
+    if (!block.stale) {
+      return bitcoinClient.getBlockStats(block.id);
+    }
+
+    // TODO: make these match the definitions used by the RPC response
+    const totalFee = transactions.reduce((acc, tx) => acc + tx.fee, 0);
+    const totalVsize = transactions.reduce((acc, tx) => acc + tx.vsize, 0);
+    const totalReward = transactions[0].vout.reduce((acc, vout) => acc + vout.value, 0);
+    const sortedByFee = transactions.sort((a, b) => a.fee - b.fee);
+    const sortedByVsize = transactions.sort((a, b) => a.vsize - b.vsize);
+    const sortedByFeerate = transactions.sort((a, b) => (a.fee / a.weight) - (b.fee / b.weight));
+    const sortedFeerates = sortedByFeerate.map(tx => (tx.fee / (tx.weight / 4)));
+    const avgfee = totalFee / transactions.length;
+    const avgfeerate = totalFee / (block.weight / 4);
+    const avgtxsize = totalVsize / transactions.length;
+    const medianfee = sortedByFee[Math.floor(transactions.length / 2)].fee;
+    const mediantime = block.timestamp;
+    const mediantxsize = sortedByVsize[Math.floor(transactions.length / 2)].vsize;
+    const minfee = sortedByFee[0].fee;
+    const maxfee = sortedByFee[sortedByFee.length - 1].fee;
+    const minfeerate = sortedFeerates[0];
+    const maxfeerate = sortedFeerates[sortedFeerates.length - 1];
+    const mintxsize = sortedByVsize[0].vsize;
+    const maxtxsize = sortedByVsize[sortedByVsize.length - 1].vsize;
+    const ins = transactions.reduce((acc, tx) => acc + tx.vin.length, 0);
+    const outs = transactions.reduce((acc, tx) => acc + tx.vout.length, 0);
+    const subsidy = totalReward - totalFee;
+    const swtotal_size = 0;
+    const swtotal_weight = 0;
+    const swtxs = 0;
+    const time = block.timestamp;
+    const total_out = transactions.reduce((acc, tx) => acc + tx.vout.reduce((acc, vout) => acc + vout.value, 0), 0);
+    const total_size = block.size;
+    const total_weight = block.weight;
+    const totalfee = totalFee;
+    const txs = transactions.length;
+    const utxo_increase = 0;
+    const utxo_size_inc = 0;
+
+    return {
+      avgfee,
+      avgfeerate,
+      avgtxsize,
+      blockhash: block.id,
+      feerate_percentiles: [minfeerate, sortedFeerates[Math.floor(transactions.length / 4)], medianfee, sortedFeerates[Math.floor(transactions.length * 3 / 4)], maxfeerate],
+      height: block.height,
+      ins,
+      maxfee,
+      maxfeerate,
+      maxtxsize,
+      medianfee,
+      mediantime,
+      mediantxsize,
+      minfee,
+      minfeerate,
+      mintxsize,
+      outs,
+      subsidy,
+      swtotal_size,
+      swtotal_weight,
+      swtxs,
+      time,
+      total_out,
+      total_size,
+      total_weight,
+      totalfee,
+      txs,
+      utxo_increase,
+      utxo_size_inc,
+    };
   }
 
   /**
@@ -1465,7 +1538,7 @@ class Blocks {
 
   public async $getBlockDefinitionHashes(): Promise<string[] | null> {
     try {
-      const [rows]: any = await database.query(`SELECT DISTINCT(definition_hash) FROM blocks`);
+      const [rows]: any = await database.query(`SELECT DISTINCT(definition_hash) FROM blocks WHERE stale = 0`);
       if (rows && Array.isArray(rows)) {
         return rows.map(r => r.definition_hash);
       } else {
@@ -1480,7 +1553,7 @@ class Blocks {
 
   public async $getBlocksByDefinitionHash(definitionHash: string): Promise<string[] | null> {
     try {
-      const [rows]: any = await database.query(`SELECT hash FROM blocks WHERE definition_hash = ?`, [definitionHash]);
+      const [rows]: any = await database.query(`SELECT hash FROM blocks WHERE definition_hash = ? AND stale = 0`, [definitionHash]);
       if (rows && Array.isArray(rows)) {
         return rows.map(r => r.hash);
       } else {
