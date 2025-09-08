@@ -647,61 +647,78 @@ class BlocksRepository {
   }
 
   /**
-   * Check if the chain of block hash is valid and delete data from the stale branch if needed
+   * Check if the canonical chain of blocks is valid and fix it if needed
    */
   public async $validateChain(): Promise<boolean> {
     try {
       const start = new Date().getTime();
+      const tip = await bitcoinApi.$getBlockHashTip();
+      let firstBadBlockHeight: number | null = null;
       const [blocks]: any[] = await DB.query(`
         SELECT
           height,
           hash,
           previous_block_hash,
-          UNIX_TIMESTAMP(blockTimestamp) AS timestamp
+          UNIX_TIMESTAMP(blockTimestamp) AS timestamp,
+          stale
         FROM blocks
-        ORDER BY height
+        ORDER BY height DESC
       `);
-
-      let partialMsg = false;
-      let idx = 1;
-      while (idx < blocks.length) {
-        if (blocks[idx].height - 1 !== blocks[idx - 1].height) {
-          if (partialMsg === false) {
-            logger.info('Some blocks are not indexed, skipping missing blocks during chain validation');
-            partialMsg = true;
-          }
-          ++idx;
-          continue;
+      const blocksByHash = {};
+      const blocksByHeight = {};
+      let minHeight = Infinity;
+      for (const block of blocks) {
+        blocksByHash[block.hash] = block;
+        if (!blocksByHeight[block.height]) {
+          blocksByHeight[block.height] = [block];
+        } else {
+          blocksByHeight[block.height].push(block);
         }
-
-        if (blocks[idx].previous_block_hash !== blocks[idx - 1].hash) {
-          logger.warn(`Chain divergence detected at block ${blocks[idx - 1].height}`);
-          await this.$deleteBlocksFrom(blocks[idx - 1].height);
-          await HashratesRepository.$deleteHashratesFromTimestamp(blocks[idx - 1].timestamp - 604800);
-          await DifficultyAdjustmentsRepository.$deleteAdjustementsFromHeight(blocks[idx - 1].height);
-          return false;
-        }
-        ++idx;
+        minHeight = block.height;
       }
 
-      logger.debug(`${idx} blocks hash validated in ${new Date().getTime() - start} ms`);
+      // ensure that indexed blocks are correctly classified as stale or canonical
+      // iterate back to genesis, resetting canonical status where necessary
+      let hash = tip;
+      const tipHeight = blocksByHash[hash].height || (await bitcoinApi.$getBlock(hash))?.height;
+      for (let height = tipHeight; height > 0; height--) {
+        const block = blocksByHash[hash];
+        if (!block) {
+          // block hasn't been indexed
+          // mark any other blocks at this height as stale
+          if (blocksByHeight[height]?.length > 1) {
+            await this.$setCanonicalBlockAtHeight(null, height);
+          }
+        } else if (block.stale) {
+          // block is marked stale, but shouldn't be
+          await this.$setCanonicalBlockAtHeight(block.hash, height);
+          firstBadBlockHeight = height;
+        }
+        hash = block?.previous_block_hash;
+        if (!hash) {
+          if (height < minHeight) {
+            // we haven't indexed anything below this height anyway
+            height = -1;
+            break;
+          } else {
+            logger.info('Some blocks are not indexed, looking up prevhashes directly for chain validation');
+            hash = await bitcoinApi.$getBlockHash(height - 1);
+          }
+        }
+      }
+
+      if (firstBadBlockHeight != null) {
+        logger.warn(`Chain divergence detected at block ${firstBadBlockHeight}`);
+        await HashratesRepository.$deleteHashratesFromTimestamp(blocksByHash[firstBadBlockHeight].timestamp - 604800);
+        await DifficultyAdjustmentsRepository.$deleteAdjustementsFromHeight(firstBadBlockHeight);
+        return false;
+      }
+
+      logger.debug(`validated best chain of ${tipHeight} blocks in ${new Date().getTime() - start} ms`);
       return true;
     } catch (e) {
       logger.err('Cannot validate chain of block hash. Reason: ' + (e instanceof Error ? e.message : e));
       return true; // Don't do anything if there is a db error
-    }
-  }
-
-  /**
-   * Delete blocks from the database from blockHeight
-   */
-  public async $deleteBlocksFrom(blockHeight: number) {
-    logger.info(`Delete newer blocks from height ${blockHeight} from the database`, logger.tags.mining);
-
-    try {
-      await DB.query(`DELETE FROM blocks where height >= ${blockHeight}`);
-    } catch (e) {
-      logger.err('Cannot delete indexed blocks. Reason: ' + (e instanceof Error ? e.message : e));
     }
   }
 
