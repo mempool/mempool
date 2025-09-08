@@ -8,6 +8,7 @@ import logger from '../../logger';
 import { Common } from '../common';
 import { SubmitPackageResult, TestMempoolAcceptResult } from './bitcoin-api.interface';
 import os from 'os';
+import { bitcoinCoreApi } from './bitcoin-api-factory';
 interface FailoverHost {
   host: string,
   rtts: number[],
@@ -408,12 +409,36 @@ class ElectrsApi implements AbstractBitcoinApi {
     return this.failoverRouter.$get<string>('/blocks/tip/hash');
   }
 
-  $getTxIdsForBlock(hash: string): Promise<string[]> {
-    return this.failoverRouter.$get<string[]>('/block/' + hash + '/txids');
+  async $getTxIdsForBlock(hash: string, fallbackToCore = false): Promise<string[]> {
+    try {
+      const txids = await this.failoverRouter.$get<string[]>('/block/' + hash + '/txids');
+      return txids;
+    } catch (e) {
+      if (fallbackToCore && isAxiosError(e) && e.response?.status === 404) {
+        // might be a stale block, see if Core has it?
+        const coreBlock = await bitcoinCoreApi.$getBlock(hash);
+        if (coreBlock?.stale) {
+          return bitcoinCoreApi.$getTxIdsForBlock(hash);
+        }
+      }
+      throw e;
+    }
   }
 
-  $getTxsForBlock(hash: string): Promise<IEsploraApi.Transaction[]> {
-    return this.failoverRouter.$get<IEsploraApi.Transaction[]>('/internal/block/' + hash + '/txs');
+  async $getTxsForBlock(hash: string, fallbackToCore = false): Promise<IEsploraApi.Transaction[]> {
+    try {
+      const txs = await this.failoverRouter.$get<IEsploraApi.Transaction[]>('/internal/block/' + hash + '/txs');
+      return txs;
+    } catch (e) {
+      if (fallbackToCore && isAxiosError(e) && e.response?.status === 404) {
+        // might be a stale block, see if Core has it?
+        const coreBlock = await bitcoinCoreApi.$getBlock(hash);
+        if (coreBlock?.stale) {
+          return bitcoinCoreApi.$getTxsForBlock(hash);
+        }
+      }
+      throw e;
+    }
   }
 
   $getBlockHash(height: number): Promise<string> {

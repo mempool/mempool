@@ -1,4 +1,4 @@
-import bitcoinApi from '../api/bitcoin/bitcoin-api-factory';
+import bitcoinApi, { bitcoinCoreApi } from '../api/bitcoin/bitcoin-api-factory';
 import { BlockExtended, BlockExtension, BlockPrice, EffectiveFeeStats } from '../mempool.interfaces';
 import DB from '../database';
 import logger from '../logger';
@@ -1201,11 +1201,10 @@ class BlocksRepository {
     {
       extras.feePercentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(dbBlk.id);
       if (extras.feePercentiles === null) {
-
         let summary;
         let summaryVersion = 0;
         if (config.MEMPOOL.BACKEND === 'esplora') {
-          const txs = (await bitcoinApi.$getTxsForBlock(dbBlk.id)).map(tx => transactionUtils.extendTransaction(tx));
+          const txs = (await bitcoinApi.$getTxsForBlock(dbBlk.id, dbBlk.stale)).map(tx => transactionUtils.extendTransaction(tx));
           summary = blocks.summarizeBlockTransactions(dbBlk.id, dbBlk.height, txs);
           summaryVersion = 1;
         } else {
