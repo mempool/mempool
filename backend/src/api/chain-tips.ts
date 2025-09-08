@@ -94,6 +94,19 @@ class ChainTips {
     return this.chainTips;
   }
 
+  clearOrphanCacheAboveHeight(height: number): void {
+    for (const h in this.orphansByHeight) {
+      if (Number(h) > height) {
+        const orphans = this.orphansByHeight[h];
+        delete this.orphansByHeight[h];
+        for (const o of orphans) {
+          delete this.orphanedBlocks[o.hash];
+          delete this.blockCache[o.hash];
+        }
+      }
+    }
+  }
+
   public isOrphaned(hash: string): boolean {
     return !!this.orphanedBlocks[hash] || this.blockCache[hash]?.status === 'valid-fork' || this.blockCache[hash]?.status === 'valid-headers';
   }

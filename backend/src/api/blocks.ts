@@ -975,11 +975,6 @@ class Blocks {
       } else {
         this.currentBlockHeight++;
         logger.debug(`New block found (#${this.currentBlockHeight})!`);
-        // skip updating the orphan block cache if we've fallen behind the chain tip
-        if (this.currentBlockHeight >= blockHeightTip - 2) {
-          this.updateTimerProgress(timer, `getting orphaned blocks for ${this.currentBlockHeight}`);
-          await chainTips.updateOrphanedBlocks();
-        }
       }
 
       this.updateTimerProgress(timer, `getting block data for ${this.currentBlockHeight}`);
@@ -1008,38 +1003,7 @@ class Blocks {
 
       if (Common.indexingEnabled()) {
         if (!fastForwarded) {
-          const lastBlock = await blocksRepository.$getBlockByHeight(blockExtended.height - 1);
-          this.updateTimerProgress(timer, `got block by height for ${this.currentBlockHeight}`);
-          if (lastBlock !== null && blockExtended.previousblockhash !== lastBlock.id) {
-            logger.warn(`Chain divergence detected at block ${lastBlock.height}, re-indexing most recent data`, logger.tags.mining);
-            // We assume there won't be a reorg with more than 10 block depth
-            this.updateTimerProgress(timer, `rolling back diverged chain from ${this.currentBlockHeight}`);
-            await BlocksRepository.$deleteBlocksFrom(lastBlock.height - 10);
-            await HashratesRepository.$deleteLastEntries();
-            await cpfpRepository.$deleteClustersFrom(lastBlock.height - 10);
-            await AccelerationRepository.$deleteAccelerationsFrom(lastBlock.height - 10);
-            this.blocks = this.blocks.slice(0, -10);
-            this.updateTimerProgress(timer, `rolled back chain divergence from ${this.currentBlockHeight}`);
-            for (let i = 10; i >= 0; --i) {
-              const newBlock = await this.$indexBlock(lastBlock.height - i);
-              this.blocks.push(newBlock);
-              this.updateTimerProgress(timer, `reindexed block`);
-              let newCpfpSummary;
-              if (config.MEMPOOL.CPFP_INDEXING) {
-                newCpfpSummary = await this.$indexCPFP(newBlock.id, lastBlock.height - i);
-                this.updateTimerProgress(timer, `reindexed block cpfp`);
-              }
-              await this.$getStrippedBlockTransactions(newBlock.id, true, true, newCpfpSummary, newBlock.height);
-              this.updateTimerProgress(timer, `reindexed block summary`);
-            }
-            await mining.$indexDifficultyAdjustments();
-            await DifficultyAdjustmentsRepository.$deleteLastAdjustment();
-            this.updateTimerProgress(timer, `reindexed difficulty adjustments`);
-            logger.info(`Re-indexed 10 blocks and summaries. Also re-indexed the last difficulty adjustments. Will re-index latest hashrates in a few seconds.`, logger.tags.mining);
-            indexer.reindex();
-
-            websocketHandler.handleReorg();
-          }
+          await this.$handleReorgs(blockExtended, timer);
         }
 
         await blocksRepository.$saveBlockInDatabase(blockExtended);
@@ -1109,6 +1073,12 @@ class Blocks {
         }
         this.lastDifficultyAdjustmentTime = block.timestamp;
         this.currentBits = block.bits;
+      }
+
+      // skip updating the orphan block cache if we've fallen behind the chain tip
+      if (this.currentBlockHeight >= blockHeightTip - 2) {
+        this.updateTimerProgress(timer, `getting orphaned blocks for ${this.currentBlockHeight}`);
+        await chainTips.updateOrphanedBlocks();
       }
 
       // wait for pending async callbacks to finish
@@ -1185,6 +1155,75 @@ class Blocks {
     // not already indexed
     const hash = await bitcoinApi.$getBlockHash(height);
     return this.$indexBlock(hash);
+  }
+
+  private async $handleReorgs(blockExtended: BlockExtended, timer: any): Promise<void> {
+    let forkTail = blockExtended;
+    let currentlyIndexed = await blocksRepository.$getBlockByHeight(forkTail.height - 1);
+    this.updateTimerProgress(timer, `got block by height at previous tip ${forkTail.height - 1}`);
+
+    // previous blockhash is not what we expected: there has been a reorg
+    if (currentlyIndexed !== null && forkTail.previousblockhash !== currentlyIndexed.id) {
+      logger.warn(`Chain divergence detected at block ${blockExtended.height}, re-indexing most recent data`, logger.tags.mining);
+      this.updateTimerProgress(timer, `reconnecting diverged chain from ${this.currentBlockHeight}`);
+      const newBlocks: BlockExtended[] = [];
+    // walk back along the chain until we reach the fork point
+      while (currentlyIndexed !== null && forkTail.previousblockhash !== currentlyIndexed.id) {
+        const newBlock = await this.$indexBlock(forkTail.previousblockhash);
+        await blocksRepository.$setCanonicalBlockAtHeight(newBlock.id, newBlock.height);
+        newBlocks.push(newBlock);
+        this.updateTimerProgress(timer, `reindexed block at ${newBlock.height} (${newBlock.id})`);
+        let newCpfpSummary;
+        if (config.MEMPOOL.CPFP_INDEXING) {
+          newCpfpSummary = await this.$indexCPFP(newBlock.id, newBlock.height);
+          this.updateTimerProgress(timer, `reindexed block cpfp`);
+        }
+        await this.$getStrippedBlockTransactions(newBlock.id, true, true, newCpfpSummary, newBlock.height);
+        this.updateTimerProgress(timer, `reindexed block summary`);
+
+        forkTail = newBlock;
+        currentlyIndexed = await blocksRepository.$getBlockByHeight(forkTail.height - 1);
+        this.updateTimerProgress(timer, `got block by height for ${forkTail.height - 1}`);
+      }
+
+      // rebuild the block cache
+      let currentBlock = forkTail;
+      const cachedBlocksByHash = {};
+      for (const cached of this.blocks) {
+        cachedBlocksByHash[cached.id] = cached;
+      }
+      while (currentBlock.height > 0 && newBlocks.length < (config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4)) {
+        const newBlock = cachedBlocksByHash[currentBlock.previousblockhash] || await blocksRepository.$getBlockByHash(currentBlock.previousblockhash);
+        if (newBlock) {
+          newBlocks.push(newBlock);
+          currentBlock = newBlock;
+        } else {
+          break;
+        }
+      }
+      this.updateTimerProgress(timer, `rebuilt block cache`);
+
+      // force re-indexing of block-related data
+      await HashratesRepository.$deleteHashratesFromTimestamp(forkTail.timestamp - 604800);
+      await DifficultyAdjustmentsRepository.$deleteAdjustementsFromHeight(forkTail.height);
+      await cpfpRepository.$deleteClustersFrom(forkTail.height);
+      await AccelerationRepository.$deleteAccelerationsFrom(forkTail.height);
+      chainTips.clearOrphanCacheAboveHeight(forkTail.height);
+      this.updateTimerProgress(timer, `deleted stale block data`);
+
+      this.blocks = newBlocks;
+      if (this.blocks.length > config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4) {
+        this.blocks = this.blocks.slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4);
+      }
+      this.updateTimerProgress(timer, `connected new best chain from ${forkTail.height} to ${this.currentBlockHeight}`);
+
+      await mining.$indexDifficultyAdjustments();
+      this.updateTimerProgress(timer, `reindexed difficulty adjustments`);
+      logger.info(`Re-indexed ${this.currentBlockHeight - forkTail.height} blocks and summaries. Also re-indexed the last difficulty adjustments. Will re-index latest hashrates in a few seconds.`, logger.tags.mining);
+      indexer.reindex();
+
+      websocketHandler.handleReorg();
+    }
   }
 
   /**
