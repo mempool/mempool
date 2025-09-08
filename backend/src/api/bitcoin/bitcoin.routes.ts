@@ -530,7 +530,13 @@ class BitcoinRoutes {
     try {
       if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) { // Bitcoin
         res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
-        res.json(chainTips.getChainTips());
+        const tips = await chainTips.getChainTips();
+        if (tips.length > 0) {
+          res.json(tips);
+        } else {
+          handleError(req, res, 503, `Temporarily unavailable`);
+          return;
+        }
       } else { // Liquid
         handleError(req, res, 404, `This API is only available for Bitcoin networks`);
         return;
