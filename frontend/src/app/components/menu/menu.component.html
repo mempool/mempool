@@ -9,15 +9,15 @@
             <ng-template #usernamenospace>&#64;{{ user.username }}</ng-template>
           </strong>
         </span>
-        <span class="badge mr-1 badge-og" *ngIf="user.ogRank">
+        <span class="badge me-1 badge-og" *ngIf="user.ogRank">
           OG #{{ user.ogRank }}
         </span>
         @if (user.subscription_tag !== 'free') {
-          <span class="badge mr-1 badge-default" [class]="'badge-' + user.subscription_tag">
+          <span class="badge me-1 badge-default" [class]="'badge-' + user.subscription_tag">
             {{ user.subscription_tag.toUpperCase() }}
           </span>
         } @else if (user.type === 'mining_pool') {
-          <span class="badge mr-1 badge-default" [class]="'badge-mining-pool'">
+          <span class="badge me-1 badge-default" [class]="'badge-mining-pool'">
             MINING POOL
           </span>
         }
