@@ -117,6 +117,12 @@ class BitcoinApi implements AbstractBitcoinApi {
     const transactions: IEsploraApi.Transaction[] = [];
     for (const tx of verboseBlock.tx) {
       const converted = await this.$convertTransaction(tx, true, false, verboseBlock.confirmations === -1);
+      converted.status = {
+        confirmed: true,
+        block_height: verboseBlock.height,
+        block_hash: hash,
+        block_time: verboseBlock.time,
+      };
       transactions.push(converted);
     }
     return transactions;
