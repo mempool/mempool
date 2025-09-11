@@ -326,9 +326,18 @@ export class TaprootAddressScriptsComponent implements OnChanges {
 
           let hiddenScriptsMessage = '';
           if (node.tooltip[0].label === 'Hash') {
+            const remaining = 128 - (node.depth ?? 0);
+            let upperBoundHtml: string;
+            if (remaining === 0) {
+              upperBoundHtml = '1';
+            } else if (remaining <= 39) {
+              upperBoundHtml = (2 ** remaining).toLocaleString();
+            } else {
+              upperBoundHtml = `2<sup style="font-size: 0.85em;">${remaining}</sup>`;
+            }
             hiddenScriptsMessage = `
               <div style="margin-top: 8px; color: #888; font-size: 11px; line-height: 1.3; font-style: italic; border-top: 1px solid #333; padding-top: 6px; word-break: break-word; white-space: normal">
-                This node might commit to one or more scripts that have not been revealed yet.
+                This node might commit to ${upperBoundHtml === '1' ? 'exactly 1 script' : `at most ${upperBoundHtml} scripts`}.
               </div>`;
           }
 
