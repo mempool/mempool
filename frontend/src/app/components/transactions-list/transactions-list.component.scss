@@ -1,12 +1,18 @@
 .col {
 	&:first-child {
 		padding-right: 0;
+		@media (max-width: 992px) {
+			padding-right: 15px;
+		}
 		td:last-child {
 			padding-right: calc(0.3em + 15px);
 		}
 	}
 	&:last-child {
 		padding-left: 0;
+		@media (max-width: 992px) {
+			padding-left: 15px;
+		}
 		td:first-child {
 			padding-left: calc(0.3em + 15px);
 		}
