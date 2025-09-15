@@ -171,6 +171,12 @@ export function defaultColorFunction(
       } else {
         return levelColor;
       }
+    case 'unmatched':
+      if (tx.context === 'stale') {
+        return auditColors.censored;
+      } else {
+        return auditColors.added;
+      }
     default:
       if (tx.acc) {
         return auditColors.accelerated;
