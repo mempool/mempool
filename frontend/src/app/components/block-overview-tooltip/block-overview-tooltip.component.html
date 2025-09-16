@@ -87,6 +87,8 @@
             <span *ngSwitchCase="'selected'" class="badge badge-warning" i18n="transaction.audit.marginal">Marginal fee rate</span>
             <span *ngSwitchCase="'rbf'" class="badge badge-warning" i18n="tx-features.tag.conflict|Conflict">Conflict</span>
             <span *ngSwitchCase="'accelerated'" class="badge badge-accelerated" i18n="transaction.audit.accelerated">Accelerated</span>
+            <span *ngSwitchCase="'matched'" class="badge badge-success" i18n="transaction.audit.match">Match</span>
+            <span *ngSwitchCase="'unmatched'" class="badge badge-warning" i18n="transaction.audit.no-match">No Match</span>
           </ng-container>
         </td>
       </tr>
