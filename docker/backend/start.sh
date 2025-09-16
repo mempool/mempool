@@ -1,4 +1,5 @@
 #!/bin/sh
+#TODO refactor, redundant wall of text. possible array + sed loop
 
 # MEMPOOL
 __MEMPOOL_NETWORK__=${MEMPOOL_NETWORK:=mainnet}
