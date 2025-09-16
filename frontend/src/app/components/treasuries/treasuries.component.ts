@@ -21,6 +21,7 @@ export class TreasuriesComponent implements OnInit, OnDestroy {
   error: any;
   walletSubscriptions: Subscription[] = [];
   currentSortedTreasuries: Treasury[] = [];
+  priceGraphHeight = 335;
 
   // Individual wallet data
   walletObservables: Record<string, Observable<Record<string, any>>> = {};
