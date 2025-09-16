@@ -32,10 +32,10 @@
       <tr>
         <td class="td-width" i18n="transaction.status|Transaction Status">Status</td>
         <td>
-          <span *ngIf="rbfInfo.tx.fullRbf" class="badge badge-info" i18n="transaction.full-rbf">Full RBF</span>
-          <span *ngIf="rbfInfo.tx.rbf; else rbfDisabled" class="badge badge-success" i18n="tx-features.tag.rbf|RBF">RBF</span>
-          <ng-template #rbfDisabled><span class="badge badge-danger mr-1"><del i18n="tx-features.tag.rbf|RBF">RBF</del></span></ng-template>
-          <span *ngIf="rbfInfo.tx.mined" class="badge badge-success" i18n="transaction.rbf.mined">Mined</span>
+          <span *ngIf="rbfInfo.tx.fullRbf" class="badge bg-info" i18n="transaction.full-rbf">Full RBF</span>
+          <span *ngIf="rbfInfo.tx.rbf; else rbfDisabled" class="badge bg-success" i18n="tx-features.tag.rbf|RBF">RBF</span>
+          <ng-template #rbfDisabled><span class="badge bg-danger me-1"><del i18n="tx-features.tag.rbf|RBF">RBF</del></span></ng-template>
+          <span *ngIf="rbfInfo.tx.mined" class="badge bg-success" i18n="transaction.rbf.mined">Mined</span>
         </td>
       </tr>
     </tbody>
