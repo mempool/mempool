@@ -124,7 +124,7 @@
           </div>
         </div>
 
-        <p class="doc-welcome-note">Below is a reference for the {{ network.val === '' ? 'Bitcoin' : network.val.charAt(0).toUpperCase() + network.val.slice(1) }} <ng-container i18n="api-docs.title-websocket">Websocket service</ng-container> running at {{ websocketUrl(network.val) }}.</p>
+        <p class="doc-welcome-note">Below is a reference for the {{ network.val === '' ? 'Bitcoin' : network.val.charAt(0).toUpperCase() + network.val.slice(1) }} Websocket service running at {{ websocketUrl(network.val) }}.</p>
         <p class="doc-welcome-note api-note" *ngIf="officialMempoolInstance">Note that usage limits apply to our WebSocket API. Consider an <a href="https://mempool.space/enterprise">enterprise sponsorship</a> if you need higher API limits, such as higher tracking limits.</p>
 
         <div class="doc-item-container" *ngFor="let item of wsDocs">
@@ -138,7 +138,7 @@
                   <div [innerHTML]="item.description.default" i18n></div>
                 </div>
                 <div class="description">
-                  <div class="subtitle" i18n>Payload</div>
+                  <div class="subtitle">Payload</div>
                   <pre><code [innerText]="item.payload"></code></pre>
                 </div>
                 <app-code-template [hostname]="hostname" [baseNetworkUrl]="baseNetworkUrl" [method]="item.httpRequestMethod" [code]="item.codeExample.default" [network]="network.val" [showCodeExample]="item.showJsExamples"></app-code-template>

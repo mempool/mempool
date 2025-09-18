@@ -1,12 +1,18 @@
 .col {
 	&:first-child {
 		padding-right: 0;
+		@media (max-width: 992px) {
+			padding-right: 15px;
+		}
 		td:last-child {
 			padding-right: calc(0.3em + 15px);
 		}
 	}
 	&:last-child {
 		padding-left: 0;
+		@media (max-width: 992px) {
+			padding-left: 15px;
+		}
 		td:first-child {
 			padding-left: calc(0.3em + 15px);
 		}
@@ -322,5 +328,27 @@ h2 {
 	border: 0;
 	&.primary {
 		background-color: var(--primary);
+	}
+}
+
+.scriptmessage.opreturn-msg {
+	max-width: 20px;
+	@media (min-width: 476px) {
+		max-width: 110px;
+	}
+	@media (min-width: 576px) {
+		max-width: 190px;
+	}
+	@media (min-width: 768px) {
+    max-width: 330px;
+	}
+	@media (min-width: 850px) {
+    max-width: 452px;
+	}
+	@media (min-width: 992px) {
+		max-width: 120px;
+	}
+	@media (min-width: 1200px) {
+		max-width: 180px;
 	}
 }

@@ -12,7 +12,7 @@
   <div class="about-text">
     <h5><ng-container i18n="about.about-the-project">The Mempool Open Source Project</ng-container><ng-template [ngIf]="locale.substr(0, 2) === 'en'"> &reg;</ng-template></h5>
     <p i18n>Our mempool and blockchain explorer for the Bitcoin community, focusing on the transaction fee market and multi-layer ecosystem, completely self-hosted without any trusted third-parties.</p>
-    <h5>Be your own explorer&trade;</h5>
+    <h5><ng-container i18n="shared.be-your-own-explorer">Be your own explorer</ng-container><ng-template [ngIf]="locale.substr(0, 2) === 'en'">&trade;</ng-template></h5>
   </div>
 
   <video #promoVideo (click)="unmutePromoVideo()" (touchstart)="unmutePromoVideo()" src="/resources/promo-video/mempool-promo.mp4" poster="/resources/promo-video/mempool-promo.jpg" controls loop playsinline [autoplay]="true" [muted]="true">
@@ -140,14 +140,11 @@
         <span>Metaplanet</span>
       </a>
       <a href="https://bullbitcoin.com/" target="_blank" title="Bull Bitcoin">
-        <svg aria-hidden="true" class="image" viewBox="0 -5 40 40" xmlns="http://www.w3.org/2000/svg">
-          <g clip-path="url(#a)" fill-rule="evenodd" clip-rule="evenodd" fill="#e21924">
-            <path d="M21.92 14.59a1.18 1.18 0 0 0-1.18-1.18h-1.82v2.36h1.82a1.18 1.18 0 0 0 1.18-1.18ZM21 17.07h-2v2.45h2a1.23 1.23 0 1 0 0-2.45Z"/>
-            <path d="M36.43 0 35 5.59l-8 2.64-2.43-3.61-4.74 2.05-4.74-2.05-2.43 3.61-8-2.64L3.21 0 0 7.86l7.89 5.86-5.56 4 5.56 1.12 2.69-.49v3.17l3.59 4.38.68 3.19 5 2.87 5-2.87.68-3.19 3.59-4.38v-3.17l2.7.49 5.56-1.12-5.56-4 7.89-5.86zM24.69 18.45a2.5 2.5 0 0 1-2.5 2.5h-1.11v1.56h-1.26V21h-.9v1.56h-1.27V21H15.3v-1.42h.64a.9.9 0 0 0 .9-.9V14.3a.901.901 0 0 0-.9-.91h-.64V12h2.35v-1.5h1.27V12h.9v-1.5h1.26V12h.68A2.269 2.269 0 0 1 24 14.31a2.25 2.25 0 0 1-.92 1.82 2.52 2.52 0 0 1 1.58 2.32z"/>
-          </g>
-          <defs>
-            <clipPath id="a"><path fill="#fff" d="M0 0h160v32H0z"/></clipPath>
-          </defs>
+        <svg width="80" version="1.1" viewBox="0 0 1128 1052.59" xmlns="http://www.w3.org/2000/svg">
+          <path transform="matrix(.13333 0 0 -.13333 0 952.59)" d="m4322.7 2375.3-38.64 2787.8 931.44 396 506.88-738.72 1706.8 581.4-474.93 1742.6 1506-2083.5-1805.8-1329.1 1015.4-775.2-1035.4-258.72-482.22 126.18-1829.7-448.74" style="fill:#b7000b"/>
+          <path transform="matrix(.13333 0 0 -.13333 0 952.59)" d="m4137.1 2378.5 40.86 2782.8-932.64 398.04-505.92-737.76-1709.1 580.92 475.26 1741.3-1505.6-2083.1 1805.6-1328.2-1015.7-775.92 1035.8-259.08 485.76 127.56 1825.6-446.52" style="fill:#b7000b"/>
+          <path transform="matrix(.13333 0 0 -.13333 0 952.59)" d="m2345.9 2694.6 5.04-585.36 722.52-883.08 142.56-656.64 958.32-569.52-15.36 1765.7-1813.1 928.92" style="fill:#b7000b"/>
+          <path transform="matrix(.13333 0 0 -.13333 0 952.59)" d="m6114.4 2694.6-5.04-585.36-722.52-883.08-142.56-656.64-958.32-569.52 15.36 1765.7 1813.1 928.92" style="fill:#b7000b"/>
         </svg>
         <span>Bull Bitcoin</span>
       </a>

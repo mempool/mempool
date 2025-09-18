@@ -1,4 +1,5 @@
 import { MempoolBlock } from '../mempool.interfaces';
+import { IBitcoinApi } from './bitcoin/bitcoin-api.interface';
 import config from '../config';
 import mempool from './mempool';
 import projectedBlocks from './mempool-blocks';
@@ -22,6 +23,11 @@ class FeeApi {
   public getRecommendedFee(): RecommendedFees {
     const pBlocks = projectedBlocks.getMempoolBlocks();
     const mPool = mempool.getMempoolInfo();
+
+    return this.calculateRecommendedFee(pBlocks, mPool);
+  }
+
+  public calculateRecommendedFee(pBlocks: MempoolBlock[], mPool: IBitcoinApi.MempoolInfo): RecommendedFees {
     const minimumFee = this.roundUpToNearest(mPool.mempoolminfee * 100000, this.minimumIncrement);
     const defaultMinFee = Math.max(minimumFee, this.defaultFee);
 
@@ -64,7 +70,7 @@ class FeeApi {
 
   private optimizeMedianFee(pBlock: MempoolBlock, nextBlock: MempoolBlock | undefined, previousFee?: number): number {
     const useFee = previousFee ? (pBlock.medianFee + previousFee) / 2 : pBlock.medianFee;
-    if (pBlock.blockVSize <= 500000) {
+    if (pBlock.blockVSize <= 500000 || pBlock.medianFee < 1) {
       return this.defaultFee;
     }
     if (pBlock.blockVSize <= 950000 && !nextBlock) {

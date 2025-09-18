@@ -110,8 +110,6 @@ build_backend()
         -e "s!__MEMPOOL_LIQUID_PASS__!${MEMPOOL_LIQUID_PASS}!" \
         -e "s!__MEMPOOL_LIQUIDTESTNET_USER__!${MEMPOOL_LIQUIDTESTNET_USER}!" \
         -e "s!__MEMPOOL_LIQUIDTESTNET_PASS__!${MEMPOOL_LIQUIDTESTNET_PASS}!" \
-        -e "s!__MEMPOOL_BISQ_USER__!${MEMPOOL_BISQ_USER}!" \
-        -e "s!__MEMPOOL_BISQ_PASS__!${MEMPOOL_BISQ_PASS}!" \
 	"mempool-config.json"
     fi
     npm install --omit=dev --omit=optional || exit 1

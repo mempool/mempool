@@ -758,7 +758,8 @@ export class TrackerComponent implements OnInit, OnDestroy {
 
   checkAccelerationEligibility() {
     if (this.tx) {
-      this.tx.flags = getTransactionFlags(this.tx, null, null, this.tx.status?.block_time, this.stateService.network);
+      const txHeight = this.tx.status?.block_height || (this.stateService.latestBlockHeight >= 0 ? this.stateService.latestBlockHeight + 1 : null);
+      this.tx.flags = getTransactionFlags(this.tx, null, null, txHeight, this.stateService.network);
       const replaceableInputs = (this.tx.flags & (TransactionFlags.sighash_none | TransactionFlags.sighash_acp)) > 0n;
       const highSigop = (this.tx.sigops * 20) > this.tx.weight;
       this.eligibleForAcceleration = !replaceableInputs && !highSigop;

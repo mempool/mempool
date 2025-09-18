@@ -56,7 +56,7 @@ export class PoolRankingComponent implements OnInit {
     if (this.widget) {
       this.miningWindowPreference = '1w';
     } else {
-      this.seoService.setTitle($localize`:@@mining.mining-pools:Mining Pools`);
+      this.seoService.setTitle($localize`:@@fe5317c6c60dd7e0e86f04d22f566f67cf04d404:Mining Pools`);
       this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.pool-ranking:See the top Bitcoin mining pools ranked by number of blocks mined, over your desired timeframe.`);
       this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
     }

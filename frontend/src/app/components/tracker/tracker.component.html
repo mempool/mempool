@@ -144,7 +144,7 @@
             </div>
             <span class="explainer" i18n="tracker.explain.accelerated">Your transaction has been accelerated</span>
             @if (paymentReceiptUrl) {
-              <span class="explainer" i18n="accelerator.receipt-label"><a [href]="paymentReceiptUrl" target="_blank">Get a receipt.</a></span>
+              <span class="explainer"><a [href]="paymentReceiptUrl" target="_blank" i18n="accelerator.receipt-label">Get a receipt.</a></span>
             }
           } @else {
             @switch (trackerStage) {
@@ -178,7 +178,7 @@
                 </div>
                 <span class="explainer" i18n="tracker.explain.confirmed">Your transaction is confirmed!</span>
                 @if (paymentReceiptUrl) {
-                  <span class="explainer" i18n="accelerator.receipt-label"><a [href]="paymentReceiptUrl" target="_blank">Get a receipt.</a></span>
+                  <span class="explainer"><a [href]="paymentReceiptUrl" target="_blank" i18n="accelerator.receipt-label">Get a receipt.</a></span>
                 }
               }
               @case ('replaced') {

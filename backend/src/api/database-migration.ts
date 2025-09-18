@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 99;
+  private static currentVersion = 101;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -1160,6 +1160,13 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE statistics ADD COLUMN vsize_0 int(11) NOT NULL DEFAULT 0');
       await this.updateToSchemaVersion(99);
     }
+
+    // Add "block indexed at version" index_version column to the blocks table
+    // to be used for lazy migrations & reindexing tasks
+    if (databaseSchemaVersion < 100) {
+      await this.$executeQuery('ALTER TABLE `blocks` ADD index_version INT NOT NULL DEFAULT 0');
+      await this.$executeQuery('ALTER TABLE `blocks` ADD INDEX `index_version` (`index_version`)');
+    }
   }
 
   /**
@@ -1290,6 +1297,10 @@ class DatabaseMigration {
     if (version < 58) {
       queries.push(`DELETE FROM state WHERE name = 'last_hashrates_indexing'`);
       queries.push(`DELETE FROM state WHERE name = 'last_weekly_hashrates_indexing'`);
+    }
+
+    if (version < 101) {
+      queries.push(`DELETE FROM prices WHERE USD = -1`);
     }
 
     return queries;

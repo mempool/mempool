@@ -13,7 +13,7 @@
       <label class="label" for="offline-mode">
         <span i18n="transaction.fetch-prevout-data">Fetch missing prevouts</span>
       </label>
-      <p *ngIf="error" class="red-color d-inline">Error decoding transaction, reason: {{ error }}</p>
+      <p *ngIf="error" class="red-color d-inline" i18n="transaction.error-decoding">Error decoding transaction, reason: {{ error }}</p>
     </form>
   }
 
@@ -54,7 +54,10 @@
             Redirecting to transaction page...
           </ng-container>
         </span>
-        <button *ngIf="!successBroadcast" [disabled]="isLoadingBroadcast" type="button" class="btn btn-sm btn-primary btn-broadcast" i18n="transaction.broadcast|Broadcast" (click)="postTx()">Broadcast</button>
+        <button *ngIf="!successBroadcast" [disabled]="isLoadingBroadcast || missingSignatures" i18n-ngbTooltip="transaction.missing-signature"
+        ngbTooltip="Transaction cannot be broadcasted because it's missing signature(s)" placement="bottom"
+        [disableTooltip]="!missingSignatures" type="button" class="btn btn-sm btn-primary btn-broadcast"
+        i18n="transaction.broadcast|Broadcast" (click)="postTx()">Broadcast</button>
         <button *ngIf="successBroadcast" type="button" class="btn btn-sm btn-success no-cursor btn-broadcast" i18n="transaction.broadcasted|Broadcasted">Broadcasted</button>
       </div>
     }
@@ -159,11 +162,17 @@
             <tbody>
               <tr>
                 <td i18n="block.size">Size</td>
-                <td [innerHTML]="'&lrm;' + (transaction.size | bytes: 2)"></td>
+                <td>
+                  <span [innerHTML]="'&lrm;' + (transaction.size + sizeFromMissingSig | bytes: 2)"></span>
+                  <fa-icon *ngIf="tooltipSize" [ngbTooltip]="tooltipSize" class="icon-symbol" [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+                </td>
               </tr>
               <tr>
                 <td i18n="transaction.vsize|Transaction Virtual Size">Virtual size</td>
-                <td [innerHTML]="'&lrm;' + (transaction.weight / 4 | vbytes: 2)"></td>
+                <td>
+                  <span [innerHTML]="'&lrm;' + ((transaction.weight + weightFromMissingSig) / 4 | vbytes: 2)"></span>
+                  <fa-icon *ngIf="tooltipVsize" [ngbTooltip]="tooltipVsize" class="icon-symbol" [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+                </td>
               </tr>
               <tr *ngIf="adjustedVsize">
                 <td><ng-container i18n="transaction.adjusted-vsize|Transaction Adjusted VSize">Adjusted vsize</ng-container>
@@ -175,7 +184,10 @@
               </tr>
               <tr>
                 <td i18n="block.weight">Weight</td>
-                <td [innerHTML]="'&lrm;' + (transaction.weight | wuBytes: 2)"></td>
+                <td>
+                  <span [innerHTML]="'&lrm;' + (transaction.weight + weightFromMissingSig | wuBytes: 2)"></span>
+                  <fa-icon *ngIf="tooltipWeight" [ngbTooltip]="tooltipWeight" class="icon-symbol" [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -213,7 +225,7 @@
   @if (isLoading) {
     <div class="text-center">
       <div class="spinner-border text-light mt-2 mb-2"></div>
-      <h3 i18n="transaction.error.loading-prevouts">
+      <h3>
         Loading {{ isLoadingPrevouts ? 'transaction prevouts' : isLoadingCpfpInfo ? 'CPFP' : '' }}
       </h3>
     </div>

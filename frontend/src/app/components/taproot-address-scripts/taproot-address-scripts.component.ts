@@ -7,7 +7,7 @@ import { ScriptInfo } from '@app/shared/script.utils';
 import { compactSize, taggedHash, uint8ArrayToHexString } from '@app/shared/transaction.utils';
 import { StateService } from '@app/services/state.service';
 import { AsmStylerPipe } from '@app/shared/pipes/asm-styler/asm-styler.pipe';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 
 interface TaprootTree {
   name: string; // the TapBranch hash or TapLeaf script hash
@@ -316,13 +316,28 @@ export class TaprootAddressScriptsComponent implements OnChanges {
               <div style="margin-top: 10px; border-top: 1px solid #333; padding-top: 5px; word-break: break-all; white-space: normal; font-family: monospace; font-size: 12px;">
                 <td>${asm} ${node.value.script.asm.length > 300 ? '...' : ''}</td>
               </div>`;
+          } else if (node.value?.script?.type === 'inner_simplicityscript') {
+            const hex = node.value.script.hex.slice(0, 300);
+            asmContent = `
+              <div style="margin-top: 10px; border-top: 1px solid #333; padding-top: 5px; word-break: break-all; white-space: normal; font-family: monospace; font-size: 12px;">
+                <td>Simplicity script: ${hex} ${node.value.script.hex.length > 300 ? '...' : ''}</td>
+              </div>`;
           }
 
           let hiddenScriptsMessage = '';
           if (node.tooltip[0].label === 'Hash') {
+            const remaining = 128 - (node.depth ?? 0);
+            let upperBoundHtml: string;
+            if (remaining === 0) {
+              upperBoundHtml = '1';
+            } else if (remaining <= 39) {
+              upperBoundHtml = (2 ** remaining).toLocaleString();
+            } else {
+              upperBoundHtml = `2<sup style="font-size: 0.85em;">${remaining}</sup>`;
+            }
             hiddenScriptsMessage = `
               <div style="margin-top: 8px; color: #888; font-size: 11px; line-height: 1.3; font-style: italic; border-top: 1px solid #333; padding-top: 6px; word-break: break-word; white-space: normal">
-                This node might commit to one or more scripts that have not been revealed yet.
+                This node might commit to ${upperBoundHtml === '1' ? 'exactly 1 script' : `at most ${upperBoundHtml} scripts`}.
               </div>`;
           }
 

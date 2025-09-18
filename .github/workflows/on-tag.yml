@@ -24,6 +24,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     name: Build and push to DockerHub
+    outputs:
+      image-digest-frontend: ${{ matrix.service == 'frontend' && steps.docker-build.outputs.digest || '' }}
+      image-digest-backend: ${{ matrix.service == 'backend' && steps.docker-build.outputs.digest || '' }}
     steps:
       - name: Replace the current swap file
         shell: bash
@@ -99,15 +102,51 @@ jobs:
             ${{ runner.os }}-buildx-${{ matrix.service }}-
 
       - name: Run Docker buildx for ${{ matrix.service }} against tag
+        id: docker-build
         run: |
           docker buildx build \
           --cache-from "type=local,src=/tmp/.buildx-cache" \
           --cache-to "type=local,dest=/tmp/.buildx-cache,mode=max" \
           --platform linux/amd64,linux/arm64 \
           --tag ${{ secrets.DOCKER_HUB_USER }}/${{ matrix.service }}:$TAG \
-          --tag ${{ secrets.DOCKER_HUB_USER }}/${{ matrix.service }}:latest \
           --build-context rustgbt=./rust \
           --build-context backend=./backend \
           --output "type=registry,push=true" \
           --build-arg commitHash=$SHORT_SHA \
           ./${{ matrix.service }}/
+
+  tag-latest:
+    needs: build
+    if: ${{ needs.build.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    name: Tag images as latest
+    strategy:
+      matrix:
+        service:
+          - frontend
+          - backend
+    steps:
+      - name: Set env variables
+        run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+
+      - name: Setup Docker buildx action
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+          driver-opts: |
+            network=host
+
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Tag multi-arch image as latest for ${{ matrix.service }}
+        run: |
+          docker buildx imagetools create \
+            --tag ${{ secrets.DOCKER_HUB_USER }}/${{ matrix.service }}:latest \
+            ${{ secrets.DOCKER_HUB_USER }}/${{ matrix.service }}:$TAG

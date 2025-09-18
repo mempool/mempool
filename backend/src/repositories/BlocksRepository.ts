@@ -18,6 +18,7 @@ import { parseDATUMTemplateCreator } from '../utils/bitcoin-script';
 import poolsUpdater from '../tasks/pools-updater';
 
 interface DatabaseBlock {
+  index_version: number;
   id: string;
   height: number;
   version: number;
@@ -62,6 +63,7 @@ interface DatabaseBlock {
 }
 
 const BLOCK_DB_FIELDS = `
+  blocks.index_version AS indexVersion,
   blocks.hash AS id,
   blocks.height,
   blocks.version,
@@ -106,6 +108,8 @@ const BLOCK_DB_FIELDS = `
 `;
 
 class BlocksRepository {
+  static version = 1;
+
   /**
    * Save indexed block data in the database
    */
@@ -124,7 +128,7 @@ class BlocksRepository {
         coinbase_signature, utxoset_size,             utxoset_change,    avg_tx_size,
         total_inputs,       total_outputs,            total_input_amt,   total_output_amt,
         fee_percentiles,    segwit_total_txs,         segwit_total_size, segwit_total_weight,
-        median_fee_amt,     coinbase_signature_ascii, definition_hash
+        median_fee_amt,     coinbase_signature_ascii, definition_hash,   index_version
       ) VALUE (
         ?, ?, FROM_UNIXTIME(?), ?,
         ?, ?, ?, ?,
@@ -135,7 +139,7 @@ class BlocksRepository {
         ?, ?, ?, ?,
         ?, ?, ?, ?,
         ?, ?, ?, ?,
-        ?, ?, ?
+        ?, ?, ?, ?
       )`;
 
       const poolDbId = await PoolsRepository.$getPoolByUniqueId(block.extras.pool.id);
@@ -182,7 +186,8 @@ class BlocksRepository {
         block.extras.segwitTotalWeight,
         block.extras.medianFeeAmt,
         truncatedCoinbaseSignatureAscii,
-        poolsUpdater.currentSha
+        poolsUpdater.currentSha,
+        BlocksRepository.version
       ];
 
       await DB.query(query, params);
@@ -882,7 +887,9 @@ class BlocksRepository {
         SELECT UNIX_TIMESTAMP(blocks.blockTimestamp) as timestamp, blocks.height
         FROM blocks
         LEFT JOIN blocks_prices ON blocks.height = blocks_prices.height
+        LEFT JOIN prices ON blocks_prices.price_id = prices.id
         WHERE blocks_prices.height IS NULL
+          OR prices.id IS NULL
         ORDER BY blocks.height
       `);
       return rows;
@@ -902,6 +909,7 @@ class BlocksRepository {
         query += ` (${price.height}, ${price.priceId}),`;
       }
       query = query.slice(0, -1);
+      query += ` ON DUPLICATE KEY UPDATE price_id = VALUES(price_id)`;
       await DB.query(query);
     } catch (e: any) {
       if (e.errno === 1062) { // ER_DUP_ENTRY - This scenario is possible upon node backend restart
@@ -1067,7 +1075,7 @@ class BlocksRepository {
     blk.weight = dbBlk.weight;
     blk.previousblockhash = dbBlk.previousblockhash;
     blk.mediantime = dbBlk.mediantime;
-    
+    blk.indexVersion = dbBlk.index_version;
     // BlockExtension
     extras.totalFees = dbBlk.totalFees;
     extras.medianFee = dbBlk.medianFee;
@@ -1154,6 +1162,74 @@ class BlocksRepository {
 
     blk.extras = <BlockExtension>extras;
     return <BlockExtended>blk;
+  }
+
+  // Execute reindexing tasks & lazy schema migrations
+  public async $migrateBlocks(): Promise<number> {
+    let blocksMigrated = 0;
+    blocksMigrated = await this.$migrateBlocksToV1();
+    if (blocksMigrated > 0) {
+      // return early, run the next migration on the next indexing loop
+      return blocksMigrated;
+    }
+    return 0;
+  }
+
+  // migration to fix median fee bug
+  private async $migrateBlocksToV1(): Promise<number> {
+    let blocksMigrated = 0;
+    try {
+      // median fee bug only affects mmre-than-half but less-than-completely full blocks
+      const minWeight = config.MEMPOOL.BLOCK_WEIGHT_UNITS / 2 - (config.MEMPOOL.BLOCK_WEIGHT_UNITS / 800);
+      const maxWeight = config.MEMPOOL.BLOCK_WEIGHT_UNITS - (config.MEMPOOL.BLOCK_WEIGHT_UNITS / 400);
+      const [rows]: any[] = await DB.query(`
+        SELECT height, hash, index_version
+        FROM blocks
+        WHERE index_version < 1
+          AND weight >= ?
+          AND weight <= ?
+        ORDER BY height DESC
+      `, [minWeight, maxWeight]);
+      const blocksToMigrate = rows.length;
+
+      let timer = Date.now() / 1000;
+      const startedAt = Date.now() / 1000;
+
+      for (const row of rows) {
+        // fetch block summary
+        const transactions = await blocks.$getStrippedBlockTransactions(row.hash);
+        // recalculate effective fee statistics using latest methodology
+        const feeStats = Common.calcEffectiveFeeStatistics(transactions.map(tx => ({
+          weight: tx.vsize * 4,
+          effectiveFeePerVsize: tx.rate,
+          txid: tx.txid,
+          acceleration: tx.acc,
+        })));
+
+        // update block db
+        await DB.query(`
+          UPDATE blocks SET index_version = 1, median_fee = ?, fee_span = ?
+          WHERE hash = ?`,
+          [feeStats.medianFee, JSON.stringify(feeStats.feeRange), row.hash]
+        );
+
+        const elapsedSeconds = (Date.now() / 1000) - timer;
+        if (elapsedSeconds > 5) {
+          const runningFor = (Date.now() / 1000) - startedAt;
+          const blockPerSeconds = blocksMigrated / elapsedSeconds;
+          const progress = Math.round(blocksMigrated / blocksToMigrate * 10000) / 100;
+          logger.debug(`Migrating blocks to version 1 | ~${blockPerSeconds.toFixed(2)} blocks/sec | height: ${row.height} | total: ${blocksMigrated}/${blocksToMigrate} (${progress}%) | elapsed: ${runningFor.toFixed(2)} seconds`);
+          timer = Date.now() / 1000;
+        }
+
+        blocksMigrated++;
+      }
+      logger.notice(`Migrating blocks to version 1 completed: migrated ${blocksMigrated} blocks`);
+    } catch (e) {
+      logger.err(`Migrating blocks to version 1 failed. Trying again later. Reason: ${(e instanceof Error ? e.message : e)}`);
+      throw e;
+    }
+    return blocksMigrated;
   }
 }
 

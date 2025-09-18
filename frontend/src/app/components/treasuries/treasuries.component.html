@@ -23,7 +23,7 @@
                       <span class="position-number">{{i + 1}}</span>
                     </div>
                   </td>
-                  <td class="table-cell-name">{{ treasury.enterprise || treasury.name }}</td>
+                  <td class="table-cell-name">{{ treasury.name || treasury.enterprise || treasury.wallet }}</td>
                   <td class="table-cell-balance">
                     <app-amount [satoshis]="walletStats[treasury.wallet]?.balance || 0" digitsInfo="1.2-4" [noFiat]="true"></app-amount>
                   </td>

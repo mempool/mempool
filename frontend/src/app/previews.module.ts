@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { SharedModule } from '@app/shared/shared.module';
 import { RouterModule } from '@angular/router';
 import { GraphsModule } from '@app/graphs/graphs.module';
-import { PreviewsRoutingModule } from './previews.routing.module';
+import { PreviewsRoutingModule } from '@app/previews.routing.module';
 import { TransactionPreviewComponent } from '@components/transaction/transaction-preview.component';
 import { BlockPreviewComponent } from '@components/block/block-preview.component';
 import { AddressPreviewComponent } from '@components/address/address-preview.component';
