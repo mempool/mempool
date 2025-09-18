@@ -85,7 +85,8 @@ const routes = {
     params: 1,
     getTitle(path) {
       return `Address: ${path[0]}`;
-    }
+    },
+    canvasView: 'address',
   },
   wallet: {
     render: true,
