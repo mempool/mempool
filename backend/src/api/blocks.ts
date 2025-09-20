@@ -836,6 +836,7 @@ class Blocks {
 
     let fastForwarded = false;
     let handledBlocks = 0;
+    const lastBlockHeight = this.currentBlockHeight;
     const blockHeightTip = await bitcoinCoreApi.$getBlockHeightTip();
     this.updateTimerProgress(timer, 'got block height tip');
 
@@ -843,16 +844,6 @@ class Blocks {
       this.currentBlockHeight = Math.max(blockHeightTip - config.MEMPOOL.INITIAL_BLOCKS_AMOUNT, -1);
     } else {
       this.currentBlockHeight = this.blocks[this.blocks.length - 1].height;
-    }
-    if (this.currentBlockHeight >= 503) {
-      try {
-        const quarterEpochBlockHash = await bitcoinApi.$getBlockHash(this.currentBlockHeight - 503);
-        const quarterEpochBlock = await bitcoinApi.$getBlock(quarterEpochBlockHash);
-        this.quarterEpochBlockTime = quarterEpochBlock?.timestamp;
-      } catch (e) {
-        this.quarterEpochBlockTime = null;
-        logger.warn('failed to update last epoch block time: ' + (e instanceof Error ? e.message : e));
-      }
     }
 
     if (blockHeightTip - this.currentBlockHeight > config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 2) {
@@ -892,12 +883,20 @@ class Blocks {
       }
     }
 
+    const heightChanged = lastBlockHeight !== this.currentBlockHeight;
+    // make sure to update the quarter epoch block time now if we won't do it inside the loop
+    if (this.currentBlockHeight >= blockHeightTip && (heightChanged || this.quarterEpochBlockTime == null)) {
+      await this.updateQuarterEpochBlockTime();
+    }
+
     while (this.currentBlockHeight < blockHeightTip) {
       if (this.currentBlockHeight === 0) {
         this.currentBlockHeight = blockHeightTip;
+        await this.updateQuarterEpochBlockTime();
       } else {
         this.currentBlockHeight++;
         logger.debug(`New block found (#${this.currentBlockHeight})!`);
+        await this.updateQuarterEpochBlockTime();
         // skip updating the orphan block cache if we've fallen behind the chain tip
         if (this.currentBlockHeight >= blockHeightTip - 2) {
           this.updateTimerProgress(timer, `getting orphaned blocks for ${this.currentBlockHeight}`);
@@ -1095,6 +1094,19 @@ class Blocks {
   private clearTimer(state): void {
     if (state.timer) {
       clearTimeout(state.timer);
+    }
+  }
+
+  private async updateQuarterEpochBlockTime(): Promise<void> {
+    if (this.currentBlockHeight >= 503) {
+      try {
+        const quarterEpochBlockHash = await bitcoinApi.$getBlockHash(this.currentBlockHeight - 503);
+        const quarterEpochBlock = await bitcoinApi.$getBlock(quarterEpochBlockHash);
+        this.quarterEpochBlockTime = quarterEpochBlock?.timestamp;
+      } catch (e) {
+      this.quarterEpochBlockTime = null;
+        logger.warn('failed to update last epoch block time: ' + (e instanceof Error ? e.message : e));
+      }
     }
   }
 
