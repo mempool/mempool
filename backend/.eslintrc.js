@@ -1,9 +1,9 @@
-{
+module.exports = {
   "root": true,
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": "./tsconfig.json",
-    "tsconfigRootDir": "./backend"
+    "tsconfigRootDir": __dirname
   },
   "plugins": [
     "@typescript-eslint",
@@ -15,7 +15,7 @@
     "plugin:@typescript-eslint/recommended",
     "prettier"
   ],
-  "ignorePatterns": ["dist", "eslint-local-rules"],
+  "ignorePatterns": ["dist", "eslint-local-rules", ".eslintrc.js", "testSetup.ts", "__tests__", "*.config.ts"],
   "rules": {
     "@typescript-eslint/ban-ts-comment": 1,
     "@typescript-eslint/ban-types": 1,
