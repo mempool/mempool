@@ -40,6 +40,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
       });
   }
 
+  /** @asyncUnsafe */
   async $getAddress(address: string): Promise<IEsploraApi.Address> {
     const addressInfo = await this.bitcoindClient.validateAddress(address);
     if (!addressInfo || !addressInfo.isvalid) {
@@ -91,6 +92,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
     }
   }
 
+  /** @asyncUnsafe */
   async $getAddressTransactions(address: string, lastSeenTxId: string): Promise<IEsploraApi.Transaction[]> {
     const addressInfo = await this.bitcoindClient.validateAddress(address);
     if (!addressInfo || !addressInfo.isvalid) {
@@ -244,6 +246,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
     return this.electrumClient.blockchainScripthash_listunspent(scriptHash);
   }
 
+  /** @asyncUnsafe */
   async $getTransactionMerkleProof(txId: string): Promise<IEsploraApi.MerkleProof> {
     const tx = await this.$getRawTransaction(txId);
     return this.electrumClient.blockchainTransaction_getMerkle(txId, tx.status.block_height);

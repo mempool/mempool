@@ -28,6 +28,7 @@ class DatabaseMigration {
 
   /**
    * Entry point
+   * @asyncUnsafe
    */
   public async $initializeOrMigrateDatabase(): Promise<void> {
     logger.debug('MIGRATIONS: Running migrations');
@@ -100,6 +101,7 @@ class DatabaseMigration {
 
   /**
    * Create all missing tables
+   * @asyncUnsafe
    */
   private async $createMissingTablesAndIndexes(databaseSchemaVersion: number) {
     await this.$setStatisticsAddedIndexedFlag(databaseSchemaVersion);
@@ -1245,6 +1247,7 @@ class DatabaseMigration {
 
   /**
    * Check if 'table' exists in the database
+   * @asyncUnsafe
    */
   private async $checkIfTableExists(table: string): Promise<boolean> {
     const query = `SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '${config.DATABASE.DATABASE}' AND TABLE_NAME = '${table}'`;
@@ -1254,6 +1257,7 @@ class DatabaseMigration {
 
   /**
    * Get current database version
+   * @asyncUnsafe
    */
   private async $getSchemaVersionFromDatabase(): Promise<number> {
     const query = `SELECT number FROM state WHERE name = 'schema_version';`;
@@ -1263,6 +1267,7 @@ class DatabaseMigration {
 
   /**
    * Create the `state` table
+   * @asyncUnsafe
    */
   private async $createMigrationStateTable(): Promise<void> {
     const query = `CREATE TABLE IF NOT EXISTS state (
@@ -1280,6 +1285,7 @@ class DatabaseMigration {
 
   /**
    * We actually execute the migrations queries here
+   * @asyncUnsafe
    */
   private async $migrateTableSchemaFromVersion(version: number): Promise<void> {
     const transactionQueries: string[] = [];
@@ -1346,11 +1352,13 @@ class DatabaseMigration {
 
   /**
    * Save the schema version in the database
+   * @asyncUnsafe
    */
   private getUpdateToLatestSchemaVersionQuery(): string {
     return `UPDATE state SET number = ${DatabaseMigration.currentVersion} WHERE name = 'schema_version';`;
   }
 
+  /** @asyncUnsafe */
   private async updateToSchemaVersion(version): Promise<void> {
     await this.$executeQuery(`UPDATE state SET number = ${version} WHERE name = 'schema_version';`);
   }
@@ -1769,6 +1777,7 @@ class DatabaseMigration {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
+  /** @asyncUnsafe */
   public async $blocksReindexingTruncate(): Promise<void> {
     logger.warn(`Truncating pools, blocks, hashrates and difficulty_adjustments tables for re-indexing (using '--reindex-blocks'). You can cancel this command within 5 seconds`);
     await Common.sleep$(5000);

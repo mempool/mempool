@@ -224,6 +224,7 @@ class PricesRepository {
     }
   }
 
+  /** @asyncUnsafe */
   public async $getOldestPriceTime(): Promise<number> {
     const [oldestRow] = await DB.query(`
       SELECT UNIX_TIMESTAMP(time) AS time
@@ -234,6 +235,7 @@ class PricesRepository {
     return oldestRow[0] ? oldestRow[0].time : 0;
   }
 
+  /** @asyncUnsafe */
   public async $getLatestPriceId(): Promise<number | null> {
     const [oldestRow] = await DB.query(`
       SELECT id
@@ -244,6 +246,7 @@ class PricesRepository {
     return oldestRow[0] ? oldestRow[0].id : null;
   }
 
+  /** @asyncUnsafe */
   public async $getLatestPriceTime(): Promise<number> {
     const [oldestRow] = await DB.query(`
       SELECT UNIX_TIMESTAMP(time) AS time
@@ -254,6 +257,7 @@ class PricesRepository {
     return oldestRow[0] ? oldestRow[0].time : 0;
   }
 
+  /** @asyncUnsafe */
   public async $getPricesTimes(): Promise<number[]> {
     const [times] = await DB.query(`
       SELECT UNIX_TIMESTAMP(time) AS time
@@ -267,6 +271,7 @@ class PricesRepository {
     return times.map(time => time.time);
   }
 
+  /** @asyncUnsafe */
   public async $getPricesTimesWithMissingFields(): Promise<{time: number, USD: number, eur_missing: boolean, gbp_missing: boolean, cad_missing: boolean, chf_missing: boolean, aud_missing: boolean, jpy_missing: boolean}[]> {
     const [times] = await DB.query(`
       SELECT UNIX_TIMESTAMP(time) AS time, 
@@ -289,6 +294,7 @@ class PricesRepository {
     return times as {time: number, USD: number, eur_missing: boolean, gbp_missing: boolean, cad_missing: boolean, chf_missing: boolean, aud_missing: boolean, jpy_missing: boolean}[];
   }
 
+  /** @asyncUnsafe */
   public async $getPricesTimesAndId(): Promise<{time: number, id: number, USD: number}[]> {
     const [times] = await DB.query(`
       SELECT
@@ -302,6 +308,7 @@ class PricesRepository {
     return times as {time: number, id: number, USD: number}[];
   }
 
+  /** @asyncUnsafe */
   public async $getLatestConversionRates(): Promise<ApiPrice> {
     const [rates] = await DB.query(`
       SELECT ${ApiPriceFields}
@@ -317,6 +324,7 @@ class PricesRepository {
     return rates[0] as ApiPrice;
   }
 
+  /** @asyncSafe */
   public async $getNearestHistoricalPrice(timestamp: number | undefined, currency?: string): Promise<Conversion | null> {
     try {
       const [rates] = await DB.query(`
@@ -428,6 +436,7 @@ class PricesRepository {
     }
   }
 
+  /** @asyncSafe */
   public async $getHistoricalPrices(currency?: string): Promise<Conversion | null> {
     try {
       const [rates] = await DB.query(`

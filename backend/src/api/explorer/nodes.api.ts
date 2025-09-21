@@ -143,6 +143,7 @@ class NodesApi {
     }
   }
 
+  /** @asyncUnsafe */
   public async $getActiveChannelsStats(node_public_key: string): Promise<unknown> {
     const query = `
       SELECT count(short_id) as active_channel_count, sum(capacity) as capacity
@@ -658,6 +659,7 @@ class NodesApi {
 
   /**
    * Save or update a node present in the graph
+   * @asyncSafe
    */
   public async $saveNode(node: ILightningApi.Node): Promise<void> {
     try {
@@ -727,6 +729,7 @@ class NodesApi {
 
   /**
    * Set all nodes not in `nodesPubkeys` as inactive (status = 0)
+   * @asyncSafe
    */
    public async $setNodesInactive(graphNodesPubkeys: string[]): Promise<void> {
     if (graphNodesPubkeys.length === 0) {

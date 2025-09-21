@@ -39,6 +39,7 @@ class ChainTips {
   private staleTipsCacheSize = 50;
   private maxIndexingQueueSize = 100;
 
+  /** @asyncSafe */
   public async updateOrphanedBlocks(): Promise<void> {
     try {
       this.chainTips = await bitcoinClient.getChainTips();

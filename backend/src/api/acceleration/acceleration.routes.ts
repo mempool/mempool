@@ -37,6 +37,7 @@ class AccelerationRoutes {
     }
   }
 
+  /** @asyncUnsafe */
   private async $getAcceleratorAccelerationsHistory(req: Request, res: Response): Promise<void> {
     const history = await AccelerationRepository.$getAccelerationInfo(null, req.query.blockHeight ? parseInt(req.query.blockHeight as string, 10) : null);
     res.status(200).send(history.map(accel => ({

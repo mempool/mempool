@@ -101,7 +101,7 @@ class FailoverRouter {
     });
 
     if (this.multihost) {
-      this.pollHosts();
+      void this.pollHosts();
     }
   }
 
@@ -195,7 +195,7 @@ class FailoverRouter {
 
     const elapsed = Date.now() - start;
 
-    this.pollTimer = setTimeout(() => { this.pollHosts(); }, Math.max(1, this.pollInterval - elapsed));
+    this.pollTimer = setTimeout(() => { void this.pollHosts(); }, Math.max(1, this.pollInterval - elapsed));
   }
 
   private formatRanking(index: number, host: FailoverHost, active: FailoverHost, maxHeight: number): string {
@@ -555,6 +555,7 @@ class ElectrsApi implements AbstractBitcoinApi {
     return this.failoverRouter.$post<IEsploraApi.Outspend[]>('/internal/txs/outspends/by-outpoint', outpoints.map(out => `${out.txid}:${out.vout}`), 'json');
   }
 
+  /** @asyncUnsafe */
   async $getCoinbaseTx(blockhash: string): Promise<IEsploraApi.Transaction> {
     const txid = await this.failoverRouter.$get<string>(`/block/${blockhash}/txid/0`);
     return this.failoverRouter.$get<IEsploraApi.Transaction>('/tx/' + txid);
