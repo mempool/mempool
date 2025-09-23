@@ -1324,7 +1324,7 @@ class Blocks {
       summaryVersion = 1;
     }
     if (height == null) {
-      const block = await bitcoinApi.$getBlock(hash);
+      const block = await bitcoinApi.$getBlock(hash, true);
       height = block.height;
     }
 
