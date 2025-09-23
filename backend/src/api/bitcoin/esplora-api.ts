@@ -449,8 +449,20 @@ class ElectrsApi implements AbstractBitcoinApi {
     return this.failoverRouter.$get<string>('/block/' + hash + '/header');
   }
 
-  $getBlock(hash: string): Promise<IEsploraApi.Block> {
-    return this.failoverRouter.$get<IEsploraApi.Block>('/block/' + hash);
+  async $getBlock(hash: string, fallbackToCore = false): Promise<IEsploraApi.Block> {
+    try {
+      const block = await this.failoverRouter.$get<IEsploraApi.Block>('/block/' + hash);
+      return block;
+    } catch (e: any) {
+      if (fallbackToCore && isAxiosError(e) && e.response?.status === 404) {
+        // might be a stale block, see if Core has it?
+        const coreBlock = await bitcoinCoreApi.$getBlock(hash);
+        if (coreBlock?.stale) {
+          return coreBlock;
+        }
+      }
+      throw e;
+    }
   }
 
   $getRawBlock(hash: string): Promise<Buffer> {
