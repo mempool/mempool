@@ -176,9 +176,22 @@ export const components: Record<string, (...args: any[]) => Component> = {
       data: [
         dataRequirements.address(id),
       ],
+      props: (data) => {
+        const a = data[`address_${id}`];
+        const received = a.chain_stats.funded_txo_sum / 1e8;
+        const sent = a.chain_stats.spent_txo_sum / 1e8;
+        const rows = [
+          { label: 'Total received', value: { num: formatNumber(received, '1.8-8'), unit: 'BTC' } },
+          { label: 'Total sent', value: { num: formatNumber(sent, '1.8-8'), unit: 'BTC' } },
+          { label: 'Balance', value: { num: formatNumber(received - sent, '1.8-8'), unit: 'BTC' } },
+          { label: 'Transactions', value: formatNumber(a.chain_stats.tx_count + a.mempool_stats.tx_count, '1.0-0') },
+          { label: 'Unspent TXOs', value: formatNumber(a.chain_stats.funded_txo_count - a.chain_stats.spent_txo_count, '1.0-0') },
+        ];
+        return { tableRows: rows };
+      },
       children: [
         components.qrcode(id, { x: bounds.x + bounds.w - 48 - 480, y: bounds.y + bounds.h - 16 - 480, w: 480, h: 480 }),
-        components.table(id, { x: bounds.x + 48, y: bounds.y + 129 }, 'address'),
+        components.table({ x: bounds.x + 48, y: bounds.y + 129 }),
       ],
       render: async (ctx: CanvasRenderingContext2D, data: any, props: any = {}): Promise<void> => {
         const address: string = id;
@@ -201,9 +214,20 @@ export const components: Record<string, (...args: any[]) => Component> = {
         dataRequirements.blockHash(id),
         dataRequirements.extendedBlock(id),
       ],
+      props: (data) => {
+        const blockData = data[`extended_block_${id}`];
+        const rows = [
+          { label: 'Timestamp', value: new Date(blockData.timestamp * 1000).toLocaleString('sv-SE').replace(',', '').slice(0, 16) },
+          { label: 'Weight', value: formatWeightUnit(blockData.weight, 2) },
+          { label: 'Median fee', value: { num: '~' + formatNumber(blockData.extras.medianFee, '1.0-0'), unit: 'sat/vB' } },
+          { label: 'Total fees', value: { num: formatNumber(blockData.extras.totalFees / 100000000, '1.2-3'), unit: 'BTC' } },
+          { label: 'Miner', value: blockData.extras.pool }
+        ];
+        return { tableRows: rows };
+      },
       children: [
         components.blockViz(id, { x: bounds.x + bounds.w - 48 - 480, y: bounds.y + bounds.h - 16 - 480, w: 480, h: 480 }),
-        components.table(id, { x: bounds.x + 48, y: bounds.y + 129 }, 'block')
+        components.table({ x: bounds.x + 48, y: bounds.y + 129 })
       ],
       render: async (ctx: CanvasRenderingContext2D, data: any, props: any = {}): Promise<void> => {
         const blockData = data[`extended_block_${id}`];
@@ -241,33 +265,11 @@ export const components: Record<string, (...args: any[]) => Component> = {
     }
   }),
 
-  table: (id: string, position: Position, type: string): Component => ({
+  table: (position: Position): Component => ({
     type: 'table',
     data: [],
     render: async (ctx: CanvasRenderingContext2D, data: any, props: any = {}): Promise<void> => {
-      // Set rows depending on type
-      let rows: { label: string, value: any }[] = [];
-      if (type === 'block') {
-        const blockData = data[`extended_block_${id}`];
-        rows = [
-          { label: 'Timestamp', value: new Date(blockData.timestamp * 1000).toLocaleString('sv-SE').replace(',', '').slice(0, 16) },
-          { label: 'Weight', value: formatWeightUnit(blockData.weight, 2) },
-          { label: 'Median fee', value: { num: '~' + formatNumber(blockData.extras.medianFee, '1.0-0'), unit: 'sat/vB' } },
-          { label: 'Total fees', value: { num: formatNumber(blockData.extras.totalFees / 100000000, '1.2-3'), unit: 'BTC' } },
-          { label: 'Miner', value: blockData.extras.pool }
-        ];
-      }
-
-      if (type === 'address') {
-        const addressData = data[`address_${id}`];
-        rows = [
-          { label: 'Total received', value: { num: formatNumber((addressData.chain_stats.funded_txo_sum) / 100000000, '1.8-8'), unit: 'BTC' } },
-          { label: 'Total sent', value: { num: formatNumber((addressData.chain_stats.spent_txo_sum) / 100000000, '1.8-8'), unit: 'BTC' } },
-          { label: 'Balance', value: { num: formatNumber((addressData.chain_stats.funded_txo_sum - addressData.chain_stats.spent_txo_sum) / 100000000, '1.8-8'), unit: 'BTC' } },
-          { label: 'Transactions', value: formatNumber(addressData.chain_stats.tx_count + addressData.mempool_stats.tx_count, '1.0-0') },
-          { label: 'Unspent TXOs', value: formatNumber(addressData.chain_stats.funded_txo_count - addressData.chain_stats.spent_txo_count, '1.0-0') },
-        ];
-      }
+      const rows = props.tableRows ?? [];
 
       // Build the table
       let yOffset = position.y;
