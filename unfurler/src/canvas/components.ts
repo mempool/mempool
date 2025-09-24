@@ -378,13 +378,13 @@ export const views: Record<string, (...args: any[]) => Component> = {
       components.blockContent(hash, { x: 0, y: 80, w: 1200, h: 520 })
     ]
   }),
-  address: (hash: string): Component => ({
+  address: (address: string): Component => ({
     type: 'address',
     data: [],
     children: [
       components.background({ x: 0, y: 0 }),
       components.header('Address', { x: 0, y: 0 }),
-      components.addressContent(hash, { x: 0, y: 80, w: 1200, h: 520 })
+      components.addressContent(address, { x: 0, y: 80, w: 1200, h: 520 })
     ]
   })
 };
