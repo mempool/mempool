@@ -7,7 +7,8 @@ import { getImage } from "./images";
 import { renderBlockViz } from "./block-viz/block-viz";
 import { themes } from "./themes";
 import { CanvasRenderingContext2D, Image } from 'canvas';
-import { formatNumber, formatWeightUnit } from "./utils";
+import { formatNumber, formatWeightUnit, middleEllipsis, renderQrToCtx } from "./utils/utils";
+import { Hash } from './utils/sha256';
 
 export interface Rect {
   x: number;
@@ -27,6 +28,7 @@ export interface Component {
   type: string;
   data?: DataRequirement<any>[];
   children?: Component[];
+  props?: Record<string, any> | ((data: any, props: any) => Record<string, any>);
   render?: (ctx: CanvasRenderingContext2D, data: any, props?: any) => Promise<void>;
 }
 
@@ -73,6 +75,26 @@ export const dataRequirements: Record<string, (id: string) => DataRequirement<an
       const hash = await getBlockHash(id);
       return await fetchJSON(config.API.MEMPOOL + `/block/${hash}/summary`) as BlockSummary;
     }
+  }),
+
+  address: (addressString: string): DataRequirement<IEsploraApi.Address> => ({
+    key: `address_${addressString}`,
+    fetcher: async () => {
+      if (addressString.match(/04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}/)) {
+        const scriptpubkey: string = (addressString.length === 130 ? '41' : '21') + addressString + 'ac';
+        const matchResult = scriptpubkey.match(/.{2}/g);
+        let scriptHash = '';
+        if (matchResult) {
+          const buf = Uint8Array.from(matchResult.map((byte) => parseInt(byte, 16)));
+          const hash = new Hash().update(buf).digest();
+          const hashArray = Array.from(new Uint8Array(hash));
+          scriptHash = hashArray.map((bytes) => bytes.toString(16).padStart(2, '0')).join('');
+        }
+        return await fetchJSON(config.API.ESPLORA + `/scripthash/${scriptHash}`) as IEsploraApi.Address;
+      } else {
+        return await fetchJSON(config.API.ESPLORA + `/address/${addressString}`) as IEsploraApi.Address;
+      }
+    }
   })
 };
 
@@ -102,7 +124,7 @@ export const components: Record<string, (...args: any[]) => Component> = {
 
       const networkName = props.networkName; // bitcoin, liquid, onbtc...
       if (networkName !== 'liquid') {
-        title = 'Bitcoin Block';
+        title = `Bitcoin ${title}`;
       }
 
       ctx.fillText(title, bounds.x + bounds.w / 2, bounds.y + bounds.h / 2);
@@ -146,6 +168,43 @@ export const components: Record<string, (...args: any[]) => Component> = {
       }
     }
   }),
+
+  addressContent: (id: string, position: Position): Component => {
+    const bounds = { ...position, w: position.w ?? 1200, h: position.h ?? 520 }
+    return {
+      type: 'address',
+      data: [
+        dataRequirements.address(id),
+      ],
+      props: (data) => {
+        const a = data[`address_${id}`];
+        const received = a.chain_stats.funded_txo_sum / 1e8;
+        const sent = a.chain_stats.spent_txo_sum / 1e8;
+        const rows = [
+          { label: 'Total received', value: { num: formatNumber(received, '1.8-8'), unit: 'BTC' } },
+          { label: 'Total sent', value: { num: formatNumber(sent, '1.8-8'), unit: 'BTC' } },
+          { label: 'Balance', value: { num: formatNumber(received - sent, '1.8-8'), unit: 'BTC' } },
+          { label: 'Transactions', value: formatNumber(a.chain_stats.tx_count + a.mempool_stats.tx_count, '1.0-0') },
+          { label: 'Unspent TXOs', value: formatNumber(a.chain_stats.funded_txo_count - a.chain_stats.spent_txo_count, '1.0-0') },
+        ];
+        return { tableRows: rows };
+      },
+      children: [
+        components.qrcode(id, { x: bounds.x + bounds.w - 48 - 480, y: bounds.y + bounds.h - 16 - 480, w: 480, h: 480 }),
+        components.table({ x: bounds.x + 48, y: bounds.y + 129 }),
+      ],
+      render: async (ctx: CanvasRenderingContext2D, data: any, props: any = {}): Promise<void> => {
+        const address: string = id;
+
+        ctx.font = 'bold 50px Roboto';
+        ctx.fillStyle = themes.default.fg;
+        ctx.textAlign = 'left';
+
+        const availableWidth = bounds.w - 96 - 480;
+        ctx.fillText(middleEllipsis(ctx, address, availableWidth), bounds.x + 48, bounds.y + 60);
+      }
+    }
+  },
   
   blockContent: (id: string, position: Position): Component => {
     const bounds = { ...position, w: position.w ?? 1200, h: position.h ?? 520 }
@@ -155,9 +214,20 @@ export const components: Record<string, (...args: any[]) => Component> = {
         dataRequirements.blockHash(id),
         dataRequirements.extendedBlock(id),
       ],
+      props: (data) => {
+        const blockData = data[`extended_block_${id}`];
+        const rows = [
+          { label: 'Timestamp', value: new Date(blockData.timestamp * 1000).toLocaleString('sv-SE').replace(',', '').slice(0, 16) },
+          { label: 'Weight', value: formatWeightUnit(blockData.weight, 2) },
+          { label: 'Median fee', value: { num: '~' + formatNumber(blockData.extras.medianFee, '1.0-0'), unit: 'sat/vB' } },
+          { label: 'Total fees', value: { num: formatNumber(blockData.extras.totalFees / 100000000, '1.2-3'), unit: 'BTC' } },
+          { label: 'Miner', value: blockData.extras.pool }
+        ];
+        return { tableRows: rows };
+      },
       children: [
         components.blockViz(id, { x: bounds.x + bounds.w - 48 - 480, y: bounds.y + bounds.h - 16 - 480, w: 480, h: 480 }),
-        components.table(id, { x: bounds.x + 48, y: bounds.y + 129 }, 'block')
+        components.table({ x: bounds.x + 48, y: bounds.y + 129 })
       ],
       render: async (ctx: CanvasRenderingContext2D, data: any, props: any = {}): Promise<void> => {
         const blockData = data[`extended_block_${id}`];
@@ -195,22 +265,11 @@ export const components: Record<string, (...args: any[]) => Component> = {
     }
   }),
 
-  table: (id: string, position: Position, type: string): Component => ({
+  table: (position: Position): Component => ({
     type: 'table',
     data: [],
     render: async (ctx: CanvasRenderingContext2D, data: any, props: any = {}): Promise<void> => {
-      // Set rows depending on type
-      let rows: { label: string, value: any }[] = [];
-      if (type === 'block') {
-        const blockData = data[`extended_block_${id}`];
-        rows = [
-          { label: 'Timestamp', value: new Date(blockData.timestamp * 1000).toLocaleString('sv-SE').replace(',', '').slice(0, 16) },
-          { label: 'Weight', value: formatWeightUnit(blockData.weight, 2) },
-          { label: 'Median fee', value: { num: '~' + formatNumber(blockData.extras.medianFee, '1.0-0'), unit: 'sat/vB' } },
-          { label: 'Total fees', value: { num: formatNumber(blockData.extras.totalFees / 100000000, '1.2-3'), unit: 'BTC' } },
-          { label: 'Miner', value: blockData.extras.pool }
-        ];
-      }
+      const rows = props.tableRows ?? [];
 
       // Build the table
       let yOffset = position.y;
@@ -300,6 +359,15 @@ export const components: Record<string, (...args: any[]) => Component> = {
       }
     }
   }),
+
+  qrcode: (text: string, position: Position): Component => ({
+    type: 'qrcode',
+    data: [],
+    render: async (ctx: CanvasRenderingContext2D) => {
+      const bounds = { ...position, w: position.w ?? 480, h: position.h ?? 480 } as Rect;
+      renderQrToCtx(ctx, text, bounds);
+    }
+  }),
 };
 
 // Views
@@ -311,6 +379,15 @@ export const views: Record<string, (...args: any[]) => Component> = {
       components.background({ x: 0, y: 0 }),
       components.header('Block', { x: 0, y: 0 }),
       components.blockContent(hash, { x: 0, y: 80, w: 1200, h: 520 })
+    ]
+  }),
+  address: (address: string): Component => ({
+    type: 'address',
+    data: [],
+    children: [
+      components.background({ x: 0, y: 0 }),
+      components.header('Address', { x: 0, y: 0 }),
+      components.addressContent(address, { x: 0, y: 80, w: 1200, h: 520 })
     ]
   })
 };

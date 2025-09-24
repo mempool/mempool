@@ -85,14 +85,19 @@ class CanvasRenderer implements Renderer {
       throw new Error('Failed to get canvas context');
     }
 
-    const renderStack = [view];
+    const renderStack = [{ next: view, props: params }];
     while (renderStack.length) {
-      const next = renderStack.pop();
+      const { next, props } = renderStack.pop()!;
+      const own = typeof next.props === 'function' ? next.props(data, props) : (next.props || {});
+      params = { ...props, ...own };
+
       if (next?.render) {
         await next.render(ctx, data, params);
       }
       if (next?.children) {
-        renderStack.push(...[...next.children].reverse());
+        for (let i = next.children.length - 1; i >= 0; i--) {
+          renderStack.push({ next: next.children[i], props: params });
+        }
       }
     }
     return canvas.toBuffer('image/png');
