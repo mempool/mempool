@@ -28,6 +28,7 @@ export interface Component {
   type: string;
   data?: DataRequirement<any>[];
   children?: Component[];
+  props?: Record<string, any> | ((data: any, props: any) => Record<string, any>);
   render?: (ctx: CanvasRenderingContext2D, data: any, props?: any) => Promise<void>;
 }
 
