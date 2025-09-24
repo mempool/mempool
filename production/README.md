@@ -222,11 +222,11 @@ Start `elementsd` and wait for it to sync the Liquid blockchain.
 
 ### Electrs
 
-Install [Electrs](https://github.com/Blockstream/electrs) from source:
+Install [Electrs](https://github.com/mempool/electrs) from source:
 ```
-git clone https://github.com/Blockstream/electrs
+git clone https://github.com/mempool/electrs
 cd electrs
-git checkout new-index
+git checkout mempool
 ```
 
 You'll need one instance per network. Build and run them one at a time:
