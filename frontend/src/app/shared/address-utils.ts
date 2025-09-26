@@ -170,7 +170,7 @@ export class AddressTypeInfo {
             this.processScript(new ScriptInfo('inner_witnessscript', scriptHex, v.inner_witnessscript_asm, v.witness, controlBlock, vinIds?.[i]));
           } else if (this.network === 'liquid' || this.network === 'liquidtestnet' && tapleafVersion === 0xbe) {
             this.simplicity = true;
-            v.inner_simplicityscript = scriptHex;
+            v.inner_simplicityscript = v.witness[1];
             this.processScript(new ScriptInfo('inner_simplicityscript', scriptHex, null, v.witness, controlBlock, vinIds?.[i]));
           }
         }

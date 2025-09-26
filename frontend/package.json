@@ -116,7 +116,7 @@
     "cypress-fail-on-console-error": "~5.1.0",
     "cypress-wait-until": "^2.0.1",
     "mock-socket": "~9.3.1",
-    "start-server-and-test": "~2.0.0"
+    "start-server-and-test": "~2.1.0"
   },
   "scarfSettings": {
     "enabled": false

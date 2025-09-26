@@ -66,6 +66,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   showFullScriptPubkeyAsm: { [voutIndex: number]: boolean } = {};
   showFullScriptPubkeyHex: { [voutIndex: number]: boolean } = {};
   showFullOpReturnData: { [voutIndex: number]: boolean } = {};
+  showFullOpReturnPreview: { [voutIndex: number]: boolean } = {};
   showOrdData: { [key: string]: { show: boolean; inscriptions?: Inscription[]; runestone?: Runestone, runeInfo?: { [id: string]: { etching: Etching; txid: string; } }; } } = {};
   similarityMatches: Map<string, Map<string, { score: number, match: AddressMatch, group: number }>> = new Map();
 
@@ -342,11 +343,11 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
               const isScriptSpend = vin.witness.length > (hasAnnex ? 2 : 1);
               if (isScriptSpend) {
                 const controlBlock = hasAnnex ? vin.witness[vin.witness.length - 2] : vin.witness[vin.witness.length - 1];
-                const scriptHex = hasAnnex ? vin.witness[vin.witness.length - 3] : vin.witness[vin.witness.length - 2];
+                const scriptHex = hasAnnex ? vin.witness[vin.witness.length - 3] : vin.witness[vin.witness.length - 2]; // bip341 script element
                 const tapleafVersion = parseInt(controlBlock.slice(0, 2), 16) & 0xfe;
                 // simplicity script spend
                 if (tapleafVersion === 0xbe) {
-                  vin.inner_simplicityscript = scriptHex;
+                  vin.inner_simplicityscript = vin.witness[1]; // simplicity program is the second witness element
                 }
               }
             }
@@ -549,6 +550,10 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
 
   toggleShowFullOpReturnData(voutIndex: number): void {
     this.showFullOpReturnData[voutIndex] = !this.showFullOpReturnData[voutIndex];
+  }
+
+  toggleShowFullOpReturnPreview(voutIndex: number): void {
+    this.showFullOpReturnPreview[voutIndex] = !this.showFullOpReturnPreview[voutIndex];
   }
 
   toggleOrdData(txid: string, type: 'vin' | 'vout', index: number) {

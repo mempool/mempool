@@ -115,7 +115,7 @@ export class TreasuriesPieComponent implements OnChanges {
     }[] = this.treasuries.map((treasury, index) => ({
       treasury,
       id: treasury.wallet,
-      label: treasury.enterprise || treasury.name,
+      label: treasury.name || treasury.enterprise || treasury.wallet,
       balance: this.walletBalance[treasury.wallet],
       share: (this.walletBalance[treasury.wallet] / total) * 100,
       color: chartColors[index % chartColors.length],

@@ -95,6 +95,10 @@ class BitcoinApi implements AbstractBitcoinApi {
       });
   }
 
+  $getTransactionMerkleProof(txId: string): Promise<IEsploraApi.MerkleProof> {
+    throw new Error('Method getTransactionMerkleProof not supported by the Bitcoin RPC API.');
+  }
+
   $getBlockHeightTip(): Promise<number> {
     return this.bitcoindClient.getBlockCount();
   }
@@ -294,7 +298,7 @@ class BitcoinApi implements AbstractBitcoinApi {
         is_coinbase: !!vin.coinbase,
         prevout: null,
         scriptsig: vin.scriptSig && vin.scriptSig.hex || vin.coinbase || '',
-        scriptsig_asm: vin.scriptSig && transactionUtils.convertScriptSigAsm(vin.scriptSig.hex) || '',
+        scriptsig_asm: vin.scriptSig ? transactionUtils.convertScriptSigAsm(vin.scriptSig.hex) : (vin.coinbase ? transactionUtils.convertScriptSigAsm(vin.coinbase) : ''),
         sequence: vin.sequence,
         txid: vin.txid || '',
         vout: vin.vout || 0,

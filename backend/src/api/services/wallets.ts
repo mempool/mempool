@@ -180,7 +180,6 @@ class WalletApi {
 
         // update list of treasuries
         const treasuriesResponse = await axios.get(config.MEMPOOL_SERVICES.API + `/treasuries`);
-        console.log(treasuriesResponse.data);
         this.treasuries = treasuriesResponse.data || [];
       } catch (e) {
         logger.err(`Error updating active wallets: ${(e instanceof Error ? e.message : e)}`);

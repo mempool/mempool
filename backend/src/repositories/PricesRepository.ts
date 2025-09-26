@@ -296,6 +296,7 @@ class PricesRepository {
         id,
         USD
       FROM prices
+      WHERE USD >= 0
       ORDER BY time
     `);
     return times as {time: number, id: number, USD: number}[];
@@ -305,6 +306,7 @@ class PricesRepository {
     const [rates] = await DB.query(`
       SELECT ${ApiPriceFields}
       FROM prices
+      WHERE USD >= 0
       ORDER BY time DESC
       LIMIT 1`
     );
@@ -321,6 +323,7 @@ class PricesRepository {
         SELECT ${ApiPriceFields}
         FROM prices
         WHERE UNIX_TIMESTAMP(time) < ?
+          AND USD >= 0
         ORDER BY time DESC
         LIMIT 1`,
         [timestamp]
@@ -332,6 +335,7 @@ class PricesRepository {
       const [latestPrices] = await DB.query(`
         SELECT ${ApiPriceFields}
         FROM prices
+        WHERE USD >= 0
         ORDER BY time DESC
         LIMIT 1
       `);
@@ -429,6 +433,7 @@ class PricesRepository {
       const [rates] = await DB.query(`
         SELECT ${ApiPriceFields}
         FROM prices
+        WHERE USD >= 0
         ORDER BY time DESC
       `);
       if (!Array.isArray(rates)) {

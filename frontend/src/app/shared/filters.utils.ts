@@ -9,7 +9,7 @@ export interface Filter {
   txPage?: boolean,
 }
 
-export type FilterMode = 'and' | 'or';
+export type FilterMode = 'and' | 'or' | 'nor';
 
 export type GradientMode = 'fee' | 'age';
 
