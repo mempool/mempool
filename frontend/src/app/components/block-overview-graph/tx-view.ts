@@ -33,8 +33,8 @@ export default class TxView implements TransactionStripped {
   flags: number;
   bigintFlags?: bigint | null = 0b00000100_00000000_00000000_00000000n;
   time?: number;
-  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'added_prioritized' | 'prioritized' | 'added_deprioritized' | 'deprioritized' | 'censored' | 'selected' | 'rbf' | 'accelerated';
-  context?: 'projected' | 'actual';
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'added_prioritized' | 'prioritized' | 'added_deprioritized' | 'deprioritized' | 'censored' | 'selected' | 'rbf' | 'accelerated' | 'matched' | 'unmatched';
+  context?: 'projected' | 'actual' | 'stale' | 'canonical';
   scene?: BlockScene;
 
   initialised: boolean;

@@ -6,8 +6,12 @@
       <app-truncate [text]="block.canonical" [lastChars]="12" [link]="['/block/' | relativeUrl, block.canonical]" [maxWidth]="480"></app-truncate>
     </div>
     <h1>
-      <ng-container *ngIf="blockHeight == null || blockHeight > 0; else genesis" i18n="shared.block-title">Block</ng-container>
-      <ng-template #genesis i18n="@@2303359202781425764">Genesis</ng-template>
+      @if (!block?.stale) {
+        <ng-container *ngIf="blockHeight == null || blockHeight > 0; else genesis" i18n="shared.block-title">Block</ng-container>
+        <ng-template #genesis i18n="@@2303359202781425764">Genesis</ng-template>
+      } @else {
+        <ng-container i18n="shared.stale-block-title">Stale Block</ng-container>
+      }
       <span class="next-previous-blocks">
         <a *ngIf="showNextBlocklink" class="nav-arrow next" [routerLink]="['/block/' | relativeUrl, nextBlockHeight]" (click)="navigateToNextBlock()" i18n-ngbTooltip="Next Block" ngbTooltip="Next Block" placement="bottom">
           <fa-icon [icon]="['fas', 'angle-left']" [fixedWidth]="true"></fa-icon>
@@ -92,21 +96,21 @@
               <tr>
                 <td colspan="2"><span class="skeleton-loader"></span></td>
               </tr>
-              <tr *ngIf="showAudit">
+              <tr *ngIf="showComparison">
                 <td colspan="2"><span class="skeleton-loader"></span></td>
               </tr>
             </ng-template>
-            <ng-container *ngIf="isMobile || (webGlEnabled && !showAudit); then restOfTable;"></ng-container>
+            <ng-container *ngIf="isMobile || (webGlEnabled && !showComparison); then restOfTable;"></ng-container>
           </tbody>
         </table>
       </div>
-      <div class="col-sm" [class.graph-col]="webGlEnabled && !showAudit">
-        <table class="table table-borderless table-striped" *ngIf="!isMobile && !(webGlEnabled && !showAudit)">
+      <div class="col-sm" [class.graph-col]="webGlEnabled && !showComparison">
+        <table class="table table-borderless table-striped" *ngIf="!isMobile && !(webGlEnabled && !showComparison)">
           <tbody>
             <ng-container *ngTemplateOutlet="restOfTable"></ng-container>
           </tbody>
         </table>
-        <div class="col-sm chart-container" *ngIf="webGlEnabled && !showAudit">
+        <div class="col-sm chart-container" *ngIf="webGlEnabled && !showComparison">
           <app-block-overview-graph
             #blockGraphActual
             [isLoading]="!stateService.isBrowser || isLoadingOverview"
@@ -220,47 +224,89 @@
     </ng-template>
   </ng-template>
 
-  <ng-container *ngIf="showAudit">
+  <ng-container *ngIf="showComparison">
     <span id="overview"></span>
     <br>
   </ng-container>
 
   <!-- VISUALIZATIONS -->
-  <div class="box" *ngIf="!error && webGlEnabled && showAudit">
-    <div class="nav nav-tabs" *ngIf="isMobile && showAudit">
-      <a class="nav-link" [class.active]="mode === 'projected'"
-        fragment="projected" (click)="changeMode('projected')"><ng-container i18n="block.expected">Expected</ng-container></a>
-      <a class="nav-link" [class.active]="mode === 'actual'" i18n="block.actual"
-        fragment="actual" (click)="changeMode('actual')">Actual</a>
-    </div>
+  <div class="box" *ngIf="!error && webGlEnabled && showComparison">
+    @if (block?.stale) {
+      <div class="nav nav-tabs" *ngIf="isMobile">
+        <a class="nav-link" [class.active]="mode === 'stale'"
+          fragment="stale" (click)="changeMode('stale')"><ng-container i18n="block.stale">Stale</ng-container></a>
+        <a class="nav-link" [class.active]="mode === 'actual'" i18n="block.actual"
+          fragment="actual" (click)="changeMode('actual')">Winning</a>
+      </div>
+    } @else {
+      <div class="nav nav-tabs" *ngIf="isMobile && showAudit">
+        <a class="nav-link" [class.active]="mode === 'projected'"
+          fragment="projected" (click)="changeMode('projected')"><ng-container i18n="block.expected">Expected</ng-container></a>
+        <a class="nav-link" [class.active]="mode === 'actual'" i18n="block.actual"
+          fragment="actual" (click)="changeMode('actual')">Actual</a>
+      </div>
+    }
     <div class="row">
       <div class="col-sm audit-col" [class.mobile]="isMobile">
-        <h3 class="block-subtitle" *ngIf="!isMobile"><ng-container i18n="block.expected-block">Expected Block</ng-container></h3>
+        @if (block?.stale && !showAudit) {
+          <h3 class="block-subtitle" *ngIf="!isMobile">
+            <ng-container i18n="block.stale-block">Stale Block</ng-container>
+            @if (block?.extras?.pool) {
+              <img class="pool-logo large" [src]="'/resources/mining-pools/' + block?.extras?.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block?.extras?.pool.name + ' mining pool'">
+              <span class="pool-name">{{ block?.extras?.pool.name }}</span>
+            }
+          </h3>
+        } @else {
+          <h3 class="block-subtitle" *ngIf="!isMobile"><ng-container i18n="block.expected-block">Expected Block</ng-container></h3>
+        }
         <div class="block-graph-wrapper">
           <app-block-overview-graph #blockGraphProjected [isLoading]="!stateService.isBrowser || isLoadingOverview" [resolution]="86"
-            [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" [auditHighlighting]="showAudit"
-            (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="!isMobile && !showAudit"
+            [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" [auditHighlighting]="showComparison"
+            (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="!isMobile && !showAudit && !block?.stale"
             [showFilters]="true" [excludeFilters]="['replacement']" [relativeTime]="block?.timestamp"></app-block-overview-graph>
           <ng-container *ngIf="!isMobile || mode !== 'actual'; else emptyBlockInfo"></ng-container>
         </div>
         <ng-container *ngIf="network !== 'liquid'">
           <ng-template [ngIf]="!isLoadingOverview" [ngIfElse]="loadingDetailsSkeletons">
-            <ng-container *ngTemplateOutlet="isMobile && mode === 'actual' ? actualDetails : expectedDetails"></ng-container>
+            @if (block?.stale && !showAudit) {
+              <ng-container *ngTemplateOutlet="isMobile && mode === 'actual' ? canonicalDetails : staleDetails"></ng-container>
+            } @else {
+              <ng-container *ngTemplateOutlet="isMobile && mode === 'actual' ? actualDetails : expectedDetails"></ng-container>
+            }
           </ng-template>
         </ng-container>
       </div>
       <div class="col-sm audit-col" *ngIf="!isMobile">
-        <h3 class="block-subtitle actual" *ngIf="!isMobile"><ng-container i18n="block.actual-block">Actual Block</ng-container><a class="info-link" [routerLink]="['/docs/faq' | relativeUrl ]" fragment="how-do-block-audits-work"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></a></h3>
+        <h3 class="block-subtitle actual" *ngIf="!isMobile">
+          @if (block?.stale) {
+            @if (showAudit) {
+              <ng-container i18n="block.winning-block">Stale Block</ng-container>
+            } @else {
+              <ng-container i18n="block.stale-block">Winning Block</ng-container>
+              @if (canonicalBlock?.extras?.pool) {
+                <img class="pool-logo large" [src]="'/resources/mining-pools/' + canonicalBlock?.extras?.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + canonicalBlock?.extras?.pool.name + ' mining pool'">
+                <span class="pool-name">{{ canonicalBlock?.extras?.pool.name }}</span>
+              }
+            }
+          } @else {
+            <ng-container i18n="block.actual-block">Actual Block</ng-container>
+            <a class="info-link" [routerLink]="['/docs/faq' | relativeUrl ]" fragment="how-do-block-audits-work"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></a>
+          }
+        </h3>
         <div class="block-graph-wrapper">
           <app-block-overview-graph #blockGraphActual [isLoading]="!stateService.isBrowser || isLoadingOverview" [resolution]="86"
-            [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" mode="mined"  [auditHighlighting]="showAudit"
-            (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="isMobile && !showAudit"
+            [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" mode="mined"  [auditHighlighting]="showComparison"
+            (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="isMobile && !showAudit && !block?.stale"
             [showFilters]="true" [excludeFilters]="['replacement']" [relativeTime]="block?.timestamp"></app-block-overview-graph>
           <ng-container *ngTemplateOutlet="emptyBlockInfo"></ng-container>
         </div>
         <ng-container *ngIf="network !== 'liquid'">
           <ng-template [ngIf]="!isLoadingOverview" [ngIfElse]="loadingDetailsSkeletons">
-            <ng-container *ngTemplateOutlet="actualDetails"></ng-container>
+            @if (block?.stale && !showAudit) {
+              <ng-container *ngTemplateOutlet="canonicalDetails"></ng-container>
+            } @else {
+              <ng-container *ngTemplateOutlet="actualDetails"></ng-container>
+            }
           </ng-template>
         </ng-container>
       </div>
@@ -333,7 +379,9 @@
     </div>
 
     @defer (on viewport) {
+      @if (!block?.stale) {
       <app-block-transactions [paginationMaxSize]="paginationMaxSize" [block$]="block$" [txCount]="block.tx_count" [timestamp]="block.timestamp" [blockHash]="blockHash" [previousBlockHash]="block.previousblockhash" (blockReward)="updateBlockReward($event)"></app-block-transactions>
+      }
     } @placeholder {
       <div>
         <div class="block-tx-title">
@@ -440,6 +488,61 @@
           {{ block.tx_count }}
           <span *ngIf="blockAudit.txDelta" class="difference" [class.positive]="blockAudit.txDelta <= 0" [class.negative]="blockAudit.txDelta > 0">
             {{ blockAudit.txDelta < 0 ? '+' : '' }}{{ (-blockAudit.txDelta * 100) | amountShortener: 2 }}%
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</ng-template>
+
+<ng-template #staleDetails>
+  <table *ngIf="block && staleStats" class="table table-borderless table-striped audit-details-table">
+    <tbody>
+      <tr>
+        <td i18n="block.total-fees|Total fees in a block">Total fees</td>
+        <td>
+          <app-amount [satoshis]="staleStats.totalFees" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
+        </td>
+      </tr>
+      <tr>
+        <td i18n="block.weight">Weight</td>
+        <td [innerHTML]="'&lrm;' + (staleStats.totalWeight | wuBytes: 2)"></td>
+      </tr>
+      <tr>
+        <td i18n="mempool-block.transactions">Transactions</td>
+        <td>{{ staleStats.txCount || 0 }}</td>
+      </tr>
+    </tbody>
+  </table>
+</ng-template>
+
+<ng-template #canonicalDetails>
+  <table *ngIf="block && canonicalTransactions && canonicalStats" class="table table-borderless table-striped audit-details-table">
+    <tbody>
+      <tr>
+        <td i18n="block.total-fees|Total fees in a block">Total fees</td>
+        <td class="text-wrap">
+          <app-amount [satoshis]="block.extras.totalFees" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
+          <span *ngIf="canonicalStats.feeDelta" class="difference" [class.positive]="canonicalStats.feeDelta > 0" [class.negative]="canonicalStats.feeDelta <= 0">
+            {{ canonicalStats.feeDelta > 0 ? '+' : '' }}{{ (canonicalStats.feeDelta * 100) | amountShortener: 2 }}%
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <td i18n="block.weight">Weight</td>
+        <td [innerHTML]>
+          <span [innerHTML]="'&lrm;' + (canonicalStats.totalWeight | wuBytes: 2)"></span>
+          <span *ngIf="canonicalStats.weightDelta" class="difference" [class.positive]="canonicalStats.weightDelta > 0" [class.negative]="canonicalStats.weightDelta <= 0">
+            {{ canonicalStats.weightDelta > 0 ? '+' : '' }}{{ (canonicalStats.weightDelta * 100) | amountShortener: 2 }}%
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <td i18n="mempool-block.transactions">Transactions</td>
+        <td>
+          {{ canonicalStats.txCount || 0 }}
+          <span *ngIf="canonicalStats.txDelta" class="difference" [class.positive]="canonicalStats.txDelta > 0" [class.negative]="canonicalStats.txDelta <= 0">
+            {{ canonicalStats.txDelta > 0 ? '+' : '' }}{{ (canonicalStats.txDelta * 100) | amountShortener: 2 }}%
           </span>
         </td>
       </tr>

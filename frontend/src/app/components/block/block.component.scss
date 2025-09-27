@@ -92,6 +92,12 @@ h1 {
   position: relative;
   top: -1px;
   margin-right: 2px;
+
+  &.large {
+    width: 30px;
+    height: 30px;
+    margin: 0 0.3em;
+  }
 }
 
 .row {

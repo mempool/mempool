@@ -107,16 +107,22 @@ class BitcoinApi implements AbstractBitcoinApi {
     return this.bitcoindClient.getBestBlockHash();
   }
 
-  $getTxIdsForBlock(hash: string): Promise<string[]> {
+  $getTxIdsForBlock(hash: string, fallbackToCore = false): Promise<string[]> {
     return this.bitcoindClient.getBlock(hash, 1)
       .then((rpcBlock: IBitcoinApi.Block) => rpcBlock.tx);
   }
 
-  async $getTxsForBlock(hash: string): Promise<IEsploraApi.Transaction[]> {
+  async $getTxsForBlock(hash: string, fallbackToCore = false): Promise<IEsploraApi.Transaction[]> {
     const verboseBlock: IBitcoinApi.VerboseBlock = await this.bitcoindClient.getBlock(hash, 2);
     const transactions: IEsploraApi.Transaction[] = [];
     for (const tx of verboseBlock.tx) {
-      const converted = await this.$convertTransaction(tx, true);
+      const converted = await this.$convertTransaction(tx, true, false, verboseBlock.confirmations === -1);
+      converted.status = {
+        confirmed: true,
+        block_height: verboseBlock.height,
+        block_hash: hash,
+        block_time: verboseBlock.time,
+      };
       transactions.push(converted);
     }
     return transactions;
@@ -269,7 +275,7 @@ class BitcoinApi implements AbstractBitcoinApi {
     return this.bitcoindClient.getNetworkHashPs(120, blockHeight);
   }
 
-  protected async $convertTransaction(transaction: IBitcoinApi.Transaction, addPrevout: boolean, lazyPrevouts = false): Promise<IEsploraApi.Transaction> {
+  protected async $convertTransaction(transaction: IBitcoinApi.Transaction, addPrevout: boolean, lazyPrevouts = false, allowMissingPrevouts = false): Promise<IEsploraApi.Transaction> {
     let esploraTransaction: IEsploraApi.Transaction = {
       txid: transaction.txid,
       version: transaction.version,
@@ -318,7 +324,13 @@ class BitcoinApi implements AbstractBitcoinApi {
     }
 
     if (addPrevout) {
-      esploraTransaction = await this.$calculateFeeFromInputs(esploraTransaction, false, lazyPrevouts);
+      try {
+        esploraTransaction = await this.$calculateFeeFromInputs(esploraTransaction, false, lazyPrevouts);
+      } catch (e) {
+        if (!allowMissingPrevouts) {
+          throw e;
+        }
+      }
     } else if (!transaction.confirmations) {
       esploraTransaction = await this.$appendMempoolFeeData(esploraTransaction);
     }

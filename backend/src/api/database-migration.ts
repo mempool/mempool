@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 101;
+  private static currentVersion = 104;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -1166,6 +1166,17 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 100) {
       await this.$executeQuery('ALTER TABLE `blocks` ADD index_version INT NOT NULL DEFAULT 0');
       await this.$executeQuery('ALTER TABLE `blocks` ADD INDEX `index_version` (`index_version`)');
+      await this.updateToSchemaVersion(100);
+    }
+
+    if (databaseSchemaVersion < 102) {
+      await this.$executeQuery('ALTER TABLE `blocks` ADD stale BOOL NOT NULL DEFAULT 0');
+      await this.updateToSchemaVersion(102);
+    }
+
+    if (databaseSchemaVersion < 103) {
+      await this.$executeQuery('ALTER TABLE `blocks` ADD INDEX `stale` (`stale`)');
+      await this.updateToSchemaVersion(103);
     }
   }
 
@@ -1301,6 +1312,12 @@ class DatabaseMigration {
 
     if (version < 101) {
       queries.push(`DELETE FROM prices WHERE USD = -1`);
+    }
+
+    if (version < 104) {
+      queries.push(`ALTER TABLE blocks DROP PRIMARY KEY`);
+      queries.push(`ALTER TABLE blocks ADD PRIMARY KEY (hash)`);
+      queries.push(`ALTER TABLE blocks ADD INDEX (height)`);
     }
 
     return queries;
