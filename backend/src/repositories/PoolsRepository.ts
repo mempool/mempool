@@ -8,6 +8,7 @@ import { PoolInfo, PoolTag } from '../mempool.interfaces';
 class PoolsRepository {
   /**
    * Get all pools tagging info
+   * @asyncUnsafe
    */
   public async $getPools(): Promise<PoolTag[]> {
     const [rows] = await DB.query('SELECT id, unique_id as uniqueId, name, addresses, regexes, slug FROM pools');
@@ -16,6 +17,7 @@ class PoolsRepository {
 
   /**
    * Get unknown pool tagging info
+   * @asyncUnsafe
    */
   public async $getUnknownPool(): Promise<PoolTag> {
     let [rows]: any[] = await DB.query('SELECT id, unique_id as uniqueId, name, slug FROM pools where name = "Unknown"');
@@ -28,6 +30,7 @@ class PoolsRepository {
 
   /**
    * Get basic pool info and block count
+   * @asyncSafe
    */
   public async $getPoolsInfo(interval: string | null = null): Promise<PoolInfo[]> {
     interval = Common.getSqlInterval(interval);
@@ -65,6 +68,7 @@ class PoolsRepository {
 
   /**
    * Get basic pool info and block count between two timestamp
+   * @asyncSafe
    */
   public async $getPoolsInfoBetween(from: number, to: number): Promise<PoolInfo[]> {
     const query = `SELECT COUNT(height) as blockCount, pools.id as poolId, pools.name as poolName
@@ -83,6 +87,7 @@ class PoolsRepository {
 
   /**
    * Get a mining pool info
+   * @asyncSafe
    */
   public async $getPool(slug: string, parse: boolean = true): Promise<PoolTag | null> {
     const query = `
@@ -115,6 +120,7 @@ class PoolsRepository {
 
   /**
    * Get a mining pool info by its unique id
+   * @asyncSafe
    */
   public async $getPoolByUniqueId(id: number, parse: boolean = true): Promise<PoolTag | null> {
     const query = `
@@ -148,7 +154,9 @@ class PoolsRepository {
   /**
    * Insert a new mining pool in the database
    * 
-   * @param pool 
+   * @param pool
+   * @param slug
+   * @asyncSafe
    */
   public async $insertNewMiningPool(pool: any, slug: string): Promise<void> {
     try {
@@ -167,7 +175,8 @@ class PoolsRepository {
    * 
    * @param dbId
    * @param newSlug
-   * @param newName 
+   * @param newName
+   * @asyncSafe
    */
   public async $renameMiningPool(dbId: number, newSlug: string, newName: string): Promise<void> {
     try {
@@ -186,7 +195,8 @@ class PoolsRepository {
    * Update an exisiting mining pool link
    * 
    * @param dbId 
-   * @param newLink 
+   * @param newLink
+   * @asyncSafe
    */
   public async $updateMiningPoolLink(dbId: number, newLink: string): Promise<void> {
     try {
@@ -207,7 +217,8 @@ class PoolsRepository {
    * 
    * @param dbId 
    * @param addresses 
-   * @param regexes 
+   * @param regexes
+   * @asyncSafe
    */
   public async $updateMiningPoolTags(dbId: number, addresses: string, regexes: string): Promise<void> {
     try {

@@ -29,6 +29,7 @@ class NetworkSyncService {
     await this.$runTasks();
   }
 
+  /** @asyncSafe */
   private async $runTasks(): Promise<void> {
     const taskStartTime = Date.now();
     try {
@@ -37,7 +38,7 @@ class NetworkSyncService {
       const networkGraph = await lightningApi.$getNetworkGraph();
       if (networkGraph.nodes.length === 0 || networkGraph.edges.length === 0) {
         logger.info(`LN Network graph is empty, retrying in 10 seconds`, logger.tags.ln);
-        setTimeout(() => { this.$runTasks(); }, 10000);
+        setTimeout(() => { void this.$runTasks(); }, 10000);
         return;
       }
 
@@ -57,7 +58,7 @@ class NetworkSyncService {
       logger.err(`$runTasks() error: ${e instanceof Error ? e.message : e}`, logger.tags.ln);
     }
 
-    setTimeout(() => { this.$runTasks(); }, Math.max(1, (1000 * config.LIGHTNING.GRAPH_REFRESH_INTERVAL) - (Date.now() - taskStartTime)));
+    setTimeout(() => { void this.$runTasks(); }, Math.max(1, (1000 * config.LIGHTNING.GRAPH_REFRESH_INTERVAL) - (Date.now() - taskStartTime)));
   }
 
   /**
@@ -111,7 +112,7 @@ class NetworkSyncService {
     await nodesApi.$setNodesInactive(graphNodesPubkeys);
 
     if (config.MAXMIND.ENABLED) {
-      $lookupNodeLocation();
+      void $lookupNodeLocation();
     }
   }
 
@@ -269,17 +270,16 @@ class NetworkSyncService {
 
   private async $scanForClosedChannels(): Promise<void> {
     let currentBlockHeight = blocks.getCurrentBlockHeight();
-    if (config.MEMPOOL.ENABLED === false) { // https://github.com/mempool/mempool/issues/3582
-      currentBlockHeight = await bitcoinApi.$getBlockHeightTip();
-    }
-    if (this.closedChannelsScanBlock === currentBlockHeight) {
-      logger.debug(`We've already scan closed channels for this block, skipping.`);
-      return;
-    }
-
-    let progress = 0;
-
     try {
+      if (config.MEMPOOL.ENABLED === false) { // https://github.com/mempool/mempool/issues/3582
+        currentBlockHeight = await bitcoinApi.$getBlockHeightTip();
+      }
+      if (this.closedChannelsScanBlock === currentBlockHeight) {
+        logger.debug(`We've already scan closed channels for this block, skipping.`);
+        return;
+      }
+
+      let progress = 0;
       let log = `Starting closed channels scan`;
       if (this.closedChannelsScanBlock > 0) {
         log += `. Last scan was at block ${this.closedChannelsScanBlock}`;

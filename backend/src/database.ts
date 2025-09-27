@@ -25,6 +25,7 @@ import { execSync } from 'child_process';
     timezone: '+00:00',
   };
 
+  /** @asyncUnsafe */
   private checkDBFlag() {
     if (config.DATABASE.ENABLED === false) {
       const stack = new Error().stack;
@@ -32,6 +33,7 @@ import { execSync } from 'child_process';
     }
   }
 
+  /** @asyncUnsafe */
   public async query<T extends RowDataPacket[][] | RowDataPacket[] | OkPacket |
     OkPacket[] | ResultSetHeader>(query, params?, errorLogLevel: LogLevel | 'silent' = 'debug', connection?: PoolConnection): Promise<[T, FieldPacket[]]>
   {
@@ -76,6 +78,7 @@ import { execSync } from 'child_process';
     }
   }
 
+  /** @asyncSafe */
   private async $rollbackAtomic(connection: PoolConnection): Promise<void> {
     try {
       await connection.rollback();
@@ -85,12 +88,14 @@ import { execSync } from 'child_process';
     }
   }
 
+  /** @asyncSafe */
   public async $atomicQuery<T extends RowDataPacket[][] | RowDataPacket[] | OkPacket |
     OkPacket[] | ResultSetHeader>(queries: { query, params }[], errorLogLevel: LogLevel | 'silent' = 'debug'): Promise<[T, FieldPacket[]][]>
   {
     const pool = await this.getPool();
-    const connection = await pool.getConnection();
+    let connection;
     try {
+      connection = await pool.getConnection();
       await connection.beginTransaction();
 
       const results: [T, FieldPacket[]][]  = [];
@@ -104,13 +109,19 @@ import { execSync } from 'child_process';
       return results;
     } catch (e) {
       logger.warn('Could not complete db transaction, rolling back: ' + (e instanceof Error ? e.message : e));
-      this.$rollbackAtomic(connection);
+      if (connection) {
+        await this.$rollbackAtomic(connection);
+      }
       throw e;
     } finally {
-      connection.release();
+      if (connection) {
+        connection.release();
+      }
     }
   }
 
+
+  /** @asyncSafe */
   public async checkDbConnection() {
     this.checkDBFlag();
     try {
@@ -166,11 +177,12 @@ import { execSync } from 'child_process';
     }
   }
 
+  /** @asyncSafe */
   private async getPool(): Promise<Pool> {
     if (this.pool === null) {
       this.pool = createPool(this.poolConfig);
       this.pool.on('connection', function (newConnection: PoolConnection) {
-        newConnection.query(`SET time_zone='+00:00'`);
+        void newConnection.query(`SET time_zone='+00:00'`);
       });
     }
     return this.pool;

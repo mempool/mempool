@@ -14,6 +14,7 @@ const fsPromises = promises;
 class LightningStatsImporter {
   topologiesFolder = config.LIGHTNING.TOPOLOGY_FOLDER;
 
+  /** @asyncSafe */
   async $run(): Promise<void> {
     try {
       const [channels]: any[] = await DB.query('SELECT short_id from channels;');
@@ -33,6 +34,7 @@ class LightningStatsImporter {
 
   /**
    * Generate LN network stats for one day
+   * @asyncUnsafe
    */
   public async computeNetworkStats(timestamp: number,
     networkGraph: ILightningApi.NetworkGraph, isHistorical: boolean = false): Promise<unknown> {

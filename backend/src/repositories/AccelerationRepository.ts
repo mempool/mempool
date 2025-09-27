@@ -165,6 +165,7 @@ class AccelerationRepository {
     }
   }
 
+  /** @asyncSafe */
   public async $getLastSyncedHeight(): Promise<number> {
     try {
       const [rows] = await DB.query(`
@@ -180,6 +181,7 @@ class AccelerationRepository {
     return 0;
   }
 
+  /** @asyncSafe */
   private async $setLastSyncedHeight(height: number): Promise<void> {
     try {
       await DB.query(`
@@ -193,6 +195,7 @@ class AccelerationRepository {
   }
 
   // modifies block transactions
+  /** @asyncSafe */
   public async $indexAccelerationsForBlock(block: BlockExtended, accelerations: Acceleration[], transactions: MempoolTransactionExtended[]): Promise<void> {
     const blockTxs: { [txid: string]: MempoolTransactionExtended } = {};
     for (const tx of transactions) {
@@ -211,7 +214,7 @@ class AccelerationRepository {
         const tx = blockTxs[acc.txid];
         const accelerationInfo = accelerationCosts.getAccelerationInfo(tx, boostRate, transactions);
         accelerationInfo.cost = Math.max(0, Math.min(acc.feeDelta, accelerationInfo.cost));
-        this.$saveAcceleration(accelerationInfo, block, block.extras.pool.id, successfulAccelerations);
+        void this.$saveAcceleration(accelerationInfo, block, block.extras.pool.id, successfulAccelerations);
       }
     }
     let anyConfirmed = false;
@@ -256,7 +259,7 @@ class AccelerationRepository {
     try {
       while (!done) {
         // don't DDoS the services backend
-        Common.sleep$(500 + (Math.random() * 1000));
+        await Common.sleep$(500 + (Math.random() * 1000));
         const accelerations = await accelerationApi.$fetchAccelerationHistory(page);
         page++;
         if (!accelerations?.length) {

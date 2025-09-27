@@ -54,7 +54,7 @@ class WalletApi {
 
     // Load cache on startup
     if (config.WALLETS.ENABLED) {
-      this.$loadCache();
+      void this.$loadCache();
     }
   }
 

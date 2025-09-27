@@ -143,7 +143,9 @@ export default function pLimit(concurrency: number): LimitFunction {
   const enqueue = (fn, resolve, args) => {
     queue.enqueue(run.bind(undefined, fn, resolve, args));
 
-    (async () => {
+    void (
+      /** @asyncUnsafe */
+      async () => {
       // This function needs to wait until the next microtask before comparing
       // `activeCount` to `concurrency`, because `activeCount` is updated asynchronously
       // when the run function is dequeued and called. The comparison in the if-statement

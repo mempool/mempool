@@ -1003,6 +1003,7 @@ class WebsocketHandler {
     }
   }
  
+  /** @asyncUnsafe */
   async handleNewBlock(block: BlockExtended, txIds: string[], transactions: MempoolTransactionExtended[]): Promise<void> {
     if (!this.webSocketServers.length) {
       throw new Error('No WebSocket.Server have been set');
@@ -1016,7 +1017,7 @@ class WebsocketHandler {
     }
 
     const _memPool = memPool.getMempool();
-    const candidateTxs = await memPool.getMempoolCandidates();
+    const candidateTxs = memPool.getMempoolCandidates();
     let candidates: GbtCandidates | undefined = (memPool.limitGBT && candidateTxs) ? { txs: candidateTxs, added: [], removed: [] } : undefined;
     let transactionIds: string[] = (memPool.limitGBT) ? Object.keys(candidates?.txs || {}) : Object.keys(_memPool);
 
@@ -1055,7 +1056,7 @@ class WebsocketHandler {
           totalWeight += (tx.vsize * 4);
         }
 
-        BlocksSummariesRepository.$saveTemplate({
+        void BlocksSummariesRepository.$saveTemplate({
           height: block.height,
           template: {
             id: block.id,
@@ -1064,7 +1065,7 @@ class WebsocketHandler {
           version: 1,
         });
 
-        BlocksAuditsRepository.$saveAudit({
+        void BlocksAuditsRepository.$saveAudit({
           version: 1,
           time: block.timestamp,
           height: block.height,
@@ -1100,7 +1101,7 @@ class WebsocketHandler {
       const firstSeen = getRecentFirstSeen(block.id);
       if (firstSeen) {
         if (config.DATABASE.ENABLED) {
-          BlocksRepository.$saveFirstSeenTime(block.id, firstSeen);
+          void BlocksRepository.$saveFirstSeenTime(block.id, firstSeen);
         }
         block.extras.firstSeen = firstSeen;
       }
@@ -1118,7 +1119,7 @@ class WebsocketHandler {
     if (memPool.limitGBT) {
       const minFeeMempool = memPool.limitGBT ? await bitcoinSecondClient.getRawMemPool() : null;
       const minFeeTip = memPool.limitGBT ? await bitcoinSecondClient.getBlockCount() : -1;
-      candidates = await memPool.getNextCandidates(minFeeMempool, minFeeTip, transactions);
+      candidates = memPool.getNextCandidates(minFeeMempool, minFeeTip, transactions);
       transactionIds = Object.keys(candidates?.txs || {});
     } else {
       candidates = undefined;
@@ -1485,6 +1486,7 @@ class WebsocketHandler {
     return addressCache;
   }
 
+  /** @asyncSafe */
   private async getFullTransactions(transactions: MempoolTransactionExtended[]): Promise<MempoolTransactionExtended[]> {
     for (let i = 0; i < transactions.length; i++) {
       try {

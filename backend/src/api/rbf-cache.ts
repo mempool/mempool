@@ -407,6 +407,7 @@ class RbfCache {
     };
   }
 
+  /** @asyncSafe */
   public async load({ txs, trees, expiring, mempool, spendMap }): Promise<void> {
     try {
       txs.forEach(txEntry => {
@@ -484,7 +485,7 @@ class RbfCache {
     return deflated;
   }
 
-  async importTree(mempool, root, txid, deflated, txs: Map<string, MempoolTransactionExtended>, mined: boolean = false): Promise<RbfTree | void> {
+  importTree(mempool, root, txid, deflated, txs: Map<string, MempoolTransactionExtended>, mined: boolean = false): RbfTree | void {
     const treeInfo = deflated[txid];
     const replaces: RbfTree[] = [];
 
@@ -503,7 +504,7 @@ class RbfCache {
 
     // recursively reconstruct child trees
     for (const childId of treeInfo.replaces) {
-      const replaced = await this.importTree(mempool, root, childId, deflated, txs, mined);
+      const replaced = this.importTree(mempool, root, childId, deflated, txs, mined);
       if (replaced) {
         this.replacedBy.set(replaced.tx.txid, txid);
         if (mempool[replaced.tx.txid]) {
