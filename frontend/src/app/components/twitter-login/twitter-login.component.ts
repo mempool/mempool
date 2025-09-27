@@ -18,7 +18,7 @@ export class TwitterLogin {
     if (this.redirectTo) {
       location.replace(`/api/v1/services/auth/login/twitter?redirectTo=${encodeURIComponent(this.redirectTo)}`);
     } else {
-      location.replace(`/api/v1/services/auth/login/twitter?redirectTo=${location.href}`);
+      location.replace(`/api/v1/services/auth/login/twitter`);
     }
     return false;
   }
