@@ -7,9 +7,9 @@
       <h1 class="title">{{ channel.short_id }}</h1>
     </div>
     <div class="badges mb-2">
-      <span class="badge rounded-pill badge-secondary" *ngIf="channel.status === 0" i18n="status.inactive">Inactive</span>
-      <span class="badge rounded-pill badge-success" *ngIf="channel.status === 1" i18n="status.active">Active</span>
-      <span class="badge rounded-pill badge-danger" *ngIf="channel.status === 2" i18n="status.closed">Closed</span>
+      <span class="badge rounded-pill bg-secondary" *ngIf="channel.status === 0" i18n="status.inactive">Inactive</span>
+      <span class="badge rounded-pill bg-success" *ngIf="channel.status === 1" i18n="status.active">Active</span>
+      <span class="badge rounded-pill bg-danger" *ngIf="channel.status === 2" i18n="status.closed">Closed</span>
 
       <app-closing-type [type]="channel.closing_reason" *ngIf="channel.status === 2"></app-closing-type>
     </div>
