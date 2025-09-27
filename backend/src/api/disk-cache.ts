@@ -252,7 +252,7 @@ class DiskCache {
       }
 
       if (rbfData?.rbf) {
-        rbfCache.load({
+        await rbfCache.load({
           txs: rbfData.rbf.txs.map(([txid, entry]) => ({ value: entry })),
           trees: rbfData.rbf.trees,
           expiring: rbfData.rbf.expiring.map(([txid, value]) => ({ key: txid, value })),

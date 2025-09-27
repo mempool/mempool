@@ -138,7 +138,11 @@ class Indexer {
 
       case 'coinStatsIndex': {
         logger.debug(`Indexing coinStatsIndex now`);
-        await mining.$indexCoinStatsIndex();
+        try {
+          await mining.$indexCoinStatsIndex();
+        } catch (e) {
+          logger.debug(`failed to index coinstatsindex: ` + (e instanceof Error ? e.message : e));
+        }
       } break;
     }
 

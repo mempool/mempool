@@ -256,7 +256,7 @@ class AccelerationRepository {
     try {
       while (!done) {
         // don't DDoS the services backend
-        Common.sleep$(500 + (Math.random() * 1000));
+        await Common.sleep$(500 + (Math.random() * 1000));
         const accelerations = await accelerationApi.$fetchAccelerationHistory(page);
         page++;
         if (!accelerations?.length) {
