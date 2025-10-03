@@ -1334,8 +1334,14 @@ class Blocks {
       summaryVersion = 1;
     }
     if (height == null) {
-      const block = await bitcoinApi.$getBlock(hash);
-      height = block.height;
+      // If the block is orphaned, use the height from the chaintips cache
+      const orphanedBlock = chainTips.getOrphanedBlock(hash);
+      if (orphanedBlock) {
+        height = orphanedBlock.height;
+      } else {
+        const block = await bitcoinApi.$getBlock(hash);
+        height = block.height;
+      }
     }
 
     // Index the response if needed
