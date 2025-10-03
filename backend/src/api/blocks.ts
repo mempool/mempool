@@ -529,16 +529,7 @@ class Blocks {
           indexedThisRun = 0;
         }
 
-
-        if (config.MEMPOOL.BACKEND === 'esplora') {
-          const txs = (await bitcoinApi.$getTxsForBlock(block.hash, block.stale)).map(tx => transactionUtils.extendMempoolTransaction(tx));
-          const cpfpSummary = await this.$indexCPFP(block.hash, block.height, txs);
-          if (cpfpSummary) {
-            await this.$getStrippedBlockTransactions(block.hash, true, true, cpfpSummary, block.height); // This will index the block summary
-          }
-        } else {
-          await this.$getStrippedBlockTransactions(block.hash, true, true); // This will index the block summary
-        }
+        await this.$indexBlockSummary(block.hash, block.height, block.stale);
 
         // Logging
         indexedThisRun++;
@@ -553,6 +544,18 @@ class Blocks {
     } catch (e) {
       logger.err(`Blocks summaries indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.mining);
       throw e;
+    }
+  }
+
+  public async $indexBlockSummary(hash: string, height: number, stale?: boolean): Promise<void> {
+    if (config.MEMPOOL.BACKEND === 'esplora') {
+      const txs = (await bitcoinApi.$getTxsForBlock(hash, stale)).map(tx => transactionUtils.extendMempoolTransaction(tx));
+      const cpfpSummary = await this.$indexCPFP(hash, height, txs, stale);
+      if (cpfpSummary) {
+        await this.$getStrippedBlockTransactions(hash, true, true, cpfpSummary, height); // This will index the block summary
+      }
+    } else {
+      await this.$getStrippedBlockTransactions(hash, true, true); // This will index the block summary
     }
   }
 
@@ -1540,7 +1543,7 @@ class Blocks {
     return this.currentBlockHeight;
   }
 
-  public async $indexCPFP(hash: string, height: number, txs?: MempoolTransactionExtended[]): Promise<CpfpSummary | null> {
+  public async $indexCPFP(hash: string, height: number, txs?: MempoolTransactionExtended[], stale?: boolean): Promise<CpfpSummary | null> {
     let transactions = txs;
     if (!transactions) {
       if (config.MEMPOOL.BACKEND === 'esplora') {
@@ -1558,7 +1561,9 @@ class Blocks {
     if (transactions?.length != null) {
       const summary = calculateFastBlockCpfp(height, transactions);
 
-      await this.$saveCpfp(hash, height, summary);
+      if (!stale) {
+        await this.$saveCpfp(hash, height, summary);
+      }
 
       const effectiveFeeStats = Common.calcEffectiveFeeStatistics(summary.transactions);
       await blocksRepository.$saveEffectiveFeeStats(hash, effectiveFeeStats);

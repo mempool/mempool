@@ -1,6 +1,10 @@
 import logger from '../logger';
+import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
 import { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import bitcoinClient from './bitcoin/bitcoin-client';
+import { IEsploraApi } from './bitcoin/esplora-api.interface';
+import blocks from './blocks';
+import { Common } from './common';
 
 export interface ChainTip {
   height: number;
@@ -21,6 +25,8 @@ class ChainTips {
   private orphanedBlocks: { [hash: string]: OrphanedBlock } = {};
   private blockCache: { [hash: string]: OrphanedBlock } = {};
   private orphansByHeight: { [height: number]: OrphanedBlock[] } = {};
+  private indexingOrphanedBlocks = false;
+  private indexingQueue: IEsploraApi.Block[] = [];
 
   public async updateOrphanedBlocks(): Promise<void> {
     try {
@@ -48,6 +54,7 @@ class ChainTips {
                   prevhash: block.previousblockhash,
                 };
                 this.blockCache[hash] = orphan;
+                this.indexingQueue.push(block);
               }
             }
             if (orphan) {
@@ -75,10 +82,38 @@ class ChainTips {
         this.orphansByHeight[orphan.height].push(orphan);
       }
 
+      // index new orphaned blocks in the background
+      void this.$indexOrphanedBlocks();
+
       logger.debug(`Updated orphaned blocks cache. Fetched ${newOrphans} new orphaned blocks. Total ${allOrphans.length}`);
     } catch (e) {
       logger.err(`Cannot get fetch orphaned blocks. Reason: ${e instanceof Error ? e.message : e}`);
     }
+  }
+
+  private async $indexOrphanedBlocks(): Promise<void> {
+    if (this.indexingOrphanedBlocks) {
+      return;
+    }
+    this.indexingOrphanedBlocks = true;
+    while (this.indexingQueue.length > 0) {
+      const block = this.indexingQueue.shift();
+      if (!block) {
+        continue;
+      }
+      try {
+        const alreadyIndexed = await BlocksSummariesRepository.$isSummaryIndexed(block.id);
+        if (!alreadyIndexed) {
+          await blocks.$indexBlock(block.id, block, true);
+          await blocks.$indexBlockSummary(block.id, block.height, true);
+        }
+      } catch (e) {
+        logger.err(`Failed to index orphaned block ${block.id} at height ${block.height}. Reason: ${e instanceof Error ? e.message : e}`);
+      }
+      // don't DDOS core by indexing too fast
+      await Common.sleep$(5000);
+    }
+    this.indexingOrphanedBlocks = false;
   }
 
   public getOrphanedBlocksAtHeight(height: number | undefined): OrphanedBlock[] {
