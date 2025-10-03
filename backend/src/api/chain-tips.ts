@@ -18,7 +18,6 @@ export interface OrphanedBlock {
 
 class ChainTips {
   private chainTips: ChainTip[] = [];
-  private maybeOrphanedBlocks: { [hash: string]: boolean } = {};
   private orphanedBlocks: { [hash: string]: OrphanedBlock } = {};
   private blockCache: { [hash: string]: OrphanedBlock } = {};
   private orphansByHeight: { [height: number]: OrphanedBlock[] } = {};
@@ -109,6 +108,10 @@ class ChainTips {
 
   public isOrphaned(hash: string): boolean {
     return !!this.orphanedBlocks[hash] || this.blockCache[hash]?.status === 'valid-fork' || this.blockCache[hash]?.status === 'valid-headers';
+  }
+
+  public getOrphanedBlock(hash: string): OrphanedBlock | undefined {
+    return this.orphanedBlocks[hash] || this.blockCache[hash];
   }
 }
 
