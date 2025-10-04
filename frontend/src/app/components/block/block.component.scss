@@ -299,3 +299,24 @@ h1 {
   top: -1px;
   margin-right: 2px;
 }
+
+.stale-block-alert {
+  border-radius: 0;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  .stale-msg {
+    flex-shrink: 0;
+  }
+
+  ul.stale-list {
+    max-width: 100%;
+    li {
+      max-width: 100%;
+      white-space: nowrap;
+    }
+  }
+}
