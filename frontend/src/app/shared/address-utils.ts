@@ -347,7 +347,7 @@ export function compareAddressInfo(a: AddressTypeInfo, b: AddressTypeInfo): Addr
   const left = fuzzyPrefixMatch(a.address, b.address);
   const right = fuzzyPrefixMatch(a.address, b.address, true);
   // depending on address type, some number of matching prefix characters are guaranteed
-  const prefixScore = isBase58 ? 1 : ADDRESS_PREFIXES[a.network || 'mainnet'].bech32.length;
+  const prefixScore = isBase58 ? 1 : (ADDRESS_PREFIXES[a.network || 'mainnet'].bech32.length + 1);
 
   // add the two scores together
   const totalScore = left.score + right.score - prefixScore;
