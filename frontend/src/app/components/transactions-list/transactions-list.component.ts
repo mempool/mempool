@@ -392,6 +392,29 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
       this.similarityMatches.set(tx.txid, new Map());
       const comparableVouts = tx.vout.slice(0, 20).filter(v => ['p2pkh', 'p2sh', 'v0_p2wpkh', 'v0_p2wsh', 'v1_p2tr'].includes(v.scriptpubkey_type));
       const comparableVins = tx.vin.slice(0, 20).map(v => v.prevout).filter(v => ['p2pkh', 'p2sh', 'v0_p2wpkh', 'v0_p2wsh', 'v1_p2tr'].includes(v?.scriptpubkey_type));
+
+      // Count unique addresses per type & position
+      const typeCount = new Map<string, { voutAddrs: Set<string>, vinAddrs: Set<string> }>();
+      for (const vout of comparableVouts) {
+        const count = typeCount.get(vout.scriptpubkey_type) || { voutAddrs: new Set(), vinAddrs: new Set() };
+        count.voutAddrs.add(vout.scriptpubkey_address);
+        typeCount.set(vout.scriptpubkey_type, count);
+      }
+      for (const vin of comparableVins) {
+        const count = typeCount.get(vin.scriptpubkey_type!) || { voutAddrs: new Set(), vinAddrs: new Set() };
+        count.vinAddrs.add(vin.scriptpubkey_address);
+        typeCount.set(vin.scriptpubkey_type!, count);
+      }
+      // We compare each vout to every distinct vin and every other vout address of the same type
+      let totalUniquePairs = 0;
+      for (const { voutAddrs, vinAddrs } of typeCount.values()) {
+        const V = voutAddrs.size;
+        const I = vinAddrs.size;
+        totalUniquePairs += (V * (V - 1)) / 2 + V * I;
+      }
+      // Adjust threshold to correct for the birthday paradox
+      const adjustedThreshold = totalUniquePairs > 0 ? ADDRESS_SIMILARITY_THRESHOLD * totalUniquePairs : ADDRESS_SIMILARITY_THRESHOLD;
+
       for (const vout of comparableVouts) {
         const address = vout.scriptpubkey_address;
         const addressType = vout.scriptpubkey_type;
@@ -403,7 +426,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
           ...comparableVins.filter(v => v.scriptpubkey_type === addressType && v.scriptpubkey_address !== address)
         ]) {
           const similarity = checkedCompareAddressStrings(address, compareAddr.scriptpubkey_address, addressType as AddressType, this.stateService.network);
-          if (similarity?.status === 'comparable' && similarity.score > ADDRESS_SIMILARITY_THRESHOLD) {
+          if (similarity?.status === 'comparable' && similarity.score > adjustedThreshold) {
             // Get or create group numbers for both addresses
             let group1 = similarityGroups.get(address);
             let group2 = similarityGroups.get(compareAddr.scriptpubkey_address);

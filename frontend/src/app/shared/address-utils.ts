@@ -264,7 +264,7 @@ export type AddressSimilarityResult =
   | { status: 'incomparable' }
   | AddressSimilarity;
 
-export const ADDRESS_SIMILARITY_THRESHOLD = 10_000_000; // 1 false positive per ~10 million comparisons
+export const ADDRESS_SIMILARITY_THRESHOLD = 1_000_000; // 1 false positive per ~1 million comparisons
 
 function fuzzyPrefixMatch(a: string, b: string, rtl: boolean = false): { score: number, matchA: string, matchB: string } {
   let score = 0;
