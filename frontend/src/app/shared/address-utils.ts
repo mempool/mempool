@@ -280,12 +280,18 @@ function fuzzyPrefixMatch(a: string, b: string, rtl: boolean = false): { score: 
     b = b.split('').reverse().join('');
   }
 
+  let discounted = false;
   while (ai < a.length && bi < b.length && !done) {
     if (a[ai] === b[bi]) {
       // matching characters
       prefixA += a[ai];
       prefixB += b[bi];
-      score++;
+      if (discounted) {
+        score += 0.5;
+      } else {
+        score ++;
+      }
+      discounted = false;
       ai++;
       bi++;
     } else if (!gap) {
@@ -312,6 +318,7 @@ function fuzzyPrefixMatch(a: string, b: string, rtl: boolean = false): { score: 
         bi++;
       }
       gap = true;
+      discounted = true;
     } else {
       done = true;
     }
