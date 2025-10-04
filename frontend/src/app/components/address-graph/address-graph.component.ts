@@ -45,6 +45,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
   @Input() left: number | string = 70;
   @Input() widget: boolean = false;
   @Input() label: string = '';
+  @Input() image: string = '';
   @Input() defaultFiat: boolean = false;
   @Input() showLegend: boolean = true;
   @Input() showYAxis: boolean = true;
@@ -56,7 +57,6 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
   hoverData: any[] = [];
   conversions: any;
   allowZoom: boolean = false;
-  labelGraphic: any;
 
   selected = { [$localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`]: true, 'Fiat': false };
 
@@ -87,18 +87,6 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.isLoading = true;
-    this.labelGraphic = this.label ? {
-      type: 'text',
-      right: '36px',
-      bottom: '36px',
-      z: 100,
-      silent: true,
-      style: {
-        fill: '#fff',
-        text: this.label,
-        font: '24px sans-serif'
-      }
-    } : undefined;
     if (!this.addressSummary$ && (!this.address || !this.stats)) {
       return;
     }
@@ -200,6 +188,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
 
     this.adjustedRight = this.selected['Fiat'] ? +this.right + 40 : +this.right;
     this.adjustedLeft = this.selected[$localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`] ? +this.left : +this.left - 40;
+    const graphicElements = this.graphicElements();
 
     this.chartOptions = {
       color: [
@@ -219,10 +208,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         right: this.adjustedRight,
         left: this.adjustedLeft,
       },
-      graphic: this.labelGraphic ? [{
-        ...this.labelGraphic,
-        right: this.adjustedRight + 22 + 'px',
-      }] : undefined,
+      graphic: graphicElements.length > 0 ? graphicElements : undefined,
       legend: (this.showLegend && !this.stateService.isAnyTestnet()) ? {
         data: [
           {
@@ -455,16 +441,14 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
     this.selected = e.selected;
     this.adjustedRight = this.selected['Fiat'] ? +this.right + 40 : +this.right;
     this.adjustedLeft = this.selected[$localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`] ? +this.left : +this.left - 40;
+    const graphicElements = this.graphicElements();
 
     this.chartOptions = {
       grid: {
         right: this.adjustedRight,
         left: this.adjustedLeft,
       },
-      graphic: this.labelGraphic ? [{
-        ...this.labelGraphic,
-        right: this.adjustedRight + 22 + 'px',
-      }] : undefined,
+      graphic: graphicElements.length > 0 ? graphicElements : undefined,
       legend: {
         selected: this.selected,
       },
@@ -525,5 +509,41 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
     }
 
     return extendedSummary;
+  }
+
+  graphicElements() {
+    const graphicElements = [];
+
+    if (this.label) {
+      graphicElements.push({
+        type: 'text',
+        right: this.adjustedRight + 22 + 'px',
+        bottom: '36px',
+        z: 100,
+        silent: true,
+        style: {
+          fill: '#fff',
+          text: this.label,
+          font: '24px sans-serif'
+        }
+      });
+    }
+
+    if (this.image) {
+      graphicElements.push({
+        type: 'image',
+        style: {
+          image: this.image,
+          width: 120,
+          height: 80,
+        },
+        right: this.adjustedRight + 22,
+        bottom: this.label ? 66 : 36,
+        z: 100,
+        silent: true,
+      });
+    }
+
+    return graphicElements;
   }
 }
