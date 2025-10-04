@@ -209,6 +209,12 @@ export interface BlockExtension {
     slug: string;
     minerNames: string[] | null;
   }
+  orphans?: {
+    height: number;
+    hash: string;
+    status: 'invalid' | 'active' | 'valid-fork' | 'valid-headers' | 'headers-only';
+    prevhash: string;
+  }[];
 }
 
 export interface BlockExtended extends Block {

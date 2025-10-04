@@ -360,6 +360,24 @@
       </div>
     </div>
 
+    @if (!block?.stale && block?.extras?.orphans?.length > 0) {
+      <br>
+      <div class="header-bg box stale-block-alert">
+        <span class="stale-msg mr-1">
+          @if (block.extras.orphans.length === 1) {
+            <span i18n="block.stale-block-singular">There is a stale block at this height</span>
+          } @else {
+            <span i18n="block.stale-block-plural">There are {{ block.extras.orphans.length }} stale blocks at this height</span>
+          }
+        </span>
+        <ul class="stale-list mb-0 list-unstyled">
+          @for (orphan of block.extras.orphans; track orphan.height) {
+            <li><app-truncate [text]="orphan.hash" [lastChars]="8" [link]="['/block' | relativeUrl, orphan.hash]"></app-truncate></li>
+          }
+        </ul>
+      </div>
+    }
+
     <div class="text-right mt-3 toggle-btns">
       <button
         *ngIf="webGlEnabled && auditAvailable"
