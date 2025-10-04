@@ -404,8 +404,38 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
         ]) {
           const similarity = checkedCompareAddressStrings(address, compareAddr.scriptpubkey_address, addressType as AddressType, this.stateService.network);
           if (similarity?.status === 'comparable' && similarity.score > ADDRESS_SIMILARITY_THRESHOLD) {
-            let group = similarityGroups.get(address) || lastGroup++;
+            // Get or create group numbers for both addresses
+            let group1 = similarityGroups.get(address);
+            let group2 = similarityGroups.get(compareAddr.scriptpubkey_address);
+
+            let group: number;
+            if (group1 !== undefined && group2 !== undefined) {
+              // Both have groups - merge by using the lower group number
+              group = Math.min(group1, group2);
+              // Update all addresses with the higher group number to use the lower one
+              if (group1 !== group2) {
+                const higherGroup = Math.max(group1, group2);
+                for (const [addr, g] of similarityGroups.entries()) {
+                  if (g === higherGroup) {
+                    similarityGroups.set(addr, group);
+                  }
+                }
+              }
+            } else if (group1 !== undefined) {
+              // Only first address has a group
+              group = group1;
+            } else if (group2 !== undefined) {
+              // Only second address has a group
+              group = group2;
+            } else {
+              // Neither has a group - create a new one
+              group = lastGroup++;
+            }
+
+            // Assign the group to both addresses
             similarityGroups.set(address, group);
+            similarityGroups.set(compareAddr.scriptpubkey_address, group);
+
             const bestVout = this.similarityMatches.get(tx.txid)?.get(address);
             if (!bestVout || bestVout.score < similarity.score) {
               this.similarityMatches.get(tx.txid)?.set(address, { score: similarity.score, match: similarity.left, group });
@@ -413,8 +443,6 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
             // opportunistically update the entry for the compared address
             const bestCompare = this.similarityMatches.get(tx.txid)?.get(compareAddr.scriptpubkey_address);
             if (!bestCompare || bestCompare.score < similarity.score) {
-              group = similarityGroups.get(compareAddr.scriptpubkey_address) || lastGroup++;
-              similarityGroups.set(compareAddr.scriptpubkey_address, group);
               this.similarityMatches.get(tx.txid)?.set(compareAddr.scriptpubkey_address, { score: similarity.score, match: similarity.right, group });
             }
           }
