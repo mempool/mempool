@@ -390,8 +390,8 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
 
       // Check for address poisoning similarity matches
       this.similarityMatches.set(tx.txid, new Map());
-      const comparableVouts = tx.vout.slice(0, 20).filter(v => ['p2pkh', 'p2sh', 'v0_p2wpkh', 'v0_p2wsh', 'v1_p2tr'].includes(v.scriptpubkey_type));
-      const comparableVins = tx.vin.slice(0, 20).map(v => v.prevout).filter(v => ['p2pkh', 'p2sh', 'v0_p2wpkh', 'v0_p2wsh', 'v1_p2tr'].includes(v?.scriptpubkey_type));
+      const comparableVouts = tx.vout.slice(0, 20).filter(v => ['p2pkh', 'p2sh', 'v0_p2wpkh', 'v0_p2wsh', 'v1_p2tr'].includes(v.scriptpubkey_type) && !this.isFakeScripthash(v));
+      const comparableVins = tx.vin.slice(0, 20).map(v => v.prevout).filter(v => ['p2pkh', 'p2sh', 'v0_p2wpkh', 'v0_p2wsh', 'v1_p2tr'].includes(v?.scriptpubkey_type) && !this.isFakeScripthash(v));
 
       // Count unique addresses per type & position
       const typeCount = new Map<string, { voutAddrs: Set<string>, vinAddrs: Set<string> }>();
@@ -472,6 +472,12 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
     }
+  }
+
+  // assume any address with 12 or more contiguous repeated substrings is fake
+  fakeScriptHashRegex = new RegExp(/(.+?)\1{11,}/);
+  isFakeScripthash(vout: Vout): boolean {
+    return this.fakeScriptHashRegex.test(vout.scriptpubkey_address);
   }
 
   onScroll(): void {
