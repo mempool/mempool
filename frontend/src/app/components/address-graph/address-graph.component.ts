@@ -512,38 +512,48 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
   }
 
   graphicElements() {
-    const graphicElements = [];
-
-    if (this.label) {
-      graphicElements.push({
-        type: 'text',
-        right: this.adjustedRight + 22 + 'px',
-        bottom: '36px',
-        z: 100,
-        silent: true,
-        style: {
-          fill: '#fff',
-          text: this.label,
-          font: '24px sans-serif'
-        }
-      });
-    }
+    const children = [];
 
     if (this.image) {
-      graphicElements.push({
+      children.push({
         type: 'image',
         style: {
           image: this.image,
           width: 120,
           height: 80,
         },
-        right: this.adjustedRight + 22,
-        bottom: this.label ? 66 : 36,
+        left: 'center',
+        top: 0,
         z: 100,
-        silent: true,
       });
     }
 
-    return graphicElements;
+    if (this.label) {
+      children.push({
+        type: 'text',
+        left: 'center',
+        top: this.image ? 90 : 0,
+        z: 100,
+        style: {
+          fill: '#fff',
+          text: this.label,
+          font: '24px sans-serif',
+          textAlign: 'center'
+        }
+      });
+    }
+
+    if (children.length) {
+      return [{
+        type: 'group',
+        right: this.adjustedRight + 22,
+        bottom: '36px',
+        z: 100,
+        silent: true,
+        children: children
+      }];
+    } else {
+      return [];
+    }
   }
 }
