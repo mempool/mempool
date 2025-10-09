@@ -526,9 +526,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
                   this.miningStats = stats;
                 });
               }
-              if (!this.gotInitialPosition && txPosition.position?.block === 0 && txPosition.position?.vsize < 750_000) {
-                this.accelerationFlowCompleted = true;
-              }
             }
           }
         }
