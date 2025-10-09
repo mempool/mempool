@@ -432,7 +432,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     return 0;
   }
 
-  isEarlierThanParent(index: number): boolean {
+  showIsEarlierThanParent(index: number): boolean {
     const block = this.blocks[index];
     const parent = this.blocks[index + 1];
 
@@ -440,6 +440,9 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
       return false;
     }
 
-    return block.timestamp < parent.timestamp;
+    // Only show FAQ icon for blocks mined in the last 2 hours
+    const recentBlock = (Date.now() / 1000 - block.timestamp) < 7200;
+
+    return recentBlock && block.timestamp < parent.timestamp;
   }
 }
