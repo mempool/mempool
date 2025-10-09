@@ -138,6 +138,7 @@ export class StateService {
   referrer: string = '';
   isBrowser: boolean = isPlatformBrowser(this.platformId);
   isMempoolSpaceBuild = window['isMempoolSpaceBuild'] ?? false;
+  isProdDomain: boolean;
   backend: 'esplora' | 'electrum' | 'none' = 'esplora';
   network = '';
   lightningNetworks = ['', 'mainnet', 'bitcoin', 'testnet', 'signet'];
@@ -249,6 +250,8 @@ export class StateService {
       this.setLightningBasedonUrl('/');
       this.isTabHidden$ = new BehaviorSubject(false);
     }
+
+    this.isProdDomain = this.testIsProdDomain(this.env.PROD_DOMAINS);
 
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
@@ -511,5 +514,12 @@ export class StateService {
     if (!hasTouchScreen()) {
       this.searchFocus$.next(true);
     }    
+  }
+
+  private testIsProdDomain(prodDomains: string[]): boolean {
+    const hostname = document.location.hostname;
+    return prodDomains.some(domain =>
+      hostname === domain || hostname.endsWith('.' + domain)
+    );
   }
 }
