@@ -72,11 +72,11 @@
     <!-- Accelerator -->
     <ng-container *ngIf="!tx?.status?.confirmed && showAccelerationSummary && (ETA$ | async) as eta;">
       <br>
-      <div class="title float-left mb-1">
+      <div class="title float-start mb-1">
         <h2><a [href]="[ isMempoolSpaceBuild ? '/accelerator' : 'https://mempool.space/accelerator']" [target]="isMempoolSpaceBuild ? '' : 'blank'"><app-svg-images name="accelerator" [height]="isMobile ? '35px' : '45px'"></app-svg-images></a></h2>
       </div>
-      <button type="button" class="btn btn-outline-info accelerator-toggle btn-sm float-right" [class.hide-on-mobile]="hasAccelerationDetails" (click)="closeAccelerator()" i18n="accelerator.hide">Hide accelerator</button>
-      <button *ngIf="hasAccelerationDetails" class="btn btn-sm btn-outline-info details-button float-right ml-2" (click)="showAccelerationDetails = !showAccelerationDetails" i18n="transaction.details|Transaction Details">Details</button>
+      <button type="button" class="btn btn-outline-info accelerator-toggle btn-sm float-end" [class.hide-on-mobile]="hasAccelerationDetails" (click)="closeAccelerator()" i18n="accelerator.hide">Hide accelerator</button>
+      <button *ngIf="hasAccelerationDetails" class="btn btn-sm btn-outline-info details-button float-end ms-2" (click)="showAccelerationDetails = !showAccelerationDetails" i18n="transaction.details|Transaction Details">Details</button>
 
       <div class="clearfix"></div>
 
@@ -99,7 +99,7 @@
     <br>
 
     <ng-container *ngIf="rbfInfo">
-      <div class="title float-left">
+      <div class="title float-start">
         <h2 id="rbf" i18n="transaction.rbf-history|RBF Timeline">RBF Timeline</h2>
       </div>
       <div class="clearfix"></div>
@@ -108,7 +108,7 @@
     </ng-container>
 
     <ng-container *ngIf="transactionTime > 0 && tx.acceleratedAt > 0 && (isAcceleration || accelerationCanceled)">
-      <div class="title float-left">
+      <div class="title float-start">
         <h2 id="acceleration-timeline" i18n="transaction.acceleration-timeline|Acceleration Timeline">Acceleration Timeline</h2>
       </div>
       <div class="clearfix"></div>
@@ -117,11 +117,11 @@
     </ng-container>
 
     <ng-container *ngIf="flowEnabled; else flowPlaceholder">
-      <div class="title float-left">
+      <div class="title float-start">
         <h2 id="flow" i18n="transaction.flow|Transaction flow">Flow</h2>
       </div>
 
-      <button type="button" class="btn btn-outline-info flow-toggle btn-sm float-right" (click)="toggleGraph()" i18n="hide-diagram">Hide diagram</button>
+      <button type="button" class="btn btn-outline-info flow-toggle btn-sm float-end" (click)="toggleGraph()" i18n="hide-diagram">Hide diagram</button>
 
       <div class="clearfix"></div>
 
@@ -172,7 +172,7 @@
 
     <app-transactions-list #txList [transactions]="[tx]" [cached]="isCached" [errorUnblinded]="errorUnblinded" [inputIndex]="inputIndex" [outputIndex]="outputIndex" [transactionPage]="true"></app-transactions-list>
 
-    <div class="title text-left">
+    <div class="title text-start">
       <h2 i18n="transaction.details|Transaction Details">Details</h2>
     </div>
     <div class="box">

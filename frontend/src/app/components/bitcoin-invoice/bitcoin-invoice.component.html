@@ -44,9 +44,7 @@
 
         <div class="input-group input-group-sm info-group">
           <input type="text" class="form-control input-dark" readonly [value]="invoice.addresses.BTC">
-          <div class="input-group-append">
-              <button class="btn btn-outline-secondary" type="button" ><app-clipboard [text]="invoice.addresses.BTC"></app-clipboard></button>
-          </div>
+          <button class="btn btn-outline-secondary" type="button" ><app-clipboard [text]="invoice.addresses.BTC"></app-clipboard></button>
         </div>
         @if (!minimal) {
           <p>{{ invoice.btcDue | number: '1.0-8' }} <span class="symbol">BTC</span></p>
@@ -64,9 +62,7 @@
 
         <div class="input-group input-group-sm info-group">
           <input type="text" class="form-control input-dark" readonly [value]="invoice.addresses.BTC_LightningLike">
-          <div class="input-group-append">
-              <button class="btn btn-outline-secondary" type="button"><app-clipboard [text]="invoice.addresses.BTC_LightningLike"></app-clipboard></button>
-          </div>
+          <button class="btn btn-outline-secondary" type="button"><app-clipboard [text]="invoice.addresses.BTC_LightningLike"></app-clipboard></button>
         </div>
 
         @if (!minimal) {
@@ -85,9 +81,7 @@
         <br>
         <div class="input-group input-group-sm info-group">
           <input type="text" class="form-control input-dark" readonly [value]="invoice.addresses.LBTC" />
-          <div class="input-group-append">
-              <button class="btn btn-outline-secondary" type="button" ><app-clipboard [text]="invoice.addresses.LBTC"></app-clipboard></button>
-          </div>
+          <button class="btn btn-outline-secondary" type="button" ><app-clipboard [text]="invoice.addresses.LBTC"></app-clipboard></button>
         </div>
         @if (!minimal) {
           <p>{{ invoice.btcDue | number: '1.0-8' }} <span class="symbol">BTC</span></p>

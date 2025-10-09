@@ -360,3 +360,15 @@ footer .nowrap {
   font-size: 8px;
   margin-left: 1em;
 }
+
+.col-md-12 {
+  padding-left: 15px;
+  padding-right: 15px;
+
+  &.row>* {
+    padding-right: 0;
+    padding-left: 0;
+    flex-shrink: unset;
+    width: unset;
+  }
+}
