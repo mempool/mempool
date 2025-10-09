@@ -37,8 +37,8 @@ class RedisCache {
         },
         database: NetworkDB[config.MEMPOOL.NETWORK],
       };
-      this.$ensureConnected();
-      setInterval(() => { this.$ensureConnected(); }, 10000);
+      void this.$ensureConnected();
+      setInterval(() => { void  this.$ensureConnected(); }, 10000);
     }
   }
 
@@ -127,6 +127,7 @@ class RedisCache {
     }
   }
 
+  /** @asyncSafe */
   async $addTransaction(tx: MempoolTransactionExtended): Promise<void> {
     if (!config.REDIS.ENABLED) {
       return;
@@ -139,6 +140,7 @@ class RedisCache {
     }
   }
 
+  /** @asyncSafe */
   async $flushTransactions(): Promise<void> {
     if (!config.REDIS.ENABLED) {
       return;
@@ -178,6 +180,7 @@ class RedisCache {
     }
   }
 
+  /** @asyncSafe */
   async $removeTransactions(transactions: string[]): Promise<void> {
     if (!config.REDIS.ENABLED) {
       return;
@@ -206,6 +209,7 @@ class RedisCache {
     }
   }
 
+  /** @asyncSafe */
   async $setRbfEntry(type: string, txid: string, value: any): Promise<void> {
     if (!config.REDIS.ENABLED) {
       return;
@@ -222,6 +226,7 @@ class RedisCache {
     }
   }
 
+  /** @asyncSafe */
   async $removeRbfEntry(type: string, txid: string): Promise<void> {
     if (!config.REDIS.ENABLED) {
       return;
@@ -238,6 +243,7 @@ class RedisCache {
     }
   }
 
+  /** @asyncSafe */
   private async $flushRbfQueues(): Promise<void> {
     if (!config.REDIS.ENABLED) {
       return;
@@ -263,6 +269,7 @@ class RedisCache {
     }
   }
 
+  /** @asyncSafe */
   async $getBlocks(): Promise<BlockExtended[]> {
     if (!config.REDIS.ENABLED) {
       return [];
@@ -280,6 +287,7 @@ class RedisCache {
     }
   }
 
+  /** @asyncSafe */
   async $getBlockSummaries(): Promise<BlockSummary[]> {
     if (!config.REDIS.ENABLED) {
       return [];
@@ -297,6 +305,7 @@ class RedisCache {
     }
   }
 
+  /** @asyncSafe */
   async $getMempool(): Promise<{ [txid: string]: MempoolTransactionExtended }> {
     if (!config.REDIS.ENABLED) {
       return {};
@@ -320,6 +329,7 @@ class RedisCache {
     return {};
   }
 
+  /** @asyncSafe */
   async $getRbfEntries(type: string): Promise<any[]> {
     if (!config.REDIS.ENABLED) {
       return [];
@@ -337,6 +347,7 @@ class RedisCache {
     }
   }
 
+  /** @asyncUnsafe */
   async $loadCache(): Promise<void> {
     if (!config.REDIS.ENABLED) {
       return;
@@ -385,12 +396,14 @@ class RedisCache {
     }
   }
 
+  /** @asyncUnsafe */
   private async scanKeys<T>(pattern): Promise<{ key: string, value: T }[]> {
     logger.info(`loading Redis entries for ${pattern}`);
     let keys: string[] = [];
     const result: { key: string, value: T }[] = [];
     const patternLength = pattern.length - 1;
     let count = 0;
+    /** @asyncUnsafe */
     const processValues = async (keys): Promise<void> => {
       const values = await this.client.MGET(keys);
       for (let i = 0; i < values.length; i++) {

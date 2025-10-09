@@ -34,6 +34,8 @@ class Indexer {
 
   /**
    * Check which core index is available for indexing
+   * 
+   * @asyncUnsafe
    */
   public async checkAvailableCoreIndexes(): Promise<void> {
     const updatedCoreIndexes: CoreIndex[] = [];
@@ -51,7 +53,7 @@ class Indexer {
       if (indexName === 'coinstatsindex' && newState.synced === true) {
         const previousState = this.isCoreIndexReady('coinstatsindex');
         // if (!previousState || previousState.synced === false) {
-          this.runSingleTask('coinStatsIndex');
+          void this.runSingleTask('coinStatsIndex');
         // }
       }
     }
@@ -149,6 +151,7 @@ class Indexer {
     this.tasksRunning[task] = false;
   }
 
+  /** @asyncUnsafe */
   public async $run(): Promise<void> {
     if (!Common.indexingEnabled() || this.runIndexer === false ||
       this.indexerRunning === true || mempool.hasPriority()
@@ -187,7 +190,7 @@ class Indexer {
         return;
       }
 
-      this.runSingleTask('blocksPrices');
+      void this.runSingleTask('blocksPrices');
       await blocks.$indexCoinbaseAddresses();
       await mining.$indexDifficultyAdjustments();
       await mining.$generateNetworkHashrateHistory();
@@ -201,7 +204,7 @@ class Indexer {
       await BlocksAuditsRepository.$migrateAuditsV0toV1();
       await BlocksRepository.$migrateBlocks();
       // do not wait for classify blocks to finish
-      blocks.$classifyBlocks();
+      void blocks.$classifyBlocks();
     } catch (e) {
       this.indexerRunning = false;
       logger.err(`Indexer failed, trying again in 10 seconds. Reason: ` + (e instanceof Error ? e.message : e));

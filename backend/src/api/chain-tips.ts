@@ -21,6 +21,7 @@ class ChainTips {
   private blockCache: { [hash: string]: OrphanedBlock } = {};
   private orphansByHeight: { [height: number]: OrphanedBlock[] } = {};
 
+  /** @asyncSafe */
   public async updateOrphanedBlocks(): Promise<void> {
     try {
       this.chainTips = await bitcoinClient.getChainTips();

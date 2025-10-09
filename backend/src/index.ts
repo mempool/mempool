@@ -68,7 +68,7 @@ class Server {
     this.app = express();
 
     if (!config.MEMPOOL.SPAWN_CLUSTER_PROCS) {
-      this.startServer();
+      void this.startServer();
       return;
     }
 
@@ -92,7 +92,7 @@ class Server {
         }, 10000);
       });
     } else {
-      this.startServer(true);
+      void this.startServer(true);
     }
   }
 
@@ -148,6 +148,7 @@ class Server {
       ;
 
     if (config.DATABASE.ENABLED && config.FIAT_PRICE.ENABLED) {
+      /** @asyncUnsafe */
       await priceUpdater.$initializeLatestPriceWithDb();
     }
 
@@ -168,12 +169,14 @@ class Server {
 
     await syncAssets.syncAssets$();
     if (config.DATABASE.ENABLED) {
+      /** @asyncUnsafe */
       await mempoolBlocks.updatePools$();
     }
     if (config.MEMPOOL.ENABLED) {
       if (config.MEMPOOL.CACHE_ENABLED) {
         await diskCache.$loadMempoolCache();
       } else if (config.REDIS.ENABLED) {
+        /** @asyncUnsafe */
         await redisCache.$loadCache();
       }
     }
@@ -197,20 +200,20 @@ class Server {
     }
 
     if (config.FIAT_PRICE.ENABLED) {
-      priceUpdater.$run();
+      void priceUpdater.$run();
     }
     await chainTips.updateOrphanedBlocks();
 
     this.setUpHttpApiRoutes();
 
     if (config.MEMPOOL.ENABLED) {
-      this.runMainUpdateLoop();
+      void this.runMainUpdateLoop();
     }
 
     setInterval(() => { this.healthCheck(); }, 2500);
 
     if (config.LIGHTNING.ENABLED) {
-      this.$runLightningBackend();
+      void this.$runLightningBackend();
     }
 
     this.server.listen(config.MEMPOOL.HTTP_PORT, () => {
@@ -231,7 +234,7 @@ class Server {
       });
     }
 
-    poolsUpdater.$startService();
+    void poolsUpdater.$startService();
   }
 
   async runMainUpdateLoop(): Promise<void> {
@@ -256,13 +259,13 @@ class Server {
       if (numHandledBlocks === 0) {
         await memPool.$updateMempool(newMempool, latestAccelerations, minFeeMempool, minFeeTip, pollRate);
       }
-      indexer.$run();
+      void indexer.$run();
       if (config.WALLETS.ENABLED) {
         // might take a while, so run in the background
-        walletApi.$syncWallets();
+        void walletApi.$syncWallets();
       }
       if (config.FIAT_PRICE.ENABLED) {
-        priceUpdater.$run();
+        void priceUpdater.$run();
       }
 
       // rerun immediately if we skipped the mempool update, otherwise wait POLL_RATE_MS
@@ -294,6 +297,7 @@ class Server {
     }
   }
 
+  /** @asyncSafe */
   async $runLightningBackend(): Promise<void> {
     try {
       await fundingTxFetcher.$init();
@@ -302,8 +306,9 @@ class Server {
       await forensicsService.$startService();
     } catch(e) {
       logger.err(`Exception in $runLightningBackend. Restarting in 1 minute. Reason: ${(e instanceof Error ? e.message : e)}`);
+      /** @asyncUnsafe */
       await Common.sleep$(1000 * 60);
-      this.$runLightningBackend();
+      void this.$runLightningBackend();
     };
   }
 
@@ -336,9 +341,9 @@ class Server {
     }
     loadingIndicators.setProgressChangedCallback(websocketHandler.handleLoadingChanged.bind(websocketHandler));
 
-    accelerationApi.connectWebsocket();
+    void accelerationApi.connectWebsocket();
     if (config.STRATUM.ENABLED) {
-      stratumApi.connectWebsocket();
+      void stratumApi.connectWebsocket();
     }
   }
 

@@ -98,6 +98,7 @@ class Mempool {
     return this.spendMap.get(`${txid}:${index}`);
   }
 
+  /** @asyncUnsafe */
   public async $setMempool(mempoolData: { [txId: string]: MempoolTransactionExtended }) {
     this.mempoolCache = mempoolData;
     let count = 0;
@@ -179,6 +180,7 @@ class Mempool {
     return this.mempoolCandidates;
   }
 
+  /** @asyncUnsafe */
   public async $updateMemPoolInfo() {
     this.mempoolInfo = await this.$getMempoolInfo();
   }
@@ -208,6 +210,7 @@ class Mempool {
     return txTimes;
   }
 
+  /** @asyncUnsafe */
   public async $updateMempool(transactions: string[], accelerations: Record<string, Acceleration> | null, minFeeMempool: string[], minFeeTip: number, pollRate: number): Promise<void> {
     logger.debug(`Updating mempool...`);
 
