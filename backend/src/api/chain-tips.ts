@@ -86,6 +86,10 @@ class ChainTips {
 
     return this.orphansByHeight[height] || [];
   }
+
+  public getChainTips(): ChainTip[] {
+    return this.chainTips;
+  }
 }
 
 export default new ChainTips();

@@ -1,4 +1,4 @@
-<div class="block-filters" [class.filters-active]="activeFilters.length > 0" [class.any-mode]="filterMode === 'or'" [class.menu-open]="menuOpen" [class.small]="cssWidth < 500" [class.vsmall]="cssWidth < 400" [class.tiny]="cssWidth < 200">
+<div class="block-filters" [class.filters-active]="activeFilters.length > 0" [class.any-mode]="filterMode === 'or'" [class.none-mode]="filterMode === 'nor'" [class.menu-open]="menuOpen" [class.small]="cssWidth < 500" [class.vsmall]="cssWidth < 400" [class.tiny]="cssWidth < 200">
   <a *ngIf="menuOpen" [routerLink]="['/docs/faq' | relativeUrl]" fragment="how-do-mempool-goggles-work" class="info-badges float-right" i18n-ngbTooltip="Mempool Goggles&trade; tooltip" ngbTooltip="select filter categories to highlight matching transactions">
     <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true" size="lg"></fa-icon>
   </a>
@@ -22,6 +22,9 @@
           </label>
           <label class="btn btn-xs green mode-toggle" [class.active]="filterMode === 'or'">
             <input type="radio" [value]="'any'" fragment="any" (click)="setFilterMode('or')"><ng-container i18n="mempool-goggles.any">Any</ng-container>
+          </label>
+          <label class="btn btn-xs red mode-toggle" [class.active]="filterMode === 'nor'">
+            <input type="radio" [value]="'nor'" fragment="nor" (click)="setFilterMode('nor')"><ng-container i18n="mempool-goggles.none">None</ng-container>
           </label>
         </div>
       </div>

@@ -1369,23 +1369,6 @@ if [ "${BITCOIN_ELECTRS_INSTALL}" = ON ];then
     esac
 
     echo "[*] Building Bitcoin Electrs release binary"
-    osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_ELECTRS_HOME} && cargo run --release --bin electrs -- --version" || true
-
-    case $OS in
-        FreeBSD*)
-            echo "[*] Patching Bitcoin Electrs code for FreeBSD"
-            SYSCONF_DIR=$(find "${BITCOIN_HOME}/.cargo/registry/src" -type d -name "sysconf-0.3.4" | head -n 1)
-            if [ -n "$SYSCONF_DIR" ]; then
-                osSudo "${BITCOIN_USER}" sh -c "cd \"$SYSCONF_DIR\" && patch -p1 < \"${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/freebsd/sysconf.patch\""
-            else
-                echo "Warning: Could not find sysconf-0.3.4 directory"
-            fi
-        ;;
-        Debian)
-        ;;
-    esac
-
-    echo "[*] Building Bitcoin Electrs release binary"
     osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_ELECTRS_HOME} && cargo run --release --bin electrs -- --version"
 fi
 

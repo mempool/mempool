@@ -22,6 +22,7 @@ import rbfCache from '../rbf-cache';
 import { calculateMempoolTxCpfp } from '../cpfp';
 import { handleError } from '../../utils/api';
 import poolsUpdater from '../../tasks/pools-updater';
+import chainTips from '../chain-tips';
 
 const TXID_REGEX = /^[a-f0-9]{64}$/i;
 const BLOCK_HASH_REGEX = /^[a-f0-9]{64}$/i;
@@ -55,6 +56,7 @@ class BitcoinRoutes {
       .post(config.MEMPOOL.API_URL_PREFIX + 'psbt/addparents', this.postPsbtCompletion)
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from', this.getBlocksByBulk.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from/:to', this.getBlocksByBulk.bind(this))
+      .get(config.MEMPOOL.API_URL_PREFIX + 'chain-tips', this.getChainTips.bind(this))
       .post(config.MEMPOOL.API_URL_PREFIX + 'prevouts', this.$getPrevouts)
       .post(config.MEMPOOL.API_URL_PREFIX + 'cpfp', this.getCpfpLocalTxs)
       // Temporarily add txs/package endpoint for all backends until esplora supports it
@@ -76,6 +78,7 @@ class BitcoinRoutes {
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/hex', this.getRawTransaction)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/status', this.getTransactionStatus)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/outspends', this.getTransactionOutspends)
+          .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/merkle-proof', this.getTransactionMerkleProof)
           .get(config.MEMPOOL.API_URL_PREFIX + 'txs/outspends', this.$getBatchedOutspends)
           .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/header', this.getBlockHeader)
           .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/hash', this.getBlockTipHash)
@@ -523,6 +526,26 @@ class BitcoinRoutes {
     }
   }
 
+  private async getChainTips(req: Request, res: Response) {
+    try {
+      if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) { // Bitcoin
+        res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+        const tips = await chainTips.getChainTips();
+        if (tips.length > 0) {
+          res.json(tips);
+        } else {
+          handleError(req, res, 503, `Temporarily unavailable`);
+          return;
+        }
+      } else { // Liquid
+        handleError(req, res, 404, `This API is only available for Bitcoin networks`);
+        return;
+      }
+    } catch (e) {
+      handleError(req, res, 500, 'Failed to get chain tips');
+    }
+  }
+
   private async getLegacyBlocks(req: Request, res: Response) {
     try {
       const returnBlocks: IEsploraApi.Block[] = [];
@@ -918,6 +941,19 @@ class BitcoinRoutes {
       res.json(result);
     } catch (e) {
       handleError(req, res, 500, 'Failed to get transaction outspends');
+    }
+  }
+
+  private async getTransactionMerkleProof(req: Request, res: Response): Promise<void> {
+    if (!TXID_REGEX.test(req.params.txId)) {
+      handleError(req, res, 501, `Invalid transaction ID`);
+      return;
+    }
+    try {
+      const result = await bitcoinApi.$getTransactionMerkleProof(req.params.txId);
+      res.json(result);
+    } catch (e) {
+      handleError(req, res, 500, e instanceof Error ? e.message : 'Failed to get transaction merkle proof');
     }
   }
 
