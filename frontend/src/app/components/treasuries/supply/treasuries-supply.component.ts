@@ -96,7 +96,7 @@ export class TreasuriesSupplyComponent implements OnInit, OnDestroy {
       }
     }
 
-    const lost = 1456206; // TODO: track this dynamically
+    const lost = 0; // TODO: track this dynamically
     const treasuryTotal = Object.values(this.walletBalance).reduce((acc, balance) => acc + balance, 0);
     const otherMined = mined - treasuryTotal - lost;
     const yetToBeMined = total - mined;
