@@ -431,4 +431,15 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     }
     return 0;
   }
+
+  isEarlierThanParent(index: number): boolean {
+    const block = this.blocks[index];
+    const parent = this.blocks[index + 1];
+
+    if (!block || !parent) {
+      return false;
+    }
+
+    return block.timestamp < parent.timestamp;
+  }
 }
