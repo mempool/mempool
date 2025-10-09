@@ -582,8 +582,7 @@ class Blocks {
       return;
     }
 
-    const blockchainInfo = await bitcoinClient.getBlockchainInfo();
-    const currentBlockHeight = blockchainInfo.blocks;
+    const currentBlockHeight = this.getCurrentBlockHeight();
 
     const targetSummaryVersion: number = 1;
     const targetTemplateVersion: number = 1;
