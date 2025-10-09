@@ -30,6 +30,12 @@ class Mining {
   public reindexHashrateRequested = false;
   public reindexDifficultyAdjustmentRequested = false;
 
+  private genesisData: {
+    timestamp: number,
+    bits: number,
+    difficulty: number,
+  } | null = null;
+
   /**
    * Get historical blocks health
    */
@@ -224,8 +230,8 @@ class Mining {
     try {
       const oldestConsecutiveBlockTimestamp = 1000 * (await BlocksRepository.$getOldestConsecutiveBlock()).timestamp;
 
-      const genesisBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(await bitcoinApi.$getBlockHash(0));
-      const genesisTimestamp = genesisBlock.timestamp * 1000;
+      const genesisData = await this.getGenesisData();
+      const genesisTimestamp = genesisData.timestamp * 1000;
 
       const indexedTimestamp = await HashratesRepository.$getWeeklyHashrateTimestamps();
       const hashrates: any[] = [];
@@ -340,8 +346,8 @@ class Mining {
     const oldestConsecutiveBlockTimestamp = 1000 * (await BlocksRepository.$getOldestConsecutiveBlock()).timestamp;
 
     try {
-      const genesisBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(await bitcoinApi.$getBlockHash(0));
-      const genesisTimestamp = genesisBlock.timestamp * 1000;
+      const genesisData = await this.getGenesisData();
+      const genesisTimestamp = genesisData.timestamp * 1000;
       const indexedTimestamp = (await HashratesRepository.$getRawNetworkDailyHashrate(null)).map(hashrate => hashrate.timestamp);
       const lastMidnight = this.getDateMidnight(new Date());
       let toTimestamp = Math.round(lastMidnight.getTime());
@@ -450,14 +456,14 @@ class Mining {
 
     // gets {time, height, difficulty, bits} of blocks in ascending order of height
     const blocks: any = await BlocksRepository.$getBlocksDifficulty();
-    const genesisBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(await bitcoinApi.$getBlockHash(0));
-    let currentDifficulty = genesisBlock.difficulty;
-    let currentBits = genesisBlock.bits;
+    const genesisData = await this.getGenesisData();
+    let currentDifficulty = genesisData.difficulty;
+    let currentBits = genesisData.bits;
     let totalIndexed = 0;
 
     if (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT === -1 && indexedHeights[0] !== true) {
       await DifficultyAdjustmentsRepository.$saveAdjustments({
-        time: genesisBlock.timestamp,
+        time: genesisData.timestamp,
         height: 0,
         difficulty: currentDifficulty,
         adjustment: 0.0,
@@ -693,6 +699,18 @@ class Mining {
       }
     }
     return blocks[0];
+  }
+
+  private async getGenesisData(): Promise<{timestamp: number, bits: number, difficulty: number}> {
+    if (this.genesisData == null) {
+      const genesisBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(await bitcoinApi.$getBlockHash(0));
+      this.genesisData = {
+        timestamp: genesisBlock.timestamp,
+        bits: genesisBlock.bits,
+        difficulty: genesisBlock.difficulty,
+      };
+    }
+    return this.genesisData;
   }
 }
 
