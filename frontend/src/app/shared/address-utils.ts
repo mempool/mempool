@@ -264,7 +264,7 @@ export type AddressSimilarityResult =
   | { status: 'incomparable' }
   | AddressSimilarity;
 
-export const ADDRESS_SIMILARITY_THRESHOLD = 10_000_000; // 1 false positive per ~10 million comparisons
+export const ADDRESS_SIMILARITY_THRESHOLD = 1_000_000; // 1 false positive per ~1 million comparisons
 
 function fuzzyPrefixMatch(a: string, b: string, rtl: boolean = false): { score: number, matchA: string, matchB: string } {
   let score = 0;
@@ -280,12 +280,18 @@ function fuzzyPrefixMatch(a: string, b: string, rtl: boolean = false): { score: 
     b = b.split('').reverse().join('');
   }
 
+  let discounted = false;
   while (ai < a.length && bi < b.length && !done) {
     if (a[ai] === b[bi]) {
       // matching characters
       prefixA += a[ai];
       prefixB += b[bi];
-      score++;
+      if (discounted) {
+        score += 0.5;
+      } else {
+        score ++;
+      }
+      discounted = false;
       ai++;
       bi++;
     } else if (!gap) {
@@ -312,6 +318,7 @@ function fuzzyPrefixMatch(a: string, b: string, rtl: boolean = false): { score: 
         bi++;
       }
       gap = true;
+      discounted = true;
     } else {
       done = true;
     }
@@ -340,7 +347,7 @@ export function compareAddressInfo(a: AddressTypeInfo, b: AddressTypeInfo): Addr
   const left = fuzzyPrefixMatch(a.address, b.address);
   const right = fuzzyPrefixMatch(a.address, b.address, true);
   // depending on address type, some number of matching prefix characters are guaranteed
-  const prefixScore = isBase58 ? 1 : ADDRESS_PREFIXES[a.network || 'mainnet'].bech32.length;
+  const prefixScore = isBase58 ? 1 : (ADDRESS_PREFIXES[a.network || 'mainnet'].bech32.length + 1);
 
   // add the two scores together
   const totalScore = left.score + right.score - prefixScore;

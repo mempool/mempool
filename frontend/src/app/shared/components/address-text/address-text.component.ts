@@ -11,6 +11,8 @@ export class AddressTextComponent {
   @Input() info: AddressTypeInfo | null;
   @Input() similarity: { score: number, match: AddressMatch, group: number } | null;
 
+  min = Math.min;
+
   groupColors: string[] = [
     'var(--primary)',
     'var(--success)',

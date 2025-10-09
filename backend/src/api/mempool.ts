@@ -411,7 +411,7 @@ class Mempool {
     }
   }
 
-  public async getNextCandidates(minFeeTransactions: string[], blockHeight: number, deletedTransactions: MempoolTransactionExtended[]): Promise<GbtCandidates | undefined> {
+  public getNextCandidates(minFeeTransactions: string[], blockHeight: number, deletedTransactions: MempoolTransactionExtended[]): GbtCandidates | undefined {
     if (this.limitGBT) {
       const deletedTxsMap = {};
       for (const tx of deletedTransactions) {

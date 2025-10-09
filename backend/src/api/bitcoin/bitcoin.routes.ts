@@ -22,6 +22,7 @@ import rbfCache from '../rbf-cache';
 import { calculateMempoolTxCpfp } from '../cpfp';
 import { handleError } from '../../utils/api';
 import poolsUpdater from '../../tasks/pools-updater';
+import chainTips from '../chain-tips';
 
 const TXID_REGEX = /^[a-f0-9]{64}$/i;
 const BLOCK_HASH_REGEX = /^[a-f0-9]{64}$/i;
@@ -55,6 +56,7 @@ class BitcoinRoutes {
       .post(config.MEMPOOL.API_URL_PREFIX + 'psbt/addparents', this.postPsbtCompletion)
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from', this.getBlocksByBulk.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from/:to', this.getBlocksByBulk.bind(this))
+      .get(config.MEMPOOL.API_URL_PREFIX + 'chain-tips', this.getChainTips.bind(this))
       .post(config.MEMPOOL.API_URL_PREFIX + 'prevouts', this.$getPrevouts)
       .post(config.MEMPOOL.API_URL_PREFIX + 'cpfp', this.getCpfpLocalTxs)
       // Temporarily add txs/package endpoint for all backends until esplora supports it
@@ -521,6 +523,26 @@ class BitcoinRoutes {
 
     } catch (e) {
       handleError(req, res, 500, 'Failed to get blocks');
+    }
+  }
+
+  private async getChainTips(req: Request, res: Response) {
+    try {
+      if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) { // Bitcoin
+        res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+        const tips = await chainTips.getChainTips();
+        if (tips.length > 0) {
+          res.json(tips);
+        } else {
+          handleError(req, res, 503, `Temporarily unavailable`);
+          return;
+        }
+      } else { // Liquid
+        handleError(req, res, 404, `This API is only available for Bitcoin networks`);
+        return;
+      }
+    } catch (e) {
+      handleError(req, res, 500, 'Failed to get chain tips');
     }
   }
 

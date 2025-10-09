@@ -61,6 +61,12 @@ try {
 }
 
 function download(filename, url) {
+  if (!filename || !url) {
+    if (verbose) {
+      console.log('skipping malformed download request: ', filename, url);
+    }
+    return;
+  }
   https.get(url, (response) => {
     if (response.statusCode < 200 || response.statusCode > 299) {
       throw new Error('HTTP Error ' + response.statusCode + ' while fetching \'' + filename + '\'');
@@ -122,6 +128,9 @@ function downloadMiningPoolLogos$() {
           }
           let downloadedCount = 0;
           for (const poolLogo of poolLogos) {
+            if (poolLogo.type !== 'file' || poolLogo.download_url == null) {
+              continue;
+            }
             if (verbose) {
               console.log(`${LOG_TAG} Processing ${poolLogo.name}`);
             }
@@ -217,6 +226,9 @@ function downloadPromoVideoSubtiles$() {
           }
           let downloadedCount = 0;
           for (const language of videoLanguages) {
+            if (language.type !== 'file' || language.download_url == null) {
+              continue;
+            }
             if (verbose) {
               console.log(`${LOG_TAG} Processing ${language.name}`);
             }
@@ -253,7 +265,7 @@ function downloadPromoVideoSubtiles$() {
 
               let download_url = language.download_url;
               if (MEMPOOL_CDN) {
-                download_url = downloadownload_url = download_url.replace("raw.githubusercontent.com/mempool/mempool-promo/master/subtitles", "mempool.space/resources/promo-video");
+                download_url = download_url.replace("raw.githubusercontent.com/mempool/mempool-promo/master/subtitles", "mempool.space/resources/promo-video");
               }
               if (DRY_RUN) {
                 console.log(`${LOG_TAG} \tDRY_RUN is set, not downloading ${language.name} but we should`);
