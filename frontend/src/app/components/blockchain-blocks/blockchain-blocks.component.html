@@ -17,9 +17,22 @@
         <a draggable="false" [routerLink]="[getHref(i, block) | relativeUrl]" [state]="{ data: { block: block } }"
           class="blockLink" [ngClass]="{'disabled': (this.stateService.blockScrolling$ | async)}">&nbsp;</a>
         <div *ngIf="!minimal" [attr.data-cy]="'bitcoin-block-' + i + '-height'" class="block-height">
-          <a [routerLink]="[getHref(i, block) | relativeUrl]" [state]="{ data: { block: block } }">{{ block.height
+          <a [routerLink]="[getHref(i, block) | relativeUrl]" [state]="{ data: { block: block } }" class="block-height-link">{{ block.height
             }}</a>
         </div>
+        @if (!minimal && block?.extras?.orphans?.length > 0) {
+          <ng-container *ngFor="let orphan of block.extras.orphans.slice(0, 3); let j = index">
+            <div
+              class="stale-ghost"
+              [style.--stale-index]="j"
+              [routerLink]="['/block' | relativeUrl, orphan.hash]"
+              [ngbTooltip]="'stale block ' + orphan.hash.slice(0, 4) + '...' + orphan.hash.slice(-4)"
+              [placement]="'top'"
+              [container]="'body'"
+              [autoClose]="'outside'"
+            ></div>
+          </ng-container>
+        }
         <div class="block-body">
           <ng-container *ngIf="!minimal">
             <div *ngIf="block?.extras; else emptyfees" [attr.data-cy]="'bitcoin-block-offset=' + offset + '-index-' + i + '-fees'" class="fees">

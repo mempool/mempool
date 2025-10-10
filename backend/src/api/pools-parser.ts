@@ -122,10 +122,8 @@ class PoolsParser {
     // refresh the in-memory block cache with the reindexed data
     if (clearCache) {
       for (const block of blocks.getBlocks()) {
-        const reindexedBlock = await blocks.$indexBlock(block.height);
-        if (reindexedBlock.id === block.id) {
-          block.extras.pool = reindexedBlock.extras.pool;
-        }
+        const reindexedBlock = await blocks.$indexBlock(block.id);
+        block.extras.pool = reindexedBlock.extras.pool;
       }
       // update persistent cache with the reindexed data
       diskCache.$saveCacheToDisk();

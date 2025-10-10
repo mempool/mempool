@@ -11,8 +11,8 @@ export interface AbstractBitcoinApi {
   $getTransactionMerkleProof(txId: string): Promise<IEsploraApi.MerkleProof>;
   $getBlockHeightTip(): Promise<number>;
   $getBlockHashTip(): Promise<string>;
-  $getTxIdsForBlock(hash: string): Promise<string[]>;
-  $getTxsForBlock(hash: string): Promise<IEsploraApi.Transaction[]>;
+  $getTxIdsForBlock(hash: string, fallbackToCore?: boolean): Promise<string[]>;
+  $getTxsForBlock(hash: string, fallbackToCore?: boolean): Promise<IEsploraApi.Transaction[]>;
   $getBlockHash(height: number): Promise<string>;
   $getBlockHeader(hash: string): Promise<string>;
   $getBlock(hash: string): Promise<IEsploraApi.Block>;
