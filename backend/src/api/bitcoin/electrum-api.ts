@@ -165,7 +165,8 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
     if (!addressInfo || !addressInfo.isvalid) {
       return [];
     }
-    return await this.$getScriptHashUtxos(addressInfo.scriptPubKey);
+    const scripthash = this.encodeScriptHash(addressInfo.scriptPubKey);
+    return this.$getScriptHashUtxos(scripthash);
   }
 
   async $getScriptHashTransactions(scripthash: string, lastSeenTxId?: string): Promise<IEsploraApi.Transaction[]> {
@@ -240,7 +241,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
   }
 
   private $getScriptHashUnspent(scriptHash: string): Promise<IElectrumApi.ScriptHashUtxos[]> {
-    return this.electrumClient.blockchainScripthash_listunspent(this.encodeScriptHash(scriptHash));
+    return this.electrumClient.blockchainScripthash_listunspent(scriptHash);
   }
 
   async $getTransactionMerkleProof(txId: string): Promise<IEsploraApi.MerkleProof> {
