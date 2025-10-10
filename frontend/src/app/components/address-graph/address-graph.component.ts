@@ -513,14 +513,16 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
 
   graphicElements() {
     const children = [];
+    const imgWidth = this.isMobile() ? 60 : 120;
+    const imgHeight = this.isMobile() ? 40 : 80;
 
     if (this.image) {
       children.push({
         type: 'image',
         style: {
           image: this.image,
-          width: 120,
-          height: 80,
+          width: imgWidth,
+          height: imgHeight,
         },
         left: 'center',
         top: 0,
@@ -532,12 +534,12 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
       children.push({
         type: 'text',
         left: 'center',
-        top: this.image ? 90 : 0,
+        top: this.image ? imgHeight + 10 : 0,
         z: 100,
         style: {
           fill: '#fff',
           text: this.label,
-          font: '24px sans-serif',
+          font: this.isMobile() ? '18px sans-serif' : '24px sans-serif',
           textAlign: 'center'
         }
       });
@@ -546,7 +548,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
     if (children.length) {
       return [{
         type: 'group',
-        right: this.adjustedRight + 22,
+        right: this.adjustedRight + (this.isMobile() ? 10 : 22),
         bottom: '36px',
         z: 100,
         silent: true,
