@@ -57,8 +57,8 @@
             </div>
             <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-time'" class="time-difference">
               <app-time kind="since" [time]="block.timestamp" [fastRender]="true" [precision]="1" minUnit="minute"></app-time>
-              <a [routerLink]="['/docs/faq' | relativeUrl ]" class="timestamp-info" fragment="why-block-timestamps-dont-always-increase">
-                <fa-icon *ngIf="!minimal && isEarlierThanParent(i)" [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+              <a *ngIf="!minimal && showIsEarlierThanParent(i)" [routerLink]="['/docs/faq' | relativeUrl ]" class="timestamp-info" fragment="why-block-timestamps-dont-always-increase">
+                <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
               </a>
             </div>
           </ng-container>
