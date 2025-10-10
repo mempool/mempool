@@ -466,12 +466,20 @@ class ElectrsApi implements AbstractBitcoinApi {
     throw new Error('Method getAddressTransactions not implemented.');
   }
 
+  $getAddressUtxos(address: string): Promise<IEsploraApi.UTXO[]> {
+    return this.failoverRouter.$get<IEsploraApi.UTXO[]>('/address/' + address + '/utxo');
+  }
+
   $getScriptHash(scripthash: string): Promise<IEsploraApi.ScriptHash> {
     throw new Error('Method getScriptHash not implemented.');
   }
 
   $getScriptHashTransactions(scripthash: string, txId?: string): Promise<IEsploraApi.Transaction[]> {
     throw new Error('Method getScriptHashTransactions not implemented.');
+  }
+
+  $getScriptHashUtxos(scripthash: string): Promise<IEsploraApi.UTXO[]> {
+    throw new Error('Method getScriptHashUtxos not implemented.');
   }
 
   $getAddressPrefix(prefix: string): string[] {
