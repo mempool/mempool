@@ -1,0 +1,201 @@
+.spinner-border {
+  height: 25px;
+  width: 25px;
+  margin-top: 13px;
+}
+
+.chain-tips {
+  .info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+    margin: 0;
+    margin-bottom: 0.5em;
+
+    .type {
+      .badge {
+        margin-left: .5em;
+      }
+    }
+
+    .depth-badge {
+      margin-left: .5em;
+    }
+  }
+
+  .chain-tip {
+    margin-bottom: 2em;
+    background: var(--box-bg);
+    border-radius: 5px;
+    padding: 0.5em 1em;
+  }
+
+  .no-chain-tips {
+    margin: 1em;
+    text-align: center;
+  }
+}
+
+.stale-tip-wrapper {
+  background: var(--stat-box-bg);
+  padding: 1em;
+  border-radius: 8px;
+}
+
+.block-comparison {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 4em;
+  align-items: center;
+
+  @media screen and (max-width: 540px) {
+    gap: 1.8em;
+  }
+  @media screen and (max-width: 420px) {
+    .vs-label {
+      display: none;
+    }
+  }
+}
+
+.block-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1em;
+}
+
+.block-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg);
+  margin-bottom: 1.5em;
+  transform: translateX(-12px);
+}
+
+.bitcoin-block {
+  --block-size: 125px;
+  width: var(--block-size);
+  height: var(--block-size);
+  position: relative;
+  cursor: pointer;
+}
+
+.block-wrapper {
+  position: relative;
+  width: var(--block-size);
+  height: var(--block-size);
+}
+
+.block-column.stale {
+  .bitcoin-block {
+    opacity: 0.6;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.25), 0 0 10px rgba(255, 0, 0, 0.25);
+    filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.25));
+  }
+
+  .block-body {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+  }
+}
+
+.block-column.canonical {
+  .bitcoin-block {
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.25), 0 0 10px rgba(0, 255, 0, 0.25);
+    filter: drop-shadow(0 0 10px rgba(0, 255, 0, 0.25));
+  }
+}
+
+.bitcoin-block::after {
+  content: '';
+  width: var(--block-size);
+  height: calc(0.192 * var(--block-size));
+  position: absolute;
+  top: calc(-0.192 * var(--block-size));
+  left: calc(-0.16 * var(--block-size));
+  background-color: #232838;
+  transform: skew(40deg);
+  transform-origin: top;
+}
+
+.bitcoin-block::before {
+  content: '';
+  width: calc(0.16 * var(--block-size));
+  height: var(--block-size);
+  position: absolute;
+  top: calc(-0.096 * var(--block-size));
+  left: calc(-0.16 * var(--block-size));
+  background-color: #191c27;
+  transform: skewY(50deg);
+  transform-origin: top;
+}
+
+.block-body {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.fees {
+  font-size: 12px;
+  margin-top: 10px;
+  margin-bottom: 2px;
+}
+
+.fee-span {
+  font-size: 11px;
+  margin-bottom: 5px;
+  color: var(--yellow);
+}
+
+.block-size {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.transaction-count {
+  font-size: 10px;
+  margin-top: 3px;
+  margin-bottom: 4px;
+}
+
+.time-difference {
+  font-size: 13px;
+}
+
+.animated {
+  transition: all 0.15s ease-in-out;
+  white-space: nowrap;
+
+  .badge {
+    position: relative;
+    color: #FFF;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 145px;
+
+    &.miner-name {
+      max-width: 125px;
+    }
+  }
+}
+
+.pool-logo {
+  width: 15px;
+  height: 15px;
+  position: relative;
+  top: -1px;
+  margin-right: 2px;
+
+  &.faded {
+    filter: grayscale(100%) brightness(1.5);
+  }
+}
