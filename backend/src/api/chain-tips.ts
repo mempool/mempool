@@ -35,6 +35,8 @@ class ChainTips {
   private indexingOrphanedBlocks = false;
   private indexingQueue: { block: IEsploraApi.Block, tip: OrphanedBlock }[] = [];
 
+  private staleTipsCacheSize = 50;
+
   public async updateOrphanedBlocks(): Promise<void> {
     try {
       this.chainTips = await bitcoinClient.getChainTips();
@@ -89,6 +91,14 @@ class ChainTips {
         this.orphansByHeight[orphan.height].push(orphan);
       }
 
+      const heightsToKeep = new Set(this.chainTips.filter(tip => tip.status !== 'active').map(tip => tip.height));
+      const heightsToRemove: number[] = Object.keys(this.staleTips).map(Number).filter(height => !heightsToKeep.has(height));
+      for (const height of heightsToRemove) {
+        delete this.staleTips[height];
+      }
+
+      this.trimStaleTipsCache();
+
       // index new orphaned blocks in the background
       void this.$indexOrphanedBlocks();
 
@@ -112,28 +122,43 @@ class ChainTips {
       try {
         let staleBlock: BlockExtended | undefined;
         const alreadyIndexed = await BlocksSummariesRepository.$isSummaryIndexed(block.id);
+        const needToCache = Object.keys(this.staleTips).length < this.staleTipsCacheSize || block.height > Object.keys(this.staleTips).map(Number).sort((a, b) => b - a)[this.staleTipsCacheSize - 1];
         if (!alreadyIndexed) {
           staleBlock = await blocks.$indexBlock(block.id, block, true);
           await blocks.$indexBlockSummary(block.id, block.height, true);
           // don't DDOS core by indexing too fast
           await Common.sleep$(5000);
-        } else {
+        } else if (needToCache) {
           staleBlock = await blocks.$getBlock(block.id) as BlockExtended;
         }
-        const canonicalBlock = await blocks.$indexBlockByHeight(staleBlock.height);
-        this.staleTips[staleBlock.height] = {
-          height: staleBlock.height,
-          hash: staleBlock.id,
-          branchlen: tip.height - staleBlock.height,
-          status: tip.status,
-          stale: staleBlock,
-          canonical: canonicalBlock,
-        };
+
+        if (staleBlock && needToCache) {
+          const canonicalBlock = await blocks.$indexBlockByHeight(staleBlock.height);
+          this.staleTips[staleBlock.height] = {
+            height: staleBlock.height,
+            hash: staleBlock.id,
+            branchlen: tip.height - staleBlock.height,
+            status: tip.status,
+            stale: staleBlock,
+            canonical: canonicalBlock,
+          };
+          this.trimStaleTipsCache();
+        }
       } catch (e) {
         logger.err(`Failed to index orphaned block ${block.id} at height ${block.height}. Reason: ${e instanceof Error ? e.message : e}`);
       }
     }
     this.indexingOrphanedBlocks = false;
+  }
+
+  private trimStaleTipsCache(): void {
+    const staleTipHeights = Object.keys(this.staleTips).map(Number).sort((a, b) => b - a);
+    if (staleTipHeights.length > this.staleTipsCacheSize) {
+      const heightsToDiscard = staleTipHeights.slice(this.staleTipsCacheSize);
+      for (const height of heightsToDiscard) {
+        delete this.staleTips[height];
+      }
+    }
   }
 
   public getOrphanedBlocksAtHeight(height: number | undefined): OrphanedBlock[] {
