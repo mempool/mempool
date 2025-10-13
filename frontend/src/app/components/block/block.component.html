@@ -545,7 +545,7 @@
       <tr>
         <td i18n="block.total-fees|Total fees in a block">Total fees</td>
         <td class="text-wrap">
-          <app-amount [satoshis]="block.extras.totalFees" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
+          <app-amount [satoshis]="canonicalStats.totalFees" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
           <span *ngIf="canonicalStats.feeDelta" class="difference" [class.positive]="canonicalStats.feeDelta > 0" [class.negative]="canonicalStats.feeDelta <= 0">
             {{ canonicalStats.feeDelta > 0 ? '+' : '' }}{{ (canonicalStats.feeDelta * 100) | amountShortener: 2 }}%
           </span>
