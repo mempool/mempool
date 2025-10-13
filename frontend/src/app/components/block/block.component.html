@@ -124,7 +124,9 @@
             [relativeTime]="block?.timestamp"
             (txClickEvent)="onTxClick($event)"
           ></app-block-overview-graph>
-          <ng-container *ngTemplateOutlet="emptyBlockInfo"></ng-container>
+          @if (!isMobile || mode === 'actual') {
+            <ng-container *ngTemplateOutlet="emptyBlockInfo; context: { $implicit: block?.stale ? canonicalBlock : block }"></ng-container>
+          }
         </div>
       </div>
     </div>
@@ -264,7 +266,9 @@
             [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" [auditHighlighting]="showComparison"
             (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="!isMobile && !showAudit && !block?.stale"
             [showFilters]="true" [excludeFilters]="['replacement']" [relativeTime]="block?.timestamp"></app-block-overview-graph>
-          <ng-container *ngIf="!isMobile || mode !== 'actual'; else emptyBlockInfo"></ng-container>
+            @if (isMobile && mode === 'actual' || block?.stale) {
+              <ng-container *ngTemplateOutlet="emptyBlockInfo; context: { $implicit: (isMobile && mode === 'actual' && block?.stale) ? canonicalBlock : block }"></ng-container>
+            }
         </div>
         <ng-container *ngIf="network !== 'liquid'">
           <ng-template [ngIf]="!isLoadingOverview" [ngIfElse]="loadingDetailsSkeletons">
@@ -298,7 +302,7 @@
             [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" mode="mined"  [auditHighlighting]="showComparison"
             (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="isMobile && !showAudit && !block?.stale"
             [showFilters]="true" [excludeFilters]="['replacement']" [relativeTime]="block?.timestamp"></app-block-overview-graph>
-          <ng-container *ngTemplateOutlet="emptyBlockInfo"></ng-container>
+            <ng-container *ngTemplateOutlet="emptyBlockInfo; context: { $implicit: block?.stale ? canonicalBlock : block }"></ng-container>
         </div>
         <ng-container *ngIf="network !== 'liquid'">
           <ng-template [ngIf]="!isLoadingOverview" [ngIfElse]="loadingDetailsSkeletons">
@@ -443,16 +447,17 @@
 
 </div>
 
-<ng-template #emptyBlockInfo>
-  <a
-    *ngIf="network === '' && block && block.height > 100000 && block.tx_count <= 1"
-    class="info-bubble-link badge badge-primary"
-    [routerLink]="['/docs/faq/' | relativeUrl]"
-    fragment="why-empty-blocks"
-  >
-    <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
-    <span i18n="block.empty-block-explanation">Why is this block empty?</span>
-  </a>
+<ng-template #emptyBlockInfo let-emptyBlock>
+  @if (network === '' && emptyBlock && emptyBlock.height > 100000 && emptyBlock.tx_count <= 1) {
+    <a
+      class="info-bubble-link badge badge-primary"
+      [routerLink]="['/docs/faq/' | relativeUrl]"
+      fragment="why-empty-blocks"
+    >
+      <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+      <span i18n="block.empty-block-explanation">Why is this block empty?</span>
+    </a>
+  }
 </ng-template>
 
 <ng-template #expectedDetails>
