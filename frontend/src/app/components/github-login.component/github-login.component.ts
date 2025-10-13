@@ -18,7 +18,7 @@ export class GithubLogin {
     if (this.redirectTo) {
       location.replace(`/api/v1/services/auth/login/github?redirectTo=${encodeURIComponent(this.redirectTo)}`);
     } else {
-      location.replace(`/api/v1/services/auth/login/github?redirectTo`);
+      location.replace(`/api/v1/services/auth/login/github`);
     }
     return false;
   }
