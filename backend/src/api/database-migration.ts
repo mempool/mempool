@@ -104,7 +104,7 @@ class DatabaseMigration {
   private async $createMissingTablesAndIndexes(databaseSchemaVersion: number) {
     await this.$setStatisticsAddedIndexedFlag(databaseSchemaVersion);
 
-    const isBitcoin = ['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK);
+    const isBitcoin = ['mainnet', 'testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK);
 
     await this.$executeQuery(this.getCreateElementsTableQuery(), await this.$checkIfTableExists('elements_pegs'));
     await this.$executeQuery(this.getCreateStatisticsQuery(), await this.$checkIfTableExists('statistics'));
@@ -1286,7 +1286,7 @@ class DatabaseMigration {
    */
   private getMigrationQueriesFromVersion(version: number): string[] {
     const queries: string[] = [];
-    const isBitcoin = ['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK);
+    const isBitcoin = ['mainnet', 'testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK);
 
     if (version < 1) {
       if (config.MEMPOOL.NETWORK !== 'liquid' && config.MEMPOOL.NETWORK !== 'liquidtestnet') {
