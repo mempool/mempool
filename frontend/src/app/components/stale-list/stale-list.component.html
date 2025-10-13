@@ -8,7 +8,7 @@
     <ng-container *ngIf="chainTips$ | async as chainTips">
       <div *ngFor="let chainTip of chainTips" class="chain-tip">
         <p class="info">
-          <span class="height">{{ chainTip.height }}</span>
+          <span class="height"><a [routerLink]="['/block', chainTip.canonical?.id || chainTip.height]">{{ chainTip.height }}</a></span>
           <span class="badges">
             <span class="type" [ngSwitch]="chainTip.status">
               <span *ngSwitchCase="'headers-only'" class="badge badge-info" i18n="chain-tips.headers-only">Headers Only</span>
@@ -23,7 +23,7 @@
         <div class="stale-tip-wrapper">
           <div class="block-comparison">
             <div class="block-column stale">
-              <div class="block-label" i18n="chain-tips.stale-block">Stale Block</div>
+              <div class="block-label" i18n="chain-tips.stale-block"><span class="badge badge-secondary">Stale</span></div>
               <div class="block-wrapper">
                 <div class="bitcoin-block mined-block stale-block" [style.background]="getBlockGradient(chainTip.stale)" [routerLink]="['/block/' + chainTip.stale.id]"></div>
                 <div class="block-body">
@@ -70,7 +70,7 @@
             <div class="vs-label">vs</div>
 
             <div class="block-column canonical">
-              <div class="block-label" i18n="chain-tips.winning-block">Winning Block</div>
+              <div class="block-label" i18n="chain-tips.winning-block"><span class="badge badge-success">Winning</span></div>
               <div class="bitcoin-block mined-block canonical-block" [style.background]="getBlockGradient(chainTip.canonical)" [routerLink]="['/block/' + chainTip.canonical.id]">
                 <div class="block-body">
                   <div *ngIf="chainTip.canonical?.extras; else emptyCanonicalBlockFees" class="fees">
