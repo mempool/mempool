@@ -49,6 +49,10 @@ const routes: Routes = [
         loadChildren: () => import('@components/about/about.module').then(m => m.AboutModule),
       },
       {
+        path: 'blocks/stale',
+        component: StaleList,
+      },
+      {
         path: 'blocks/:page',
         component: BlocksList,
       },
@@ -59,10 +63,6 @@ const routes: Routes = [
       {
         path: 'rbf',
         component: RbfList,
-      },
-      {
-        path: 'stale',
-        component: StaleList,
       },
       ...(browserWindowEnv.STRATUM_ENABLED ? [{
         path: 'stratum',
