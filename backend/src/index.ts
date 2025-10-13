@@ -161,7 +161,7 @@ class Server {
     this.setUpWebsocketHandling();
 
     await poolsUpdater.updatePoolsJson(); // Needs to be done before loading the disk cache because we sometimes wipe it
-    if (config.DATABASE.ENABLED === true && config.MEMPOOL.ENABLED && ['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) && !poolsUpdater.currentSha) {
+    if (config.DATABASE.ENABLED === true && config.MEMPOOL.ENABLED && ['mainnet', 'testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK) && !poolsUpdater.currentSha) {
       logger.err(`Failed to retreive pools-v2.json sha, cannot run block indexing. Please make sure you've set valid urls in your mempool-config.json::MEMPOOL::POOLS_JSON_URL and mempool-config.json::MEMPOOL::POOLS_JSON_TREE_UR, aborting now`);
       return process.exit(1);
     }
