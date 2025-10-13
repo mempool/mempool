@@ -689,13 +689,13 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.staleStats.totalWeight = Math.min(this.staleStats.totalWeight, 4_000_000);
     this.canonicalStats.totalWeight = Math.min(this.canonicalStats.totalWeight, 4_000_000);
 
-    this.staleStats.feeDelta = this.staleStats.totalFees > 0 ? (this.staleStats.totalFees - this.canonicalStats.totalFees) / this.staleStats.totalFees : 0;
-    this.staleStats.weightDelta = this.staleStats.totalWeight > 0 ? (this.staleStats.totalWeight - this.canonicalStats.totalWeight) / this.staleStats.totalWeight : 0;
-    this.staleStats.txDelta = this.staleStats.txCount > 0 ? (this.staleStats.txCount - this.canonicalStats.txCount) / this.staleStats.txCount : 0;
+    this.staleStats.feeDelta = this.canonicalStats.totalFees > 0 ? (this.staleStats.totalFees - this.canonicalStats.totalFees) / this.canonicalStats.totalFees : (this.canonicalStats.totalFees > 0 ? Infinity : -Infinity);
+    this.staleStats.weightDelta = this.canonicalStats.totalWeight > 0 ? (this.staleStats.totalWeight - this.canonicalStats.totalWeight) / this.canonicalStats.totalWeight : (this.canonicalStats.totalWeight > 0 ? Infinity : -Infinity);
+    this.staleStats.txDelta = this.canonicalStats.txCount > 0 ? (this.staleStats.txCount - this.canonicalStats.txCount) / this.canonicalStats.txCount : (this.canonicalStats.txCount > 0 ? Infinity : -Infinity);
 
-    this.canonicalStats.feeDelta = this.canonicalStats.totalFees > 0 ? (this.canonicalStats.totalFees - this.staleStats.totalFees) / this.canonicalStats.totalFees : 0;
-    this.canonicalStats.weightDelta = this.canonicalStats.totalWeight > 0 ? (this.canonicalStats.totalWeight - this.staleStats.totalWeight) / this.canonicalStats.totalWeight : 0;
-    this.canonicalStats.txDelta = this.canonicalStats.txCount > 0 ? (this.canonicalStats.txCount - this.staleStats.txCount) / this.canonicalStats.txCount : 0;
+    this.canonicalStats.feeDelta = this.staleStats.totalFees > 0 ? (this.canonicalStats.totalFees - this.staleStats.totalFees) / this.staleStats.totalFees : (this.staleStats.totalFees > 0 ? Infinity : -Infinity);
+    this.canonicalStats.weightDelta = this.staleStats.totalWeight > 0 ? (this.canonicalStats.totalWeight - this.staleStats.totalWeight) / this.staleStats.totalWeight : (this.staleStats.totalWeight > 0 ? Infinity : -Infinity);
+    this.canonicalStats.txDelta = this.staleStats.txCount > 0 ? (this.canonicalStats.txCount - this.staleStats.txCount) / this.staleStats.txCount : (this.staleStats.txCount > 0 ? Infinity : -Infinity);
   }
 
   setupBlockAudit(): void {
