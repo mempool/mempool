@@ -496,3 +496,15 @@ export interface Treasury {
   verifiedAddresses: string[];
   balances?: { balance: number, time: number }[];
 }
+
+export interface ChainTip {
+  height: number;
+  hash: string;
+  branchlen: number;
+  status: 'invalid' | 'active' | 'valid-fork' | 'valid-headers' | 'headers-only';
+}
+
+export interface StaleTip extends ChainTip {
+  stale: BlockExtended;
+  canonical: BlockExtended;
+}

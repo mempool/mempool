@@ -1,0 +1,125 @@
+<div class="container-xl" style="min-height: 335px">
+  <h1 class="float-left" i18n="page.recent-stale-chain-tips">Recent Stale Chain Tips</h1>
+  <div *ngIf="isLoading" class="spinner-border ml-3" role="status"></div>
+
+  <div class="clearfix"></div>
+
+  <div class="chain-tips" [ngStyle]="{ 'min-height': '295px', 'opacity': isLoading ? '0.75' : '1' }">
+    <ng-container *ngIf="chainTips$ | async as chainTips">
+      <div *ngFor="let chainTip of chainTips" class="chain-tip">
+        <p class="info">
+          <span class="height">{{ chainTip.height }}</span>
+          <span class="badges">
+            <span class="type" [ngSwitch]="chainTip.status">
+              <span *ngSwitchCase="'headers-only'" class="badge badge-info" i18n="chain-tips.headers-only">Headers Only</span>
+              <span *ngSwitchCase="'valid-headers'" class="badge badge-info" i18n="chain-tips.valid-headers">Valid Headers</span>
+              <span *ngSwitchCase="'valid-fork'" class="badge badge-info" i18n="chain-tips.valid-fork">Valid Fork</span>
+              <span *ngSwitchCase="'invalid'" class="badge badge-info" i18n="chain-tips.invalid">Invalid</span>
+              <span *ngSwitchDefault>{{ chainTip.status }}</span>
+            </span>
+            <span class="badge badge-secondary depth-badge" i18n="chain-tips.depth">Depth {{ chainTip.branchlen + 1 }}</span>
+          </span>
+        </p>
+        <div class="stale-tip-wrapper">
+          <div class="block-comparison">
+            <div class="block-column stale">
+              <div class="block-label" i18n="chain-tips.stale-block">Stale Block</div>
+              <div class="block-wrapper">
+                <div class="bitcoin-block mined-block stale-block" [style.background]="getBlockGradient(chainTip.stale)" [routerLink]="['/block/' + chainTip.stale.id]"></div>
+                <div class="block-body">
+                  <div *ngIf="chainTip.stale?.extras; else emptyStaleBlockFees" class="fees">
+                    ~<app-fee-rate [fee]="chainTip.stale.extras.medianFee" unitClass="" rounding="1.0-0"></app-fee-rate>
+                  </div>
+                  <ng-template #emptyStaleBlockFees>
+                    <div class="fees">
+                      <app-fee-rate unitClass=""></app-fee-rate>
+                    </div>
+                  </ng-template>
+                  <div *ngIf="chainTip.stale?.extras?.minFee != null && chainTip.stale?.extras?.maxFee != null; else emptyStaleBlockFeeSpan" class="fee-span">
+                    <app-fee-rate [fee]="chainTip.stale.extras.minFee" [showUnit]="false" unitClass=""></app-fee-rate>
+                    -
+                    <app-fee-rate [fee]="chainTip.stale.extras.maxFee" unitClass=""></app-fee-rate>
+                  </div>
+                  <ng-template #emptyStaleBlockFeeSpan>
+                    <div class="fee-span">
+                      <app-fee-rate unitClass=""></app-fee-rate>
+                    </div>
+                  </ng-template>
+                  <div class="block-size" *ngIf="chainTip.stale?.size" [innerHTML]="'&lrm;' + (chainTip.stale.size | bytes: 2)"></div>
+                  <div class="transaction-count" *ngIf="chainTip.stale?.tx_count">
+                    {{ chainTip.stale.tx_count | number }} transaction<ng-container *ngIf="chainTip.stale.tx_count !== 1">s</ng-container>
+                  </div>
+                  <div class="time-difference" *ngIf="chainTip.stale?.timestamp">
+                    <app-time kind="since" [time]="chainTip.stale.timestamp" [fastRender]="true" [precision]="1" minUnit="minute"></app-time>
+                  </div>
+                </div>
+              </div>
+              <div class="animated" *ngIf="chainTip.stale?.extras?.pool != undefined">
+                <a class="badge" [class.miner-name]="chainTip.stale.extras.pool.minerNames?.length > 1 && chainTip.stale.extras.pool.minerNames[1] != ''" [routerLink]="[('/mining/pool/' + chainTip.stale.extras.pool.slug) | relativeUrl]">
+                  <ng-container *ngIf="chainTip.stale.extras.pool.minerNames?.length > 1 && chainTip.stale.extras.pool.minerNames[1] != ''; else staleBlockCentralisedPool">
+                    <img [ngbTooltip]="chainTip.stale.extras.pool.name" class="pool-logo faded" [src]="'/resources/mining-pools/' + chainTip.stale.extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + chainTip.stale.extras.pool.name + ' mining pool'">
+                    {{ chainTip.stale.extras.pool.minerNames[1] }}
+                  </ng-container>
+                  <ng-template #staleBlockCentralisedPool>
+                    <img class="pool-logo" [src]="'/resources/mining-pools/' + chainTip.stale.extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + chainTip.stale.extras.pool.name + ' mining pool'"> {{ chainTip.stale.extras.pool.name }}
+                  </ng-template>
+                </a>
+              </div>
+            </div>
+
+            <div class="vs-label">vs</div>
+
+            <div class="block-column canonical">
+              <div class="block-label" i18n="chain-tips.winning-block">Winning Block</div>
+              <div class="bitcoin-block mined-block canonical-block" [style.background]="getBlockGradient(chainTip.canonical)" [routerLink]="['/block/' + chainTip.canonical.id]">
+                <div class="block-body">
+                  <div *ngIf="chainTip.canonical?.extras; else emptyCanonicalBlockFees" class="fees">
+                    ~<app-fee-rate [fee]="chainTip.canonical.extras.medianFee" unitClass="" rounding="1.0-0"></app-fee-rate>
+                  </div>
+                  <ng-template #emptyCanonicalBlockFees>
+                    <div class="fees">
+                      <app-fee-rate unitClass=""></app-fee-rate>
+                    </div>
+                  </ng-template>
+                  <div *ngIf="chainTip.canonical?.extras?.minFee != null && chainTip.canonical?.extras?.maxFee != null; else emptyCanonicalBlockFeeSpan" class="fee-span">
+                    <app-fee-rate [fee]="chainTip.canonical.extras.minFee" [showUnit]="false" unitClass=""></app-fee-rate>
+                    -
+                    <app-fee-rate [fee]="chainTip.canonical.extras.maxFee" unitClass=""></app-fee-rate>
+                  </div>
+                  <ng-template #emptyCanonicalBlockFeeSpan>
+                    <div class="fee-span">
+                      <app-fee-rate unitClass=""></app-fee-rate>
+                    </div>
+                  </ng-template>
+                  <div class="block-size" *ngIf="chainTip.canonical?.size" [innerHTML]="'&lrm;' + (chainTip.canonical.size | bytes: 2)"></div>
+                  <div class="transaction-count" *ngIf="chainTip.canonical?.tx_count">
+                    {{ chainTip.canonical.tx_count | number }} transaction<ng-container *ngIf="chainTip.canonical.tx_count !== 1">s</ng-container>
+                  </div>
+                  <div class="time-difference" *ngIf="chainTip.canonical?.timestamp">
+                    <app-time kind="since" [time]="chainTip.canonical.timestamp" [fastRender]="true" [precision]="1" minUnit="minute"></app-time>
+                  </div>
+                </div>
+              </div>
+              <div class="animated" *ngIf="chainTip.canonical?.extras?.pool != undefined">
+                <a class="badge" [class.miner-name]="chainTip.canonical.extras.pool.minerNames?.length > 1 && chainTip.canonical.extras.pool.minerNames[1] != ''" [routerLink]="[('/mining/pool/' + chainTip.canonical.extras.pool.slug) | relativeUrl]">
+                  <ng-container *ngIf="chainTip.canonical.extras.pool.minerNames?.length > 1 && chainTip.canonical.extras.pool.minerNames[1] != ''; else canonicalBlockCentralisedPool">
+                    <img [ngbTooltip]="chainTip.canonical.extras.pool.name" class="pool-logo faded" [src]="'/resources/mining-pools/' + chainTip.canonical.extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + chainTip.canonical.extras.pool.name + ' mining pool'">
+                    {{ chainTip.canonical.extras.pool.minerNames[1] }}
+                  </ng-container>
+                  <ng-template #canonicalBlockCentralisedPool>
+                    <img class="pool-logo" [src]="'/resources/mining-pools/' + chainTip.canonical.extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + chainTip.canonical.extras.pool.name + ' mining pool'"> {{ chainTip.canonical.extras.pool.name }}
+                  </ng-template>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="no-chain-tips" *ngIf="!chainTips?.length">
+        <p i18n="chain-tips.no-stale-blocks-yet">This node hasn't seen any stale blocks yet!</p>
+      </div>
+    </ng-container>
+  </div>
+  
+</div>
