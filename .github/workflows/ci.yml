@@ -29,11 +29,36 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           registry-url: "https://registry.npmjs.org"
+          cache: 'npm'
+          cache-dependency-path: '${{ matrix.node }}/${{ matrix.flavor }}/backend/package-lock.json'
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ${{ matrix.node }}/${{ matrix.flavor }}/backend/node_modules
+          key: ${{ runner.os }}-backend-${{ matrix.flavor }}-node-${{ matrix.node }}-${{ hashFiles('${{ matrix.node }}/${{ matrix.flavor }}/backend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-backend-${{ matrix.flavor }}-node-${{ matrix.node }}-
+            ${{ runner.os }}-backend-${{ matrix.flavor }}-
 
       - name: Read rust-toolchain file from repository
         id: gettoolchain
         run: echo "::set-output name=toolchain::$(cat ./rust/gbt/rust-toolchain)"
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}
+
+      - name: Cache Rust dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            ${{ matrix.node }}/${{ matrix.flavor }}/rust/gbt/target/
+          key: ${{ runner.os }}-cargo-${{ matrix.flavor }}-${{ hashFiles('${{ matrix.node }}/${{ matrix.flavor }}/rust/gbt/**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-${{ matrix.flavor }}-
+            ${{ runner.os }}-cargo-
 
       - name: Install ${{ steps.gettoolchain.outputs.toolchain }} Rust toolchain
         # Latest version available on this commit is 1.71.1
@@ -69,6 +94,9 @@ jobs:
 
   cache:
     name: "Cache assets for builds"
+    strategy:
+      matrix:
+        node: ["22.14.0"]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -81,6 +109,17 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           registry-url: "https://registry.npmjs.org"
+          cache: 'npm'
+          cache-dependency-path: 'assets/frontend/package-lock.json'
+
+      - name: Cache node modules for frontend
+        uses: actions/cache@v4
+        with:
+          path: assets/frontend/node_modules
+          key: ${{ runner.os }}-cache-frontend-node-${{ matrix.node }}-${{ hashFiles('assets/frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-cache-frontend-node-${{ matrix.node }}-
+            ${{ runner.os }}-cache-frontend-
 
       - name: Install (Prod dependencies only)
         run: npm ci --omit=dev --omit=optional
@@ -180,6 +219,17 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           registry-url: "https://registry.npmjs.org"
+          cache: 'npm'
+          cache-dependency-path: '${{ matrix.node }}/${{ matrix.flavor }}/frontend/package-lock.json'
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ${{ matrix.node }}/${{ matrix.flavor }}/frontend/node_modules
+          key: ${{ runner.os }}-frontend-${{ matrix.flavor }}-node-${{ matrix.node }}-${{ hashFiles('${{ matrix.node }}/${{ matrix.flavor }}/frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-frontend-${{ matrix.flavor }}-node-${{ matrix.node }}-
+            ${{ runner.os }}-frontend-${{ matrix.flavor }}-
 
       - name: Install (Prod dependencies only)
         run: npm ci --omit=dev --omit=optional
@@ -269,6 +319,15 @@ jobs:
           node-version: 22
           cache: "npm"
           cache-dependency-path: ${{ matrix.module }}/frontend/package-lock.json
+
+      - name: Cache node modules for e2e
+        uses: actions/cache@v4
+        with:
+          path: ${{ matrix.module }}/frontend/node_modules
+          key: ${{ runner.os }}-e2e-${{ matrix.module }}-node-22-${{ hashFiles('${{ matrix.module }}/frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-e2e-${{ matrix.module }}-node-22-
+            ${{ runner.os }}-e2e-${{ matrix.module }}-
 
       - name: Restore cached mining pool assets
         continue-on-error: true

@@ -209,6 +209,12 @@ export interface BlockExtension {
     slug: string;
     minerNames: string[] | null;
   }
+  orphans?: {
+    height: number;
+    hash: string;
+    status: 'invalid' | 'active' | 'valid-fork' | 'valid-headers' | 'headers-only';
+    prevhash: string;
+  }[];
 }
 
 export interface BlockExtended extends Block {
@@ -244,8 +250,8 @@ export interface TransactionStripped {
   acc?: boolean;
   flags?: number | null;
   time?: number;
-  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'added_prioritized' | 'prioritized' | 'added_deprioritized' | 'deprioritized' | 'censored' | 'selected' | 'rbf' | 'accelerated';
-  context?: 'projected' | 'actual';
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'added_prioritized' | 'prioritized' | 'added_deprioritized' | 'deprioritized' | 'censored' | 'selected' | 'rbf' | 'accelerated' | 'matched' | 'unmatched';
+  context?: 'projected' | 'actual' | 'stale' | 'canonical';
 }
 
 export interface RbfTransaction extends TransactionStripped {
@@ -487,4 +493,18 @@ export interface Treasury {
   name: string,
   wallet: string,
   enterprise: string,
+  verifiedAddresses: string[];
+  balances?: { balance: number, time: number }[];
+}
+
+export interface ChainTip {
+  height: number;
+  hash: string;
+  branchlen: number;
+  status: 'invalid' | 'active' | 'valid-fork' | 'valid-headers' | 'headers-only';
+}
+
+export interface StaleTip extends ChainTip {
+  stale: BlockExtended;
+  canonical: BlockExtended;
 }

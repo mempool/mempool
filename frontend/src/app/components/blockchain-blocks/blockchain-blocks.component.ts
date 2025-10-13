@@ -431,4 +431,18 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     }
     return 0;
   }
+
+  showIsEarlierThanParent(index: number): boolean {
+    const block = this.blocks[index];
+    const parent = this.blocks[index + 1];
+
+    if (!block || !parent) {
+      return false;
+    }
+
+    // Only show FAQ icon for blocks mined in the last 2 hours
+    const recentBlock = (Date.now() / 1000 - block.timestamp) < 7200;
+
+    return recentBlock && block.timestamp < parent.timestamp;
+  }
 }

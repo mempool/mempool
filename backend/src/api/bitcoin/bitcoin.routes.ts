@@ -57,6 +57,7 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from', this.getBlocksByBulk.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from/:to', this.getBlocksByBulk.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'chain-tips', this.getChainTips.bind(this))
+      .get(config.MEMPOOL.API_URL_PREFIX + 'stale-tips', this.getStaleTips.bind(this))
       .post(config.MEMPOOL.API_URL_PREFIX + 'prevouts', this.$getPrevouts)
       .post(config.MEMPOOL.API_URL_PREFIX + 'cpfp', this.getCpfpLocalTxs)
       // Temporarily add txs/package endpoint for all backends until esplora supports it
@@ -90,9 +91,11 @@ class BitcoinRoutes {
           .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address', this.getAddress)
           .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs', this.getAddressTransactions)
           .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs/summary', this.getAddressTransactionSummary)
+          .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/utxo', this.getAddressUtxo)
           .get(config.MEMPOOL.API_URL_PREFIX + 'scripthash/:scripthash', this.getScriptHash)
           .get(config.MEMPOOL.API_URL_PREFIX + 'scripthash/:scripthash/txs', this.getScriptHashTransactions)
           .get(config.MEMPOOL.API_URL_PREFIX + 'scripthash/:scripthash/txs/summary', this.getScriptHashTransactionSummary)
+          .get(config.MEMPOOL.API_URL_PREFIX + 'scripthash/:scripthash/utxo', this.getScriptHashUtxo)
           .get(config.MEMPOOL.API_URL_PREFIX + 'address-prefix/:prefix', this.getAddressPrefix)
           ;
       }
@@ -546,6 +549,26 @@ class BitcoinRoutes {
     }
   }
 
+  private async getStaleTips(req: Request, res: Response) {
+    try {
+      if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) { // Bitcoin
+        res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+        const tips = await chainTips.getStaleTips();
+        if (tips.length > 0) {
+          res.json(tips);
+        } else {
+          handleError(req, res, 503, `Temporarily unavailable`);
+          return;
+        }
+      } else { // Liquid
+        handleError(req, res, 404, `This API is only available for Bitcoin networks`);
+        return;
+      }
+    } catch (e) {
+      handleError(req, res, 500, 'Failed to get stale tips');
+    }
+  }
+
   private async getLegacyBlocks(req: Request, res: Response) {
     try {
       const returnBlocks: IEsploraApi.Block[] = [];
@@ -667,6 +690,28 @@ class BitcoinRoutes {
     }
   }
 
+  private async getAddressUtxo(req: Request, res: Response): Promise<void> {
+    if (config.MEMPOOL.BACKEND === 'none') {
+      handleError(req, res, 405, 'Address lookups cannot be used with bitcoind as backend.');
+      return;
+    }
+    if (!ADDRESS_REGEX.test(req.params.address)) {
+      handleError(req, res, 501, `Invalid address`);
+      return;
+    }
+
+    try {
+      const addressData = await bitcoinApi.$getAddressUtxos(req.params.address);
+      res.json(addressData);
+    } catch (e) {
+      if (e instanceof Error && e.message && (e.message.indexOf('too long') > 0 || e.message.indexOf('confirmed status') > 0)) {
+        handleError(req, res, 413, e.message);
+        return;
+      }
+      handleError(req, res, 500, 'Failed to get address');
+    }
+  }
+
   private async getAddressTransactionSummary(req: Request, res: Response): Promise<void> {
     if (config.MEMPOOL.BACKEND !== 'esplora') {
       handleError(req, res, 405, 'Address summary lookups require mempool/electrs backend.');
@@ -723,6 +768,30 @@ class BitcoinRoutes {
         return;
       }
       handleError(req, res, 500, 'Failed to get script hash transactions');
+    }
+  }
+
+  private async getScriptHashUtxo(req: Request, res: Response): Promise<void> {
+    if (config.MEMPOOL.BACKEND === 'none') {
+      handleError(req, res, 405, 'Address lookups cannot be used with bitcoind as backend.');
+      return;
+    }
+    if (!SCRIPT_HASH_REGEX.test(req.params.scripthash)) {
+      handleError(req, res, 501, `Invalid scripthash`);
+      return;
+    }
+
+    try {
+      // electrum expects scripthashes in little-endian
+      const electrumScripthash = req.params.scripthash.match(/../g)?.reverse().join('') ?? '';
+      const addressData = await bitcoinApi.$getScriptHashUtxos(electrumScripthash);
+      res.json(addressData);
+    } catch (e) {
+      if (e instanceof Error && e.message && (e.message.indexOf('too long') > 0 || e.message.indexOf('confirmed status') > 0)) {
+        handleError(req, res, 413, e.message);
+        return;
+      }
+      handleError(req, res, 500, 'Failed to get script hash');
     }
   }
 

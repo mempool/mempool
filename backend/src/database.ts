@@ -89,8 +89,9 @@ import { execSync } from 'child_process';
     OkPacket[] | ResultSetHeader>(queries: { query, params }[], errorLogLevel: LogLevel | 'silent' = 'debug'): Promise<[T, FieldPacket[]][]>
   {
     const pool = await this.getPool();
-    const connection = await pool.getConnection();
+    let connection;
     try {
+      connection = await pool.getConnection();
       await connection.beginTransaction();
 
       const results: [T, FieldPacket[]][]  = [];
@@ -104,10 +105,14 @@ import { execSync } from 'child_process';
       return results;
     } catch (e) {
       logger.warn('Could not complete db transaction, rolling back: ' + (e instanceof Error ? e.message : e));
-      this.$rollbackAtomic(connection);
+      if (connection) {
+        await this.$rollbackAtomic(connection);
+      }
       throw e;
     } finally {
-      connection.release();
+      if (connection) {
+        connection.release();
+      }
     }
   }
 

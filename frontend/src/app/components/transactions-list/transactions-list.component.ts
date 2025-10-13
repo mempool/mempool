@@ -390,8 +390,31 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
 
       // Check for address poisoning similarity matches
       this.similarityMatches.set(tx.txid, new Map());
-      const comparableVouts = tx.vout.slice(0, 20).filter(v => ['p2pkh', 'p2sh', 'v0_p2wpkh', 'v0_p2wsh', 'v1_p2tr'].includes(v.scriptpubkey_type));
-      const comparableVins = tx.vin.slice(0, 20).map(v => v.prevout).filter(v => ['p2pkh', 'p2sh', 'v0_p2wpkh', 'v0_p2wsh', 'v1_p2tr'].includes(v?.scriptpubkey_type));
+      const comparableVouts = tx.vout.slice(0, 20).filter(v => ['p2pkh', 'p2sh', 'v0_p2wpkh', 'v0_p2wsh', 'v1_p2tr'].includes(v.scriptpubkey_type) && !this.isFakeScripthash(v));
+      const comparableVins = tx.vin.slice(0, 20).map(v => v.prevout).filter(v => ['p2pkh', 'p2sh', 'v0_p2wpkh', 'v0_p2wsh', 'v1_p2tr'].includes(v?.scriptpubkey_type) && !this.isFakeScripthash(v));
+
+      // Count unique addresses per type & position
+      const typeCount = new Map<string, { voutAddrs: Set<string>, vinAddrs: Set<string> }>();
+      for (const vout of comparableVouts) {
+        const count = typeCount.get(vout.scriptpubkey_type) || { voutAddrs: new Set(), vinAddrs: new Set() };
+        count.voutAddrs.add(vout.scriptpubkey_address);
+        typeCount.set(vout.scriptpubkey_type, count);
+      }
+      for (const vin of comparableVins) {
+        const count = typeCount.get(vin.scriptpubkey_type!) || { voutAddrs: new Set(), vinAddrs: new Set() };
+        count.vinAddrs.add(vin.scriptpubkey_address);
+        typeCount.set(vin.scriptpubkey_type!, count);
+      }
+      // We compare each vout to every distinct vin and every other vout address of the same type
+      let totalUniquePairs = 0;
+      for (const { voutAddrs, vinAddrs } of typeCount.values()) {
+        const V = voutAddrs.size;
+        const I = vinAddrs.size;
+        totalUniquePairs += (V * (V - 1)) / 2 + V * I;
+      }
+      // Adjust threshold to correct for the birthday paradox
+      const adjustedThreshold = totalUniquePairs > 0 ? ADDRESS_SIMILARITY_THRESHOLD * totalUniquePairs : ADDRESS_SIMILARITY_THRESHOLD;
+
       for (const vout of comparableVouts) {
         const address = vout.scriptpubkey_address;
         const addressType = vout.scriptpubkey_type;
@@ -403,9 +426,39 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
           ...comparableVins.filter(v => v.scriptpubkey_type === addressType && v.scriptpubkey_address !== address)
         ]) {
           const similarity = checkedCompareAddressStrings(address, compareAddr.scriptpubkey_address, addressType as AddressType, this.stateService.network);
-          if (similarity?.status === 'comparable' && similarity.score > ADDRESS_SIMILARITY_THRESHOLD) {
-            let group = similarityGroups.get(address) || lastGroup++;
+          if (similarity?.status === 'comparable' && similarity.score > adjustedThreshold) {
+            // Get or create group numbers for both addresses
+            let group1 = similarityGroups.get(address);
+            let group2 = similarityGroups.get(compareAddr.scriptpubkey_address);
+
+            let group: number;
+            if (group1 !== undefined && group2 !== undefined) {
+              // Both have groups - merge by using the lower group number
+              group = Math.min(group1, group2);
+              // Update all addresses with the higher group number to use the lower one
+              if (group1 !== group2) {
+                const higherGroup = Math.max(group1, group2);
+                for (const [addr, g] of similarityGroups.entries()) {
+                  if (g === higherGroup) {
+                    similarityGroups.set(addr, group);
+                  }
+                }
+              }
+            } else if (group1 !== undefined) {
+              // Only first address has a group
+              group = group1;
+            } else if (group2 !== undefined) {
+              // Only second address has a group
+              group = group2;
+            } else {
+              // Neither has a group - create a new one
+              group = lastGroup++;
+            }
+
+            // Assign the group to both addresses
             similarityGroups.set(address, group);
+            similarityGroups.set(compareAddr.scriptpubkey_address, group);
+
             const bestVout = this.similarityMatches.get(tx.txid)?.get(address);
             if (!bestVout || bestVout.score < similarity.score) {
               this.similarityMatches.get(tx.txid)?.set(address, { score: similarity.score, match: similarity.left, group });
@@ -413,14 +466,18 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
             // opportunistically update the entry for the compared address
             const bestCompare = this.similarityMatches.get(tx.txid)?.get(compareAddr.scriptpubkey_address);
             if (!bestCompare || bestCompare.score < similarity.score) {
-              group = similarityGroups.get(compareAddr.scriptpubkey_address) || lastGroup++;
-              similarityGroups.set(compareAddr.scriptpubkey_address, group);
               this.similarityMatches.get(tx.txid)?.set(compareAddr.scriptpubkey_address, { score: similarity.score, match: similarity.right, group });
             }
           }
         }
       }
     }
+  }
+
+  // assume any address with 12 or more contiguous repeated substrings is fake
+  fakeScriptHashRegex = new RegExp(/(.+?)\1{11,}/);
+  isFakeScripthash(vout: Vout): boolean {
+    return this.fakeScriptHashRegex.test(vout.scriptpubkey_address);
   }
 
   onScroll(): void {
