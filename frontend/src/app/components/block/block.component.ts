@@ -22,6 +22,7 @@ import { identifyPrioritizedTransactions } from '@app/shared/transaction.utils';
 interface ComparisonStats {
   totalFees: number;
   totalWeight: number;
+  totalVsize: number;
   txCount: number;
   feeDelta: number;
   weightDelta: number;
@@ -622,6 +623,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.staleStats = {
       totalFees: 0,
       totalWeight: 0,
+      totalVsize: 0,
       txCount: 0,
       feeDelta: 0,
       weightDelta: 0,
@@ -630,6 +632,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.canonicalStats = {
       totalFees: 0,
       totalWeight: 0,
+      totalVsize: 0,
       txCount: 0,
       feeDelta: 0,
       weightDelta: 0,
@@ -645,12 +648,14 @@ export class BlockComponent implements OnInit, OnDestroy {
       inStale[tx.txid] = tx;
       this.staleStats.totalFees += tx.fee;
       this.staleStats.totalWeight += tx.vsize * 4;
+      this.staleStats.totalVsize += tx.vsize;
       this.staleStats.txCount++;
     }
     for (const tx of canonicalTransactions) {
       inCanonical[tx.txid] = tx;
       this.canonicalStats.totalFees += tx.fee;
       this.canonicalStats.totalWeight += tx.vsize * 4;
+      this.canonicalStats.totalVsize += tx.vsize;
       this.canonicalStats.txCount++;
     }
 
@@ -679,6 +684,10 @@ export class BlockComponent implements OnInit, OnDestroy {
         tx.status = 'unmatched';
       }
     }
+
+    // if vsize was rounded, the total weight we calculated isn't exact and can exceed the 4MB limit
+    this.staleStats.totalWeight = Math.min(this.staleStats.totalWeight, 4_000_000);
+    this.canonicalStats.totalWeight = Math.min(this.canonicalStats.totalWeight, 4_000_000);
 
     this.staleStats.feeDelta = this.staleStats.totalFees > 0 ? (this.staleStats.totalFees - this.canonicalStats.totalFees) / this.staleStats.totalFees : 0;
     this.staleStats.weightDelta = this.staleStats.totalWeight > 0 ? (this.staleStats.totalWeight - this.canonicalStats.totalWeight) / this.staleStats.totalWeight : 0;
