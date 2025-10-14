@@ -58,8 +58,8 @@ export class TxFeeRatingComponent implements OnInit, OnChanges, OnDestroy {
     const feePervByte = this.tx.effectiveFeePerVsize || this.tx.fee / (this.tx.weight / 4);
     this.medianFeeNeeded = block?.extras?.medianFee;
 
-    // Block not filled
-    if (block.weight < this.stateService.env.BLOCK_WEIGHT_UNITS * 0.95) {
+    // Block not filled or sub-sat median fee
+    if (block.weight < this.stateService.env.BLOCK_WEIGHT_UNITS * 0.95 || this.medianFeeNeeded < 1) {
       this.medianFeeNeeded = 1;
     }
 
