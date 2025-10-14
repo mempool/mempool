@@ -24,7 +24,7 @@ function extractDateFromLogLine(line: string): number | undefined {
 
   const dateStr = dateMatch[0];
   const date = new Date(dateStr);
-  let timestamp = Math.floor(date.getTime() / 1000); // Remove decimal (microseconds are added later)
+  const timestamp = Math.floor(date.getTime() / 1000); // Remove decimal (microseconds are added later)
 
   const timePart = dateStr.split('T')[1];
   const microseconds = timePart.split('.')[1] || '';
@@ -41,14 +41,18 @@ export function getRecentFirstSeen(hash: string): number | undefined {
   if (debugLogPath) {
     try {
       // Read the last few lines of debug.log
-      const lines = readFile(debugLogPath, 2048);
+      const lines = readFile(debugLogPath, 4096).reverse();
 
-      for (let i = lines.length - 1; i >= 0; i--) {
-        const line = lines[i];
-        if (line && line.includes(`Saw new header hash=${hash}`)) {
+      let bestMatch: number | undefined;
+      for (const line of lines) {
+        if (line.includes(`Saw new header hash=${hash}`) || line.includes(`Saw new cmpctblock header hash=${hash}`)) {
           return extractDateFromLogLine(line);
+        } else if (line.includes(`UpdateTip: new best=${hash}`)) {
+          bestMatch = extractDateFromLogLine(line);
         }
       }
+
+      return bestMatch;
     } catch (e) {
       logger.err(`Cannot parse block first seen time from Core logs. Reason: ` + (e instanceof Error ? e.message : e));
     }
