@@ -88,6 +88,10 @@ bitcoin_precmd()
 {
   bitcoin_checkconfig
 
+  # ensure debug.log exists & override default permissions
+  touch "${bitcoin_data_dir}/debug.log"
+  chmod 644 "${bitcoin_data_dir}/debug.log"
+
   pid=$(check_pidfile "${pidfile}" "${procname}")
   if [ -z "${pid}" ]
   then
