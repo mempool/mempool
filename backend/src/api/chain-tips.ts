@@ -1,4 +1,5 @@
 import logger from '../logger';
+import { BlockExtended } from '../mempool.interfaces';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
 import { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import bitcoinClient from './bitcoin/bitcoin-client';
@@ -13,6 +14,11 @@ export interface ChainTip {
   status: 'invalid' | 'active' | 'valid-fork' | 'valid-headers' | 'headers-only';
 };
 
+export interface StaleTip extends ChainTip {
+  stale: BlockExtended;
+  canonical: BlockExtended;
+}
+
 export interface OrphanedBlock {
   height: number;
   hash: string;
@@ -22,11 +28,14 @@ export interface OrphanedBlock {
 
 class ChainTips {
   private chainTips: ChainTip[] = [];
+  private staleTips: Record<number, StaleTip> = {};
   private orphanedBlocks: { [hash: string]: OrphanedBlock } = {};
   private blockCache: { [hash: string]: OrphanedBlock } = {};
   private orphansByHeight: { [height: number]: OrphanedBlock[] } = {};
   private indexingOrphanedBlocks = false;
-  private indexingQueue: IEsploraApi.Block[] = [];
+  private indexingQueue: { block: IEsploraApi.Block, tip: OrphanedBlock }[] = [];
+
+  private staleTipsCacheSize = 50;
 
   public async updateOrphanedBlocks(): Promise<void> {
     try {
@@ -54,7 +63,7 @@ class ChainTips {
                   prevhash: block.previousblockhash,
                 };
                 this.blockCache[hash] = orphan;
-                this.indexingQueue.push(block);
+                this.indexingQueue.push({ block, tip: orphan });
               }
             }
             if (orphan) {
@@ -82,6 +91,14 @@ class ChainTips {
         this.orphansByHeight[orphan.height].push(orphan);
       }
 
+      const heightsToKeep = new Set(this.chainTips.filter(tip => tip.status !== 'active').map(tip => tip.height));
+      const heightsToRemove: number[] = Object.keys(this.staleTips).map(Number).filter(height => !heightsToKeep.has(height));
+      for (const height of heightsToRemove) {
+        delete this.staleTips[height];
+      }
+
+      this.trimStaleTipsCache();
+
       // index new orphaned blocks in the background
       void this.$indexOrphanedBlocks();
 
@@ -97,23 +114,51 @@ class ChainTips {
     }
     this.indexingOrphanedBlocks = true;
     while (this.indexingQueue.length > 0) {
-      const block = this.indexingQueue.shift();
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const { block, tip } = this.indexingQueue.shift()!;
       if (!block) {
         continue;
       }
       try {
+        let staleBlock: BlockExtended | undefined;
         const alreadyIndexed = await BlocksSummariesRepository.$isSummaryIndexed(block.id);
+        const needToCache = Object.keys(this.staleTips).length < this.staleTipsCacheSize || block.height > Object.keys(this.staleTips).map(Number).sort((a, b) => b - a)[this.staleTipsCacheSize - 1];
         if (!alreadyIndexed) {
-          await blocks.$indexBlock(block.id, block, true);
+          staleBlock = await blocks.$indexBlock(block.id, block, true);
           await blocks.$indexBlockSummary(block.id, block.height, true);
+          // don't DDOS core by indexing too fast
+          await Common.sleep$(5000);
+        } else if (needToCache) {
+          staleBlock = await blocks.$getBlock(block.id) as BlockExtended;
+        }
+
+        if (staleBlock && needToCache) {
+          const canonicalBlock = await blocks.$indexBlockByHeight(staleBlock.height);
+          this.staleTips[staleBlock.height] = {
+            height: staleBlock.height,
+            hash: staleBlock.id,
+            branchlen: tip.height - staleBlock.height,
+            status: tip.status,
+            stale: staleBlock,
+            canonical: canonicalBlock,
+          };
+          this.trimStaleTipsCache();
         }
       } catch (e) {
         logger.err(`Failed to index orphaned block ${block.id} at height ${block.height}. Reason: ${e instanceof Error ? e.message : e}`);
       }
-      // don't DDOS core by indexing too fast
-      await Common.sleep$(5000);
     }
     this.indexingOrphanedBlocks = false;
+  }
+
+  private trimStaleTipsCache(): void {
+    const staleTipHeights = Object.keys(this.staleTips).map(Number).sort((a, b) => b - a);
+    if (staleTipHeights.length > this.staleTipsCacheSize) {
+      const heightsToDiscard = staleTipHeights.slice(this.staleTipsCacheSize);
+      for (const height of heightsToDiscard) {
+        delete this.staleTips[height];
+      }
+    }
   }
 
   public getOrphanedBlocksAtHeight(height: number | undefined): OrphanedBlock[] {
@@ -126,6 +171,10 @@ class ChainTips {
 
   public getChainTips(): ChainTip[] {
     return this.chainTips;
+  }
+
+  public getStaleTips(): StaleTip[] {
+    return Object.values(this.staleTips).sort((a, b) => b.height - a.height);
   }
 
   clearOrphanCacheAboveHeight(height: number): void {

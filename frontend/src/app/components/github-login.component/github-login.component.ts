@@ -6,7 +6,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class GithubLogin {
   @Input() width: string | null = null;
   @Input() customClass: string | null = null;
-  @Input() buttonString: string= 'unset';
+  @Input() buttonString: string = 'unset';
   @Input() redirectTo: string | null = null;
   @Output() clicked = new EventEmitter<boolean>();
   @Input() disabled: boolean = false;
@@ -18,7 +18,7 @@ export class GithubLogin {
     if (this.redirectTo) {
       location.replace(`/api/v1/services/auth/login/github?redirectTo=${encodeURIComponent(this.redirectTo)}`);
     } else {
-      location.replace(`/api/v1/services/auth/login/github?redirectTo=${location.href}`);
+      location.replace(`/api/v1/services/auth/login/github`);
     }
     return false;
   }

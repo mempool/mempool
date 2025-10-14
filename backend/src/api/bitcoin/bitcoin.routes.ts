@@ -57,6 +57,7 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from', this.getBlocksByBulk.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from/:to', this.getBlocksByBulk.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'chain-tips', this.getChainTips.bind(this))
+      .get(config.MEMPOOL.API_URL_PREFIX + 'stale-tips', this.getStaleTips.bind(this))
       .post(config.MEMPOOL.API_URL_PREFIX + 'prevouts', this.$getPrevouts)
       .post(config.MEMPOOL.API_URL_PREFIX + 'cpfp', this.getCpfpLocalTxs)
       // Temporarily add txs/package endpoint for all backends until esplora supports it
@@ -474,7 +475,7 @@ class BitcoinRoutes {
 
   private async getBlocks(req: Request, res: Response) {
     try {
-      if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) { // Bitcoin
+      if (['mainnet', 'testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK)) { // Bitcoin
         const height = req.params.height === undefined ? undefined : parseInt(req.params.height, 10);
         res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
         res.json(await blocks.$getBlocks(height, 15));
@@ -488,7 +489,7 @@ class BitcoinRoutes {
 
   private async getBlocksByBulk(req: Request, res: Response) {
     try {
-      if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) { // Liquid - Not implemented
+      if (['mainnet', 'testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK) === false) { // Liquid - Not implemented
         handleError(req, res, 404, `This API is only available for Bitcoin networks`);
         return;
       }
@@ -530,7 +531,7 @@ class BitcoinRoutes {
 
   private async getChainTips(req: Request, res: Response) {
     try {
-      if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) { // Bitcoin
+      if (['mainnet', 'testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK)) { // Bitcoin
         res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
         const tips = await chainTips.getChainTips();
         if (tips.length > 0) {
@@ -545,6 +546,26 @@ class BitcoinRoutes {
       }
     } catch (e) {
       handleError(req, res, 500, 'Failed to get chain tips');
+    }
+  }
+
+  private async getStaleTips(req: Request, res: Response) {
+    try {
+      if (['mainnet', 'testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK)) { // Bitcoin
+        res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+        const tips = await chainTips.getStaleTips();
+        if (tips.length > 0) {
+          res.json(tips);
+        } else {
+          handleError(req, res, 503, `Temporarily unavailable`);
+          return;
+        }
+      } else { // Liquid
+        handleError(req, res, 404, `This API is only available for Bitcoin networks`);
+        return;
+      }
+    } catch (e) {
+      handleError(req, res, 500, 'Failed to get stale tips');
     }
   }
 

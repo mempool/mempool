@@ -85,6 +85,7 @@ import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { DifficultyAdjustmentsTable } from '@components/difficulty-adjustments-table/difficulty-adjustments-table.components';
 import { BlocksList } from '@components/blocks-list/blocks-list.component';
 import { RbfList } from '@components/rbf-list/rbf-list.component';
+import { StaleList } from '@components/stale-list/stale-list.component';
 import { StratumList } from '@components/stratum/stratum-list/stratum-list.component';
 import { RewardStatsComponent } from '@components/reward-stats/reward-stats.component';
 import { DataCyDirective } from '@app/data-cy.directive';
@@ -209,6 +210,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     DifficultyAdjustmentsTable,
     BlocksList,
     RbfList,
+    StaleList,
     StratumList,
     DataCyDirective,
     RewardStatsComponent,
@@ -358,6 +360,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     AmountShortenerPipe,
     DifficultyAdjustmentsTable,
     BlocksList,
+    StaleList,
     StratumList,
     DataCyDirective,
     RewardStatsComponent,
