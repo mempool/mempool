@@ -64,6 +64,8 @@ bitcoin_checkconfig()
     echo "Missing data directory: ${bitcoin_data_dir}"
     exit 1
   fi
+  touch "${bitcoin_data_dir}/debug.log"
+  chmod 644 "${bitcoin_data_dir}/debug.log"
   chown -R "${bitcoin_user}:${bitcoin_group}" "${bitcoin_data_dir}"
 
   if [ ! -f "${bitcoin_config_file}" ]
@@ -87,10 +89,6 @@ bitcoin_cleanup()
 bitcoin_precmd()
 {
   bitcoin_checkconfig
-
-  # ensure debug.log exists & override default permissions
-  touch "${bitcoin_data_dir}/debug.log"
-  chmod 644 "${bitcoin_data_dir}/debug.log"
 
   pid=$(check_pidfile "${pidfile}" "${procname}")
   if [ -z "${pid}" ]
