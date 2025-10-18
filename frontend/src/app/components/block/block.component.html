@@ -124,7 +124,9 @@
             [relativeTime]="block?.timestamp"
             (txClickEvent)="onTxClick($event)"
           ></app-block-overview-graph>
-          <ng-container *ngTemplateOutlet="emptyBlockInfo"></ng-container>
+          @if (!isMobile || mode === 'actual') {
+            <ng-container *ngTemplateOutlet="emptyBlockInfo; context: { $implicit: block?.stale ? canonicalBlock : block }"></ng-container>
+          }
         </div>
       </div>
     </div>
@@ -264,7 +266,9 @@
             [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" [auditHighlighting]="showComparison"
             (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="!isMobile && !showAudit && !block?.stale"
             [showFilters]="true" [excludeFilters]="['replacement']" [relativeTime]="block?.timestamp"></app-block-overview-graph>
-          <ng-container *ngIf="!isMobile || mode !== 'actual'; else emptyBlockInfo"></ng-container>
+            @if (isMobile && mode === 'actual' || block?.stale) {
+              <ng-container *ngTemplateOutlet="emptyBlockInfo; context: { $implicit: (isMobile && mode === 'actual' && block?.stale) ? canonicalBlock : block }"></ng-container>
+            }
         </div>
         <ng-container *ngIf="network !== 'liquid'">
           <ng-template [ngIf]="!isLoadingOverview" [ngIfElse]="loadingDetailsSkeletons">
@@ -298,7 +302,7 @@
             [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" mode="mined"  [auditHighlighting]="showComparison"
             (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="isMobile && !showAudit && !block?.stale"
             [showFilters]="true" [excludeFilters]="['replacement']" [relativeTime]="block?.timestamp"></app-block-overview-graph>
-          <ng-container *ngTemplateOutlet="emptyBlockInfo"></ng-container>
+            <ng-container *ngTemplateOutlet="emptyBlockInfo; context: { $implicit: block?.stale ? canonicalBlock : block }"></ng-container>
         </div>
         <ng-container *ngIf="network !== 'liquid'">
           <ng-template [ngIf]="!isLoadingOverview" [ngIfElse]="loadingDetailsSkeletons">
@@ -443,16 +447,17 @@
 
 </div>
 
-<ng-template #emptyBlockInfo>
-  <a
-    *ngIf="network === '' && block && block.height > 100000 && block.tx_count <= 1"
-    class="info-bubble-link badge badge-primary"
-    [routerLink]="['/docs/faq/' | relativeUrl]"
-    fragment="why-empty-blocks"
-  >
-    <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
-    <span i18n="block.empty-block-explanation">Why is this block empty?</span>
-  </a>
+<ng-template #emptyBlockInfo let-emptyBlock>
+  @if (network === '' && emptyBlock && emptyBlock.height > 100000 && emptyBlock.tx_count <= 1) {
+    <a
+      class="info-bubble-link badge badge-primary"
+      [routerLink]="['/docs/faq/' | relativeUrl]"
+      fragment="why-empty-blocks"
+    >
+      <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+      <span i18n="block.empty-block-explanation">Why is this block empty?</span>
+    </a>
+  }
 </ng-template>
 
 <ng-template #expectedDetails>
@@ -520,15 +525,33 @@
         <td i18n="block.total-fees|Total fees in a block">Total fees</td>
         <td>
           <app-amount [satoshis]="staleStats.totalFees" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
+          @if (staleStats.feeDelta && (canonicalStats.feeDelta >= 100 || canonicalStats.feeDelta <= -100)) {
+            <span class="difference" [class.positive]="staleStats.feeDelta > 0" [class.negative]="staleStats.feeDelta <= 0">
+              {{ staleStats.feeDelta > 0 ? '+' : '' }}{{ (staleStats.feeDelta * 100) | amountShortener: 2 }}%
+            </span>
+          }
         </td>
       </tr>
       <tr>
         <td i18n="block.weight">Weight</td>
-        <td [innerHTML]="'&lrm;' + (staleStats.totalWeight | wuBytes: 2)"></td>
+        <td>
+          <span [innerHTML]="'&lrm;' + (staleStats.totalWeight | wuBytes: 2)"></span>
+          @if (staleStats.weightDelta && (canonicalStats.weightDelta >= 100 || canonicalStats.weightDelta <= -100)) {
+            <span class="difference" [class.positive]="staleStats.weightDelta > 0" [class.negative]="staleStats.weightDelta <= 0">
+              {{ staleStats.weightDelta > 0 ? '+' : '' }}{{ (staleStats.weightDelta * 100) | amountShortener: 2 }}%
+            </span>
+          }
+        </td>
       </tr>
       <tr>
         <td i18n="mempool-block.transactions">Transactions</td>
-        <td>{{ staleStats.txCount || 0 }}</td>
+        <td>{{ staleStats.txCount || 0 }}
+          @if (staleStats.txDelta && (canonicalStats.txDelta >= 100 || canonicalStats.txDelta <= -100)) {
+            <span class="difference" [class.positive]="staleStats.txDelta > 0" [class.negative]="staleStats.txDelta <= 0">
+              {{ staleStats.txDelta > 0 ? '+' : '' }}{{ (staleStats.txDelta * 100) | amountShortener: 2 }}%
+            </span>
+          }
+        </td>
       </tr>
     </tbody>
   </table>
@@ -540,28 +563,34 @@
       <tr>
         <td i18n="block.total-fees|Total fees in a block">Total fees</td>
         <td class="text-wrap">
-          <app-amount [satoshis]="block.extras.totalFees" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
-          <span *ngIf="canonicalStats.feeDelta" class="difference" [class.positive]="canonicalStats.feeDelta > 0" [class.negative]="canonicalStats.feeDelta <= 0">
-            {{ canonicalStats.feeDelta > 0 ? '+' : '' }}{{ (canonicalStats.feeDelta * 100) | amountShortener: 2 }}%
-          </span>
+          <app-amount [satoshis]="canonicalStats.totalFees" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
+          @if (canonicalStats.feeDelta && canonicalStats.feeDelta < 100 && canonicalStats.feeDelta > -100) {
+            <span class="difference" [class.positive]="canonicalStats.feeDelta > 0" [class.negative]="canonicalStats.feeDelta <= 0">
+              {{ canonicalStats.feeDelta > 0 ? '+' : '' }}{{ (canonicalStats.feeDelta * 100) | amountShortener: 2 }}%
+            </span>
+          }
         </td>
       </tr>
       <tr>
         <td i18n="block.weight">Weight</td>
-        <td [innerHTML]>
+        <td>
           <span [innerHTML]="'&lrm;' + (canonicalStats.totalWeight | wuBytes: 2)"></span>
-          <span *ngIf="canonicalStats.weightDelta" class="difference" [class.positive]="canonicalStats.weightDelta > 0" [class.negative]="canonicalStats.weightDelta <= 0">
-            {{ canonicalStats.weightDelta > 0 ? '+' : '' }}{{ (canonicalStats.weightDelta * 100) | amountShortener: 2 }}%
-          </span>
+          @if (canonicalStats.weightDelta && canonicalStats.weightDelta < 100 && canonicalStats.weightDelta > -100) {
+            <span class="difference" [class.positive]="canonicalStats.weightDelta > 0" [class.negative]="canonicalStats.weightDelta <= 0">
+              {{ canonicalStats.weightDelta > 0 ? '+' : '' }}{{ (canonicalStats.weightDelta * 100) | amountShortener: 2 }}%
+            </span>
+          }
         </td>
       </tr>
       <tr>
         <td i18n="mempool-block.transactions">Transactions</td>
         <td>
           {{ canonicalStats.txCount || 0 }}
-          <span *ngIf="canonicalStats.txDelta" class="difference" [class.positive]="canonicalStats.txDelta > 0" [class.negative]="canonicalStats.txDelta <= 0">
-            {{ canonicalStats.txDelta > 0 ? '+' : '' }}{{ (canonicalStats.txDelta * 100) | amountShortener: 2 }}%
-          </span>
+          @if (canonicalStats.txDelta && canonicalStats.txDelta < 100 && canonicalStats.txDelta > -100) {
+            <span class="difference" [class.positive]="canonicalStats.txDelta > 0" [class.negative]="canonicalStats.txDelta <= 0">
+              {{ canonicalStats.txDelta > 0 ? '+' : '' }}{{ (canonicalStats.txDelta * 100) | amountShortener: 2 }}%
+            </span>
+          }
         </td>
       </tr>
     </tbody>

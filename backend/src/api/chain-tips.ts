@@ -33,9 +33,10 @@ class ChainTips {
   private blockCache: { [hash: string]: OrphanedBlock } = {};
   private orphansByHeight: { [height: number]: OrphanedBlock[] } = {};
   private indexingOrphanedBlocks = false;
-  private indexingQueue: { block: IEsploraApi.Block, tip: OrphanedBlock }[] = [];
+  private indexingQueue: { blockhash?: string, block?: IEsploraApi.Block, tip: OrphanedBlock }[] = [];
 
   private staleTipsCacheSize = 50;
+  private maxIndexingQueueSize = 100;
 
   public async updateOrphanedBlocks(): Promise<void> {
     try {
@@ -63,7 +64,12 @@ class ChainTips {
                   prevhash: block.previousblockhash,
                 };
                 this.blockCache[hash] = orphan;
-                this.indexingQueue.push({ block, tip: orphan });
+                if (this.indexingQueue.length < this.maxIndexingQueueSize) {
+                  this.indexingQueue.push({ block, tip: orphan });
+                } else {
+                  // re-fetch blocks lazily if the queue is big to keep memory usage sane
+                  this.indexingQueue.push({ blockhash: hash, tip: orphan });
+                }
               }
             }
             if (orphan) {
@@ -114,8 +120,14 @@ class ChainTips {
     }
     this.indexingOrphanedBlocks = true;
     while (this.indexingQueue.length > 0) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const { block, tip } = this.indexingQueue.shift()!;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, prefer-const
+      let { blockhash, block, tip } = this.indexingQueue.shift()!;
+      if (!block && !blockhash) {
+        continue;
+      }
+      if (blockhash && !block) {
+        block = await bitcoinCoreApi.$getBlock(blockhash);
+      }
       if (!block) {
         continue;
       }

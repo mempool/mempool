@@ -974,6 +974,7 @@ class Blocks {
         await this.updateQuarterEpochBlockTime();
       } else {
         this.currentBlockHeight++;
+        await this.updateQuarterEpochBlockTime();
         logger.debug(`New block found (#${this.currentBlockHeight})!`);
       }
 

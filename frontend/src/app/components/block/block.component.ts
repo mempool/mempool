@@ -22,6 +22,7 @@ import { identifyPrioritizedTransactions } from '@app/shared/transaction.utils';
 interface ComparisonStats {
   totalFees: number;
   totalWeight: number;
+  totalVsize: number;
   txCount: number;
   feeDelta: number;
   weightDelta: number;
@@ -622,6 +623,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.staleStats = {
       totalFees: 0,
       totalWeight: 0,
+      totalVsize: 0,
       txCount: 0,
       feeDelta: 0,
       weightDelta: 0,
@@ -630,6 +632,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.canonicalStats = {
       totalFees: 0,
       totalWeight: 0,
+      totalVsize: 0,
       txCount: 0,
       feeDelta: 0,
       weightDelta: 0,
@@ -645,12 +648,14 @@ export class BlockComponent implements OnInit, OnDestroy {
       inStale[tx.txid] = tx;
       this.staleStats.totalFees += tx.fee;
       this.staleStats.totalWeight += tx.vsize * 4;
+      this.staleStats.totalVsize += tx.vsize;
       this.staleStats.txCount++;
     }
     for (const tx of canonicalTransactions) {
       inCanonical[tx.txid] = tx;
       this.canonicalStats.totalFees += tx.fee;
       this.canonicalStats.totalWeight += tx.vsize * 4;
+      this.canonicalStats.totalVsize += tx.vsize;
       this.canonicalStats.txCount++;
     }
 
@@ -680,13 +685,17 @@ export class BlockComponent implements OnInit, OnDestroy {
       }
     }
 
-    this.staleStats.feeDelta = this.staleStats.totalFees > 0 ? (this.staleStats.totalFees - this.canonicalStats.totalFees) / this.staleStats.totalFees : 0;
-    this.staleStats.weightDelta = this.staleStats.totalWeight > 0 ? (this.staleStats.totalWeight - this.canonicalStats.totalWeight) / this.staleStats.totalWeight : 0;
-    this.staleStats.txDelta = this.staleStats.txCount > 0 ? (this.staleStats.txCount - this.canonicalStats.txCount) / this.staleStats.txCount : 0;
+    // if vsize was rounded, the total weight we calculated isn't exact and can exceed the 4MB limit
+    this.staleStats.totalWeight = Math.min(this.staleStats.totalWeight, 4_000_000);
+    this.canonicalStats.totalWeight = Math.min(this.canonicalStats.totalWeight, 4_000_000);
 
-    this.canonicalStats.feeDelta = this.canonicalStats.totalFees > 0 ? (this.canonicalStats.totalFees - this.staleStats.totalFees) / this.canonicalStats.totalFees : 0;
-    this.canonicalStats.weightDelta = this.canonicalStats.totalWeight > 0 ? (this.canonicalStats.totalWeight - this.staleStats.totalWeight) / this.canonicalStats.totalWeight : 0;
-    this.canonicalStats.txDelta = this.canonicalStats.txCount > 0 ? (this.canonicalStats.txCount - this.staleStats.txCount) / this.canonicalStats.txCount : 0;
+    this.staleStats.feeDelta = this.canonicalStats.totalFees > 0 ? (this.staleStats.totalFees - this.canonicalStats.totalFees) / this.canonicalStats.totalFees : (this.canonicalStats.totalFees > 0 ? Infinity : -Infinity);
+    this.staleStats.weightDelta = this.canonicalStats.totalWeight > 0 ? (this.staleStats.totalWeight - this.canonicalStats.totalWeight) / this.canonicalStats.totalWeight : (this.canonicalStats.totalWeight > 0 ? Infinity : -Infinity);
+    this.staleStats.txDelta = this.canonicalStats.txCount > 0 ? (this.staleStats.txCount - this.canonicalStats.txCount) / this.canonicalStats.txCount : (this.canonicalStats.txCount > 0 ? Infinity : -Infinity);
+
+    this.canonicalStats.feeDelta = this.staleStats.totalFees > 0 ? (this.canonicalStats.totalFees - this.staleStats.totalFees) / this.staleStats.totalFees : (this.staleStats.totalFees > 0 ? Infinity : -Infinity);
+    this.canonicalStats.weightDelta = this.staleStats.totalWeight > 0 ? (this.canonicalStats.totalWeight - this.staleStats.totalWeight) / this.staleStats.totalWeight : (this.staleStats.totalWeight > 0 ? Infinity : -Infinity);
+    this.canonicalStats.txDelta = this.staleStats.txCount > 0 ? (this.canonicalStats.txCount - this.staleStats.txCount) / this.staleStats.txCount : (this.staleStats.txCount > 0 ? Infinity : -Infinity);
   }
 
   setupBlockAudit(): void {
