@@ -6,7 +6,7 @@ import config from '../config';
 import { Worker } from 'worker_threads';
 import path from 'path';
 import mempool from './mempool';
-import { Acceleration } from './services/acceleration';
+import { Acceleration, AccelerationDelta } from './services/acceleration';
 import PoolsRepository from '../repositories/PoolsRepository';
 
 const MAX_UINT32 = Math.pow(2, 32) - 1;
@@ -172,7 +172,7 @@ class MempoolBlocks {
     return this.mempoolBlocks;
   }
 
-  public async $updateBlockTemplates(transactions: string[], newMempool: { [txid: string]: MempoolTransactionExtended }, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[], candidates: GbtCandidates | undefined, accelerationDelta: string[] = [], saveResults: boolean = false, useAccelerations: boolean = false): Promise<void> {
+  public async $updateBlockTemplates(transactions: string[], newMempool: { [txid: string]: MempoolTransactionExtended }, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[], candidates: GbtCandidates | undefined, accelerationDelta: AccelerationDelta, saveResults: boolean = false, useAccelerations: boolean = false): Promise<void> {
     if (!this.txSelectionWorker) {
       // need to reset the worker
       await this.$makeBlockTemplates(transactions, newMempool, candidates, saveResults, useAccelerations);
@@ -182,7 +182,7 @@ class MempoolBlocks {
     const start = Date.now();
 
     const accelerations = useAccelerations ? mempool.getAccelerations() : {};
-    const addedAndChanged: MempoolTransactionExtended[] = useAccelerations ? accelerationDelta.map(txid => newMempool[txid]).filter(tx => tx != null).concat(added) : added;
+    const addedAndChanged: MempoolTransactionExtended[] = useAccelerations ? [...accelerationDelta.added, ...accelerationDelta.changed].map(acc => newMempool[acc.txid]).filter(tx => tx != null).concat(added) : added;
 
     for (const tx of addedAndChanged) {
       this.setUid(tx, false);
@@ -241,7 +241,14 @@ class MempoolBlocks {
       this.resetUids();
     }
 
-    const transactions = txids.map(txid => newMempool[txid]).filter(tx => tx != null);
+    const accelerations = useAccelerations ? mempool.getAccelerations() : {};
+    const acceleratedList = accelerationPool ? Object.values(accelerations).filter(acc => newMempool[acc.txid] && acc.pools.includes(accelerationPool)) : Object.values(accelerations).filter(acc => newMempool[acc.txid]);
+    const acceptedAccelerations = {};
+    for (const acc of acceleratedList) {
+      acceptedAccelerations[acc.txid] = true;
+    }
+
+    const transactions = txids.map(txid => newMempool[txid]).filter(tx => tx != null && (!mempool.isInjected(tx.txid) || acceptedAccelerations[tx.txid]));
     // set missing short ids
     for (const tx of transactions) {
       this.setUid(tx, !saveResults);
@@ -251,8 +258,6 @@ class MempoolBlocks {
       tx.inputs = tx.vin.map(v => this.getUid(newMempool[v.txid])).filter(uid => (uid !== null && uid !== undefined)) as number[];
     }
 
-    const accelerations = useAccelerations ? mempool.getAccelerations() : {};
-    const acceleratedList = accelerationPool ? Object.values(accelerations).filter(acc => newMempool[acc.txid] && acc.pools.includes(accelerationPool)) : Object.values(accelerations).filter(acc => newMempool[acc.txid]);
     const convertedAccelerations = acceleratedList.map(acc => {
       this.setUid(newMempool[acc.txid], true);
       return {
