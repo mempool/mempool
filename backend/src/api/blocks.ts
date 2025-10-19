@@ -35,6 +35,7 @@ import mempool from './mempool';
 import CpfpRepository from '../repositories/CpfpRepository';
 import { parseDATUMTemplateCreator } from '../utils/bitcoin-script';
 import database from '../database';
+import { getBlockFirstSeenFromLogs, getOldestLogTimestampFromLogs } from '../utils/file-read';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -47,6 +48,7 @@ class Blocks {
   private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
   private newAsyncBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: MempoolTransactionExtended[]) => Promise<void>)[] = [];
   private classifyingBlocks: boolean = false;
+  private oldestCoreLogTimestamp: number | undefined | null = null;
 
   private mainLoopTimeout: number = 120000;
 
@@ -364,6 +366,16 @@ class Blocks {
           extras.matchRate = auditScore.matchRate;
           extras.expectedFees = auditScore.expectedFees;
           extras.expectedWeight = auditScore.expectedWeight;
+        }
+      }
+
+      if (config.CORE_RPC.DEBUG_LOG_PATH) {
+        const oldestLog = this.getOldestCoreLogTimestamp();
+        if (oldestLog !== undefined) {
+          const firstSeen = getBlockFirstSeenFromLogs(block.id, block.timestamp, oldestLog);
+          if (firstSeen) {
+            extras.firstSeen = firstSeen;
+          }
         }
       }
     }
@@ -1624,6 +1636,30 @@ class Blocks {
     } catch (e) {
       logger.debug(`Unable to retrieve list of blocks for definition hash ${definitionHash} from db (exception: ${e})`);
       return null;
+    }
+  }
+
+  public getOldestCoreLogTimestamp(): number | undefined {
+    if (this.oldestCoreLogTimestamp !== null) {
+      return this.oldestCoreLogTimestamp;
+    }
+    const debugLogPath = config.CORE_RPC.DEBUG_LOG_PATH;
+    if (!debugLogPath) {
+      this.oldestCoreLogTimestamp = undefined;
+      return undefined;
+    }
+    try {
+      this.oldestCoreLogTimestamp = getOldestLogTimestampFromLogs(debugLogPath);
+      if (this.oldestCoreLogTimestamp !== undefined) {
+        logger.info(`Core debug log entries date back to ${new Date(this.oldestCoreLogTimestamp * 1000).toISOString()}`);
+      } else {
+        logger.err(`Unable to read Core debug log file at ${debugLogPath}`);
+      }
+      return this.oldestCoreLogTimestamp;
+    } catch {
+      this.oldestCoreLogTimestamp = undefined;
+      logger.err(`Unable to read Core debug log file at ${debugLogPath}`);
+      return undefined;
     }
   }
 }
