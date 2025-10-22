@@ -81,6 +81,16 @@ class ChainTips {
                     this.indexingQueue.push({ blockhash: hash, tip: orphan });
                   }
                 }
+                // make sure the cached canonical block at this height is correct & up to date
+                if (block.height >= (activeTipHeight - (config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4))) {
+                  const cachedBlocks = blocks.getBlocks();
+                  for (const cachedBlock of cachedBlocks) {
+                    if (cachedBlock.height === block.height) {
+                      // ensure this stale block is included in the orphans list
+                      cachedBlock.extras.orphans = Array.from(new Set([...(cachedBlock.extras.orphans || []), orphan]));
+                    }
+                  }
+                }
               }
             }
             if (orphan) {
