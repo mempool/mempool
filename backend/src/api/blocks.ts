@@ -1272,11 +1272,13 @@ class Blocks {
   /**
    * Get one block by its hash
    */
-  public async $getBlock(hash: string): Promise<BlockExtended | IEsploraApi.Block> {
+  public async $getBlock(hash: string, skipMemoryCache: boolean = false): Promise<BlockExtended | IEsploraApi.Block> {
     // Check the memory cache
-    const blockByHash = this.getBlocks().find((b) => b.id === hash);
-    if (blockByHash) {
-      return blockByHash;
+    if (!skipMemoryCache) {
+      const blockByHash = this.getBlocks().find((b) => b.id === hash);
+      if (blockByHash) {
+        return blockByHash;
+      }
     }
 
     // Not Bitcoin network, return the block as it from the bitcoin backend

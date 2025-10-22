@@ -152,7 +152,7 @@ class ChainTips {
           // don't DDOS core by indexing too fast
           await Common.sleep$(5000);
         } else if (needToCache) {
-          staleBlock = await blocks.$getBlock(block.id) as BlockExtended;
+          staleBlock = await blocks.$getBlock(block.id, true) as BlockExtended;
         }
 
         if (staleBlock && needToCache) {
