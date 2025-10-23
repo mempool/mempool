@@ -1,7 +1,8 @@
+import config from '../config';
 import logger from '../logger';
 import { BlockExtended } from '../mempool.interfaces';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
-import { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
+import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import bitcoinClient from './bitcoin/bitcoin-client';
 import { IEsploraApi } from './bitcoin/esplora-api.interface';
 import blocks from './blocks';
@@ -42,6 +43,13 @@ class ChainTips {
     try {
       this.chainTips = await bitcoinClient.getChainTips();
 
+      const activeTipHeight = this.chainTips.find(tip => tip.status === 'active')?.height || (await bitcoinApi.$getBlockHeightTip());
+      let minIndexHeight = 0;
+      const indexedBlockAmount = Math.min(config.MEMPOOL.INDEXING_BLOCKS_AMOUNT, activeTipHeight);
+      if (indexedBlockAmount > 0) {
+        minIndexHeight = Math.max(0, activeTipHeight - indexedBlockAmount + 1);
+      }
+
       const start = Date.now();
       const breakAt = start + 10000;
       let newOrphans = 0;
@@ -64,11 +72,24 @@ class ChainTips {
                   prevhash: block.previousblockhash,
                 };
                 this.blockCache[hash] = orphan;
-                if (this.indexingQueue.length < this.maxIndexingQueueSize) {
-                  this.indexingQueue.push({ block, tip: orphan });
-                } else {
-                  // re-fetch blocks lazily if the queue is big to keep memory usage sane
-                  this.indexingQueue.push({ blockhash: hash, tip: orphan });
+                // don't index stale blocks below the INDEXING_BLOCKS_AMOUNT cutoff
+                if (block.height >= minIndexHeight) {
+                  if (this.indexingQueue.length < this.maxIndexingQueueSize) {
+                    this.indexingQueue.push({ block, tip: orphan });
+                  } else {
+                    // re-fetch blocks lazily if the queue is big to keep memory usage sane
+                    this.indexingQueue.push({ blockhash: hash, tip: orphan });
+                  }
+                }
+                // make sure the cached canonical block at this height is correct & up to date
+                if (block.height >= (activeTipHeight - (config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4))) {
+                  const cachedBlocks = blocks.getBlocks();
+                  for (const cachedBlock of cachedBlocks) {
+                    if (cachedBlock.height === block.height) {
+                      // ensure this stale block is included in the orphans list
+                      cachedBlock.extras.orphans = Array.from(new Set([...(cachedBlock.extras.orphans || []), orphan]));
+                    }
+                  }
                 }
               }
             }
@@ -141,7 +162,7 @@ class ChainTips {
           // don't DDOS core by indexing too fast
           await Common.sleep$(5000);
         } else if (needToCache) {
-          staleBlock = await blocks.$getBlock(block.id) as BlockExtended;
+          staleBlock = await blocks.$getBlock(block.id, true) as BlockExtended;
         }
 
         if (staleBlock && needToCache) {

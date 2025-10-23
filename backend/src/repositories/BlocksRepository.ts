@@ -681,7 +681,16 @@ class BlocksRepository {
       // iterate back to genesis, resetting canonical status where necessary
       let hash = tip;
       const tipHeight = blocksByHash[hash].height || (await bitcoinApi.$getBlock(hash))?.height;
-      for (let height = tipHeight; height > 0; height--) {
+
+      // stop at the last canonical block we're supposed to have indexed already
+      let lastIndexedBlockHeight = minHeight;
+      const indexedBlockAmount = Math.min(config.MEMPOOL.INDEXING_BLOCKS_AMOUNT, tipHeight);
+      if (indexedBlockAmount > 0) {
+        lastIndexedBlockHeight = Math.max(0, tipHeight - indexedBlockAmount + 1);
+      }
+
+
+      for (let height = tipHeight; height > lastIndexedBlockHeight; height--) {
         const block = blocksByHash[hash];
         if (!block) {
           // block hasn't been indexed
