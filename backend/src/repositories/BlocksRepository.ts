@@ -59,7 +59,7 @@ interface DatabaseBlock {
   utxoSetChange: number;
   utxoSetSize: number;
   totalInputAmt: number;
-  firstSeen: number;
+  firstSeen: string; // UNIX_TIMESTAMP() returns a string when applied to datetime(6)
   stale: boolean;
 }
 
@@ -1193,7 +1193,7 @@ class BlocksRepository {
     extras.utxoSetSize = dbBlk.utxoSetSize;
     extras.totalInputAmt = dbBlk.totalInputAmt;
     extras.virtualSize = dbBlk.weight / 4.0;
-    extras.firstSeen = dbBlk.firstSeen;
+    extras.firstSeen = parseFloat(dbBlk.firstSeen) || null;
 
     // Re-org can happen after indexing so we need to always get the
     // latest state from core
