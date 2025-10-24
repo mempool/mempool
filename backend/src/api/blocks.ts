@@ -372,10 +372,7 @@ class Blocks {
       if (config.CORE_RPC.DEBUG_LOG_PATH) {
         const oldestLog = this.getOldestCoreLogTimestamp();
         if (oldestLog !== undefined) {
-          const firstSeen = getBlockFirstSeenFromLogs(block.id, block.timestamp, oldestLog);
-          if (firstSeen) {
-            extras.firstSeen = firstSeen;
-          }
+          extras.firstSeen = getBlockFirstSeenFromLogs(block.id, block.timestamp, oldestLog);
         }
       }
     }

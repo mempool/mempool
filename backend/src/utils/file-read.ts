@@ -163,7 +163,7 @@ function findTimestampPosition(fd: number, targetTimestamp: number): number {
  * @param hash block hash to search for
  * @returns timestamp when the block was first seen, or undefined if not found
  */
-function searchForFirstSeen(fd: number, anchor: number, startTimestamp: number, endTimestamp: number, hash: string): number | undefined {
+function searchForFirstSeen(fd: number, anchor: number, startTimestamp: number, endTimestamp: number, hash: string): number {
   const size = fs.fstatSync(fd).size;
   const half = Math.floor(MAX_WINDOW_SIZE / 2);
   const minOffset = Math.max(0, anchor - half);
@@ -179,7 +179,7 @@ function searchForFirstSeen(fd: number, anchor: number, startTimestamp: number, 
   let bPos = anchor - 1;
   let bDone = bPos <= minOffset;
 
-  let bestMatch: number | undefined = undefined;
+  let bestMatch = 1;
 
   while (!fDone || !bDone) {
     if (!fDone && fPos < maxOffset) {
@@ -205,7 +205,7 @@ function searchForFirstSeen(fd: number, anchor: number, startTimestamp: number, 
         if (line.includes(headerNeedle) || line.includes(cmpctNeedle)) {
           return logTimestamp;
         }
-        if ((line.includes(partNeedle) || line.includes(updateNeedle)) && (!bestMatch || logTimestamp < bestMatch)) {
+        if ((line.includes(partNeedle) || line.includes(updateNeedle)) && (bestMatch === 1 || logTimestamp < bestMatch)) {
           bestMatch = logTimestamp;
         }
       }
@@ -247,10 +247,10 @@ function searchForFirstSeen(fd: number, anchor: number, startTimestamp: number, 
   return bestMatch;
 }
 
-export function getBlockFirstSeenFromLogs(hash: string, blockTimestamp: number, oldestLogTimestamp: number): number | undefined {
+export function getBlockFirstSeenFromLogs(hash: string, blockTimestamp: number, oldestLogTimestamp: number): number {
   const debugLogPath = config.CORE_RPC.DEBUG_LOG_PATH;
-  if (!debugLogPath) {
-    return undefined;
+  if (!debugLogPath || blockTimestamp + 7200 <= oldestLogTimestamp) {
+    return 1;
   }
 
   const fd = fs.openSync(debugLogPath, 'r');
@@ -258,23 +258,16 @@ export function getBlockFirstSeenFromLogs(hash: string, blockTimestamp: number, 
     const start = blockTimestamp - 7200; // block time can be up to 2 hours in the future
     if (blockTimestamp + 3600 > (Date.now() / 1000)) { // Recent block: search the end of the log for recent blocks
       const EOF = fs.fstatSync(fd).size;
-      const firstSeen = searchForFirstSeen(fd, EOF, start, Number.MAX_SAFE_INTEGER, hash);
-      if (firstSeen) {
-        return firstSeen;
-      }
+      return searchForFirstSeen(fd, EOF, start, Number.MAX_SAFE_INTEGER, hash);
     }
 
-    if (blockTimestamp + 7200 > oldestLogTimestamp) { // Older block but still within log range: do a binary search to find the right window
-      const end = blockTimestamp + 3600; // block time can be up to 1 hour in the past (approximating median past time)
-      const anchor = findTimestampPosition(fd, blockTimestamp);
-      return searchForFirstSeen(fd, anchor, start, end, hash);
-    }
-
-    return undefined;
+    // Older block but still within log range: do a binary search to find the right window
+    const end = blockTimestamp + 3600; // block time can be up to 1 hour in the past (approximating median past time)
+    const anchor = findTimestampPosition(fd, blockTimestamp);
+    return searchForFirstSeen(fd, anchor, start, end, hash);
   } catch (e) {
     logger.debug(`Cannot parse block first seen time from Core logs. Reason: ${e instanceof Error ? e.message : e}`);
-    return undefined;
-
+    return 1;
   } finally {
     fs.closeSync(fd);
   }
