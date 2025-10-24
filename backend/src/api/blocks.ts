@@ -916,6 +916,50 @@ class Blocks {
     return await BlocksRepository.$validateChain();
   }
 
+  /**
+   * [INDEXING] Index all blocks first seen time from Bitcoin Core debug logs
+   */
+  public async $indexBlocksFirstSeen(): Promise<void> {
+    const old = this.oldestCoreLogTimestamp;
+    const current = this.getOldestCoreLogTimestamp(true);
+    const hasLogFileChanged = old !== null && current !== old;
+
+    if (!current) {
+      return;
+    }
+
+    // If the log file changed since last run, re-try to index blocks marked with sentinel value
+    const blocks = await BlocksRepository.$getBlocksWithoutFirstSeen(hasLogFileChanged);
+
+    if (!blocks?.length) {
+      return;
+    }
+    let timer = Date.now();
+    let indexedThisRun = 0;
+    let indexedTotal = 0;
+    logger.debug(`Indexing ${blocks.length} block first seen times${hasLogFileChanged ? ' (log file changed since last run)' : ''}`);
+    for (const block of blocks) {
+      const firstSeen = getBlockFirstSeenFromLogs(block.hash, block.timestamp, current);
+      await BlocksRepository.$saveFirstSeenTime(block.hash, firstSeen);
+
+      const cachedBlock = this.blocks.find(blk => blk.id === block.hash);
+      if (cachedBlock) {
+        cachedBlock.extras.firstSeen = firstSeen;
+      }
+
+      indexedThisRun++;
+      indexedTotal++;
+      const elapsedSeconds = (Date.now() - timer) / 1000;
+      if (elapsedSeconds > 5) {
+        const blockPerSeconds = indexedThisRun / elapsedSeconds;
+        logger.debug(`Indexed ${indexedTotal} / ${blocks.length} block first seen times (${blockPerSeconds.toFixed()}/s)`);
+        timer = Date.now();
+        indexedThisRun = 0;
+      }
+    }
+    logger.debug(`Indexing of block first seen times completed`);
+  }
+
   public async $updateBlocks(): Promise<number> {
     // warn if this run stalls the main loop for more than 2 minutes
     const timer = this.startTimer();
@@ -1636,8 +1680,8 @@ class Blocks {
     }
   }
 
-  public getOldestCoreLogTimestamp(): number | undefined {
-    if (this.oldestCoreLogTimestamp !== null) {
+  public getOldestCoreLogTimestamp(forceRefresh = false): number | undefined {
+    if (!forceRefresh && this.oldestCoreLogTimestamp !== null) {
       return this.oldestCoreLogTimestamp;
     }
     const debugLogPath = config.CORE_RPC.DEBUG_LOG_PATH;

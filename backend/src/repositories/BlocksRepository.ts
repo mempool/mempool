@@ -1109,6 +1109,27 @@ class BlocksRepository {
   }
 
   /**
+   * Get all blocks which do not have a first seen time yet
+   * 
+   * @param includeAlreadyTried Include blocks we have already tried to fetch first seen time for
+   */
+  public async $getBlocksWithoutFirstSeen(includeAlreadyTried = false): Promise<any[]> {
+    try {
+      const [rows]: any[] = await DB.query(`
+        SELECT hash, UNIX_TIMESTAMP(blockTimestamp) as timestamp
+        FROM blocks
+        WHERE first_seen IS NULL
+        ${includeAlreadyTried ? ' OR first_seen = FROM_UNIXTIME(1)' : ''}
+        ORDER BY height DESC
+      `);
+      return rows;
+    } catch (e: any) {
+      logger.err(`Cannot fetch block first seen from db. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
    * Change which block at a height belongs to the canonical chain
    * 
    * @param hash
