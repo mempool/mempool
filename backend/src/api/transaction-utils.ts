@@ -6,6 +6,7 @@ import * as bitcoinjs from 'bitcoinjs-lib';
 import logger from '../logger';
 import config from '../config';
 import pLimit from '../utils/p-limit';
+import { scriptPubKeyToAddress } from '../utils/address.utils';
 
 class TransactionUtils {
   constructor() { }
@@ -135,6 +136,58 @@ class TransactionUtils {
       transactionExtended.firstSeen = Math.round((Date.now() / 1000));
     }
     return transactionExtended;
+  }
+
+  public parseTransaction(txhex: string): MempoolTransactionExtended {
+    const tx: IEsploraApi.Transaction = this.bitcoinJsTransactionToMempoolTransaction(bitcoinjs.Transaction.fromHex(txhex));
+    return this.extendMempoolTransaction(tx);
+  }
+
+  private bitcoinJsTransactionToMempoolTransaction(tx: bitcoinjs.Transaction): IEsploraApi.Transaction {
+    const vin: IEsploraApi.Vin[] = tx.ins.map(input => ({
+      txid: Buffer.from(input.hash).reverse().toString('hex'),
+      vout: input.index,
+      is_coinbase: tx.isCoinbase(),
+      scriptsig: input.script.toString('hex'),
+      scriptsig_asm: this.convertScriptSigAsm(input.script.toString('hex')),
+      inner_redeemscript_asm: '',
+      inner_witnessscript_asm: '',
+      sequence: input.sequence,
+      witness: input.witness.map(w => w.toString('hex')),
+      prevout: null,
+    }));
+
+    const vout: IEsploraApi.Vout[] = tx.outs.map(output => {
+      const scriptPubKey = output.script.toString('hex');
+      const scriptPubKeyAsm = this.convertScriptSigAsm(scriptPubKey);
+      const { address, type } = scriptPubKeyToAddress(scriptPubKey);
+
+      return {
+        scriptpubkey: scriptPubKey,
+        scriptpubkey_asm: scriptPubKeyAsm,
+        scriptpubkey_type: type,
+        scriptpubkey_address: address,
+        value: output.value,
+      };
+    });
+
+    const transaction: IEsploraApi.Transaction = {
+      txid: tx.getId(),
+      version: tx.version,
+      locktime: tx.locktime,
+      size: tx.byteLength(true),
+      weight: tx.weight(),
+      fee: 0, // This needs to be calculated from input/output values
+      sigops: 0,
+      vin,
+      vout,
+      status: {
+        confirmed: false
+      },
+      hex: tx.toHex()
+    };
+    transaction.sigops = this.countSigops(transaction);
+    return transaction;
   }
 
   public hex2ascii(hex: string) {

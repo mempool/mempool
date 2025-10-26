@@ -19,6 +19,7 @@ import bitcoinClient from './bitcoin-client';
 import difficultyAdjustment from '../difficulty-adjustment';
 import transactionRepository from '../../repositories/TransactionRepository';
 import rbfCache from '../rbf-cache';
+import accelerationApi from '../services/acceleration';
 import { calculateMempoolTxCpfp } from '../cpfp';
 import { handleError } from '../../utils/api';
 import poolsUpdater from '../../tasks/pools-updater';
@@ -989,7 +990,7 @@ class BitcoinRoutes {
       return;
     }
     try {
-      const result = rbfCache.getTx(req.params.txId);
+      const result = rbfCache.getTx(req.params.txId) || accelerationApi.getPublicTx(req.params.txId);
       if (result) {
         res.json(result);
       } else {
