@@ -48,7 +48,7 @@ class Blocks {
   private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
   private newAsyncBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: MempoolTransactionExtended[]) => Promise<void>)[] = [];
   private classifyingBlocks: boolean = false;
-  private oldestCoreLogTimestamp: number | undefined | null = null;
+  private oldestCoreLogTimestamp: number | undefined | null = undefined;
 
   private mainLoopTimeout: number = 120000;
 
@@ -371,7 +371,7 @@ class Blocks {
 
       if (config.CORE_RPC.DEBUG_LOG_PATH) {
         const oldestLog = this.getOldestCoreLogTimestamp();
-        if (oldestLog !== undefined) {
+        if (oldestLog) {
           extras.firstSeen = getBlockFirstSeenFromLogs(block.id, block.timestamp, oldestLog);
         }
       }
@@ -922,7 +922,7 @@ class Blocks {
   public async $indexBlocksFirstSeen(): Promise<void> {
     const old = this.oldestCoreLogTimestamp;
     const current = this.getOldestCoreLogTimestamp(true);
-    const hasLogFileChanged = old !== null && current !== old;
+    const hasLogFileChanged = old !== undefined && current !== old;
 
     if (!current) {
       return;
@@ -1680,27 +1680,27 @@ class Blocks {
     }
   }
 
-  public getOldestCoreLogTimestamp(forceRefresh = false): number | undefined {
-    if (!forceRefresh && this.oldestCoreLogTimestamp !== null) {
+  public getOldestCoreLogTimestamp(forceRefresh = false): number | null {
+    if (!forceRefresh && this.oldestCoreLogTimestamp !== undefined) {
       return this.oldestCoreLogTimestamp;
     }
     const debugLogPath = config.CORE_RPC.DEBUG_LOG_PATH;
     if (!debugLogPath) {
-      this.oldestCoreLogTimestamp = undefined;
-      return undefined;
+      this.oldestCoreLogTimestamp = null;
+      return null;
     }
     try {
       this.oldestCoreLogTimestamp = getOldestLogTimestampFromLogs(debugLogPath);
-      if (this.oldestCoreLogTimestamp !== undefined) {
+      if (this.oldestCoreLogTimestamp !== null) {
         logger.info(`Core debug log entries date back to ${new Date(this.oldestCoreLogTimestamp * 1000).toISOString()}`);
       } else {
         logger.err(`Unable to read Core debug log file at ${debugLogPath}`);
       }
       return this.oldestCoreLogTimestamp;
     } catch {
-      this.oldestCoreLogTimestamp = undefined;
+      this.oldestCoreLogTimestamp = null;
       logger.err(`Unable to read Core debug log file at ${debugLogPath}`);
-      return undefined;
+      return null;
     }
   }
 }

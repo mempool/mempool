@@ -193,7 +193,7 @@ class BlocksRepository {
         poolsUpdater.currentSha,
         BlocksRepository.version,
         (block.stale ? 1 : 0),
-        block.extras.firstSeen || null
+        block.extras.firstSeen === null ? 1 : block.extras.firstSeen // Sentinel value 1 indicates that we could not find first seen time
       ];
 
       await DB.query(query, params);
@@ -1095,12 +1095,12 @@ class BlocksRepository {
    * 
    * @param id 
    */
-  public async $saveFirstSeenTime(id: string, firstSeen: number): Promise<void> {
+  public async $saveFirstSeenTime(id: string, firstSeen: number | null): Promise<void> {
     try {
       await DB.query(`
         UPDATE blocks SET first_seen = FROM_UNIXTIME(?)
         WHERE hash = ?`,
-        [firstSeen, id]
+        [firstSeen === null ? 1 : firstSeen, id] // Sentinel value 1 indicates that we could not find first seen time
       );
     } catch (e) {
       logger.err(`Cannot update block first seen time. Reason: ` + (e instanceof Error ? e.message : e));
@@ -1111,7 +1111,7 @@ class BlocksRepository {
   /**
    * Get all blocks which do not have a first seen time yet
    * 
-   * @param includeAlreadyTried Include blocks we have already tried to fetch first seen time for
+   * @param includeAlreadyTried Include blocks we have already tried to fetch first seen time for, identified by sentinel value 1
    */
   public async $getBlocksWithoutFirstSeen(includeAlreadyTried = false): Promise<any[]> {
     try {
@@ -1214,7 +1214,14 @@ class BlocksRepository {
     extras.utxoSetSize = dbBlk.utxoSetSize;
     extras.totalInputAmt = dbBlk.totalInputAmt;
     extras.virtualSize = dbBlk.weight / 4.0;
-    extras.firstSeen = parseFloat(dbBlk.firstSeen) || null;
+
+    extras.firstSeen = null;
+    if (config.CORE_RPC.DEBUG_LOG_PATH) {
+      const dbFirstSeen = parseFloat(dbBlk.firstSeen);
+      if (dbFirstSeen > 1) { // Sentinel value 1 indicates that we could not find first seen time
+        extras.firstSeen = dbFirstSeen;
+      }
+    }
 
     // Re-org can happen after indexing so we need to always get the
     // latest state from core
