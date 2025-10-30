@@ -1091,20 +1091,33 @@ class BlocksRepository {
   }
 
   /**
-   * Save block first seen time
-   * 
-   * @param id 
+   * Save block first seen times
    */
-  public async $saveFirstSeenTime(id: string, firstSeen: number | null): Promise<void> {
-    try {
-      await DB.query(`
-        UPDATE blocks SET first_seen = FROM_UNIXTIME(?)
-        WHERE hash = ?`,
-        [firstSeen === null ? 1 : firstSeen, id] // Sentinel value 1 indicates that we could not find first seen time
-      );
-    } catch (e) {
-      logger.err(`Cannot update block first seen time. Reason: ` + (e instanceof Error ? e.message : e));
-      throw e;
+  public async $saveFirstSeenTimes(results: { hash: string; firstSeen: number | null }[]): Promise<void> {
+    if (!results.length) {
+      return;
+    }
+    const CHUNK_SIZE = 1000;
+    for (let i = 0; i < results.length; i += CHUNK_SIZE) {
+      const chunk = results.slice(i, i + CHUNK_SIZE);
+      const params: Array<string | number> = [];
+      const selects = chunk.map(() => 'SELECT ? AS hash, FROM_UNIXTIME(?) AS first_seen').join(' UNION ALL ');
+      for (const { hash, firstSeen } of chunk) {
+        params.push(hash, firstSeen === null ? 1 : firstSeen); // Sentinel value 1 indicates that we could not find first seen time
+      }
+      const query = `
+        UPDATE blocks AS b
+        JOIN (
+          ${selects}
+        ) AS updates ON updates.hash = b.hash
+        SET b.first_seen = updates.first_seen
+      `;
+      try {
+        await DB.query(query, params);
+      } catch (e) {
+        logger.err(`Cannot batch update block first seen times. Reason: ` + (e instanceof Error ? e.message : e));
+        throw e;
+      }
     }
   }
 
@@ -1113,14 +1126,13 @@ class BlocksRepository {
    * 
    * @param includeAlreadyTried Include blocks we have already tried to fetch first seen time for, identified by sentinel value 1
    */
-  public async $getBlocksWithoutFirstSeen(includeAlreadyTried = false): Promise<any[]> {
+  public async $getBlocksWithoutFirstSeen(includeAlreadyTried = false): Promise<{ hash: string; timestamp: number }[]> {
     try {
       const [rows]: any[] = await DB.query(`
         SELECT hash, UNIX_TIMESTAMP(blockTimestamp) as timestamp
         FROM blocks
         WHERE first_seen IS NULL
         ${includeAlreadyTried ? ' OR first_seen = FROM_UNIXTIME(1)' : ''}
-        ORDER BY height DESC
       `);
       return rows;
     } catch (e: any) {

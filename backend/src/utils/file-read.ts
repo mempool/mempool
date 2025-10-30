@@ -27,7 +27,7 @@ function extractDateFromLogLine(line: string): number | undefined {
   return parseFloat(timestamp + '.' + microseconds);
 }
 
-function readLineAt(fd: number, startPos: number): { line: string; startPos: number; nextPos: number } | null {
+function readLineAt(fd: number, startPos: number, assumeStartOfLine = false): { line: string; startPos: number; nextPos: number } | null {
   const size = fs.fstatSync(fd).size;
   if (startPos >= size) {
     return null;
@@ -36,39 +36,42 @@ function readLineAt(fd: number, startPos: number): { line: string; startPos: num
   const chunks: Buffer[] = [];
   let length = 0;
 
-  if (startPos > 0) {
-    let searchPos = startPos;
-    let found = false;
-    let count = 0;
-
-    while (searchPos > 0 && !found && count < 5) {
-      const chunkSize = Math.min(CHUNK_SIZE, searchPos);
-      const buf = Buffer.allocUnsafe(chunkSize);
-      const bytesRead = fs.readSync(fd, buf, 0, chunkSize, searchPos - chunkSize);
-
-      if (count === 0 && bytesRead > 0 && buf[bytesRead - 1] === 0x0a) {
-        // startPos is already at a line boundary, no need to search backward
-        found = true;
-        break;
-      }
-
-      const nl = buf.lastIndexOf(0x0a, bytesRead - 1);
-      if (nl !== -1) {
-        startPos = searchPos - chunkSize + nl + 1;
-        const slice = buf.subarray(nl + 1, bytesRead);
-        chunks.unshift(slice);
-        length += slice.length;
-        found = true;
-      } else {
-        searchPos -= chunkSize;
-        const slice = buf.subarray(0, bytesRead);
-        chunks.unshift(slice);
-        length += slice.length;
-        count++;
-      }
+  if (startPos > 0 && !assumeStartOfLine) {
+    // Cheap guard: if the previous byte is '\n' we are already aligned
+    const preceding = Buffer.allocUnsafe(1);
+    const read = fs.readSync(fd, preceding, 0, 1, startPos - 1);
+    if (read === 1 && preceding[0] === 0x0a) {
+      assumeStartOfLine = true;
     }
-    if (!found && chunks.length > 0) {
-      startPos = searchPos;
+
+    if (!assumeStartOfLine) {
+      let searchPos = startPos;
+      let found = false;
+      let count = 0;
+
+      while (searchPos > 0 && !found && count < 5) {
+        const chunkSize = Math.min(CHUNK_SIZE, searchPos);
+        const buf = Buffer.allocUnsafe(chunkSize);
+        const bytesRead = fs.readSync(fd, buf, 0, chunkSize, searchPos - chunkSize);
+
+        const nl = buf.lastIndexOf(0x0a, bytesRead - 1);
+        if (nl !== -1) {
+          startPos = searchPos - chunkSize + nl + 1;
+          const slice = buf.subarray(nl + 1, bytesRead);
+          chunks.unshift(slice);
+          length += slice.length;
+          found = true;
+        } else {
+          searchPos -= chunkSize;
+          const slice = buf.subarray(0, bytesRead);
+          chunks.unshift(slice);
+          length += slice.length;
+          count++;
+        }
+      }
+      if (!found && chunks.length > 0) {
+        startPos = searchPos;
+      }
     }
   }
 
@@ -123,7 +126,7 @@ function findTimestampPosition(fd: number, targetTimestamp: number): number {
     if (ts === undefined) { // usually caused by empty lines between Core restarts, keep reading forward until we find a correct line
       let attempts = 0;
       while (attempts < 10) {
-        record = readLineAt(fd, record.nextPos);
+        record = readLineAt(fd, record.nextPos, true);
         if (!record) {
           break; // should not happen
         }
@@ -161,9 +164,9 @@ function findTimestampPosition(fd: number, targetTimestamp: number): number {
  * @param startTimestamp min timestamp of the backward search
  * @param endTimestamp max timestamp of the forward search
  * @param hash block hash to search for
- * @returns timestamp when the block was first seen, or null if not found
+ * @returns timestamp and next file position when the block was first seen, or null if not found
  */
-function searchForFirstSeen(fd: number, anchor: number, startTimestamp: number, endTimestamp: number, hash: string): number | null {
+function searchForFirstSeen(fd: number, anchor: number, startTimestamp: number, endTimestamp: number, hash: string): { timestamp: number; nextPos: number; } | null {
   const size = fs.fstatSync(fd).size;
   const half = Math.floor(MAX_WINDOW_SIZE / 2);
   const minOffset = Math.max(0, anchor - half);
@@ -179,13 +182,13 @@ function searchForFirstSeen(fd: number, anchor: number, startTimestamp: number, 
   let bPos = anchor - 1;
   let bDone = bPos <= minOffset;
 
-  let bestMatch: number | null = null;
+  let bestMatch: { timestamp: number; nextPos: number; } | null = null;
 
   while (!fDone || !bDone) {
     if (!fDone && fPos < maxOffset) {
       const forwardLimit = Math.min(maxOffset, fPos + CHUNK_SIZE);
       while (fPos < forwardLimit) {
-        const record = readLineAt(fd, fPos);
+        const record = readLineAt(fd, fPos, fPos !== anchor);
         if (!record) {
           fDone = true;
           break;
@@ -203,10 +206,10 @@ function searchForFirstSeen(fd: number, anchor: number, startTimestamp: number, 
         }
 
         if (line.includes(headerNeedle) || line.includes(cmpctNeedle)) {
-          return logTimestamp;
+          return { timestamp: logTimestamp, nextPos };
         }
-        if ((line.includes(partNeedle) || line.includes(updateNeedle)) && (!bestMatch || logTimestamp < bestMatch)) {
-          bestMatch = logTimestamp;
+        if ((line.includes(partNeedle) || line.includes(updateNeedle)) && !bestMatch) {
+          bestMatch = { timestamp: logTimestamp, nextPos };
         }
       }
     } else {
@@ -221,7 +224,7 @@ function searchForFirstSeen(fd: number, anchor: number, startTimestamp: number, 
           bDone = true;
           break;
         }
-        const { line, startPos } = record;
+        const { line, startPos, nextPos } = record;
         bPos = startPos - 1;
 
         const logTimestamp = extractDateFromLogLine(line);
@@ -234,10 +237,10 @@ function searchForFirstSeen(fd: number, anchor: number, startTimestamp: number, 
         }
 
         if (line.includes(headerNeedle) || line.includes(cmpctNeedle)) {
-          return logTimestamp;
+          return { timestamp: logTimestamp, nextPos };
         }
         if (line.includes(partNeedle) || line.includes(updateNeedle)) {
-          bestMatch = logTimestamp;
+          bestMatch = { timestamp: logTimestamp, nextPos };
         }
       }
     } else {
@@ -249,28 +252,121 @@ function searchForFirstSeen(fd: number, anchor: number, startTimestamp: number, 
 
 export function getBlockFirstSeenFromLogs(hash: string, blockTimestamp: number, oldestLogTimestamp: number): number | null {
   const debugLogPath = config.CORE_RPC.DEBUG_LOG_PATH;
-  if (!debugLogPath || blockTimestamp + 7200 <= oldestLogTimestamp) {
+  if (!debugLogPath || blockTimestamp + 3600 <= oldestLogTimestamp) {
     return null;
   }
 
   const fd = fs.openSync(debugLogPath, 'r');
   try {
-    const start = blockTimestamp - 7200; // block time can be up to 2 hours in the future
-    if (blockTimestamp + 3600 > (Date.now() / 1000)) { // Recent block: search the end of the log for recent blocks
-      const EOF = fs.fstatSync(fd).size;
-      return searchForFirstSeen(fd, EOF, start, Number.MAX_SAFE_INTEGER, hash);
-    }
-
-    // Older block but still within log range: do a binary search to find the right window
-    const end = blockTimestamp + 3600; // block time can be up to 1 hour in the past (approximating median past time)
-    const anchor = findTimestampPosition(fd, blockTimestamp);
-    return searchForFirstSeen(fd, anchor, start, end, hash);
+    const EOF = fs.fstatSync(fd).size;
+    const now = Date.now() / 1000;
+    const start = blockTimestamp - 7200;
+    const end = blockTimestamp + 3600 > now ? Number.MAX_SAFE_INTEGER : blockTimestamp + 3600;
+    const anchor = end === Number.MAX_SAFE_INTEGER ? EOF : findTimestampPosition(fd, blockTimestamp);
+    return searchForFirstSeen(fd, anchor, start, end, hash)?.timestamp ?? null;
   } catch (e) {
     logger.debug(`Cannot parse block first seen time from Core logs. Reason: ${e instanceof Error ? e.message : e}`);
     return null;
   } finally {
     fs.closeSync(fd);
   }
+}
+
+export function scanLogsForBlocksFirstSeen(blocks: { hash: string; timestamp: number }[], oldestLogTimestamp: number): { hash: string; firstSeen: number | null }[] {
+  const debugLogPath = config.CORE_RPC.DEBUG_LOG_PATH;
+  if (!debugLogPath) {
+    return blocks.map(block => ({ hash: block.hash, firstSeen: null }));
+  }
+
+  if (blocks.length < 5000) { // for small batches, individually binary-search each block's first seen time
+    return blocks.map(block => ({ hash: block.hash, firstSeen: getBlockFirstSeenFromLogs(block.hash, block.timestamp, oldestLogTimestamp) }));
+  }
+
+  const firstSeenMap = new Map<string, number | null>();
+  const missing = new Map<string, { start: number; end: number }>();
+
+  let startTimestamp = Number.POSITIVE_INFINITY;
+  for (const block of blocks) {
+    firstSeenMap.set(block.hash, null);
+
+    if (block.timestamp + 3600 > oldestLogTimestamp) {
+      const start = block.timestamp - 7200;
+      const end = block.timestamp + 3600;
+
+      missing.set(block.hash, { start, end });
+      if (start < startTimestamp) {
+        startTimestamp = start;
+      }
+    }
+  }
+
+  if (!missing.size) {
+    return blocks.map(block => ({ hash: block.hash, firstSeen: null }));
+  }
+
+  const extractHash = (line: string, prefix: string): string | null => {
+    const idx = line.indexOf(prefix);
+    if (idx === -1) {
+      return null;
+    }
+    const fragment = line.slice(idx + prefix.length);
+    const match = fragment.match(/^[0-9a-fA-F]{64}/);
+    return match ? match[0] : null;
+  };
+
+  try {
+    const fd = fs.openSync(debugLogPath, 'r');
+    try {
+      const size = fs.fstatSync(fd).size;
+      if (!size) {
+        return blocks.map(block => ({ hash: block.hash, firstSeen: null }));
+      }
+
+      for (let record = readLineAt(fd, findTimestampPosition(fd, startTimestamp)); record; record = readLineAt(fd, record.nextPos, true)) {
+        const { line } = record;
+        const logTimestamp = extractDateFromLogLine(line);
+        if (!logTimestamp) {
+          continue;
+        }
+
+        let hash: string | null = null;
+
+        if (line.includes('Saw new header hash=')) {
+          hash = extractHash(line, 'Saw new header hash=');
+        } else if (line.includes('Saw new cmpctblock header hash=')) {
+          hash = extractHash(line, 'Saw new cmpctblock header hash=');
+        } else if (line.includes('Initialized PartiallyDownloadedBlock for block ')) {
+          hash = extractHash(line, 'Initialized PartiallyDownloadedBlock for block ');
+        } else if (line.includes('UpdateTip: new best=')) {
+          hash = extractHash(line, 'UpdateTip: new best=');
+        }
+
+        if (!hash) {
+          continue;
+        }
+
+        const window = missing.get(hash);
+        if (!window) {
+          continue;
+        }
+
+        missing.delete(hash);
+        if (logTimestamp >= window.start && logTimestamp <= window.end) {
+          firstSeenMap.set(hash, logTimestamp);
+        }
+
+        if (!missing.size) {
+          break;
+        }
+      }
+    } finally {
+      fs.closeSync(fd);
+    }
+  } catch (e) {
+    logger.debug(`Cannot scan blocks first seen from Core logs. Reason: ${e instanceof Error ? e.message : e}`);
+  }
+
+  return blocks.map(block => ({ hash: block.hash, firstSeen: firstSeenMap.get(block.hash) ?? null }));
 }
 
 export function getOldestLogTimestampFromLogs(filePath: string): number | null {
@@ -283,7 +379,7 @@ export function getOldestLogTimestampFromLogs(filePath: string): number | null {
 
     let pos = 0;
     for (let i = 0; i < 10 && pos < size; i++) {
-      const record = readLineAt(fd, pos);
+      const record = readLineAt(fd, pos, true);
       if (!record) {
         break;
       }

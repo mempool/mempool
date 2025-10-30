@@ -35,7 +35,7 @@ import mempool from './mempool';
 import CpfpRepository from '../repositories/CpfpRepository';
 import { parseDATUMTemplateCreator } from '../utils/bitcoin-script';
 import database from '../database';
-import { getBlockFirstSeenFromLogs, getOldestLogTimestampFromLogs } from '../utils/file-read';
+import { getBlockFirstSeenFromLogs, getOldestLogTimestampFromLogs, scanLogsForBlocksFirstSeen } from '../utils/file-read';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -920,11 +920,11 @@ class Blocks {
    * [INDEXING] Index all blocks first seen time from Bitcoin Core debug logs
    */
   public async $indexBlocksFirstSeen(): Promise<void> {
-    const old = this.oldestCoreLogTimestamp;
-    const current = this.getOldestCoreLogTimestamp(true);
-    const hasLogFileChanged = old !== undefined && current !== old;
+    const previous = this.oldestCoreLogTimestamp;
+    const oldestLogTimestamp = this.getOldestCoreLogTimestamp(true);
+    const hasLogFileChanged = previous !== undefined && oldestLogTimestamp !== previous;
 
-    if (!current) {
+    if (!oldestLogTimestamp) {
       return;
     }
 
@@ -934,30 +934,23 @@ class Blocks {
     if (!blocks?.length) {
       return;
     }
-    let timer = Date.now();
-    let indexedThisRun = 0;
-    let indexedTotal = 0;
     logger.debug(`Indexing ${blocks.length} block first seen times${hasLogFileChanged ? ' (log file changed since last run)' : ''}`);
-    for (const block of blocks) {
-      const firstSeen = getBlockFirstSeenFromLogs(block.hash, block.timestamp, current);
-      await BlocksRepository.$saveFirstSeenTime(block.hash, firstSeen);
+    const startedAt = Date.now();
+    const results = scanLogsForBlocksFirstSeen(blocks, oldestLogTimestamp);
+    const foundCount = results.filter(result => result.firstSeen !== null).length;
+    logger.debug(`Found first seen times of ${foundCount} / ${results.length} blocks in Core logs, saving to database...`);
+    await BlocksRepository.$saveFirstSeenTimes(results);
 
-      const cachedBlock = this.blocks.find(blk => blk.id === block.hash);
-      if (cachedBlock) {
-        cachedBlock.extras.firstSeen = firstSeen;
-      }
-
-      indexedThisRun++;
-      indexedTotal++;
-      const elapsedSeconds = (Date.now() - timer) / 1000;
-      if (elapsedSeconds > 5) {
-        const blockPerSeconds = indexedThisRun / elapsedSeconds;
-        logger.debug(`Indexed ${indexedTotal} / ${blocks.length} block first seen times (${blockPerSeconds.toFixed()}/s)`);
-        timer = Date.now();
-        indexedThisRun = 0;
+    for (const { hash, firstSeen } of results) {
+      if (firstSeen !== null) {
+        const cachedBlock = this.blocks.find(blk => blk.id === hash);
+        if (cachedBlock) {
+          cachedBlock.extras.firstSeen = firstSeen;
+        }
       }
     }
-    logger.debug(`Indexing of block first seen times completed`);
+
+    logger.debug(`Indexed ${foundCount} / ${blocks.length} block first seen times in ${((Date.now() - startedAt) / 1000).toFixed(2)} seconds`);
   }
 
   public async $updateBlocks(): Promise<number> {
