@@ -129,7 +129,7 @@ class BitcoinRoutes {
       res.send('Service Unavailable');
       return;
     }
-    let minFee = 1;
+    let minFee = 0;
     if (req.query.min) {
       try {
         minFee = parseFloat(req.query.min as string);
