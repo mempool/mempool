@@ -17,7 +17,6 @@ interface RecommendedFees {
 class FeeApi {
   constructor() { }
 
-  defaultFee = isLiquid ? 0.1 : config.MEMPOOL.MIN_RECOMMENDED_FEE;
   minimumIncrement = isLiquid ? 0.1 : 1;
 
   public getRecommendedFee(): RecommendedFees {
@@ -35,9 +34,9 @@ class FeeApi {
     return this.calculateRecommendedFee(pBlocks, mPool, minimum, 0.001);
   }
 
-  public calculateRecommendedFee(pBlocks: MempoolBlock[], mPool: IBitcoinApi.MempoolInfo, minimumRecommendation: number = this.defaultFee, minIncrement: number = this.minimumIncrement): RecommendedFees {
+  public calculateRecommendedFee(pBlocks: MempoolBlock[], mPool: IBitcoinApi.MempoolInfo, minimumRecommendation: number = 0, minIncrement: number = this.minimumIncrement): RecommendedFees {
     const purgeRate = this.roundUpToNearest(mPool.mempoolminfee * 100000, minIncrement);
-    const minimumFee = Math.max(purgeRate, minimumRecommendation, config.MEMPOOL.MIN_RECOMMENDED_FEE, minIncrement);
+    const minimumFee = Math.max(purgeRate, minimumRecommendation, minIncrement);
 
     if (!pBlocks.length) {
       return {
@@ -76,7 +75,7 @@ class FeeApi {
     };
   }
 
-  private optimizeMedianFee(pBlock: MempoolBlock, nextBlock: MempoolBlock | undefined, previousFee?: number, minFee: number = this.defaultFee, minIncrement: number = this.minimumIncrement): number {
+  private optimizeMedianFee(pBlock: MempoolBlock, nextBlock: MempoolBlock | undefined, previousFee: number | undefined, minFee: number, minIncrement: number = this.minimumIncrement): number {
     const useFee = previousFee ? (pBlock.medianFee + previousFee) / 2 : pBlock.medianFee;
     if (pBlock.blockVSize <= 500000 || pBlock.medianFee < minFee) {
       return minFee;
