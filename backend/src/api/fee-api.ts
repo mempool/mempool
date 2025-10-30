@@ -68,11 +68,11 @@ class FeeApi {
     hourFee = Math.max(hourFee, economyFee);
 
     return {
-      'fastestFee': fastestFee,
-      'halfHourFee': halfHourFee,
-      'hourFee': hourFee,
-      'economyFee': economyFee,
-      'minimumFee': minimumFee,
+      'fastestFee': this.roundToNearest(fastestFee, minIncrement),
+      'halfHourFee': this.roundToNearest(halfHourFee, minIncrement),
+      'hourFee': this.roundToNearest(hourFee, minIncrement),
+      'economyFee': this.roundToNearest(economyFee, minIncrement),
+      'minimumFee': this.roundToNearest(minimumFee, minIncrement),
     };
   }
 
