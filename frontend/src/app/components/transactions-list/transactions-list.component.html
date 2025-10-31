@@ -243,6 +243,14 @@
                         <td i18n="transactions-list.p2sh-redeem-script">P2SH redeem script</td>
                         <td style="text-align: left;" [innerHTML]="vin.inner_redeemscript_asm | asmStyler"></td>
                       </tr>
+                      @if (vin['taprootInfo']?.scriptPath) {
+                        <tr>
+                          <td i18n="transactions-list.p2tr-control-block">P2TR control block</td>
+                          <td style="text-align: left; padding: 0px;">
+                            <ng-container *ngTemplateOutlet="controlBlockInfo; context: { $implicit: vin['taprootInfo']?.scriptPath }"></ng-container>
+                          </td>
+                        </tr>
+                      }
                       <tr *ngIf="vin.inner_witnessscript_asm">
                         @if (isLiquid && vin.inner_simplicityscript) {
                           <td i18n="transactions-list.p2tr-simplicity-script">P2TR Simplicity script</td>
@@ -556,4 +564,28 @@
     <span class="internal-key" ngbTooltip="internal key">{{ scriptPath.internalKey }}</span>
   }
   <span *ngFor="let branch of scriptPath.merkleBranches.slice(0, truncate ? 14 : scriptPath.merkleBranches.length); index as i" class="merkle-branch" ngbTooltip="taptree merkle branch {{ i + 1 }}">{{ branch }}</span>
+</ng-template>
+
+<ng-template #controlBlockInfo let-scriptPath>
+  <table class="table table-borderless control-block-info">
+    <tr></tr>
+    <tr>
+      <td i18n="transactions-list.taproot.leaf-version">leaf version</td>
+      <td>{{ scriptPath.leafVersion | decimal2hex:1 }}</td>
+    </tr>
+    <tr>
+      <td i18n="transactions-list.taproot.parity">parity</td>
+      <td>{{ scriptPath.parity ? '0x01' : '0x00' }}</td>
+    </tr>
+    @if (scriptPath.isNUMS) {
+      <tr>
+        <td i18n="transactions-list.taproot.keypath">key path</td>
+        <td>disabled</td>
+      </tr>
+    }
+    <tr>
+      <td i18n="transactions-list.taproot.script-depth">script depth</td>
+      <td>{{ scriptPath.merkleBranches.length }}</td>
+    </tr>
+  </table>
 </ng-template>

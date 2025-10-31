@@ -371,3 +371,22 @@ h2 {
 		color: #ffdddd;
 	}
 }
+
+.control-block-info {
+	padding: 0;
+
+	tr td {
+		width: 50%;
+		white-space: nowrap;
+
+		&:first-child {
+			color: white;
+			width: 50%;
+			white-space: nowrap;
+		}
+
+		@media (max-width: 480px) {
+			padding: 4px;
+		}
+	}
+}
