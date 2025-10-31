@@ -183,21 +183,21 @@
                                   <fa-icon [icon]="['fas', 'key']" [fixedWidth]="true"></fa-icon>
                                 </span>
                               </ng-container>
-                              @if (windex === vin['taprootInfo']?.controlBlockIndex) {
+                              @if (windex === vin.taprootInfo?.controlBlockIndex) {
                                 <span class="control-block" ngbTooltip="taproot control block">
                                   <fa-icon [icon]="['fas', 'code-fork']" [fixedWidth]="true" [rotate]="180"></fa-icon>
                                 </span>
-                                <ng-container *ngTemplateOutlet="taprootControlBlock; context: { $implicit: vin['taprootInfo']?.scriptPath, controlBlock: witness, truncate: !showFullWitness[vindex][windex] }"></ng-container>
-                              } @else if (windex === vin['taprootInfo']?.scriptIndex || (windex === vin.witness.length - 1 && ['p2sh', 'v0_p2wsh'].includes(vin.prevout?.scriptpubkey_type))) {
+                                <ng-container *ngTemplateOutlet="taprootControlBlock; context: { $implicit: vin.taprootInfo?.scriptPath, controlBlock: witness, truncate: !showFullWitness[vindex][windex] }"></ng-container>
+                              } @else if (windex === vin.taprootInfo?.scriptIndex || (windex === vin.witness.length - 1 && ['p2sh', 'v0_p2wsh'].includes(vin.prevout?.scriptpubkey_type))) {
                                 <span class="script" ngbTooltip="script">
                                   <fa-icon [icon]="['fas', 'code']" [fixedWidth]="true"></fa-icon>
                                 </span>
-                              } @else if (windex === vin['taprootInfo']?.annexIndex) {
+                              } @else if (windex === vin.taprootInfo?.annexIndex) {
                                 <span class="annex" ngbTooltip="annex">
                                   <fa-icon [icon]="['fas', 'paperclip']" [fixedWidth]="true"></fa-icon>
                                 </span>
                               }
-                              @if (windex !== vin['taprootInfo']?.controlBlockIndex) {
+                              @if (windex !== vin.taprootInfo?.controlBlockIndex) {
                                 @if (witness.length > 1000) {
                                   @if (!showFullWitness[vindex][windex]) {
                                     {{ witness | slice:0:1000 }}
@@ -243,11 +243,11 @@
                         <td i18n="transactions-list.p2sh-redeem-script">P2SH redeem script</td>
                         <td style="text-align: left;" [innerHTML]="vin.inner_redeemscript_asm | asmStyler"></td>
                       </tr>
-                      @if (vin['taprootInfo']?.scriptPath) {
+                      @if (vin.taprootInfo?.scriptPath) {
                         <tr>
                           <td i18n="transactions-list.p2tr-control-block">P2TR control block</td>
                           <td style="text-align: left; padding: 0px;">
-                            <ng-container *ngTemplateOutlet="controlBlockInfo; context: { $implicit: vin['taprootInfo']?.scriptPath }"></ng-container>
+                            <ng-container *ngTemplateOutlet="controlBlockInfo; context: { $implicit: vin.taprootInfo?.scriptPath }"></ng-container>
                           </td>
                         </tr>
                       }

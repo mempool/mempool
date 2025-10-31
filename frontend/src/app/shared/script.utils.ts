@@ -1,5 +1,6 @@
 import { Vin } from "../interfaces/electrs.interface";
 import { AddressType, detectAddressType } from "./address-utils";
+import { ParsedTaproot } from "./transaction.utils";
 
 const opcodes = {
   OP_FALSE: 0,
@@ -175,18 +176,18 @@ export const ScriptTemplates: { [type: string]: (...args: any) => ScriptTemplate
 
 export class ScriptInfo {
   type: ScriptType;
-  scriptPath?: string;
+  taprootInfo?: ParsedTaproot;
   hex?: string;
   asm?: string;
   vinId?: string;
   template: ScriptTemplate;
 
-  constructor(type: ScriptType, hex?: string, asm?: string, witness?: string[], scriptPath?: string, vinId?: string) {
+  constructor(type: ScriptType, hex?: string, asm?: string, witness?: string[], taprootInfo?: ParsedTaproot, vinId?: string) {
     this.type = type;
     this.hex = hex;
     this.asm = asm;
-    if (scriptPath) {
-      this.scriptPath = scriptPath;
+    if (taprootInfo) {
+      this.taprootInfo = taprootInfo;
     }
     if (vinId) {
       this.vinId = vinId;
@@ -201,7 +202,7 @@ export class ScriptInfo {
   }
 
   get key(): string {
-    return this.type + (this.scriptPath || '');
+    return this.type + (this.taprootInfo?.controlBlock || '');
   }
 }
 

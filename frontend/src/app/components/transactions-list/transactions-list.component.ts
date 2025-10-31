@@ -305,15 +305,6 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
 
         // Check for ord data fingerprints in inputs and outputs
         if (this.stateService.network !== 'liquid' && this.stateService.network !== 'liquidtestnet') {
-          for (let i = 0; i < tx.vin.length; i++) {
-            if (tx.vin[i].prevout?.scriptpubkey_type === 'v1_p2tr' && tx.vin[i].witness?.length) {
-              const hasAnnex = tx.vin[i].witness?.[tx.vin[i].witness.length - 1].startsWith('50');
-              if (tx.vin[i].witness.length > (hasAnnex ? 2 : 1) && tx.vin[i].witness[tx.vin[i].witness.length - (hasAnnex ? 3 : 2)].includes('0063036f7264')) {
-                tx.vin[i].isInscription = true;
-                tx.largeInput = true;
-              }
-            }
-          }
           for (let i = 0; i < tx.vout.length; i++) {
             if (tx.vout[i]?.scriptpubkey?.startsWith('6a5d')) {
               tx.vout[i].isRunestone = true;
@@ -341,9 +332,16 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
         // parse taproot spends
         for (const vin of tx.vin) {
           if (vin.prevout?.scriptpubkey_type === 'v1_p2tr') {
-            vin['taprootInfo'] = parseTaproot(vin.witness);
-            if (vin['taprootInfo']?.scriptPath?.leafVersion === 0xbe) {
-              vin.inner_simplicityscript = vin.witness[1]; // simplicity program is the second witness element
+            vin.taprootInfo = parseTaproot(vin.witness);
+            if (this.stateService.network !== 'liquid' && this.stateService.network !== 'liquidtestnet') {
+              if (vin.taprootInfo?.scriptPath?.script.includes('0063036f7264')) {
+                vin.isInscription = true;
+                tx.largeInput = true;
+              }
+            } else {
+              if (vin.taprootInfo?.scriptPath?.leafVersion === 0xbe) {
+                vin.inner_simplicityscript = vin.witness[1]; // simplicity program is the second witness element
+              }
             }
           }
         }
@@ -617,10 +615,9 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
     this.showOrdData[key] = this.showOrdData[key] || { show: false };
 
     if (type === 'vin') {
-
       if (!this.showOrdData[key].inscriptions) {
-        const hasAnnex = tx.vin[index].witness?.[tx.vin[index].witness.length - 1].startsWith('50');
-        this.showOrdData[key].inscriptions = this.ordApiService.decodeInscriptions(tx.vin[index].witness[tx.vin[index].witness.length - (hasAnnex ? 3 : 2)]);
+        const tapscript = tx.vin[index].taprootInfo?.scriptPath?.script;
+        this.showOrdData[key].inscriptions = this.ordApiService.decodeInscriptions(tapscript);
       }
       this.showOrdData[key].show = !this.showOrdData[key].show;
 

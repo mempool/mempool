@@ -285,8 +285,8 @@ export class AddressComponent implements OnInit, OnDestroy {
         }
         this.isLoadingTransactions = false;
 
-        let addressVin: Vin[] = [];
-        let vinIds: string[] = [];
+        const addressVin: Vin[] = [];
+        const vinIds: string[] = [];
         for (const tx of this.transactions) {
           tx.vin.forEach((v, index) => {
             if (v.prevout?.scriptpubkey_address === this.address.address) {
@@ -296,7 +296,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           });
         }
         this.addressTypeInfo.processInputs(addressVin, vinIds);
-        this.hasTapTree = this.addressTypeInfo.tapscript && this.addressTypeInfo.scripts.values().next().value.scriptPath.length / 2 > 33;
+        this.hasTapTree = this.addressTypeInfo.tapscript && this.addressTypeInfo.scripts.values().next().value.taprootInfo.scriptPath.merkleBranches.length > 1;
         // hack to trigger change detection
         this.addressTypeInfo = this.addressTypeInfo.clone();
 
