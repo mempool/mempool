@@ -158,7 +158,7 @@
                           <td style="text-align: left;">
                             <app-asm
                               [asm]="vin.scriptsig_asm"
-                              [annotations]="{ signatures: tx['_sigmap'], selectedSig: selectedSig?.txIndex === i && selectedSig?.vindex === vindex ? selectedSig.sig : null }"
+                              [annotations]="{ signatures: tx['_sigmap'], selectedSig: selectedSig?.txIndex === i && selectedSig?.vindex === vindex ? selectedSig.sig : null, p2sh: vin.prevout?.scriptpubkey_type === 'p2sh' && !vin.witness }"
                               (showSigInfo)="showSigInfo(i, vindex, $event)"
                               (hideSigInfo)="hideSigInfo()"
                             ></app-asm>
@@ -188,7 +188,7 @@
                                   <fa-icon [icon]="['fas', 'code-fork']" [fixedWidth]="true" [rotate]="180"></fa-icon>
                                 </span>
                                 <ng-container *ngTemplateOutlet="taprootControlBlock; context: { $implicit: vin['taprootInfo']?.scriptPath, controlBlock: witness, truncate: !showFullWitness[vindex][windex] }"></ng-container>
-                              } @else if (windex === vin['taprootInfo']?.scriptIndex || (windex === vin.witness.length - 1 && vin.prevout?.scriptpubkey_type === 'v0_p2wsh')) {
+                              } @else if (windex === vin['taprootInfo']?.scriptIndex || (windex === vin.witness.length - 1 && ['p2sh', 'v0_p2wsh'].includes(vin.prevout?.scriptpubkey_type))) {
                                 <span class="script" ngbTooltip="script">
                                   <fa-icon [icon]="['fas', 'code']" [fixedWidth]="true"></fa-icon>
                                 </span>
