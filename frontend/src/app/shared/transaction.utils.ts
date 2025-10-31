@@ -2164,6 +2164,7 @@ export interface ParsedTaproot {
     leafVersion: number;
     parity: number;
     script: string;
+    simplicityScript?: string; // liquid only
     stack: string[];
     merkleBranches: string[];
     internalKey: string;
@@ -2210,6 +2211,12 @@ export function parseTaproot(witness: string[]): ParsedTaproot {
     };
     for (let i = 66; (i + 64) <= controlblock.length; i += 64) {
       parsed.scriptPath.merkleBranches.push(controlblock.slice(i, i + 64));
+    }
+
+    if (parsed.scriptPath.leafVersion === 0xbe) {
+      // override script stuff for simplicity
+      parsed.scriptIndex = 1;
+      parsed.scriptPath.simplicityScript = witness[parsed.scriptIndex];
     }
   }
   return parsed;
