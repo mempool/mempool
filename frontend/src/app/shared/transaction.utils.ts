@@ -2157,3 +2157,60 @@ const opcodes = {
   254: 'OP_PUBKEY',
   255: 'OP_INVALIDOPCODE',
 };
+
+export interface ParsedTaproot {
+  keyPath: boolean;
+  scriptPath?: {
+    leafVersion: number;
+    parity: number;
+    script: string;
+    stack: string[];
+    merkleBranches: string[];
+    internalKey: string;
+    isNUMS?: boolean;
+  }
+  annex?: string;
+  annexIndex?: number;
+  controlBlockIndex?: number;
+  scriptIndex?: number;
+}
+
+/**
+ * Parse out the different parts of a taproot spend from a p2tr witness
+ * `witness` MUST be a valid p2tr witness stack, otherwise the result will be garbage
+ */
+export function parseTaproot(witness: string[]): ParsedTaproot {
+  const parsed: ParsedTaproot = {
+    keyPath: true,
+  };
+  const hasAnnex = witness.length > 1 && witness[witness.length - 1].startsWith('50');
+  if (hasAnnex) {
+    parsed.annexIndex = witness.length - 1;
+    parsed.annex = witness[parsed.annexIndex];
+  }
+  if (witness.length > (hasAnnex ? 2 : 1)) {
+    parsed.keyPath = false;
+    parsed.controlBlockIndex = witness.length - (hasAnnex ? 2 : 1);
+    parsed.scriptIndex = witness.length - (hasAnnex ? 3 : 2);
+    // control block is the last non-annex element
+    const controlblock = witness[parsed.controlBlockIndex];
+    const leafVersionParity = parseInt(controlblock.slice(0, 2), 16);
+    const internalKey = controlblock.slice(2, 66);
+    parsed.scriptPath = {
+      // script is the second last non-annex element
+      script: witness[parsed.scriptIndex],
+      // remaining items are the initial stack
+      stack: witness.slice(0, (hasAnnex ? -3 : -2)),
+      // first two bytes are the leaf version & parity bit
+      leafVersion: leafVersionParity & 0xfe,
+      parity: leafVersionParity & 0x01,
+      internalKey: internalKey,
+      isNUMS: internalKey === '50929b74c1a04954b78b4b6035e97a5e078a5a0f28ec96d547bfee9ace803ac0',
+      merkleBranches: [],
+    };
+    for (let i = 66; (i + 64) <= controlblock.length; i += 64) {
+      parsed.scriptPath.merkleBranches.push(controlblock.slice(i, i + 64));
+    }
+  }
+  return parsed;
+}

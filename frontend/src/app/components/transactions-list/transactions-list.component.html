@@ -183,32 +183,43 @@
                                   <fa-icon [icon]="['fas', 'key']" [fixedWidth]="true"></fa-icon>
                                 </span>
                               </ng-container>
-                              @if (vin.witness.length > 1 && windex === vin.witness.length - 1 && witness.slice(0, 2) === '50') {
+                              @if (windex === vin['taprootInfo']?.controlBlockIndex) {
+                                <span class="control-block" ngbTooltip="taproot control block">
+                                  <fa-icon [icon]="['fas', 'code-fork']" [fixedWidth]="true" [rotate]="180"></fa-icon>
+                                </span>
+                                <ng-container *ngTemplateOutlet="taprootControlBlock; context: { $implicit: vin['taprootInfo']?.scriptPath, controlBlock: witness, truncate: !showFullWitness[vindex][windex] }"></ng-container>
+                              } @else if (windex === vin['taprootInfo']?.scriptIndex || (windex === vin.witness.length - 1 && vin.prevout?.scriptpubkey_type === 'v0_p2wsh')) {
+                                <span class="script" ngbTooltip="script">
+                                  <fa-icon [icon]="['fas', 'code']" [fixedWidth]="true"></fa-icon>
+                                </span>
+                              } @else if (windex === vin['taprootInfo']?.annexIndex) {
                                 <span class="annex" ngbTooltip="annex">
                                   <fa-icon [icon]="['fas', 'paperclip']" [fixedWidth]="true"></fa-icon>
                                 </span>
                               }
-                              @if (witness.length > 1000) {
-                                @if (!showFullWitness[vindex][windex]) {
-                                  {{ witness | slice:0:1000 }}
+                              @if (windex !== vin['taprootInfo']?.controlBlockIndex) {
+                                @if (witness.length > 1000) {
+                                  @if (!showFullWitness[vindex][windex]) {
+                                    {{ witness | slice:0:1000 }}
+                                  } @else {
+                                    {{ witness }}
+                                  }
+                                } @else if (witness) {
+                                  <ng-container *ngIf="tx['_sigmap']?.[witness]?.sig.sighash !== 0 && tx['_sigmap']?.[witness] as sigInfo; else plainSig">
+                                    <span class="witness">
+                                      {{witness.slice(0, -2)}}<span class="sig sighash-{{sigInfo.sig.sighash}}" 
+                                            [class.hovered]="selectedSig && selectedSig.txIndex === i && selectedSig.vindex === vindex && selectedSig.sig === sigInfo.sig"
+                                            (mouseenter)="showSigInfo(i, vindex, sigInfo.sig)" 
+                                            (mouseleave)="hideSigInfo()" 
+                                            [ngbTooltip]="sighashLabels[sigInfo.sig.sighash]">{{witness.slice(-2)}}</span>
+                                    </span>
+                                  </ng-container>
+                                  <ng-template #plainSig>
+                                    {{ witness }}
+                                  </ng-template>
                                 } @else {
-                                  {{ witness }}
+                                  &lt;empty&gt;
                                 }
-                              } @else if (witness) {
-                                <ng-container *ngIf="tx['_sigmap']?.[witness]?.sig.sighash !== 0 && tx['_sigmap']?.[witness] as sigInfo; else plainSig">
-                                  <span class="witness">
-                                    {{witness.slice(0, -2)}}<span class="sig sighash-{{sigInfo.sig.sighash}}" 
-                                          [class.hovered]="selectedSig && selectedSig.txIndex === i && selectedSig.vindex === vindex && selectedSig.sig === sigInfo.sig"
-                                          (mouseenter)="showSigInfo(i, vindex, sigInfo.sig)" 
-                                          (mouseleave)="hideSigInfo()" 
-                                          [ngbTooltip]="sighashLabels[sigInfo.sig.sighash]">{{witness.slice(-2)}}</span>
-                                  </span>
-                                </ng-container>
-                                <ng-template #plainSig>
-                                  {{ witness }}
-                                </ng-template>
-                              } @else {
-                                &lt;empty&gt;
                               }
                             </p>
                             @if (witness.length > 1000) {
@@ -536,3 +547,13 @@
 </ng-template>
 
 <ng-template #xRemaining let-x i18n="x-remaining">{{ x }} remaining</ng-template>
+
+<ng-template #taprootControlBlock let-scriptPath let-controlBlock="controlBlock" let-truncate="truncate">
+  <span class="leaf-version" ngbTooltip="leaf version and parity"> {{ controlBlock.slice(0, 2) }}</span>
+  @if (scriptPath.isNUMS) {
+    <span class="internal-key nums" ngbTooltip="internal key (NUMS point)">{{ scriptPath.internalKey }}</span>
+  } @else {
+    <span class="internal-key" ngbTooltip="internal key">{{ scriptPath.internalKey }}</span>
+  }
+  <span *ngFor="let branch of scriptPath.merkleBranches.slice(0, truncate ? 14 : scriptPath.merkleBranches.length); index as i" class="merkle-branch" ngbTooltip="taptree merkle branch {{ i + 1 }}">{{ branch }}</span>
+</ng-template>

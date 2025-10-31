@@ -156,7 +156,7 @@
 	transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
-.annex {
+.annex, .control-block, .script {
 	margin-right: -5px;
 	position: relative;
 	left: 0px;
@@ -350,5 +350,24 @@ h2 {
 	}
 	@media (min-width: 1200px) {
 		max-width: 180px;
+	}
+}
+
+.merkle-branch:nth-child(2n + 1), .internal-key	{
+	color: #cccccc;
+	font-weight: 500;
+}
+
+.merkle-branch, .internal-key, .leaf-version {
+	&:hover {
+		color: white;
+		font-weight: 600;
+	}
+}
+
+.internal-key.nums {
+	color: #ffdddd;
+	&:hover {
+		color: #ffdddd;
 	}
 }
