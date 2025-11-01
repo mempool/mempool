@@ -184,7 +184,7 @@
                                 </span>
                               </ng-container>
                               @if (windex === vin.taprootInfo?.controlBlockIndex) {
-                                <span class="control-block" ngbTooltip="taproot control block">
+                                <span class="control-block" ngbTooltip="taproot control block" (click)="toggleTaprootControlBlock(vindex)">
                                   <fa-icon [icon]="['fas', 'code-fork']" [fixedWidth]="true" [rotate]="180"></fa-icon>
                                 </span>
                                 <ng-container *ngTemplateOutlet="taprootControlBlock; context: { $implicit: vin.taprootInfo?.scriptPath, controlBlock: witness, truncate: !showFullWitness[vindex][windex] }"></ng-container>
@@ -243,7 +243,7 @@
                         <td i18n="transactions-list.p2sh-redeem-script">P2SH redeem script</td>
                         <td style="text-align: left;" [innerHTML]="vin.inner_redeemscript_asm | asmStyler"></td>
                       </tr>
-                      @if (vin.taprootInfo?.scriptPath) {
+                      @if (vin.taprootInfo?.scriptPath && showTaprootControlBlock[vindex]) {
                         <tr>
                           <td i18n="transactions-list.p2tr-control-block">P2TR control block</td>
                           <td style="text-align: left; padding: 0px;">

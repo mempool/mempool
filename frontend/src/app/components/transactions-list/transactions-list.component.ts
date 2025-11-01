@@ -68,6 +68,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   showFullScriptPubkeyHex: { [voutIndex: number]: boolean } = {};
   showFullOpReturnData: { [voutIndex: number]: boolean } = {};
   showFullOpReturnPreview: { [voutIndex: number]: boolean } = {};
+  showTaprootControlBlock: { [vinIndex: number]: boolean } = {};
   showOrdData: { [key: string]: { show: boolean; inscriptions?: Inscription[]; runestone?: Runestone, runeInfo?: { [id: string]: { etching: Etching; txid: string; } }; } } = {};
   similarityMatches: Map<string, Map<string, { score: number, match: AddressMatch, group: number }>> = new Map();
 
@@ -603,6 +604,10 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
 
   toggleShowFullOpReturnPreview(voutIndex: number): void {
     this.showFullOpReturnPreview[voutIndex] = !this.showFullOpReturnPreview[voutIndex];
+  }
+
+  toggleTaprootControlBlock(vinIndex: number): void {
+    this.showTaprootControlBlock[vinIndex] = !this.showTaprootControlBlock[vinIndex];
   }
 
   toggleOrdData(txid: string, type: 'vin' | 'vout', index: number) {
