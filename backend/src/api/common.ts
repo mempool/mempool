@@ -24,6 +24,7 @@ const MAX_STANDARD_SCRIPTSIG_SIZE = 1650;
 const DUST_RELAY_TX_FEE = 3;
 const MAX_OP_RETURN_RELAY = 83;
 const DEFAULT_PERMIT_BAREMULTISIG = true;
+const MAX_TX_LEGACY_SIGOPS = 2_500 * 4; // witness-adjusted sigops
 
 export class Common {
   static nativeAssetId = config.MEMPOOL.NETWORK === 'liquidtestnet' ?
@@ -221,6 +222,11 @@ export class Common {
 
     // bad-txns-too-many-sigops
     if (tx.sigops && tx.sigops > MAX_STANDARD_TX_SIGOPS_COST) {
+      return true;
+    }
+
+    // legacy sigops
+    if (this.isNonStandardLegacySigops(tx, height)) {
       return true;
     }
 
@@ -446,6 +452,27 @@ export class Common {
       (bytes <= this.MAX_DATACARRIER_BYTES && outputs <= 1) // below old limits
     ) {
       return true;
+    }
+    return false;
+  }
+
+  // New legacy sigops limit started to be enforced in v30.0
+  static LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT = {
+    'testnet4': 108_000,
+    'testnet': 4_750_000,
+    'signet': 276_500,
+    '': 921_000,
+  };
+  static isNonStandardLegacySigops(tx: TransactionExtended, height?: number): boolean {
+    if (
+      height == null || (
+        this.LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+        && height >= this.LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+      )
+    ) {
+      if (!transactionUtils.checkSigopsBIP54(tx, MAX_TX_LEGACY_SIGOPS)) {
+        return true;
+      }
     }
     return false;
   }
