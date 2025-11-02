@@ -4,6 +4,7 @@ import { Component, Input, Output, ChangeDetectionStrategy, EventEmitter, AfterV
   selector: 'app-toggle',
   templateUrl: './toggle.component.html',
   styleUrls: ['./toggle.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ToggleComponent implements AfterViewInit {

@@ -2,7 +2,8 @@ import { Directive, TemplateRef, ViewContainerRef, Inject, PLATFORM_ID } from '@
 import { isPlatformServer } from '@angular/common';
 
 @Directive({
-  selector: '[serverOnly]'
+  selector: '[serverOnly]',
+  standalone: false,
 })
 export class ServerOnlyDirective {
   constructor(

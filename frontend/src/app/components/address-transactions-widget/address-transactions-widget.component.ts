@@ -9,6 +9,7 @@ import { PriceService } from '@app/services/price.service';
   selector: 'app-address-transactions-widget',
   templateUrl: './address-transactions-widget.component.html',
   styleUrls: ['./address-transactions-widget.component.scss'],
+  standalone: false,
 })
 export class AddressTransactionsWidgetComponent implements OnInit, OnChanges, OnDestroy {
   @Input() address: string;

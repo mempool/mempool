@@ -36,6 +36,7 @@ const periodSeconds = {
       z-index: 99;
     }
   `],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {

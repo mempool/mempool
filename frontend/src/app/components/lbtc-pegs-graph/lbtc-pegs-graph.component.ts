@@ -18,6 +18,7 @@ import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
     }
   `],
   templateUrl: './lbtc-pegs-graph.component.html',
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LbtcPegsGraphComponent implements OnInit, OnChanges {

@@ -66,6 +66,7 @@ function getMerkleBranchIds(merkleBranches: string[], numBranches: number, poolI
   selector: 'app-stratum-list',
   templateUrl: './stratum-list.component.html',
   styleUrls: ['./stratum-list.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StratumList implements OnInit, OnDestroy {

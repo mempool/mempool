@@ -23,6 +23,7 @@ import { ThemeService } from '@app/services/theme.service';
       animate('2s 0s ease', style({ transform: '' })),
     ]),
   ])],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {

@@ -6,6 +6,7 @@ import { Transaction } from '@interfaces/electrs.interface';
   selector: 'app-cpfp-info',
   templateUrl: './cpfp-info.component.html',
   styleUrls: ['./cpfp-info.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CpfpInfoComponent implements OnInit {

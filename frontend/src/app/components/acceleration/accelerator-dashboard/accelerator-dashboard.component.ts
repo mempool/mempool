@@ -26,6 +26,7 @@ interface AccelerationBlock extends BlockExtended {
   selector: 'app-accelerator-dashboard',
   templateUrl: './accelerator-dashboard.component.html',
   styleUrls: ['./accelerator-dashboard.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AcceleratorDashboardComponent implements OnInit, OnDestroy {

@@ -9,6 +9,7 @@ import { Observable, catchError, of } from 'rxjs';
   templateUrl: './balance-widget.component.html',
   styleUrls: ['./balance-widget.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class BalanceWidgetComponent implements OnInit, OnChanges {
   @Input() address: string;

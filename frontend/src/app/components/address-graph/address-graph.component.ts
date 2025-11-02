@@ -32,6 +32,7 @@ const periodSeconds = {
       z-index: 99;
     }
   `],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddressGraphComponent implements OnChanges, OnDestroy {

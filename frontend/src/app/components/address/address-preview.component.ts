@@ -15,7 +15,8 @@ import { AddressInformation } from '@interfaces/node-api.interface';
 @Component({
   selector: 'app-address-preview',
   templateUrl: './address-preview.component.html',
-  styleUrls: ['./address-preview.component.scss']
+  styleUrls: ['./address-preview.component.scss'],
+  standalone: false,
 })
 export class AddressPreviewComponent implements OnInit, OnDestroy {
   network = '';
