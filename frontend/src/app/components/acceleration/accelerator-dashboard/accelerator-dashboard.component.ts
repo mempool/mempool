@@ -52,7 +52,6 @@ export class AcceleratorDashboardComponent implements OnInit, OnDestroy {
     private serviceApiServices: ServicesApiServices,
     private audioService: AudioService,
     private stateService: StateService,
-    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
     this.seoService.setTitle($localize`:@@6b867dc61c6a92f3229f1950f9f2d414790cce95:Accelerator Dashboard`);

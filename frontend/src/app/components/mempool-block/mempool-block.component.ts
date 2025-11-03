@@ -31,8 +31,6 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
     public stateService: StateService,
     private seoService: SeoService,
     private websocketService: WebsocketService,
-    private cd: ChangeDetectorRef,
-    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
   }
