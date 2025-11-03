@@ -272,18 +272,22 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
     this.pegsChartOptions = {
       ...this.pegsChartOptions,
       grid: {
-        ...this.pegsChartOptions.grid,
+        ...(Array.isArray(this.pegsChartOptions?.grid)
+          ? (this.pegsChartOptions.grid[0] ?? {})
+          : (this.pegsChartOptions?.grid ?? {})) as Record<string, any>,
         right: this.adjustedRight,
         left: this.adjustedLeft,
       },
       legend: {
-        ...this.pegsChartOptions.legend,
+        ...(Array.isArray(this.pegsChartOptions?.legend)
+          ? (this.pegsChartOptions.legend[0] ?? {})
+          : (this.pegsChartOptions?.legend ?? {})) as Record<string, any>,
         selected: this.selected,
       },
     };
   }
 
-  onChartInit(ec) {
+  onChartInit(ec: any): void {
     this.chartInstance = ec;
     this.chartInstance.on('legendselectchanged', this.onLegendSelectChanged.bind(this));
   }

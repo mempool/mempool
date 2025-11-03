@@ -50,7 +50,6 @@ const providers = [
   FiatShortenerPipe,
   FiatCurrencyPipe,
   CapAddressPipe,
-  DatePipe,
   AppPreloadingStrategy,
   ServicesApiServices,
   PreloadService,
@@ -64,7 +63,12 @@ const providers = [
     bootstrap: [AppComponent], imports: [BrowserModule,
         AppRoutingModule,
         BrowserAnimationsModule,
-        SharedModule], providers: [provideHttpClient(withInterceptorsFromDi())] })
+        SharedModule
+      ],
+      providers: [
+        provideHttpClient(withInterceptorsFromDi()),
+        DatePipe
+      ] })
 export class AppModule { }
 
 @NgModule({})
