@@ -343,12 +343,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.setIsAccelerated();
       }),
       switchMap((blockHeight: number) => {
-        return this.servicesApiService.getAllAccelerationHistory$({ blockHeight }, null, this.txId).pipe(
-          switchMap((accelerationHistory: Acceleration[]) => {
-            if (this.tx.acceleration && !accelerationHistory.length) { // If the just mined transaction was accelerated, but services backend did not return any acceleration data, retry
+        return this.servicesApiService.getAccelerationDataForTxid$(this.txId).pipe(
+          switchMap((accelerationData: Acceleration) => {
+            if (this.tx.acceleration && !accelerationData) { // If the just mined transaction was accelerated, but services backend did not return any acceleration data, retry
               return throwError('retry');
             }
-            return of(accelerationHistory);
+            return of(accelerationData);
           }),
           retry({ count: 3, delay: 2000 }),
           catchError(() => {
@@ -356,25 +356,21 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           })
         );
       }),
-    ).subscribe((accelerationHistory) => {
-      for (const acceleration of accelerationHistory) {
-        if (acceleration.txid === this.txId) {
-          if ((acceleration.status === 'completed' || acceleration.status === 'completed_provisional') && acceleration.pools.includes(acceleration.minedByPoolUniqueId)) {
-            const boostCost = acceleration.boostCost || acceleration.bidBoost;
-            acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
-            acceleration.boost = boostCost;
-            this.tx.acceleratedAt = acceleration.added;
-            this.accelerationInfo = acceleration;  
-          }
-          if (acceleration.status === 'failed' || acceleration.status === 'failed_provisional') {
-            this.accelerationCanceled = true;
-            this.tx.acceleratedAt = acceleration.added;
-            this.accelerationInfo = acceleration;
-          }
-          this.waitingForAccelerationInfo = false;
-          this.setIsAccelerated();
-        }
+    ).subscribe((acceleration: Acceleration) => {
+      if ((acceleration.status === 'completed' || acceleration.status === 'completed_provisional') && acceleration.pools.includes(acceleration.minedByPoolUniqueId)) {
+        const boostCost = acceleration.boostCost || acceleration.bidBoost;
+        acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
+        acceleration.boost = boostCost;
+        this.tx.acceleratedAt = acceleration.added;
+        this.accelerationInfo = acceleration;
       }
+      if (acceleration.status === 'failed' || acceleration.status === 'failed_provisional') {
+        this.accelerationCanceled = true;
+        this.tx.acceleratedAt = acceleration.added;
+        this.accelerationInfo = acceleration;
+      }
+      this.waitingForAccelerationInfo = false;
+      this.setIsAccelerated();
     });
 
     this.miningSubscription = this.fetchMiningInfo$.pipe(
