@@ -67,7 +67,8 @@ const providers = [
       ],
       providers: [
         provideHttpClient(withInterceptorsFromDi()),
-        DatePipe
+        DatePipe,
+        ...providers
       ] })
 export class AppModule { }
 
