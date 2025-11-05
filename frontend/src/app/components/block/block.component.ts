@@ -384,7 +384,7 @@ export class BlockComponent implements OnInit, OnDestroy {
 
     this.accelerationsSubscription = this.block$.pipe(
       switchMap((block) => {
-        return this.stateService.env.ACCELERATOR === true && block.height > 819500
+        return this.stateService.env.ACCELERATOR === true && block.height > 819500 && this.stateService.network === ''
           ? this.servicesApiService.getAllAccelerationHistory$({ blockHeight: block.height })
             .pipe(catchError(() => {
               return of([]);
