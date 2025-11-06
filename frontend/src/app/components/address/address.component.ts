@@ -296,7 +296,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           });
         }
         this.addressTypeInfo.processInputs(addressVin, vinIds);
-        this.hasTapTree = this.addressTypeInfo.tapscript && this.addressTypeInfo.scripts.values().next().value.taprootInfo.scriptPath.merkleBranches.length > 1;
+        this.hasTapTree = this.addressTypeInfo.tapscript && this.addressTypeInfo.scripts.values().next().value.taprootInfo.scriptPath.merkleBranches.length > 0;
         // hack to trigger change detection
         this.addressTypeInfo = this.addressTypeInfo.clone();
 
