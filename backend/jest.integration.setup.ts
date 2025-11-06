@@ -8,14 +8,36 @@ if (!process.env.MEMPOOL_CONFIG_FILE) {
   process.env.MEMPOOL_CONFIG_FILE = path.join(__dirname, 'mempool-config.test.json');
 }
 
+// Helper to get docker compose command (v1 or v2)
+function getDockerComposeCmd(): string {
+  try {
+    execSync('docker compose version', { stdio: 'pipe' });
+    return 'docker compose';
+  } catch {
+    try {
+      execSync('docker-compose version', { stdio: 'pipe' });
+      return 'docker-compose';
+    } catch {
+      throw new Error('Neither "docker compose" nor "docker-compose" is available');
+    }
+  }
+}
+
 // Start the Docker test database container
 module.exports = async () => {
+  // Skip if SKIP_DB_SETUP is set (e.g., when test-with-db.sh manages the database)
+  if (process.env.SKIP_DB_SETUP) {
+    console.log('Skipping database setup (managed externally)');
+    return;
+  }
+
   console.log('Starting test database container...');
   try {
     const composeFile = path.join(__dirname, 'docker-compose.test.yml');
+    const dockerComposeCmd = getDockerComposeCmd();
     
     // Start the container
-    execSync(`docker-compose -f "${composeFile}" up -d`, { 
+    execSync(`${dockerComposeCmd} -f "${composeFile}" up -d`, { 
       stdio: 'inherit',
       cwd: __dirname
     });
@@ -27,7 +49,7 @@ module.exports = async () => {
     
     while (attempts < maxAttempts) {
       try {
-        execSync(`docker-compose -f "${composeFile}" exec -T db-test mysqladmin ping -h localhost -u mempool_test -pmempool_test --silent`, {
+        execSync(`${dockerComposeCmd} -f "${composeFile}" exec -T db-test mysqladmin ping -h localhost -u mempool_test -pmempool_test --silent`, {
           cwd: __dirname,
           stdio: 'pipe'
         });

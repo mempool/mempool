@@ -16,6 +16,18 @@ BACKEND_DIR="$( cd "$SCRIPT_DIR/.." && pwd )"
 
 cd "$BACKEND_DIR"
 
+# Detect docker compose command (v1 or v2)
+if docker compose version &> /dev/null; then
+  DOCKER_COMPOSE="docker compose"
+elif docker-compose version &> /dev/null; then
+  DOCKER_COMPOSE="docker-compose"
+else
+  echo -e "${RED}Error: Neither 'docker compose' nor 'docker-compose' is available${NC}"
+  exit 1
+fi
+
+echo -e "${YELLOW}Using: ${DOCKER_COMPOSE}${NC}"
+
 # Function to cleanup on exit
 cleanup() {
   echo -e "\n${YELLOW}Cleaning up...${NC}"
@@ -24,7 +36,7 @@ cleanup() {
     kill $SERVER_PID 2>/dev/null || true
   fi
   # Stop containers and remove volumes, but don't fail on network errors
-  docker-compose -f docker-compose.test.yml down -v 2>&1 | grep -v "Resource is still in use" || true
+  $DOCKER_COMPOSE -f docker-compose.test.yml down -v 2>&1 | grep -v "Resource is still in use" || true
 }
 
 # Set trap to cleanup on exit
@@ -32,18 +44,18 @@ trap cleanup EXIT INT TERM
 
 # Stop any existing test containers
 echo -e "${YELLOW}Stopping any existing test containers...${NC}"
-docker-compose -f docker-compose.test.yml down -v 2>/dev/null || true
+$DOCKER_COMPOSE -f docker-compose.test.yml down -v 2>/dev/null || true
 
 # Start MariaDB container
 echo -e "${GREEN}Starting MariaDB container...${NC}"
-docker-compose -f docker-compose.test.yml up -d
+$DOCKER_COMPOSE -f docker-compose.test.yml up -d
 
 # Wait for MariaDB to be ready
 echo -e "${YELLOW}Waiting for MariaDB to be ready...${NC}"
 max_attempts=30
 attempt=0
 while [ $attempt -lt $max_attempts ]; do
-  if docker-compose -f docker-compose.test.yml exec -T db-test mysqladmin ping -h localhost -u mempool_test -pmempool_test --silent 2>/dev/null; then
+  if $DOCKER_COMPOSE -f docker-compose.test.yml exec -T db-test mysqladmin ping -h localhost -u mempool_test -pmempool_test --silent 2>/dev/null; then
     echo -e "${GREEN}MariaDB is ready!${NC}"
     break
   fi
@@ -65,8 +77,9 @@ echo -e "${GREEN}Building backend...${NC}"
 npm run build
 
 # Run integration tests with absolute path to config
+# SKIP_DB_SETUP=1 and SKIP_DB_TEARDOWN=1 tell Jest that we're managing the database lifecycle
 echo -e "${GREEN}Running integration tests...${NC}"
-MEMPOOL_CONFIG_FILE="$BACKEND_DIR/mempool-config.test.json" npm run test:integration
+SKIP_DB_SETUP=1 SKIP_DB_TEARDOWN=1 MEMPOOL_CONFIG_FILE="$BACKEND_DIR/mempool-config.test.json" npm run test:integration
 
 # Start the backend server in the background
 echo -e "${GREEN}Starting backend server...${NC}"

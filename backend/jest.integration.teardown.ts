@@ -4,6 +4,21 @@ import mempool from './src/api/mempool';
 import { execSync } from 'child_process';
 import * as path from 'path';
 
+// Helper to get docker compose command (v1 or v2)
+function getDockerComposeCmd(): string {
+  try {
+    execSync('docker compose version', { stdio: 'pipe' });
+    return 'docker compose';
+  } catch {
+    try {
+      execSync('docker-compose version', { stdio: 'pipe' });
+      return 'docker-compose';
+    } catch {
+      throw new Error('Neither "docker compose" nor "docker-compose" is available');
+    }
+  }
+}
+
 module.exports = async () => {
   try {
     // Final cleanup after all tests
@@ -54,15 +69,21 @@ module.exports = async () => {
     logger.close();
     
     // Stop and remove the Docker test database container
-    try {
-      const composeFile = path.join(__dirname, 'docker-compose.test.yml');
-      execSync(`docker-compose -f "${composeFile}" down -v`, { 
-        stdio: 'inherit',
-        cwd: __dirname
-      });
-      console.log('Test database container stopped and removed');
-    } catch (error) {
-      console.error('Failed to stop Docker container:', error instanceof Error ? error.message : error);
+    // Skip if SKIP_DB_TEARDOWN is set (e.g., when test-with-db.sh manages the database)
+    if (!process.env.SKIP_DB_TEARDOWN) {
+      try {
+        const composeFile = path.join(__dirname, 'docker-compose.test.yml');
+        const dockerComposeCmd = getDockerComposeCmd();
+        execSync(`${dockerComposeCmd} -f "${composeFile}" down -v`, { 
+          stdio: 'inherit',
+          cwd: __dirname
+        });
+        console.log('Test database container stopped and removed');
+      } catch (error) {
+        console.error('Failed to stop Docker container:', error instanceof Error ? error.message : error);
+      }
+    } else {
+      console.log('Skipping Docker cleanup (managed externally)');
     }
   } catch (error) {
     // Use console.error since logger might be closed

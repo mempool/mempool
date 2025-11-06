@@ -69,45 +69,38 @@ jobs:
         run: npm ci
         working-directory: ${{ matrix.node }}/integration/backend
 
-      - name: Start MariaDB service
-        run: docker-compose -f docker-compose.test.yml up -d
-        working-directory: ${{ matrix.node }}/integration/backend
-
-      - name: Wait for MariaDB to be ready
-        run: |
-          max_attempts=30
-          attempt=0
-          while [ $attempt -lt $max_attempts ]; do
-            if docker-compose -f docker-compose.test.yml exec -T db-test mysqladmin ping -h localhost -u mempool_test -pmempool_test --silent 2>/dev/null; then
-              echo "MariaDB is ready!"
-              break
-            fi
-            attempt=$((attempt + 1))
-            echo "Attempt $attempt/$max_attempts - waiting for MariaDB..."
-            sleep 2
-          done
-          if [ $attempt -eq $max_attempts ]; then
-            echo "MariaDB did not start in time"
-            exit 1
-          fi
-          # Additional wait to ensure full initialization
-          sleep 5
-        working-directory: ${{ matrix.node }}/integration/backend
-
       - name: Build backend
         run: npm run build
         working-directory: ${{ matrix.node }}/integration/backend
 
-      - name: Run integration tests
+      - name: Run integration tests (DB auto-starts via Jest)
         run: npm run test:integration
         working-directory: ${{ matrix.node }}/integration/backend
         env:
           MEMPOOL_CONFIG_FILE: ./mempool-config.test.json
 
+      - name: Start MariaDB for server test
+        run: docker compose -f docker-compose.test.yml up -d
+        working-directory: ${{ matrix.node }}/integration/backend
+
+      - name: Wait for MariaDB
+        run: |
+          echo "Waiting for MariaDB to be ready..."
+          for i in {1..30}; do
+            if docker compose -f docker-compose.test.yml exec -T db-test mysqladmin ping -h localhost -u mempool_test -pmempool_test --silent 2>/dev/null; then
+              echo "MariaDB is ready!"
+              break
+            fi
+            echo "Attempt $i/30..."
+            sleep 2
+          done
+          sleep 3
+        working-directory: ${{ matrix.node }}/integration/backend
+
       - name: Start backend server and verify connectivity
         run: |
-          # Start server in background with timeout
-          timeout 30s node dist/index.js &
+          # Start server in background
+          node dist/index.js &
           SERVER_PID=$!
           
           # Wait for server to start
@@ -130,13 +123,13 @@ jobs:
 
       - name: Cleanup containers
         if: always()
-        run: docker-compose -f docker-compose.test.yml down -v
+        run: docker compose -f docker-compose.test.yml down -v
         working-directory: ${{ matrix.node }}/integration/backend
 
       - name: Display logs on failure
         if: failure()
         run: |
           echo "=== MariaDB logs ==="
-          docker-compose -f docker-compose.test.yml logs db-test || true
+          docker compose -f docker-compose.test.yml logs db-test || true
         working-directory: ${{ matrix.node }}/integration/backend
 
