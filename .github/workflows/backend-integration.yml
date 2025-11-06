@@ -73,11 +73,21 @@ jobs:
         run: npm run build
         working-directory: ${{ matrix.node }}/integration/backend
 
+      - name: Verify config file exists
+        run: |
+          ls -la mempool-config.test.json
+          echo "Current directory: ${PWD}"
+          echo "Config file will be: ${{ github.workspace }}/${{ matrix.node }}/integration/backend/mempool-config.test.json"
+          test -f mempool-config.test.json || (echo "ERROR: Config file not found!" && exit 1)
+        working-directory: ${{ matrix.node }}/integration/backend
+
       - name: Run integration tests (DB auto-starts via Jest)
-        run: npm run test:integration
+        run: |
+          echo "MEMPOOL_CONFIG_FILE=$MEMPOOL_CONFIG_FILE"
+          npm run test:integration
         working-directory: ${{ matrix.node }}/integration/backend
         env:
-          MEMPOOL_CONFIG_FILE: ./mempool-config.test.json
+          MEMPOOL_CONFIG_FILE: ${{ github.workspace }}/${{ matrix.node }}/integration/backend/mempool-config.test.json
 
       - name: Start MariaDB for server test
         run: docker compose -f docker-compose.test.yml up -d
@@ -119,7 +129,7 @@ jobs:
           fi
         working-directory: ${{ matrix.node }}/integration/backend
         env:
-          MEMPOOL_CONFIG_FILE: ./mempool-config.test.json
+          MEMPOOL_CONFIG_FILE: ${{ github.workspace }}/${{ matrix.node }}/integration/backend/mempool-config.test.json
 
       - name: Cleanup containers
         if: always()

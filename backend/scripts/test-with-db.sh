@@ -79,11 +79,15 @@ npm run build
 # Run integration tests with absolute path to config
 # SKIP_DB_SETUP=1 and SKIP_DB_TEARDOWN=1 tell Jest that we're managing the database lifecycle
 echo -e "${GREEN}Running integration tests...${NC}"
-SKIP_DB_SETUP=1 SKIP_DB_TEARDOWN=1 MEMPOOL_CONFIG_FILE="$BACKEND_DIR/mempool-config.test.json" npm run test:integration
+export MEMPOOL_CONFIG_FILE="$BACKEND_DIR/mempool-config.test.json"
+export SKIP_DB_SETUP=1
+export SKIP_DB_TEARDOWN=1
+npm run test:integration
 
 # Start the backend server in the background
+# MEMPOOL_CONFIG_FILE is already exported above
 echo -e "${GREEN}Starting backend server...${NC}"
-MEMPOOL_CONFIG_FILE="$BACKEND_DIR/mempool-config.test.json" node dist/index.js &
+node dist/index.js &
 SERVER_PID=$!
 
 # Wait for server to start and verify connection
