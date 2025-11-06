@@ -188,7 +188,7 @@
                                   <fa-icon [icon]="['fas', 'code-fork']" [fixedWidth]="true" [rotate]="180"></fa-icon>
                                 </span>
                                 <ng-container *ngTemplateOutlet="taprootControlBlock; context: { $implicit: vin.taprootInfo?.scriptPath, controlBlock: witness, truncate: !showFullWitness[vindex][windex] }"></ng-container>
-                              } @else if (windex === vin.taprootInfo?.scriptIndex || (windex === vin.witness.length - 1 && ['p2sh', 'v0_p2wsh'].includes(vin.prevout?.scriptpubkey_type))) {
+                              } @else if (windex === vin.taprootInfo?.scriptIndex || (windex === vin.witness.length - 1 && ['p2sh', 'v0_p2wsh'].includes(vin.prevout?.scriptpubkey_type) && vin.scriptsig.length !== 46)) {
                                 <span class="script" ngbTooltip="script">
                                   <fa-icon [icon]="['fas', 'code']" [fixedWidth]="true"></fa-icon>
                                 </span>
