@@ -24,12 +24,17 @@ export interface Position {
   h?: number;
 }
 
+export interface TableRow {
+  label: string;
+  value: string | { num: string; unit: string } | { slug: string; name: string; minerNames?: string[] };
+}
+
 export interface Component {
   type: string;
   data?: DataRequirement<any>[];
   children?: Component[];
-  props?: Record<string, any> | ((data: any, props: any) => Record<string, any>);
-  render?: (ctx: CanvasRenderingContext2D, data: any, props?: any) => Promise<void>;
+  props?: Record<string, any> | ((data: Record<string, any>, params: Record<string, any>, parentProps: Record<string, any>) => Record<string, any>);
+  render?: (ctx: CanvasRenderingContext2D, data: Record<string, any>, props?: Record<string, any>) => Promise<void>;
 }
 
 // Data Requirements Library
@@ -103,7 +108,7 @@ export const components: Record<string, (...args: any[]) => Component> = {
   background: (position: Position): Component => ({
     type: 'background',
     data: [],
-    render: async (ctx: CanvasRenderingContext2D, data: any, props: any = {}): Promise<void> => {
+    render: async (ctx: CanvasRenderingContext2D): Promise<void> => {
       const bounds = { ...position, w: 1200, h: 600 };
       ctx.fillStyle = themes.default.background;
       ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
@@ -113,7 +118,11 @@ export const components: Record<string, (...args: any[]) => Component> = {
   header: (title: string, position: Position): Component => ({
     type: 'header',
     data: [],
-    render: async (ctx: CanvasRenderingContext2D, data: any, props: any = {}): Promise<void> => {
+    props: (_data, params) => ({
+      networkName: params.networkName,
+      networkMode: params.networkMode,
+    }),
+    render: async (ctx: CanvasRenderingContext2D, _data: any, props: any = {}): Promise<void> => {
       const bounds = { ...position, w: 1200, h: 80 };
       ctx.fillStyle = themes.default.header;
       ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
@@ -138,7 +147,7 @@ export const components: Record<string, (...args: any[]) => Component> = {
 
         const logoX = bounds.x + 49;
         const logoY = bounds.y + (bounds.h - logoHeight) / 2;
-        
+
         ctx.drawImage(mempoolLogo, logoX, logoY, logoWidth, logoHeight);
       }
 
@@ -176,24 +185,23 @@ export const components: Record<string, (...args: any[]) => Component> = {
       data: [
         dataRequirements.address(id),
       ],
-      props: (data) => {
-        const a = data[`address_${id}`];
-        const received = a.chain_stats.funded_txo_sum / 1e8;
-        const sent = a.chain_stats.spent_txo_sum / 1e8;
-        const rows = [
-          { label: 'Total received', value: { num: formatNumber(received, '1.8-8'), unit: 'BTC' } },
-          { label: 'Total sent', value: { num: formatNumber(sent, '1.8-8'), unit: 'BTC' } },
-          { label: 'Balance', value: { num: formatNumber(received - sent, '1.8-8'), unit: 'BTC' } },
-          { label: 'Transactions', value: formatNumber(a.chain_stats.tx_count + a.mempool_stats.tx_count, '1.0-0') },
-          { label: 'Unspent TXOs', value: formatNumber(a.chain_stats.funded_txo_count - a.chain_stats.spent_txo_count, '1.0-0') },
-        ];
-        return { tableRows: rows };
-      },
       children: [
         components.qrcode(id, { x: bounds.x + bounds.w - 48 - 480, y: bounds.y + bounds.h - 16 - 480, w: 480, h: 480 }),
-        components.table({ x: bounds.x + 48, y: bounds.y + 129 }),
+        components.table({ x: bounds.x + 48, y: bounds.y + 129 }, (data) => {
+          const a = data[`address_${id}`];
+          const received = a.chain_stats.funded_txo_sum / 1e8;
+          const sent = a.chain_stats.spent_txo_sum / 1e8;
+          const rows = [
+            { label: 'Total received', value: { num: formatNumber(received, '1.8-8'), unit: 'BTC' } },
+            { label: 'Total sent', value: { num: formatNumber(sent, '1.8-8'), unit: 'BTC' } },
+            { label: 'Balance', value: { num: formatNumber(received - sent, '1.8-8'), unit: 'BTC' } },
+            { label: 'Transactions', value: formatNumber(a.chain_stats.tx_count + a.mempool_stats.tx_count, '1.0-0') },
+            { label: 'Unspent TXOs', value: formatNumber(a.chain_stats.funded_txo_count - a.chain_stats.spent_txo_count, '1.0-0') },
+          ];
+          return { tableRows: rows };
+        }),
       ],
-      render: async (ctx: CanvasRenderingContext2D, data: any, props: any = {}): Promise<void> => {
+      render: async (ctx: CanvasRenderingContext2D): Promise<void> => {
         const address: string = id;
 
         ctx.font = 'bold 50px Roboto';
@@ -214,22 +222,21 @@ export const components: Record<string, (...args: any[]) => Component> = {
         dataRequirements.blockHash(id),
         dataRequirements.extendedBlock(id),
       ],
-      props: (data) => {
-        const blockData = data[`extended_block_${id}`];
-        const rows = [
-          { label: 'Timestamp', value: new Date(blockData.timestamp * 1000).toLocaleString('sv-SE').replace(',', '').slice(0, 16) },
-          { label: 'Weight', value: formatWeightUnit(blockData.weight, 2) },
-          { label: 'Median fee', value: { num: '~' + formatNumber(blockData.extras.medianFee, '1.0-0'), unit: 'sat/vB' } },
-          { label: 'Total fees', value: { num: formatNumber(blockData.extras.totalFees / 100000000, '1.2-3'), unit: 'BTC' } },
-          { label: 'Miner', value: blockData.extras.pool }
-        ];
-        return { tableRows: rows };
-      },
       children: [
         components.blockViz(id, { x: bounds.x + bounds.w - 48 - 480, y: bounds.y + bounds.h - 16 - 480, w: 480, h: 480 }),
-        components.table({ x: bounds.x + 48, y: bounds.y + 129 })
+        components.table({ x: bounds.x + 48, y: bounds.y + 129 }, (data) => {
+          const blockData = data[`extended_block_${id}`];
+          const rows = [
+            { label: 'Timestamp', value: new Date(blockData.timestamp * 1000).toLocaleString('sv-SE').replace(',', '').slice(0, 16) },
+            { label: 'Weight', value: formatWeightUnit(blockData.weight, 2) },
+            { label: 'Median fee', value: { num: '~' + formatNumber(blockData.extras.medianFee, '1.0-0'), unit: 'sat/vB' } },
+            { label: 'Total fees', value: { num: formatNumber(blockData.extras.totalFees / 100000000, '1.2-3'), unit: 'BTC' } },
+            { label: 'Miner', value: blockData.extras.pool }
+          ];
+          return { tableRows: rows };
+        })
       ],
-      render: async (ctx: CanvasRenderingContext2D, data: any, props: any = {}): Promise<void> => {
+      render: async (ctx: CanvasRenderingContext2D, data: any): Promise<void> => {
         const blockData = data[`extended_block_${id}`];
 
         const blockHeight = blockData.height.toString()
@@ -258,17 +265,18 @@ export const components: Record<string, (...args: any[]) => Component> = {
       dataRequirements.blockHash(id),
       dataRequirements.blockSummary(id),
     ],
-    render: async (ctx: CanvasRenderingContext2D, data: any, props: any = {}): Promise<void> => {
+    render: async (ctx: CanvasRenderingContext2D, data: any): Promise<void> => {
       const bounds = { ...position, w: position.w ?? 480, h: position.h ?? 480 } as Rect;
       const summary = data['block_summary_' + id];
       return renderBlockViz(ctx, summary, bounds, 'default', false);
     }
   }),
 
-  table: (position: Position): Component => ({
+  table: (position: Position, propsCallback?: (data: any, params: any, parentProps: any) => { tableRows: TableRow[] }): Component => ({
     type: 'table',
     data: [],
-    render: async (ctx: CanvasRenderingContext2D, data: any, props: any = {}): Promise<void> => {
+    props: propsCallback,
+    render: async (ctx: CanvasRenderingContext2D, _data: any, props: any = {}): Promise<void> => {
       const rows = props.tableRows ?? [];
 
       // Build the table
