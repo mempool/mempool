@@ -161,6 +161,7 @@ const routes = {
         }
       }
     },
+    canvasView: 'tx',
     routes: {
       push: {
         title: "Push Transaction",
