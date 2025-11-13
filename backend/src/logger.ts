@@ -67,6 +67,8 @@ class Logger {
       }
     }
     this.client = dgram.createSocket('udp4');
+    // Unref the socket so it doesn't prevent Node.js from exiting
+    this.client.unref();
     this.network = this.getNetwork();
   }
 
@@ -152,6 +154,20 @@ class Logger {
     }
     months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     return months[month] + ' ' + day + ' ' + hours + ':' + minutes + ':' + seconds;
+  }
+
+  /**
+   * Close the UDP socket used for syslog
+   * This should only be called when shutting down or in test teardown
+   */
+  public close(): void {
+    if (this.client) {
+      // Unref allows Node.js to exit even if the socket is open
+      this.client.unref();
+      this.client.close(() => {
+        // Socket closed callback
+      });
+    }
   }
 }
 
