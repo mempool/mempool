@@ -4,7 +4,7 @@
     "NETWORK": "mainnet",
     "BACKEND": "none",
     "ENABLED": true,
-    "HTTP_PORT": 8999,
+    "HTTP_PORT": 8998,
     "SPAWN_CLUSTER_PROCS": 0,
     "API_URL_PREFIX": "/api/v1/",
     "POLL_RATE_MS": 2000,
