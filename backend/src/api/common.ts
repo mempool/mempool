@@ -285,6 +285,7 @@ export class Common {
 
     // output validation
     let opreturnCount = 0;
+    let opreturnBytes = 0;
     for (const vout of tx.vout) {
       // scriptpubkey
       if (['nonstandard', 'provably_unspendable', 'empty'].includes(vout.scriptpubkey_type)) {
@@ -308,10 +309,7 @@ export class Common {
         }
       } else if (vout.scriptpubkey_type === 'op_return') {
         opreturnCount++;
-        if ((vout.scriptpubkey.length / 2) > MAX_OP_RETURN_RELAY) {
-          // over default datacarrier limit
-          return true;
-        }
+        opreturnBytes += vout.scriptpubkey.length / 2;
       }
       // dust
       // (we could probably hardcode this for the different output types...)
@@ -333,9 +331,11 @@ export class Common {
       }
     }
 
-    // multi-op-return
-    if (opreturnCount > 1) {
-      return true;
+    // op_return
+    if (opreturnCount > 0) {
+      if (!this.isStandardOpReturn(opreturnBytes, opreturnCount, height)) {
+        return true;
+      }
     }
 
     // TODO: non-mandatory-script-verify-flag
@@ -422,6 +422,28 @@ export class Common {
         this.EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
         && height >= this.EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
       ))
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  // OP_RETURN size & count limits were lifted in v28.3/v29.2/v30.0
+  static OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT = {
+    'testnet4': 108_000,
+    'testnet': 4_750_000,
+    'signet': 276_500,
+    '': 921_000,
+  };
+  static MAX_DATACARRIER_BYTES = 83;
+  static isStandardOpReturn(bytes: number, outputs: number,height?: number): boolean {
+    if (
+      (height == null || (
+        this.OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+        && height >= this.OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+      )) // limits lifted
+      || // OR
+      (bytes <= this.MAX_DATACARRIER_BYTES && outputs <= 1) // below old limits
     ) {
       return true;
     }
