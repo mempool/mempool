@@ -181,8 +181,8 @@
                 "inject": false
               },
               {
-                "input": "src/theme-wiz.scss",
-                "bundleName": "wiz",
+                "input": "src/theme-softsimon.scss",
+                "bundleName": "softsimon",
                 "inject": false
               },
               {
