@@ -10,6 +10,7 @@ import { LightningApiService } from '@app/lightning/lightning-api.service';
   selector: 'app-top-nodes-per-capacity',
   templateUrl: './top-nodes-per-capacity.component.html',
   styleUrls: ['./top-nodes-per-capacity.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TopNodesPerCapacity implements OnInit {

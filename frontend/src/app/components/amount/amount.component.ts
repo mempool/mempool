@@ -8,6 +8,7 @@ import { Price } from '@app/services/price.service';
   templateUrl: './amount.component.html',
   styleUrls: ['./amount.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class AmountComponent implements OnInit, OnDestroy {
   conversions$: Observable<any>;

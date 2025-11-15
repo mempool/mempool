@@ -13,7 +13,8 @@ import { StateService } from '@app/services/state.service';
   selector: 'app-assets',
   templateUrl: './assets.component.html',
   styleUrls: ['./assets.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class AssetsComponent implements OnInit {
   nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;

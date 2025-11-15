@@ -11,6 +11,7 @@ import { SeoService } from '@app/services/seo.service';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  standalone: false,
   providers: [NgbTooltipConfig]
 })
 export class AppComponent implements OnInit {

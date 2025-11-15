@@ -23,6 +23,7 @@ interface EpochProgress {
   selector: 'app-difficulty-mining',
   templateUrl: './difficulty-mining.component.html',
   styleUrls: ['./difficulty-mining.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DifficultyMiningComponent implements OnInit {

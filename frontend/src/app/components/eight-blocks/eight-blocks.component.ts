@@ -45,6 +45,7 @@ interface BlockInfo extends BlockExtended {
       ])
     ]),
   ],
+  standalone: false,
 })
 export class EightBlocksComponent implements OnInit, OnDestroy {
   network = '';

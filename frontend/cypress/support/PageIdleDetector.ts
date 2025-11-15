@@ -1,7 +1,7 @@
 // source: chrisp_68 @ https://stackoverflow.com/questions/50525143/how-do-you-reliably-wait-for-page-idle-in-cypress-io-test
 export class PageIdleDetector
 {   
-    defaultOptions: Object = { timeout: 60000 };
+    defaultOptions: object = { timeout: 60000 };
 
     public WaitForPageToBeIdle(): void
     {
@@ -11,7 +11,7 @@ export class PageIdleDetector
         this.WaitForAnimationsToStop();
     }
 
-    public WaitForPageToLoad(options: Object = this.defaultOptions): void
+    public WaitForPageToLoad(options: object = this.defaultOptions): void
     {
         cy.document(options).should((myDocument: any) =>
         {
@@ -19,7 +19,7 @@ export class PageIdleDetector
         });
     }
 
-    public WaitForAngularRequestsToComplete(options: Object = this.defaultOptions): void
+    public WaitForAngularRequestsToComplete(options: object = this.defaultOptions): void
     {
         cy.window(options).should((myWindow: any) =>
         {
@@ -30,7 +30,7 @@ export class PageIdleDetector
         });
     }
 
-    public WaitForAngularDigestCycleToComplete(options: Object = this.defaultOptions): void
+    public WaitForAngularDigestCycleToComplete(options: object = this.defaultOptions): void
     {
         cy.window(options).should((myWindow: any) =>
         {
@@ -41,7 +41,7 @@ export class PageIdleDetector
         });
     }
 
-    public WaitForAnimationsToStop(options: Object = this.defaultOptions): void
+    public WaitForAnimationsToStop(options: object = this.defaultOptions): void
     {
         cy.get(":animated", options).should("not.exist");
     }

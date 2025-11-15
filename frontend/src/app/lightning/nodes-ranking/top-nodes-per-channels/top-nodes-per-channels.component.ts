@@ -10,6 +10,7 @@ import { LightningApiService } from '@app/lightning/lightning-api.service';
   selector: 'app-top-nodes-per-channels',
   templateUrl: './top-nodes-per-channels.component.html',
   styleUrls: ['./top-nodes-per-channels.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TopNodesPerChannels implements OnInit {

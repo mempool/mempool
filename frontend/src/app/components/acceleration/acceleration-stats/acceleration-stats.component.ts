@@ -14,6 +14,7 @@ export type AccelerationStats = {
   templateUrl: './acceleration-stats.component.html',
   styleUrls: ['./acceleration-stats.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class AccelerationStatsComponent implements OnInit, OnChanges {
   @Input() timespan: '24h' | '3d' | '1w' | '1m' | 'all' = '1w';

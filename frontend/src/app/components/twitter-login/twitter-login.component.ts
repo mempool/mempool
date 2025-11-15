@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 @Component({
   selector: 'app-twitter-login',
   templateUrl: './twitter-login.component.html',
+  standalone: false,
 })
 export class TwitterLogin {
   @Input() width: string | null = null;

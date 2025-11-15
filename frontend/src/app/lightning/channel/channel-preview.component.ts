@@ -10,6 +10,7 @@ import { LightningApiService } from '@app/lightning/lightning-api.service';
   selector: 'app-channel-preview',
   templateUrl: './channel-preview.component.html',
   styleUrls: ['./channel-preview.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChannelPreviewComponent implements OnInit {

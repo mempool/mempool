@@ -8,6 +8,7 @@ import { MiningService } from '@app/services/mining.service';
   selector: 'app-acceleration-timeline',
   templateUrl: './acceleration-timeline.component.html',
   styleUrls: ['./acceleration-timeline.component.scss'],
+  standalone: false,
 })
 export class AccelerationTimelineComponent implements OnInit, OnChanges {
   @Input() transactionTime: number;

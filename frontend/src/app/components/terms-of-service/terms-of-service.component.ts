@@ -5,7 +5,8 @@ import { OpenGraphService } from '@app/services/opengraph.service';
 
 @Component({
   selector: 'app-terms-of-service',
-  templateUrl: './terms-of-service.component.html'
+  templateUrl: './terms-of-service.component.html',
+  standalone: false,
 })
 export class TermsOfServiceComponent {
   officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;

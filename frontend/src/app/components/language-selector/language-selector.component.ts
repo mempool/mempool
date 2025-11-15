@@ -8,6 +8,7 @@ import { LanguageService } from '@app/services/language.service';
   selector: 'app-language-selector',
   templateUrl: './language-selector.component.html',
   styleUrls: ['./language-selector.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LanguageSelectorComponent implements OnInit {

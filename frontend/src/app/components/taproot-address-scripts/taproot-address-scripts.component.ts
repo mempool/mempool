@@ -32,6 +32,7 @@ interface LeafNode {
   selector: 'app-taproot-address-scripts',
   templateUrl: './taproot-address-scripts.component.html',
   styleUrls: ['./taproot-address-scripts.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaprootAddressScriptsComponent implements OnChanges {

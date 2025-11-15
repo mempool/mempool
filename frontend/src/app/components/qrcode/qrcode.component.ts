@@ -6,6 +6,7 @@ import { StateService } from '@app/services/state.service';
   selector: 'app-qrcode',
   templateUrl: './qrcode.component.html',
   styleUrls: ['./qrcode.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QrcodeComponent implements AfterViewInit {

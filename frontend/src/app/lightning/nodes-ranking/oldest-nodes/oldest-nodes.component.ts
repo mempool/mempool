@@ -9,6 +9,7 @@ import { LightningApiService } from '@app/lightning/lightning-api.service';
   selector: 'app-oldest-nodes',
   templateUrl: './oldest-nodes.component.html',
   styleUrls: ['./oldest-nodes.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OldestNodes implements OnInit {
