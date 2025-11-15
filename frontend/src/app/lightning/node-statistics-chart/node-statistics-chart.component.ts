@@ -14,6 +14,7 @@ import { StateService } from '@app/services/state.service';
   selector: 'app-node-statistics-chart',
   templateUrl: './node-statistics-chart.component.html',
   styleUrls: ['./node-statistics-chart.component.scss'],
+  standalone: false,
   styles: [`
     .loadingGraphs {
       position: absolute;

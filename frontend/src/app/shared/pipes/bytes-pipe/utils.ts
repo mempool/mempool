@@ -62,7 +62,7 @@ export function upperFirst(value: string): string {
   return value.slice(0, 1).toUpperCase() + value.slice(1);
 }
 
-export function createRound(method: string): Function {
+export function createRound(method: string) {
   // <any>Math to suppress error
   const func: any = (<any>Math)[method];
   return function (value: number, precision: number = 0) {

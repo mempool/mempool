@@ -19,6 +19,7 @@ interface CustomRecord {
   selector: 'app-node',
   templateUrl: './node.component.html',
   styleUrls: ['./node.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodeComponent implements OnInit {

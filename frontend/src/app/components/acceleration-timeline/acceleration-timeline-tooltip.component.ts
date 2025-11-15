@@ -4,6 +4,7 @@ import { Component, ElementRef, ViewChild, Input, OnChanges } from '@angular/cor
   selector: 'app-acceleration-timeline-tooltip',
   templateUrl: './acceleration-timeline-tooltip.component.html',
   styleUrls: ['./acceleration-timeline-tooltip.component.scss'],
+  standalone: false,
 })
 export class AccelerationTimelineTooltipComponent implements OnChanges {
   @Input() accelerationInfo: any;

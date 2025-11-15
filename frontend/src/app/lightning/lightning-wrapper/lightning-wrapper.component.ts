@@ -7,6 +7,7 @@ import { handleDemoRedirect } from '../../shared/common.utils';
   selector: 'app-lightning-wrapper',
   templateUrl: './lightning-wrapper.component.html',
   styleUrls: ['./lightning-wrapper.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LightningWrapperComponent implements OnInit {

@@ -6,6 +6,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
   selector: 'app-twitter-widget',
   templateUrl: './twitter-widget.component.html',
   styleUrls: ['./twitter-widget.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TwitterWidgetComponent implements OnChanges {

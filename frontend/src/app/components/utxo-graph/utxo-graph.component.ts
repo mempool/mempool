@@ -54,6 +54,7 @@ function sortedInsert(positions: { c1: Circle, c2: Circle, d: number, p: number,
       z-index: 99;
     }
   `],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UtxoGraphComponent implements OnChanges, OnDestroy {

@@ -11,6 +11,7 @@ import { seoDescriptionNetwork } from '@app/shared/common.utils';
   selector: 'app-stale-list',
   templateUrl: './stale-list.component.html',
   styleUrls: ['./stale-list.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StaleList implements OnInit {

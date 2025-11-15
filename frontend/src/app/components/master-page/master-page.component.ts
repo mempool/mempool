@@ -12,6 +12,7 @@ import { StorageService } from '@app/services/storage.service';
   selector: 'app-master-page',
   templateUrl: './master-page.component.html',
   styleUrls: ['./master-page.component.scss'],
+  standalone: false,
 })
 export class MasterPageComponent implements OnInit, OnDestroy {
   @Input() headerVisible = true;

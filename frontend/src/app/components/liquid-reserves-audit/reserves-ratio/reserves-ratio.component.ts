@@ -7,6 +7,7 @@ import { CurrentPegs } from '@interfaces/node-api.interface';
   selector: 'app-reserves-ratio',
   templateUrl: './reserves-ratio.component.html',
   styleUrls: ['./reserves-ratio.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReservesRatioComponent implements OnInit, OnChanges {

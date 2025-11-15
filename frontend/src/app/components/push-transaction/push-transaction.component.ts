@@ -12,7 +12,8 @@ import { TxResult } from '@interfaces/node-api.interface';
 @Component({
   selector: 'app-push-transaction',
   templateUrl: './push-transaction.component.html',
-  styleUrls: ['./push-transaction.component.scss']
+  styleUrls: ['./push-transaction.component.scss'],
+  standalone: false,
 })
 export class PushTransactionComponent implements OnInit {
   pushTxForm: UntypedFormGroup;

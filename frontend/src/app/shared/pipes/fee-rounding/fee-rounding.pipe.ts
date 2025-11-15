@@ -3,6 +3,7 @@ import { Inject, LOCALE_ID, Pipe, PipeTransform } from "@angular/core";
 
 @Pipe({
   name: "feeRounding",
+  standalone: false,
 })
 export class FeeRoundingPipe implements PipeTransform {
   constructor(

@@ -4,6 +4,7 @@ import { ChangeDetectionStrategy, Component, Input, OnChanges } from '@angular/c
   selector: 'app-change',
   templateUrl: './change.component.html',
   styleUrls: ['./change.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChangeComponent implements OnChanges {

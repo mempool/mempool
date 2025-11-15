@@ -7,6 +7,7 @@ import { StateService } from '@app/services/state.service';
   selector: 'app-tx-features',
   templateUrl: './tx-features.component.html',
   styleUrls: ['./tx-features.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TxFeaturesComponent implements OnChanges {

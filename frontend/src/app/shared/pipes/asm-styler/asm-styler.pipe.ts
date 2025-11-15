@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'asmStyler'
+  name: 'asmStyler',
+  standalone: false,
 })
 export class AsmStylerPipe implements PipeTransform {
 

@@ -61,6 +61,7 @@ export interface TxAuditStatus {
   selector: 'app-transaction',
   templateUrl: './transaction.component.html',
   styleUrls: ['./transaction.component.scss'],
+  standalone: false,
 })
 export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   network = '';

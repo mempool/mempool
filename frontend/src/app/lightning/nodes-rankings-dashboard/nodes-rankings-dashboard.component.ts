@@ -8,6 +8,7 @@ import { LightningApiService } from '@app/lightning/lightning-api.service';
   selector: 'app-nodes-rankings-dashboard',
   templateUrl: './nodes-rankings-dashboard.component.html',
   styleUrls: ['./nodes-rankings-dashboard.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesRankingsDashboard implements OnInit {

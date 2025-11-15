@@ -11,6 +11,7 @@ import { environment } from '@environments/environment';
   templateUrl: './asset-circulation.component.html',
   styleUrls: ['./asset-circulation.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class AssetCirculationComponent implements OnInit {
   @Input() assetId: string;

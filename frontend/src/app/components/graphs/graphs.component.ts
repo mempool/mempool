@@ -8,6 +8,7 @@ import { handleDemoRedirect } from '@app/shared/common.utils';
   selector: 'app-graphs',
   templateUrl: './graphs.component.html',
   styleUrls: ['./graphs.component.scss'],
+  standalone: false,
 })
 export class GraphsComponent implements OnInit {
   flexWrap = false;

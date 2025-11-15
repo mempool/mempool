@@ -11,7 +11,8 @@ import { Treasury } from '@interfaces/node-api.interface';
 @Component({
   selector: 'app-treasuries',
   templateUrl: './treasuries.component.html',
-  styleUrls: ['./treasuries.component.scss']
+  styleUrls: ['./treasuries.component.scss'],
+  standalone: false,
 })
 export class TreasuriesComponent implements OnInit, OnDestroy {
   treasuries: Treasury[] = [];

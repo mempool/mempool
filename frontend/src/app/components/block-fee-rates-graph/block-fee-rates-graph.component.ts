@@ -26,6 +26,7 @@ import { ActivatedRoute, Router } from '@angular/router';
       z-index: 99;
     }
   `],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlockFeeRatesGraphComponent implements OnInit {

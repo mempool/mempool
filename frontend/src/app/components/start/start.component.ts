@@ -10,6 +10,7 @@ import { handleDemoRedirect } from '@app/shared/common.utils';
   selector: 'app-start',
   templateUrl: './start.component.html',
   styleUrls: ['./start.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {

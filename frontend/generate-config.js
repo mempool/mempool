@@ -29,7 +29,7 @@ if (configContent && configContent.CUSTOMIZATION) {
   try {
     customConfig = readConfig(configContent.CUSTOMIZATION);
     customConfigContent = JSON.parse(customConfig);
-  } catch (e) {
+  } catch {
     console.log(`failed to load customization config from ${configContent.CUSTOMIZATION}`);
   }
 }
@@ -54,7 +54,7 @@ try {
   throw new Error(e);
 }
 
-for (setting in configContent) {
+for (const setting in configContent) {
   settings.push({
     key: setting,
     value: configContent[setting]
@@ -98,7 +98,7 @@ function readConfig(path) {
   try {
     const currentConfig = fs.readFileSync(path).toString().trim();
     return currentConfig;
-  } catch (e) {
+  } catch {
     return false;
   }
 }
@@ -136,13 +136,11 @@ writeConfig(GENERATED_CUSTOMIZATION_FILE_NAME, customConfigJs);
 
 if (currentConfig && currentConfig === newConfig) {
   console.log(`No configuration updates, skipping ${GENERATED_CONFIG_FILE_NAME} file update`);
-  return;
 } else if (!currentConfig) {
   console.log(`${GENERATED_CONFIG_FILE_NAME} file not found, creating new config file`);
   console.log('CONFIG: ', newConfig);
   writeConfig(GENERATED_CONFIG_FILE_NAME, newConfig);
   console.log(`${GENERATED_CONFIG_FILE_NAME} file saved`);
-  return;
 } else {
   console.log(`Configuration changes detected, updating ${GENERATED_CONFIG_FILE_NAME} file`);
   console.log('OLD CONFIG: ', currentConfig);

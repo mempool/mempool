@@ -9,6 +9,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   selector: 'app-server-status',
   templateUrl: './server-status.component.html',
   styleUrls: ['./server-status.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ServerStatusComponent implements OnInit, OnDestroy {

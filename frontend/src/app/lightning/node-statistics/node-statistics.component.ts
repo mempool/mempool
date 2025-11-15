@@ -6,6 +6,7 @@ import { INodesStatistics } from '@interfaces/node-api.interface';
   selector: 'app-node-statistics',
   templateUrl: './node-statistics.component.html',
   styleUrls: ['./node-statistics.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodeStatisticsComponent implements OnInit {

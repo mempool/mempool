@@ -11,6 +11,7 @@ import { WebsocketService } from '@app/services/websocket.service';
   selector: 'app-federation-utxos-list',
   templateUrl: './federation-utxos-list.component.html',
   styleUrls: ['./federation-utxos-list.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FederationUtxosListComponent implements OnInit {

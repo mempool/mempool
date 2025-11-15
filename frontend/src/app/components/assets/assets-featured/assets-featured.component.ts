@@ -6,7 +6,8 @@ import { StateService } from '@app/services/state.service';
 @Component({
   selector: 'app-assets-featured',
   templateUrl: './assets-featured.component.html',
-  styleUrls: ['./assets-featured.component.scss']
+  styleUrls: ['./assets-featured.component.scss'],
+  standalone: false,
 })
 export class AssetsFeaturedComponent implements OnInit {
   featuredAssets$: Observable<any>;

@@ -1,8 +1,6 @@
-const fs = require('fs');
-
 const PROXY_CONFIG = require('./proxy.conf');
 
-const addApiKeyHeader = (proxyReq, req, res) => {
+const addApiKeyHeader = (proxyReq) => {
   if (process.env.MEMPOOL_CI_API_KEY) {
     proxyReq.setHeader('X-Mempool-Auth', process.env.MEMPOOL_CI_API_KEY);
   }

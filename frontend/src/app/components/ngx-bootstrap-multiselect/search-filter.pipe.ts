@@ -6,7 +6,8 @@ interface StringHashMap<T> {
 }
 
 @Pipe({
-  name: 'searchFilter'
+  name: 'searchFilter',
+  standalone: false,
 })
 export class MultiSelectSearchFilter implements PipeTransform {
 

@@ -9,6 +9,7 @@ import { Block } from '@interfaces/electrs.interface.js';
   selector: 'app-block-overview-tooltip',
   templateUrl: './block-overview-tooltip.component.html',
   styleUrls: ['./block-overview-tooltip.component.scss'],
+  standalone: false,
 })
 export class BlockOverviewTooltipComponent implements OnChanges {
   @Input() tx: TransactionStripped | void;

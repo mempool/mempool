@@ -15,6 +15,7 @@ import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pip
   selector: 'app-nodes-per-isp-chart',
   templateUrl: './nodes-per-isp-chart.component.html',
   styleUrls: ['./nodes-per-isp-chart.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesPerISPChartComponent implements OnInit {

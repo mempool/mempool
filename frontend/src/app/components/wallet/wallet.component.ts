@@ -17,7 +17,8 @@ import { WalletStats } from '@app/shared/wallet-stats';
 @Component({
   selector: 'app-wallet',
   templateUrl: './wallet.component.html',
-  styleUrls: ['./wallet.component.scss']
+  styleUrls: ['./wallet.component.scss'],
+  standalone: false,
 })
 export class WalletComponent implements OnInit, OnDestroy {
   network = '';

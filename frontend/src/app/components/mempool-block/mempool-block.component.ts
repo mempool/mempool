@@ -14,6 +14,7 @@ import { WebsocketService } from '@app/services/websocket.service';
   selector: 'app-mempool-block',
   templateUrl: './mempool-block.component.html',
   styleUrls: ['./mempool-block.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MempoolBlockComponent implements OnInit, OnDestroy {
@@ -30,8 +31,6 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
     public stateService: StateService,
     private seoService: SeoService,
     private websocketService: WebsocketService,
-    private cd: ChangeDetectorRef,
-    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
   }
