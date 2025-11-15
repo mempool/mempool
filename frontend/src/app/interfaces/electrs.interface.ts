@@ -1,5 +1,6 @@
 import { Price } from '@app/services/price.service';
 import { IChannel } from '@interfaces/node-api.interface';
+import { ParsedTaproot } from '../shared/transaction.utils';
 
 export interface Transaction {
   txid: string;
@@ -80,6 +81,8 @@ export interface Vin {
   isInscription?: boolean;
   // temporary field for extracted raw simplicity scripts
   inner_simplicityscript?: string;
+  // parsed taproot info
+  taprootInfo?: ParsedTaproot;
 }
 
 interface Issuance {
