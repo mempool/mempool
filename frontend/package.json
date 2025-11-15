@@ -36,9 +36,10 @@
     "sync-assets": "rsync -av ./src/resources ./dist/mempool/browser && node sync-assets.js 'dist/mempool/browser/resources/'",
     "sync-assets-dev": "node sync-assets.js 'src/resources/'",
     "generate-config": "node generate-config.js",
-    "build-mempool.js": "npm run build-mempool-js && npm run build-mempool-liquid-js",
-    "build-mempool-js": "browserify -p tinyify ./node_modules/@mempool/mempool.js/lib/index.js --standalone mempoolJS > ./dist/mempool/browser/en-US/mempool.js",
-    "build-mempool-liquid-js": "browserify -p tinyify ./node_modules/@mempool/mempool.js/lib/index-liquid.js --standalone liquidJS > ./dist/mempool/browser/en-US/liquid.js",
+    "build-mempool.js": "npm run build-mempool-js",
+    "build-mempool-js": "browserify -p esmify node_modules/@mempool/mempool.js/lib/index.js --standalone mempoolJS > ./dist/mempool/browser/en-US/mempool.js | browserify -p tinyify -p esmify node_modules/@mempool/mempool.js/lib/index.js --standalone mempoolJS > ./dist/mempool/browser/en-US/mempool.min.js && npm run copy-mempool-js",
+    "build-mempool-liquid-js": "npm run build-mempool-js",
+    "copy-mempool-js": "cp ./dist/mempool/browser/en-US/mempool.js ./dist/mempool/browser/en-US/liquid.js && cp ./dist/mempool/browser/en-US/mempool.min.js ./dist/mempool/browser/en-US/liquid.min.js",
     "test": "npm run ng -- test",
     "lint": "./node_modules/.bin/eslint . --ext .ts",
     "lint:fix": "./node_modules/.bin/eslint . --ext .ts --fix",
@@ -81,7 +82,8 @@
     "@ng-bootstrap/ng-bootstrap": "^19.0.0",
     "@types/qrcode": "~1.5.0",
     "bootstrap": "~4.6.2",
-    "browserify": "^17.0.0",
+    "browserify": "^17.0.1",
+    "esmify": "^2.1.1",
     "clipboard": "^2.0.11",
     "domino": "^2.1.6",
     "echarts": "~5.4.0",
@@ -118,7 +120,8 @@
     "start-server-and-test": "~2.1.2"
   },
   "overrides": {
-    "terser": "^5.14.2"
+    "terser": "^5.14.2",
+    "babel-traverse": "npm:@babel/traverse@^7.23.2"
   },
   "scarfSettings": {
     "enabled": false
