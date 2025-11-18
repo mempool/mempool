@@ -5,6 +5,7 @@ import { SigInfo, SighashLabels } from '@app/shared/transaction.utils';
   selector: 'app-asm',
   templateUrl: './asm.component.html',
   styleUrls: ['./asm.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AsmComponent {

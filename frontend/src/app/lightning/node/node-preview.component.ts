@@ -12,6 +12,7 @@ import { isMobile } from '@app/shared/common.utils';
   selector: 'app-node-preview',
   templateUrl: './node-preview.component.html',
   styleUrls: ['./node-preview.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodePreviewComponent implements OnInit {

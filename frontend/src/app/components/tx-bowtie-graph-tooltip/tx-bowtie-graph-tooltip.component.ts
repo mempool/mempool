@@ -30,6 +30,7 @@ interface Xput {
   selector: 'app-tx-bowtie-graph-tooltip',
   templateUrl: './tx-bowtie-graph-tooltip.component.html',
   styleUrls: ['./tx-bowtie-graph-tooltip.component.scss'],
+  standalone: false,
 })
 export class TxBowtieGraphTooltipComponent implements OnChanges {
   @Input() line: Xput | void;

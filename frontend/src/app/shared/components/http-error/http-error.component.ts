@@ -4,7 +4,8 @@ import { Component, Input } from '@angular/core';
 @Component({
   selector: 'app-http-error',
   templateUrl: './http-error.component.html',
-  styleUrls: ['./http-error.component.scss']
+  styleUrls: ['./http-error.component.scss'],
+  standalone: false,
 })
 export class HttpErrorComponent {
   @Input() error: HttpErrorResponse | null;

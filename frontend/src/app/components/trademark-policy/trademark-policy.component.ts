@@ -6,7 +6,8 @@ import { OpenGraphService } from '@app/services/opengraph.service';
 @Component({
   selector: 'app-trademark-policy',
   templateUrl: './trademark-policy.component.html',
-  styleUrls: ['./trademark-policy.component.scss']
+  styleUrls: ['./trademark-policy.component.scss'],
+  standalone: false,
 })
 export class TrademarkPolicyComponent {
   officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;

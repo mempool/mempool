@@ -27,6 +27,7 @@ import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
       z-index: 99;
     }
   `],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HashrateChartComponent implements OnInit {
