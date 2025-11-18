@@ -5,6 +5,7 @@ import { Observable, combineLatest, map, of } from 'rxjs';
   selector: 'app-federation-addresses-stats',
   templateUrl: './federation-addresses-stats.component.html',
   styleUrls: ['./federation-addresses-stats.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FederationAddressesStatsComponent implements OnInit {

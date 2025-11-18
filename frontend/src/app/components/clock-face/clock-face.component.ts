@@ -6,6 +6,7 @@ import { StateService } from '@app/services/state.service';
   selector: 'app-clock-face',
   templateUrl: './clock-face.component.html',
   styleUrls: ['./clock-face.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClockFaceComponent implements OnInit, OnChanges, OnDestroy {

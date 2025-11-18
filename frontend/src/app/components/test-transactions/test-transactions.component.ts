@@ -9,7 +9,8 @@ import { TestMempoolAcceptResult } from '@interfaces/node-api.interface';
 @Component({
   selector: 'app-test-transactions',
   templateUrl: './test-transactions.component.html',
-  styleUrls: ['./test-transactions.component.scss']
+  styleUrls: ['./test-transactions.component.scss'],
+  standalone: false,
 })
 export class TestTransactionsComponent implements OnInit {
   testTxsForm: UntypedFormGroup;

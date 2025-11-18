@@ -9,6 +9,7 @@ import { EventType, NavigationStart, Router } from '@angular/router';
   selector: 'app-mining-dashboard',
   templateUrl: './mining-dashboard.component.html',
   styleUrls: ['./mining-dashboard.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MiningDashboardComponent implements OnInit, AfterViewInit {

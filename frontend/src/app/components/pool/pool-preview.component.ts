@@ -14,6 +14,7 @@ import { OpenGraphService } from '@app/services/opengraph.service';
   selector: 'app-pool-preview',
   templateUrl: './pool-preview.component.html',
   styleUrls: ['./pool-preview.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PoolPreviewComponent implements OnInit {

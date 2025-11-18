@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'hex2ascii'
+  name: 'hex2ascii',
+  standalone: false,
 })
 export class Hex2asciiPipe implements PipeTransform {
 

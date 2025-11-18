@@ -20,6 +20,7 @@ const OUTLIERS_MEDIAN_MULTIPLIER = 4;
       z-index: 99;
     }
   `],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, OnDestroy {

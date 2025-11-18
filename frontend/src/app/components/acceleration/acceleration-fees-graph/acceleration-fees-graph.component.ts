@@ -27,6 +27,7 @@ import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pip
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDestroy {
   @Input() widget: boolean = false;

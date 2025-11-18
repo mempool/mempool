@@ -32,6 +32,7 @@ function parseGeneratedFile() {
     if (generatedConfig) {
       const configContents = generatedConfig.toString();
       const regexp = new RegExp(/window.__env.(\w+) = '(.*)'/,'g');
+      let match;
       while ((match = regexp.exec(configContents)) !== null) {
           // Do not add setting if it's the git hash or package json version
           if (!packageSettings.includes(match[1])) {
@@ -46,8 +47,10 @@ function parseGeneratedFile() {
 
 function saveSettingsJson() {
     settings.forEach(setting => {
+        // eslint-disable-next-line no-prototype-builtins
         if (configContent.hasOwnProperty(setting['key']) && normalizedValue(configContent[setting['key']]) !== normalizedValue(setting['value'])) {
             console.log(setting['key'] + " updated from " + configContent[setting['key']] + " to " + setting['value']);
+        // eslint-disable-next-line no-prototype-builtins
         } else if (configContent.hasOwnProperty(setting['key']) && normalizedValue(configContent[setting['key']]) === normalizedValue(setting['value'])) {
             console.log(setting['key'] + " unchanged, skipping");
         } else {
@@ -56,15 +59,6 @@ function saveSettingsJson() {
         configContent[setting['key']] = setting['value'];
     });
     fs.writeFileSync(CONFIG_FILE_NAME, JSON.stringify(configContent));
-}
-
-function configToJson() {
-    for (setting in configContent) {
-        settings.push({
-          key: setting,
-          value: configContent[setting]
-        });
-    }
 }
 
 try {

@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-theme-selector',
   templateUrl: './theme-selector.component.html',
   styleUrls: ['./theme-selector.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ThemeSelectorComponent implements OnInit {

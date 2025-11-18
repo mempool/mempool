@@ -5,7 +5,7 @@ import { tap } from 'rxjs/operators';
 import { AddressTxSummary } from '@interfaces/electrs.interface';
 import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { StateService } from '@app/services/state.service';
-import { SeriesOption } from 'echarts';
+import { SeriesOption } from 'echarts/types/dist/echarts';
 import { WalletStats } from '@app/shared/wallet-stats';
 import { originalChartColors as chartColors } from '@app/app.constants';
 import { Treasury } from '@interfaces/node-api.interface';
@@ -36,6 +36,7 @@ const periodSeconds = {
       z-index: 99;
     }
   `],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
