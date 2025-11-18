@@ -81,7 +81,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           VERSION=$(jq -r '.version' backend/package.json)
-          echo "TAG=${VERSION}-${SHORT_SHA}" >> $GITHUB_ENV
+          echo "TAG=v${VERSION}-${SHORT_SHA}" >> $GITHUB_ENV
 
       - name: Show set environment variables
         run: |
