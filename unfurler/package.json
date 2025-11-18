@@ -20,7 +20,7 @@
     "@types/node": "^24.10.1",
     "express": "^5.1.0",
     "ejs": "^3.1.10",
-    "node-fetch-commonjs": "^3.3.2",
+    "node-fetch": "^3.3.2",
     "puppeteer": "^24.30.0",
     "puppeteer-cluster": "^0.25.0",
     "typescript": "~5.8.3"
