@@ -272,6 +272,56 @@ export function detectScriptTemplate(type: ScriptType, script_asm: string, witne
   return;
 }
 
+/** Returns the last push of a script as a number, the push can be OP_0, OP_PUSHNUM_<1-16>, or OP_PUSHBYTES_<1-75> */
+function popScriptNumberOperand(ops: string[]): number | undefined {
+  if (!ops.length) {
+    return;
+  }
+
+  const token = ops.pop();
+  if (!token) {
+    return;
+  }
+
+  if (token === 'OP_0') {
+    return 0;
+  }
+
+  if (token.startsWith('OP_PUSHNUM_')) {
+    const digits = token.match(/[0-9]+/);
+    if (!digits) {
+      return;
+    }
+    return parseInt(digits[0], 10);
+  }
+
+  if (!token.startsWith('OP_')) {
+    const pushOp = ops.pop();
+    const pushBytes = pushOp?.match(/^OP_PUSHBYTES_(\d+)$/);
+    if (!pushBytes) {
+      return;
+    }
+
+    const byteCount = parseInt(pushBytes[1], 10);
+    if (!byteCount || !/^[0-9a-fA-F]+$/.test(token) || token.length !== byteCount * 2) {
+      return;
+    }
+
+    let value = 0;
+    for (let i = 0; i < byteCount; i++) {
+      const byteHex = token.slice(i * 2, i * 2 + 2);
+      const byte = parseInt(byteHex, 16);
+      if (Number.isNaN(byte)) {
+        return;
+      }
+      value |= byte << (8 * i);
+    }
+    return value;
+  }
+
+  return;
+}
+
 /** extracts m and n from a multisig script (asm), returns nothing if it is not a multisig script */
 export function parseMultisigScript(script: string): undefined | { m: number, n: number } {
   if (!script) {
@@ -281,14 +331,10 @@ export function parseMultisigScript(script: string): undefined | { m: number, n:
   if (ops.length < 3 || ops.pop() !== 'OP_CHECKMULTISIG') {
     return;
   }
-  const opN = ops.pop();
-  if (!opN) {
+  const n = popScriptNumberOperand(ops);
+  if (n === undefined) {
     return;
   }
-  if (opN !== 'OP_0' && !opN.startsWith('OP_PUSHNUM_')) {
-    return;
-  }
-  const n = parseInt(opN.match(/[0-9]+/)?.[0] || '', 10);
   if (ops.length < n * 2 + 1) {
     return;
   }
@@ -301,14 +347,10 @@ export function parseMultisigScript(script: string): undefined | { m: number, n:
       return;
     }
   }
-  const opM = ops.pop();
-  if (!opM) {
+  const m = popScriptNumberOperand(ops);
+  if (m === undefined) {
     return;
   }
-  if (opM !== 'OP_0' && !opM.startsWith('OP_PUSHNUM_')) {
-    return;
-  }
-  const m = parseInt(opM.match(/[0-9]+/)?.[0] || '', 10);
 
   if (ops.length) {
     return;
@@ -333,14 +375,8 @@ export function parseTapscriptMultisig(script: string): undefined | { m: number,
     return;
   }
 
-  let m: number;
-  if (['OP_PUSHBYTES_1', 'OP_PUSHBYTES_2'].includes(ops[ops.length - 2])) {
-    const data = ops.pop();
-    ops.pop();
-    m = parseInt(data.match(/../g).reverse().join(''), 16);
-  } else if (ops[ops.length - 1].startsWith('OP_PUSHNUM_') || ops[ops.length - 1] === 'OP_0') {
-    m = parseInt(ops.pop().match(/[0-9]+/)?.[0], 10);
-  } else {
+  let m = popScriptNumberOperand(ops);
+  if (m === undefined) {
     return;
   }
 
