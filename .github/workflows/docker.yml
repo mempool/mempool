@@ -84,10 +84,14 @@ jobs:
         uses: actions/checkout@v4
 
       # For PRs: use package.json version + short sha as TAG
-      - name: Set TAG from package.json for pull requests
+      - name: Set TAG from service package.json for pull requests
         if: github.event_name == 'pull_request'
         run: |
-          VERSION=$(jq -r '.version' backend/package.json)
+          if [ "${{ matrix.service }}" = "frontend" ]; then
+            VERSION=$(jq -r '.version' frontend/package.json)
+          else
+            VERSION=$(jq -r '.version' backend/package.json)
+          fi
           echo "TAG=v${VERSION}-${SHORT_SHA}" >> $GITHUB_ENV
 
       - name: Show set environment variables
