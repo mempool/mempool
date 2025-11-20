@@ -16,7 +16,8 @@ import { moveDec } from '@app/bitcoin.utils';
 @Component({
   selector: 'app-asset',
   templateUrl: './asset.component.html',
-  styleUrls: ['./asset.component.scss']
+  styleUrls: ['./asset.component.scss'],
+  standalone: false,
 })
 export class AssetComponent implements OnInit, OnDestroy {
   network = '';

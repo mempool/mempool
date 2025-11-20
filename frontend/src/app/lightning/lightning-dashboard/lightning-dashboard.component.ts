@@ -11,6 +11,7 @@ import { LightningApiService } from '@app/lightning/lightning-api.service';
   selector: 'app-lightning-dashboard',
   templateUrl: './lightning-dashboard.component.html',
   styleUrls: ['./lightning-dashboard.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LightningDashboardComponent implements OnInit, AfterViewInit {

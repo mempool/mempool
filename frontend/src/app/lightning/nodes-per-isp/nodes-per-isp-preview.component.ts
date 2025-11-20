@@ -11,6 +11,7 @@ import { GeolocationData } from '@app/shared/components/geolocation/geolocation.
   selector: 'app-nodes-per-isp-preview',
   templateUrl: './nodes-per-isp-preview.component.html',
   styleUrls: ['./nodes-per-isp-preview.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesPerISPPreview implements OnInit {

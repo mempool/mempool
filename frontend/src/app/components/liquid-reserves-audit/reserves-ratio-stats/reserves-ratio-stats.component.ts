@@ -5,6 +5,7 @@ import { Observable, map } from 'rxjs';
   selector: 'app-reserves-ratio-stats',
   templateUrl: './reserves-ratio-stats.component.html',
   styleUrls: ['./reserves-ratio-stats.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReservesRatioStatsComponent implements OnInit {

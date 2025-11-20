@@ -31,6 +31,7 @@ interface Hashrate {
       z-index: 99;
     }
   `],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HashrateChartPoolsComponent implements OnInit {

@@ -16,6 +16,7 @@ import { lerpColor } from '@app/shared/graphs.utils';
   selector: 'app-nodes-channels-map',
   templateUrl: './nodes-channels-map.component.html',
   styleUrls: ['./nodes-channels-map.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesChannelsMap implements OnInit {
