@@ -54,7 +54,7 @@ export class TxBowtieGraphTooltipComponent implements OnChanges {
 
   constructor(
     private priceService: PriceService,
-    private stateService: StateService,
+    public stateService: StateService,
     private apiService: ApiService,
   ) {}
 
