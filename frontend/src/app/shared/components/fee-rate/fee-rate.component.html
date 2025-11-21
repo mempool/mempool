@@ -1,7 +1,7 @@
 <ng-container *ngIf="rateUnits$ | async as units">
   <ng-container *ngIf="fee !== undefined; else noFee">
-    <ng-container *ngIf="units !== 'wu'">{{ fee / (weight / 4) | feeRounding:rounding }} <span *ngIf="showUnit" [class]="unitClass" [style]="unitStyle" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></ng-container>
-    <ng-container *ngIf="units === 'wu'">{{ fee / weight | feeRounding:rounding }} <span *ngIf="showUnit" [class]="unitClass" [style]="unitStyle" i18n="shared.sat-weight-units|sat/WU">sat/WU</span></ng-container>
+    <ng-container *ngIf="units !== 'wu'">{{ fee / (weight / 4) | feeRounding:rounding:dp }} <span *ngIf="showUnit" [class]="unitClass" [style]="unitStyle" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></ng-container>
+    <ng-container *ngIf="units === 'wu'">{{ fee / weight | feeRounding:rounding:dp }} <span *ngIf="showUnit" [class]="unitClass" [style]="unitStyle" i18n="shared.sat-weight-units|sat/WU">sat/WU</span></ng-container>
   </ng-container>
   <ng-template #noFee>
       <ng-container *ngIf="units !== 'wu'">- <span *ngIf="showUnit" [class]="unitClass" [style]="unitStyle" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></ng-container>
