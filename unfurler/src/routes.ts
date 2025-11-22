@@ -399,6 +399,28 @@ export const networks = {
         routes: routes.lightning.routes,
       }
     }
+  },
+  anap: {
+    networkName: 'anap',
+    title: 'ANAP | Make Japan Great Bitcoin Nation Again',
+    description: 'Make Japan Great Bitcoin Nation Again',
+    fallbackImg: '/resources/anap/anap-preview.jpg',
+    routes: { // only dynamic routes supported
+      block: routes.block,
+      address: routes.address,
+      wallet: routes.wallet,
+      tx: routes.tx,
+      mining: {
+        title: "Mining",
+        routes: {
+          pool: routes.mining.routes.pool,
+        }
+      },
+      lightning: {
+        title: "Lightning",
+        routes: routes.lightning.routes,
+      }
+    }
   }
 };
 

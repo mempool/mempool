@@ -1,0 +1,48 @@
+{
+  "theme": "wiz",
+  "enterprise": "anap",
+  "branding": {
+    "name": "anap",
+    "title": "ANAP",
+    "site_id": 23,
+    "header_img": "/resources/anap/anaplogo.png",
+    "footer_img": "/resources/anap/anaplogo.png"
+  },
+  "dashboard": {
+    "widgets": [
+      {
+        "component": "fees",
+        "mobileOrder": 4
+      },
+      {
+        "component": "walletBalance",
+        "mobileOrder": 1,
+        "props": {
+          "wallet": "ANAP"
+        }
+      },
+      {
+        "component": "goggles",
+        "mobileOrder": 5
+      },
+      {
+        "component": "wallet",
+        "mobileOrder": 2,
+        "props": {
+          "wallet": "ANAP",
+          "period": "all"
+        }
+      },
+      {
+        "component": "blocks"
+      },
+      {
+        "component": "walletTransactions",
+        "mobileOrder": 3,
+        "props": {
+          "wallet": "ANAP"
+        }
+      }
+    ]
+  }
+}
