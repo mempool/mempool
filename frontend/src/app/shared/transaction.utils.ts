@@ -544,6 +544,7 @@ export function isNonStandard(tx: Transaction, height?: number, network?: string
 
   // output validation
   let opreturnCount = 0;
+  let opreturnBytes = 0;
   for (const vout of tx.vout) {
     // scriptpubkey
     if (['nonstandard', 'provably_unspendable', 'empty'].includes(vout.scriptpubkey_type)) {
@@ -567,10 +568,7 @@ export function isNonStandard(tx: Transaction, height?: number, network?: string
       }
     } else if (vout.scriptpubkey_type === 'op_return') {
       opreturnCount++;
-      if ((vout.scriptpubkey.length / 2) > MAX_OP_RETURN_RELAY) {
-        // over default datacarrier limit
-        return true;
-      }
+      opreturnBytes += vout.scriptpubkey.length / 2;
     }
     // dust
     // (we could probably hardcode this for the different output types...)
@@ -592,9 +590,11 @@ export function isNonStandard(tx: Transaction, height?: number, network?: string
     }
   }
 
-  // multi-op-return
-  if (opreturnCount > 1) {
-    return true;
+  // op_return
+  if (opreturnCount > 0) {
+    if (!isStandardOpReturn(opreturnBytes, opreturnCount, height, network)) {
+      return true;
+    }
   }
 
   // TODO: non-mandatory-script-verify-flag
@@ -662,6 +662,28 @@ function isStandardEphemeralDust(tx: Transaction, height?: number, network?: str
       EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[network]
       && height >= EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[network]
     ))
+  ) {
+    return true;
+  }
+  return false;
+}
+
+// OP_RETURN size & count limits were lifted in v28.3/v29.2/v30.0
+const OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT = {
+  'testnet4': 108_000,
+  'testnet': 4_750_000,
+  'signet': 276_500,
+  '': 921_000,
+};
+const MAX_DATACARRIER_BYTES = 83;
+function isStandardOpReturn(bytes: number, outputs: number,height?: number, network?: string): boolean {
+  if (
+    (height == null || (
+      OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[network]
+      && height >= OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[network]
+    )) // limits lifted
+    || // OR
+    (bytes <= MAX_DATACARRIER_BYTES && outputs <= 1) // below old limits
   ) {
     return true;
   }
