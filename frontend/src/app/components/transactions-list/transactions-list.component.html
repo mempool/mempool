@@ -158,7 +158,7 @@
                           <td style="text-align: left;">
                             <app-asm
                               [asm]="vin.scriptsig_asm"
-                              [annotations]="{ signatures: tx['_sigmap'], selectedSig: selectedSig?.txIndex === i && selectedSig?.vindex === vindex ? selectedSig.sig : null }"
+                              [annotations]="{ signatures: tx['_sigmap'], selectedSig: selectedSig?.txIndex === i && selectedSig?.vindex === vindex ? selectedSig.sig : null, p2sh: vin.prevout?.scriptpubkey_type === 'p2sh' && !vin.witness }"
                               (showSigInfo)="showSigInfo(i, vindex, $event)"
                               (hideSigInfo)="hideSigInfo()"
                             ></app-asm>
@@ -183,32 +183,43 @@
                                   <fa-icon [icon]="['fas', 'key']" [fixedWidth]="true"></fa-icon>
                                 </span>
                               </ng-container>
-                              @if (vin.witness.length > 1 && windex === vin.witness.length - 1 && witness.slice(0, 2) === '50') {
+                              @if (windex === vin.taprootInfo?.controlBlockIndex) {
+                                <span class="control-block" ngbTooltip="taproot control block" (click)="toggleTaprootControlBlock(vindex)">
+                                  <fa-icon [icon]="['fas', 'code-fork']" [fixedWidth]="true" [rotate]="180"></fa-icon>
+                                </span>
+                                <ng-container *ngTemplateOutlet="taprootControlBlock; context: { $implicit: vin.taprootInfo?.scriptPath, controlBlock: witness, truncate: !showFullWitness[vindex][windex] }"></ng-container>
+                              } @else if (windex === vin.taprootInfo?.scriptIndex || (windex === vin.witness.length - 1 && ['p2sh', 'v0_p2wsh'].includes(vin.prevout?.scriptpubkey_type) && vin.scriptsig.length !== 46)) {
+                                <span class="script" ngbTooltip="script">
+                                  <fa-icon [icon]="['fas', 'code']" [fixedWidth]="true"></fa-icon>
+                                </span>
+                              } @else if (windex === vin.taprootInfo?.annexIndex) {
                                 <span class="annex" ngbTooltip="annex">
                                   <fa-icon [icon]="['fas', 'paperclip']" [fixedWidth]="true"></fa-icon>
                                 </span>
                               }
-                              @if (witness.length > 1000) {
-                                @if (!showFullWitness[vindex][windex]) {
-                                  {{ witness | slice:0:1000 }}
+                              @if (windex !== vin.taprootInfo?.controlBlockIndex) {
+                                @if (witness.length > 1000) {
+                                  @if (!showFullWitness[vindex][windex]) {
+                                    {{ witness | slice:0:1000 }}
+                                  } @else {
+                                    {{ witness }}
+                                  }
+                                } @else if (witness) {
+                                  <ng-container *ngIf="tx['_sigmap']?.[witness]?.sig.sighash !== 0 && tx['_sigmap']?.[witness] as sigInfo; else plainSig">
+                                    <span class="witness">
+                                      {{witness.slice(0, -2)}}<span class="sig sighash-{{sigInfo.sig.sighash}}" 
+                                            [class.hovered]="selectedSig && selectedSig.txIndex === i && selectedSig.vindex === vindex && selectedSig.sig === sigInfo.sig"
+                                            (mouseenter)="showSigInfo(i, vindex, sigInfo.sig)" 
+                                            (mouseleave)="hideSigInfo()" 
+                                            [ngbTooltip]="sighashLabels[sigInfo.sig.sighash]">{{witness.slice(-2)}}</span>
+                                    </span>
+                                  </ng-container>
+                                  <ng-template #plainSig>
+                                    {{ witness }}
+                                  </ng-template>
                                 } @else {
-                                  {{ witness }}
+                                  &lt;empty&gt;
                                 }
-                              } @else if (witness) {
-                                <ng-container *ngIf="tx['_sigmap']?.[witness]?.sig.sighash !== 0 && tx['_sigmap']?.[witness] as sigInfo; else plainSig">
-                                  <span class="witness">
-                                    {{witness.slice(0, -2)}}<span class="sig sighash-{{sigInfo.sig.sighash}}" 
-                                          [class.hovered]="selectedSig && selectedSig.txIndex === i && selectedSig.vindex === vindex && selectedSig.sig === sigInfo.sig"
-                                          (mouseenter)="showSigInfo(i, vindex, sigInfo.sig)" 
-                                          (mouseleave)="hideSigInfo()" 
-                                          [ngbTooltip]="sighashLabels[sigInfo.sig.sighash]">{{witness.slice(-2)}}</span>
-                                  </span>
-                                </ng-container>
-                                <ng-template #plainSig>
-                                  {{ witness }}
-                                </ng-template>
-                              } @else {
-                                &lt;empty&gt;
                               }
                             </p>
                             @if (witness.length > 1000) {
@@ -232,6 +243,14 @@
                         <td i18n="transactions-list.p2sh-redeem-script">P2SH redeem script</td>
                         <td style="text-align: left;" [innerHTML]="vin.inner_redeemscript_asm | asmStyler"></td>
                       </tr>
+                      @if (vin.taprootInfo?.scriptPath && showTaprootControlBlock[vindex]) {
+                        <tr>
+                          <td i18n="transactions-list.p2tr-control-block">P2TR control block</td>
+                          <td style="text-align: left; padding: 0px;">
+                            <ng-container *ngTemplateOutlet="controlBlockInfo; context: { $implicit: vin.taprootInfo?.scriptPath }"></ng-container>
+                          </td>
+                        </tr>
+                      }
                       <tr *ngIf="vin.inner_witnessscript_asm">
                         @if (isLiquid && vin.inner_simplicityscript) {
                           <td i18n="transactions-list.p2tr-simplicity-script">P2TR Simplicity script</td>
@@ -536,3 +555,37 @@
 </ng-template>
 
 <ng-template #xRemaining let-x i18n="x-remaining">{{ x }} remaining</ng-template>
+
+<ng-template #taprootControlBlock let-scriptPath let-controlBlock="controlBlock" let-truncate="truncate">
+  <span class="leaf-version" ngbTooltip="leaf version and parity"> {{ controlBlock.slice(0, 2) }}</span>
+  @if (scriptPath.isNUMS) {
+    <span class="internal-key nums" ngbTooltip="internal key (NUMS point)">{{ scriptPath.internalKey }}</span>
+  } @else {
+    <span class="internal-key" ngbTooltip="internal key">{{ scriptPath.internalKey }}</span>
+  }
+  <span *ngFor="let branch of scriptPath.merkleBranches.slice(0, truncate ? 14 : scriptPath.merkleBranches.length); index as i" class="merkle-branch" ngbTooltip="taptree merkle branch {{ i + 1 }}">{{ branch }}</span>
+</ng-template>
+
+<ng-template #controlBlockInfo let-scriptPath>
+  <table class="table table-borderless control-block-info">
+    <tr></tr>
+    <tr>
+      <td i18n="transactions-list.taproot.leaf-version">leaf version</td>
+      <td>{{ scriptPath.leafVersion | decimal2hex:1 }}</td>
+    </tr>
+    <tr>
+      <td i18n="transactions-list.taproot.parity">parity</td>
+      <td>{{ scriptPath.parity ? '0x01' : '0x00' }}</td>
+    </tr>
+    @if (scriptPath.isNUMS) {
+      <tr>
+        <td i18n="transactions-list.taproot.keypath">key path</td>
+        <td>disabled</td>
+      </tr>
+    }
+    <tr>
+      <td i18n="transactions-list.taproot.script-depth">script depth</td>
+      <td>{{ scriptPath.merkleBranches.length }}</td>
+    </tr>
+  </table>
+</ng-template>

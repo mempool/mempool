@@ -78,16 +78,12 @@ export class TaprootAddressScriptsComponent implements OnChanges {
     const merklePaths: { leafVersion: number, merklePath: string[] }[] = [];
     this.depth = 0;
     for (const script of scripts) {
-      const controlBlock = script.scriptPath;
-      const m = ((controlBlock.length / 2) - 33) / 32;
-      if (!Number.isInteger(m) || m <= 0) {
+      const scriptInfo = script.taprootInfo;
+      if (!scriptInfo.scriptPath?.merkleBranches?.length) {
         throw new Error("Merkle path length must be >= 1");
       }
-      const leafVersion = parseInt(controlBlock.slice(0, 2), 16) & 0xfe;
-      const merklePath = [];
-      for (let i = 0; i < m; i++) {
-        merklePath.push(controlBlock.slice(66 + i * 64, 66 + (i + 1) * 64));
-      }
+      const leafVersion = scriptInfo.scriptPath.leafVersion;
+      const merklePath = scriptInfo.scriptPath.merkleBranches.slice();
       if (merklePath.length > this.depth) {
         this.depth = merklePath.length;
       }

@@ -15,7 +15,7 @@ import { OrdApiService } from '@app/services/ord-api.service';
 import { Inscription } from '@app/shared/ord/inscription.utils';
 import { Etching, Runestone } from '@app/shared/ord/rune.utils';
 import { ADDRESS_SIMILARITY_THRESHOLD, AddressMatch, AddressSimilarity, AddressType, AddressTypeInfo, checkedCompareAddressStrings, detectAddressType } from '@app/shared/address-utils';
-import { processInputSignatures, Sighash, SigInfo, SighashLabels } from '@app/shared/transaction.utils';
+import { processInputSignatures, Sighash, SigInfo, SighashLabels, parseTaproot } from '@app/shared/transaction.utils';
 import { ActivatedRoute } from '@angular/router';
 import { SighashFlag } from '@app/shared/transaction.utils';
 
@@ -68,6 +68,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   showFullScriptPubkeyHex: { [voutIndex: number]: boolean } = {};
   showFullOpReturnData: { [voutIndex: number]: boolean } = {};
   showFullOpReturnPreview: { [voutIndex: number]: boolean } = {};
+  showTaprootControlBlock: { [vinIndex: number]: boolean } = {};
   showOrdData: { [key: string]: { show: boolean; inscriptions?: Inscription[]; runestone?: Runestone, runeInfo?: { [id: string]: { etching: Etching; txid: string; } }; } } = {};
   similarityMatches: Map<string, Map<string, { score: number, match: AddressMatch, group: number }>> = new Map();
 
@@ -305,15 +306,6 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
 
         // Check for ord data fingerprints in inputs and outputs
         if (this.stateService.network !== 'liquid' && this.stateService.network !== 'liquidtestnet') {
-          for (let i = 0; i < tx.vin.length; i++) {
-            if (tx.vin[i].prevout?.scriptpubkey_type === 'v1_p2tr' && tx.vin[i].witness?.length) {
-              const hasAnnex = tx.vin[i].witness?.[tx.vin[i].witness.length - 1].startsWith('50');
-              if (tx.vin[i].witness.length > (hasAnnex ? 2 : 1) && tx.vin[i].witness[tx.vin[i].witness.length - (hasAnnex ? 3 : 2)].includes('0063036f7264')) {
-                tx.vin[i].isInscription = true;
-                tx.largeInput = true;
-              }
-            }
-          }
           for (let i = 0; i < tx.vout.length; i++) {
             if (tx.vout[i]?.scriptpubkey?.startsWith('6a5d')) {
               tx.vout[i].isRunestone = true;
@@ -337,19 +329,19 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
             }
           }
           tx['_showSignatures'] = this.shouldShowSignatures(tx);
-        } else { // check for simplicity script spends
-          for (const vin of tx.vin) {
-            if (vin.prevout?.scriptpubkey_type === 'v1_p2tr' && vin.inner_witnessscript_asm) {
-              const hasAnnex = vin.witness[vin.witness.length - 1].startsWith('50');
-              const isScriptSpend = vin.witness.length > (hasAnnex ? 2 : 1);
-              if (isScriptSpend) {
-                const controlBlock = hasAnnex ? vin.witness[vin.witness.length - 2] : vin.witness[vin.witness.length - 1];
-                const scriptHex = hasAnnex ? vin.witness[vin.witness.length - 3] : vin.witness[vin.witness.length - 2]; // bip341 script element
-                const tapleafVersion = parseInt(controlBlock.slice(0, 2), 16) & 0xfe;
-                // simplicity script spend
-                if (tapleafVersion === 0xbe) {
-                  vin.inner_simplicityscript = vin.witness[1]; // simplicity program is the second witness element
-                }
+        }
+        // parse taproot spends
+        for (const vin of tx.vin) {
+          if (vin.prevout?.scriptpubkey_type === 'v1_p2tr') {
+            vin.taprootInfo = parseTaproot(vin.witness);
+            if (this.stateService.network !== 'liquid' && this.stateService.network !== 'liquidtestnet') {
+              if (vin.taprootInfo?.scriptPath?.script.includes('0063036f7264')) {
+                vin.isInscription = true;
+                tx.largeInput = true;
+              }
+            } else {
+              if (vin.taprootInfo?.scriptPath?.leafVersion === 0xbe) {
+                vin.inner_simplicityscript = vin.witness[1]; // simplicity program is the second witness element
               }
             }
           }
@@ -614,6 +606,10 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
     this.showFullOpReturnPreview[voutIndex] = !this.showFullOpReturnPreview[voutIndex];
   }
 
+  toggleTaprootControlBlock(vinIndex: number): void {
+    this.showTaprootControlBlock[vinIndex] = !this.showTaprootControlBlock[vinIndex];
+  }
+
   toggleOrdData(txid: string, type: 'vin' | 'vout', index: number) {
     const tx = this.transactions.find((tx) => tx.txid === txid);
     if (!tx) {
@@ -624,10 +620,9 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
     this.showOrdData[key] = this.showOrdData[key] || { show: false };
 
     if (type === 'vin') {
-
       if (!this.showOrdData[key].inscriptions) {
-        const hasAnnex = tx.vin[index].witness?.[tx.vin[index].witness.length - 1].startsWith('50');
-        this.showOrdData[key].inscriptions = this.ordApiService.decodeInscriptions(tx.vin[index].witness[tx.vin[index].witness.length - (hasAnnex ? 3 : 2)]);
+        const tapscript = tx.vin[index].taprootInfo?.scriptPath?.script;
+        this.showOrdData[key].inscriptions = this.ordApiService.decodeInscriptions(tapscript);
       }
       this.showOrdData[key].show = !this.showOrdData[key].show;
 
