@@ -93,7 +93,7 @@
     "tinyify": "^4.0.0",
     "tlite": "^0.1.9",
     "tslib": "~2.8.0",
-    "zone.js": "~0.15.1"
+    "zone.js": "~0.16.0"
   },
   "devDependencies": {
     "@angular/compiler-cli": "^20.3.9",
