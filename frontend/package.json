@@ -121,7 +121,8 @@
   },
   "overrides": {
     "terser": "^5.14.2",
-    "babel-traverse": "npm:@babel/traverse@^7.23.2"
+    "babel-traverse": "npm:@babel/traverse@^7.23.2",
+    "glob": "^10.5.0"
   },
   "scarfSettings": {
     "enabled": false
