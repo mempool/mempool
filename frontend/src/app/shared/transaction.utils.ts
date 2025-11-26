@@ -1175,7 +1175,7 @@ export function addInnerScriptsToVin(vin: Vin): void {
  * @param inputs Additional information from a PSBT, if available
  * @returns The decoded transaction object and the raw hex
  */
-function fromBuffer(buffer: Uint8Array, network: string, inputs?: { key: Uint8Array; value: Uint8Array }[][]): { tx: Transaction, hex: string } {
+function fromBuffer(buffer: Uint8Array, network: string, inputs?: PsbtKeyValueMap[]): { tx: Transaction, hex: string } {
   let offset = 0;
 
   // Parse raw transaction
@@ -1257,51 +1257,17 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: { key: Uint8Ar
       const inputRecords = inputs[i];
 
       const groups = {
-        nonWitnessUtxo: null,
-        witnessUtxo: null,
-        finalScriptSig: null,
-        finalScriptWitness: null,
-        redeemScript: null,
-        witnessScript: null,
-        partialSigs: [],
-        tapLeafScripts: [],
-        tapScriptSigs: [],
-        tapInternalKey: null,
+        nonWitnessUtxo: inputRecords.get(0x00)?.[0] || null,
+        witnessUtxo: inputRecords.get(0x01)?.[0] || null,
+        finalScriptSig: inputRecords.get(0x07)?.[0] || null,
+        finalScriptWitness: inputRecords.get(0x08)?.[0] || null,
+        redeemScript: inputRecords.get(0x04)?.[0] || null,
+        witnessScript: inputRecords.get(0x05)?.[0] || null,
+        partialSigs: inputRecords.get(0x02) || [],
+        tapLeafScripts: inputRecords.get(0x15) || [],
+        tapScriptSigs: inputRecords.get(0x14) || [],
+        tapInternalKey: inputRecords.get(0x17)?.[0] || null,
       };
-
-      for (const record of inputRecords) {
-        switch (record.key[0]) {
-          case 0x00:
-            groups.nonWitnessUtxo = record;
-            break;
-          case 0x01:
-            groups.witnessUtxo = record;
-            break;
-          case 0x07:
-            groups.finalScriptSig = record;
-            break;
-          case 0x08:
-            groups.finalScriptWitness = record;
-            break;
-          case 0x04:
-            groups.redeemScript = record;
-            break;
-          case 0x05:
-            groups.witnessScript = record;
-            break;
-          case 0x02:
-            groups.partialSigs.push(record);
-            break;
-          case 0x14:
-            groups.tapScriptSigs.push(record);
-            break;
-          case 0x15:
-            groups.tapLeafScripts.push(record);
-            break;
-          case 0x17:
-            groups.tapInternalKey = record;
-        }
-      }
 
       // Fill prevout
       if (groups.witnessUtxo && !vin.prevout) {
@@ -1404,7 +1370,7 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: { key: Uint8Ar
           if (uint8ArrayToHexString(groups.tapInternalKey.value) === '50929b74c1a04954b78b4b6035e97a5e078a5a0f28ec96d547bfee9ace803ac0') {
             // unspendable internal key, use the first tap leaf script provided
             const record = groups.tapLeafScripts[0];
-            const controlBlock = uint8ArrayToHexString(record.key.slice(1));
+            const controlBlock = uint8ArrayToHexString(record.keyData);
             const tapLeaf = uint8ArrayToHexString(record.value.slice(0, -1));
             vin.witness = vin.witness || [];
             vin.witness.unshift(tapLeaf, controlBlock);
@@ -1417,7 +1383,7 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: { key: Uint8Ar
           let scriptMostSigs = '';
 
           for (const record of groups.tapScriptSigs) {
-            const leafHash = uint8ArrayToHexString(record.key.slice(33));
+            const leafHash = uint8ArrayToHexString(record.keyData.slice(32));
             if (!leafScriptSignatures[leafHash]) {
               leafScriptSignatures[leafHash] = 0;
             }
@@ -1435,14 +1401,14 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: { key: Uint8Ar
             const scriptSize = uint8ArrayToHexString(compactSize(record.value.length - 1));
             if (taggedHash('TapLeaf', leafVersion + scriptSize + script) === scriptMostSigs) {
               // add the script
-              const controlBlock = uint8ArrayToHexString(record.key.slice(1));
+              const controlBlock = uint8ArrayToHexString(record.keyData);
               const tapLeaf = uint8ArrayToHexString(record.value.slice(0, -1));
               vin.witness = vin.witness || [];
               vin.witness.unshift(tapLeaf, controlBlock);
               vin.inner_witnessscript_asm = convertScriptSigAsm(tapLeaf);
               // add the signatures that are part of this script
               for (const sigRecord of groups.tapScriptSigs) {
-                const sigLeafHash = uint8ArrayToHexString(sigRecord.key.slice(33));
+                const sigLeafHash = uint8ArrayToHexString(sigRecord.keyData.slice(32));
                 if (sigLeafHash === scriptMostSigs) {
                   vin.witness.unshift(uint8ArrayToHexString(sigRecord.value));
                 }
@@ -1479,14 +1445,17 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: { key: Uint8Ar
   return { tx, hex: uint8ArrayToHexString(rawHex) };
 }
 
+type PsbtKeyValueMap = Map<number, { keyData: Uint8Array; value: Uint8Array; }[]>;
+
 /**
- * Decodes a PSBT buffer into the unsigned raw transaction and input map
+ * Decodes a PSBT buffer into the unsigned raw transaction and input/output maps
  * @param psbtBuffer
  * @returns
- *   - the unsigned transaction from a PSBT (txHex)
- *   - the full input map for each input in to fill signatures and prevouts later (inputs)
+ *   - the unsigned transaction from a PSBT
+ *   - the full input map for each input
+ *   - the full output map for each output
  */
-function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: { key: Uint8Array; value: Uint8Array }[][] } {
+function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: PsbtKeyValueMap[]; outputs: PsbtKeyValueMap[]; } {
   let offset = 0;
 
   // magic: "psbt" in ASCII
@@ -1530,7 +1499,46 @@ function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: { key:
     throw new Error("Unsigned transaction not found in PSBT");
   }
 
+  const readMaps = (count: number, startOffset: number): { map: PsbtKeyValueMap[]; offset: number } => {
+    const map: PsbtKeyValueMap[] = [];
+    let offset = startOffset;
+
+    for (let i = 0; i < count; i++) {
+      const records: PsbtKeyValueMap = new Map();
+    const seenKeys = new Set<string>();
+    while (offset < psbtBuffer.length) {
+      const [keyLen, newOffset] = readVarInt(psbtBuffer, offset);
+      offset = newOffset;
+      if (keyLen === 0) {
+        break;
+      }
+      const key = psbtBuffer.slice(offset, offset + keyLen);
+      offset += keyLen;
+
+      const keyHex = uint8ArrayToHexString(key);
+      if (seenKeys.has(keyHex)) {
+          throw new Error('Duplicate key in map');
+      }
+      seenKeys.add(keyHex);
+
+      const [valLen, newOffset2] = readVarInt(psbtBuffer, offset);
+      offset = newOffset2;
+      const value = psbtBuffer.slice(offset, offset + valLen);
+      offset += valLen;
+
+        const [keyType, keyDataOffset] = readVarInt(key, 0);
+        const bucket = records.get(keyType) || [];
+        bucket.push({ keyData: key.slice(keyDataOffset), value });
+        records.set(keyType, bucket);
+      }
+      map.push(records);
+  }
+
+    return { map, offset };
+  };
+
   let numInputs: number;
+  let numOutputs: number;
   let txOffset = 0;
   // Skip version (4 bytes)
   txOffset += 4;
@@ -1540,39 +1548,29 @@ function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: { key:
   const [inputCount, newTxOffset] = readVarInt(rawTx, txOffset);
   txOffset = newTxOffset;
   numInputs = inputCount;
+  for (let i = 0; i < numInputs; i++) {
+    txOffset += 32; // prev txid
+    txOffset += 4; // vout
+    const [scriptLength, scriptOffset] = readVarInt(rawTx, txOffset);
+    txOffset = scriptOffset;
+    txOffset += scriptLength;
+    txOffset += 4; // sequence
+  }
+  const [outputCount, outputOffset] = readVarInt(rawTx, txOffset);
+  txOffset = outputOffset;
+  numOutputs = outputCount;
 
   // INPUT MAPS
-  const inputs: { key: Uint8Array; value: Uint8Array }[][] = [];
-  for (let i = 0; i < numInputs; i++) {
-    const inputRecords: { key: Uint8Array; value: Uint8Array }[] = [];
-    const seenKeys = new Set<string>();
-    while (offset < psbtBuffer.length) {
-      const [keyLen, newOffset] = readVarInt(psbtBuffer, offset);
-      offset = newOffset;
-      // key length of 0 means the end of the input map
-      if (keyLen === 0) {
-        break;
-      }
-      const key = psbtBuffer.slice(offset, offset + keyLen);
-      offset += keyLen;
+  const inputMaps = readMaps(numInputs, offset);
+  offset = inputMaps.offset;
+  const inputs = inputMaps.map;
 
-      const keyHex = uint8ArrayToHexString(key);
-      if (seenKeys.has(keyHex)) {
-        throw new Error(`Duplicate key in input map`);
-      }
-      seenKeys.add(keyHex);
+  // OUTPUT MAPS
+  const outputMaps = readMaps(numOutputs, offset);
+  offset = outputMaps.offset;
+  const outputs = outputMaps.map;
 
-      const [valLen, newOffset2] = readVarInt(psbtBuffer, offset);
-      offset = newOffset2;
-      const value = psbtBuffer.slice(offset, offset + valLen);
-      offset += valLen;
-
-      inputRecords.push({ key, value });
-    }
-    inputs.push(inputRecords);
-  }
-
-  return { rawTx, inputs };
+  return { rawTx, inputs, outputs };
 }
 
 export function decodeRawTransaction(input: string, network: string): { tx: Transaction, hex: string, psbt?: string } {
