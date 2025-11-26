@@ -1,10 +1,9 @@
-import { Component, ChangeDetectionStrategy, Input, OnChanges, NgZone, SimpleChanges, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input, OnChanges, NgZone, Output, SimpleChanges, ChangeDetectorRef, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { AddressTypeInfo } from '@app/shared/address-utils';
 import { EChartsOption } from '@app/graphs/echarts';
 import { ScriptInfo } from '@app/shared/script.utils';
-import { compactSize, taggedHash, uint8ArrayToHexString } from '@app/shared/transaction.utils';
+import { computeLeafHash, taggedHash, taprootAddressToOutputKey } from '@app/shared/transaction.utils';
 import { StateService } from '@app/services/state.service';
 import { AsmStylerPipe } from '@app/shared/pipes/asm-styler/asm-styler.pipe';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
@@ -12,6 +11,7 @@ import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pip
 interface TaprootTree {
   name: string; // the TapBranch hash or TapLeaf script hash
   value?: LeafNode;
+  special?: 'internalKey' | 'merkleRoot';
   depth?: number;
   children?: [TaprootTree, TaprootTree];
   // ECharts properties
@@ -36,7 +36,9 @@ interface LeafNode {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaprootAddressScriptsComponent implements OnChanges {
-  @Input() address: AddressTypeInfo;
+  @Input() address: string;
+  @Input() scripts: Map<string, ScriptInfo>;
+  @Output() tapTreeIncomplete = new EventEmitter<boolean>(true);
 
   tree: TaprootTree;
   croppedTree: TaprootTree;
@@ -46,6 +48,8 @@ export class TaprootAddressScriptsComponent implements OnChanges {
   height: number;
   levelHeight: number = 40;
   fullTreeShown: boolean;
+  maybetapTreeIncomplete: boolean = false;
+  isNUMS: boolean = false;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -65,60 +69,70 @@ export class TaprootAddressScriptsComponent implements OnChanges {
   ) { }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.address?.currentValue.scripts && changes.address.currentValue.scripts.size) {
-      this.buildTree(Array.from(this.address.scripts.values()));
+    if (changes.scripts?.currentValue && changes.scripts.currentValue.size) {
+      this.buildTree(Array.from(this.scripts.values()));
       this.prepareTree(this.tree, 0);
+      this.tapTreeIncomplete.emit(this.maybetapTreeIncomplete);
       this.cropTree();
       this.toggleTree(this.fullTreeShown, false);
     }
   }
 
   buildTree(scripts: ScriptInfo[]): void {
-    // Parse script paths into merklePaths list and calculate depth
-    const merklePaths: { leafVersion: number, merklePath: string[] }[] = [];
     this.depth = 0;
-    for (const script of scripts) {
-      const scriptInfo = script.taprootInfo;
-      if (!scriptInfo.scriptPath?.merkleBranches?.length) {
-        throw new Error("Merkle path length must be >= 1");
-      }
-      const leafVersion = scriptInfo.scriptPath.leafVersion;
-      const merklePath = scriptInfo.scriptPath.merkleBranches.slice();
-      if (merklePath.length > this.depth) {
-        this.depth = merklePath.length;
-      }
-      merklePaths.push({ leafVersion, merklePath });
-    }
+    this.maybetapTreeIncomplete = false;
 
     // treeStructure is a list of maps, where each map contains as keys the hashes of the nodes at that depth, and as values the hashes of its two children
     const treeStructure: Map<string, [string, string]>[] = [];
-    for (let i = 0; i < this.depth; i++) {
-      treeStructure.push(new Map<string, [string, string]>());
-    }
     const leaves = new Map<string, LeafNode>();
+    const ensureLevels = (levels: number) => {
+      while (treeStructure.length < levels) {
+        treeStructure.push(new Map<string, [string, string]>());
+      }
+    };
 
-    for (let i = 0; i < scripts.length; i++) {
-      const script = scripts[i];
-      const merklePath = merklePaths[i].merklePath;
-      const leafVersion = merklePaths[i].leafVersion;
-      const tapLeaf = taggedHash('TapLeaf', leafVersion.toString(16) + uint8ArrayToHexString(compactSize(script.hex.length / 2)) + script.hex);
+    for (const script of scripts) {
+      const leafVersion = script.taprootInfo.scriptPath.leafVersion;
+      const merklePath = script.taprootInfo.scriptPath.merkleBranches.slice();
+      this.depth = Math.max(this.depth, merklePath.length);
+      ensureLevels(merklePath.length);
+      const tapLeaf = computeLeafHash(script.hex, leafVersion);
       leaves.set(tapLeaf, { leafVersion, script, merklePath });
       let k = tapLeaf;
       for (let j = 0; j < merklePath.length; j++) {
         const e = merklePath[j];
-        const [firstChild, secondChild] = [k, e].sort((a, b) => a.localeCompare(b));
+        const firstChild = k < e ? k : e;
+        const secondChild = firstChild === k ? e : k;
         const parentHash = taggedHash('TapBranch', firstChild + secondChild);
-        treeStructure[merklePath.length - j - 1].set(parentHash, [firstChild, secondChild]);
+        const previousLevelIndex = merklePath.length - j - 1;
+        const level = treeStructure[previousLevelIndex];
+        if (level.has(parentHash)) {
+          break;
+        }
+        level.set(parentHash, [firstChild, secondChild]);
         k = parentHash;
       }
     }
 
+    // Expand the tree to include public key, internal key and merkle root
+    const internalKeyNode = scripts[0].taprootInfo.scriptPath.internalKey;
+    const merkleRootNode = treeStructure.length > 0 ? treeStructure[0].keys().next().value : leaves.keys().next().value;
+    const outputKeyNode = taprootAddressToOutputKey(this.address).outputKey;
+    treeStructure.unshift(new Map<string, [string, string]>());
+    treeStructure[0].set(outputKeyNode, [internalKeyNode, merkleRootNode]);
+    this.depth++;
+    this.isNUMS = scripts[0].taprootInfo.scriptPath.isNUMS;
+
     // Build the tree recursively
-    const recursiveBuild = (hash: string, depth: number): TaprootTree => {
+    const recursiveBuild = (hash: string, depth: number, special?: TaprootTree['special']): TaprootTree => {
       const node: TaprootTree = {
         name: hash,
         depth: depth
       };
+
+      if (special) {
+        node.special = special;
+      }
 
       if (leaves.has(hash)) {
         node.value = leaves.get(hash);
@@ -128,8 +142,8 @@ export class TaprootAddressScriptsComponent implements OnChanges {
       if (depth < treeStructure.length && treeStructure[depth].has(hash)) {
         const [firstChild, secondChild] = treeStructure[depth].get(hash);
         node.children = [
-          recursiveBuild(firstChild, depth + 1),
-          recursiveBuild(secondChild, depth + 1)
+          recursiveBuild(firstChild, depth + 1, depth === 0 ? 'internalKey' : undefined),
+          recursiveBuild(secondChild, depth + 1, depth === 0 ? 'merkleRoot' : undefined)
         ];
       }
 
@@ -200,31 +214,48 @@ export class TaprootAddressScriptsComponent implements OnChanges {
     if (depth === 0) {
       node.symbol = 'none';
       node.label = {
-        formatter: '{pill|Taproot}',
+        formatter: '{pill|Public Key}',
         offset: [0, -5],
         rich: {
           pill: {
             ...basePillStyle,
-            backgroundColor: 'var(--tertiary)',
+            backgroundColor: 'var(--primary)',
             color: '#fff',
           },
         },
       };
       node.tooltip = [
-        { label: 'TapRoot Hash', content: node.name.slice(0, 10) + '…' + node.name.slice(-10) },
+        { label: 'Public Key', content: node.name.slice(0, 10) + '…' + node.name.slice(-10) },
       ];
     }
 
     if (node.children) {
       if (depth > 0) {
-        node.symbol = 'circle';
-        node.symbolSize = 10;
-        node.symbolOffset = [0, 5];
-        node.label = { formatter: '' };
-        node.tooltip = [
-          { label: 'TapBranch Hash', content: node.name.slice(0, 10) + '…' + node.name.slice(-10) },
-          { label: 'Depth', content: depth.toString() },
-        ];
+        if (!node.special) {
+          node.symbol = 'circle';
+          node.symbolSize = 10;
+          node.symbolOffset = [0, 5];
+          node.label = { formatter: '' };
+          node.tooltip = [
+            { label: 'TapBranch Hash', content: node.name.slice(0, 10) + '…' + node.name.slice(-10) },
+            { label: 'Depth', content: (depth - 1).toString() },
+          ];
+        } else if (node.special === 'merkleRoot') {
+          node.label = {
+            formatter: '{pill|Taproot}',
+            offset: [0, -5],
+            rich: {
+              pill: {
+                ...basePillStyle,
+                backgroundColor: 'var(--tertiary)',
+                color: '#fff',
+              },
+            },
+          };
+          node.tooltip = [
+            { label: 'Merkle Root', content: node.name.slice(0, 10) + '…' + node.name.slice(-10) },
+          ];
+        }
       }
       this.prepareTree(node.children[0], depth + 1);
       this.prepareTree(node.children[1], depth + 1);
@@ -248,10 +279,26 @@ export class TaprootAddressScriptsComponent implements OnChanges {
 
         node.tooltip = [
           { label: 'TapLeaf Hash', content: node.name.slice(0, 10) + '…' + node.name.slice(-10) },
-          { label: 'Depth', content: depth.toString() },
+          { label: 'Depth', content: (depth - 1).toString() },
           { label: 'Leaf Version', content: node.value.leafVersion.toString(16) },
         ];
 
+      } else if (node.special === 'internalKey') {
+        const internalKeyLabel = this.isNUMS ? 'Internal Key 🚫' : 'Internal Key';
+        node.label = {
+          formatter: `{pill|${internalKeyLabel}}`,
+          offset: [0, -5],
+          rich: {
+            pill: {
+              ...basePillStyle,
+              backgroundColor: this.isNUMS ? 'var(--grey)' : 'var(--tertiary)',
+              color: '#fff',
+            },
+          },
+        };
+        node.tooltip = [
+          { label: 'Internal Key', content: node.name.slice(0, 10) + '…' + node.name.slice(-10) },
+        ];
       } else {
         node.symbol = 'circle';
         node.symbolSize = 10;
@@ -259,8 +306,9 @@ export class TaprootAddressScriptsComponent implements OnChanges {
         node.label = { formatter: '' };
         node.tooltip = [
           { label: 'Hash', content: node.name.slice(0, 10) + '…' + node.name.slice(-10) },
-          { label: 'Depth', content: depth.toString() },
+          { label: 'Depth', content: (depth - 1).toString() },
         ];
+        this.maybetapTreeIncomplete = true;
       }
     }
   }
@@ -291,7 +339,7 @@ export class TaprootAddressScriptsComponent implements OnChanges {
             (item) =>
               `<tr>
                   <td style="color: #fff; padding-right: 5px; width: 30%">${item.label}</td>
-                  <td style="color: #b1b1b1; text-align: right">${item.content}</td>
+                  <td style="color: ${item.label === 'Internal Key' && this.isNUMS ? '#ffdddd' : '#b1b1b1'}; text-align: right">${item.content}</td>
                 </tr>`
           ).join('');
 
@@ -323,7 +371,7 @@ export class TaprootAddressScriptsComponent implements OnChanges {
 
           let hiddenScriptsMessage = '';
           if (node.tooltip[0].label === 'Hash') {
-            const remaining = 128 - (node.depth ?? 0);
+            const remaining = 128 - (node.depth - 1);
             let upperBoundHtml: string;
             if (remaining === 0) {
               upperBoundHtml = '1';
