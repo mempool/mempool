@@ -32,14 +32,10 @@
     "start:local-esplora": "npm run generate-config && npm run sync-assets-dev && npm run ng -- serve -c local-esplora",
     "start:local-prod": "npm run generate-config && npm run sync-assets-dev && npm run ng -- serve -c local-prod",
     "start:mixed": "npm run generate-config && npm run sync-assets-dev && npm run ng -- serve -c mixed",
-    "build": "npm run generate-config && npm run ng -- build --configuration production --localize && npm run sync-assets-dev && npm run sync-assets && npm run build-mempool.js",
+    "build": "npm run generate-config && npm run ng -- build --configuration production --localize && npm run sync-assets-dev && npm run sync-assets",
     "sync-assets": "rsync -av ./src/resources ./dist/mempool/browser && node sync-assets.js 'dist/mempool/browser/resources/'",
     "sync-assets-dev": "node sync-assets.js 'src/resources/'",
     "generate-config": "node generate-config.js",
-    "build-mempool.js": "npm run build-mempool-js",
-    "build-mempool-js": "browserify -p esmify node_modules/@mempool/mempool.js/lib/index.js --standalone mempoolJS > ./dist/mempool/browser/en-US/mempool.js | browserify -p tinyify -p esmify node_modules/@mempool/mempool.js/lib/index.js --standalone mempoolJS > ./dist/mempool/browser/en-US/mempool.min.js && npm run copy-mempool-js",
-    "build-mempool-liquid-js": "npm run build-mempool-js",
-    "copy-mempool-js": "cp ./dist/mempool/browser/en-US/mempool.js ./dist/mempool/browser/en-US/liquid.js && cp ./dist/mempool/browser/en-US/mempool.min.js ./dist/mempool/browser/en-US/liquid.min.js",
     "test": "npm run ng -- test",
     "lint": "./node_modules/.bin/eslint . --ext .ts",
     "lint:fix": "./node_modules/.bin/eslint . --ext .ts --fix",
@@ -78,12 +74,9 @@
     "@fortawesome/fontawesome-common-types": "~6.7.2",
     "@fortawesome/fontawesome-svg-core": "~6.7.2",
     "@fortawesome/free-solid-svg-icons": "~6.7.2",
-    "@mempool/mempool.js": "github:mempool/mempool.js#v3.0.0-beta",
     "@ng-bootstrap/ng-bootstrap": "^19.0.0",
     "@types/qrcode": "~1.5.0",
     "bootstrap": "~4.6.2",
-    "browserify": "^17.0.1",
-    "esmify": "^2.1.1",
     "clipboard": "^2.0.11",
     "domino": "^2.1.6",
     "echarts": "~5.4.0",
@@ -92,7 +85,6 @@
     "qrcode": "1.5.1",
     "rxjs": "~7.8.1",
     "esbuild": "^0.25.8",
-    "tinyify": "^4.0.0",
     "tlite": "^0.1.9",
     "tslib": "~2.8.0",
     "zone.js": "~0.15.1"
@@ -118,11 +110,6 @@
     "cypress-wait-until": "^3.0.1",
     "mock-socket": "~9.3.1",
     "start-server-and-test": "~2.1.2"
-  },
-  "overrides": {
-    "terser": "^5.14.2",
-    "babel-traverse": "npm:@babel/traverse@^7.23.2",
-    "glob": "^10.5.0"
   },
   "scarfSettings": {
     "enabled": false
