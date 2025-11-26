@@ -130,6 +130,7 @@ export class AddressTypeInfo {
   isMultisig?: { m: number, n: number };
   tapscript?: boolean;
   simplicity?: boolean;
+  isNUMS?: boolean;
 
   constructor (network: string, address: string, type?: AddressType, vin?: Vin[], vout?: Vout) {
     this.network = network;
@@ -151,6 +152,8 @@ export class AddressTypeInfo {
     cloned.scripts = new Map(Array.from(this.scripts, ([key, value]) => [key, value?.clone()]));
     cloned.isMultisig = this.isMultisig;
     cloned.tapscript = this.tapscript;
+    cloned.simplicity = this.simplicity;
+    cloned.isNUMS = this.isNUMS;
     return cloned;
   }
 
@@ -236,14 +239,18 @@ export class AddressTypeInfo {
     return this.compareTo(otherInfo);
   }
 
-  private processScript(script: ScriptInfo): void {
+  public processScript(script: ScriptInfo): boolean {
     if (this.scripts.has(script.key)) {
-      return;
+      return false;
     }
     this.scripts.set(script.key, script);
     if (script.template?.type === 'multisig') {
       this.isMultisig = { m: script.template['m'], n: script.template['n'] };
     }
+    if (script.taprootInfo?.scriptPath?.isNUMS) {
+      this.isNUMS = true;
+    }
+    return true;
   }
 }
 

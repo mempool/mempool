@@ -1,10 +1,11 @@
 import { TransactionFlags } from '@app/shared/filters.utils';
-import { getVarIntLength, parseMultisigScript, isPoint, parseTapscriptMultisig, parseTapscriptUnanimousMultisig } from '@app/shared/script.utils';
+import { getVarIntLength, parseMultisigScript, isPoint, parseTapscriptMultisig, parseTapscriptUnanimousMultisig, ScriptInfo } from '@app/shared/script.utils';
 import { Transaction, Vin } from '@interfaces/electrs.interface';
 import { CpfpInfo, RbfInfo, TransactionStripped } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 import { hash, Hash } from '@app/shared/sha256';
-import { AddressType } from '@app/shared/address-utils';
+import { AddressType, AddressTypeInfo } from '@app/shared/address-utils';
+import * as secp256k1 from '@noble/secp256k1';
 
 // Bitcoin Core default policy settings
 const MAX_STANDARD_TX_WEIGHT = 400_000;
@@ -20,6 +21,9 @@ const MAX_STANDARD_SCRIPTSIG_SIZE = 1650;
 const DUST_RELAY_TX_FEE = 3;
 const MAX_OP_RETURN_RELAY = 83;
 const DEFAULT_PERMIT_BAREMULTISIG = true;
+
+const TAPROOT_NUMS_INTERNAL_KEY = '50929b74c1a04954b78b4b6035e97a5e078a5a0f28ec96d547bfee9ace803ac0';
+const SECP256K1_ORDER = BigInt('0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141');
 
 export function countScriptSigops(script: string, isRawScript: boolean = false, witness: boolean = false): number {
   if (!script?.length) {
@@ -1522,18 +1526,7 @@ function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: PsbtKe
 }
 
 export function decodeRawTransaction(input: string, network: string): { tx: Transaction, hex: string, psbt?: string } {
-  if (!input.length) {
-    throw new Error('Empty input');
-  }
-
-  let buffer: Uint8Array;
-  if (input.length % 2 === 0 && /^[0-9a-fA-F]+$/.test(input)) {
-    buffer = hexStringToUint8Array(input);
-  } else if (/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)|[A-Za-z0-9+/]{3}=)?$/.test(input)) {
-    buffer = base64ToUint8Array(input);
-  } else {
-    throw new Error('Invalid input: not a valid transaction or PSBT');
-  }
+  const buffer = convertTextToBuffer(input);
 
   if (buffer[0] === 0x70 && buffer[1] === 0x73 && buffer[2] === 0x62 && buffer[3] === 0x74) { // PSBT magic bytes
     const { rawTx, inputs } = decodePsbt(buffer);
@@ -2192,7 +2185,7 @@ export function parseTaproot(witness: string[]): ParsedTaproot {
       leafVersion: leafVersionParity & 0xfe,
       parity: leafVersionParity & 0x01,
       internalKey: internalKey,
-      isNUMS: internalKey === '50929b74c1a04954b78b4b6035e97a5e078a5a0f28ec96d547bfee9ace803ac0',
+      isNUMS: internalKey === TAPROOT_NUMS_INTERNAL_KEY,
       merkleBranches: [],
     };
     for (let i = 66; (i + 64) <= parsed.controlBlock.length; i += 64) {
@@ -2208,4 +2201,218 @@ export function parseTaproot(witness: string[]): ParsedTaproot {
     }
   }
   return parsed;
+}
+
+function convertTextToBuffer(input: string): Uint8Array {
+  if (!input.length) {
+    throw new Error('Empty input');
+  }
+
+  let buffer: Uint8Array;
+  if (input.length % 2 === 0 && /^[0-9a-fA-F]+$/.test(input)) {
+    buffer = hexStringToUint8Array(input);
+  } else if (/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)|[A-Za-z0-9+/]{3}=)?$/.test(input)) {
+    buffer = base64ToUint8Array(input);
+  } else {
+    throw new Error('Invalid input: not hex or base64');
+  }
+  return buffer;
+}
+
+export function computeLeafHash(scriptHex: string, leafVersion: number): string {
+  const versionHex = leafVersion.toString(16).padStart(2, '0');
+  const scriptSizeHex = uint8ArrayToHexString(compactSize(scriptHex.length / 2));
+  return taggedHash('TapLeaf', versionHex + scriptSizeHex + scriptHex);
+};
+
+function computeMerkleRoot(scriptHex: string, leafVersion: number, merkleBranches: string[]): string {
+  const leafHash = computeLeafHash(scriptHex, leafVersion);
+  return (merkleBranches || []).reduce((acc, branch) => {
+    const [firstChild, secondChild] = [acc, branch].sort((a, b) => a.localeCompare(b));
+    return taggedHash('TapBranch', firstChild + secondChild);
+  }, leafHash);
+}
+
+function deriveTaprootOutput(internalKey: string, merkleRoot: string, network: string): { address: string; parity: number } {
+  const tweakHash = taggedHash('TapTweak', internalKey + merkleRoot); // HashTapTweak(internalKey || m)
+  const tweak = BigInt('0x' + tweakHash) % SECP256K1_ORDER; // int(HashTapTweak(internalKey || m))
+  const internalKeyPoint = secp256k1.Point.fromHex(`02${internalKey}`); // P = lift_x(internalKey)
+  const outputKeyPoint = internalKeyPoint.add(secp256k1.Point.BASE.multiply(tweak)); // Q = P + int(HashTapTweak(internalKey || m)) * G
+  const parity = Number(outputKeyPoint.y & 1n);
+  const outputKey = outputKeyPoint.x.toString(16).padStart(64, '0');
+  return { address: scriptPubKeyToAddress(`5120${outputKey}`, network).address, parity };
+}
+
+interface TapTreeLeaf {
+  leafVersion: number;
+  scriptHex: string;
+  merkleBranches: string[];
+}
+
+/** Decode a PSBT_OUT_TAP_TREE into its leaves */
+function parseTapTreeRecord(value: Uint8Array): TapTreeLeaf[] {
+  const leaves: TapTreeLeaf[] = [];
+  const stack: { depth: number; hash: string; leaves: TapTreeLeaf[] }[] = [];
+  let offset = 0;
+
+  while (offset < value.length) {
+    const depth = value[offset++];
+    const leafVersion = value[offset++];
+    const [scriptLength, scriptOffset] = readVarInt(value, offset);
+    offset = scriptOffset;
+    const [scriptBytes, nextOffset] = readSlice(value, offset, scriptLength);
+    offset = nextOffset;
+    const scriptHex = uint8ArrayToHexString(scriptBytes);
+    const leaf: TapTreeLeaf = {
+      leafVersion,
+      scriptHex,
+      merkleBranches: [],
+    };
+    leaves.push(leaf);
+    stack.push({ depth, hash: computeLeafHash(scriptHex, leafVersion), leaves: [leaf] });
+
+    while (stack.length >= 2 && stack[stack.length - 1].depth === stack[stack.length - 2].depth) {
+      const right = stack.pop();
+      const left = stack.pop();
+      for (const l of left.leaves) {
+        l.merkleBranches.push(right.hash);
+      }
+      for (const r of right.leaves) {
+        r.merkleBranches.push(left.hash);
+      }
+      const [firstChild, secondChild] = [left.hash, right.hash].sort((a, b) => a.localeCompare(b));
+      stack.push({ depth: left.depth - 1, hash: taggedHash('TapBranch', firstChild + secondChild), leaves: left.leaves.concat(right.leaves) });
+    }
+  }
+
+  return leaves;
+}
+
+/** Populate an address' taptree using a PSBT involving the taproot address */
+export function fillTapTree(addressTypeInfo: AddressTypeInfo, input: string) {
+  if (addressTypeInfo?.type !== 'v1_p2tr') {
+    return;
+  }
+
+  const psbt = decodePsbt(convertTextToBuffer(input));
+  const scripts = addressTypeInfo.scripts;
+  const targetAddress = addressTypeInfo.address;
+  let committedInternalKey: string | undefined; // internal key, known if at least one tapscript spend is on chain
+  let committedMerkleRoot: string | undefined;
+  let committedParity: number | undefined;
+  if (scripts.size) {
+    // get the merkle root from published tapscript
+    const tapInfo: ParsedTaproot = scripts.values().next().value.taprootInfo;
+    committedInternalKey = tapInfo.scriptPath.internalKey;
+    committedMerkleRoot = computeMerkleRoot(tapInfo.scriptPath.script, tapInfo.scriptPath.leafVersion, tapInfo.scriptPath.merkleBranches);
+    committedParity = tapInfo.scriptPath.parity;
+  }
+
+  const internalKeyMatchesAddress = (internalKey: string): boolean => !committedInternalKey || internalKey === committedInternalKey;
+  const scriptMatchesAddress = (internalKey: string, scriptHex: string, leafVersion: number, merkleBranches: string[]): boolean => {
+    const merkleRoot = computeMerkleRoot(scriptHex, leafVersion, merkleBranches);
+    if (committedMerkleRoot) {
+      return merkleRoot === committedMerkleRoot;
+    }
+    const { address, parity } = deriveTaprootOutput(internalKey, merkleRoot, addressTypeInfo.network);
+    if (address !== targetAddress) {
+      return false;
+    }
+    committedMerkleRoot = merkleRoot;
+    committedInternalKey = internalKey;
+    committedParity = parity;
+    return true;
+  };
+
+  let addedScript = false;
+  try {
+    for (let i = 0; i < psbt.inputs.length; i++) {
+      // Look for PSBT_IN_TAP_LEAF_SCRIPT (0x15)
+      for (const record of psbt.inputs[i].get(0x15) || []) {
+        const controlBlock = record.keyData;
+        const tapInternalKey = uint8ArrayToHexString(controlBlock.slice(1, 33));
+        if (!tapInternalKey || !internalKeyMatchesAddress(tapInternalKey)) {
+          continue;
+        }
+
+        const merkleBranches: string[] = [];
+        for (let offset = 33; offset < controlBlock.length; offset += 32) {
+          merkleBranches.push(uint8ArrayToHexString(controlBlock.slice(offset, offset + 32)));
+        }
+
+        const leafVersion = record.value[record.value.length - 1];
+        const scriptHex = uint8ArrayToHexString(record.value.slice(0, -1));
+        if (!scriptMatchesAddress(tapInternalKey, scriptHex, leafVersion, merkleBranches)) {
+          continue;
+        }
+
+        const taprootInfo: ParsedTaproot = {
+          keyPath: false,
+          stack: [],
+          controlBlock: uint8ArrayToHexString(controlBlock),
+          scriptPath: {
+            script: scriptHex,
+            leafVersion,
+            parity: controlBlock[0] & 0x01,
+            merkleBranches: merkleBranches.slice(),
+            internalKey: tapInternalKey,
+            isNUMS: tapInternalKey === TAPROOT_NUMS_INTERNAL_KEY,
+          },
+        };
+
+        const scriptInfo = new ScriptInfo('inner_witnessscript', scriptHex, convertScriptSigAsm(scriptHex), undefined, taprootInfo);
+        const scriptAdded = addressTypeInfo.processScript(scriptInfo);
+        if (scriptAdded) {
+          addressTypeInfo.tapscript = true;
+          addedScript = true;
+        }
+      }
+    }
+
+    for (let i = 0; i < psbt.outputs.length; i++) {
+      // Look for PSBT_OUT_TAP_TREE (0x06) and PSBT_OUT_TAP_INTERNAL_KEY (key 0x05)
+      const outputMap = psbt.outputs[i];
+      const tapTreeRecord = outputMap.get(0x06)?.[0];
+      const tapInternalKeyRecord = outputMap.get(0x05)?.[0];
+      const tapInternalKey = tapInternalKeyRecord ? uint8ArrayToHexString(tapInternalKeyRecord.value) : committedInternalKey;
+      if (!tapTreeRecord || !tapInternalKey || !internalKeyMatchesAddress(tapInternalKey)) {
+        continue;
+      }
+
+      const leaves = parseTapTreeRecord(tapTreeRecord.value);
+      for (const leaf of leaves) {
+        if (!scriptMatchesAddress(tapInternalKey, leaf.scriptHex, leaf.leafVersion, leaf.merkleBranches)) {
+          continue;
+        }
+        const controlBlockPrefix = (leaf.leafVersion | committedParity).toString(16).padStart(2, '0');
+        const controlBlock = controlBlockPrefix + tapInternalKey + leaf.merkleBranches.join('');
+        const taprootInfo: ParsedTaproot = {
+          keyPath: false,
+          stack: [],
+          controlBlock,
+          scriptPath: {
+            script: leaf.scriptHex,
+            leafVersion: leaf.leafVersion,
+            parity: committedParity,
+            internalKey: tapInternalKey,
+            merkleBranches: leaf.merkleBranches.slice(),
+            isNUMS: tapInternalKey === TAPROOT_NUMS_INTERNAL_KEY,
+          },
+        };
+        const scriptInfo = new ScriptInfo('inner_witnessscript', leaf.scriptHex, convertScriptSigAsm(leaf.scriptHex), undefined, taprootInfo);
+        const scriptAdded = addressTypeInfo.processScript(scriptInfo);
+        if (scriptAdded) {
+          addressTypeInfo.tapscript = true;
+          addedScript = true;
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error parsing PSBT:', error);
+    throw new Error('An error occurred while parsing the PSBT');
+  }
+
+  if (!addedScript) {
+    throw new Error('No new taproot scripts matching this address');
+  }
 }
