@@ -15,6 +15,7 @@ import { getFlagEmoji } from '@app/shared/common.utils';
   selector: 'app-nodes-map',
   templateUrl: './nodes-map.component.html',
   styleUrls: ['./nodes-map.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesMap implements OnInit, OnChanges {

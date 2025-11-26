@@ -38,8 +38,8 @@ function createRateUnitDirective(checkFn: (rateUnit: string) => boolean): any {
   return RateUnitDirective;
 }
 
-@Directive({ selector: '[only-vsize]' })
+@Directive({ selector: '[only-vsize]', standalone: false })
 export class OnlyVsizeDirective extends createRateUnitDirective(rateUnit => rateUnit !== 'wu') {}
 
-@Directive({ selector: '[only-weight]' })
+@Directive({ selector: '[only-weight]', standalone: false })
 export class OnlyWeightDirective extends createRateUnitDirective(rateUnit => rateUnit === 'wu') {}

@@ -8,6 +8,7 @@ import { AddressType, AddressTypeInfo } from '@app/shared/address-utils';
   templateUrl: './address-labels.component.html',
   styleUrls: ['./address-labels.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class AddressLabelsComponent implements OnChanges {
   network = '';

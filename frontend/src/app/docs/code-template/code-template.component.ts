@@ -4,7 +4,8 @@ import { Env, StateService } from '@app/services/state.service';
 @Component({
   selector: 'app-code-template',
   templateUrl: './code-template.component.html',
-  styleUrls: ['./code-template.component.scss']
+  styleUrls: ['./code-template.component.scss'],
+  standalone: false,
 })
 export class CodeTemplateComponent implements OnInit {
   @Input() network: string;

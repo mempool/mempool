@@ -180,6 +180,19 @@ import { execSync } from 'child_process';
     }
     return this.pool;
   }
+
+  /**
+   * Close the database connection pool
+   * This should only be called when the application is shutting down
+   * or at the end of test suites
+   */
+  public async close(): Promise<void> {
+    if (this.pool !== null) {
+      await this.pool.end();
+      this.pool = null;
+      logger.debug('Database connection pool closed');
+    }
+  }
 }
 
 export default new DB();

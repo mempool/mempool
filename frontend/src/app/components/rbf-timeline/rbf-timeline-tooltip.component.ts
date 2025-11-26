@@ -5,6 +5,7 @@ import { RbfTree } from '@interfaces/node-api.interface';
   selector: 'app-rbf-timeline-tooltip',
   templateUrl: './rbf-timeline-tooltip.component.html',
   styleUrls: ['./rbf-timeline-tooltip.component.scss'],
+  standalone: false,
 })
 export class RbfTimelineTooltipComponent implements OnChanges {
   @Input() rbfInfo: RbfTree | null;

@@ -8,7 +8,8 @@ import { faqData } from '@app/docs/api-docs/api-docs-data';
 @Component({
   selector: 'app-api-docs-nav',
   templateUrl: './api-docs-nav.component.html',
-  styleUrls: ['./api-docs-nav.component.scss']
+  styleUrls: ['./api-docs-nav.component.scss'],
+  standalone: false,
 })
 export class ApiDocsNavComponent implements OnInit {
 

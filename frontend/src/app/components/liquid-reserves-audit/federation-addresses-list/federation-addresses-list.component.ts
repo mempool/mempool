@@ -10,6 +10,7 @@ import { WebsocketService } from '@app/services/websocket.service';
   selector: 'app-federation-addresses-list',
   templateUrl: './federation-addresses-list.component.html',
   styleUrls: ['./federation-addresses-list.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FederationAddressesListComponent implements OnInit {

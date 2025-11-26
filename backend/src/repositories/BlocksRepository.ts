@@ -272,7 +272,11 @@ class BlocksRepository {
    * Get all block height that have not been indexed between [startHeight, endHeight]
    */
   public async $getMissingBlocksBetweenHeights(startHeight: number, endHeight: number): Promise<number[]> {
-    if (startHeight < endHeight) {
+    // Ensure startHeight is the lower value and endHeight is the higher value
+    const minHeight = Math.min(startHeight, endHeight);
+    const maxHeight = Math.max(startHeight, endHeight);
+    
+    if (minHeight === maxHeight) {
       return [];
     }
 
@@ -280,13 +284,13 @@ class BlocksRepository {
       const [rows]: any[] = await DB.query(`
         SELECT height
         FROM blocks
-        WHERE height <= ? AND height >= ? AND stale = 0
-        ORDER BY height DESC;
-      `, [startHeight, endHeight]);
+        WHERE height >= ? AND height <= ? AND stale = 0
+        ORDER BY height ASC;
+      `, [minHeight, maxHeight]);
 
       const indexedBlockHeights: number[] = [];
       rows.forEach((row: any) => { indexedBlockHeights.push(row.height); });
-      const seekedBlocks: number[] = Array.from(Array(startHeight - endHeight + 1).keys(), n => n + endHeight).reverse();
+      const seekedBlocks: number[] = Array.from(Array(maxHeight - minHeight + 1).keys(), n => n + minHeight);
       const missingBlocksHeights = seekedBlocks.filter(x => indexedBlockHeights.indexOf(x) === -1);
 
       return missingBlocksHeights;

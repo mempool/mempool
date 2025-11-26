@@ -16,5 +16,9 @@ const config: Config.InitialOptions = {
   setupFiles: [
     "./testSetup.ts",
   ],
+  testPathIgnorePatterns: [
+    "/node_modules/",
+    "/__integration_tests__/",
+  ],
 }
 export default config;

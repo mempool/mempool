@@ -7,6 +7,7 @@ import { CurrentPegs } from '@interfaces/node-api.interface';
   selector: 'app-reserves-supply-stats',
   templateUrl: './reserves-supply-stats.component.html',
   styleUrls: ['./reserves-supply-stats.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReservesSupplyStatsComponent implements OnInit {

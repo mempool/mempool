@@ -56,6 +56,7 @@ interface AuditStatus {
   selector: 'app-tracker',
   templateUrl: './tracker.component.html',
   styleUrls: ['./tracker.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TrackerComponent implements OnInit, OnDestroy {

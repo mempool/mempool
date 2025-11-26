@@ -9,6 +9,7 @@ import { LightningApiService } from '@app/lightning/lightning-api.service';
   selector: 'app-channels-list',
   templateUrl: './channels-list.component.html',
   styleUrls: ['./channels-list.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChannelsListComponent implements OnInit, OnChanges {

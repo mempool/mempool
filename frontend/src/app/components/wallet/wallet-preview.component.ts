@@ -101,7 +101,8 @@ class WalletStats implements ChainStats {
 @Component({
   selector: 'app-wallet-preview',
   templateUrl: './wallet-preview.component.html',
-  styleUrls: ['./wallet-preview.component.scss']
+  styleUrls: ['./wallet-preview.component.scss'],
+  standalone: false,
 })
 export class WalletPreviewComponent implements OnInit, OnDestroy {
   network = '';

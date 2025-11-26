@@ -5,6 +5,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inpu
   templateUrl: './acceleration-sparkles.component.html',
   styleUrls: ['./acceleration-sparkles.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class AccelerationSparklesComponent implements OnChanges {
   @Input() arrow: ElementRef<HTMLDivElement>;

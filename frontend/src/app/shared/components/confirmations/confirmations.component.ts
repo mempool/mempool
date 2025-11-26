@@ -5,6 +5,7 @@ import { ChangeDetectionStrategy, Component, Input, OnChanges } from '@angular/c
   selector: 'app-confirmations',
   templateUrl: './confirmations.component.html',
   styleUrls: ['./confirmations.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmationsComponent implements OnChanges {

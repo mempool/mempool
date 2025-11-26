@@ -17,6 +17,7 @@ interface GraphBar {
   selector: 'app-accelerate-fee-graph',
   templateUrl: './accelerate-fee-graph.component.html',
   styleUrls: ['./accelerate-fee-graph.component.scss'],
+  standalone: false,
 })
 export class AccelerateFeeGraphComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   @Input() tx: Transaction;

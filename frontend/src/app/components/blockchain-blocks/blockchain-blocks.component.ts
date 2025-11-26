@@ -15,6 +15,7 @@ interface BlockchainBlock extends BlockExtended {
   selector: 'app-blockchain-blocks',
   templateUrl: './blockchain-blocks.component.html',
   styleUrls: ['./blockchain-blocks.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {

@@ -6,6 +6,7 @@ import { FederationUtxo } from '@interfaces/node-api.interface';
   selector: 'app-expired-utxos-stats',
   templateUrl: './expired-utxos-stats.component.html',
   styleUrls: ['./expired-utxos-stats.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExpiredUtxosStatsComponent implements OnInit {

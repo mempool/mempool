@@ -2,13 +2,14 @@ import { Directive, TemplateRef, ViewContainerRef, Inject, PLATFORM_ID } from '@
 import { isPlatformBrowser } from '@angular/common';
 
 @Directive({
-  selector: '[browserOnly]'
+  selector: '[browserOnly]',
+  standalone: false,
 })
 export class BrowserOnlyDirective {
   constructor(
     private templateRef: TemplateRef<any>,
     private viewContainer: ViewContainerRef,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: object
   ) {
     if (isPlatformBrowser(this.platformId)) {
       this.viewContainer.createEmbeddedView(this.templateRef);
