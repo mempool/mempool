@@ -2167,9 +2167,13 @@ export interface ParsedTaproot {
 
 /**
  * Parse out the different parts of a taproot spend from a p2tr witness
- * `witness` MUST be a valid p2tr witness stack, otherwise the result will be garbage
+ * if present, `witness` MUST be a valid p2tr witness stack, otherwise the result will be garbage
+ * otherwise assume this is an unsigned input from a non finalized PSBT
  */
-export function parseTaproot(witness: string[]): ParsedTaproot {
+export function parseTaproot(witness: string[]): ParsedTaproot | null {
+  if (!witness?.length) {
+    return { keyPath: true, stack: [] };
+  }
   const parsed: ParsedTaproot = {
     keyPath: true,
     stack: witness.slice(0, 1), // assume keyspend for now
