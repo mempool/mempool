@@ -86,13 +86,12 @@ class Indexer {
   }
 
   private scheduleNextRun(timeout: number): void {
-    if (this.reindexTimeout) { // Only one future run should be planned, so always replace existing timer
-      clearTimeout(this.reindexTimeout);
+    if (!this.reindexTimeout) { // Only one future run should be planned, ignore if already scheduled
+      this.reindexTimeout = setTimeout(() => {
+        this.reindexTimeout = undefined;
+        this.reindex();
+      }, timeout);
     }
-    this.reindexTimeout = setTimeout(() => {
-      this.reindexTimeout = undefined;
-      this.reindex();
-    }, timeout);
   }
 
   /**
