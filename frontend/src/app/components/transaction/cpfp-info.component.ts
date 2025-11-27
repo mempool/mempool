@@ -20,4 +20,8 @@ export class CpfpInfoComponent implements OnInit {
   roundToOneDecimal(cpfpTx: any): number {
     return +(cpfpTx.fee / (cpfpTx.weight / 4)).toFixed(1);
   }
+
+  trackByIndex(index: number): number {
+    return index;
+  }
 }
