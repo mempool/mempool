@@ -1,10 +1,9 @@
-import { Component, ChangeDetectionStrategy, Input, OnChanges, NgZone, SimpleChanges, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input, OnChanges, NgZone, Output, SimpleChanges, ChangeDetectorRef, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { AddressTypeInfo } from '@app/shared/address-utils';
 import { EChartsOption } from '@app/graphs/echarts';
 import { ScriptInfo } from '@app/shared/script.utils';
-import { compactSize, taggedHash, uint8ArrayToHexString } from '@app/shared/transaction.utils';
+import { computeLeafHash, taggedHash } from '@app/shared/transaction.utils';
 import { StateService } from '@app/services/state.service';
 import { AsmStylerPipe } from '@app/shared/pipes/asm-styler/asm-styler.pipe';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
@@ -36,7 +35,8 @@ interface LeafNode {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaprootAddressScriptsComponent implements OnChanges {
-  @Input() address: AddressTypeInfo;
+  @Input() scripts: Map<string, ScriptInfo>;
+  @Output() tapTreeIncomplete = new EventEmitter<boolean>(true);
 
   tree: TaprootTree;
   croppedTree: TaprootTree;
@@ -46,6 +46,7 @@ export class TaprootAddressScriptsComponent implements OnChanges {
   height: number;
   levelHeight: number = 40;
   fullTreeShown: boolean;
+  maybetapTreeIncomplete: boolean = false;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -65,9 +66,10 @@ export class TaprootAddressScriptsComponent implements OnChanges {
   ) { }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.address?.currentValue.scripts && changes.address.currentValue.scripts.size) {
-      this.buildTree(Array.from(this.address.scripts.values()));
+    if (changes.scripts?.currentValue && changes.scripts.currentValue.size) {
+      this.buildTree(Array.from(this.scripts.values()));
       this.prepareTree(this.tree, 0);
+      this.tapTreeIncomplete.emit(this.maybetapTreeIncomplete);
       this.cropTree();
       this.toggleTree(this.fullTreeShown, false);
     }
@@ -77,17 +79,14 @@ export class TaprootAddressScriptsComponent implements OnChanges {
     // Parse script paths into merklePaths list and calculate depth
     const merklePaths: { leafVersion: number, merklePath: string[] }[] = [];
     this.depth = 0;
+    this.maybetapTreeIncomplete = false;
     for (const script of scripts) {
-      const controlBlock = script.scriptPath;
-      const m = ((controlBlock.length / 2) - 33) / 32;
-      if (!Number.isInteger(m) || m <= 0) {
+      const scriptInfo = script.taprootInfo;
+      if (!scriptInfo.scriptPath?.merkleBranches?.length) {
         throw new Error("Merkle path length must be >= 1");
       }
-      const leafVersion = parseInt(controlBlock.slice(0, 2), 16) & 0xfe;
-      const merklePath = [];
-      for (let i = 0; i < m; i++) {
-        merklePath.push(controlBlock.slice(66 + i * 64, 66 + (i + 1) * 64));
-      }
+      const leafVersion = scriptInfo.scriptPath.leafVersion;
+      const merklePath = scriptInfo.scriptPath.merkleBranches.slice();
       if (merklePath.length > this.depth) {
         this.depth = merklePath.length;
       }
@@ -105,7 +104,7 @@ export class TaprootAddressScriptsComponent implements OnChanges {
       const script = scripts[i];
       const merklePath = merklePaths[i].merklePath;
       const leafVersion = merklePaths[i].leafVersion;
-      const tapLeaf = taggedHash('TapLeaf', leafVersion.toString(16) + uint8ArrayToHexString(compactSize(script.hex.length / 2)) + script.hex);
+      const tapLeaf = computeLeafHash(script.hex, leafVersion);
       leaves.set(tapLeaf, { leafVersion, script, merklePath });
       let k = tapLeaf;
       for (let j = 0; j < merklePath.length; j++) {
@@ -265,6 +264,7 @@ export class TaprootAddressScriptsComponent implements OnChanges {
           { label: 'Hash', content: node.name.slice(0, 10) + '…' + node.name.slice(-10) },
           { label: 'Depth', content: depth.toString() },
         ];
+        this.maybetapTreeIncomplete = true;
       }
     }
   }

@@ -73,15 +73,21 @@
       </div>
     </div>
 
-    <ng-container *ngIf="hasTapTree"> 
+    <ng-container *ngIf="hasTapTree || taprootPsbtExpanded"> 
       <br>
-      <div class="title-tx">
+      <div class="title-tx d-flex align-items-center justify-content-between flex-wrap">
         <h2 class="text-left" i18n="address.taproot-tree">Taproot Tree</h2>
       </div>
       <div class="box">
         <div class="row">
           <div class="col-md">
-            <app-taproot-address-scripts [address]="addressTypeInfo"></app-taproot-address-scripts> 
+            <div *ngIf="taprootPsbtExpanded" class="mb-3">
+              <form *ngIf="psbtForm" [formGroup]="psbtForm" novalidate>
+                <textarea id="psbtInput" class="form-control font-monospace" rows="2" formControlName="psbt" placeholder="Paste hex or base64 PSBT involving this address to add unpublished leaves to the tree" autocomplete="off" spellcheck="false" (input)="submitPsbt()"></textarea>
+                <div class="text-danger mt-1 small" *ngIf="psbtError">{{ psbtError }}</div>
+              </form>
+            </div>
+            <app-taproot-address-scripts *ngIf="hasTapTree" [scripts]="addressTypeInfo.scripts" (tapTreeIncomplete)="isTapTreeIncomplete($event)"></app-taproot-address-scripts> 
           </div>
         </div>
       </div>
@@ -299,9 +305,12 @@
 <ng-template #typeRow>
   <td i18n="address.type">Type</td>
   <td class="wrap-cell">
-    <span placement="bottom" class="badge badge-primary">
+    <span class="badge" [ngClass]="addressTypeInfo?.isNUMS ? 'badge-warning' : 'badge-primary'" [ngbTooltip]="addressTypeInfo?.isNUMS ? 'key path disabled' : null" i18n-ngbTooltip="address.nums-keypath-disabled">
       <app-address-type [address]="addressTypeInfo"></app-address-type>
     </span>
+    <button *ngIf="showTaprootPsbtButton()" type="button" class="btn btn-sm taproot-psbt-btn" (click)="taprootPsbtExpanded = !taprootPsbtExpanded" i18n-ngbTooltip="address.taproot-psbt-add-unpublished-spend-paths" ngbTooltip="Add unpublished spending paths">
+      <fa-icon [icon]="['fas', 'code-fork']" [fixedWidth]="true"></fa-icon>
+    </button>
     <app-address-labels *ngIf="!hasTapTree" [channel]="exampleChannel" [address]="addressTypeInfo" class="ml-1"></app-address-labels>
   </td>
 </ng-template>

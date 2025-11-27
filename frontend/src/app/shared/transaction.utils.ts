@@ -1,10 +1,11 @@
 import { TransactionFlags } from '@app/shared/filters.utils';
-import { getVarIntLength, parseMultisigScript, isPoint, parseTapscriptMultisig, parseTapscriptUnanimousMultisig } from '@app/shared/script.utils';
+import { getVarIntLength, parseMultisigScript, isPoint, parseTapscriptMultisig, parseTapscriptUnanimousMultisig, ScriptInfo } from '@app/shared/script.utils';
 import { Transaction, Vin } from '@interfaces/electrs.interface';
 import { CpfpInfo, RbfInfo, TransactionStripped } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 import { hash, Hash } from '@app/shared/sha256';
-import { AddressType } from '@app/shared/address-utils';
+import { AddressType, AddressTypeInfo } from '@app/shared/address-utils';
+import * as secp256k1 from '@noble/secp256k1';
 
 // Bitcoin Core default policy settings
 const MAX_STANDARD_TX_WEIGHT = 400_000;
@@ -20,6 +21,9 @@ const MAX_STANDARD_SCRIPTSIG_SIZE = 1650;
 const DUST_RELAY_TX_FEE = 3;
 const MAX_OP_RETURN_RELAY = 83;
 const DEFAULT_PERMIT_BAREMULTISIG = true;
+
+const TAPROOT_NUMS_INTERNAL_KEY = '50929b74c1a04954b78b4b6035e97a5e078a5a0f28ec96d547bfee9ace803ac0';
+const SECP256K1_ORDER = BigInt('0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141');
 
 export function countScriptSigops(script: string, isRawScript: boolean = false, witness: boolean = false): number {
   if (!script?.length) {
@@ -55,8 +59,8 @@ export function setSchnorrSighashFlags(flags: bigint, witness: string[]): bigint
   if (!witness?.length) {
     return flags;
   }
-  const hasAnnex = witness.length > 1 && witness[witness.length - 1].startsWith('50');
-  if (witness?.length === (hasAnnex ? 2 : 1)) {
+  const taprootInfo = parseTaproot(witness);
+  if (taprootInfo.keyPath) {
     // keypath spend, signature is the only witness item
     if (witness[0].length === 130) {
       flags |= setSighashFlags(flags, witness[0]);
@@ -64,12 +68,13 @@ export function setSchnorrSighashFlags(flags: bigint, witness: string[]): bigint
       flags |= TransactionFlags.sighash_default;
     }
   } else {
-    // scriptpath spend, all items except for the script, control block and annex could be signatures
-    for (let i = 0; i < witness.length - (hasAnnex ? 3 : 2); i++) {
+    // scriptpath spend, all initial stack items could be signatures
+    const stack = taprootInfo.stack;
+    for (const w of stack) {
       // handle probable signatures
-      if (witness[i].length === 130) {
-        flags |= setSighashFlags(flags, witness[i]);
-      } else if (witness[i].length === 128) {
+      if (w.length === 130) {
+        flags |= setSighashFlags(flags, w);
+      } else if (w.length === 128) {
         flags |= TransactionFlags.sighash_default;
       }
     }
@@ -287,14 +292,8 @@ export function processInputSignatures(vin: Vin): SigInfo[] {
       signatures = extractDERSignaturesWitness(vin.witness || []);
       break;
     case 'v1_p2tr': {
-      const hasAnnex = vin.witness?.length > 1 && vin.witness[vin.witness.length - 1].startsWith('50');
-      const isKeyspend = vin.witness?.length === (hasAnnex ? 2 : 1);
-      if (isKeyspend) {
-        signatures = extractSchnorrSignatures(vin.witness);
-      } else {
-        const stackItems = vin.witness?.slice(0, hasAnnex ? -3 : -2);
-        signatures = extractSchnorrSignatures(stackItems);
-      }
+      const taprootInfo = parseTaproot(vin.witness);
+      signatures = extractSchnorrSignatures(taprootInfo.stack);
     } break;
     default:
       // non-signed input types?
@@ -406,12 +405,11 @@ export function fillUnsignedInput(vin: Vin): { missingSigs: number, bytes: numbe
         }
       }
       break;
-    case 'v1_p2tr':
-      const hasAnnex = vin.witness?.length > 1 && vin.witness[vin.witness.length - 1].startsWith('50');
-      if (vin.inner_witnessscript_asm) {
-        const stackItems = vin.witness.slice(0, hasAnnex ? -3 : -2);
+    case 'v1_p2tr': {
+      const taprootInfo = parseTaproot(vin.witness);
+      signatures = extractSchnorrSignatures(taprootInfo.stack);
+      if (taprootInfo.scriptPath) {
         if (/^OP_PUSHBYTES_32 [a-fA-F0-9]{64} OP_CHECKSIG$/.test(vin.inner_witnessscript_asm)) {
-          signatures = extractSchnorrSignatures(stackItems);
           if (!signatures.length) {
             missingSigs = 1;
             bytes = 65;
@@ -421,7 +419,6 @@ export function fillUnsignedInput(vin: Vin): { missingSigs: number, bytes: numbe
 
         multisig = parseTapscriptMultisig(vin.inner_witnessscript_asm);
         if (multisig) {
-          signatures = extractSchnorrSignatures(stackItems);
           if (multisig.m - signatures.length > 0) {
             missingSigs = multisig.m - signatures.length;
             bytes = 65 * missingSigs + (multisig.n - multisig.m); // empty witness items for each non-signing keys
@@ -429,9 +426,8 @@ export function fillUnsignedInput(vin: Vin): { missingSigs: number, bytes: numbe
           }
         }
 
-        let unanimousMultisig = parseTapscriptUnanimousMultisig(vin.inner_witnessscript_asm);
+        const unanimousMultisig = parseTapscriptUnanimousMultisig(vin.inner_witnessscript_asm);
         if (unanimousMultisig) {
-          signatures = extractSchnorrSignatures(stackItems);
           if (unanimousMultisig - signatures.length > 0) {
             missingSigs = unanimousMultisig - signatures.length;
             bytes = 65 * missingSigs;
@@ -439,14 +435,13 @@ export function fillUnsignedInput(vin: Vin): { missingSigs: number, bytes: numbe
           }
         }
       } else { // Assume keyspend
-        signatures = extractSchnorrSignatures(vin.witness?.slice(0, hasAnnex ? -1 : undefined) || []);
         if (!signatures.length) {
           missingSigs = 1;
           bytes = 65;
           addToWitness = true;
         }
       }
-      break;
+    } break;
     default:
       break;
   }
@@ -516,25 +511,24 @@ export function isNonStandard(tx: Transaction, height?: number, network?: string
     }
     // bad-witness-nonstandard
     if (vin.prevout?.scriptpubkey_type === 'v1_p2tr' && vin.witness?.length) {
-      const hasAnnex = vin.witness.length > 1 && vin.witness[vin.witness.length - 1].startsWith('50');
+      const taprootInfo = parseTaproot(vin.witness);
       // annex is non-standard
-      if (hasAnnex) {
+      if (taprootInfo.annex) {
         return true;
       }
-      if (vin.witness.length > (hasAnnex ? 2 : 1)) {
+      if (taprootInfo.scriptPath) {
         // script path spend
-        const controlBlock = vin.witness[vin.witness.length - (hasAnnex ? 2 : 1)];
         // control block is required
-        if (!controlBlock.length) {
+        if (!taprootInfo.controlBlock.length) {
           return false;
         } else {
           // Leaf version must be 0xc0 (aka Tapscript, see BIP 342)
-          if ((parseInt(controlBlock.slice(0, 2), 16) & 0xfe) !== 0xc0) {
+          if (taprootInfo.scriptPath.leafVersion !== 0xc0) {
             return false;
           }
         }
         // remaining witness items (except for the script) must be within MAX_STANDARD_TAPSCRIPT_STACK_ITEM_SIZE limit
-        if (vin.witness.slice(0, vin.witness.length - (hasAnnex ? 3 : 2)).some(v => v.length > 160)) {
+        if (taprootInfo.stack.some(v => v.length > 160)) {
           return false;
         }
       }
@@ -805,10 +799,8 @@ export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replac
         // created before taproot activation don't need to have any witness data
         // (see https://mempool.space/tx/b10c007c60e14f9d087e0291d4d0c7869697c6681d979c6639dbd960792b4d41)
         if (vin.witness?.length) {
-          // in taproot, if there are at least two witness elements, and the first byte of the last element is 0x50, that last element is an annex
-          const hasAnnex = vin.witness?.length > 1 &&  vin.witness?.[vin.witness.length - 1].startsWith('50');
-          // script spends have more than one witness item, not counting the annex (if present)
-          if (vin.witness.length > (hasAnnex ? 2 : 1)) {
+          const taprootInfo = parseTaproot(vin.witness);
+          if (taprootInfo.scriptPath) {
             // the script itself is the second-to-last witness item, not counting the annex
             const asm = vin.inner_witnessscript_asm;
             // inscriptions smuggle data within an 'OP_0 OP_IF ... OP_ENDIF' envelope
@@ -816,7 +808,7 @@ export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replac
               flags |= TransactionFlags.inscription;
             }
           }
-          if (hasAnnex) {
+          if (taprootInfo.annex) {
             flags |= TransactionFlags.annex;
           }
         }
@@ -1135,7 +1127,7 @@ export function addInnerScriptsToVin(vin: Vin): void {
  * @param inputs Additional information from a PSBT, if available
  * @returns The decoded transaction object and the raw hex
  */
-function fromBuffer(buffer: Uint8Array, network: string, inputs?: { key: Uint8Array; value: Uint8Array }[][]): { tx: Transaction, hex: string } {
+function fromBuffer(buffer: Uint8Array, network: string, inputs?: PsbtKeyValueMap[]): { tx: Transaction, hex: string } {
   let offset = 0;
 
   // Parse raw transaction
@@ -1217,51 +1209,17 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: { key: Uint8Ar
       const inputRecords = inputs[i];
 
       const groups = {
-        nonWitnessUtxo: null,
-        witnessUtxo: null,
-        finalScriptSig: null,
-        finalScriptWitness: null,
-        redeemScript: null,
-        witnessScript: null,
-        partialSigs: [],
-        tapLeafScripts: [],
-        tapScriptSigs: [],
-        tapInternalKey: null,
+        nonWitnessUtxo: inputRecords.get(0x00)?.[0] || null,
+        witnessUtxo: inputRecords.get(0x01)?.[0] || null,
+        finalScriptSig: inputRecords.get(0x07)?.[0] || null,
+        finalScriptWitness: inputRecords.get(0x08)?.[0] || null,
+        redeemScript: inputRecords.get(0x04)?.[0] || null,
+        witnessScript: inputRecords.get(0x05)?.[0] || null,
+        partialSigs: inputRecords.get(0x02) || [],
+        tapLeafScripts: inputRecords.get(0x15) || [],
+        tapScriptSigs: inputRecords.get(0x14) || [],
+        tapInternalKey: inputRecords.get(0x17)?.[0] || null,
       };
-
-      for (const record of inputRecords) {
-        switch (record.key[0]) {
-          case 0x00:
-            groups.nonWitnessUtxo = record;
-            break;
-          case 0x01:
-            groups.witnessUtxo = record;
-            break;
-          case 0x07:
-            groups.finalScriptSig = record;
-            break;
-          case 0x08:
-            groups.finalScriptWitness = record;
-            break;
-          case 0x04:
-            groups.redeemScript = record;
-            break;
-          case 0x05:
-            groups.witnessScript = record;
-            break;
-          case 0x02:
-            groups.partialSigs.push(record);
-            break;
-          case 0x14:
-            groups.tapScriptSigs.push(record);
-            break;
-          case 0x15:
-            groups.tapLeafScripts.push(record);
-            break;
-          case 0x17:
-            groups.tapInternalKey = record;
-        }
-      }
 
       // Fill prevout
       if (groups.witnessUtxo && !vin.prevout) {
@@ -1364,7 +1322,7 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: { key: Uint8Ar
           if (uint8ArrayToHexString(groups.tapInternalKey.value) === '50929b74c1a04954b78b4b6035e97a5e078a5a0f28ec96d547bfee9ace803ac0') {
             // unspendable internal key, use the first tap leaf script provided
             const record = groups.tapLeafScripts[0];
-            const controlBlock = uint8ArrayToHexString(record.key.slice(1));
+            const controlBlock = uint8ArrayToHexString(record.keyData);
             const tapLeaf = uint8ArrayToHexString(record.value.slice(0, -1));
             vin.witness = vin.witness || [];
             vin.witness.unshift(tapLeaf, controlBlock);
@@ -1377,7 +1335,7 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: { key: Uint8Ar
           let scriptMostSigs = '';
 
           for (const record of groups.tapScriptSigs) {
-            const leafHash = uint8ArrayToHexString(record.key.slice(33));
+            const leafHash = uint8ArrayToHexString(record.keyData.slice(32));
             if (!leafScriptSignatures[leafHash]) {
               leafScriptSignatures[leafHash] = 0;
             }
@@ -1395,14 +1353,14 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: { key: Uint8Ar
             const scriptSize = uint8ArrayToHexString(compactSize(record.value.length - 1));
             if (taggedHash('TapLeaf', leafVersion + scriptSize + script) === scriptMostSigs) {
               // add the script
-              const controlBlock = uint8ArrayToHexString(record.key.slice(1));
+              const controlBlock = uint8ArrayToHexString(record.keyData);
               const tapLeaf = uint8ArrayToHexString(record.value.slice(0, -1));
               vin.witness = vin.witness || [];
               vin.witness.unshift(tapLeaf, controlBlock);
               vin.inner_witnessscript_asm = convertScriptSigAsm(tapLeaf);
               // add the signatures that are part of this script
               for (const sigRecord of groups.tapScriptSigs) {
-                const sigLeafHash = uint8ArrayToHexString(sigRecord.key.slice(33));
+                const sigLeafHash = uint8ArrayToHexString(sigRecord.keyData.slice(32));
                 if (sigLeafHash === scriptMostSigs) {
                   vin.witness.unshift(uint8ArrayToHexString(sigRecord.value));
                 }
@@ -1439,14 +1397,17 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: { key: Uint8Ar
   return { tx, hex: uint8ArrayToHexString(rawHex) };
 }
 
+type PsbtKeyValueMap = Map<number, { keyData: Uint8Array; value: Uint8Array; }[]>;
+
 /**
- * Decodes a PSBT buffer into the unsigned raw transaction and input map
+ * Decodes a PSBT buffer into the unsigned raw transaction and input/output maps
  * @param psbtBuffer
  * @returns
- *   - the unsigned transaction from a PSBT (txHex)
- *   - the full input map for each input in to fill signatures and prevouts later (inputs)
+ *   - the unsigned transaction from a PSBT
+ *   - the full input map for each input
+ *   - the full output map for each output
  */
-function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: { key: Uint8Array; value: Uint8Array }[][] } {
+function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: PsbtKeyValueMap[]; outputs: PsbtKeyValueMap[]; } {
   let offset = 0;
 
   // magic: "psbt" in ASCII
@@ -1490,7 +1451,46 @@ function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: { key:
     throw new Error("Unsigned transaction not found in PSBT");
   }
 
+  const readMaps = (count: number, startOffset: number): { map: PsbtKeyValueMap[]; offset: number } => {
+    const map: PsbtKeyValueMap[] = [];
+    let offset = startOffset;
+
+    for (let i = 0; i < count; i++) {
+      const records: PsbtKeyValueMap = new Map();
+    const seenKeys = new Set<string>();
+    while (offset < psbtBuffer.length) {
+      const [keyLen, newOffset] = readVarInt(psbtBuffer, offset);
+      offset = newOffset;
+      if (keyLen === 0) {
+        break;
+      }
+      const key = psbtBuffer.slice(offset, offset + keyLen);
+      offset += keyLen;
+
+      const keyHex = uint8ArrayToHexString(key);
+      if (seenKeys.has(keyHex)) {
+          throw new Error('Duplicate key in map');
+      }
+      seenKeys.add(keyHex);
+
+      const [valLen, newOffset2] = readVarInt(psbtBuffer, offset);
+      offset = newOffset2;
+      const value = psbtBuffer.slice(offset, offset + valLen);
+      offset += valLen;
+
+        const [keyType, keyDataOffset] = readVarInt(key, 0);
+        const bucket = records.get(keyType) || [];
+        bucket.push({ keyData: key.slice(keyDataOffset), value });
+        records.set(keyType, bucket);
+      }
+      map.push(records);
+  }
+
+    return { map, offset };
+  };
+
   let numInputs: number;
+  let numOutputs: number;
   let txOffset = 0;
   // Skip version (4 bytes)
   txOffset += 4;
@@ -1500,54 +1500,33 @@ function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: { key:
   const [inputCount, newTxOffset] = readVarInt(rawTx, txOffset);
   txOffset = newTxOffset;
   numInputs = inputCount;
+  for (let i = 0; i < numInputs; i++) {
+    txOffset += 32; // prev txid
+    txOffset += 4; // vout
+    const [scriptLength, scriptOffset] = readVarInt(rawTx, txOffset);
+    txOffset = scriptOffset;
+    txOffset += scriptLength;
+    txOffset += 4; // sequence
+  }
+  const [outputCount, outputOffset] = readVarInt(rawTx, txOffset);
+  txOffset = outputOffset;
+  numOutputs = outputCount;
 
   // INPUT MAPS
-  const inputs: { key: Uint8Array; value: Uint8Array }[][] = [];
-  for (let i = 0; i < numInputs; i++) {
-    const inputRecords: { key: Uint8Array; value: Uint8Array }[] = [];
-    const seenKeys = new Set<string>();
-    while (offset < psbtBuffer.length) {
-      const [keyLen, newOffset] = readVarInt(psbtBuffer, offset);
-      offset = newOffset;
-      // key length of 0 means the end of the input map
-      if (keyLen === 0) {
-        break;
-      }
-      const key = psbtBuffer.slice(offset, offset + keyLen);
-      offset += keyLen;
+  const inputMaps = readMaps(numInputs, offset);
+  offset = inputMaps.offset;
+  const inputs = inputMaps.map;
 
-      const keyHex = uint8ArrayToHexString(key);
-      if (seenKeys.has(keyHex)) {
-        throw new Error(`Duplicate key in input map`);
-      }
-      seenKeys.add(keyHex);
+  // OUTPUT MAPS
+  const outputMaps = readMaps(numOutputs, offset);
+  offset = outputMaps.offset;
+  const outputs = outputMaps.map;
 
-      const [valLen, newOffset2] = readVarInt(psbtBuffer, offset);
-      offset = newOffset2;
-      const value = psbtBuffer.slice(offset, offset + valLen);
-      offset += valLen;
-
-      inputRecords.push({ key, value });
-    }
-    inputs.push(inputRecords);
-  }
-
-  return { rawTx, inputs };
+  return { rawTx, inputs, outputs };
 }
 
 export function decodeRawTransaction(input: string, network: string): { tx: Transaction, hex: string, psbt?: string } {
-  if (!input.length) {
-    throw new Error('Empty input');
-  }
-
-  let buffer: Uint8Array;
-  if (input.length % 2 === 0 && /^[0-9a-fA-F]+$/.test(input)) {
-    buffer = hexStringToUint8Array(input);
-  } else if (/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)|[A-Za-z0-9+/]{3}=)?$/.test(input)) {
-    buffer = base64ToUint8Array(input);
-  } else {
-    throw new Error('Invalid input: not a valid transaction or PSBT');
-  }
+  const buffer = convertTextToBuffer(input);
 
   if (buffer[0] === 0x70 && buffer[1] === 0x73 && buffer[2] === 0x62 && buffer[3] === 0x74) { // PSBT magic bytes
     const { rawTx, inputs } = decodePsbt(buffer);
@@ -2157,3 +2136,283 @@ const opcodes = {
   254: 'OP_PUBKEY',
   255: 'OP_INVALIDOPCODE',
 };
+
+export interface ParsedTaproot {
+  keyPath: boolean;
+  scriptPath?: {
+    leafVersion: number;
+    parity: number;
+    script: string;
+    simplicityScript?: string; // liquid only
+    merkleBranches: string[];
+    internalKey: string;
+    isNUMS?: boolean;
+  }
+  stack: string[]; // witness items excluding annex, script, control block
+  annex?: string;
+  controlBlock?: string;
+  annexIndex?: number;
+  controlBlockIndex?: number;
+  scriptIndex?: number;
+}
+
+/**
+ * Parse out the different parts of a taproot spend from a p2tr witness
+ * `witness` MUST be a valid p2tr witness stack, otherwise the result will be garbage
+ */
+export function parseTaproot(witness: string[]): ParsedTaproot {
+  const parsed: ParsedTaproot = {
+    keyPath: true,
+    stack: witness.slice(0, 1), // assume keyspend for now
+  };
+  const hasAnnex = witness.length > 1 && witness[witness.length - 1].startsWith('50');
+  if (hasAnnex) {
+    parsed.annexIndex = witness.length - 1;
+    parsed.annex = witness[parsed.annexIndex];
+  }
+  if (witness.length > (hasAnnex ? 2 : 1)) {
+    parsed.keyPath = false;
+    parsed.controlBlockIndex = witness.length - (hasAnnex ? 2 : 1);
+    parsed.scriptIndex = witness.length - (hasAnnex ? 3 : 2);
+    // control block is the last non-annex element
+    parsed.controlBlock = witness[parsed.controlBlockIndex];
+    const leafVersionParity = parseInt(parsed.controlBlock.slice(0, 2), 16);
+    const internalKey = parsed.controlBlock.slice(2, 66);
+    parsed.scriptPath = {
+      // script is the second last non-annex element
+      script: witness[parsed.scriptIndex],
+      // first two bytes are the leaf version & parity bit
+      leafVersion: leafVersionParity & 0xfe,
+      parity: leafVersionParity & 0x01,
+      internalKey: internalKey,
+      isNUMS: internalKey === TAPROOT_NUMS_INTERNAL_KEY,
+      merkleBranches: [],
+    };
+    for (let i = 66; (i + 64) <= parsed.controlBlock.length; i += 64) {
+      parsed.scriptPath.merkleBranches.push(parsed.controlBlock.slice(i, i + 64));
+    }
+    // remaining items are the initial stack
+    parsed.stack = witness.slice(0, (hasAnnex ? -3 : -2));
+
+    if (parsed.scriptPath.leafVersion === 0xbe) {
+      // override script stuff for simplicity
+      parsed.scriptIndex = 1;
+      parsed.scriptPath.simplicityScript = witness[parsed.scriptIndex];
+    }
+  }
+  return parsed;
+}
+
+function convertTextToBuffer(input: string): Uint8Array {
+  if (!input.length) {
+    throw new Error('Empty input');
+  }
+
+  let buffer: Uint8Array;
+  if (input.length % 2 === 0 && /^[0-9a-fA-F]+$/.test(input)) {
+    buffer = hexStringToUint8Array(input);
+  } else if (/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)|[A-Za-z0-9+/]{3}=)?$/.test(input)) {
+    buffer = base64ToUint8Array(input);
+  } else {
+    throw new Error('Invalid input: not hex or base64');
+  }
+  return buffer;
+}
+
+export function computeLeafHash(scriptHex: string, leafVersion: number): string {
+  const versionHex = leafVersion.toString(16).padStart(2, '0');
+  const scriptSizeHex = uint8ArrayToHexString(compactSize(scriptHex.length / 2));
+  return taggedHash('TapLeaf', versionHex + scriptSizeHex + scriptHex);
+};
+
+function computeMerkleRoot(scriptHex: string, leafVersion: number, merkleBranches: string[]): string {
+  const leafHash = computeLeafHash(scriptHex, leafVersion);
+  return (merkleBranches || []).reduce((acc, branch) => {
+    const [firstChild, secondChild] = [acc, branch].sort((a, b) => a.localeCompare(b));
+    return taggedHash('TapBranch', firstChild + secondChild);
+  }, leafHash);
+}
+
+function deriveTaprootOutput(internalKey: string, merkleRoot: string, network: string): { address: string; parity: number } {
+  const tweakHash = taggedHash('TapTweak', internalKey + merkleRoot); // HashTapTweak(internalKey || m)
+  const tweak = BigInt('0x' + tweakHash) % SECP256K1_ORDER; // int(HashTapTweak(internalKey || m))
+  const internalKeyPoint = secp256k1.Point.fromHex(`02${internalKey}`); // P = lift_x(internalKey)
+  const outputKeyPoint = internalKeyPoint.add(secp256k1.Point.BASE.multiply(tweak)); // Q = P + int(HashTapTweak(internalKey || m)) * G
+  const parity = Number(outputKeyPoint.y & 1n);
+  const outputKey = outputKeyPoint.x.toString(16).padStart(64, '0');
+  return { address: scriptPubKeyToAddress(`5120${outputKey}`, network).address, parity };
+}
+
+interface TapTreeLeaf {
+  leafVersion: number;
+  scriptHex: string;
+  merkleBranches: string[];
+}
+
+/** Decode a PSBT_OUT_TAP_TREE into its leaves */
+function parseTapTreeRecord(value: Uint8Array): TapTreeLeaf[] {
+  const leaves: TapTreeLeaf[] = [];
+  const stack: { depth: number; hash: string; leaves: TapTreeLeaf[] }[] = [];
+  let offset = 0;
+
+  while (offset < value.length) {
+    const depth = value[offset++];
+    const leafVersion = value[offset++];
+    const [scriptLength, scriptOffset] = readVarInt(value, offset);
+    offset = scriptOffset;
+    const [scriptBytes, nextOffset] = readSlice(value, offset, scriptLength);
+    offset = nextOffset;
+    const scriptHex = uint8ArrayToHexString(scriptBytes);
+    const leaf: TapTreeLeaf = {
+      leafVersion,
+      scriptHex,
+      merkleBranches: [],
+    };
+    leaves.push(leaf);
+    stack.push({ depth, hash: computeLeafHash(scriptHex, leafVersion), leaves: [leaf] });
+
+    while (stack.length >= 2 && stack[stack.length - 1].depth === stack[stack.length - 2].depth) {
+      const right = stack.pop();
+      const left = stack.pop();
+      for (const l of left.leaves) {
+        l.merkleBranches.push(right.hash);
+      }
+      for (const r of right.leaves) {
+        r.merkleBranches.push(left.hash);
+      }
+      const [firstChild, secondChild] = [left.hash, right.hash].sort((a, b) => a.localeCompare(b));
+      stack.push({ depth: left.depth - 1, hash: taggedHash('TapBranch', firstChild + secondChild), leaves: left.leaves.concat(right.leaves) });
+    }
+  }
+
+  return leaves;
+}
+
+/** Populate an address' taptree using a PSBT involving the taproot address */
+export function fillTapTree(addressTypeInfo: AddressTypeInfo, input: string) {
+  if (addressTypeInfo?.type !== 'v1_p2tr') {
+    return;
+  }
+
+  const psbt = decodePsbt(convertTextToBuffer(input));
+  const scripts = addressTypeInfo.scripts;
+  const targetAddress = addressTypeInfo.address;
+  let committedInternalKey: string | undefined; // internal key, known if at least one tapscript spend is on chain
+  let committedMerkleRoot: string | undefined;
+  let committedParity: number | undefined;
+  if (scripts.size) {
+    // get the merkle root from published tapscript
+    const tapInfo: ParsedTaproot = scripts.values().next().value.taprootInfo;
+    committedInternalKey = tapInfo.scriptPath.internalKey;
+    committedMerkleRoot = computeMerkleRoot(tapInfo.scriptPath.script, tapInfo.scriptPath.leafVersion, tapInfo.scriptPath.merkleBranches);
+    committedParity = tapInfo.scriptPath.parity;
+  }
+
+  const internalKeyMatchesAddress = (internalKey: string): boolean => !committedInternalKey || internalKey === committedInternalKey;
+  const scriptMatchesAddress = (internalKey: string, scriptHex: string, leafVersion: number, merkleBranches: string[]): boolean => {
+    const merkleRoot = computeMerkleRoot(scriptHex, leafVersion, merkleBranches);
+    if (committedMerkleRoot) {
+      return merkleRoot === committedMerkleRoot;
+    }
+    const { address, parity } = deriveTaprootOutput(internalKey, merkleRoot, addressTypeInfo.network);
+    if (address !== targetAddress) {
+      return false;
+    }
+    committedMerkleRoot = merkleRoot;
+    committedInternalKey = internalKey;
+    committedParity = parity;
+    return true;
+  };
+
+  let addedScript = false;
+  try {
+    for (let i = 0; i < psbt.inputs.length; i++) {
+      // Look for PSBT_IN_TAP_LEAF_SCRIPT (0x15)
+      for (const record of psbt.inputs[i].get(0x15) || []) {
+        const controlBlock = record.keyData;
+        const tapInternalKey = uint8ArrayToHexString(controlBlock.slice(1, 33));
+        if (!tapInternalKey || !internalKeyMatchesAddress(tapInternalKey)) {
+          continue;
+        }
+
+        const merkleBranches: string[] = [];
+        for (let offset = 33; offset < controlBlock.length; offset += 32) {
+          merkleBranches.push(uint8ArrayToHexString(controlBlock.slice(offset, offset + 32)));
+        }
+
+        const leafVersion = record.value[record.value.length - 1];
+        const scriptHex = uint8ArrayToHexString(record.value.slice(0, -1));
+        if (!scriptMatchesAddress(tapInternalKey, scriptHex, leafVersion, merkleBranches)) {
+          continue;
+        }
+
+        const taprootInfo: ParsedTaproot = {
+          keyPath: false,
+          stack: [],
+          controlBlock: uint8ArrayToHexString(controlBlock),
+          scriptPath: {
+            script: scriptHex,
+            leafVersion,
+            parity: controlBlock[0] & 0x01,
+            merkleBranches: merkleBranches.slice(),
+            internalKey: tapInternalKey,
+            isNUMS: tapInternalKey === TAPROOT_NUMS_INTERNAL_KEY,
+          },
+        };
+
+        const scriptInfo = new ScriptInfo('inner_witnessscript', scriptHex, convertScriptSigAsm(scriptHex), undefined, taprootInfo);
+        const scriptAdded = addressTypeInfo.processScript(scriptInfo);
+        if (scriptAdded) {
+          addressTypeInfo.tapscript = true;
+          addedScript = true;
+        }
+      }
+    }
+
+    for (let i = 0; i < psbt.outputs.length; i++) {
+      // Look for PSBT_OUT_TAP_TREE (0x06) and PSBT_OUT_TAP_INTERNAL_KEY (key 0x05)
+      const outputMap = psbt.outputs[i];
+      const tapTreeRecord = outputMap.get(0x06)?.[0];
+      const tapInternalKeyRecord = outputMap.get(0x05)?.[0];
+      const tapInternalKey = tapInternalKeyRecord ? uint8ArrayToHexString(tapInternalKeyRecord.value) : committedInternalKey;
+      if (!tapTreeRecord || !tapInternalKey || !internalKeyMatchesAddress(tapInternalKey)) {
+        continue;
+      }
+
+      const leaves = parseTapTreeRecord(tapTreeRecord.value);
+      for (const leaf of leaves) {
+        if (!scriptMatchesAddress(tapInternalKey, leaf.scriptHex, leaf.leafVersion, leaf.merkleBranches)) {
+          continue;
+        }
+        const controlBlockPrefix = (leaf.leafVersion | committedParity).toString(16).padStart(2, '0');
+        const controlBlock = controlBlockPrefix + tapInternalKey + leaf.merkleBranches.join('');
+        const taprootInfo: ParsedTaproot = {
+          keyPath: false,
+          stack: [],
+          controlBlock,
+          scriptPath: {
+            script: leaf.scriptHex,
+            leafVersion: leaf.leafVersion,
+            parity: committedParity,
+            internalKey: tapInternalKey,
+            merkleBranches: leaf.merkleBranches.slice(),
+            isNUMS: tapInternalKey === TAPROOT_NUMS_INTERNAL_KEY,
+          },
+        };
+        const scriptInfo = new ScriptInfo('inner_witnessscript', leaf.scriptHex, convertScriptSigAsm(leaf.scriptHex), undefined, taprootInfo);
+        const scriptAdded = addressTypeInfo.processScript(scriptInfo);
+        if (scriptAdded) {
+          addressTypeInfo.tapscript = true;
+          addedScript = true;
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error parsing PSBT:', error);
+    throw new Error('An error occurred while parsing the PSBT');
+  }
+
+  if (!addedScript) {
+    throw new Error('No new taproot scripts matching this address');
+  }
+}
