@@ -20,7 +20,11 @@ const MAX_STANDARD_SCRIPTSIG_SIZE = 1650;
 const DUST_RELAY_TX_FEE = 3;
 const MAX_OP_RETURN_RELAY = 83;
 const DEFAULT_PERMIT_BAREMULTISIG = true;
+const MAX_TX_LEGACY_SIGOPS = 2_500 * 4; // witness-adjusted sigops
 
+/**
+ *  Calculate the witness-adjusted sigops cost of an asm script
+ */
 export function countScriptSigops(script: string, isRawScript: boolean = false, witness: boolean = false): number {
   if (!script?.length) {
     return 0;
@@ -474,6 +478,11 @@ export function isNonStandard(tx: Transaction, height?: number, network?: string
     return true;
   }
 
+  // legacy sigops
+  if (isNonStandardLegacySigops(tx, height, network)) {
+    return true;
+  }
+
   // input validation
   for (const vin of tx.vin) {
     if (vin.is_coinbase) {
@@ -676,6 +685,27 @@ function isStandardOpReturn(bytes: number, outputs: number,height?: number, netw
     (bytes <= MAX_DATACARRIER_BYTES && outputs <= 1) // below old limits
   ) {
     return true;
+  }
+  return false;
+}
+
+// New legacy sigops limit started to be enforced in v30.0
+const LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT = {
+  'testnet4': 108_000,
+  'testnet': 4_750_000,
+  'signet': 276_500,
+  '': 921_000,
+};
+function isNonStandardLegacySigops(tx: Transaction, height?: number, network?: string): boolean {
+  if (
+    height == null || (
+      LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[network]
+      && height >= LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[network]
+    )
+  ) {
+    if (!checkSigopsBIP54(tx, MAX_TX_LEGACY_SIGOPS)) {
+      return true;
+    }
   }
   return false;
 }
@@ -1661,6 +1691,41 @@ export function countSigops(transaction: Transaction): number {
   }
 
   return sigops;
+}
+
+/**
+ * see https://github.com/bitcoin/bitcoin/blob/25c45bb0d0bd6618ec9296a1a43605657124e5de/src/policy/policy.cpp#L166-L193
+ * returns true if the transactions is permitted under bip54 sigops rules
+ *
+ * "Unlike the existing block wide sigop limit which counts sigops present in the block
+ * itself (including the scriptPubKey which is not executed until spending later), BIP54
+ * counts sigops in the block where they are potentially executed (only).
+ * This means sigops in the spent scriptPubKey count toward the limit.
+ * `fAccurate` means correctly accounting sigops for CHECKMULTISIGs(VERIFY) with 16 pubkeys
+ * or fewer. This method of accounting was introduced by BIP16, and BIP54 reuses it.
+ * The GetSigOpCount call on the previous scriptPubKey counts both bare and P2SH sigops."
+ */
+function checkSigopsBIP54(tx: Transaction, limit: number = MAX_TX_LEGACY_SIGOPS): boolean {
+  let sigops = 0;
+  for (const input of tx.vin) {
+    if (input.scriptsig_asm) {
+      sigops += countScriptSigops(input.scriptsig_asm);
+    }
+    if (input.prevout) {
+      // P2SH redeem script
+      if (input.prevout.scriptpubkey_type === 'p2sh' && input.inner_redeemscript_asm) {
+        sigops += countScriptSigops(input.inner_redeemscript_asm);
+      } else {
+        // prevout scriptpubkey
+        sigops += countScriptSigops(input.prevout.scriptpubkey_asm);
+      }
+    }
+
+    if (sigops > limit) {
+      return false;
+    }
+  }
+  return true;
 }
 
 function scriptPubKeyToAddress(scriptPubKey: string, network: string): { address: string, type: string } {
