@@ -55,8 +55,8 @@ export function setSchnorrSighashFlags(flags: bigint, witness: string[]): bigint
   if (!witness?.length) {
     return flags;
   }
-  const hasAnnex = witness.length > 1 && witness[witness.length - 1].startsWith('50');
-  if (witness?.length === (hasAnnex ? 2 : 1)) {
+  const taprootInfo = parseTaproot(witness);
+  if (taprootInfo.keyPath) {
     // keypath spend, signature is the only witness item
     if (witness[0].length === 130) {
       flags |= setSighashFlags(flags, witness[0]);
@@ -64,12 +64,13 @@ export function setSchnorrSighashFlags(flags: bigint, witness: string[]): bigint
       flags |= TransactionFlags.sighash_default;
     }
   } else {
-    // scriptpath spend, all items except for the script, control block and annex could be signatures
-    for (let i = 0; i < witness.length - (hasAnnex ? 3 : 2); i++) {
+    // scriptpath spend, all initial stack items could be signatures
+    const stack = taprootInfo.stack;
+    for (const w of stack) {
       // handle probable signatures
-      if (witness[i].length === 130) {
-        flags |= setSighashFlags(flags, witness[i]);
-      } else if (witness[i].length === 128) {
+      if (w.length === 130) {
+        flags |= setSighashFlags(flags, w);
+      } else if (w.length === 128) {
         flags |= TransactionFlags.sighash_default;
       }
     }
@@ -287,14 +288,8 @@ export function processInputSignatures(vin: Vin): SigInfo[] {
       signatures = extractDERSignaturesWitness(vin.witness || []);
       break;
     case 'v1_p2tr': {
-      const hasAnnex = vin.witness?.length > 1 && vin.witness[vin.witness.length - 1].startsWith('50');
-      const isKeyspend = vin.witness?.length === (hasAnnex ? 2 : 1);
-      if (isKeyspend) {
-        signatures = extractSchnorrSignatures(vin.witness);
-      } else {
-        const stackItems = vin.witness?.slice(0, hasAnnex ? -3 : -2);
-        signatures = extractSchnorrSignatures(stackItems);
-      }
+      const taprootInfo = parseTaproot(vin.witness);
+      signatures = extractSchnorrSignatures(taprootInfo.stack);
     } break;
     default:
       // non-signed input types?
@@ -406,12 +401,11 @@ export function fillUnsignedInput(vin: Vin): { missingSigs: number, bytes: numbe
         }
       }
       break;
-    case 'v1_p2tr':
-      const hasAnnex = vin.witness?.length > 1 && vin.witness[vin.witness.length - 1].startsWith('50');
-      if (vin.inner_witnessscript_asm) {
-        const stackItems = vin.witness.slice(0, hasAnnex ? -3 : -2);
+    case 'v1_p2tr': {
+      const taprootInfo = parseTaproot(vin.witness);
+      signatures = extractSchnorrSignatures(taprootInfo.stack);
+      if (taprootInfo.scriptPath) {
         if (/^OP_PUSHBYTES_32 [a-fA-F0-9]{64} OP_CHECKSIG$/.test(vin.inner_witnessscript_asm)) {
-          signatures = extractSchnorrSignatures(stackItems);
           if (!signatures.length) {
             missingSigs = 1;
             bytes = 65;
@@ -421,7 +415,6 @@ export function fillUnsignedInput(vin: Vin): { missingSigs: number, bytes: numbe
 
         multisig = parseTapscriptMultisig(vin.inner_witnessscript_asm);
         if (multisig) {
-          signatures = extractSchnorrSignatures(stackItems);
           if (multisig.m - signatures.length > 0) {
             missingSigs = multisig.m - signatures.length;
             bytes = 65 * missingSigs + (multisig.n - multisig.m); // empty witness items for each non-signing keys
@@ -429,9 +422,8 @@ export function fillUnsignedInput(vin: Vin): { missingSigs: number, bytes: numbe
           }
         }
 
-        let unanimousMultisig = parseTapscriptUnanimousMultisig(vin.inner_witnessscript_asm);
+        const unanimousMultisig = parseTapscriptUnanimousMultisig(vin.inner_witnessscript_asm);
         if (unanimousMultisig) {
-          signatures = extractSchnorrSignatures(stackItems);
           if (unanimousMultisig - signatures.length > 0) {
             missingSigs = unanimousMultisig - signatures.length;
             bytes = 65 * missingSigs;
@@ -439,14 +431,13 @@ export function fillUnsignedInput(vin: Vin): { missingSigs: number, bytes: numbe
           }
         }
       } else { // Assume keyspend
-        signatures = extractSchnorrSignatures(vin.witness?.slice(0, hasAnnex ? -1 : undefined) || []);
         if (!signatures.length) {
           missingSigs = 1;
           bytes = 65;
           addToWitness = true;
         }
       }
-      break;
+    } break;
     default:
       break;
   }
@@ -516,25 +507,24 @@ export function isNonStandard(tx: Transaction, height?: number, network?: string
     }
     // bad-witness-nonstandard
     if (vin.prevout?.scriptpubkey_type === 'v1_p2tr' && vin.witness?.length) {
-      const hasAnnex = vin.witness.length > 1 && vin.witness[vin.witness.length - 1].startsWith('50');
+      const taprootInfo = parseTaproot(vin.witness);
       // annex is non-standard
-      if (hasAnnex) {
+      if (taprootInfo.annex) {
         return true;
       }
-      if (vin.witness.length > (hasAnnex ? 2 : 1)) {
+      if (taprootInfo.scriptPath) {
         // script path spend
-        const controlBlock = vin.witness[vin.witness.length - (hasAnnex ? 2 : 1)];
         // control block is required
-        if (!controlBlock.length) {
+        if (!taprootInfo.controlBlock.length) {
           return false;
         } else {
           // Leaf version must be 0xc0 (aka Tapscript, see BIP 342)
-          if ((parseInt(controlBlock.slice(0, 2), 16) & 0xfe) !== 0xc0) {
+          if (taprootInfo.scriptPath.leafVersion !== 0xc0) {
             return false;
           }
         }
         // remaining witness items (except for the script) must be within MAX_STANDARD_TAPSCRIPT_STACK_ITEM_SIZE limit
-        if (vin.witness.slice(0, vin.witness.length - (hasAnnex ? 3 : 2)).some(v => v.length > 160)) {
+        if (taprootInfo.stack.some(v => v.length > 160)) {
           return false;
         }
       }
@@ -805,10 +795,8 @@ export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replac
         // created before taproot activation don't need to have any witness data
         // (see https://mempool.space/tx/b10c007c60e14f9d087e0291d4d0c7869697c6681d979c6639dbd960792b4d41)
         if (vin.witness?.length) {
-          // in taproot, if there are at least two witness elements, and the first byte of the last element is 0x50, that last element is an annex
-          const hasAnnex = vin.witness?.length > 1 &&  vin.witness?.[vin.witness.length - 1].startsWith('50');
-          // script spends have more than one witness item, not counting the annex (if present)
-          if (vin.witness.length > (hasAnnex ? 2 : 1)) {
+          const taprootInfo = parseTaproot(vin.witness);
+          if (taprootInfo.scriptPath) {
             // the script itself is the second-to-last witness item, not counting the annex
             const asm = vin.inner_witnessscript_asm;
             // inscriptions smuggle data within an 'OP_0 OP_IF ... OP_ENDIF' envelope
@@ -816,7 +804,7 @@ export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replac
               flags |= TransactionFlags.inscription;
             }
           }
-          if (hasAnnex) {
+          if (taprootInfo.annex) {
             flags |= TransactionFlags.annex;
           }
         }
@@ -2157,3 +2145,73 @@ const opcodes = {
   254: 'OP_PUBKEY',
   255: 'OP_INVALIDOPCODE',
 };
+
+export interface ParsedTaproot {
+  keyPath: boolean;
+  scriptPath?: {
+    leafVersion: number;
+    parity: number;
+    script: string;
+    simplicityScript?: string; // liquid only
+    merkleBranches: string[];
+    internalKey: string;
+    isNUMS?: boolean;
+  }
+  stack: string[]; // witness items excluding annex, script, control block
+  annex?: string;
+  controlBlock?: string;
+  annexIndex?: number;
+  controlBlockIndex?: number;
+  scriptIndex?: number;
+}
+
+/**
+ * Parse out the different parts of a taproot spend from a p2tr witness
+ * if present, `witness` MUST be a valid p2tr witness stack, otherwise the result will be garbage
+ * otherwise assume this is an unsigned input from a non finalized PSBT
+ */
+export function parseTaproot(witness: string[]): ParsedTaproot | null {
+  if (!witness?.length) {
+    return { keyPath: true, stack: [] };
+  }
+  const parsed: ParsedTaproot = {
+    keyPath: true,
+    stack: witness.slice(0, 1), // assume keyspend for now
+  };
+  const hasAnnex = witness.length > 1 && witness[witness.length - 1].startsWith('50');
+  if (hasAnnex) {
+    parsed.annexIndex = witness.length - 1;
+    parsed.annex = witness[parsed.annexIndex];
+  }
+  if (witness.length > (hasAnnex ? 2 : 1)) {
+    parsed.keyPath = false;
+    parsed.controlBlockIndex = witness.length - (hasAnnex ? 2 : 1);
+    parsed.scriptIndex = witness.length - (hasAnnex ? 3 : 2);
+    // control block is the last non-annex element
+    parsed.controlBlock = witness[parsed.controlBlockIndex];
+    const leafVersionParity = parseInt(parsed.controlBlock.slice(0, 2), 16);
+    const internalKey = parsed.controlBlock.slice(2, 66);
+    parsed.scriptPath = {
+      // script is the second last non-annex element
+      script: witness[parsed.scriptIndex],
+      // first two bytes are the leaf version & parity bit
+      leafVersion: leafVersionParity & 0xfe,
+      parity: leafVersionParity & 0x01,
+      internalKey: internalKey,
+      isNUMS: internalKey === '50929b74c1a04954b78b4b6035e97a5e078a5a0f28ec96d547bfee9ace803ac0',
+      merkleBranches: [],
+    };
+    for (let i = 66; (i + 64) <= parsed.controlBlock.length; i += 64) {
+      parsed.scriptPath.merkleBranches.push(parsed.controlBlock.slice(i, i + 64));
+    }
+    // remaining items are the initial stack
+    parsed.stack = witness.slice(0, (hasAnnex ? -3 : -2));
+
+    if (parsed.scriptPath.leafVersion === 0xbe) {
+      // override script stuff for simplicity
+      parsed.scriptIndex = 1;
+      parsed.scriptPath.simplicityScript = witness[parsed.scriptIndex];
+    }
+  }
+  return parsed;
+}
