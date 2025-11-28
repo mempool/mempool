@@ -89,6 +89,7 @@
         [miningStats]="miningStats"
         [showDetails]="showAccelerationDetails"
         [noCTA]="true"
+        [shareCode]="this.acceleratorShareCode"
         (hasDetails)="setHasAccelerationDetails($event)"
         (completed)="onAccelerationCompleted()"
         (unavailable)="eligibleForAcceleration = false"
