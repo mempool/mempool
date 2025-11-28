@@ -57,7 +57,8 @@
   .alliances,
   .enterprise-sponsor,
   .community-integrations-sponsor,
-  .maintainers {
+  .maintainers,
+  .managers {
     margin-top: 30px;
     margin-bottom: 68px;
     scroll-margin: 30px;
@@ -67,7 +68,8 @@
     }
   }
 
-  .maintainers {
+  .maintainers,
+  .managers {
     margin-bottom: 50px;
   }
 
@@ -257,6 +259,12 @@
 .community-integrations-sponsor img.image {
   width: 64px;
   height: 64px;
+}
+
+.wiz-logo {
+  width: 400px;
+  max-width: 90vw;
+  margin: auto;
 }
 
 .enterprise-sponsor {
