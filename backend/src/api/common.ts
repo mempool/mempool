@@ -24,15 +24,15 @@ const MAX_STANDARD_SCRIPTSIG_SIZE = 1650;
 const DUST_RELAY_TX_FEE = 3;
 const MAX_OP_RETURN_RELAY = 83;
 const DEFAULT_PERMIT_BAREMULTISIG = true;
+const MAX_TX_LEGACY_SIGOPS = 2_500 * 4; // witness-adjusted sigops
 
 export class Common {
   static nativeAssetId = config.MEMPOOL.NETWORK === 'liquidtestnet' ?
     '144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49'
   : '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d';
-  static _isLiquid = config.MEMPOOL.NETWORK === 'liquid' || config.MEMPOOL.NETWORK === 'liquidtestnet';
 
   static isLiquid(): boolean {
-    return this._isLiquid;
+    return config?.MEMPOOL?.NETWORK === 'liquid' || config?.MEMPOOL?.NETWORK === 'liquidtestnet';
   }
 
   static median(numbers: number[]) {
@@ -225,6 +225,11 @@ export class Common {
       return true;
     }
 
+    // legacy sigops
+    if (this.isNonStandardLegacySigops(tx, height)) {
+      return true;
+    }
+
     // input validation
     for (const vin of tx.vin) {
       if (vin.is_coinbase) {
@@ -286,6 +291,7 @@ export class Common {
 
     // output validation
     let opreturnCount = 0;
+    let opreturnBytes = 0;
     for (const vout of tx.vout) {
       // scriptpubkey
       if (['nonstandard', 'provably_unspendable', 'empty'].includes(vout.scriptpubkey_type)) {
@@ -309,10 +315,7 @@ export class Common {
         }
       } else if (vout.scriptpubkey_type === 'op_return') {
         opreturnCount++;
-        if ((vout.scriptpubkey.length / 2) > MAX_OP_RETURN_RELAY) {
-          // over default datacarrier limit
-          return true;
-        }
+        opreturnBytes += vout.scriptpubkey.length / 2;
       }
       // dust
       // (we could probably hardcode this for the different output types...)
@@ -334,9 +337,11 @@ export class Common {
       }
     }
 
-    // multi-op-return
-    if (opreturnCount > 1) {
-      return true;
+    // op_return
+    if (opreturnCount > 0) {
+      if (!this.isStandardOpReturn(opreturnBytes, opreturnCount, height)) {
+        return true;
+      }
     }
 
     // TODO: non-mandatory-script-verify-flag
@@ -425,6 +430,49 @@ export class Common {
       ))
     ) {
       return true;
+    }
+    return false;
+  }
+
+  // OP_RETURN size & count limits were lifted in v28.3/v29.2/v30.0
+  static OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT = {
+    'testnet4': 108_000,
+    'testnet': 4_750_000,
+    'signet': 276_500,
+    '': 921_000,
+  };
+  static MAX_DATACARRIER_BYTES = 83;
+  static isStandardOpReturn(bytes: number, outputs: number,height?: number): boolean {
+    if (
+      (height == null || (
+        this.OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+        && height >= this.OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+      )) // limits lifted
+      || // OR
+      (bytes <= this.MAX_DATACARRIER_BYTES && outputs <= 1) // below old limits
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  // New legacy sigops limit started to be enforced in v30.0
+  static LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT = {
+    'testnet4': 108_000,
+    'testnet': 4_750_000,
+    'signet': 276_500,
+    '': 921_000,
+  };
+  static isNonStandardLegacySigops(tx: TransactionExtended, height?: number): boolean {
+    if (
+      height == null || (
+        this.LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+        && height >= this.LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+      )
+    ) {
+      if (!transactionUtils.checkSigopsBIP54(tx, MAX_TX_LEGACY_SIGOPS)) {
+        return true;
+      }
     }
     return false;
   }

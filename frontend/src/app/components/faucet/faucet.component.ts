@@ -11,7 +11,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 @Component({
   selector: 'app-faucet',
   templateUrl: './faucet.component.html',
-  styleUrls: ['./faucet.component.scss']
+  styleUrls: ['./faucet.component.scss'],
+  standalone: false,
 })
 export class FaucetComponent implements OnInit, OnDestroy {
   loading = true;

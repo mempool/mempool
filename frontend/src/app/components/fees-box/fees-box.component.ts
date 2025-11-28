@@ -11,6 +11,7 @@ import { ThemeService } from '@app/services/theme.service';
   templateUrl: './fees-box.component.html',
   styleUrls: ['./fees-box.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class FeesBoxComponent implements OnInit, OnDestroy {
   isLoading$: Observable<boolean>;

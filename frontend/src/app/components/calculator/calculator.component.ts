@@ -9,6 +9,7 @@ import { WebsocketService } from '@app/services/websocket.service';
   selector: 'app-calculator',
   templateUrl: './calculator.component.html',
   styleUrls: ['./calculator.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CalculatorComponent implements OnInit {

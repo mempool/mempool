@@ -39,6 +39,7 @@ const EPOCH_BLOCK_LENGTH = 2016; // Bitcoin mainnet
   selector: 'app-difficulty',
   templateUrl: './difficulty.component.html',
   styleUrls: ['./difficulty.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DifficultyComponent implements OnInit {

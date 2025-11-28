@@ -28,7 +28,8 @@ function bestFitResolution(min, max, n): number {
 @Component({
   selector: 'app-block-view',
   templateUrl: './block-view.component.html',
-  styleUrls: ['./block-view.component.scss']
+  styleUrls: ['./block-view.component.scss'],
+  standalone: false,
 })
 export class BlockViewComponent implements OnInit, OnDestroy {
   network = '';

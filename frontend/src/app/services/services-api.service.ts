@@ -163,6 +163,10 @@ export class ServicesApiServices {
     return this.httpClient.get<Acceleration[]>(`${this.stateService.env.SERVICES_API}/accelerator/accelerations/history`, { params: { ...params } });
   }
 
+  getAccelerationDataForTxid$(txid: string) {
+    return this.httpClient.get<Acceleration>(`${this.stateService.env.SERVICES_API}/accelerator/accelerations/${txid}`);
+  }
+
   getAllAccelerationHistory$(params: AccelerationHistoryParams, limit?: number, findTxid?: string): Observable<Acceleration[]> {
     const getPage$ = (page: number, accelerations: Acceleration[] = []): Observable<{ page: number, total: number, accelerations: Acceleration[] }> => {
       return this.getAccelerationHistoryObserveResponse$({...params, page}).pipe(

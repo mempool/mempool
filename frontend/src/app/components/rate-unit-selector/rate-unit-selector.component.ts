@@ -8,6 +8,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-rate-unit-selector',
   templateUrl: './rate-unit-selector.component.html',
   styleUrls: ['./rate-unit-selector.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RateUnitSelectorComponent implements OnInit, OnDestroy {

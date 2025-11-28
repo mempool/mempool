@@ -54,7 +54,8 @@ type CheckoutStep = 'quote' | 'summary' | 'checkout' | 'cashapp' | 'applepay' | 
 @Component({
   selector: 'app-accelerate-checkout',
   templateUrl: './accelerate-checkout.component.html',
-  styleUrls: ['./accelerate-checkout.component.scss']
+  styleUrls: ['./accelerate-checkout.component.scss'],
+  standalone: false,
 })
 export class AccelerateCheckout implements OnInit, OnDestroy {
   @Input() tx: Transaction;

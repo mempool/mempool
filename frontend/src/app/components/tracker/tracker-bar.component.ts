@@ -6,6 +6,7 @@ export type TrackerStage = 'waiting' | 'pending' | 'soon' | 'next' | 'confirmed'
   selector: 'app-tracker-bar',
   templateUrl: './tracker-bar.component.html',
   styleUrls: ['./tracker-bar.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TrackerBarComponent implements OnInit, OnChanges {
