@@ -20,7 +20,7 @@ export class TrademarkPolicyComponent {
 
   ngOnInit(): void {
     this.seoService.setTitle('Trademark Policy');
-    this.seoService.setDescription('An overview of the trademarks registered by Mempool Space K.K. and The Mempool Open Source Project® and what we consider to be lawful usage of those trademarks.');
+    this.seoService.setDescription('An overview of the trademarks registered by Mempool Holdings S.A. de C.V. and The Mempool Open Source Project® and what we consider to be lawful usage of those trademarks.');
     this.ogService.setManualOgImage('trademark-policy.jpg');
   }
 }
