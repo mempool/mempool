@@ -18,10 +18,10 @@ permissions:
 
 jobs:
   build:
-    # Run on tag pushes OR on PRs that have the "docker" or "docker-test" label
+    # Run on tag pushes OR on PRs that have the "docker" label (but not "docker-test")
     if: |
       github.event_name == 'push' ||
-      (github.event_name == 'pull_request' && (contains(github.event.pull_request.labels.*.name, 'docker') || contains(github.event.pull_request.labels.*.name, 'docker-test')))
+      (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'docker') && !contains(github.event.pull_request.labels.*.name, 'docker-test'))
     strategy:
       matrix:
         service:
@@ -83,9 +83,6 @@ jobs:
 
 
       - name: Login to Docker for building
-        if: |
-          github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'docker-test'))
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Checkout project
@@ -141,10 +138,6 @@ jobs:
 
       - name: Run Docker buildx for ${{ matrix.service }} against tag
         id: docker-build
-        # Skip building/pushing images when this is a docker-test label PR
-        if: |
-          github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'docker-test'))
         run: |
           docker buildx build \
           --cache-from "type=local,src=/tmp/.buildx-cache" \
@@ -195,9 +188,8 @@ jobs:
             ${{ secrets.DOCKER_HUB_USER }}/${{ matrix.service }}:$TAG
 
   test-images:
-    needs: build
-    # Only run for PRs with "docker-test" label
-    if: ${{ needs.build.result == 'success' && github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'docker-test') }}
+    # Only run for PRs with "docker-test" label (independent of build job)
+    if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'docker-test') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     name: Test built Docker images
