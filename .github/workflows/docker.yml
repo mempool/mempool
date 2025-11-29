@@ -18,10 +18,10 @@ permissions:
 
 jobs:
   build:
-    # Run on tag pushes OR on PRs that have the "docker" label
+    # Run on tag pushes OR on PRs that have the "docker" or "docker-test" label
     if: |
       github.event_name == 'push' ||
-      (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'docker'))
+      (github.event_name == 'pull_request' && (contains(github.event.pull_request.labels.*.name, 'docker') || contains(github.event.pull_request.labels.*.name, 'docker-test')))
     strategy:
       matrix:
         service:
@@ -33,6 +33,7 @@ jobs:
     outputs:
       image-digest-frontend: ${{ matrix.service == 'frontend' && steps.docker-build.outputs.digest || '' }}
       image-digest-backend: ${{ matrix.service == 'backend' && steps.docker-build.outputs.digest || '' }}
+      tag: ${{ matrix.service == 'frontend' && (steps.set-tag-push.outputs.tag || steps.set-tag-pr.outputs.tag) || '' }}
     steps:
       - name: Replace the current swap file
         shell: bash
@@ -65,7 +66,11 @@ jobs:
       # Only for tag pushes: use the Git tag as TAG
       - name: Set TAG from pushed tag
         if: github.event_name == 'push'
-        run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+        id: set-tag-push
+        run: |
+          TAG="${GITHUB_REF/refs\/tags\//}"
+          echo "TAG=${TAG}" >> $GITHUB_ENV
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
 
       - name: Add SHORT_SHA env property with commit short sha
         run: |
@@ -86,13 +91,16 @@ jobs:
       # For PRs: use package.json version + short sha as TAG
       - name: Set TAG from service package.json for pull requests
         if: github.event_name == 'pull_request'
+        id: set-tag-pr
         run: |
           if [ "${{ matrix.service }}" = "frontend" ]; then
             VERSION=$(jq -r '.version' frontend/package.json)
           else
             VERSION=$(jq -r '.version' backend/package.json)
           fi
-          echo "TAG=v${VERSION}-${SHORT_SHA}" >> $GITHUB_ENV
+          TAG="v${VERSION}-${SHORT_SHA}"
+          echo "TAG=${TAG}" >> $GITHUB_ENV
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
 
       - name: Show set environment variables
         run: |
@@ -178,3 +186,154 @@ jobs:
           docker buildx imagetools create \
             --tag ${{ secrets.DOCKER_HUB_USER }}/${{ matrix.service }}:latest \
             ${{ secrets.DOCKER_HUB_USER }}/${{ matrix.service }}:$TAG
+
+  test-images:
+    needs: build
+    # Only run for PRs with "docker-test" label
+    if: ${{ needs.build.result == 'success' && github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'docker-test') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    name: Test built Docker images
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Add SHORT_SHA env property with commit short sha
+        run: |
+          SHA="${{ github.event.pull_request.head.sha }}"
+          echo "SHORT_SHA=${SHA:0:8}" >> $GITHUB_ENV
+
+      - name: Set TAG from frontend package.json
+        run: |
+          VERSION=$(jq -r '.version' frontend/package.json)
+          echo "TAG=v${VERSION}-${SHORT_SHA}" >> $GITHUB_ENV
+
+      - name: Show set environment variables
+        run: |
+          printf "      TAG: %s\n"  "$TAG"
+          printf " SHORT_SHA: %s\n" "$SHORT_SHA"
+
+      - name: Init repo for Dockerization
+        run: docker/init.sh "$TAG"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build frontend image locally
+        run: |
+          docker buildx build \
+            --tag test-frontend:$TAG \
+            --build-arg commitHash=$SHORT_SHA \
+            --load \
+            --platform linux/amd64 \
+            ./frontend/
+
+      - name: Build backend image locally
+        run: |
+          docker buildx build \
+            --tag test-backend:$TAG \
+            --build-context rustgbt=./rust \
+            --build-context backend=./backend \
+            --build-arg commitHash=$SHORT_SHA \
+            --load \
+            --platform linux/amd64 \
+            ./backend/
+
+      - name: Generate docker-compose test file
+        run: |
+          cat > docker-compose.test.yml <<EOF
+          version: "3.7"
+
+          services:
+            web:
+              environment:
+                FRONTEND_HTTP_PORT: "8080"
+                BACKEND_MAINNET_HTTP_HOST: "api"
+              image: test-frontend:$TAG
+              user: "1000:1000"
+              restart: on-failure
+              stop_grace_period: 1m
+              command: "./wait-for db:3306 --timeout=720 -- nginx -g 'daemon off;'"
+              ports:
+                - "8080:8080"
+              depends_on:
+                - api
+                - db
+            api:
+              environment:
+                MEMPOOL_BACKEND: "none"
+                CORE_RPC_HOST: "172.27.0.1"
+                CORE_RPC_PORT: "8332"
+                CORE_RPC_USERNAME: "mempool"
+                CORE_RPC_PASSWORD: "mempool"
+                DATABASE_ENABLED: "true"
+                DATABASE_HOST: "db"
+                DATABASE_DATABASE: "mempool"
+                DATABASE_USERNAME: "mempool"
+                DATABASE_PASSWORD: "mempool"
+                STATISTICS_ENABLED: "true"
+              image: test-backend:$TAG
+              user: "1000:1000"
+              restart: on-failure
+              stop_grace_period: 1m
+              command: "./wait-for-it.sh db:3306 --timeout=720 --strict -- ./start.sh"
+              depends_on:
+                - db
+            db:
+              environment:
+                MYSQL_DATABASE: "mempool"
+                MYSQL_USER: "mempool"
+                MYSQL_PASSWORD: "mempool"
+                MYSQL_ROOT_PASSWORD: "admin"
+              image: mariadb:10.5.21
+              user: "1000:1000"
+              restart: on-failure
+              stop_grace_period: 1m
+              tmpfs:
+                - /var/lib/mysql
+          EOF
+          cat docker-compose.test.yml
+
+      - name: Start containers
+        run: |
+          docker compose -f docker-compose.test.yml up -d
+
+      - name: Wait for services to be ready
+        run: |
+          echo "Waiting for database to be ready..."
+          timeout=120
+          elapsed=0
+          while [ $elapsed -lt $timeout ]; do
+            if docker compose -f docker-compose.test.yml exec -T db mysqladmin ping -h localhost -u mempool -pmempool --silent 2>/dev/null; then
+              echo "Database is ready!"
+              break
+            fi
+            sleep 2
+            elapsed=$((elapsed + 2))
+          done
+          if [ $elapsed -ge $timeout ]; then
+            echo "Database did not become ready in time"
+            docker compose -f docker-compose.test.yml logs
+            exit 1
+          fi
+
+      - name: Verify containers are running
+        run: |
+          echo "Checking container status..."
+          docker compose -f docker-compose.test.yml ps
+          if ! docker compose -f docker-compose.test.yml ps | grep -q "Up"; then
+            echo "Some containers are not running"
+            docker compose -f docker-compose.test.yml logs
+            exit 1
+          fi
+          echo "All containers are running successfully!"
+
+      - name: Show container logs
+        if: failure()
+        run: |
+          docker compose -f docker-compose.test.yml logs
+
+      - name: Clean up containers
+        if: always()
+        run: |
+          docker compose -f docker-compose.test.yml down -v
