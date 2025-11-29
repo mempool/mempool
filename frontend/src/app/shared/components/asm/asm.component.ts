@@ -13,10 +13,12 @@ export class AsmComponent {
   @Input() crop: number = 0;
   @Input() annotations: {
     signatures: Record<string, { sig: SigInfo, vindex: number }>,
-    selectedSig: SigInfo | null
+    selectedSig: SigInfo | null,
+    p2sh: boolean
   } = {
     signatures: {},
-    selectedSig: null
+    selectedSig: null,
+    p2sh: false
   };
   @Output() showSigInfo = new EventEmitter<SigInfo>();
   @Output() hideSigInfo = new EventEmitter<void>();
