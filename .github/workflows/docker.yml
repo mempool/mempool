@@ -285,11 +285,15 @@ jobs:
                 MYSQL_PASSWORD: "mempool"
                 MYSQL_ROOT_PASSWORD: "admin"
               image: mariadb:10.5.21
-              user: "1000:1000"
               restart: on-failure
               stop_grace_period: 1m
               tmpfs:
                 - /var/lib/mysql
+              healthcheck:
+                test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "mempool", "-pmempool"]
+                interval: 5s
+                timeout: 5s
+                retries: 10
           EOF
           cat docker-compose.test.yml
 
