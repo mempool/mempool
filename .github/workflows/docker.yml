@@ -280,9 +280,9 @@ jobs:
           # Remove volumes section from db service
           content = re.sub(r'    volumes:\n      - \.\/mysql\/data:\/var\/lib\/mysql\n', '', content)
           
-          # Add tmpfs and healthcheck after stop_grace_period in db service
+          # Add tmpfs after stop_grace_period in db service (healthcheck already exists in base file)
           db_stop_grace = '    stop_grace_period: 1m'
-          db_additions = '    stop_grace_period: 1m\n    tmpfs:\n      - /var/lib/mysql\n    healthcheck:\n      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "mempool", "-pmempool"]\n      interval: 5s\n      timeout: 5s\n      retries: 10'
+          db_additions = '    stop_grace_period: 1m\n    tmpfs:\n      - /var/lib/mysql'
           content = content.replace(db_stop_grace, db_additions, 1)
           
           # Add depends_on to web service after ports
@@ -310,33 +310,62 @@ jobs:
 
       - name: Wait for services to be ready
         run: |
-          echo "Waiting for database to be ready..."
+          echo "Waiting for all services (web, api, db) to be healthy..."
           timeout=120
           elapsed=0
           while [ $elapsed -lt $timeout ]; do
-            if docker compose -f docker-compose.test.yml exec -T db mysqladmin ping -h localhost -u mempool -pmempool --silent 2>/dev/null; then
-              echo "Database is ready!"
+            # Check health status for all services
+            PS_OUTPUT=$(docker compose -f docker-compose.test.yml ps)
+            HEALTHY_COUNT=$(echo "$PS_OUTPUT" | grep -c "(healthy)" || true)
+            if [ "$HEALTHY_COUNT" -ge 3 ]; then
+              echo "All services are healthy!"
+              echo "$PS_OUTPUT"
               break
             fi
+            echo "Waiting for services to be healthy... (${elapsed}s/${timeout}s)"
+            echo "$PS_OUTPUT"
             sleep 2
             elapsed=$((elapsed + 2))
           done
           if [ $elapsed -ge $timeout ]; then
-            echo "Database did not become ready in time"
+            echo "Services did not become healthy in time"
+            docker compose -f docker-compose.test.yml ps
             docker compose -f docker-compose.test.yml logs
             exit 1
           fi
 
-      - name: Verify containers are running
+      - name: Verify containers are healthy
         run: |
-          echo "Checking container status..."
-          docker compose -f docker-compose.test.yml ps
-          if ! docker compose -f docker-compose.test.yml ps | grep -q "Up"; then
-            echo "Some containers are not running"
+          echo "Checking container health status..."
+          PS_OUTPUT=$(docker compose -f docker-compose.test.yml ps)
+          echo "$PS_OUTPUT"
+          
+          # Check that all three services (web, api, db) are healthy
+          HEALTHY_COUNT=$(echo "$PS_OUTPUT" | grep -c "(healthy)" || true)
+          if [ "$HEALTHY_COUNT" -lt 3 ]; then
+            echo "Not all containers are healthy. Expected 3 healthy services, found $HEALTHY_COUNT"
             docker compose -f docker-compose.test.yml logs
             exit 1
           fi
-          echo "All containers are running successfully!"
+          
+          # Verify each service individually for better error messages
+          if ! echo "$PS_OUTPUT" | grep -q "web.*(healthy)"; then
+            echo "Web service is not healthy"
+            docker compose -f docker-compose.test.yml logs web
+            exit 1
+          fi
+          if ! echo "$PS_OUTPUT" | grep -q "api.*(healthy)"; then
+            echo "API service is not healthy"
+            docker compose -f docker-compose.test.yml logs api
+            exit 1
+          fi
+          if ! echo "$PS_OUTPUT" | grep -q "db.*(healthy)"; then
+            echo "Database service is not healthy"
+            docker compose -f docker-compose.test.yml logs db
+            exit 1
+          fi
+          
+          echo "All containers are healthy!"
 
       - name: Show container logs
         if: failure()
