@@ -12,6 +12,7 @@ export class FeeRateComponent implements OnInit {
   @Input() fee: number | undefined;
   @Input() weight: number = 4;
   @Input() rounding: string = null;
+  @Input() dp: number = null;
   @Input() showUnit: boolean = true;
   @Input() unitClass: string = 'symbol';
   @Input() unitStyle: any;
