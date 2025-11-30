@@ -2,45 +2,68 @@ version: "3.7"
 
 services:
   web:
+    image: mempool/mempool-frontend:latest
+    container_name: mempool-web
     environment:
-      FRONTEND_HTTP_PORT: "8080"
-      BACKEND_MAINNET_HTTP_HOST: "api"
-    image: mempool/frontend:latest
-    user: "1000:1000"
-    restart: on-failure
-    stop_grace_period: 1m
-    command: "./wait-for db:3306 --timeout=720 -- nginx -g 'daemon off;'"
+      FRONTEND_HTTP_PORT: 8080
+      BACKEND_MAINNET_HTTP_HOST: api
+    # volumes:
+    # secrets:
+    # networks:
     ports:
       - 80:8080
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
+    init: true
+    user: "1000:1000"
+    stop_grace_period: 1m
+
   api:
-    environment:
-      MEMPOOL_BACKEND: "none"
-      CORE_RPC_HOST: "172.27.0.1"
-      CORE_RPC_PORT: "8332"
-      CORE_RPC_USERNAME: "mempool"
-      CORE_RPC_PASSWORD: "mempool"
-      DATABASE_ENABLED: "true"
-      DATABASE_HOST: "db"
-      DATABASE_DATABASE: "mempool"
-      DATABASE_USERNAME: "mempool"
-      DATABASE_PASSWORD: "mempool"
-      STATISTICS_ENABLED: "true"
-    image: mempool/backend:latest
-    user: "1000:1000"
-    restart: on-failure
-    stop_grace_period: 1m
-    command: "./wait-for-it.sh db:3306 --timeout=720 --strict -- ./start.sh"
+    image: mempool/mempool-backend:latest
+    container_name: mempool-api
+    env_file: api.env
     volumes:
-      - ./data:/backend/cache
+      - api-data:/backend/cache:rw
+    # secrets:
+    # networks:
+    # ports:
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
+    init: true
+    user: "1000:1000"
+    post_start:
+      - command: ["chown", "-R", "1000:1000", "/backend/cache"]
+        user: "root"
+    stop_grace_period: 1m
+
   db:
-    environment:
-      MYSQL_DATABASE: "mempool"
-      MYSQL_USER: "mempool"
-      MYSQL_PASSWORD: "mempool"
-      MYSQL_ROOT_PASSWORD: "admin"
     image: mariadb:10.5.21
-    user: "1000:1000"
-    restart: on-failure
-    stop_grace_period: 1m
+    container_name: mempool-db
+    environment:
+      MYSQL_DATABASE: mempool
+      MYSQL_USER: mempool
+      MYSQL_PASSWORD: mempool
+      MYSQL_ROOT_PASSWORD: admin
     volumes:
-      - ./mysql/data:/var/lib/mysql
+      - db-data:/var/lib/mysql:rw
+    # secrets:
+    # networks:
+    # ports:
+    # depends_on:
+    restart: on-failure
+    init: true
+    user: "1000:1000"
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-u", "root", "-padmin"]
+    post_start:
+      - command: ["chown", "-R", "1000:1000", "/var/lib/mysql"]
+        user: "root"
+    stop_grace_period: 1m
+
+volumes:
+  db-data:
+  api-data:
