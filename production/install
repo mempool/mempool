@@ -356,7 +356,7 @@ BITCOIN_REPO_URL=https://github.com/bitcoin/bitcoin
 BITCOIN_REPO_NAME=bitcoin
 BITCOIN_REPO_BRANCH=master
 #BITCOIN_LATEST_RELEASE=$(curl -s https://api.github.com/repos/bitcoin/bitcoin/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
-BITCOIN_LATEST_RELEASE=v29.0
+BITCOIN_LATEST_RELEASE=v30.0
 echo -n '.'
 
 CKPOOL_REPO_URL=https://github.com/mempool/ckpool
@@ -1186,7 +1186,7 @@ if [ "${BITCOIN_INSTALL}" = ON ];then
 
     # use cmake if > v28
     if [ "${BITCOIN_LATEST_RELEASE:1:2}" -gt "28" ];then
-        osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && cmake -B build -DWITH_GUI=OFF -DENABLE_WALLET=OFF -DBUILD_BITCOIN_TESTS=OFF"
+        osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && cmake -B build -DWITH_GUI=OFF -DENABLE_IPC=OFF -DENABLE_WALLET=OFF -DBUILD_BITCOIN_TESTS=OFF"
         osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && cmake --build build -j${NPROC}"
 
         echo "[*] Installing Bitcoin binaries into OS"
