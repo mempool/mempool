@@ -129,17 +129,7 @@ class BitcoinRoutes {
       res.send('Service Unavailable');
       return;
     }
-    let minFee = 0;
-    if (req.query.min) {
-      try {
-        minFee = parseFloat(req.query.min as string);
-      } catch (e) {
-        res.statusCode = 400;
-        res.send('Invalid minimum fee');
-        return;
-      }
-    }
-    const result = feeApi.getPreciseRecommendedFee(minFee);
+    const result = feeApi.getPreciseRecommendedFee();
     res.json(result);
   }
 
