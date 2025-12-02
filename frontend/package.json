@@ -61,7 +61,7 @@
     "@angular/animations": "^20.3.14",
     "@angular/cli": "^20.3.12",
     "@angular/common": "^20.3.14",
-    "@angular/compiler": "^20.3.14",
+    "@angular/compiler": "^20.3.15",
     "@angular/core": "^20.3.14",
     "@angular/forms": "^20.3.14",
     "@angular/localize": "^20.3.14",
