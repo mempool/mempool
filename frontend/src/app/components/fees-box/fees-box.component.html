@@ -14,23 +14,23 @@
   <div class="fee-estimation-container">
     <div class="item">
       <div class="card-text">
-        <div class="fee-text"><app-fee-rate [fee]="recommendedFees.economyFee" [dp]="2" [softDecimals]="true"></app-fee-rate></div> <span class="fiat"><app-fiat i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom" [value]="recommendedFees.economyFee * 140" ></app-fiat></span>
+        <div class="fee-text"><app-fee-rate [fee]="recommendedFees.economyFee" [dp]="2"></app-fee-rate></div> <span class="fiat"><app-fiat i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom" [value]="recommendedFees.economyFee * 140" ></app-fiat></span>
       </div>
     </div>
     <div class="band-separator"></div>
     <div class="item">
       <div class="card-text">
-        <div class="fee-text"><app-fee-rate [fee]="recommendedFees.hourFee" [dp]="2" [softDecimals]="true"></app-fee-rate></div> <span class="fiat"><app-fiat i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom" [value]="recommendedFees.hourFee * 140" ></app-fiat></span>
+        <div class="fee-text"><app-fee-rate [fee]="recommendedFees.hourFee" [dp]="2"></app-fee-rate></div> <span class="fiat"><app-fiat i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom" [value]="recommendedFees.hourFee * 140" ></app-fiat></span>
       </div>
     </div>
     <div class="item">
       <div class="card-text">
-        <div class="fee-text"><app-fee-rate [fee]="recommendedFees.halfHourFee" [dp]="2" [softDecimals]="true"></app-fee-rate></div> <span class="fiat"><app-fiat i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom" [value]="recommendedFees.halfHourFee * 140" ></app-fiat></span>
+        <div class="fee-text"><app-fee-rate [fee]="recommendedFees.halfHourFee" [dp]="2"></app-fee-rate></div> <span class="fiat"><app-fiat i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom" [value]="recommendedFees.halfHourFee * 140" ></app-fiat></span>
       </div>
     </div>
     <div class="item">
       <div class="card-text">
-        <div class="fee-text"><app-fee-rate [fee]="recommendedFees.fastestFee" [dp]="2" [softDecimals]="true"></app-fee-rate></div> <span class="fiat"><app-fiat i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom" [value]="recommendedFees.fastestFee * 140" ></app-fiat></span>
+        <div class="fee-text"><app-fee-rate [fee]="recommendedFees.fastestFee" [dp]="2"></app-fee-rate></div> <span class="fiat"><app-fiat i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom" [value]="recommendedFees.fastestFee * 140" ></app-fiat></span>
       </div>
     </div>
   </div>
