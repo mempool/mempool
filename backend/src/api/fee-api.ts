@@ -26,17 +26,17 @@ class FeeApi {
     return this.calculateRecommendedFee(pBlocks, mPool);
   }
 
-  public getPreciseRecommendedFee(minimum: number = 0): RecommendedFees {
+  public getPreciseRecommendedFee(): RecommendedFees {
     const pBlocks = projectedBlocks.getMempoolBlocks();
     const mPool = mempool.getMempoolInfo();
 
     // minimum non-zero minrelaytxfee / incrementalrelayfee is 1 sat/kvB = 0.001 sat/vB
-    return this.calculateRecommendedFee(pBlocks, mPool, minimum, 0.001);
+    return this.calculateRecommendedFee(pBlocks, mPool, 0.001);
   }
 
-  public calculateRecommendedFee(pBlocks: MempoolBlock[], mPool: IBitcoinApi.MempoolInfo, minimumRecommendation: number = 0, minIncrement: number = this.minimumIncrement): RecommendedFees {
+  public calculateRecommendedFee(pBlocks: MempoolBlock[], mPool: IBitcoinApi.MempoolInfo, minIncrement: number = this.minimumIncrement): RecommendedFees {
     const purgeRate = this.roundUpToNearest(mPool.mempoolminfee * 100000, minIncrement);
-    const minimumFee = Math.max(purgeRate, minimumRecommendation, minIncrement);
+    const minimumFee = Math.max(purgeRate, minIncrement);
 
     if (!pBlocks.length) {
       return {
