@@ -46,8 +46,6 @@ export class WebsocketService {
   private subscription: Subscription;
   private network = '';
 
-  private minRecommendedFee = this.stateService.env.MIN_RECOMMENDED_FEE;
-
   constructor(
     private stateService: StateService,
     private apiService: ApiService,
@@ -431,11 +429,7 @@ export class WebsocketService {
 
     if (response.fees) {
       this.stateService.recommendedFees$.next({
-        fastestFee: Math.max(response.fees.fastestFee, this.minRecommendedFee),
-        halfHourFee: Math.max(response.fees.halfHourFee, this.minRecommendedFee),
-        hourFee: Math.max(response.fees.hourFee, this.minRecommendedFee),
-        minimumFee: Math.max(response.fees.minimumFee, this.minRecommendedFee),
-        economyFee: Math.max(response.fees.economyFee, this.minRecommendedFee),
+        ...response.fees,
       });
     }
 

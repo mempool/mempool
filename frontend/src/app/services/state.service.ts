@@ -87,7 +87,6 @@ export interface Env {
   SERVICES_API?: string;
   customize?: Customization;
   PROD_DOMAINS: string[];
-  MIN_RECOMMENDED_FEE: number;
 }
 
 const defaultEnv: Env = {
@@ -130,7 +129,6 @@ const defaultEnv: Env = {
   'STRATUM_ENABLED': false,
   'SERVICES_API': 'https://mempool.space/api/v1/services',
   'PROD_DOMAINS': [],
-  'MIN_RECOMMENDED_FEE': 1,
 };
 
 @Injectable({
