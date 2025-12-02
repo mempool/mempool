@@ -18,6 +18,9 @@ class FeeApi {
   constructor() { }
 
   minimumIncrement = isLiquid ? 0.1 : 1;
+  minFastestFee = isLiquid ? 0.1 : 1;
+  minHalfHourFee = isLiquid ? 0.1 : 0.5;
+  priorityFactor = isLiquid ? 0 : 0.5;
 
   public getRecommendedFee(): RecommendedFees {
     const pBlocks = projectedBlocks.getMempoolBlocks();
@@ -67,8 +70,8 @@ class FeeApi {
     hourFee = Math.max(hourFee, economyFee);
 
     return {
-      'fastestFee': this.roundToNearest(fastestFee, minIncrement),
-      'halfHourFee': this.roundToNearest(halfHourFee, minIncrement),
+      'fastestFee': Math.max(this.roundToNearest(fastestFee + this.priorityFactor, minIncrement), this.minFastestFee),
+      'halfHourFee': Math.max(this.roundToNearest(halfHourFee + (this.priorityFactor / 2), minIncrement), this.minHalfHourFee),
       'hourFee': this.roundToNearest(hourFee, minIncrement),
       'economyFee': this.roundToNearest(economyFee, minIncrement),
       'minimumFee': this.roundToNearest(minimumFee, minIncrement),
