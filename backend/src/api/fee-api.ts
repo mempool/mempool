@@ -38,7 +38,13 @@ class FeeApi {
     // enforce floor & offset for highest priority recommendations while <100% hashrate accepts sub-sat fees
     recommendations.fastestFee = Math.max(recommendations.fastestFee + this.priorityFactor, this.minFastestFee);
     recommendations.halfHourFee = Math.max(recommendations.halfHourFee + (this.priorityFactor / 2), this.minHalfHourFee);
-    return recommendations;
+    return {
+      'fastestFee': Math.round(recommendations.fastestFee * 1000) / 1000,
+      'halfHourFee': Math.round(recommendations.halfHourFee * 1000) / 1000,
+      'hourFee': Math.round(recommendations.hourFee * 1000) / 1000,
+      'economyFee': Math.round(recommendations.economyFee * 1000) / 1000,
+      'minimumFee': Math.round(recommendations.minimumFee * 1000) / 1000,
+    };
   }
 
   public calculateRecommendedFee(pBlocks: MempoolBlock[], mPool: IBitcoinApi.MempoolInfo, minIncrement: number = this.minimumIncrement): RecommendedFees {
