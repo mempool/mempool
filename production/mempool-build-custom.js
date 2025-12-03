@@ -8,19 +8,14 @@ const defaultConfig = {
     "name": "mempool",
     "title": "mempool",
     "site_id": 5,
+    "header_img": "/resources/mempool/mempool-header.png",
+    "footer_img": "/resources/mempool/mempool-footer.png"
   },
   "meta": {
     "title": "mempool - Bitcoin Explorer",
     "description": "Explore the full Bitcoin ecosystem with The Mempool Open Source Project®. See the real-time status of your transactions, get network info, and more.",
+    previewFallbackImg: "/resources/mempool/mempool-preview.jpg"
   },
-  "unfurls": {
-    "preview": {
-      "src": "https://mempool.space/resources/previews/mempool-space-preview.jpg",
-      "type": "image/jpeg",
-      "width": "2000",
-      "height": "1000"
-    }
-  }
 }
 
 function deepMerge(target, source) {
@@ -53,17 +48,17 @@ function substitute(indexhtml, config) {
 
   // substitute meta tags
   newhtml = newhtml.replace(/\<\!\-\- META \-\-\>.*\<\!\-\- END META \-\-\>/gis, `<meta name="description" content="${config.meta.description}" />
-  <meta property="og:image" content="${config.unfurls.preview.src}" />
-  <meta property="og:image:type" content="${config.unfurls.preview.type}" />
-  <meta property="og:image:width" content="${config.unfurls.preview.width}" />
-  <meta property="og:image:height" content="${config.unfurls.preview.height}" />
+  <meta property="og:image" content="https://${config.domains[0]}${config.meta.previewFallbackImg}" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="2000" />
+  <meta property="og:image:height" content="1000" />
   <meta property="og:description" content="${config.meta.description}" />
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@mempool">
   <meta name="twitter:creator" content="@mempool">
   <meta name="twitter:title" content="${config.meta.title}">
   <meta name="twitter:description" content="${config.meta.description}" />
-  <meta name="twitter:image" content="${config.unfurls.preview.src}" />
+  <meta name="twitter:image" content="https://${config.domains[0]}${config.meta.previewFallbackImg}" />
   <meta name="twitter:domain" content="${config.domains[0]}">`);
 
 
@@ -87,6 +82,9 @@ async function run() {
   const servicesHost = process.argv[2] || 'http://localhost:9000';
   const mempoolDir = process.argv[3] || '../frontend/dist/mempool/browser';
 
+  console.log('connecting to services host at', servicesHost);
+  console.log('writing files to mempool directory at ', mempoolDir);
+
   console.log('fetching list of custom builds');
   const customBuilds = await (await fetch(`${servicesHost}/api/v1/internal/enterprise/dashboard/list`)).json();
 
@@ -96,15 +94,20 @@ async function run() {
     return addDefaultsToConfig(await (await fetch(`${servicesHost}/api/v1/internal/enterprise/dashboard/${build}`)).json());
   }));
 
-  
+  const browserDir = mempoolDir;
+  const locales = fs.readdirSync(browserDir)
+    .filter(file => fs.statSync(`${browserDir}/${file}`).isDirectory())
+    .filter(file => fs.existsSync(`${browserDir}/${file}/index.html`));
+
+  if (locales.length === 0) {
+    console.log(`no locales found in browser directory - are you sure "${browserDir}" is the correct path?`);
+    return;
+  }
+
   // for each custom build config:
   let i = 0;
   for (const config of customConfigs) {
     console.log(`generating ${config.enterprise} build (${i + 1}/${customConfigs.length})`);
-    const browserDir = mempoolDir;
-    const locales = fs.readdirSync(browserDir)
-      .filter(file => fs.statSync(`${browserDir}/${file}`).isDirectory())
-      .filter(file => fs.existsSync(`${browserDir}/${file}/index.html`));
 
     // Process each locale's index.html
     for (const locale of locales) {
