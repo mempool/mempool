@@ -19,6 +19,7 @@ interface SupplyShare {
   selector: 'app-treasuries-supply',
   templateUrl: './treasuries-supply.component.html',
   styleUrls: ['./treasuries-supply.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TreasuriesSupplyComponent implements OnInit, OnDestroy {

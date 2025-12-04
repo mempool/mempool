@@ -11,6 +11,7 @@ import { LightningApiService } from '@app/lightning/lightning-api.service';
   selector: 'app-channel',
   templateUrl: './channel.component.html',
   styleUrls: ['./channel.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChannelComponent implements OnInit {

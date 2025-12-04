@@ -10,6 +10,7 @@ import { GeolocationData } from '@app/shared/components/geolocation/geolocation.
   selector: 'app-nodes-per-country',
   templateUrl: './nodes-per-country.component.html',
   styleUrls: ['./nodes-per-country.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesPerCountry implements OnInit {

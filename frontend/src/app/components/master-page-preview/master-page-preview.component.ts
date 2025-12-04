@@ -8,6 +8,7 @@ import { EnterpriseService } from '@app/services/enterprise.service';
   selector: 'app-master-page-preview',
   templateUrl: './master-page-preview.component.html',
   styleUrls: ['./master-page-preview.component.scss'],
+  standalone: false,
 })
 export class MasterPagePreviewComponent implements OnInit {
   network$: Observable<string>;

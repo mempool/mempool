@@ -9,6 +9,7 @@ import { ElectrsApiService } from '@app/services/electrs-api.service';
   selector: 'app-justice-list',
   templateUrl: './justice-list.component.html',
   styleUrls: ['./justice-list.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class JusticeList implements OnInit, OnDestroy {

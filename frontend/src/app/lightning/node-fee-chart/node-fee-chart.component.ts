@@ -11,6 +11,7 @@ import { StateService } from '@app/services/state.service';
   selector: 'app-node-fee-chart',
   templateUrl: './node-fee-chart.component.html',
   styleUrls: ['./node-fee-chart.component.scss'],
+  standalone: false,
   styles: [`
     .loadingGraphs {
       position: absolute;

@@ -6,6 +6,7 @@ import { Inscription } from '@app/shared/ord/inscription.utils';
   selector: 'app-ord-data',
   templateUrl: './ord-data.component.html',
   styleUrls: ['./ord-data.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OrdDataComponent implements OnChanges {

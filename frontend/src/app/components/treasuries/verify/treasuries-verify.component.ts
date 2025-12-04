@@ -19,6 +19,7 @@ interface VerifyShare {
   selector: 'app-treasuries-verify-progress',
   templateUrl: './treasuries-verify.component.html',
   styleUrls: ['./treasuries-verify.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TreasuriesVerifyProgressComponent implements OnInit, OnDestroy {

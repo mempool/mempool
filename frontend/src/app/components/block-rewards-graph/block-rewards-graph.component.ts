@@ -26,6 +26,7 @@ import { StateService } from '@app/services/state.service';
       z-index: 99;
     }
   `],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlockRewardsGraphComponent implements OnInit {

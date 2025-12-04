@@ -32,6 +32,7 @@ interface ComparisonStats {
 @Component({
   selector: 'app-block',
   templateUrl: './block.component.html',
+  standalone: false,
   styleUrls: ['./block.component.scss'],
   styles: [`
     .loadingGraphs {

@@ -5,6 +5,7 @@ import { Output } from '@angular/core';
 @Directive({
   // tslint:disable-next-line:directive-selector
   selector: '[offClick]',
+  standalone: false,
 })
 
 export class OffClickDirective {

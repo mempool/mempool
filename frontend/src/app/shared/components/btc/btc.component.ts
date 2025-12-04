@@ -5,7 +5,8 @@ import { StateService } from '@app/services/state.service';
 @Component({
   selector: 'app-btc',
   templateUrl: './btc.component.html',
-  styleUrls: ['./btc.component.scss']
+  styleUrls: ['./btc.component.scss'],
+  standalone: false,
 })
 export class BtcComponent implements OnInit, OnChanges {
   @Input() satoshis: number;

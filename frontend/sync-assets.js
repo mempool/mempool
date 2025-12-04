@@ -1,5 +1,4 @@
 const https = require('https');
-const fs = require('fs').promises;
 const fsSync = require('fs');
 const crypto = require('crypto');
 const path = require('node:path');

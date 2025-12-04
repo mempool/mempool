@@ -9,6 +9,7 @@ import { timezones } from '@app/app.constants';
   selector: 'app-timezone-selector',
   templateUrl: './timezone-selector.component.html',
   styleUrls: ['./timezone-selector.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TimezoneSelectorComponent implements OnInit {

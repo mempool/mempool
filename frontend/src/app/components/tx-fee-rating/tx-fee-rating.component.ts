@@ -9,6 +9,7 @@ import { CacheService } from '@app/services/cache.service';
   selector: 'app-tx-fee-rating',
   templateUrl: './tx-fee-rating.component.html',
   styleUrls: ['./tx-fee-rating.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TxFeeRatingComponent implements OnInit, OnChanges, OnDestroy {
