@@ -8,6 +8,7 @@ import { Observable, of, ReplaySubject, tap, catchError, share, filter, switchMa
 import { IBackendInfo } from '@interfaces/websocket.interface';
 import { Acceleration, AccelerationHistoryParams } from '@interfaces/node-api.interface';
 import { AccelerationStats } from '@components/acceleration/acceleration-stats/acceleration-stats.component';
+import { SimpleProof } from '@components/simpleproof-widget/simpleproof-widget.component';
 
 export interface IUser {
   username: string;
@@ -72,7 +73,7 @@ export class ServicesApiServices {
         this.userSubject$.next(user);
       }),
       catchError((e) => {
-        if (e.error === 'User does not exists') {
+        if (e.error === 'invalid_user') {
           this.userSubject$.next(null);
           this.logout$().subscribe();
           return of(null);
@@ -146,6 +147,10 @@ export class ServicesApiServices {
     return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/googlePay`, { txInput: txInput, cardTag: cardTag, token: token, verificationToken: verificationToken, referenceId: referenceId, userApprovedUSD: userApprovedUSD, userChallenged: userChallenged });
   }
 
+  accelerateWithCardOnFile$(txInput: string, token: string, verificationToken: string, referenceId: string, userApprovedUSD: number, userChallenged: boolean) {
+    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/cardOnFile`, { txInput: txInput, token: token, verificationToken: verificationToken, referenceId: referenceId, userApprovedUSD: userApprovedUSD, userChallenged: userChallenged });
+  }
+
   getAccelerations$(): Observable<Acceleration[]> {
     return this.httpClient.get<Acceleration[]>(`${this.stateService.env.SERVICES_API}/accelerator/accelerations`);
   }
@@ -158,6 +163,10 @@ export class ServicesApiServices {
     return this.httpClient.get<Acceleration[]>(`${this.stateService.env.SERVICES_API}/accelerator/accelerations/history`, { params: { ...params } });
   }
 
+  getAccelerationDataForTxid$(txid: string) {
+    return this.httpClient.get<Acceleration>(`${this.stateService.env.SERVICES_API}/accelerator/accelerations/${txid}`);
+  }
+
   getAllAccelerationHistory$(params: AccelerationHistoryParams, limit?: number, findTxid?: string): Observable<Acceleration[]> {
     const getPage$ = (page: number, accelerations: Acceleration[] = []): Observable<{ page: number, total: number, accelerations: Acceleration[] }> => {
       return this.getAccelerationHistoryObserveResponse$({...params, page}).pipe(
@@ -165,9 +174,10 @@ export class ServicesApiServices {
           page,
           total: parseInt(response.headers.get('X-Total-Count'), 10) || 0,
           accelerations: accelerations.concat(response.body || []),
+          pageAccelerations: response.body || [],
         })),
-        switchMap(({page, total, accelerations}) => {
-          if (accelerations.length >= Math.min(total, limit ?? Infinity) || (findTxid && accelerations.find((acc) => acc.txid === findTxid))) {
+        switchMap(({page, total, accelerations, pageAccelerations }) => {
+          if (pageAccelerations.length === 0 || accelerations.length >= Math.min(total, limit ?? Infinity) || (findTxid && accelerations.find((acc) => acc.txid === findTxid))) {
             return of({ page, total, accelerations });
           } else {
             return getPage$(page + 1, accelerations);
@@ -209,11 +219,17 @@ export class ServicesApiServices {
     return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/payments/bitcoin`, params);
   }
 
-  retreiveInvoice$(invoiceId: string): Observable<any[]> {
+  retrieveInvoice$(invoiceId: string): Observable<any[]> {
     return this.httpClient.get<any[]>(`${this.stateService.env.SERVICES_API}/payments/bitcoin/invoice?id=${invoiceId}`);
   }
 
   getPaymentStatus$(orderId: string): Observable<any> {
     return this.httpClient.get<any>(`${this.stateService.env.SERVICES_API}/payments/bitcoin/check?order_id=${orderId}`, { observe: 'response' });
+  }
+
+  getSimpleProofs$(key: string): Observable<Record<string, SimpleProof>> {
+    // Need to use relative path here to avoid CORS errors, since this won't be used from mempool.space website
+    const pathname = new URL(this.stateService.env.SERVICES_API + '/sp/verified').pathname;
+    return this.httpClient.get<Record<string, SimpleProof>>(`${pathname}/${key}`);
   }
 }

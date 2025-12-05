@@ -25,10 +25,29 @@ li.nav-item {
   margin: auto 10px;
   padding-left: 10px;
   padding-right: 10px;
+  align-content: center;
+  .svg-wrapper {
+    height: 19.2px;
+    width: auto;
+    margin-bottom: 8px;
+  }
+  @media (max-width: 991px) {
+    margin: 0;
+    padding-left: 8px;
+    padding-right: 8px;
+    .svg-wrapper {
+      height: 25.6px;
+      width: auto;
+      margin-bottom: 0;
+    }
+    .nav-link {
+      padding: 12px 0;
+    }
+  }
   @media (max-width: 429px) {
-    margin: auto 5px;
-    padding-left: 6px;
-    padding-right: 6px;
+    margin: auto 2px;
+    padding-left: 12px;
+    padding-right: 12px;
   }
 }
 
@@ -54,9 +73,13 @@ li.nav-item {
   box-shadow: 0px 0px 15px 0px #000;
   flex-direction: row;
   left: 0;
-  justify-content: center;
+  justify-content: space-between;
   position: fixed;
   width: 100%;
+  li {
+    flex-grow: 1;
+    text-align: center;
+  }
   @media (min-width: 992px) {
     background: transparent;
     box-shadow: none;
@@ -84,12 +107,13 @@ li.nav-item {
 }
 
 .navbar-brand {
-  width: 60%;
+  position: relative;
 }
 
-@media (min-width: 576px) {
-  .navbar-brand {
-    width: 130px;
+.navbar-brand.dual-logos {
+  justify-content: space-between;
+  @media (max-width: 767.98px) {
+    width: 100%;
   }
 }
 
@@ -155,6 +179,64 @@ nav {
 }
 .navbar-dark .navbar-nav .nav-link {
   color: var(--icon);
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: var(--icon);
+}
+
+.subdomain_logo {
+  height: 35px;
+  overflow: clip;
+  max-width: 140px;
+  margin: auto;
+  align-self: center;
+  .rounded {
+    border-radius: 5px;
+  }
+}
+
+.subdomain_container {
+  max-width: 140px;
+  text-align: center;
+  align-self: center;
+}
+
+.vertical-line {
+  border-left: 1px solid #444;
+  height: 30px;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-top: 3px;
+}
+
+.logo-holder {
+  display: flex;
+  flex-direction: row;
+}
+
+.navbar-brand {
+  width: 60%;
+  flex-direction: row;
+  display: flex;
+
+  @media screen and (min-width: 576px) {
+    width: 130px;
+  }
+
+  &.dual-logos {
+    width: auto;
+  }
+}
+
+.mempool-logo, app-svg-images {
+  align-self: start;
+  width: 140px;
+  height: 35px;
+
+  @media screen and (min-width: 576px) {
+    align-self: center;
+  }
 }
 
 .current-network-svg {

@@ -92,7 +92,8 @@ class AddressStats implements ChainStats {
 @Component({
   selector: 'app-address',
   templateUrl: './address.component.html',
-  styleUrls: ['./address.component.scss']
+  styleUrls: ['./address.component.scss'],
+  standalone: false,
 })
 export class AddressComponent implements OnInit, OnDestroy {
   network = '';
@@ -115,6 +116,7 @@ export class AddressComponent implements OnInit, OnDestroy {
   addressLoadingStatus$: Observable<number>;
   addressInfo: null | AddressInformation = null;
   addressTypeInfo: null | AddressTypeInfo;
+  hasTapTree: boolean;
 
   fullyLoaded = false;
   chainStats: AddressStats;
@@ -163,6 +165,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.utxos = null;
           this.addressInfo = null;
           this.exampleChannel = null;
+          this.hasTapTree = false;
           document.body.scrollTo(0, 0);
           this.addressString = params.get('id') || '';
           if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}$/.test(this.addressString)) {
@@ -282,11 +285,18 @@ export class AddressComponent implements OnInit, OnDestroy {
         }
         this.isLoadingTransactions = false;
 
-        let addressVin: Vin[] = [];
+        const addressVin: Vin[] = [];
+        const vinIds: string[] = [];
         for (const tx of this.transactions) {
-          addressVin = addressVin.concat(tx.vin.filter(v => v.prevout?.scriptpubkey_address === this.address.address));
+          tx.vin.forEach((v, index) => {
+            if (v.prevout?.scriptpubkey_address === this.address.address) {
+              addressVin.push(v);
+              vinIds.push(`${tx.txid}:${index}`);
+            }
+          });
         }
-        this.addressTypeInfo.processInputs(addressVin);
+        this.addressTypeInfo.processInputs(addressVin, vinIds);
+        this.hasTapTree = this.addressTypeInfo.tapscript && this.addressTypeInfo.scripts.values().next().value.taprootInfo.scriptPath.merkleBranches.length > 0;
         // hack to trigger change detection
         this.addressTypeInfo = this.addressTypeInfo.clone();
 

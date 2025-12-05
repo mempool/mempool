@@ -1,10 +1,10 @@
 /* Theme */
-$bg: #1d1f31;
-$active-bg: #11131f;
+$bg: #11131f;
+$active-bg: #000000;
 $hover-bg: #12131e;
 $fg: #fff;
 $nav-bg: $bg;
-$title-fg: #4a68b9;
+$title-fg: #2055e3;
 
 $taproot: #eba814;
 $taproot-light: #d5a90a;
@@ -18,11 +18,11 @@ $gray-700: $fg;
 
 $nav-tabs-link-active-bg: $active-bg;
 
-$primary: #105fb0;
-$secondary: #2d3348;
-$tertiary: #653b9c;
-$success: #1a9436;
-$info: #1bd8f4;
+$primary: #007cfa;
+$secondary: #272f4e;
+$tertiary: #6225b2;
+$success: #0aab2f;
+$info: #00ddff;
 
 $h5-font-size: 1.15rem !default;
 
@@ -79,13 +79,13 @@ $dropdown-link-active-bg: $active-bg;
   --skeleton-bg: #2e324e;
   --skeleton-bg-light: #5d6182;
 
-  --box-bg: #24273e;
-  --stat-box-bg: #181b2d;
+  --box-bg: #171c2a;
+  --stat-box-bg: #0b1018;
   --alert-bg: #3a1c61;
   --navbar-bg: #212121;
-  --transparent-fg: #ffffff66;
-  --fade-out-box-bg-start: rgba(36, 39, 62, 0);
-  --fade-out-box-bg-end: rgba(36, 39, 62, 1);
+  --transparent-fg: #ffffffbb;
+  --fade-out-box-bg-start: rgba(23, 28, 42, 0);
+  --fade-out-box-bg-end: rgba(23, 28, 42, 1);
   --opacity: 0.57;
 
   --testnet: #1d486f;
@@ -102,12 +102,12 @@ $dropdown-link-active-bg: $active-bg;
   --taproot-light: #d5a90a;
   --taproot-dark: #9d7c05;
 
-  --green: #3bcc49;
-  --red: #dc3545;
+  --green: #83fd00;
+  --red: #ff3d00;
   --yellow: #fff000;
-  --grey: #6c757d;
+  --grey: #7e7e7e;
   --tooltip-grey: #b1b1b1;
-  --orange: #b86d12;
+  --orange: #ff9f00;
 
   --search-button: #4d2d77;
   --search-button-border: #472a6e;
@@ -1347,7 +1347,7 @@ app-master-page, app-liquid-master-page {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding-bottom: 56px;
+  padding-bottom: 48px;
   @media (min-width: 992px) {
     padding-bottom: 0px;
   }
@@ -1372,7 +1372,7 @@ app-global-footer {
 .dropdown-menu {
   background-color: var(--bg);
   color: var(--fg);
-  .dropdown-item:hover, .dropdown-item:focus { 
+  .dropdown-item:hover, .dropdown-item:focus {
     background-color: var(--active-bg);
     color: var(--fg);
   }
@@ -1399,7 +1399,7 @@ a {
   background-color: var(--info);
 }
 
-.btn-primary { 
+.btn-primary {
   color: var(--fg);
   background-color: var(--primary);
   border-color: var(--primary);
@@ -1407,4 +1407,8 @@ a {
 
 .btn-small-height {
 	line-height: 1;
+}
+
+button {
+  touch-action: manipulation;
 }

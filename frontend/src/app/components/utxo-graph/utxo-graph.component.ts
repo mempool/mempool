@@ -8,9 +8,12 @@ import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pip
 import { renderSats } from '@app/shared/common.utils';
 import { colorToHex, hexToColor, mix } from '@components/block-overview-graph/utils';
 import { TimeService } from '@app/services/time.service';
+import { WebsocketService } from '@app/services/websocket.service';
+import { Acceleration } from '@interfaces/node-api.interface';
+import { defaultAuditColors } from '@components/block-overview-graph/utils';
 
-const newColorHex = '1bd8f4';
-const oldColorHex = '9339f4';
+const newColorHex = '1BF4AF';
+const oldColorHex = '3C39F4';
 const pendingColorHex = 'eba814';
 const newColor = hexToColor(newColorHex);
 const oldColor = hexToColor(oldColorHex);
@@ -51,6 +54,7 @@ function sortedInsert(positions: { c1: Circle, c2: Circle, d: number, p: number,
       z-index: 99;
     }
   `],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UtxoGraphComponent implements OnChanges, OnDestroy {
@@ -61,8 +65,10 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
   @Input() widget: boolean = false;
 
   subscription: Subscription;
+  accelerationsSubscription: Subscription;
   lastUpdate: number = 0;
   updateInterval;
+  accelerationMap: Record<string, Acceleration> = {};
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -80,6 +86,7 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
     private router: Router,
     private relativeUrlPipe: RelativeUrlPipe,
     private timeService: TimeService,
+    private websocketService: WebsocketService,
   ) {
     // re-render the chart every 10 seconds, to keep the age colors up to date
     this.updateInterval = setInterval(() => {
@@ -87,6 +94,18 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
         this.prepareChartOptions(this.utxos);
       }
     }, 10000);
+
+    this.websocketService.startTrackAccelerations();
+    this.accelerationsSubscription = this.stateService.liveAccelerations$.subscribe((accelerations) => {
+      this.accelerationMap = accelerations.reduce((acc, acceleration) => {
+        acc[acceleration.txid] = acceleration;
+        return acc;
+      }, {});
+
+      this.applyAccelerations();
+      this.prepareChartOptions(this.utxos);
+    });
+
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -95,7 +114,17 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
       return;
     }
     if (changes.utxos) {
+      this.applyAccelerations();
       this.prepareChartOptions(this.utxos);
+    }
+  }
+
+  applyAccelerations(): void {
+    for (const utxo of this.utxos) {
+      delete utxo.status['accelerated'];
+      if (this.accelerationMap[utxo.txid]) {
+        utxo.status['accelerated'] = true;
+      }
     }
   }
 
@@ -311,7 +340,12 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
           <br>
           ${valueStr}
           <br>
-          ${utxo.status.confirmed ? 'Confirmed ' + this.timeService.calculate(utxo.status.block_time, 'since', true, 1, 'minute').text : 'Pending'}
+          ${utxo.status.confirmed
+            ? 'Confirmed ' + this.timeService.calculate(utxo.status.block_time, 'since', true, 1, 'minute').text
+            : utxo.status['accelerated']
+              ? 'Accelerated'
+              : 'Pending'
+          }
           `;
         },
       }
@@ -322,7 +356,9 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
   }
 
   getColor(utxo: Utxo): string {
-    if (utxo.status.confirmed) {
+    if (utxo.status['accelerated']) {
+      return colorToHex(defaultAuditColors.accelerated);
+    } else if (utxo.status.confirmed) {
       const age = Date.now() / 1000 - utxo.status.block_time;
       const oneHour = 60 * 60;
       const fourYears = 4 * 365 * 24 * 60 * 60;
@@ -366,6 +402,8 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
       this.subscription.unsubscribe();
     }
     clearInterval(this.updateInterval);
+    this.websocketService.stopTrackAccelerations();
+    this.accelerationsSubscription.unsubscribe();
   }
 
   isMobile(): boolean {

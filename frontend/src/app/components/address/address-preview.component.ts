@@ -15,7 +15,8 @@ import { AddressInformation } from '@interfaces/node-api.interface';
 @Component({
   selector: 'app-address-preview',
   templateUrl: './address-preview.component.html',
-  styleUrls: ['./address-preview.component.scss']
+  styleUrls: ['./address-preview.component.scss'],
+  standalone: false,
 })
 export class AddressPreviewComponent implements OnInit, OnDestroy {
   network = '';
@@ -35,6 +36,8 @@ export class AddressPreviewComponent implements OnInit, OnDestroy {
   received = 0;
   sent = 0;
   totalUnspent = 0;
+
+  ogSession: number;
 
   constructor(
     private route: ActivatedRoute,
@@ -58,7 +61,7 @@ export class AddressPreviewComponent implements OnInit, OnDestroy {
       .pipe(
         switchMap((params: ParamMap) => {
           this.rawAddress = params.get('id') || '';
-          this.openGraphService.waitFor('address-data-' + this.rawAddress);
+          this.ogSession = this.openGraphService.waitFor('address-data-' + this.rawAddress);
           this.error = undefined;
           this.isLoadingAddress = true;
           this.loadedConfirmedTxCount = 0;
@@ -79,7 +82,7 @@ export class AddressPreviewComponent implements OnInit, OnDestroy {
                 this.isLoadingAddress = false;
                 this.error = err;
                 console.log(err);
-                this.openGraphService.fail('address-data-' + this.rawAddress);
+                this.openGraphService.fail({ event: 'address-data-' + this.rawAddress, sessionId: this.ogSession });
                 return of(null);
               })
             );
@@ -97,7 +100,7 @@ export class AddressPreviewComponent implements OnInit, OnDestroy {
           this.address = address;
           this.updateChainStats();
           this.isLoadingAddress = false;
-          this.openGraphService.waitOver('address-data-' + this.rawAddress);
+          this.openGraphService.waitOver({ event: 'address-data-' + this.rawAddress, sessionId: this.ogSession });
         })
       )
       .subscribe(() => {},
@@ -105,7 +108,7 @@ export class AddressPreviewComponent implements OnInit, OnDestroy {
           console.log(error);
           this.error = error;
           this.isLoadingAddress = false;
-          this.openGraphService.fail('address-data-' + this.rawAddress);
+          this.openGraphService.fail({ event: 'address-data-' + this.rawAddress, sessionId: this.ogSession });
         }
       );
   }

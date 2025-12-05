@@ -6,6 +6,7 @@ import blocks from '../blocks';
 import mempool from '../mempool';
 import { TransactionExtended } from '../../mempool.interfaces';
 import transactionUtils from '../transaction-utils';
+import { Common } from '../common';
 
 class BitcoinApi implements AbstractBitcoinApi {
   private rawMempoolCache: IBitcoinApi.RawMempool | null = null;
@@ -94,6 +95,10 @@ class BitcoinApi implements AbstractBitcoinApi {
       });
   }
 
+  $getTransactionMerkleProof(txId: string): Promise<IEsploraApi.MerkleProof> {
+    throw new Error('Method getTransactionMerkleProof not supported by the Bitcoin RPC API.');
+  }
+
   $getBlockHeightTip(): Promise<number> {
     return this.bitcoindClient.getBlockCount();
   }
@@ -102,16 +107,22 @@ class BitcoinApi implements AbstractBitcoinApi {
     return this.bitcoindClient.getBestBlockHash();
   }
 
-  $getTxIdsForBlock(hash: string): Promise<string[]> {
+  $getTxIdsForBlock(hash: string, fallbackToCore = false): Promise<string[]> {
     return this.bitcoindClient.getBlock(hash, 1)
       .then((rpcBlock: IBitcoinApi.Block) => rpcBlock.tx);
   }
 
-  async $getTxsForBlock(hash: string): Promise<IEsploraApi.Transaction[]> {
+  async $getTxsForBlock(hash: string, fallbackToCore = false): Promise<IEsploraApi.Transaction[]> {
     const verboseBlock: IBitcoinApi.VerboseBlock = await this.bitcoindClient.getBlock(hash, 2);
     const transactions: IEsploraApi.Transaction[] = [];
     for (const tx of verboseBlock.tx) {
-      const converted = await this.$convertTransaction(tx, true);
+      const converted = await this.$convertTransaction(tx, true, false, verboseBlock.confirmations === -1);
+      converted.status = {
+        confirmed: true,
+        block_height: verboseBlock.height,
+        block_hash: hash,
+        block_time: verboseBlock.time,
+      };
       transactions.push(converted);
     }
     return transactions;
@@ -148,12 +159,20 @@ class BitcoinApi implements AbstractBitcoinApi {
     throw new Error('Method getAddressTransactions not supported by the Bitcoin RPC API.');
   }
 
+  $getAddressUtxos(address: string): Promise<IEsploraApi.UTXO[]> {
+    throw new Error('Method getAddressUtxos not supported by the Bitcoin RPC API.');
+  }
+
   $getScriptHash(scripthash: string): Promise<IEsploraApi.ScriptHash> {
     throw new Error('Method getScriptHash not supported by the Bitcoin RPC API.');
   }
 
   $getScriptHashTransactions(scripthash: string, lastSeenTxId: string): Promise<IEsploraApi.Transaction[]> {
     throw new Error('Method getScriptHashTransactions not supported by the Bitcoin RPC API.');
+  }
+
+  $getScriptHashUtxos(scripthash: string): Promise<IEsploraApi.UTXO[]> {
+    throw new Error('Method getScriptHashUtxos not supported by the Bitcoin RPC API.');
   }
 
   $getRawMempool(): Promise<IEsploraApi.Transaction['txid'][]> {
@@ -264,7 +283,7 @@ class BitcoinApi implements AbstractBitcoinApi {
     return this.bitcoindClient.getNetworkHashPs(120, blockHeight);
   }
 
-  protected async $convertTransaction(transaction: IBitcoinApi.Transaction, addPrevout: boolean, lazyPrevouts = false): Promise<IEsploraApi.Transaction> {
+  protected async $convertTransaction(transaction: IBitcoinApi.Transaction, addPrevout: boolean, lazyPrevouts = false, allowMissingPrevouts = false): Promise<IEsploraApi.Transaction> {
     let esploraTransaction: IEsploraApi.Transaction = {
       txid: transaction.txid,
       version: transaction.version,
@@ -293,7 +312,7 @@ class BitcoinApi implements AbstractBitcoinApi {
         is_coinbase: !!vin.coinbase,
         prevout: null,
         scriptsig: vin.scriptSig && vin.scriptSig.hex || vin.coinbase || '',
-        scriptsig_asm: vin.scriptSig && transactionUtils.convertScriptSigAsm(vin.scriptSig.hex) || '',
+        scriptsig_asm: vin.scriptSig ? transactionUtils.convertScriptSigAsm(vin.scriptSig.hex) : (vin.coinbase ? transactionUtils.convertScriptSigAsm(vin.coinbase) : ''),
         sequence: vin.sequence,
         txid: vin.txid || '',
         vout: vin.vout || 0,
@@ -313,7 +332,13 @@ class BitcoinApi implements AbstractBitcoinApi {
     }
 
     if (addPrevout) {
-      esploraTransaction = await this.$calculateFeeFromInputs(esploraTransaction, false, lazyPrevouts);
+      try {
+        esploraTransaction = await this.$calculateFeeFromInputs(esploraTransaction, false, lazyPrevouts);
+      } catch (e) {
+        if (!allowMissingPrevouts) {
+          throw e;
+        }
+      }
     } else if (!transaction.confirmations) {
       esploraTransaction = await this.$appendMempoolFeeData(esploraTransaction);
     }
@@ -360,6 +385,7 @@ class BitcoinApi implements AbstractBitcoinApi {
   }
 
   protected async $addPrevouts(transaction: TransactionExtended): Promise<TransactionExtended> {
+    let addedPrevouts = false;
     for (const vin of transaction.vin) {
       if (vin.prevout) {
         continue;
@@ -367,6 +393,12 @@ class BitcoinApi implements AbstractBitcoinApi {
       const innerTx = await this.$getRawTransaction(vin.txid, false, false);
       vin.prevout = innerTx.vout[vin.vout];
       transactionUtils.addInnerScriptsToVin(vin);
+      addedPrevouts = true;
+    }
+    if (addedPrevouts) {
+      // re-calculate transaction flags now that we have full prevout data
+      transaction.flags = undefined; // clear existing flags to force full classification
+      transaction.flags = Common.getTransactionFlags(transaction, transaction.status?.block_height ?? blocks.getCurrentBlockHeight());
     }
     return transaction;
   }

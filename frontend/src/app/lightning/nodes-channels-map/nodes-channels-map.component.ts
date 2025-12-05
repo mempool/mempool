@@ -16,6 +16,7 @@ import { lerpColor } from '@app/shared/graphs.utils';
   selector: 'app-nodes-channels-map',
   templateUrl: './nodes-channels-map.component.html',
   styleUrls: ['./nodes-channels-map.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesChannelsMap implements OnInit {
@@ -70,7 +71,7 @@ export class NodesChannelsMap implements OnInit {
 
     if (this.style === 'graph') {
       this.center = [0, 5];
-      this.seoService.setTitle($localize`Lightning Nodes Channels World Map`);
+      this.seoService.setTitle($localize`:@@b482ceceb39c7a045cb2ab2c64f7091d21e63d44:Lightning Nodes Channels World Map`);
       this.seoService.setDescription($localize`:@@meta.description.lightning.node-map:See the channels of non-Tor Lightning network nodes visualized on a world map. Hover/tap on points on the map for node names and details.`);
     }
 

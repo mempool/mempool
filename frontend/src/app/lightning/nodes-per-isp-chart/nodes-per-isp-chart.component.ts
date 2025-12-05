@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, HostBinding, NgZone, Input 
 import { Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from '@app/graphs/echarts';
 import { combineLatest, map, Observable, share, startWith, Subject, switchMap, tap } from 'rxjs';
-import { chartColors } from '@app/app.constants';
+import { originalChartColors as chartColors } from '@app/app.constants';
 import { ApiService } from '@app/services/api.service';
 import { SeoService } from '@app/services/seo.service';
 import { StateService } from '@app/services/state.service';
@@ -15,6 +15,7 @@ import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pip
   selector: 'app-nodes-per-isp-chart',
   templateUrl: './nodes-per-isp-chart.component.html',
   styleUrls: ['./nodes-per-isp-chart.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesPerISPChartComponent implements OnInit {

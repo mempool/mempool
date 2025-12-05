@@ -16,6 +16,7 @@ import { FilterMode, GradientMode } from '@app/shared/filters.utils';
   selector: 'app-mempool-block-overview',
   templateUrl: './mempool-block-overview.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
   @Input() index: number;

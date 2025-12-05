@@ -11,6 +11,7 @@ import { Filter } from '@app/shared/filters.utils';
   selector: 'app-transaction-details',
   templateUrl: './transaction-details.component.html',
   styleUrls: ['./transaction-details.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TransactionDetailsComponent implements OnInit {
@@ -38,6 +39,7 @@ export class TransactionDetailsComponent implements OnInit {
   @Input() replaced: boolean;
   @Input() isCached: boolean;
   @Input() ETA$: Observable<ETA>;
+  @Input() unbroadcasted: boolean;
 
   @Output() accelerateClicked = new EventEmitter<boolean>();
   @Output() toggleCpfp$ = new EventEmitter<void>();

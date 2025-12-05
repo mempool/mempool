@@ -31,7 +31,7 @@ class PoolsUpdater {
   }
 
   public async updatePoolsJson(): Promise<void> {
-    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false ||
+    if (['mainnet', 'testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK) === false ||
       config.MEMPOOL.ENABLED === false
     ) {
       return;
@@ -45,13 +45,13 @@ class PoolsUpdater {
     this.lastRun = now;
 
     try {
+      if (config.DATABASE.ENABLED === true) {
+        this.currentSha = await this.getShaFromDb();
+      }
+
       const githubSha = await this.fetchPoolsSha(); // Fetch pools-v2.json sha from github
       if (githubSha === null) {
         return;
-      }
-
-      if (config.DATABASE.ENABLED === true) {
-        this.currentSha = await this.getShaFromDb();
       }
 
       logger.debug(`pools-v2.json sha | Current: ${this.currentSha} | Github: ${githubSha}`, this.tag);
@@ -88,8 +88,8 @@ class PoolsUpdater {
 
       try {
         await DB.query('START TRANSACTION;');
-        await poolsParser.migratePoolsJson();
         await this.updateDBSha(githubSha);
+        await poolsParser.migratePoolsJson();
         await DB.query('COMMIT;');
       } catch (e) {
         logger.err(`Could not migrate mining pools, rolling back. Exception: ${JSON.stringify(e)}`, this.tag);
@@ -98,7 +98,8 @@ class PoolsUpdater {
       logger.info(`Mining pools-v2.json (${githubSha}) import completed`, this.tag);
 
     } catch (e) {
-      this.lastRun = now - 600; // Try again in 10 minutes
+      // fast-forward lastRun to 10 minutes before the next scheduled update
+      this.lastRun = now - Math.max(config.MEMPOOL.POOLS_UPDATE_DELAY - 600, 600);
       logger.err(`PoolsUpdater failed. Will try again in 10 minutes. Exception: ${JSON.stringify(e)}`, this.tag);
     }
   }
@@ -121,7 +122,7 @@ class PoolsUpdater {
   /**
    * Fetch our latest pools-v2.json sha from the db
    */
-  private async getShaFromDb(): Promise<string | null> {
+  public async getShaFromDb(): Promise<string | null> {
     try {
       const [rows]: any[] = await DB.query('SELECT string FROM state WHERE name="pools_json_sha"');
       return (rows.length > 0 ? rows[0].string : null);

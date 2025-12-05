@@ -8,6 +8,7 @@ import transactionUtils from './transaction-utils';
 import { isPoint } from '../utils/secp256k1';
 import logger from '../logger';
 import { getVarIntLength, opcodes, parseMultisigScript } from '../utils/bitcoin-script';
+import { IEsploraApi } from './bitcoin/esplora-api.interface';
 
 // Bitcoin Core default policy settings
 const MAX_STANDARD_TX_WEIGHT = 400_000;
@@ -23,15 +24,15 @@ const MAX_STANDARD_SCRIPTSIG_SIZE = 1650;
 const DUST_RELAY_TX_FEE = 3;
 const MAX_OP_RETURN_RELAY = 83;
 const DEFAULT_PERMIT_BAREMULTISIG = true;
+const MAX_TX_LEGACY_SIGOPS = 2_500 * 4; // witness-adjusted sigops
 
 export class Common {
   static nativeAssetId = config.MEMPOOL.NETWORK === 'liquidtestnet' ?
     '144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49'
   : '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d';
-  static _isLiquid = config.MEMPOOL.NETWORK === 'liquid' || config.MEMPOOL.NETWORK === 'liquidtestnet';
 
   static isLiquid(): boolean {
-    return this._isLiquid;
+    return config?.MEMPOOL?.NETWORK === 'liquid' || config?.MEMPOOL?.NETWORK === 'liquidtestnet';
   }
 
   static median(numbers: number[]) {
@@ -224,6 +225,11 @@ export class Common {
       return true;
     }
 
+    // legacy sigops
+    if (this.isNonStandardLegacySigops(tx, height)) {
+      return true;
+    }
+
     // input validation
     for (const vin of tx.vin) {
       if (vin.is_coinbase) {
@@ -252,14 +258,40 @@ export class Common {
         }
       } else if (['unknown', 'provably_unspendable', 'empty'].includes(vin.prevout?.scriptpubkey_type || '')) {
         return true;
-      } else if (this.isNonStandardAnchor(tx, height)) {
+      } else if (vin.prevout?.scriptpubkey_type === 'anchor' && this.isNonStandardAnchor(vin, height)) {
         return true;
       }
-      // TODO: bad-witness-nonstandard
+      // bad-witness-nonstandard
+      if (vin.prevout?.scriptpubkey_type === 'v1_p2tr' && vin.witness?.length) {
+        const hasAnnex = vin.witness.length > 1 && vin.witness[vin.witness.length - 1].startsWith('50');
+        // annex is non-standard
+        if (hasAnnex) {
+          return true;
+        }
+        if (vin.witness.length > (hasAnnex ? 2 : 1)) {
+          // script path spend
+          const controlBlock = vin.witness[vin.witness.length - (hasAnnex ? 2 : 1)];
+          // control block is required
+          if (!controlBlock.length) {
+            return false;
+          } else {
+            // Leaf version must be 0xc0 (aka Tapscript, see BIP 342)
+            if ((parseInt(controlBlock.slice(0, 2), 16) & 0xfe) !== 0xc0) {
+              return false;
+            }
+          }
+          // remaining witness items (except for the script) must be within MAX_STANDARD_TAPSCRIPT_STACK_ITEM_SIZE limit
+          if (vin.witness.slice(0, vin.witness.length - (hasAnnex ? 3 : 2)).some(v => v.length > 160)) {
+            return false;
+          }
+        }
+      }
+      // TODO: other bad-witness-nonstandard cases
     }
 
     // output validation
     let opreturnCount = 0;
+    let opreturnBytes = 0;
     for (const vout of tx.vout) {
       // scriptpubkey
       if (['nonstandard', 'provably_unspendable', 'empty'].includes(vout.scriptpubkey_type)) {
@@ -283,10 +315,7 @@ export class Common {
         }
       } else if (vout.scriptpubkey_type === 'op_return') {
         opreturnCount++;
-        if ((vout.scriptpubkey.length / 2) > MAX_OP_RETURN_RELAY) {
-          // over default datacarrier limit
-          return true;
-        }
+        opreturnBytes += vout.scriptpubkey.length / 2;
       }
       // dust
       // (we could probably hardcode this for the different output types...)
@@ -303,14 +332,16 @@ export class Common {
         }
         if (vout.value < (dustSize * DUST_RELAY_TX_FEE)) {
           // under minimum output size
-          return true;
+          return !Common.isStandardEphemeralDust(tx, height);
         }
       }
     }
 
-    // multi-op-return
-    if (opreturnCount > 1) {
-      return true;
+    // op_return
+    if (opreturnCount > 0) {
+      if (!this.isStandardOpReturn(opreturnBytes, opreturnCount, height)) {
+        return true;
+      }
     }
 
     // TODO: non-mandatory-script-verify-flag
@@ -370,14 +401,78 @@ export class Common {
     'signet': 211_000,
     '': 863_500,
   };
-  static isNonStandardAnchor(tx: TransactionExtended, height?: number): boolean {
+  static isNonStandardAnchor(vin: IEsploraApi.Vin, height?: number): boolean {
     if (
       height != null
       && this.ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
       && height <= this.ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+      && vin.prevout?.scriptpubkey === '51024e73'
     ) {
       // anchor outputs were non-standard to spend before v28.x (scheduled for 2024/09/30 https://github.com/bitcoin/bitcoin/issues/29891)
       return true;
+    }
+    return false;
+  }
+
+  // Ephemeral dust is a new concept that allows a single dust output in a transaction, provided the transaction is zero fee
+  static EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT = {
+    'testnet4': 90_500,
+    'testnet': 4_550_000,
+    'signet': 260_000,
+    '': 905_000,
+  };
+  static isStandardEphemeralDust(tx: TransactionExtended, height?: number): boolean {
+    if (
+      tx.fee === 0
+      && (height == null || (
+        this.EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+        && height >= this.EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+      ))
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  // OP_RETURN size & count limits were lifted in v28.3/v29.2/v30.0
+  static OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT = {
+    'testnet4': 108_000,
+    'testnet': 4_750_000,
+    'signet': 276_500,
+    '': 921_000,
+  };
+  static MAX_DATACARRIER_BYTES = 83;
+  static isStandardOpReturn(bytes: number, outputs: number,height?: number): boolean {
+    if (
+      (height == null || (
+        this.OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+        && height >= this.OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+      )) // limits lifted
+      || // OR
+      (bytes <= this.MAX_DATACARRIER_BYTES && outputs <= 1) // below old limits
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  // New legacy sigops limit started to be enforced in v30.0
+  static LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT = {
+    'testnet4': 108_000,
+    'testnet': 4_750_000,
+    'signet': 276_500,
+    '': 921_000,
+  };
+  static isNonStandardLegacySigops(tx: TransactionExtended, height?: number): boolean {
+    if (
+      height == null || (
+        this.LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+        && height >= this.LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+      )
+    ) {
+      if (!transactionUtils.checkSigopsBIP54(tx, MAX_TX_LEGACY_SIGOPS)) {
+        return true;
+      }
     }
     return false;
   }
@@ -462,6 +557,51 @@ export class Common {
     return flags;
   }
 
+  static inputIsMaybeInscription(vin: IEsploraApi.Vin): boolean {
+    // check if this is actually a taproot input
+    let isTaproot = false;
+    let isNotTaproot = false;
+
+    // taproot inputs have no scriptsig (otherwise probably wrapped segwit)
+    if (vin.scriptsig?.length) {
+      isNotTaproot = true;
+    }
+
+    // p2wpkh consist of a DER-encoded signature followed by a compressed pubkey
+    if (!isNotTaproot
+      && this.isDERSig(vin.witness[0])
+      && (vin.witness[1].startsWith('02') || vin.witness[1].startsWith('03'))
+      && vin.witness[1].length === 66) {
+      isNotTaproot = true;
+    }
+
+    // p2wsh could be almost anything, but ends with a script which
+    // probably doesn't match a valid taproot control block length (32 + 33m)
+    if (!isNotTaproot
+      && vin.witness.length >= 2
+    ) {
+      const hasAnnex = vin.witness[vin.witness.length - 1].startsWith('50');
+      const controlBlock = vin.witness[vin.witness.length - (hasAnnex ? 2 : 1)];
+      if ((controlBlock.length - 66) % 64 === 0) {
+        isNotTaproot = true;
+      }
+    }
+
+    // signed taproot inscriptions should have 3 non-annex witness items:
+    //  1) schnorr signature
+    //  2) inscription script
+    //  3) control block (length 33 + 32m)
+    if (!isTaproot
+      && vin.witness.length >= 3
+      && vin.witness[0].length === 128 || vin.witness[0].length === 130
+      && (vin.witness[2].length - 66) % 64 === 0
+    ) {
+      isTaproot = true;
+    }
+
+    return isTaproot || !isNotTaproot;
+  }
+
   static getTransactionFlags(tx: TransactionExtended, height?: number): number {
     let flags = tx.flags ? BigInt(tx.flags) : 0n;
 
@@ -513,12 +653,17 @@ export class Common {
             flags |= TransactionFlags.p2tr;
             if (vin.witness?.length) {
               flags = Common.isInscription(vin, flags);
+              const hasAnnex = vin.witness.length > 1 && vin.witness[vin.witness.length - 1].startsWith('50');
+              if (hasAnnex) {
+                flags |= TransactionFlags.annex;
+              }
             }
           } break;
         }
       } else {
         // no prevouts, optimistically check witness-bearing inputs
-        if (vin.witness?.length >= 2) {
+        if (vin.witness?.length >= 2 && Common.inputIsMaybeInscription(vin)) {
+          // try to parse the witness as a taproot inscription
           try {
             flags = Common.isInscription(vin, flags);
           } catch {
@@ -709,7 +854,7 @@ export class Common {
 
   static indexingEnabled(): boolean {
     return (
-      ['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) &&
+      ['mainnet', 'testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK) &&
       config.DATABASE.ENABLED === true &&
       config.MEMPOOL.INDEXING_BLOCKS_AMOUNT !== 0
     );
@@ -719,6 +864,13 @@ export class Common {
     return (
       Common.indexingEnabled() &&
       config.MEMPOOL.BLOCKS_SUMMARIES_INDEXING === true
+    );
+  }
+
+  static auditIndexingEnabled(): boolean {
+    return (
+      Common.indexingEnabled() &&
+      config.MEMPOOL.AUDIT === true
     );
   }
 
@@ -856,14 +1008,16 @@ export class Common {
     }
   }
 
-  static calcEffectiveFeeStatistics(transactions: { weight: number, fee: number, effectiveFeePerVsize?: number, txid: string, acceleration?: boolean }[]): EffectiveFeeStats {
+  static calcEffectiveFeeStatistics(transactions: { weight: number, fee?: number, effectiveFeePerVsize?: number, txid: string, acceleration?: boolean }[]): EffectiveFeeStats {
     const sortedTxs = transactions.map(tx => { return { txid: tx.txid, weight: tx.weight, rate: tx.effectiveFeePerVsize || ((tx.fee || 0) / (tx.weight / 4)) }; }).sort((a, b) => a.rate - b.rate);
+    const totalWeight = transactions.reduce((acc, tx) => acc + tx.weight, 0);
 
-    let weightCount = 0;
+    // include any unused space
+    let weightCount = config.MEMPOOL.BLOCK_WEIGHT_UNITS - totalWeight;
     let medianFee = 0;
     let medianWeight = 0;
 
-    // calculate the "medianFee" as the average fee rate of the middle 0.25% weight units of transactions
+    // calculate the "medianFee" as the average fee rate of the middle 0.25% weight units of the conceptual block
     const halfWidth = config.MEMPOOL.BLOCK_WEIGHT_UNITS / 800;
     const leftBound = Math.floor((config.MEMPOOL.BLOCK_WEIGHT_UNITS / 2) - halfWidth);
     const rightBound = Math.ceil((config.MEMPOOL.BLOCK_WEIGHT_UNITS / 2) + halfWidth);

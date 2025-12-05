@@ -26,6 +26,7 @@ import { StateService } from '@app/services/state.service';
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDestroy {
   @Input() widget: boolean = false;

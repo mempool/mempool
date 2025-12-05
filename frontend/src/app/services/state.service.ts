@@ -42,6 +42,8 @@ export interface Customization {
   };
 }
 
+export type SignaturesMode = 'all' | 'interesting' | 'none' | null;
+
 export interface Env {
   MAINNET_ENABLED: boolean;
   TESTNET_ENABLED: boolean;
@@ -136,6 +138,7 @@ export class StateService {
   referrer: string = '';
   isBrowser: boolean = isPlatformBrowser(this.platformId);
   isMempoolSpaceBuild = window['isMempoolSpaceBuild'] ?? false;
+  isProdDomain: boolean;
   backend: 'esplora' | 'electrum' | 'none' = 'esplora';
   network = '';
   lightningNetworks = ['', 'mainnet', 'bitcoin', 'testnet', 'signet'];
@@ -150,6 +153,7 @@ export class StateService {
   backend$ = new BehaviorSubject<'esplora' | 'electrum' | 'none'>('esplora');
   networkChanged$ = new ReplaySubject<string>(1);
   lightningChanged$ = new ReplaySubject<boolean>(1);
+  signaturesMode$: BehaviorSubject<SignaturesMode>;
   blocksSubject$ = new BehaviorSubject<BlockExtended[]>([]);
   blocks$: Observable<BlockExtended[]>;
   transactions$ = new BehaviorSubject<TransactionStripped[]>(null);
@@ -247,6 +251,8 @@ export class StateService {
       this.isTabHidden$ = new BehaviorSubject(false);
     }
 
+    this.isProdDomain = this.testIsProdDomain(this.env.PROD_DOMAINS);
+
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         this.setNetworkBasedonUrl(event.url);
@@ -327,8 +333,12 @@ export class StateService {
 
     this.networkChanged$.subscribe((network) => {
       this.transactions$ = new BehaviorSubject<TransactionStripped[]>(null);
+      this.stratumJobs$ = new BehaviorSubject<Record<string, StratumJob>>({});
+      this.stratumJobUpdate$.next({ state: {} });
       this.blocksSubject$.next([]);
     });
+
+    this.signaturesMode$ = new BehaviorSubject<SignaturesMode>(this.storageService.getValue('signatures-mode') as SignaturesMode || null);
 
     this.blockVSize = this.env.BLOCK_WEIGHT_UNITS / 4;
 
@@ -504,5 +514,12 @@ export class StateService {
     if (!hasTouchScreen()) {
       this.searchFocus$.next(true);
     }    
+  }
+
+  private testIsProdDomain(prodDomains: string[]): boolean {
+    const hostname = document.location.hostname;
+    return prodDomains.some(domain =>
+      hostname === domain || hostname.endsWith('.' + domain)
+    );
   }
 }

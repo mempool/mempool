@@ -1,0 +1,113 @@
+<div class="container-xl dashboard-container">
+  <div class="row row-cols-1 row-cols-md-2">
+    <ng-container>
+      <div class="col">
+        <app-treasuries-verify-progress [treasuries]="currentSortedTreasuries" [walletStats]="walletStats$ | async"></app-treasuries-verify-progress>
+      </div>
+      <div class="col">
+        <app-treasuries-supply [walletSummaries$]="walletSummaries$" [treasuries]="currentSortedTreasuries" [walletStats]="walletStats$ | async"></app-treasuries-supply>
+      </div>
+    </ng-container>
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title" i18n="dashboard.treasury-leaderboard">Treasury Leaderboard</h5>
+          <table class="table table-striped treasury-leaderboard-table">
+            <thead>
+              <th class="table-cell-position"></th>
+              <th class="table-cell-name" i18n="dashboard.treasury-leaderboard.treasury">Treasury</th>
+              <th class="table-cell-balance" i18n="dashboard.treasury-leaderboard.balance">BTC Balance</th>
+              <th class="table-cell-value" i18n="dashboard.treasury-leaderboard.value">USD Value</th>
+            </thead>
+            <tbody *ngIf="walletStats$ | async as walletStats; else leaderboardSkeleton">
+              <ng-container *ngIf="(sortedTreasuries$ | async) as sortedTreasuries">
+                <tr *ngFor="let treasury of sortedTreasuries.slice(0, 7); let i = index"
+                    (click)="navigateToTreasury(treasury)"
+                    class="clickable-row">
+                  <td class="table-cell-position">
+                    <div class="position-container">
+                      <div class="color-swatch" [style.background-color]="getTreasuryColor(treasury)"></div>
+                      <span class="position-number">{{i + 1}}</span>
+                    </div>
+                  </td>
+                  <td class="table-cell-name">{{ treasury.name || treasury.enterprise || treasury.wallet }}</td>
+                  <td class="table-cell-balance">
+                    <app-amount [satoshis]="walletStats[treasury.wallet]?.balance || 0" digitsInfo="1.0-0" [noFiat]="true"></app-amount>
+                  </td>
+                  <td class="table-cell-value">
+                    <app-fiat [value]="walletStats[treasury.wallet]?.balance || 0" digitsInfo="1.0-0"></app-fiat>
+                  </td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <div class="card-body pl-2 pr-2">
+          <h5 class="card-title" i18n="dashboard.treasury-distribution">Treasury Distribution</h5>
+          <div *ngIf="walletStats$ | async as walletStats">
+            <app-treasuries-pie
+              [walletStats]="walletStats"
+              [walletSummaries$]="walletSummaries$"
+              [selectedWallets]="selectedWallets"
+              [treasuries]="currentSortedTreasuries"
+              [height]="375"
+              mode="relative"
+              (navigateToTreasury)="onNavigateToTreasury($event)"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title" i18n="dashboard.balance-history">Balance History</h5>
+          <div *ngIf="walletStats$ | async as walletStats">
+            <app-treasuries-graph
+              [walletStats]="walletStats"
+              [walletSummaries$]="walletSummaries$"
+              [selectedWallets]="selectedWallets"
+              [treasuries]="currentSortedTreasuries"
+              [height]="400"
+              [right]="10"
+              [left]="70"
+              [showLegend]="true"
+              [showYAxis]="true"
+              [widget]="false"
+              [allowZoom]="false"
+              period="all"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col" style="margin-bottom: 1.47rem">
+      <div class="card">
+        <div class="card-body pl-lg-3 pr-lg-3 pl-2 pr-2">
+          <app-price-chart [height]="335" [widget]="true"></app-price-chart>
+          <div class="mt-1"><a [routerLink]="['/graphs/price' | relativeUrl]" fragment="1y" i18n="dashboard.view-more">View more &raquo;</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #leaderboardSkeleton>
+  <tbody>
+    <tr *ngFor="let i of [1,2,3,4,5,6]">
+      <td class="table-cell-position">
+        <div class="position-container">
+          <div class="color-swatch skeleton-loader"></div>
+          <span class="position-number skeleton-loader"></span>
+        </div>
+      </td>
+      <td class="table-cell-name"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+      <td class="table-cell-balance"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+      <td class="table-cell-value"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+    </tr>
+  </tbody>
+</ng-template>

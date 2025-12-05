@@ -145,6 +145,9 @@ class TransactionUtils {
     return str;
   }
 
+  /**
+   *  Calculate the witness-adjusted sigops cost of an asm script
+   */
   public countScriptSigops(script: string, isRawScript: boolean = false, witness: boolean = false): number {
     if (!script?.length) {
       return 0;
@@ -211,6 +214,41 @@ class TransactionUtils {
     }
 
     return sigops;
+  }
+
+    /**
+   * see https://github.com/bitcoin/bitcoin/blob/25c45bb0d0bd6618ec9296a1a43605657124e5de/src/policy/policy.cpp#L166-L193
+   * returns true if the transactions is permitted under bip54 sigops rules
+   *
+   * "Unlike the existing block wide sigop limit which counts sigops present in the block
+   * itself (including the scriptPubKey which is not executed until spending later), BIP54
+   * counts sigops in the block where they are potentially executed (only).
+   * This means sigops in the spent scriptPubKey count toward the limit.
+   * `fAccurate` means correctly accounting sigops for CHECKMULTISIGs(VERIFY) with 16 pubkeys
+   * or fewer. This method of accounting was introduced by BIP16, and BIP54 reuses it.
+   * The GetSigOpCount call on the previous scriptPubKey counts both bare and P2SH sigops."
+   */
+  public checkSigopsBIP54(tx: TransactionExtended, limit): boolean {
+    let sigops = 0;
+    for (const input of tx.vin) {
+      if (input.scriptsig_asm) {
+        sigops += this.countScriptSigops(input.scriptsig_asm);
+      }
+      if (input.prevout) {
+        // P2SH redeem script
+        if (input.prevout.scriptpubkey_type === 'p2sh' && input.inner_redeemscript_asm) {
+          sigops += this.countScriptSigops(input.inner_redeemscript_asm);
+        } else {
+          // prevout scriptpubkey
+          sigops += this.countScriptSigops(input.prevout.scriptpubkey_asm);
+        }
+      }
+
+      if (sigops > limit) {
+        return false;
+      }
+    }
+    return true;
   }
 
   // returns the most significant 4 bytes of the txid as an integer
@@ -420,6 +458,29 @@ class TransactionUtils {
 
     return { prioritized, deprioritized };
   }
+
+  // Copied from https://github.com/mempool/mempool/blob/14e49126c3ca8416a8d7ad134a95c5e090324d69/backend/src/api/bitcoin/bitcoin-api.ts#L324
+  public translateScriptPubKeyType(outputType: string): string {
+    const map = {
+      'pubkey': 'p2pk',
+      'pubkeyhash': 'p2pkh',
+      'scripthash': 'p2sh',
+      'witness_v0_keyhash': 'v0_p2wpkh',
+      'witness_v0_scripthash': 'v0_p2wsh',
+      'witness_v1_taproot': 'v1_p2tr',
+      'nonstandard': 'nonstandard',
+      'multisig': 'multisig',
+      'anchor': 'anchor',
+      'nulldata': 'op_return'
+    };
+
+    if (map[outputType]) {
+      return map[outputType];
+    } else {
+      return 'unknown';
+    }
+  }
+  
 }
 
 export default new TransactionUtils();

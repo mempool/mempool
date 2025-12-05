@@ -1,20 +1,20 @@
-FROM node:20.15.0-buster-slim AS builder
+FROM rust:1.84-bookworm AS builder
 
 ARG commitHash
 ENV MEMPOOL_COMMIT_HASH=${commitHash}
 
 WORKDIR /build
+
+RUN apt-get update && \
+    apt-get install -y curl ca-certificates && \
+    curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
+    apt-get install -y nodejs=22.14.0-1nodesource1 build-essential python3 pkg-config && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 COPY . .
 
-RUN apt-get update
-RUN apt-get install -y build-essential python3 pkg-config curl ca-certificates
-
-# Install Rust via rustup
-RUN CPU_ARCH=$(uname -m); if [ "$CPU_ARCH" = "armv7l" ]; then c_rehash; fi
-#RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain stable
-#Workaround to run on github actions from https://github.com/rust-lang/rustup/issues/2700#issuecomment-1367488985
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sed 's#/proc/self/exe#\/bin\/sh#g' | sh -s -- -y --default-toolchain stable
-ENV PATH="/root/.cargo/bin:$PATH"
+ENV PATH="/usr/local/cargo/bin:$PATH"
 
 COPY --from=backend . .
 COPY --from=rustgbt . ../rust/
@@ -24,7 +24,14 @@ RUN npm install --omit=dev --omit=optional
 WORKDIR /build
 RUN npm run package
 
-FROM node:20.15.0-buster-slim
+FROM rust:1.84-bookworm AS runtime
+
+RUN apt-get update && \
+    apt-get install -y curl ca-certificates && \
+    curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
+    apt-get install -y nodejs=22.14.0-1nodesource1 && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /backend
 

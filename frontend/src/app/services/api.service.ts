@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators, PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights,
-  RbfTree, BlockAudit, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume, AccelerationInfo, TestMempoolAcceptResult, WalletAddress, SubmitPackageResult } from '../interfaces/node-api.interface';
+  RbfTree, BlockAudit, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume, AccelerationInfo, TestMempoolAcceptResult, WalletAddress, Treasury, SubmitPackageResult, ChainTip, StaleTip } from '@interfaces/node-api.interface';
 import { BehaviorSubject, Observable, catchError, filter, map, of, shareReplay, take, tap } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 import { Transaction } from '@interfaces/electrs.interface';
@@ -166,6 +166,14 @@ export class ApiService {
 
   getRbfList$(fullRbf: boolean, after?: string): Observable<RbfTree[]> {
     return this.httpClient.get<RbfTree[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/' + (fullRbf ? 'fullrbf/' : '') + 'replacements/' + (after || ''));
+  }
+
+  getChainTips$(): Observable<ChainTip[]> {
+    return this.httpClient.get<ChainTip[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/chain-tips');
+  }
+
+  getStaleTips$(): Observable<StaleTip[]> {
+    return this.httpClient.get<StaleTip[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/stale-tips');
   }
 
   liquidPegs$(): Observable<CurrentPegs> {
@@ -420,7 +428,7 @@ export class ApiService {
   }
 
   getEnterpriseInfo$(name: string): Observable<any> {
-    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + `/api/v1/services/enterprise/info/` + name);
+    return this.httpClient.get<any>(this.apiBaseUrl + `/api/v1/services/enterprise/info/` + name);
   }
 
   getChannelByTxIds$(txIds: string[]): Observable<any[]> {
@@ -523,6 +531,12 @@ export class ApiService {
     );
   }
 
+  getTreasuries$(): Observable<Treasury[]> {
+    return this.httpClient.get<Treasury[]>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/treasuries`
+    );
+  }
+
   getWallet$(walletName: string): Observable<Record<string, WalletAddress>> {
     return this.httpClient.get<Record<string, WalletAddress>>(
       this.apiBaseUrl + this.apiBasePath + `/api/v1/wallet/${walletName}`
@@ -563,6 +577,14 @@ export class ApiService {
 
   logAccelerationRequest$(txid: string): Observable<any> {
     return this.httpClient.post(this.apiBaseUrl + this.apiBasePath + '/api/v1/acceleration/request/' + txid, '');
+  }
+
+  getPrevouts$(outpoints: {txid: string; vout: number}[]): Observable<any> {
+    return this.httpClient.post(this.apiBaseUrl + this.apiBasePath + '/api/v1/prevouts', outpoints);
+  }
+
+  getCpfpLocalTx$(tx: any[]): Observable<CpfpInfo[]> {
+    return this.httpClient.post<CpfpInfo[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/cpfp', tx);
   }
 
   // Cache methods

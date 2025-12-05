@@ -15,5 +15,5 @@
   <button type="button" class="btn btn-sm btn-warning no-cursor {{buttonClass}}" i18n="transaction.audit.removed|Transaction removed state">Removed</button>
 </ng-template>
 <ng-template [ngIf]="!hideUnconfirmed && chainTip != null && !confirmations && !replaced && !(removed || cached)">
-  <button type="button" class="btn btn-sm btn-danger no-cursor {{buttonClass}}" i18n="transaction.unconfirmed|Transaction unconfirmed state">Unconfirmed</button>
+  <button type="button" class="btn btn-sm btn-danger no-cursor {{buttonClass}}" i18n="dashboard.unconfirmed|Unconfirmed count">Unconfirmed</button>
 </ng-template>

@@ -4,12 +4,13 @@ import { MarkBlockState, StateService } from '@app/services/state.service';
 import { specialBlocks } from '@app/app.constants';
 import { BlockExtended } from '@interfaces/node-api.interface';
 import { Router, ActivatedRoute } from '@angular/router';
-import { handleDemoRedirect } from '../../shared/common.utils';
+import { handleDemoRedirect } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-start',
   templateUrl: './start.component.html',
   styleUrls: ['./start.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
@@ -194,14 +195,16 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
   applyScrollLeft(): void {
     if (this.blockchainContainer?.nativeElement?.scrollWidth) {
       let lastScrollLeft = null;
-      while (this.scrollLeft < 0 && this.shiftPagesForward() && lastScrollLeft !== this.scrollLeft) {
-        lastScrollLeft = this.scrollLeft;
-        this.scrollLeft += this.pageWidth;
-      }
-      lastScrollLeft = null;
-      while (this.scrollLeft > this.blockchainContainer.nativeElement.scrollWidth && this.shiftPagesBack() && lastScrollLeft !== this.scrollLeft) {
-        lastScrollLeft = this.scrollLeft;
-        this.scrollLeft -= this.pageWidth;
+      if (!this.timeLtr) {
+        while (this.scrollLeft < 0 && this.shiftPagesForward() && lastScrollLeft !== this.scrollLeft) {
+          lastScrollLeft = this.scrollLeft;
+          this.scrollLeft += this.pageWidth;
+        }
+        lastScrollLeft = null;
+        while (this.scrollLeft > this.blockchainContainer.nativeElement.scrollWidth && this.shiftPagesBack() && lastScrollLeft !== this.scrollLeft) {
+          lastScrollLeft = this.scrollLeft;
+          this.scrollLeft -= this.pageWidth;
+        }
       }
       this.blockchainContainer.nativeElement.scrollLeft = this.scrollLeft;
     }

@@ -7,6 +7,7 @@ import { StateService } from '@app/services/state.service';
   selector: 'app-amount-selector',
   templateUrl: './amount-selector.component.html',
   styleUrls: ['./amount-selector.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AmountSelectorComponent implements OnInit {

@@ -14,13 +14,16 @@ interface NodeGroup {
 @Component({
   selector: 'app-group-preview',
   templateUrl: './group-preview.component.html',
-  styleUrls: ['./group-preview.component.scss']
+  styleUrls: ['./group-preview.component.scss'],
+  standalone: false,
 })
 export class GroupPreviewComponent implements OnInit {
   nodes$: Observable<any>;
   group: NodeGroup = { name: '', description: '' };
   slug: string;
   groupId: string;
+
+  ogSession: number;
 
   constructor(
     private lightningApiService: LightningApiService,
@@ -37,8 +40,8 @@ export class GroupPreviewComponent implements OnInit {
       .pipe(
         switchMap((params: ParamMap) => {
           this.slug = params.get('slug');
-          this.openGraphService.waitFor('ln-group-map-' + this.slug);
-          this.openGraphService.waitFor('ln-group-data-' + this.slug);
+          this.ogSession = this.openGraphService.waitFor('ln-group-map-' + this.slug);
+          this.ogSession = this.openGraphService.waitFor('ln-group-data-' + this.slug);
 
           if (this.slug === 'the-mempool-open-source-project') {
             this.groupId = 'mempool.space';
@@ -52,8 +55,8 @@ export class GroupPreviewComponent implements OnInit {
               description: '',
             };
             this.seoService.logSoft404();
-            this.openGraphService.fail('ln-group-map-' + this.slug);
-            this.openGraphService.fail('ln-group-data-' + this.slug);
+            this.openGraphService.fail({ event: 'ln-group-map-' + this.slug, sessionId: this.ogSession });
+            this.openGraphService.fail({ event: 'ln-group-data-' + this.slug, sessionId: this.ogSession });
             return of(null);
           }
 
@@ -99,7 +102,7 @@ export class GroupPreviewComponent implements OnInit {
           const sumLiquidity = nodes.reduce((partialSum, a) => partialSum + parseInt(a.capacity, 10), 0);
           const sumChannels = nodes.reduce((partialSum, a) => partialSum + a.opened_channel_count, 0);
 
-          this.openGraphService.waitOver('ln-group-data-' + this.slug);
+          this.openGraphService.waitOver({ event: 'ln-group-data-' + this.slug, sessionId: this.ogSession });
 
           return {
             nodes: nodes,
@@ -109,8 +112,8 @@ export class GroupPreviewComponent implements OnInit {
         }),
         catchError(() => {
           this.seoService.logSoft404();
-          this.openGraphService.fail('ln-group-map-' + this.slug);
-          this.openGraphService.fail('ln-group-data-' + this.slug);
+          this.openGraphService.fail({ event: 'ln-group-map-' + this.slug, sessionId: this.ogSession });
+          this.openGraphService.fail({ event: 'ln-group-data-' + this.slug, sessionId: this.ogSession });
           return of({
             nodes: [],
             sumLiquidity: 0,
@@ -121,7 +124,7 @@ export class GroupPreviewComponent implements OnInit {
   }
 
   onMapReady(): void {
-    this.openGraphService.waitOver('ln-group-map-' + this.slug);
+    this.openGraphService.waitOver({ event: 'ln-group-map-' + this.slug, sessionId: this.ogSession });
   }
 
 }

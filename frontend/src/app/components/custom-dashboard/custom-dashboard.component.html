@@ -238,7 +238,7 @@
                   <span>&nbsp;</span>
                   <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
                 </a>
-                <app-address-graph [address]="widget.props.address" [addressSummary$]="addressSummary$" [period]="widget.props.period || 'all'" [stats]="address ? address.chain_stats : null" [widget]="true" [defaultFiat]="true" [height]="graphHeight"></app-address-graph>
+                <app-address-graph [address]="widget.props.address" [addressSummary$]="addressSummary$" [period]="widget.props.period || 'all'" [stats]="address ? address.chain_stats : null" [widget]="true" [defaultFiat]="true" [height]="graphHeight" [label]="widget.props.label"></app-address-graph>
               </div>
             </div>
           </div>
@@ -272,7 +272,7 @@
                   <span>&nbsp;</span>
                   <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
                 </a>
-                <app-address-graph [addressSummary$]="walletSummary$" [period]="widget.props.period || 'all'" [widget]="true" [height]="graphHeight"></app-address-graph>
+                <app-address-graph [addressSummary$]="walletSummary$" [period]="widget.props.period || 'all'" [widget]="true" [height]="graphHeight" [label]="widget.props.label" [image]="widget.props.image"></app-address-graph>
               </div>
             </div>
           </div>
@@ -303,6 +303,38 @@
                 @defer {
                   <app-twitter-widget [handle]="widget.props?.handle" style="flex-grow: 1"></app-twitter-widget>
                 }
+              </div>
+            </div>
+          </div>
+        }
+        @case ('simpleproof') {
+          <div class="col" style="max-height: 410px" [style.order]="isMobile && widget.mobileOrder || 8">
+            <div class="card">
+              <div class="card-body">
+                <a class="title-link" href="" [routerLink]="['/sp/verified' | relativeUrl]">
+                  <h5 class="card-title d-inline">{{ widget.props?.label }}</h5>
+                  <span>&nbsp;</span>
+                  <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
+                </a>
+                <app-simpleproof-widget [label]="widget.props.label" [key]="widget.props.key" [widget]="true"></app-simpleproof-widget>
+              </div>
+            </div>
+          </div>
+        }
+        @case ('simpleproof_cubo') {
+          <div class="col" style="max-height: 410px" [style.order]="isMobile && widget.mobileOrder || 8">
+            <div class="card">
+              <div class="card-body">
+                <a href="" [routerLink]="['/sp/cubo' | relativeUrl]">
+                  <h5 class="card-title d-inline">
+                    <img src="/resources/cubo.svg" style="width: 1.1em; height: 1.1em; margin-right: 0.1em; transform: translateY(-0.1em);">
+                    {{ widget.props?.label }}
+                  </h5>
+                  <span>&nbsp;</span>
+                  <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
+                </a>
+                <app-simpleproof-cubo-widget [label]="widget.props.label" [key]="widget.props.key" [widget]="true"></app-simpleproof-cubo-widget>
+                <div style="margin-top: -0.6rem;"><a [routerLink]="['/sp/cubo' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
               </div>
             </div>
           </div>

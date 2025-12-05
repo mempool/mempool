@@ -17,6 +17,7 @@ interface GraphBar {
   selector: 'app-accelerate-fee-graph',
   templateUrl: './accelerate-fee-graph.component.html',
   styleUrls: ['./accelerate-fee-graph.component.scss'],
+  standalone: false,
 })
 export class AccelerateFeeGraphComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   @Input() tx: Transaction;
@@ -88,7 +89,7 @@ export class AccelerateFeeGraphComponent implements OnInit, AfterViewInit, OnCha
         rate: option.rate,
         height: lastHeight,
         class: 'max',
-        label: this.showEstimate ? $localize`maximum` : $localize`accelerated`,
+        label: this.showEstimate ? $localize`maximum` : $localize`:@@b484583f0ce10f3341ab36750d05271d9d22c9a1:Accelerated`.toLowerCase(),
         active: option.index === this.maxRateIndex,
         rateIndex: option.index,
         fee: option.fee,

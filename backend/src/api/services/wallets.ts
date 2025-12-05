@@ -4,6 +4,7 @@ import { IEsploraApi } from '../bitcoin/esplora-api.interface';
 import bitcoinApi from '../bitcoin/bitcoin-api-factory';
 import axios from 'axios';
 import { TransactionExtended } from '../../mempool.interfaces';
+import { promises as fsPromises } from 'fs';
 
 interface WalletAddress {
   address: string;
@@ -25,21 +26,125 @@ interface Wallet {
   lastPoll: number;
 }
 
+interface Treasury {
+  id: number,
+  name: string,
+  wallet: string,
+  enterprise: string,
+  verifiedAddresses: string[],
+  balances: { balance: number, time: number }[], // off-chain balances
+}
+
 const POLL_FREQUENCY = 5 * 60 * 1000; // 5 minutes
 
 class WalletApi {
+  private treasuries: Treasury[] = [];
   private wallets: Record<string, Wallet> = {};
   private syncing = false;
+  private lastSync = 0;
+  private isSaving = false;
+  private cacheSchemaVersion = 1;
+
+  private static TMP_FILE_NAME = config.MEMPOOL.CACHE_DIR + '/tmp-wallets-cache.json';
+  private static FILE_NAME = config.MEMPOOL.CACHE_DIR + '/wallets-cache.json';
 
   constructor() {
     this.wallets = config.WALLETS.ENABLED ? (config.WALLETS.WALLETS as string[]).reduce((acc, wallet) => {
       acc[wallet] = { name: wallet, addresses: {}, lastPoll: 0 };
       return acc;
     }, {} as Record<string, Wallet>) : {};
+
+    // Load cache on startup
+    if (config.WALLETS.ENABLED) {
+      this.$loadCache();
+    }
   }
 
-  public getWallet(wallet: string): Record<string, WalletAddress> {
-    return this.wallets?.[wallet]?.addresses || {};
+  private async $loadCache(): Promise<void> {
+    try {
+      const cacheData = await fsPromises.readFile(WalletApi.FILE_NAME, 'utf8');
+      if (!cacheData) {
+        return;
+      }
+
+      const data = JSON.parse(cacheData);
+
+      if (data.cacheSchemaVersion !== this.cacheSchemaVersion) {
+        logger.notice('Wallets cache contains an outdated schema version. Clearing it.');
+        return this.$wipeCache();
+      }
+
+      this.wallets = data.wallets;
+      this.treasuries = data.treasuries || [];
+
+      // Reset lastSync time to force transaction history refresh
+      for (const wallet of Object.values(this.wallets)) {
+        wallet.lastPoll = 0;
+        for (const address of Object.values(wallet.addresses)) {
+          address.lastSync = 0;
+        }
+      }
+      logger.info('Restored wallets data from disk cache');
+    } catch (e) {
+      logger.warn('Failed to parse wallets cache. Skipping. Reason: ' + (e instanceof Error ? e.message : e));
+    }
+  }
+
+  private async $saveCache(): Promise<void> {
+    if (this.isSaving || !config.WALLETS.ENABLED) {
+      return;
+    }
+
+    try {
+      this.isSaving = true;
+      logger.debug('Writing wallets data to disk cache...');
+
+      const cacheData = {
+        cacheSchemaVersion: this.cacheSchemaVersion,
+        wallets: this.wallets,
+        treasuries: this.treasuries,
+      };
+
+      await fsPromises.writeFile(
+        WalletApi.TMP_FILE_NAME,
+        JSON.stringify(cacheData),
+        { flag: 'w' }
+      );
+
+      await fsPromises.rename(WalletApi.TMP_FILE_NAME, WalletApi.FILE_NAME);
+
+      logger.debug('Wallets data saved to disk cache');
+    } catch (e) {
+      logger.warn('Error writing to wallets cache file: ' + (e instanceof Error ? e.message : e));
+    } finally {
+      this.isSaving = false;
+    }
+  }
+
+  private async $wipeCache(): Promise<void> {
+    try {
+      await fsPromises.unlink(WalletApi.FILE_NAME);
+    } catch (e: any) {
+      if (e?.code !== 'ENOENT') {
+        logger.err(`Cannot wipe wallets cache file ${WalletApi.FILE_NAME}. Exception ${JSON.stringify(e)}`);
+      }
+    }
+  }
+
+  public getWallet(wallet: string): Record<string, WalletAddress> | null {
+    if (wallet in this.wallets) {
+      return this.wallets?.[wallet]?.addresses || {};
+    } else {
+      return null;
+    }
+  }
+
+  public getWallets(): string[] {
+    return Object.keys(this.wallets);
+  }
+
+  public getTreasuries(): Treasury[] {
+    return this.treasuries?.filter(treasury => !!this.wallets[treasury.wallet]) || [];
   }
 
   // resync wallet addresses from the services backend
@@ -47,7 +152,63 @@ class WalletApi {
     if (!config.WALLETS.ENABLED || this.syncing) {
       return;
     }
+
     this.syncing = true;
+
+    if (config.WALLETS.AUTO && (Date.now() - this.lastSync) > POLL_FREQUENCY) {
+      try {
+        // update list of active wallets
+        this.lastSync = Date.now();
+        const response = await axios.get(config.MEMPOOL_SERVICES.API + `/wallets`);
+        const walletList: string[] = response.data;
+        if (walletList) {
+          // create a quick lookup dictionary of active wallets
+          const newWallets: Record<string, boolean> = Object.fromEntries(
+            walletList.map(wallet => [wallet, true])
+          );
+          for (const wallet of walletList) {
+            // don't overwrite existing wallets
+            if (!this.wallets[wallet]) {
+              this.wallets[wallet] = { name: wallet, addresses: {}, lastPoll: 0 };
+            }
+          }
+          // remove wallets that are no longer active
+          for (const wallet of Object.keys(this.wallets)) {
+            if (!newWallets[wallet]) {
+              delete this.wallets[wallet];
+            }
+          }
+        }
+
+        // update list of treasuries
+        const treasuriesResponse = await axios.get(config.MEMPOOL_SERVICES.API + `/treasuries`);
+        this.treasuries = treasuriesResponse.data || [];
+      } catch (e) {
+        logger.err(`Error updating active wallets: ${(e instanceof Error ? e.message : e)}`);
+      }
+
+      try {
+        // update list of active treasuries
+        this.lastSync = Date.now();
+        const response = await axios.get(config.MEMPOOL_SERVICES.API + `/treasuries`);
+        const treasuries: Treasury[] = response.data;
+        if (treasuries) {
+          this.treasuries = treasuries;
+        }
+      } catch (e) {
+        logger.err(`Error updating active treasuries: ${(e instanceof Error ? e.message : e)}`);
+      }
+
+      // insert dummy address data to represent off-chain balance history
+      for (const treasury of this.treasuries) {
+        if (treasury.balances?.length) {
+          if (this.wallets[treasury.wallet]) {
+            this.wallets[treasury.wallet].addresses['private'] = convertBalancesToWalletAddress(treasury.wallet, treasury.balances);
+          }
+        }
+      }
+    }
+
     for (const walletKey of Object.keys(this.wallets)) {
       const wallet = this.wallets[walletKey];
       if (wallet.lastPoll < (Date.now() - POLL_FREQUENCY)) {
@@ -61,17 +222,21 @@ class WalletApi {
           }
           // remove old addresses
           for (const address of Object.keys(wallet.addresses)) {
-            if (!addresses[address]) {
+            if (address !== 'private' && !addresses[address]) {
               delete wallet.addresses[address];
             }
           }
           wallet.lastPoll = Date.now();
           logger.debug(`Synced ${Object.keys(wallet.addresses).length} addresses for wallet ${wallet.name}`);
+
+          // Update cache
+          await this.$saveCache();
         } catch (e) {
           logger.err(`Error syncing wallet ${wallet.name}: ${(e instanceof Error ? e.message : e)}`);
         }
       }
     }
+
     this.syncing = false;
   }
 
@@ -148,6 +313,36 @@ class WalletApi {
     }
     return walletTransactions;
   }
+}
+
+function convertBalancesToWalletAddress(wallet: string, balances: { balance: number, time: number }[]): WalletAddress {
+  // represent the off-chain balance as a series of transactions modifying a single notional UTXO
+  const sortedBalances = balances.sort((a, b) => a.time - b.time);
+  const walletAddress: WalletAddress = {
+    address: 'private',
+    active: false,
+    stats: {
+      funded_txo_count: 0,
+      funded_txo_sum: sortedBalances[sortedBalances.length - 1].balance,
+      spent_txo_count: 0,
+      spent_txo_sum: 0,
+      tx_count: 0,
+    },
+    transactions: [],
+    lastSync: sortedBalances[sortedBalances.length - 1].time,
+  };
+  let lastBalance = 0;
+  for (const [index, entry] of sortedBalances.entries()) {
+    const diff = entry.balance - lastBalance;
+    walletAddress.transactions.push({
+      txid: `${wallet}-private-${index}`,
+      value: diff,
+      height: index,
+      time: entry.time,
+    });
+    lastBalance = entry.balance;
+  }
+  return walletAddress;
 }
 
 export default new WalletApi();

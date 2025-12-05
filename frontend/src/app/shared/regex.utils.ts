@@ -142,7 +142,7 @@ const ADDRESS_CHARS: {
 type RegexTypeNoAddrNoBlockHash = | `transaction` | `blockheight` | `date` | `timestamp`;
 export type RegexType = `address` | `blockhash` | RegexTypeNoAddrNoBlockHash;
 
-export const NETWORKS = [`testnet`, `testnet4`, `signet`, `liquid`, `liquidtestnet`, `mainnet`] as const;
+export const NETWORKS = [`mainnet`, `testnet4`, `testnet`, `signet`, `liquid`, `liquidtestnet`] as const;
 export type Network = typeof NETWORKS[number]; // Turn const array into union type
 
 export const ADDRESS_REGEXES: [RegExp, Network][] = NETWORKS

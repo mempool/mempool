@@ -1,7 +1,10 @@
-import { Component, Inject, LOCALE_ID, ChangeDetectionStrategy, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Inject, LOCALE_ID, ChangeDetectionStrategy, Input, OnChanges, OnInit, ChangeDetectorRef } from '@angular/core';
 import { formatDate, formatNumber } from '@angular/common';
 import { EChartsOption } from '@app/graphs/echarts';
 import { StateService } from '@app/services/state.service';
+import { map, Subscription, switchMap } from 'rxjs';
+import { PriceService } from '@app/services/price.service';
+import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 
 @Component({
   selector: 'app-lbtc-pegs-graph',
@@ -15,25 +18,38 @@ import { StateService } from '@app/services/state.service';
     }
   `],
   templateUrl: './lbtc-pegs-graph.component.html',
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LbtcPegsGraphComponent implements OnInit, OnChanges {
   @Input() data: any;
   @Input() height: number | string = '360';
   pegsChartOptions: EChartsOption;
+  subscription: Subscription;
 
-  right: number | string = '10';
+  right: number | string = '5';
   top: number | string = '20';
-  left: number | string = '50';
+  left: number | string = '60';
   template: ('widget' | 'advanced') = 'widget';
   isLoading = true;
-
+  chartInstance: any = undefined;
   pegsChartInitOption = {
     renderer: 'svg'
   };
 
+  adjustedLeft: number;
+  adjustedRight: number;
+  selected = {
+    'LBTC': true,
+    'BTC': true,
+    'USD': false,
+  };
+
   constructor(
     public stateService: StateService,
+    public priceService: PriceService,
+    public amountShortenerPipe: AmountShortenerPipe,
+    public cd: ChangeDetectorRef,
     @Inject(LOCALE_ID) private locale: string,
   ) { }
 
@@ -42,14 +58,25 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges() {
-    if (!this.data?.liquidPegs) {
+    if (!this.data?.liquidReserves) {
       return;
     }
-    if (!this.data.liquidReserves) {
-      this.pegsChartOptions = this.createChartOptions(this.data.liquidPegs.series, this.data.liquidPegs.labels);
-    } else {
-      this.pegsChartOptions = this.createChartOptions(this.data.liquidPegs.series, this.data.liquidPegs.labels, this.data.liquidReserves.series);
-    }
+
+    this.subscription = this.stateService.conversions$.pipe(
+      switchMap(conversions =>
+        this.priceService.getPriceByBulk$(this.data.liquidPegs.labels.map((date: string) => Math.floor(new Date(date).getTime() / 1000)).slice(0, -1), 'USD')
+          .pipe(
+            map(prices => this.data.liquidReserves.series.map((value, i) => value * (prices[i]?.price.USD || conversions['USD'])))
+          )
+      )
+    ).subscribe((usdBanlance: any) => {
+      if (!this.data.liquidReserves) {
+        this.pegsChartOptions = this.createChartOptions(this.data.liquidPegs.series, this.data.liquidPegs.labels);
+      } else {
+        this.pegsChartOptions = this.createChartOptions(this.data.liquidPegs.series, this.data.liquidPegs.labels, this.data.liquidReserves.series, usdBanlance);
+      }
+      this.cd.markForCheck();
+    });
   }
 
   rendered() {
@@ -59,7 +86,7 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
     this.isLoading = false;
   }
 
-  createChartOptions(pegSeries: number[], labels: string[], reservesSeries?: number[],): EChartsOption {
+  createChartOptions(pegSeries: number[], labels: string[], reservesSeries?: number[], usdBalance?: number[]): EChartsOption {
     return {
       grid: {
         height: this.height,
@@ -89,6 +116,35 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
           }
         }
       }],
+      legend: {
+        data: [
+          {
+            name: 'LBTC',
+            inactiveColor: 'var(--grey)',
+            textStyle: {
+              color: 'white',
+            },
+            icon: 'roundRect',
+          },
+          {
+            name: 'BTC',
+            inactiveColor: 'var(--grey)',
+            textStyle: {
+              color: 'white',
+            },
+            icon: 'roundRect',
+          },
+          {
+            name: 'USD',
+            inactiveColor: 'var(--grey)',
+            textStyle: {
+              color: 'white',
+            },
+            icon: 'roundRect',
+          }
+        ],
+        selected: this.selected,
+      },
       tooltip: {
         trigger: 'axis',
         position: (pos, params, el, elRect, size) => {
@@ -109,10 +165,12 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
           for (let index = params.length - 1; index >= 0; index--) {
             const item = params[index];
             if (index < 26) {
+              let formattedValue;
+              item.seriesName === 'USD' ? formattedValue = this.amountShortenerPipe.transform(item.value, 3, undefined, true, true) : formattedValue = formatNumber(item.value, this.locale, '1.2-2');
               itemFormatted += `<div class="item">
                 <div class="indicator-container">${colorSpan(item.color)}</div>
                 <div style="margin-right: 5px"></div>
-                <div class="value">${formatNumber(item.value, this.locale, '1.2-2')} <span class="symbol">${item.seriesName}</span></div>
+                <div class="value">${formattedValue} <span class="symbol">${item.seriesName}</span></div>
               </div>`;
             }
           }
@@ -129,10 +187,13 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
         boundaryGap: false,
         data: labels.map((value: any) => `${formatDate(value, 'MMM\ny', this.locale)}`),
       },
-      yAxis: {
+      yAxis: [{
         type: 'value',
         axisLabel: {
           fontSize: 11,
+          formatter: (val): string => {
+            return `${this.amountShortenerPipe.transform(Math.round(val), 0, undefined, true)} BTC`;
+          }
         },
         splitLine: {
           lineStyle: {
@@ -142,10 +203,23 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
           }
         }
       },
+      {
+        type: 'value',
+        axisLabel: {
+          color: 'rgb(110, 112, 121)',
+          formatter: function(val) {
+            return `$${this.amountShortenerPipe.transform(val, 3, undefined, true, true)}`;
+          }.bind(this)
+        },
+        splitLine: {
+          show: false,
+        },
+      }],
       series: [
         {
           data: pegSeries,
-          name: 'L-BTC',
+          name: 'LBTC',
+          yAxisIndex: 0,
           color: '#116761',
           type: 'line',
           stack: 'total',
@@ -163,6 +237,7 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
         {
           data: reservesSeries,
           name: 'BTC',
+          yAxisIndex: 0,
           color: '#EA983B',
           type: 'line',
           smooth: true,
@@ -172,8 +247,53 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
             color: '#EA983B',
           },
         },
+        {
+          data: usdBalance,
+          name: 'USD',
+          yAxisIndex: 1,
+          color: '#4CAF50',
+          type: 'line',
+          smooth: true,
+          showSymbol: false,
+          lineStyle: {
+            width: 2,
+            color: '#3BCC49',
+          },
+        },
       ],
     };
+  }
+
+  onLegendSelectChanged(e) {
+    this.selected = e.selected;
+    this.adjustedRight = this.selected['USD'] ? +this.right + 40 : +this.right;
+    this.adjustedLeft = this.selected['LBTC'] || this.selected['BTC'] ? +this.left : +this.left - 40;
+
+    this.pegsChartOptions = {
+      ...this.pegsChartOptions,
+      grid: {
+        ...(Array.isArray(this.pegsChartOptions?.grid)
+          ? (this.pegsChartOptions.grid[0] ?? {})
+          : (this.pegsChartOptions?.grid ?? {})) as Record<string, any>,
+        right: this.adjustedRight,
+        left: this.adjustedLeft,
+      },
+      legend: {
+        ...(Array.isArray(this.pegsChartOptions?.legend)
+          ? (this.pegsChartOptions.legend[0] ?? {})
+          : (this.pegsChartOptions?.legend ?? {})) as Record<string, any>,
+        selected: this.selected,
+      },
+    };
+  }
+
+  onChartInit(ec: any): void {
+    this.chartInstance = ec;
+    this.chartInstance.on('legendselectchanged', this.onLegendSelectChanged.bind(this));
+  }
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
   }
 }
 

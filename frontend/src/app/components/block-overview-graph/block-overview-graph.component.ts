@@ -35,6 +35,7 @@ const unmatchedContrastAuditColors = {
   selector: 'app-block-overview-graph',
   templateUrl: './block-overview-graph.component.html',
   styleUrls: ['./block-overview-graph.component.scss'],
+  standalone: false,
 })
 export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, OnChanges {
   @Input() isLoading: boolean;
@@ -656,7 +657,19 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   getFilterColorFunction(flags: bigint, gradient: 'fee' | 'age'): ((tx: TxView) => Color) {
     return (tx: TxView) => {
-      if ((this.filterMode === 'and' && (tx.bigintFlags & flags) === flags) || (this.filterMode === 'or' && (flags === 0n || (tx.bigintFlags & flags) > 0n))) {
+      let matches = false;
+      switch (this.filterMode) {
+        case 'and':
+          matches = (tx.bigintFlags & flags) === flags;
+          break;
+        case 'or':
+          matches = flags === 0n || (tx.bigintFlags & flags) > 0n;
+          break;
+        case 'nor':
+          matches = (tx.bigintFlags & flags) === 0n;
+          break;
+      }
+      if (matches) {
         if (this.themeService.theme !== 'contrast' && this.themeService.theme !== 'bukele') {
           return (gradient === 'age') ? ageColorFunction(tx, defaultColors.fee, defaultAuditColors, this.relativeTime || (Date.now() / 1000)) : defaultColorFunction(tx, defaultColors.fee, defaultAuditColors, this.relativeTime || (Date.now() / 1000));
         } else {

@@ -4,6 +4,7 @@ import config from '../../config';
 import elementsParser from './elements-parser';
 import icons from './icons';
 import { handleError } from '../../utils/api';
+import PricesRepository from '../../repositories/PricesRepository';
 
 class LiquidRoutes {
   public initRoutes(app: Application) {
@@ -31,6 +32,7 @@ class LiquidRoutes {
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/utxos/emergency-spent', this.$getEmergencySpentUtxos)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/utxos/emergency-spent/stats', this.$getEmergencySpentUtxosStats)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/status', this.$getFederationAuditStatus)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'historical-price', this.$getHistoricalPrice)
         ;
     }
   }
@@ -252,6 +254,34 @@ class LiquidRoutes {
       res.json(pegsCount);
     } catch (e) {
       handleError(req, res, 500, 'Failed to get pegs count');
+    }
+  }
+
+  private async $getHistoricalPrice(req: Request, res: Response): Promise<void> {
+    try {
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      if (['testnet', 'signet', 'liquidtestnet', 'testnet4'].includes(config.MEMPOOL.NETWORK)) {
+        handleError(req, res, 400, 'Prices are not available on testnets.');
+        return;
+      }
+      const timestamp = parseInt(req.query.timestamp as string, 10) || 0;
+      const currency = req.query.currency as string;
+
+      let response;
+      if (timestamp && currency) {
+        response = await PricesRepository.$getNearestHistoricalPrice(timestamp, currency);
+      } else if (timestamp) {
+        response = await PricesRepository.$getNearestHistoricalPrice(timestamp);
+      } else if (currency) {
+        response = await PricesRepository.$getHistoricalPrices(currency);
+      } else {
+        response = await PricesRepository.$getHistoricalPrices();
+      }
+      res.status(200).send(response);
+    } catch (e) {
+      handleError(req, res, 500, 'Failed to get historical prices');
     }
   }
 

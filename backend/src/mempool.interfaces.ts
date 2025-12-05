@@ -274,6 +274,7 @@ export const TransactionFlags = {
   fake_pubkey:                      0b00000010_00000000_00000000_00000000n,
   inscription:                      0b00000100_00000000_00000000_00000000n,
   fake_scripthash:                  0b00001000_00000000_00000000_00000000n,
+  annex:                            0b00010000_00000000_00000000_00000000n,
   // heuristics
   coinjoin:                0b00000001_00000000_00000000_00000000_00000000n,
   consolidation:           0b00000010_00000000_00000000_00000000_00000000n,
@@ -325,6 +326,8 @@ export interface BlockExtension {
   // Requires coinstatsindex, will be set to NULL otherwise
   utxoSetSize: number | null;
   totalInputAmt: number | null;
+  // pools-v2.json git hash
+  definitionHash: string | undefined;
 }
 
 /**
@@ -334,6 +337,7 @@ export interface BlockExtension {
 export interface BlockExtended extends IEsploraApi.Block {
   extras: BlockExtension;
   canonical?: string;
+  indexVersion?: number;
 }
 
 export interface BlockSummary {
@@ -403,6 +407,7 @@ export interface Statistic {
   fee_data: string;
   min_fee: number;
 
+  vsize_0: number;
   vsize_1: number;
   vsize_2: number;
   vsize_3: number;

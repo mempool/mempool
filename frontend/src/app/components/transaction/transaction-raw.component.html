@@ -1,0 +1,233 @@
+<div class="container-xl">
+
+  @if (!transaction) {
+
+    <h1 style="margin-top: 19px;" i18n="shared.preview-transaction|Preview Transaction">Preview Transaction</h1>
+
+    <form [formGroup]="pushTxForm" (submit)="decodeTransaction()" novalidate>
+      <div class="mb-3">
+        <textarea formControlName="txRaw" class="form-control" rows="5" i18n-placeholder="transaction.hex-and-psbt" placeholder="Transaction hex or base64 encoded PSBT"></textarea>
+      </div>
+      <button [disabled]="isLoading" type="submit" class="btn btn-primary mr-2" i18n="shared.preview|Preview">Preview</button>
+      <input type="checkbox" [checked]="!offlineMode" id="offline-mode" (change)="onOfflineModeChange($event)">
+      <label class="label" for="offline-mode">
+        <span i18n="transaction.fetch-prevout-data">Fetch missing prevouts</span>
+      </label>
+      <p *ngIf="error" class="red-color d-inline" i18n="transaction.error-decoding">Error decoding transaction, reason: {{ error }}</p>
+    </form>
+  }
+
+  @if (transaction && !error && !isLoading) {
+    <div class="title-block">
+      @if (isCoinbase) {
+        <h1 i18n="shared.preview-coinbase|Preview Coinbase">Preview Coinbase</h1>
+      } @else {
+        <h1 i18n="shared.preview-transaction|Preview Transaction">Preview Transaction</h1>
+      }
+
+      <span class="tx-link">
+        <span class="txid">
+          <app-truncate [text]="transaction.txid" [lastChars]="12" [link]="['/tx/' | relativeUrl, transaction.txid]" [disabled]="!successBroadcast">
+            <app-clipboard [text]="transaction.txid"></app-clipboard>
+          </app-truncate>
+        </span>
+      </span>
+
+      <div class="container-buttons">
+        <button class="btn btn-sm" style="margin-left: 10px; padding: 0;" (click)="resetForm()">&#10005;</button>
+      </div>
+
+    </div>
+
+    <p class="red-color d-inline">{{ errorBroadcast }}</p>
+
+    <div class="clearfix"></div>
+
+    @if (!isCoinbase) {
+      <div class="alert alert-mempool" style="align-items: center;">
+        <span>
+          <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+          <ng-container *ngIf="!successBroadcast" i18n="transaction.local-tx|This transaction is stored locally in your browser.">
+            This transaction is stored locally in your browser. Broadcast it to add it to the mempool.
+          </ng-container>
+          <ng-container *ngIf="successBroadcast" i18n="transaction.redirecting|Redirecting to transaction page...">
+            Redirecting to transaction page...
+          </ng-container>
+        </span>
+        <button *ngIf="!successBroadcast" [disabled]="isLoadingBroadcast || missingSignatures" i18n-ngbTooltip="transaction.missing-signature"
+        ngbTooltip="Transaction cannot be broadcasted because it's missing signature(s)" placement="bottom"
+        [disableTooltip]="!missingSignatures" type="button" class="btn btn-sm btn-primary btn-broadcast"
+        i18n="transaction.broadcast|Broadcast" (click)="postTx()">Broadcast</button>
+        <button *ngIf="successBroadcast" type="button" class="btn btn-sm btn-success no-cursor btn-broadcast" i18n="transaction.broadcasted|Broadcasted">Broadcasted</button>
+      </div>
+    }
+
+    @if (!hasPrevouts) {
+      <div class="alert alert-mempool">
+        @if (offlineMode) {
+          <span><strong>Missing prevouts are not loaded. Some fields like fee rate cannot be calculated.</strong></span>
+        } @else {
+          <span><strong>Error loading missing prevouts</strong>. {{ errorPrevouts ? 'Reason: ' + errorPrevouts : '' }}</span>
+        }
+      </div>
+    }
+
+    @if (errorCpfpInfo) {
+      <div class="alert alert-mempool">
+        <span><strong>Error loading CPFP data</strong>. Reason: {{ errorCpfpInfo }}</span>
+      </div>
+    }
+
+    <app-transaction-details
+      [unbroadcasted]="true"
+      [network]="stateService.network"
+      [tx]="transaction"
+      [isLoadingTx]="false"
+      [isMobile]="isMobile"
+      [isLoadingFirstSeen]="false"
+      [featuresEnabled]="true"
+      [filters]="filters"
+      [hasEffectiveFeeRate]="hasEffectiveFeeRate"
+      [cpfpInfo]="cpfpInfo"
+      [hasCpfp]="hasCpfp"
+      (toggleCpfp$)="this.showCpfpDetails = !this.showCpfpDetails"
+    ></app-transaction-details>
+  
+    <app-cpfp-info *ngIf="showCpfpDetails" [cpfpInfo]="cpfpInfo" [tx]="transaction"></app-cpfp-info>
+    <br>
+
+    <ng-container *ngIf="flowEnabled; else flowPlaceholder">
+      <div class="title float-left">
+        <h2 id="flow" i18n="transaction.flow|Transaction flow">Flow</h2>
+      </div>
+
+      <button type="button" class="btn btn-outline-info flow-toggle btn-sm float-right" (click)="toggleGraph()" i18n="hide-diagram">Hide diagram</button>
+
+      <div class="clearfix"></div>
+
+      <div class="box">
+        <div class="graph-container" #graphContainer>
+          <tx-bowtie-graph
+            [tx]="transaction"
+            [cached]="true"
+            [width]="graphWidth"
+            [height]="graphHeight"
+            [lineLimit]="inOutLimit"
+            [maxStrands]="graphExpanded ? maxInOut : 24"
+            [network]="stateService.network"
+            [tooltip]="true"
+            [connectors]="true"
+            [inputIndex]="null" [outputIndex]="null"
+          >
+          </tx-bowtie-graph>
+        </div>
+        <div class="toggle-wrapper" *ngIf="maxInOut > 24">
+          <button class="btn btn-sm btn-primary graph-toggle" (click)="expandGraph();" *ngIf="!graphExpanded; else collapseBtn"><span i18n="show-more">Show more</span></button>
+          <ng-template #collapseBtn>
+            <button class="btn btn-sm btn-primary graph-toggle" (click)="collapseGraph();"><span i18n="show-less">Show less</span></button>
+          </ng-template>
+        </div>
+      </div>
+
+      <br>
+    </ng-container>
+    <ng-template #flowPlaceholder>
+      <div class="box hidden">
+        <div class="graph-container" #graphContainer>
+        </div>
+      </div>
+    </ng-template>
+
+    <div class="subtitle-block">
+      <div class="title">
+        <h2 i18n="transaction.inputs-and-outputs|Transaction inputs and outputs">Inputs & Outputs</h2>
+      </div>
+
+      <div class="title-buttons">
+        <button *ngIf="!flowEnabled" type="button" class="btn btn-outline-info flow-toggle btn-sm" (click)="toggleGraph()" i18n="show-diagram">Show diagram</button>
+        <button type="button" class="btn btn-outline-info btn-sm" (click)="txList.toggleDetails()" i18n="transaction.details|Transaction Details">Details</button>
+      </div>
+    </div>
+
+
+    <app-transactions-list #txList [transactions]="[transaction]" [transactionPage]="true" [txPreview]="true" [forceSignaturesMode]="isCoinbase ? 'none' : 'all'"></app-transactions-list>
+
+    <div class="title text-left">
+      <h2 i18n="transaction.details|Transaction Details">Details</h2>
+    </div>
+    <div class="box">
+      <div class="row">
+        <div class="col-sm">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td i18n="block.size">Size</td>
+                <td>
+                  <span [innerHTML]="'&lrm;' + (transaction.size + sizeFromMissingSig | bytes: 2)"></span>
+                  <fa-icon *ngIf="tooltipSize" [ngbTooltip]="tooltipSize" class="icon-symbol" [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+                </td>
+              </tr>
+              <tr>
+                <td i18n="transaction.vsize|Transaction Virtual Size">Virtual size</td>
+                <td>
+                  <span [innerHTML]="'&lrm;' + ((transaction.weight + weightFromMissingSig) / 4 | vbytes: 2)"></span>
+                  <fa-icon *ngIf="tooltipVsize" [ngbTooltip]="tooltipVsize" class="icon-symbol" [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+                </td>
+              </tr>
+              <tr *ngIf="adjustedVsize">
+                <td><ng-container i18n="transaction.adjusted-vsize|Transaction Adjusted VSize">Adjusted vsize</ng-container>
+                  <a class="info-link" [routerLink]="['/docs/faq/' | relativeUrl]" fragment="what-is-adjusted-vsize">
+                    <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+                  </a>
+                </td>
+                <td [innerHTML]="'&lrm;' + (adjustedVsize | vbytes: 2)"></td>
+              </tr>
+              <tr>
+                <td i18n="block.weight">Weight</td>
+                <td>
+                  <span [innerHTML]="'&lrm;' + (transaction.weight + weightFromMissingSig | wuBytes: 2)"></span>
+                  <fa-icon *ngIf="tooltipWeight" [ngbTooltip]="tooltipWeight" class="icon-symbol" [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-sm">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td i18n="transaction.version">Version</td>
+                <td [innerHTML]="'&lrm;' + (transaction.version | number)"></td>
+              </tr>
+              <tr>
+                <td i18n="transaction.locktime">Locktime</td>
+                <td [innerHTML]="'&lrm;' + (transaction.locktime | number)"></td>
+              </tr>
+              <tr *ngIf="transaction.sigops >= 0">
+                <td><ng-container i18n="transaction.sigops|Transaction Sigops">Sigops</ng-container>
+                  <a class="info-link" [routerLink]="['/docs/faq/' | relativeUrl]" fragment="what-are-sigops">
+                    <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+                  </a>
+                </td>
+                <td [innerHTML]="'&lrm;' + (transaction.sigops | number)"></td>
+              </tr>
+              <tr>
+                <td i18n="transaction.hex">Transaction hex</td>
+                <td><app-clipboard [text]="rawHexTransaction" [leftPadding]="false"></app-clipboard></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (isLoading) {
+    <div class="text-center">
+      <div class="spinner-border text-light mt-2 mb-2"></div>
+      <h3>
+        Loading {{ isLoadingPrevouts ? 'transaction prevouts' : isLoadingCpfpInfo ? 'CPFP' : '' }}
+      </h3>
+    </div>
+  }
+</div>

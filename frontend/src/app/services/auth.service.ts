@@ -58,6 +58,7 @@ export class AuthServiceMempool {
   setAuth(auth: any) {
     if (!auth) {
       localStorage.removeItem('auth');
+      localStorage.removeItem('authenticatorStatus');
     } else {
       localStorage.setItem('auth', JSON.stringify(auth));
     }

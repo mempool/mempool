@@ -10,10 +10,13 @@ import { TestTransactionsComponent } from '@components/test-transactions/test-tr
 import { CalculatorComponent } from '@components/calculator/calculator.component';
 import { BlocksList } from '@components/blocks-list/blocks-list.component';
 import { RbfList } from '@components/rbf-list/rbf-list.component';
+import { StaleList } from '@components/stale-list/stale-list.component';
 import { StratumList } from '@components/stratum/stratum-list/stratum-list.component';
 import { ServerHealthComponent } from '@components/server-health/server-health.component';
 import { ServerStatusComponent } from '@components/server-health/server-status.component';
 import { FaucetComponent } from '@components/faucet/faucet.component';
+import { SimpleProofWidgetComponent } from '@components/simpleproof-widget/simpleproof-widget.component';
+import { SimpleProofCuboWidgetComponent } from '@components/simpleproof-widget/simpleproof-cubo-widget.component';
 
 const browserWindow = window || {};
 // @ts-ignore
@@ -44,6 +47,10 @@ const routes: Routes = [
       {
         path: 'about',
         loadChildren: () => import('@components/about/about.module').then(m => m.AboutModule),
+      },
+      {
+        path: 'blocks/stale',
+        component: StaleList,
       },
       {
         path: 'blocks/:page',
@@ -139,6 +146,20 @@ if (window['__env']?.OFFICIAL_MEMPOOL_SPACE) {
       }]
     })
   }
+}
+
+if (window['__env']?.customize?.dashboard.widgets?.some(w => w.component ==='simpleproof')) {
+  routes[0].children.push({
+    path: 'sp/verified',
+    component: SimpleProofWidgetComponent,
+  });
+}
+
+if (window['__env']?.customize?.dashboard.widgets?.some(w => w.component ==='simpleproof_cubo')) {
+  routes[0].children.push({
+    path: 'sp/cubo',
+    component: SimpleProofCuboWidgetComponent,
+  });
 }
 
 @NgModule({

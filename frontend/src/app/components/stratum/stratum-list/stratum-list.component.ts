@@ -1,15 +1,17 @@
 import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { StateService } from '../../../services/state.service';
-import { WebsocketService } from '../../../services/websocket.service';
+import { StateService } from '@app/services/state.service';
+import { WebsocketService } from '@app/services/websocket.service';
 import { map, Observable } from 'rxjs';
-import { StratumJob } from '../../../interfaces/websocket.interface';
-import { MiningService } from '../../../services/mining.service';
-import { SinglePoolStats } from '../../../interfaces/node-api.interface';
+import { StratumJob } from '@interfaces/websocket.interface';
+import { MiningService } from '@app/services/mining.service';
+import { SinglePoolStats } from '@interfaces/node-api.interface';
 
 type MerkleCellType = ' ' | '┬' | '├' | '└' | '│' | '─' | 'leaf';
 
+
 interface TaggedStratumJob extends StratumJob {
   tag: string;
+  merkleBranchIds: string[];
 }
 
 interface MerkleCell {
@@ -46,10 +48,25 @@ function parseTag(scriptSig: string): string {
   return (ascii.match(/\/.*\//)?.[0] || ascii).trim();
 }
 
+function getMerkleBranchIds(merkleBranches: string[], numBranches: number, poolId: number): string[] {
+  let lastHash = '';
+  const ids: string[] = [];
+  for (let i = 0; i < numBranches; i++) {
+    if (merkleBranches[i]) {
+      lastHash = merkleBranches[i];
+      ids.push(`${i}-${lastHash}`);
+    } else {
+      ids.push(`${i}-${lastHash}-${poolId}`);
+    }
+  }
+  return ids;
+}
+
 @Component({
   selector: 'app-stratum-list',
   templateUrl: './stratum-list.component.html',
   styleUrls: ['./stratum-list.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StratumList implements OnInit, OnDestroy {
@@ -81,15 +98,14 @@ export class StratumList implements OnInit, OnDestroy {
   }
 
   processJobs(rawJobs: Record<string, StratumJob>): PoolRow[] {
+    const numBranches = Math.max(...Object.values(rawJobs).map(job => job.merkleBranches.length));
     const jobs: Record<string, TaggedStratumJob> = {};
     for (const [id, job] of Object.entries(rawJobs)) {
-      jobs[id] = { ...job, tag: parseTag(job.scriptsig) };
+      jobs[id] = { ...job, tag: parseTag(job.scriptsig), merkleBranchIds: getMerkleBranchIds(job.merkleBranches, numBranches, job.pool) };
     }
     if (Object.keys(jobs).length === 0) {
       return [];
     }
-
-    const numBranches = Math.max(...Object.values(jobs).map(job => job.merkleBranches.length));
 
     let trees: MerkleTree[] = Object.keys(jobs).map(job => ({
       job,
@@ -100,12 +116,13 @@ export class StratumList implements OnInit, OnDestroy {
     for (let col = numBranches - 1; col >= 0; col--) {
       const groups: Record<string, MerkleTree[]> = {};
       for (const tree of trees) {
-        const hash = jobs[tree.job].merkleBranches[col];
-        if (!groups[hash]) {
-          groups[hash] = [];
+        const branchId = jobs[tree.job].merkleBranchIds[col];
+        if (!groups[branchId]) {
+          groups[branchId] = [];
         }
-        groups[hash].push(tree);
+        groups[branchId].push(tree);
       }
+
       trees = Object.values(groups).map(group => ({
         hash: jobs[group[0].job].merkleBranches[col],
         job: group[0].job,
@@ -180,6 +197,10 @@ export class StratumList implements OnInit, OnDestroy {
       '─': 'horizontal',
       'leaf': 'leaf'
     }[type];
+  }
+
+  reverseHash(hash: string) {
+    return hash.match(/../g).reverse().join('');
   }
 
   ngOnDestroy(): void {

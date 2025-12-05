@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, HostBinding, NgZone } from 
 import { Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from '@app/graphs/echarts';
 import { map, Observable, share, tap } from 'rxjs';
-import { chartColors } from '@app/app.constants';
+import { originalChartColors as chartColors } from '@app/app.constants';
 import { ApiService } from '@app/services/api.service';
 import { SeoService } from '@app/services/seo.service';
 import { StateService } from '@app/services/state.service';
@@ -15,6 +15,7 @@ import { getFlagEmoji } from '@app/shared/common.utils';
   selector: 'app-nodes-per-country-chart',
   templateUrl: './nodes-per-country-chart.component.html',
   styleUrls: ['./nodes-per-country-chart.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesPerCountryChartComponent implements OnInit {

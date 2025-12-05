@@ -1,0 +1,109 @@
+<div *ngIf="showTitle" class="main-title" i18n="treasuries.bitcoin-supply">Bitcoin Supply</div>
+<div class="card-wrapper">
+  <div class="card">
+    <div class="card-body more-padding">
+      <div class="treasury-supply-container" *ngIf="(isLoadingWebSocket$ | async) === false && !loadingTreasurySupply; else skeletonLoaders">
+        <div class="supply-progress">
+          <svg #supplySvg class="supply-shares" height="22px" width="100%" shape-rendering="crispEdges" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="supply-gradient" x1="0%" y1="0%" x2="100%" y2="0%" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="var(--primary)" />
+                <stop offset="100%" stop-color="var(--mainnet-alt)" />
+              </linearGradient>
+              <linearGradient id="supply-hover-gradient" x1="0%" y1="0%" x2="100%" y2="0%" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#2486eb" />
+                <stop offset="100%" stop-color="#ae6af7" />
+              </linearGradient>
+            </defs>
+            <rect
+              *ngFor="let rect of shares"
+              [attr.x]="rect.x" [attr.y]="0"
+              [attr.width]="rect.w" height="100%"
+              class="rect {{rect.type}}"
+              [class.hover]="hoverSection && rect.type === hoverSection.type"
+              (pointerover)="onHover($event, rect);"
+              (pointerout)="onBlur();"
+            >
+            </rect>
+          </svg>
+        </div>
+        <div class="supply-stats">
+          <div class="item">
+            <div class="card-text">
+              <app-amount [satoshis]="totalTreasuries * 100_000_000" digitsInfo="1.0-0" [noFiat]="true" [ignoreViewMode]="true"></app-amount>
+            </div>
+            <div class="symbol" i18n="treasuries.held-in-treasuries">in treasuries</div>
+          </div>
+          <div class="item">
+            <div class="card-text bigger">
+              {{ percentSupply | number: '1.2-2' }}
+              <span class="symbol">%</span>
+            </div>
+            <div class="symbol" i18n="treasuries.percent-of-total-supply">of total supply</div>
+          </div>
+          <div class="item">
+            <div class="card-text">
+              <app-amount [satoshis]="toBeMined * 100_000_000" digitsInfo="1.0-0" [noFiat]="true" [ignoreViewMode]="true"></app-amount>
+            </div>
+            <div class="symbol" i18n="treasuries.yet-to-be-mined">yet to be mined</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #skeletonLoaders>
+  <div class="supply-progress">
+    <div class="skeleton-loader"></div>
+  </div>
+  <div class="supply-skeleton loading-container">
+    <div class="item">
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+    <div class="item">
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+    <div class="item">
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+
+<div
+  #tooltip
+  *ngIf="hoverSection"
+  class="supply-tooltip"
+  [style.visibility]="hoverSection ? 'visible' : 'hidden'"
+  [style.left]="tooltipPosition.x + 'px'"
+  [style.top]="tooltipPosition.y + (isMobile ? -60 : 0) + 'px'"
+>
+  <ng-container [ngSwitch]="hoverSection.type">
+    <ng-container *ngSwitchCase="'treasuries'">
+      <div class="tooltip-title">In Treasuries</div>
+    </ng-container>
+    <ng-container *ngSwitchCase="'mined'">
+      <div class="tooltip-title">Mined</div>
+    </ng-container>
+    <ng-container *ngSwitchCase="'lost'">
+      <div class="tooltip-title">Lost</div>
+    </ng-container>
+    <ng-container *ngSwitchCase="'unmined'">
+      <div class="tooltip-title">Yet to be mined</div>
+    </ng-container>
+  </ng-container>
+  <div class="tooltip-value">{{ (hoverSection.share * 100) | number: '1.2-2' }}%</div>
+  <div class="tooltip-value">
+    <app-amount [satoshis]="hoverSection.btc * 100_000_000" digitsInfo="1.0-0" [noFiat]="true" [ignoreViewMode]="true"></app-amount>
+  </div>
+</div>

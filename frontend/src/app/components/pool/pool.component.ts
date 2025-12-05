@@ -6,13 +6,13 @@ import { catchError, distinctUntilChanged, filter, map, share, switchMap, tap } 
 import { BlockExtended, PoolStat } from '@interfaces/node-api.interface';
 import { ApiService } from '@app/services/api.service';
 import { StateService } from '@app/services/state.service';
-import { selectPowerOfTen } from '@app/bitcoin.utils';
+import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { formatNumber } from '@angular/common';
 import { SeoService } from '@app/services/seo.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { StratumJob } from '../../interfaces/websocket.interface';
-import { WebsocketService } from '../../services/websocket.service';
-import { MiningService } from '../../services/mining.service';
+import { StratumJob } from '@interfaces/websocket.interface';
+import { WebsocketService } from '@app/services/websocket.service';
+import { MiningService } from '@app/services/mining.service';
 
 interface AccelerationTotal {
   cost: number,
@@ -23,6 +23,7 @@ interface AccelerationTotal {
   selector: 'app-pool',
   templateUrl: './pool.component.html',
   styleUrls: ['./pool.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PoolComponent implements OnInit {
@@ -63,6 +64,7 @@ export class PoolComponent implements OnInit {
     private websocketService: WebsocketService,
     private miningService: MiningService,
     private seoService: SeoService,
+    public amountShortenerPipe: AmountShortenerPipe,
   ) {
     this.auditAvailable = this.stateService.env.AUDIT;
   }
@@ -217,9 +219,7 @@ export class PoolComponent implements OnInit {
 
           for (const tick of ticks) {
             if (tick.seriesIndex === 0) {
-              let hashratePowerOfTen = selectPowerOfTen(tick.data[1], 10);
-              let hashrateData = tick.data[1] / hashratePowerOfTen.divider;
-              hashrateString = `${tick.marker} ${tick.seriesName}: ${formatNumber(hashrateData, this.locale, '1.0-0')} ${hashratePowerOfTen.unit}H/s<br>`;
+              hashrateString = `${tick.marker} ${tick.seriesName}: ${this.amountShortenerPipe.transform(tick.data[1], 3, 'H/s', false, true)}<br>`;
             } else if (tick.seriesIndex === 1) {
               dominanceString = `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-2')}%`;
             }             
@@ -271,9 +271,7 @@ export class PoolComponent implements OnInit {
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: (val) => {
-              const selectedPowerOfTen: any = selectPowerOfTen(val);
-              const newVal = Math.round(val / selectedPowerOfTen.divider);
-              return `${newVal} ${selectedPowerOfTen.unit}H/s`
+              return this.amountShortenerPipe.transform(val, 3, 'H/s', false, true).toString();
             }
           },
           splitLine: {
@@ -359,6 +357,10 @@ export class PoolComponent implements OnInit {
 
   trackByBlock(index: number, block: BlockExtended) {
     return block.height;
+  }
+
+  reverseHash(hash: string) {
+    return hash.match(/../g).reverse().join('');
   }
 
   ngOnDestroy(): void {

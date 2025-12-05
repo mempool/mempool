@@ -9,6 +9,7 @@ import { StateService } from '@app/services/state.service';
   templateUrl: './reward-stats.component.html',
   styleUrls: ['./reward-stats.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class RewardStatsComponent implements OnInit {
   public $rewardStats: Observable<any>;

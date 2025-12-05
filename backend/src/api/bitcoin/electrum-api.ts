@@ -160,6 +160,15 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
     }
   }
 
+  async $getAddressUtxos(address: string): Promise<IEsploraApi.UTXO[]> {
+    const addressInfo = await this.bitcoindClient.validateAddress(address);
+    if (!addressInfo || !addressInfo.isvalid) {
+      return [];
+    }
+    const scripthash = this.encodeScriptHash(addressInfo.scriptPubKey);
+    return this.$getScriptHashUtxos(scripthash);
+  }
+
   async $getScriptHashTransactions(scripthash: string, lastSeenTxId?: string): Promise<IEsploraApi.Transaction[]> {
     try {
       loadingIndicators.setProgress('address-' + scripthash, 0);
@@ -195,6 +204,49 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
       loadingIndicators.setProgress('address-' + scripthash, 100);
       throw new Error(typeof e === 'string' ? e : e && e.message || e);
     }
+  }
+
+  async $getScriptHashUtxos(scripthash: string): Promise<IEsploraApi.UTXO[]> {
+    const utxos = await this.$getScriptHashUnspent(scripthash);
+    const result: IEsploraApi.UTXO[] = [];
+    for(let utxo of utxos) {
+      if(utxo.height===0) {
+        //Unconfirmed
+        result.push({
+          txid: utxo.tx_hash,
+          vout: utxo.tx_pos,
+          status: {
+            confirmed: false
+          },
+          value: utxo.value
+        });
+      } else {
+        //Confirmed
+        const blockHash = await this.$getBlockHash(utxo.height);
+        const block = await this.$getBlock(blockHash);
+        result.push({
+          txid: utxo.tx_hash,
+          vout: utxo.tx_pos,
+          status: {
+            confirmed: true,
+            block_height: utxo.height,
+            block_hash: blockHash,
+            block_time: block.timestamp
+          },
+          value: utxo.value
+        });
+      }
+    }
+    return result;
+  }
+
+  private $getScriptHashUnspent(scriptHash: string): Promise<IElectrumApi.ScriptHashUtxos[]> {
+    return this.electrumClient.blockchainScripthash_listunspent(scriptHash);
+  }
+
+  async $getTransactionMerkleProof(txId: string): Promise<IEsploraApi.MerkleProof> {
+    const tx = await this.$getRawTransaction(txId);
+    return this.electrumClient.blockchainTransaction_getMerkle(txId, tx.status.block_height);
   }
 
   private $getScriptHashBalance(scriptHash: string): Promise<IElectrumApi.ScriptHashBalance> {

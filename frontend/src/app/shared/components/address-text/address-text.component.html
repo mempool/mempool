@@ -1,0 +1,17 @@
+
+@if (similarity) {
+  <div class="address-text">
+    <a class="address" style="display: contents;" [routerLink]="['/address/' | relativeUrl, address]" title="{{ address }}">
+      <span class="prefix">{{ similarity.match.prefix.slice(0, 16) }}</span>
+      <span class="infix" [ngStyle]="{'text-decoration-color': groupColors[similarity.group % (groupColors.length)]}">{{ address.slice(min(similarity.match.prefix.length, 16) || 0, -min(similarity.match.postfix.length, 16) || undefined) }}</span>
+      <span class="postfix"> {{ similarity.match.postfix.slice(-16) }}</span>
+    </a>
+    <span class="poison-alert" *ngIf="similarity" i18n-ngbTooltip="address-poisoning.warning-tooltip" ngbTooltip="This address is deceptively similar to another output. It may be part of an address poisoning attack.">
+      <fa-icon [icon]="['fas', 'exclamation-triangle']" [fixedWidth]="true"></fa-icon>
+    </span>
+  </div>
+} @else {
+  <a class="address" [routerLink]="['/address/' | relativeUrl, address]" title="{{ address }}">
+    <app-truncate [text]="address" [lastChars]="8"></app-truncate>
+  </a>
+}

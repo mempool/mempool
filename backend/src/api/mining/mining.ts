@@ -30,6 +30,12 @@ class Mining {
   public reindexHashrateRequested = false;
   public reindexDifficultyAdjustmentRequested = false;
 
+  private genesisData: {
+    timestamp: number,
+    bits: number,
+    difficulty: number,
+  } | null = null;
+
   /**
    * Get historical blocks health
    */
@@ -224,8 +230,8 @@ class Mining {
     try {
       const oldestConsecutiveBlockTimestamp = 1000 * (await BlocksRepository.$getOldestConsecutiveBlock()).timestamp;
 
-      const genesisBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(await bitcoinApi.$getBlockHash(0));
-      const genesisTimestamp = genesisBlock.timestamp * 1000;
+      const genesisData = await this.getGenesisData();
+      const genesisTimestamp = genesisData.timestamp * 1000;
 
       const indexedTimestamp = await HashratesRepository.$getWeeklyHashrateTimestamps();
       const hashrates: any[] = [];
@@ -256,31 +262,36 @@ class Mining {
 
         const blockStats: any = await BlocksRepository.$blockCountBetweenTimestamp(
           null, fromTimestamp / 1000, toTimestamp / 1000);
-        const lastBlockHashrate = await bitcoinClient.getNetworkHashPs(blockStats.blockCount,
-          blockStats.lastBlockHeight);
 
-        let pools = await PoolsRepository.$getPoolsInfoBetween(fromTimestamp / 1000, toTimestamp / 1000);
-        const totalBlocks = pools.reduce((acc, pool) => acc + pool.blockCount, 0);
-        if (totalBlocks > 0) {
-          pools = pools.map((pool: any) => {
-            pool.hashrate = (pool.blockCount / totalBlocks) * lastBlockHashrate;
-            pool.share = (pool.blockCount / totalBlocks);
-            return pool;
-          });
+        if (blockStats.blockCount <= 0) {
+          logger.debug(`No block found between ${fromTimestamp / 1000} and ${toTimestamp / 1000}, skipping hashrate indexing for this period`, logger.tags.mining);
+        } else {
+          const lastBlockHashrate = await bitcoinClient.getNetworkHashPs(blockStats.blockCount,
+            blockStats.lastBlockHeight);
 
-          for (const pool of pools) {
-            hashrates.push({
-              hashrateTimestamp: toTimestamp / 1000,
-              avgHashrate: pool['hashrate'] ,
-              poolId: pool.poolId,
-              share: pool['share'],
-              type: 'weekly',
+          let pools = await PoolsRepository.$getPoolsInfoBetween(fromTimestamp / 1000, toTimestamp / 1000);
+          const totalBlocks = pools.reduce((acc, pool) => acc + pool.blockCount, 0);
+          if (totalBlocks > 0) {
+            pools = pools.map((pool: any) => {
+              pool.hashrate = (pool.blockCount / totalBlocks) * lastBlockHashrate;
+              pool.share = (pool.blockCount / totalBlocks);
+              return pool;
             });
-          }
 
-          newlyIndexed += hashrates.length / Math.max(1, pools.length);
-          await HashratesRepository.$saveHashrates(hashrates);
-          hashrates.length = 0;
+            for (const pool of pools) {
+              hashrates.push({
+                hashrateTimestamp: toTimestamp / 1000,
+                avgHashrate: pool['hashrate'] ,
+                poolId: pool.poolId,
+                share: pool['share'],
+                type: 'weekly',
+              });
+            }
+
+            newlyIndexed += hashrates.length / Math.max(1, pools.length);
+            await HashratesRepository.$saveHashrates(hashrates);
+            hashrates.length = 0;
+          }
         }
 
         const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - timer));
@@ -335,8 +346,8 @@ class Mining {
     const oldestConsecutiveBlockTimestamp = 1000 * (await BlocksRepository.$getOldestConsecutiveBlock()).timestamp;
 
     try {
-      const genesisBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(await bitcoinApi.$getBlockHash(0));
-      const genesisTimestamp = genesisBlock.timestamp * 1000;
+      const genesisData = await this.getGenesisData();
+      const genesisTimestamp = genesisData.timestamp * 1000;
       const indexedTimestamp = (await HashratesRepository.$getRawNetworkDailyHashrate(null)).map(hashrate => hashrate.timestamp);
       const lastMidnight = this.getDateMidnight(new Date());
       let toTimestamp = Math.round(lastMidnight.getTime());
@@ -445,14 +456,14 @@ class Mining {
 
     // gets {time, height, difficulty, bits} of blocks in ascending order of height
     const blocks: any = await BlocksRepository.$getBlocksDifficulty();
-    const genesisBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(await bitcoinApi.$getBlockHash(0));
-    let currentDifficulty = genesisBlock.difficulty;
-    let currentBits = genesisBlock.bits;
+    const genesisData = await this.getGenesisData();
+    let currentDifficulty = genesisData.difficulty;
+    let currentBits = genesisData.bits;
     let totalIndexed = 0;
 
     if (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT === -1 && indexedHeights[0] !== true) {
       await DifficultyAdjustmentsRepository.$saveAdjustments({
-        time: genesisBlock.timestamp,
+        time: genesisData.timestamp,
         height: 0,
         difficulty: currentDifficulty,
         adjustment: 0.0,
@@ -688,6 +699,18 @@ class Mining {
       }
     }
     return blocks[0];
+  }
+
+  private async getGenesisData(): Promise<{timestamp: number, bits: number, difficulty: number}> {
+    if (this.genesisData == null) {
+      const genesisBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(await bitcoinApi.$getBlockHash(0));
+      this.genesisData = {
+        timestamp: genesisBlock.timestamp,
+        bits: genesisBlock.bits,
+        difficulty: genesisBlock.difficulty,
+      };
+    }
+    return this.genesisData;
   }
 }
 

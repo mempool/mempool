@@ -9,6 +9,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   selector: 'app-server-health',
   templateUrl: './server-health.component.html',
   styleUrls: ['./server-health.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ServerHealthComponent implements OnInit {
@@ -16,6 +17,13 @@ export class ServerHealthComponent implements OnInit {
   maxHeight: number;
   interval: number;
   now: number = Date.now();
+
+  repoMap = {
+    frontend: 'mempool',
+    hybrid: 'mempool.space',
+    backend: 'mempool',
+    electrs: 'electrs',
+  };
 
   constructor(
     private websocketService: WebsocketService,
@@ -82,6 +90,10 @@ export class ServerHealthComponent implements OnInit {
       return '🇺🇸';
     } else if (host.includes('.va1.')) {
       return '🇺🇸';
+    } else if (host.includes('.sg1.')) {
+      return '🇸🇬';
+    } else if (host.includes('.hnl.')) {
+      return '🤙';
     } else {
       return '';
     }

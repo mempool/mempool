@@ -8,7 +8,7 @@
           </a>
         } @else if (enterpriseInfo?.img || enterpriseInfo?.imageMd5) {
           <a [routerLink]="['/' | relativeUrl]">
-            <img [src]="enterpriseInfo.img || '/api/v1/services/enterprise/images/' + enterpriseInfo.name + '/logo?imageMd5=' + enterpriseInfo.imageMd5" class="subdomain_logo" [class]="{'rounded': enterpriseInfo.rounded_corner}">
+            <img [src]="enterpriseInfo.img || '/api/v1/services/enterprise/images/' + enterpriseInfo.name + '/logo'" class="subdomain_logo" [class]="{'rounded': enterpriseInfo.rounded_corner}">
           </a>
           <div class="vertical-line"></div>
         }
@@ -124,15 +124,14 @@
           <ng-container *ngIf="(ETA$ | async) as eta;">
             <app-accelerate-checkout
               *ngIf="(da$ | async) as da;"
-              [cashappEnabled]="cashappEligible"
               [advancedEnabled]="false"
               [forceMobile]="true"
               [tx]="tx"
               [accelerating]="isAcceleration"
               [miningStats]="miningStats"
               [eta]="eta"
-              [scrollEvent]="scrollIntoAccelPreview"
               (unavailable)="eligibleForAcceleration = false"
+              (paymentReceipt)="paymentReceipt($event)"
               class="w-100"
             ></app-accelerate-checkout>
           </ng-container>
@@ -142,7 +141,10 @@
             <div class="progress-icon">
               <fa-icon [icon]="['fas', 'wand-magic-sparkles']" [fixedWidth]="true"></fa-icon>
             </div>
-            <span class="explainer" i18n="tracker.explain.accelerated">Your transaction has been accelerated</span>
+            <span class="explainer" i18n="tracker.explain.accelerated">Transaction has been accelerated</span>
+            @if (paymentReceiptUrl) {
+              <span class="explainer"><a [href]="paymentReceiptUrl" target="_blank" i18n="accelerator.receipt-label">Get a receipt.</a></span>
+            }
           } @else {
             @switch (trackerStage) {
               @case ('waiting') {
@@ -174,6 +176,9 @@
                   <fa-icon [icon]="['fas', 'circle-check']" [fixedWidth]="true"></fa-icon>
                 </div>
                 <span class="explainer" i18n="tracker.explain.confirmed">Your transaction is confirmed!</span>
+                @if (paymentReceiptUrl) {
+                  <span class="explainer"><a [href]="paymentReceiptUrl" target="_blank" i18n="accelerator.receipt-label">Get a receipt.</a></span>
+                }
               }
               @case ('replaced') {
                 <div class="progress-icon">

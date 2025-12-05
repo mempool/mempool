@@ -181,8 +181,8 @@
                 "inject": false
               },
               {
-                "input": "src/theme-wiz.scss",
-                "bundleName": "wiz",
+                "input": "src/theme-softsimon.scss",
+                "bundleName": "softsimon",
                 "inject": false
               },
               {
@@ -261,20 +261,14 @@
               "proxyConfig": "proxy.conf.mixed.js",
               "verbose": true
             },
-            "staging": {
-              "proxyConfig": "proxy.conf.js",
-              "disableHostCheck": true,
-              "host": "0.0.0.0",
-              "verbose": true
-            },
             "local-prod": {
               "proxyConfig": "proxy.conf.js",
               "disableHostCheck": true,
               "host": "0.0.0.0",
               "verbose": false
             },
-            "local-staging": {
-              "proxyConfig": "proxy.conf.staging.js",
+            "parameterized": {
+              "proxyConfig": "proxy.conf.parameterized.js",
               "disableHostCheck": true,
               "host": "0.0.0.0",
               "verbose": false

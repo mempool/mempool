@@ -1,0 +1,58 @@
+.sig {
+	cursor: pointer;
+	
+
+	&.sighash-0 {
+		--sigColor: var(--green);
+	}
+	&.sighash-1 {
+		--sigColor: var(--green);
+	}
+	&.sighash-2 {
+		--sigColor: gold;
+	}
+	&.sighash-3 {
+		--sigColor: cornflowerblue;
+	}
+	&.sighash-129 {
+		--sigColor: darkviolet;
+	}
+	&.sighash-130 {
+		--sigColor: darkorange;
+	}
+	&.sighash-131 {
+		--sigColor: var(--pink);
+	}
+	&.sig-no-lock {
+		--sigColor: var(--red);
+	}
+	color: var(--sigColor);
+
+	&:hover, &.hovered {
+		color: color-mix(in srgb, var(--sigColor) 60%, white);
+	}
+
+	::ng-deep svg path {
+		pointer-events: auto;
+	}
+}
+
+.sig-key {
+	position: absolute;
+	top: 0;
+	left: 0;
+	transition: transform 0.2s ease;
+	pointer-events: none;
+
+	&.sig-inline {
+		position: relative;
+		pointer-events: auto;
+    margin-left: 4px;
+		margin-right: -4px;
+	}
+}
+
+.script {
+	margin-left: 4px;
+	margin-right: -4px;
+}

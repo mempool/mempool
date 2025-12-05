@@ -17,9 +17,22 @@
         <a draggable="false" [routerLink]="[getHref(i, block) | relativeUrl]" [state]="{ data: { block: block } }"
           class="blockLink" [ngClass]="{'disabled': (this.stateService.blockScrolling$ | async)}">&nbsp;</a>
         <div *ngIf="!minimal" [attr.data-cy]="'bitcoin-block-' + i + '-height'" class="block-height">
-          <a [routerLink]="[getHref(i, block) | relativeUrl]" [state]="{ data: { block: block } }">{{ block.height
+          <a [routerLink]="[getHref(i, block) | relativeUrl]" [state]="{ data: { block: block } }" class="block-height-link">{{ block.height
             }}</a>
         </div>
+        @if (!minimal && block?.extras?.orphans?.length > 0) {
+          <ng-container *ngFor="let orphan of block.extras.orphans.slice(0, 3); let j = index">
+            <div
+              class="stale-ghost"
+              [style.--stale-index]="j"
+              [routerLink]="['/block' | relativeUrl, orphan.hash]"
+              [ngbTooltip]="'stale block ' + orphan.hash.slice(0, 4) + '...' + orphan.hash.slice(-4)"
+              [placement]="'top'"
+              [container]="'body'"
+              [autoClose]="'outside'"
+            ></div>
+          </ng-container>
+        }
         <div class="block-body">
           <ng-container *ngIf="!minimal">
             <div *ngIf="block?.extras; else emptyfees" [attr.data-cy]="'bitcoin-block-offset=' + offset + '-index-' + i + '-fees'" class="fees">
@@ -32,9 +45,9 @@
             </ng-template>
             <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-fee-span'" class="fee-span"
               *ngIf="block?.extras?.minFee != null && block?.extras?.maxFee != null; else emptyfeespan">
-              <app-fee-rate [fee]="block?.extras?.minFee" [showUnit]="false" rounding="1.0-0" unitClass=""></app-fee-rate>
+              <app-fee-rate [fee]="block?.extras?.minFee" [showUnit]="false" unitClass=""></app-fee-rate>
               -
-              <app-fee-rate [fee]="block?.extras?.maxFee" rounding="1.0-0" unitClass=""></app-fee-rate>
+              <app-fee-rate [fee]="block?.extras?.maxFee" unitClass=""></app-fee-rate>
             </div>
             <ng-template #emptyfeespan>
               <div [attr.data-cy]="'bitcoin-block-offset=' + offset + '-index-' + i + '-fees'" class="fee-span">
@@ -56,7 +69,11 @@
               <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
             </div>
             <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-time'" class="time-difference">
-              <app-time kind="since" [time]="block.timestamp" [fastRender]="true" [precision]="1" minUnit="minute"></app-time></div>
+              <app-time kind="since" [time]="block.timestamp" [fastRender]="true" [precision]="1" minUnit="minute"></app-time>
+              <a *ngIf="!minimal && showIsEarlierThanParent(i)" [routerLink]="['/docs/faq' | relativeUrl ]" class="timestamp-info" fragment="why-block-timestamps-dont-always-increase">
+                <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+              </a>
+            </div>
           </ng-container>
         </div>
         <div class="animated" *ngIf="block.extras?.pool != undefined && showPools">

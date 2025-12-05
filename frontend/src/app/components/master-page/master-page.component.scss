@@ -26,18 +26,33 @@ li.nav-item {
   margin: auto 10px;
   padding-left: 10px;
   padding-right: 10px;
-  @media (max-width: 992px) {
-    margin: auto 7px;
+  align-content: center;
+  .svg-wrapper {
+    height: 19.2px;
+    width: auto;
+    margin-bottom: 8px;
+  }
+  @media (max-width: 991px) {
+    margin: 0;
     padding-left: 8px;
     padding-right: 8px;
+    .svg-wrapper {
+      height: 25.6px;
+      width: auto;
+      margin-bottom: 0;
+    }
+    .nav-link {
+      padding: 12px 0;
+    }
+
   }
   @media (max-width: 429px) {
-    margin: auto 5px;
+    margin: 0;
     padding-left: 6px;
     padding-right: 6px;
   }
   @media (max-width: 369px) {
-    margin: auto 3px;
+    margin: 0;
     padding-left: 4px;
     padding-right: 4px;
   }
@@ -173,7 +188,7 @@ nav {
   align-items: center;
 }
 
-@media (min-width: 992px) {
+@media (min-width: 991px) {
   .search-form-container {
     width: 100%;
     max-width: 500px;
@@ -269,7 +284,7 @@ nav {
   text-align: center;
   align-self: center;
   cursor: pointer;
-  &.anon {
+  .anon {
     border: 1.5px solid lightgrey;
     color: lightgrey;
     border-radius: 5px;

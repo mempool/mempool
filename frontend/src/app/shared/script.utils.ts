@@ -1,3 +1,7 @@
+import { Vin } from "../interfaces/electrs.interface";
+import { AddressType, detectAddressType } from "./address-utils";
+import { ParsedTaproot } from "./transaction.utils";
+
 const opcodes = {
   OP_FALSE: 0,
   OP_0: 0,
@@ -149,6 +153,7 @@ export type ScriptType = 'scriptpubkey'
   | 'scriptsig'
   | 'inner_witnessscript'
   | 'inner_redeemscript'
+  | 'inner_simplicityscript'
 
 export interface ScriptTemplate {
   type: string;
@@ -171,17 +176,21 @@ export const ScriptTemplates: { [type: string]: (...args: any) => ScriptTemplate
 
 export class ScriptInfo {
   type: ScriptType;
-  scriptPath?: string;
+  taprootInfo?: ParsedTaproot;
   hex?: string;
   asm?: string;
+  vinId?: string;
   template: ScriptTemplate;
 
-  constructor(type: ScriptType, hex?: string, asm?: string, witness?: string[], scriptPath?: string) {
+  constructor(type: ScriptType, hex?: string, asm?: string, witness?: string[], taprootInfo?: ParsedTaproot, vinId?: string) {
     this.type = type;
     this.hex = hex;
     this.asm = asm;
-    if (scriptPath) {
-      this.scriptPath = scriptPath;
+    if (taprootInfo) {
+      this.taprootInfo = taprootInfo;
+    }
+    if (vinId) {
+      this.vinId = vinId;
     }
     if (this.asm) {
       this.template = detectScriptTemplate(this.type, this.asm, witness);
@@ -193,7 +202,7 @@ export class ScriptInfo {
   }
 
   get key(): string {
-    return this.type + (this.scriptPath || '');
+    return this.type + (this.taprootInfo?.controlBlock || '');
   }
 }
 
@@ -251,6 +260,66 @@ export function detectScriptTemplate(type: ScriptType, script_asm: string, witne
     return ScriptTemplates.multisig(multisig.m, multisig.n);
   }
 
+  const tapscriptMultisig = parseTapscriptMultisig(script_asm);
+  if (tapscriptMultisig) {
+    return ScriptTemplates.multisig(tapscriptMultisig.m, tapscriptMultisig.n);
+  }
+
+  const tapscriptUnanimousMultisig = parseTapscriptUnanimousMultisig(script_asm);
+  if (tapscriptUnanimousMultisig) {
+    return ScriptTemplates.multisig(tapscriptUnanimousMultisig, tapscriptUnanimousMultisig);
+  }
+
+  return;
+}
+
+/** Returns the last push of a script as a number, the push can be OP_0, OP_PUSHNUM_<1-16>, or OP_PUSHBYTES_<1-75> */
+function popScriptNumberOperand(ops: string[]): number | undefined {
+  if (!ops.length) {
+    return;
+  }
+
+  const token = ops.pop();
+  if (!token) {
+    return;
+  }
+
+  if (token === 'OP_0') {
+    return 0;
+  }
+
+  if (token.startsWith('OP_PUSHNUM_')) {
+    const digits = token.match(/[0-9]+/);
+    if (!digits) {
+      return;
+    }
+    return parseInt(digits[0], 10);
+  }
+
+  if (!token.startsWith('OP_')) {
+    const pushOp = ops.pop();
+    const pushBytes = pushOp?.match(/^OP_PUSHBYTES_(\d+)$/);
+    if (!pushBytes) {
+      return;
+    }
+
+    const byteCount = parseInt(pushBytes[1], 10);
+    if (!byteCount || !/^[0-9a-fA-F]+$/.test(token) || token.length !== byteCount * 2) {
+      return;
+    }
+
+    let value = 0;
+    for (let i = 0; i < byteCount; i++) {
+      const byteHex = token.slice(i * 2, i * 2 + 2);
+      const byte = parseInt(byteHex, 16);
+      if (Number.isNaN(byte)) {
+        return;
+      }
+      value |= byte << (8 * i);
+    }
+    return value;
+  }
+
   return;
 }
 
@@ -263,14 +332,10 @@ export function parseMultisigScript(script: string): undefined | { m: number, n:
   if (ops.length < 3 || ops.pop() !== 'OP_CHECKMULTISIG') {
     return;
   }
-  const opN = ops.pop();
-  if (!opN) {
+  const n = popScriptNumberOperand(ops);
+  if (n === undefined) {
     return;
   }
-  if (opN !== 'OP_0' && !opN.startsWith('OP_PUSHNUM_')) {
-    return;
-  }
-  const n = parseInt(opN.match(/[0-9]+/)?.[0] || '', 10);
   if (ops.length < n * 2 + 1) {
     return;
   }
@@ -283,20 +348,119 @@ export function parseMultisigScript(script: string): undefined | { m: number, n:
       return;
     }
   }
-  const opM = ops.pop();
-  if (!opM) {
+  const m = popScriptNumberOperand(ops);
+  if (m === undefined) {
     return;
   }
-  if (opM !== 'OP_0' && !opM.startsWith('OP_PUSHNUM_')) {
-    return;
-  }
-  const m = parseInt(opM.match(/[0-9]+/)?.[0] || '', 10);
 
   if (ops.length) {
     return;
   }
 
   return { m, n };
+}
+
+export function parseTapscriptMultisig(script: string): undefined | { m: number, n: number } {
+  if (!script) {
+    return;
+  }
+
+  const ops = script.split(' ');
+  // At minimum, 2 pubkey group (3 tokens) + m push + final opcode = 8 tokens
+  if (ops.length < 8) {
+    return;
+  }
+
+  const finalOp = ops.pop();
+  if (!['OP_NUMEQUAL', 'OP_NUMEQUALVERIFY', 'OP_GREATERTHANOREQUAL', 'OP_GREATERTHAN', 'OP_EQUAL', 'OP_EQUALVERIFY'].includes(finalOp)) {
+    return;
+  }
+
+  let m = popScriptNumberOperand(ops);
+  if (m === undefined) {
+    return;
+  }
+
+  if (finalOp === 'OP_GREATERTHAN') {
+    m += 1;
+  }
+
+  if (ops.length % 3 !== 0) {
+    return;
+  }
+  const n = ops.length / 3;
+  if (n < 1) {
+    return;
+  }
+
+  for (let i = 0; i < n; i++) {
+    const push = ops.shift();
+    const pubkey = ops.shift();
+    const sigOp = ops.shift();
+
+    if (push !== 'OP_PUSHBYTES_32') {
+      return;
+    }
+    if (!/^[0-9a-fA-F]{64}$/.test(pubkey)) {
+      return;
+    }
+    if (sigOp !== (i === 0 ? 'OP_CHECKSIG' : 'OP_CHECKSIGADD')) {
+      return;
+    }
+  }
+
+  if (ops.length) {
+    return;
+  }
+
+  return { m, n };
+}
+
+export function parseTapscriptUnanimousMultisig(script: string): undefined | number {
+  if (!script) {
+    return;
+  }
+
+  const ops = script.split(' ');
+  // At minimum, 2 pubkey group (3 tokens) = 6 tokens
+  if (ops.length < 6) {
+    return;
+  }
+
+  if (ops.length % 3 !== 0) {
+    return;
+  }
+
+  const n = ops.length / 3;
+
+  for (let i = 0; i < n; i++) {
+    const pushOp = ops.shift();
+    const pubkey = ops.shift();
+    const sigOp = ops.shift();
+
+    if (pushOp !== 'OP_PUSHBYTES_32') {
+      return;
+    }
+    if (!/^[0-9a-fA-F]{64}$/.test(pubkey)) {
+      return;
+    }
+    if (i < n - 1) {
+      if (sigOp !== 'OP_CHECKSIGVERIFY') {
+        return;
+      }
+    } else {
+      // Last opcode can be either CHECKSIG or CHECKSIGVERIFY
+      if (!(sigOp === 'OP_CHECKSIGVERIFY' || sigOp === 'OP_CHECKSIG')) {
+        return;
+      }
+    }
+  }
+
+  if (ops.length) {
+    return;
+  }
+
+  return n;
 }
 
 export function getVarIntLength(n: number): number {

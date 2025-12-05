@@ -8,7 +8,7 @@ import { SeoService } from '@app/services/seo.service';
 import { StorageService } from '@app//services/storage.service';
 import { MiningService, MiningStats } from '@app/services/mining.service';
 import { StateService } from '@app/services/state.service';
-import { chartColors, poolsColor } from '@app/app.constants';
+import { originalChartColors as chartColors, poolsColor } from '@app/app.constants';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { download } from '@app/shared/graphs.utils';
 import { isMobile } from '@app/shared/common.utils';
@@ -17,6 +17,7 @@ import { isMobile } from '@app/shared/common.utils';
   selector: 'app-pool-ranking',
   templateUrl: './pool-ranking.component.html',
   styleUrls: ['./pool-ranking.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PoolRankingComponent implements OnInit {
@@ -56,7 +57,7 @@ export class PoolRankingComponent implements OnInit {
     if (this.widget) {
       this.miningWindowPreference = '1w';
     } else {
-      this.seoService.setTitle($localize`:@@mining.mining-pools:Mining Pools`);
+      this.seoService.setTitle($localize`:@@fe5317c6c60dd7e0e86f04d22f566f67cf04d404:Mining Pools`);
       this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.pool-ranking:See the top Bitcoin mining pools ranked by number of blocks mined, over your desired timeframe.`);
       this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
     }

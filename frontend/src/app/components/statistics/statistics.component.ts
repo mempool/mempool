@@ -18,7 +18,8 @@ import { IncomingTransactionsGraphComponent } from '@components/incoming-transac
 @Component({
   selector: 'app-statistics',
   templateUrl: './statistics.component.html',
-  styleUrls: ['./statistics.component.scss']
+  styleUrls: ['./statistics.component.scss'],
+  standalone: false,
 })
 export class StatisticsComponent implements OnInit {
   @ViewChild('mempoolgraph') mempoolGraph: MempoolGraphComponent;
@@ -30,7 +31,7 @@ export class StatisticsComponent implements OnInit {
   feeLevels = feeLevels;
   chartColors = chartColors;
   filterSize = 100000;
-  filterFeeIndex = 1;
+  filterFeeIndex = 0;
   showCount = false;
   maxFeeIndex: number;
   dropDownOpen = false;
@@ -146,7 +147,7 @@ export class StatisticsComponent implements OnInit {
     const labels = mempoolStats.map(stats => stats.added);
 
     let maxTier = 0;
-    for (let index = 37; index > -1; index--) {
+    for (let index = 38; index > -1; index--) {
       mempoolStats.forEach((stats) => {
         if (stats.vsizes[index] >= this.filterSize) {
           maxTier = Math.max(maxTier, index);

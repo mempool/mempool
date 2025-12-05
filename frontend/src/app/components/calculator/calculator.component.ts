@@ -9,6 +9,7 @@ import { WebsocketService } from '@app/services/websocket.service';
   selector: 'app-calculator',
   templateUrl: './calculator.component.html',
   styleUrls: ['./calculator.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CalculatorComponent implements OnInit {
@@ -86,6 +87,8 @@ export class CalculatorComponent implements OnInit {
       this.form.get('bitcoin').setValue(bitcoinRate, { emitEvent: false });
     });
 
+    // Default form with 1 BTC
+    this.form.get('bitcoin').setValue(1, { emitEvent: true });
   }
 
   transformInput(name: string): void {

@@ -25,6 +25,7 @@ import { StateService } from '@app/services/state.service';
       z-index: 99;
     }
   `],
+  standalone: false,
 })
 export class LightningStatisticsChartComponent implements OnInit, OnChanges {
   @Input() height: number = 150;
@@ -120,7 +121,7 @@ export class LightningStatisticsChartComponent implements OnInit, OnChanges {
           color: 'grey',
           fontSize: 15
         },
-        text: $localize`Indexing in progress`,
+        text: $localize`:@@af1176facd00a0580509fb2900ab0cf7f9b39ae7:Indexing in progress`,
         left: 'center',
         top: 'center'
       };

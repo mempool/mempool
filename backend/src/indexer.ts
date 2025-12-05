@@ -11,6 +11,7 @@ import auditReplicator from './replication/AuditReplication';
 import statisticsReplicator from './replication/StatisticsReplication';
 import AccelerationRepository from './repositories/AccelerationRepository';
 import BlocksAuditsRepository from './repositories/BlocksAuditsRepository';
+import BlocksRepository from './repositories/BlocksRepository';
 
 export interface CoreIndex {
   name: string;
@@ -25,6 +26,7 @@ class Indexer {
   private indexerRunning = false;
   private tasksRunning: { [key in TaskName]?: boolean; } = {};
   private tasksScheduled: { [key in TaskName]?: NodeJS.Timeout; } = {};
+  private reindexTimeout: NodeJS.Timeout | undefined;
   private coreIndexes: CoreIndex[] = [];
 
   public indexerIsRunning(): boolean {
@@ -75,7 +77,20 @@ class Indexer {
 
   public reindex(): void {
     if (Common.indexingEnabled()) {
+      if (this.reindexTimeout) {
+        clearTimeout(this.reindexTimeout);
+        this.reindexTimeout = undefined;
+      }
       this.runIndexer = true;
+    }
+  }
+
+  private scheduleNextRun(timeout: number): void {
+    if (!this.reindexTimeout) { // Only one future run should be planned, ignore if already scheduled
+      this.reindexTimeout = setTimeout(() => {
+        this.reindexTimeout = undefined;
+        this.reindex();
+      }, timeout);
     }
   }
 
@@ -119,7 +134,7 @@ class Indexer {
 
     switch (task) {
       case 'blocksPrices': {
-        if (!['testnet', 'signet'].includes(config.MEMPOOL.NETWORK) && config.FIAT_PRICE.ENABLED) {
+        if (!['testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK) && config.FIAT_PRICE.ENABLED) {
           let lastestPriceId;
           try {
             lastestPriceId = await PricesRepository.$getLatestPriceId();
@@ -137,7 +152,11 @@ class Indexer {
 
       case 'coinStatsIndex': {
         logger.debug(`Indexing coinStatsIndex now`);
-        await mining.$indexCoinStatsIndex();
+        try {
+          await mining.$indexCoinStatsIndex();
+        } catch (e) {
+          logger.debug(`failed to index coinstatsindex: ` + (e instanceof Error ? e.message : e));
+        }
       } break;
     }
 
@@ -150,6 +169,9 @@ class Indexer {
     ) {
       return;
     }
+
+    this.runIndexer = false;
+    this.indexerRunning = true;
 
     if (config.FIAT_PRICE.ENABLED) {
       try {
@@ -165,9 +187,6 @@ class Indexer {
       return;
     }
 
-    this.runIndexer = false;
-    this.indexerRunning = true;
-
     logger.debug(`Running mining indexer`);
 
     await this.checkAvailableCoreIndexes();
@@ -177,7 +196,7 @@ class Indexer {
       if (chainValid === false) {
         // Chain of block hash was invalid, so we need to reindex. Stop here and continue at the next iteration
         logger.warn(`The chain of block hash is invalid, re-indexing invalid data in 10 seconds.`, logger.tags.mining);
-        setTimeout(() => this.reindex(), 10000);
+        this.scheduleNextRun(10000);
         this.indexerRunning = false;
         return;
       }
@@ -194,12 +213,13 @@ class Indexer {
       await statisticsReplicator.$sync();
       await AccelerationRepository.$indexPastAccelerations();
       await BlocksAuditsRepository.$migrateAuditsV0toV1();
+      await BlocksRepository.$migrateBlocks();
       // do not wait for classify blocks to finish
       blocks.$classifyBlocks();
     } catch (e) {
       this.indexerRunning = false;
       logger.err(`Indexer failed, trying again in 10 seconds. Reason: ` + (e instanceof Error ? e.message : e));
-      setTimeout(() => this.reindex(), 10000);
+      this.scheduleNextRun(10000);
       this.indexerRunning = false;
       return;
     }
@@ -208,7 +228,7 @@ class Indexer {
 
     const runEvery = 1000 * 3600; // 1 hour
     logger.debug(`Indexing completed. Next run planned at ${new Date(new Date().getTime() + runEvery).toUTCString()}`);
-    setTimeout(() => this.reindex(), runEvery);
+    this.scheduleNextRun(runEvery);
   }
 }
 

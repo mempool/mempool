@@ -1,6 +1,6 @@
 # Deploying an Enterprise Production Instance
 
-These instructions are for setting up a serious production Mempool website for Bitcoin (mainnet, testnet, signet), Liquid (mainnet, testnet), and Bisq.
+These instructions are for setting up a serious production Mempool website for Bitcoin (mainnet, testnet, signet), Liquid (mainnet, testnet).
 
 Again, this setup is no joke—home users should use [one of the other installation methods](../#installation-methods). Support is only provided to project sponsors through [Mempool Enterprise®](https://mempool.space/enterprise).
 
@@ -38,7 +38,6 @@ nvm        3.62T  1.25T  2.38T        -         -     2%    34%  1.00x    ONLINE
 For maximum flexibility of configuration, I recommend separate partitions for each data folder:
 ```
 Filesystem                             Size    Used   Avail Capacity  Mounted on
-nvm/bisq                             766G    1.1G    765G     0%    /bisq
 nvm/bitcoin                          766G    648M    765G     0%    /bitcoin
 nvm/bitcoin/blocks                   1.1T    375G    765G    33%    /bitcoin/blocks
 nvm/bitcoin/chainstate               770G    4.5G    765G     1%    /bitcoin/chainstate
@@ -72,7 +71,6 @@ nvm/elements/liquidv1                777G     11G    765G     1%    /elements/li
 nvm/mempool                          789G     24G    765G     3%    /mempool
 nvm/mysql                            766G    648M    765G     0%    /mysql
 tmpfs                                1.0G    1.3M    1.0G     0%    /var/cache/nginx
-tmpfs                                3.0G    1.9G    1.1G    63%    /bisq/statsnode-data/btc_mainnet/db/json
 ```
 
 ### Build Dependencies
@@ -84,11 +82,11 @@ pkg install -y zsh sudo git screen curl wget neovim rsync nginx openssl openssh-
 
 ### Node.js + npm
 
-Build Node.js v20.17.0 and npm v9 from source using `nvm`:
+Build Node.js v22.14.0 and npm v9 from source using `nvm`:
 ```
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | zsh
 source $HOME/.zshrc
-nvm install v20.17.0 --shared-zlib
+nvm install v22.14.0 --shared-zlib
 nvm alias default node
 ```
 
@@ -122,10 +120,6 @@ DataDirectoryGroupReadable 1
 
 HiddenServiceDir /var/db/tor/mempool
 HiddenServicePort 80 127.0.0.1:81
-HiddenServiceVersion 3
-
-HiddenServiceDir /var/db/tor/bisq
-HiddenServicePort 80 127.0.0.1:82
 HiddenServiceVersion 3
 
 HiddenServiceDir /var/db/tor/liquid
@@ -228,11 +222,11 @@ Start `elementsd` and wait for it to sync the Liquid blockchain.
 
 ### Electrs
 
-Install [Electrs](https://github.com/Blockstream/electrs) from source:
+Install [Electrs](https://github.com/mempool/electrs) from source:
 ```
-git clone https://github.com/Blockstream/electrs
+git clone https://github.com/mempool/electrs
 cd electrs
-git checkout new-index
+git checkout mempool
 ```
 
 You'll need one instance per network. Build and run them one at a time:
@@ -261,15 +255,6 @@ create database mempool_liquidtestnet;
 grant all on mempool_liquidtestnet.* to 'mempool_liquidtestnet'@'localhost' identified by 'mempool_liquidtestnet';
 ```
 
-
-### Bisq
-
-Build bisq-statsnode normally and run using options like this:
-```
-./bisq-statsnode --dumpBlockchainData=true --dumpStatistics=true
-```
-
-If Bisq is happy, it should dump JSON files for Bisq Markets and BSQ data into `/bisq` for the Mempool backend to use.
 
 ### Mempool
 

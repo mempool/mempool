@@ -1,4 +1,5 @@
 export const defaultMempoolFeeColors = [
+  '007d3d',
   '557d00',
   '5d7d01',
   '637d02',
@@ -40,6 +41,7 @@ export const defaultMempoolFeeColors = [
 ];
 
 export const contrastMempoolFeeColors = [
+  '06adef',
   '0082e6',
   '0984df',
   '1285d9',
@@ -81,6 +83,7 @@ export const contrastMempoolFeeColors = [
  ];
 
 export const chartColors = [
+  "#A81524",
   "#D81B60",
   "#8E24AA",
   "#5E35B1",
@@ -120,12 +123,13 @@ export const chartColors = [
   "#263238",
   "#801313",
 ];
+export const originalChartColors = chartColors.slice(1);
 
 export const poolsColor = {
   'unknown': '#FDD835',
 };
 
-export const feeLevels = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
+export const feeLevels = [0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
   250, 300, 350, 400, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000];
 
 export interface Language {
@@ -270,7 +274,12 @@ export const specialBlocks = {
     labelEvent: 'Bitcoin\'s 15th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 0.00152587 BTC per block',
     networks: ['mainnet', 'testnet', 'testnet4'],
-  }
+  },
+  '3477600': {
+    labelEvent: 'Simplicity activation',
+    labelEventCompleted: 'Simplicity has been activated!',
+    networks: ['liquid'],
+  },
 };
 
 export const fiatCurrencies = {

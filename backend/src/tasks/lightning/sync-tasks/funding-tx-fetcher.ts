@@ -79,6 +79,10 @@ class FundingTxFetcher {
     }
 
     const parts = channelId.split('x');
+    if (parts.length < 3) {
+      logger.debug(`Channel ID ${channelId} does not seem valid, should contains at least 3 parts separated by 'x'`, logger.tags.ln);
+      return null;
+    }
     const blockHeight = parts[0];
     const txIdx = parts[1];
     const outputIdx = parts[2];
@@ -99,6 +103,10 @@ class FundingTxFetcher {
     }
 
     const txid = block.tx[txIdx];
+    if (!txid) {
+      logger.debug(`Cannot cache ${channelId} funding tx. TX index ${txIdx} does not exist in block ${block.hash ?? block.id}`, logger.tags.ln);
+      return null;
+    }
     const rawTx = await bitcoinClient.getRawTransaction(txid);
     const tx = await bitcoinClient.decodeRawTransaction(rawTx);
 

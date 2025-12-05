@@ -13,7 +13,7 @@ import { EnterpriseService } from '@app/services/enterprise.service';
 import { ApiService } from '@app/services/api.service';
 import { isDevMode } from '@angular/core';
 
-export type PaymentMethod = 'balance' | 'bitcoin' | 'cashapp' | 'applePay' | 'googlePay';
+export type PaymentMethod = 'balance' | 'bitcoin' | 'cashapp' | 'applePay' | 'googlePay' | 'cardOnFile';
 
 export type AccelerationEstimate = {
   hasAccess: boolean;
@@ -26,7 +26,7 @@ export type AccelerationEstimate = {
   mempoolBaseFee: number;
   vsizeFee: number;
   pools: number[];
-  availablePaymentMethods: Record<PaymentMethod, {min: number, max: number}>;
+  availablePaymentMethods: Record<PaymentMethod, {min: number, max: number, card?: {card_id: string, last_4: string, brand: string, name: string, billing: any}}>;
   unavailable?: boolean;
   options: { // recommended bid options
     fee: number; // recommended userBid in sats
@@ -49,22 +49,22 @@ export const MIN_BID_RATIO = 1;
 export const DEFAULT_BID_RATIO = 2;
 export const MAX_BID_RATIO = 4;
 
-type CheckoutStep = 'quote' | 'summary' | 'checkout' | 'cashapp' | 'applepay' | 'googlepay' | 'processing' | 'paid' | 'success';
+type CheckoutStep = 'quote' | 'summary' | 'checkout' | 'cashapp' | 'applepay' | 'googlepay' | 'cardonfile' | 'processing' | 'paid' | 'success';
 
 @Component({
   selector: 'app-accelerate-checkout',
   templateUrl: './accelerate-checkout.component.html',
-  styleUrls: ['./accelerate-checkout.component.scss']
+  styleUrls: ['./accelerate-checkout.component.scss'],
+  standalone: false,
 })
 export class AccelerateCheckout implements OnInit, OnDestroy {
   @Input() tx: Transaction;
   @Input() accelerating: boolean = false;
   @Input() miningStats: MiningStats;
   @Input() eta: ETA;
-  @Input() scrollEvent: boolean;
-  @Input() cashappEnabled: boolean = true;
   @Input() applePayEnabled: boolean = false;
   @Input() googlePayEnabled: boolean = true;
+  @Input() cardOnFileEnabled: boolean = true;
   @Input() advancedEnabled: boolean = false;
   @Input() forceMobile: boolean = false;
   @Input() showDetails: boolean = false;
@@ -73,6 +73,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   @Output() completed = new EventEmitter<boolean>();
   @Output() hasDetails = new EventEmitter<boolean>();
   @Output() changeMode = new EventEmitter<boolean>();
+  @Output() paymentReceipt = new EventEmitter<string>();
 
   calculating = true;
   processing = false;
@@ -87,6 +88,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   math = Math;
   isMobile: boolean = window.innerWidth <= 767.98;
   isProdDomain = false;
+  accelerationResponse: { receiptUrl: string | null } | undefined;
 
   private _step: CheckoutStep = 'summary';
   simpleMode: boolean = true;
@@ -117,6 +119,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   loadingCashapp = false;
   loadingApplePay = false;
   loadingGooglePay = false;
+  loadingCardOnFile = false;
   payments: any;
   cashAppPay: any;
   applePay: any;
@@ -138,7 +141,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     private authService: AuthServiceMempool,
     private enterpriseService: EnterpriseService,
   ) {
-    this.isProdDomain = this.stateService.env.PROD_DOMAINS.indexOf(document.location.hostname) > -1;
+    this.isProdDomain = this.stateService.isProdDomain;
 
     // Check if Apple Pay available
     // https://developer.apple.com/documentation/apple_pay_on_the_web/apple_pay_js_api/checking_for_apple_pay_availability#overview
@@ -189,20 +192,13 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.scrollEvent && this.scrollEvent) {
-      this.scrollToElement('acceleratePreviewAnchor', 'start');
-    }
     if (changes.accelerating && this.accelerating) {
-      if (this.step === 'processing' || this.step === 'paid') {
-        this.moveToStep('success', true);
-      } else { // Edge case where the transaction gets accelerated by someone else or on another session
-        this.closeModal();
-      }
+      this.moveToStep('success', true);
     }
   }
 
   moveToStep(step: CheckoutStep, force: boolean = false): void {
-    if (this.isCheckoutLocked > 0 && !force) {
+    if (this.isCheckoutLocked > 0 && !force || this.step === 'success') {
       return;
     }
     this.processing = false;
@@ -210,20 +206,20 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     if (this.timeoutTimer) {
       clearTimeout(this.timeoutTimer);
     }
-    if (!this.estimate && ['quote', 'summary', 'checkout'].includes(this.step)) {
+    if (!this.estimate && ['quote', 'summary', 'checkout', 'processing'].includes(this.step)) {
       this.fetchEstimate();
     }
     if (this._step === 'checkout') {
       this.insertSquare();
       this.enterpriseService.goal(8);
+      this.scrollToElementWithTimeout('acceleratePreviewAnchor', 'start', 100);
     }
     if (this._step === 'checkout' && this.canPayWithBitcoin) {
       this.btcpayInvoiceFailed = false;
-      this.loadingBtcpayInvoice = true;
-      this.invoice = null;
+      this.invoice = undefined;
       this.requestBTCPayInvoice();
       this.scrollToElementWithTimeout('acceleratePreviewAnchor', 'start', 100);
-    } else if (this._step === 'cashapp' && this.cashappEnabled) {
+    } else if (this._step === 'cashapp') {
       this.loadingCashapp = true;
       this.setupSquare();
       this.scrollToElementWithTimeout('confirm-title', 'center', 100);
@@ -233,6 +229,10 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.scrollToElementWithTimeout('confirm-title', 'center', 100);
     } else if (this._step === 'googlepay' && this.googlePayEnabled) {
       this.loadingGooglePay = true;
+      this.setupSquare();
+      this.scrollToElementWithTimeout('confirm-title', 'center', 100);
+    } else if (this._step === 'cardonfile' && this.cardOnFileEnabled) {
+      this.loadingCardOnFile = true;
       this.setupSquare();
       this.scrollToElementWithTimeout('confirm-title', 'center', 100);
     } else if (this._step === 'paid') {
@@ -329,7 +329,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           }
 
           if (this.step === 'checkout' && this.canPayWithBitcoin && !this.loadingBtcpayInvoice) {
-            this.loadingBtcpayInvoice = true;
             this.requestBTCPayInvoice();
           }
 
@@ -455,6 +454,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             await this.requestApplePayPayment();
           } else if (this._step === 'googlepay') {
             await this.requestGooglePayPayment();
+          } else if (this._step === 'cardonfile') {
+            this.loadingCardOnFile = false;
           }
         },
         error: () => {
@@ -475,19 +476,14 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     if (this.processing) {
       return;
     }
-    if (this.conversionsSubscription) {
-      this.conversionsSubscription.unsubscribe();
-    }
 
     this.processing = true;
-    this.conversionsSubscription = this.stateService.conversions$.subscribe(
-      async (conversions) => {
-        this.conversions = conversions;
+
         if (this.applePay) {
           this.applePay.destroy();
         }
 
-        const costUSD = this.cost / 100_000_000 * conversions.USD;
+        const costUSD = this.cost / 100_000_000 * this.conversions.USD;
         const paymentRequest = this.payments.paymentRequest({
           countryCode: 'US',
           currencyCode: 'USD',
@@ -521,7 +517,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               if (tokenResult?.status === 'OK') {
                 const card = tokenResult.details?.card;
                 if (!card || !card.brand || !card.expMonth || !card.expYear || !card.last4) {
-                  console.error(`Cannot retreive payment card details`);
+                  console.error(`Cannot retrieve payment card details`);
                   this.accelerateError = 'apple_pay_no_card_details';
                   this.processing = false;
                   return;
@@ -537,13 +533,15 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                   `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
                   costUSD
                 ).subscribe({
-                  next: () => {
+                  next: (response) => {
+                    this.accelerationResponse = response;
                     this.processing = false;
                     this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
                     this.audioService.playSound('ascend-chime-cartoon');
                     if (this.applePay) {
                       this.applePay.destroy();
                     }
+                    this.paymentReceipt.emit(this.accelerationResponse?.receiptUrl);
                     setTimeout(() => {
                       this.isTokenizing--;
                       this.isCheckoutLocked--;
@@ -560,7 +558,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                         // Reset everything by reloading the page :D, can be improved
                         const urlParams = new URLSearchParams(window.location.search);
                         window.location.assign(window.location.toString().replace(`?cash_request_id=${urlParams.get('cash_request_id')}`, ``));
-                      }, 3000);
+                      }, 10000);
                     }
                   }
                 });
@@ -584,8 +582,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           this.processing = false;
           console.error(e);
         }
-      }
-    );
   }
 
   /**
@@ -595,19 +591,14 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     if (this.processing) {
       return;
     }
-    if (this.conversionsSubscription) {
-      this.conversionsSubscription.unsubscribe();
-    }
     
     this.processing = true;
-    this.conversionsSubscription = this.stateService.conversions$.subscribe(
-      async (conversions) => {
-        this.conversions = conversions;
+
         if (this.googlePay) {
           this.googlePay.destroy();
         }
 
-        const costUSD = this.cost / 100_000_000 * conversions.USD;
+        const costUSD = this.cost / 100_000_000 * this.conversions.USD;
         const paymentRequest = this.payments.paymentRequest({
           countryCode: 'US',
           currencyCode: 'USD',
@@ -639,7 +630,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             if (tokenResult?.status === 'OK') {
               const card = tokenResult.details?.card;
               if (!card || !card.brand || !card.expMonth || !card.expYear || !card.last4) {
-                console.error(`Cannot retreive payment card details`);
+                console.error(`Cannot retrieve payment card details`);
                 this.accelerateError = 'apple_pay_no_card_details';
                 this.processing = false;
                 return;
@@ -664,13 +655,15 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                 costUSD,
                 verificationToken.userChallenged
               ).subscribe({
-                next: () => {
+                next: (response) => {
+                  this.accelerationResponse = response;
                   this.processing = false;
                   this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
                   this.audioService.playSound('ascend-chime-cartoon');
                   if (this.googlePay) {
                     this.googlePay.destroy();
                   }
+                  this.paymentReceipt.emit(this.accelerationResponse?.receiptUrl);
                   setTimeout(() => {
                     this.isTokenizing--;
                     this.isCheckoutLocked--;
@@ -687,7 +680,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                       // Reset everything by reloading the page :D, can be improved
                       const urlParams = new URLSearchParams(window.location.search);
                       window.location.assign(window.location.toString().replace(`?cash_request_id=${urlParams.get('cash_request_id')}`, ``));
-                    }, 3000);
+                    }, 10000);
                   }
                 }
               });
@@ -707,8 +700,103 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             this.isCheckoutLocked--;
           }
         });
-      }
-    );
+  }
+
+  /**
+   * Card On File
+   */
+  async requestCardOnFilePayment(): Promise<void> {
+    if (this.processing) {
+      return;
+    }
+    
+    this.processing = true;
+
+        const costUSD = this.cost / 100_000_000 * this.conversions.USD;
+        if (this.isCheckoutLocked > 0) {
+          return;
+        }
+        const cardOnFile = this.estimate?.availablePaymentMethods?.cardOnFile;
+        if (!cardOnFile?.card) {
+          this.accelerateError = 'card_on_file_not_found';
+          return;
+        }
+        this.loadingCardOnFile = false;
+        
+        try {
+          this.isCheckoutLocked += 2;
+          this.isTokenizing += 2;
+          
+          const nameParts = cardOnFile.card.name.split(' ');
+          const assumedGivenName = nameParts[0];
+          const assumedFamilyName = nameParts.length > 1 ? nameParts[1] : undefined;
+          const verificationDetails = {
+            card: {
+              billing: {
+                givenName: assumedGivenName,
+                familyName: assumedFamilyName,
+                addressLines: [cardOnFile.card.billing.addressLine1 ?? ''],
+                city: cardOnFile.card.billing.locality ?? '',
+                state: cardOnFile.card.billing.administrativeDistrictLevel1 ?? '',
+                countyCode: cardOnFile.card.billing.country,
+              }
+            }
+          };
+          const verificationToken = await this.$verifyBuyer(this.payments, cardOnFile.card.card_id, verificationDetails, costUSD.toFixed(2));
+          if (!verificationToken || !verificationToken.token) {
+            console.error(`SCA verification failed`);
+            this.accelerateError = 'SCA Verification Failed. Payment Declined.';
+            this.processing = false;
+            return;
+          }
+
+          this.servicesApiService.accelerateWithCardOnFile$(
+            this.tx.txid,
+            cardOnFile.card.card_id,
+            verificationToken.token,
+            `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
+            costUSD,
+            verificationToken.userChallenged
+          ).subscribe({
+            next: (response) => {
+              this.accelerationResponse = response;
+              this.processing = false;
+              this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
+              this.audioService.playSound('ascend-chime-cartoon');
+              this.paymentReceipt.emit(this.accelerationResponse?.receiptUrl);
+              setTimeout(() => {
+                this.isCheckoutLocked--;
+                this.isTokenizing--;
+                this.moveToStep('paid', true);
+              }, 1000);
+            },
+            error: (response) => {
+              this.processing = false;
+              this.accelerateError = response.error;
+              this.isCheckoutLocked--;
+              this.isTokenizing--;
+              if (!(response.status === 403 && response.error === 'not_available')) {
+                setTimeout(() => {
+                  // Reset everything by reloading the page :D, can be improved
+                  const urlParams = new URLSearchParams(window.location.search);
+                  window.location.assign(window.location.toString().replace(`?cash_request_id=${urlParams.get('cash_request_id')}`, ``));
+                }, 3000);
+              }
+            }
+          });
+
+        } catch (e) {
+          console.log(e);
+          this.isCheckoutLocked--;
+          this.isTokenizing--;
+          this.processing = false;
+          this.accelerateError = e.message;
+
+        } finally {
+          // always unlock the checkout once we're finished
+          this.isCheckoutLocked--;
+          this.isTokenizing--;
+        }
   }
 
   /**
@@ -718,20 +806,15 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     if (this.processing) {
       return;
     }
-    if (this.conversionsSubscription) {
-      this.conversionsSubscription.unsubscribe();
-    }
 
     this.processing = true;
-    this.conversionsSubscription = this.stateService.conversions$.subscribe(
-      async (conversions) => {
-        this.conversions = conversions;
+
         if (this.cashAppPay) {
           this.cashAppPay.destroy();
         }
 
         const redirectHostname = document.location.hostname === 'localhost' ? `http://localhost:4200`: `https://${document.location.hostname}`;
-        const costUSD = this.step === 'processing' ? 69.69 : (this.cost / 100_000_000 * conversions.USD); // When we're redirected to this component, the payment data is already linked to the payment token, so does not matter what amonut we put in there, therefore it's 69.69
+        const costUSD = this.cost / 100_000_000 * this.conversions.USD;
         const paymentRequest = this.payments.paymentRequest({
           countryCode: 'US',
           currencyCode: 'USD',
@@ -763,13 +846,15 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               tokenResult.details.cashAppPay.referenceId,
               costUSD
             ).subscribe({
-              next: () => {
+              next: (response) => {
+                this.accelerationResponse = response;
                 this.processing = false;
                 this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
                 this.audioService.playSound('ascend-chime-cartoon');
                 if (this.cashAppPay) {
                   this.cashAppPay.destroy();
                 }
+                this.paymentReceipt.emit(this.accelerationResponse?.receiptUrl);
                 setTimeout(() => {
                   this.moveToStep('paid', true);
                   if (window.history.replaceState) {
@@ -786,14 +871,12 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                     // Reset everything by reloading the page :D, can be improved
                     const urlParams = new URLSearchParams(window.location.search);
                     window.location.assign(window.location.toString().replace(`?cash_request_id=${urlParams.get('cash_request_id')}`, ``));
-                  }, 3000);
+                  }, 10000);
                 }
               }
             });
           }
         });
-      }
-    );
   }
 
   /**
@@ -826,16 +909,19 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
    * BTCPay
    */
   async requestBTCPayInvoice(): Promise<void> {
+    this.loadingBtcpayInvoice = true;
     this.servicesApiService.generateBTCPayAcceleratorInvoice$(this.tx.txid, this.userBid).pipe(
       switchMap(response => {
-        return this.servicesApiService.retreiveInvoice$(response.btcpayInvoiceId);
+        return this.servicesApiService.retrieveInvoice$(response.btcpayInvoiceId);
       }),
       catchError(error => {
         console.log(error);
+        this.loadingBtcpayInvoice = false;
         this.btcpayInvoiceFailed = true;
         return of(null);
       })
     ).subscribe((invoice) => {
+        this.loadingBtcpayInvoice = false;
         this.invoice = invoice;
         this.cd.markForCheck();
     });
@@ -872,9 +958,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   get couldPayWithCashapp(): boolean {
-    if (!this.cashappEnabled) {
-      return false;
-    }
     return !!this.estimate?.availablePaymentMethods?.cashapp;
   }
 
@@ -909,7 +992,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   get canPayWithCashapp(): boolean {
-    if (!this.cashappEnabled || !this.conversions || (!this.isProdDomain && !isDevMode())) {
+    if (!this.conversions || (!this.isProdDomain && !isDevMode())) {
       return false;
     }
 
@@ -946,6 +1029,22 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     }
 
     const paymentMethod = this.estimate?.availablePaymentMethods?.googlePay;
+    if (paymentMethod) {
+      const costUSD = (this.cost / 100_000_000 * this.conversions.USD);
+      if (costUSD >= paymentMethod.min && costUSD <= paymentMethod.max) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  get canPayWithCardOnFile(): boolean {
+    if (!this.cardOnFileEnabled || !this.conversions || (!this.isProdDomain && !isDevMode())) {
+      return false;
+    }
+
+    const paymentMethod = this.estimate?.availablePaymentMethods?.cardOnFile;
     if (paymentMethod) {
       const costUSD = (this.cost / 100_000_000 * this.conversions.USD);
       if (costUSD >= paymentMethod.min && costUSD <= paymentMethod.max) {
