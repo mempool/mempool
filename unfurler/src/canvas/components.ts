@@ -5,6 +5,7 @@ import { IEsploraApi } from "../api/esplora-api.interface";
 import { fetchJSON } from "../api/api";
 import { getImage } from "./images";
 import { renderBlockViz } from "./block-viz/block-viz";
+import { renderTxBowtie } from "./tx-bowtie/tx-bowtie";
 import { themes } from "./themes";
 import { CanvasRenderingContext2D, Image } from 'canvas';
 import { formatNumber, formatWeightUnit, middleEllipsis, renderQrToCtx } from "./utils/utils";
@@ -65,7 +66,14 @@ export const dataRequirements: Record<string, (id: string) => DataRequirement<an
       return await fetchJSON(config.API.ESPLORA + `/block/${hash}`) as IEsploraApi.Block;
     }
   }),
-  
+
+  tx: (txid: string): DataRequirement<IEsploraApi.Transaction> => ({
+    key: `tx_${txid}`,
+    fetcher: async () => {
+      return await fetchJSON(config.API.ESPLORA + `/tx/${txid}`) as IEsploraApi.Transaction;
+    }
+  }),
+
   extendedBlock: (id: string): DataRequirement<BlockExtended> => ({
     key: `extended_block_${id}`,
     fetcher: async () => {
@@ -272,6 +280,185 @@ export const components: Record<string, (...args: any[]) => Component> = {
     }
   }),
 
+  txContent: (txid: string, position: Position): Component => {
+    const bounds = { ...position, w: position.w ?? 1200, h: position.h ?? 520 }
+    const boxPadding = 10;
+    const boxHeight = 366;
+    const boxMargin = { left: 48, right: 48, bottom: 24 };
+    const boxX = bounds.x + boxMargin.left;
+    const boxY = bounds.y + bounds.h - boxMargin.bottom - boxHeight;
+    const boxW = bounds.w - boxMargin.left - boxMargin.right;
+
+    return {
+      type: 'tx',
+      data: [
+        dataRequirements.tx(txid),
+      ],
+      children: [
+        components.txViz(txid, {
+          x: boxX + boxPadding,
+          y: boxY + boxPadding,
+          w: boxW - (boxPadding * 2),
+          h: boxHeight - (boxPadding * 2)
+        }),
+      ],
+      render: async (ctx: CanvasRenderingContext2D, data: any): Promise<void> => {
+        const tx = data[`tx_${txid}`];
+        const totalValue = tx.vout.reduce((acc: number, v: any) => (v.value || 0) + acc, 0);
+        const isCoinbase = tx.vin.some((v: any) => v.is_coinbase === true);
+
+        ctx.fillStyle = '#181b2d';
+        ctx.fillRect(boxX, boxY, boxW, boxHeight);
+
+        ctx.font = 'bold 50px Roboto';
+        ctx.fillStyle = themes.default.fg;
+        ctx.textAlign = 'left';
+        const txidWidth = bounds.w - 96;
+        ctx.fillText(middleEllipsis(ctx, txid, txidWidth), bounds.x + 48, bounds.y + 50);
+
+        const secondRowY = boxY - 20;
+        ctx.font = 'bold 32px Roboto';
+        ctx.fillStyle = themes.default.fg;
+        ctx.textAlign = 'left';
+        const amountNum = formatNumber(totalValue / 1e8, '1.8-8');
+        ctx.fillText(amountNum, bounds.x + 48, secondRowY);
+        const amountWidth = ctx.measureText(amountNum).width;
+        ctx.font = '24px Roboto';
+        ctx.fillStyle = themes.default.symbol;
+        ctx.fillText('BTC', bounds.x + 48 + amountWidth + 6, secondRowY + 2);
+
+        if (tx.status?.block_time) {
+          ctx.font = 'bold 32px Roboto';
+          ctx.fillStyle = themes.default.fg;
+          ctx.textAlign = 'center';
+          const datetime = new Date(tx.status.block_time * 1000).toLocaleString('sv-SE').replace(',', '').slice(0, 16);
+          ctx.fillText(datetime, bounds.x + bounds.w / 2, secondRowY);
+        }
+
+        ctx.font = 'bold 32px Roboto';
+        ctx.fillStyle = themes.default.fg;
+        ctx.textAlign = 'right';
+        const feeNum = formatNumber(tx.fee, '1.0-0');
+        const feeNumWidth = ctx.measureText(feeNum).width;
+        ctx.font = '24px Roboto';
+        ctx.fillStyle = themes.default.symbol;
+        const unitWidth = ctx.measureText('sats').width;
+        ctx.fillText('Fee ', bounds.x + bounds.w - 48 - feeNumWidth - 6 - unitWidth - 6, secondRowY + 2);
+        ctx.font = 'bold 32px Roboto';
+        ctx.fillStyle = themes.default.fg;
+        ctx.fillText(feeNum, bounds.x + bounds.w - 48 - unitWidth - 6, secondRowY);
+        ctx.font = '24px Roboto';
+        ctx.fillStyle = themes.default.symbol;
+        ctx.fillText('sats', bounds.x + bounds.w - 48, secondRowY + 2);
+
+        const statsY = boxY + 42;
+        const statsX = boxX + boxW / 2;
+
+        const formatBytes = (bytes: number): { num: string, unit: string } => {
+          const units = ['B', 'kB', 'MB', 'GB'];
+          const base = 1000;
+          let value = bytes;
+          let unitIndex = 0;
+          while (value >= base && unitIndex < units.length - 1) {
+            value /= base;
+            unitIndex++;
+          }
+          return { num: formatNumber(value, unitIndex === 0 ? '1.0-0' : '1.2-2'), unit: units[unitIndex] };
+        };
+
+        const size = formatBytes(tx.size);
+        const weight = formatWeightUnit(tx.weight, 2);
+
+        ctx.font = 'bold 32px Roboto';
+        const sizeNumWidth = ctx.measureText(size.num).width;
+        ctx.font = '24px Roboto';
+        const sizeUnitWidth = ctx.measureText(` ${size.unit}`).width;
+
+        ctx.font = 'bold 32px Roboto';
+        const weightNumWidth = ctx.measureText(weight.num).width;
+        ctx.font = '24px Roboto';
+        const weightUnitWidth = ctx.measureText(` ${weight.unit}`).width;
+
+        const spacing = ctx.measureText('     ').width;
+        const totalWidth = sizeNumWidth + sizeUnitWidth + spacing + weightNumWidth + weightUnitWidth;
+
+        let x = statsX - totalWidth / 2;
+
+        ctx.font = 'bold 32px Roboto';
+        ctx.fillStyle = themes.default.fg;
+        ctx.textAlign = 'left';
+        ctx.fillText(size.num, x, statsY);
+        x += sizeNumWidth;
+
+        ctx.font = '24px Roboto';
+        ctx.fillStyle = themes.default.symbol;
+        ctx.fillText(` ${size.unit}`, x, statsY + 2);
+        x += sizeUnitWidth + spacing;
+
+        ctx.font = 'bold 32px Roboto';
+        ctx.fillStyle = themes.default.fg;
+        ctx.fillText(weight.num, x, statsY);
+        x += weightNumWidth;
+
+        ctx.font = '24px Roboto';
+        ctx.fillStyle = themes.default.symbol;
+        ctx.fillText(` ${weight.unit}`, x, statsY + 2);
+
+        if (!isCoinbase) {
+          const feeRate = tx.fee / (tx.weight / 4);
+          const feeRateNum = formatNumber(feeRate, '1.2-2');
+
+          ctx.font = 'bold 32px Roboto';
+          const feeRateNumWidth = ctx.measureText(feeRateNum).width;
+          ctx.font = '24px Roboto';
+          const feeRateUnitWidth = ctx.measureText(' sat/vB').width;
+          const feeRateTotalWidth = feeRateNumWidth + feeRateUnitWidth;
+
+          let feeX = statsX - feeRateTotalWidth / 2;
+
+          ctx.font = 'bold 32px Roboto';
+          ctx.fillStyle = themes.default.fg;
+          ctx.textAlign = 'left';
+          ctx.fillText(feeRateNum, feeX, statsY + 40);
+          feeX += feeRateNumWidth;
+
+          // Draw fee rate unit
+          ctx.font = '24px Roboto';
+          ctx.fillStyle = themes.default.symbol;
+          ctx.fillText(' sat/vB', feeX, statsY + 40 + 2);
+        }
+      }
+    }
+  },
+
+  txViz: (txid: string, position: Position): Component => {
+    return {
+      type: 'tx-viz',
+      data: [
+        dataRequirements.tx(txid),
+      ],
+      render: async (ctx: CanvasRenderingContext2D, data: any): Promise<void> => {
+        const bounds = { ...position, w: position.w ?? 1200, h: position.h ?? 431 } as Rect;
+        const tx = data[`tx_${txid}`];
+
+        const boxPadding = 10;
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(
+          bounds.x - boxPadding,
+          bounds.y - boxPadding,
+          bounds.w + (boxPadding * 2),
+          bounds.h + (boxPadding * 2)
+        );
+        ctx.clip();
+
+        renderTxBowtie(ctx, tx, bounds, 'default');
+
+        ctx.restore();
+      }
+    }
+  },
+
   table: (position: Position, propsCallback?: (data: any, params: any, parentProps: any) => { tableRows: TableRow[] }): Component => ({
     type: 'table',
     data: [],
@@ -387,6 +574,15 @@ export const views: Record<string, (...args: any[]) => Component> = {
       components.background({ x: 0, y: 0 }),
       components.header('Block', { x: 0, y: 0 }),
       components.blockContent(hash, { x: 0, y: 80, w: 1200, h: 520 })
+    ]
+  }),
+  tx: (txid: string): Component => ({
+    type: 'tx',
+    data: [],
+    children: [
+      components.background({ x: 0, y: 0 }),
+      components.header('Transaction', { x: 0, y: 0 }),
+      components.txContent(txid, { x: 0, y: 80, w: 1200, h: 520 })
     ]
   }),
   address: (address: string): Component => ({
