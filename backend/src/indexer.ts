@@ -170,6 +170,9 @@ class Indexer {
       return;
     }
 
+    this.runIndexer = false;
+    this.indexerRunning = true;
+
     if (config.FIAT_PRICE.ENABLED) {
       try {
         await priceUpdater.$run();
@@ -183,9 +186,6 @@ class Indexer {
     if (blockchainInfo.blocks !== blockchainInfo.headers) {
       return;
     }
-
-    this.runIndexer = false;
-    this.indexerRunning = true;
 
     logger.debug(`Running mining indexer`);
 
