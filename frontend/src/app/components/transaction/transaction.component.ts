@@ -16,7 +16,7 @@ import {
   take
 } from 'rxjs/operators';
 import { Transaction } from '@interfaces/electrs.interface';
-import { of, merge, Subscription, Observable, Subject, from, throwError, combineLatest, BehaviorSubject } from 'rxjs';
+import { of, merge, Subscription, Observable, Subject, from, throwError, combineLatest, BehaviorSubject, timer } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 import { CacheService } from '@app/services/cache.service';
 import { WebsocketService } from '@app/services/websocket.service';
@@ -61,6 +61,7 @@ export interface TxAuditStatus {
   selector: 'app-transaction',
   templateUrl: './transaction.component.html',
   styleUrls: ['./transaction.component.scss'],
+  standalone: false,
 })
 export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   network = '';
@@ -343,38 +344,47 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.setIsAccelerated();
       }),
       switchMap((blockHeight: number) => {
-        return this.servicesApiService.getAllAccelerationHistory$({ blockHeight }, null, this.txId).pipe(
-          switchMap((accelerationHistory: Acceleration[]) => {
-            if (this.tx.acceleration && !accelerationHistory.length) { // If the just mined transaction was accelerated, but services backend did not return any acceleration data, retry
-              return throwError('retry');
-            }
-            return of(accelerationHistory);
-          }),
-          retry({ count: 3, delay: 2000 }),
-          catchError(() => {
-            return of([]);
-          })
-        );
-      }),
-    ).subscribe((accelerationHistory) => {
-      for (const acceleration of accelerationHistory) {
-        if (acceleration.txid === this.txId) {
-          if ((acceleration.status === 'completed' || acceleration.status === 'completed_provisional') && acceleration.pools.includes(acceleration.minedByPoolUniqueId)) {
-            const boostCost = acceleration.boostCost || acceleration.bidBoost;
-            acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
-            acceleration.boost = boostCost;
-            this.tx.acceleratedAt = acceleration.added;
-            this.accelerationInfo = acceleration;  
-          }
-          if (acceleration.status === 'failed' || acceleration.status === 'failed_provisional') {
-            this.accelerationCanceled = true;
-            this.tx.acceleratedAt = acceleration.added;
-            this.accelerationInfo = acceleration;
-          }
-          this.waitingForAccelerationInfo = false;
-          this.setIsAccelerated();
+        if (this.stateService.network === '' && this.stateService.env.ACCELERATOR && blockHeight >= 819500 ) {
+          return this.servicesApiService.getAccelerationDataForTxid$(this.txId).pipe(
+            switchMap((accelerationData: Acceleration) => {
+              if (this.tx.acceleration && !accelerationData) { // If the just mined transaction was accelerated, but services backend did not return any acceleration data, retry
+                return throwError(() => 'retry');
+              }
+              return of(accelerationData);
+            }),
+            retry({
+              count: 3,
+              delay: (error) => {
+                if (error === 'retry') {
+                  return timer(2000);
+                }
+                return throwError(() => error);
+              }
+            }),
+            catchError(() => {
+              return of(null);
+            })
+          );
+        } else {
+          return of(null);
         }
+      }),
+      filter((acceleration: Acceleration) => !!acceleration),
+    ).subscribe((acceleration: Acceleration) => {
+      if (acceleration.txid === this.txId && (acceleration.status === 'completed' || acceleration.status === 'completed_provisional') && acceleration.pools.includes(acceleration.minedByPoolUniqueId)) {
+        const boostCost = acceleration.boostCost || acceleration.bidBoost;
+        acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
+        acceleration.boost = boostCost;
+        this.tx.acceleratedAt = acceleration.added;
+        this.accelerationInfo = acceleration;
       }
+      if (acceleration.txid === this.txId && (acceleration.status === 'failed' || acceleration.status === 'failed_provisional')) {
+        this.accelerationCanceled = true;
+        this.tx.acceleratedAt = acceleration.added;
+        this.accelerationInfo = acceleration;
+      }
+      this.waitingForAccelerationInfo = false;
+      this.setIsAccelerated();
     });
 
     this.miningSubscription = this.fetchMiningInfo$.pipe(

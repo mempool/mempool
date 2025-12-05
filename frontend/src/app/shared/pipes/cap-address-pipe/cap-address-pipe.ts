@@ -1,6 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({ name: 'capAddress' })
+@Pipe({
+  name: 'capAddress',
+  standalone: false,
+})
 export class CapAddressPipe implements PipeTransform {
   transform(str: string, cap: number, leftover: number) {
     if (!str) { return; }

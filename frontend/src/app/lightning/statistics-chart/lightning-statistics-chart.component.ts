@@ -25,6 +25,7 @@ import { StateService } from '@app/services/state.service';
       z-index: 99;
     }
   `],
+  standalone: false,
 })
 export class LightningStatisticsChartComponent implements OnInit, OnChanges {
   @Input() height: number = 150;

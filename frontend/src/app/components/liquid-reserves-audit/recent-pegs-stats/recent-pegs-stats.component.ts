@@ -6,6 +6,7 @@ import { PegsVolume } from '@interfaces/node-api.interface';
   selector: 'app-recent-pegs-stats',
   templateUrl: './recent-pegs-stats.component.html',
   styleUrls: ['./recent-pegs-stats.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecentPegsStatsComponent implements OnInit {

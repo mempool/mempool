@@ -102,7 +102,7 @@ class WebsocketHandler {
       'backendInfo': backendInfo.getBackendInfo(),
       'loadingIndicators': loadingIndicators.getLoadingIndicators(),
       'da': da?.previousTime ? da : undefined,
-      'fees': feeApi.getRecommendedFee(),
+      'fees': feeApi.getPreciseRecommendedFee(),
     });
   }
 
@@ -639,7 +639,7 @@ class WebsocketHandler {
     }
     memPool.removeFromSpendMap(deletedTransactions);
     memPool.addToSpendMap(newTransactions);
-    const recommendedFees = feeApi.getRecommendedFee();
+    const recommendedFees = feeApi.getPreciseRecommendedFee();
 
     const latestTransactions = memPool.getLatestTransactions();
 
@@ -1137,7 +1137,7 @@ class WebsocketHandler {
     const mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
 
     const da = difficultyAdjustment.getDifficultyAdjustment();
-    const fees = feeApi.getRecommendedFee();
+    const fees = feeApi.getPreciseRecommendedFee();
     const mempoolInfo = memPool.getMempoolInfo();
 
     // pre-compute address transactions

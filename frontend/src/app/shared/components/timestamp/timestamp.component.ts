@@ -5,6 +5,7 @@ import { StateService } from '@app/services/state.service';
   selector: 'app-timestamp',
   templateUrl: './timestamp.component.html',
   styleUrls: ['./timestamp.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimestampComponent implements OnChanges {

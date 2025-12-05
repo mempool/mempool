@@ -9,6 +9,7 @@ import { NavigationService } from '@app/services/navigation.service';
   selector: 'app-liquid-master-page',
   templateUrl: './liquid-master-page.component.html',
   styleUrls: ['./liquid-master-page.component.scss'],
+  standalone: false,
 })
 export class LiquidMasterPageComponent implements OnInit, OnDestroy {
   env: Env;

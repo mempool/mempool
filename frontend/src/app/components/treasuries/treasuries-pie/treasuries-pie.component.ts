@@ -14,6 +14,7 @@ import { Treasury } from '@interfaces/node-api.interface';
   selector: 'app-treasuries-pie',
   templateUrl: './treasuries-pie.component.html',
   styleUrls: ['./treasuries-pie.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TreasuriesPieComponent implements OnChanges {

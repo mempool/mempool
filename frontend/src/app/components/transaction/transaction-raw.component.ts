@@ -21,6 +21,7 @@ import { CpfpInfo } from '@interfaces/node-api.interface';
   selector: 'app-transaction-raw',
   templateUrl: './transaction-raw.component.html',
   styleUrls: ['./transaction-raw.component.scss'],
+  standalone: false,
 })
 export class TransactionRawComponent implements OnInit, OnDestroy {
 

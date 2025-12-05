@@ -10,6 +10,7 @@ import { PreloadService } from '@app/services/preload.service';
   selector: 'app-block-transactions',
   templateUrl: './block-transactions.component.html',
   styleUrl: './block-transactions.component.scss',
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlockTransactionsComponent implements OnInit {

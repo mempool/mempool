@@ -4,7 +4,8 @@ import { Subscription } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 
 @Pipe({
-  name: 'fiatShortener'
+  name: 'fiatShortener',
+  standalone: false,
 })
 export class FiatShortenerPipe implements PipeTransform {
   fiatSubscription: Subscription;

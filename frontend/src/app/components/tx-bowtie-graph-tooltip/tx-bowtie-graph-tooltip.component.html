@@ -56,7 +56,7 @@
             </ng-container>
           </span>
           <span *ngSwitchCase="'output'">
-            <ng-container *ngIf="line.blockHeight && line?.spent">
+            <ng-container *ngIf="(stateService.backend$ | async) === 'esplora' && line.blockHeight && line?.spent">
               <ng-container *ngIf="line?.status?.block_height; else noBlockHeight">
                 <ng-container *ngTemplateOutlet="nBlocksLater; context:{n: line?.status?.block_height - line.blockHeight, connector: false}"></ng-container>
               </ng-container>

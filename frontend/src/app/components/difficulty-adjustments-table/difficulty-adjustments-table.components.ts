@@ -18,6 +18,7 @@ import { StateService } from '@app/services/state.service';
       z-index: 99;
     }
   `],
+  standalone: false,
 })
 export class DifficultyAdjustmentsTable implements OnInit {
   hashrateObservable$: Observable<any>;

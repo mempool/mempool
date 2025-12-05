@@ -8,7 +8,8 @@ import { LightningApiService } from '@app/lightning/lightning-api.service';
 @Component({
   selector: 'app-group',
   templateUrl: './group.component.html',
-  styleUrls: ['./group.component.scss']
+  styleUrls: ['./group.component.scss'],
+  standalone: false,
 })
 export class GroupComponent implements OnInit {
   nodes$: Observable<any>;
