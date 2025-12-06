@@ -7731,6 +7731,88 @@ export const restApiDocsData = [
     }
   },
   {
+    type: "endpoint",
+    category: "fees",
+    httpRequestMethod: "GET",
+    fragment: "get-recommended-fees-precise",
+    title: "GET Recommended Fees (Precise)",
+    description: {
+      default: "Returns our currently-suggested feerates with up to 3 decimal places, including sub-sat feerates down to 0.1 s/vb."
+    },
+    urlString: "/v1/fees/precise",
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/fees/precise`,
+          commonJS: ``,
+          esModule: ``,
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "fastestFee": 2.023,
+  "halfHourFee": 1.094,
+  "hourFee": 0.502,
+  "economyFee": 0.2,
+  "minimumFee": 0.1
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "fastestFee": 1.5,
+  "halfHourFee": 1.25,
+  "hourFee": 1,
+  "economyFee": 1,
+  "minimumFee": 1
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "fastestFee": 1.5,
+  "halfHourFee": 1.25,
+  "hourFee": 1,
+  "economyFee": 1,
+  "minimumFee": 1
+}`
+        },
+        codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "fastestFee": 0.1,
+  "halfHourFee": 0.1,
+  "hourFee": 0.1,
+  "economyFee": 0.1,
+  "minimumFee": 0.1
+}`
+        },
+        codeSampleLiquidTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "fastestFee": 0.1,
+  "halfHourFee": 0.1,
+  "hourFee": 0.1,
+  "economyFee": 0.1,
+  "minimumFee": 0.1
+}`
+        },
+      }
+    }
+  },
+  {
     type: "category",
     category: "mempool",
     fragment: "mempool",
