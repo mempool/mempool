@@ -1,4 +1,4 @@
-import fetch from 'node-fetch-commonjs';
+import fetch from 'node-fetch';
 import config from './config';
 import http from 'node:http';
 import https from 'node:https';
@@ -13,7 +13,7 @@ const agentSelector = function(_parsedURL: any) {
     }
 }
 
-interface Match {
+export interface Match {
   render: boolean;
   title: string;
   description: string;
@@ -22,6 +22,7 @@ interface Match {
   networkMode: string;
   params?: string[];
   sip?: SipTemplate;
+  canvasView?: string;
 }
 
 interface SipTemplate {
@@ -76,14 +77,16 @@ const routes = {
           };
         }
       }
-    }
+    },
+    canvasView: 'block',
   },
   address: {
     render: true,
     params: 1,
     getTitle(path) {
       return `Address: ${path[0]}`;
-    }
+    },
+    canvasView: 'address',
   },
   wallet: {
     render: true,
@@ -158,6 +161,7 @@ const routes = {
         }
       }
     },
+    canvasView: 'tx',
     routes: {
       push: {
         title: "Push Transaction",
@@ -441,6 +445,7 @@ export function matchRoute(network: string, path: string, matchFor: string = 're
   if (route[matchFor] && parts.length >= route.params) {
     match.render = route.render;
     match.sip = route.sip;
+    match.canvasView = route.canvasView;
     match.params = parts;
   }
   // only use set a static image for exact matches

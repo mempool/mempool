@@ -9,21 +9,27 @@
   "main": "index.ts",
   "scripts": {
     "tsc": "./node_modules/typescript/bin/tsc",
-    "build": "npm run tsc && rsync -av ../frontend/dist/mempool/browser/resources dist/",
+    "postbuild": "rsync -av ../frontend/dist/mempool/browser/resources dist/",
+    "build": "tsc -p tsconfig-norender.json && npm run postbuild",
+    "build:puppeteer": "tsc -p tsconfig-puppeteer.json && npm run postbuild",
+    "build:canvas": "tsc -p tsconfig-canvas.json && npm run postbuild",
+    "build:allrender": "npm run tsc && npm run postbuild",
     "start": "node --max-old-space-size=2048 dist/index.js",
     "unfurler": "node --max-old-space-size=4096 dist/index.js",
     "lint": "./node_modules/.bin/eslint . --ext .ts",
     "lint:fix": "./node_modules/.bin/eslint . --ext .ts --fix",
-    "prettier": "./node_modules/.bin/prettier --write \"src/**/*.{js,ts}\""
+    "prettier": "./node_modules/.bin/prettier --write \"src/**/*.{js,ts}\"",
+    "install:puppeteer": "rm -f package-lock.json && npm install puppeteer@15.3.2 puppeteer-cluster@0.23.0 --no-save",
+    "install:canvas": "rm -f package-lock.json && npm install canvas@3.1.2 --no-save",
+    "install:allrender": "rm -f package-lock.json && npm install canvas@3.1.2 puppeteer@15.3.2 puppeteer-cluster@0.23.0 --no-save"
   },
   "dependencies": {
     "@types/node": "^16.11.41",
-    "express": "^4.19.2",
     "ejs": "^3.1.10",
+    "express": "^4.19.2",
     "node-fetch-commonjs": "^3.3.1",
-    "puppeteer": "^15.3.2",
-    "puppeteer-cluster": "^0.23.0",
-    "typescript": "~4.7.4"
+    "typescript": "~4.7.4",
+    "qrcode": "1.5.1"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.30.5",
