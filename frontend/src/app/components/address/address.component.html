@@ -73,7 +73,7 @@
       </div>
     </div>
 
-    <ng-container *ngIf="hasTapTree"> 
+    <ng-container *ngIf="addressTypeInfo?.tapscript || taprootPsbtExpanded"> 
       <br>
       <div class="title-tx">
         <h2 class="text-left" i18n="address.taproot-tree">Taproot Tree</h2>
@@ -81,7 +81,13 @@
       <div class="box">
         <div class="row">
           <div class="col-md">
-            <app-taproot-address-scripts [address]="addressTypeInfo"></app-taproot-address-scripts> 
+            <div *ngIf="taprootPsbtExpanded" class="mb-3">
+              <form *ngIf="psbtForm" [formGroup]="psbtForm" novalidate>
+                <textarea id="psbtInput" class="form-control font-monospace" rows="2" formControlName="psbt" placeholder="Paste hex or base64 PSBT involving this address to add unpublished leaves to the tree" autocomplete="off" spellcheck="false" (input)="submitPsbt()"></textarea>
+                <div class="text-danger mt-1 small" *ngIf="psbtError">{{ psbtError }}</div>
+              </form>
+            </div>
+            <app-taproot-address-scripts *ngIf="addressTypeInfo?.tapscript" [address]="addressTypeInfo.address" [scripts]="addressTypeInfo.scripts" (tapTreeIncomplete)="setTapTreeIncomplete($event)"></app-taproot-address-scripts> 
           </div>
         </div>
       </div>
@@ -302,7 +308,10 @@
     <span placement="bottom" class="badge badge-primary">
       <app-address-type [address]="addressTypeInfo"></app-address-type>
     </span>
-    <app-address-labels *ngIf="!hasTapTree" [channel]="exampleChannel" [address]="addressTypeInfo" class="ml-1"></app-address-labels>
+    <button *ngIf="showTaprootPsbtButton()" type="button" class="btn btn-sm taproot-psbt-btn" (click)="taprootPsbtExpanded = !taprootPsbtExpanded" i18n-ngbTooltip="address.taproot-psbt-add-unpublished-spend-paths" ngbTooltip="Add unpublished spending paths">
+      <fa-icon [icon]="['fas', 'code-fork']" [fixedWidth]="true"></fa-icon>
+    </button>
+    <app-address-labels *ngIf="!addressTypeInfo?.tapscript" [channel]="exampleChannel" [address]="addressTypeInfo" class="ml-1"></app-address-labels>
   </td>
 </ng-template>
 

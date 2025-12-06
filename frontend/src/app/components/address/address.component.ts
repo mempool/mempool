@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { switchMap, filter, catchError, map, tap } from 'rxjs/operators';
@@ -12,6 +13,7 @@ import { SeoService } from '@app/services/seo.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { AddressInformation } from '@interfaces/node-api.interface';
 import { AddressTypeInfo } from '@app/shared/address-utils';
+import { extractTapLeavesFromPsbt, fillTapTree } from '@app/shared/transaction.utils';
 
 class AddressStats implements ChainStats {
   address: string;
@@ -116,7 +118,10 @@ export class AddressComponent implements OnInit, OnDestroy {
   addressLoadingStatus$: Observable<number>;
   addressInfo: null | AddressInformation = null;
   addressTypeInfo: null | AddressTypeInfo;
-  hasTapTree: boolean;
+  tapTreeIncomplete: boolean = false;
+  taprootPsbtExpanded: boolean = false;
+  psbtForm: UntypedFormGroup;
+  psbtError?: string;
 
   fullyLoaded = false;
   chainStats: AddressStats;
@@ -139,11 +144,13 @@ export class AddressComponent implements OnInit, OnDestroy {
     private audioService: AudioService,
     private apiService: ApiService,
     private seoService: SeoService,
+    private formBuilder: UntypedFormBuilder,
   ) { }
 
   ngOnInit(): void {
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.websocketService.want(['blocks']);
+    this.psbtForm = this.formBuilder.group({ psbt: [''] });
 
     this.onResize();
 
@@ -165,7 +172,10 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.utxos = null;
           this.addressInfo = null;
           this.exampleChannel = null;
-          this.hasTapTree = false;
+          this.tapTreeIncomplete = false;
+          this.taprootPsbtExpanded = false;
+          this.psbtForm?.reset({ psbt: '' });
+          this.psbtError = undefined;
           document.body.scrollTo(0, 0);
           this.addressString = params.get('id') || '';
           if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}$/.test(this.addressString)) {
@@ -296,7 +306,9 @@ export class AddressComponent implements OnInit, OnDestroy {
           });
         }
         this.addressTypeInfo.processInputs(addressVin, vinIds);
-        this.hasTapTree = this.addressTypeInfo.tapscript && this.addressTypeInfo.scripts.values().next().value.taprootInfo.scriptPath.merkleBranches.length > 0;
+        if (this.addressTypeInfo.type === 'v1_p2tr' && !this.addressTypeInfo.tapscript) {
+          this.tapTreeIncomplete = true;
+        }
         // hack to trigger change detection
         this.addressTypeInfo = this.addressTypeInfo.clone();
 
@@ -498,6 +510,45 @@ export class AddressComponent implements OnInit, OnDestroy {
       !this.transactions[0].status?.confirmed
       || this.transactions[0].status.block_time > (this.now - (60 * 60 * 24 * 30))
     );
+  }
+
+  submitPsbt(): void {
+    if (!this.psbtForm) {
+      return;
+    }
+    const control = this.psbtForm.get('psbt');
+    const sanitized = (control?.value || '').trim();
+    if (control && control.value !== sanitized) {
+      control.setValue(sanitized, { emitEvent: false });
+    }
+    if (!sanitized) {
+      this.psbtError = undefined;
+      return;
+    }
+    try {
+      fillTapTree(this.addressTypeInfo, extractTapLeavesFromPsbt(sanitized));
+      this.addressTypeInfo = this.addressTypeInfo.clone();
+      this.psbtForm.reset();
+      this.psbtError = undefined;
+    } catch (error) {
+      if (error instanceof Error) {
+        this.psbtError = error.message;
+      } else {
+        this.psbtError = 'An error occurred while processing the PSBT';
+      }
+    }
+  }
+
+  setTapTreeIncomplete(incomplete: boolean): void {
+    if (!incomplete) {
+      this.taprootPsbtExpanded = false;
+    }
+    this.tapTreeIncomplete = incomplete;
+  }
+
+  showTaprootPsbtButton(): boolean {
+    const isBitcoin = this.stateService.network !== 'liquid' && this.stateService.network !== 'liquidtestnet';
+    return this.addressTypeInfo.type === 'v1_p2tr' && isBitcoin && this.tapTreeIncomplete;
   }
 
   @HostListener('window:resize', ['$event'])
