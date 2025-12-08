@@ -312,19 +312,16 @@
 }
 
 .duplicate-tx-alert {
-  &.alert-info {
-    color: var(--fg);
-    background-color: var(--box-bg);
-    border-color: var(--info);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-left: 3px solid var(--info);
+  
+  .icon-container {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    
-    .icon-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--info);
   }
 }
