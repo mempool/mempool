@@ -10,7 +10,7 @@
       <div class="icon-container">
         <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
       </div>
-      <span i18n="transaction.duplicate.notice|Duplicate transaction notice">This transaction ID appears twice in the blockchain. In total, two pairs of duplicate transactions were created before this bug was fixed in <a href="https://github.com/bitcoin/bips/blob/master/bip-0030.mediawiki" target="_blank" rel="noopener">BIP-30</a>. (<a href="https://blog.bitmex.com/bitcoins-duplicate-transactions/" target="_blank" rel="noopener">Read more</a>)</span>
+      <span i18n="transaction.duplicate.notice|Duplicate transaction notice">This transaction ID appears twice in the blockchain. Two pairs of duplicate transactions were created before this bug was fixed in <a href="https://github.com/bitcoin/bips/blob/master/bip-0030.mediawiki" target="_blank" rel="noopener">BIP-30</a>.<br><a href="https://blog.bitmex.com/bitcoins-duplicate-transactions/" target="_blank" rel="noopener">Read more</a></span>
     </div>
 
     <ng-container *ngIf="!rbfTransaction || rbfTransaction?.size || tx">
