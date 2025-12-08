@@ -1,0 +1,84 @@
+# Workflow: Automatically set project status to "Review Needed" when a reviewer is requested
+name: Set Project Status on Review Request
+
+# Trigger: Runs whenever a reviewer is requested on a pull request
+on:
+  pull_request:
+    types: [review_requested]
+
+jobs:
+  update-project-status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update Project Status to Review Needed
+        uses: actions/github-script@v7
+        with:
+          # Use the PAT stored in repository secrets (has project write access)
+          github-token: ${{ secrets.PROJECT_TOKEN }}
+          script: |
+            // GraphQL query to find the PR's project items
+            // This fetches all projects the PR is linked to
+            const query = `
+              query($owner: String!, $repo: String!, $pr: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  pullRequest(number: $pr) {
+                    projectItems(first: 10) {
+                      nodes {
+                        id
+                        project {
+                          number
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            // Execute the query with current repo/PR context
+            const result = await github.graphql(query, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pr: context.payload.pull_request.number
+            });
+
+            // Find the project item that belongs to project #8
+            const projectItems = result.repository.pullRequest.projectItems.nodes;
+            const projectItem = projectItems.find(item => item.project.number === 8);
+
+            // Exit early if PR isn't in project #8
+            if (!projectItem) {
+              console.log('PR is not in project #8, skipping...');
+              return;
+            }
+
+            // GraphQL mutation to update the Status field
+            const mutation = `
+              mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+                updateProjectV2ItemFieldValue(
+                  input: {
+                    projectId: $projectId
+                    itemId: $itemId
+                    fieldId: $fieldId
+                    value: { singleSelectOptionId: $optionId }
+                  }
+                ) {
+                  projectV2Item {
+                    id
+                  }
+                }
+              }
+            `;
+
+            // Execute the mutation using IDs stored in repository variables
+            // PROJECT_ID: The project's unique identifier
+            // STATUS_FIELD_ID: The "Status" field's unique identifier
+            // REVIEW_NEEDED_OPTION_ID: The "Review Needed" option's unique identifier
+            await github.graphql(mutation, {
+              projectId: "${{ vars.PROJECT_ID }}",
+              itemId: projectItem.id,
+              fieldId: "${{ vars.STATUS_FIELD_ID }}",
+              optionId: "${{ vars.REVIEW_NEEDED_OPTION_ID }}"
+            });
+
+            console.log('Successfully updated project status to Review Needed');
