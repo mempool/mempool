@@ -8,6 +8,7 @@ services:
       MYSQL_USER: "mempool_test"
       MYSQL_PASSWORD: "mempool_test"
       MYSQL_ROOT_PASSWORD: "admin"
+      MARIADB_AUTO_UPGRADE: "1"
     ports:
       - "33306:3306"
     healthcheck:
