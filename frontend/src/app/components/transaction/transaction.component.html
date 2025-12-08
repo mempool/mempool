@@ -6,9 +6,11 @@
       <app-truncate [text]="rbfTransaction.txid" [lastChars]="12" [link]="['/tx/' | relativeUrl, rbfTransaction.txid]"></app-truncate>
     </div>
 
-    <div *ngIf="isDuplicateTransaction" class="alert alert-info" role="alert">
-      <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
-      <span i18n="transaction.duplicate.notice|Duplicate transaction notice">This transaction ID appears twice in the blockchain. There are two pairs of duplicate transactions in Bitcoin's history, caused by a bug in early Bitcoin versions that was later fixed by <a href="https://github.com/bitcoin/bips/blob/master/bip-0030.mediawiki" target="_blank" rel="noopener">BIP-30</a>. Read more in the <a href="https://blog.bitmex.com/bitcoins-duplicate-transactions/" target="_blank" rel="noopener">BitMEX Research article</a>.</span>
+    <div *ngIf="isDuplicateTransaction" class="alert alert-info duplicate-tx-alert" role="alert">
+      <div class="icon-container">
+        <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+      </div>
+      <span i18n="transaction.duplicate.notice|Duplicate transaction notice">This transaction ID appears twice in the blockchain. In total, two pairs of duplicate transactions were created before this bug was fixed in <a href="https://github.com/bitcoin/bips/blob/master/bip-0030.mediawiki" target="_blank" rel="noopener">BIP-30</a>. (<a href="https://blog.bitmex.com/bitcoins-duplicate-transactions/" target="_blank" rel="noopener">Read more</a>)</span>
     </div>
 
     <ng-container *ngIf="!rbfTransaction || rbfTransaction?.size || tx">

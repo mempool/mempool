@@ -310,3 +310,21 @@
   opacity: 0.5;
   pointer-events: none;
 }
+
+.duplicate-tx-alert {
+  &.alert-info {
+    color: var(--fg);
+    background-color: var(--box-bg);
+    border-color: var(--info);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    
+    .icon-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+  }
+}
