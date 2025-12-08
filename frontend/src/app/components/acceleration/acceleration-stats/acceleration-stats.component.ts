@@ -17,7 +17,7 @@ export type AccelerationStats = {
   standalone: false,
 })
 export class AccelerationStatsComponent implements OnInit, OnChanges {
-  @Input() timespan: '24h' | '3d' | '1w' | '1m' | 'all' = '1w';
+  @Input() timespan: '24h' | '1m' | '1y' | 'all' = '1y';
   accelerationStats$: Observable<AccelerationStats>;
   blocksInPeriod: number = 7 * 144;
 
@@ -39,15 +39,12 @@ export class AccelerationStatsComponent implements OnInit, OnChanges {
       case '24h':
         this.blocksInPeriod = 144;
         break;
-      case '3d':
-        this.blocksInPeriod = 3 * 144;
-        break;
-      case '1w':
-        this.blocksInPeriod = 7 * 144;
-        break;
       case '1m':
-        this.blocksInPeriod = 30 * 144;
+        this.blocksInPeriod = 30.5 * 144;
         break;
+      case '1y':
+        this.blocksInPeriod = 30.5 * 144 * 365;
+        break;  
       case 'all':
         this.blocksInPeriod = Infinity;
         break;
