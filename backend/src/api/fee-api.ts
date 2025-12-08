@@ -34,7 +34,17 @@ class FeeApi {
     const mPool = mempool.getMempoolInfo();
 
     // minimum non-zero minrelaytxfee / incrementalrelayfee is 1 sat/kvB = 0.001 sat/vB
-    return this.calculateRecommendedFee(pBlocks, mPool, 0.001);
+    const recommendations = this.calculateRecommendedFee(pBlocks, mPool, 0.001);
+    // enforce floor & offset for highest priority recommendations while <100% hashrate accepts sub-sat fees
+    recommendations.fastestFee = Math.max(recommendations.fastestFee + this.priorityFactor, this.minFastestFee);
+    recommendations.halfHourFee = Math.max(recommendations.halfHourFee + (this.priorityFactor / 2), this.minHalfHourFee);
+    return {
+      'fastestFee': Math.round(recommendations.fastestFee * 1000) / 1000,
+      'halfHourFee': Math.round(recommendations.halfHourFee * 1000) / 1000,
+      'hourFee': Math.round(recommendations.hourFee * 1000) / 1000,
+      'economyFee': Math.round(recommendations.economyFee * 1000) / 1000,
+      'minimumFee': Math.round(recommendations.minimumFee * 1000) / 1000,
+    };
   }
 
   public calculateRecommendedFee(pBlocks: MempoolBlock[], mPool: IBitcoinApi.MempoolInfo, minIncrement: number = this.minimumIncrement): RecommendedFees {
@@ -70,8 +80,8 @@ class FeeApi {
     hourFee = Math.max(hourFee, economyFee);
 
     return {
-      'fastestFee': Math.max(this.roundToNearest(fastestFee + this.priorityFactor, minIncrement), this.minFastestFee),
-      'halfHourFee': Math.max(this.roundToNearest(halfHourFee + (this.priorityFactor / 2), minIncrement), this.minHalfHourFee),
+      'fastestFee': this.roundToNearest(fastestFee, minIncrement),
+      'halfHourFee': this.roundToNearest(halfHourFee, minIncrement),
       'hourFee': this.roundToNearest(hourFee, minIncrement),
       'economyFee': this.roundToNearest(economyFee, minIncrement),
       'minimumFee': this.roundToNearest(minimumFee, minIncrement),
