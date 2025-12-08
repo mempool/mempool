@@ -6,6 +6,11 @@
       <app-truncate [text]="rbfTransaction.txid" [lastChars]="12" [link]="['/tx/' | relativeUrl, rbfTransaction.txid]"></app-truncate>
     </div>
 
+    <div *ngIf="isDuplicateTransaction" class="alert alert-info" role="alert">
+      <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+      <span i18n="transaction.duplicate.notice|Duplicate transaction notice">This is one of two duplicate transactions in Bitcoin's history that share the same transaction ID. These duplicates existed due to a bug in early Bitcoin versions, which was later fixed by <a href="https://github.com/bitcoin/bips/blob/master/bip-0030.mediawiki" target="_blank" rel="noopener">BIP-30</a>. Read more in the <a href="https://blog.bitmex.com/bitcoins-duplicate-transactions/" target="_blank" rel="noopener">BitMEX Research article</a>.</span>
+    </div>
+
     <ng-container *ngIf="!rbfTransaction || rbfTransaction?.size || tx">
       <h1 i18n="shared.transaction">Transaction</h1>
 
