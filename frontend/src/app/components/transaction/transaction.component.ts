@@ -1159,7 +1159,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   get isDuplicateTransaction(): boolean {
-    return this.txId && this.DUPLICATE_TXIDS.includes(this.txId.toLowerCase());
+    return !!this.txId && this.DUPLICATE_TXIDS.includes(this.txId.toLowerCase());
   }
 
   ngOnDestroy() {
