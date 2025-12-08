@@ -173,31 +173,37 @@ class Indexer {
     this.runIndexer = false;
     this.indexerRunning = true;
 
-    if (config.FIAT_PRICE.ENABLED) {
-      try {
-        await priceUpdater.$run();
-      } catch (e) {
-        logger.err(`Running priceUpdater failed. Reason: ` + (e instanceof Error ? e.message : e));
-      }
-    }
-
-    // Do not attempt to index anything unless Bitcoin Core is fully synced
-    const blockchainInfo = await bitcoinClient.getBlockchainInfo();
-    if (blockchainInfo.blocks !== blockchainInfo.headers) {
-      return;
-    }
-
-    logger.debug(`Running mining indexer`);
-
-    await this.checkAvailableCoreIndexes();
+    const retryDelay = 10000;
+    const runEvery = 1000 * 3600; // 1 hour
+    let nextRunDelay = runEvery;
+    let runSuccessful = false;
 
     try {
+      if (config.FIAT_PRICE.ENABLED) {
+        try {
+          await priceUpdater.$run();
+        } catch (e) {
+          logger.err(`Running priceUpdater failed. Reason: ` + (e instanceof Error ? e.message : e));
+        }
+      }
+
+      // Do not attempt to index anything unless Bitcoin Core is fully synced
+      const blockchainInfo = await bitcoinClient.getBlockchainInfo();
+      if (blockchainInfo.blocks !== blockchainInfo.headers) {
+        logger.debug(`Bitcoin Core not fully synced, retrying index run in 10 seconds.`);
+        nextRunDelay = retryDelay;
+        return;
+      }
+
+      logger.debug(`Running mining indexer`);
+
+      await this.checkAvailableCoreIndexes();
+
       const chainValid = await blocks.$generateBlockDatabase();
       if (chainValid === false) {
         // Chain of block hash was invalid, so we need to reindex. Stop here and continue at the next iteration
         logger.warn(`The chain of block hash is invalid, re-indexing invalid data in 10 seconds.`, logger.tags.mining);
-        this.scheduleNextRun(10000);
-        this.indexerRunning = false;
+        nextRunDelay = retryDelay;
         return;
       }
 
@@ -216,19 +222,20 @@ class Indexer {
       await BlocksRepository.$migrateBlocks();
       // do not wait for classify blocks to finish
       blocks.$classifyBlocks();
+      runSuccessful = true;
     } catch (e) {
-      this.indexerRunning = false;
+      nextRunDelay = retryDelay;
       logger.err(`Indexer failed, trying again in 10 seconds. Reason: ` + (e instanceof Error ? e.message : e));
-      this.scheduleNextRun(10000);
+    } finally {
       this.indexerRunning = false;
-      return;
+      const nextRunAt = new Date(Date.now() + nextRunDelay).toUTCString();
+      if (runSuccessful) {
+        logger.debug(`Indexing completed. Next run planned at ${nextRunAt}`);
+      } else {
+        logger.debug(`Indexing did not complete, next run planned at ${nextRunAt}`);
+      }
+      this.scheduleNextRun(nextRunDelay);
     }
-
-    this.indexerRunning = false;
-
-    const runEvery = 1000 * 3600; // 1 hour
-    logger.debug(`Indexing completed. Next run planned at ${new Date(new Date().getTime() + runEvery).toUTCString()}`);
-    this.scheduleNextRun(runEvery);
   }
 }
 
