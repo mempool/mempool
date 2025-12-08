@@ -75,10 +75,10 @@ jobs:
             // STATUS_FIELD_ID: The "Status" field's unique identifier
             // REVIEW_NEEDED_OPTION_ID: The "Review Needed" option's unique identifier
             await github.graphql(mutation, {
-              projectId: "${{ vars.PROJECT_ID }}",
+              projectId: "${{ secrets.PROJECT_ID }}",
               itemId: projectItem.id,
-              fieldId: "${{ vars.STATUS_FIELD_ID }}",
-              optionId: "${{ vars.REVIEW_NEEDED_OPTION_ID }}"
+              fieldId: "${{ secrets.STATUS_FIELD_ID }}",
+              optionId: "${{ secrets.REVIEW_NEEDED_OPTION_ID }}"
             });
 
             console.log('Successfully updated project status to Review Needed');
