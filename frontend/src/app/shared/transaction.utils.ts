@@ -1258,16 +1258,16 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: PsbtKeyValueMa
       const inputRecords = inputs[i];
 
       const groups = {
-        nonWitnessUtxo: inputRecords.get(0x00)?.[0] || null,
-        witnessUtxo: inputRecords.get(0x01)?.[0] || null,
-        finalScriptSig: inputRecords.get(0x07)?.[0] || null,
-        finalScriptWitness: inputRecords.get(0x08)?.[0] || null,
-        redeemScript: inputRecords.get(0x04)?.[0] || null,
-        witnessScript: inputRecords.get(0x05)?.[0] || null,
-        partialSigs: inputRecords.get(0x02) || [],
-        tapLeafScripts: inputRecords.get(0x15) || [],
-        tapScriptSigs: inputRecords.get(0x14) || [],
-        tapInternalKey: inputRecords.get(0x17)?.[0] || null,
+        nonWitnessUtxo: inputRecords.get(PSBT_IN.NON_WITNESS_UTXO)?.[0] || null,
+        witnessUtxo: inputRecords.get(PSBT_IN.WITNESS_UTXO)?.[0] || null,
+        finalScriptSig: inputRecords.get(PSBT_IN.FINAL_SCRIPTSIG)?.[0] || null,
+        finalScriptWitness: inputRecords.get(PSBT_IN.FINAL_SCRIPTWITNESS)?.[0] || null,
+        redeemScript: inputRecords.get(PSBT_IN.REDEEM_SCRIPT)?.[0] || null,
+        witnessScript: inputRecords.get(PSBT_IN.WITNESS_SCRIPT)?.[0] || null,
+        partialSigs: inputRecords.get(PSBT_IN.PARTIAL_SIG) || [],
+        tapLeafScripts: inputRecords.get(PSBT_IN.TAP_LEAF_SCRIPT) || [],
+        tapScriptSigs: inputRecords.get(PSBT_IN.TAP_SCRIPT_SIG) || [],
+        tapInternalKey: inputRecords.get(PSBT_IN.TAP_INTERNAL_KEY)?.[0] || null,
       };
 
       // Fill prevout
@@ -1446,7 +1446,27 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: PsbtKeyValueMa
   return { tx, hex: uint8ArrayToHexString(rawHex) };
 }
 
-type PsbtKeyValueMap = Map<number, { keyData: Uint8Array; value: Uint8Array; }[]>;
+export type PsbtKeyValue = { keyData: Uint8Array; value: Uint8Array; };
+type PsbtKeyValueMap = Map<number, PsbtKeyValue[]>;
+
+const PSBT_IN = {
+  NON_WITNESS_UTXO: 0x00,
+  WITNESS_UTXO: 0x01,
+  PARTIAL_SIG: 0x02,
+  REDEEM_SCRIPT: 0x04,
+  WITNESS_SCRIPT: 0x05,
+  BIP32_DERIVATION: 0x06,
+  FINAL_SCRIPTSIG: 0x07,
+  FINAL_SCRIPTWITNESS: 0x08,
+  TAP_SCRIPT_SIG: 0x14,
+  TAP_LEAF_SCRIPT: 0x15,
+  TAP_INTERNAL_KEY: 0x17,
+};
+
+const PSBT_OUT = {
+  TAP_INTERNAL_KEY: 0x05,
+  TAP_TREE: 0x06,
+};
 
 /**
  * Decodes a PSBT buffer into the unsigned raw transaction and input/output maps
@@ -1554,8 +1574,7 @@ function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: PsbtKe
     txOffset += scriptLength;
     txOffset += 4; // sequence
   }
-  const [outputCount, outputOffset] = readVarInt(rawTx, txOffset);
-  txOffset = outputOffset;
+  const [outputCount, _] = readVarInt(rawTx, txOffset);
   numOutputs = outputCount;
 
   // INPUT MAPS
@@ -1565,7 +1584,6 @@ function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: PsbtKe
 
   // OUTPUT MAPS
   const outputMaps = readMaps(numOutputs, offset);
-  offset = outputMaps.offset;
   const outputs = outputMaps.map;
 
   return { rawTx, inputs, outputs };
@@ -1864,6 +1882,7 @@ function bech32Encode(prefix: string, words: number[], encoding: Bech32Encoding 
   return result;
 }
 
+/* Decodes a *valid* bech32 or bech32m encoded address into its prefix and payload */
 function bech32Decode(address: string): { prefix: string, words: number[], encoding: Bech32Encoding } {
   const normalized = address.toLowerCase();
   const separator = normalized.lastIndexOf('1');
@@ -2332,7 +2351,7 @@ export function parseTaproot(witness: string[]): ParsedTaproot | null {
   return parsed;
 }
 
-function convertTextToBuffer(input: string): Uint8Array {
+export function convertTextToBuffer(input: string): Uint8Array {
   if (!input.length) {
     throw new Error('Empty input');
   }
@@ -2352,7 +2371,7 @@ export function computeLeafHash(scriptHex: string, leafVersion: number): string 
   const versionHex = leafVersion.toString(16).padStart(2, '0');
   const scriptSizeHex = uint8ArrayToHexString(compactSize(scriptHex.length / 2));
   return taggedHash('TapLeaf', versionHex + scriptSizeHex + scriptHex);
-};
+}
 
 function computeMerkleRoot(scriptHex: string, leafVersion: number, merkleBranches: string[]): string {
   const leafHash = computeLeafHash(scriptHex, leafVersion);
@@ -2378,18 +2397,29 @@ function deriveTaprootAddress(internalKey: string, merkleRoot: string, network: 
   return { address: scriptPubKeyToAddress(`5120${outputKey}`, network).address, parity };
 }
 
-interface TapLeaf {
+export interface TapLeaf {
   leafVersion: number;
   scriptHex: string;
   merkleBranches: string[];
+  internalKey?: string;
 }
 
-interface ExpandedTapLeaf extends TapLeaf {
-  internalKey: string;
+/** Decode a PSBT_IN_TAP_LEAF_SCRIPT into a tapleaf */
+export function parseTapLeafRecord(record: PsbtKeyValue): TapLeaf {
+  const controlBlock = record.keyData;
+  const valueLength = record.value.length;
+  const leafVersion = record.value[valueLength - 1];
+  const scriptHex = uint8ArrayToHexString(record.value.slice(0, valueLength - 1));
+  const internalKey = uint8ArrayToHexString(controlBlock.slice(1, 33));
+  const merkleBranches: string[] = [];
+  for (let offset = 33; offset < controlBlock.length; offset += 32) {
+    merkleBranches.push(uint8ArrayToHexString(controlBlock.slice(offset, offset + 32)));
+  }
+  return { leafVersion, scriptHex, merkleBranches, internalKey };
 }
 
 /** Decode a PSBT_OUT_TAP_TREE into its leaves */
-function parseTapTreeRecord(value: Uint8Array): TapLeaf[] {
+export function parseTapTreeRecord(value: Uint8Array): TapLeaf[] {
   const leaves: TapLeaf[] = [];
   const stack: { depth: number; hash: string; leaves: TapLeaf[] }[] = [];
   let offset = 0;
@@ -2428,55 +2458,85 @@ function parseTapTreeRecord(value: Uint8Array): TapLeaf[] {
   return leaves;
 }
 
-/* Extract tapleaves from a PSBT */
-export function extractTapLeavesFromPsbt(input: string): ExpandedTapLeaf[] {
-  const psbt = decodePsbt(convertTextToBuffer(input));
+/**
+ * Extract taproot leaves from a PSBT, tapleaves, and/or taptree
+ * At least one of the inputs (`psbt`, `tapleaves`, or `tapTree`) must be provided
+ *
+ * @param psbt Raw PSBT
+ * @param tapleaves Array of PSBT_IN_TAP_LEAF_SCRIPT's keyData/value fields
+ * @param tapTree PSBT_OUT_TAP_TREE value field
+ * @param internalKey Optional x-only internal key
+ * @throws {Error} If no tapleaves are found or extraction fails
+ */
+export function extractTapLeaves(psbt: Uint8Array, tapleaves: PsbtKeyValue[], tapTree: Uint8Array, internalKey: Uint8Array): TapLeaf[] {
+  const leaves: TapLeaf[] = [];
+  const seenLeaves = new Set<string>();
+
+  let providedInternalKey: string | undefined;
+  const getProvidedInternalKey = (): string | undefined => {
+    if (providedInternalKey !== undefined) {
+      return providedInternalKey;
+    }
+    providedInternalKey = internalKey ? uint8ArrayToHexString(internalKey) : undefined;
+    return providedInternalKey;
+  };
+
+  const addLeaf = (leaf: TapLeaf): void => {
+    const key = `${leaf.leafVersion}${leaf.merkleBranches.join('')}${leaf.scriptHex}${leaf.internalKey || ''}`;
+    if (seenLeaves.has(key)) {
+      return;
+    }
+    seenLeaves.add(key);
+    leaves.push(leaf);
+  };
 
   try {
-    const leaves: ExpandedTapLeaf[] = [];
-    const seenLeaves = new Set<string>();
-    const addLeaf = (leaf: ExpandedTapLeaf): void => {
-      const key = `${leaf.leafVersion}${leaf.internalKey}${leaf.merkleBranches.join('')}${leaf.scriptHex}`;
-      if (seenLeaves.has(key)) {
-        return;
-      }
-      seenLeaves.add(key);
-      leaves.push(leaf);
-    };
-
-    for (const input of psbt.inputs) {
-      for (const record of input.get(0x15) || []) {  // PSBT_IN_TAP_LEAF_SCRIPT (0x15)
-        const leafVersion = record.value[record.value.length - 1];
-        const scriptHex = uint8ArrayToHexString(record.value.slice(0, -1));
-        const controlBlock = record.keyData;
-        const internalKey = uint8ArrayToHexString(controlBlock.slice(1, 33));
-        const merkleBranches: string[] = [];
-        for (let offset = 33; offset < controlBlock.length; offset += 32) {
-          merkleBranches.push(uint8ArrayToHexString(controlBlock.slice(offset, offset + 32)));
+    if (psbt) {
+      const decoded = decodePsbt(psbt);
+      for (const input of decoded.inputs) {
+        for (const record of input.get(PSBT_IN.TAP_LEAF_SCRIPT) || []) {
+          addLeaf(parseTapLeafRecord(record));
         }
-        addLeaf({ leafVersion, scriptHex, merkleBranches, internalKey });
       }
-    }
 
-    for (const output of psbt.outputs) {
-      const tapInternalKeyRecord = output.get(0x05)?.[0]; // PSBT_OUT_TAP_INTERNAL_KEY (0x05)
-      const tapTreeRecord = output.get(0x06)?.[0]; // PSBT_OUT_TAP_TREE (0x06)
-      if (tapInternalKeyRecord && tapTreeRecord) {
-        const internalKey = uint8ArrayToHexString(tapInternalKeyRecord.value);
-        for (const leaf of parseTapTreeRecord(tapTreeRecord.value)) {
-          addLeaf({ ...leaf, internalKey });
+      for (const output of decoded.outputs) {
+        const tapInternalKeyRecord = output.get(PSBT_OUT.TAP_INTERNAL_KEY)?.[0];
+        const tapTreeRecord = output.get(PSBT_OUT.TAP_TREE)?.[0];
+        if (tapTreeRecord) {
+          // If PSBT_OUT_TAP_INTERNAL_KEY is omitted, fallback to provided ikey
+          const internalKey = tapInternalKeyRecord ? uint8ArrayToHexString(tapInternalKeyRecord.value) : getProvidedInternalKey();
+          for (const leaf of parseTapTreeRecord(tapTreeRecord.value)) {
+            addLeaf({ ...leaf, internalKey });
+          }
         }
       }
     }
 
-    return leaves;
+    for (const tapleaf of tapleaves || []) {
+      addLeaf(parseTapLeafRecord(tapleaf));
+    }
+
+    if (tapTree) {
+      for (const leaf of parseTapTreeRecord(tapTree)) {
+        addLeaf({ ...leaf, internalKey: getProvidedInternalKey() });
+      }
+    }
   } catch (error) {
-    throw new Error('Failed to extract taproot leaves from PSBT');
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error('Failed to extract taproot leaves');
   }
+
+  if (!leaves.length) {
+    throw new Error('No tapleaves found');
+  }
+
+  return leaves;
 }
 
 /** Populate an address' taptree using a PSBT involving the taproot address */
-export function fillTapTree(addressTypeInfo: AddressTypeInfo, leaves: ExpandedTapLeaf[]) {
+export function fillTapTree(addressTypeInfo: AddressTypeInfo, leaves: TapLeaf[]) {
   if (addressTypeInfo?.type !== 'v1_p2tr') {
     return;
   }
@@ -2491,29 +2551,33 @@ export function fillTapTree(addressTypeInfo: AddressTypeInfo, leaves: ExpandedTa
     };
   }
 
-  const leafMatchesAddress = (leaf: ExpandedTapLeaf): boolean => {
-    if (commitment) {
-      if (leaf.internalKey !== commitment.internalKey) {
-        return false;
-      }
-      const merkleRoot = computeMerkleRoot(leaf.scriptHex, leaf.leafVersion, leaf.merkleBranches);
-      if (merkleRoot !== commitment.merkleRoot) {
-        return false;
-      }
-      return true;
-    } else {
-      const merkleRoot = computeMerkleRoot(leaf.scriptHex, leaf.leafVersion, leaf.merkleBranches);
-      const { address, parity } = deriveTaprootAddress(leaf.internalKey, merkleRoot, addressTypeInfo.network);
-      if (addressTypeInfo.address !== address) {
-        return false;
-      }
-      commitment = {
-        internalKey: leaf.internalKey,
-        merkleRoot,
-        parity,
-      };
-      return true;
+  // Adds the internal key to the leaf if needed and fills the commitment when the leaf matches the address
+  const leafMatchesAddress = (leaf: TapLeaf): leaf is TapLeaf & { internalKey: string } => {
+    leaf.internalKey = leaf.internalKey ?? commitment?.internalKey;
+    if (!leaf.internalKey) {
+      throw new Error('Internal key is needed to validate leaves');
     }
+
+    if (commitment && leaf.internalKey !== commitment.internalKey) {
+      return false;
+    }
+
+    const resolvedMerkleRoot = computeMerkleRoot(leaf.scriptHex, leaf.leafVersion, leaf.merkleBranches);
+    if (commitment) {
+      return resolvedMerkleRoot === commitment.merkleRoot;
+    }
+
+    const { address, parity } = deriveTaprootAddress(leaf.internalKey, resolvedMerkleRoot, addressTypeInfo.network);
+    if (addressTypeInfo.address !== address) {
+      return false;
+    }
+
+    commitment = {
+      internalKey: leaf.internalKey,
+      merkleRoot: resolvedMerkleRoot,
+      parity,
+    };
+    return true;
   };
 
   let addedScript = false;
@@ -2544,11 +2608,11 @@ export function fillTapTree(addressTypeInfo: AddressTypeInfo, leaves: ExpandedTa
       }
     }
   } catch (error) {
-    throw new Error('An error occurred while filling the taproot tree');
+    throw error instanceof Error ? error : new Error('An error occurred while filling the taproot tree');
   }
 
   if (!addedScript) {
-    throw new Error('No new taproot scripts matching this address');
+    throw new Error('No valid taproot scripts found that match this address, or all provided scripts are already loaded for this address');
   }
 }
 

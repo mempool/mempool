@@ -48,7 +48,7 @@ export class TaprootAddressScriptsComponent implements OnChanges {
   height: number;
   levelHeight: number = 40;
   fullTreeShown: boolean;
-  maybetapTreeIncomplete: boolean = false;
+  maybeTapTreeIncomplete: boolean = false;
   isNUMS: boolean = false;
 
   chartOptions: EChartsOption = {};
@@ -72,7 +72,7 @@ export class TaprootAddressScriptsComponent implements OnChanges {
     if (changes.scripts?.currentValue && changes.scripts.currentValue.size) {
       this.buildTree(Array.from(this.scripts.values()));
       this.prepareTree(this.tree, 0);
-      this.tapTreeIncomplete.emit(this.maybetapTreeIncomplete);
+      this.tapTreeIncomplete.emit(this.maybeTapTreeIncomplete);
       this.cropTree();
       this.toggleTree(this.fullTreeShown, false);
     }
@@ -80,7 +80,7 @@ export class TaprootAddressScriptsComponent implements OnChanges {
 
   buildTree(scripts: ScriptInfo[]): void {
     this.depth = 0;
-    this.maybetapTreeIncomplete = false;
+    this.maybeTapTreeIncomplete = false;
 
     // treeStructure is a list of maps, where each map contains as keys the hashes of the nodes at that depth, and as values the hashes of its two children
     const treeStructure: Map<string, [string, string]>[] = [];
@@ -308,7 +308,7 @@ export class TaprootAddressScriptsComponent implements OnChanges {
           { label: 'Hash', content: node.name.slice(0, 10) + '…' + node.name.slice(-10) },
           { label: 'Depth', content: (depth - 1).toString() },
         ];
-        this.maybetapTreeIncomplete = true;
+        this.maybeTapTreeIncomplete = true;
       }
     }
   }

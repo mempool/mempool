@@ -13,7 +13,7 @@ import { SeoService } from '@app/services/seo.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { AddressInformation } from '@interfaces/node-api.interface';
 import { AddressTypeInfo } from '@app/shared/address-utils';
-import { extractTapLeavesFromPsbt, fillTapTree } from '@app/shared/transaction.utils';
+import { extractTapLeaves, fillTapTree, convertTextToBuffer, PsbtKeyValue } from '@app/shared/transaction.utils';
 
 class AddressStats implements ChainStats {
   address: string;
@@ -115,6 +115,8 @@ export class AddressComponent implements OnInit, OnDestroy {
   mempoolTxSubscription: Subscription;
   mempoolRemovedTxSubscription: Subscription;
   blockTxSubscription: Subscription;
+  fragmentSubscription: Subscription;
+  taprootFragment: URLSearchParams;
   addressLoadingStatus$: Observable<number>;
   addressInfo: null | AddressInformation = null;
   addressTypeInfo: null | AddressTypeInfo;
@@ -150,9 +152,17 @@ export class AddressComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.websocketService.want(['blocks']);
-    this.psbtForm = this.formBuilder.group({ psbt: [''] });
+    this.psbtForm = this.formBuilder.group({ psbt: [''], tapleaf: [''], taptree: [''], ikey: [''] });
 
     this.onResize();
+    this.fragmentSubscription = this.route.fragment.subscribe((fragment) => {
+      if (fragment) {
+        this.taprootFragment = new URLSearchParams(fragment.replace(/\+/g, '%2B')); // URLSearchParams decodes "+" as space, so normalize to preserve base64 fragments
+        this.submitPsbt();
+      } else {
+        this.taprootFragment = undefined;
+      }
+    });
 
     this.addressLoadingStatus$ = this.route.paramMap
       .pipe(
@@ -174,7 +184,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.exampleChannel = null;
           this.tapTreeIncomplete = false;
           this.taprootPsbtExpanded = false;
-          this.psbtForm?.reset({ psbt: '' });
+          this.psbtForm?.reset({ psbt: '', tapleaf: '', taptree: '', ikey: '' });
           this.psbtError = undefined;
           document.body.scrollTo(0, 0);
           this.addressString = params.get('id') || '';
@@ -307,7 +317,7 @@ export class AddressComponent implements OnInit, OnDestroy {
         }
         this.addressTypeInfo.processInputs(addressVin, vinIds);
         if (this.addressTypeInfo.type === 'v1_p2tr' && !this.addressTypeInfo.tapscript) {
-          this.tapTreeIncomplete = true;
+          this.setTapTreeIncomplete(true);
         }
         // hack to trigger change detection
         this.addressTypeInfo = this.addressTypeInfo.clone();
@@ -512,29 +522,74 @@ export class AddressComponent implements OnInit, OnDestroy {
     );
   }
 
-  submitPsbt(): void {
-    if (!this.psbtForm) {
-      return;
-    }
-    const control = this.psbtForm.get('psbt');
+  sanitizeFormControl(controlName: string): string {
+    const control = this.psbtForm?.get(controlName);
     const sanitized = (control?.value || '').trim();
     if (control && control.value !== sanitized) {
       control.setValue(sanitized, { emitEvent: false });
     }
-    if (!sanitized) {
-      this.psbtError = undefined;
-      return;
-    }
-    try {
-      fillTapTree(this.addressTypeInfo, extractTapLeavesFromPsbt(sanitized));
-      this.addressTypeInfo = this.addressTypeInfo.clone();
-      this.psbtForm.reset();
-      this.psbtError = undefined;
-    } catch (error) {
-      if (error instanceof Error) {
-        this.psbtError = error.message;
-      } else {
-        this.psbtError = 'An error occurred while processing the PSBT';
+    return sanitized;
+  }
+
+  submitPsbt(): void {
+    if (this.psbtForm && this.tapTreeIncomplete) {
+      if (this.taprootFragment) { // If pending fragment, apply it first
+        const fragment = this.taprootFragment;
+        this.taprootFragment = undefined;
+
+        const patch = {};
+        ['psbt', 'tapleaf', 'taptree', 'ikey'].forEach((key) => {
+          const value = fragment.get(key);
+          if (value) {
+            patch[key] = value;
+          }
+        });
+
+        if (Object.keys(patch).length) {
+          this.psbtForm.patchValue(patch, { emitEvent: false });
+        }
+      }
+
+      try {
+        const psbt = this.sanitizeFormControl('psbt');
+        const tapleavesRaw = this.sanitizeFormControl('tapleaf');
+        const taptree = this.sanitizeFormControl('taptree');
+        const internalKey = this.sanitizeFormControl('ikey');
+        const tapleaves = tapleavesRaw ? tapleavesRaw.split(',').map((leaf) => leaf.trim()).filter(Boolean) : [];
+
+        const hasInput = !!(psbt || tapleaves.length || taptree);
+        if (!hasInput) {
+          this.psbtError = undefined;
+          return;
+        }
+
+        const psbtBuffer = psbt ? convertTextToBuffer(psbt) : undefined;
+        const tapleafRecords = tapleaves.reduce((records, leaf) => {
+          const parts = leaf.split(':');
+          if (parts.length !== 2 || !parts[0] || !parts[1]) {
+            throw new Error('Tapleaves must be in the format "<control block>:<script><leaf version>" separated by commas');
+          }
+          records.push({
+            keyData: convertTextToBuffer(parts[0]),
+            value: convertTextToBuffer(parts[1]),
+          });
+          return records;
+        }, [] as PsbtKeyValue[]);
+        const taptreeBuffer = taptree ? convertTextToBuffer(taptree) : undefined;
+        const internalKeyBuffer = internalKey ? convertTextToBuffer(internalKey) : undefined;
+
+        const leaves = extractTapLeaves(psbtBuffer, tapleafRecords, taptreeBuffer, internalKeyBuffer);
+        fillTapTree(this.addressTypeInfo, leaves);
+        this.addressTypeInfo = this.addressTypeInfo.clone();
+        this.psbtForm?.reset({ psbt: '', tapleaf: '', taptree: '', ikey: '' });
+        this.psbtError = undefined;
+      } catch (error) {
+        this.taprootPsbtExpanded = true;
+        if (error instanceof Error) {
+          this.psbtError = error.message;
+        } else {
+          this.psbtError = 'An error occurred while processing taproot data';
+        }
       }
     }
   }
@@ -544,11 +599,14 @@ export class AddressComponent implements OnInit, OnDestroy {
       this.taprootPsbtExpanded = false;
     }
     this.tapTreeIncomplete = incomplete;
+    if (this.taprootFragment) {
+      this.submitPsbt();
+    }
   }
 
   showTaprootPsbtButton(): boolean {
     const isBitcoin = this.stateService.network !== 'liquid' && this.stateService.network !== 'liquidtestnet';
-    return this.addressTypeInfo.type === 'v1_p2tr' && isBitcoin && this.tapTreeIncomplete;
+    return this.addressTypeInfo?.type === 'v1_p2tr' && isBitcoin && this.tapTreeIncomplete;
   }
 
   @HostListener('window:resize', ['$event'])
@@ -562,5 +620,6 @@ export class AddressComponent implements OnInit, OnDestroy {
     this.mempoolRemovedTxSubscription.unsubscribe();
     this.blockTxSubscription.unsubscribe();
     this.websocketService.stopTrackingAddress();
+    this.fragmentSubscription?.unsubscribe();
   }
 }
