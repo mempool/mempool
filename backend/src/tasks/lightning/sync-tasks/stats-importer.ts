@@ -108,6 +108,9 @@ class LightningStatsImporter {
 
     for (const channel of networkGraph.edges) {
       const short_id = Common.channelIntegerIdToShortId(channel.channel_id);
+      if (!short_id?.length) {
+        continue;
+      }
 
       const tx = await fundingTxFetcher.$fetchChannelOpenTx(short_id);
       if (!tx) {

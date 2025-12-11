@@ -267,7 +267,7 @@ class TransactionUtils {
       return;
     }
 
-    if (vin.prevout.scriptpubkey_type === 'p2sh') {
+    if (vin.prevout.scriptpubkey_type === 'p2sh' && vin.scriptsig_asm?.length) {
       const redeemScript = vin.scriptsig_asm.split(' ').reverse()[0];
       vin.inner_redeemscript_asm = this.convertScriptSigAsm(redeemScript);
       if (vin.witness && vin.witness.length > 2) {
