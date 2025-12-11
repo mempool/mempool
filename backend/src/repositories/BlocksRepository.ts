@@ -1263,7 +1263,10 @@ class BlocksRepository {
   // Execute reindexing tasks & lazy schema migrations
   public async $migrateBlocks(): Promise<number> {
     let blocksMigrated = 0;
-    blocksMigrated = await this.$migrateBlocksToV1();
+    // skip this migration if it'll be super slow
+    if (config.MEMPOOL.BACKEND === 'esplora' || Common.blocksSummariesIndexingEnabled()) {
+      blocksMigrated = await this.$migrateBlocksToV1();
+    }
     if (blocksMigrated > 0) {
       // return early, run the next migration on the next indexing loop
       return blocksMigrated;
@@ -1275,7 +1278,7 @@ class BlocksRepository {
   private async $migrateBlocksToV1(): Promise<number> {
     let blocksMigrated = 0;
     try {
-      // median fee bug only affects mmre-than-half but less-than-completely full blocks
+      // median fee bug only affects more-than-half but less-than-completely full blocks
       const minWeight = config.MEMPOOL.BLOCK_WEIGHT_UNITS / 2 - (config.MEMPOOL.BLOCK_WEIGHT_UNITS / 800);
       const maxWeight = config.MEMPOOL.BLOCK_WEIGHT_UNITS - (config.MEMPOOL.BLOCK_WEIGHT_UNITS / 400);
       const [rows]: any[] = await DB.query(`
