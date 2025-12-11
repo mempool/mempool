@@ -2528,7 +2528,6 @@ export function extractTapLeaves(psbt: Uint8Array, tapleaves: PsbtKeyValue[], ta
     throw new Error('No tapleaves found');
   }
 
-  console.log('leaves', leaves);
   return leaves;
 }
 
