@@ -118,16 +118,16 @@ class Server {
     this.app.set('view engine', 'ejs');
 
     if (puppeteerEnabled) {
-      this.app.get('/unfurl/render*', async (req, res) => { return this.renderPreview(req, res) })
-      this.app.get('/render*', async (req, res) => { return this.renderPreview(req, res) })
+      this.app.get('/unfurl/render{*path}', async (req, res) => { return this.renderPreview(req, res) })
+      this.app.get('/render{*path}', async (req, res) => { return this.renderPreview(req, res) })
     } else {
-      this.app.get('/unfurl/render*', async (req, res) => { return this.renderDisabled(req, res) })
-      this.app.get('/render*', async (req, res) => { return this.renderDisabled(req, res) })
+      this.app.get('/unfurl/render{*path}', async (req, res) => { return this.renderDisabled(req, res) })
+      this.app.get('/render{*path}', async (req, res) => { return this.renderDisabled(req, res) })
     }
-    this.app.get('/unfurl*', (req, res) => { return this.renderHTML(req, res, true) })
-    this.app.get('/slurp*', (req, res) => { return this.renderHTML(req, res, false) })
-    this.app.get('/sip*', (req, res) => { return this.renderSip(req, res) })
-    this.app.get('*', (req, res) => { return this.renderHTML(req, res, false) })
+    this.app.get('/unfurl{*path}', (req, res) => { return this.renderHTML(req, res, true) })
+    this.app.get('/slurp{*path}', (req, res) => { return this.renderHTML(req, res, false) })
+    this.app.get('/sip{*path}', (req, res) => { return this.renderSip(req, res) })
+    this.app.get('{*path}', (req, res) => { return this.renderHTML(req, res, false) })
   }
 
   async clusterTask({ page, data: { url, path, action, reqUrl } }) {
@@ -239,7 +239,7 @@ class Server {
     try {
       this.unfurlQueueLength++;
       const start = Date.now();
-      const rawPath = req.params[0];
+      const rawPath = req.params.path.join('/');
 
       let img = null;
 
@@ -263,7 +263,7 @@ class Server {
         res.send(img);
       }
     } catch (e) {
-      logger.err(e instanceof Error ? e.message : `${e} ${req.params[0]}`);
+      logger.err(e instanceof Error ? e.message : `${e} ${req.params.path.join('/')}`);
       res.status(500).send(e instanceof Error ? e.message : e);
     } finally {
       this.unfurlQueueLength--;
@@ -272,7 +272,7 @@ class Server {
 
   async renderHTML(req, res, unfurl: boolean = false) {
     // drop requests for static files
-    const rawPath = req.params[0];
+    const rawPath = req.params.path.join('/');
     const match = rawPath.match(/\.[\w]+$/);
     if (match?.length && match[0] !== '.html'
       || rawPath.startsWith('/api/v1/donations/images')
@@ -321,7 +321,7 @@ class Server {
         res.status(500).send();
       }
     } catch (e) {
-      logger.err(e instanceof Error ? e.message : `${e} ${req.params[0]}`);
+      logger.err(e instanceof Error ? e.message : `${e} ${req.params.path.join('/')}`);
       res.status(500).send(e instanceof Error ? e.message : e);
     } finally {
       if (!unfurl) {
@@ -385,7 +385,7 @@ class Server {
 
   async renderSip(req, res): Promise<void> {
     const start = Date.now();
-    const rawPath = req.params[0];
+    const rawPath = req.params.path.join('/');
     const { lang, path } = parseLanguageUrl(rawPath);
     const matchedRoute = matchRoute(this.network, path, 'sip');
 
