@@ -1,6 +1,6 @@
 <div id="enterprise-cta-desktop" *ngIf="officialMempoolInstance">
   <p>Get higher API limits with Mempool Enterprise®</p>
-  <a class="btn btn-small btn-purple" href="/enterprise">More Info <fa-icon [icon]="['fas', 'angle-right']"></fa-icon></a>
+  <a class="btn btn-small btn-purple" [href]="[ isMempoolSpaceBuild ? '/enterprise' : 'https://mempool.space/enterprise']" [target]="isMempoolSpaceBuild ? '' : 'blank'">More Info <fa-icon [icon]="['fas', 'angle-right']"></fa-icon></a>
 </div>
 <div *ngFor="let item of tabData">
   <p *ngIf="( item.type === 'category' ) && ( item.showConditions.indexOf(network.val) > -1 ) && ( !item.hasOwnProperty('options') || ( item.hasOwnProperty('options') && item.options.hasOwnProperty('officialOnly') && item.options.officialOnly && officialMempoolInstance ))">{{ item.title }}</p>
