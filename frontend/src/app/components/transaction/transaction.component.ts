@@ -58,11 +58,10 @@ export interface TxAuditStatus {
 }
 
 // Known duplicate transaction IDs from early Bitcoin history (pre-BIP-30)
-// These are stored in lowercase for case-insensitive comparison
-const DUPLICATE_TXIDS = [
-  'd5d27987d2a3dfc724e359870c6644b40e497bdc0589a033220fe15429d88599',
-  'e3bf3d07d4b0375638d5f1db5255fe07ba2c4cb067cd81b84ee974b6585fb468'
-];
+const DUPLICATE_TX_BLOCKS: Record<string, [number, number]> = {
+  'e3bf3d07d4b0375638d5f1db5255fe07ba2c4cb067cd81b84ee974b6585fb468': [91722, 91880],
+  'd5d27987d2a3dfc724e359870c6644b40e497bdc0589a033220fe15429d88599': [91812, 91842],
+};
 
 @Component({
   selector: 'app-transaction',
@@ -1160,8 +1159,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
-  get isDuplicateTransaction(): boolean {
-    return !!this.txId && DUPLICATE_TXIDS.includes(this.txId.toLowerCase());
+  get duplicateTxBlocks(): [number, number] | undefined {
+    if (!this.txId) {
+      return undefined;
+    }
+    return DUPLICATE_TX_BLOCKS[this.txId.toLowerCase()];
   }
 
   ngOnDestroy() {
