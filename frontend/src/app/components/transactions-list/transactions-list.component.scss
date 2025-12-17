@@ -391,3 +391,25 @@ h2 {
 		}
 	}
 }
+
+.accelerate {
+	background-color: var(--tertiary);
+	margin-left: 5px;
+
+	&.blink {
+		animation: blink 0.2s infinite;
+		pointer-events: none;
+	}
+}
+
+@keyframes blink {
+	0% {
+		background-color: #008b42;
+	}
+	50% {
+		background-color: #d99f00;
+	}
+	100% {
+		background-color: #e55a21;
+	}
+}

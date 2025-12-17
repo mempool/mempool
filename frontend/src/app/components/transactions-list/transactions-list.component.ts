@@ -41,6 +41,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   @Input() inputIndex: number;
   @Input() outputIndex: number;
   @Input() addresses: string[] = [];
+  @Input() acceleratedTxids: Set<string> | null = null;
   @Input() rowLimit = 12;
   @Input() blockTime: number = 0; // Used for price calculation if all the transactions are in the same block
   @Input() txPreview = false;
