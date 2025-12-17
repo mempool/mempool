@@ -338,13 +338,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.fetchAccelerationSubscription = this.fetchAcceleration$.pipe(
-      filter(() => this.stateService.env.ACCELERATOR === true),
       tap(() => {
         this.accelerationInfo = null;
         this.setIsAccelerated();
       }),
       switchMap((blockHeight: number) => {
-        if (this.stateService.network === '' && this.stateService.env.ACCELERATOR && blockHeight >= 819500 ) {
+        if (this.stateService.network === '' && blockHeight >= 819500 ) {
           return this.servicesApiService.getAccelerationDataForTxid$(this.txId).pipe(
             switchMap((accelerationData: Acceleration) => {
               if (this.tx.acceleration && !accelerationData) { // If the just mined transaction was accelerated, but services backend did not return any acceleration data, retry
