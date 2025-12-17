@@ -22,7 +22,7 @@ export class PendingStatsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.accelerationStats$ = (this.accelerations$ || this.stateService.liveAccelerations$).pipe(
+    this.accelerationStats$ = ((this.accelerations$ || this.stateService.liveAccelerations$) as Observable<Acceleration[]>).pipe(
       switchMap(accelerations => {
         let totalAccelerations = 0;
         let totalFeeDelta = 0;

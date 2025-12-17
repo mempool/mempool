@@ -1,8 +1,19 @@
 import { Component, Input, OnInit, OnChanges, HostListener } from '@angular/core';
 import { ETA } from '@app/services/eta.service';
 import { Transaction } from '@interfaces/electrs.interface';
-import { Acceleration, SinglePoolStats } from '@interfaces/node-api.interface';
+import { Acceleration, isCompletedAcceleration, isPendingAcceleration, SinglePoolStats } from '@interfaces/node-api.interface';
 import { MiningService } from '@app/services/mining.service';
+
+interface AccelerationHoverInfo {
+  status: 'seen' | 'accelerated' | 'mined';
+  fee: number;
+  weight: number;
+  pools?: number[];
+  poolsData?: { [id: number]: SinglePoolStats };
+  bidBoost?: number;
+  feeDelta?: number;
+  minedByPoolUniqueId?: number;
+}
 
 @Component({
   selector: 'app-acceleration-timeline',
@@ -25,7 +36,7 @@ export class AccelerationTimelineComponent implements OnInit, OnChanges {
   acceleratedToMined: number;
 
   tooltipPosition = null;
-  hoverInfo: any = null;
+  hoverInfo: AccelerationHoverInfo | null = null;
   poolsData: { [id: number]: SinglePoolStats } = {};
 
   constructor(
@@ -60,7 +71,7 @@ export class AccelerationTimelineComponent implements OnInit, OnChanges {
         fee: this.tx.fee,
         weight: this.tx.weight
       };
-    } else if (status === 'accelerated') {
+    } else if (status === 'accelerated' && isPendingAcceleration(this.accelerationInfo)) {
       this.hoverInfo = {
         status,
         fee: this.accelerationInfo?.effectiveFee || this.tx.fee,
@@ -69,7 +80,7 @@ export class AccelerationTimelineComponent implements OnInit, OnChanges {
         pools: this.tx.acceleratedBy || this.accelerationInfo?.pools,
         poolsData: this.poolsData
       };
-    } else if (status === 'mined') {
+    } else if (status === 'mined' && isCompletedAcceleration(this.accelerationInfo)) {
       this.hoverInfo = {
         status,
         fee: this.accelerationInfo?.effectiveFee,

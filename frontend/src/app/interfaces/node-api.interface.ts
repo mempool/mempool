@@ -404,27 +404,52 @@ export interface INode {
   closing_balance?: number;
 }
 
-export interface Acceleration {
+// Pending/active accelerations from websocket
+export interface PendingAcceleration {
   txid: string;
-  status: 'requested' | 'accelerating' | 'completed_provisional' | 'completed' | 'failed' | 'failed_provisional';
-  pools: number[];
-  feePaid: number;
   added: number; // timestamp
-  lastUpdated: number; // timestamp
-  baseFee: number;
-  vsizeFee: number;
+  effectiveVsize: number;
+  effectiveFee: number;
+  feeDelta: number;
+  pools: number[];
+  status?: 'accelerating';
+}
+
+// Completed accelerations from history API
+export interface CompletedAcceleration {
+  txid: string;
+  added: number; // timestamp
+  status: 'completed_provisional' | 'completed' | 'failed' | 'failed_provisional';
+  pools: number[];
   effectiveFee: number;
   effectiveVsize: number;
-  feeDelta: number;
-  blockHash: string;
-  blockHeight: number;
-  acceleratedFeeRate?: number;
-  boost?: number;
-  bidBoost?: number;
+  blockHeight?: number;
   boostCost?: number;
+  bidBoost?: number;
   boostRate?: number;
   minedByPoolUniqueId?: number;
   canceled?: number;
+
+  // computed fields
+  boost?: number;
+  acceleratedFeeRate?: number;
+}
+
+export type Acceleration = Partial<Omit<PendingAcceleration, 'status'> & Omit<CompletedAcceleration, 'status'>> & {
+  status?: 'accelerating' | 'completed_provisional' | 'completed' | 'failed' | 'failed_provisional';
+  txid: string;
+  added: number;
+  pools: number[];
+  effectiveFee: number;
+  effectiveVsize: number;
+};
+
+export function isPendingAcceleration(acceleration: Acceleration): acceleration is PendingAcceleration {
+  return (acceleration as PendingAcceleration).status === 'accelerating';
+}
+
+export function isCompletedAcceleration(acceleration: Acceleration): acceleration is CompletedAcceleration {
+  return (acceleration as CompletedAcceleration).status === 'completed_provisional' || (acceleration as CompletedAcceleration).status === 'completed' || (acceleration as CompletedAcceleration).status === 'failed' || (acceleration as CompletedAcceleration).status === 'failed_provisional';
 }
 
 export interface AccelerationHistoryParams {
