@@ -404,6 +404,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       })
     ).subscribe(pool => {
       this.pool = pool;
+      this.setIsAccelerated();
     });
 
     this.auditSubscription = this.fetchMiningInfo$.pipe(
