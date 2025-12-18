@@ -198,7 +198,11 @@ export class ScriptInfo {
   }
 
   public clone(): ScriptInfo {
-    return { ...this };
+    const cloned = new ScriptInfo(this.type, this.hex, this.asm, undefined, this.taprootInfo, this.vinId);
+    if (this.template) {
+      cloned.template = this.template;
+    }
+    return cloned;
   }
 
   get key(): string {
