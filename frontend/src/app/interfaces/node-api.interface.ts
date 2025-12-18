@@ -445,7 +445,7 @@ export type Acceleration = Partial<Omit<PendingAcceleration, 'status'> & Omit<Co
 };
 
 export function isPendingAcceleration(acceleration: Acceleration): acceleration is PendingAcceleration {
-  return (acceleration as PendingAcceleration).status === 'accelerating';
+  return !acceleration.status || acceleration.status === 'accelerating';
 }
 
 export function isCompletedAcceleration(acceleration: Acceleration): acceleration is CompletedAcceleration {
