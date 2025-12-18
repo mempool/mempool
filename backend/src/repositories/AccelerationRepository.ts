@@ -73,7 +73,7 @@ class AccelerationRepository {
         height: row.height,
         added: row.requested_timestamp || row.block_timestamp,
         pool: {
-          id: row.id,
+          id: row.pool,
           slug: row.slug,
           name: row.name,
         },
@@ -134,7 +134,7 @@ class AccelerationRepository {
           height: row.height,
           added: row.requested_timestamp || row.block_timestamp,
           pool: {
-            id: row.id,
+            id: row.pool,
             slug: row.slug,
             name: row.name,
           },

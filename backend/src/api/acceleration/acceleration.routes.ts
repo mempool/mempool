@@ -16,6 +16,7 @@ interface ApiAcceleration {
   boostCost: number,
   blockHeight: number | null,
   pools: number[],
+  minedByPoolUniqueId?: number;
 }
 
 function mempoolAccelerationToApiAcceleration(mempoolAcceleration: Acceleration): ApiAcceleration {
@@ -43,6 +44,7 @@ function savedAccelerationToApiAcceleration(savedAcceleration: PublicAcceleratio
     boostCost: savedAcceleration.boost_cost,
     blockHeight: savedAcceleration.height,
     pools: [savedAcceleration.pool.id],
+    minedByPoolUniqueId: savedAcceleration.pool.id,
   };
 }
 
@@ -52,11 +54,12 @@ class AccelerationRoutes {
   public initRoutes(app: Application): void {
     app
       .get(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/accelerations', this.$getAcceleratorAccelerations.bind(this))
-      .get(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/accelerations/:txid', this.$getAcceleratorAcceleration.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/accelerations/history', this.$getAcceleratorAccelerationsHistory.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/accelerations/history/aggregated', this.$getAcceleratorAccelerationsHistoryAggregated.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/accelerations/stats', this.$getAcceleratorAccelerationsStats.bind(this))
+      .get(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/accelerations/:txid', this.$getAcceleratorAcceleration.bind(this))
       .post(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/estimate', this.$getAcceleratorEstimate.bind(this))
+      .post(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/accelerate', this.$accelerate.bind(this))
     ;
   }
 
@@ -121,13 +124,41 @@ class AccelerationRoutes {
   private async $getAcceleratorEstimate(req: Request, res: Response): Promise<void> {
     const url = `${config.MEMPOOL_SERVICES.API}/${req.originalUrl.replace('/api/v1/services/', '')}`;
     try {
-      const response = await axios.post(url, req.body, { responseType: 'stream', timeout: 10000 });
+      const headers = {
+        ...(req.headers['authorization'] && { authorization: req.headers['authorization'] }),
+        ...(req.headers['cookie'] && { cookie: req.headers['cookie'] }),
+        ...(req.headers['content-type'] && { 'content-type': req.headers['content-type'] }),
+        ...(req.headers['accept'] && { accept: req.headers['accept'] }),
+        ...(req.headers['accept-language'] && { 'accept-language': req.headers['accept-language'] }),
+      };
+      const response = await axios.post(url, req.body, { headers, responseType: 'stream', timeout: 10000 });
       for (const key in response.headers) {
         res.setHeader(key, response.headers[key]);
       }
       response.data.pipe(res);
     } catch (e) {
       logger.err(`Unable to get acceleration estimate from ${url} in $getAcceleratorEstimate(), ${e}`, this.tag);
+      res.status(500).end();
+    }
+  }
+
+  private async $accelerate(req: Request, res: Response): Promise<void> {
+    const url = `${config.MEMPOOL_SERVICES.API}/${req.originalUrl.replace('/api/v1/services/', '')}`;
+    try {
+      const headers = {
+        ...(req.headers['authorization'] && { authorization: req.headers['authorization'] }),
+        ...(req.headers['cookie'] && { cookie: req.headers['cookie'] }),
+        ...(req.headers['content-type'] && { 'content-type': req.headers['content-type'] }),
+        ...(req.headers['accept'] && { accept: req.headers['accept'] }),
+        ...(req.headers['accept-language'] && { 'accept-language': req.headers['accept-language'] }),
+      };
+      const response = await axios.post(url, req.body, { headers, responseType: 'stream', timeout: 10000 });
+      for (const key in response.headers) {
+        res.setHeader(key, response.headers[key]);
+      }
+      response.data.pipe(res);
+    } catch (e) {
+      logger.err(`Unable to accelerate transaction from ${url} in $accelerate(), ${e}`, this.tag);
       res.status(500).end();
     }
   }

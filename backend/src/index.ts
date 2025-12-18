@@ -362,9 +362,7 @@ class Server {
       nodesRoutes.initRoutes(this.app);
       channelsRoutes.initRoutes(this.app);
     }
-    if (config.MEMPOOL_SERVICES.ACCELERATIONS) {
-      accelerationRoutes.initRoutes(this.app);
-    }
+    accelerationRoutes.initRoutes(this.app);
     if (config.WALLETS.ENABLED) {
       servicesRoutes.initRoutes(this.app);
     }
