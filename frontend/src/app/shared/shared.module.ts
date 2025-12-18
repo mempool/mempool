@@ -279,6 +279,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     ShortenStringPipe,
     CapAddressPipe,
     AmountShortenerPipe,
+    FeeRoundingPipe,
   ],
   exports: [
     MenuComponent,
