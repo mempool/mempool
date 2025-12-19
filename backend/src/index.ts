@@ -100,14 +100,20 @@ class Server {
     logger.notice(`Starting Mempool Server${worker ? ' (worker)' : ''}... (${backendInfo.getShortCommitHash()})`);
 
     // Register cleanup listeners for exit events
-    ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGUSR1', 'SIGUSR2'].forEach(event => {
-      process.on(event, () => { this.onExit(event); });
+    ['SIGHUP', 'SIGINT', 'SIGTERM', 'SIGUSR1', 'SIGUSR2'].forEach(event => {
+      process.on(event, () => { this.forceExit(event); });
+    });
+    process.on('exit', () => {
+      logger.debug(`'exit' event triggered`);
+      this.exitCleanup();
     });
     process.on('uncaughtException', (error) => {
-      this.onUnhandledException('uncaughtException', error);
+      console.error(`uncaughtException:`, error);
+      this.forceExit('uncaughtException', 1);
     });
     process.on('unhandledRejection', (reason, promise) => {
-      this.onUnhandledException('unhandledRejection', reason);
+      console.error(`unhandledRejection:`, reason, promise);
+      this.forceExit('unhandledRejection', 1);
     });
 
     if (config.MEMPOOL.BACKEND === 'esplora') {
@@ -136,9 +142,9 @@ class Server {
         res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count,X-Mempool-Auth');
         next();
       })
-      .use(express.urlencoded({ extended: true }))
-      .use(express.text({ type: ['text/plain', 'application/base64'] }))
-      .use(express.json())
+      .use(express.urlencoded({ extended: true, limit: '10mb' }))
+      .use(express.text({ type: ['text/plain', 'application/base64'], limit: '10mb' }))
+      .use(express.json({ limit: '10mb' }))
       ;
 
     if (config.DATABASE.ENABLED && config.FIAT_PRICE.ENABLED) {
@@ -155,7 +161,7 @@ class Server {
     this.setUpWebsocketHandling();
 
     await poolsUpdater.updatePoolsJson(); // Needs to be done before loading the disk cache because we sometimes wipe it
-    if (config.DATABASE.ENABLED === true && config.MEMPOOL.ENABLED && ['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) && !poolsUpdater.currentSha) {
+    if (config.DATABASE.ENABLED === true && config.MEMPOOL.ENABLED && ['mainnet', 'testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK) && !poolsUpdater.currentSha) {
       logger.err(`Failed to retreive pools-v2.json sha, cannot run block indexing. Please make sure you've set valid urls in your mempool-config.json::MEMPOOL::POOLS_JSON_URL and mempool-config.json::MEMPOOL::POOLS_JSON_TREE_UR, aborting now`);
       return process.exit(1);
     }
@@ -387,8 +393,16 @@ class Server {
     }
   }
 
-  onExit(exitEvent, code = 0): void {
-    logger.debug(`onExit for signal: ${exitEvent}`);
+  forceExit(exitEvent, code?: number): void {
+    logger.debug(`triggering exit for signal: ${exitEvent}`);
+    if (code != null) {
+      // override the default exit code
+      process.exitCode = code;
+    }
+    process.exit();
+  }
+
+  exitCleanup(): void {
     if (config.DATABASE.ENABLED) {
       DB.releasePidLock();
     }
@@ -398,12 +412,6 @@ class Server {
     if (this.wssUnixSocket) {
       this.wssUnixSocket.close();
     }
-    process.exit(code);
-  }
-
-  onUnhandledException(type, error): void {
-    console.error(`${type}:`, error);
-    this.onExit(type, 1);
   }
 }
 

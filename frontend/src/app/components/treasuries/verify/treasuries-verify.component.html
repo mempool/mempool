@@ -1,0 +1,106 @@
+<div *ngIf="showTitle" class="main-title" i18n="treasuries.verified-treasuries">Verified Treasuries</div>
+<div class="card-wrapper">
+  <div class="card">
+    <div class="card-body more-padding">
+      <div class="treasury-verify-container" *ngIf="(isLoadingWebSocket$ | async) === false && !loading; else skeletonLoaders">
+        <div class="verify-progress">
+          <svg #verifySvg class="verify-shares" height="22px" width="100%" shape-rendering="crispEdges" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="verify-gradient" x1="0%" y1="0%" x2="100%" y2="0%" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="var(--primary)" />
+                <stop offset="100%" stop-color="var(--mainnet-alt)" />
+              </linearGradient>
+              <linearGradient id="verify-hover-gradient" x1="0%" y1="0%" x2="100%" y2="0%" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#2486eb" />
+                <stop offset="100%" stop-color="#ae6af7" />
+              </linearGradient>
+            </defs>
+            <rect
+              *ngFor="let rect of shares"
+              [attr.x]="rect.x" [attr.y]="0"
+              [attr.width]="rect.w" height="100%"
+              class="rect {{rect.type}}"
+              [class.hover]="hoverSection && rect.type === hoverSection.type"
+              (pointerover)="onHover($event, rect);"
+              (pointerout)="onBlur();"
+            >
+            </rect>
+          </svg>
+        </div>
+        <div class="verify-stats">
+          <div class="item">
+            <div class="card-text">
+              {{ verifiedTotalAddresses }}
+            </div>
+            <div class="symbol" i18n="treasuries.held-in-treasuries">verified addresses</div>
+          </div>
+          <div class="item">
+            <div class="card-text bigger">
+              {{ percentVerified | number: '1.2-2' }}
+              <span class="symbol">%</span>
+            </div>
+            <div class="symbol" i18n="treasuries.percent-of-total-verify">verified of total</div>
+          </div>
+          <div class="item">
+            <div class="card-text">
+              <app-amount [satoshis]="verifiedTotalBtc * 100_000_000" digitsInfo="1.0-0" [noFiat]="true" [ignoreViewMode]="true"></app-amount>
+            </div>
+            <div class="symbol" i18n="treasuries.yet-to-be-mined">verified holdings</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #skeletonLoaders>
+  <div class="verify-progress">
+    <div class="skeleton-loader"></div>
+  </div>
+  <div class="verify-skeleton loading-container">
+    <div class="item">
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+    <div class="item">
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+    <div class="item">
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+
+<div
+  #tooltip
+  *ngIf="hoverSection"
+  class="verify-tooltip"
+  [style.visibility]="hoverSection ? 'visible' : 'hidden'"
+  [style.left]="tooltipPosition.x + 'px'"
+  [style.top]="tooltipPosition.y + (isMobile ? -60 : 0) + 'px'"
+>
+  <ng-container [ngSwitch]="hoverSection.type">
+    <ng-container *ngSwitchCase="'verified'">
+      <div class="tooltip-title">Verified</div>
+    </ng-container>
+    <ng-container *ngSwitchCase="'public'">
+      <div class="tooltip-title">Public</div>
+    </ng-container>
+    <ng-container *ngSwitchCase="'treasuries'">
+      <div class="tooltip-title">All Treasuries</div>
+    </ng-container>
+  </ng-container>
+  <div class="tooltip-value">{{ (hoverSection.share * 100) | number: '1.2-2' }}%</div>
+  <div class="tooltip-value">
+    <app-amount [satoshis]="hoverSection.btc * 100_000_000" digitsInfo="1.0-0" [noFiat]="true" [ignoreViewMode]="true"></app-amount>
+  </div>
+</div>

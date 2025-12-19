@@ -572,22 +572,14 @@
     <div class="row mb-1 text-center">
       <div class="col-sm">
         <h1 style="font-size: larger;"><ng-content select="[slot='accelerated-title']"></ng-content>
-          @if (accelerationResponse) {
-            <span class="default-slot" i18n="accelerator.success-message">Your transaction is being accelerated!</span>
-          } @else {
-            <span class="default-slot" i18n="accelerator.success-message-third-party">Transaction is already being accelerated!</span>
-          }
+          <span class="default-slot" i18n="accelerator.success-message">Transaction is being accelerated!</span>
         </h1>
       </div>
     </div>
     <div class="row text-center mt-1">
       <div class="col-sm">
         <div class="d-flex flex-row justify-content-center align-items-center">
-          @if (accelerationResponse) {        
-            <span i18n="accelerator.confirmed-acceleration-with-miners">Your transaction has been accepted for acceleration by our mining pool partners.</span>
-          } @else {
-            <span i18n="accelerator.confirmed-acceleration-with-miners-third-party">Transaction has already been accepted for acceleration by our mining pool partners.</span>
-          }
+          <span i18n="accelerator.confirmed-acceleration-with-miners">Transaction has been accepted for acceleration by our mining pool partners.</span>
         </div>
         @if (accelerationResponse?.receiptUrl) {
           <div class="d-flex flex-row justify-content-center align-items-center">

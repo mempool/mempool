@@ -33,6 +33,7 @@ interface MempoolStatsData {
   selector: 'app-custom-dashboard',
   templateUrl: './custom-dashboard.component.html',
   styleUrls: ['./custom-dashboard.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -89,7 +90,6 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
     private websocketService: WebsocketService,
     private seoService: SeoService,
     private cd: ChangeDetectorRef,
-    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
     this.widgets = this.stateService.env.customize?.dashboard.widgets || [];

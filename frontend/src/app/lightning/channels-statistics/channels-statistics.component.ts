@@ -6,6 +6,7 @@ import { INodesStatistics } from '@interfaces/node-api.interface';
   selector: 'app-channels-statistics',
   templateUrl: './channels-statistics.component.html',
   styleUrls: ['./channels-statistics.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChannelsStatisticsComponent implements OnInit {

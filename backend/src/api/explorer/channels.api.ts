@@ -580,6 +580,9 @@ class ChannelsApi {
    * Save or update a channel present in the graph
    */
   public async $saveChannel(channel: ILightningApi.Channel, status = 1): Promise<void> {
+    if (!channel.chan_point?.length) {
+      return;
+    }
     const [ txid, vout ] = channel.chan_point.split(':');
 
     const policy1: Partial<ILightningApi.RoutingPolicy> = channel.node1_policy || {};

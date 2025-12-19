@@ -1,0 +1,145 @@
+name: Backend Integration Tests with MariaDB
+
+on:
+  pull_request:
+    types: [opened, review_requested, synchronize]
+  push:
+    branches:
+      - master
+
+jobs:
+  backend-integration:
+    if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
+    strategy:
+      matrix:
+        node: ["22.14.0"]
+      fail-fast: false
+    runs-on: ubuntu-latest
+
+    name: Backend Integration Tests - node ${{ matrix.node }}
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: ${{ matrix.node }}/integration
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+          registry-url: "https://registry.npmjs.org"
+          cache: 'npm'
+          cache-dependency-path: '${{ matrix.node }}/integration/backend/package-lock.json'
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ${{ matrix.node }}/integration/backend/node_modules
+          key: ${{ runner.os }}-backend-integration-node-${{ matrix.node }}-${{ hashFiles('${{ matrix.node }}/integration/backend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-backend-integration-node-${{ matrix.node }}-
+            ${{ runner.os }}-backend-integration-
+
+      - name: Read rust-toolchain file from repository
+        id: gettoolchain
+        run: echo "::set-output name=toolchain::$(cat ./rust/gbt/rust-toolchain)"
+        working-directory: ${{ matrix.node }}/integration
+
+      - name: Cache Rust dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            ${{ matrix.node }}/integration/rust/gbt/target/
+          key: ${{ runner.os }}-cargo-integration-${{ hashFiles('${{ matrix.node }}/integration/rust/gbt/**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-integration-
+            ${{ runner.os }}-cargo-
+
+      - name: Install ${{ steps.gettoolchain.outputs.toolchain }} Rust toolchain
+        uses: dtolnay/rust-toolchain@6d653acede28d24f02e3cd41383119e8b1b35921
+        with:
+          toolchain: ${{ steps.gettoolchain.outputs.toolchain }}
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ${{ matrix.node }}/integration/backend
+
+      - name: Build backend
+        run: npm run build
+        working-directory: ${{ matrix.node }}/integration/backend
+
+      - name: Verify config file exists
+        run: |
+          ls -la mempool-config.test.json
+          echo "Current directory: ${PWD}"
+          echo "Config file will be: ${{ github.workspace }}/${{ matrix.node }}/integration/backend/mempool-config.test.json"
+          test -f mempool-config.test.json || (echo "ERROR: Config file not found!" && exit 1)
+        working-directory: ${{ matrix.node }}/integration/backend
+
+      - name: Run integration tests (DB auto-starts via Jest)
+        run: |
+          echo "MEMPOOL_CONFIG_FILE=$MEMPOOL_CONFIG_FILE"
+          npm run test:integration
+        working-directory: ${{ matrix.node }}/integration/backend
+        env:
+          MEMPOOL_CONFIG_FILE: ${{ github.workspace }}/${{ matrix.node }}/integration/backend/mempool-config.test.json
+
+      - name: Start MariaDB for server test
+        run: docker compose -f docker-compose.test.yml up -d
+        working-directory: ${{ matrix.node }}/integration/backend
+
+      - name: Wait for MariaDB
+        run: |
+          echo "Waiting for MariaDB to be ready..."
+          for i in {1..30}; do
+            if docker compose -f docker-compose.test.yml exec -T db-test mysqladmin ping -h localhost -u mempool_test -pmempool_test --silent 2>/dev/null; then
+              echo "MariaDB is ready!"
+              break
+            fi
+            echo "Attempt $i/30..."
+            sleep 2
+          done
+          sleep 3
+        working-directory: ${{ matrix.node }}/integration/backend
+
+      - name: Start backend server and verify connectivity
+        run: |
+          # Start server in background
+          node dist/index.js &
+          SERVER_PID=$!
+          
+          # Wait for server to start
+          echo "Waiting for server to start..."
+          sleep 10
+          
+          # Check if server is still running
+          if ps -p $SERVER_PID > /dev/null 2>&1; then
+            echo "Server started successfully and connected to database!"
+            kill $SERVER_PID 2>/dev/null || true
+            wait $SERVER_PID 2>/dev/null || true
+            exit 0
+          else
+            echo "Server failed to start or exited prematurely"
+            exit 1
+          fi
+        working-directory: ${{ matrix.node }}/integration/backend
+        env:
+          MEMPOOL_CONFIG_FILE: ${{ github.workspace }}/${{ matrix.node }}/integration/backend/mempool-config.test.json
+
+      - name: Cleanup containers
+        if: always()
+        run: docker compose -f docker-compose.test.yml down -v
+        working-directory: ${{ matrix.node }}/integration/backend
+
+      - name: Display logs on failure
+        if: failure()
+        run: |
+          echo "=== MariaDB logs ==="
+          docker compose -f docker-compose.test.yml logs db-test || true
+        working-directory: ${{ matrix.node }}/integration/backend
+

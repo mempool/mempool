@@ -19,6 +19,7 @@ export interface SimpleProof {
   selector: 'app-simpleproof-widget',
   templateUrl: './simpleproof-widget.component.html',
   styleUrls: ['./simpleproof-widget.component.scss'],
+  standalone: false,
 })
 export class SimpleProofWidgetComponent implements OnChanges {
   @Input() key: string = window['__env']?.customize?.dashboard.widgets?.find(w => w.component ==='simpleproof')?.props?.key ?? '';

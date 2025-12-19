@@ -10,12 +10,18 @@ on:
     tags:
       - v[0-9]+.[0-9]+.[0-9]+
       - v[0-9]+.[0-9]+.[0-9]+-*
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
 
 permissions:
   contents: read
 
 jobs:
   build:
+    # Run on tag pushes OR on PRs that have the "docker" label
+    if: |
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'docker'))
     strategy:
       matrix:
         service:
@@ -56,21 +62,42 @@ jobs:
           sudo systemctl restart docker
           sudo df -h | grep docker
 
-      - name: Set env variables
+      # Only for tag pushes: use the Git tag as TAG
+      - name: Set TAG from pushed tag
+        if: github.event_name == 'push'
         run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
 
-      - name: Show set environment variables
-        run: |
-          printf "      TAG: %s\n"  "$TAG"
-
       - name: Add SHORT_SHA env property with commit short sha
-        run: echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            SHA="${{ github.event.pull_request.head.sha }}"
+          else
+            SHA="${GITHUB_SHA}"
+          fi
+          echo "SHORT_SHA=${SHA:0:8}" >> $GITHUB_ENV
+
 
       - name: Login to Docker for building
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Checkout project
         uses: actions/checkout@v4
+
+      # For PRs: use package.json version + short sha as TAG
+      - name: Set TAG from service package.json for pull requests
+        if: github.event_name == 'pull_request'
+        run: |
+          if [ "${{ matrix.service }}" = "frontend" ]; then
+            VERSION=$(jq -r '.version' frontend/package.json)
+          else
+            VERSION=$(jq -r '.version' backend/package.json)
+          fi
+          echo "TAG=v${VERSION}-${SHORT_SHA}" >> $GITHUB_ENV
+
+      - name: Show set environment variables
+        run: |
+          printf "      TAG: %s\n"  "$TAG"
+          printf " SHORT_SHA: %s\n" "$SHORT_SHA"
 
       - name: Init repo for Dockerization
         run: docker/init.sh "$TAG"
@@ -117,10 +144,11 @@ jobs:
 
   tag-latest:
     needs: build
-    if: ${{ needs.build.result == 'success' }}
+    # Only for successful *tag pushes* and only for "plain" versions (no '-')
+    if: ${{ needs.build.result == 'success' && github.event_name == 'push' && !contains(github.ref_name, '-') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    name: Tag images as latest
+    name: Tag release build as latest
     strategy:
       matrix:
         service:
@@ -145,7 +173,7 @@ jobs:
       - name: Login to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      - name: Tag multi-arch image as latest for ${{ matrix.service }}
+      - name: Tag as latest for ${{ matrix.service }}
         run: |
           docker buildx imagetools create \
             --tag ${{ secrets.DOCKER_HUB_USER }}/${{ matrix.service }}:latest \

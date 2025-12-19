@@ -26,6 +26,7 @@ interface AccelerationBlock extends BlockExtended {
   selector: 'app-accelerator-dashboard',
   templateUrl: './accelerator-dashboard.component.html',
   styleUrls: ['./accelerator-dashboard.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AcceleratorDashboardComponent implements OnInit, OnDestroy {
@@ -37,7 +38,7 @@ export class AcceleratorDashboardComponent implements OnInit, OnDestroy {
   webGlEnabled = true;
   seen: Set<string> = new Set();
   firstLoad = true;
-  timespan: '24h' | '3d' | '1w' | '1m' | 'all' = '1w';
+  timespan: '24h' | '1m' | '1y' | 'all' = '1y';
 
   accelerationDeltaSubscription: Subscription;
 
@@ -51,7 +52,6 @@ export class AcceleratorDashboardComponent implements OnInit, OnDestroy {
     private serviceApiServices: ServicesApiServices,
     private audioService: AudioService,
     private stateService: StateService,
-    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
     this.seoService.setTitle($localize`:@@6b867dc61c6a92f3229f1950f9f2d414790cce95:Accelerator Dashboard`);

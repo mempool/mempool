@@ -2,6 +2,7 @@ import '@angular/localize/init';
 import { ScriptInfo } from '@app/shared/script.utils';
 import { Vin, Vout } from '@interfaces/electrs.interface';
 import { BECH32_CHARS_LW, BASE58_CHARS, HEX_CHARS } from '@app/shared/regex.utils';
+import { parseTaproot } from './transaction.utils';
 
 export type AddressType = 'fee'
   | 'empty'
@@ -150,6 +151,7 @@ export class AddressTypeInfo {
     cloned.scripts = new Map(Array.from(this.scripts, ([key, value]) => [key, value?.clone()]));
     cloned.isMultisig = this.isMultisig;
     cloned.tapscript = this.tapscript;
+    cloned.simplicity = this.simplicity;
     return cloned;
   }
 
@@ -158,20 +160,18 @@ export class AddressTypeInfo {
     if (this.type === 'v1_p2tr') {
       for (let i = 0; i < vin.length; i++) {
         const v = vin[i];
-        const hasAnnex = v.witness[v.witness.length - 1].startsWith('50');
-        const isScriptSpend = v.witness.length > (hasAnnex ? 2 : 1);
-        if (isScriptSpend) {
-          const controlBlock = hasAnnex ? v.witness[v.witness.length - 2] : v.witness[v.witness.length - 1];
-          const scriptHex = hasAnnex ? v.witness[v.witness.length - 3] : v.witness[v.witness.length - 2];
-          const tapleafVersion = parseInt(controlBlock.slice(0, 2), 16) & 0xfe;
-
-          if (tapleafVersion === 0xc0 && v.inner_witnessscript_asm) {
+        if (!v.taprootInfo) {
+          v.taprootInfo = parseTaproot(v.witness);
+        }
+        const taprootInfo = v.taprootInfo;
+        if (taprootInfo.scriptPath) {
+          if (taprootInfo.scriptPath.leafVersion === 0xc0 && v.inner_witnessscript_asm) {
             this.tapscript = true;
-            this.processScript(new ScriptInfo('inner_witnessscript', scriptHex, v.inner_witnessscript_asm, v.witness, controlBlock, vinIds?.[i]));
-          } else if (this.network === 'liquid' || this.network === 'liquidtestnet' && tapleafVersion === 0xbe) {
+            this.processScript(new ScriptInfo('inner_witnessscript', taprootInfo.scriptPath.script, v.inner_witnessscript_asm, v.witness, taprootInfo, vinIds?.[i]));
+          } else if (this.network === 'liquid' || this.network === 'liquidtestnet' && taprootInfo.scriptPath.leafVersion === 0xbe) {
             this.simplicity = true;
             v.inner_simplicityscript = v.witness[1];
-            this.processScript(new ScriptInfo('inner_simplicityscript', scriptHex, null, v.witness, controlBlock, vinIds?.[i]));
+            this.processScript(new ScriptInfo('inner_simplicityscript', taprootInfo.scriptPath.simplicityScript, null, v.witness, taprootInfo, vinIds?.[i]));
           }
         }
       }
@@ -237,14 +237,15 @@ export class AddressTypeInfo {
     return this.compareTo(otherInfo);
   }
 
-  private processScript(script: ScriptInfo): void {
+  public processScript(script: ScriptInfo): boolean {
     if (this.scripts.has(script.key)) {
-      return;
+      return false;
     }
     this.scripts.set(script.key, script);
     if (script.template?.type === 'multisig') {
       this.isMultisig = { m: script.template['m'], n: script.template['n'] };
     }
+    return true;
   }
 }
 
@@ -264,7 +265,7 @@ export type AddressSimilarityResult =
   | { status: 'incomparable' }
   | AddressSimilarity;
 
-export const ADDRESS_SIMILARITY_THRESHOLD = 10_000_000; // 1 false positive per ~10 million comparisons
+export const ADDRESS_SIMILARITY_THRESHOLD = 1_000_000; // 1 false positive per ~1 million comparisons
 
 function fuzzyPrefixMatch(a: string, b: string, rtl: boolean = false): { score: number, matchA: string, matchB: string } {
   let score = 0;
@@ -280,12 +281,18 @@ function fuzzyPrefixMatch(a: string, b: string, rtl: boolean = false): { score: 
     b = b.split('').reverse().join('');
   }
 
+  let discounted = false;
   while (ai < a.length && bi < b.length && !done) {
     if (a[ai] === b[bi]) {
       // matching characters
       prefixA += a[ai];
       prefixB += b[bi];
-      score++;
+      if (discounted) {
+        score += 0.5;
+      } else {
+        score ++;
+      }
+      discounted = false;
       ai++;
       bi++;
     } else if (!gap) {
@@ -312,6 +319,7 @@ function fuzzyPrefixMatch(a: string, b: string, rtl: boolean = false): { score: 
         bi++;
       }
       gap = true;
+      discounted = true;
     } else {
       done = true;
     }
@@ -340,7 +348,7 @@ export function compareAddressInfo(a: AddressTypeInfo, b: AddressTypeInfo): Addr
   const left = fuzzyPrefixMatch(a.address, b.address);
   const right = fuzzyPrefixMatch(a.address, b.address, true);
   // depending on address type, some number of matching prefix characters are guaranteed
-  const prefixScore = isBase58 ? 1 : ADDRESS_PREFIXES[a.network || 'mainnet'].bech32.length;
+  const prefixScore = isBase58 ? 1 : (ADDRESS_PREFIXES[a.network || 'mainnet'].bech32.length + 1);
 
   // add the two scores together
   const totalScore = left.score + right.score - prefixScore;
