@@ -397,19 +397,13 @@ h2 {
 	margin-left: 5px;
 
 	&.blink {
-		animation: blink 0.2s infinite;
+		animation: acceleratePulse 1s infinite;
 		pointer-events: none;
 	}
 }
 
-@keyframes blink {
-	0% {
-		background-color: #008b42;
-	}
-	50% {
-		background-color: #d99f00;
-	}
-	100% {
-		background-color: #e55a21;
-	}
+@keyframes acceleratePulse {
+  0% { background-color: #653b9c; box-shadow: #ad7de57f 0px 0px 12px -2px; }
+  50% { background-color: #8457bb; box-shadow: #ad7de5 0px 0px 18px -2px;}
+  100% { background-color: #653b9c; box-shadow: #ad7de57f 0px 0px 12px -2px; }
 }
