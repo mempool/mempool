@@ -148,6 +148,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   waitingForAccelerationInfo: boolean = false;
   isLoadingFirstSeen = false;
   notAcceleratedOnLoad: boolean = null;
+  duplicateTxBlocks: [number, number] | undefined;
 
   featuresEnabled: boolean;
   segwitEnabled: boolean;
@@ -581,6 +582,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               });
             }
           }
+          this.duplicateTxBlocks = DUPLICATE_TX_BLOCKS[this.txId?.toLowerCase()];
           if (window.innerWidth <= 767.98) {
             this.router.navigate([this.relativeUrlPipe.transform('/tx'), this.txId], {
               queryParamsHandling: 'merge',
@@ -1157,13 +1159,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       )
       && this.notAcceleratedOnLoad // avoid briefly showing accelerator checkout on already accelerated txs
     );
-  }
-
-  get duplicateTxBlocks(): [number, number] | undefined {
-    if (!this.txId) {
-      return undefined;
-    }
-    return DUPLICATE_TX_BLOCKS[this.txId.toLowerCase()];
   }
 
   ngOnDestroy() {

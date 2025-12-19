@@ -31,18 +31,20 @@
   </div>
   <div class="clearfix"></div>
 
-  <div *ngIf="duplicateTxBlocks" class="box duplicate-tx-alert">
-    <div class="icon-container">
-      <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+  @if (duplicateTxBlocks) {
+    <div class="box duplicate-tx-alert">
+      <div class="icon-container">
+        <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+      </div>
+      <span>
+        <ng-container i18n="transaction.duplicate.notice|Duplicate transaction notice">
+          This transaction ID appears twice in the blockchain as the coinbase of blocks <a [routerLink]="['/block/' | relativeUrl, duplicateTxBlocks[0]]">{{ duplicateTxBlocks[0] }}</a> and <a [routerLink]="['/block/' | relativeUrl, duplicateTxBlocks[1]]">{{ duplicateTxBlocks[1] }}</a>, due to a bug later mitigated by <a href="https://github.com/bitcoin/bips/blob/master/bip-0030.mediawiki" target="_blank" rel="noopener">BIP-30</a>.
+        </ng-container>
+        <br>
+        <a href="https://blog.bitmex.com/bitcoins-duplicate-transactions/" target="_blank" rel="noopener" i18n="transaction.duplicate.read-more|Duplicate transaction read more">Read more</a>
+      </span>
     </div>
-    <span>
-      <ng-container i18n="transaction.duplicate.notice|Duplicate transaction notice">
-        This transaction ID appears twice in the blockchain as the coinbase of blocks <a [routerLink]="['/block/' | relativeUrl, duplicateTxBlocks[0]]">{{ duplicateTxBlocks[0] }}</a> and <a [routerLink]="['/block/' | relativeUrl, duplicateTxBlocks[1]]">{{ duplicateTxBlocks[1] }}</a>, due to a bug later mitigated by <a href="https://github.com/bitcoin/bips/blob/master/bip-0030.mediawiki" target="_blank" rel="noopener">BIP-30</a>.
-      </ng-container>
-      <br>
-      <a href="https://blog.bitmex.com/bitcoins-duplicate-transactions/" target="_blank" rel="noopener" i18n="transaction.duplicate.read-more|Duplicate transaction read more">Read more</a>
-    </span>
-  </div>
+  }
 
   @if (!error) {
     <app-transaction-details
