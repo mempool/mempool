@@ -159,8 +159,21 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
   isMempoolSpaceBuild = this.stateService.isMempoolSpaceBuild;
 
-  @ViewChild('graphContainer')
   graphContainer: ElementRef;
+  @ViewChild('graphContainer')
+  set flowAnchor(element: ElementRef | null | undefined) {
+    if (element) {
+      this.graphContainer = element;
+      setTimeout(() => { this.applyFragment(); }, 0);
+    }
+  }
+  
+  @ViewChild('accelerate')
+  set accelerateAnchor(element: ElementRef | null | undefined) {
+    if (element) {
+      setTimeout(() => { this.applyFragment(); }, 0);
+    }
+  }
 
   constructor(
     private route: ActivatedRoute,
@@ -220,11 +233,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     );
 
     this.urlFragmentSubscription = this.route.fragment.subscribe((fragment) => {
-      this.fragmentParams = new URLSearchParams(fragment || '');
-      const vin = parseInt(this.fragmentParams.get('vin'), 10);
-      const vout = parseInt(this.fragmentParams.get('vout'), 10);
-      this.inputIndex = (!isNaN(vin) && vin >= 0) ? vin : null;
-      this.outputIndex = (!isNaN(vout) && vout >= 0) ? vout : null;
+      this.updateFragmentParams(fragment);
     });
 
     this.blocksSubscription = this.stateService.blocks$.subscribe((blocks) => {
@@ -703,8 +712,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             })
           ).subscribe();
 
-          setTimeout(() => { this.applyFragment(); }, 0);
-
           this.cd.detectChanges();
         },
         (error) => {
@@ -835,7 +842,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    document.location.hash = '#accelerate';
     this.openAccelerator();
     return false;
   }
@@ -893,10 +899,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     
     if (this.notAcceleratedOnLoad === null) {
       this.notAcceleratedOnLoad = !this.isAcceleration;
-    }
-
-    if (!this.isAcceleration && this.fragmentParams.has('accelerate')) {
-      this.forceAccelerationSummary = true;
     }
 
     this.txChanged$.next(true);
@@ -1038,6 +1040,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.showAccelerationDetails = false;
     this.accelerationFlowCompleted = false;
     this.accelerationInfo = null;
+    this.notAcceleratedOnLoad = null;
     this.txInBlockIndex = null;
     this.mempoolPosition = null;
     this.pool = null;
@@ -1088,12 +1091,24 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   // simulate normal anchor fragment behavior
   applyFragment(): void {
     const anchor = Array.from(this.fragmentParams.entries()).find(([frag, value]) => value === '');
-    if (anchor?.length && anchor[0] !== 'accelerate') {
+    if (anchor?.length) {
       const anchorElement = document.getElementById(anchor[0]);
       if (anchorElement) {
-        anchorElement.scrollIntoView();
+        anchorElement.scrollIntoView({ behavior: 'smooth' });
       }
     }
+  }
+
+  updateFragmentParams(fragment: string | null): void {
+    this.fragmentParams = new URLSearchParams(fragment || '');
+    const vin = parseInt(this.fragmentParams.get('vin'), 10);
+    const vout = parseInt(this.fragmentParams.get('vout'), 10);
+    this.inputIndex = (!isNaN(vin) && vin >= 0) ? vin : null;
+    this.outputIndex = (!isNaN(vout) && vout >= 0) ? vout : null;
+    if (this.fragmentParams.has('accelerate')) {
+      this.forceAccelerationSummary = true;
+    }
+    setTimeout(() => { this.applyFragment(); }, 0);
   }
 
   setHasAccelerationDetails(hasDetails: boolean): void {
@@ -1120,19 +1135,20 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onAccelerationCompleted(): void {
-    document.location.hash = '';
+    this.router.navigate([], { fragment: null });
     this.accelerationFlowCompleted = true;
     this.forceAccelerationSummary = false;
   }
 
   closeAccelerator(): void {
-    document.location.hash = '';
+    this.router.navigate([], { fragment: null });
     this.hideAccelerationSummary = true;
     this.forceAccelerationSummary = false;
     this.storageService.setValue('hide-accelerator-pref', 'true');
   }
 
   openAccelerator(): void {
+    this.router.navigate([], { fragment: 'accelerate' });
     this.accelerationFlowCompleted = false;
     this.hideAccelerationSummary = false;
     this.storageService.setValue('hide-accelerator-pref', 'false');
