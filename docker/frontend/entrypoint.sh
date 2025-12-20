@@ -3,6 +3,13 @@ __MEMPOOL_BACKEND_MAINNET_HTTP_HOST__=${BACKEND_MAINNET_HTTP_HOST:=127.0.0.1}
 __MEMPOOL_BACKEND_MAINNET_HTTP_PORT__=${BACKEND_MAINNET_HTTP_PORT:=8999}
 __MEMPOOL_FRONTEND_HTTP_PORT__=${FRONTEND_HTTP_PORT:=8080}
 
+__PROXIED_SERVICES__=${PROXIED_SERVICES:=false}
+__PROXIED_SERVICES_HOST__=${PROXIED_SERVICES_HOST:=https://mempool.space}
+
+if [ "${PROXIED_SERVICES}" = "true" ]; then
+  sed -i "s|proxy_pass https://mempool.space;|proxy_pass ${PROXIED_SERVICES_HOST};|g" /etc/nginx/conf.d/nginx-mempool.conf
+fi
+
 sed -i "s/__MEMPOOL_BACKEND_MAINNET_HTTP_HOST__/${__MEMPOOL_BACKEND_MAINNET_HTTP_HOST__}/g" /etc/nginx/conf.d/nginx-mempool.conf
 sed -i "s/__MEMPOOL_BACKEND_MAINNET_HTTP_PORT__/${__MEMPOOL_BACKEND_MAINNET_HTTP_PORT__}/g" /etc/nginx/conf.d/nginx-mempool.conf
 
