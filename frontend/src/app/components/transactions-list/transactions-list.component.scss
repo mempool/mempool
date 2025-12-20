@@ -288,6 +288,16 @@ h2 {
 
 .summary {
 	margin-top: 10px;
+
+	@media (max-width: 430px) {
+		.accelerate img {
+			display: none;
+		}
+
+		.has-accelerate .btn {
+			font-size: 12px;
+		}
+	}
 }
 
 .address {
