@@ -1,4 +1,5 @@
 var fs = require('fs');
+var crypto = require('crypto');
 const { spawnSync } = require('child_process');
 
 const CONFIG_FILE_NAME = 'mempool-frontend-config.json';
@@ -37,9 +38,10 @@ if (configContent && configContent.CUSTOMIZATION) {
 const baseModuleName = configContent.BASE_MODULE || 'mempool';
 const customBuildName = (customConfigContent && customConfigContent.enterprise) ? ('.' + customConfigContent.enterprise) : '';
 const indexFilePath = 'src/index.' + baseModuleName + customBuildName + '.html';
+const SRC_INDEX_FILE_PATH = 'src/index.html';
 
 try {
-  fs.copyFileSync(indexFilePath, 'src/index.html');
+  fs.copyFileSync(indexFilePath, SRC_INDEX_FILE_PATH);
   console.log('Copied ' + indexFilePath + ' to src/index.html');
 } catch (e) {
   console.log('Error copying the index file');
@@ -105,6 +107,22 @@ function readConfig(path) {
 
 function writeConfig(path, config) {
   try {
+    const sriHash = crypto.createHash('sha384').update(config).digest('base64');
+    console.log(`SRI hash for ${path}: sha384-${sriHash}`);
+
+    let fileContent = fs.readFileSync(SRC_INDEX_FILE_PATH, 'utf8');
+    // There are two variants, depending on the filename path given to this function.
+    // config.js or customize.js
+    // We need to decide which one to replace based on the path argument.
+    const scriptFileName = path.split('/').pop();
+    // The format of the script tag is:
+    // <script src="/resources/config.js"></script>
+    const regex = new RegExp(`(<script\\s+src=["']/resources/${scriptFileName}["'])(\\s*></script>)`);
+    fileContent = fileContent.replace(regex, `$1 integrity="sha384-${sriHash}" crossorigin="anonymous"$2`);
+    fs.writeFileSync(SRC_INDEX_FILE_PATH, fileContent, 'utf8');
+    console.log(`Updated SRI hash in ${SRC_INDEX_FILE_PATH}`);
+
+    // Write the config file itself to the given path
     fs.writeFileSync(path, config, 'utf8');
   } catch (e) {
     throw new Error(e);
