@@ -118,10 +118,20 @@ function writeConfig(path, config) {
     // The format of the script tag is:
     // <script src="/resources/config.js"></script>
     const regex = new RegExp(`(<script\\s+src=["']/resources/${scriptFileName}["'])(\\s*></script>)`);
-    fileContent = fileContent.replace(regex, `$1 integrity="sha384-${sriHash}" crossorigin="anonymous"$2`);
-    fs.writeFileSync(SRC_INDEX_FILE_PATH, fileContent, 'utf8');
-    console.log(`Updated SRI hash in ${SRC_INDEX_FILE_PATH}`);
+    const updatedFileContent = fileContent.replace(
+      regex,
+      `$1 integrity="sha384-${sriHash}" crossorigin="anonymous"$2`
+    );
 
+    if (updatedFileContent === fileContent) {
+      console.warn(
+        `Warning: could not update SRI hash for /resources/${scriptFileName} in ${SRC_INDEX_FILE_PATH} (script tag not found or format unexpected).`
+      );
+    } else {
+      fileContent = updatedFileContent;
+      fs.writeFileSync(SRC_INDEX_FILE_PATH, fileContent, 'utf8');
+      console.log(`Updated SRI hash in ${SRC_INDEX_FILE_PATH}`);
+    }
     // Write the config file itself to the given path
     fs.writeFileSync(path, config, 'utf8');
   } catch (e) {
