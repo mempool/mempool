@@ -311,6 +311,13 @@
   pointer-events: none;
 }
 
+.anchor {
+  scroll-margin-top: 105px;
+  @media (min-width: 564px) {
+    scroll-margin-top: 65px;
+  }
+}
+
 .duplicate-tx-alert {
   display: flex;
   align-items: center;

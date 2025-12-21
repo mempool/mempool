@@ -77,8 +77,6 @@
     ></app-transaction-details>
   }
 
-  <span id="accelerate"></span>
-
   <ng-template [ngIf]="!isLoadingTx && !error">
 
     <!-- CPFP Details -->
@@ -86,6 +84,7 @@
 
     <!-- Accelerator -->
     <ng-container *ngIf="!tx?.status?.confirmed && showAccelerationSummary && (ETA$ | async) as eta;">
+      <span id='accelerate' #accelerate class="anchor"></span>
       <br>
       <div class="title float-left mb-1">
         <h2><a [href]="[ isMempoolSpaceBuild ? '/accelerator' : 'https://mempool.space/accelerator']" [target]="isMempoolSpaceBuild ? '' : 'blank'"><app-svg-images name="accelerator" [height]="isMobile ? '35px' : '45px'"></app-svg-images></a></h2>
@@ -133,7 +132,7 @@
 
     <ng-container *ngIf="flowEnabled; else flowPlaceholder">
       <div class="title float-left">
-        <h2 id="flow" i18n="transaction.flow|Transaction flow">Flow</h2>
+        <h2 id="flow" #flow class="anchor" i18n="transaction.flow|Transaction flow">Flow</h2>
       </div>
 
       <button type="button" class="btn btn-outline-info flow-toggle btn-sm float-right" (click)="toggleGraph()" i18n="hide-diagram">Hide diagram</button>
