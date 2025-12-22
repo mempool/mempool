@@ -160,7 +160,7 @@ export class BlockViewComponent implements OnInit, OnDestroy {
     }
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onResize(): void {
     if (this.autofit) {
       this.resolution = bestFitResolution(64, 96, Math.min(window.innerWidth, window.innerHeight));

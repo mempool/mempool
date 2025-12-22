@@ -222,7 +222,7 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
     }
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onResize(): void {
     this.chainWidth = window.innerWidth;
     this.isMobile = this.chainWidth <= 767.98;
@@ -251,6 +251,9 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   onMouseDown(event: MouseEvent) {
+    if (!event) {
+      return;
+    }
     if (!(event.which > 1 || event.button > 0)) {
       this.mouseDragStartX = event.clientX;
       this.resetMomentum(event.clientX);
@@ -275,28 +278,29 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   // We're catching the whole page event here because we still want to scroll blocks
   // even if the mouse leave the blockchain blocks container. Same idea for mouseup below.
-  @HostListener('document:mousemove', ['$event'])
-  onMouseMove(event: MouseEvent): void {
-    if (this.mouseDragStartX != null) {
-      this.updateVelocity(event.clientX);
-      this.stateService.setBlockScrollingInProgress(true);
-      this.scrollLeft = this.blockchainScrollLeftInit + this.mouseDragStartX - event.clientX;
-      this.applyScrollLeft();
+  @HostListener('document:mousemove')
+  onMouseMove(event?: MouseEvent): void {
+    if (!event || this.mouseDragStartX == null) {
+      return;
     }
+    this.updateVelocity(event.clientX);
+    this.stateService.setBlockScrollingInProgress(true);
+    this.scrollLeft = this.blockchainScrollLeftInit + this.mouseDragStartX - event.clientX;
+    this.applyScrollLeft();
   }
-  @HostListener('document:mouseup', [])
+  @HostListener('document:mouseup')
   onMouseUp() {
     this.mouseDragStartX = null;
     this.animateMomentum();
   }
-  @HostListener('document:pointermove', ['$event'])
-  onPointerMove(event: PointerEvent): void {
+  @HostListener('document:pointermove')
+  onPointerMove(event?: PointerEvent): void {
     if (this.isiOS) {
       this.onMouseMove(event);
     }
   }
-  @HostListener('document:pointerup', [])
-  @HostListener('document:pointercancel', [])
+  @HostListener('document:pointerup')
+  @HostListener('document:pointercancel')
   onPointerUp() {
     if (this.isiOS) {
       this.onMouseUp();

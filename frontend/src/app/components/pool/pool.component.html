@@ -352,7 +352,7 @@
           <td class="size">
             <div class="progress">
               <div class="progress-bar progress-mempool" role="progressbar"
-                [ngStyle]="{'width': (block.weight / stateService.env.BLOCK_WEIGHT_UNITS)*100 + '%' }"></div>
+                [style.width]="(block.weight / stateService.env.BLOCK_WEIGHT_UNITS)*100 + '%' "></div>
               <div class="progress-text" [innerHTML]="block.size | bytes: 2"></div>
             </div>
           </td>

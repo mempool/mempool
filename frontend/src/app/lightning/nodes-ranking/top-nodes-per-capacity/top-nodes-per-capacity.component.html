@@ -1,6 +1,6 @@
 
 
-<div class="container-xl" style="min-height: 335px" [ngClass]="{'widget': widget, 'full-height': !widget}">
+<div class="container-xl" style="min-height: 335px" [class]="{'widget': widget, 'full-height': !widget}">
   <h1 *ngIf="!widget" class="float-left" i18n="lightning.liquidity-ranking">Liquidity Ranking</h1>
 
   <div class="clearfix"></div>
@@ -29,7 +29,7 @@
             <app-amount [satoshis]="node.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
             <span class="capacity-ratio">&nbsp;({{ (node?.capacity / data.statistics.totalCapacity * 100) | number:'1.1-1' }}%)</span>
           </td>
-          <td class="d-table-cell fiat text-right" [ngClass]="{'widget': widget}">
+          <td class="d-table-cell fiat text-right" [class]="{'widget': widget}">
             <app-fiat [value]="node.capacity"></app-fiat>
           </td>
           <td *ngIf="!widget" class="d-none d-md-table-cell text-right">

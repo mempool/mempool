@@ -1,12 +1,12 @@
-<div [ngClass]="{'widget': widget, 'extra-margin-right': widget}">
+<div [class]="{'widget': widget, 'extra-margin-right': widget}">
 
   <div class="clearfix"></div>
 
   <div style="min-height: 295px">
     <table class="table table-borderless">
       <thead style="vertical-align: middle;">
-        <th class="address text-left" [ngClass]="{'widget': widget}" i18n="shared.address">Address</th>
-        <th class="amount text-right" [ngClass]="{'widget': widget}" i18n="address.balance">Balance</th>
+        <th class="address text-left" [class]="{'widget': widget}" i18n="shared.address">Address</th>
+        <th class="amount text-right" [class]="{'widget': widget}" i18n="address.balance">Balance</th>
       </thead>
       <tbody *ngIf="federationAddresses$ | async as addresses; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
         <ng-container *ngIf="widget; else regularRows">

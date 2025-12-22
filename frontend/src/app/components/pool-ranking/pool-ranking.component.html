@@ -92,7 +92,7 @@
           <th class="" i18n="mining.pool-name">Pool</th>
           <th class="" *ngIf="['24h', '3d', '1w'].includes(this.miningWindowPreference)" i18n="mining.hashrate">Hashrate</th>
           <th class="" i18n="master-page.blocks">Blocks</th>
-          <th *ngIf="auditAvailable" class="health text-right widget" [ngClass]="{'health-column': ['24h', '3d', '1w'].includes(this.miningWindowPreference)}" i18n="latest-blocks.avg_health"
+          <th *ngIf="auditAvailable" class="health text-right widget" [class]="{'health-column': ['24h', '3d', '1w'].includes(this.miningWindowPreference)}" i18n="latest-blocks.avg_health"
             i18n-ngbTooltip="latest-blocks.avg_health" ngbTooltip="Avg Health" placement="bottom" #health [disableTooltip]="!isEllipsisActive(health)">Avg Health</th>
           <th *ngIf="auditAvailable" class="d-none d-sm-table-cell" i18n="mining.fees-per-block">Avg Block Fees</th>
           <th class="d-none d-lg-table-cell" i18n="mining.empty-blocks">Empty Blocks</th>
@@ -111,7 +111,7 @@
           <td class="d-flex justify-content-center">
             {{ pool.blockCount }}<span class="d-none d-md-table-cell">&nbsp;({{ pool.share }}%)</span>
           </td>
-          <td *ngIf="auditAvailable" class="health text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable, 'health-column': ['24h', '3d', '1w'].includes(this.miningWindowPreference)}">
+          <td *ngIf="auditAvailable" class="health text-right" [class]="{'widget': widget, 'legacy': !indexingAvailable, 'health-column': ['24h', '3d', '1w'].includes(this.miningWindowPreference)}">
             <a
               class="health-badge badge"
               [class.badge-success]="pool.avgMatchRate >= 99"

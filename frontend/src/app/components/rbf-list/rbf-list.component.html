@@ -15,7 +15,7 @@
 
   <div class="clearfix"></div>
 
-  <div class="rbf-trees" [ngStyle]="{ 'min-height': '295px', 'opacity': isLoading ? '0.75' : '1' }">
+  <div class="rbf-trees" [style]="{ 'min-height': '295px', 'opacity': isLoading ? '0.75' : '1' }">
     <ng-container *ngIf="rbfTrees$ | async as trees">
       <div *ngFor="let tree of trees" class="tree">
         <p class="info">

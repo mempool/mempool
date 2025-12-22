@@ -168,7 +168,7 @@ export class AcceleratorDashboardComponent implements OnInit, OnDestroy {
     this.websocketService.stopTrackAccelerations();
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onResize(): void {
     if (window.innerWidth >= 992) {
       this.graphHeight = 380;

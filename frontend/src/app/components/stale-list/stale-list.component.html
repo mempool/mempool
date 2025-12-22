@@ -4,7 +4,7 @@
 
   <div class="clearfix"></div>
 
-  <div class="chain-tips" [ngStyle]="{ 'min-height': '295px', 'opacity': isLoading ? '0.75' : '1' }">
+  <div class="chain-tips" [style]="{ 'min-height': '295px', 'opacity': isLoading ? '0.75' : '1' }">
     <ng-container *ngIf="chainTips$ | async as chainTips">
       <div *ngFor="let chainTip of chainTips" class="chain-tip">
         <p class="info">

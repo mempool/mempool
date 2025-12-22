@@ -1,4 +1,4 @@
-<div class="container-xl" style="min-height: 335px" [ngClass]="{'widget': widget, 'full-height': !widget}">
+<div class="container-xl" style="min-height: 335px" [class]="{'widget': widget, 'full-height': !widget}">
   <div *ngIf="!widget" class="float-left" style="display: flex; width: 100%; align-items: center;">
     <h1>{{ label }}</h1>
     <div *ngIf="!widget && isLoading" class="spinner-border" role="status"></div>
@@ -19,10 +19,10 @@
     <div style="min-height: 295px">
       <table class="table table-borderless" [class.table-fixed]="widget">
         <thead>
-          <th class="filename text-left" [ngClass]="{'widget': widget}" i18n="simpleproof.filename">Filename</th>
-          <th class="hash text-left" [ngClass]="{'widget': widget}" i18n="simpleproof.hash">Hash</th>
-          <th class="verified text-right" [ngClass]="{'widget': widget}" i18n="simpleproof.verified">Verified</th>
-          <th class="proof text-right" [ngClass]="{'widget': widget}" i18n="simpleproof.proof">Proof</th>
+          <th class="filename text-left" [class]="{'widget': widget}" i18n="simpleproof.filename">Filename</th>
+          <th class="hash text-left" [class]="{'widget': widget}" i18n="simpleproof.hash">Hash</th>
+          <th class="verified text-right" [class]="{'widget': widget}" i18n="simpleproof.verified">Verified</th>
+          <th class="proof text-right" [class]="{'widget': widget}" i18n="simpleproof.proof">Proof</th>
         </thead>
         <tbody *ngIf="verifiedPage; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
           <tr *ngFor="let item of verifiedPage">
@@ -44,16 +44,16 @@
         <ng-template #skeleton>
           <tbody>
             <tr *ngFor="let item of [].constructor(itemsPerPage)">
-              <td class="filename text-left" [ngClass]="{'widget': widget}">
+              <td class="filename text-left" [class]="{'widget': widget}">
                 <span class="skeleton-loader" style="max-width: 75px"></span>
               </td>
-              <td class="hash text-left" [ngClass]="{'widget': widget}">
+              <td class="hash text-left" [class]="{'widget': widget}">
                 <span class="skeleton-loader" style="max-width: 75px"></span>
               </td>
-              <td class="verified text-right" [ngClass]="{'widget': widget}">
+              <td class="verified text-right" [class]="{'widget': widget}">
                 <span class="skeleton-loader" style="max-width: 75px"></span>
               </td>
-              <td class="proof text-right" [ngClass]="{'widget': widget}">
+              <td class="proof text-right" [class]="{'widget': widget}">
                 <span class="skeleton-loader" style="max-width: 75px"></span>
               </td>
             </tr>

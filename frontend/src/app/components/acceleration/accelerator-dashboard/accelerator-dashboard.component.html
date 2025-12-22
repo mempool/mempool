@@ -43,16 +43,16 @@
             <app-acceleration-stats [timespan]="timespan"></app-acceleration-stats>
             <div class="widget-toggler">
               <a href="" (click)="setTimespan('24h')" class="toggler-option"
-                [ngClass]="{'inactive': timespan === '24h'}"><small>24h</small></a>
+                [class]="{'inactive': timespan === '24h'}"><small>24h</small></a>
               <span style="color: #ffffff66; font-size: 8px"> | </span>
               <a href="" (click)="setTimespan('1m')" class="toggler-option"
-              [ngClass]="{'inactive': timespan === '1m'}"><small>1m</small></a>
+              [class]="{'inactive': timespan === '1m'}"><small>1m</small></a>
               <span style="color: #ffffff66; font-size: 8px"> | </span>
               <a href="" (click)="setTimespan('1y')" class="toggler-option"
-                [ngClass]="{'inactive': timespan === '1y'}"><small>1y</small></a>
+                [class]="{'inactive': timespan === '1y'}"><small>1y</small></a>
               <span style="color: #ffffff66; font-size: 8px"> | </span>
               <a href="" (click)="setTimespan('all')" class="toggler-option"
-              [ngClass]="{'inactive': timespan === 'all'}"><small i18n="all">all</small></a>
+              [class]="{'inactive': timespan === 'all'}"><small i18n="all">all</small></a>
             </div>
           </div>
         </div>

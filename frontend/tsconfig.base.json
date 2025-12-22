@@ -7,8 +7,8 @@
     "declaration": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
-    "module": "ES2020",
-    "moduleResolution": "node",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2020",
     "typeRoots": [

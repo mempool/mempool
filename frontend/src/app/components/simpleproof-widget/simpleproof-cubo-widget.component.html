@@ -1,4 +1,4 @@
-<div class="container-xl" style="min-height: 335px" [ngClass]="{'widget': widget, 'full-height': !widget}">
+<div class="container-xl" style="min-height: 335px" [class]="{'widget': widget, 'full-height': !widget}">
   <div *ngIf="!widget" class="float-left" style="display: flex; width: 100%; align-items: center;">
     <h1>
       <img src="/resources/cubo.svg" style="width: 1.1em; height: 1.1em; margin-right: 0.1em; transform: translateY(-0.1em);">
@@ -31,21 +31,21 @@
       </div>
       <table class="table table-borderless table-fixed">
         <thead>
-          <th class="student text-left sortable" [ngClass]="{'widget': widget}" (click)="$event.stopPropagation(); sortBy('student_name')" style="cursor: pointer;">
+          <th class="student text-left sortable" [class]="{'widget': widget}" (click)="$event.stopPropagation(); sortBy('student_name')" style="cursor: pointer;">
             <span i18n="simpleproof.student_name">Student Name</span>
             <div class="sort-icons ml-1">
               <fa-icon [icon]="['fas', 'caret-up']" [fixedWidth]="true" [class.active]="sortField === 'student_name' && sortDirection === 'asc'" (click)="$event.stopPropagation(); sortBy('student_name', 'asc')"></fa-icon>
               <fa-icon [icon]="['fas', 'caret-down']" [fixedWidth]="true" [class.active]="sortField === 'student_name' && sortDirection === 'desc'" (click)="$event.stopPropagation(); sortBy('student_name', 'desc')"></fa-icon>
             </div>
           </th>
-          <th class="id text-left sortable" [ngClass]="{'widget': widget}" (click)="$event.stopPropagation(); sortBy('id_code')" style="cursor: pointer;">
+          <th class="id text-left sortable" [class]="{'widget': widget}" (click)="$event.stopPropagation(); sortBy('id_code')" style="cursor: pointer;">
             <span i18n="simpleproof.id_code">ID</span>
             <div class="sort-icons ml-1">
               <fa-icon [icon]="['fas', 'caret-up']" [fixedWidth]="true" [class.active]="sortField === 'id_code' && sortDirection === 'asc'" (click)="$event.stopPropagation(); sortBy('id_code', 'asc')"></fa-icon>
               <fa-icon [icon]="['fas', 'caret-down']" [fixedWidth]="true" [class.active]="sortField === 'id_code' && sortDirection === 'desc'" (click)="$event.stopPropagation(); sortBy('id_code', 'desc')"></fa-icon>
             </div>
           </th>
-          <th class="proof text-right" [ngClass]="{'widget': widget}" i18n="simpleproof.proof">Proof</th>
+          <th class="proof text-right" [class]="{'widget': widget}" i18n="simpleproof.proof">Proof</th>
         </thead>
         <tbody *ngIf="verifiedPage; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
           <tr *ngIf="widget" class="search-row">
@@ -103,13 +103,13 @@
         <ng-template #skeleton>
           <tbody>
             <tr *ngFor="let item of [].constructor(itemsPerPage)">
-              <td class="filename text-left" [ngClass]="{'widget': widget}">
+              <td class="filename text-left" [class]="{'widget': widget}">
                 <span class="skeleton-loader" style="max-width: 75px"></span>
               </td>
-              <td class="id text-left" [ngClass]="{'widget': widget}">
+              <td class="id text-left" [class]="{'widget': widget}">
                 <span class="skeleton-loader" style="max-width: 75px"></span>
               </td>
-              <td class="proof text-right" [ngClass]="{'widget': widget}">
+              <td class="proof text-right" [class]="{'widget': widget}">
                 <span class="skeleton-loader" style="max-width: 75px"></span>
               </td>
             </tr>

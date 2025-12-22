@@ -618,7 +618,7 @@ export class AddressComponent implements OnInit, OnDestroy {
     return this.addressTypeInfo?.type === 'v1_p2tr' && isBitcoin && this.tapTreeIncomplete;
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onResize(): void {
     this.isMobile = window.innerWidth < 768;
   }

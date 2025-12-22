@@ -68,7 +68,7 @@
                   <ul>
                     <li (click)="this.showCount = !this.showCount"
                       [class]="this.showCount ? '' : 'inactive'">
-                      <span class="square" [ngStyle]="{'backgroundColor': 'white'}"></span>
+                      <span class="square" [style]="{'backgroundColor': 'white'}"></span>
                       <span class="fee-text">{{ titleCount }}</span>
                     </li>
                     <hr style="margin: 4px;">
@@ -76,7 +76,7 @@
                       <ng-template [ngIf]="feeData.fee <= (feeLevels[maxFeeIndex])">
                         <li (click)="filterFeeIndex = feeData.fee"
                           [class]="filterFeeIndex > feeData.fee ? 'inactive' : ''">
-                          <span class="square" [ngStyle]="{'backgroundColor': feeData.color}"></span>
+                          <span class="square" [style]="{'backgroundColor': feeData.color}"></span>
                           <span class="fee-text">{{ feeData.range }}</span>
                         </li>
                       </ng-template>

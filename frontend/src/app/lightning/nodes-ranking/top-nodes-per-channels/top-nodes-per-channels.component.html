@@ -1,6 +1,6 @@
 
 
-<div class="container-xl" style="min-height: 335px" [ngClass]="{'widget': widget, 'full-height': !widget}">
+<div class="container-xl" style="min-height: 335px" [class]="{'widget': widget, 'full-height': !widget}">
   <h1 *ngIf="!widget" class="float-left" i18n="lightning.connectivity-ranking">Connectivity Ranking</h1>
 
   <div class="clearfix"></div>
@@ -8,7 +8,7 @@
   <div style="min-height: 295px">
     <table class="table table-borderless">
       <thead>
-        <th class="pool text-left" i18n="nodes.alias" [ngClass]="{'widget': widget}">Alias</th>
+        <th class="pool text-left" i18n="nodes.alias" [class]="{'widget': widget}">Alias</th>
         <th class="liquidity text-right" i18n="node.channels">Channels</th>
         <th *ngIf="!widget" class="d-none d-md-table-cell channels text-right" i18n="lightning.channels">Capacity</th>
         <th *ngIf="!widget" class="d-none d-md-table-cell text-right">{{ currency$ | async }}</th>

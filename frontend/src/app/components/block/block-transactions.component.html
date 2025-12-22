@@ -24,7 +24,7 @@
     <ng-container *ngIf="(txsLoadingStatus$ | async) as txsLoadingStatus; else headerLoader">
       <div class="header-bg box">
         <div class="progress progress-dark" style="margin: 4px; height: 14px;">
-          <div class="progress-bar progress-light" role="progressbar" [ngStyle]="{'width': txsLoadingStatus + '%' }"></div>
+          <div class="progress-bar progress-light" role="progressbar" [style.width]="txsLoadingStatus + '%' "></div>
         </div>
       </div>
     </ng-container>

@@ -10,6 +10,7 @@ import { Block } from '@interfaces/electrs.interface.js';
   templateUrl: './block-overview-tooltip.component.html',
   styleUrls: ['./block-overview-tooltip.component.scss'],
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlockOverviewTooltipComponent implements OnChanges {
   @Input() tx: TransactionStripped | void;
@@ -43,6 +44,8 @@ export class BlockOverviewTooltipComponent implements OnChanges {
   ) {}
 
   ngOnChanges(changes): void {
+    let shouldMarkForCheck = false;
+
     if (changes.cursorPosition && changes.cursorPosition.currentValue) {
       let x = changes.cursorPosition.currentValue.x + 10;
       let y = changes.cursorPosition.currentValue.y + 10;
@@ -57,43 +60,63 @@ export class BlockOverviewTooltipComponent implements OnChanges {
         }
       }
       this.tooltipPosition = { x, y };
+      shouldMarkForCheck = true;
     }
 
-    if (this.tx && (changes.tx || changes.filterFlags || changes.filterMode)) {
-      this.txid = this.tx.txid || '';
-      this.time = this.tx.time || 0;
-      this.fee = this.tx.fee || 0;
-      this.value = this.tx.value || 0;
-      this.vsize = this.tx.vsize || 1;
-      this.feeRate = this.fee / this.vsize;
-      this.effectiveRate = this.tx.rate;
-      const txFlags = BigInt(this.tx.flags) || 0n;
-      this.acceleration = this.tx.acc || (txFlags & TransactionFlags.acceleration);
-      this.hasEffectiveRate = this.tx.acc || !(Math.abs((this.fee / this.vsize) - this.effectiveRate) <= 0.1 && Math.abs((this.fee / Math.ceil(this.vsize)) - this.effectiveRate) <= 0.1)
-        || (txFlags && (txFlags & (TransactionFlags.cpfp_child | TransactionFlags.cpfp_parent)) > 0n);
-      this.filters = this.tx.flags ? toFilters(txFlags).filter(f => f.tooltip) : [];
-      this.activeFilters = {}
-      for (const filter of this.filters) {
-        if (this.filterFlags && (this.filterFlags & BigInt(filter.flag))) {
-          this.activeFilters[filter.key] = true;
-        }
-      }
-
-      if (!this.relativeTime) {
-        this.timeMode = 'mempool';
-      } else {
-        if (this.tx?.context === 'actual' || this.tx?.status === 'found') {
-          this.timeMode = 'mined';
-        } else {
-          const time = this.relativeTime || Date.now();
-          if (this.time <= time) {
-            this.timeMode = 'missed';
-          } else {
-            this.timeMode = 'after';
+    if (changes.tx || changes.filterFlags || changes.filterMode) {
+      if (this.tx) {
+        this.txid = this.tx.txid || '';
+        this.time = this.tx.time || 0;
+        this.fee = this.tx.fee || 0;
+        this.value = this.tx.value || 0;
+        this.vsize = this.tx.vsize || 1;
+        this.feeRate = this.fee / this.vsize;
+        this.effectiveRate = this.tx.rate;
+        const txFlags = BigInt(this.tx.flags) || 0n;
+        this.acceleration = this.tx.acc || (txFlags & TransactionFlags.acceleration);
+        this.hasEffectiveRate = this.tx.acc || !(Math.abs((this.fee / this.vsize) - this.effectiveRate) <= 0.1 && Math.abs((this.fee / Math.ceil(this.vsize)) - this.effectiveRate) <= 0.1)
+          || (txFlags && (txFlags & (TransactionFlags.cpfp_child | TransactionFlags.cpfp_parent)) > 0n);
+        this.filters = this.tx.flags ? toFilters(txFlags).filter(f => f.tooltip) : [];
+        this.activeFilters = {}
+        for (const filter of this.filters) {
+          if (this.filterFlags && (this.filterFlags & BigInt(filter.flag))) {
+            this.activeFilters[filter.key] = true;
           }
         }
-      }
 
+        if (!this.relativeTime) {
+          this.timeMode = 'mempool';
+        } else {
+          if (this.tx?.context === 'actual' || this.tx?.status === 'found') {
+            this.timeMode = 'mined';
+          } else {
+            const time = this.relativeTime || Date.now();
+            if (this.time <= time) {
+              this.timeMode = 'missed';
+            } else {
+              this.timeMode = 'after';
+            }
+          }
+        }
+      } else {
+        // Clear tooltip data when tx is null/undefined
+        this.txid = '';
+        this.time = 0;
+        this.fee = 0;
+        this.value = 0;
+        this.vsize = 1;
+        this.feeRate = 0;
+        this.effectiveRate = undefined;
+        this.acceleration = undefined;
+        this.hasEffectiveRate = false;
+        this.filters = [];
+        this.activeFilters = {};
+        this.timeMode = 'mempool';
+      }
+      shouldMarkForCheck = true;
+    }
+
+    if (shouldMarkForCheck) {
       this.cd.markForCheck();
     }
   }

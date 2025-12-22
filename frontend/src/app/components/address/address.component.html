@@ -107,11 +107,11 @@
       </div>
       <div class="box">
         <div class="widget-toggler" *ngIf="showBalancePeriod()">
-          <a href="" (click)="setBalancePeriod('all')" class="toggler-option"
-            [ngClass]="{'inactive': balancePeriod === 'all'}"><small i18n="all">all</small></a>
-          <span style="color: var(--transparent-fg); font-size: 8px"> | </span>
-          <a href="" (click)="setBalancePeriod('1m')" class="toggler-option"
-            [ngClass]="{'inactive': balancePeriod === '1m'}"><small i18n="recent">recent</small></a>
+            <a href="" (click)="setBalancePeriod('all')" class="toggler-option"
+             [class.inactive]="balancePeriod === 'all'"><small i18n="all">all</small></a>
+            <span style="color: var(--transparent-fg); font-size: 8px"> | </span>
+            <a href="" (click)="setBalancePeriod('1m')" class="toggler-option"
+             [class.inactive]="balancePeriod === '1m'"><small i18n="recent">recent</small></a>
         </div>
         <div class="row">
           <div class="col-md">
@@ -152,7 +152,7 @@
         <ng-container *ngIf="addressLoadingStatus$ as addressLoadingStatus">
           <div class="header-bg box" style="padding: 12px; margin-bottom: 10px;">
             <div class="progress progress-dark">
-              <div class="progress-bar progress-light" role="progressbar" [ngStyle]="{'width': addressLoadingStatus + '%' }"></div>
+              <div class="progress-bar progress-light" role="progressbar" [style.width]="addressLoadingStatus + '%'"></div>
             </div>
           </div>
         </ng-container>
