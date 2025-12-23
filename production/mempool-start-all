@@ -14,7 +14,7 @@ done
 # start SSR for each frontend
 for site in services;do
     cd "$HOME/${site}/ssr" && \
-    echo "starting ${site} SSR daemon: ${site}" && \
+    echo "starting SSR daemon: ${site}" && \
     screen -dmS "${site}-ssr" sh -c 'while true;do npm run start;done'
 done
 
