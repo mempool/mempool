@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
@@ -96,6 +96,7 @@ class AddressStats implements ChainStats {
   templateUrl: './address.component.html',
   styleUrls: ['./address.component.scss'],
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddressComponent implements OnInit, OnDestroy {
   network = '';
@@ -150,6 +151,7 @@ export class AddressComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private seoService: SeoService,
     private formBuilder: UntypedFormBuilder,
+    private cd: ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
@@ -188,6 +190,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.address = null;
           this.isLoadingTransactions = true;
           this.transactions = null;
+          this.cd.markForCheck();
           this.utxos = null;
           this.addressInfo = null;
           this.exampleChannel = null;
@@ -236,6 +239,7 @@ export class AddressComponent implements OnInit, OnDestroy {
               .subscribe((addressInfo) => {
                 this.addressInfo = addressInfo;
                 this.websocketService.startTrackAddress(addressInfo.unconfidential);
+                this.cd.markForCheck();
               });
           } else {
             this.websocketService.startTrackAddress(address.address);
@@ -246,6 +250,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.updateChainStats();
           this.isLoadingAddress = false;
           this.isLoadingTransactions = true;
+          this.cd.markForCheck();
           const utxoCount = this.chainStats.utxos + this.mempoolStats.utxos;
           return forkJoin([
             address.is_pubkey
@@ -262,6 +267,7 @@ export class AddressComponent implements OnInit, OnDestroy {
         }),
         switchMap(([transactions, utxos]) => {
           this.utxos = utxos;
+          this.cd.markForCheck();
 
           this.tempTransactions = transactions;
           if (transactions.length) {
@@ -286,6 +292,7 @@ export class AddressComponent implements OnInit, OnDestroy {
               this.error = err;
               this.seoService.logSoft404();
               console.log(err);
+              this.cd.markForCheck();
               return of([]);
             })
           );
@@ -313,6 +320,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.fullyLoaded = true;
         }
         this.isLoadingTransactions = false;
+        this.cd.markForCheck();
 
         const addressVin: Vin[] = [];
         const vinIds: string[] = [];
@@ -342,18 +350,21 @@ export class AddressComponent implements OnInit, OnDestroy {
         this.error = error;
         this.seoService.logSoft404();
         this.isLoadingAddress = false;
+        this.cd.markForCheck();
       });
 
     this.mempoolTxSubscription = this.stateService.mempoolTransactions$
       .subscribe(tx => {
         this.addTransaction(tx);
         this.mempoolStats.addTx(tx);
+        this.cd.markForCheck();
       });
 
     this.mempoolRemovedTxSubscription = this.stateService.mempoolRemovedTransactions$
       .subscribe(tx => {
         this.removeTransaction(tx);
         this.mempoolStats.removeTx(tx);
+        this.cd.markForCheck();
       });
 
     this.blockTxSubscription = this.stateService.blockTransactions$
@@ -371,6 +382,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           }
         }
         this.chainStats.addTx(transaction);
+        this.cd.markForCheck();
       });
   }
 
@@ -503,10 +515,12 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.fullyLoaded = true;
         }
         this.isLoadingTransactions = false;
+        this.cd.markForCheck();
       },
       (error) => {
         this.isLoadingTransactions = false;
         this.retryLoadMore = true;
+        this.cd.markForCheck();
         // In the unlikely event of the txid wasn't found in the mempool anymore and we must reload the page.
         if (error.status === 422) {
           window.location.reload();
