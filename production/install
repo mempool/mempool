@@ -401,7 +401,7 @@ DEBIAN_PKG+=(geoipupdate)
 # packages needed for mempool ecosystem
 FREEBSD_PKG=()
 FREEBSD_PKG+=(zsh sudo git screen curl wget calc neovim)
-FREEBSD_PKG+=(openssh-portable py311-pip rust llvm17 jq base64 libzmq4)
+FREEBSD_PKG+=(openssh-portable py311-pip rust llvm17 jq base64 libzmq4 rocksdb)
 FREEBSD_PKG+=(boost-libs autoconf automake gmake gcc gcc13 libevent libtool pkgconf cmake)
 FREEBSD_PKG+=(nginx rsync py311-certbot-nginx mariadb1011-server)
 FREEBSD_PKG+=(redis sqlite3 pango cairo)
