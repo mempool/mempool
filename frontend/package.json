@@ -91,7 +91,7 @@
   "devDependencies": {
     "@angular/compiler-cli": "^21.0.0",
     "@angular/language-service": "^21.0.0",
-    "@types/node": "^24.9.2",
+    "@types/node": "^22.0.0",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
     "@typescript-eslint/parser": "^8.46.2",
     "browser-sync": "^3.0.3",
