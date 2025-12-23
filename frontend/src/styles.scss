@@ -1130,11 +1130,11 @@ th {
   .fee-progress-bar {
     @extend .fee-progress-bar;
     &.priority {
+      width: 75%;
+      border-radius: 10px 0px 0px 10px !important;
       @media (767px < width < 992px), (width < 576px) {
         width: 100%;
       }
-      width: 75%;
-      border-radius: 10px 0px 0px 10px !important;
     }
   }
 
