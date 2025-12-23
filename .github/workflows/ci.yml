@@ -370,6 +370,8 @@ jobs:
         with:
           tag: ${{ github.event_name }}
           working-directory: ${{ matrix.module }}/frontend
+          install: true
+          install-command: npm install --legacy-peer-deps
           build: npm run config:defaults:${{ matrix.module }}
           start: npm run start:parameterized
           wait-on: "http://localhost:4200"
@@ -395,6 +397,8 @@ jobs:
         with:
           tag: ${{ github.event_name }}
           working-directory: ${{ matrix.module }}/frontend
+          install: true
+          install-command: npm install --legacy-peer-deps
           build: npm run config:defaults:${{ matrix.module }}
           start: npm run start:parameterized
           wait-on: "http://localhost:4200"
@@ -420,6 +424,8 @@ jobs:
         with:
           tag: ${{ github.event_name }}
           working-directory: ${{ matrix.module }}/frontend
+          install: true
+          install-command: npm install --legacy-peer-deps
           build: npm run config:defaults:mempool
           start: npm run start:parameterized
           wait-on: "http://localhost:4200"
