@@ -11,15 +11,11 @@ for site in mainnet mainnet-lightning testnet testnet-lightning testnet4 signet 
     screen -dmS "${site}" sh -c 'while true;do npm run start-production;sleep 1;done'
 done
 
-export DISPLAY=:0
-screen -dmS x startx
-sleep 3
-
-# start unfurlers for each frontend
-for site in mainnet liquid onbtc bitb meta river strategy xxi;do
-    cd "$HOME/${site}/unfurler" && \
-    echo "starting mempool unfurler: ${site}" && \
-    screen -dmS "unfurler-${site}" sh -c 'while true;do npm run unfurler;sleep 2;done'
+# start SSR for each frontend
+for site in services;do
+    cd "$HOME/${site}/ssr" && \
+    echo "starting ${site} SSR daemon: ${site}" && \
+    screen -dmS "${site}-ssr" sh -c 'while true;do npm run start;done'
 done
 
 # start nginx warm cacher

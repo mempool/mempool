@@ -39,9 +39,6 @@ BITCOIN_INSTALL=ON
 ELEMENTS_INSTALL=ON
 CLN_INSTALL=ON
 
-# install UNFURL
-UNFURL_INSTALL=ON
-
 # install CKPool
 CKPOOL_INSTALL=ON
 
@@ -365,13 +362,6 @@ CKPOOL_REPO_BRANCH=master
 CKPOOL_LATEST_RELEASE=master
 echo -n '.'
 
-UNFURL_REPO_URL=https://github.com/mempool/mempool
-UNFURL_REPO_NAME=unfurl
-UNFURL_REPO_BRANCH=master
-#UNFURL_LATEST_RELEASE=$(curl -s https://api.github.com/repos/mempool/mempool/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
-UNFURL_LATEST_RELEASE=master
-echo -n '.'
-
 ELEMENTS_REPO_URL=https://github.com/ElementsProject/elements
 ELEMENTS_REPO_NAME=elements
 ELEMENTS_REPO_BRANCH=master
@@ -408,22 +398,14 @@ DEBIAN_PKG+=(libboost-system-dev libboost-filesystem-dev libboost-chrono-dev lib
 DEBIAN_PKG+=(nodejs npm mariadb-server nginx-core python3-certbot-nginx rsync ufw)
 DEBIAN_PKG+=(geoipupdate)
 
-DEBIAN_UNFURL_PKG=()
-DEBIAN_UNFURL_PKG+=(cups chromium-bsu libatk1.0 libatk-bridge2.0 libxkbcommon-dev libxcomposite-dev)
-DEBIAN_UNFURL_PKG+=(libxdamage-dev libxrandr-dev libgbm-dev libpango1.0-dev libasound-dev)
-
 # packages needed for mempool ecosystem
 FREEBSD_PKG=()
 FREEBSD_PKG+=(zsh sudo git screen curl wget calc neovim)
 FREEBSD_PKG+=(openssh-portable py311-pip rust llvm17 jq base64 libzmq4)
 FREEBSD_PKG+=(boost-libs autoconf automake gmake gcc gcc13 libevent libtool pkgconf cmake)
 FREEBSD_PKG+=(nginx rsync py311-certbot-nginx mariadb1011-server)
-FREEBSD_PKG+=(redis sqlite3 libzmq4)
+FREEBSD_PKG+=(redis sqlite3 libzmq4 pango cairo)
 FREEBSD_PKG+=(libepoll-shim)
-
-FREEBSD_UNFURL_PKG=()
-FREEBSD_UNFURL_PKG+=(nvidia-driver-470 chromium xinit xterm twm ja-sourcehansans-otf)
-FREEBSD_UNFURL_PKG+=(zh-sourcehansans-sc-otf ko-aleefonts-ttf lohit tlwg-ttf)
 
 #############################
 ##### utility functions #####
@@ -949,12 +931,6 @@ else
     ELEMENTS_ELECTRS_INSTALL=OFF
 fi
 
-if grep Unfurl $tempfile >/dev/null 2>&1;then
-    UNFURL_INSTALL=ON
-else
-    UNFURL_INSTALL=OFF
-fi
-
 ##################
 ## dialog part 2 #
 ##################
@@ -1451,6 +1427,8 @@ case $OS in
 
 ######## FIXME: this code doesn't work properly, needs fixing
 #
+#        crontab -l|head -3|sed -e s/...................//|zsh
+#
 #        echo "[*] Installing Core Lightning mainnet Cronjob"
 #        public_ipv4=$( ifconfig | grep 'inet ' | awk -F ' ' '{ print $2 }' | grep -v '^103\.165\.192\.' | grep -v '^127\.0\.0\.1' )
 #        public_ipv6=$( ifconfig | grep 'inet6' | awk -F ' ' '{ print $2 }' | grep -v '^2001:df6:7280::' | grep -v '^fe80::' | grep -v '^::1' )
@@ -1465,75 +1443,6 @@ case $OS in
     Debian)
     ;;
 esac
-
-fi
-
-#######################
-# Unfurl installation #
-#######################
-
-if [ "${UNFURL_INSTALL}" = ON ];then
-
-    echo "[*] Insalling Unfurl source"
-    case $OS in
-
-        FreeBSD)
-
-            if pciconf -lv|grep -i nvidia >/dev/null 2>&1;then
-                echo "[*] GPU detected: Installing packages for Unfurl"
-                osPackageInstall ${FREEBSD_UNFURL_PKG[@]}
-
-                echo 'allowed_users = anybody' >> /usr/local/etc/X11/Xwrapper.config
-                echo 'kld_list="nvidia"' >> /etc/rc.conf
-                echo 'nvidia_xorg_enable="YES"' >> /etc/rc.conf
-
-                echo "[*] Installing color emoji"
-                osSudo "${ROOT_USER}" curl -sSL "https://github.com/samuelngs/apple-emoji-linux/releases/download/ios-15.4/AppleColorEmoji.ttf" -o /usr/local/share/fonts/TTF/AppleColorEmoji.ttf
-                cat > /usr/local/etc/fonts/conf.d/01-emoji.conf <<EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
-<fontconfig>
-<match>
-<test name="family"><string>sans-serif</string></test>
-<edit name="family" mode="prepend" binding="strong">
-<string>Apple Color Emoji</string>
-</edit>
-</match>
-<match>
-<test name="family"><string>serif</string></test>
-<edit name="family" mode="prepend" binding="strong">
-<string>Apple Color Emoji</string>
-</edit>
-</match>
-<match>
-<test name="family"><string>Apple Color Emoji</string></test>
-<edit name="family" mode="prepend" binding="strong">
-<string>Apple Color Emoji</string>
-</edit>
-</match>
-</fontconfig>
-EOF
-            fi
-        ;;
-
-        Debian)
-            echo "[*] Installing packages for Unfurl"
-            osPackageInstall ${DEBIAN_UNFURL_PKG[@]}
-            echo "[*] Cloning Mempool (Unfurl) repo from ${UNFURL_REPO_URL}"
-            osSudo "${UNFURL_USER}" git config --global pull.rebase true
-            osSudo "${UNFURL_USER}" git config --global advice.detachedHead false
-            osSudo "${UNFURL_USER}" git clone --branch "${UNFURL_REPO_BRANCH}" "${UNFURL_REPO_URL}" "${UNFURL_HOME}/${UNFURL_REPO_NAME}"
-            osSudo "${UNFURL_USER}" ln -s unfurl/production/unfurl-build upgrade
-            osSudo "${UNFURL_USER}" ln -s unfurl/production/unfurl-kill stop
-            osSudo "${UNFURL_USER}" ln -s unfurl/production/unfurl-start start
-            echo "[*] Installing nvm.sh from GitHub"
-            osSudo "${UNFURL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh'
-
-            echo "[*] Building NodeJS via nvm.sh"
-            osSudo "${UNFURL_USER}" zsh -c 'source ~/.zshrc ; nvm install v22.14.0 --shared-zlib'
-
-        ;;
-    esac
 
 fi
 
