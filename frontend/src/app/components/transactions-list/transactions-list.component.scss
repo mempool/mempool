@@ -288,9 +288,19 @@ h2 {
 
 .summary {
 	margin-top: 10px;
-	// Bootstrap 5 override: Match production alignment - summary should be right-aligned
-	margin-left: auto !important;
-	width: fit-content !important;
+	// Bootstrap 5 override: Ensure floats work correctly by ensuring full width
+	// Remove any width constraints that prevent float-left and float-right from working
+	width: 100% !important;
+	overflow: hidden; // Clear floats
+
+	// Bootstrap 5 override: Ensure float-left and float-right work correctly
+	.float-left {
+		float: left !important;
+	}
+
+	.float-right {
+		float: right !important;
+	}
 
 	@media (max-width: 430px) {
 		.accelerate img {
