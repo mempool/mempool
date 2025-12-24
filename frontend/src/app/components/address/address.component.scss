@@ -46,6 +46,12 @@
   }
 }
 
+// Bootstrap 5 removed font-italic utility class (replaced with fst-italic)
+// Add it back to match production styling for pending rows
+.font-italic {
+  font-style: italic !important;
+}
+
 h1 {
   margin: 0px;
   padding: 0px;
