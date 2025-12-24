@@ -525,7 +525,7 @@ main {
 }
 
 .dual-col-striped tbody tr:nth-of-type(odd) td:not(.spacer) {
-  background-color: var(--stat-box-bg);
+  background-color: var(--stat-box-bg) !important; // Override global .table td { background-color: transparent !important; } rule
 }
 
 .dual-col-striped tbody tr td.spacer {
