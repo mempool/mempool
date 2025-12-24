@@ -288,6 +288,9 @@ h2 {
 
 .summary {
 	margin-top: 10px;
+	// Bootstrap 5 override: Match production alignment - summary should be right-aligned
+	margin-left: auto !important;
+	width: fit-content !important;
 
 	@media (max-width: 430px) {
 		.accelerate img {
