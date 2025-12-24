@@ -1,24 +1,24 @@
 <ng-template [ngIf]="segwitEnabled">
-<span *ngIf="segwitGains.realizedSegwitGains && !segwitGains.potentialSegwitGains; else segwitTwo" class="badge badge-success mr-1" i18n-ngbTooltip="ngbTooltip about segwit gains" ngbTooltip="This transaction saved {{ segwitGains.realizedSegwitGains * 100 | number:  '1.0-0' }}% on fees by using native SegWit" placement="bottom" i18n="tx-features.tag.segwit|SegWit">SegWit</span>
+<span *ngIf="segwitGains.realizedSegwitGains && !segwitGains.potentialSegwitGains; else segwitTwo" class="badge badge-success me-1" i18n-ngbTooltip="ngbTooltip about segwit gains" ngbTooltip="This transaction saved {{ segwitGains.realizedSegwitGains * 100 | number:  '1.0-0' }}% on fees by using native SegWit" placement="bottom" i18n="tx-features.tag.segwit|SegWit">SegWit</span>
 <ng-template #segwitTwo>
-  <span *ngIf="segwitGains.realizedSegwitGains && segwitGains.potentialSegwitGains; else potentialP2shSegwitGains" class="badge badge-warning mr-1" i18n-ngbTooltip="ngbTooltip about double segwit gains" ngbTooltip="This transaction saved {{ segwitGains.realizedSegwitGains * 100 | number:  '1.0-0' }}% on fees by using SegWit and could save {{ segwitGains.potentialSegwitGains * 100 | number : '1.0-0' }}% more by fully upgrading to native SegWit" placement="bottom" i18n="tx-features.tag.segwit|SegWit">SegWit</span>
+  <span *ngIf="segwitGains.realizedSegwitGains && segwitGains.potentialSegwitGains; else potentialP2shSegwitGains" class="badge badge-warning me-1" i18n-ngbTooltip="ngbTooltip about double segwit gains" ngbTooltip="This transaction saved {{ segwitGains.realizedSegwitGains * 100 | number:  '1.0-0' }}% on fees by using SegWit and could save {{ segwitGains.potentialSegwitGains * 100 | number : '1.0-0' }}% more by fully upgrading to native SegWit" placement="bottom" i18n="tx-features.tag.segwit|SegWit">SegWit</span>
   <ng-template #potentialP2shSegwitGains>
-    <span *ngIf="segwitGains.potentialP2shSegwitGains" class="badge badge-danger mr-1" i18n-ngbTooltip="ngbTooltip about missed out gains" ngbTooltip="This transaction could save {{ segwitGains.potentialSegwitGains * 100 | number : '1.0-0' }}% on fees by upgrading to native SegWit or {{ segwitGains.potentialP2shSegwitGains * 100 | number:  '1.0-0' }}% by upgrading to SegWit-P2SH" placement="bottom"><del i18n="tx-features.tag.segwit|SegWit">SegWit</del></span>
+    <span *ngIf="segwitGains.potentialP2shSegwitGains" class="badge badge-danger me-1" i18n-ngbTooltip="ngbTooltip about missed out gains" ngbTooltip="This transaction could save {{ segwitGains.potentialSegwitGains * 100 | number : '1.0-0' }}% on fees by upgrading to native SegWit or {{ segwitGains.potentialP2shSegwitGains * 100 | number:  '1.0-0' }}% by upgrading to SegWit-P2SH" placement="bottom"><del i18n="tx-features.tag.segwit|SegWit">SegWit</del></span>
   </ng-template>
 </ng-template>
 </ng-template>
 
 <ng-template [ngIf]="taprootEnabled">
-<span *ngIf="segwitGains.realizedTaprootGains && !segwitGains.potentialTaprootGains; else notFullyTaproot" class="badge badge-success mr-1" i18n-ngbTooltip="Tooltip about fees saved with taproot" ngbTooltip="This transaction uses Taproot and thereby saved at least {{ segwitGains.realizedTaprootGains * 100 | number: '1.0-0' }}% on fees" placement="bottom" i18n="tx-features.tag.taproot|Taproot">Taproot</span>
+<span *ngIf="segwitGains.realizedTaprootGains && !segwitGains.potentialTaprootGains; else notFullyTaproot" class="badge badge-success me-1" i18n-ngbTooltip="Tooltip about fees saved with taproot" ngbTooltip="This transaction uses Taproot and thereby saved at least {{ segwitGains.realizedTaprootGains * 100 | number: '1.0-0' }}% on fees" placement="bottom" i18n="tx-features.tag.taproot|Taproot">Taproot</span>
 <ng-template #notFullyTaproot>
-  <span *ngIf="segwitGains.realizedTaprootGains && segwitGains.potentialTaprootGains; else noTaproot" class="badge badge-warning mr-1" i18n-ngbTooltip="Tooltip about fees that saved and could be saved with taproot" ngbTooltip="This transaction uses Taproot and already saved at least {{ segwitGains.realizedTaprootGains * 100 | number: '1.0-0' }}% on fees, but could save an additional {{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}% by fully using Taproot" placement="bottom" i18n="tx-features.tag.taproot|Taproot">Taproot</span>
+  <span *ngIf="segwitGains.realizedTaprootGains && segwitGains.potentialTaprootGains; else noTaproot" class="badge badge-warning me-1" i18n-ngbTooltip="Tooltip about fees that saved and could be saved with taproot" ngbTooltip="This transaction uses Taproot and already saved at least {{ segwitGains.realizedTaprootGains * 100 | number: '1.0-0' }}% on fees, but could save an additional {{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}% by fully using Taproot" placement="bottom" i18n="tx-features.tag.taproot|Taproot">Taproot</span>
   <ng-template #noTaproot>
-    <span *ngIf="segwitGains.potentialTaprootGains && segwitGains.potentialTaprootGains > 0; else negativeTaprootGains" class="badge badge-danger mr-1" i18n-ngbTooltip="Tooltip about fees that could be saved with taproot" ngbTooltip="This transaction could save {{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}% on fees by using Taproot" placement="bottom"><del i18n="tx-features.tag.taproot|Taproot">Taproot</del></span>
+    <span *ngIf="segwitGains.potentialTaprootGains && segwitGains.potentialTaprootGains > 0; else negativeTaprootGains" class="badge badge-danger me-1" i18n-ngbTooltip="Tooltip about fees that could be saved with taproot" ngbTooltip="This transaction could save {{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}% on fees by using Taproot" placement="bottom"><del i18n="tx-features.tag.taproot|Taproot">Taproot</del></span>
     <ng-template #negativeTaprootGains>
-      <span *ngIf="!isTaproot; else taprootButNoGains" class="badge badge-danger mr-1" i18n-ngbTooltip="Tooltip about using taproot" ngbTooltip="This transaction does not use Taproot" placement="bottom"><del i18n="tx-features.tag.taproot|Taproot">Taproot</del></span>
+      <span *ngIf="!isTaproot; else taprootButNoGains" class="badge badge-danger me-1" i18n-ngbTooltip="Tooltip about using taproot" ngbTooltip="This transaction does not use Taproot" placement="bottom"><del i18n="tx-features.tag.taproot|Taproot">Taproot</del></span>
     </ng-template>
     <ng-template #taprootButNoGains>
-      <span *ngIf="isTaproot" class="badge badge-success mr-1" i18n-ngbTooltip="Tooltip about taproot" ngbTooltip="This transaction uses Taproot" placement="bottom" i18n="tx-features.tag.taproot|Taproot">Taproot</span>
+      <span *ngIf="isTaproot" class="badge badge-success me-1" i18n-ngbTooltip="Tooltip about taproot" ngbTooltip="This transaction uses Taproot" placement="bottom" i18n="tx-features.tag.taproot|Taproot">Taproot</span>
     </ng-template>
   </ng-template>
 </ng-template>
@@ -26,5 +26,5 @@
 
 <ng-template [ngIf]="rbfEnabled">
 <span *ngIf="isRbfTransaction; else rbfDisabled" class="badge badge-success" i18n-ngbTooltip="RBF tooltip" ngbTooltip="This transaction supports Replace-By-Fee (RBF) allowing fee bumping" placement="bottom" i18n="tx-features.tag.rbf|RBF">RBF</span>
-<ng-template #rbfDisabled><span class="badge badge-danger mr-1" i18n-ngbTooltip="RBF disabled tooltip" ngbTooltip="This transaction does NOT support Replace-By-Fee (RBF) and cannot be fee bumped using this method" placement="bottom"><del i18n="tx-features.tag.rbf|RBF">RBF</del></span></ng-template>
+<ng-template #rbfDisabled><span class="badge badge-danger me-1" i18n-ngbTooltip="RBF disabled tooltip" ngbTooltip="This transaction does NOT support Replace-By-Fee (RBF) and cannot be fee bumped using this method" placement="bottom"><del i18n="tx-features.tag.rbf|RBF">RBF</del></span></ng-template>
 </ng-template>

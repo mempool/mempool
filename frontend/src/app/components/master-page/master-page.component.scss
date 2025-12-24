@@ -20,6 +20,11 @@ fa-icon {
   min-height: 64px;
   width: 100%;
   background-color: var(--nav-bg);
+  // Bootstrap 5 override: Match Bootstrap 4 navbar padding on mobile (16px instead of 0px)
+  @media (max-width: 991px) {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
 }
 
 li.nav-item {

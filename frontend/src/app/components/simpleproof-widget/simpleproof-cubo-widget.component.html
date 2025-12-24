@@ -12,7 +12,7 @@
   @if (isLoading) {
     loading!
     <div class="spinner-wrapper">
-      <div class="ml-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
+      <div class="ms-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
     </div>
   } @else if (error || !verified.length) {
     <div class="error-wrapper">
@@ -31,21 +31,21 @@
       </div>
       <table class="table table-borderless table-fixed">
         <thead>
-          <th class="student text-left sortable" [class]="{'widget': widget}" (click)="$event.stopPropagation(); sortBy('student_name')" style="cursor: pointer;">
+          <th class="student text-start sortable" [class]="{'widget': widget}" (click)="$event.stopPropagation(); sortBy('student_name')" style="cursor: pointer;">
             <span i18n="simpleproof.student_name">Student Name</span>
-            <div class="sort-icons ml-1">
+            <div class="sort-icons ms-1">
               <fa-icon [icon]="['fas', 'caret-up']" [fixedWidth]="true" [class.active]="sortField === 'student_name' && sortDirection === 'asc'" (click)="$event.stopPropagation(); sortBy('student_name', 'asc')"></fa-icon>
               <fa-icon [icon]="['fas', 'caret-down']" [fixedWidth]="true" [class.active]="sortField === 'student_name' && sortDirection === 'desc'" (click)="$event.stopPropagation(); sortBy('student_name', 'desc')"></fa-icon>
             </div>
           </th>
-          <th class="id text-left sortable" [class]="{'widget': widget}" (click)="$event.stopPropagation(); sortBy('id_code')" style="cursor: pointer;">
+          <th class="id text-start sortable" [class]="{'widget': widget}" (click)="$event.stopPropagation(); sortBy('id_code')" style="cursor: pointer;">
             <span i18n="simpleproof.id_code">ID</span>
-            <div class="sort-icons ml-1">
+            <div class="sort-icons ms-1">
               <fa-icon [icon]="['fas', 'caret-up']" [fixedWidth]="true" [class.active]="sortField === 'id_code' && sortDirection === 'asc'" (click)="$event.stopPropagation(); sortBy('id_code', 'asc')"></fa-icon>
               <fa-icon [icon]="['fas', 'caret-down']" [fixedWidth]="true" [class.active]="sortField === 'id_code' && sortDirection === 'desc'" (click)="$event.stopPropagation(); sortBy('id_code', 'desc')"></fa-icon>
             </div>
           </th>
-          <th class="proof text-right" [class]="{'widget': widget}" i18n="simpleproof.proof">Proof</th>
+          <th class="proof text-end" [class]="{'widget': widget}" i18n="simpleproof.proof">Proof</th>
         </thead>
         <tbody *ngIf="verifiedPage; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
           <tr *ngIf="widget" class="search-row">
@@ -63,11 +63,11 @@
           </tr>
           <tr *ngFor="let item of verifiedPage">
             @if (widget) {
-              <td class="student text-left" [class]="widget ? 'widget' : ''">
+              <td class="student text-start" [class]="widget ? 'widget' : ''">
                 @if (item.sanitized_download_url) {
                   <a [href]="item.sanitized_download_url" target="_blank">
                     <span>{{ item.student_name }}</span>
-                    <span class="icon ml-2">
+                    <span class="icon ms-2">
                       <fa-icon [icon]="['fas', 'file-pdf']" [fixedWidth]="true"></fa-icon>
                     </span>
                   </a>
@@ -76,12 +76,12 @@
                 }
               </td>
             } @else {
-              <td class="student text-left" [class]="widget ? 'widget' : ''">{{ item.student_name }}</td>
-              <td class="id text-left" [class]="widget ? 'widget' : ''">
+              <td class="student text-start" [class]="widget ? 'widget' : ''">{{ item.student_name }}</td>
+              <td class="id text-start" [class]="widget ? 'widget' : ''">
                 @if (item.sanitized_download_url) {
                   <a [href]="item.sanitized_download_url" target="_blank">
                     <span>{{ item.id_code }}</span>
-                    <span class="icon ml-2">
+                    <span class="icon ms-2">
                       <fa-icon [icon]="['fas', 'file-pdf']" [fixedWidth]="true"></fa-icon>
                     </span>
                   </a>
@@ -90,7 +90,7 @@
                 }
               </td>
             }
-            <td class="proof text-right" [class]="widget ? 'widget' : ''">
+            <td class="proof text-end" [class]="widget ? 'widget' : ''">
               <a [href]="item.sanitized_simpleproof_url" target="_blank" class="badge badge-primary badge-verify" style="font-size: 1.035em;">
                 <span class="icon">
                   <img class="icon-img" src="/resources/sp.svg">
@@ -103,13 +103,13 @@
         <ng-template #skeleton>
           <tbody>
             <tr *ngFor="let item of [].constructor(itemsPerPage)">
-              <td class="filename text-left" [class]="{'widget': widget}">
+              <td class="filename text-start" [class]="{'widget': widget}">
                 <span class="skeleton-loader" style="max-width: 75px"></span>
               </td>
-              <td class="id text-left" [class]="{'widget': widget}">
+              <td class="id text-start" [class]="{'widget': widget}">
                 <span class="skeleton-loader" style="max-width: 75px"></span>
               </td>
-              <td class="proof text-right" [class]="{'widget': widget}">
+              <td class="proof text-end" [class]="{'widget': widget}">
                 <span class="skeleton-loader" style="max-width: 75px"></span>
               </td>
             </tr>

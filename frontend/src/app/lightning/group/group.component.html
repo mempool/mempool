@@ -69,13 +69,13 @@
   <div style="min-height: 295px">
     <table class="table table-borderless">
       <thead>
-        <th class="alias text-left" i18n="lightning.alias">Alias</th>
-        <th class="text-left" i18n="lightning.connect-to-node|Connect">Connect</th>
-        <th class="city text-right d-none d-md-table-cell" i18n="lightning.location">Location</th>
+        <th class="alias text-start" i18n="lightning.alias">Alias</th>
+        <th class="text-start" i18n="lightning.connect-to-node|Connect">Connect</th>
+        <th class="city text-end d-none d-md-table-cell" i18n="lightning.location">Location</th>
       </thead>
       <tbody *ngIf="nodes$ | async as response; else skeleton">
         <tr *ngFor="let node of response.nodes; let i = index; trackBy: trackByPublicKey">
-          <td class="alias text-left">
+          <td class="alias text-start">
             <div class="text-truncate">
             <a [routerLink]="['/lightning/node/' | relativeUrl, node.public_key]">{{ node.alias }}</a>
             <div class="second-line">{{ node.opened_channel_count }} channel(s), <app-amount *ngIf="node.capacity > 100000000; else smallnode" [satoshis]="node.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
@@ -85,7 +85,7 @@
             </div>
           </div>
           </td>
-          <td class="timestamp-first text-left">
+          <td class="timestamp-first text-start">
             <div class="input-group" *ngIf="node.socketsObject.length">
               <ng-template #noDropdown>
                 <span class="input-group-text" id="basic-addon3">{{ node.socketsObject[selectedSocketIndex].label }}</span>
@@ -102,7 +102,7 @@
               <app-clipboard [button]="true" [text]="node.socketsObject[selectedSocketIndex].socket" [leftPadding]="false"></app-clipboard>
             </div>
           </td>
-          <td class="city text-right text-truncate d-none d-md-table-cell">
+          <td class="city text-end text-truncate d-none d-md-table-cell">
             <app-geolocation [data]="node.geolocation" [type]="'list-isp'"></app-geolocation>
           </td>
       </tbody>

@@ -247,13 +247,25 @@
   position: relative;
   top: 19px;
   z-index: 101;
-  color: #FFF;
+  color: #FFF !important; // Force white color
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 145px;
+  text-decoration: none !important; // No underline
 
   &.miner-name {
     max-width: 125px;
+  }
+  
+  // Ensure badge links stay white on hover (no cyan hover effect)
+  // Override Bootstrap 5's global a:hover which applies var(--link-hover-color)
+  &:link,
+  &:visited,
+  &:hover,
+  &:active,
+  &:focus {
+    color: #FFF !important; // Stay white on all states - override Bootstrap 5's cyan hover
+    text-decoration: none !important; // No underline on hover
   }
 }
 

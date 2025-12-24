@@ -8,7 +8,7 @@
       <div class="mb-3">
         <textarea formControlName="txRaw" class="form-control" rows="5" i18n-placeholder="transaction.hex-and-psbt" placeholder="Transaction hex or base64 encoded PSBT"></textarea>
       </div>
-      <button [disabled]="isLoading" type="submit" class="btn btn-primary mr-2" i18n="shared.preview|Preview">Preview</button>
+      <button [disabled]="isLoading" type="submit" class="btn btn-primary me-2" i18n="shared.preview|Preview">Preview</button>
       <input type="checkbox" [checked]="!offlineMode" id="offline-mode" (change)="onOfflineModeChange($event)">
       <label class="label" for="offline-mode">
         <span i18n="transaction.fetch-prevout-data">Fetch missing prevouts</span>
@@ -152,7 +152,7 @@
 
     <app-transactions-list #txList [transactions]="[transaction]" [transactionPage]="true" [txPreview]="true" [forceSignaturesMode]="isCoinbase ? 'none' : 'all'"></app-transactions-list>
 
-    <div class="title text-left">
+    <div class="title text-start">
       <h2 i18n="transaction.details|Transaction Details">Details</h2>
     </div>
     <div class="box">

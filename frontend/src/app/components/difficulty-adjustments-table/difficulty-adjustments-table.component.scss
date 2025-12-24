@@ -6,15 +6,46 @@
     border: 0px;
     padding-top: 0.65rem !important;
     padding-bottom: 0.7rem !important;
+    padding-left: 12px !important; // Bootstrap 5 changed horizontal padding from 12px to 8px - override to match production
+    padding-right: 12px !important; // Bootstrap 5 changed horizontal padding from 12px to 8px - override to match production
+    color: var(--fg) !important; // Ensure column headers are white, not Bootstrap 5's default black
   }
   td {
     border: 0px;
     padding-top: 0.71rem !important;
     padding-bottom: 0.75rem !important;
+    padding-left: 12px !important; // Bootstrap 5 changed horizontal padding from 12px to 8px - override to match production
+    padding-right: 12px !important; // Bootstrap 5 changed horizontal padding from 12px to 8px - override to match production
     width: 25%;
+    
+    // Only set default white color if no inline style is present
+    // This allows inline styles (like Change column colors) to work
+    &:not([style*="color"]) {
+      color: var(--fg) !important; // Ensure table cells are white, not Bootstrap 5's default black
+    }
+    
+    // For cells with inline color styles, we need to override the global .table td rule
+    // Use a more specific selector to ensure inline styles work
+    &[style*="color"] {
+      // Override the global .table td { color: var(--fg) !important; } rule
+      // We need higher specificity than .table td, so use .latest-adjustments td[style*="color"]
+      // But we can't just remove the rule - we need to explicitly override it
+      // The inline style should have highest priority, but CSS !important is overriding it
+      // Solution: Don't set color at all for these cells in the global rule
+    }
+    
     @media (max-width: 376px) {
       padding: 0.85rem;
     }
+  }
+  
+  // Ensure text alignment classes work correctly with Bootstrap 5
+  .text-left {
+    text-align: left !important;
+  }
+  
+  .text-right {
+    text-align: right !important;
   }
 }
 

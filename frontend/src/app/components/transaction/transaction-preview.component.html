@@ -8,20 +8,20 @@
     </div>
     <div *ngIf="network !== 'liquid' && network !== 'liquidtestnet'" class="features">
       <app-tx-features [tx]="tx"></app-tx-features>
-      <span *ngIf="cpfpInfo && (cpfpInfo?.bestDescendant || cpfpInfo?.descendants?.length || cpfpInfo?.ancestors?.length)" class="badge badge-primary ml-1 mr-1">
+      <span *ngIf="cpfpInfo && (cpfpInfo?.bestDescendant || cpfpInfo?.descendants?.length || cpfpInfo?.ancestors?.length)" class="badge badge-primary ms-1 me-1">
         CPFP
       </span>
     </div>
   </div>
   <div class="top-data row">
-    <span class="field col-sm-4 text-left">
+    <span class="field col-sm-4 text-start">
       <ng-template [ngIf]="isLiquid && haveBlindedOutputValues(tx)" [ngIfElse]="defaultAmount" i18n="shared.confidential">Confidential</ng-template>
       <ng-template #defaultAmount>
         <app-amount [satoshis]="totalValue"></app-amount>
       </ng-template>
     </span>
     <span class="field col-sm-4 text-center"><ng-container *ngIf="transactionTime > 0">&lrm;{{ transactionTime * 1000 | date:'yyyy-MM-dd HH:mm' }}</ng-container></span>
-    <span class="field col-sm-4 text-right"><span class="label" i18n="transaction.fee|Transaction fee">Fee</span> {{ tx.fee | number }} <span class="symbol" i18n="shared.sats">sats</span></span>
+    <span class="field col-sm-4 text-end"><span class="label" i18n="transaction.fee|Transaction fee">Fee</span> {{ tx.fee | number }} <span class="symbol" i18n="shared.sats">sats</span></span>
   </div>
 
 

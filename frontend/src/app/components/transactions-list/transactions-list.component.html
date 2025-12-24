@@ -117,7 +117,7 @@
                     </ng-container>
                   </div>
                 </td>
-                <td class="text-right nowrap amount" [class.large]="tx.largeInput">
+                <td class="text-end nowrap amount" [class.large]="tx.largeInput">
                   <button *ngIf="vin.isInscription" (click)="toggleOrdData(tx.txid, 'vin', vindex)" type="button" class="btn btn-sm badge badge-ord primary" style="margin-right: 10px;" i18n="transaction.inscription-tag">Inscription</button>
                   <ng-template [ngIf]="vin.prevout && vin.prevout.asset && vin.prevout.asset !== nativeAssetId" [ngIfElse]="defaultOutput">
                     <div *ngIf="assetsMinimal && assetsMinimal[vin.prevout.asset] else assetVinNotFound">
@@ -376,7 +376,7 @@
                     </ng-template>
                   </ng-template>
                 </td>
-                <td class="text-right nowrap amount" [class.large]="tx.largeOutput">
+                <td class="text-end nowrap amount" [class.large]="tx.largeOutput">
                   <ng-template [ngIf]="vout.asset && vout.asset !== nativeAssetId" [ngIfElse]="defaultOutput">
                     <div *ngIf="assetsMinimal && assetsMinimal[vout.asset] else assetNotFound">
                       <ng-container *ngTemplateOutlet="assetBox; context:{ $implicit: vout }"></ng-container>
@@ -511,8 +511,8 @@
 
       <div class="float-right" [class.has-accelerate]="!tx.status?.confirmed && acceleratedTxids">
         @if (!tx.status?.confirmed && acceleratedTxids) {
-          <button type="button" class="btn btn-sm accelerate mt-2 mr-2" [class.blink]="acceleratedTxids.has(tx.txid)" [routerLink]="['/tx/' | relativeUrl, tx.txid]" [fragment]="'accelerate'">
-            <img src="/resources/mempool-accelerator-sparkles-light.svg" height="15" class="mr-2" />
+          <button type="button" class="btn btn-sm accelerate mt-2 me-2" [class.blink]="acceleratedTxids.has(tx.txid)" [routerLink]="['/tx/' | relativeUrl, tx.txid]" [fragment]="'accelerate'">
+            <img src="/resources/mempool-accelerator-sparkles-light.svg" height="15" class="me-2" />
             @if (acceleratedTxids.has(tx.txid)) {
               <span i18n="transaction.audit.accelerated">Accelerated</span>
             } @else {
@@ -523,14 +523,14 @@
         <ng-container *ngIf="showConfirmations && latestBlock$ | async as latestBlock">
           <app-confirmations [chainTip]="latestBlock?.height" [height]="tx?.status?.block_height" [buttonClass]="(!tx.status?.confirmed && acceleratedTxids) ? 'mt-2 confirmation-compact' : 'mt-2'"></app-confirmations>
         </ng-container>
-        <button *ngIf="addresses.length === 0; else viewingAddress" type="button" class="btn btn-sm btn-primary mt-2 ml-2" (click)="switchCurrency()">
+        <button *ngIf="addresses.length === 0; else viewingAddress" type="button" class="btn btn-sm btn-primary mt-2 ms-2" (click)="switchCurrency()">
           <ng-template [ngIf]="(network === 'liquid' || network === 'liquidtestnet') && haveBlindedOutputValues(tx)" [ngIfElse]="defaultAmount" i18n="shared.confidential">Confidential</ng-template>
           <ng-template #defaultAmount>
             <app-amount [blockConversion]="tx.price" [satoshis]="getTotalTxOutput(tx)"></app-amount>
           </ng-template>
         </button>
         <ng-template #viewingAddress>
-          <button type="button" class="btn btn-sm mt-2 ml-2" (click)="switchCurrency()" [class.btn-success]="tx['addressValue'] >= 0" [class.btn-danger]="tx['addressValue'] < 0">
+          <button type="button" class="btn btn-sm mt-2 ms-2" (click)="switchCurrency()" [class.btn-success]="tx['addressValue'] >= 0" [class.btn-danger]="tx['addressValue'] < 0">
             <app-amount [blockConversion]="tx.price" [satoshis]="tx['addressValue']" [addPlus]="true"></app-amount>
           </button>
         </ng-template>

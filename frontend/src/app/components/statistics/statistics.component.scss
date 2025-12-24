@@ -3,10 +3,11 @@
 }
 
 .card-header {
-  border-bottom: 0;
-  font-size: 18px;
+  border-bottom: 0 !important;
+  font-size: 18px !important;
+  padding: 12px 20px !important; // Override Bootstrap 5 default (8px 16px) to match Bootstrap 4
   @media (min-width: 465px) {
-    font-size: 20px;
+    font-size: 20px !important;
   }
 }
 
@@ -38,17 +39,27 @@
 
 .formRadioGroup {
   margin-top: 6px;
-  display: flex;
-  flex-direction: column;
+  display: flex !important;
+  flex-direction: column !important;
   @media (min-width: 830px) {
-    flex-direction: row;
+    flex-direction: row !important;
     float: right;
     margin-top: 0px;
   }
   .btn-sm {
-    font-size: 9px;
+    font-size: 9px !important;
+    padding: 4px 8px !important;
+    line-height: 13.5px !important; // Match production line-height at mobile (production is 13.5px)
+    height: 23.5px !important; // Match production height at mobile (production is 23.5px)
     @media (min-width: 830px) {
-      font-size: 14px;
+      font-size: 14px !important;
+      line-height: 21px !important; // Match production line-height at desktop (production is 21px)
+      height: 31px !important; // Match production height at desktop (production is 31px)
+    }
+    
+    // Match production: active buttons should have darker border color
+    &.active {
+      border-color: rgb(0, 92, 186) !important; // Darker border (production: rgb(0, 92, 186), Bootstrap 5: rgb(0, 99, 199))
     }
   }
 }
@@ -127,9 +138,29 @@
 }
 
 .btn-group-toggle {
-  display: inline-flex;
+  display: inline-flex !important;
+  vertical-align: middle !important; // Ensure proper alignment
   @media (min-width: 830px) {
-    display: block;
+    display: block !important;
+    vertical-align: top !important;
+  }
+  
+  // Match production: buttons should have left border (Bootstrap 5 removes left borders in button groups)
+  // Use same specificity as Bootstrap 5's .btn-group > .btn:not(:first-child) rule to override it
+  &.btn-group > .btn,
+  &.btn-group > .btn:not(:first-child) {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    border-left-width: 1px !important; // Match production: all buttons have left border
+    
+    // Overlap borders for seamless connection (but keep the border)
+    &:not(:first-child) {
+      margin-left: -1px !important; // Overlap borders for seamless connection
+    }
+    
+    &:focus {
+      z-index: 1; // Bring focused button to front
+    }
   }
 }
 
@@ -185,24 +216,65 @@
 }
 
 .btn-toggle-rows {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  justify-content: stretch;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  justify-content: stretch !important;
+  gap: 0 !important; // No gap between button groups
+  margin: 0 !important;
+  padding: 0 !important;
 
   .btn-group {
     flex-grow: 1;
     flex-shrink: 1;
+    display: flex !important;
+    flex-direction: row !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    
+    // Ensure button groups connect seamlessly - overlap borders
+    &:not(:first-child) {
+      margin-left: -1px !important; // Overlap with previous group
+      
+      .btn:first-child {
+        border-left-width: 0 !important; // Remove left border to create seamless connection
+      }
+    }
+    
+    // Ensure buttons within group connect seamlessly
+    .btn:not(:first-child) {
+      margin-left: -1px !important; // Overlap borders
+      border-left-width: 0 !important; // Remove left border
+    }
   }
 
   @media (min-width: 500px) {
-    .btn-group:first-child > .btn:last-child {
-      border-top-right-radius: 0;
-      border-bottom-right-radius: 0;
+    // First button in first group - left corners rounded
+    .btn-group:first-child > .btn:first-child {
+      border-top-left-radius: 3.2px !important;
+      border-bottom-left-radius: 3.2px !important;
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
     }
+    // Last button in first group - no rounded corners
+    .btn-group:first-child > .btn:last-child {
+      border-radius: 0 !important;
+    }
+    // First button in last group - no rounded corners
     .btn-group:last-child > .btn:first-child {
-      border-top-left-radius: 0;
-      border-bottom-left-radius: 0;
+      border-radius: 0 !important;
+    }
+    // Last button in last group - right corners rounded
+    .btn-group:last-child > .btn:last-child {
+      border-top-left-radius: 0 !important;
+      border-bottom-left-radius: 0 !important;
+      border-top-right-radius: 3.2px !important;
+      border-bottom-right-radius: 3.2px !important;
+    }
+    // Middle buttons in any group - no rounded corners
+    .btn-group > .btn:not(:first-child):not(:last-child) {
+      border-radius: 0 !important;
     }
   }
 
@@ -210,16 +282,20 @@
     flex-direction: column;
 
     .btn-group:first-child > .btn:first-child {
-      border-bottom-left-radius: 0;
+      border-top-left-radius: 3.2px !important;
+      border-bottom-left-radius: 0 !important;
     }
     .btn-group:first-child > .btn:last-child {
-      border-bottom-right-radius: 0;
+      border-top-right-radius: 3.2px !important;
+      border-bottom-right-radius: 0 !important;
     }
     .btn-group:last-child > .btn:first-child {
-      border-top-left-radius: 0;
+      border-top-left-radius: 0 !important;
+      border-bottom-left-radius: 3.2px !important;
     }
     .btn-group:last-child > .btn:last-child {
-      border-top-right-radius: 0;
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 3.2px !important;
     }
   }
 }
@@ -231,4 +307,11 @@
   @media (max-width: 767px) {
     display: block;
   }
+}
+
+// Bootstrap 5 changed checkbox size from 13px (Bootstrap 4) to 18px
+// Override to match Bootstrap 4 / production styling
+input[type="checkbox"] {
+  width: 13px !important;
+  height: 13px !important;
 }

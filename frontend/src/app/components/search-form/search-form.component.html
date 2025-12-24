@@ -1,6 +1,6 @@
 <form [class]="{hamburgerOpen: hamburgerOpen}" [formGroup]="searchForm" (submit)="searchForm.valid && search()" novalidate>
   <div class="d-flex">
-    <div class="search-box-container mr-2">
+    <div class="search-box-container me-2">
       <input #searchInput (focus)="focus$.next($any($event).target.value)" (click)="click$.next($any($event).target.value)" formControlName="searchText" type="text" class="form-control" i18n-placeholder="search-form.searchbar-placeholder" placeholder="Explore the full Bitcoin ecosystem">
       <app-search-results #searchResults [hidden]="dropdownHidden" [results]="typeAhead$ | async" (selectedResult)="selectedResult($event)"></app-search-results>
     </div>

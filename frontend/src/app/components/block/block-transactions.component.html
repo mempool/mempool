@@ -1,5 +1,5 @@
 <div #blockTxTitle id="block-tx-title" class="block-tx-title">
-  <h2 class="text-left">
+  <h2 class="text-start">
     <ng-container *ngTemplateOutlet="txCount === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: txCount | number}"></ng-container>
     <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
     <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>

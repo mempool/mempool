@@ -328,7 +328,7 @@
               <tbody>
                 <tr>
                   <td class="td-width" i18n="transaction.version">Version</td>
-                  <td>{{ block.version | decimal2hex }} <span *ngIf="displayTaprootStatus() && hasTaproot(block.version)" class="badge badge-success ml-1" i18n="tx-features.tag.taproot|Taproot">Taproot</span></td>
+                  <td>{{ block.version | decimal2hex }} <span *ngIf="displayTaprootStatus() && hasTaproot(block.version)" class="badge badge-success ms-1" i18n="tx-features.tag.taproot|Taproot">Taproot</span></td>
                 </tr>
                 <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
                   <td i18n="block.bits">Bits</td>
@@ -367,7 +367,7 @@
     @if (!block?.stale && block?.extras?.orphans?.length > 0) {
       <br>
       <div class="header-bg box stale-block-alert">
-        <span class="stale-msg mr-1">
+        <span class="stale-msg me-1">
           @if (block.extras.orphans.length === 1) {
             <span i18n="block.stale-block-singular">There is a stale block at this height</span>
           } @else {
@@ -382,7 +382,7 @@
       </div>
     }
 
-    <div class="text-right mt-3 toggle-btns">
+    <div class="text-end mt-3 toggle-btns">
       <button
         *ngIf="webGlEnabled && auditAvailable"
         type="button"
@@ -407,7 +407,7 @@
     } @placeholder {
       <div>
         <div class="block-tx-title">
-          <h2 class="text-left">
+          <h2 class="text-start">
             <ng-container *ngTemplateOutlet="block.tx_count === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: block.tx_count | number}"></ng-container>
             <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
             <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>

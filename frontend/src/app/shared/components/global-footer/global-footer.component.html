@@ -46,13 +46,13 @@
           </a>
         </div>
         @if (!env.customize?.theme) {
-          <div class="selector d-flex justify-content-center ml-auto mr-auto mt-0" [class]="isServicesPage ? 'd-lg-none' : 'd-md-none'">
+          <div class="selector d-flex justify-content-center ms-auto me-auto mt-0" [class]="isServicesPage ? 'd-lg-none' : 'd-md-none'">
             <app-amount-selector class="add-margin"></app-amount-selector>
             <app-theme-selector class="add-margin"></app-theme-selector>
           </div>
         }
         @if (!enterpriseInfo?.footer_img) {
-          <a *ngIf="stateService.isMempoolSpaceBuild" class="btn btn-purple sponsor d-flex justify-content-center ml-auto mr-auto mt-0 mb-2" [class]="isServicesPage ? 'd-lg-none' : 'd-md-none'" [routerLink]="['/login']">
+          <a *ngIf="stateService.isMempoolSpaceBuild" class="btn btn-purple sponsor d-flex justify-content-center ms-auto me-auto mt-0 mb-2" [class]="isServicesPage ? 'd-lg-none' : 'd-md-none'" [routerLink]="['/login']">
             <span *ngIf="user" i18n="shared.my-account" class="nowrap">My Account</span>
             <span *ngIf="!user" i18n="shared.sign-in" class="nowrap">Sign In</span>
           </a>

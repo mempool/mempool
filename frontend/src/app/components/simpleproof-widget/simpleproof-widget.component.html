@@ -9,7 +9,7 @@
   @if (isLoading) {
     loading!
     <div class="spinner-wrapper">
-      <div class="ml-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
+      <div class="ms-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
     </div>
   } @else if (error || !verified.length) {
     <div class="error-wrapper">
@@ -19,19 +19,19 @@
     <div style="min-height: 295px">
       <table class="table table-borderless" [class.table-fixed]="widget">
         <thead>
-          <th class="filename text-left" [class]="{'widget': widget}" i18n="simpleproof.filename">Filename</th>
-          <th class="hash text-left" [class]="{'widget': widget}" i18n="simpleproof.hash">Hash</th>
-          <th class="verified text-right" [class]="{'widget': widget}" i18n="simpleproof.verified">Verified</th>
-          <th class="proof text-right" [class]="{'widget': widget}" i18n="simpleproof.proof">Proof</th>
+          <th class="filename text-start" [class]="{'widget': widget}" i18n="simpleproof.filename">Filename</th>
+          <th class="hash text-start" [class]="{'widget': widget}" i18n="simpleproof.hash">Hash</th>
+          <th class="verified text-end" [class]="{'widget': widget}" i18n="simpleproof.verified">Verified</th>
+          <th class="proof text-end" [class]="{'widget': widget}" i18n="simpleproof.proof">Proof</th>
         </thead>
         <tbody *ngIf="verifiedPage; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
           <tr *ngFor="let item of verifiedPage">
-            <td class="filename text-left" [class]="widget ? 'widget' : ''">{{ item.file_name }}</td>
-            <td class="hash text-left" [class]="widget ? 'widget' : ''">{{ item.sha256 }}</td>
-            <td class="verified text-right" [class]="widget ? 'widget' : ''">
+            <td class="filename text-start" [class]="widget ? 'widget' : ''">{{ item.file_name }}</td>
+            <td class="hash text-start" [class]="widget ? 'widget' : ''">{{ item.sha256 }}</td>
+            <td class="verified text-end" [class]="widget ? 'widget' : ''">
               <app-timestamp [unixTime]="item.block_time" [customFormat]="'yyyy-MM-dd'" [hideTimeSince]="true"></app-timestamp>
             </td>
-            <td class="proof text-right" [class]="widget ? 'widget' : ''">
+            <td class="proof text-end" [class]="widget ? 'widget' : ''">
               <a [href]="item.sanitized_url" target="_blank" class="badge badge-primary badge-verify">
                 <span class="icon">
                   <img class="icon-img" src="/resources/sp.svg">
@@ -44,16 +44,16 @@
         <ng-template #skeleton>
           <tbody>
             <tr *ngFor="let item of [].constructor(itemsPerPage)">
-              <td class="filename text-left" [class]="{'widget': widget}">
+              <td class="filename text-start" [class]="{'widget': widget}">
                 <span class="skeleton-loader" style="max-width: 75px"></span>
               </td>
-              <td class="hash text-left" [class]="{'widget': widget}">
+              <td class="hash text-start" [class]="{'widget': widget}">
                 <span class="skeleton-loader" style="max-width: 75px"></span>
               </td>
-              <td class="verified text-right" [class]="{'widget': widget}">
+              <td class="verified text-end" [class]="{'widget': widget}">
                 <span class="skeleton-loader" style="max-width: 75px"></span>
               </td>
-              <td class="proof text-right" [class]="{'widget': widget}">
+              <td class="proof text-end" [class]="{'widget': widget}">
                 <span class="skeleton-loader" style="max-width: 75px"></span>
               </td>
             </tr>

@@ -18,7 +18,7 @@
   <a class="navbar-brand d-none d-md-flex" [class.dual-logos]="subdomain" [routerLink]="['/' | relativeUrl]" (click)="brandClick($event)">
     <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
       @if (enterpriseInfo?.header_img) {
-        <img [src]="enterpriseInfo?.header_img" [alt]="enterpriseInfo.title" height="48px" class="mr-3">
+        <img [src]="enterpriseInfo?.header_img" [alt]="enterpriseInfo.title" height="48px" class="me-3">
       } @else {
         <ng-template [ngIf]="subdomain && enterpriseInfo">
           <div class="subdomain_container">
@@ -36,7 +36,7 @@
     </ng-container>
   </a>
   <!-- Mobile -->
-  <a class="navbar-brand d-flex d-md-none justify-content-center" [class.dual-logos]="subdomain" [class.mr-0]="subdomain" [routerLink]="['/' | relativeUrl]" (click)="brandClick($event)">
+  <a class="navbar-brand d-flex d-md-none justify-content-center" [class.dual-logos]="subdomain" [class.me-0]="subdomain" [routerLink]="['/' | relativeUrl]" (click)="brandClick($event)">
     @if (enterpriseInfo?.header_img) {
       <img [src]="enterpriseInfo?.header_img" [alt]="enterpriseInfo.title" height="42px">
     } @else {
@@ -66,12 +66,12 @@
       <app-svg-images class="d-flex justify-content-center align-items-center current-network-svg" [name]="network.val === '' ? 'bitcoin' : network.val" width="20" height="20" viewBox="0 0 65 65"></app-svg-images>
     </button>
     <div ngbDropdownMenu [class]="{'dropdown-menu-right' : isMobile}">
-      <a ngbDropdownItem *ngIf="env.MAINNET_ENABLED" class="mainnet" [routerLink]="networkPaths['mainnet'] || '/'"><app-svg-images name="bitcoin" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Mainnet</a>
-      <a ngbDropdownItem *ngIf="env.SIGNET_ENABLED" class="signet" [class.active]="network.val === 'signet'" [routerLink]="networkPaths['signet'] || '/signet'"><app-svg-images name="signet" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Signet</a>
-      <a ngbDropdownItem *ngIf="env.TESTNET_ENABLED" class="testnet" [class.active]="network.val === 'testnet'" [routerLink]="networkPaths['testnet'] || '/testnet'"><app-svg-images name="testnet" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Testnet3</a>
-      <a ngbDropdownItem *ngIf="env.TESTNET4_ENABLED" class="testnet4" [class.active]="network.val === 'testnet4'" [routerLink]="networkPaths['testnet4'] || '/testnet4'"><app-svg-images name="testnet4" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Testnet4</a>
-      <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage + (networkPaths['liquid'] || '')" ngbDropdownItem *ngIf="env.LIQUID_ENABLED" class="liquid" [class.active]="network.val === 'liquid'"><app-svg-images name="liquid" width="22" height="22" viewBox="0 0 125 125" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Liquid</a>
-      <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage  + (networkPaths['liquidtestnet'] || '/testnet')" ngbDropdownItem *ngIf="env.LIQUID_TESTNET_ENABLED" class="liquidtestnet" [class.active]="network.val === 'liquid'"><app-svg-images name="liquidtestnet" width="22" height="22" viewBox="0 0 125 125" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Liquid Testnet</a>
+      <a ngbDropdownItem *ngIf="env.MAINNET_ENABLED" class="mainnet" [routerLink]="networkPaths['mainnet'] || '/'"><app-svg-images name="bitcoin" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet me-1"></app-svg-images> Mainnet</a>
+      <a ngbDropdownItem *ngIf="env.SIGNET_ENABLED" class="signet" [class.active]="network.val === 'signet'" [routerLink]="networkPaths['signet'] || '/signet'"><app-svg-images name="signet" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet me-1"></app-svg-images> Signet</a>
+      <a ngbDropdownItem *ngIf="env.TESTNET_ENABLED" class="testnet" [class.active]="network.val === 'testnet'" [routerLink]="networkPaths['testnet'] || '/testnet'"><app-svg-images name="testnet" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet me-1"></app-svg-images> Testnet3</a>
+      <a ngbDropdownItem *ngIf="env.TESTNET4_ENABLED" class="testnet4" [class.active]="network.val === 'testnet4'" [routerLink]="networkPaths['testnet4'] || '/testnet4'"><app-svg-images name="testnet4" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet me-1"></app-svg-images> Testnet4</a>
+      <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage + (networkPaths['liquid'] || '')" ngbDropdownItem *ngIf="env.LIQUID_ENABLED" class="liquid" [class.active]="network.val === 'liquid'"><app-svg-images name="liquid" width="22" height="22" viewBox="0 0 125 125" style="width: 25px; height: 25px;" class="mainnet me-1"></app-svg-images> Liquid</a>
+      <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage  + (networkPaths['liquidtestnet'] || '/testnet')" ngbDropdownItem *ngIf="env.LIQUID_TESTNET_ENABLED" class="liquidtestnet" [class.active]="network.val === 'liquid'"><app-svg-images name="liquidtestnet" width="22" height="22" viewBox="0 0 125 125" style="width: 25px; height: 25px;" class="mainnet me-1"></app-svg-images> Liquid Testnet</a>
     </div>
   </div>
 
