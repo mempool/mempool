@@ -210,6 +210,12 @@ body {
   background-position: calc(100% - 12px) 50% !important;
 }
 
+// Bootstrap 5 changed card border-radius from 0.25rem (4px) to 0.375rem (6px)
+// Override to match Bootstrap 4 / production styling
+.card {
+  border-radius: 4px !important;
+}
+
 main {
   margin-top: 24px;
 }
@@ -2064,6 +2070,11 @@ span.badge-info:active {
 // Bootstrap 5 override: Match Bootstrap 4 button border-radius (4px instead of 6px)
 .btn {
   border-radius: 4px !important;
+}
+
+// Bootstrap 5 override: Match Bootstrap 4 small button border-radius (3.2px / 0.2rem instead of 4px)
+.btn-sm {
+  border-radius: 0.2rem !important; // 3.2px at default font-size
 }
 
 // Bootstrap 5 override: Match Bootstrap 4 badge padding (3px 4.8px instead of 4.2px 7.8px)
