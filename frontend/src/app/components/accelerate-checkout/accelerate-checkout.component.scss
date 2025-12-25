@@ -52,6 +52,14 @@
   .btn-purple {
     border-radius: 50rem !important; // rounded-pill should be 50rem (very rounded)
   }
+  
+  // Bootstrap 5 override: Ensure rounded-pill works correctly for all buttons
+  // The global .btn and .btn-sm border-radius overrides may interfere with rounded-pill
+  // Use higher specificity to ensure rounded-pill takes precedence
+  .btn.rounded-pill,
+  .btn.btn-sm.rounded-pill {
+    border-radius: 50rem !important; // Match production: rounded-pill should be 50rem (very rounded)
+  }
 }
 
 .paymentMethod {
@@ -97,6 +105,7 @@
 
 .feerate.active {
   background-color: var(--primary) !important;
+  color: white !important; // Match production: white text on active button
   opacity: 1;
   border: 1px solid #007fff !important;
 }
@@ -137,6 +146,10 @@
 }
 
 .table-accelerator {
+  // Bootstrap 5 override: Ensure proper table layout
+  table-layout: auto;
+  width: 100%;
+  
   tr {
     td {
       padding-top: 0;
@@ -163,7 +176,10 @@
   }
   td {
     &:first-child {
-      width: 100vw;
+      // Bootstrap 5 override: Remove width: 100vw which causes overlapping
+      // Use auto width to let table layout naturally size the first column
+      width: auto !important;
+      max-width: none;
     }
     &.info {
       color: #6c757d;
@@ -172,6 +188,7 @@
     &.amt {
       text-align: right;
       padding-right: 0.2em;
+      white-space: nowrap;
     }
     &.units {
       padding-left: 0.2em;

@@ -111,7 +111,7 @@
               <table class="table table-borderless table-border table-dark table-background table-accelerator">
                 <tbody>
                   <!-- ESTIMATED FEE -->
-                  <ng-container *ngIf="showDetails">
+                  <ng-container *ngIf="showDetails || step === 'quote'">
                     @if (hasAccessToBalanceMode) {
                       <tr class="group-first">
                         <td class="item" i18n="accelerator.next-block-rate">Next block market rate</td>
@@ -247,7 +247,7 @@
                   <tr class="group-first group-last" style="border-top: 1px dashed grey">
                     <td class="item"></td>
                     <td colspan="2">
-                      <div class="d-flex">
+                      <div class="d-flex justify-content-end">
                         <ng-container *ngTemplateOutlet="accelerateButton"></ng-container>
                       </div>
                     </td>
