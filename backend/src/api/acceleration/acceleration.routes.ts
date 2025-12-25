@@ -3,7 +3,50 @@ import config from '../../config';
 import axios from 'axios';
 import logger from '../../logger';
 import mempool from '../mempool';
-import AccelerationRepository from '../../repositories/AccelerationRepository';
+import AccelerationRepository, { PublicAcceleration } from '../../repositories/AccelerationRepository';
+import { Acceleration } from '../services/acceleration';
+
+interface ApiAcceleration {
+  txid: string,
+  added: number,
+  status: 'completed' | 'requested' | 'accelerating' | 'failed',
+  effectiveFee: number,
+  effectiveVsize: number,
+  boostRate: number,
+  boostCost: number,
+  blockHeight: number | null,
+  pools: number[],
+  minedByPoolUniqueId?: number;
+}
+
+function mempoolAccelerationToApiAcceleration(mempoolAcceleration: Acceleration): ApiAcceleration {
+  return {
+    txid: mempoolAcceleration.txid,
+    added: mempoolAcceleration.added,
+    status: 'accelerating',
+    effectiveFee: mempoolAcceleration.effectiveFee,
+    effectiveVsize: mempoolAcceleration.effectiveVsize,
+    boostRate: (mempoolAcceleration.effectiveFee + mempoolAcceleration.feeDelta) / mempoolAcceleration.effectiveVsize,
+    boostCost: mempoolAcceleration.feeDelta,
+    blockHeight: null,
+    pools: mempoolAcceleration.pools,
+  };
+}
+
+function savedAccelerationToApiAcceleration(savedAcceleration: PublicAcceleration): ApiAcceleration {
+  return {
+    txid: savedAcceleration.txid,
+    added: savedAcceleration.added,
+    status: 'completed',
+    effectiveFee: savedAcceleration.effective_fee,
+    effectiveVsize: savedAcceleration.effective_vsize,
+    boostRate: savedAcceleration.boost_rate,
+    boostCost: savedAcceleration.boost_cost,
+    blockHeight: savedAcceleration.height,
+    pools: [savedAcceleration.pool.id],
+    minedByPoolUniqueId: savedAcceleration.pool.id,
+  };
+}
 
 class AccelerationRoutes {
   private tag = 'Accelerator';
@@ -11,11 +54,12 @@ class AccelerationRoutes {
   public initRoutes(app: Application): void {
     app
       .get(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/accelerations', this.$getAcceleratorAccelerations.bind(this))
-      .get(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/accelerations/:txid', this.$getAcceleratorAcceleration.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/accelerations/history', this.$getAcceleratorAccelerationsHistory.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/accelerations/history/aggregated', this.$getAcceleratorAccelerationsHistoryAggregated.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/accelerations/stats', this.$getAcceleratorAccelerationsStats.bind(this))
+      .get(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/accelerations/:txid', this.$getAcceleratorAcceleration.bind(this))
       .post(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/estimate', this.$getAcceleratorEstimate.bind(this))
+      .post(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/accelerate', this.$accelerate.bind(this))
     ;
   }
 
@@ -25,31 +69,28 @@ class AccelerationRoutes {
   }
 
   private async $getAcceleratorAcceleration(req: Request, res: Response): Promise<void> {
+    let acceleration: ApiAcceleration | null = null;
     if (req.params.txid) {
-      const acceleration = await AccelerationRepository.$getAccelerationInfoForTxid(req.params.txid);
-      if (acceleration) {
-        res.status(200).send(acceleration);
+      const mempoolAcceleration = mempool.getAccelerations()[req.params.txid];
+      if (mempoolAcceleration) {
+        acceleration = mempoolAccelerationToApiAcceleration(mempoolAcceleration);
       } else {
-        res.status(404).send('Acceleration not found');
+        const savedAcceleration = await AccelerationRepository.$getAccelerationInfoForTxid(req.params.txid);
+        if (savedAcceleration) {
+          acceleration = savedAccelerationToApiAcceleration(savedAcceleration);
+        }
       }
+    }
+    if (acceleration) {
+      res.status(200).send(acceleration);
     } else {
-      res.status(400).send('txid is required');
+      res.status(404).send('Acceleration not found');
     }
   }
 
   private async $getAcceleratorAccelerationsHistory(req: Request, res: Response): Promise<void> {
     const history = await AccelerationRepository.$getAccelerationInfo(null, req.query.blockHeight ? parseInt(req.query.blockHeight as string, 10) : null);
-    res.status(200).send(history.map(accel => ({
-      txid: accel.txid,
-      added: accel.added,
-      status: 'completed',
-      effectiveFee: accel.effective_fee,
-      effectiveVsize: accel.effective_vsize,
-      boostRate: accel.boost_rate,
-      boostCost: accel.boost_cost,
-      blockHeight: accel.height,
-      pools: [accel.pool],
-    })));
+    res.status(200).send(history.map(savedAccelerationToApiAcceleration));
   }
 
   private async $getAcceleratorAccelerationsHistoryAggregated(req: Request, res: Response): Promise<void> {
@@ -83,13 +124,41 @@ class AccelerationRoutes {
   private async $getAcceleratorEstimate(req: Request, res: Response): Promise<void> {
     const url = `${config.MEMPOOL_SERVICES.API}/${req.originalUrl.replace('/api/v1/services/', '')}`;
     try {
-      const response = await axios.post(url, req.body, { responseType: 'stream', timeout: 10000 });
+      const headers = {
+        ...(req.headers['authorization'] && { authorization: req.headers['authorization'] }),
+        ...(req.headers['cookie'] && { cookie: req.headers['cookie'] }),
+        ...(req.headers['content-type'] && { 'content-type': req.headers['content-type'] }),
+        ...(req.headers['accept'] && { accept: req.headers['accept'] }),
+        ...(req.headers['accept-language'] && { 'accept-language': req.headers['accept-language'] }),
+      };
+      const response = await axios.post(url, req.body, { headers, responseType: 'stream', timeout: 10000 });
       for (const key in response.headers) {
         res.setHeader(key, response.headers[key]);
       }
       response.data.pipe(res);
     } catch (e) {
       logger.err(`Unable to get acceleration estimate from ${url} in $getAcceleratorEstimate(), ${e}`, this.tag);
+      res.status(500).end();
+    }
+  }
+
+  private async $accelerate(req: Request, res: Response): Promise<void> {
+    const url = `${config.MEMPOOL_SERVICES.API}/${req.originalUrl.replace('/api/v1/services/', '')}`;
+    try {
+      const headers = {
+        ...(req.headers['authorization'] && { authorization: req.headers['authorization'] }),
+        ...(req.headers['cookie'] && { cookie: req.headers['cookie'] }),
+        ...(req.headers['content-type'] && { 'content-type': req.headers['content-type'] }),
+        ...(req.headers['accept'] && { accept: req.headers['accept'] }),
+        ...(req.headers['accept-language'] && { 'accept-language': req.headers['accept-language'] }),
+      };
+      const response = await axios.post(url, req.body, { headers, responseType: 'stream', timeout: 10000 });
+      for (const key in response.headers) {
+        res.setHeader(key, response.headers[key]);
+      }
+      response.data.pipe(res);
+    } catch (e) {
+      logger.err(`Unable to accelerate transaction from ${url} in $accelerate(), ${e}`, this.tag);
       res.status(500).end();
     }
   }
