@@ -185,6 +185,13 @@
     margin: 0;
     padding-bottom: 5px;
   }
+  
+  // Ensure float-left works correctly in Bootstrap 5
+  // Match production: title div should float and not take full width
+  &.float-left {
+    float: left !important;
+    width: auto !important;
+  }
 }
 
 .btn-outline-info {
@@ -198,7 +205,7 @@
   margin-top: -5px;
   margin-left: 10px;
 	@media (min-width: 768px){
-		display: inline-block; // Match production: buttons should be inline-block, not block
+		display: inline-block !important; // Match production: buttons should be inline-block, not block
     margin-top: 0px;
     margin-bottom: 0px;
 	}
