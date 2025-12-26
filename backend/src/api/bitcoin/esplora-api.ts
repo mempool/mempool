@@ -28,6 +28,8 @@ interface FailoverHost {
     hybrid?: string,
     backend?: string,
     electrs?: string,
+    ssr?: string,
+    core?: string,
     lastUpdated: number,
   }
 }
@@ -145,7 +147,8 @@ class FailoverRouter {
           if (Date.now() - host.hashes.lastUpdated > this.gitHashInterval) {
             await Promise.all([
               this.$updateFrontendGitHash(host),
-              this.$updateBackendGitHash(host),
+              this.$updateBackendVersions(host),
+              this.$updateSSRGitHash(host),
               config.MEMPOOL.OFFICIAL ? this.$updateHybridGitHash(host) : Promise.resolve(),
             ]);
             host.hashes.lastUpdated = Date.now();
@@ -301,15 +304,30 @@ class FailoverRouter {
     }
   }
 
-  private async $updateBackendGitHash(host: FailoverHost): Promise<void> {
+  private async $updateBackendVersions(host: FailoverHost): Promise<void> {
     try {
       const url = `${host.publicDomain}/api/v1/backend-info`;
       const response = await this.pollConnection.get<any>(url, { timeout: config.ESPLORA.FALLBACK_TIMEOUT });
       if (response.data?.gitCommit) {
         host.hashes.backend = response.data.gitCommit;
       }
+      if (response.data?.coreVersion) {
+        host.hashes.core = response.data.coreVersion;
+      }
     } catch (e) {
       // failed to get backend build hash - do nothing
+    }
+  }
+
+  private async $updateSSRGitHash(host: FailoverHost): Promise<void> {
+    try {
+      const url = `${host.publicDomain}/ssr/api/status`;
+      const response = await this.pollConnection.get<any>(url, { timeout: config.ESPLORA.FALLBACK_TIMEOUT });
+      if (response.data?.gitHash) {
+        host.hashes.ssr = response.data.gitHash;
+      }
+    } catch (e) {
+      // failed to get ssr build hash - do nothing
     }
   }
 
