@@ -37,7 +37,7 @@ interface FailoverHost {
 class FailoverRouter {
   activeHost: FailoverHost;
   fallbackHost: FailoverHost;
-  maxSlippage: number = config.ESPLORA.MAX_BEHIND_TIP ?? 2;
+  maxSlippage: number = config.ESPLORA.MAX_BEHIND_TIP ?? (Common.isLiquid() ? 8 : 2);
   maxHeight: number = 0;
   hosts: FailoverHost[];
   multihost: boolean;
