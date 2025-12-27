@@ -20,5 +20,6 @@
   "AUDIT": true,
   "PROD_DOMAINS": [
     "mempool.space"
-  ]
+  ],
+  "ADDITIONAL_CURRENCIES": true
 }
