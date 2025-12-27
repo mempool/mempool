@@ -1,4 +1,4 @@
-FROM rust:1.84-bookworm AS builder
+FROM rust:1.92-bookworm AS builder
 
 ARG commitHash
 ENV MEMPOOL_COMMIT_HASH=${commitHash}
@@ -24,7 +24,7 @@ RUN npm install --omit=dev --omit=optional
 WORKDIR /build
 RUN npm run package
 
-FROM rust:1.84-bookworm AS runtime
+FROM rust:1.92-bookworm AS runtime
 
 RUN apt-get update && \
     apt-get install -y curl ca-certificates && \
