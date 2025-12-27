@@ -23,6 +23,7 @@ export class ServerHealthComponent implements OnInit {
     hybrid: 'mempool.space',
     backend: 'mempool',
     electrs: 'electrs',
+    ssr: 'mempool.space',
   };
 
   constructor(
