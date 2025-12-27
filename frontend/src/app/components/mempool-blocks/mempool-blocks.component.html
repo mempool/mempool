@@ -7,9 +7,9 @@
           class="spotlight-bottom"
           [style.right]="mempoolBlockStyles[i].right"
         ></div>
-        <div @blockEntryTrigger [@.disabled]="i > 0 || !animateEntry" [attr.data-cy]="'mempool-block-' + i" class="bitcoin-block text-center mempool-block" [class.hide-block]="count && i >= count" id="mempool-block-{{ i }}" [ngStyle]="mempoolBlockStyles[i]" [class.blink-bg]="projectedBlock.blink" [style]="blockTransformation">
+        <div @blockEntryTrigger [@.disabled]="i > 0 || !animateEntry" [attr.data-cy]="'mempool-block-' + i" class="bitcoin-block text-center mempool-block" [class.hide-block]="count && i >= count" id="mempool-block-{{ i }}" [style]="getMergedBlockStyle(i)" [class.blink-bg]="projectedBlock.blink">
           <a draggable="false" [routerLink]="[getHref(i) | relativeUrl]"
-            class="blockLink" [ngClass]="{'disabled': (this.stateService.blockScrolling$ | async)}">&nbsp;</a>
+            class="blockLink" [class.disabled]="(this.stateService.blockScrolling$ | async)">&nbsp;</a>
           <div class="block-body">
             <ng-container *ngIf="!minimal">
               <div [attr.data-cy]="'mempool-block-' + i + '-fees'" class="fees">
@@ -51,8 +51,8 @@
         </div>
       </ng-template>
     </div>
-    <app-acceleration-sparkles [style]="{ position: 'absolute', right: 0}" [arrow]="arrowElement" [run]="acceleratingArrow"></app-acceleration-sparkles>
-    <div *ngIf="arrowVisible" #arrowUp id="arrow-up" [ngStyle]="{'right': rightPosition + (blockWidth * 0.3) + containerOffset + 'px', transition: transition }" [class.blink]="txPosition?.accelerated"></div>
+    <app-acceleration-sparkles [style.position]="'absolute'" [style.right]="0" [arrow]="arrowElement" [run]="acceleratingArrow"></app-acceleration-sparkles>
+    <div *ngIf="arrowVisible" #arrowUp id="arrow-up" [style.right.px]="rightPosition + (blockWidth * 0.3) + containerOffset" [style.transition]="transition" [class.blink]="txPosition?.accelerated"></div>
   </div>
 </ng-container>
 
@@ -60,7 +60,7 @@
   <div class="mempool-blocks-container" [class.time-ltr]="timeLtr" [style.--block-size]="blockWidth+'px'">
     <div class="flashing">
       <ng-template ngFor let-projectedBlock [ngForOf]="mempoolEmptyBlocks" let-i="index" [ngForTrackBy]="trackByFn">
-        <div class="bitcoin-block text-center mempool-block" [class.hide-block]="count && i >= count" id="mempool-block-{{ i }}" [ngStyle]="mempoolEmptyBlockStyles[i]"></div>
+        <div class="bitcoin-block text-center mempool-block" [class.hide-block]="count && i >= count" id="mempool-block-{{ i }}" [style]="mempoolEmptyBlockStyles[i]"></div>
       </ng-template>
     </div>
   </div>

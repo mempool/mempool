@@ -25,6 +25,9 @@ tr, td, th {
   border: 0px;
   padding-top: 0.65rem !important;
   padding-bottom: 0.7rem !important;
+  padding-left: 12px !important; // Bootstrap 5 uses less padding, override to match Bootstrap 4 / production
+  padding-right: 12px !important; // Bootstrap 5 uses less padding, override to match Bootstrap 4 / production
+  color: var(--fg) !important; // Ensure text is white, not Bootstrap 5's default black
 
   .difference {
     margin-left: 0.5em;
@@ -36,6 +39,19 @@ tr, td, th {
       color: rgb(183, 66, 66);
     }
   }
+}
+
+// Ensure text alignment classes work correctly with Bootstrap 5
+.text-left {
+  text-align: left !important;
+}
+
+.text-right {
+  text-align: right !important;
+}
+
+.text-center {
+  text-align: center !important;
 }
 
 .clear-link {
@@ -290,4 +306,13 @@ tr, td, th {
 	vertical-align: middle;
 	max-width: 50vw;
   text-align: left;
+}
+
+// Override global .table app-amount .symbol { color: var(--fg) !important; } rule
+// Ensure app-amount symbols in blocks-list tables are gray (transparent white) to match production
+// Use ::ng-deep to penetrate child component (app-amount) view encapsulation
+::ng-deep .table {
+  app-amount .symbol {
+    color: var(--transparent-fg) !important; // Gray symbol (matches production: rgba(255, 255, 255, 0.733))
+  }
 }

@@ -13,6 +13,45 @@
     pointer-events: none;
     opacity: 0.75;
   }
+  
+  // Bootstrap 5 override: Ensure proper spacing between sections
+  // Add margin-top to h5 headings to create space between sections
+  h5 {
+    margin-top: 1.5rem !important; // Match production spacing (24px)
+    margin-bottom: 0.5rem !important; // Match production spacing (8px)
+
+    // First h5 should not have top margin
+    &:first-child {
+      margin-top: 0 !important;
+    }
+  }
+
+  // Bootstrap 5 override: Remove default margins from fee-card
+  // Production has no margins on fee-card
+  .fee-card {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+  
+  // Bootstrap 5 override: Ensure proper spacing for form-group
+  .form-group {
+    margin-bottom: 1rem !important; // Match production spacing (16px)
+  }
+  
+  // Bootstrap 5 override: Ensure proper spacing for small text elements
+  small {
+    margin-bottom: 0.5rem !important; // Match production spacing (8px) for mb-2 class
+  }
+  
+  // Bootstrap 5 override: Ensure btn-outline-info buttons have correct border-radius (4px instead of 6px)
+  .btn-outline-info {
+    border-radius: 4px !important; // Match production border-radius (4px instead of 6px)
+  }
+  
+  // Bootstrap 5 override: Ensure btn-purple buttons maintain correct styling
+  .btn-purple {
+    border-radius: 50rem !important; // rounded-pill should be 50rem (very rounded)
+  }
 }
 
 .paymentMethod {
@@ -194,6 +233,17 @@
 
   @media (max-width: 640px) {
     flex-direction: column;
+  }
+
+  // Bootstrap 5 override: Ensure child elements have no padding
+  // and can shrink to maintain the production layout spacing
+  > * {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    flex-shrink: 1 !important;
+    max-width: none !important;
+    width: auto !important;
+    flex-basis: auto !important;
   }
 }
 

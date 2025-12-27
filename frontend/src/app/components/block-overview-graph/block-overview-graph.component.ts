@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, HostListener, Input, Output, EventEmitter, NgZone, AfterViewInit, OnDestroy, OnChanges } from '@angular/core';
+import { Component, ElementRef, ViewChild, HostListener, Input, Output, EventEmitter, AfterViewInit, OnDestroy, OnChanges, ChangeDetectorRef } from '@angular/core';
 import { TransactionStripped } from '@interfaces/node-api.interface';
 import { FastVertexArray } from '@components/block-overview-graph/fast-vertex-array';
 import BlockScene from '@components/block-overview-graph/block-scene';
@@ -85,6 +85,9 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   readyNextFrame = false;
   lastUpdate: number = 0;
+  onPointerMoveBound: (event: PointerEvent) => void;
+  onPointerLeaveBound: (event: PointerEvent) => void;
+  onPointerUpBound: (event: PointerEvent) => void;
   pendingUpdate: {
     count: number,
     add: { [txid: string]: TransactionStripped },
@@ -107,10 +110,10 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   webGlEnabled = true;
 
   constructor(
-    readonly ngZone: NgZone,
     readonly elRef: ElementRef,
     public stateService: StateService,
     private themeService: ThemeService,
+    private cd: ChangeDetectorRef,
   ) {
     this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
     this.vertexArray = new FastVertexArray(512, TxSprite.dataSize);
@@ -118,12 +121,20 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
       this.searchText = text;
       this.updateSearchHighlight();
     });
+    // Bind event handlers for direct canvas event listeners
+    this.onPointerMoveBound = (event: PointerEvent) => this.onPointerMove(event);
+    this.onPointerLeaveBound = (event: PointerEvent) => this.onPointerLeave(event);
+    this.onPointerUpBound = (event: PointerEvent) => this.onClick(event);
   }
 
   ngAfterViewInit(): void {
     if (this.canvas) {
       this.canvas.nativeElement.addEventListener('webglcontextlost', this.handleContextLost, false);
       this.canvas.nativeElement.addEventListener('webglcontextrestored', this.handleContextRestored, false);
+      // Attach pointer event listeners directly to canvas for zoneless change detection
+      this.canvas.nativeElement.addEventListener('pointermove', this.onPointerMoveBound, false);
+      this.canvas.nativeElement.addEventListener('pointerleave', this.onPointerLeaveBound, false);
+      this.canvas.nativeElement.addEventListener('pointerup', this.onPointerUpBound, false);
       this.gl = this.canvas.nativeElement.getContext('webgl');
 
       if (this.gl) {
@@ -178,6 +189,9 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     if (this.canvas) {
       this.canvas.nativeElement.removeEventListener('webglcontextlost', this.handleContextLost);
       this.canvas.nativeElement.removeEventListener('webglcontextrestored', this.handleContextRestored);
+      this.canvas.nativeElement.removeEventListener('pointermove', this.onPointerMoveBound);
+      this.canvas.nativeElement.removeEventListener('pointerleave', this.onPointerLeaveBound);
+      this.canvas.nativeElement.removeEventListener('pointerup', this.onPointerUpBound);
     }
     if (this.scene) {
       this.scene.destroy();
@@ -372,7 +386,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     }
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   resizeCanvas(): void {
     if (this.canvas) {
       this.cssWidth = this.canvas.nativeElement.offsetParent.clientWidth;
@@ -438,7 +452,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   start(): void {
     this.running = true;
-    this.ngZone.runOutsideAngular(() => this.doRun());
+    this.doRun();
   }
 
   doRun(): void {
@@ -503,9 +517,12 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     }
   }
 
-  @HostListener('document:click', ['$event'])
-  clickAway(event) {
-    if (!this.elRef.nativeElement.contains(event.target)) {
+  @HostListener('document:click')
+  clickAway(event?: MouseEvent) {
+    if (!event || !event.target) {
+      return;
+    }
+    if (!this.elRef.nativeElement.contains(event.target as Node)) {
       const currentPreview = this.selectedTx || this.hoverTx;
       if (currentPreview && this.scene) {
         this.scene.setHover(currentPreview, false);
@@ -514,12 +531,12 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
       this.hoverTx = null;
       this.selectedTx = null;
       this.onTxHover(null);
+      this.cd.markForCheck();
     }
   }
 
-  @HostListener('pointerup', ['$event'])
-  onClick(event) {
-    if (!this.canvas) {
+  onClick(event: PointerEvent) {
+    if (!this.canvas || !event || !event.target) {
       return;
     }
     if (event.target === this.canvas.nativeElement && event.pointerType === 'touch') {
@@ -529,11 +546,11 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
       const middleClick = event.which === 2 || event.button === 1;
       this.onTxClick(event.offsetX, event.offsetY, keyMod || middleClick);
     }
+    this.cd.markForCheck();
   }
 
-  @HostListener('pointermove', ['$event'])
-  onPointerMove(event) {
-    if (!this.canvas) {
+  onPointerMove(event: PointerEvent) {
+    if (!this.canvas || !event || !event.target) {
       return;
     }
     if (event.target === this.canvas.nativeElement) {
@@ -541,19 +558,21 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     } else {
       this.onPointerLeave(event);
     }
+    this.cd.markForCheck();
   }
 
-  @HostListener('pointerleave', ['$event'])
-  onPointerLeave(event) {
-    if (event.pointerType !== 'touch') {
+  onPointerLeave(event: PointerEvent) {
+    if (!event || event.pointerType !== 'touch') {
       this.setPreviewTx(-1, -1, true);
     }
+    this.cd.markForCheck();
   }
 
   setPreviewTx(cssX: number, cssY: number, clicked: boolean = false) {
     const x = cssX * window.devicePixelRatio;
     const y = cssY * window.devicePixelRatio;
     if (this.scene && (!this.selectedTx || clicked)) {
+      // Always update tooltip position to follow cursor, even if transaction doesn't change
       this.tooltipPosition = {
         x: cssX,
         y: cssY
@@ -593,6 +612,15 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
           this.selectedTx = selected;
         }
       }
+      // Always mark for check to ensure tooltip position updates even when tx doesn't change
+      this.cd.markForCheck();
+    } else if (this.scene && this.selectedTx && !clicked) {
+      // Update tooltip position even when there's a selected transaction (for cursor following)
+      this.tooltipPosition = {
+        x: cssX,
+        y: cssY
+      };
+      this.cd.markForCheck();
     }
   }
 

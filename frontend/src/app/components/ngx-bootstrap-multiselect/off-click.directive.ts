@@ -14,25 +14,31 @@ export class OffClickDirective {
   private _clickEvent: MouseEvent;
   private _touchEvent: TouchEvent;
 
-  @HostListener('click', ['$event']) 
+  @HostListener('click') 
   public onClick(event: MouseEvent): void {
     this._clickEvent = event;
   }
 
-  @HostListener('touchstart', ['$event'])
+  @HostListener('touchstart')
   public onTouch(event: TouchEvent): void {
     this._touchEvent = event;
   }
 
-  @HostListener('document:click', ['$event']) 
-  public onDocumentClick(event: MouseEvent): void {
+  @HostListener('document:click') 
+  public onDocumentClick(event?: MouseEvent): void {
+    if (!event) {
+      return;
+    }
     if (event !== this._clickEvent) {
       this.onOffClick.emit(event);
     }
   }
 
-  @HostListener('document:touchstart', ['$event'])
-  public onDocumentTouch(event: TouchEvent): void {
+  @HostListener('document:touchstart')
+  public onDocumentTouch(event?: TouchEvent): void {
+    if (!event) {
+      return;
+    }
     if (event !== this._touchEvent) {
       this.onOffClick.emit(event);
     }

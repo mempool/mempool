@@ -49,6 +49,8 @@
 }
 
 .container-xl {
+	// Override Bootstrap 5's container-xl max-width: at xxl breakpoint (1400px+) it's 1320px, but we want 1140px to match production
+	max-width: 1140px !important;
 	margin-bottom: 40px;
 }
 

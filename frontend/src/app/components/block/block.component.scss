@@ -31,6 +31,12 @@
   }
 }
 .table {
+  // Bootstrap 5 changed table cell padding from 12px to 8px
+  // Override to match Bootstrap 4 / production
+  td, th {
+    padding: 12px !important;
+  }
+  
   tr td {
     &:last-child {
       text-align: right;

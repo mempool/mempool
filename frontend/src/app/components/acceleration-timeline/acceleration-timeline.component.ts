@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, HostListener } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, HostListener, ChangeDetectorRef } from '@angular/core';
 import { ETA } from '@app/services/eta.service';
 import { Transaction } from '@interfaces/electrs.interface';
 import { Acceleration, SinglePoolStats } from '@interfaces/node-api.interface';
@@ -30,6 +30,7 @@ export class AccelerationTimelineComponent implements OnInit, OnChanges {
 
   constructor(
     private miningService: MiningService,
+    private cd: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -80,14 +81,20 @@ export class AccelerationTimelineComponent implements OnInit, OnChanges {
         poolsData: this.poolsData
       };
     }
+    this.cd.markForCheck();
   }
 
   onBlur(event): void {
     this.hoverInfo = null;
+    this.cd.markForCheck();
   }
 
-  @HostListener('pointermove', ['$event'])
-  onPointerMove(event) {
+  @HostListener('pointermove')
+  onPointerMove(event?: PointerEvent) {
+    if (!event) {
+      return;
+    }
     this.tooltipPosition = { x: event.clientX, y: event.clientY };
+    this.cd.markForCheck();
   }
 }

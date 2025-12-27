@@ -117,6 +117,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
             transform: 'rotateX(90deg)',
             transition: 'transform 0.375s'
           };
+          this.cd.markForCheck();
         }),
         delay(375),
         tap((mode) => {
@@ -130,6 +131,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
       )
       .subscribe(() => {
         this.blockTransformation = {};
+        this.cd.markForCheck();
       });
 
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
@@ -306,7 +308,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     clearTimeout(this.resetTransitionTimeout);
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onResize(): void {
     this.animateEntry = false;
     this.reduceEmptyBlocksToFitScreen(this.mempoolEmptyBlocks);
@@ -388,6 +390,18 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.mempoolBlocksFull.forEach((block, i) => this.mempoolBlockStyles.push(this.getStyleForMempoolBlock(block, i)));
   }
 
+  getMergedBlockStyle(index: number) {
+    const baseStyle = this.mempoolBlockStyles[index] || {};
+    const merged = { ...baseStyle, ...this.blockTransformation };
+    // Remove null/undefined values as Angular 21 doesn't handle them well in style objects
+    Object.keys(merged).forEach(key => {
+      if (merged[key] == null) {
+        delete merged[key];
+      }
+    });
+    return merged;
+  }
+
   getStyleForMempoolBlock(mempoolBlock: MempoolBlock, index: number) {
     const emptyBackgroundSpacePercentage = Math.max(100 - mempoolBlock.blockVSize / this.stateService.blockVSize * 100, 0);
     const usedBlockSpace = 100 - emptyBackgroundSpacePercentage;
@@ -410,15 +424,15 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     });
 
     return {
-      'right': this.containerOffset + index * this.blockOffset + 'px',
-      'background': backgroundGradients.join(',') + ')'
+      right: this.containerOffset + index * this.blockOffset + 'px',
+      background: backgroundGradients.join(',') + ')'
     };
   }
 
   getStyleForMempoolEmptyBlock(index: number) {
     return {
-      'right': this.containerOffset + index * this.blockOffset + 'px',
-      'background': '#554b45',
+      right: this.containerOffset + index * this.blockOffset + 'px',
+      background: '#554b45',
     };
   }
 

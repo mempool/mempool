@@ -98,6 +98,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
           transform: 'rotateX(90deg)',
           transition: 'transform 0.375s'
         };
+        this.cd.markForCheck();
       }),
       delay(375),
       tap((mode) => {
@@ -114,6 +115,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     )
     .subscribe(() => {
       this.blockTransformation = {};
+      this.cd.markForCheck();
     });
 
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
@@ -365,6 +367,18 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
       ...style,
       background: "var(--secondary)",
     };
+  }
+
+  getMergedBlockStyle(index: number) {
+    const baseStyle = this.blockStyles[index] || {};
+    const merged = { ...baseStyle, ...this.blockTransformation };
+    // Remove null/undefined values as Angular 21 doesn't handle them well in style objects
+    Object.keys(merged).forEach(key => {
+      if (merged[key] == null) {
+        delete merged[key];
+      }
+    });
+    return merged;
   }
 
   getStyleForLoadingBlock(index: number, animateEnterFrom: number = 0) {

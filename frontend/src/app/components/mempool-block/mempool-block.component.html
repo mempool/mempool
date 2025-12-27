@@ -36,7 +36,7 @@
               <td i18n="mempool-block.size">Size</td>
               <td>
                 <div class="progress">
-                  <div class="progress-bar progress-mempool {{ (network$ | async) }}" role="progressbar" [ngStyle]="{'width': (mempoolBlock.blockVSize / stateService.blockVSize) * 100 + '%' }"></div>
+                  <div class="progress-bar progress-mempool {{ (network$ | async) }}" role="progressbar" [style.width]="(mempoolBlock.blockVSize / stateService.blockVSize) * 100 + '%' "></div>
                   <div class="progress-text" [innerHTML]="mempoolBlock.blockSize | bytes: 2"></div>
                 </div>
               </td>

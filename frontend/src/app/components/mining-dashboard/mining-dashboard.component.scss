@@ -3,6 +3,9 @@
   margin-top: 0.5rem;
   .col {
     margin-bottom: 1.5rem;
+    // Ensure column padding matches production (15px, not Bootstrap 5's default 12px)
+    padding-left: 15px !important;
+    padding-right: 15px !important;
   }
 }
 
@@ -78,6 +81,10 @@
 }
 
 .card-wrapper {
+  // Note: mining dashboard uses .card-wrapper inside .col, so padding is on .col, not .card-wrapper
+  // Ensure .card-wrapper itself has no padding (production has 0px)
+  padding: 0 !important;
+  
   .card {
     height: auto !important;
   }

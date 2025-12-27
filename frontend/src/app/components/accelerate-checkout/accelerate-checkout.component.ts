@@ -1075,7 +1075,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     return Date.now() - this.timePaid;
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onResize(): void {
     this.isMobile = window.innerWidth <= 767.98;
   }

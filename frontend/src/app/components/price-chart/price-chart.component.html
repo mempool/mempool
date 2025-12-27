@@ -12,7 +12,7 @@
       </div>
       <div class="item">
         <h5 class="card-title" i18n="price-chart.percent-change">% Change</h5>
-        <p class="card-text" [ngClass]="{'text-success': stats.percentChange > 0, 'text-danger': stats.percentChange < 0}">
+        <p class="card-text" [class]="{'text-success': stats.percentChange > 0, 'text-danger': stats.percentChange < 0}">
           {{ stats.percentChange > 0 ? '+' : '' }}{{ stats.percentChange | number:'1.2-2' }}%
         </p>
       </div>

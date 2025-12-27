@@ -1,5 +1,5 @@
 <div class="text-center" class="blockchain-wrapper" [class.time-ltr]="timeLtr" [class.ltr-transition]="ltrTransitionEnabled" #container>
-  <div #positionContainer class="position-container" [ngClass]="network ? network : ''" [style]="positionStyle">
+  <div #positionContainer class="position-container" [class]="network ? network : ''" [style]="positionStyle">
     <span>
       <div class="blocks-wrapper">
         <div class="scroll-spacer" *ngIf="minScrollWidth" [style.left]="minScrollWidth + 'px'"></div>

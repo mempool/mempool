@@ -24,26 +24,26 @@
     <table class="table table-borderless table-fixed text-center m-auto" style="max-width: 900px">
       <thead>
         <tr>
-          <th class="text-left rank" i18n="mining.rank">Rank</th>
-          <th class="text-left name" i18n="lightning.as-name">Name</th>
-          <th class="text-right share" i18n="lightning.share">Share</th>
-          <th class="text-right nodes" i18n="lightning.nodes-count">Nodes</th>
-          <th class="text-right capacity" i18n="lightning.capacity">Capacity</th>
+          <th class="text-start rank" i18n="mining.rank">Rank</th>
+          <th class="text-start name" i18n="lightning.as-name">Name</th>
+          <th class="text-end share" i18n="lightning.share">Share</th>
+          <th class="text-end nodes" i18n="lightning.nodes-count">Nodes</th>
+          <th class="text-end capacity" i18n="lightning.capacity">Capacity</th>
         </tr>
       </thead>
       <tbody [attr.data-cy]="'pools-table'" *ngIf="(nodesPerCountryObservable$ | async) as countries">
         <tr *ngFor="let country of countries">
-          <td class="text-left rank">{{ country.rank }}</td>
-          <td class="text-left text-truncate name">
+          <td class="text-start rank">{{ country.rank }}</td>
+          <td class="text-start text-truncate name">
             <a class="d-flex align-items-center" [routerLink]="['/lightning/nodes/country' | relativeUrl, country.iso]">
               <span class="flag">{{ country.flag }}</span>
               &nbsp;
               <span class="link">{{ country.name.en }}</span>
             </a>
           </td>
-          <td class="text-right share">{{ country.share }}%</td>
-          <td class="text-right nodes">{{ country.count }}</td>
-          <td class="text-right capacity">
+          <td class="text-end share">{{ country.share }}%</td>
+          <td class="text-end nodes">{{ country.count }}</td>
+          <td class="text-end capacity">
             <app-amount *ngIf="country.capacity > 100000000; else smallchannel" [satoshis]="country.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
             <ng-template #smallchannel>
               {{ country.capacity ?? 0 | amountShortener: 1 }}

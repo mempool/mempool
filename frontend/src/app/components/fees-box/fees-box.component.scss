@@ -72,6 +72,12 @@
   }
 }
 
+.fee-estimation-wrapper {
+  .d-flex {
+    width: 100%; // Ensure flex container takes full width
+  }
+}
+
 .fee-progress-bar {
   width: 25%;
   height: 22px;
@@ -85,6 +91,8 @@
       width: 100%;
     }
     width: 75%;
+    flex: 1 1 auto; // Allow priority bar to grow and fill remaining space
+    min-width: 0; // Allow flex item to shrink below content size
     border-radius: 0px 10px 10px 0px;
   }
   &:first-child {

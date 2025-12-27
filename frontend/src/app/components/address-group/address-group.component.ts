@@ -185,7 +185,7 @@ export class AddressGroupComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onResize(): void {
     if (window.innerWidth >= 992) {
       this.screenSize = 'lg';

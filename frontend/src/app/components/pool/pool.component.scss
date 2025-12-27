@@ -1,6 +1,25 @@
 .container-xl {
-  max-width: 1400px;
+  // Pool component uses 1400px max-width (not 1140px like other pages)
+  // Override global .container-xl:not(.widget) rule to preserve 1400px
+  max-width: 1400px !important;
   padding-bottom: 100px;
+  
+  // Ensure proper vertical spacing matches production
+  h1.m-0 {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  
+  .mb-3 {
+    margin-bottom: 1rem !important; // 16px - ensure Bootstrap 5 matches Bootstrap 4
+  }
+  
+  h2 {
+    margin-top: 0 !important;
+    margin-bottom: 1rem !important; // 16px - ensure Bootstrap 5 matches Bootstrap 4
+  }
 }
 
 @media (min-width: 768px) {
@@ -53,6 +72,64 @@ div.scrollable {
   @media (min-width: 767.98px) {
     min-height: 187px;
   }
+
+  // Bootstrap 5 changed column padding from 15px to 12px
+  // Override to match Bootstrap 4 / production
+  .col-lg-6 {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+  }
+
+  // Bootstrap 5 changed table cell padding from 12px to 8px
+  // Override to match Bootstrap 4 / production
+  // BUT: nested .table-xs tables should keep minimal padding (0.1rem = 1.6px)
+  .table {
+    td, th {
+      padding: 12px !important;
+    }
+    
+    // Exclude nested .table-xs tables - they should keep minimal padding
+    .table-xs {
+      td, th {
+        padding: 0.1rem !important; // 1.6px - matches Bootstrap 4 / production
+      }
+      
+      // Ensure nested table rows have transparent backgrounds (override parent table-striped)
+      tr {
+        background-color: transparent !important;
+      }
+      
+      // Override Bootstrap 5's table-striped for nested tables
+      &.table-striped,
+      tbody tr:nth-of-type(odd),
+      tbody tr:nth-of-type(even) {
+        background-color: transparent !important;
+      }
+    }
+  }
+  
+  // Also ensure .table-xs tables directly inside pool-details have correct padding and transparent backgrounds
+  .table-xs {
+    td, th {
+      padding: 0.1rem !important; // 1.6px - matches Bootstrap 4 / production
+    }
+    
+    // Ensure nested table rows have transparent backgrounds (override parent table-striped)
+    tr {
+      background-color: transparent !important;
+    }
+    
+    // Override Bootstrap 5's table-striped for nested tables
+    &.table-striped,
+    tbody tr:nth-of-type(odd),
+    tbody tr:nth-of-type(even) {
+      background-color: transparent !important;
+    }
+  }
+  
+  // Ensure proper vertical spacing - Bootstrap 5 may have different default margins
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 
   .label {
     width: 25%;
@@ -193,9 +270,20 @@ div.scrollable {
   }
 }
 
-.data-title {
-  color: var(--title-fg);
+// Nested table headers (.data-title) should be blue (var(--title-fg))
+// Override global .table { color: var(--fg) !important; } and .table td, th { color: var(--fg) !important; } rules
+// Use very specific selectors to ensure they override global styles
+.pool-details .table-xs .data-title,
+.pool-details .table-data .data-title,
+.pool-details .table-xs th.data-title,
+.pool-details .table-data th.data-title,
+.table-xs .data-title,
+.table-data .data-title,
+.table-xs th.data-title,
+.table-data th.data-title {
+  color: var(--title-fg) !important; // Blue text for nested table headers (matches production)
   font-size: 14px;
+  background-color: transparent !important; // Ensure transparent background
 }
 
 .clip {
@@ -206,13 +294,68 @@ div.scrollable {
   }
 }
 
-.table-data tr {
-  background-color: transparent;
+.table-data {
+  background-color: transparent !important; // Ensure table background is transparent
+  
+  // Ensure all rows have transparent backgrounds (override Bootstrap 5 table-striped)
+  tr {
+    background-color: transparent !important;
+  }
+  
+  // Override Bootstrap 5's table-striped which applies backgrounds to tr
+  &.table-striped {
+    tbody tr:nth-of-type(odd),
+    tbody tr:nth-of-type(even) {
+      background-color: transparent !important; // All rows should be transparent
+    }
+  }
+  
+  td {
+    text-align: left;
+    color: var(--fg) !important; // White text for table cells
+    background-color: transparent !important; // Ensure transparent background
+    @media (max-width: 767.98px) {
+      text-align: center;
+    }
+  }
+  
+  th {
+    color: var(--fg) !important; // White text for table headers (matches production)
+    background-color: transparent !important; // Ensure transparent background
+    
+    // .data-title headers should be blue (var(--title-fg)) not white
+    &.data-title {
+      color: var(--title-fg) !important; // Blue text for nested table headers (matches production)
+    }
+  }
+  
+  // Ensure amount component text is white (not black) and background is transparent
+  app-amount,
+  app-amount span,
+  app-amount .symbol,
+  app-amount .fiat,
+  app-amount * {
+    color: var(--fg) !important; // White text for amount component
+    background-color: transparent !important; // Ensure transparent background (matches production)
+  }
 }
-.table-data td {
-  text-align: left;
-  @media (max-width: 767.98px) {
-    text-align: center;
+
+// Ensure main blocks table headers are white (matches production)
+// and amount component is white
+.table-borderless {
+  thead th {
+    color: var(--fg) !important; // White text for main table headers (matches production)
+    background-color: transparent !important; // Ensure transparent background
+  }
+  
+  // Ensure amount component in main blocks table is also white and has transparent background
+  app-amount,
+  app-amount span,
+  app-amount .symbol,
+  app-amount .fiat,
+  app-amount * {
+    color: var(--fg) !important; // White text for amount component
+    background-color: transparent !important; // Ensure transparent background (matches production)
   }
 }
 

@@ -14,7 +14,7 @@
         </div>
         <div class="item">
           <h5 class="card-title" i18n="difficulty-box.estimate">Estimate</h5>
-          <div class="card-text" [ngStyle]="{'color': epochData.colorAdjustments}">
+          <div class="card-text" [style.color]="epochData.colorAdjustments">
             <span *ngIf="epochData.change > 0; else arrowDownDifficulty" >
               <fa-icon class="retarget-sign" [icon]="['fas', 'caret-up']" [fixedWidth]="true"></fa-icon>
             </span>
@@ -26,7 +26,7 @@
           </div>
           <div class="symbol">
             <span i18n="difficulty-box.previous">Previous</span>:
-            <span [ngStyle]="{'color': epochData.colorPreviousAdjustments}">
+            <span [style.color]="epochData.colorPreviousAdjustments">
               <span *ngIf="epochData.previousRetarget > 0; else arrowDownPreviousDifficulty" >
                 <fa-icon class="previous-retarget-sign" [icon]="['fas', 'caret-up']" [fixedWidth]="true"></fa-icon>
               </span>
@@ -40,7 +40,7 @@
           <h5 class="card-title" i18n="difficulty-box.current-period">Current Period</h5>
           <div class="card-text">{{ epochData.progress | number: '1.2-2' }} <span class="symbol">%</span></div>
           <div class="progress small-bar">
-            <div class="progress-bar" role="progressbar" style="width: 15%; background-color: var(--primary)" [ngStyle]="{'width': epochData.base}">&nbsp;</div>
+            <div class="progress-bar" role="progressbar" style="width: 15%; background-color: var(--primary)" [style.width]="epochData.base">&nbsp;</div>
           </div>
         </div>
         <div class="item" *ngIf="showHalving">

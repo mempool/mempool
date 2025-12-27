@@ -148,17 +148,17 @@ export class TreasuriesSupplyComponent implements OnInit, OnDestroy {
     this.loadingTreasurySupply = false;
   }
 
-  @HostListener('pointerdown', ['$event'])
-  onPointerDown(event): void {
-    if (this.supplySvgElement?.nativeElement?.contains(event.target)) {
+  @HostListener('pointerdown')
+  onPointerDown(event?: PointerEvent): void {
+    if (event && this.supplySvgElement?.nativeElement?.contains(event.target as Node)) {
       this.onPointerMove(event);
       event.preventDefault();
     }
   }
 
-  @HostListener('pointermove', ['$event'])
-  onPointerMove(event): void {
-    if (this.supplySvgElement?.nativeElement?.contains(event.target)) {
+  @HostListener('pointermove')
+  onPointerMove(event?: PointerEvent): void {
+    if (event && this.supplySvgElement?.nativeElement?.contains(event.target as Node)) {
       let x = event.clientX;
       const y = event.clientY - 100;
       if (this.tooltipElement) {
@@ -179,7 +179,7 @@ export class TreasuriesSupplyComponent implements OnInit, OnDestroy {
     this.hoverSection = undefined;
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onResize(): void {
     this.isMobile = window.innerWidth <= 767.98;
   }

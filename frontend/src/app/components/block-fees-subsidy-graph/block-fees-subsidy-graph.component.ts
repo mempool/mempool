@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Inject, Input, LOCALE_ID, NgZone, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Inject, Input, LOCALE_ID, NgZone, OnInit, AfterViewInit } from '@angular/core';
 import { EChartsOption } from '@app/graphs/echarts';
 import { Observable } from 'rxjs';
 import { catchError, map, share, startWith, switchMap, tap } from 'rxjs/operators';
@@ -30,7 +30,7 @@ import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pip
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BlockFeesSubsidyGraphComponent implements OnInit {
+export class BlockFeesSubsidyGraphComponent implements OnInit, AfterViewInit {
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
 
@@ -395,6 +395,12 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
 
   onChartInit(ec) {
     this.chartInstance = ec;
+    // Resize chart after initialization to ensure correct dimensions
+    setTimeout(() => {
+      if (this.chartInstance) {
+        this.chartInstance.resize();
+      }
+    }, 0);
 
     this.chartInstance.on('legendselectchanged', (params) => {
       if (this.isLoading) {
@@ -446,11 +452,29 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
     });
   }
 
-  @HostListener('document:pointerup', ['$event'])
-  onPointerUp(event: PointerEvent) {
+  @HostListener('document:pointerup')
+  onPointerUp(event?: PointerEvent) {
     if (this.updateZoom) {
       this.onZoom();
       this.updateZoom = false;
+    }
+  }
+
+  ngAfterViewInit(): void {
+    // Resize chart after view initialization to handle initial screen size
+    setTimeout(() => {
+      if (this.chartInstance) {
+        this.chartInstance.resize();
+        this.cd.markForCheck();
+      }
+    }, 100);
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    if (this.chartInstance) {
+      this.chartInstance.resize();
+      this.cd.markForCheck();
     }
   }
 

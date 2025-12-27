@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, AfterViewInit, HostListener, ChangeDetectorRef } from '@angular/core';
 import { echarts, EChartsOption } from '@app/graphs/echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
@@ -29,7 +29,7 @@ import { StateService } from '@app/services/state.service';
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PriceChartComponent implements OnInit {
+export class PriceChartComponent implements OnInit, AfterViewInit {
   @Input() widget = false;
   @Input() height: number = 300;
   @Input() right: number | string = 45;
@@ -62,6 +62,7 @@ export class PriceChartComponent implements OnInit {
     private route: ActivatedRoute,
     private fiatShortenerPipe: FiatShortenerPipe,
     private fiatCurrencyPipe: FiatCurrencyPipe,
+    private cd: ChangeDetectorRef,
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
     this.radioGroupForm.controls.dateSpan.setValue('1y');
@@ -269,6 +270,30 @@ export class PriceChartComponent implements OnInit {
 
   onChartInit(ec) {
     this.chartInstance = ec;
+    // Resize chart after initialization to ensure correct dimensions
+    setTimeout(() => {
+      if (this.chartInstance) {
+        this.chartInstance.resize();
+      }
+    }, 0);
+  }
+
+  ngAfterViewInit(): void {
+    // Resize chart after view initialization to handle initial screen size
+    setTimeout(() => {
+      if (this.chartInstance) {
+        this.chartInstance.resize();
+        this.cd.markForCheck();
+      }
+    }, 100);
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    if (this.chartInstance) {
+      this.chartInstance.resize();
+      this.cd.markForCheck();
+    }
   }
 
   isMobile() {

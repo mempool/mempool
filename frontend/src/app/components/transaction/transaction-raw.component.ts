@@ -363,7 +363,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     });
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   setGraphSize(): void {
     this.isMobile = window.innerWidth < 850;
     if (this.graphContainer?.nativeElement && this.stateService.isBrowser) {

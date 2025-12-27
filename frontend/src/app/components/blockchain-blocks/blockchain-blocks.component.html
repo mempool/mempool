@@ -11,11 +11,10 @@
       <div [attr.data-cy]="'bitcoin-block-offset-' + offset + '-index-' + i"
         class="text-center bitcoin-block mined-block blockchain-blocks-offset-{{ offset }}-index-{{ i }}"
         [class.offscreen]="!static && count && i >= count"
-        id="bitcoin-block-{{ block.height }}" [ngStyle]="blockStyles[i]"
-        [style]="blockTransformation"
+        id="bitcoin-block-{{ block.height }}" [style]="getMergedBlockStyle(i)"
         [class.blink-bg]="isSpecial(block.height)">
         <a draggable="false" [routerLink]="[getHref(i, block) | relativeUrl]" [state]="{ data: { block: block } }"
-          class="blockLink" [ngClass]="{'disabled': (this.stateService.blockScrolling$ | async)}">&nbsp;</a>
+          class="blockLink" [class.disabled]="(this.stateService.blockScrolling$ | async)">&nbsp;</a>
         <div *ngIf="!minimal" [attr.data-cy]="'bitcoin-block-' + i + '-height'" class="block-height">
           <a [routerLink]="[getHref(i, block) | relativeUrl]" [state]="{ data: { block: block } }" class="block-height-link">{{ block.height
             }}</a>
@@ -93,7 +92,7 @@
       <ng-container *ngIf="block && block.placeholder && connected && !loadingTip; else loadingBlock">
         <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i"
           class="text-center bitcoin-block mined-block placeholder-block blockchain-blocks-{{ i }}"
-          id="bitcoin-block-{{ block.height }}" [ngStyle]="blockStyles[i]">
+          id="bitcoin-block-{{ block.height }}" [style]="getMergedBlockStyle(i)">
  
         </div>
       </ng-container>
@@ -102,13 +101,13 @@
       <ng-container *ngIf="!connected || loadingTip || (block && block.loading)">
         <div class="flashing loading">
           <div class="text-center bitcoin-block mined-block" id="bitcoin-block-{{ block.height }}"
-            [ngStyle]="convertStyleForLoadingBlock(blockStyles[i])"></div>
+            [style]="convertStyleForLoadingBlock(blockStyles[i])"></div>
         </div>
       </ng-container>
     </ng-template>
   </div>
   <div [hidden]="!arrowVisible" id="arrow-up" [style.transition]="arrowTransition"
-    [ngStyle]="{'left': arrowLeftPx + 8 + 'px' }"></div>
+    [style.left.px]="arrowLeftPx + 8"></div>
 </div>
 
 <ng-template #loadingBlocksTemplate>
@@ -116,7 +115,7 @@
     <div class="flashing">
       <div *ngFor="let block of emptyBlocks; let i = index; trackBy: trackByBlocksFn">
         <div class="text-center bitcoin-block mined-block" id="bitcoin-block-{{ block.height }}"
-          [ngStyle]="emptyBlockStyles[i]" [class.offscreen]="!static && count && i >= count"></div>
+          [style]="emptyBlockStyles[i]" [class.offscreen]="!static && count && i >= count"></div>
       </div>
     </div>
   </div>

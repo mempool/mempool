@@ -69,12 +69,12 @@ jobs:
 
       - name: Install
         if: ${{ matrix.flavor == 'dev'}}
-        run: npm ci
+        run: npm ci --legacy-peer-deps
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/backend
 
       - name: Install (Prod dependencies only)
         if: ${{ matrix.flavor == 'prod'}}
-        run: npm ci --omit=dev --omit=optional
+        run: npm ci --omit=dev --omit=optional --legacy-peer-deps
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/backend
 
       - name: Lint
@@ -122,7 +122,7 @@ jobs:
             ${{ runner.os }}-cache-frontend-
 
       - name: Install (Prod dependencies only)
-        run: npm ci --omit=dev --omit=optional
+        run: npm ci --omit=dev --omit=optional --legacy-peer-deps
         working-directory: assets/frontend
 
       - name: Restore cached mining pool assets
@@ -232,13 +232,13 @@ jobs:
             ${{ runner.os }}-frontend-${{ matrix.flavor }}-
 
       - name: Install (Prod dependencies only)
-        run: npm ci --omit=dev --omit=optional
+        run: npm ci --omit=dev --omit=optional --legacy-peer-deps
         if: ${{ matrix.flavor == 'prod'}}
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/frontend
 
       - name: Install
         if: ${{ matrix.flavor == 'dev'}}
-        run: npm ci
+        run: npm ci --legacy-peer-deps
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/frontend
 
       - name: Lint
@@ -370,6 +370,8 @@ jobs:
         with:
           tag: ${{ github.event_name }}
           working-directory: ${{ matrix.module }}/frontend
+          install: true
+          install-command: npm install --legacy-peer-deps
           build: npm run config:defaults:${{ matrix.module }}
           start: npm run start:parameterized
           wait-on: "http://localhost:4200"
@@ -395,6 +397,8 @@ jobs:
         with:
           tag: ${{ github.event_name }}
           working-directory: ${{ matrix.module }}/frontend
+          install: true
+          install-command: npm install --legacy-peer-deps
           build: npm run config:defaults:${{ matrix.module }}
           start: npm run start:parameterized
           wait-on: "http://localhost:4200"
@@ -420,6 +424,8 @@ jobs:
         with:
           tag: ${{ github.event_name }}
           working-directory: ${{ matrix.module }}/frontend
+          install: true
+          install-command: npm install --legacy-peer-deps
           build: npm run config:defaults:mempool
           start: npm run start:parameterized
           wait-on: "http://localhost:4200"

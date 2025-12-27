@@ -36,6 +36,8 @@ tr, td, th {
   border: 0px;
   padding-top: 0.65rem !important;
   padding-bottom: 0.8rem !important;
+  padding-left: 12px !important; // Bootstrap 5 uses less padding, override to match Bootstrap 4 / production
+  padding-right: 12px !important; // Bootstrap 5 uses less padding, override to match Bootstrap 4 / production
 
   .difference {
     margin-left: 0.5em;

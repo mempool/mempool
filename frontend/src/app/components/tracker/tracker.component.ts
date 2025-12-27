@@ -837,7 +837,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
     return +(cpfpTx.fee / (cpfpTx.weight / 4)).toFixed(1);
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onResize(): void {
     this.isMobile = window.innerWidth < 850;
     this.blockchainWidth = Math.min(600, window.innerWidth);
