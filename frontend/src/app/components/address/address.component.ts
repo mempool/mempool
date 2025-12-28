@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { switchMap, filter, catchError, map, tap } from 'rxjs/operators';
@@ -12,6 +13,7 @@ import { SeoService } from '@app/services/seo.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { AddressInformation } from '@interfaces/node-api.interface';
 import { AddressTypeInfo } from '@app/shared/address-utils';
+import { extractTapLeaves, fillTapTree, convertTextToBuffer, PsbtKeyValue } from '@app/shared/transaction.utils';
 
 class AddressStats implements ChainStats {
   address: string;
@@ -113,10 +115,18 @@ export class AddressComponent implements OnInit, OnDestroy {
   mempoolTxSubscription: Subscription;
   mempoolRemovedTxSubscription: Subscription;
   blockTxSubscription: Subscription;
+  fragmentSubscription: Subscription;
+  networkChangeSubscription: Subscription;
+  taprootFragment: URLSearchParams;
   addressLoadingStatus$: Observable<number>;
   addressInfo: null | AddressInformation = null;
   addressTypeInfo: null | AddressTypeInfo;
-  hasTapTree: boolean;
+  tapTreeIncomplete: boolean = false;
+  taprootPsbtExpanded: boolean = false;
+  psbtForm: UntypedFormGroup;
+  psbtError?: string;
+  accelerationsSubscription: Subscription;
+  acceleratedTxids: Set<string> | null = null;
 
   fullyLoaded = false;
   chainStats: AddressStats;
@@ -139,19 +149,35 @@ export class AddressComponent implements OnInit, OnDestroy {
     private audioService: AudioService,
     private apiService: ApiService,
     private seoService: SeoService,
+    private formBuilder: UntypedFormBuilder,
   ) { }
 
   ngOnInit(): void {
-    this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    this.network = this.stateService.network;
+    this.networkChangeSubscription = this.stateService.networkChanged$.subscribe((network) => {
+      this.network = network;
+      this.updateAccelerationSubscription();
+    });
     this.websocketService.want(['blocks']);
+    this.psbtForm = this.formBuilder.group({ psbt: [''], tapleaf: [''], taptree: [''], ikey: [''] });
 
     this.onResize();
+    this.fragmentSubscription = this.route.fragment.subscribe((fragment) => {
+      if (fragment) {
+        this.taprootFragment = new URLSearchParams(fragment.replace(/\+/g, '%2B')); // URLSearchParams decodes "+" as space, so normalize to preserve base64 fragments
+        this.submitPsbt();
+      } else {
+        this.taprootFragment = undefined;
+      }
+    });
 
     this.addressLoadingStatus$ = this.route.paramMap
       .pipe(
         switchMap(() => this.stateService.loadingIndicators$),
         map((indicators) => indicators['address-' + this.addressString] !== undefined ? indicators['address-' + this.addressString] : 0)
       );
+
+    this.updateAccelerationSubscription();
 
     this.mainSubscription = this.route.paramMap
       .pipe(
@@ -165,7 +191,10 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.utxos = null;
           this.addressInfo = null;
           this.exampleChannel = null;
-          this.hasTapTree = false;
+          this.tapTreeIncomplete = false;
+          this.taprootPsbtExpanded = false;
+          this.psbtForm?.reset({ psbt: '', tapleaf: '', taptree: '', ikey: '' });
+          this.psbtError = undefined;
           document.body.scrollTo(0, 0);
           this.addressString = params.get('id') || '';
           if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}$/.test(this.addressString)) {
@@ -296,7 +325,9 @@ export class AddressComponent implements OnInit, OnDestroy {
           });
         }
         this.addressTypeInfo.processInputs(addressVin, vinIds);
-        this.hasTapTree = this.addressTypeInfo.tapscript && this.addressTypeInfo.scripts.values().next().value.taprootInfo.scriptPath.merkleBranches.length > 0;
+        if (this.addressTypeInfo.type === 'v1_p2tr' && !this.addressTypeInfo.tapscript) {
+          this.setTapTreeIncomplete(true);
+        }
         // hack to trigger change detection
         this.addressTypeInfo = this.addressTypeInfo.clone();
 
@@ -500,9 +531,124 @@ export class AddressComponent implements OnInit, OnDestroy {
     );
   }
 
+  sanitizeFormControl(controlName: string): string {
+    const control = this.psbtForm?.get(controlName);
+    const sanitized = (control?.value || '').trim();
+    if (control && control.value !== sanitized) {
+      control.setValue(sanitized, { emitEvent: false });
+    }
+    return sanitized;
+  }
+
+  submitPsbt(): void {
+    if (this.psbtForm && this.tapTreeIncomplete) {
+      if (this.taprootFragment) { // If pending fragment, apply it first
+        const fragment = this.taprootFragment;
+        this.taprootFragment = undefined;
+
+        const patch = {};
+        ['psbt', 'tapleaf', 'taptree', 'ikey'].forEach((key) => {
+          const value = fragment.get(key);
+          if (value) {
+            patch[key] = value;
+          }
+        });
+
+        if (Object.keys(patch).length) {
+          this.psbtForm.patchValue(patch, { emitEvent: false });
+        }
+      }
+
+      try {
+        const psbt = this.sanitizeFormControl('psbt');
+        const tapleavesRaw = this.sanitizeFormControl('tapleaf');
+        const taptree = this.sanitizeFormControl('taptree');
+        const internalKey = this.sanitizeFormControl('ikey');
+        const tapleaves = tapleavesRaw ? tapleavesRaw.split(',').map((leaf) => leaf.trim()).filter(Boolean) : [];
+
+        const hasInput = !!(psbt || tapleaves.length || taptree);
+        if (!hasInput) {
+          this.psbtError = undefined;
+          return;
+        }
+
+        const psbtBuffer = psbt ? convertTextToBuffer(psbt) : undefined;
+        const tapleafRecords = tapleaves.reduce((records, leaf) => {
+          const parts = leaf.split(':');
+          if (parts.length !== 2 || !parts[0] || !parts[1]) {
+            throw new Error('Tapleaves must be in the format "<control block>:<script><leaf version>" separated by commas');
+          }
+          records.push({
+            keyData: convertTextToBuffer(parts[0]),
+            value: convertTextToBuffer(parts[1]),
+          });
+          return records;
+        }, [] as PsbtKeyValue[]);
+        const taptreeBuffer = taptree ? convertTextToBuffer(taptree) : undefined;
+        const internalKeyBuffer = internalKey ? convertTextToBuffer(internalKey) : undefined;
+
+        const leaves = extractTapLeaves(psbtBuffer, tapleafRecords, taptreeBuffer, internalKeyBuffer);
+        fillTapTree(this.addressTypeInfo, leaves);
+        this.addressTypeInfo = this.addressTypeInfo.clone();
+        this.psbtForm?.reset({ psbt: '', tapleaf: '', taptree: '', ikey: '' });
+        this.psbtError = undefined;
+      } catch (error) {
+        this.taprootPsbtExpanded = true;
+        if (error instanceof Error) {
+          this.psbtError = error.message;
+        } else {
+          this.psbtError = 'An error occurred while processing taproot data';
+        }
+      }
+    }
+  }
+
+  setTapTreeIncomplete(incomplete: boolean): void {
+    if (!incomplete) {
+      this.taprootPsbtExpanded = false;
+    }
+    this.tapTreeIncomplete = incomplete;
+    if (this.taprootFragment) {
+      this.submitPsbt();
+    }
+  }
+
+  showTaprootPsbtButton(): boolean {
+    const isBitcoin = this.stateService.network !== 'liquid' && this.stateService.network !== 'liquidtestnet';
+    return this.addressTypeInfo?.type === 'v1_p2tr' && isBitcoin && this.tapTreeIncomplete;
+  }
+
   @HostListener('window:resize', ['$event'])
   onResize(): void {
     this.isMobile = window.innerWidth < 768;
+  }
+
+  private updateAccelerationSubscription(): void {
+    if (this.stateService.env.ACCELERATOR_BUTTON && this.network === '') {
+      if (!this.accelerationsSubscription) {
+        this.websocketService.ensureTrackAccelerations();
+        this.acceleratedTxids = new Set();
+        this.accelerationsSubscription = this.stateService.accelerations$.subscribe((delta) => {
+          if (!this.acceleratedTxids) {
+            this.acceleratedTxids = new Set();
+          }
+          if (delta.reset) {
+            this.acceleratedTxids.clear();
+          } else {
+            for (const txid of delta.removed) {
+              this.acceleratedTxids.delete(txid);
+            }
+          }
+          for (const acceleration of delta.added) {
+            this.acceleratedTxids.add(acceleration.txid);
+          }
+        });
+      }
+    } else {
+      this.accelerationsSubscription?.unsubscribe();
+      this.accelerationsSubscription = null;
+      this.acceleratedTxids = null;
+    }
   }
 
   ngOnDestroy(): void {
@@ -511,5 +657,9 @@ export class AddressComponent implements OnInit, OnDestroy {
     this.mempoolRemovedTxSubscription.unsubscribe();
     this.blockTxSubscription.unsubscribe();
     this.websocketService.stopTrackingAddress();
+    this.fragmentSubscription?.unsubscribe();
+    this.networkChangeSubscription?.unsubscribe();
+    this.accelerationsSubscription?.unsubscribe();
+    this.websocketService.stopTrackAccelerations();
   }
 }
