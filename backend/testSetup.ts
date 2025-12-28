@@ -8,6 +8,7 @@ jest.mock('./src/logger.ts', () => ({
   notice: jest.fn(),
   info: jest.fn(),
   debug: jest.fn(),
+  updateNetwork: jest.fn(),
   tags: {
     mining: 'mining',
     ln: 'ln',
