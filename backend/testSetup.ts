@@ -8,6 +8,11 @@ jest.mock('./src/logger.ts', () => ({
   notice: jest.fn(),
   info: jest.fn(),
   debug: jest.fn(),
+  tags: {
+    mining: 'mining',
+    ln: 'ln',
+    goggles: 'goggles',
+  },
 }), { virtual: true });
 jest.mock('./src/api/rbf-cache.ts', () => ({}), { virtual: true });
 jest.mock('./src/api/mempool.ts', () => ({}), { virtual: true });
