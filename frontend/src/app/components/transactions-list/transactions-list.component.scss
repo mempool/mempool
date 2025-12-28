@@ -288,6 +288,16 @@ h2 {
 
 .summary {
 	margin-top: 10px;
+
+	@media (max-width: 430px) {
+		.accelerate img {
+			display: none;
+		}
+
+		.has-accelerate .btn {
+			font-size: 12px;
+		}
+	}
 }
 
 .address {
@@ -390,4 +400,20 @@ h2 {
 			padding: 4px;
 		}
 	}
+}
+
+.accelerate {
+	background-color: var(--tertiary);
+	margin-left: 5px;
+
+	&.blink {
+		animation: acceleratePulse 1s infinite;
+		pointer-events: none;
+	}
+}
+
+@keyframes acceleratePulse {
+  0% { background-color: #653b9c; box-shadow: #ad7de57f 0px 0px 12px -2px; }
+  50% { background-color: #8457bb; box-shadow: #ad7de5 0px 0px 18px -2px;}
+  100% { background-color: #653b9c; box-shadow: #ad7de57f 0px 0px 12px -2px; }
 }

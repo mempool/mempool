@@ -76,6 +76,7 @@
     "@fortawesome/free-solid-svg-icons": "~6.7.2",
     "@ng-bootstrap/ng-bootstrap": "^19.0.0",
     "@types/qrcode": "~1.5.0",
+    "@noble/secp256k1": "^3.0.0",
     "bootstrap": "~4.6.2",
     "clipboard": "^2.0.11",
     "domino": "^2.1.6",
@@ -84,8 +85,6 @@
     "ngx-infinite-scroll": "^20.0.0",
     "qrcode": "1.5.1",
     "rxjs": "~7.8.1",
-    "esbuild": "^0.25.8",
-    "tlite": "^0.1.9",
     "tslib": "~2.8.0",
     "zone.js": "~0.15.1"
   },
@@ -105,7 +104,7 @@
   },
   "optionalDependencies": {
     "@cypress/schematic": "^2.5.0",
-    "cypress": "^15.7.0",
+    "cypress": "^15.8.1",
     "cypress-fail-on-console-error": "~5.1.1",
     "cypress-wait-until": "^3.0.1",
     "mock-socket": "~9.3.1",
