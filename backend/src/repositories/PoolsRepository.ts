@@ -45,10 +45,11 @@ class PoolsRepository {
       FROM blocks
       JOIN pools on pools.id = pool_id
       LEFT JOIN blocks_audits ON blocks_audits.height = blocks.height
+      WHERE blocks.stale = 0
     `;
 
     if (interval) {
-      query += ` WHERE blocks.blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
+      query += ` AND blocks.blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
     }
 
     query += ` GROUP BY pool_id
@@ -70,6 +71,7 @@ class PoolsRepository {
     const query = `SELECT COUNT(height) as blockCount, pools.id as poolId, pools.name as poolName
       FROM pools
       LEFT JOIN blocks on pools.id = blocks.pool_id AND blocks.blockTimestamp BETWEEN FROM_UNIXTIME(?) AND FROM_UNIXTIME(?)
+      WHERE blocks.stale = 0
       GROUP BY pools.id`;
 
     try {
@@ -100,7 +102,7 @@ class PoolsRepository {
       if (parse) {
         rows[0].regexes = JSON.parse(rows[0].regexes);
       }
-      if (['testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) {
+      if (['testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK)) {
         rows[0].addresses = []; // pools-v2.json only contains mainnet addresses
       } else if (parse) {
         rows[0].addresses = JSON.parse(rows[0].addresses);
@@ -132,7 +134,7 @@ class PoolsRepository {
       if (parse) {
         rows[0].regexes = JSON.parse(rows[0].regexes);
       }
-      if (['testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) {
+      if (['testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK)) {
         rows[0].addresses = []; // pools.json only contains mainnet addresses
       } else if (parse) {
         rows[0].addresses = JSON.parse(rows[0].addresses);

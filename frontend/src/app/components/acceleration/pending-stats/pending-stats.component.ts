@@ -10,6 +10,7 @@ import { WebsocketService } from '@app/services/websocket.service';
   templateUrl: './pending-stats.component.html',
   styleUrls: ['./pending-stats.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class PendingStatsComponent implements OnInit {
   @Input() accelerations$: Observable<Acceleration[]>;

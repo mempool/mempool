@@ -181,8 +181,8 @@
                 "inject": false
               },
               {
-                "input": "src/theme-wiz.scss",
-                "bundleName": "wiz",
+                "input": "src/theme-softsimon.scss",
+                "bundleName": "softsimon",
                 "inject": false
               },
               {
@@ -197,7 +197,10 @@
             "buildOptimizer": false,
             "sourceMap": true,
             "optimization": false,
-            "namedChunks": true
+            "namedChunks": true,
+            "allowedCommonJsDependencies": [
+              "qrcode"
+            ]
           },
           "configurations": {
             "production": {

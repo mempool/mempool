@@ -354,7 +354,7 @@ class NodesRoutes {
         return;
       }
 
-      const nodes = await nodesApi.$getNodesPerISP(req.params.isp);
+      const nodes = await nodesApi.$getNodesPerISP(req.params.isp || '');
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());

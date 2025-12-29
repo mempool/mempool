@@ -5,7 +5,7 @@ import { tap } from 'rxjs/operators';
 import { AddressTxSummary } from '@interfaces/electrs.interface';
 import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { StateService } from '@app/services/state.service';
-import { SeriesOption } from 'echarts';
+import { SeriesOption } from 'echarts/types/dist/echarts';
 import { WalletStats } from '@app/shared/wallet-stats';
 import { originalChartColors as chartColors } from '@app/app.constants';
 import { Treasury } from '@interfaces/node-api.interface';
@@ -36,6 +36,7 @@ const periodSeconds = {
       z-index: 99;
     }
   `],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
@@ -220,7 +221,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
       color: chartColors,
       animation: false,
       grid: {
-        top: 20,
+        top: this.showLegend ? 50 : 20,
         bottom: this.allowZoom ? 65 : 20,
         right: this.adjustedRight,
         left: this.adjustedLeft,
@@ -230,6 +231,17 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
         selected: this.selectedWallets,
         formatter: (name) => {
           return this.seriesNameToLabel[name];
+        },
+        type: 'plain',
+        orient: 'horizontal',
+        top: 0,
+        left: 80,
+        right: 20,
+        itemGap: 10,
+        itemWidth: 18,
+        itemHeight: 10,
+        textStyle: {
+          fontSize: 11
         }
       } : undefined,
       tooltip: {

@@ -11,12 +11,6 @@
 
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="daysAvailable">
       <div class="btn-group" role="group" name="radioBasic">
-        <input type="radio" class="btn-check" id="accelerationfees-24h" [value]="'24h'" fragment="24h" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" formControlName="dateSpan">
-        <label class="btn btn-primary btn-sm" for="accelerationfees-24h">24h</label>
-        <ng-container *ngIf="daysAvailable >= 1">
-          <input type="radio" class="btn-check" id="accelerationfees-3d" [value]="'3d'" fragment="3d" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" formControlName="dateSpan">
-          <label class="btn btn-primary btn-sm" for="accelerationfees-3d">3D</label>
-        </ng-container>
         <ng-container *ngIf="daysAvailable >= 3">
           <input type="radio" class="btn-check" id="accelerationfees-1w" [value]="'1w'" fragment="1w" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="accelerationfees-1w">1W</label>

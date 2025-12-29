@@ -5,6 +5,7 @@ import { SigInfo, SighashLabels } from '@app/shared/transaction.utils';
   selector: 'app-asm',
   templateUrl: './asm.component.html',
   styleUrls: ['./asm.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AsmComponent {
@@ -12,10 +13,12 @@ export class AsmComponent {
   @Input() crop: number = 0;
   @Input() annotations: {
     signatures: Record<string, { sig: SigInfo, vindex: number }>,
-    selectedSig: SigInfo | null
+    selectedSig: SigInfo | null,
+    p2sh: boolean
   } = {
     signatures: {},
-    selectedSig: null
+    selectedSig: null,
+    p2sh: false
   };
   @Output() showSigInfo = new EventEmitter<SigInfo>();
   @Output() hideSigInfo = new EventEmitter<void>();

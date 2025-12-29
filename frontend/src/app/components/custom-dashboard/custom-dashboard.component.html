@@ -274,7 +274,7 @@
                   <span>&nbsp;</span>
                   <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
                 </a>
-                <app-address-graph [addressSummary$]="walletSummary$" [period]="widget.props.period || 'all'" [widget]="true" [height]="graphHeight" [label]="widget.props.label"></app-address-graph>
+                <app-address-graph [addressSummary$]="walletSummary$" [period]="widget.props.period || 'all'" [widget]="true" [height]="graphHeight" [label]="widget.props.label" [image]="widget.props.image"></app-address-graph>
               </div>
             </div>
           </div>

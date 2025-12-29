@@ -1,10 +1,12 @@
+@use "sass:color";
+
 /* Theme */
-$bg: #1d1f31;
-$active-bg: #11131f;
+$bg: #11131f;
+$active-bg: #000000;
 $hover-bg: #12131e;
 $fg: #fff;
 $nav-bg: $bg;
-$title-fg: #4a68b9;
+$title-fg: #2055e3;
 
 $taproot: #eba814;
 $taproot-light: #d5a90a;
@@ -18,11 +20,11 @@ $gray-700: $fg;
 
 $nav-tabs-link-active-bg: $active-bg;
 
-$primary: #105fb0;
-$secondary: #2d3348;
-$tertiary: #653b9c;
-$success: #1a9436;
-$info: #1bd8f4;
+$primary: #007cfa;
+$secondary: #272f4e;
+$tertiary: #6225b2;
+$success: #0aab2f;
+$info: #00ddff;
 
 $h5-font-size: 1.15rem !default;
 
@@ -38,14 +40,9 @@ $pagination-disabled-bg:          $bg;
 
 $form-select-indicator-color: $fg;
 
-.input-group-text {
-  background-color: #1c2031 !important;
-  border: 1px solid #20263e !important;
-}
-
 $link-color:                $info;
 $link-decoration:           none !default;
-$link-hover-color:          darken($link-color, 15%) !default;
+$link-hover-color:          color.adjust($link-color, $lightness: -15%) !default;
 $link-hover-decoration:     underline !default;
 
 $dropdown-bg: $bg;
@@ -57,8 +54,42 @@ $dropdown-link-hover-bg: $active-bg;
 $dropdown-link-active-color: $fg;
 $dropdown-link-active-bg: $active-bg;
 
-@import "bootstrap/scss/bootstrap";
-@import 'tlite/tlite.css';
+@use "bootstrap/scss/bootstrap" with (
+  $body-bg: $body-bg,
+  $body-color: $body-color,
+  $gray-800: $gray-800,
+  $gray-700: $gray-700,
+  $nav-tabs-link-active-bg: $nav-tabs-link-active-bg,
+  $primary: $primary,
+  $secondary: $secondary,
+  $success: $success,
+  $info: $info,
+  $h5-font-size: $h5-font-size,
+  $pagination-bg: $pagination-bg,
+  $pagination-border-color: $pagination-border-color,
+  $pagination-disabled-bg: $pagination-disabled-bg,
+  $pagination-disabled-border-color: $pagination-disabled-border-color,
+  $pagination-active-color: $pagination-active-color,
+  $pagination-active-bg: $pagination-active-bg,
+  $pagination-hover-bg: $pagination-hover-bg,
+  $pagination-hover-border-color: $pagination-hover-border-color,
+  $custom-select-indicator-color: $custom-select-indicator-color,
+  $link-color: $link-color,
+  $link-decoration: $link-decoration,
+  $link-hover-color: $link-hover-color,
+  $link-hover-decoration: $link-hover-decoration,
+  $dropdown-bg: $dropdown-bg,
+  $dropdown-link-color: $dropdown-link-color,
+  $dropdown-link-hover-color: $dropdown-link-hover-color,
+  $dropdown-link-hover-bg: $dropdown-link-hover-bg,
+  $dropdown-link-active-color: $dropdown-link-active-color,
+  $dropdown-link-active-bg: $dropdown-link-active-bg
+);
+
+.input-group-text {
+  background-color: #1c2031 !important;
+  border: 1px solid #20263e !important;
+}
 
 :root {
   --bg: #{$bg};
@@ -79,13 +110,13 @@ $dropdown-link-active-bg: $active-bg;
   --skeleton-bg: #2e324e;
   --skeleton-bg-light: #5d6182;
 
-  --box-bg: #24273e;
-  --stat-box-bg: #181b2d;
+  --box-bg: #171c2a;
+  --stat-box-bg: #0b1018;
   --alert-bg: #3a1c61;
   --navbar-bg: #212121;
-  --transparent-fg: #ffffff66;
-  --fade-out-box-bg-start: rgba(36, 39, 62, 0);
-  --fade-out-box-bg-end: rgba(36, 39, 62, 1);
+  --transparent-fg: #ffffffbb;
+  --fade-out-box-bg-start: rgba(23, 28, 42, 0);
+  --fade-out-box-bg-end: rgba(23, 28, 42, 1);
   --opacity: 0.57;
 
   --testnet: #1d486f;
@@ -102,12 +133,12 @@ $dropdown-link-active-bg: $active-bg;
   --taproot-light: #d5a90a;
   --taproot-dark: #9d7c05;
 
-  --green: #3bcc49;
-  --red: #dc3545;
+  --green: #83fd00;
+  --red: #ff3d00;
   --yellow: #fff000;
-  --grey: #6c757d;
+  --grey: #7e7e7e;
   --tooltip-grey: #b1b1b1;
-  --orange: #b86d12;
+  --orange: #ff9f00;
 
   --search-button: #4d2d77;
   --search-button-border: #472a6e;
@@ -1101,11 +1132,11 @@ th {
   .fee-progress-bar {
     @extend .fee-progress-bar;
     &.priority {
+      width: 75%;
+      border-radius: 10px 0px 0px 10px !important;
       @media (767px < width < 992px), (width < 576px) {
         width: 100%;
       }
-      width: 75%;
-      border-radius: 10px 0px 0px 10px !important;
     }
   }
 

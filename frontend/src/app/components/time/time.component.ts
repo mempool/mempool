@@ -5,6 +5,7 @@ import { TimeService } from '@app/services/time.service';
 @Component({
   selector: 'app-time',
   templateUrl: './time.component.html',
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TimeComponent implements OnInit, OnChanges, OnDestroy {

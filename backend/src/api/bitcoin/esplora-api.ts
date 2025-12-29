@@ -8,6 +8,7 @@ import logger from '../../logger';
 import { Common } from '../common';
 import { SubmitPackageResult, TestMempoolAcceptResult } from './bitcoin-api.interface';
 import os from 'os';
+import { bitcoinCoreApi } from './bitcoin-api-factory';
 interface FailoverHost {
   host: string,
   rtts: number[],
@@ -27,6 +28,8 @@ interface FailoverHost {
     hybrid?: string,
     backend?: string,
     electrs?: string,
+    ssr?: string,
+    core?: string,
     lastUpdated: number,
   }
 }
@@ -34,7 +37,7 @@ interface FailoverHost {
 class FailoverRouter {
   activeHost: FailoverHost;
   fallbackHost: FailoverHost;
-  maxSlippage: number = config.ESPLORA.MAX_BEHIND_TIP ?? 2;
+  maxSlippage: number = config.ESPLORA.MAX_BEHIND_TIP ?? (Common.isLiquid() ? 8 : 2);
   maxHeight: number = 0;
   hosts: FailoverHost[];
   multihost: boolean;
@@ -144,7 +147,8 @@ class FailoverRouter {
           if (Date.now() - host.hashes.lastUpdated > this.gitHashInterval) {
             await Promise.all([
               this.$updateFrontendGitHash(host),
-              this.$updateBackendGitHash(host),
+              this.$updateBackendVersions(host),
+              this.$updateSSRGitHash(host),
               config.MEMPOOL.OFFICIAL ? this.$updateHybridGitHash(host) : Promise.resolve(),
             ]);
             host.hashes.lastUpdated = Date.now();
@@ -300,15 +304,30 @@ class FailoverRouter {
     }
   }
 
-  private async $updateBackendGitHash(host: FailoverHost): Promise<void> {
+  private async $updateBackendVersions(host: FailoverHost): Promise<void> {
     try {
       const url = `${host.publicDomain}/api/v1/backend-info`;
       const response = await this.pollConnection.get<any>(url, { timeout: config.ESPLORA.FALLBACK_TIMEOUT });
       if (response.data?.gitCommit) {
         host.hashes.backend = response.data.gitCommit;
       }
+      if (response.data?.coreVersion) {
+        host.hashes.core = response.data.coreVersion;
+      }
     } catch (e) {
       // failed to get backend build hash - do nothing
+    }
+  }
+
+  private async $updateSSRGitHash(host: FailoverHost): Promise<void> {
+    try {
+      const url = `${host.publicDomain}/ssr/api/status`;
+      const response = await this.pollConnection.get<any>(url, { timeout: config.ESPLORA.FALLBACK_TIMEOUT });
+      if (response.data?.gitHash) {
+        host.hashes.ssr = response.data.gitHash;
+      }
+    } catch (e) {
+      // failed to get ssr build hash - do nothing
     }
   }
 
@@ -408,12 +427,36 @@ class ElectrsApi implements AbstractBitcoinApi {
     return this.failoverRouter.$get<string>('/blocks/tip/hash');
   }
 
-  $getTxIdsForBlock(hash: string): Promise<string[]> {
-    return this.failoverRouter.$get<string[]>('/block/' + hash + '/txids');
+  async $getTxIdsForBlock(hash: string, fallbackToCore = false): Promise<string[]> {
+    try {
+      const txids = await this.failoverRouter.$get<string[]>('/block/' + hash + '/txids');
+      return txids;
+    } catch (e) {
+      if (fallbackToCore && isAxiosError(e) && e.response?.status === 404) {
+        // might be a stale block, see if Core has it?
+        const coreBlock = await bitcoinCoreApi.$getBlock(hash);
+        if (coreBlock?.stale) {
+          return bitcoinCoreApi.$getTxIdsForBlock(hash);
+        }
+      }
+      throw e;
+    }
   }
 
-  $getTxsForBlock(hash: string): Promise<IEsploraApi.Transaction[]> {
-    return this.failoverRouter.$get<IEsploraApi.Transaction[]>('/internal/block/' + hash + '/txs');
+  async $getTxsForBlock(hash: string, fallbackToCore = false): Promise<IEsploraApi.Transaction[]> {
+    try {
+      const txs = await this.failoverRouter.$get<IEsploraApi.Transaction[]>('/internal/block/' + hash + '/txs');
+      return txs;
+    } catch (e) {
+      if (fallbackToCore && isAxiosError(e) && e.response?.status === 404) {
+        // might be a stale block, see if Core has it?
+        const coreBlock = await bitcoinCoreApi.$getBlock(hash);
+        if (coreBlock?.stale) {
+          return bitcoinCoreApi.$getTxsForBlock(hash);
+        }
+      }
+      throw e;
+    }
   }
 
   $getBlockHash(height: number): Promise<string> {
@@ -441,12 +484,20 @@ class ElectrsApi implements AbstractBitcoinApi {
     throw new Error('Method getAddressTransactions not implemented.');
   }
 
+  $getAddressUtxos(address: string): Promise<IEsploraApi.UTXO[]> {
+    return this.failoverRouter.$get<IEsploraApi.UTXO[]>('/address/' + address + '/utxo');
+  }
+
   $getScriptHash(scripthash: string): Promise<IEsploraApi.ScriptHash> {
     throw new Error('Method getScriptHash not implemented.');
   }
 
   $getScriptHashTransactions(scripthash: string, txId?: string): Promise<IEsploraApi.Transaction[]> {
     throw new Error('Method getScriptHashTransactions not implemented.');
+  }
+
+  $getScriptHashUtxos(scripthash: string): Promise<IEsploraApi.UTXO[]> {
+    throw new Error('Method getScriptHashUtxos not implemented.');
   }
 
   $getAddressPrefix(prefix: string): string[] {

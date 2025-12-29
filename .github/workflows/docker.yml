@@ -1,0 +1,180 @@
+name: Docker build on tag
+env:
+  DOCKER_CLI_EXPERIMENTAL: enabled
+  TAG_FMT: "^refs/tags/(((.?[0-9]+){3,4}))$"
+  DOCKER_BUILDKIT: 1  # Enable BuildKit for better performance
+  COMPOSE_DOCKER_CLI_BUILD: 0
+
+on:
+  push:
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+
+      - v[0-9]+.[0-9]+.[0-9]+-*
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    # Run on tag pushes OR on PRs that have the "docker" label
+    if: |
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'docker'))
+    strategy:
+      matrix:
+        service:
+          - frontend
+          - backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    name: Build and push to DockerHub
+    outputs:
+      image-digest-frontend: ${{ matrix.service == 'frontend' && steps.docker-build.outputs.digest || '' }}
+      image-digest-backend: ${{ matrix.service == 'backend' && steps.docker-build.outputs.digest || '' }}
+    steps:
+      - name: Replace the current swap file
+        shell: bash
+        run: |
+          sudo swapoff /mnt/swapfile || true
+          sudo rm -f /mnt/swapfile
+          sudo fallocate -l 16G /mnt/swapfile
+          sudo chmod 600 /mnt/swapfile
+          sudo mkswap /mnt/swapfile
+          sudo swapon /mnt/swapfile
+
+      - name: Show current memory and swap status
+        shell: bash
+        run: |
+          sudo free -h
+          echo
+          sudo swapon --show
+
+      - name: Mount a tmpfs over /var/lib/docker
+        shell: bash
+        run: |
+          if [ ! -d "/var/lib/docker" ]; then
+            echo "Directory '/var/lib/docker' not found"
+            exit 1
+          fi
+          sudo mount -t tmpfs -o size=12G tmpfs /var/lib/docker
+          sudo systemctl restart docker
+          sudo df -h | grep docker
+
+      # Only for tag pushes: use the Git tag as TAG
+      - name: Set TAG from pushed tag
+        if: github.event_name == 'push'
+        run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+
+      - name: Add SHORT_SHA env property with commit short sha
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            SHA="${{ github.event.pull_request.head.sha }}"
+          else
+            SHA="${GITHUB_SHA}"
+          fi
+          echo "SHORT_SHA=${SHA:0:8}" >> $GITHUB_ENV
+
+
+      - name: Login to Docker for building
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      # For PRs: use package.json version + short sha as TAG
+      - name: Set TAG from service package.json for pull requests
+        if: github.event_name == 'pull_request'
+        run: |
+          if [ "${{ matrix.service }}" = "frontend" ]; then
+            VERSION=$(jq -r '.version' frontend/package.json)
+          else
+            VERSION=$(jq -r '.version' backend/package.json)
+          fi
+          echo "TAG=v${VERSION}-${SHORT_SHA}" >> $GITHUB_ENV
+
+      - name: Show set environment variables
+        run: |
+          printf "      TAG: %s\n"  "$TAG"
+          printf " SHORT_SHA: %s\n" "$SHORT_SHA"
+
+      - name: Init repo for Dockerization
+        run: docker/init.sh "$TAG"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+        id: qemu
+
+      - name: Setup Docker buildx action
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+          driver-opts: |
+            network=host
+        id: buildx
+
+      - name: Available platforms
+        run: echo ${{ steps.buildx.outputs.platforms }}
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        id: cache
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ matrix.service }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-${{ matrix.service }}-
+
+      - name: Run Docker buildx for ${{ matrix.service }} against tag
+        id: docker-build
+        run: |
+          docker buildx build \
+          --cache-from "type=local,src=/tmp/.buildx-cache" \
+          --cache-to "type=local,dest=/tmp/.buildx-cache,mode=max" \
+          --platform linux/amd64,linux/arm64 \
+          --tag ${{ secrets.DOCKER_HUB_USER }}/${{ matrix.service }}:$TAG \
+          --build-context rustgbt=./rust \
+          --build-context backend=./backend \
+          --output "type=registry,push=true" \
+          --build-arg commitHash=$SHORT_SHA \
+          ./${{ matrix.service }}/
+
+  tag-latest:
+    needs: build
+    # Only for successful *tag pushes* and only for "plain" versions (no '-')
+    if: ${{ needs.build.result == 'success' && github.event_name == 'push' && !contains(github.ref_name, '-') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    name: Tag release build as latest
+    strategy:
+      matrix:
+        service:
+          - frontend
+          - backend
+    steps:
+      - name: Set env variables
+        run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+
+      - name: Setup Docker buildx action
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+          driver-opts: |
+            network=host
+
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Tag as latest for ${{ matrix.service }}
+        run: |
+          docker buildx imagetools create \
+            --tag ${{ secrets.DOCKER_HUB_USER }}/${{ matrix.service }}:latest \
+            ${{ secrets.DOCKER_HUB_USER }}/${{ matrix.service }}:$TAG

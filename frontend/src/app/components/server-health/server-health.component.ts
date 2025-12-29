@@ -9,6 +9,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   selector: 'app-server-health',
   templateUrl: './server-health.component.html',
   styleUrls: ['./server-health.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ServerHealthComponent implements OnInit {
@@ -22,6 +23,7 @@ export class ServerHealthComponent implements OnInit {
     hybrid: 'mempool.space',
     backend: 'mempool',
     electrs: 'electrs',
+    ssr: 'mempool.space',
   };
 
   constructor(

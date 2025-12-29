@@ -4,6 +4,7 @@ import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } f
   selector: 'app-channel-close-box',
   templateUrl: './channel-close-box.component.html',
   styleUrls: ['./channel-close-box.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChannelCloseBoxComponent implements OnChanges {
