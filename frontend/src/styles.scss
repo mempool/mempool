@@ -1,3 +1,5 @@
+@use "sass:color";
+
 /* Theme */
 $bg: #11131f;
 $active-bg: #000000;
@@ -38,14 +40,9 @@ $pagination-disabled-bg:          $bg;
 
 $custom-select-indicator-color: $fg;
 
-.input-group-text {
-  background-color: #1c2031 !important;
-  border: 1px solid #20263e !important;
-}
-
 $link-color:                $info;
 $link-decoration:           none !default;
-$link-hover-color:          darken($link-color, 15%) !default;
+$link-hover-color:          color.adjust($link-color, $lightness: -15%) !default;
 $link-hover-decoration:     underline !default;
 
 $dropdown-bg: $bg;
@@ -57,7 +54,42 @@ $dropdown-link-hover-bg: $active-bg;
 $dropdown-link-active-color: $fg;
 $dropdown-link-active-bg: $active-bg;
 
-@import "bootstrap/scss/bootstrap";
+@use "bootstrap/scss/bootstrap" with (
+  $body-bg: $body-bg,
+  $body-color: $body-color,
+  $gray-800: $gray-800,
+  $gray-700: $gray-700,
+  $nav-tabs-link-active-bg: $nav-tabs-link-active-bg,
+  $primary: $primary,
+  $secondary: $secondary,
+  $success: $success,
+  $info: $info,
+  $h5-font-size: $h5-font-size,
+  $pagination-bg: $pagination-bg,
+  $pagination-border-color: $pagination-border-color,
+  $pagination-disabled-bg: $pagination-disabled-bg,
+  $pagination-disabled-border-color: $pagination-disabled-border-color,
+  $pagination-active-color: $pagination-active-color,
+  $pagination-active-bg: $pagination-active-bg,
+  $pagination-hover-bg: $pagination-hover-bg,
+  $pagination-hover-border-color: $pagination-hover-border-color,
+  $custom-select-indicator-color: $custom-select-indicator-color,
+  $link-color: $link-color,
+  $link-decoration: $link-decoration,
+  $link-hover-color: $link-hover-color,
+  $link-hover-decoration: $link-hover-decoration,
+  $dropdown-bg: $dropdown-bg,
+  $dropdown-link-color: $dropdown-link-color,
+  $dropdown-link-hover-color: $dropdown-link-hover-color,
+  $dropdown-link-hover-bg: $dropdown-link-hover-bg,
+  $dropdown-link-active-color: $dropdown-link-active-color,
+  $dropdown-link-active-bg: $dropdown-link-active-bg
+);
+
+.input-group-text {
+  background-color: #1c2031 !important;
+  border: 1px solid #20263e !important;
+}
 
 :root {
   --bg: #{$bg};
@@ -1098,11 +1130,11 @@ th {
   .fee-progress-bar {
     @extend .fee-progress-bar;
     &.priority {
+      width: 75%;
+      border-radius: 10px 0px 0px 10px !important;
       @media (767px < width < 992px), (width < 576px) {
         width: 100%;
       }
-      width: 75%;
-      border-radius: 10px 0px 0px 10px !important;
     }
   }
 
