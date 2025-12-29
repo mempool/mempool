@@ -11,12 +11,12 @@ for site in mainnet mainnet-lightning testnet testnet-lightning testnet4 signet 
     screen -dmS "${site}" sh -c 'while true;do npm run start-production;sleep 1;done'
 done
 
-# start SSR for each frontend
-for site in services;do
-    cd "$HOME/${site}/ssr" && \
-    echo "starting SSR daemon: ${site}" && \
-    screen -dmS "${site}-ssr" sh -c 'while true;do npm run start;done'
-done
+# start SSR for services
+if [ -e "${HOME}/services" ];then
+    cd "${HOME}/services/ssr" && \
+    echo "starting SSR daemon: services" && \
+    screen -dmS "ssr" sh -c 'while true;do npm run start;sleep 2;done'
+fi
 
 # start nginx warm cacher
 for site in mainnet;do
