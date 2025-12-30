@@ -4,6 +4,21 @@
   margin-top: 13px;
 }
 
+// Bootstrap 5 override: Constrain container-lg width and remove padding to match production
+// Bootstrap 5's container-lg is 1320px with 15px padding, but production is 1140px with no padding
+.container-lg.widget-container {
+  max-width: 1140px !important;
+  width: 1140px !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  
+  // On smaller screens, allow container to be responsive
+  @media (max-width: 1200px) {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+}
+
 .container-xl {
   max-width: 1400px;
 }
@@ -29,6 +44,30 @@
   min-height: 295px;
   @media (max-width: 767px) {
     min-height: auto;
+  }
+  
+  // Bootstrap 5 override: Constrain acceleration-list width to match production (1140px)
+  // Bootstrap 5's container-lg is wider than Bootstrap 4, causing expansion
+  max-width: 1140px;
+  width: 1140px;
+  
+  // Bootstrap 5 override: Constrain table width to match production (1140px)
+  // With table-layout: fixed, we need to set explicit width to prevent expansion
+  table {
+    max-width: 1140px;
+    width: 1140px;
+    
+    // On smaller screens, allow table to be responsive
+    @media (max-width: 1200px) {
+      width: 100%;
+      max-width: 100%;
+    }
+  }
+  
+  // On smaller screens, allow acceleration-list to be responsive
+  @media (max-width: 1200px) {
+    width: 100%;
+    max-width: 100%;
   }
 }
 
@@ -200,5 +239,28 @@ tr, td, th {
   justify-content: center;
   @media (max-width: 767px) {
     height: 100px;
+  }
+}
+
+// Bootstrap 5 override: Fix pagination link colors and alignment to match production
+// Production uses cyan (#00ddff) for inactive pagination links, not gray
+.pagination-container {
+  // Bootstrap 5 override: Ensure text-align is left (not "start") to match production
+  text-align: left !important;
+  
+  ::ng-deep {
+    .page-link {
+      // Inactive pagination links should be cyan to match production
+      color: #00ddff !important;
+      
+      // Disabled links (<<, < when on first page) should remain gray
+      &.disabled,
+      &:disabled {
+        color: #6c757d !important;
+      }
+      
+      // Active page link color is handled by Bootstrap's active state
+      // which uses the tertiary color (purple) background with white text
+    }
   }
 }
