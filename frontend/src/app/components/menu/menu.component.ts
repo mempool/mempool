@@ -97,7 +97,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
   }
 
-  @HostListener('window:click')
+  @HostListener('window:click', ['$event'])
   onClick(event?: MouseEvent) {
     const isServicesPageOnMobile = this.isServicesPage && this.isSmallScreen();
     const cssClasses = event?.target ? (event.target as HTMLElement).className : '';

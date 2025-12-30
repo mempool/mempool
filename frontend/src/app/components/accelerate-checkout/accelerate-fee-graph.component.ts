@@ -130,7 +130,7 @@ export class AccelerateFeeGraphComponent implements OnInit, AfterViewInit, OnCha
     }
   }
 
-  @HostListener('pointermove')
+  @HostListener('pointermove', ['$event'])
   onPointerMove(event?: PointerEvent) {
     if (!event) {
       return;

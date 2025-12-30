@@ -148,7 +148,7 @@ export class TreasuriesSupplyComponent implements OnInit, OnDestroy {
     this.loadingTreasurySupply = false;
   }
 
-  @HostListener('pointerdown')
+  @HostListener('pointerdown', ['$event'])
   onPointerDown(event?: PointerEvent): void {
     if (event && this.supplySvgElement?.nativeElement?.contains(event.target as Node)) {
       this.onPointerMove(event);
@@ -156,7 +156,7 @@ export class TreasuriesSupplyComponent implements OnInit, OnDestroy {
     }
   }
 
-  @HostListener('pointermove')
+  @HostListener('pointermove', ['$event'])
   onPointerMove(event?: PointerEvent): void {
     if (event && this.supplySvgElement?.nativeElement?.contains(event.target as Node)) {
       let x = event.clientX;

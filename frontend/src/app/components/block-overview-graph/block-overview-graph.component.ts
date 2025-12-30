@@ -517,7 +517,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     }
   }
 
-  @HostListener('document:click')
+  @HostListener('document:click', ['$event'])
   clickAway(event?: MouseEvent) {
     if (!event || !event.target) {
       return;

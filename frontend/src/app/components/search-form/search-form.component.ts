@@ -30,7 +30,7 @@ export class SearchFormComponent implements OnInit {
   searchForm: UntypedFormGroup;
   dropdownHidden = false;
 
-  @HostListener('document:click')
+  @HostListener('document:click', ['$event'])
   onDocumentClick(event?: MouseEvent) {
     if (!event || !event.target) {
       return;
@@ -54,7 +54,7 @@ export class SearchFormComponent implements OnInit {
 
   @Output() searchTriggered = new EventEmitter();
   @ViewChild('searchResults') searchResults: SearchResultsComponent;
-  @HostListener('keydown') keydown($event?: KeyboardEvent): void {
+  @HostListener('keydown', ['$event']) keydown($event?: KeyboardEvent): void {
     if ($event) {
       this.handleKeyDown($event);
     }

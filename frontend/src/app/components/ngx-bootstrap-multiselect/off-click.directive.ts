@@ -14,17 +14,17 @@ export class OffClickDirective {
   private _clickEvent: MouseEvent;
   private _touchEvent: TouchEvent;
 
-  @HostListener('click') 
+  @HostListener('click', ['$event']) 
   public onClick(event: MouseEvent): void {
     this._clickEvent = event;
   }
 
-  @HostListener('touchstart')
+  @HostListener('touchstart', ['$event'])
   public onTouch(event: TouchEvent): void {
     this._touchEvent = event;
   }
 
-  @HostListener('document:click') 
+  @HostListener('document:click', ['$event']) 
   public onDocumentClick(event?: MouseEvent): void {
     if (!event) {
       return;
@@ -34,7 +34,7 @@ export class OffClickDirective {
     }
   }
 
-  @HostListener('document:touchstart')
+  @HostListener('document:touchstart', ['$event'])
   public onDocumentTouch(event?: TouchEvent): void {
     if (!event) {
       return;

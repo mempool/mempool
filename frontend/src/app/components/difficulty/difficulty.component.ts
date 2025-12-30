@@ -212,7 +212,7 @@ export class DifficultyComponent implements OnInit {
     return false;
   }
 
-  @HostListener('pointerdown')
+  @HostListener('pointerdown', ['$event'])
   onPointerDown(event?: PointerEvent): void {
     if (event && this.epochSvgElement?.nativeElement?.contains(event.target as Node)) {
       this.onPointerMove(event);
@@ -220,7 +220,7 @@ export class DifficultyComponent implements OnInit {
     }
   }
 
-  @HostListener('pointermove')
+  @HostListener('pointermove', ['$event'])
   onPointerMove(event?: PointerEvent): void {
     if (event && this.epochSvgElement?.nativeElement?.contains(event.target as Node)) {
       this.tooltipPosition = { x: event.clientX, y: event.clientY };

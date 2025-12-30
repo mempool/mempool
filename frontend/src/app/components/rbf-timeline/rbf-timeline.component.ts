@@ -205,7 +205,7 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
     }
   }
 
-  @HostListener('pointermove')
+  @HostListener('pointermove', ['$event'])
   onPointerMove(event?: PointerEvent) {
     if (!event) {
       return;

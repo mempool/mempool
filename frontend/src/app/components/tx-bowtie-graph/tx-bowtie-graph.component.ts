@@ -494,7 +494,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     return v?.value == null || this.isLiquid && v?.asset !== this.nativeAssetId;
   }
 
-  @HostListener('pointermove')
+  @HostListener('pointermove', ['$event'])
   onPointerMove(event?: PointerEvent) {
     if (!event) {
       return;

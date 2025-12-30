@@ -278,7 +278,7 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   // We're catching the whole page event here because we still want to scroll blocks
   // even if the mouse leave the blockchain blocks container. Same idea for mouseup below.
-  @HostListener('document:mousemove')
+  @HostListener('document:mousemove', ['$event'])
   onMouseMove(event?: MouseEvent): void {
     if (!event || this.mouseDragStartX == null) {
       return;
@@ -293,7 +293,7 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.mouseDragStartX = null;
     this.animateMomentum();
   }
-  @HostListener('document:pointermove')
+  @HostListener('document:pointermove', ['$event'])
   onPointerMove(event?: PointerEvent): void {
     if (this.isiOS) {
       this.onMouseMove(event);

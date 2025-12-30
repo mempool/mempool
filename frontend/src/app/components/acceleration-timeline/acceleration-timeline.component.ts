@@ -89,7 +89,7 @@ export class AccelerationTimelineComponent implements OnInit, OnChanges {
     this.cd.markForCheck();
   }
 
-  @HostListener('pointermove')
+  @HostListener('pointermove', ['$event'])
   onPointerMove(event?: PointerEvent) {
     if (!event) {
       return;
