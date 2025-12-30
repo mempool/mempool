@@ -41,6 +41,33 @@
   color: var(--title-fg);
 }
 
+// Bootstrap 5 override: Match production .card-body default padding (20px, not Bootstrap 5's 16px)
+// Bootstrap 5's .card-body uses padding shorthand with CSS variables, which prevents utility classes from working
+// We need to explicitly override the padding and handle utility classes
+.card-body:not(.more-padding):not(.pool-ranking) {
+  padding-top: 20px !important; // Bootstrap 4 default was 20px, Bootstrap 5 is 16px
+  padding-bottom: 20px !important;
+  // Set default left/right to 20px (Bootstrap 4 default) only if no utility classes are present
+  &:not([class*="pl-"]):not([class*="pr-"]):not([class*="px-"]) {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+  // Explicitly handle pl-2 pr-2 utility classes to match production (20px top/bottom, 8px left/right)
+  &.pl-2.pr-2 {
+    padding-left: 0.5rem !important; // 8px to match production
+    padding-right: 0.5rem !important; // 8px to match production
+  }
+  // Explicitly handle pl-lg-3 pr-lg-3 pl-2 pr-2 utility classes to match production (20px top/bottom, 16px left/right on large screens, 8px on small)
+  &.pl-lg-3.pr-lg-3.pl-2.pr-2 {
+    padding-left: 0.5rem !important; // 8px on small screens
+    padding-right: 0.5rem !important; // 8px on small screens
+    @media (min-width: 992px) {
+      padding-left: 1rem !important; // 16px on large screens to match production
+      padding-right: 1rem !important; // 16px on large screens to match production
+    }
+  }
+}
+
 .card-body.pool-ranking {
   padding: 1.25rem 0.25rem 0.75rem 0.25rem;
 }

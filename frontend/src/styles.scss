@@ -509,6 +509,14 @@ main {
   color: var(--yellow);
 }
 
+// Bootstrap 4 compatibility: Match production's rule order
+// Production has Bootstrap 4's default rgba(0, 0, 0, 0.05) which gets overridden
+// Bootstrap 5 doesn't have this default, but we add it for compatibility
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.05); // Bootstrap 4 default (gets overridden below)
+}
+
+// Override Bootstrap 4 default to use theme variable (matches production)
 .table-striped tbody tr:nth-of-type(odd) {
   background-color: var(--stat-box-bg);
 }
@@ -554,23 +562,6 @@ main {
   // Note: reward-stats component has its own rule that overrides this with higher specificity
   app-amount .symbol {
     color: var(--transparent-fg) !important; // Gray text for currency units to match production
-  }
-  
-  // Override Bootstrap 5's table-striped which applies dark backgrounds
-  // In Bootstrap 5, striped backgrounds are applied to tr, not td
-  &.table-striped {
-    tbody tr:nth-of-type(odd) {
-      background-color: var(--stat-box-bg) !important; // Use theme variable for striped rows
-      td, th {
-        background-color: transparent !important; // Cells remain transparent, background comes from tr
-      }
-    }
-    tbody tr:nth-of-type(even) {
-      background-color: transparent !important; // Even rows are transparent
-      td, th {
-        background-color: transparent !important; // Cells remain transparent
-      }
-    }
   }
   
   // Override Bootstrap 5's table-borderless to ensure no unwanted borders
@@ -1669,8 +1660,8 @@ a {
   }
   
   // Bootstrap 5 override: Ensure all links maintain white/light text on hover
-  // Exclude footer links, contentinfo links, blockchain badge links (miner names), and title-link (which should inherit white)
-  &:hover:not(.btn):not(.dropdown-item):not(.nav-link):not(footer a):not(contentinfo a):not(app-blockchain-blocks a.badge):not(.title-link) {
+  // Exclude footer links, contentinfo links, blockchain badge links (miner names), badges, and title-link (which should inherit white)
+  &:hover:not(.btn):not(.dropdown-item):not(.nav-link):not(footer a):not(contentinfo a):not(app-blockchain-blocks a.badge):not(.title-link):not(.badge) {
     color: var(--link-hover-color) !important;
   }
 }
@@ -1715,16 +1706,17 @@ app-global-footer a:hover,
 
 // Miner/pool links should be white without underline (no green hover effect)
 // Target badge links that go to mining pools
+// NOTE: Removed overly broad a[href*="/mining/pool"] and a[routerLink*="/mining/pool"] selectors
+// as they catch "View more" links (e.g., /graphs/mining/pools) which should be cyan, not white
+// Only target specific badge/component links to mining pools
 a.badge[href*="/mining/pool"],
 a.badge[routerLink*="/mining/pool"],
 a.clear-link,
-a[href*="/mining/pool"],
-a[routerLink*="/mining/pool"],
 app-blockchain-blocks a.badge,
 app-blockchain-blocks a.badge[href*="/mining/pool"] {
   color: var(--fg) !important; // White text
   text-decoration: none !important; // No underline
-  
+
   &:hover,
   &:focus,
   &:active,
@@ -1810,6 +1802,17 @@ app-blockchain-blocks {
     color: #FFF !important; // White text - override Bootstrap 5's cyan hover
     text-decoration: none !important; // No underline
   }
+}
+
+// Match production: a.badge-success:hover should darken background color (global rule)
+// Must override .table a:hover which applies underline and blue color
+a.badge-success:hover,
+a.badge-success:focus,
+.table a.badge-success:hover,
+.table a.badge-success:focus {
+  background-color: rgb(7, 123, 34) !important; // Darken green background on hover (matches Bootstrap 4 / production)
+  color: rgb(255, 255, 255) !important; // White text on hover (override .table a:hover blue color)
+  text-decoration: none !important; // No underline on hover (override .table a:hover underline)
 }
 
 // Bootstrap 5 override: Ensure nav links have white text on hover
