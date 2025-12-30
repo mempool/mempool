@@ -25,6 +25,8 @@ $secondary: #272f4e;
 $tertiary: #6225b2;
 $success: #0aab2f;
 $info: #00ddff;
+$danger: #dc3545;
+$warning: #ffc107;
 
 $h5-font-size: 1.15rem !default;
 
@@ -37,11 +39,6 @@ $pagination-active-bg:             $tertiary;
 $pagination-hover-bg:              $hover-bg;
 $pagination-hover-border-color:     $bg;
 $pagination-disabled-bg:          $bg;
-
-.input-group-text {
-  background-color: #1c2031 !important;
-  border: 1px solid #20263e !important;
-}
 
 $link-color:                $info;
 $link-decoration:           none !default;
@@ -67,6 +64,8 @@ $dropdown-link-active-bg: $active-bg;
   $secondary: $secondary,
   $success: $success,
   $info: $info,
+  $danger: $danger,
+  $warning: $warning,
   $h5-font-size: $h5-font-size,
   $pagination-bg: $pagination-bg,
   $pagination-border-color: $pagination-border-color,
@@ -76,7 +75,6 @@ $dropdown-link-active-bg: $active-bg;
   $pagination-active-bg: $pagination-active-bg,
   $pagination-hover-bg: $pagination-hover-bg,
   $pagination-hover-border-color: $pagination-hover-border-color,
-  $custom-select-indicator-color: $custom-select-indicator-color,
   $link-color: $link-color,
   $link-decoration: $link-decoration,
   $link-hover-color: $link-hover-color,
