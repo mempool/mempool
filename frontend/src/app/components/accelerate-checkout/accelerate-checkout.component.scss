@@ -182,8 +182,15 @@
       max-width: none;
     }
     &.info {
-      color: #6c757d;
+      // Bootstrap 5 override: Ensure info text is gray (#6c757d) to match production
+      // Bootstrap 5's table-dark class may override this, so use !important
+      color: #6c757d !important;
       white-space: initial;
+      
+      // Ensure nested small and i elements also inherit the gray color
+      small, i {
+        color: #6c757d !important;
+      }
     }
     &.amt {
       text-align: right;
