@@ -25,14 +25,18 @@
 // Bootstrap 5 override: Ensure table width matches production when in widget mode
 // Bootstrap 5's table-layout: auto algorithm calculates narrower tables than BS4
 // even with identical content, padding, and spacing
-.table {
-  min-width: 483px; // Match production table width for pixel-perfect parity
-}
+// Only apply min-width on single-column mobile (500-767px) and large desktop (≥1200px)
+// Avoid applying at 768-1199px where 2-column layout has insufficient space
+@media (min-width: 500px) and (max-width: 767px), (min-width: 1200px) {
+  .table {
+    min-width: 483px; // Match production table width for pixel-perfect parity
+  }
 
-// Bootstrap 5 override: Ensure parent wrapper div also matches production width
-// The parent div (with min-height: 295px) needs to match the table width
-.container-xl.widget > div {
-  min-width: 483px; // Match production wrapper width for pixel-perfect parity
+  // Bootstrap 5 override: Ensure parent wrapper div also matches production width
+  // The parent div (with min-height: 295px) needs to match the table width
+  .container-xl.widget > div {
+    min-width: 483px; // Match production wrapper width for pixel-perfect parity
+  }
 }
 
 tr, td, th {
