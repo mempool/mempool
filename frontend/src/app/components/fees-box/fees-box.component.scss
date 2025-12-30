@@ -26,12 +26,12 @@
     width: 100px;
     margin: 0;
     width: -webkit-fill-available;
+    margin: 0 auto 0px;
     &:first-child {
       @media (767px < width < 992px), (width < 576px) {
         display: none
       }
     }
-    margin: 0 auto 0px;
     &:last-child {
       margin-bottom: 0;
     }
@@ -87,6 +87,8 @@
   transition: background-color 1s;
   color: #fff;
   &.priority {
+    width: 75%;
+    border-radius: 0px 10px 10px 0px;
     @media (767px < width < 992px), (width < 576px) {
       width: 100%;
     }
@@ -123,15 +125,15 @@
   padding-top: 2px;
   font-size: 12px;
   width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-left: 5px;
+  padding-right: 5px;
   @media (767px < width < 992px), (width < 576px) {
     width: 33%;
   }
   &.prority {
     width: 33%;
   }
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  padding-left: 5px;
-  padding-right: 5px;
 }

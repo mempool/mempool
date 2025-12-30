@@ -1,3 +1,5 @@
+@use "sass:color";
+
 /* Theme */
 $bg: #11131f;
 $active-bg: #000000;
@@ -43,7 +45,7 @@ $pagination-disabled-bg:          $bg;
 
 $link-color:                $info;
 $link-decoration:           none !default;
-$link-hover-color:          darken($link-color, 15%) !default;
+$link-hover-color:          color.adjust($link-color, $lightness: -15%) !default;
 $link-hover-decoration:     underline !default;
 
 $dropdown-bg: $bg;

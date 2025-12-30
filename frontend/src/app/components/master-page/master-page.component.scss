@@ -112,10 +112,10 @@ li.nav-item {
 
 
 .navbar-collapse {
+  justify-content: flex-end;
   @media (min-width: 564px) {
     flex-basis: auto;
   }
-  justify-content: flex-end;
 }
 
 @media (min-width: 992px) {
