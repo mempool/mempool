@@ -205,6 +205,30 @@
   flex-direction: row;
   align-items: stretch;
   margin-top: 1em;
+  
+  // Fix: Constrain the content div width to match production
+  // The div containing the Summary table should match production width (703px at 1068px parent width)
+  // This ensures pixel-perfect alignment after Bootstrap 5 migration
+  // Production measurement: 703.211px width when parent is 1068px
+  > div {
+    // Prevent expansion beyond production width
+    max-width: 703px;
+    // Allow shrinking if fee graph needs more space
+    flex-shrink: 1;
+    // Prevent growing beyond content size
+    flex-grow: 0;
+    // Use auto width to let content determine size, constrained by max-width
+    width: auto;
+    // Set initial size to match production ratio for consistent layout
+    flex-basis: auto;
+    
+    // On mobile when fee graph is hidden, allow full width
+    @media (max-width: 991px) {
+      max-width: 100%;
+      flex-grow: 1;
+      flex-basis: 100%;
+    }
+  }
 }
 
 .payment-area {

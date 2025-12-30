@@ -173,6 +173,11 @@ html, body {
 body {
   background-color: var(--active-bg);
   padding-bottom: 60px;
+
+  // Bootstrap 5 override: Restore Bootstrap 4 font stack for pixel-perfect parity
+  // BS5 changed font-family order from "-apple-system, BlinkMacSystemFont, ..." to "system-ui, -apple-system, ..."
+  // BS4 includes "Liberation Sans" which BS5 removed - this affects text rendering width and causes layout differences
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
 }
 
 .container {
@@ -901,6 +906,16 @@ html:lang(ru) .card-title {
 
 hr {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  // Bootstrap 5 override: Ensure hr margins match Bootstrap 4 / production
+  // Bootstrap 5 changed default margins - override to match production spacing
+  margin-top: 1rem !important; // Match Bootstrap 4 default (1rem = 16px)
+  margin-bottom: 1rem !important; // Match Bootstrap 4 default (1rem = 16px)
+}
+
+// Bootstrap 5 override: Ensure text-muted color matches Bootstrap 4 / production
+// Bootstrap 5 changed the default text-muted color - override to match production
+.text-muted {
+  color: #6c757d !important; // Match Bootstrap 4 default text-muted color
 }
 
 tr {
