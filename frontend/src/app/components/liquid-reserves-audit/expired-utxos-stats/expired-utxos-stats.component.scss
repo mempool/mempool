@@ -16,7 +16,7 @@
     .card-title {
       color: var(--title-fg);
       font-size: 10px;
-      margin-bottom: 4px;  
+      margin-bottom: 4px !important; // Bootstrap 5 uses CSS variables for card-title spacing - override with !important
       font-size: 1rem;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -76,7 +76,7 @@
 
 .title-link, .title-link:hover, .title-link:focus, .title-link:active {
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 4px !important; // Bootstrap 5 uses CSS variables for card-title spacing - override with !important
   text-decoration: none;
   color: inherit;
 }

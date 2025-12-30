@@ -79,7 +79,7 @@
     flex-direction: row;
   }
   h5 {
-    margin-bottom: 5px;
+    margin-bottom: 5px !important; // Bootstrap 5 uses CSS variables for card-title spacing - override with !important
   }
   .item {
     max-width: 160px;

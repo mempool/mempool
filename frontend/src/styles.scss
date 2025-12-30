@@ -216,6 +216,16 @@ body {
   border-radius: 4px !important;
 }
 
+// Bootstrap 5 removed .float-left and .float-right in favor of .float-start and .float-end
+// Restore Bootstrap 4 float utility classes to match production
+.float-right {
+  float: right !important;
+}
+
+.float-left {
+  float: left !important;
+}
+
 main {
   margin-top: 24px;
 }
@@ -499,10 +509,11 @@ main {
     background-color: transparent !important; // Ensure transparent background (matches production)
   }
   
-  // For app-amount symbols, apply white color
+  // For app-amount symbols, use default gray color (not white)
+  // Bootstrap 5 migration: Remove white override to let default gray show through
   // Note: reward-stats component has its own rule that overrides this with higher specificity
   app-amount .symbol {
-    color: var(--fg) !important; // White text for amount component symbol
+    color: var(--transparent-fg) !important; // Gray text for currency units to match production
   }
   
   // Override Bootstrap 5's table-striped which applies dark backgrounds
@@ -863,6 +874,24 @@ tr {
 
 h1, h2, h3 {
   margin-bottom: 1rem;
+}
+
+// Bootstrap 5 override: Match Bootstrap 4 heading font sizes exactly
+// Production uses exact pixel values, Bootstrap 5 uses rem with rounding issues
+h1 {
+  font-size: 40px !important; // Match production (39.595px in BS5)
+}
+
+h2 {
+  font-size: 32px !important; // Match production (31.757px in BS5)
+}
+
+h3 {
+  font-size: 28px !important; // Match production (27.838px in BS5)
+}
+
+h4 {
+  font-size: 24px !important; // Match production (23.919px in BS5)
 }
 
 // Bootstrap 5 override: Match Bootstrap 4 h5 margin-bottom (12px instead of 8px)
@@ -1463,6 +1492,7 @@ th {
   .page-link {
     background-color: var(--bg);
     border: 1px solid var(--bg);
+    color: #6c757d !important; // Bootstrap 5 migration: gray text for inactive pagination links (not white)
   }
   .page-link:hover {
     background-color: var(--active-bg);
@@ -1470,10 +1500,12 @@ th {
   .page-item.active .page-link {
     background-color: var(--tertiary);
     border: 1px solid var(--tertiary);
+    color: #fff !important; // Bootstrap 5 migration: white text for active page
   }
   .page-item.disabled .page-link {
     background-color: var(--bg);
     border: 1px solid var(--bg);
+    color: #6c757d !important; // Bootstrap 5 migration: gray text for disabled pagination links
   }
 }
 
@@ -2078,9 +2110,16 @@ span.badge-info:active {
 }
 
 // Bootstrap 5 override: Match Bootstrap 4 badge padding (3px 4.8px instead of 4.2px 7.8px)
+// Note: padding does not use !important to allow inline styles to override (e.g., miner badges with padding: 0)
 .badge {
-  padding: 3px 4.8px !important;
+  padding: 3px 4.8px;
   border-radius: 4px !important; // Bootstrap 5 changed from 4px to 6px - override to match Bootstrap 4
+}
+
+// Bootstrap 5 override: Restore badge-secondary background color to match production
+// Production uses rgb(39, 47, 78), Bootstrap 5 has transparent background
+.badge-secondary {
+  background-color: #272F4E !important;
 }
 
 button {
