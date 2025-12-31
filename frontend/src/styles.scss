@@ -256,6 +256,12 @@ body {
   border-radius: 4px !important;
 }
 
+// Bootstrap 5 changed .card-body padding from 1.25rem (20px) to 1rem (16px)
+// Override to match Bootstrap 4 / production styling
+.card-body {
+  padding: 1.25rem !important; // Bootstrap 5 override: 20px instead of BS5's 16px
+}
+
 // Bootstrap 5 removed .float-left and .float-right in favor of .float-start and .float-end
 // Restore Bootstrap 4 float utility classes to match production
 .float-right {
@@ -530,7 +536,13 @@ main {
     border-color: rgba(255, 255, 255, 0.1) !important; // Ensure borders are visible on dark background
     padding: 0.75rem !important; // Bootstrap 5 override: 0.75rem (12px) instead of BS5's 0.5rem (8px) to match production
   }
-  
+
+  // Bootstrap 5 override: Remove horizontal padding from table rows (only cells should have padding)
+  tr {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
   // Apply white color to all table cells EXCEPT .latest-adjustments tables
   // .latest-adjustments tables are handled separately to allow inline color styles
   &:not(.latest-adjustments) {

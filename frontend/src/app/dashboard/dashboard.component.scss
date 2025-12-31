@@ -159,13 +159,16 @@
   width: 100%;
   text-align: left;
   table-layout:fixed;
-  tr, td, th {
+  td, th {
     border: 0px;
     padding-top: 0.71rem !important;
     padding-bottom: 0.75rem !important;
-    padding-left: 12px !important; // Bootstrap 5 uses less padding, override to match Bootstrap 4 / production
-    padding-right: 12px !important; // Bootstrap 5 uses less padding, override to match Bootstrap 4 / production
+    padding-left: 12px; // Bootstrap 5 uses less padding, override to match Bootstrap 4 / production (no !important to allow specific cell overrides)
+    padding-right: 12px; // Bootstrap 5 uses less padding, override to match Bootstrap 4 / production (no !important to allow specific cell overrides)
     color: var(--fg) !important; // Ensure text is white, not Bootstrap 5's default black
+  }
+  tr {
+    border: 0px;
   }
   td {
     overflow:hidden;
@@ -212,12 +215,15 @@
 .lastest-blocks-table {
   width: 100%;
   text-align: left;
-  tr, td, th {
+  td, th {
     border: 0px;
     padding-top: 0.65rem !important;
     padding-bottom: 0.7rem !important;
-    padding-left: 12px !important; // Bootstrap 5 uses less padding, override to match Bootstrap 4 / production
-    padding-right: 12px !important; // Bootstrap 5 uses less padding, override to match Bootstrap 4 / production
+    padding-left: 12px; // Bootstrap 5 uses less padding, override to match Bootstrap 4 / production (no !important to allow specific cell overrides)
+    padding-right: 12px; // Bootstrap 5 uses less padding, override to match Bootstrap 4 / production (no !important to allow specific cell overrides)
+  }
+  tr {
+    border: 0px;
   }
   .table-cell-height {
     width: 15%;
@@ -252,13 +258,17 @@
   width: 100%;
   text-align: left;
   table-layout:fixed;
-  tr, td, th {
+  td, th {
     border: 0px;
     padding-top: 0.71rem !important;
     padding-bottom: 0.75rem !important;
-    padding-left: 12px !important; // Bootstrap 5 uses less padding, override to match Bootstrap 4 / production
-    padding-right: 12px !important; // Bootstrap 5 uses less padding, override to match Bootstrap 4 / production
+    padding-left: 12px; // Bootstrap 5 uses less padding, override to match Bootstrap 4 / production (no !important to allow .table-cell-badges override)
+    padding-right: 12px; // Bootstrap 5 uses less padding, override to match Bootstrap 4 / production (no !important to allow .table-cell-badges override)
     color: var(--fg) !important; // Ensure text is white, not Bootstrap 5's default black
+  }
+  tr {
+    border: 0px;
+    color: var(--fg) !important;
   }
   td {
     overflow:hidden;
@@ -282,8 +292,8 @@
   }
   .table-cell-badges {
     width: 23%;
-    padding-right: 0;
-    padding-left: 5px;
+    padding-right: 0 !important; // Override global table padding for Status column alignment
+    padding-left: 5px !important; // Override global table padding for Status column alignment
     text-align: end;
 
     .badge {
