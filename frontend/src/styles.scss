@@ -528,6 +528,7 @@ main {
   td, th {
     background-color: transparent !important; // Override Bootstrap 5's default background - cells should be transparent
     border-color: rgba(255, 255, 255, 0.1) !important; // Ensure borders are visible on dark background
+    padding: 0.75rem !important; // Bootstrap 5 override: 0.75rem (12px) instead of BS5's 0.5rem (8px) to match production
   }
   
   // Apply white color to all table cells EXCEPT .latest-adjustments tables
