@@ -6,11 +6,22 @@
 
 // Bootstrap 5 override: Constrain container-lg width and remove padding to match production
 // Bootstrap 5's container-lg is 1320px with 15px padding, but production is 1140px with no padding
+// BUT: When inside a widget (card), use 100% width to prevent overflow
 .container-lg.widget-container {
-  max-width: 1140px !important;
-  width: 1140px !important;
   padding-left: 0 !important;
   padding-right: 0 !important;
+  
+  // Full-page view (not widget): use 1140px width
+  &:not(.widget) {
+    max-width: 1140px !important;
+    width: 1140px !important;
+  }
+  
+  // Widget context (inside card): use 100% width to fit card
+  &.widget {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
   
   // On smaller screens, allow container to be responsive
   @media (max-width: 1200px) {
@@ -46,28 +57,24 @@
     min-height: auto;
   }
   
-  // Bootstrap 5 override: Constrain acceleration-list width to match production (1140px)
-  // Bootstrap 5's container-lg is wider than Bootstrap 4, causing expansion
-  max-width: 1140px;
-  width: 1140px;
+  // Default: 100% width to fit container (prevents overflow in cards)
+  // Remove fixed 1140px width that was causing overflow in widget context
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden; // Prevent horizontal overflow
   
-  // Bootstrap 5 override: Constrain table width to match production (1140px)
-  // With table-layout: fixed, we need to set explicit width to prevent expansion
+  // Bootstrap 5 override: Constrain table width to fit parent
+  // Use 100% width to prevent overflow in card context
   table {
-    max-width: 1140px;
-    width: 1140px;
+    width: 100%;
+    max-width: 100%;
+    table-layout: fixed; // Ensure table respects width constraints
     
     // On smaller screens, allow table to be responsive
     @media (max-width: 1200px) {
       width: 100%;
       max-width: 100%;
     }
-  }
-  
-  // On smaller screens, allow acceleration-list to be responsive
-  @media (max-width: 1200px) {
-    width: 100%;
-    max-width: 100%;
   }
 }
 

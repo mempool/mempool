@@ -258,8 +258,10 @@ body {
 
 // Bootstrap 5 changed .card-body padding from 1.25rem (20px) to 1rem (16px)
 // Override to match Bootstrap 4 / production styling
-.card-body {
-  padding: 1.25rem !important; // Bootstrap 5 override: 20px instead of BS5's 16px
+// Use shorthand padding with !important to match production computed styles
+// Exclude component-specific padding classes (more-padding, less-padding) to allow custom overrides
+.card-body:not(.more-padding):not(.less-padding) {
+  padding: 1.25rem !important; // Bootstrap 5 override: 20px on all sides to match production
 }
 
 // Bootstrap 5 removed .float-left and .float-right in favor of .float-start and .float-end
