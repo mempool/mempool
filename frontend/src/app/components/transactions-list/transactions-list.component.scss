@@ -1,3 +1,20 @@
+// Bootstrap 5 override: Transactions tables need 0.3rem (4.8px) padding to match production
+// This overrides the global .table td, th rule that sets 0.75rem (12px)
+// Exclude .details-container tables which need 0.75rem padding
+.table {
+	td, th {
+		padding: 0.3rem !important; // 4.8px to match production transactions table
+		line-height: 1.2 !important; // Compact line-height to match production row heights
+	}
+}
+
+// Ensure detail tables keep their 0.75rem padding (more specific selector wins)
+.details-container {
+	tr td {
+		padding: 0.75rem !important; // Keep 0.75rem for detail tables
+	}
+}
+
 .col {
 	&:first-child {
 		padding-right: 0;
