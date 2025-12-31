@@ -83,11 +83,16 @@ div.scrollable {
   // Bootstrap 5 changed table cell padding from 12px to 8px
   // Override to match Bootstrap 4 / production
   // BUT: nested .table-xs tables should keep minimal padding (0.1rem = 1.6px)
+  // AND: .label.addresses cells should keep 25px top padding
+  // AND: .data cells should keep custom padding-left: 5%
   .table {
-    td, th {
+    td:not(.addresses):not(.data), th:not(.addresses):not(.data) {
       padding: 12px !important;
     }
-    
+
+    // .addresses cells get custom padding (set below in .label.addresses rule)
+    // .data cells get custom padding-left: 5% (set below in .data rule)
+
     // Exclude nested .table-xs tables - they should keep minimal padding
     .table-xs {
       td, th {
@@ -142,7 +147,7 @@ div.scrollable {
   }
   .label.addresses {
     vertical-align: top;
-    padding-top: 25px;
+    padding: 25px 12px 12px 12px !important; // Top: 25px, Right/Bottom/Left: 12px - override global table padding
   }
   .addresses-data {
     vertical-align: top;
@@ -294,49 +299,13 @@ div.scrollable {
   }
 }
 
-.table-data {
-  background-color: transparent !important; // Ensure table background is transparent
-  
-  // Ensure all rows have transparent backgrounds (override Bootstrap 5 table-striped)
-  tr {
-    background-color: transparent !important;
-  }
-  
-  // Override Bootstrap 5's table-striped which applies backgrounds to tr
-  &.table-striped {
-    tbody tr:nth-of-type(odd),
-    tbody tr:nth-of-type(even) {
-      background-color: transparent !important; // All rows should be transparent
-    }
-  }
-  
-  td {
-    text-align: left;
-    color: var(--fg) !important; // White text for table cells
-    background-color: transparent !important; // Ensure transparent background
-    @media (max-width: 767.98px) {
-      text-align: center;
-    }
-  }
-  
-  th {
-    color: var(--fg) !important; // White text for table headers (matches production)
-    background-color: transparent !important; // Ensure transparent background
-    
-    // .data-title headers should be blue (var(--title-fg)) not white
-    &.data-title {
-      color: var(--title-fg) !important; // Blue text for nested table headers (matches production)
-    }
-  }
-  
-  // Ensure amount component text is white (not black) and background is transparent
-  app-amount,
-  app-amount span,
-  app-amount .symbol,
-  app-amount .fiat,
-  app-amount * {
-    color: var(--fg) !important; // White text for amount component
-    background-color: transparent !important; // Ensure transparent background (matches production)
+.table-data tr {
+  background-color: transparent;
+}
+.table-data td {
+  text-align: left;
+  @media (max-width: 767.98px) {
+    text-align: center;
   }
 }
 
