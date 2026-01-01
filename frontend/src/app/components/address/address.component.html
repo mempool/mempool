@@ -76,7 +76,7 @@
     <ng-container *ngIf="(addressTypeInfo?.tapscript && addressTypeInfo?.scripts?.size > 0) || taprootPsbtExpanded"> 
       <br>
       <div class="title-tx">
-        <h2 class="text-left" i18n="address.taproot-tree">Taproot Tree</h2>
+        <h2 class="text-start" i18n="address.taproot-tree">Taproot Tree</h2>
       </div>
       <div class="box">
         <div class="row">
@@ -103,7 +103,7 @@
     <ng-container *ngIf="(stateService.backend$ | async) === 'esplora' && address && transactions && transactions.length > 2">
       <br>
       <div class="title-tx">
-        <h2 class="text-left" i18n="address.balance-history">Balance History</h2>
+        <h2 class="text-start" i18n="address.balance-history">Balance History</h2>
       </div>
       <div class="box">
         <div class="widget-toggler" *ngIf="showBalancePeriod()">
@@ -124,7 +124,7 @@
     <ng-container *ngIf="(stateService.backend$ | async) === 'esplora' && address && utxos && utxos.length > 2">
       <br>
       <div class="title-tx">
-        <h2 class="text-left" i18n="address.unspent-outputs">Unspent Outputs</h2>
+        <h2 class="text-start" i18n="address.unspent-outputs">Unspent Outputs</h2>
       </div>
       <div class="box">
         <div class="row">
@@ -137,7 +137,7 @@
 
     <br>
     <div class="title-tx">
-      <h2 class="text-left">
+      <h2 class="text-start">
         <ng-template [ngIf]="!transactions?.length">&nbsp;</ng-template>
         <ng-template i18n="X of X Address Transaction" [ngIf]="transactions?.length === 1">{{ (transactions?.length | number) || '?' }} of {{ mempoolStats.tx_count + chainStats.tx_count | number }} transaction</ng-template>
         <ng-template i18n="X of X Address Transactions (Plural)" [ngIf]="transactions?.length > 1">{{ (transactions?.length | number) || '?' }} of {{ mempoolStats.tx_count + chainStats.tx_count | number }} transactions</ng-template>
@@ -290,8 +290,8 @@
 </ng-template>
 
 <ng-template #pendingBalanceRow>
-  <td i18n="accelerator.pending-state" class="font-italic">Pending</td>
-  <td *ngIf="mempoolStats.funded_txo_sum !== undefined; else confidentialTd" class="font-italic wrap-cell"><app-amount [satoshis]="mempoolStats.balance" [noFiat]="true" [addPlus]="true"></app-amount> <span class="fiat"><app-fiat [value]="mempoolStats.balance"></app-fiat></span></td>
+  <td i18n="accelerator.pending-state" class="fst-italic">Pending</td>
+  <td *ngIf="mempoolStats.funded_txo_sum !== undefined; else confidentialTd" class="fst-italic wrap-cell"><app-amount [satoshis]="mempoolStats.balance" [noFiat]="true" [addPlus]="true"></app-amount> <span class="fiat"><app-fiat [value]="mempoolStats.balance"></app-fiat></span></td>
 </ng-template>
 
 <ng-template #utxoRow>
@@ -300,8 +300,8 @@
 </ng-template>
 
 <ng-template #pendingUtxoRow>
-  <td i18n="address.pending-utxos" class="font-italic">Pending UTXOs</td>
-  <td class="font-italic wrap-cell">{{ mempoolStats.utxos > 0 ? '+' : ''}}{{ mempoolStats.utxos }}</td>
+  <td i18n="address.pending-utxos" class="fst-italic">Pending UTXOs</td>
+  <td class="fst-italic wrap-cell">{{ mempoolStats.utxos > 0 ? '+' : ''}}{{ mempoolStats.utxos }}</td>
 </ng-template>
 
 <ng-template #volumeRow>
@@ -312,13 +312,13 @@
 <ng-template #typeRow>
   <td i18n="address.type">Type</td>
   <td class="wrap-cell">
-    <span placement="bottom" class="badge badge-primary">
+    <span placement="bottom" class="badge bg-primary">
       <app-address-type [address]="addressTypeInfo"></app-address-type>
     </span>
     <button *ngIf="showTaprootPsbtButton()" type="button" class="btn btn-sm taproot-psbt-btn" (click)="taprootPsbtExpanded = !taprootPsbtExpanded" i18n-ngbTooltip="address.taproot-psbt-add-unpublished-spend-paths" ngbTooltip="Add unpublished spending paths">
       <fa-icon [icon]="['fas', 'code-fork']" [fixedWidth]="true"></fa-icon>
     </button>
-    <app-address-labels *ngIf="!addressTypeInfo?.tapscript" [channel]="exampleChannel" [address]="addressTypeInfo" class="ml-1"></app-address-labels>
+    <app-address-labels *ngIf="!addressTypeInfo?.tapscript" [channel]="exampleChannel" [address]="addressTypeInfo" class="ms-1"></app-address-labels>
   </td>
 </ng-template>
 

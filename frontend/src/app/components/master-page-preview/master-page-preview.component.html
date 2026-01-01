@@ -6,7 +6,7 @@
         <img [src]="enterpriseInfo.img" class="subdomain_logo" [class]="{'rounded': enterpriseInfo.rounded_corner}">
       }
       @if (enterpriseInfo?.header_img) {
-        <img *ngIf="enterpriseInfo.header_img" [src]="enterpriseInfo?.header_img" [alt]="enterpriseInfo.title" height="60px" class="mr-3">
+        <img *ngIf="enterpriseInfo.header_img" [src]="enterpriseInfo?.header_img" [alt]="enterpriseInfo.title" height="60px" class="me-3">
       } @else {
         <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126" width="500" height="126" class="mempool-logo" style="width: 200px; height: 50px"></app-svg-images>
         <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" style="width: 200px; height: 50px" width="500" height="126" viewBox="0 0 500 126"></app-svg-images>
@@ -14,12 +14,12 @@
     </span>
 
     <div [ngSwitch]="network.val">
-      <span *ngSwitchCase="'signet'" class="network signet"><app-svg-images name="signet" width="35" height="35" viewBox="0 0 65 65" style="width: 40px; height: 48px;" class="mainnet mr-1"></app-svg-images> Signet</span>
-      <span *ngSwitchCase="'testnet'" class="network testnet"><app-svg-images name="testnet" width="35" height="35" viewBox="0 0 65 65" style="width: 40px; height: 48px;" class="mainnet mr-1"></app-svg-images> Testnet3</span>
-      <span *ngSwitchCase="'testnet4'" class="network testnet"><app-svg-images name="testnet4" width="35" height="35" viewBox="0 0 65 65" style="width: 40px; height: 48px;" class="mainnet mr-1"></app-svg-images> Testnet4</span>
-      <span *ngSwitchCase="'liquid'" class="network liquid"><app-svg-images name="liquid" width="35" height="35" viewBox="0 0 125 125" style="width: 40px; height: 48px;" class="mainnet mr-1"></app-svg-images> Mainnet</span>
-      <span *ngSwitchCase="'liquidtestnet'" class="network liquidtestnet"><app-svg-images name="liquidtestnet" width="35" height="35" viewBox="0 0 125 125" style="width: 40px; height: 48px;" class="mainnet mr-1"></app-svg-images> Testnet</span>
-      <span *ngSwitchDefault class="network mainnet"><app-svg-images name="bitcoin" width="35" height="35" viewBox="0 0 65 65" style="width: 40px; height: 48px;" class="mainnet mr-1"></app-svg-images> Mainnet</span>
+      <span *ngSwitchCase="'signet'" class="network signet"><app-svg-images name="signet" width="35" height="35" viewBox="0 0 65 65" style="width: 40px; height: 48px;" class="mainnet me-1"></app-svg-images> Signet</span>
+      <span *ngSwitchCase="'testnet'" class="network testnet"><app-svg-images name="testnet" width="35" height="35" viewBox="0 0 65 65" style="width: 40px; height: 48px;" class="mainnet me-1"></app-svg-images> Testnet3</span>
+      <span *ngSwitchCase="'testnet4'" class="network testnet"><app-svg-images name="testnet4" width="35" height="35" viewBox="0 0 65 65" style="width: 40px; height: 48px;" class="mainnet me-1"></app-svg-images> Testnet4</span>
+      <span *ngSwitchCase="'liquid'" class="network liquid"><app-svg-images name="liquid" width="35" height="35" viewBox="0 0 125 125" style="width: 40px; height: 48px;" class="mainnet me-1"></app-svg-images> Mainnet</span>
+      <span *ngSwitchCase="'liquidtestnet'" class="network liquidtestnet"><app-svg-images name="liquidtestnet" width="35" height="35" viewBox="0 0 125 125" style="width: 40px; height: 48px;" class="mainnet me-1"></app-svg-images> Testnet</span>
+      <span *ngSwitchDefault class="network mainnet"><app-svg-images name="bitcoin" width="35" height="35" viewBox="0 0 65 65" style="width: 40px; height: 48px;" class="mainnet me-1"></app-svg-images> Mainnet</span>
     </div>
   </header>
   <router-outlet></router-outlet>
