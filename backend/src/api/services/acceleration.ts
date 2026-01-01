@@ -45,7 +45,7 @@ class AccelerationApi {
   private startedWebsocketLoop: boolean = false;
   private websocketConnected: boolean = false;
   private onDemandPollingEnabled = !config.MEMPOOL_SERVICES.ACCELERATIONS;
-  private apiPath = config.MEMPOOL.OFFICIAL ? (config.MEMPOOL_SERVICES.API + '/accelerator/accelerations') : (config.EXTERNAL_DATA_SERVER.MEMPOOL_API + '/accelerations');
+  private apiPath = config.MEMPOOL.OFFICIAL ? (config.MEMPOOL_SERVICES.API + '/accelerator/accelerations') : (config.EXTERNAL_DATA_SERVER.MEMPOOL_API + '/services/accelerator/accelerations');
   private websocketPath = config.MEMPOOL_SERVICES?.API ? `${config.MEMPOOL_SERVICES.API.replace('https://', 'wss://').replace('http://', 'ws://')}/accelerator/ws` : '/';
   private _accelerations: Record<string, Acceleration> = {};
   private lastPoll = 0;

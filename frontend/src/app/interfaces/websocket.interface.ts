@@ -1,7 +1,7 @@
 import { SafeResourceUrl } from '@angular/platform-browser';
 import { ILoadingIndicators } from '@app/services/state.service';
 import { Transaction } from '@interfaces/electrs.interface';
-import { Acceleration, BlockExtended, DifficultyAdjustment, RbfTree, TransactionStripped } from '@interfaces/node-api.interface';
+import { BlockExtended, DifficultyAdjustment, PendingAcceleration, RbfTree, TransactionStripped } from '@interfaces/node-api.interface';
 
 export interface WebsocketResponse {
   backend?: 'esplora' | 'electrum' | 'none';
@@ -100,7 +100,7 @@ export interface MempoolBlockDeltaCompressed {
 }
 
 export interface AccelerationDelta {
-  added: Acceleration[];
+  added: PendingAcceleration[];
   removed: string[];
   reset?: boolean;
 }
