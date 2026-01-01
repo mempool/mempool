@@ -21,3 +21,43 @@
   background-color: rgb(0, 99, 199) !important; // Darker blue (production: rgb(0, 99, 199), Bootstrap 5: rgb(51, 150, 251))
   border-color: rgb(0, 92, 186) !important; // Darker border (production: rgb(0, 92, 186), Bootstrap 5: rgb(26, 137, 251))
 }
+
+// Button group styling - ensure buttons are seamlessly connected with flat edges
+.btn-group-toggle {
+  display: inline-flex !important; // Match production - ensures buttons appear on single line
+  vertical-align: middle !important;
+  gap: 0 !important; // Remove any gap Bootstrap 5 might add
+
+  .btn {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+
+    // Border radius: only outer edges rounded, inner edges square for seamless connection
+    &:first-child {
+      border-top-left-radius: 3.2px !important;
+      border-bottom-left-radius: 3.2px !important;
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+    }
+
+    &:last-child {
+      border-top-left-radius: 0 !important;
+      border-bottom-left-radius: 0 !important;
+      border-top-right-radius: 3.2px !important;
+      border-bottom-right-radius: 3.2px !important;
+    }
+
+    &:not(:first-child):not(:last-child) {
+      border-radius: 0 !important; // Middle buttons have no rounded corners
+    }
+
+    &:not(:first-child) {
+      margin-left: -1px !important; // Overlap borders for seamless connection
+    }
+
+    &:focus {
+      z-index: 1; // Bring focused button to front
+      position: relative; // Ensure z-index works
+    }
+  }
+}
