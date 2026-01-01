@@ -10,6 +10,8 @@
   margin-left: auto !important;
   margin-right: auto !important;
   margin-bottom: 0 !important;
+  // Prevent clipping of .main-title elements which have negative margin-top
+  overflow: visible !important;
 
   // Override at all Bootstrap 5 breakpoints where container-xl applies margins
   @media (min-width: 1400px) {

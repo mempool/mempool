@@ -1,8 +1,8 @@
 .dashboard-container {
   text-align: center;
   margin-top: 0.5rem;
-  // Ensure container doesn't overflow
-  overflow-x: hidden;
+  // Allow overflow to show .main-title elements with negative margin-top
+  overflow: visible;
   .col {
     margin-bottom: 1.5rem;
     // Ensure columns don't overflow container
