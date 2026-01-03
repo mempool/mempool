@@ -50,6 +50,7 @@
 
 .td-width {
 	width: 150px;
+	text-align: left !important; // Override Bootstrap 5's default text-align: start to match Bootstrap 4
 
 	@media (max-width: 768px) {
 	  width: 175px;
@@ -75,6 +76,8 @@
 }
 
 .container-xl {
+	// Override Bootstrap 5's container-xl max-width: at xxl breakpoint (1400px+) it's 1320px, but we want 1140px to match production
+	max-width: 1140px !important;
 	margin-bottom: 40px;
 }
 
@@ -182,6 +185,13 @@
     margin: 0;
     padding-bottom: 5px;
   }
+  
+  // Ensure float-left works correctly in Bootstrap 5
+  // Match production: title div should float and not take full width
+  &.float-left {
+    float: left !important;
+    width: auto !important;
+  }
 }
 
 .btn-outline-info {
@@ -195,10 +205,15 @@
   margin-top: -5px;
   margin-left: 10px;
 	@media (min-width: 768px){
-		display: inline-block;
+		display: inline-block !important; // Match production: buttons should be inline-block, not block
     margin-top: 0px;
     margin-bottom: 0px;
 	}
+  
+  // Ensure float-right works for buttons (Bootstrap 5 may not apply float utilities correctly)
+  &.float-right {
+    float: right !important;
+  }
 }
 
 .accelerator-toggle, .details-button {

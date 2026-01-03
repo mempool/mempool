@@ -1,3 +1,17 @@
+// Bootstrap 5 migration: Remove extra spacing on form labels to match production
+label {
+  margin-top: 0 !important;
+  margin-bottom: 0.5rem !important;
+}
+
+// Bootstrap 5 migration: Fix placeholder text color to match production
+// Production uses rgb(108, 117, 125) - Bootstrap's gray-600
+.form-control::placeholder,
+.input-dark::placeholder {
+  color: #6c757d !important;
+  opacity: 1 !important;
+}
+
 .accept-results {
   td, th {
     &.allowed {

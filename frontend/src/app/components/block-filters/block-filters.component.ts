@@ -62,12 +62,14 @@ export class BlockFiltersComponent implements OnInit, OnChanges, OnDestroy {
     this.filterMode = mode;
     this.onFilterChanged.emit({ mode: this.filterMode, filters: this.activeFilters, gradient: this.gradientMode });
     this.stateService.activeGoggles$.next({ mode: this.filterMode, filters: [...this.activeFilters], gradient: this.gradientMode });
+    this.cd.markForCheck();
   }
 
   setGradientMode(mode): void {
     this.gradientMode = mode;
     this.onFilterChanged.emit({ mode: this.filterMode, filters: this.activeFilters, gradient: this.gradientMode });
     this.stateService.activeGoggles$.next({ mode: this.filterMode, filters: [...this.activeFilters], gradient: this.gradientMode });
+    this.cd.markForCheck();
   }
 
   toggleFilter(key): void {
@@ -92,6 +94,7 @@ export class BlockFiltersComponent implements OnInit, OnChanges, OnDestroy {
     const booleanFlags = this.getBooleanFlags();
     this.onFilterChanged.emit({ mode: this.filterMode, filters: this.activeFilters, gradient: this.gradientMode });
     this.stateService.activeGoggles$.next({ mode: this.filterMode, filters: [...this.activeFilters], gradient: this.gradientMode });
+    this.cd.markForCheck();
   }
   
   getBooleanFlags(): bigint | null {
@@ -105,9 +108,9 @@ export class BlockFiltersComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   @HostListener('document:click', ['$event'])
-  onClick(event): boolean {
+  onClick(event?: MouseEvent): boolean {
     // click away from menu
-    if (!event.target.closest('button') && !event.target.closest('label')) {
+    if (event && !(event.target as HTMLElement).closest('button') && !(event.target as HTMLElement).closest('label')) {
       this.menuOpen = false;
     }
     return true;

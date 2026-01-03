@@ -76,7 +76,7 @@
     <ng-container *ngIf="(addressTypeInfo?.tapscript && addressTypeInfo?.scripts?.size > 0) || taprootPsbtExpanded"> 
       <br>
       <div class="title-tx">
-        <h2 class="text-left" i18n="address.taproot-tree">Taproot Tree</h2>
+        <h2 class="text-start" i18n="address.taproot-tree">Taproot Tree</h2>
       </div>
       <div class="box">
         <div class="row">
@@ -103,15 +103,15 @@
     <ng-container *ngIf="(stateService.backend$ | async) === 'esplora' && address && transactions && transactions.length > 2">
       <br>
       <div class="title-tx">
-        <h2 class="text-left" i18n="address.balance-history">Balance History</h2>
+        <h2 class="text-start" i18n="address.balance-history">Balance History</h2>
       </div>
       <div class="box">
         <div class="widget-toggler" *ngIf="showBalancePeriod()">
-          <a href="" (click)="setBalancePeriod('all')" class="toggler-option"
-            [ngClass]="{'inactive': balancePeriod === 'all'}"><small i18n="all">all</small></a>
-          <span style="color: var(--transparent-fg); font-size: 8px"> | </span>
-          <a href="" (click)="setBalancePeriod('1m')" class="toggler-option"
-            [ngClass]="{'inactive': balancePeriod === '1m'}"><small i18n="recent">recent</small></a>
+            <a href="" (click)="setBalancePeriod('all')" class="toggler-option"
+             [class.inactive]="balancePeriod === 'all'"><small i18n="all">all</small></a>
+            <span style="color: var(--transparent-fg); font-size: 8px"> | </span>
+            <a href="" (click)="setBalancePeriod('1m')" class="toggler-option"
+             [class.inactive]="balancePeriod === '1m'"><small i18n="recent">recent</small></a>
         </div>
         <div class="row">
           <div class="col-md">
@@ -124,7 +124,7 @@
     <ng-container *ngIf="(stateService.backend$ | async) === 'esplora' && address && utxos && utxos.length > 2">
       <br>
       <div class="title-tx">
-        <h2 class="text-left" i18n="address.unspent-outputs">Unspent Outputs</h2>
+        <h2 class="text-start" i18n="address.unspent-outputs">Unspent Outputs</h2>
       </div>
       <div class="box">
         <div class="row">
@@ -137,7 +137,7 @@
 
     <br>
     <div class="title-tx">
-      <h2 class="text-left">
+      <h2 class="text-start">
         <ng-template [ngIf]="!transactions?.length">&nbsp;</ng-template>
         <ng-template i18n="X of X Address Transaction" [ngIf]="transactions?.length === 1">{{ (transactions?.length | number) || '?' }} of {{ mempoolStats.tx_count + chainStats.tx_count | number }} transaction</ng-template>
         <ng-template i18n="X of X Address Transactions (Plural)" [ngIf]="transactions?.length > 1">{{ (transactions?.length | number) || '?' }} of {{ mempoolStats.tx_count + chainStats.tx_count | number }} transactions</ng-template>
@@ -152,7 +152,7 @@
         <ng-container *ngIf="addressLoadingStatus$ as addressLoadingStatus">
           <div class="header-bg box" style="padding: 12px; margin-bottom: 10px;">
             <div class="progress progress-dark">
-              <div class="progress-bar progress-light" role="progressbar" [ngStyle]="{'width': addressLoadingStatus + '%' }"></div>
+              <div class="progress-bar progress-light" role="progressbar" [style.width]="addressLoadingStatus + '%'"></div>
             </div>
           </div>
         </ng-container>
@@ -318,7 +318,7 @@
     <button *ngIf="showTaprootPsbtButton()" type="button" class="btn btn-sm taproot-psbt-btn" (click)="taprootPsbtExpanded = !taprootPsbtExpanded" i18n-ngbTooltip="address.taproot-psbt-add-unpublished-spend-paths" ngbTooltip="Add unpublished spending paths">
       <fa-icon [icon]="['fas', 'code-fork']" [fixedWidth]="true"></fa-icon>
     </button>
-    <app-address-labels *ngIf="!addressTypeInfo?.tapscript" [channel]="exampleChannel" [address]="addressTypeInfo" class="ml-1"></app-address-labels>
+    <app-address-labels *ngIf="!addressTypeInfo?.tapscript" [channel]="exampleChannel" [address]="addressTypeInfo" class="ms-1"></app-address-labels>
   </td>
 </ng-template>
 

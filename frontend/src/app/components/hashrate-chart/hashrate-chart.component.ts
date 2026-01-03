@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding, AfterViewInit, HostListener, ChangeDetectorRef } from '@angular/core';
 import { echarts, EChartsOption } from '@app/graphs/echarts';
 import { combineLatest, fromEvent, merge, Observable, of } from 'rxjs';
 import { map, mergeMap, share, startWith, switchMap, tap } from 'rxjs/operators';
@@ -30,7 +30,7 @@ import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HashrateChartComponent implements OnInit {
+export class HashrateChartComponent implements OnInit, AfterViewInit {
   @Input() tableOnly = false;
   @Input() widget = false;
   @Input() height: number = 300;
@@ -63,7 +63,8 @@ export class HashrateChartComponent implements OnInit {
     private miningService: MiningService,
     private route: ActivatedRoute,
     private amountShortenerPipe: AmountShortenerPipe,
-    public stateService: StateService
+    public stateService: StateService,
+    private cd: ChangeDetectorRef,
   ) {
   }
 
@@ -457,6 +458,30 @@ export class HashrateChartComponent implements OnInit {
     this.chartInstance.on('legendselectchanged', (e) => {
       this.storageService.setValue('hashrate_difficulty_legend', JSON.stringify(e.selected));
     });
+    // Resize chart after initialization to ensure correct dimensions
+    setTimeout(() => {
+      if (this.chartInstance) {
+        this.chartInstance.resize();
+      }
+    }, 0);
+  }
+
+  ngAfterViewInit(): void {
+    // Resize chart after view initialization to handle initial screen size
+    setTimeout(() => {
+      if (this.chartInstance) {
+        this.chartInstance.resize();
+        this.cd.markForCheck();
+      }
+    }, 100);
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    if (this.chartInstance) {
+      this.chartInstance.resize();
+      this.cd.markForCheck();
+    }
   }
 
   isMobile() {

@@ -85,7 +85,7 @@
             <tr>
               <td i18n="lightning.color" class="text-truncate label">Color</td>
               <td>
-                <div [ngStyle]="{'color': node.color}">{{ node.color }}</div>
+                <div [style.color]="node.color">{{ node.color }}</div>
               </td>
             </tr>
             <tr>
@@ -167,7 +167,7 @@
     </ng-template>
     <input type="text" class="form-control" aria-label="Text input with dropdown button"
       [value]="node.socketsObject[selectedSocketIndex].socket">
-    <button class="btn btn-secondary ml-1" type="button" id="inputGroupFileAddon04" (mouseover)="qrCodeVisible = true"
+    <button class="btn btn-secondary ms-1" type="button" id="inputGroupFileAddon04" (mouseover)="qrCodeVisible = true"
       (mouseout)="qrCodeVisible = false">
       <fa-icon [icon]="['fas', 'qrcode']" [fixedWidth]="true"></fa-icon>
       <div class="qr-wrapper" [hidden]="!qrCodeVisible">
@@ -260,7 +260,7 @@
     </div>
   </div>
 
-  <div *ngIf="hasDetails" class="text-right mt-3">
+  <div *ngIf="hasDetails" class="text-end mt-3">
     <button type="button" class="btn btn-outline-info btn-sm btn-details" (click)="toggleShowDetails()" i18n="transaction.details|Transaction Details">Details</button>
   </div>
 
@@ -290,7 +290,7 @@
         <span i18n="lightning.open-channels">Closed channels</span>
         <span> ({{ node.closed_channel_count }})</span>
       </h2>
-      <div *ngIf="channelListLoading" class="spinner-border ml-3" role="status"></div>
+      <div *ngIf="channelListLoading" class="spinner-border ms-3" role="status"></div>
     </div>
 
     <app-channels-list [publicKey]="node.public_key"
@@ -368,7 +368,7 @@
     <div class="input-group mt-3" >
     <span class="input-group-text" id="basic-addon3"><span class="skeleton-loader" style="width: 75px;"></span></span>
       <input type="text" class="form-control" disabled style="opacity: 0.3;">
-      <button class="btn btn-secondary ml-1" type="button" id="inputGroupFileAddon04" [disabled]="true">
+      <button class="btn btn-secondary ms-1" type="button" id="inputGroupFileAddon04" [disabled]="true">
         <fa-icon [icon]="['fas', 'qrcode']" [fixedWidth]="true"></fa-icon>
       </button>
       <app-clipboard [button]="true" [text]="''"></app-clipboard>

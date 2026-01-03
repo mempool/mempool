@@ -1,7 +1,7 @@
 .card-title {
   color: var(--title-fg);
   font-size: 10px;
-  margin-bottom: 4px;
+  margin-bottom: 4px !important; // Bootstrap 5 uses CSS variables for card-title spacing - override with !important
   font-size: 1rem;
 
   margin-left: 10px;

@@ -131,7 +131,10 @@ export class AccelerateFeeGraphComponent implements OnInit, AfterViewInit, OnCha
   }
 
   @HostListener('pointermove', ['$event'])
-  onPointerMove(event) {
+  onPointerMove(event?: PointerEvent) {
+    if (!event) {
+      return;
+    }
     this.tooltipPosition = { x: event.offsetX, y: event.offsetY };
   }
 

@@ -140,6 +140,7 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
             this.goggleFlags = toFlags(goggle.filters);
             this.goggleMode = goggle.mode;
             this.gradientMode = active.gradient;
+            this.cd.markForCheck();
             return;
           }
         }
@@ -154,6 +155,7 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
       this.goggleIndex = this.goggleCycle.length - 1;
       this.goggleFlags = toFlags(active.filters);
       this.goggleMode = active.mode;
+      this.cd.markForCheck();
     });
 
     this.mempoolInfoData$ = combineLatest([
@@ -290,6 +292,7 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
   setFilter(index): void {
     const selected = this.goggleCycle[index];
     this.stateService.activeGoggles$.next(selected);
+    this.cd.markForCheck();
   }
 
   startAddressSubscription(): void {
@@ -434,7 +437,7 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
     });
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onResize(): void {
     if (window.innerWidth >= 992) {
       this.incomingGraphHeight = 300;

@@ -49,7 +49,7 @@ export class LightningDashboardComponent implements OnInit, AfterViewInit {
     this.stateService.focusSearchInputDesktop();
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onResize(): void {
     if (window.innerWidth >= 992) {
       this.graphHeight = 340;

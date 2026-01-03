@@ -199,7 +199,7 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges, OnDestr
     };
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onResize(): void {
     const isSmallScreen = window.innerWidth < 450;
     if (this.smallScreen !== isSmallScreen) {

@@ -169,7 +169,7 @@ export class ReservesRatioComponent implements OnInit, OnChanges {
     };
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onResize(): void {
     this.updateChartOptions();
   }

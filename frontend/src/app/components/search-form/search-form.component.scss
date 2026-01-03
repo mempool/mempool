@@ -36,6 +36,7 @@ form {
 .search-box-container {
   position: relative;
   width: 100%;
+  margin-right: 0.5rem !important; // Ensure gap between search bar and button (matches production - 8px)
   @media (min-width: 768px) {
     min-width: 300px;
   }
@@ -47,6 +48,25 @@ form {
   }
   .btn {
     width: 100px;
+  }
+  
+  // Ensure input text color is white when typing, but placeholder is gray (matches production)
+  input.form-control {
+    color: var(--fg) !important; // White text color when typing (matches production)
+    border-radius: 4px !important; // Match Bootstrap 4 border-radius (Bootstrap 5 changed from 4px to 6px)
+    
+    &::placeholder {
+      color: rgb(108, 117, 125) !important; // Gray placeholder color (matches production - Bootstrap default)
+    }
+    
+    &::-webkit-input-placeholder {
+      color: rgb(108, 117, 125) !important; // Gray placeholder color for webkit browsers
+    }
+    
+    &::-moz-placeholder {
+      color: rgb(108, 117, 125) !important; // Gray placeholder color for Firefox
+      opacity: 1; // Firefox requires opacity: 1 for placeholder color to work
+    }
   }
 }
 

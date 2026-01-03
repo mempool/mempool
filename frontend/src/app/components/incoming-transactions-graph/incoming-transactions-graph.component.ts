@@ -1,6 +1,5 @@
-import { Component, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnInit, OnDestroy, OnChanges, AfterViewInit, HostListener, ChangeDetectorRef } from '@angular/core';
 import { EChartsOption } from '@app/graphs/echarts';
-import { OnChanges } from '@angular/core';
 import { StorageService } from '@app/services/storage.service';
 import { download, formatterXAxis, formatterXAxisLabel } from '@app/shared/graphs.utils';
 import { formatNumber } from '@angular/common';
@@ -23,7 +22,7 @@ const OUTLIERS_MEDIAN_MULTIPLIER = 4;
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, OnDestroy {
+export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
   @Input() data: any;
   @Input() theme: string;
   @Input() height: number | string = '200';
@@ -50,6 +49,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
     @Inject(LOCALE_ID) private locale: string,
     private storageService: StorageService,
     public stateService: StateService,
+    private cd: ChangeDetectorRef,
   ) { }
 
   ngOnInit() {
@@ -77,6 +77,32 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
   rendered() {
     if (!this.data) {
       return; 
+    }
+    // Resize chart after rendering to ensure correct dimensions
+    if (this.chartInstance) {
+      setTimeout(() => {
+        if (this.chartInstance) {
+          this.chartInstance.resize();
+        }
+      }, 0);
+    }
+  }
+
+  ngAfterViewInit(): void {
+    // Resize chart after view initialization to handle initial screen size
+    setTimeout(() => {
+      if (this.chartInstance) {
+        this.chartInstance.resize();
+        this.cd.markForCheck();
+      }
+    }, 100);
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    if (this.chartInstance) {
+      this.chartInstance.resize();
+      this.cd.markForCheck();
     }
   }
 
@@ -316,6 +342,12 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
 
   onChartInit(ec) {
     this.chartInstance = ec;
+    // Resize chart after initialization to ensure correct dimensions
+    setTimeout(() => {
+      if (this.chartInstance) {
+        this.chartInstance.resize();
+      }
+    }, 0);
   }
 
   isMobile() {

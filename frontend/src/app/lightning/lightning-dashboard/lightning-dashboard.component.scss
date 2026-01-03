@@ -117,3 +117,11 @@
   text-decoration: none;
   color: inherit;
 }
+
+// Bootstrap 5 changed table cell padding from 12px to 8px
+// Override to match Bootstrap 4 / production
+.table {
+  td, th {
+    padding: 12px !important;
+  }
+}

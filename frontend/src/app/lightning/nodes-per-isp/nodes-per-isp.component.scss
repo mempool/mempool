@@ -1,6 +1,15 @@
 .container-xl {
-  max-width: 1400px;
+  max-width: 1400px !important;
+  width: 1400px !important;
+  padding-left: 15px !important;
+  padding-right: 15px !important;
   padding-bottom: 100px;
+  
+  // On smaller screens, allow container to be responsive
+  @media (max-width: 1440px) {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
 }
 
 .sats {
@@ -58,5 +67,107 @@
 
   @media (max-width: 675px) {
     display: none
+  }
+}
+
+// Bootstrap 5 override: Ensure row columns align properly (stretch to match tallest column)
+.box .row {
+  align-items: stretch !important;
+}
+
+// Bootstrap 5 override: Fix column padding for map container to match production
+// Production has padding-right: 16px (1rem) and padding-left: 0px on md+ screens
+// Bootstrap 5's default column padding is 12px (0.75rem) on both sides
+// The HTML has p-md-0 pr-md-3, but Bootstrap 5's column padding needs explicit override
+.box .row .col-md-6.p-md-0.pr-md-3 {
+  @media (min-width: 768px) {
+    padding-left: 0 !important;
+    padding-right: 1rem !important; // 16px to match production (pr-md-3 = 1rem)
+  }
+}
+
+// Bootstrap 5 override: Ensure first column content aligns with map
+// The table in the first column should align with the map in the second column
+// Production table naturally renders at 240px, ensure column matches map height
+.box .row .col-md-6:first-child {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: stretch !important;
+  
+  .table.table-striped {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    // Don't force height - let table render naturally but ensure it fills column
+    flex: 1 1 auto !important;
+    
+    // Bootstrap 5 override: Match production cell padding (12px all sides vs 8px in Bootstrap 5)
+    tbody td {
+      padding-top: 12px !important;
+      padding-bottom: 12px !important;
+      padding-left: 12px !important;
+      padding-right: 12px !important;
+    }
+  }
+}
+
+// Bootstrap 5 override: Ensure table wrapper div matches production spacing
+// The div with min-height: 295px needs margin-top to create spacing from info table
+div[style*="min-height: 295px"] {
+  margin-top: 0 !important; // Production has no margin-top
+  margin-bottom: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  width: 1370px !important; // Match production: container width (1400px) - padding (15px * 2)
+}
+
+// Bootstrap 5 override: Fix main table header and cell padding to match production
+// Production has 12px padding (top/bottom/left) vs Bootstrap 5's 8px default
+.table.table-borderless {
+  // Header cells (th) should have same padding as data cells (td) to align properly
+  thead th {
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+    padding-left: 12px !important;
+    // padding-right is handled by .alias class (70px) or defaults to 12px
+    &:not(.alias) {
+      padding-right: 12px !important;
+    }
+  }
+  
+  // Data cells
+  tbody td {
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+    padding-left: 12px !important;
+    // padding-right is handled by .alias class (70px) or defaults to 12px
+    &:not(.alias) {
+      padding-right: 12px !important;
+    }
+  }
+  
+}
+
+// Bootstrap 5 override: Fix pagination link colors to match production
+// Production uses cyan (#00ddff) for inactive pagination links, not gray
+.pagination-container {
+  ::ng-deep {
+    .page-link {
+      // Inactive pagination links should be cyan to match production
+      color: #00ddff !important;
+      
+      // Disabled links (<<, < when on first page) should remain gray
+      &.disabled,
+      &:disabled {
+        color: #6c757d !important;
+      }
+      
+      // Active page link color is handled by Bootstrap's active state
+      // which uses the tertiary color (purple) background with white text
+    }
   }
 }

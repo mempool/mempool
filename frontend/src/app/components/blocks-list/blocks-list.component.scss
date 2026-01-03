@@ -10,7 +10,8 @@
   max-width: 1400px;
 }
 .container-xl.widget {
-  padding-left: 0px;
+  padding-left: 0px !important;
+  padding-right: 15px !important; // Bootstrap 5 override: Match production right padding
   padding-bottom: 0px;
 }
 .container-xl.legacy {
@@ -21,10 +22,32 @@
   max-width: 100%;
 }
 
+// Bootstrap 5 override: Ensure table width matches production when in widget mode
+// Bootstrap 5's table-layout: auto algorithm calculates narrower tables than BS4
+// even with identical content, padding, and spacing
+// Only apply min-width on single-column mobile (500-767px) and large desktop (≥1200px)
+// Avoid applying at 768-1199px where 2-column layout has insufficient space
+@media (min-width: 500px) and (max-width: 767px), (min-width: 1200px) {
+  .table {
+    min-width: 483px; // Match production table width for pixel-perfect parity
+  }
+
+  // Bootstrap 5 override: Ensure parent wrapper div also matches production width
+  // The parent div (with min-height: 295px) needs to match the table width
+  .container-xl.widget > div {
+    min-width: 483px; // Match production wrapper width for pixel-perfect parity
+  }
+}
+
 tr, td, th {
   border: 0px;
   padding-top: 0.65rem !important;
   padding-bottom: 0.7rem !important;
+  // Don't set padding-left/right with !important here - let specific rules (like .pool.widget, .txs.widget) override
+  // Bootstrap 5 uses less padding, but we need to allow specific overrides
+  padding-left: 12px; // Default padding, can be overridden by specific rules
+  padding-right: 12px; // Default padding, can be overridden by specific rules
+  color: var(--fg) !important; // Ensure text is white, not Bootstrap 5's default black
 
   .difference {
     margin-left: 0.5em;
@@ -36,6 +59,30 @@ tr, td, th {
       color: rgb(183, 66, 66);
     }
   }
+}
+
+// Ensure text alignment classes work correctly with Bootstrap 5
+// Bootstrap 5 uses text-start/text-end, but we need to match production's text-left/text-right behavior
+.text-left {
+  text-align: left !important;
+}
+
+.text-right {
+  text-align: right !important;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+// Bootstrap 5's text-start/text-end should behave like text-left/text-right in LTR languages
+// Match production behavior exactly
+.text-start {
+  text-align: left !important; // Match production's text-left behavior
+}
+
+.text-end {
+  text-align: right !important; // Match production's text-right behavior
 }
 
 .clear-link {
@@ -63,13 +110,13 @@ tr, td, th {
 }
 .pool.widget {
   width: 40%;
-  padding-left: 24px;
+  padding-left: 24px !important; // Override default padding to match production
   @media (min-width: 768px) AND (max-width: 926px) {
-    padding-left: 0px;
+    padding-left: 0px !important;
     width: 60%;
   }
   @media (max-width: 430px) {
-    padding-left: 0px;
+    padding-left: 0px !important;
     width: 60%;
   }
 }
@@ -150,7 +197,7 @@ tr, td, th {
   }
 }
 .txs.widget {
-  padding-right: 0;
+  padding-right: 0 !important; // Override default padding to match production (0px for widget)
   display: none;
   @media (max-width: 650px) {
     display: none;
@@ -290,4 +337,13 @@ tr, td, th {
 	vertical-align: middle;
 	max-width: 50vw;
   text-align: left;
+}
+
+// Override global .table app-amount .symbol { color: var(--fg) !important; } rule
+// Ensure app-amount symbols in blocks-list tables are gray (transparent white) to match production
+// Use ::ng-deep to penetrate child component (app-amount) view encapsulation
+::ng-deep .table {
+  app-amount .symbol {
+    color: var(--transparent-fg) !important; // Gray symbol (matches production: rgba(255, 255, 255, 0.733))
+  }
 }

@@ -1,7 +1,7 @@
 .card-title {
   color: var(--title-fg);
   font-size: 10px;
-  margin-bottom: 4px;  
+  margin-bottom: 4px !important; // Bootstrap 5 uses CSS variables for card-title spacing - override with !important
   font-size: 1rem;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -53,6 +53,17 @@
       color: var(--transparent-fg);
       font-size: 12px;
       top: 0px;
+    }
+    
+    // Ensure app-amount symbol (BTC) is gray, not white
+    // Override global .symbol { color: var(--transparent-fg); } rule (no !important, so this should work)
+    // Override global .block-size .symbol { color: #fff !important; } rule
+    // Override global .table app-amount .symbol { color: var(--fg) !important; } rule
+    // Use more specific selector to ensure it overrides all global rules
+    // Note: These selectors are nested inside .item, so they compile correctly
+    .fee-text app-amount .symbol,
+    app-amount .symbol {
+      color: var(--transparent-fg) !important; // Gray symbol (matches production)
     }
     .fee-text{
       border-bottom: 1px solid #ffffff1c;

@@ -1,8 +1,12 @@
 .dashboard-container {
   text-align: center;
   margin-top: 0.5rem;
+  // Allow overflow to show .main-title elements with negative margin-top
+  overflow: visible;
   .col {
     margin-bottom: 1.5rem;
+    // Ensure columns don't overflow container
+    min-width: 0;
   }
 }
 
@@ -37,9 +41,6 @@
 
 .card-body.pool-ranking {
   padding: 1.25rem 0.25rem 0.75rem 0.25rem;
-}
-.card-text {
-  font-size: 22px;
 }
 
 #blockchain-container {
@@ -84,7 +85,8 @@
     text-align: center;
     flex-direction: column;
     justify-content: space-around;
-    padding: 22px 20px;
+    // Padding is handled by .more-padding class or global .card-body rule
+    // Remove duplicate padding to avoid conflicts
   }
 }
 
@@ -99,10 +101,6 @@
     margin: 10px auto 3px;
     max-width: 55px;
   }
-}
-
-.card-text {
-  font-size: 22px;
 }
 
 .title-link, .title-link:hover, .title-link:focus, .title-link:active {

@@ -4,10 +4,10 @@
   <div class="card">
     <div class="widget-toggler">
       <a href="" (click)="setMode('difficulty')" class="toggler-option"
-        [ngClass]="{'inactive': mode === 'difficulty'}"><small i18n="statistics.average-small">difficulty</small></a>
+        [class]="{'inactive': mode === 'difficulty'}"><small i18n="statistics.average-small">difficulty</small></a>
       <span style="color: var(--transparent-fg); font-size: 8px"> | </span>
       <a href="" (click)="setMode('halving')" class="toggler-option"
-        [ngClass]="{'inactive': mode === 'halving'}"><small i18n="statistics.median-small">halving</small></a>
+        [class]="{'inactive': mode === 'halving'}"><small i18n="statistics.median-small">halving</small></a>
     </div>
     <div *ngIf="mode === 'difficulty'; else halving" class="card-body more-padding">
       <div class="difficulty-adjustment-container" *ngIf="(isLoadingWebSocket$ | async) === false && (difficultyEpoch$ | async) as epochData; else loadingDifficulty">
@@ -50,7 +50,7 @@
             <div class="symbol" i18n="difficulty-box.average-block-time">Average block time</div>
           </div>
           <div class="item">
-            <div class="card-text bigger" [ngStyle]="{'color': epochData.colorAdjustments}">
+            <div class="card-text bigger" [style.color]="epochData.colorAdjustments">
               <span *ngIf="epochData.change > 0; else arrowDownDifficulty" >
                 <fa-icon class="retarget-sign" [icon]="['fas', 'caret-up']" [fixedWidth]="true"></fa-icon>
               </span>
@@ -62,7 +62,7 @@
             </div>
             <div class="symbol">
               <span i18n="difficulty-box.previous">Previous</span>:
-              <span [ngStyle]="{'color': epochData.colorPreviousAdjustments}">
+              <span [style.color]="epochData.colorPreviousAdjustments">
                 <span *ngIf="epochData.previousRetarget > 0; else arrowDownPreviousDifficulty" >
                   <fa-icon class="previous-retarget-sign" [icon]="['fas', 'caret-up']" [fixedWidth]="true"></fa-icon>
                 </span>

@@ -88,8 +88,8 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.stateService.menuOpen$.next(this.navOpen);
   }
 
-  @HostListener('window:resize', ['$event'])
-  onResize(event) {
+  @HostListener('window:resize')
+  onResize(event?: Event) {
     if (this.isSmallScreen()) {
       this.toggleMenu(false);
     } else if (this.isServicesPage) {
@@ -98,9 +98,9 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   @HostListener('window:click', ['$event'])
-  onClick(event) {
+  onClick(event?: MouseEvent) {
     const isServicesPageOnMobile = this.isServicesPage && this.isSmallScreen();
-    const cssClasses = event.target.className;
+    const cssClasses = event?.target ? (event.target as HTMLElement).className : '';
 
     if (!cssClasses.indexOf) { // Click on chart or non html thingy, close the menu
       if (!this.isServicesPage || isServicesPageOnMobile) {

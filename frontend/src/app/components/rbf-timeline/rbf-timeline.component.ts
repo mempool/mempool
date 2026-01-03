@@ -206,7 +206,10 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
   }
 
   @HostListener('pointermove', ['$event'])
-  onPointerMove(event) {
+  onPointerMove(event?: PointerEvent) {
+    if (!event) {
+      return;
+    }
     this.tooltipPosition = { x: event.clientX, y: event.clientY };
   }
 
