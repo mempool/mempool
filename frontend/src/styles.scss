@@ -256,6 +256,12 @@ body {
   border-radius: 4px !important;
 }
 
+// Bootstrap 5 changed .card-header padding from 12px 20px to 0
+// Override to match Bootstrap 4 / production styling
+.card-header {
+  padding: 12px 20px !important;
+}
+
 // Bootstrap 5 changed .card-body padding from 1.25rem (20px) to 1rem (16px)
 // Override to match Bootstrap 4 / production styling
 // Use shorthand padding with !important to match production computed styles
@@ -273,6 +279,36 @@ body {
 .float-left {
   float: left !important;
 }
+
+// Bootstrap 5 removed .pl-*, .pr-*, .ml-*, .mr-* in favor of .ps-*, .pe-*, .ms-*, .me-*
+// Restore Bootstrap 4 directional utility classes to match production
+.pl-0 { padding-left: 0 !important; }
+.pl-1 { padding-left: 0.25rem !important; } // 4px
+.pl-2 { padding-left: 0.5rem !important; } // 8px
+.pl-3 { padding-left: 1rem !important; } // 16px
+.pl-4 { padding-left: 1.5rem !important; } // 24px
+.pl-5 { padding-left: 3rem !important; } // 48px
+
+.pr-0 { padding-right: 0 !important; }
+.pr-1 { padding-right: 0.25rem !important; } // 4px
+.pr-2 { padding-right: 0.5rem !important; } // 8px
+.pr-3 { padding-right: 1rem !important; } // 16px
+.pr-4 { padding-right: 1.5rem !important; } // 24px
+.pr-5 { padding-right: 3rem !important; } // 48px
+
+.ml-0 { margin-left: 0 !important; }
+.ml-1 { margin-left: 0.25rem !important; } // 4px
+.ml-2 { margin-left: 0.5rem !important; } // 8px
+.ml-3 { margin-left: 1rem !important; } // 16px
+.ml-4 { margin-left: 1.5rem !important; } // 24px
+.ml-5 { margin-left: 3rem !important; } // 48px
+
+.mr-0 { margin-right: 0 !important; }
+.mr-1 { margin-right: 0.25rem !important; } // 4px
+.mr-2 { margin-right: 0.5rem !important; } // 8px
+.mr-3 { margin-right: 1rem !important; } // 16px
+.mr-4 { margin-right: 1.5rem !important; } // 24px
+.mr-5 { margin-right: 3rem !important; } // 48px
 
 main {
   margin-top: 24px;
@@ -532,11 +568,12 @@ main {
 // Bootstrap 5 override: Ensure table cells have transparent backgrounds and white text
 .table {
   color: var(--fg) !important; // Ensure table text is white by default
+  padding: 0 !important; // Bootstrap 5 override: Remove padding from table element itself (only cells should have padding)
   
   td, th {
     background-color: transparent !important; // Override Bootstrap 5's default background - cells should be transparent
     border-color: rgba(255, 255, 255, 0.1) !important; // Ensure borders are visible on dark background
-    padding: 0.75rem !important; // Bootstrap 5 override: 0.75rem (12px) instead of BS5's 0.5rem (8px) to match production
+    padding: 0.75rem; // Bootstrap 5 override: 0.75rem (12px) instead of BS5's 0.5rem (8px) - no !important to allow component overrides
   }
 
   // Bootstrap 5 override: Remove horizontal padding from table rows (only cells should have padding)
@@ -1652,15 +1689,20 @@ app-global-footer {
   color: var(--fg);
   .dropdown-item:hover, .dropdown-item:focus {
     background-color: var(--active-bg);
-    color: var(--fg);
+    color: var(--fg) !important; // Ensure white text on hover, override Bootstrap 5 default
   }
 }
 
-// Bootstrap 5 changed dropdown-item padding from 16px (Bootstrap 4) to 24px
+// Additional override to ensure dropdown items always have white hover text
+.dropdown-item:hover, .dropdown-item:focus {
+  color: var(--fg) !important; // White text on hover
+}
+
+// Bootstrap 5 changed dropdown-item padding from 24px (Bootstrap 4) to 16px
 // Override to match Bootstrap 4 / production styling
 .dropdown-item {
-  padding-left: 16px !important;
-  padding-right: 16px !important;
+  padding-left: 24px !important;
+  padding-right: 24px !important;
 }
 
 .btn-secondary {
@@ -1886,35 +1928,38 @@ a.badge-success:focus,
 }
 
 .badge-success {
-  background-color: var(--success) !important;
+  background-color: #0aab2f !important; // Bootstrap 4 / production color: var(--success) = #0aab2f
   color: var(--fg) !important; // White text on green background
   
   &:hover,
   &:focus,
   &:active {
     color: var(--fg) !important; // Maintain white text on hover/focus/active
+    background-color: #077b23 !important; // Darker green on hover (matches Bootstrap 4 behavior)
   }
 }
 
 .badge-danger {
-  background-color: var(--danger) !important;
+  background-color: #dc3545 !important; // Bootstrap 4 / production color: var(--danger) = #dc3545
   color: var(--fg) !important; // White text on red background
   
   &:hover,
   &:focus,
   &:active {
     color: var(--fg) !important; // Maintain white text on hover/focus/active
+    background-color: #c82333 !important; // Darker red on hover (matches Bootstrap 4 behavior)
   }
 }
 
 .badge-warning {
-  background-color: var(--warning) !important;
-  color: var(--bg) !important; // Dark text on yellow/orange background (Bootstrap 5 default)
+  background-color: #ffc107 !important; // Bootstrap 4 / production color: var(--warning) = #ffc107
+  color: var(--fg) !important; // White text on yellow background (matches production)
   
   &:hover,
   &:focus,
   &:active {
-    color: var(--bg) !important; // Maintain dark text on hover/focus/active
+    color: var(--fg) !important; // Maintain white text on hover/focus/active
+    background-color: #e0a800 !important; // Darker yellow on hover (matches Bootstrap 4 behavior)
   }
 }
 
@@ -2101,11 +2146,7 @@ span.badge-info:active {
   // Override Bootstrap 5's default display to match Bootstrap 4 behavior
   display: inline-flex !important;
   vertical-align: middle !important;
-  
-  @media (min-width: 830px) {
-    display: block !important;
-  }
-  
+
   // Remove gaps and ensure seamless button connection
   .btn {
     margin-left: 0 !important;
@@ -2122,9 +2163,25 @@ span.badge-info:active {
   }
   
   .btn-primary {
-    // Default border radius - will be overridden by btn-toggle-rows if present
-    border-radius: 3.2px !important;
-    
+    // Border radius: only outer edges rounded, inner edges square for seamless connection
+    &:first-child {
+      border-top-left-radius: 3.2px !important;
+      border-bottom-left-radius: 3.2px !important;
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+    }
+
+    &:last-child {
+      border-top-left-radius: 0 !important;
+      border-bottom-left-radius: 0 !important;
+      border-top-right-radius: 3.2px !important;
+      border-bottom-right-radius: 3.2px !important;
+    }
+
+    &:not(:first-child):not(:last-child) {
+      border-radius: 0 !important; // Middle buttons have no rounded corners
+    }
+
     // Active state - darker blue with white text
     &.active,
     &:active,
@@ -2133,14 +2190,14 @@ span.badge-info:active {
       border-color: #0063c7 !important;
       color: var(--fg) !important;
     }
-    
+
     // Hover state - darker blue (same as active)
     &:hover:not(.active):not(:active) {
       background-color: #0063c7 !important; // rgb(0, 99, 199)
       border-color: #0063c7 !important;
       color: var(--fg) !important;
     }
-    
+
     // Focus state
     &:focus {
       box-shadow: 0 0 0 0.2rem rgba(0, 99, 199, 0.25) !important;
@@ -2180,8 +2237,13 @@ span.badge-info:active {
 // Bootstrap 5 override: Match Bootstrap 4 badge padding (3px 4.8px instead of 4.2px 7.8px)
 // Note: padding does not use !important to allow inline styles to override (e.g., miner badges with padding: 0)
 .badge {
-  padding: 3px 4.8px;
+  padding: 3px 4.8px !important; // Bootstrap 4 default: 0.25em 0.4em = 3px 4.8px (Bootstrap 5 uses 4.2px 7.8px)
   border-radius: 4px !important; // Bootstrap 5 changed from 4px to 6px - override to match Bootstrap 4
+  font-size: 75% !important; // Bootstrap 4 default: 0.75em (Bootstrap 5 uses 0.875em)
+  font-weight: 700 !important; // Bootstrap 4 default: bold text
+  line-height: 1 !important; // Bootstrap 4 default: line-height 1 (Bootstrap 5 might use different line-height)
+  display: inline-block !important; // Bootstrap 4 default: inline-block
+  color: var(--fg) !important; // Default white text color (matches production)
 }
 
 // Bootstrap 5 override: Restore badge-secondary background color to match production
