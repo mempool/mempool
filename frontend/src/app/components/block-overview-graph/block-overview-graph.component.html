@@ -4,8 +4,8 @@
     <canvas *browserOnly class="block-overview-canvas" [class.clickable]="!!hoverTx" #blockCanvas></canvas>
     @if (!disableSpinner) {
       <div class="loader-wrapper" [class.hidden]="!isLoading && !unavailable">
-        <div *ngIf="!unavailable" class="spinner-border ml-3 loading" role="status"></div>
-        <div *ngIf="!isLoading && unavailable" class="ml-3" i18n="block.not-available">not available</div>
+        <div *ngIf="!unavailable" class="spinner-border ms-3 loading" role="status"></div>
+        <div *ngIf="!isLoading && unavailable" class="ms-3" i18n="block.not-available">not available</div>
       </div>
     }
     <app-block-overview-tooltip

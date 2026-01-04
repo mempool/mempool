@@ -1,4 +1,4 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { filter, map, switchMap } from 'rxjs/operators';
@@ -17,7 +17,6 @@ export class OpenGraphService {
   sessionId = 1;
 
   constructor(
-    private ngZone: NgZone,
     private metaService: Meta,
     private stateService: StateService,
     private LanguageService: LanguageService,
@@ -126,9 +125,7 @@ export class OpenGraphService {
   loadPage(path) {
     if (path !== this.router.url) {
       this.resetLoading();
-      this.ngZone.run(() => {
-        this.router.navigateByUrl(path);
-      });
+      this.router.navigateByUrl(path);
     }
   }
 }

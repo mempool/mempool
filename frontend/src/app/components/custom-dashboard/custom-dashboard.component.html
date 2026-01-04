@@ -84,7 +84,7 @@
                 <h5 class="card-title" i18n="dashboard.memory-usage|Memory usage">Memory Usage</h5>
                 <div class="card-text" *ngIf="(isLoadingWebSocket$ | async) === false && mempoolInfoData.value; else loadingbig">
                   <div class="progress">
-                    <div class="progress-bar {{ mempoolInfoData.value.mempoolSizeProgress }}" role="progressbar" [ngStyle]="{'width': (mempoolInfoData.value.memPoolInfo.usage / mempoolInfoData.value.memPoolInfo.maxmempool * 100) + '%' }">&nbsp;</div>
+                    <div class="progress-bar {{ mempoolInfoData.value.mempoolSizeProgress }}" role="progressbar" [style.width]="(mempoolInfoData.value.memPoolInfo.usage / mempoolInfoData.value.memPoolInfo.maxmempool * 100) + '%' ">&nbsp;</div>
                     <div class="progress-text">&lrm;<span [innerHTML]="mempoolInfoData.value.memPoolInfo.usage | bytes : 2 : 'B' : null : false : 3"></span> / <span [innerHTML]="mempoolInfoData.value.memPoolInfo.maxmempool | bytes"></span></div>
                   </div>
                 </div>
@@ -162,7 +162,7 @@
                       <td class="table-cell-transaction-count">{{ block.tx_count | number }}</td>
                       <td class="table-cell-size">
                         <div class="progress">
-                          <div class="progress-bar progress-mempool {{ network$ | async }}" role="progressbar" [ngStyle]="{'width': (block.weight / stateService.env.BLOCK_WEIGHT_UNITS)*100 + '%' }">&nbsp;</div>
+                          <div class="progress-bar progress-mempool {{ network$ | async }}" role="progressbar" [style.width]="(block.weight / stateService.env.BLOCK_WEIGHT_UNITS)*100 + '%' ">&nbsp;</div>
                           <div class="progress-text" [innerHTML]="block.size | bytes: 2"></div>
                         </div>
                       </td>

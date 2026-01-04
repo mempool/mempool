@@ -1,5 +1,5 @@
 <div #blockTxTitle id="block-tx-title" class="block-tx-title">
-  <h2 class="text-left">
+  <h2 class="text-start">
     <ng-container *ngTemplateOutlet="txCount === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: txCount | number}"></ng-container>
     <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
     <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
@@ -24,7 +24,7 @@
     <ng-container *ngIf="(txsLoadingStatus$ | async) as txsLoadingStatus; else headerLoader">
       <div class="header-bg box">
         <div class="progress progress-dark" style="margin: 4px; height: 14px;">
-          <div class="progress-bar progress-light" role="progressbar" [ngStyle]="{'width': txsLoadingStatus + '%' }"></div>
+          <div class="progress-bar progress-light" role="progressbar" [style.width]="txsLoadingStatus + '%' "></div>
         </div>
       </div>
     </ng-container>

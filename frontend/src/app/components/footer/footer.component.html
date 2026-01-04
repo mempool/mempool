@@ -9,7 +9,7 @@
           </span>
           <ng-template #inSync>
             <div class="progress inc-tx-progress-bar">
-              <div class="progress-bar" role="progressbar" [ngStyle]="{'width': mempoolInfoData.progressWidth, 'background-color': mempoolInfoData.progressColor}">&nbsp;</div>
+              <div class="progress-bar" role="progressbar" [style]="{'width': mempoolInfoData.progressWidth, 'background-color': mempoolInfoData.progressColor}">&nbsp;</div>
               <div class="progress-text" *only-vsize>&lrm;{{ mempoolInfoData.vBytesPerSecond | ceil | number }} <ng-container i18n="shared.vbytes-per-second|vB/s">vB/s</ng-container></div>
               <div class="progress-text" *only-weight>&lrm;{{ mempoolInfoData.vBytesPerSecond * 4 | ceil | number }} <ng-container i18n="shared.weight-per-second|WU/s">WU/s</ng-container></div>
             </div>

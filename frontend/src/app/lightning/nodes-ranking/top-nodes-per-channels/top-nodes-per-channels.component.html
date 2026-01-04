@@ -1,6 +1,6 @@
 
 
-<div class="container-xl" style="min-height: 335px" [ngClass]="{'widget': widget, 'full-height': !widget}">
+<div class="container-xl" style="min-height: 335px" [class]="{'widget': widget, 'full-height': !widget}">
   <h1 *ngIf="!widget" class="float-left" i18n="lightning.connectivity-ranking">Connectivity Ranking</h1>
 
   <div class="clearfix"></div>
@@ -8,41 +8,41 @@
   <div style="min-height: 295px">
     <table class="table table-borderless">
       <thead>
-        <th class="pool text-left" i18n="nodes.alias" [ngClass]="{'widget': widget}">Alias</th>
-        <th class="liquidity text-right" i18n="node.channels">Channels</th>
-        <th *ngIf="!widget" class="d-none d-md-table-cell channels text-right" i18n="lightning.channels">Capacity</th>
-        <th *ngIf="!widget" class="d-none d-md-table-cell text-right">{{ currency$ | async }}</th>
-        <th *ngIf="!widget" class="d-none d-md-table-cell timestamp text-right" i18n="transaction.first-seen|Transaction first seen">First seen</th>
-        <th *ngIf="!widget" class="d-none d-md-table-cell timestamp text-right" i18n="lightning.last_update">Last update</th>
-        <th class="geolocation d-table-cell text-right" i18n="lightning.location">Location</th>
+        <th class="pool text-start" i18n="nodes.alias" [class]="{'widget': widget}">Alias</th>
+        <th class="liquidity text-end" i18n="node.channels">Channels</th>
+        <th *ngIf="!widget" class="d-none d-md-table-cell channels text-end" i18n="lightning.channels">Capacity</th>
+        <th *ngIf="!widget" class="d-none d-md-table-cell text-end">{{ currency$ | async }}</th>
+        <th *ngIf="!widget" class="d-none d-md-table-cell timestamp text-end" i18n="transaction.first-seen|Transaction first seen">First seen</th>
+        <th *ngIf="!widget" class="d-none d-md-table-cell timestamp text-end" i18n="lightning.last_update">Last update</th>
+        <th class="geolocation d-table-cell text-end" i18n="lightning.location">Location</th>
       </thead>
       <tbody *ngIf="topNodesPerChannels$ | async as data">
         <tr *ngFor="let node of data.nodes;">
-          <td class="pool text-left">
+          <td class="pool text-start">
             <div class="tooltip-custom d-block w-100">
               <a class="link d-block w-100" [routerLink]="['/lightning/node' | relativeUrl, node.publicKey]">
                 <span class="pool-name w-100">{{ node.alias }}</span>
               </a>
             </div>
           </td>
-          <td class="text-right">
+          <td class="text-end">
             {{ node.channels ? (node.channels | number) : '~' }}
             <span class="capacity-ratio">&nbsp;({{ (node?.channels / data.statistics.totalChannels * 100) | number:'1.1-1' }}%)</span>
           </td>
-          <td *ngIf="!widget" class="d-none d-md-table-cell capacity text-right">
+          <td *ngIf="!widget" class="d-none d-md-table-cell capacity text-end">
             <app-amount [satoshis]="node.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
             <span class="capacity-ratio">&nbsp;({{ (node.capacity / data.statistics.totalCapacity * 100) | number:'1.1-1' }}%)</span>
           </td>
-          <td *ngIf="!widget" class="fiat d-none d-md-table-cell text-right">
+          <td *ngIf="!widget" class="fiat d-none d-md-table-cell text-end">
             <app-fiat [value]="node.capacity"></app-fiat>
           </td>
-          <td *ngIf="!widget" class="d-none d-md-table-cell text-right">
+          <td *ngIf="!widget" class="d-none d-md-table-cell text-end">
             <app-timestamp [customFormat]="'yyyy-MM-dd'" [unixTime]="node.firstSeen" [hideTimeSince]="true"></app-timestamp>
           </td>
-          <td *ngIf="!widget" class="d-none d-md-table-cell text-right">
+          <td *ngIf="!widget" class="d-none d-md-table-cell text-end">
             <app-timestamp [customFormat]="'yyyy-MM-dd'" [unixTime]="node.updatedAt" [hideTimeSince]="true"></app-timestamp>
           </td>
-          <td class="geolocation d-table-cell text-right text-truncate">
+          <td class="geolocation d-table-cell text-end text-truncate">
             <app-geolocation [data]="node.geolocation" [type]="'list-isp'"></app-geolocation>
           </td>
         </tr>

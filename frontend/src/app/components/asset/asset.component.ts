@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { switchMap, filter, catchError, take } from 'rxjs/operators';
@@ -18,6 +18,7 @@ import { moveDec } from '@app/bitcoin.utils';
   templateUrl: './asset.component.html',
   styleUrls: ['./asset.component.scss'],
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssetComponent implements OnInit, OnDestroy {
   network = '';
@@ -54,6 +55,7 @@ export class AssetComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private seoService: SeoService,
     private assetsService: AssetsService,
+    private cd: ChangeDetectorRef,
   ) { }
 
   ngOnInit() {
@@ -71,6 +73,7 @@ export class AssetComponent implements OnInit, OnDestroy {
           this.assetContract = null;
           this.isLoadingTransactions = true;
           this.transactions = null;
+          this.cd.markForCheck();
           document.body.scrollTo(0, 0);
           this.assetString = params.get('id') || '';
           this.seoService.setTitle($localize`:@@asset.component.asset-browser-title:Asset: ${this.assetString}:INTERPOLATION:`);
@@ -89,6 +92,7 @@ export class AssetComponent implements OnInit, OnDestroy {
                     this.error = err;
                     this.seoService.logSoft404();
                     console.log(err);
+                    this.cd.markForCheck();
                     return of(null);
                   })
                 ), this.assetsService.getAssetsMinimalJson$])
@@ -113,6 +117,7 @@ export class AssetComponent implements OnInit, OnDestroy {
           this.websocketService.startTrackAsset(asset.asset_id);
           this.isLoadingAsset = false;
           this.isLoadingTransactions = true;
+          this.cd.markForCheck();
           return this.electrsApiService.getAssetTransactions$(asset.asset_id);
         }),
         switchMap((transactions) => {
@@ -152,12 +157,14 @@ export class AssetComponent implements OnInit, OnDestroy {
 
         this.transactions = this.tempTransactions;
         this.isLoadingTransactions = false;
+        this.cd.markForCheck();
       },
       (error) => {
         console.log(error);
         this.error = error;
         this.seoService.logSoft404();
         this.isLoadingAsset = false;
+        this.cd.markForCheck();
       });
 
     this.stateService.mempoolTransactions$
@@ -171,6 +178,7 @@ export class AssetComponent implements OnInit, OnDestroy {
         this.txCount++;
 
         this.audioService.playSound('chime');
+        this.cd.markForCheck();
       });
 
     this.stateService.blockTransactions$
@@ -183,6 +191,7 @@ export class AssetComponent implements OnInit, OnDestroy {
         }
         this.totalConfirmedTxCount++;
         this.loadedConfirmedTxCount++;
+        this.cd.markForCheck();
       });
   }
 
@@ -191,12 +200,14 @@ export class AssetComponent implements OnInit, OnDestroy {
       return;
     }
     this.isLoadingTransactions = true;
+    this.cd.markForCheck();
     this.electrsApiService.getAssetTransactionsFromHash$(this.asset.asset_id, this.lastTransactionTxId)
       .subscribe((transactions: Transaction[]) => {
         this.lastTransactionTxId = transactions[transactions.length - 1].txid;
         this.loadedConfirmedTxCount += transactions.length;
         this.transactions = this.transactions.concat(transactions);
         this.isLoadingTransactions = false;
+        this.cd.markForCheck();
       });
   }
 

@@ -1,6 +1,6 @@
 <div class="container-xl" style="min-height: 335px">
   <h1 class="float-left" i18n="page.rbf-replacements">RBF Replacements</h1>
-  <div *ngIf="isLoading" class="spinner-border ml-3" role="status"></div>
+  <div *ngIf="isLoading" class="spinner-border ms-3" role="status"></div>
 
   <div class="mode-toggle float-right">
     <form class="formRadioGroup">
@@ -15,7 +15,7 @@
 
   <div class="clearfix"></div>
 
-  <div class="rbf-trees" [ngStyle]="{ 'min-height': '295px', 'opacity': isLoading ? '0.75' : '1' }">
+  <div class="rbf-trees" [style]="{ 'min-height': '295px', 'opacity': isLoading ? '0.75' : '1' }">
     <ng-container *ngIf="rbfTrees$ | async as trees">
       <div *ngFor="let tree of trees" class="tree">
         <p class="info">

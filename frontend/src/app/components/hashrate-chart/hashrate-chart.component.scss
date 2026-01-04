@@ -68,7 +68,7 @@
     flex-direction: row;
   }
   h5 {
-    margin-bottom: 10px;
+    margin-bottom: 10px !important; // Bootstrap 5 uses CSS variables for h5 spacing - override with !important
   }
   .item {
     width: 50%;

@@ -43,7 +43,7 @@ export class MiningDashboardComponent implements OnInit, AfterViewInit {
     });
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onResize(): void {
     if (window.innerWidth >= 992) {
       this.hashrateGraphHeight = 335;

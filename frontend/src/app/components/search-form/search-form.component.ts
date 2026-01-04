@@ -31,8 +31,11 @@ export class SearchFormComponent implements OnInit {
   dropdownHidden = false;
 
   @HostListener('document:click', ['$event'])
-  onDocumentClick(event) {
-    if (this.elementRef.nativeElement.contains(event.target)) {
+  onDocumentClick(event?: MouseEvent) {
+    if (!event || !event.target) {
+      return;
+    }
+    if (this.elementRef.nativeElement.contains(event.target as Node)) {
       this.dropdownHidden = false;
     } else {
       this.dropdownHidden = true;
@@ -51,8 +54,10 @@ export class SearchFormComponent implements OnInit {
 
   @Output() searchTriggered = new EventEmitter();
   @ViewChild('searchResults') searchResults: SearchResultsComponent;
-  @HostListener('keydown', ['$event']) keydown($event): void {
-    this.handleKeyDown($event);
+  @HostListener('keydown', ['$event']) keydown($event?: KeyboardEvent): void {
+    if ($event) {
+      this.handleKeyDown($event);
+    }
   }
 
   @ViewChild('searchInput') searchInput: ElementRef;

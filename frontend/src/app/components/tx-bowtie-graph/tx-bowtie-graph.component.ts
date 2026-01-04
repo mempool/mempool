@@ -495,7 +495,10 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   }
 
   @HostListener('pointermove', ['$event'])
-  onPointerMove(event) {
+  onPointerMove(event?: PointerEvent) {
+    if (!event) {
+      return;
+    }
     if (this.dir === 'rtl') {
       this.tooltipPosition = { x: this.width - event.offsetX, y: event.offsetY };
     } else {

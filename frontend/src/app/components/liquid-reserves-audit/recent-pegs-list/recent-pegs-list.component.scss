@@ -8,6 +8,7 @@ tr, td, th {
   border: 0px;
   padding-top: 0.65rem;
   padding-bottom: 0.6rem;
+  padding-left: 12px; // Bootstrap 5 uses less padding, override to match Bootstrap 4 / production
   padding-right: 2rem;
   .widget &.widget {
     padding-right: 1rem;

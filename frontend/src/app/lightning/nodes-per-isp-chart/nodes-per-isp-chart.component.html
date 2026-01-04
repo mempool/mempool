@@ -50,22 +50,22 @@
     <table class="table table-borderless table-fixed text-center m-auto" style="max-width: 900px"  *ngIf="!widget">
       <thead>
         <tr>
-          <th class="rank text-left pl-0" i18n="mining.rank">Rank</th>
-          <th class="name text-left" i18n="lightning.isp">ISP</th>
-          <th class="share text-right" i18n="lightning.share">Share</th>
-          <th class="nodes text-right" i18n="lightning.nodes-count">Nodes</th>
-          <th class="capacity text-right pr-0" i18n="lightning.capacity">Capacity</th>
+          <th class="rank text-start pl-0" i18n="mining.rank">Rank</th>
+          <th class="name text-start" i18n="lightning.isp">ISP</th>
+          <th class="share text-end" i18n="lightning.share">Share</th>
+          <th class="nodes text-end" i18n="lightning.nodes-count">Nodes</th>
+          <th class="capacity text-end pr-0" i18n="lightning.capacity">Capacity</th>
         </tr>
       </thead>
       <tbody [attr.data-cy]="'pools-table'" *ngIf="(nodesPerAsObservable$ | async) as result">
         <tr *ngFor="let isp of result.ispRanking">
-          <td class="rank text-left pl-0">{{ isp[5] }}</td>
-          <td class="name text-left text-truncate">
+          <td class="rank text-start pl-0">{{ isp[5] }}</td>
+          <td class="name text-start text-truncate">
             <a [routerLink]="[('/lightning/nodes/isp/' + isp[0]) | relativeUrl]">{{ isp[1] }}</a>
           </td>
-          <td class="share text-right">{{ sortBy === 'capacity' ? isp[7] : isp[6] }}%</td>
-          <td class="nodes text-right">{{ isp[4] }}</td>
-          <td class="capacity text-right pr-0"><app-amount [satoshis]="isp[2]" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount></td>
+          <td class="share text-end">{{ sortBy === 'capacity' ? isp[7] : isp[6] }}%</td>
+          <td class="nodes text-end">{{ isp[4] }}</td>
+          <td class="capacity text-end pr-0"><app-amount [satoshis]="isp[2]" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount></td>
         </tr>
       </tbody>
     </table>

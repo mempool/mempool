@@ -37,6 +37,14 @@
   }
 }
 
+// Bootstrap 5 changed table cell padding from 12px to 8px
+// Override to match Bootstrap 4 / production
+.pools-table {
+  td, th {
+    padding: 12px !important;
+  }
+}
+
 @media (max-width: 767.98px) {
   .pools-table th,
   .pools-table td {
@@ -71,7 +79,7 @@
     flex-direction: row;
   }
   h5 {
-    margin-bottom: 5px;
+    margin-bottom: 5px !important; // Bootstrap 5 uses CSS variables for card-title spacing - override with !important
   }
   .item {
     max-width: 160px;

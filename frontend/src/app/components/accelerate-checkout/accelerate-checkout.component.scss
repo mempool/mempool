@@ -13,6 +13,53 @@
     pointer-events: none;
     opacity: 0.75;
   }
+  
+  // Bootstrap 5 override: Ensure proper spacing between sections
+  // Add margin-top to h5 headings to create space between sections
+  h5 {
+    margin-top: 1.5rem !important; // Match production spacing (24px)
+    margin-bottom: 0.5rem !important; // Match production spacing (8px)
+
+    // First h5 should not have top margin
+    &:first-child {
+      margin-top: 0 !important;
+    }
+  }
+
+  // Bootstrap 5 override: Remove default margins from fee-card
+  // Production has no margins on fee-card
+  .fee-card {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+  
+  // Bootstrap 5 override: Ensure proper spacing for form-group
+  .form-group {
+    margin-bottom: 1rem !important; // Match production spacing (16px)
+  }
+  
+  // Bootstrap 5 override: Ensure proper spacing for small text elements
+  small {
+    margin-bottom: 0.5rem !important; // Match production spacing (8px) for mb-2 class
+  }
+  
+  // Bootstrap 5 override: Ensure btn-outline-info buttons have correct border-radius (4px instead of 6px)
+  .btn-outline-info {
+    border-radius: 4px !important; // Match production border-radius (4px instead of 6px)
+  }
+  
+  // Bootstrap 5 override: Ensure btn-purple buttons maintain correct styling
+  .btn-purple {
+    border-radius: 50rem !important; // rounded-pill should be 50rem (very rounded)
+  }
+  
+  // Bootstrap 5 override: Ensure rounded-pill works correctly for all buttons
+  // The global .btn and .btn-sm border-radius overrides may interfere with rounded-pill
+  // Use higher specificity to ensure rounded-pill takes precedence
+  .btn.rounded-pill,
+  .btn.btn-sm.rounded-pill {
+    border-radius: 50rem !important; // Match production: rounded-pill should be 50rem (very rounded)
+  }
 }
 
 .paymentMethod {
@@ -58,6 +105,7 @@
 
 .feerate.active {
   background-color: var(--primary) !important;
+  color: white !important; // Match production: white text on active button
   opacity: 1;
   border: 1px solid #007fff !important;
 }
@@ -98,6 +146,10 @@
 }
 
 .table-accelerator {
+  // Bootstrap 5 override: Ensure proper table layout
+  table-layout: auto;
+  width: 100%;
+  
   tr {
     td {
       padding-top: 0;
@@ -124,15 +176,26 @@
   }
   td {
     &:first-child {
-      width: 100vw;
+      // Bootstrap 5 override: Remove width: 100vw which causes overlapping
+      // Use auto width to let table layout naturally size the first column
+      width: auto !important;
+      max-width: none;
     }
     &.info {
-      color: #6c757d;
+      // Bootstrap 5 override: Ensure info text is gray (#6c757d) to match production
+      // Bootstrap 5's table-dark class may override this, so use !important
+      color: #6c757d !important;
       white-space: initial;
+      
+      // Ensure nested small and i elements also inherit the gray color
+      small, i {
+        color: #6c757d !important;
+      }
     }
     &.amt {
       text-align: right;
       padding-right: 0.2em;
+      white-space: nowrap;
     }
     &.units {
       padding-left: 0.2em;
@@ -149,6 +212,30 @@
   flex-direction: row;
   align-items: stretch;
   margin-top: 1em;
+  
+  // Fix: Constrain the content div width to match production
+  // The div containing the Summary table should match production width (703px at 1068px parent width)
+  // This ensures pixel-perfect alignment after Bootstrap 5 migration
+  // Production measurement: 703.211px width when parent is 1068px
+  > div {
+    // Prevent expansion beyond production width
+    max-width: 703px;
+    // Allow shrinking if fee graph needs more space
+    flex-shrink: 1;
+    // Prevent growing beyond content size
+    flex-grow: 0;
+    // Use auto width to let content determine size, constrained by max-width
+    width: auto;
+    // Set initial size to match production ratio for consistent layout
+    flex-basis: auto;
+    
+    // On mobile when fee graph is hidden, allow full width
+    @media (max-width: 991px) {
+      max-width: 100%;
+      flex-grow: 1;
+      flex-basis: 100%;
+    }
+  }
 }
 
 .payment-area {
@@ -194,6 +281,17 @@
 
   @media (max-width: 640px) {
     flex-direction: column;
+  }
+
+  // Bootstrap 5 override: Ensure child elements have no padding
+  // and can shrink to maintain the production layout spacing
+  > * {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    flex-shrink: 1 !important;
+    max-width: none !important;
+    width: auto !important;
+    flex-basis: auto !important;
   }
 }
 

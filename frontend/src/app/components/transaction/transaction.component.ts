@@ -1125,7 +1125,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.hasAccelerationDetails = hasDetails;
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   setGraphSize(): void {
     this.isMobile = window.innerWidth < 850;
     if (this.graphContainer?.nativeElement && this.stateService.isBrowser) {

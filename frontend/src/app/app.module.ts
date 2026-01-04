@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { ModuleWithProviders, NgModule } from '@angular/core';
+import { ModuleWithProviders, NgModule, provideZonelessChangeDetection } from '@angular/core';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ZONE_SERVICE } from '@app/injection-tokens';
@@ -67,6 +67,7 @@ const providers = [
       ],
       providers: [
         provideHttpClient(withInterceptorsFromDi()),
+        provideZonelessChangeDetection(),
         DatePipe,
         ...providers
       ] })

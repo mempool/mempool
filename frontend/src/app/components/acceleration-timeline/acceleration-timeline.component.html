@@ -116,7 +116,7 @@
           <div class="seen-to-acc left"></div>
           }
           <div class="shape-border" 
-              [ngClass]="{'waiting': !tx.status.confirmed, 'hovering': tx.status.confirmed}"
+              [class]="{'waiting': !tx.status.confirmed, 'hovering': tx.status.confirmed}"
               (pointerover)="onHover($event, tx.status.confirmed ? 'mined' : null)" 
               (pointerout)="onBlur($event);">
             <div class="shape"></div>

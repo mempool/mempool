@@ -1,9 +1,9 @@
 <ng-container *ngIf="{ val: network$ | async } as network">
-  <div class="container-xl text-left">
+  <div class="container-xl text-start">
 
     <div id="faq" *ngIf="whichTab === 'faq'">
 
-      <div id="doc-nav-desktop" class="hide-on-mobile" [ngClass]="desktopDocsNavPosition">
+      <div id="doc-nav-desktop" class="hide-on-mobile" [class]="desktopDocsNavPosition">
         <app-api-docs-nav (navLinkClickEvent)="anchorLinkClick( $event )" [network]="{ val: network$ | async }" [whichTab]="whichTab"></app-api-docs-nav>
       </div>
 
@@ -33,7 +33,7 @@
 
     <div id="restAPI" *ngIf="whichTab === 'rest'">
 
-      <div id="doc-nav-desktop" class="hide-on-mobile" [ngClass]="desktopDocsNavPosition">
+      <div id="doc-nav-desktop" class="hide-on-mobile" [class]="desktopDocsNavPosition">
         <app-api-docs-nav (navLinkClickEvent)="anchorLinkClick( $event )" [network]="{ val: network$ | async }" [whichTab]="whichTab"></app-api-docs-nav>
       </div>
 
@@ -110,7 +110,7 @@
 
     <div id="websocketAPI" *ngIf="whichTab === 'websocket'">
 
-      <div id="doc-nav-desktop" class="hide-on-mobile" [ngClass]="desktopDocsNavPosition">
+      <div id="doc-nav-desktop" class="hide-on-mobile" [class]="desktopDocsNavPosition">
         <app-api-docs-nav (navLinkClickEvent)="anchorLinkClick( $event )" [network]="{ val: network$ | async }" [whichTab]="whichTab"></app-api-docs-nav>
       </div>
 

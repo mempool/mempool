@@ -1,8 +1,30 @@
-.dashboard-container {
+// Override Bootstrap 5's container-xl margins to match production alignment
+// Bootstrap 5 applies responsive margins (30px on larger screens) via media queries
+// We need to override these at all breakpoints to ensure proper centering
+.container-xl.dashboard-container {
   text-align: center;
-  margin-top: 0.5rem;
+  margin-top: 0.5rem !important;
+  // Override Bootstrap 5's responsive margins - container should be centered
+  // Override Bootstrap 5's container-xl max-width: at xxl breakpoint (1400px+) it's 1320px, but we want 1140px to match production
+  max-width: 1140px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  margin-bottom: 0 !important;
+  // Prevent clipping of .main-title elements which have negative margin-top
+  overflow: visible !important;
+
+  // Override at all Bootstrap 5 breakpoints where container-xl applies margins
+  @media (min-width: 1400px) {
+    max-width: 1140px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  
   .col {
     margin-bottom: 1.5rem;
+    // Ensure all columns use 15px padding (not Bootstrap 5's default 12px)
+    padding-left: 15px !important;
+    padding-right: 15px !important;
   }
 }
 
@@ -28,6 +50,7 @@
   background-color: var(--secondary);
   height: 1.1rem;
   max-width: 180px;
+  align-items: center;
 }
 
 .bg-warning {
@@ -64,7 +87,7 @@
     flex-direction: row;
   }
   h5 {
-    margin-bottom: 10px;
+    margin-bottom: 10px !important; // Bootstrap 5 uses CSS variables for h5 spacing - override with !important
   }
   .item {
     width: 50%;
@@ -138,10 +161,16 @@
   width: 100%;
   text-align: left;
   table-layout:fixed;
-  tr, td, th {
+  td, th {
     border: 0px;
     padding-top: 0.71rem !important;
     padding-bottom: 0.75rem !important;
+    padding-left: 12px; // Bootstrap 5 uses less padding, override to match Bootstrap 4 / production (no !important to allow specific cell overrides)
+    padding-right: 12px; // Bootstrap 5 uses less padding, override to match Bootstrap 4 / production (no !important to allow specific cell overrides)
+    color: var(--fg) !important; // Ensure text is white, not Bootstrap 5's default black
+  }
+  tr {
+    border: 0px;
   }
   td {
     overflow:hidden;
@@ -188,10 +217,15 @@
 .lastest-blocks-table {
   width: 100%;
   text-align: left;
-  tr, td, th {
+  td, th {
     border: 0px;
     padding-top: 0.65rem !important;
     padding-bottom: 0.7rem !important;
+    padding-left: 12px; // Bootstrap 5 uses less padding, override to match Bootstrap 4 / production (no !important to allow specific cell overrides)
+    padding-right: 12px; // Bootstrap 5 uses less padding, override to match Bootstrap 4 / production (no !important to allow specific cell overrides)
+  }
+  tr {
+    border: 0px;
   }
   .table-cell-height {
     width: 15%;
@@ -226,10 +260,17 @@
   width: 100%;
   text-align: left;
   table-layout:fixed;
-  tr, td, th {
+  td, th {
     border: 0px;
     padding-top: 0.71rem !important;
     padding-bottom: 0.75rem !important;
+    padding-left: 12px; // Bootstrap 5 uses less padding, override to match Bootstrap 4 / production (no !important to allow .table-cell-badges override)
+    padding-right: 12px; // Bootstrap 5 uses less padding, override to match Bootstrap 4 / production (no !important to allow .table-cell-badges override)
+    color: var(--fg) !important; // Ensure text is white, not Bootstrap 5's default black
+  }
+  tr {
+    border: 0px;
+    color: var(--fg) !important;
   }
   td {
     overflow:hidden;
@@ -253,8 +294,8 @@
   }
   .table-cell-badges {
     width: 23%;
-    padding-right: 0;
-    padding-left: 5px;
+    padding-right: 0 !important; // Override global table padding for Status column alignment
+    padding-left: 5px !important; // Override global table padding for Status column alignment
     text-align: end;
 
     .badge {
@@ -312,6 +353,11 @@
 }
 
 .card-wrapper {
+  // Note: padding is now handled by .dashboard-container .col above
+  // Keep this for any card-wrapper outside dashboard-container if needed
+  padding-left: 15px !important;
+  padding-right: 15px !important;
+  
   .card {
     height: auto !important;
   }
@@ -377,7 +423,7 @@
 
 .title-link, .title-link:hover, .title-link:focus, .title-link:active {
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 10px !important; // Bootstrap 5 uses CSS variables for h5 spacing - override with !important
   text-decoration: none;
   color: inherit;
 }
@@ -416,6 +462,47 @@
 .quick-filter {
   margin-top: 5px;
   margin-bottom: 6px;
+  
+  .btn-group-toggle {
+    display: inline-flex !important; // Match production - ensures buttons appear on single line
+    vertical-align: middle !important;
+    gap: 0 !important; // Remove any gap Bootstrap 5 might add
+    
+    // Remove gaps and ensure seamless button connection
+    .btn {
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      
+      // Border radius: only outer edges rounded, inner edges square for seamless connection
+      &:first-child {
+        border-top-left-radius: 3.2px !important;
+        border-bottom-left-radius: 3.2px !important;
+        border-top-right-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+      }
+      
+      &:last-child {
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+        border-top-right-radius: 3.2px !important;
+        border-bottom-right-radius: 3.2px !important;
+      }
+      
+      &:not(:first-child):not(:last-child) {
+        border-radius: 0 !important; // Middle buttons have no rounded corners
+      }
+      
+      &:not(:first-child) {
+        margin-left: -1px !important; // Overlap borders for seamless connection
+        // Keep border but ensure it overlaps properly - production keeps the border
+      }
+      
+      &:focus {
+        z-index: 1; // Bring focused button to front
+        position: relative; // Ensure z-index works
+      }
+    }
+  }
 }
 
 .card-liquid {

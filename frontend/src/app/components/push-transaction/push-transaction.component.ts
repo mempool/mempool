@@ -181,7 +181,7 @@ export class PushTransactionComponent implements OnInit {
         
 
         // check checksum
-        const hashTx = await crypto.subtle.digest('SHA-256', rawTx);
+        const hashTx = await crypto.subtle.digest('SHA-256', rawTx as BufferSource);
         if (this.u8ArrayToHex(new Uint8Array(hashTx.slice(24))) !== this.u8ArrayToHex(rawCheck)) {
           this.error = 'Bad checksum, URL is probably truncated';
           return false;

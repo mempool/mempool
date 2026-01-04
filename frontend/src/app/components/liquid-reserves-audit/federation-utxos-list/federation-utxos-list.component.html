@@ -1,51 +1,51 @@
-<div [ngClass]="{'widget': widget}">
+<div [class]="{'widget': widget}">
 
   <div class="clearfix"></div>
   
   <div style="min-height: 295px">
     <table class="table table-borderless">
       <thead style="vertical-align: middle;">
-        <th class="txid text-left" [ngClass]="{'widget': widget}" i18n="transaction.output">Output</th>
-        <th class="address text-left" *ngIf="!widget" i18n="shared.address">Address</th>
-        <th class="amount text-right" [ngClass]="{'widget': widget}" i18n="shared.amount">Amount</th>
-        <th class="pegin text-left" *ngIf="!widget" i18n="liquid.related-peg-in">Related Peg-In</th>
-        <th class="timestamp text-left" i18n="shared.date" [ngClass]="{'widget': widget}">Date</th>
-        <th class="expires-in text-left" *ngIf="!widget && showExpiredUtxos === false" i18n="liquid.expires-in">Expires in</th>
-        <th class="expires-in text-left" *ngIf="!widget && showExpiredUtxos === true" i18n="liquid.expired-since">Expired since</th>
-        <th class="is-dust text-right" *ngIf="!widget && showExpiredUtxos === true" i18n="liquid.dust">Dust</th>
+        <th class="txid text-start" [class]="{'widget': widget}" i18n="transaction.output">Output</th>
+        <th class="address text-start" *ngIf="!widget" i18n="shared.address">Address</th>
+        <th class="amount text-end" [class]="{'widget': widget}" i18n="shared.amount">Amount</th>
+        <th class="pegin text-start" *ngIf="!widget" i18n="liquid.related-peg-in">Related Peg-In</th>
+        <th class="timestamp text-start" i18n="shared.date" [class]="{'widget': widget}">Date</th>
+        <th class="expires-in text-start" *ngIf="!widget && showExpiredUtxos === false" i18n="liquid.expires-in">Expires in</th>
+        <th class="expires-in text-start" *ngIf="!widget && showExpiredUtxos === true" i18n="liquid.expired-since">Expired since</th>
+        <th class="is-dust text-end" *ngIf="!widget && showExpiredUtxos === true" i18n="liquid.dust">Dust</th>
       </thead>
       <tbody *ngIf="federationUtxos$ | async as utxos; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
         <ng-container *ngIf="widget; else regularRows">
           <tr *ngFor="let utxo of utxos | slice:0:6">
-            <td class="txid text-left widget">
+            <td class="txid text-start widget">
               <a href="{{ env.MEMPOOL_WEBSITE_URL + '/tx/' + utxo.txid + ':' + utxo.txindex }}" target="_blank" style="color:var(--orange)">
                 <app-truncate [text]="utxo.txid + ':' + utxo.txindex" [lastChars]="6"></app-truncate>
               </a>
             </td>
-            <td class="amount text-right widget">
+            <td class="amount text-end widget">
               <app-amount [satoshis]="utxo.amount" [noFiat]="true" [forceBtc]="true"></app-amount>
             </td>
-            <td class="timestamp text-left widget">
+            <td class="timestamp text-start widget">
               <app-time kind="since" [time]="utxo.blocktime" [showTooltip]="true"></app-time>
             </td>
           </tr>
         </ng-container>
         <ng-template #regularRows>
           <tr *ngFor="let utxo of utxos | slice:(page - 1) * pageSize:page * pageSize">
-            <td class="txid text-left">
+            <td class="txid text-start">
               <a href="{{ env.MEMPOOL_WEBSITE_URL + '/tx/' + utxo.txid + ':' + utxo.txindex }}" target="_blank" style="color:var(--orange)">
                 <app-truncate [text]="utxo.txid + ':' + utxo.txindex" [lastChars]="6"></app-truncate>
               </a>
             </td>
-            <td class="address text-left">
+            <td class="address text-start">
               <a href="{{ env.MEMPOOL_WEBSITE_URL + '/address/' + utxo.bitcoinaddress }}" target="_blank" style="color:var(--orange)">
                 <app-truncate [text]="utxo.bitcoinaddress" [lastChars]="6"></app-truncate>
               </a>
             </td>
-            <td class="amount text-right">
+            <td class="amount text-end">
               <app-amount [satoshis]="utxo.amount" [noFiat]="true" [forceBtc]="true"></app-amount>
             </td>
-            <td class="pegin text-left">
+            <td class="pegin text-start">
               <ng-container *ngIf="utxo.pegtxid; else noPeginMessage">
                 <a [routerLink]="['/tx' | relativeUrl, utxo.pegtxid]" [fragment]="'vin=' + utxo.pegindex">
                   <app-truncate [text]="utxo.pegtxid + ':' + utxo.pegindex" [lastChars]="6"></app-truncate>
@@ -55,13 +55,13 @@
                 <i><span class="text-muted" i18n="liquid.change-output">Change output</span></i>
               </ng-template>
             </td>
-            <td class="timestamp text-left">
+            <td class="timestamp text-start">
               <app-timestamp [customFormat]="'yyyy-MM-dd HH:mm'" [unixTime]="utxo.blocktime"></app-timestamp>
             </td>
-            <td class="expires-in text-left" [ngStyle]="{ 'color': getGradientColor(utxo.blocknumber + utxo.timelock - lastReservesBlockUpdate) }">
+            <td class="expires-in text-start" [style]="{ 'color': getGradientColor(utxo.blocknumber + utxo.timelock - lastReservesBlockUpdate) }">
               {{ utxo.blocknumber + utxo.timelock - lastReservesBlockUpdate < 0 ? -(utxo.blocknumber + utxo.timelock - lastReservesBlockUpdate) : utxo.blocknumber + utxo.timelock - lastReservesBlockUpdate }} <span i18n="shared.blocks" class="symbol">blocks</span>
             </td>
-            <td *ngIf="!widget && showExpiredUtxos === true" class="is-dust text-right" [ngStyle]="{ 'color': !utxo.isDust ? 'var(--red)' : '' }">
+            <td *ngIf="!widget && showExpiredUtxos === true" class="is-dust text-end" [style]="{ 'color': !utxo.isDust ? 'var(--red)' : '' }">
               @if (utxo.isDust) {
                 ✔
               } @else {
@@ -74,35 +74,35 @@
       <ng-template #skeleton>
         <tbody *ngIf="widget; else regularRowsSkeleton">
           <tr *ngFor="let item of skeletonLines">
-            <td class="txid text-left widget">
+            <td class="txid text-start widget">
               <span class="skeleton-loader" style="max-width: 400px"></span>
             </td>
-            <td class="amount text-right widget">
+            <td class="amount text-end widget">
               <span class="skeleton-loader" style="max-width: 300px"></span>
             </td>
-            <td class="timestamp text-left widget">
+            <td class="timestamp text-start widget">
               <span class="skeleton-loader" style="max-width: 300px"></span>
             </td>
           </tr>
         </tbody>
         <ng-template #regularRowsSkeleton>
           <tr *ngFor="let item of skeletonLines">
-            <td class="txid text-left">
+            <td class="txid text-start">
               <span class="skeleton-loader" style="max-width: 300px"></span>
             </td>
-            <td class="address text-left">
+            <td class="address text-start">
               <span class="skeleton-loader" style="max-width: 300px"></span>
             </td>
-            <td class="amount text-right">
+            <td class="amount text-end">
               <span class="skeleton-loader" style="max-width: 140px"></span>
             </td>
-            <td class="pegin text-left">
+            <td class="pegin text-start">
               <span class="skeleton-loader" style="max-width: 300px"></span>
             </td>
-            <td class="timestamp text-left">
+            <td class="timestamp text-start">
               <span class="skeleton-loader" style="max-width: 140px"></span>
             </td>
-            <td class="expires-in text-left">
+            <td class="expires-in text-start">
               <span class="skeleton-loader" style="max-width: 140px"></span>
             </td>
           </tr>

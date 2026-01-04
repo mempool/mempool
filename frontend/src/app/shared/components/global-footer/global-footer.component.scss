@@ -9,7 +9,21 @@ footer {
 }
 
 footer a {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.4) !important; // Override global link color (cyan)
+  text-decoration: none !important; // No underline by default
+  
+  &:link,
+  &:visited {
+    color: rgba(255, 255, 255, 0.4) !important; // Stay gray
+    text-decoration: none !important; // No underline
+  }
+  
+  &:hover,
+  &:active,
+  &:focus {
+    color: rgba(255, 255, 255, 0.4) !important; // Stay same gray on hover (not cyan)
+    text-decoration: underline !important; // Add underline on hover
+  }
 }
 
 footer p {
@@ -19,7 +33,9 @@ footer p {
 footer .row.main {
   padding: 40px 0 24px 0;
   max-width: 1140px;
-  margin: 0 auto;
+  margin: 0 auto !important; // Override Bootstrap 5's default negative margin
+  margin-left: auto !important;
+  margin-right: auto !important;
   &.services {
     @media (min-width: 1201px) {
       padding-left: 50px;
@@ -43,6 +59,13 @@ footer .row.main .branding button.account {
 
 footer .row.main .branding .cta {
   margin: 25px auto 25px auto;
+}
+
+// Bootstrap 5 applies 12px padding to elements in .row
+// Override to ensure all footer link columns have 0 padding like Bootstrap 4
+footer .link-tree .links {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 footer .link-tree .links:nth-child(1), footer .link-tree .links:nth-child(4) {
@@ -83,14 +106,34 @@ footer .add-margin {
 
 footer .row.link-tree {
   max-width: 1140px;
-  margin: 0 auto;
+  margin: 0 auto !important; // Override Bootstrap 5's default negative margin
+  margin-left: auto !important;
+  margin-right: auto !important;
   display: flex;
   justify-content: space-between;
   flex-wrap: nowrap;
+  // Bootstrap 5's row gutter system uses CSS variables --bs-gutter-x and --bs-gutter-y
+  // This causes equal-width columns instead of content-based sizing
+  // Override to disable gutters like Bootstrap 4 / production
+  --bs-gutter-x: 0 !important;
+  --bs-gutter-y: 0 !important;
+
   &.services {
     @media (min-width: 1201px) {
       padding-left: 65px;
       padding-right: 65px;
+    }
+  }
+
+  // Bootstrap 5 changed flex behavior: children have flex: 0 0 auto instead of flex: 0 1 auto
+  // This prevents shrinking and causes columns to take full width
+  // Override to match Bootstrap 4 / production behavior
+  // Also set width to fit-content to size based on content instead of distributing space equally
+  // BUT only on desktop - on mobile, links should be full width and centered
+  .links {
+    flex: 0 1 auto !important;
+    @media (min-width: 1020px) {
+      width: fit-content !important;
     }
   }
 }
@@ -100,7 +143,9 @@ footer .row.social-links {
   display: flex;
   flex-wrap: wrap;
   width: fit-content;
-  margin: 0 auto; 
+  margin: 0 auto !important; // Override Bootstrap 5's default negative margin
+  margin-left: auto !important;
+  margin-right: auto !important;
 
   @media (max-width: 450px){
     width: 250px;

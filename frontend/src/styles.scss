@@ -25,6 +25,8 @@ $secondary: #272f4e;
 $tertiary: #6225b2;
 $success: #0aab2f;
 $info: #00ddff;
+$danger: #dc3545;
+$warning: #ffc107;
 
 $h5-font-size: 1.15rem !default;
 
@@ -37,8 +39,6 @@ $pagination-active-bg:             $tertiary;
 $pagination-hover-bg:              $hover-bg;
 $pagination-hover-border-color:     $bg;
 $pagination-disabled-bg:          $bg;
-
-$custom-select-indicator-color: $fg;
 
 $link-color:                $info;
 $link-decoration:           none !default;
@@ -64,6 +64,8 @@ $dropdown-link-active-bg: $active-bg;
   $secondary: $secondary,
   $success: $success,
   $info: $info,
+  $danger: $danger,
+  $warning: $warning,
   $h5-font-size: $h5-font-size,
   $pagination-bg: $pagination-bg,
   $pagination-border-color: $pagination-border-color,
@@ -73,7 +75,6 @@ $dropdown-link-active-bg: $active-bg;
   $pagination-active-bg: $pagination-active-bg,
   $pagination-hover-bg: $pagination-hover-bg,
   $pagination-hover-border-color: $pagination-hover-border-color,
-  $custom-select-indicator-color: $custom-select-indicator-color,
   $link-color: $link-color,
   $link-decoration: $link-decoration,
   $link-hover-color: $link-hover-color,
@@ -91,6 +92,22 @@ $dropdown-link-active-bg: $active-bg;
   border: 1px solid #20263e !important;
 }
 
+// Preserve radio button group styling - ensure radio buttons remain hidden
+.btn-group-toggle > label > input[type="radio"],
+.btn-group.btn-group-toggle > label > input[type="radio"] {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 :root {
   --bg: #{$bg};
   --active-bg: #{$active-bg};
@@ -104,6 +121,8 @@ $dropdown-link-active-bg: $active-bg;
   --tertiary: #{$tertiary};
   --success: #{$success};
   --info: #{$info};
+  --danger: #{$danger};
+  --warning: #{$warning};
   --link-color: #{$link-color};
   --link-hover-color: #{$link-hover-color};
   --icon: #f1f1f1;
@@ -138,6 +157,7 @@ $dropdown-link-active-bg: $active-bg;
   --yellow: #fff000;
   --grey: #7e7e7e;
   --tooltip-grey: #b1b1b1;
+  --tooltip-text: var(--fg); // White text for tooltips
   --orange: #ff9f00;
 
   --search-button: #4d2d77;
@@ -153,11 +173,142 @@ html, body {
 body {
   background-color: var(--active-bg);
   padding-bottom: 60px;
+
+  // Bootstrap 5 override: Restore Bootstrap 4 font stack for pixel-perfect parity
+  // BS5 changed font-family order from "-apple-system, BlinkMacSystemFont, ..." to "system-ui, -apple-system, ..."
+  // BS4 includes "Liberation Sans" which BS5 removed - this affects text rendering width and causes layout differences
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
 }
 
 .container {
   position: relative;
 }
+
+// Bootstrap 5 changed container padding from 15px to 12px
+// Override to match Bootstrap 4 / production styling
+.container,
+.container-fluid,
+.container-sm,
+.container-md,
+.container-lg,
+.container-xl,
+.container-xxl {
+  padding-left: 15px !important;
+  padding-right: 15px !important;
+}
+
+// Bootstrap 5's container max-width is 1320px at xxl breakpoint (1400px+)
+// Override to match Bootstrap 4 / production (1140px)
+// Note: Some components override this with their own max-width values (e.g., .container-xl.widget with 1400px)
+// We only override when NOT a widget to preserve component-specific overrides
+.container:not(.widget):not(.full-height) {
+  @media (min-width: 1400px) {
+    max-width: 1140px !important;
+  }
+}
+
+// Bootstrap 5's container-xl max-width is 1320px at xxl breakpoint (1400px+)
+// Override to match Bootstrap 4 / production (1140px)
+// Note: Some components override this with their own max-width values (e.g., .container-xl.widget with 1400px)
+// We only override when NOT a widget to preserve component-specific overrides
+.container-xl:not(.widget) {
+  @media (min-width: 1400px) {
+    max-width: 1140px !important;
+  }
+}
+
+// Ensure dashboard-container also uses 1140px
+.container-xl.dashboard-container {
+  @media (min-width: 1400px) {
+    max-width: 1140px !important;
+  }
+}
+
+// Bootstrap 5 changed row negative margin from -15px to -12px
+// Override to match Bootstrap 4 / production styling
+.row {
+  margin-left: -15px !important;
+  margin-right: -15px !important;
+}
+
+// Bootstrap 5 changed column padding from 15px to 12px
+// Override to match Bootstrap 4 / production styling
+[class*="col-"],
+.col {
+  padding-left: 15px !important;
+  padding-right: 15px !important;
+}
+
+// Bootstrap 5 changed form-select padding-right from 28px (Bootstrap 4 custom-select) to 36px
+// Override to match Bootstrap 4 / production styling for footer selectors
+.form-select {
+  padding-right: 28px !important;
+  // Override Bootstrap 5's default single black arrow with production double white arrow
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23fff' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") !important;
+  background-size: 8px 10px !important; // Match production size (SVG is 4x5, scaled 2x)
+  background-repeat: no-repeat !important;
+  background-position: calc(100% - 12px) 50% !important;
+}
+
+// Bootstrap 5 changed card border-radius from 0.25rem (4px) to 0.375rem (6px)
+// Override to match Bootstrap 4 / production styling
+.card {
+  border-radius: 4px !important;
+}
+
+// Bootstrap 5 changed .card-header padding from 12px 20px to 0
+// Override to match Bootstrap 4 / production styling
+.card-header {
+  padding: 12px 20px !important;
+}
+
+// Bootstrap 5 changed .card-body padding from 1.25rem (20px) to 1rem (16px)
+// Override to match Bootstrap 4 / production styling
+// Use shorthand padding with !important to match production computed styles
+// Exclude component-specific padding classes (more-padding, less-padding) to allow custom overrides
+.card-body:not(.more-padding):not(.less-padding) {
+  padding: 1.25rem !important; // Bootstrap 5 override: 20px on all sides to match production
+}
+
+// Bootstrap 5 removed .float-left and .float-right in favor of .float-start and .float-end
+// Restore Bootstrap 4 float utility classes to match production
+.float-right {
+  float: right !important;
+}
+
+.float-left {
+  float: left !important;
+}
+
+// Bootstrap 5 removed .pl-*, .pr-*, .ml-*, .mr-* in favor of .ps-*, .pe-*, .ms-*, .me-*
+// Restore Bootstrap 4 directional utility classes to match production
+.pl-0 { padding-left: 0 !important; }
+.pl-1 { padding-left: 0.25rem !important; } // 4px
+.pl-2 { padding-left: 0.5rem !important; } // 8px
+.pl-3 { padding-left: 1rem !important; } // 16px
+.pl-4 { padding-left: 1.5rem !important; } // 24px
+.pl-5 { padding-left: 3rem !important; } // 48px
+
+.pr-0 { padding-right: 0 !important; }
+.pr-1 { padding-right: 0.25rem !important; } // 4px
+.pr-2 { padding-right: 0.5rem !important; } // 8px
+.pr-3 { padding-right: 1rem !important; } // 16px
+.pr-4 { padding-right: 1.5rem !important; } // 24px
+.pr-5 { padding-right: 3rem !important; } // 48px
+
+.ml-0 { margin-left: 0 !important; }
+.ml-1 { margin-left: 0.25rem !important; } // 4px
+.ml-2 { margin-left: 0.5rem !important; } // 8px
+.ml-3 { margin-left: 1rem !important; } // 16px
+.ml-4 { margin-left: 1.5rem !important; } // 24px
+.ml-5 { margin-left: 3rem !important; } // 48px
+
+.mr-0 { margin-right: 0 !important; }
+.mr-1 { margin-right: 0.25rem !important; } // 4px
+.mr-2 { margin-right: 0.5rem !important; } // 8px
+.mr-3 { margin-right: 1rem !important; } // 16px
+.mr-4 { margin-right: 1.5rem !important; } // 24px
+.mr-5 { margin-right: 3rem !important; } // 48px
 
 main {
   margin-top: 24px;
@@ -402,12 +553,79 @@ main {
   color: var(--yellow);
 }
 
+// Bootstrap 4 compatibility: Match production's rule order
+// Production has Bootstrap 4's default rgba(0, 0, 0, 0.05) which gets overridden
+// Bootstrap 5 doesn't have this default, but we add it for compatibility
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.05); // Bootstrap 4 default (gets overridden below)
+}
+
+// Override Bootstrap 4 default to use theme variable (matches production)
 .table-striped tbody tr:nth-of-type(odd) {
   background-color: var(--stat-box-bg);
 }
 
+// Bootstrap 5 override: Ensure table cells have transparent backgrounds and white text
+.table {
+  color: var(--fg) !important; // Ensure table text is white by default
+  padding: 0 !important; // Bootstrap 5 override: Remove padding from table element itself (only cells should have padding)
+  
+  td, th {
+    background-color: transparent !important; // Override Bootstrap 5's default background - cells should be transparent
+    border-color: rgba(255, 255, 255, 0.1) !important; // Ensure borders are visible on dark background
+    padding: 0.75rem; // Bootstrap 5 override: 0.75rem (12px) instead of BS5's 0.5rem (8px) - no !important to allow component overrides
+  }
+
+  // Bootstrap 5 override: Remove horizontal padding from table rows (only cells should have padding)
+  tr {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  // Apply white color to all table cells EXCEPT .latest-adjustments tables
+  // .latest-adjustments tables are handled separately to allow inline color styles
+  &:not(.latest-adjustments) {
+    td, th {
+      color: var(--fg) !important; // Ensure text color is white
+    }
+  }
+  
+  // For .latest-adjustments tables, only apply white color to cells without inline styles
+  // This allows inline styles (red/green for Change column) to work
+  &.latest-adjustments {
+    td:not([style*="color"]),
+    th:not([style*="color"]) {
+      color: var(--fg) !important; // Ensure text color is white for cells without inline styles
+    }
+    // Cells with inline color styles will use their inline style (highest specificity)
+  }
+  
+  // Ensure amount component inside tables is white (not black) and has transparent background
+  // BUT: Exclude app-amount symbols in reward-stats component which should be gray
+  app-amount,
+  app-amount span,
+  app-amount .fiat {
+    color: var(--fg) !important; // White text for amount component
+    background-color: transparent !important; // Ensure transparent background (matches production)
+  }
+  
+  // For app-amount symbols, use default gray color (not white)
+  // Bootstrap 5 migration: Remove white override to let default gray show through
+  // Note: reward-stats component has its own rule that overrides this with higher specificity
+  app-amount .symbol {
+    color: var(--transparent-fg) !important; // Gray text for currency units to match production
+  }
+  
+  // Override Bootstrap 5's table-borderless to ensure no unwanted borders
+  &.table-borderless {
+    td, th {
+      border: 0 !important;
+    }
+  }
+}
+
 .dual-col-striped tbody tr:nth-of-type(odd) td:not(.spacer) {
-  background-color: var(--stat-box-bg);
+  background-color: var(--stat-box-bg) !important; // Override global .table td { background-color: transparent !important; } rule
 }
 
 .dual-col-striped tbody tr td.spacer {
@@ -731,6 +949,16 @@ html:lang(ru) .card-title {
 
 hr {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  // Bootstrap 5 override: Ensure hr margins match Bootstrap 4 / production
+  // Bootstrap 5 changed default margins - override to match production spacing
+  margin-top: 1rem !important; // Match Bootstrap 4 default (1rem = 16px)
+  margin-bottom: 1rem !important; // Match Bootstrap 4 default (1rem = 16px)
+}
+
+// Bootstrap 5 override: Ensure text-muted color matches Bootstrap 4 / production
+// Bootstrap 5 changed the default text-muted color - override to match production
+.text-muted {
+  color: #6c757d !important; // Match Bootstrap 4 default text-muted color
 }
 
 tr {
@@ -739,6 +967,29 @@ tr {
 
 h1, h2, h3 {
   margin-bottom: 1rem;
+}
+
+// Bootstrap 5 override: Match Bootstrap 4 heading font sizes exactly
+// Production uses exact pixel values, Bootstrap 5 uses rem with rounding issues
+h1 {
+  font-size: 40px !important; // Match production (39.595px in BS5)
+}
+
+h2 {
+  font-size: 32px !important; // Match production (31.757px in BS5)
+}
+
+h3 {
+  font-size: 28px !important; // Match production (27.838px in BS5)
+}
+
+h4 {
+  font-size: 24px !important; // Match production (23.919px in BS5)
+}
+
+// Bootstrap 5 override: Match Bootstrap 4 h5 margin-bottom (12px instead of 8px)
+h5 {
+  margin-bottom: 0.75rem !important; // 12px to match production
 }
 
 @media (max-width: 767.98px) {
@@ -768,29 +1019,43 @@ h1, h2, h3 {
 
 .progress {
   position: relative;
+  display: flex;
+  align-items: center;
+  height: 1rem; // Bootstrap 5 default height
+  background-color: var(--secondary) !important; // Override Bootstrap 5 default light background
+}
+
+.progress-bar:not(.progress-mempool) {
+  background-color: transparent; // Ensure no default Bootstrap 5 background color for non-mempool progress bars
 }
 
 .progress-text {
   position: absolute;
-  top: 8.5px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 100%;
   text-align: center;
+  line-height: 1;
+  z-index: 1;
+  color: var(--fg) !important; // Ensure text color matches theme
 }
 
-.progress-mempool {
-  background: repeating-linear-gradient(to right, var(--secondary), var(--secondary) 0%, var(--primary) 0%, var(--mainnet-alt) 100%);
+.progress-bar.progress-mempool {
+  background: repeating-linear-gradient(to right, var(--secondary), var(--secondary) 0%, var(--primary) 0%, var(--mainnet-alt) 100%) !important;
+  height: 100% !important; // Ensure progress bar has height to display gradient
 }
 
-.progress-mempool.testnet {
-  background: repeating-linear-gradient(to right, var(--secondary), var(--secondary) 0%, var(--testnet) 0%, var(--testnet-alt) 100%);
+.progress-bar.progress-mempool.testnet {
+  background: repeating-linear-gradient(to right, var(--secondary), var(--secondary) 0%, var(--testnet) 0%, var(--testnet-alt) 100%) !important;
 }
 
-.progress-mempool.signet {
-  background: repeating-linear-gradient(to right, var(--secondary), var(--secondary) 0%, var(--signet) 0%, var(--signet-alt) 100%);
+.progress-bar.progress-mempool.signet {
+  background: repeating-linear-gradient(to right, var(--secondary), var(--secondary) 0%, var(--signet) 0%, var(--signet-alt) 100%) !important;
 }
 
-.progress-mempool.liquid {
-  background: repeating-linear-gradient(to right, var(--secondary), var(--secondary) 0%, var(--liquid) 0%, var(--testnet-alt) 100%);
+.progress-bar.progress-mempool.liquid {
+  background: repeating-linear-gradient(to right, var(--secondary), var(--secondary) 0%, var(--liquid) 0%, var(--testnet-alt) 100%) !important;
 }
 
 .progress-dark {
@@ -1036,16 +1301,17 @@ th {
   }
 
   .mr-3 {
-    @extend .ml-3;
+    @extend .ml-3 !optional;
     margin-right: 0 !important;
   }
 
+  // Bootstrap 5 compatibility: .mr-1 (margin-right) should work like Bootstrap 4
   .mr-1 {
-      @extend .ml-1;
+    margin-right: 0.25rem !important; // 4px - Bootstrap 4's .mr-1 value
   }
 
   .mr-2 {
-    @extend .ml-2;
+    @extend .ml-2 !optional;
   }
 
   .float-left {
@@ -1319,6 +1585,7 @@ th {
   .page-link {
     background-color: var(--bg);
     border: 1px solid var(--bg);
+    color: #6c757d !important; // Bootstrap 5 migration: gray text for inactive pagination links (not white)
   }
   .page-link:hover {
     background-color: var(--active-bg);
@@ -1326,10 +1593,12 @@ th {
   .page-item.active .page-link {
     background-color: var(--tertiary);
     border: 1px solid var(--tertiary);
+    color: #fff !important; // Bootstrap 5 migration: white text for active page
   }
   .page-item.disabled .page-link {
     background-color: var(--bg);
     border: 1px solid var(--bg);
+    color: #6c757d !important; // Bootstrap 5 migration: gray text for disabled pagination links
   }
 }
 
@@ -1337,6 +1606,21 @@ th {
   .tooltip.show {
     width: 220px;
   }
+}
+
+// Bootstrap 5 override: Ensure tooltip text is white
+.tooltip,
+.bs-tooltip-top,
+.bs-tooltip-bottom,
+.bs-tooltip-start,
+.bs-tooltip-end,
+.tooltip-inner {
+  color: var(--fg) !important; // White text in tooltips
+}
+
+.tooltip-inner {
+  background-color: var(--active-bg) !important; // Dark background for tooltips
+  color: var(--fg) !important; // White text
 }
 
 
@@ -1405,8 +1689,20 @@ app-global-footer {
   color: var(--fg);
   .dropdown-item:hover, .dropdown-item:focus {
     background-color: var(--active-bg);
-    color: var(--fg);
+    color: var(--fg) !important; // Ensure white text on hover, override Bootstrap 5 default
   }
+}
+
+// Additional override to ensure dropdown items always have white hover text
+.dropdown-item:hover, .dropdown-item:focus {
+  color: var(--fg) !important; // White text on hover
+}
+
+// Bootstrap 5 changed dropdown-item padding from 24px (Bootstrap 4) to 16px
+// Override to match Bootstrap 4 / production styling
+.dropdown-item {
+  padding-left: 24px !important;
+  padding-right: 24px !important;
 }
 
 .btn-secondary {
@@ -1417,7 +1713,201 @@ app-global-footer {
 a {
   color: var(--link-color);
   &:hover {
-    color: var(--link-hover-color);
+    color: var(--link-hover-color) !important; // Ensure hover color is applied
+  }
+  
+  // Bootstrap 5 override: Ensure all links maintain white/light text on hover
+  // Exclude footer links, contentinfo links, blockchain badge links (miner names), badges, and title-link (which should inherit white)
+  &:hover:not(.btn):not(.dropdown-item):not(.nav-link):not(footer a):not(contentinfo a):not(app-blockchain-blocks a.badge):not(.title-link):not(.badge) {
+    color: var(--link-hover-color) !important;
+  }
+}
+
+// Ensure title-link maintains white color on hover (inherits from parent, doesn't use link hover color)
+.title-link:hover,
+.title-link:focus,
+.title-link:active {
+  color: inherit !important; // Maintain white color on hover to match production
+}
+
+// Footer links should be gray, not cyan, with underline on hover
+// Override Bootstrap 5's default link color (var(--link-color) which is cyan) for footer links
+// Use higher specificity to override global a:hover rule
+footer a,
+contentinfo a,
+app-global-footer a,
+app-global-footer a,
+.footer a,
+footer a:link,
+footer a:visited,
+footer a:hover,
+footer a:active,
+footer a:focus,
+contentinfo a:link,
+contentinfo a:visited,
+contentinfo a:hover,
+contentinfo a:active,
+contentinfo a:focus {
+  color: rgba(255, 255, 255, 0.4) !important; // Match production footer link color (gray)
+  text-decoration: none !important; // No underline by default
+}
+
+// Footer links hover state - must be separate to override global a:hover
+footer a:hover,
+contentinfo a:hover,
+app-global-footer a:hover,
+.footer a:hover {
+  color: rgba(255, 255, 255, 0.4) !important; // Stay same gray on hover (not cyan) - override Bootstrap 5's var(--link-hover-color)
+  text-decoration: underline !important; // Add underline on hover
+}
+
+// Miner/pool links should be white without underline (no green hover effect)
+// Target badge links that go to mining pools
+// NOTE: Removed overly broad a[href*="/mining/pool"] and a[routerLink*="/mining/pool"] selectors
+// as they catch "View more" links (e.g., /graphs/mining/pools) which should be cyan, not white
+// Only target specific badge/component links to mining pools
+a.badge[href*="/mining/pool"],
+a.badge[routerLink*="/mining/pool"],
+a.clear-link,
+app-blockchain-blocks a.badge,
+app-blockchain-blocks a.badge[href*="/mining/pool"] {
+  color: var(--fg) !important; // White text
+  text-decoration: none !important; // No underline
+
+  &:hover,
+  &:focus,
+  &:active,
+  &:visited {
+    color: var(--fg) !important; // Stay white on hover/focus/active/visited
+    text-decoration: none !important; // No underline on hover
+  }
+}
+
+// Pool name links in blocks list and other components
+.pool-name,
+a .pool-name,
+a.clear-link .pool-name,
+a.badge .pool-name {
+  color: var(--fg) !important; // White text
+  text-decoration: none !important; // No underline
+  
+  &:hover {
+    color: var(--fg) !important; // Stay white on hover
+    text-decoration: none !important; // No underline
+  }
+}
+
+// Exception: .pool-name inside table links should inherit link color (cyan) and hover color (darker cyan)
+.table a.link .pool-name,
+.table .link .pool-name {
+  color: inherit !important; // Inherit cyan link color from parent link
+  text-decoration: none !important; // No underline
+  
+  &:hover {
+    color: inherit !important; // Inherit darker cyan hover color from parent link
+    text-decoration: none !important; // No underline on hover
+  }
+}
+
+// Ensure badge links (miner links) don't get link hover colors
+a.badge {
+  color: inherit !important; // Inherit badge color
+  text-decoration: none !important; // No underline
+  
+  &:hover,
+  &:focus,
+  &:active,
+  &:visited {
+    color: inherit !important; // Inherit badge color on hover
+    text-decoration: none !important; // No underline on hover
+  }
+  
+  // Specifically for blockchain component badge links
+  &[href*="/mining/pool"] {
+    color: var(--fg) !important; // White text
+    text-decoration: none !important; // No underline
+    
+    &:hover,
+    &:focus,
+    &:active,
+    &:visited {
+      color: var(--fg) !important; // Stay white on hover
+      text-decoration: none !important; // No underline
+    }
+  }
+}
+
+// Specific override for blockchain component - must override Bootstrap 5's global a:hover
+app-blockchain-blocks {
+  a.badge,
+  a.badge:link,
+  a.badge:visited,
+  a.badge:hover,
+  a.badge:active,
+  a.badge:focus {
+    color: #FFF !important; // White text - override Bootstrap 5's var(--link-hover-color) which is cyan
+    text-decoration: none !important; // No underline
+  }
+  
+  // Additional specificity for miner-name class
+  a.badge.miner-name,
+  a.badge.miner-name:link,
+  a.badge.miner-name:visited,
+  a.badge.miner-name:hover,
+  a.badge.miner-name:active,
+  a.badge.miner-name:focus {
+    color: #FFF !important; // White text - override Bootstrap 5's cyan hover
+    text-decoration: none !important; // No underline
+  }
+}
+
+// Match production: a.badge-success:hover should darken background color (global rule)
+// Must override .table a:hover which applies underline and blue color
+a.badge-success:hover,
+a.badge-success:focus,
+.table a.badge-success:hover,
+.table a.badge-success:focus {
+  background-color: rgb(7, 123, 34) !important; // Darken green background on hover (matches Bootstrap 4 / production)
+  color: rgb(255, 255, 255) !important; // White text on hover (override .table a:hover blue color)
+  text-decoration: none !important; // No underline on hover (override .table a:hover underline)
+}
+
+// Bootstrap 5 override: Ensure nav links have white text on hover
+.nav-link {
+  &:hover {
+    color: var(--fg) !important; // White text on hover
+  }
+}
+
+// Bootstrap 5 override: Ensure buttons maintain white text on hover
+.btn {
+  &:hover:not(.btn-link) {
+    color: var(--fg) !important; // White text on hover for most buttons
+  }
+  
+  &.btn-link {
+    &:hover {
+      color: var(--link-hover-color) !important; // Link-style buttons use link hover color
+    }
+  }
+}
+
+// Bootstrap 5 override: Ensure table links have proper hover color and underline
+.table {
+  a {
+    &:hover {
+      color: var(--link-hover-color) !important; // Maintain link hover color in tables (darker cyan)
+      text-decoration: underline !important; // Add underline on hover to match production
+    }
+  }
+  
+  // Specifically target .link class links in tables (used in lightning ranking tables)
+  // Need higher specificity to override any other rules
+  a.link:hover,
+  .link:hover,
+  a.link.d-block:hover {
+    color: var(--link-hover-color) !important; // Darker cyan on hover (darken($link-color, 15%))
+    text-decoration: underline !important; // Underline on hover to match production
   }
 }
 
@@ -1427,7 +1917,222 @@ a {
 }
 
 .badge-info {
-  background-color: var(--info);
+  background-color: var(--info) !important;
+  color: var(--bg) !important; // Dark text on light background
+  
+  &:hover,
+  &:focus,
+  &:active {
+    color: var(--bg) !important; // Maintain dark text on hover/focus/active
+  }
+}
+
+.badge-success {
+  background-color: #0aab2f !important; // Bootstrap 4 / production color: var(--success) = #0aab2f
+  color: var(--fg) !important; // White text on green background
+  
+  &:hover,
+  &:focus,
+  &:active {
+    color: var(--fg) !important; // Maintain white text on hover/focus/active
+    background-color: #077b23 !important; // Darker green on hover (matches Bootstrap 4 behavior)
+  }
+}
+
+.badge-danger {
+  background-color: #dc3545 !important; // Bootstrap 4 / production color: var(--danger) = #dc3545
+  color: var(--fg) !important; // White text on red background
+  
+  &:hover,
+  &:focus,
+  &:active {
+    color: var(--fg) !important; // Maintain white text on hover/focus/active
+    background-color: #c82333 !important; // Darker red on hover (matches Bootstrap 4 behavior)
+  }
+}
+
+.badge-warning {
+  background-color: #ffc107 !important; // Bootstrap 4 / production color: var(--warning) = #ffc107
+  color: var(--fg) !important; // White text on yellow background (matches production)
+  
+  &:hover,
+  &:focus,
+  &:active {
+    color: var(--fg) !important; // Maintain white text on hover/focus/active
+    background-color: #e0a800 !important; // Darker yellow on hover (matches Bootstrap 4 behavior)
+  }
+}
+
+// Bootstrap 5 override: Ensure badges maintain their text color on hover
+// This handles cases where badges are inside links or have hover states
+.badge {
+  &:hover,
+  &:focus,
+  &:active {
+    color: inherit !important; // Maintain the badge's text color on hover/focus/active
+  }
+  
+  // Override Bootstrap 5's default hover styles that might change text color
+  &.badge-danger:hover,
+  &.badge-danger:focus,
+  &.badge-danger:active {
+    color: var(--fg) !important; // Force white text for danger badges
+  }
+  
+  &.badge-success:hover,
+  &.badge-success:focus,
+  &.badge-success:active {
+    color: var(--fg) !important; // Force white text for success badges
+  }
+  
+  &.badge-warning:hover,
+  &.badge-warning:focus,
+  &.badge-warning:active {
+    color: var(--bg) !important; // Force dark text for warning badges
+  }
+  
+  &.badge-info:hover,
+  &.badge-info:focus,
+  &.badge-info:active {
+    color: var(--bg) !important; // Force dark text for info badges
+  }
+}
+
+// If badge is inside a link, ensure it maintains its color on link hover
+a {
+  .badge {
+    &:hover {
+      color: inherit !important; // Maintain badge color when hovering over link
+    }
+  }
+  
+  &:hover {
+    .badge {
+      color: inherit !important; // Maintain badge color when link is hovered
+    }
+  }
+}
+
+// Bootstrap 5 override: Ensure badges maintain their text color when table row is hovered
+.table {
+  tr {
+    &:hover {
+      .badge-danger,
+      .badge-success {
+        color: var(--fg) !important; // Ensure white text on hover for danger/success badges
+      }
+      
+      .badge-warning {
+        color: var(--bg) !important; // Ensure dark text on hover for warning badges
+      }
+      
+      .badge-info {
+        color: var(--bg) !important; // Ensure dark text on hover for info badge
+      }
+    }
+  }
+  
+  // Also ensure badges maintain color when hovering directly on them in tables
+  .badge-danger:hover,
+  .badge-success:hover {
+    color: var(--fg) !important; // White text on hover
+  }
+  
+  .badge-warning:hover {
+    color: var(--bg) !important; // Dark text on hover
+  }
+  
+  .badge-info:hover {
+    color: var(--bg) !important; // Dark text on hover
+  }
+}
+
+// Bootstrap 5 override: Ensure badges in any container maintain white text on hover
+td .badge-danger:hover,
+td .badge-success:hover,
+tbody .badge-danger:hover,
+tbody .badge-success:hover,
+.badge-danger:hover,
+.badge-success:hover {
+  color: var(--fg) !important; // Force white text on hover
+}
+
+td .badge-warning:hover,
+tbody .badge-warning:hover,
+.badge-warning:hover {
+  color: var(--bg) !important; // Force dark text on hover
+}
+
+// Bootstrap 5 override: Ensure badges maintain white text when tooltip is active/hovered
+// ngbTooltip might add wrapper elements that affect styling
+[ngbTooltip],
+[ngbtooltip] {
+  .badge-danger,
+  .badge-success {
+    color: var(--fg) !important; // Force white text always
+    &:hover,
+    &:focus,
+    &:active {
+      color: var(--fg) !important; // Force white text on hover/focus/active
+    }
+  }
+  
+  .badge-warning {
+    color: var(--bg) !important; // Force dark text for warning badges
+    &:hover,
+    &:focus,
+    &:active {
+      color: var(--bg) !important; // Force dark text on hover/focus/active
+    }
+  }
+  
+  .badge-info {
+    color: var(--bg) !important; // Force dark text for info badges
+    &:hover,
+    &:focus,
+    &:active {
+      color: var(--bg) !important; // Force dark text on hover/focus/active
+    }
+  }
+}
+
+// Global override: Ensure all badge variants maintain their text color on hover
+span.badge-danger,
+span.badge-danger:hover,
+span.badge-danger:focus,
+span.badge-danger:active {
+  color: var(--fg) !important; // Force white text always
+}
+
+span.badge-success,
+span.badge-success:hover,
+span.badge-success:focus,
+span.badge-success:active {
+  color: var(--fg) !important; // Force white text always
+}
+
+span.badge-warning,
+span.badge-warning:hover,
+span.badge-warning:focus,
+span.badge-warning:active {
+  color: var(--bg) !important; // Force dark text always
+}
+
+span.badge-info,
+span.badge-info:hover,
+span.badge-info:focus,
+span.badge-info:active {
+  color: var(--bg) !important; // Force dark text always
+}
+
+// Ensure badges with .mr-1 class have proper spacing
+.badge.mr-1 {
+  margin-right: 0.25rem !important; // 4px spacing between badges
+}
+
+// Bootstrap 5 override: Ensure button success has white text
+.btn-success {
+  color: var(--fg) !important; // White text on green background
 }
 
 .btn-primary {
@@ -1436,10 +2141,135 @@ a {
   border-color: var(--primary);
 }
 
+// Fix button group toggle styling for Bootstrap 5
+.btn-group-toggle {
+  // Override Bootstrap 5's default display to match Bootstrap 4 behavior
+  display: inline-flex !important;
+  vertical-align: middle !important;
+
+  // Remove gaps and ensure seamless button connection
+  .btn {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    
+    &:not(:first-child) {
+      margin-left: -1px !important; // Overlap borders for seamless connection
+    }
+    
+    &:focus {
+      z-index: 1; // Bring focused button to front
+      position: relative; // Ensure z-index works
+    }
+  }
+  
+  .btn-primary {
+    // Border radius: only outer edges rounded, inner edges square for seamless connection
+    &:first-child {
+      border-top-left-radius: 3.2px !important;
+      border-bottom-left-radius: 3.2px !important;
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+    }
+
+    &:last-child {
+      border-top-left-radius: 0 !important;
+      border-bottom-left-radius: 0 !important;
+      border-top-right-radius: 3.2px !important;
+      border-bottom-right-radius: 3.2px !important;
+    }
+
+    &:not(:first-child):not(:last-child) {
+      border-radius: 0 !important; // Middle buttons have no rounded corners
+    }
+
+    // Active state - darker blue with white text
+    &.active,
+    &:active,
+    &:focus:active {
+      background-color: #0063c7 !important; // rgb(0, 99, 199)
+      border-color: #0063c7 !important;
+      color: var(--fg) !important;
+    }
+
+    // Hover state - darker blue (same as active)
+    &:hover:not(.active):not(:active) {
+      background-color: #0063c7 !important; // rgb(0, 99, 199)
+      border-color: #0063c7 !important;
+      color: var(--fg) !important;
+    }
+
+    // Focus state
+    &:focus {
+      box-shadow: 0 0 0 0.2rem rgba(0, 99, 199, 0.25) !important;
+    }
+  }
+}
+
+// Handle btn-toggle-rows which has multiple button groups
+// Override component styles to use 3.2px border radius instead of default
+.btn-toggle-rows {
+  @media (min-width: 500px) {
+    .btn-group:first-child > .btn:first-child {
+      border-top-left-radius: 3.2px !important;
+      border-bottom-left-radius: 3.2px !important;
+    }
+    .btn-group:last-child > .btn:last-child {
+      border-top-right-radius: 3.2px !important;
+      border-bottom-right-radius: 3.2px !important;
+    }
+  }
+}
+
 .btn-small-height {
 	line-height: 1;
 }
 
+// Bootstrap 5 override: Match Bootstrap 4 button border-radius (4px instead of 6px)
+.btn {
+  border-radius: 4px !important;
+}
+
+// Bootstrap 5 override: Match Bootstrap 4 small button border-radius (3.2px / 0.2rem instead of 4px)
+.btn-sm {
+  border-radius: 0.2rem !important; // 3.2px at default font-size
+}
+
+// Bootstrap 5 override: Match Bootstrap 4 badge padding (3px 4.8px instead of 4.2px 7.8px)
+// Note: padding does not use !important to allow inline styles to override (e.g., miner badges with padding: 0)
+.badge {
+  padding: 3px 4.8px !important; // Bootstrap 4 default: 0.25em 0.4em = 3px 4.8px (Bootstrap 5 uses 4.2px 7.8px)
+  border-radius: 4px !important; // Bootstrap 5 changed from 4px to 6px - override to match Bootstrap 4
+  font-size: 75% !important; // Bootstrap 4 default: 0.75em (Bootstrap 5 uses 0.875em)
+  font-weight: 700 !important; // Bootstrap 4 default: bold text
+  line-height: 1 !important; // Bootstrap 4 default: line-height 1 (Bootstrap 5 might use different line-height)
+  display: inline-block !important; // Bootstrap 4 default: inline-block
+  color: var(--fg) !important; // Default white text color (matches production)
+}
+
+// Bootstrap 5 override: Restore badge-secondary background color to match production
+// Production uses rgb(39, 47, 78), Bootstrap 5 has transparent background
+.badge-secondary {
+  background-color: #272F4E !important;
+}
+
 button {
   touch-action: manipulation;
+}
+
+// Bootstrap 5 override: Ensure selected text is white with proper background
+// Match production styling where selected text is visible on dark background
+::selection {
+  color: var(--fg) !important; // White text
+  background-color: rgba(0, 124, 250, 0.3) !important; // Light blue background (using primary color with opacity)
+}
+
+::-moz-selection {
+  color: var(--fg) !important; // White text (Firefox)
+  background-color: rgba(0, 124, 250, 0.3) !important; // Light blue background (Firefox)
+}
+
+// Bootstrap 5 override: Ensure active nav-tabs links have white text
+// Match production styling where active nav tabs have white text on dark background
+.nav-tabs .nav-link.active {
+  color: var(--fg) !important; // White text (production has white, Bootstrap 5 has black)
 }

@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Component, HostListener, OnInit, Inject, LOCALE_ID, HostBinding } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy, Inject, LOCALE_ID, HostBinding } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { StateService } from '@app/services/state.service';
 import { OpenGraphService } from '@app/services/opengraph.service';
@@ -14,7 +14,12 @@ import { SeoService } from '@app/services/seo.service';
   standalone: false,
   providers: [NgbTooltipConfig]
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
+  @HostBinding('attr.dir') dir = 'ltr';
+  @HostBinding('class') class;
+
+  private keydownHandlerBound: (event: KeyboardEvent) => void;
+
   constructor(
     public router: Router,
     private stateService: StateService,
@@ -35,14 +40,17 @@ export class AppComponent implements OnInit {
     tooltipConfig.animation = false;
     tooltipConfig.container = 'body';
     tooltipConfig.triggers = 'hover';
+
+    // Bind the keyboard event handler
+    this.keydownHandlerBound = (event: KeyboardEvent) => this.handleKeyboardEvents(event);
   }
 
-  @HostBinding('attr.dir') dir = 'ltr';
-  @HostBinding('class') class;
-
-  @HostListener('document:keydown', ['$event'])
   handleKeyboardEvents(event: KeyboardEvent) {
-    if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+    if (!event) {
+      return;
+    }
+    // Skip keyboard events when user is typing in input/textarea fields
+    if (event.target && (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement)) {
       return;
     }
     // prevent arrow key horizontal scrolling
@@ -53,10 +61,18 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    // Attach keyboard event listener directly to document for zoneless compatibility
+    document.addEventListener('keydown', this.keydownHandlerBound, false);
+
     this.router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) {
         this.seoService.updateCanonical(this.location.path());
       }
     });
+  }
+
+  ngOnDestroy() {
+    // Remove keyboard event listener
+    document.removeEventListener('keydown', this.keydownHandlerBound, false);
   }
 }

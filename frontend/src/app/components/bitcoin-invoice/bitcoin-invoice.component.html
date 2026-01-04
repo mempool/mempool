@@ -20,13 +20,13 @@
 
       <div *ngIf="availableMethods.length > 1" class="form-group">
         <div class="btn-group btn-group-toggle" data-toggle="buttons">
-          <!-- <label *ngIf="invoice.addresses.BTC" class="btn btn-primary" [ngClass]="{'active': paymentForm.get('method')?.value === 'chain'}">
+          <!-- <label *ngIf="invoice.addresses.BTC" class="btn btn-primary" [class]="{'active': paymentForm.get('method')?.value === 'chain'}">
             <input type="radio" value="chain" formControlName="method"> <fa-icon [icon]="['fas', 'link']" [fixedWidth]="true" title="Onchain"></fa-icon>
           </label> -->
-          <label *ngIf="invoice.addresses.BTC_LightningLike" class="btn btn-primary" [ngClass]="{'active': paymentForm.get('method')?.value === 'lightning'}">
+          <label *ngIf="invoice.addresses.BTC_LightningLike" class="btn btn-primary" [class]="{'active': paymentForm.get('method')?.value === 'lightning'}">
             <input type="radio" value="lightning" formControlName="method"> <fa-icon [icon]="['fas', 'bolt']" [fixedWidth]="true" title="Lightning"></fa-icon>
           </label>
-          <!-- <label *ngIf="invoice.addresses.LBTC" class="btn btn-primary" [ngClass]="{'active': paymentForm.get('method')?.value === 'lbtc'}">
+          <!-- <label *ngIf="invoice.addresses.LBTC" class="btn btn-primary" [class]="{'active': paymentForm.get('method')?.value === 'lbtc'}">
             <input type="radio" value="lbtc" formControlName="method"> <fa-icon [icon]="['fas', 'tint']" [fixedWidth]="true" title="Liquid Bitcoin"></fa-icon>
           </label> -->
         </div>

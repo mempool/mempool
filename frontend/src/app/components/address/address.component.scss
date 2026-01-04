@@ -26,6 +26,13 @@
 }
 
 .table {
+  // Bootstrap 5 changed table cell padding from 12px to 8px
+  // Override to match Bootstrap 4 / production
+  // Default: 0.3rem (4.8px) for transactions tables to match production
+  td, th {
+    padding: 0.3rem !important; // 4.8px to match production transactions table
+  }
+  
   tr td {
     &:last-child {
       text-align: right;
@@ -38,6 +45,19 @@
       white-space: normal;
     }
   }
+}
+
+// Summary table at top of address page uses 12px padding
+.address-table {
+  td, th {
+    padding: 12px !important; // Keep 12px for summary table
+  }
+}
+
+// Bootstrap 5 removed font-italic utility class (replaced with fst-italic)
+// Add it back to match production styling for pending rows
+.font-italic {
+  font-style: italic !important;
 }
 
 h1 {

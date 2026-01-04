@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnChanges } from '@angular/core';
+import { Component, OnInit, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnChanges, AfterViewInit, HostListener, ChangeDetectorRef } from '@angular/core';
 import { VbytesPipe } from '@app/shared/pipes/bytes-pipe/vbytes.pipe';
 import { WuBytesPipe } from '@app/shared/pipes/bytes-pipe/wubytes.pipe';
 import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
@@ -24,7 +24,7 @@ import { download, formatterXAxis, formatterXAxisLabel } from '@app/shared/graph
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MempoolGraphComponent implements OnInit, OnChanges {
+export class MempoolGraphComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() data: any[];
   @Input() filterSize = 100000;
   @Input() limitFilterFee = 1;
@@ -63,6 +63,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     public stateService: StateService,
     private storageService: StorageService,
     @Inject(LOCALE_ID) private locale: string,
+    private cd: ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
@@ -98,6 +99,30 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       }
     });
     this.chartInstance = myChart;
+    // Resize chart after initialization to ensure correct dimensions
+    setTimeout(() => {
+      if (this.chartInstance) {
+        this.chartInstance.resize();
+      }
+    }, 0);
+  }
+
+  ngAfterViewInit(): void {
+    // Resize chart after view initialization to handle initial screen size
+    setTimeout(() => {
+      if (this.chartInstance) {
+        this.chartInstance.resize();
+        this.cd.markForCheck();
+      }
+    }, 100);
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    if (this.chartInstance) {
+      this.chartInstance.resize();
+      this.cd.markForCheck();
+    }
   }
 
   handleNewMempoolData(mempoolStats: OptimizedMempoolStats[]) {
