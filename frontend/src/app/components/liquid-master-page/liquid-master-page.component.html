@@ -7,7 +7,7 @@
   <a class="navbar-brand d-none d-md-flex" [ngClass]="{'dual-logos': subdomain}" [routerLink]="['/' | relativeUrl]">
     <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
       @if (enterpriseInfo?.header_img) {
-        <img [src]="enterpriseInfo?.header_img" [alt]="enterpriseInfo.title" height="48px" class="mr-3">
+        <img [src]="enterpriseInfo?.header_img" [alt]="enterpriseInfo.title" height="48px" class="me-3">
       } @else {
         <ng-template [ngIf]="subdomain && enterpriseInfo">
           <div class="subdomain_container">
@@ -24,7 +24,7 @@
     </ng-container>
   </a>
   <!-- Mobile -->
-  <a class="navbar-brand d-flex d-md-none" [ngClass]="{'dual-logos': subdomain, 'mr-0': subdomain}" [routerLink]="['/' | relativeUrl]">
+  <a class="navbar-brand d-flex d-md-none" [ngClass]="{'dual-logos': subdomain, 'me-0': subdomain}" [routerLink]="['/' | relativeUrl]">
     @if (enterpriseInfo?.header_img) {
       <img [src]="enterpriseInfo?.header_img" [alt]="enterpriseInfo.title" height="42px">
     } @else {
@@ -41,8 +41,8 @@
           <app-svg-images name="liquidNetwork" viewBox="0 0 500 126" class="mempool-logo" [ngStyle]="{'opacity': connectionState.val === 2 ? 1 : 0.5 }"></app-svg-images>
         }
           <div class="connection-badge">
-          <div class="badge badge-warning" *ngIf="connectionState.val === 0" i18n="master-page.offline">Offline</div>
-          <div class="badge badge-warning" *ngIf="connectionState.val === 1" i18n="master-page.reconnecting">Reconnecting...</div>
+          <div class="badge bg-warning" *ngIf="connectionState.val === 0" i18n="master-page.offline">Offline</div>
+          <div class="badge bg-warning" *ngIf="connectionState.val === 1" i18n="master-page.reconnecting">Reconnecting...</div>
         </div>
       </ng-container>
     }

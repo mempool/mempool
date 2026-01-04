@@ -521,8 +521,8 @@
 
       <div class="float-end" [class.has-accelerate]="!tx.status?.confirmed && acceleratedTxids">
         @if (!tx.status?.confirmed && acceleratedTxids) {
-          <button type="button" class="btn btn-sm accelerate mt-2 mr-2" [class.blink]="acceleratedTxids.has(tx.txid)" [routerLink]="['/tx/' | relativeUrl, tx.txid]" [fragment]="'accelerate'">
-            <img src="/resources/mempool-accelerator-sparkles-light.svg" height="15" class="mr-2" />
+          <button type="button" class="btn btn-sm accelerate mt-2 me-2" [class.blink]="acceleratedTxids.has(tx.txid)" [routerLink]="['/tx/' | relativeUrl, tx.txid]" [fragment]="'accelerate'">
+            <img src="/resources/mempool-accelerator-sparkles-light.svg" height="15" class="me-2" />
             @if (acceleratedTxids.has(tx.txid)) {
               <span i18n="transaction.audit.accelerated">Accelerated</span>
             } @else {

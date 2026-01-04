@@ -73,7 +73,7 @@ $dropdown-link-active-bg: $active-bg;
   $pagination-active-bg: $pagination-active-bg,
   $pagination-hover-bg: $pagination-hover-bg,
   $pagination-hover-border-color: $pagination-hover-border-color,
-  $custom-select-indicator-color: $custom-select-indicator-color,
+  $form-select-indicator-color: $form-select-indicator-color,
   $link-color: $link-color,
   $link-decoration: $link-decoration,
   $link-hover-color: $link-hover-color,
@@ -402,6 +402,11 @@ main {
 
 .yellow-color {
   color: var(--yellow);
+}
+
+.table-striped {
+  --bs-table-striped-bg: var(--stat-box-bg);
+  --bs-table-striped-color: var(--fg);
 }
 
 .table-striped tbody tr:nth-of-type(odd) {
@@ -733,6 +738,7 @@ html:lang(ru) .card-title {
 
 hr {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  opacity: 1;
 }
 
 tr {
@@ -1441,6 +1447,19 @@ a {
   color: var(--fg);
   background-color: var(--primary);
   border-color: var(--primary);
+  --bs-btn-color: var(--fg);
+  --bs-btn-bg: var(--primary);
+  --bs-btn-border-color: var(--primary);
+  --bs-btn-hover-color: var(--fg);
+  --bs-btn-hover-bg: #0069d4;
+  --bs-btn-hover-border-color: #0063c7;
+  --bs-btn-active-color: var(--fg);
+  --bs-btn-active-bg: #0063c7;
+  --bs-btn-active-border-color: #005cba;
+  --bs-btn-active-shadow: none;
+  --bs-btn-disabled-color: var(--fg);
+  --bs-btn-disabled-bg: var(--primary);
+  --bs-btn-disabled-border-color: var(--primary);
 }
 
 .btn-small-height {
@@ -1508,6 +1527,12 @@ button {
 .btn-check:focus+.btn {
   box-shadow: none !important;
   outline: none !important;
+}
+
+.btn-check+.btn:hover {
+  color: var(--bs-btn-hover-color);
+  background-color: var(--bs-btn-hover-bg);
+  border-color: var(--bs-btn-hover-border-color);
 }
 
 .table>:not(caption)>*>* {

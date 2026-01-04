@@ -90,7 +90,7 @@
           </div>
           <div class="row">
             <div class="col">
-              <div class="form-group">
+              <div class="mb-3">
                 <div class="fee-card">
                   <div class="d-flex mb-0">
                     <ng-container *ngFor="let option of maxRateOptions">
@@ -190,10 +190,10 @@
                   <ng-container *ngIf="hasAccessToBalanceMode">
                     <tr class="group-first">
                       <td class="item">
-                        <b style="background-color: #5E35B1" class="p-1 ps-0" i18n="accelerator.estimated-cost">Estimated acceleration cost</b> ~{{ estimate.targetFeeRate | number : '1.0-0' }} sat/vB
+                        <b style="background-color: #5E35B1" class="p-1" i18n="accelerator.estimated-cost">Estimated acceleration cost</b> ~{{ estimate.targetFeeRate | number : '1.0-0' }} sat/vB
                       </td>
                       <td class="amt">
-                        <span style="background-color: #5E35B1" class="p-1 ps-0">
+                        <span style="background-color: #5E35B1" class="p-1">
                           {{ estimate.cost + estimate.mempoolBaseFee + estimate.vsizeFee | number }}
                         </span>
                       </td>
@@ -209,13 +209,13 @@
                     <tr class="group-first group-last">
                       <td class="item">
                         @if (hasAccessToBalanceMode) {
-                          <b style="background-color: var(--primary);" class="p-1 ps-0" i18n="accelerator.maximum-cost">Maximum acceleration cost</b>
+                          <b style="background-color: var(--primary);" class="p-1" i18n="accelerator.maximum-cost">Maximum acceleration cost</b>
                         } @else {
-                          <b style="background-color: var(--primary);" class="p-1 ps-0" i18n="accelerator.cost">Acceleration cost</b>
+                          <b style="background-color: var(--primary);" class="p-1" i18n="accelerator.cost">Acceleration cost</b>
                         }
                       </td>
                       <td class="amt">
-                        <span style="background-color: var(--primary)" class="p-1 ps-0">
+                        <span style="background-color: var(--primary)" class="p-1">
                           {{ cost | number }}
                         </span>
                       </td>
@@ -287,7 +287,7 @@
         <form>
           <div class="row">
             <div class="col-md">
-              <div class="form-group form-check mb-2">
+              <div class="form-check mb-2">
                 <input type="radio" [checked]="selectedOption === 'wait'"  class="form-check-input" id="wait" name="accel" (change)="selectedOptionChanged($event)">
                 <label class="form-check-label d-flex flex-column" for="wait">
                   <span class="fw-bold" i18n="accelerator.wait">Wait</span>
@@ -300,7 +300,7 @@
                   }
                 </label>
               </div>
-              <div class="form-group form-check mb-2">
+              <div class="form-check mb-2">
                 <input type="radio" [checked]="selectedOption === 'accel'"  class="form-check-input" id="accel" name="accel" (change)="selectedOptionChanged($event)">
                 <label class="form-check-label d-flex flex-column" for="accel">
                   <ng-container *ngTemplateOutlet="accelerateOption; context: {etaInfo}"></ng-container>
@@ -467,7 +467,7 @@
 
     <div class="row text-center">
       <div class="col-sm">
-        <div class="form-group w-100" style="font-size: 14px">
+        <div class="w-100 mb-3" style="font-size: 14px">
           <ng-container i18n="accelerator.payment-to-mempool-space">Payment to mempool.space for acceleration of txid <a [routerLink]="'/tx/' + tx.txid" target="_blank">{{ tx.txid.substr(0, 10) }}..{{ tx.txid.substr(-10) }}</a></ng-container>
         </div>
       </div>
@@ -476,7 +476,7 @@
     @if (step === 'cashapp' && !loadingCashapp || step === 'applepay' && !loadingApplePay || step === 'googlepay' && !loadingGooglePay || step === 'cardonfile' && !loadingCardOnFile) {
       <div class="row text-center mt-1">
         <div class="col-sm">
-          <div class="form-group w-100">
+          <div class="w-100 mb-3">
             <span><u><strong i18n="accelerator.total-additional-cost">Total additional cost</strong></u><br>
               <span style="font-size: 16px" class="d-block mt-2">
                 <ng-container i18n="transaction.pay|Pay button label">Pay</ng-container>
@@ -491,7 +491,7 @@
 
     <div class="row text-center mt-1">
       <div class="col-sm">
-        <div class="form-group w-100">
+        <div class="w-100 mb-3">
           @if (step === 'applepay') {
             <div id="apple-pay-button" class="apple-pay-button apple-pay-button-black" style="height: 50px"  [style]="loadingApplePay ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
           } @else if (step === 'cashapp') {          
@@ -539,7 +539,7 @@
 
     <div class="row text-center mt-1">
       <div class="col-sm">
-        <div class="form-group w-100">
+        <div class="w-100 mb-3">
           <!-- Processing payment -->
           <div id="cash-app-pay" class="d-inline-block" [style]="'opacity: 0; width: 0px; height: 0px; pointer-events: none;'"></div>
           <div display="d-flex flex-row justify-content-center">

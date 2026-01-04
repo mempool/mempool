@@ -414,7 +414,7 @@
       </h1>
     </div>
 
-    <div class="box">
+    <div class="box pool-details">
       <div class="row">
 
         <div class="col-lg-6">
@@ -440,8 +440,8 @@
 
               <!-- Addresses desktop -->
               <tr *ngIf="!isMobile()" class="taller-row">
-                <td class="label" i18n="mining.addresses">Addresses</td>
-                <td style="vertical-align: middle;">
+                <td class="label addresses" i18n="mining.addresses">Addresses</td>
+                <td style="padding-top: 25px;">
                   <div class="skeleton-loader"></div>
                   <div #collapse="ngbCollapse" [(ngbCollapse)]="gfg">
                     <div class="skeleton-loader"></div>
@@ -474,19 +474,19 @@
                   <table class="table table-xs table-data text-center">
                     <thead>
                       <tr>
-                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.total-reward">Reward</th>
-                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.estimated">Hashrate (24h)</th>
-                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.luck" *ngIf="auditAvailable">Avg Health</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%; padding: 0.1rem;" i18n="mining.total-reward">Reward</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%; padding: 0.1rem;" i18n="mining.estimated">Hashrate (24h)</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%; padding: 0.1rem;" i18n="mining.luck" *ngIf="auditAvailable">Avg Health</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <td class="text-center">
+                      <td class="text-center" style="padding: 0.1rem;">
                         <div class="skeleton-loader data"></div>
                       </td>
-                      <td class="text-center">
+                      <td class="text-center" style="padding: 0.1rem;">
                         <div class="skeleton-loader data"></div>
                       </td>
-                      <td class="text-center" *ngIf="auditAvailable">
+                      <td class="text-center" style="padding: 0.1rem;" *ngIf="auditAvailable; else emptyTd">
                         <div class="skeleton-loader data"></div>
                       </td>
                     </tbody>
@@ -499,19 +499,19 @@
                   <table class="table table-xs table-data text-center">
                     <thead>
                       <tr>
-                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.total-reward">Reward</th>
-                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.estimated">Hashrate (24h)</th>
-                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.luck" *ngIf="auditAvailable">Avg Health</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%; padding: 0.1rem;" i18n="mining.total-reward">Reward</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%; padding: 0.1rem;" i18n="mining.estimated">Hashrate (24h)</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%; padding: 0.1rem;" i18n="mining.luck" *ngIf="auditAvailable">Avg Health</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <td class="text-center">
+                      <td class="text-center" style="padding: 0.1rem;">
                         <div class="skeleton-loader data"></div>
                       </td>
-                      <td class="text-center">
+                      <td class="text-center" style="padding: 0.1rem;">
                         <div class="skeleton-loader data"></div>
                       </td>
-                      <td class="text-center" *ngIf="auditAvailable">
+                      <td class="text-center" style="padding: 0.1rem;" *ngIf="auditAvailable; else emptyTd">
                         <div class="skeleton-loader data"></div>
                       </td>
                     </tbody>
@@ -525,19 +525,19 @@
                   <table class="table table-xs table-data text-center">
                     <thead>
                       <tr>
-                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="24h">Blocks (24h)</th>
-                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="1w">1w</th>
-                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="all">All</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%; padding: 0.1rem;" i18n="24h">Blocks (24h)</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%; padding: 0.1rem;" i18n="1w">1w</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%; padding: 0.1rem;" i18n="all">All</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <td class="text-center">
+                      <td class="text-center" style="padding: 0.1rem;">
                         <div class="skeleton-loader data"></div>
                       </td>
-                      <td class="text-center">
+                      <td class="text-center" style="padding: 0.1rem;">
                         <div class="skeleton-loader data"></div>
                       </td>
-                      <td class="text-center">
+                      <td class="text-center" style="padding: 0.1rem;">
                         <div class="skeleton-loader data"></div>
                       </td>
                     </tbody>
@@ -550,19 +550,19 @@
                   <table class="table table-xs table-data text-center">
                     <thead>
                       <tr>
-                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="24h">Blocks (24h)</th>
-                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="1w">1w</th>
-                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="all">All</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%; padding: 0.1rem;" i18n="24h">Blocks (24h)</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%; padding: 0.1rem;" i18n="1w">1w</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%; padding: 0.1rem;" i18n="all">All</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <td class="text-center">
+                      <td class="text-center" style="padding: 0.1rem;">
                         <div class="skeleton-loader data"></div>
                       </td>
-                      <td class="text-center">
+                      <td class="text-center" style="padding: 0.1rem;">
                         <div class="skeleton-loader data"></div>
                       </td>
-                      <td class="text-center">
+                      <td class="text-center" style="padding: 0.1rem;">
                         <div class="skeleton-loader data"></div>
                       </td>
                     </tbody>
