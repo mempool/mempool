@@ -34,7 +34,7 @@ class NodesApi {
       `;
 
       const [maximums]: any[] = await DB.query(query);
-      
+
       return {
         maxLiquidity: maximums[0].maxLiquidity,
         maxChannels: maximums[0].maxChannels,
@@ -78,7 +78,7 @@ class NodesApi {
       node.city = JSON.parse(node.city);
       node.country = JSON.parse(node.country);
 
-      // Features      
+      // Features
       node.features = JSON.parse(node.features);
       node.featuresBits = null;
       if (node.features) {
@@ -87,7 +87,7 @@ class NodesApi {
           maxBit = Math.max(maxBit, feature.bit);
         }
         maxBit = Math.ceil(maxBit / 4) * 4 - 1;
-        
+
         node.featuresBits = new Array(maxBit + 1).fill(0);
         for (const feature of node.features) {
           node.featuresBits[feature.bit] = 1;
@@ -394,7 +394,7 @@ class NodesApi {
     try {
       const publicKeySearch = search.replace(/[^a-zA-Z0-9]/g, '') + '%';
       const aliasSearch = search
-        .replace(/[-_.]/g, ' ') // Replace all -_. characters with empty space. Eg: "ln.nicehash" becomes "ln nicehash".  
+        .replace(/[-_.]/g, ' ') // Replace all -_. characters with empty space. Eg: "ln.nicehash" becomes "ln nicehash".
         .replace(/[^a-zA-Z0-9 ]/g, '') // Remove all special characters and keep just A to Z, 0 to 9.
         .split(' ')
         .filter(key => key.length)
@@ -455,7 +455,7 @@ class NodesApi {
         } else if (ispList[isp2].ids.includes(channel.isp2ID) === false) {
           ispList[isp2].ids.push(channel.isp2ID);
         }
-        
+
         ispList[isp1].capacity += channel.capacity;
         ispList[isp1].channels += 1;
         ispList[isp1].nodes[channel.node1PublicKey] = true;
@@ -463,7 +463,7 @@ class NodesApi {
         ispList[isp2].channels += 1;
         ispList[isp2].nodes[channel.node2PublicKey] = true;
       }
-      
+
       const ispRanking: any[] = [];
       for (const isp of Object.keys(ispList)) {
         ispRanking.push([
@@ -494,7 +494,7 @@ class NodesApi {
       `;
       const [clearnetCapacity]: any = await DB.query(query);
 
-      // Get the total capacity of all channels which have both nodes on Tor 
+      // Get the total capacity of all channels which have both nodes on Tor
       query = `
         SELECT SUM(capacity) as capacity
         FROM (
@@ -642,11 +642,11 @@ class NodesApi {
       for (const country of nodesCountPerCountry) {
         nodesPerCountry.push({
           name: JSON.parse(country.names),
-          iso: country.iso_code, 
+          iso: country.iso_code,
           count: country.nodesCount,
           share: Math.floor(country.nodesCount / nodesWithAS[0].total * 10000) / 100,
           capacity: country.capacity,
-        })
+        });
       }
 
       return nodesPerCountry;
@@ -665,7 +665,7 @@ class NodesApi {
       if ((node.last_update ?? 0) < 1514736061) { // January 1st 2018
         node.last_update = null;
       }
-  
+
       const uniqueAddr = [...new Set(node.addresses?.map(a => a.addr))];
       const formattedSockets = (uniqueAddr.join(',')) ?? '';
 

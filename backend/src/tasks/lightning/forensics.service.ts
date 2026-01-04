@@ -449,7 +449,7 @@ class ForensicsService {
           const initiatorSide = initiator === 'remote' ? prevRemote : prevLocal;
           prevChannel.closed_by = prevChannel[`node${initiatorSide}_public_key`];
         }
-  
+
         // save changes to the closing channel
         await channelsApi.$updateClosingInfo(prevChannel);
       } else {

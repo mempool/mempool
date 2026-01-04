@@ -215,7 +215,7 @@ class HashratesRepository {
       logger.err('Cannot delete latest hashrates data points. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
     }
   }
-  
+
   /**
    * Delete hashrates from the database from timestamp
    */

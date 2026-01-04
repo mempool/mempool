@@ -116,7 +116,7 @@ class LightningError extends Error {
 
 const defaultRpcPath = path.join(homedir(), '.lightning')
   , fStat = (...p) => statSync(path.join(...p))
-  , fExists = (...p) => existsSync(path.join(...p))
+  , fExists = (...p) => existsSync(path.join(...p));
 
 export default class CLightningClient extends EventEmitter implements AbstractLightningApi {
   private rpcPath: string;
@@ -141,9 +141,9 @@ export default class CLightningClient extends EventEmitter implements AbstractLi
       // main data directory provided, default to using the bitcoin mainnet subdirectory
       // to be removed in v0.2.0
       else if (fExists(rpcPath, 'bitcoin', 'lightning-rpc')) {
-        logger.warn(`${rpcPath}/lightning-rpc is missing, using the bitcoin mainnet subdirectory at ${rpcPath}/bitcoin instead.`, logger.tags.ln)
-        logger.warn(`specifying the main lightning data directory is deprecated, please specify the network directory explicitly.\n`, logger.tags.ln)
-        rpcPath = path.join(rpcPath, 'bitcoin', 'lightning-rpc')
+        logger.warn(`${rpcPath}/lightning-rpc is missing, using the bitcoin mainnet subdirectory at ${rpcPath}/bitcoin instead.`, logger.tags.ln);
+        logger.warn(`specifying the main lightning data directory is deprecated, please specify the network directory explicitly.\n`, logger.tags.ln);
+        rpcPath = path.join(rpcPath, 'bitcoin', 'lightning-rpc');
       }
     }
 

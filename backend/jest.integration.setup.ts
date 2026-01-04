@@ -35,18 +35,18 @@ module.exports = async () => {
   try {
     const composeFile = path.join(__dirname, 'docker-compose.test.yml');
     const dockerComposeCmd = getDockerComposeCmd();
-    
+
     // Start the container
-    execSync(`${dockerComposeCmd} -f "${composeFile}" up -d`, { 
+    execSync(`${dockerComposeCmd} -f "${composeFile}" up -d`, {
       stdio: 'inherit',
       cwd: __dirname
     });
-    
+
     // Wait for database to be ready
     console.log('Waiting for database to be ready...');
     let attempts = 0;
     const maxAttempts = 30;
-    
+
     while (attempts < maxAttempts) {
       try {
         execSync(`${dockerComposeCmd} -f "${composeFile}" exec -T db-test mysqladmin ping -h localhost -u mempool_test -pmempool_test --silent`, {
