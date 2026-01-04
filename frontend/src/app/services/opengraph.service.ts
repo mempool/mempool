@@ -55,7 +55,6 @@ export class OpenGraphService {
     const ogImageUrl = `${window.location.protocol}//${window.location.host}/render/${lang}/preview${this.router.url}`;
     this.metaService.updateTag({ property: 'og:image', content: ogImageUrl });
     this.metaService.updateTag({ name: 'twitter:image', content: ogImageUrl });
-    this.metaService.updateTag({ property: 'og:image:type', content: 'image/png' });
     this.metaService.updateTag({ property: 'og:image:width', content: '1200' });
     this.metaService.updateTag({ property: 'og:image:height', content: '600' });
   }
@@ -63,7 +62,6 @@ export class OpenGraphService {
   clearOgImage() {
     this.metaService.updateTag({ property: 'og:image', content: this.defaultImageUrl });
     this.metaService.updateTag({ name: 'twitter:image', content: this.defaultImageUrl });
-    this.metaService.updateTag({ property: 'og:image:type', content: 'image/png' });
     this.metaService.updateTag({ property: 'og:image:width', content: '1000' });
     this.metaService.updateTag({ property: 'og:image:height', content: '500' });
   }
@@ -71,7 +69,6 @@ export class OpenGraphService {
   setManualOgImage(imageFilename) {
     const ogImage = `${window.location.protocol}//${window.location.host}/resources/previews/${imageFilename}`;
     this.metaService.updateTag({ property: 'og:image', content: ogImage });
-    this.metaService.updateTag({ property: 'og:image:type', content: 'image/jpeg' });
     this.metaService.updateTag({ property: 'og:image:width', content: '2000' });
     this.metaService.updateTag({ property: 'og:image:height', content: '1000' });
     this.metaService.updateTag({ name: 'twitter:image', content: ogImage });
