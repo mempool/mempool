@@ -196,11 +196,11 @@
   }
 
   @media (min-width: 500px) {
-    .btn-group:first-child > .btn:last-child {
+    .btn-group:first-child > .btn:last-of-type {
       border-top-right-radius: 0;
       border-bottom-right-radius: 0;
     }
-    .btn-group:last-child > .btn:first-child {
+    .btn-group:last-child > .btn:first-of-type {
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
     }
@@ -209,16 +209,16 @@
   @media (max-width: 499px) {
     flex-direction: column;
 
-    .btn-group:first-child > .btn:first-child {
+    .btn-group:first-child > .btn:first-of-type {
       border-bottom-left-radius: 0;
     }
-    .btn-group:first-child > .btn:last-child {
+    .btn-group:first-child > .btn:last-of-type {
       border-bottom-right-radius: 0;
     }
-    .btn-group:last-child > .btn:first-child {
+    .btn-group:last-child > .btn:first-of-type {
       border-top-left-radius: 0;
     }
-    .btn-group:last-child > .btn:last-child {
+    .btn-group:last-child > .btn:last-of-type {
       border-top-right-radius: 0;
     }
   }
