@@ -63,7 +63,7 @@ export class AddressGroupComponent implements OnInit, OnDestroy {
           this.addresses = {};
           this.addressInfo = {};
           this.balance = 0;
-          
+
           this.addressStrings = params.get('addresses').split(',').map(address => {
             if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}$/.test(address)) {
               return address.toLowerCase();

@@ -127,7 +127,7 @@ export class NodeChannels implements OnChanges {
           }
         }
       ]
-    };    
+    };
   }
 
   onChartInit(ec: any): void {

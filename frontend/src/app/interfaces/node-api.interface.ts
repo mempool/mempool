@@ -1,4 +1,4 @@
-import { AddressTxSummary, Block, ChainStats } from "./electrs.interface";
+import { AddressTxSummary, Block, ChainStats } from './electrs.interface';
 
 export interface OptimizedMempoolStats {
   added: number;
@@ -91,7 +91,7 @@ export interface PegsVolume {
   number: number;
 }
 
-export interface FederationAddress { 
+export interface FederationAddress {
   bitcoinaddress: string;
   balance: string;
 }
@@ -334,13 +334,13 @@ export interface INodesRanking {
 
 export interface INodesStatisticsEntry {
   added: string;
-  avg_base_fee_mtokens: number; 
+  avg_base_fee_mtokens: number;
   avg_capacity: number;
   avg_fee_rate: number;
   channel_count: number;
   clearnet_nodes: number;
   clearnet_tor_nodes: number;
-  id: number; 
+  id: number;
   med_base_fee_mtokens: number;
   med_capacity: number;
   med_fee_rate: number;
@@ -458,26 +458,26 @@ export interface TestMempoolAcceptResult {
   vsize?: number,
   fees?: {
     base: number,
-    "effective-feerate": number,
-    "effective-includes": string[],
+    'effective-feerate': number,
+    'effective-includes': string[],
   },
   ['reject-reason']?: string,
 }
 
 export interface SubmitPackageResult {
   package_msg: string;
-  "tx-results": { [wtxid: string]: TxResult };
-  "replaced-transactions"?: string[];
+  'tx-results': { [wtxid: string]: TxResult };
+  'replaced-transactions'?: string[];
 }
 
 export interface TxResult {
   txid: string;
-  "other-wtxid"?: string;
+  'other-wtxid'?: string;
   vsize?: number;
   fees?: {
     base: number;
-    "effective-feerate"?: number;
-    "effective-includes"?: string[];
+    'effective-feerate'?: number;
+    'effective-includes'?: string[];
   };
   error?: string;
 }

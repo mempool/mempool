@@ -108,7 +108,7 @@ export class TxBowtieGraphTooltipComponent implements OnChanges {
   }
 
   fetchPrices(changes: any) {
-    if (!this.currency || !this.viewFiat) return;
+    if (!this.currency || !this.viewFiat) {return;}
     if (this.isConnector) { // If the tooltip is on a connector, we fetch prices at the time of the input / output
       if (['input', 'output'].includes(changes.line.currentValue.type) && changes.line.currentValue?.status?.block_time && !this.blockConversions?.[changes.line.currentValue?.status.block_time]) {
         this.priceService.getBlockPrice$(changes.line.currentValue?.status.block_time, true, this.currency).pipe(
@@ -122,7 +122,7 @@ export class TxBowtieGraphTooltipComponent implements OnChanges {
             tap((price) => this.blockConversions[changes.line.currentValue.timestamp] = price),
           ).subscribe();
         }
-      } 
+      }
     }
   }
 

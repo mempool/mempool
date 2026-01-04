@@ -67,7 +67,7 @@ export class GeolocationComponent implements OnChanges {
         }
       }
     }
-    
+
     if (this.type === 'node') {
       const city = this.data.city ? this.data.city : '';
 

@@ -31,7 +31,7 @@ export class BalanceWidgetComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-    
+
   }
 
   ngOnChanges(changes: SimpleChanges): void {

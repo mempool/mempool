@@ -34,7 +34,7 @@ export class BytesPipe implements PipeTransform {
             unit = BytesPipe.formats[unit].prev!;
         }
 
-        let numberFormat = sigfigs == null ?
+        const numberFormat = sigfigs == null ?
             (number) => toDecimal(number, decimal).toString() :
             (number) => toSigFigs(number, sigfigs);
 

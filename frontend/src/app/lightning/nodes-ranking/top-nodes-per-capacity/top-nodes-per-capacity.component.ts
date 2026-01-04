@@ -61,7 +61,7 @@ export class TopNodesPerCapacity implements OnInit {
               totalCapacity: statistics.latest.total_capacity,
               totalChannels: statistics.latest.channel_count,
             }
-          }
+          };
         })
       );
     } else {
@@ -76,7 +76,7 @@ export class TopNodesPerCapacity implements OnInit {
             statistics: {
               totalCapacity: statistics.latest.total_capacity,
             }
-          }
+          };
         })
       );
     }

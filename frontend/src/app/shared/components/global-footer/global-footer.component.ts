@@ -76,7 +76,7 @@ export class GlobalFooterComponent implements OnInit, OnDestroy, OnChanges {
     this.urlSubscription = this.route.url.subscribe((url) => {
       this.user = this.storageService.getAuth();
       this.cd.markForCheck();
-    })
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {

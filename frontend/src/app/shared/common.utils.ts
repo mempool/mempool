@@ -1,6 +1,6 @@
-import { MempoolBlockDelta, MempoolBlockDeltaCompressed, MempoolDeltaChange, TransactionCompressed } from "../interfaces/websocket.interface";
-import { TransactionStripped } from "@interfaces/node-api.interface";
-import { AmountShortenerPipe } from "@app/shared/pipes/amount-shortener.pipe";
+import { MempoolBlockDelta, MempoolBlockDeltaCompressed, MempoolDeltaChange, TransactionCompressed } from '../interfaces/websocket.interface';
+import { TransactionStripped } from '@interfaces/node-api.interface';
+import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { Router, ActivatedRoute } from '@angular/router';
 const amountShortenerPipe = new AmountShortenerPipe();
 
@@ -230,7 +230,7 @@ export function handleDemoRedirect(route: ActivatedRoute, router: Router) {
         const index = path.indexOf(params.next);
         if (index >= 0) {
           const nextPath = path[(index + 1) % path.length];
-          setTimeout(() => { window.location.replace(`${params.next}?next=${nextPath}`) }, 15000);
+          setTimeout(() => { window.location.replace(`${params.next}?next=${nextPath}`); }, 15000);
         }
       }
     }
@@ -239,9 +239,9 @@ export function handleDemoRedirect(route: ActivatedRoute, router: Router) {
 
 // https://stackoverflow.com/a/60467595
 export function md5(inputString): string {
-    var hc="0123456789abcdef";
-    function rh(n) {var j,s="";for(j=0;j<=3;j++) s+=hc.charAt((n>>(j*8+4))&0x0F)+hc.charAt((n>>(j*8))&0x0F);return s;}
-    function ad(x,y) {var l=(x&0xFFFF)+(y&0xFFFF);var m=(x>>16)+(y>>16)+(l>>16);return (m<<16)|(l&0xFFFF);}
+    const hc='0123456789abcdef';
+    function rh(n) {let j,s='';for(j=0;j<=3;j++) {s+=hc.charAt((n>>(j*8+4))&0x0F)+hc.charAt((n>>(j*8))&0x0F);}return s;}
+    function ad(x,y) {const l=(x&0xFFFF)+(y&0xFFFF);const m=(x>>16)+(y>>16)+(l>>16);return (m<<16)|(l&0xFFFF);}
     function rl(n,c)            {return (n<<c)|(n>>>(32-c));}
     function cm(q,a,b,x,s,t)    {return ad(rl(ad(ad(a,q),ad(x,t)),s),b);}
     function ff(a,b,c,d,x,s,t)  {return cm((b&c)|((~b)&d),a,b,x,s,t);}
@@ -249,11 +249,11 @@ export function md5(inputString): string {
     function hh(a,b,c,d,x,s,t)  {return cm(b^c^d,a,b,x,s,t);}
     function ii(a,b,c,d,x,s,t)  {return cm(c^(b|(~d)),a,b,x,s,t);}
     function sb(x) {
-        var i;var nblk=((x.length+8)>>6)+1;var blks=new Array(nblk*16);for(i=0;i<nblk*16;i++) blks[i]=0;
-        for(i=0;i<x.length;i++) blks[i>>2]|=x.charCodeAt(i)<<((i%4)*8);
+        let i;const nblk=((x.length+8)>>6)+1;const blks=new Array(nblk*16);for(i=0;i<nblk*16;i++) {blks[i]=0;}
+        for(i=0;i<x.length;i++) {blks[i>>2]|=x.charCodeAt(i)<<((i%4)*8);}
         blks[i>>2]|=0x80<<((i%4)*8);blks[nblk*16-2]=x.length*8;return blks;
     }
-    var i,x=sb(""+inputString),a=1732584193,b=-271733879,c=-1732584194,d=271733878,olda,oldb,oldc,oldd;
+    let i,x=sb(''+inputString),a=1732584193,b=-271733879,c=-1732584194,d=271733878,olda,oldb,oldc,oldd;
     for(i=0;i<x.length;i+=16) {olda=a;oldb=b;oldc=c;oldd=d;
         a=ff(a,b,c,d,x[i+ 0], 7, -680876936);d=ff(d,a,b,c,x[i+ 1],12, -389564586);c=ff(c,d,a,b,x[i+ 2],17,  606105819);
         b=ff(b,c,d,a,x[i+ 3],22,-1044525330);a=ff(a,b,c,d,x[i+ 4], 7, -176418897);d=ff(d,a,b,c,x[i+ 5],12, 1200080426);

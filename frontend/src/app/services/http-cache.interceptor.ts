@@ -39,7 +39,7 @@ export class HttpCacheInterceptor implements HttpInterceptor {
       .pipe(
         tap((event: HttpEvent<any>) => {
           if (!this.isBrowser && event instanceof HttpResponse) {
-            let keyId = request.url.split('/').slice(3).join('/');
+            const keyId = request.url.split('/').slice(3).join('/');
             const headers = {};
             for (const k of event.headers.keys()) {
               headers[k] = event.headers.getAll(k);

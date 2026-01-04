@@ -67,7 +67,7 @@ export class BlocksList implements OnInit {
 
     if (!this.widget) {
       this.websocketService.want(['blocks']);
-      
+
       this.seoService.setTitle($localize`:@@8a7b4bd44c0ac71b2e72de0398b303257f7d2f54:Blocks`);
       this.ogService.setManualOgImage('recent-blocks.jpg');
       if( this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet' ) {
@@ -110,7 +110,7 @@ export class BlocksList implements OnInit {
 
     this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
     this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
-    
+
     this.blocks$ = combineLatest([
       this.fromHeightSubject.pipe(
         filter(fromBlockHeight => fromBlockHeight !== this.lastBlockHeightFetched),

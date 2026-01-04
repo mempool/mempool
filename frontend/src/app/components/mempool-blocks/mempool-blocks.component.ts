@@ -452,7 +452,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       const estimatedPosition = this.etaService.mempoolPositionFromFees(this.txFeePerVSize, this.mempoolBlocks);
       this.rightPosition = estimatedPosition.block * (this.blockWidth + this.blockPadding)
-        + ((estimatedPosition.vsize / this.stateService.blockVSize) * this.blockWidth)
+        + ((estimatedPosition.vsize / this.stateService.blockVSize) * this.blockWidth);
     }
     this.rightPosition = Math.min(this.maxArrowPosition, this.rightPosition);
   }

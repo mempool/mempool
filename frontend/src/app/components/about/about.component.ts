@@ -58,11 +58,11 @@ export class AboutComponent implements OnInit {
         if (scrollToSponsors && !profiles?.whales?.length && !profiles?.chads?.length) {
           return;
         } else {
-          this.goToAnchor(scrollToSponsors)
+          this.goToAnchor(scrollToSponsors);
         }
       }),
       share(),
-    )
+    );
 
     this.translators$ = this.apiService.getTranslators$()
       .pipe(

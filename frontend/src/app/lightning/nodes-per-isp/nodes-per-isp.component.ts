@@ -77,7 +77,7 @@ export class NodesPerISP implements OnInit {
             }
           }
           topCountry.flag = getFlagEmoji(topCountry.iso);
-          
+
           return {
             nodes: response.nodes,
             sumLiquidity: sumLiquidity,

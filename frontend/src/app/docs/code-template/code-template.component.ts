@@ -25,12 +25,12 @@ export class CodeTemplateComponent implements OnInit {
   }
 
   adjustContainerHeight( event ) {
-    if( ( window.innerWidth <= 992 ) && ( this.method !== "websocket" ) ) {
-      const urlObj = new URL( window.location + "" );
+    if( ( window.innerWidth <= 992 ) && ( this.method !== 'websocket' ) ) {
+      const urlObj = new URL( window.location + '' );
       const endpointContainerEl = document.querySelector<HTMLElement>( urlObj.hash );
-      const endpointContentEl = document.querySelector<HTMLElement>( urlObj.hash + " .endpoint-content" );
+      const endpointContentEl = document.querySelector<HTMLElement>( urlObj.hash + ' .endpoint-content' );
       window.setTimeout( function() {
-        endpointContainerEl.style.height = endpointContentEl.clientHeight + 90 + "px";
+        endpointContainerEl.style.height = endpointContentEl.clientHeight + 90 + 'px';
       }, 550);
     }
   }
@@ -260,7 +260,7 @@ yarn add @mempool/liquid.js`;
   }
 
   wrapPythonTemplate(code: any) {
-    return ( ( this.network === 'testnet' || this.network === 'testnet4' || this.network === 'signet' ) ? ( code.codeTemplate.python.replace( "wss://mempool.space/api/v1/ws", "wss://mempool.space/" + this.network + "/api/v1/ws" ) ) : code.codeTemplate.python );
+    return ( ( this.network === 'testnet' || this.network === 'testnet4' || this.network === 'signet' ) ? ( code.codeTemplate.python.replace( 'wss://mempool.space/api/v1/ws', 'wss://mempool.space/' + this.network + '/api/v1/ws' ) ) : code.codeTemplate.python );
   }
 
   replaceJSPlaceholder(text: string, code: any) {
@@ -274,8 +274,8 @@ yarn add @mempool/liquid.js`;
 
   replaceCurlPlaceholder(curlText: any, code: any) {
     let text = curlText;
-    text = text.replace( "[[hostname]]", this.hostname );
-    text = text.replace( "[[baseNetworkUrl]]", this.baseNetworkUrl );
+    text = text.replace( '[[hostname]]', this.hostname );
+    text = text.replace( '[[baseNetworkUrl]]', this.baseNetworkUrl );
     for (let index = 0; index < code.curl.length; index++) {
       const textReplace = code.curl[index];
       const indexNumber = index + 1;
@@ -283,7 +283,7 @@ yarn add @mempool/liquid.js`;
     }
 
     const headersString = code.headers ? ` -H "${code.headers}"` : ``;
-    
+
     if (this.env.BASE_MODULE === 'mempool') {
       if (this.network === 'main' || this.network === '' || this.network === this.env.ROOT_NETWORK) {
         if (this.method === 'POST') {

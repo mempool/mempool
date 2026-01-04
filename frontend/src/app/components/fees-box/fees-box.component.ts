@@ -44,7 +44,7 @@ export class FeesBoxComponent implements OnInit, OnDestroy {
     );
     this.themeSubscription = this.themeService.themeChanged$.subscribe(() => {
       this.setFeeGradient();
-    })
+    });
   }
 
   setFeeGradient() {

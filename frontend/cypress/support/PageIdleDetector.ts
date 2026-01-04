@@ -1,6 +1,6 @@
 // source: chrisp_68 @ https://stackoverflow.com/questions/50525143/how-do-you-reliably-wait-for-page-idle-in-cypress-io-test
 export class PageIdleDetector
-{   
+{
     defaultOptions: object = { timeout: 60000 };
 
     public WaitForPageToBeIdle(): void
@@ -15,7 +15,7 @@ export class PageIdleDetector
     {
         cy.document(options).should((myDocument: any) =>
         {
-            expect(myDocument.readyState, "WaitForPageToLoad").to.be.oneOf(["interactive", "complete"]);
+            expect(myDocument.readyState, 'WaitForPageToLoad').to.be.oneOf(['interactive', 'complete']);
         });
     }
 
@@ -23,9 +23,9 @@ export class PageIdleDetector
     {
         cy.window(options).should((myWindow: any) =>
         {
-            if (!!myWindow.angular)
+            if (myWindow.angular)
             {
-                expect(this.NumberOfPendingAngularRequests(myWindow), "WaitForAngularRequestsToComplete").to.have.length(0);
+                expect(this.NumberOfPendingAngularRequests(myWindow), 'WaitForAngularRequestsToComplete').to.have.length(0);
             }
         });
     }
@@ -34,16 +34,16 @@ export class PageIdleDetector
     {
         cy.window(options).should((myWindow: any) =>
         {
-            if (!!myWindow.angular)
+            if (myWindow.angular)
             {
-                expect(this.AngularRootScopePhase(myWindow), "WaitForAngularDigestCycleToComplete").to.be.null;
+                expect(this.AngularRootScopePhase(myWindow), 'WaitForAngularDigestCycleToComplete').to.be.null;
             }
         });
     }
 
     public WaitForAnimationsToStop(options: object = this.defaultOptions): void
     {
-        cy.get(":animated", options).should("not.exist");
+        cy.get(':animated', options).should('not.exist');
     }
 
     private getInjector(myWindow: any)
@@ -58,6 +58,6 @@ export class PageIdleDetector
 
     private AngularRootScopePhase(myWindow: any)
     {
-        return this.getInjector(myWindow).get("$rootScope").$$phase;
+        return this.getInjector(myWindow).get('$rootScope').$$phase;
     }
 }

@@ -93,8 +93,8 @@ export class AccelerateFeeGraphComponent implements OnInit, AfterViewInit, OnCha
         active: option.index === this.maxRateIndex,
         rateIndex: option.index,
         fee: option.fee,
-      })
-    })
+      });
+    });
 
     bars.reverse();
 
@@ -121,7 +121,7 @@ export class AccelerateFeeGraphComponent implements OnInit, AfterViewInit, OnCha
     return {
       height: `${height}px`,
       bottom: base ? `${base}px` : '0',
-    }
+    };
   }
 
   onClick(event, bar): void {

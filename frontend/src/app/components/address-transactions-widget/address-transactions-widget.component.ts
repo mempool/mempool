@@ -16,7 +16,7 @@ export class AddressTransactionsWidgetComponent implements OnInit, OnChanges, On
   @Input() addressInfo: Address;
   @Input() addressSummary$: Observable<AddressTxSummary[]> | null;
   @Input() isPubkey: boolean = false;
-  
+
   currencySubscription: Subscription;
   currency: string;
 

@@ -187,7 +187,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
               }
             } else if (tick && tick.seriesName === 'Accelerated') {
               tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-0')}<br>`;
-            }  
+            }
           }
           tooltip += `<small>` + $localize`Around block: ${ticks[0].data[2]}` + `</small>`;
 
@@ -287,7 +287,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
         {
           name: 'Total bid boost',
           data: data.map(h =>  {
-            return [h.timestamp * 1000, h.sumBidBoost, h.avgHeight]
+            return [h.timestamp * 1000, h.sumBidBoost, h.avgHeight];
           }),
           type: 'line',
           symbol: 'none',
@@ -300,7 +300,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
           name: 'Accelerated',
           yAxisIndex: 1,
           data: data.map(h =>  {
-            return [h.timestamp * 1000, h.count, h.avgHeight]
+            return [h.timestamp * 1000, h.count, h.avgHeight];
           }),
           type: 'bar',
           barWidth: '90%',

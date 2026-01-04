@@ -103,9 +103,9 @@ export class ReservesRatioComponent implements OnInit, OnChanges {
             }
           },
           axisLabel: {
-            color: 'inherit',        
-            fontFamily: 'inherit',  
-            fontSize: axisFontSize,  
+            color: 'inherit',
+            fontFamily: 'inherit',
+            fontSize: axisFontSize,
             formatter: function (value) {
               if (value === 0.999) {
                 return hideMinAxisLabels ? '' : '99.9%';

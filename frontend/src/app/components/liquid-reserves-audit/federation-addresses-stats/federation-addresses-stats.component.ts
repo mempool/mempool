@@ -24,9 +24,9 @@ export class FederationAddressesStatsComponent implements OnInit {
         if (address_count === undefined || utxo_count === undefined) {
           return undefined;
         }
-        return { address_count, utxo_count}
+        return { address_count, utxo_count};
       })
-    )
+    );
   }
 
 }

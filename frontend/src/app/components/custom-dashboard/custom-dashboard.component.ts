@@ -286,7 +286,7 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
   getArrayFromNumber(num: number): number[] {
     return Array.from({ length: num }, (_, i) => i + 1);
   }
-  
+
   setFilter(index): void {
     const selected = this.goggleCycle[index];
     this.stateService.activeGoggles$.next(selected);
@@ -296,7 +296,7 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
     if (this.stateService.env.customize && this.stateService.env.customize.dashboard.widgets.some(w => w.props?.address)) {
       let addressString = this.stateService.env.customize.dashboard.widgets.find(w => w.props?.address).props.address;
       addressString = (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}$/.test(addressString)) ? addressString.toLowerCase() : addressString;
-      
+
       this.addressSubscription = (
         addressString.match(/04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}/)
         ? this.electrsApiService.getPubKeyAddress$(addressString)

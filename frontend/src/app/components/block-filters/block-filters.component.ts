@@ -93,7 +93,7 @@ export class BlockFiltersComponent implements OnInit, OnChanges, OnDestroy {
     this.onFilterChanged.emit({ mode: this.filterMode, filters: this.activeFilters, gradient: this.gradientMode });
     this.stateService.activeGoggles$.next({ mode: this.filterMode, filters: [...this.activeFilters], gradient: this.gradientMode });
   }
-  
+
   getBooleanFlags(): bigint | null {
     let flags = 0n;
     for (const key of Object.keys(this.filterFlags)) {

@@ -108,7 +108,7 @@ export class ClockComponent implements OnInit {
       )`,
     };
   }
-  
+
   @HostListener('window:resize', ['$event'])
   resizeCanvas(): void {
     const windowWidth = this.limitWidth || window.innerWidth || 800;

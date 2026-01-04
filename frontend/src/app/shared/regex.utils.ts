@@ -97,7 +97,7 @@ const ADDRESS_CHARS: {
       + `|`
         + `[V][TJ]` // Confidential P2PKH or P2SH starts with VT or VJ
         + BASE58_CHARS
-        + `{78}`, 
+        + `{78}`,
     bech32: `(?:`
         + `(?:` // bech32 liquid starts with ex1 (unconfidential) or lq1 (confidential)
           + `ex1`
@@ -138,7 +138,7 @@ const ADDRESS_CHARS: {
         + `{6,100}`
       + `)`,
   },
-}
+};
 type RegexTypeNoAddrNoBlockHash = | `transaction` | `blockheight` | `date` | `timestamp`;
 export type RegexType = `address` | `blockhash` | RegexTypeNoAddrNoBlockHash;
 
@@ -146,7 +146,7 @@ export const NETWORKS = [`mainnet`, `testnet4`, `testnet`, `signet`, `liquid`, `
 export type Network = typeof NETWORKS[number]; // Turn const array into union type
 
 export const ADDRESS_REGEXES: [RegExp, Network][] = NETWORKS
-  .map(network => [getRegex('address', network), network])
+  .map(network => [getRegex('address', network), network]);
 
 export function findOtherNetworks(address: string, skipNetwork: Network, env: Env): { network: Network, address: string, isNetworkAvailable: boolean }[] {
   return ADDRESS_REGEXES
@@ -174,7 +174,7 @@ function isNetworkAvailable(network: Network, env: Env): boolean {
 }
 
 export function needBaseModuleChange(fromBaseModule: 'mempool' | 'liquid', toNetwork: Network): boolean {
-  if (!toNetwork) return false; // No target network means no change needed
+  if (!toNetwork) {return false;} // No target network means no change needed
   if (fromBaseModule === 'mempool') {
     return toNetwork !== 'mainnet' && toNetwork !== 'testnet' && toNetwork !== 'testnet4' && toNetwork !== 'signet';
   }

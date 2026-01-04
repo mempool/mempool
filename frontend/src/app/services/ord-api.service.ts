@@ -85,7 +85,7 @@ export class OrdApiService {
 
     while (true) {
       const pointer = getNextInscriptionMark(raw, startPosition);
-      if (pointer === -1) break;
+      if (pointer === -1) {break;}
 
       const inscription = extractInscriptionData(raw, pointer);
       if (inscription) {

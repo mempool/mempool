@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({ 
+@Pipe({
   name: 'ceil',
   standalone: false,
 })

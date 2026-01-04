@@ -174,7 +174,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       setTimeout(() => { this.applyFragment(); }, 0);
     }
   }
-  
+
   @ViewChild('accelerate')
   set accelerateAnchor(element: ElementRef | null | undefined) {
     if (element) {
@@ -483,7 +483,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               catchError(() => {
                 return of({ audit: null });
               })
-            )
+            );
           } else {
             return this.apiService.getBlockTxAudit$(hash, txid).pipe(
               retry({ count: 3, delay: 2000 }),
@@ -491,7 +491,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               catchError(() => {
                 return of({ audit: null });
               })
-            )
+            );
           }
         } else {
           const audit = isCoinbase ? { coinbase: true } : null;
@@ -906,7 +906,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.accelerationCanceled = true;
       this.setIsAccelerated(firstCpfp);
     }
-    
+
     if (this.notAcceleratedOnLoad === null) {
       this.notAcceleratedOnLoad = !this.isAcceleration;
     }
@@ -923,11 +923,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   setIsAccelerated(initialState: boolean = false) {
-    this.isAcceleration = 
+    this.isAcceleration =
       (
-        (this.tx.acceleration && (!this.tx.status.confirmed || this.waitingForAccelerationInfo)) || 
+        (this.tx.acceleration && (!this.tx.status.confirmed || this.waitingForAccelerationInfo)) ||
         (this.accelerationInfo && this.pool && this.accelerationInfo.pools.some(pool => (pool === this.pool.id)))
-      ) && 
+      ) &&
       !this.accelerationCanceled;
     if (this.isAcceleration) {
       if (initialState) {

@@ -222,9 +222,9 @@ export class PoolComponent implements OnInit {
               hashrateString = `${tick.marker} ${tick.seriesName}: ${this.amountShortenerPipe.transform(tick.data[1], 3, 'H/s', false, true)}<br>`;
             } else if (tick.seriesIndex === 1) {
               dominanceString = `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-2')}%`;
-            }             
+            }
           }
-          
+
           return `
             <b style="color: white; margin-left: 18px">${ticks[0].axisValueLabel}</b><br>
             <span>${hashrateString}</span>
@@ -283,7 +283,7 @@ export class PoolComponent implements OnInit {
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: (val) => {
-              return `${val}%`
+              return `${val}%`;
             }
           },
           splitLine: {

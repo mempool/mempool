@@ -211,7 +211,7 @@ export class PriceService {
           };
           for (const price of conversion.prices) {
             historicalPrice.prices[price.time] = this.stateService.env.ADDITIONAL_CURRENCIES ? {
-              USD: price.USD, EUR: price.EUR, GBP: price.GBP, CAD: price.CAD, CHF: price.CHF, AUD: price.AUD, 
+              USD: price.USD, EUR: price.EUR, GBP: price.GBP, CAD: price.CAD, CHF: price.CHF, AUD: price.AUD,
               JPY: price.JPY, BGN: price.BGN, BRL: price.BRL, CNY: price.CNY, CZK: price.CZK, DKK: price.DKK,
               HKD: price.HKD, HRK: price.HRK, HUF: price.HUF, IDR: price.IDR, ILS: price.ILS, INR: price.INR,
               ISK: price.ISK, KRW: price.KRW, MXN: price.MXN, MYR: price.MYR, NOK: price.NOK, NZD: price.NZD,
@@ -276,7 +276,7 @@ export class PriceService {
         };
         for (const price of conversion.prices) {
           historicalPrice.prices[price.time] = this.stateService.env.ADDITIONAL_CURRENCIES ? {
-            USD: price.USD, EUR: price.EUR, GBP: price.GBP, CAD: price.CAD, CHF: price.CHF, AUD: price.AUD, 
+            USD: price.USD, EUR: price.EUR, GBP: price.GBP, CAD: price.CAD, CHF: price.CHF, AUD: price.AUD,
             JPY: price.JPY, BGN: price.BGN, BRL: price.BRL, CNY: price.CNY, CZK: price.CZK, DKK: price.DKK,
             HKD: price.HKD, HRK: price.HRK, HUF: price.HUF, IDR: price.IDR, ILS: price.ILS, INR: price.INR,
             ISK: price.ISK, KRW: price.KRW, MXN: price.MXN, MYR: price.MYR, NOK: price.NOK, NZD: price.NZD,
@@ -286,7 +286,7 @@ export class PriceService {
             USD: price.USD, EUR: price.EUR, GBP: price.GBP, CAD: price.CAD, CHF: price.CHF, AUD: price.AUD, JPY: price.JPY
           };
         }
-        
+
         const priceTimestamps = Object.keys(historicalPrice.prices).map(Number);
         priceTimestamps.push(Number.MAX_SAFE_INTEGER);
         priceTimestamps.sort((a, b) => b - a);

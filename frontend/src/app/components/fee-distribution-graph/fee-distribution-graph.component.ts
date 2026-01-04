@@ -145,7 +145,7 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges, OnDestr
             const unitValue = this.weightMode ? value / 4 : value;
             const selectedPowerOfTen = selectPowerOfTen(unitValue);
             const scaledValue = unitValue / selectedPowerOfTen.divider;
-            let newVal = '';
+            const newVal = '';
             switch (true) {
               case scaledValue >= 100:
                 return Math.round(scaledValue).toString();

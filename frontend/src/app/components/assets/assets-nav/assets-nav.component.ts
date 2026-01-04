@@ -73,10 +73,10 @@ export class AssetsNavComponent implements OnInit {
                 return assets.array.slice(0, this.itemsPerPage);
               }
             })
-          )
+          );
         }),
       );
-  }
+  };
 
   itemSelected() {
     setTimeout(() => this.search());
