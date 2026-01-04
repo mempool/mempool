@@ -58,7 +58,7 @@
       <form [formGroup]="faucetForm" class="formGroup" (submit)="requestCoins()">
         <div class="row">
           <div class="col">
-            <div class="form-group mb-0">
+            <div class="mb-0">
               <div class="input-group input-group-lg">
                 <span class="input-group-text" i18n="amount-sats">Amount (sats)</span>
                 <input type="number" class="form-control" [class]="{invalid: invalidAmount}" formControlName="satoshis" id="satoshis">

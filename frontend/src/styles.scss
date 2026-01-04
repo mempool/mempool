@@ -73,7 +73,7 @@ $dropdown-link-active-bg: $active-bg;
   $pagination-active-bg: $pagination-active-bg,
   $pagination-hover-bg: $pagination-hover-bg,
   $pagination-hover-border-color: $pagination-hover-border-color,
-  $custom-select-indicator-color: $custom-select-indicator-color,
+  $form-select-indicator-color: $form-select-indicator-color,
   $link-color: $link-color,
   $link-decoration: $link-decoration,
   $link-hover-color: $link-hover-color,
@@ -139,6 +139,7 @@ $dropdown-link-active-bg: $active-bg;
   --grey: #7e7e7e;
   --tooltip-grey: #b1b1b1;
   --orange: #ff9f00;
+  --pink: #e83e8c;
 
   --search-button: #4d2d77;
   --search-button-border: #472a6e;
@@ -146,6 +147,8 @@ $dropdown-link-active-bg: $active-bg;
   --search-button-shadow: #7c58ab80;
   
   --bs-border-radius: 0.25rem;
+  --bs-btn-border-color: transparent;
+  --bs-btn-disabled-border-color: transparent;
 }
 
 html, body {
@@ -402,6 +405,11 @@ main {
 
 .yellow-color {
   color: var(--yellow);
+}
+
+.table-striped {
+  --bs-table-striped-bg: var(--stat-box-bg);
+  --bs-table-striped-color: var(--fg);
 }
 
 .table-striped tbody tr:nth-of-type(odd) {
@@ -733,6 +741,7 @@ html:lang(ru) .card-title {
 
 hr {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  opacity: 1;
 }
 
 tr {
@@ -1438,9 +1447,19 @@ a {
 }
 
 .btn-primary {
-  color: var(--fg);
-  background-color: var(--primary);
-  border-color: var(--primary);
+  --bs-btn-color: var(--fg);
+  --bs-btn-bg: var(--primary);
+  --bs-btn-border-color: var(--bs-btn-bg);
+  --bs-btn-hover-color: var(--bs-btn-color);
+  --bs-btn-hover-bg: #0069d4;
+  --bs-btn-hover-border-color: #0063c7;
+  --bs-btn-active-color: var(--bs-btn-color);
+  --bs-btn-active-bg: var(--bs-btn-hover-border-color);
+  --bs-btn-active-border-color: #005cba;
+  --bs-btn-active-shadow: none;
+  --bs-btn-disabled-color: var(--bs-btn-color);
+  --bs-btn-disabled-bg: var(--bs-btn-bg);
+  --bs-btn-disabled-border-color: var(--bs-btn-border-color);
 }
 
 .btn-small-height {
@@ -1508,6 +1527,12 @@ button {
 .btn-check:focus+.btn {
   box-shadow: none !important;
   outline: none !important;
+}
+
+.btn-check+.btn:hover {
+  color: var(--bs-btn-hover-color);
+  background-color: var(--bs-btn-hover-bg);
+  border-color: var(--bs-btn-hover-border-color);
 }
 
 .table>:not(caption)>*>* {

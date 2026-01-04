@@ -83,13 +83,13 @@
           <div class="col-md">
             <div *ngIf="taprootPsbtExpanded" class="mb-3">
               <form *ngIf="psbtForm" [formGroup]="psbtForm" novalidate>
-                <label for="psbtInput" class="form-label mb-1 font-weight-bold">PSBT</label>
+                <label for="psbtInput" class="form-label mb-1 fw-bold">PSBT</label>
                 <textarea id="psbtInput" class="form-control font-monospace" rows="1" formControlName="psbt" placeholder="Hex or base64 encoded PSBT involving this address" autocomplete="off" spellcheck="false" (input)="submitPsbt()"></textarea>
-                <label for="tapleavesInput" class="form-label mt-2 mb-1 font-weight-bold">Tapleaves</label>
+                <label for="tapleavesInput" class="form-label mt-2 mb-1 fw-bold">Tapleaves</label>
                 <textarea id="tapleavesInput" class="form-control font-monospace" rows="1" formControlName="tapleaf" placeholder="Hex or base64 encoded, comma separated PSBT_IN_TAP_LEAF_SCRIPT (<control block>:<script><leaf version>)" autocomplete="off" spellcheck="false" (input)="submitPsbt()"></textarea>
-                <label for="taptreeInput" class="form-label mt-2 mb-1 font-weight-bold">Taptree</label>
+                <label for="taptreeInput" class="form-label mt-2 mb-1 fw-bold">Taptree</label>
                 <textarea id="taptreeInput" class="form-control font-monospace" rows="1" formControlName="taptree" placeholder="Hex or base64 encoded PSBT_OUT_TAP_TREE field" autocomplete="off" spellcheck="false" (input)="submitPsbt()"></textarea>
-                <label *ngIf="!addressTypeInfo?.tapscript" for="internalKeyInput" class="form-label mt-2 mb-1 font-weight-bold">Internal Key</label>
+                <label *ngIf="!addressTypeInfo?.tapscript" for="internalKeyInput" class="form-label mt-2 mb-1 fw-bold">Internal Key</label>
                 <textarea *ngIf="!addressTypeInfo?.tapscript" id="internalKeyInput" class="form-control font-monospace" rows="1" formControlName="ikey" placeholder="Hex or base64 encoded x-only public key" autocomplete="off" spellcheck="false" (input)="submitPsbt()"></textarea>
                 <div class="text-danger mt-2 small" *ngIf="psbtError">{{ psbtError }}</div>
               </form>

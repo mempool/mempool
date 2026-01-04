@@ -367,7 +367,7 @@
     @if (!block?.stale && block?.extras?.orphans?.length > 0) {
       <br>
       <div class="header-bg box stale-block-alert">
-        <span class="stale-msg mr-1">
+        <span class="stale-msg me-1">
           @if (block.extras.orphans.length === 1) {
             <span i18n="block.stale-block-singular">There is a stale block at this height</span>
           } @else {
