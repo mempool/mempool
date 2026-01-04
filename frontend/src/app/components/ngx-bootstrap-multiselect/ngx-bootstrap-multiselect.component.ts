@@ -464,7 +464,7 @@ export class NgxDropdownMultiselectComponent implements OnInit,
       this.model = this.model.slice();
       this.fireModelChange();
 
-    }, 0)
+    }, 0);
   }
 
   updateNumSelected() {

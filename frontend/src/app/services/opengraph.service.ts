@@ -25,13 +25,13 @@ export class OpenGraphService {
     private activatedRoute: ActivatedRoute,
   ) {
     // save og:image tag from original template
-    const initialOgImageTag = metaService.getTag("property='og:image'");
+    const initialOgImageTag = metaService.getTag('property=\'og:image\'');
     this.defaultImageUrl = initialOgImageTag?.content || 'https://mempool.space/resources/previews/mempool-space-preview.jpg';
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd),
       map(() => this.activatedRoute),
       map(route => {
-        while (route.firstChild) route = route.firstChild;
+        while (route.firstChild) {route = route.firstChild;}
         return route;
       }),
       filter(route => route.outlet === 'primary'),
@@ -120,10 +120,10 @@ export class OpenGraphService {
     this.previewLoadingEvents = {};
     this.previewLoadingCount = 0;
     this.sessionId++;
-    this.metaService.removeTag("property='og:preview:loading'");
-    this.metaService.removeTag("property='og:preview:ready'");
-    this.metaService.removeTag("property='og:preview:fail'");
-    this.metaService.removeTag("property='og:meta:ready'");
+    this.metaService.removeTag('property=\'og:preview:loading\'');
+    this.metaService.removeTag('property=\'og:preview:ready\'');
+    this.metaService.removeTag('property=\'og:preview:fail\'');
+    this.metaService.removeTag('property=\'og:meta:ready\'');
   }
 
   loadPage(path) {

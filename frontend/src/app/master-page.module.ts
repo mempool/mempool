@@ -144,7 +144,7 @@ if (window['__env']?.OFFICIAL_MEMPOOL_SPACE) {
         data: { networks: ['bitcoin'] },
         component: FaucetComponent,
       }]
-    })
+    });
   }
 }
 

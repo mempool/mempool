@@ -20,7 +20,7 @@ export class ToggleComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.animate = true;
-    setTimeout(() => { this.cd.markForCheck()});
+    setTimeout(() => { this.cd.markForCheck();});
   }
 
   onToggleStatusChanged(e): void {

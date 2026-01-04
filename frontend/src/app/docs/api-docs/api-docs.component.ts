@@ -2,7 +2,7 @@ import { Component, OnInit, Input, QueryList, AfterViewInit, ViewChildren } from
 import { Env, StateService } from '@app/services/state.service';
 import { Observable, merge, of, Subject, Subscription } from 'rxjs';
 import { tap, takeUntil } from 'rxjs/operators';
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute } from '@angular/router';
 import { faqData, restApiDocsData, wsApiDocsData } from '@app/docs/api-docs/api-docs-data';
 import { FaqTemplateDirective } from '@app/docs/faq-template/faq-template.component';
 
@@ -23,7 +23,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
   code: any;
   baseNetworkUrl = '';
   @Input() whichTab: string;
-  desktopDocsNavPosition = "relative";
+  desktopDocsNavPosition = 'relative';
   faq: any[];
   restDocs: any[];
   wsDocs: any;
@@ -49,7 +49,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
     if (this.faqTemplates) {
       this.faqTemplates.forEach((x) => this.dict[x.type] = x.template);
     }
-    this.desktopDocsNavPosition = ( window.pageYOffset > 115 ) ? "fixed" : "relative";
+    this.desktopDocsNavPosition = ( window.pageYOffset > 115 ) ? 'fixed' : 'relative';
     this.mobileViewport = window.innerWidth <= 992;
   }
 
@@ -59,7 +59,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
       if( this.route.snapshot.fragment ) {
         this.openEndpointContainer( this.route.snapshot.fragment );
         if (document.getElementById( this.route.snapshot.fragment )) {
-          let vOffset = ( window.innerWidth <= 992 ) ? 100 : 60;
+          const vOffset = ( window.innerWidth <= 992 ) ? 100 : 60;
           window.scrollTo({
             top: document.getElementById( this.route.snapshot.fragment ).offsetTop - vOffset
           });
@@ -102,19 +102,19 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
     this.network$.pipe(takeUntil(this.destroy$)).subscribe((network) => {
       this.active = (network === 'liquid' || network === 'liquidtestnet') ? 2 : 0;
       switch( network ) {
-        case "":
+        case '':
           this.electrsPort = 50002; break;
-        case "mainnet":
+        case 'mainnet':
           this.electrsPort = 50002; break;
-        case "testnet":
+        case 'testnet':
           this.electrsPort = 60002; break;
-        case "testnet4":
+        case 'testnet4':
           this.electrsPort = 40002; break;
-        case "signet":
+        case 'signet':
           this.electrsPort = 60602; break;
-        case "liquid":
+        case 'liquid':
           this.electrsPort = 51002; break;
-        case "liquidtestnet":
+        case 'liquidtestnet':
           this.electrsPort = 51302; break;
       }
     });
@@ -132,39 +132,39 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
   }
 
   onDocScroll() {
-    this.desktopDocsNavPosition = ( window.pageYOffset > 115 ) ? "fixed" : "relative";
+    this.desktopDocsNavPosition = ( window.pageYOffset > 115 ) ? 'fixed' : 'relative';
   }
 
   anchorLinkClick( e ) {
-    let targetId = e.fragment;
-    let vOffset = ( window.innerWidth <= 992 ) ? 100 : 60;
+    const targetId = e.fragment;
+    const vOffset = ( window.innerWidth <= 992 ) ? 100 : 60;
     window.scrollTo({
       top: document.getElementById( targetId ).offsetTop - vOffset
     });
-    window.history.pushState({}, null, document.location.href.split("#")[0] + "#" + targetId);
+    window.history.pushState({}, null, document.location.href.split('#')[0] + '#' + targetId);
     this.openEndpointContainer( targetId );
   }
 
   openEndpointContainer( targetId ) {
     let tabHeaderHeight = 0;
-    if (document.getElementById( targetId + "-tab-header" )) {
-      tabHeaderHeight = document.getElementById( targetId + "-tab-header" ).scrollHeight;
+    if (document.getElementById( targetId + '-tab-header' )) {
+      tabHeaderHeight = document.getElementById( targetId + '-tab-header' ).scrollHeight;
     }
     if( ( window.innerWidth <= 992 ) && ( ( this.whichTab === 'rest' ) || ( this.whichTab === 'faq' ) || ( this.whichTab === 'websocket' ) ) && targetId ) {
-      const endpointContainerEl = document.querySelector<HTMLElement>( "#" + targetId );
-      const endpointContentEl = document.querySelector<HTMLElement>( "#" + targetId + " .endpoint-content" );
+      const endpointContainerEl = document.querySelector<HTMLElement>( '#' + targetId );
+      const endpointContentEl = document.querySelector<HTMLElement>( '#' + targetId + ' .endpoint-content' );
       const endPointContentElHeight = endpointContentEl.clientHeight;
 
-      if( endpointContentEl.classList.contains( "open" ) ) {
-        endpointContainerEl.style.height = "auto";
-        endpointContentEl.style.top = "-10000px";
-        endpointContentEl.style.opacity = "0";
-        endpointContentEl.classList.remove( "open" );
+      if( endpointContentEl.classList.contains( 'open' ) ) {
+        endpointContainerEl.style.height = 'auto';
+        endpointContentEl.style.top = '-10000px';
+        endpointContentEl.style.opacity = '0';
+        endpointContentEl.classList.remove( 'open' );
       } else {
-        endpointContainerEl.style.height = endPointContentElHeight + tabHeaderHeight + 28 + "px";
-        endpointContentEl.style.top = tabHeaderHeight + 28 + "px";
-        endpointContentEl.style.opacity = "1";
-        endpointContentEl.classList.add( "open" );
+        endpointContainerEl.style.height = endPointContentElHeight + tabHeaderHeight + 28 + 'px';
+        endpointContentEl.style.top = tabHeaderHeight + 28 + 'px';
+        endpointContentEl.style.opacity = '1';
+        endpointContentEl.classList.add( 'open' );
       }
     }
   }
