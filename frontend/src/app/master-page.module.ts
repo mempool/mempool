@@ -148,14 +148,14 @@ if (window['__env']?.OFFICIAL_MEMPOOL_SPACE) {
   }
 }
 
-if (window['__env']?.customize?.dashboard.widgets?.some(w => w.component ==='simpleproof')) {
+if (window['__env']?.customize?.dashboard?.widgets?.some(w => w.component ==='simpleproof')) {
   routes[0].children.push({
     path: 'sp/verified',
     component: SimpleProofWidgetComponent,
   });
 }
 
-if (window['__env']?.customize?.dashboard.widgets?.some(w => w.component ==='simpleproof_cubo')) {
+if (window['__env']?.customize?.dashboard?.widgets?.some(w => w.component ==='simpleproof_cubo')) {
   routes[0].children.push({
     path: 'sp/cubo',
     component: SimpleProofCuboWidgetComponent,
