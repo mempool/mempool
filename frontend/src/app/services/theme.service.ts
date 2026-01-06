@@ -8,7 +8,7 @@ import { StateService } from '@app/services/state.service';
   providedIn: 'root'
 })
 export class ThemeService {
-  style: HTMLLinkElement;
+  style: HTMLLinkElement | null = null;
   theme: string = 'default';
   themeChanged$: Subject<string> = new Subject();
   mempoolFeeColors: string[] = defaultMempoolFeeColors;
@@ -21,16 +21,19 @@ export class ThemeService {
     this.apply(theme);
   }
 
-  apply(theme) {
+  apply(theme: string): void {
     this.theme = theme;
     if (theme !== 'default') {
-      theme === 'contrast'  || theme === 'bukele' ? this.mempoolFeeColors = contrastMempoolFeeColors : this.mempoolFeeColors = defaultMempoolFeeColors;
+      this.mempoolFeeColors = (theme === 'contrast'  || theme === 'bukele') ? contrastMempoolFeeColors : defaultMempoolFeeColors;
       try {
         if (!this.style) {
           this.style = document.createElement('link');
           this.style.rel = 'stylesheet';
           this.style.href = `${theme}.css`;
-          document.head.appendChild(this.style);
+          this.style.onerror = (): void => { // something went wrong (eg the css resource does not exist, revert to default)
+            this.apply('default');
+          };
+          document.head.appendChild(this.style); // load the css now
         } else {
           this.style.href = `${theme}.css`;
         }
