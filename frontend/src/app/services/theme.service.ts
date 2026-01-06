@@ -17,7 +17,12 @@ export class ThemeService {
     private storageService: StorageService,
     private stateService: StateService,
   ) {
-    const theme = this.stateService.env.customize?.theme || this.storageService.getValue('theme-preference') || 'default';
+    let theme = this.stateService.env.customize?.theme || this.storageService.getValue('theme-preference') || 'default';
+    // theme preference must be a valid known public theme
+    if (!this.stateService.env.customize?.theme && !['default', 'contrast', 'softsimon'].includes(theme)) {
+      theme = 'default';
+      this.storageService.setValue('theme-preference', 'default');
+    }
     this.apply(theme);
   }
 
