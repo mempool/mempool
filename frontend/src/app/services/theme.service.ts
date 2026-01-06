@@ -22,6 +22,10 @@ export class ThemeService {
   }
 
   apply(theme: string): void {
+    if (this.theme === theme) {
+      return;
+    }
+
     this.theme = theme;
     if (theme !== 'default') {
       this.mempoolFeeColors = (theme === 'contrast'  || theme === 'bukele') ? contrastMempoolFeeColors : defaultMempoolFeeColors;
