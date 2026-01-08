@@ -48,6 +48,9 @@ export class FeesBoxComponent implements OnInit, OnDestroy {
   }
 
   setFeeGradient() {
+    if (!this.fees || !this.themeService.mempoolFeeColors) {
+      return;
+    }
     let feeLevelIndex = feeLevels.slice().reverse().findIndex((feeLvl) => this.fees.minimumFee >= feeLvl);
     feeLevelIndex = feeLevelIndex >= 0 ? feeLevels.length - feeLevelIndex : feeLevelIndex;
     const startColor = '#' + (this.themeService.mempoolFeeColors[feeLevelIndex - 1] || this.themeService.mempoolFeeColors[this.themeService.mempoolFeeColors.length - 1]);
