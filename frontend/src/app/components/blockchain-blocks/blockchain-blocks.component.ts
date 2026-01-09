@@ -30,7 +30,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   @Input() spotlight: number = 0;
   @Input() showPools: boolean = true;
   @Input() getHref?: (index, block) => string = (index, block) => `/block/${block.id}`;
-  
+
   specialBlocks = specialBlocks;
   network = '';
   blocks: BlockchainBlock[] = [];
@@ -174,7 +174,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
         } else {
           this.moveArrowToPosition(true, false);
         }
-      })
+      });
     } else {
       this.blockPageSubscription = this.cacheService.loadedBlocks$.subscribe((block) => {
         if (block.height <= this.height && block.height > this.height - this.count) {
@@ -363,7 +363,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   convertStyleForLoadingBlock(style) {
     return {
       ...style,
-      background: "var(--secondary)",
+      background: 'var(--secondary)',
     };
   }
 
@@ -372,7 +372,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
     return {
       left: addLeft + (this.blockOffset * index) + 'px',
-      background: "var(--secondary)",
+      background: 'var(--secondary)',
     };
   }
 
@@ -388,7 +388,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
     return {
       left: addLeft + this.blockOffset * this.emptyBlocks.indexOf(block) + 'px',
-      background: "var(--secondary)",
+      background: 'var(--secondary)',
     };
   }
 

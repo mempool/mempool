@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { AppPreloadingStrategy } from '@app/app.preloading-strategy'
+import { AppPreloadingStrategy } from '@app/app.preloading-strategy';
 import { BlockViewComponent } from '@components/block-view/block-view.component';
 import { EightBlocksComponent } from '@components/eight-blocks/eight-blocks.component';
 import { MempoolBlockViewComponent } from '@components/mempool-block-view/mempool-block-view.component';

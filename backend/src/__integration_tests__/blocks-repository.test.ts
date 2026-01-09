@@ -40,7 +40,7 @@ describe('BlocksRepository Integration Tests', () => {
     });
 
     const block = await BlocksRepository.$getBlockByHeight(height);
-    
+
     expect(block).toBeDefined();
     expect(block!.height).toBe(height);
     expect(block!.id).toBe(blockHash);
@@ -58,7 +58,7 @@ describe('BlocksRepository Integration Tests', () => {
     });
 
     const block = await BlocksRepository.$getBlockByHash(blockHash);
-    
+
     expect(block).toBeDefined();
     expect(block!.id).toBe(blockHash);
     expect(block!.height).toBe(height);
@@ -71,36 +71,36 @@ describe('BlocksRepository Integration Tests', () => {
 
   test('should check for missing blocks in range', async () => {
     // Insert blocks with a gap
-    await insertTestBlock({ 
-      height: 800100, 
+    await insertTestBlock({
+      height: 800100,
       hash: '0000000000000000000100000000000000000000000000000000000000000001',
       poolId: defaultPoolId
     });
-    await insertTestBlock({ 
-      height: 800102, 
+    await insertTestBlock({
+      height: 800102,
       hash: '0000000000000000000100000000000000000000000000000000000000000003',
       poolId: defaultPoolId
     });
 
     const missingBlocks = await BlocksRepository.$getMissingBlocksBetweenHeights(800100, 800102);
-    
+
     expect(missingBlocks).toContain(800101);
   });
 
   test('should get latest block height', async () => {
-    await insertTestBlock({ 
-      height: 800200, 
+    await insertTestBlock({
+      height: 800200,
       hash: '0000000000000000000200000000000000000000000000000000000000000001',
       poolId: defaultPoolId
     });
-    await insertTestBlock({ 
-      height: 800201, 
+    await insertTestBlock({
+      height: 800201,
       hash: '0000000000000000000200000000000000000000000000000000000000000002',
       poolId: defaultPoolId
     });
 
     const height = await BlocksRepository.$mostRecentBlockHeight();
-    
+
     expect(height).toBe(800201);
   });
 
@@ -121,7 +121,7 @@ describe('BlocksRepository Integration Tests', () => {
     });
 
     const block = await BlocksRepository.$getBlockByHash(blockHash);
-    
+
     expect(block).toBeDefined();
     expect(block).not.toBeNull();
     // The pool should be populated with the test pool's data

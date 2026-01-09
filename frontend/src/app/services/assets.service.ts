@@ -30,7 +30,7 @@ export class AssetsService {
         switchMap(() => this.httpClient.get(`${apiBaseUrl}/resources/assets${this.stateService.network === 'liquidtestnet' ? '-testnet' : ''}.json`)),
         map((rawAssets) => {
           const assets: AssetExtended[] = Object.values(rawAssets);
-  
+
           if (this.stateService.network === 'liquid') {
             // @ts-ignore
             assets.push({
@@ -46,7 +46,7 @@ export class AssetsService {
               asset_id: this.nativeAssetId,
             });
           }
-  
+
           return {
             objects: rawAssets,
             array: assets.sort((a: any, b: any) => a.name.localeCompare(b.name)),
@@ -60,7 +60,7 @@ export class AssetsService {
       map((assetsMinimal) => {
         if (this.stateService.network === 'liquidtestnet') {
           // Hard coding the Liquid Testnet native asset
-          assetsMinimal['144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49'] = [null, "tLBTC", "Test Liquid Bitcoin", 8];
+          assetsMinimal['144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49'] = [null, 'tLBTC', 'Test Liquid Bitcoin', 8];
         }
         return assetsMinimal;
       }),

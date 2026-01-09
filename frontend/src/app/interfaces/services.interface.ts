@@ -10,5 +10,5 @@ export type MenuItem = {
 export type MenuGroup = {
   title: string;
   i18n: string;
-  items: MenuItem[];  
+  items: MenuItem[];
 }

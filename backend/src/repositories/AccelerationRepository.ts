@@ -100,7 +100,7 @@ class AccelerationRepository {
       SELECT *, UNIX_TIMESTAMP(requested) as requested_timestamp, UNIX_TIMESTAMP(added) as block_timestamp FROM accelerations
       JOIN pools on pools.unique_id = accelerations.pool
     `;
-    let params: any[] = [];
+    const params: any[] = [];
     let hasFilter = false;
 
     if (interval && height === null) {
@@ -163,7 +163,7 @@ class AccelerationRepository {
       SELECT SUM(boost_cost) as total_cost, COUNT(txid) as count FROM accelerations
       JOIN pools on pools.unique_id = accelerations.pool
     `;
-    let params: any[] = [];
+    const params: any[] = [];
     let hasFilter = false;
 
     if (interval) {
@@ -346,7 +346,7 @@ class AccelerationRepository {
         const accelerationSummaries = accelerations.map(acc => ({
           ...acc,
           pools: acc.pools,
-        }))
+        }));
         for (const acc of accelerations) {
           if (blockTxs[acc.txid] && acc.pools.includes(block.extras.pool.id)) {
             const tx = blockTxs[acc.txid];

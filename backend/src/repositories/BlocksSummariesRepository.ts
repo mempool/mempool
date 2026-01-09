@@ -154,8 +154,8 @@ class BlocksSummariesRepository {
 
   /**
    * Get the fee percentiles if the block has already been indexed, [] otherwise
-   * 
-   * @param id 
+   *
+   * @param id
    */
   public async $getFeePercentilesByBlockId(id: string): Promise<number[] | null> {
     try {

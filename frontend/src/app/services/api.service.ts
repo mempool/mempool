@@ -237,7 +237,7 @@ export class ApiService {
   }
 
   listFeaturedAssets$(network: string = 'liquid'): Observable<any[]> {
-    if (network === 'liquid') return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/assets/featured');
+    if (network === 'liquid') {return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/assets/featured');}
     return of([]);
   }
 
@@ -286,7 +286,7 @@ export class ApiService {
         return response;
       })
     );
-  }  
+  }
 
   getPoolStats$(slug: string): Observable<PoolStat> {
     return this.httpClient.get<PoolStat>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${slug}`)
@@ -440,7 +440,7 @@ export class ApiService {
   }
 
   lightningSearch$(searchText: string): Observable<{ nodes: any[], channels: any[] }> {
-    let params = new HttpParams().set('searchText', searchText);
+    const params = new HttpParams().set('searchText', searchText);
     // Don't request the backend if searchText is less than 3 characters
     if (searchText.length < 3) {
       return of({ nodes: [], channels: [] });
