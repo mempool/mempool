@@ -13,7 +13,7 @@ import { Subscription } from 'rxjs';
 export class ThemeSelectorComponent implements OnInit {
   themeForm: UntypedFormGroup;
   themes = ['default', 'contrast', 'softsimon', 'bukele'];
-  themeSubscription: Subscription;
+  themeStateSubscription: Subscription;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -24,11 +24,13 @@ export class ThemeSelectorComponent implements OnInit {
     this.themeForm = this.formBuilder.group({
       theme: ['default']
     });
-    this.themeForm.get('theme')?.setValue(this.themeService.theme);
-    // Subscribe to theme changes because two instances of this component exist
-    this.themeSubscription = this.themeService.themeChanged$.subscribe(() => {
-      if (this.themeForm.get('theme')?.value !== this.themeService.theme){
-        this.themeForm.get('theme')?.setValue(this.themeService.theme);
+    this.themeStateSubscription = this.themeService.themeState$.subscribe(({ theme, loading }) => {
+      console.log('Theme state changed:', theme, loading);
+      this.themeForm.get('theme')?.setValue(theme, { emitEvent: false });
+      if (loading) {
+        this.themeForm.get('theme')?.disable({ emitEvent: false });
+      } else {
+        this.themeForm.get('theme')?.enable({ emitEvent: false });
       }
     });
   }
@@ -39,6 +41,6 @@ export class ThemeSelectorComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    this.themeSubscription.unsubscribe();
+    this.themeStateSubscription.unsubscribe();
   }
 }
