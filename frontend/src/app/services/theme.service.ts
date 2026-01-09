@@ -12,6 +12,7 @@ export class ThemeService {
   theme: string = 'default';
   themeState$: BehaviorSubject<{ theme: string; loading: boolean; }>;
   mempoolFeeColors: string[] = defaultMempoolFeeColors;
+  initialLoad: boolean = true;
 
   constructor(
     private storageService: StorageService,
@@ -52,10 +53,17 @@ export class ThemeService {
       if (!this.style) {
         this.style = document.createElement('link');
         this.style.rel = 'stylesheet';
+        if (this.initialLoad) {
+          this.style.media = 'print'; // Prevent white flash and other CSS issues when using custom theme on initial app load in Safari
+        }
         document.head.appendChild(this.style); // load the css now
       }
 
       this.style.onload = () => {
+        if (this.initialLoad) {
+          this.style.media = 'all';
+          this.initialLoad = false;
+        }
         this.mempoolFeeColors = theme === 'contrast' || theme === 'bukele' ? contrastMempoolFeeColors : defaultMempoolFeeColors;
         this.themeState$.next({ theme, loading: false });
       };
