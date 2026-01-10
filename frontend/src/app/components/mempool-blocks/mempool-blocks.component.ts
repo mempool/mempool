@@ -50,6 +50,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   blockDisplayMode: 'size' | 'fees';
   blockTransformation = {};
   blocksSubscription: Subscription;
+  themeStateSubscription: Subscription;
 
   mempoolBlocksFull: MempoolBlock[] = [];
   mempoolBlockStyles = [];
@@ -146,6 +147,12 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.reduceEmptyBlocksToFitScreen(this.mempoolEmptyBlocks);
 
     this.isTabHiddenSubscription = this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
+    this.themeStateSubscription = this.themeService.themeState$.subscribe((state) => {
+      if (!state.loading) {
+        this.updateMempoolBlockStyles();
+        this.cd.markForCheck();
+      }
+    });
     this.loadingBlocks$ = combineLatest([
       this.stateService.isLoadingWebSocket$,
       this.stateService.isLoadingMempool$
@@ -300,6 +307,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.networkSubscription.unsubscribe();
     this.blockDisplayModeSubscription.unsubscribe();
     this.timeLtrSubscription.unsubscribe();
+    this.themeStateSubscription.unsubscribe();
     this.chainTipSubscription.unsubscribe();
     this.keySubscription.unsubscribe();
     this.isTabHiddenSubscription.unsubscribe();

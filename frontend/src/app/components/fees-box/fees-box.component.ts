@@ -16,7 +16,7 @@ import { ThemeService } from '@app/services/theme.service';
 export class FeesBoxComponent implements OnInit, OnDestroy {
   isLoading$: Observable<boolean>;
   recommendedFees$: Observable<Recommendedfees>;
-  themeSubscription: Subscription;
+  themeStateSubscription: Subscription;
   gradient = 'linear-gradient(to right, var(--skeleton-bg), var(--skeleton-bg))';
   noPriority = 'var(--skeleton-bg)';
   fees: Recommendedfees;
@@ -42,8 +42,10 @@ export class FeesBoxComponent implements OnInit, OnDestroy {
         }
       )
     );
-    this.themeSubscription = this.themeService.themeChanged$.subscribe(() => {
-      this.setFeeGradient();
+    this.themeStateSubscription = this.themeService.themeState$.subscribe((state) => {
+      if (!state.loading) {
+        this.setFeeGradient();
+      }
     });
   }
 
@@ -66,6 +68,6 @@ export class FeesBoxComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.themeSubscription.unsubscribe();
+    this.themeStateSubscription.unsubscribe();
   }
 }
