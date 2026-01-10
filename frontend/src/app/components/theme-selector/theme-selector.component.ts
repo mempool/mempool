@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ThemeService } from '@app/services/theme.service';
 import { Subscription } from 'rxjs';
@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ThemeSelectorComponent implements OnInit {
+export class ThemeSelectorComponent implements OnInit, OnDestroy {
   themeForm: UntypedFormGroup;
   themes = ['default', 'contrast', 'softsimon', 'bukele'];
   themeStateSubscription: Subscription;
@@ -25,7 +25,6 @@ export class ThemeSelectorComponent implements OnInit {
       theme: ['default']
     });
     this.themeStateSubscription = this.themeService.themeState$.subscribe(({ theme, loading }) => {
-      console.log('Theme state changed:', theme, loading);
       this.themeForm.get('theme')?.setValue(theme, { emitEvent: false });
       if (loading) {
         this.themeForm.get('theme')?.disable({ emitEvent: false });
