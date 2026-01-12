@@ -12724,3 +12724,369 @@ export const faqData = [
     title: 'Why do I get an error for certain address lookups on my Mempool instance?',
   }
 ];
+
+export const electrumApiDocsData = [
+  {
+    type: 'category',
+    category: 'server',
+    fragment: 'server-methods',
+    title: 'Server Methods',
+    showConditions: bitcoinNetworks.concat(liquidNetworks)
+  },
+  {
+    type: 'endpoint',
+    category: 'server',
+    fragment: 'server-version',
+    title: 'server.version',
+    description: {
+      default: 'Returns the server version and protocol version.'
+    },
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"server.version","params":[]}',
+    responseExample: `{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": ["mempool-electrs v3.3.0", "1.4"]
+}`
+  },
+  {
+    type: 'endpoint',
+    category: 'server',
+    fragment: 'server-banner',
+    title: 'server.banner',
+    description: {
+      default: 'Returns the server banner message.'
+    },
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"server.banner","params":[]}',
+    responseExample: `{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "Welcome to mempool.space Electrum Server"
+}`
+  },
+  {
+    type: 'endpoint',
+    category: 'server',
+    fragment: 'server-ping',
+    title: 'server.ping',
+    description: {
+      default: 'A simple ping to check if the server is responsive.'
+    },
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"server.ping","params":[]}',
+    responseExample: `{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": null
+}`
+  },
+  {
+    type: 'category',
+    category: 'blockchain',
+    fragment: 'blockchain-methods',
+    title: 'Blockchain Methods',
+    showConditions: bitcoinNetworks.concat(liquidNetworks)
+  },
+  {
+    type: 'endpoint',
+    category: 'blockchain',
+    fragment: 'blockchain-block-header',
+    title: 'blockchain.block.header',
+    description: {
+      default: 'Returns the block header at a given height. Optionally includes a merkle proof if <code>cp_height</code> is specified.'
+    },
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.block.header","params":[500000]}',
+    responseExample: `{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "00000020b48b86f547e8ea3b1c3e8a49e2e93f6e6e1e73c3b94f16e4e7e7e7e7"
+}`
+  },
+  {
+    type: 'endpoint',
+    category: 'blockchain',
+    fragment: 'blockchain-block-headers',
+    title: 'blockchain.block.headers',
+    description: {
+      default: 'Returns a range of block headers. Maximum of 2016 headers can be requested at once.'
+    },
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.block.headers","params":[500000, 3]}',
+    responseExample: `{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "count": 3,
+    "hex": "00000020b48b86f547e8ea3b...",
+    "max": 2016
+  }
+}`
+  },
+  {
+    type: 'endpoint',
+    category: 'blockchain',
+    fragment: 'blockchain-headers-subscribe',
+    title: 'blockchain.headers.subscribe',
+    description: {
+      default: 'Subscribe to new block headers. Returns the current best block header and sends notifications when new blocks are found.'
+    },
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.headers.subscribe","params":[]}',
+    responseExample: `{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "hex": "00000020b48b86f547e8ea3b1c3e8a49e2e93f6e6e1e73c3b94f16e4e7e7e7e7",
+    "height": 875000
+  }
+}`
+  },
+  {
+    type: 'endpoint',
+    category: 'blockchain',
+    fragment: 'blockchain-estimatefee',
+    title: 'blockchain.estimatefee',
+    description: {
+      default: 'Returns the estimated transaction fee for confirmation within a given number of blocks. Returns fee in BTC/kB, or -1 if estimation is not available.'
+    },
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.estimatefee","params":[6]}',
+    responseExample: `{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": 0.00005000
+}`
+  },
+  {
+    type: 'endpoint',
+    category: 'blockchain',
+    fragment: 'blockchain-relayfee',
+    title: 'blockchain.relayfee',
+    description: {
+      default: 'Returns the minimum relay fee for low-priority transactions in BTC/kB.'
+    },
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.relayfee","params":[]}',
+    responseExample: `{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": 0.00001000
+}`
+  },
+  {
+    type: 'category',
+    category: 'scripthash',
+    fragment: 'scripthash-methods',
+    title: 'Script Hash Methods',
+    showConditions: bitcoinNetworks.concat(liquidNetworks)
+  },
+  {
+    type: 'endpoint',
+    category: 'scripthash',
+    fragment: 'blockchain-scripthash-get-balance',
+    title: 'blockchain.scripthash.get_balance',
+    description: {
+      default: 'Returns the confirmed and unconfirmed balance for a script hash. Script hashes are the SHA256 hash of the output script (scriptPubKey), encoded as hexadecimal with the bytes reversed.<br><br><b>Not available on Liquid networks.</b>'
+    },
+    showConditions: bitcoinNetworks,
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.scripthash.get_balance","params":["8b01df4e368ea28f8dc0423bcf7a4923e3a12d307c875e47a0cfbf90b5c39161"]}',
+    responseExample: `{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "confirmed": 1000000,
+    "unconfirmed": 0
+  }
+}`
+  },
+  {
+    type: 'endpoint',
+    category: 'scripthash',
+    fragment: 'blockchain-scripthash-get-history',
+    title: 'blockchain.scripthash.get_history',
+    description: {
+      default: 'Returns the transaction history for a script hash. Returns an array of objects containing transaction ID, height, and fee (for mempool transactions).'
+    },
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.scripthash.get_history","params":["8b01df4e368ea28f8dc0423bcf7a4923e3a12d307c875e47a0cfbf90b5c39161"]}',
+    responseExample: `{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": [
+    {
+      "tx_hash": "9d1e7c2e3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d",
+      "height": 500000,
+      "fee": 0
+    },
+    {
+      "tx_hash": "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b",
+      "height": 0,
+      "fee": 226
+    }
+  ]
+}`
+  },
+  {
+    type: 'endpoint',
+    category: 'scripthash',
+    fragment: 'blockchain-scripthash-listunspent',
+    title: 'blockchain.scripthash.listunspent',
+    description: {
+      default: 'Returns the list of unspent transaction outputs for a script hash.'
+    },
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.scripthash.listunspent","params":["8b01df4e368ea28f8dc0423bcf7a4923e3a12d307c875e47a0cfbf90b5c39161"]}',
+    responseExample: `{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": [
+    {
+      "height": 500000,
+      "tx_pos": 0,
+      "tx_hash": "9d1e7c2e3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d",
+      "value": 1000000
+    }
+  ]
+}`
+  },
+  {
+    type: 'endpoint',
+    category: 'scripthash',
+    fragment: 'blockchain-scripthash-subscribe',
+    title: 'blockchain.scripthash.subscribe',
+    description: {
+      default: 'Subscribe to notifications for a script hash. Returns the current status hash and sends notifications when the history changes.'
+    },
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.scripthash.subscribe","params":["8b01df4e368ea28f8dc0423bcf7a4923e3a12d307c875e47a0cfbf90b5c39161"]}',
+    responseExample: `{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "5a4b3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b"
+}`
+  },
+  {
+    type: 'endpoint',
+    category: 'scripthash',
+    fragment: 'blockchain-scripthash-unsubscribe',
+    title: 'blockchain.scripthash.unsubscribe',
+    description: {
+      default: 'Unsubscribe from notifications for a script hash.'
+    },
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.scripthash.unsubscribe","params":["8b01df4e368ea28f8dc0423bcf7a4923e3a12d307c875e47a0cfbf90b5c39161"]}',
+    responseExample: `{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": true
+}`
+  },
+  {
+    type: 'category',
+    category: 'transaction',
+    fragment: 'transaction-methods',
+    title: 'Transaction Methods',
+    showConditions: bitcoinNetworks.concat(liquidNetworks)
+  },
+  {
+    type: 'endpoint',
+    category: 'transaction',
+    fragment: 'blockchain-transaction-broadcast',
+    title: 'blockchain.transaction.broadcast',
+    description: {
+      default: 'Broadcast a raw transaction to the network. Returns the transaction ID on success.'
+    },
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.transaction.broadcast","params":["0200000001..."]}',
+    responseExample: `{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "9d1e7c2e3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d"
+}`
+  },
+  {
+    type: 'endpoint',
+    category: 'transaction',
+    fragment: 'blockchain-transaction-get',
+    title: 'blockchain.transaction.get',
+    description: {
+      default: 'Returns a raw transaction by its transaction ID. Returns hex-encoded raw transaction.'
+    },
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.transaction.get","params":["9d1e7c2e3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d"]}',
+    responseExample: `{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "02000000019c2e0f24a03e72002a96acedb12a632e72b6119a"
+}`
+  },
+  {
+    type: 'endpoint',
+    category: 'transaction',
+    fragment: 'blockchain-transaction-get-merkle',
+    title: 'blockchain.transaction.get_merkle',
+    description: {
+      default: 'Returns the merkle proof for a transaction. Requires the transaction to be confirmed.'
+    },
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.transaction.get_merkle","params":["9d1e7c2e3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d", 500000]}',
+    responseExample: `{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "block_height": 500000,
+    "merkle": [
+      "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b",
+      "2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c"
+    ],
+    "pos": 123
+  }
+}`
+  },
+  {
+    type: 'endpoint',
+    category: 'transaction',
+    fragment: 'blockchain-transaction-id-from-pos',
+    title: 'blockchain.transaction.id_from_pos',
+    description: {
+      default: 'Returns the transaction ID at a given position in a block. Optionally includes the merkle proof.'
+    },
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.transaction.id_from_pos","params":[500000, 123, false]}',
+    responseExample: `{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "9d1e7c2e3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d"
+}`
+  },
+  {
+    type: 'category',
+    category: 'mempool',
+    fragment: 'mempool-methods',
+    title: 'Mempool Methods',
+    showConditions: bitcoinNetworks.concat(liquidNetworks)
+  },
+  {
+    type: 'endpoint',
+    category: 'mempool',
+    fragment: 'mempool-get-fee-histogram',
+    title: 'mempool.get_fee_histogram',
+    description: {
+      default: 'Returns a histogram of transaction fees in the mempool. Each entry is a pair of [fee_rate, cumulative_vsize] where fee_rate is in satoshis per virtual byte.'
+    },
+    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"mempool.get_fee_histogram","params":[]}',
+    responseExample: `{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": [
+    [10.0, 50000],
+    [5.0, 150000],
+    [2.0, 300000],
+    [1.0, 500000]
+  ]
+}`
+  }
+];
