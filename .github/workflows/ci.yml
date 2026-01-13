@@ -12,7 +12,7 @@ jobs:
     if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
     strategy:
       matrix:
-        node: ["22.14.0"]
+        node: ["24.13.0"]
         flavor: ["dev", "prod"]
       fail-fast: false
     runs-on: ubuntu-latest
@@ -96,7 +96,7 @@ jobs:
     name: "Cache assets for builds"
     strategy:
       matrix:
-        node: ["22.14.0"]
+        node: ["24.13.0"]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -202,7 +202,7 @@ jobs:
     if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
     strategy:
       matrix:
-        node: ["22.14.0"]
+        node: ["24.13.0"]
         flavor: ["dev", "prod"]
       fail-fast: false
     runs-on: ubuntu-latest
@@ -304,6 +304,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        node: ["24.13.0"]
         module: ["mempool", "liquid", "testnet4"]
 
     name: E2E tests for ${{ matrix.module }}
@@ -316,7 +317,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: 22
+          node-version: ${{ matrix.node }}
           cache: "npm"
           cache-dependency-path: ${{ matrix.module }}/frontend/package-lock.json
 
@@ -324,9 +325,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ matrix.module }}/frontend/node_modules
-          key: ${{ runner.os }}-e2e-${{ matrix.module }}-node-22-${{ hashFiles('${{ matrix.module }}/frontend/package-lock.json') }}
+          key: ${{ runner.os }}-e2e-${{ matrix.module }}-node-${{ matrix.node }}-${{ hashFiles('${{ matrix.module }}/frontend/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-e2e-${{ matrix.module }}-node-22-
+            ${{ runner.os }}-e2e-${{ matrix.module }}-node-${{ matrix.node }}-
             ${{ runner.os }}-e2e-${{ matrix.module }}-
 
       - name: Restore cached mining pool assets
