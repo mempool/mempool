@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, QueryList, AfterViewInit, ViewChildren } from '@angular/core';
+import { Component, OnInit, Input, QueryList, AfterViewInit, ViewChildren, OnDestroy } from '@angular/core';
 import { Env, StateService } from '@app/services/state.service';
 import { Observable, merge, of, Subject, Subscription } from 'rxjs';
 import { tap, takeUntil } from 'rxjs/operators';
@@ -12,7 +12,7 @@ import { FaqTemplateDirective } from '@app/docs/faq-template/faq-template.compon
   styleUrls: ['./api-docs.component.scss'],
   standalone: false,
 })
-export class ApiDocsComponent implements OnInit, AfterViewInit {
+export class ApiDocsComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$: Subject<any> = new Subject<any>();
   plainHostname = document.location.hostname;
   electrsPort = 0;
@@ -37,6 +37,8 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
   timeLtrSubscription: Subscription;
   timeLtr: boolean = this.stateService.timeLtr.value;
   isMempoolSpaceBuild = this.stateService.isMempoolSpaceBuild;
+  activeFragment: string = '';
+  observer: IntersectionObserver;
 
   @ViewChildren(FaqTemplateDirective) faqTemplates: QueryList<FaqTemplateDirective>;
   dict = {};
@@ -67,7 +69,53 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
         }
       }
       window.addEventListener('scroll', that.onDocScroll, { passive: true });
+      this.setupIntersectionObserver();
     }, 1 );
+  }
+
+  setupIntersectionObserver(): void {
+    const intersectionOptions = {
+      rootMargin: '-20% 0px -70% 0px',
+      threshold: [0, 0.25, 0.5, 0.75, 1],
+    };
+
+    this.observer = new IntersectionObserver((entries) => {
+      let mostVisibleEntry = null;
+      let maxRatio = 0;
+
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
+          maxRatio = entry.intersectionRatio;
+          mostVisibleEntry = entry;
+        }
+      });
+
+      if (mostVisibleEntry) {
+        this.activeFragment = mostVisibleEntry.target.id;
+      }
+    }, intersectionOptions);
+
+    let tabData = [];
+    if (this.whichTab === 'rest') {
+      tabData = restApiDocsData;
+    } else if (this.whichTab === 'websocket') {
+      tabData = wsApiDocsData;
+    } else if (this.whichTab === 'faq') {
+      tabData = faqData;
+    } else if (this.whichTab === 'electrs') {
+      tabData = electrumApiDocsData;
+    }
+
+    if (tabData) {
+      tabData.forEach((item) => {
+        if (item.type !== 'category' && item.fragment) {
+          const element = document.getElementById(item.fragment);
+          if (element) {
+            this.observer.observe(element);
+          }
+        }
+      });
+    }
   }
 
   ngOnInit(): void {
@@ -131,6 +179,9 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
     this.destroy$.complete();
     window.removeEventListener('scroll', this.onDocScroll);
     this.timeLtrSubscription.unsubscribe();
+    if (this.observer) {
+      this.observer.disconnect();
+    }
   }
 
   onDocScroll() {
