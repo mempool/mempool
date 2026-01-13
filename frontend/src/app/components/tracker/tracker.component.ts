@@ -642,7 +642,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
       }),
       tap(eta => {
         if (this.replaced) {
-          this.trackerStage = 'replaced'
+          this.trackerStage = 'replaced';
         } else if (eta?.blocks === 0) {
           this.trackerStage = 'next';
         } else if (eta?.blocks < 3){
@@ -651,7 +651,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
           this.trackerStage = 'pending';
         }
       })
-    )
+    );
   }
 
   handleLoadElectrsTransactionError(error: any): Observable<any> {

@@ -18,7 +18,7 @@ describe('Database Migration Integration Tests', () => {
   });
 
   test('should have schema version in state table', async () => {
-    const [result] = await DB.query<any>("SELECT number FROM state WHERE name = 'schema_version'");
+    const [result] = await DB.query<any>('SELECT number FROM state WHERE name = \'schema_version\'');
     expect(result).toHaveLength(1);
     expect(result[0].number).toBeGreaterThan(0);
   });
@@ -70,7 +70,7 @@ describe('Database Migration Integration Tests', () => {
        WHERE TABLE_SCHEMA = 'mempool_test' 
        AND TABLE_NAME = 'blocks'`
     );
-    
+
     const columnNames = columns.map((col: any) => col.COLUMN_NAME);
     expect(columnNames).toContain('height');
     expect(columnNames).toContain('hash');
@@ -87,7 +87,7 @@ describe('Database Migration Integration Tests', () => {
        WHERE TABLE_SCHEMA = 'mempool_test' 
        AND TABLE_NAME = 'pools'`
     );
-    
+
     const columnNames = columns.map((col: any) => col.COLUMN_NAME);
     expect(columnNames).toContain('id');
     expect(columnNames).toContain('name');

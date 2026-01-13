@@ -315,21 +315,21 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         switchMap(_ => this.apiService.recentPegsList$()),
         share()
       );
-  
+
       this.pegsVolume$ = this.auditUpdated$.pipe(
         filter(auditUpdated => auditUpdated === true),
         throttleTime(40000),
         switchMap(_ => this.apiService.pegsVolume$()),
         share()
       );
-  
+
       this.federationAddresses$ = this.auditUpdated$.pipe(
         filter(auditUpdated => auditUpdated === true),
         throttleTime(40000),
         switchMap(_ => this.apiService.federationAddresses$()),
         share()
       );
-  
+
       this.federationAddressesNumber$ = this.auditUpdated$.pipe(
         filter(auditUpdated => auditUpdated === true),
         throttleTime(40000),
@@ -337,7 +337,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         map(count => count.address_count),
         share()
       );
-  
+
       this.federationUtxosNumber$ = this.auditUpdated$.pipe(
         filter(auditUpdated => auditUpdated === true),
         throttleTime(40000),
@@ -359,7 +359,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         switchMap(_ => this.apiService.emergencySpentUtxosStats$()),
         share()
       );
-  
+
       this.liquidPegsMonth$ = interval(60 * 60 * 1000)
         .pipe(
           startWith(0),
@@ -375,7 +375,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
           }),
           share(),
         );
-  
+
       this.liquidReservesMonth$ = interval(60 * 60 * 1000).pipe(
         startWith(0),
         switchMap(() => this.apiService.listLiquidReservesMonth$()),
@@ -389,12 +389,12 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         }),
         share()
       );
-  
+
       this.fullHistory$ = combineLatest([this.liquidPegsMonth$, this.currentPeg$, this.liquidReservesMonth$, this.currentReserves$])
         .pipe(
           map(([liquidPegs, currentPeg, liquidReserves, currentReserves]) => {
             liquidPegs.series[liquidPegs.series.length - 1] = parseFloat(currentPeg.amount) / 100000000;
-  
+
             if (liquidPegs.series.length === liquidReserves?.series.length) {
               liquidReserves.series[liquidReserves.series.length - 1] = parseFloat(currentReserves?.amount) / 100000000;
             } else if (liquidPegs.series.length === liquidReserves?.series.length + 1) {
@@ -406,7 +406,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
                 labels: []
               };
             }
-  
+
             return {
               liquidPegs,
               liquidReserves
@@ -438,7 +438,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   getArrayFromNumber(num: number): number[] {
     return Array.from({ length: num }, (_, i) => i + 1);
   }
-  
+
   setFilter(index): void {
     const selected = this.goggleCycle[index];
     this.stateService.activeGoggles$.next(selected);

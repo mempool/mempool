@@ -33,7 +33,7 @@ export class ChannelsListComponent implements OnInit, OnChanges {
   constructor(
     private lightningApiService: LightningApiService,
     private formBuilder: UntypedFormBuilder,
-  ) { 
+  ) {
     this.channelStatusForm = this.formBuilder.group({
       status: [this.defaultStatus],
     });

@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Env, StateService } from '@app/services/state.service';
 import { Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { restApiDocsData, wsApiDocsData } from '@app/docs/api-docs/api-docs-data';
+import { restApiDocsData, wsApiDocsData, electrumApiDocsData } from '@app/docs/api-docs/api-docs-data';
 import { faqData } from '@app/docs/api-docs/api-docs-data';
 
 @Component({
@@ -21,6 +21,7 @@ export class ApiDocsNavComponent implements OnInit {
   tabData: any[];
   auditEnabled: boolean;
   officialMempoolInstance: boolean;
+  isMempoolSpaceBuild: boolean;
   runningElectrs: boolean;
 
   constructor(
@@ -30,6 +31,7 @@ export class ApiDocsNavComponent implements OnInit {
   ngOnInit(): void {
     this.env = this.stateService.env;
     this.officialMempoolInstance = this.env.OFFICIAL_MEMPOOL_SPACE;
+    this.isMempoolSpaceBuild = this.stateService.isMempoolSpaceBuild;
     this.stateService.backend$.pipe(takeUntil(this.destroy$)).subscribe((backend) => {
       this.runningElectrs = !!(backend == 'esplora');
     });
@@ -40,6 +42,8 @@ export class ApiDocsNavComponent implements OnInit {
       this.tabData = wsApiDocsData;
     } else if (this.whichTab === 'faq') {
       this.tabData = faqData;
+    } else if (this.whichTab === 'electrs') {
+      this.tabData = electrumApiDocsData;
     }
   }
 

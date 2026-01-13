@@ -46,10 +46,10 @@ class LndApi implements AbstractLightningApi {
 
     for (const node of graph.nodes) {
       const nodeFeatures: ILightningApi.Feature[] = [];
-      for (const bit in node.features) {        
+      for (const bit in node.features) {
         nodeFeatures.push({
           bit: parseInt(bit, 10),
-          name: node.features[bit].name,  
+          name: node.features[bit].name,
           is_required: node.features[bit].is_required,
           is_known: node.features[bit].is_known,
         });

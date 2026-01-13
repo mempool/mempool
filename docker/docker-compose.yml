@@ -50,6 +50,7 @@ services:
       MYSQL_USER: "mempool"
       MYSQL_PASSWORD: "mempool"
       MYSQL_ROOT_PASSWORD: "admin"
+      MARIADB_AUTO_UPGRADE: "1"
     image: mariadb:10.5.21
     user: "1000:1000"
     restart: on-failure

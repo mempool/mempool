@@ -241,7 +241,7 @@ export class Common {
         return true;
       }
       // scriptsig-not-pushonly
-      if (vin.scriptsig_asm) {
+      if (vin.scriptsig_asm?.length) {
         for (const op of vin.scriptsig_asm.split(' ')) {
           if (opcodes[op] && opcodes[op] > opcodes['OP_16']) {
             return true;
@@ -508,7 +508,7 @@ export class Common {
   }
 
   static setLegacySighashFlags(flags: bigint, scriptsig_asm: string): bigint {
-    for (const item of scriptsig_asm.split(' ')) {
+    for (const item of scriptsig_asm?.split(' ') ?? []) {
       // skip op_codes
       if (item.startsWith('OP_')) {
         continue;
@@ -911,7 +911,7 @@ export class Common {
     if (id.indexOf('/') !== -1) {
       id = id.slice(0, -2);
     }
-    
+
     if (id.indexOf('x') !== -1) { // Already a short id
       return id;
     }
@@ -933,6 +933,13 @@ export class Common {
   }
 
   static findSocketNetwork(addr: string): {network: string | null, url: string} {
+    if (!addr?.length) {
+      return {
+        network: null,
+        url: ''
+      };
+    }
+
     let network: string | null = null;
     let url: string = addr;
 
@@ -940,7 +947,7 @@ export class Common {
       url = addr.split('://')[1];
     }
 
-    if (!url) {
+    if (!url?.length) {
       return {
         network: null,
         url: addr,
@@ -966,7 +973,15 @@ export class Common {
         };
       }
     } else if (addr.indexOf('ipv6') !== -1 || (config.LIGHTNING.BACKEND === 'lnd' && url.indexOf(']:'))) {
-      url = url.split('[')[1].split(']')[0];
+      const parts = url.split('[');
+      if (parts.length < 2) {
+        return {
+          network: null,
+          url: addr,
+        };
+      } else {
+        url = parts[1].split(']')[0];
+      }
       const ipv = isIP(url);
       if (ipv === 6) {
         const parts = addr.split(':');
@@ -1066,7 +1081,7 @@ export class Common {
   }
 
   static getTransactionFromRequest(req: Request, form: boolean): string {
-    let rawTx: any = typeof req.body === 'object' && form
+    const rawTx: any = typeof req.body === 'object' && form
       ? Object.values(req.body)[0] as any
       : req.body;
     if (typeof rawTx !== 'string') {
@@ -1167,7 +1182,7 @@ export class Common {
             }
           }
         }
-      })
+      });
     }
 
     // Pass through the input string untouched
@@ -1205,14 +1220,14 @@ export class Common {
 /**
  * Class to calculate average fee rates of a list of transactions
  * at certain weight percentiles, in a single pass
- * 
+ *
  * init with:
  *   maxWeight - the total weight to measure percentiles relative to (e.g. 4MW for a single block)
  *   percentileBandWidth - how many weight units to average over for each percentile (as a % of maxWeight)
  *   percentiles - an array of weight percentiles to compute, in %
- * 
+ *
  * then call .processNext(tx) for each transaction, in descending order
- * 
+ *
  * retrieve the final results with .getFeeStats()
  */
 export class OnlineFeeStatsCalculator {

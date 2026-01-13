@@ -2,3 +2,9 @@
   cursor: default !important;
   pointer-events: none;
 }
+
+@media (max-width: 430px) {
+  .confirmation-compact {
+    font-size: 12px;
+  }
+}

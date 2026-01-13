@@ -41,6 +41,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   @Input() inputIndex: number;
   @Input() outputIndex: number;
   @Input() addresses: string[] = [];
+  @Input() acceleratedTxids: Set<string> | null = null;
   @Input() rowLimit = 12;
   @Input() blockTime: number = 0; // Used for price calculation if all the transactions are in the same block
   @Input() txPreview = false;
@@ -224,7 +225,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
         setTimeout(() => {
           const assetBoxElements = document.getElementsByClassName('assetBox');
           if (assetBoxElements && assetBoxElements[0]) {
-            assetBoxElements[0].scrollIntoView({block: "center"});
+            assetBoxElements[0].scrollIntoView({block: 'center'});
           }
         }, 10);
       }
@@ -421,8 +422,8 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
           const similarity = checkedCompareAddressStrings(address, compareAddr.scriptpubkey_address, addressType as AddressType, this.stateService.network);
           if (similarity?.status === 'comparable' && similarity.score > adjustedThreshold) {
             // Get or create group numbers for both addresses
-            let group1 = similarityGroups.get(address);
-            let group2 = similarityGroups.get(compareAddr.scriptpubkey_address);
+            const group1 = similarityGroups.get(address);
+            const group2 = similarityGroups.get(compareAddr.scriptpubkey_address);
 
             let group: number;
             if (group1 !== undefined && group2 !== undefined) {
@@ -536,7 +537,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
       this.electrsApiService.getTransaction$(tx.txid)
         .subscribe((newTx) => {
           tx['@vinLoaded'] = true;
-          let temp = tx.vin;
+          const temp = tx.vin;
           tx.vin = newTx.vin;
           tx.fee = newTx.fee;
           for (const [index, vin] of temp.entries()) {

@@ -1,6 +1,6 @@
-import { Vin } from "../interfaces/electrs.interface";
-import { AddressType, detectAddressType } from "./address-utils";
-import { ParsedTaproot } from "./transaction.utils";
+import { Vin } from '../interfaces/electrs.interface';
+import { AddressType, detectAddressType } from './address-utils';
+import { ParsedTaproot } from './transaction.utils';
 
 const opcodes = {
   OP_FALSE: 0,
@@ -198,7 +198,11 @@ export class ScriptInfo {
   }
 
   public clone(): ScriptInfo {
-    return { ...this };
+    const cloned = new ScriptInfo(this.type, this.hex, this.asm, undefined, this.taprootInfo, this.vinId);
+    if (this.template) {
+      cloned.template = this.template;
+    }
+    return cloned;
   }
 
   get key(): string {
@@ -526,7 +530,7 @@ export function isPoint(pointHex: string): boolean {
   }
 
   // Function modified slightly from noble-curves
-  
+
 
   // Now we know that pointHex is a 33 or 65 byte hex string.
   const isCompressed = pointHex.length === 66;

@@ -28,7 +28,7 @@ import { WalletComponent } from '@components/wallet/wallet.component';
 const browserWindow = window || {};
 // @ts-ignore
 const browserWindowEnv = browserWindow.__env || {};
-const isCustomized = browserWindowEnv?.customize;
+const isCustomized = browserWindowEnv?.customize?.dashboard;
 
 const routes: Routes = [
   {

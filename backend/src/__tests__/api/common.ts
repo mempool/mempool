@@ -30,7 +30,7 @@ describe('Common', () => {
         expect(Common.isNonStandard(tx)).toEqual(true);
       });
     });
-  
+
     test('should not misclassify as nonstandard transactions', () => {
       randomTransactions.forEach((tx) => {
         expect(Common.isNonStandard(tx)).toEqual(false);

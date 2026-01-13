@@ -46,7 +46,7 @@ class Indexer {
         synced: indexes[indexName].synced,
         best_block_height: indexes[indexName].best_block_height,
       };
-      logger.info(`Core index '${indexName}' is ${indexes[indexName].synced ? 'synced' : 'not synced'}. Best block height is ${indexes[indexName].best_block_height}`);      
+      logger.info(`Core index '${indexName}' is ${indexes[indexName].synced ? 'synced' : 'not synced'}. Best block height is ${indexes[indexName].best_block_height}`);
       updatedCoreIndexes.push(newState);
 
       if (indexName === 'coinstatsindex' && newState.synced === true) {
@@ -62,9 +62,9 @@ class Indexer {
 
   /**
    * Return the best block height if a core index is available, or 0 if not
-   * 
-   * @param name 
-   * @returns 
+   *
+   * @param name
+   * @returns
    */
   public isCoreIndexReady(name: string): CoreIndex | null {
     for (const index of this.coreIndexes) {

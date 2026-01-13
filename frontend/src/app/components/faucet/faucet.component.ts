@@ -174,12 +174,12 @@ export class FaucetComponent implements OnInit, OnDestroy {
   get amount() { return this.faucetForm.get('satoshis')!; }
   get invalidAmount() {
     const amount = this.faucetForm.get('satoshis')!;
-    return amount?.invalid && (amount.dirty || amount.touched)
+    return amount?.invalid && (amount.dirty || amount.touched);
   }
 
   get address() { return this.faucetForm.get('address')!; }
   get invalidAddress() {
     const address = this.faucetForm.get('address')!;
-    return address?.invalid && (address.dirty || address.touched)
+    return address?.invalid && (address.dirty || address.touched);
   }
 }

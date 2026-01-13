@@ -107,10 +107,10 @@ li.nav-item {
 
 
 .navbar-collapse {
+  justify-content: flex-end;
   @media (min-width: 564px) {
     flex-basis: auto;
   }
-  justify-content: flex-end;
 }
 
 @media (min-width: 992px) {
@@ -207,6 +207,19 @@ nav {
   align-self: center;
   .rounded {
     border-radius: 5px;
+  }
+
+  &.custom_logo {
+    height: 48px;
+    margin-right: 1em;
+  }
+ 
+  &.mobile_logo {
+    margin-right: 0;
+  }
+
+  &.custom_logo.mobile_logo {
+    height: 42px;
   }
 }
 

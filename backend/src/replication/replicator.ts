@@ -14,7 +14,7 @@ export async function $sync(path): Promise<{ data?: any, exists: boolean, server
     if (server === backendInfo.getBackendInfo().hostname) {
       continue;
     }
-    
+
     try {
       const result = await query(`https://${server}${path}`);
       if (result) {

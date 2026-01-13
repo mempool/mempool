@@ -5,7 +5,7 @@ import { IEsploraApi } from './esplora-api.interface';
 import { IElectrumApi } from './electrum-api.interface';
 import BitcoinApi from './bitcoin-api';
 import logger from '../../logger';
-import crypto from "crypto-js";
+import crypto from 'crypto-js';
 import loadingIndicators from '../loading-indicators';
 import memoryCache from '../memory-cache';
 
@@ -209,7 +209,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
   async $getScriptHashUtxos(scripthash: string): Promise<IEsploraApi.UTXO[]> {
     const utxos = await this.$getScriptHashUnspent(scripthash);
     const result: IEsploraApi.UTXO[] = [];
-    for(let utxo of utxos) {
+    for(const utxo of utxos) {
       if(utxo.height===0) {
         //Unconfirmed
         result.push({

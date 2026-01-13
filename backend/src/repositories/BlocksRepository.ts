@@ -217,9 +217,9 @@ class BlocksRepository {
 
   /**
    * Save newly indexed data from core coinstatsindex
-   * 
-   * @param utxoSetSize 
-   * @param totalInputAmt 
+   *
+   * @param utxoSetSize
+   * @param totalInputAmt
    */
   public async $updateCoinStatsIndexData(blockHash: string, utxoSetSize: number,
     totalInputAmt: number
@@ -245,9 +245,9 @@ class BlocksRepository {
   /**
    * Update missing fee amounts fields
    *
-   * @param blockHash 
-   * @param feeAmtPercentiles 
-   * @param medianFeeAmt 
+   * @param blockHash
+   * @param feeAmtPercentiles
+   * @param medianFeeAmt
    */
   public async $updateFeeAmounts(blockHash: string, feeAmtPercentiles, medianFeeAmt) : Promise<void> {
     try {
@@ -275,7 +275,7 @@ class BlocksRepository {
     // Ensure startHeight is the lower value and endHeight is the higher value
     const minHeight = Math.min(startHeight, endHeight);
     const maxHeight = Math.max(startHeight, endHeight);
-    
+
     if (minHeight === maxHeight) {
       return [];
     }
@@ -410,7 +410,7 @@ class BlocksRepository {
    */
    public async $blockCountBetweenHeight(startHeight: number, endHeight: number): Promise<number> {
     const params: any[] = [];
-    let query = `SELECT count(height) as blockCount
+    const query = `SELECT count(height) as blockCount
       FROM blocks
       WHERE height <= ${startHeight} AND height >= ${endHeight} AND stale = 0`;
 
@@ -1028,9 +1028,9 @@ class BlocksRepository {
 
   /**
    * Save indexed median fee to avoid recomputing it later
-   * 
-   * @param id 
-   * @param feePercentiles 
+   *
+   * @param id
+   * @param feePercentiles
    */
   public async $saveFeePercentilesForBlockId(id: string, feePercentiles: number[]): Promise<void> {
     try {
@@ -1047,9 +1047,9 @@ class BlocksRepository {
 
   /**
    * Save indexed effective fee statistics
-   * 
-   * @param id 
-   * @param feeStats 
+   *
+   * @param id
+   * @param feeStats
    */
   public async $saveEffectiveFeeStats(id: string, feeStats: EffectiveFeeStats): Promise<void> {
     try {
@@ -1066,7 +1066,7 @@ class BlocksRepository {
 
   /**
    * Save coinbase addresses
-   * 
+   *
    * @param id
    * @param addresses
    */
@@ -1085,7 +1085,7 @@ class BlocksRepository {
 
   /**
    * Save pool
-   * 
+   *
    * @param id
    * @param poolId
    */
@@ -1104,8 +1104,8 @@ class BlocksRepository {
 
   /**
    * Save block first seen time
-   * 
-   * @param id 
+   *
+   * @param id
    */
   public async $saveFirstSeenTime(id: string, firstSeen: number): Promise<void> {
     try {
@@ -1122,7 +1122,7 @@ class BlocksRepository {
 
   /**
    * Change which block at a height belongs to the canonical chain
-   * 
+   *
    * @param hash
    * @param height
    */
@@ -1151,8 +1151,8 @@ class BlocksRepository {
   /**
    * Convert a mysql row block into a BlockExtended. Note that you
    * must provide the correct field into dbBlk object param
-   * 
-   * @param dbBlk 
+   *
+   * @param dbBlk
    */
   private async formatDbBlockIntoExtendedBlock(dbBlk: DatabaseBlock): Promise<BlockExtended> {
     const blk: Partial<BlockExtended> = {};
