@@ -130,7 +130,7 @@ class BitcoinApi implements AbstractBitcoinApi {
 
   $getRawBlock(hash: string): Promise<Buffer> {
     return this.bitcoindClient.getBlock(hash, 0)
-      .then((raw: string) => Buffer.from(raw, "hex"));
+      .then((raw: string) => Buffer.from(raw, 'hex'));
   }
 
   $getBlockHash(height: number): Promise<string> {

@@ -42,7 +42,7 @@ export class TimezoneSelectorComponent implements OnInit {
 
   setLocalTimezone() {
     const offset = new Date().getTimezoneOffset();
-    const sign = offset <= 0 ? "+" : "-";
+    const sign = offset <= 0 ? '+' : '-';
     const absOffset = Math.abs(offset);
     const hours = String(Math.floor(absOffset / 60));
     const minutes = String(absOffset % 60).padStart(2, '0');

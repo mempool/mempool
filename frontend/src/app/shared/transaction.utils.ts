@@ -303,7 +303,7 @@ export function processInputSignatures(vin: Vin): SigInfo[] {
   return signatures;
 }
 
-/*  
+/*
  * returns the number of missing signatures, the number of bytes to add to the transaction
  * and whether these should benefit from witness discounting
  * - Add a DER sig     in scriptsig/witness: 71 bytes signature + 1 push or witness size byte = 72 bytes
@@ -1125,7 +1125,7 @@ function convertScriptSigAsm(hex: string): string {
  *          the script item if it is a script spend.
  */
 function witnessToP2TRScript(witness: string[]): string | null {
-  if (witness.length < 2) return null;
+  if (witness.length < 2) {return null;}
   // Note: see BIP341 for parsing details of witness stack
 
   // If there are at least two witness elements, and the first byte of the
@@ -1135,7 +1135,7 @@ function witnessToP2TRScript(witness: string[]): string | null {
   // If there are at least two witness elements left, script path spending is used.
   // Call the second-to-last stack element s, the script.
   // (Note: this phrasing from BIP341 assumes we've *removed* the annex from the stack)
-  if (hasAnnex && witness.length < 3) return null;
+  if (hasAnnex && witness.length < 3) {return null;}
   const positionOfScript = hasAnnex ? witness.length - 3 : witness.length - 2;
   return witness[positionOfScript];
 }
@@ -1188,7 +1188,7 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: PsbtKeyValueMa
       block_time: null,
     }
   } as Transaction;
-  
+
   [tx.version, offset] = readInt32(buffer, offset);
 
   let marker, flag;
@@ -1250,7 +1250,7 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: PsbtKeyValueMa
   if (offset !== buffer.length) {
     throw new Error('Transaction has unexpected data');
   }
-  
+
   // Optionally add data from PSBT: prevouts, redeem/witness scripts and signatures
   if (inputs) {
     for (let i = 0; i < tx.vin.length; i++) {
@@ -1311,7 +1311,7 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: PsbtKeyValueMa
       if (groups.redeemScript && !finalizedScriptSig) {
         const redeemScript = groups.redeemScript.value;
         if (redeemScript.length > 520) {
-          throw new Error("Redeem script must be <= 520 bytes");
+          throw new Error('Redeem script must be <= 520 bytes');
         }
         let pushOpcode;
         if (redeemScript.length < 0x4c) {
@@ -1336,7 +1336,7 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: PsbtKeyValueMa
         const scriptpubkey_type = vin.prevout?.scriptpubkey_type;
         if (scriptpubkey_type === 'multisig' && !finalizedScriptSig) {
           if (signature.length > 74) {
-            throw new Error("Signature must be <= 74 bytes");
+            throw new Error('Signature must be <= 74 bytes');
           }
           const pushOpcode = new Uint8Array([signature.length]);
           vin.scriptsig = uint8ArrayToHexString(pushOpcode) + uint8ArrayToHexString(signature) + (vin.scriptsig || '');
@@ -1351,7 +1351,7 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: PsbtKeyValueMa
           } else {
             if (!finalizedScriptSig) {
               if (signature.length > 74) {
-                throw new Error("Signature must be <= 74 bytes");
+                throw new Error('Signature must be <= 74 bytes');
               }
               const pushOpcode = new Uint8Array([signature.length]);
               vin.scriptsig = uint8ArrayToHexString(pushOpcode) + uint8ArrayToHexString(signature) + (vin.scriptsig || '');
@@ -1419,7 +1419,7 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: PsbtKeyValueMa
           }
         }
       }
-    }    
+    }
   }
 
   // Calculate final size, weight, and txid
@@ -1483,7 +1483,7 @@ function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: PsbtKe
   const expectedMagic = [0x70, 0x73, 0x62, 0x74];
   for (let i = 0; i < expectedMagic.length; i++) {
     if (psbtBuffer[offset + i] !== expectedMagic[i]) {
-      throw new Error("Invalid PSBT magic bytes");
+      throw new Error('Invalid PSBT magic bytes');
     }
   }
   offset += expectedMagic.length;
@@ -1491,7 +1491,7 @@ function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: PsbtKe
   const separator = psbtBuffer[offset];
   offset += 1;
   if (separator !== 0xff) {
-    throw new Error("Invalid PSBT separator");
+    throw new Error('Invalid PSBT separator');
   }
 
   // GLOBAL MAP
@@ -1517,7 +1517,7 @@ function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: PsbtKe
   }
 
   if (!rawTx) {
-    throw new Error("Unsigned transaction not found in PSBT");
+    throw new Error('Unsigned transaction not found in PSBT');
   }
 
   const readMaps = (count: number, startOffset: number): { map: PsbtKeyValueMap[]; offset: number } => {
@@ -1840,24 +1840,24 @@ export function taprootAddressToOutputKey(address: string): { outputKey: string,
 
 // base58 encoding
 function base58Encode(data: Uint8Array): string {
-  const BASE58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+  const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 
-  let hexString = Array.from(data)
+  const hexString = Array.from(data)
     .map(byte => byte.toString(16).padStart(2, '0'))
     .join('');
-  
-  let num = BigInt("0x" + hexString);
 
-  let encoded = "";
+  let num = BigInt('0x' + hexString);
+
+  let encoded = '';
   while (num > 0) {
     const remainder = Number(num % 58n);
     num = num / 58n;
     encoded = BASE58_ALPHABET[remainder] + encoded;
   }
 
-  for (let byte of data) {
+  for (const byte of data) {
     if (byte === 0) {
-      encoded = "1" + encoded;
+      encoded = '1' + encoded;
     } else {
       break;
     }
@@ -1868,7 +1868,7 @@ function base58Encode(data: Uint8Array): string {
 
 // bech32 encoding / decoding
 // Adapted from https://github.com/bitcoinjs/bech32/blob/5ceb0e3d4625561a459c85643ca6947739b2d83c/src/index.ts
-const BECH32_ALPHABET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
+const BECH32_ALPHABET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
 type Bech32Encoding = 'bech32' | 'bech32m';
 
 function bech32Encode(prefix: string, words: number[], encoding: Bech32Encoding = 'bech32'): string {
@@ -1968,7 +1968,7 @@ function convertBits(data, fromBits, toBits, pad) {
 
   for (let i = 0; i < data.length; ++i) {
     const value = data[i];
-    if (value < 0 || value >> fromBits) throw new Error('Invalid value');
+    if (value < 0 || value >> fromBits) {throw new Error('Invalid value');}
     acc = (acc << fromBits) | value;
     bits += fromBits;
     while (bits >= toBits) {
@@ -2098,13 +2098,13 @@ function readVarInt(buffer: Uint8Array, offset: number): [number, number] {
     const [bigValue, nextOffset] = readInt64(buffer, newOffset);
 
     if (bigValue > Number.MAX_SAFE_INTEGER) {
-      throw new Error("VarInt exceeds safe integer range");
+      throw new Error('VarInt exceeds safe integer range');
     }
 
     const numValue = Number(bigValue);
     return [numValue, nextOffset];
   } else {
-    throw new Error("Invalid VarInt prefix");
+    throw new Error('Invalid VarInt prefix');
   }
 }
 

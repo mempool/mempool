@@ -209,7 +209,7 @@ export class StatisticsComponent implements OnInit {
       }
     });
   }
-  
+
   onOutlierToggleChange(e): void {
     this.outlierCappingEnabled = e.target.checked;
     this.storageService.setValue('cap-outliers', e.target.checked);

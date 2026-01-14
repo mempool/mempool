@@ -14,5 +14,5 @@ export const dates = (counter: number) => {
         i18nMinutes: $localize`:@@date-base.minutes:${counter}:DATE: minutes`,
         i18nSecond: $localize`:@@date-base.second:${counter}:DATE: second`,
         i18nSeconds: $localize`:@@date-base.seconds:${counter}:DATE: seconds`,
-    }
-}
+    };
+};

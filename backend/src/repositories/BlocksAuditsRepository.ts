@@ -94,7 +94,7 @@ class BlocksAuditRepositories {
         JOIN blocks_templates ON blocks_templates.id = blocks_audits.hash
         WHERE blocks_audits.hash = ?
       `, [hash]);
-      
+
       if (rows.length) {
         rows[0].unseenTxs = JSON.parse(rows[0].unseenTxs);
         rows[0].missingTxs = JSON.parse(rows[0].missingTxs);

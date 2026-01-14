@@ -1,3 +1,7 @@
 .form-select {
   width: 108px;
 }
+
+.custom-select:disabled {
+  opacity: 0.6;
+}

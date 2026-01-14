@@ -155,8 +155,8 @@ export class WalletComponent implements OnInit, OnDestroy {
     );
 
     this.walletSubscription = this.walletAddresses$.subscribe(wallet => {
-      this.addressStrings = Object.keys(wallet);
-      this.addresses = Object.values(wallet);
+      this.addressStrings = Object.keys(wallet).filter(address => address !== 'private');
+      this.addresses = Object.values(wallet).filter(address => address.address !== 'private');
     });
 
     this.walletSummary$ = this.wallet$.pipe(

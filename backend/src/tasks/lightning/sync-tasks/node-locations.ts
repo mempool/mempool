@@ -60,13 +60,13 @@ export async function $lookupNodeLocation(): Promise<void> {
 
           if (city && (asn || isp)) {
             const query = `
-              UPDATE nodes SET 
-                as_number = ?, 
-                city_id = ?, 
-                country_id = ?, 
-                subdivision_id = ?, 
-                longitude = ?, 
-                latitude = ?, 
+              UPDATE nodes SET
+                as_number = ?,
+                city_id = ?,
+                country_id = ?,
+                subdivision_id = ?,
+                longitude = ?,
+                latitude = ?,
                 accuracy_radius = ?
               WHERE public_key = ?
             `;

@@ -150,16 +150,79 @@
     </div>
 
     <div id="electrs" *ngIf="whichTab === 'electrs'">
-      <div class="doc-content no-sidebar">
-        <div class="doc-item-container">
-          <p class='subtitle'>Hostname</p>
-          <p>{{plainHostname}}</p>
-          <p class="subtitle">Port</p>
-          <p>{{electrsPort}}</p>
-          <p class="subtitle">SSL</p>
-          <p>Enabled</p>
+
+      <div id="doc-nav-desktop" class="hide-on-mobile" [ngClass]="desktopDocsNavPosition">
+        <app-api-docs-nav (navLinkClickEvent)="anchorLinkClick( $event )" [network]="{ val: network$ | async }" [whichTab]="whichTab"></app-api-docs-nav>
+      </div>
+
+      <div class="doc-content">
+
+        <div class="doc-item-container connection-info">
+          <p class="doc-welcome-note">Below is a reference for the {{ network.val === '' ? 'Bitcoin' : network.val.charAt(0).toUpperCase() + network.val.slice(1) }} Electrum JSON-RPC v2.0 API.</p>
+          
+          <div class="connection-details">
+            <h3>Connection Information</h3>
+            <div class="connection-item">
+              <p class='subtitle'>Hostname</p>
+              <p>{{plainHostname}}</p>
+            </div>
+            <div class="connection-item">
+              <p class="subtitle">Port</p>
+              <p>{{electrsPort}}</p>
+            </div>
+            <div class="connection-item">
+              <p class="subtitle">SSL</p>
+              <p>Enabled</p>
+            </div>
+            <div class="connection-item">
+              <p class="subtitle">Protocol</p>
+              <p>JSON-RPC v2.0</p>
+            </div>
+            <div class="connection-item">
+              <p class="subtitle">Protocol Version</p>
+              <p>1.4</p>
+            </div>
+          </div>
+
           <p class="note" *ngIf="network.val !== 'signet' && network.val !== 'testnet4'">Electrum RPC interface for <a href="/signet/docs/api/electrs">Bitcoin Signet</a> and <a href="/testnet4/docs/api/electrs">Bitcoin Testnet4</a> is publicly available. Electrum RPC interface for all other networks is available to <a href='https://mempool.space/enterprise'>sponsors</a> only—whitelisting is required.</p>
+          
+          <div class="protocol-info">
+            <h3>Request Format</h3>
+            <p>All requests must be valid JSON-RPC 2.0 messages. You can use a tool like <code>curl</code> with SSL/TLS to connect to the Electrum server.</p>
+            <pre><code>{{'{'}}"jsonrpc": "2.0", "id": 1, "method": "method.name", "params": []{{'}'}}</code></pre>
+          </div>
         </div>
+
+        <div class="doc-item-container" *ngFor="let item of electrumDocs">
+          <div *ngIf="!item.hasOwnProperty('options') || ( item.hasOwnProperty('options') && item.options.hasOwnProperty('officialOnly') && item.options.officialOnly && officialMempoolInstance )">
+            <h3 *ngIf="( item.type === 'category' ) && ( item.showConditions.indexOf(network.val) > -1 )">{{ item.title }}</h3>
+            <div *ngIf="( item.type !== 'category' ) && ( item.showConditions.indexOf(network.val) > -1 )" class="endpoint-container" id="{{ item.fragment }}">
+              <a id="{{ item.fragment + '-tab-header' }}" class="section-header" (click)="anchorLinkClick({event: $event, fragment: item.fragment})">{{ item.title }} <span>{{ item.category }}</span></a>
+              <div class="endpoint-content">
+                <div class="description">
+                  <div class="subtitle" i18n>Description</div>
+                  <div [innerHTML]="item.description.default" i18n></div>
+                </div>
+                <div class="electrum-example">
+                  <div class="subtitle">Request Example</div>
+                  <div class="code-block">
+                    <p class="code-label">Using curl with SSL:</p>
+                    <pre><code>echo '{{item.requestExample}}' | openssl s_client -connect {{plainHostname}}:{{electrsPort}} -quiet 2>/dev/null</code></pre>
+                  </div>
+                  <div class="code-block">
+                    <p class="code-label">Raw JSON-RPC Request:</p>
+                    <pre><code>{{item.requestExample}}</code></pre>
+                  </div>
+                </div>
+                <div class="electrum-example">
+                  <div class="subtitle">Response Example</div>
+                  <pre><code>{{item.responseExample}}</code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 

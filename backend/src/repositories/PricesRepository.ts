@@ -179,7 +179,7 @@ class PricesRepository {
         prices[currency] = 0;
       }
     }
-    
+
     try {
       if (!config.FIAT_PRICE.API_KEY) { // Store only the 7 main currencies
           await DB.query(`
@@ -191,8 +191,8 @@ class PricesRepository {
         await DB.query(`
           INSERT INTO prices(time,             USD, EUR, GBP, CAD, CHF, AUD, JPY, BGN, BRL, CNY, CZK, DKK, HKD, HRK, HUF, IDR, ILS, INR, ISK, KRW, MXN, MYR, NOK, NZD, PHP, PLN, RON, RUB, SEK, SGD, THB, TRY, ZAR)
           VALUE             (FROM_UNIXTIME(?), ?,   ?,   ?,   ?,   ?,   ?,   ?,   ?  , ?,   ?,   ?,   ?,   ?,   ?,   ?,   ?  , ?,   ?,   ?,   ?,   ?,   ?,   ?,   ?,   ?,   ?,   ?,   ?,   ?,   ?,   ?,   ?  , ?  )`,
-          [time, prices.USD, prices.EUR, prices.GBP, prices.CAD, prices.CHF, prices.AUD, prices.JPY, prices.BGN, prices.BRL, prices.CNY, prices.CZK, prices.DKK, 
-                prices.HKD, prices.HRK, prices.HUF, prices.IDR, prices.ILS, prices.INR, prices.ISK, prices.KRW, prices.MXN, prices.MYR, prices.NOK, prices.NZD, 
+          [time, prices.USD, prices.EUR, prices.GBP, prices.CAD, prices.CHF, prices.AUD, prices.JPY, prices.BGN, prices.BRL, prices.CNY, prices.CZK, prices.DKK,
+                prices.HKD, prices.HRK, prices.HUF, prices.IDR, prices.ILS, prices.INR, prices.ISK, prices.KRW, prices.MXN, prices.MYR, prices.NOK, prices.NZD,
                 prices.PHP, prices.PLN, prices.RON, prices.RUB, prices.SEK, prices.SGD, prices.THB, prices.TRY, prices.ZAR]
         );
       }
@@ -341,8 +341,8 @@ class PricesRepository {
       `);
       if (!Array.isArray(latestPrices)) {
         throw Error(`Cannot get single historical price from the database`);
-      }      
-      
+      }
+
       // Compute fiat exchange rates
       let latestPrice = latestPrices[0] as ApiPrice;
       if (!latestPrice || latestPrice.USD === -1) {
@@ -350,8 +350,8 @@ class PricesRepository {
       }
 
       const computeFx = (usd: number, other: number): number => usd <= 0.05 ? 0 : Math.round(Math.max(other, 0) / usd * 100) / 100;
-      
-      const exchangeRates: ExchangeRates = config.FIAT_PRICE.API_KEY ? 
+
+      const exchangeRates: ExchangeRates = config.FIAT_PRICE.API_KEY ?
         {
           USDEUR: computeFx(latestPrice.USD, latestPrice.EUR),
           USDGBP: computeFx(latestPrice.USD, latestPrice.GBP),
@@ -446,10 +446,10 @@ class PricesRepository {
         latestPrice = priceUpdater.getEmptyPricesObj();
       }
 
-      const computeFx = (usd: number, other: number): number => 
+      const computeFx = (usd: number, other: number): number =>
         usd <= 0 ? 0 : Math.round(Math.max(other, 0) / usd * 100) / 100;
-      
-      const exchangeRates: ExchangeRates = config.FIAT_PRICE.API_KEY ? 
+
+      const exchangeRates: ExchangeRates = config.FIAT_PRICE.API_KEY ?
         {
           USDEUR: computeFx(latestPrice.USD, latestPrice.EUR),
           USDGBP: computeFx(latestPrice.USD, latestPrice.GBP),

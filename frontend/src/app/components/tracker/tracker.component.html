@@ -2,24 +2,22 @@
   <div class="mobile-container">
     <div class="panel">
       <div class="nav-header">
-        @if (enterpriseInfo?.header_img) {
-          <a class="d-flex" [routerLink]="['/' | relativeUrl]">
-            <img *ngIf="enterpriseInfo.header_img" [src]="enterpriseInfo?.header_img" [alt]="enterpriseInfo.title" height="42px">
-          </a>
-        } @else if (enterpriseInfo?.img || enterpriseInfo?.imageMd5) {
+        @if (enterpriseInfo) {
           <a [routerLink]="['/' | relativeUrl]">
-            <img [src]="enterpriseInfo.img || '/api/v1/services/enterprise/images/' + enterpriseInfo.name + '/logo'" class="subdomain_logo" [class]="{'rounded': enterpriseInfo.rounded_corner}">
+            <img [src]="enterpriseInfo.logoUrl" [alt]="enterpriseInfo.title" class="subdomain_logo" [class.custom_logo]="!enterpriseInfo?.dualLogo" [class.rounded]="enterpriseInfo.rounded_corner">
           </a>
-          <div class="vertical-line"></div>
+          @if (enterpriseInfo.dualLogo) {
+            <div class="vertical-line"></div>
+          }
         }
-        @if (!enterpriseInfo?.header_img) {
+        @if (!enterpriseInfo || enterpriseInfo.dualLogo) {
           <a [routerLink]="['/' | relativeUrl]">
             <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" style="width: 144px; height: 36px" viewBox="0 0 500 126" width="500" height="126" class="mempool-logo"></app-svg-images>
             <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" style="width: 144px; height: 36px" width="500" height="126" viewBox="0 0 500 126"></app-svg-images>
           </a>
         }
 
-        @if (enterpriseInfo?.header_img || (!enterpriseInfo?.img && !enterpriseInfo?.imageMd5)) {
+        @if (!enterpriseInfo || !enterpriseInfo.dualLogo) {
           <div [ngSwitch]="network" class="network-label" [class.hide-name]="enterpriseInfo?.header_img">
             <span *ngSwitchCase="'signet'" class="network signet"><span class="name">Bitcoin Signet</span><app-svg-images name="signet" width="35" height="35" viewBox="0 0 65 65" style="display: inline-block" class="mainnet ms-2"></app-svg-images></span>
             <span *ngSwitchCase="'testnet'" class="network testnet"><span class="name">Bitcoin Testnet3</span><app-svg-images name="testnet" width="35" height="35" viewBox="0 0 65 65" style="display: inline-block" class="mainnet ms-2"></app-svg-images></span>

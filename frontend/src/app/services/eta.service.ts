@@ -269,7 +269,7 @@ export class EtaService {
       relatives.push(cpfpInfo.bestDescendant);
     }
 
-    if (!!relatives.length) {
+    if (relatives.length) {
       const totalWeight = tx.weight + relatives.reduce((prev, val) => prev + val.weight, 0);
       const totalFees = tx.fee + relatives.reduce((prev, val) => prev + val.fee, 0);
 
