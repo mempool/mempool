@@ -92,6 +92,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit, OnDestroy {
 
       if (mostVisibleEntry) {
         this.activeFragment = mostVisibleEntry.target.id;
+        document.getElementById(this.activeFragment + '-nav-link').scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }, intersectionOptions);
 
