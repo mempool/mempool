@@ -12762,7 +12762,7 @@ export const electrumApiDocsData = [
     responseExample: `{
   "jsonrpc": "2.0",
   "id": 1,
-  "result": "Welcome to mempool.space Electrum Server"
+  "result": "Welcome to mempool-electrs 3.3.0"
 }`
   },
   {
@@ -12801,7 +12801,7 @@ export const electrumApiDocsData = [
     responseExample: `{
   "jsonrpc": "2.0",
   "id": 1,
-  "result": "00000020b48b86f547e8ea3b1c3e8a49e2e93f6e6e1e73c3b94f16e4e7e7e7e7"
+  "result": "000000201929eb850a74427d0440cf6b518308837566cd6d0662790000000000000000001f6231ed3de07345b607ec2a39b2d01bec2fe10dfb7f516ba4958a42691c95316d0a385a459600185599fc5c"
 }`
   },
   {
@@ -12819,7 +12819,7 @@ export const electrumApiDocsData = [
   "id": 1,
   "result": {
     "count": 3,
-    "hex": "00000020b48b86f547e8ea3b...",
+    "hex": "000000201929eb850a74427d0440cf6b518308837566cd6d0662790000000000000000001f6231ed3de07345b607ec2a39b2d01bec2fe10dfb7f516ba4958a42691c95316d0a385a459600185599fc5c00000020045d94a1c33354c3759cc0512dcc49fd81bf4c3637fb24000000000000000000d4ee4e4683ad039ad67465c39acd4d569037b592afce6a920949b5d0cacfdb560d0b385a4596001862682d4b00000020924eb7e8ded72ae19fa6de6ec94ef940866f21b359995c000000000000000000f2131f2ac82b701b1bbc27a2952f4bd1093220a952c3a84226a72bf250ec4380c00b385a45960018cc2de362",
     "max": 2016
   }
 }`
@@ -12838,8 +12838,8 @@ export const electrumApiDocsData = [
   "jsonrpc": "2.0",
   "id": 1,
   "result": {
-    "hex": "00000020b48b86f547e8ea3b1c3e8a49e2e93f6e6e1e73c3b94f16e4e7e7e7e7",
-    "height": 875000
+    "height": 932110,
+    "hex": "0080fc20e679a5ad18c5a262e5dc72709e025e0987ee461170f300000000000000000000436161d7868d22dbaf5b1ff8414edbdb059db796987f68fdc166f912e677a205272a6669f2eb0117008ec971"
   }
 }`
   },
@@ -12872,7 +12872,7 @@ export const electrumApiDocsData = [
     responseExample: `{
   "jsonrpc": "2.0",
   "id": 1,
-  "result": 0.00001000
+  "result": 1e-6
 }`
   },
   {
@@ -12891,12 +12891,12 @@ export const electrumApiDocsData = [
       default: 'Returns the confirmed and unconfirmed balance for a script hash. Script hashes are the SHA256 hash of the output script (scriptPubKey), encoded as hexadecimal with the bytes reversed.<br><br><b>Not available on Liquid networks.</b>'
     },
     showConditions: bitcoinNetworks,
-    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.scripthash.get_balance","params":["8b01df4e368ea28f8dc0423bcf7a4923e3a12d307c875e47a0cfbf90b5c39161"]}',
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.scripthash.get_balance","params":["740485f380ff6379d11ef6fe7d7cdd68aea7f8bd0d953d9fdf3531fb7d531833"]}',
     responseExample: `{
   "jsonrpc": "2.0",
   "id": 1,
   "result": {
-    "confirmed": 1000000,
+    "confirmed": 5001009380,
     "unconfirmed": 0
   }
 }`
@@ -12910,20 +12910,54 @@ export const electrumApiDocsData = [
       default: 'Returns the transaction history for a script hash. Returns an array of objects containing transaction ID, height, and fee (for mempool transactions).'
     },
     showConditions: bitcoinNetworks.concat(liquidNetworks),
-    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.scripthash.get_history","params":["8b01df4e368ea28f8dc0423bcf7a4923e3a12d307c875e47a0cfbf90b5c39161"]}',
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.scripthash.get_history","params":["740485f380ff6379d11ef6fe7d7cdd68aea7f8bd0d953d9fdf3531fb7d531833"]}',
     responseExample: `{
   "jsonrpc": "2.0",
   "id": 1,
   "result": [
     {
-      "tx_hash": "9d1e7c2e3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d",
-      "height": 500000,
-      "fee": 0
+      "height": 0,
+      "tx_hash": "4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"
     },
     {
-      "tx_hash": "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b",
-      "height": 0,
-      "fee": 226
+      "height": 172165,
+      "tx_hash": "08901b81e39bc61d632c93241c44ec3763366bd57444b01494481ed46079c898"
+    },
+    {
+      "height": 800570,
+      "tx_hash": "b338282600dcb99fcf112159b2504e179d343691fc70d1882b3721d0a7664b5c"
+    },
+    {
+      "height": 821323,
+      "tx_hash": "f59c0ea559a4a22933ea2d71224002b5a60dcc885351ce67c58ba0bb0a53df49"
+    },
+    {
+      "height": 821358,
+      "tx_hash": "dfe1986a5392f7ffa82d95caac650dba064237871b8600c0a99ec86fd0f96443"
+    },
+    {
+      "height": 844542,
+      "tx_hash": "2cc7cd85d75b113fa8bf4d80aded938ab261bae8ce1b85afe066e84024276d9b"
+    },
+    {
+      "height": 882493,
+      "tx_hash": "85c5ffbe348a762b4eebd024fa7d166bf773fea1af5b37b485ab33e79f664dce"
+    },
+    {
+      "height": 895701,
+      "tx_hash": "8ee94a203a24490d8449c5c6e40c615200ed04d031172481738ad68717902355"
+    },
+    {
+      "height": 895706,
+      "tx_hash": "07a14d470d796f3407181f63f48a23756d9e63a10f31e709887aa871fda6b5e3"
+    },
+    {
+      "height": 916656,
+      "tx_hash": "bda4c8b2a99324f6b27bb7c9996ae942dee3fd3120cb72fddfe618914502012b"
+    },
+    {
+      "height": 928418,
+      "tx_hash": "edf0dc50de7065ec2cfcb223091746bacce2ba2c139bcd3a748fdeb18e3741b3"
     }
   ]
 }`
@@ -12937,16 +12971,76 @@ export const electrumApiDocsData = [
       default: 'Returns the list of unspent transaction outputs for a script hash.'
     },
     showConditions: bitcoinNetworks.concat(liquidNetworks),
-    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.scripthash.listunspent","params":["8b01df4e368ea28f8dc0423bcf7a4923e3a12d307c875e47a0cfbf90b5c39161"]}',
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.scripthash.listunspent","params":["740485f380ff6379d11ef6fe7d7cdd68aea7f8bd0d953d9fdf3531fb7d531833"]}',
     responseExample: `{
   "jsonrpc": "2.0",
   "id": 1,
   "result": [
     {
-      "height": 500000,
+      "height": 821323,
+      "tx_hash": "f59c0ea559a4a22933ea2d71224002b5a60dcc885351ce67c58ba0bb0a53df49",
       "tx_pos": 0,
-      "tx_hash": "9d1e7c2e3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d",
+      "value": 1337
+    },
+    {
+      "height": 844542,
+      "tx_hash": "2cc7cd85d75b113fa8bf4d80aded938ab261bae8ce1b85afe066e84024276d9b",
+      "tx_pos": 0,
+      "value": 1000
+    },
+    {
+      "height": 916656,
+      "tx_hash": "bda4c8b2a99324f6b27bb7c9996ae942dee3fd3120cb72fddfe618914502012b",
+      "tx_pos": 0,
+      "value": 777
+    },
+    {
+      "height": 895701,
+      "tx_hash": "8ee94a203a24490d8449c5c6e40c615200ed04d031172481738ad68717902355",
+      "tx_pos": 0,
+      "value": 777
+    },
+    {
+      "height": 821358,
+      "tx_hash": "dfe1986a5392f7ffa82d95caac650dba064237871b8600c0a99ec86fd0f96443",
+      "tx_pos": 0,
+      "value": 1031
+    },
+    {
+      "height": 928418,
+      "tx_hash": "edf0dc50de7065ec2cfcb223091746bacce2ba2c139bcd3a748fdeb18e3741b3",
+      "tx_pos": 1,
+      "value": 1000
+    },
+    {
+      "height": 895706,
+      "tx_hash": "07a14d470d796f3407181f63f48a23756d9e63a10f31e709887aa871fda6b5e3",
+      "tx_pos": 1,
+      "value": 777
+    },
+    {
+      "height": 882493,
+      "tx_hash": "85c5ffbe348a762b4eebd024fa7d166bf773fea1af5b37b485ab33e79f664dce",
+      "tx_pos": 0,
+      "value": 2009
+    },
+    {
+      "height": 800570,
+      "tx_hash": "b338282600dcb99fcf112159b2504e179d343691fc70d1882b3721d0a7664b5c",
+      "tx_pos": 0,
+      "value": 672
+    },
+    {
+      "height": 172165,
+      "tx_hash": "08901b81e39bc61d632c93241c44ec3763366bd57444b01494481ed46079c898",
+      "tx_pos": 0,
       "value": 1000000
+    },
+    {
+      "height": 0,
+      "tx_hash": "4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b",
+      "tx_pos": 0,
+      "value": 5000000000
     }
   ]
 }`
@@ -12960,11 +13054,11 @@ export const electrumApiDocsData = [
       default: 'Subscribe to notifications for a script hash. Returns the current status hash and sends notifications when the history changes.'
     },
     showConditions: bitcoinNetworks.concat(liquidNetworks),
-    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.scripthash.subscribe","params":["8b01df4e368ea28f8dc0423bcf7a4923e3a12d307c875e47a0cfbf90b5c39161"]}',
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.scripthash.subscribe","params":["740485f380ff6379d11ef6fe7d7cdd68aea7f8bd0d953d9fdf3531fb7d531833"]}',
     responseExample: `{
   "jsonrpc": "2.0",
   "id": 1,
-  "result": "5a4b3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b"
+  "result": "891ef581d38edb24d1750114c0bcf51ea4c1726b4ea9ae36932646f93a56c550"
 }`
   },
   {
@@ -12976,7 +13070,7 @@ export const electrumApiDocsData = [
       default: 'Unsubscribe from notifications for a script hash.'
     },
     showConditions: bitcoinNetworks.concat(liquidNetworks),
-    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.scripthash.unsubscribe","params":["8b01df4e368ea28f8dc0423bcf7a4923e3a12d307c875e47a0cfbf90b5c39161"]}',
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.scripthash.unsubscribe","params":["740485f380ff6379d11ef6fe7d7cdd68aea7f8bd0d953d9fdf3531fb7d531833"]}',
     responseExample: `{
   "jsonrpc": "2.0",
   "id": 1,
@@ -13003,7 +13097,7 @@ export const electrumApiDocsData = [
     responseExample: `{
   "jsonrpc": "2.0",
   "id": 1,
-  "result": "9d1e7c2e3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d"
+  "result": "bbf3c490cf501e8485c5b43cd2e6263ba68c503b17db91db80a28a0cd4ec6391"
 }`
   },
   {
@@ -13015,11 +13109,11 @@ export const electrumApiDocsData = [
       default: 'Returns a raw transaction by its transaction ID. Returns hex-encoded raw transaction.'
     },
     showConditions: bitcoinNetworks.concat(liquidNetworks),
-    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.transaction.get","params":["9d1e7c2e3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d"]}',
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.transaction.get","params":["bbf3c490cf501e8485c5b43cd2e6263ba68c503b17db91db80a28a0cd4ec6391"]}',
     responseExample: `{
   "jsonrpc": "2.0",
   "id": 1,
-  "result": "02000000019c2e0f24a03e72002a96acedb12a632e72b6119a"
+  "result": "020000000001010000000000000000000000000000000000000000000000000000000000000000ffffffff5d0378380e049bc164692f466f756e6472792055534120506f6f6c202364726f70676f6c642ffabe6d6dd44f35d084e35ea9a357464d0c2510e43bb568a5b29ef898d3e7e8690c1f90b9010000000000000036491a5a7d13020000000000ffffffff04eb7ac612000000002200207086320071974eef5e72eaa01dd9096e10c0383483855ea6b344259c244f73c20000000000000000266a24aa21a9ed3384fdddc3722e862f962a0878460114bf4dc2430e6fd3205e9537da28b45d0600000000000000002f6a2d434f52450158d8efc838d2de558eedeabce631c7dff92c947ae6d18fda214e5b9f350ffc7b6cf3058b9026e76500000000000000002b6a2952534b424c4f434b3ae99adb1d2ac81cc7d3680512413dcae46d51a79f039615b4e3eff61000805db10120000000000000000000000000000000000000000000000000000000000000000000000000"
 }`
   },
   {
@@ -13031,17 +13125,22 @@ export const electrumApiDocsData = [
       default: 'Returns the merkle proof for a transaction. Requires the transaction to be confirmed.'
     },
     showConditions: bitcoinNetworks.concat(liquidNetworks),
-    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.transaction.get_merkle","params":["9d1e7c2e3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d", 500000]}',
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.transaction.get_merkle","params":["08901b81e39bc61d632c93241c44ec3763366bd57444b01494481ed46079c898", 172165]}',
     responseExample: `{
   "jsonrpc": "2.0",
   "id": 1,
   "result": {
-    "block_height": 500000,
+    "block_height": 172165,
     "merkle": [
-      "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b",
-      "2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c"
+      "221057f51521fd35428760dcb60ad4a413778abfe0bde1e1eca8ecad3ff99aa8",
+      "dc53cbc515d5577181ac2c0f7a2644b1ad65e54c820c9d92a57ee4c309216938",
+      "bff85650005199e957d22721ef5b62c3c87baeca8a72e20436444511f2b897ef",
+      "91c7603e7ec8c15f09b1aad2f41f7be0d951f7d8e148596d90123440748d2ba2",
+      "16a0b5e409e6f0bffb25296f82cb250e504f66cdda8aedb35a11da33f6175bf8",
+      "4222062909f5eacc0a97b7e12ecc24261e50c1c21c7c52391f3c1bc17570b086",
+      "0f889caf2f4e3435e9a4a7334c9a323c032452159991a1a66908db722925e865"
     ],
-    "pos": 123
+    "pos": 28
   }
 }`
   },
@@ -13054,11 +13153,11 @@ export const electrumApiDocsData = [
       default: 'Returns the transaction ID at a given position in a block. Optionally includes the merkle proof.'
     },
     showConditions: bitcoinNetworks.concat(liquidNetworks),
-    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.transaction.id_from_pos","params":[500000, 123, false]}',
+    requestExample: '{"jsonrpc":"2.0","id":1,"method":"blockchain.transaction.id_from_pos","params":[172165, 28, false]}',
     responseExample: `{
   "jsonrpc": "2.0",
   "id": 1,
-  "result": "9d1e7c2e3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d"
+  "result": "08901b81e39bc61d632c93241c44ec3763366bd57444b01494481ed46079c898"
 }`
   },
   {
