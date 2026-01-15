@@ -68,7 +68,7 @@ export class ThemeService {
         this.themeState$.next({ theme, loading: false });
       };
       this.style.onerror = () => this.apply('default');
-      this.style.href = `${theme}.css`;
+      this.style.href = this.getThemeFile(theme);
 
       if (!this.stateService.env.customize?.theme) {
         this.storageService.setValue('theme-preference', theme);
@@ -77,5 +77,13 @@ export class ThemeService {
       console.log('failed to apply theme stylesheet: ', err);
       this.apply('default');
     }
+  }
+
+  private getThemeFile(theme: string): string {
+    const themeFiles = (window as any).__env?.THEME_FILES;
+    if (themeFiles?.[theme]) {
+      return themeFiles[theme];
+    }
+    return `${theme}.css`;
   }
 }
