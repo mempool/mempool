@@ -151,7 +151,10 @@ export interface HealthCheckHost {
     frontend?: string;
     backend?: string;
     electrs?: string;
-  }
+    hybrid?: string;
+    ssr?: string;
+    core?: string;
+  };
 }
 
 export interface StratumJob {
