@@ -46,6 +46,22 @@ try {
   throw new Error(e);
 }
 
+// Inject theme manifest if it exists (created by generate-themes.js)
+const THEME_MANIFEST_FILE = 'theme-manifest.json';
+try {
+  const themeManifest = fs.readFileSync(THEME_MANIFEST_FILE, 'utf-8');
+  const themeFiles = JSON.parse(themeManifest);
+  let indexHtml = fs.readFileSync('src/index.html', 'utf-8');
+  const script = `  <script>window.__env=window.__env||{};window.__env.THEME_FILES=${JSON.stringify(themeFiles)};</script>`;
+  indexHtml = indexHtml.replace('</head>', `${script}\n</head>`);
+  fs.writeFileSync('src/index.html', indexHtml);
+  console.log('Injected theme manifest into src/index.html:', themeFiles);
+} catch (e) {
+  if (e.code !== 'ENOENT') {
+    console.log('Warning: Could not inject theme manifest:', e.message);
+  }
+}
+
 try {
   const packageJson = fs.readFileSync('package.json');
   packetJsonVersion = JSON.parse(packageJson).version;
