@@ -55,7 +55,8 @@ type CheckoutStep = 'quote' | 'summary' | 'checkout' | 'cashapp' | 'applepay' | 
 @Component({
   selector: 'app-accelerate-checkout',
   templateUrl: './accelerate-checkout.component.html',
-  styleUrls: ['./accelerate-checkout.component.scss']
+  styleUrls: ['./accelerate-checkout.component.scss'],
+  standalone: false,
 })
 export class AccelerateCheckout implements OnInit, OnDestroy {
   @Input() tx: Transaction;
@@ -143,7 +144,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     private enterpriseService: EnterpriseService,
     private storageService: StorageService
   ) {
-    this.isProdDomain = this.stateService.env.PROD_DOMAINS.indexOf(document.location.hostname) > -1;
+    this.isProdDomain = this.stateService.isProdDomain;
 
     // Check if Apple Pay available
     // https://developer.apple.com/documentation/apple_pay_on_the_web/apple_pay_js_api/checking_for_apple_pay_availability#overview
@@ -218,8 +219,9 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     }
     if (this._step === 'checkout' && this.canPayWithBitcoin) {
       this.btcpayInvoiceFailed = false;
-      this.invoice = null;
+      this.invoice = undefined;
       this.requestBTCPayInvoice();
+      this.scrollToElementWithTimeout('acceleratePreviewAnchor', 'start', 100);
     } else if (this._step === 'cashapp') {
       this.loadingCashapp = true;
       this.setupSquare();
@@ -594,7 +596,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     if (this.processing) {
       return;
     }
-    
+
     this.processing = true;
 
         if (this.googlePay) {
@@ -714,7 +716,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     if (this.processing) {
       return;
     }
-    
+
     this.processing = true;
 
         const costUSD = this.cost / 100_000_000 * this.conversions.USD;
@@ -727,11 +729,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           return;
         }
         this.loadingCardOnFile = false;
-        
+
         try {
           this.isCheckoutLocked += 2;
           this.isTokenizing += 2;
-          
+
           const nameParts = cardOnFile.card.name.split(' ');
           const assumedGivenName = nameParts[0];
           const assumedFamilyName = nameParts.length > 1 ? nameParts[1] : undefined;

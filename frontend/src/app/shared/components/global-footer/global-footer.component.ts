@@ -14,6 +14,7 @@ import { EnterpriseService } from '@app/services/enterprise.service';
   selector: 'app-global-footer',
   templateUrl: './global-footer.component.html',
   styleUrls: ['./global-footer.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GlobalFooterComponent implements OnInit, OnDestroy, OnChanges {
@@ -75,7 +76,7 @@ export class GlobalFooterComponent implements OnInit, OnDestroy, OnChanges {
     this.urlSubscription = this.route.url.subscribe((url) => {
       this.user = this.storageService.getAuth();
       this.cd.markForCheck();
-    })
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {

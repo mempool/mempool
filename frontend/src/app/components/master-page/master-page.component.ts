@@ -12,6 +12,7 @@ import { StorageService } from '@app/services/storage.service';
   selector: 'app-master-page',
   templateUrl: './master-page.component.html',
   styleUrls: ['./master-page.component.scss'],
+  standalone: false,
 })
 export class MasterPageComponent implements OnInit, OnDestroy {
   @Input() headerVisible = true;
@@ -23,6 +24,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   navCollapsed = false;
   isMobile = window.innerWidth <= 767.98;
   officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
+  officialMempoolSpaceBuild = this.stateService.isMempoolSpaceBuild;
   urlLanguage: string;
   subdomain = '';
   networkPaths: { [network: string]: string };
@@ -32,7 +34,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   servicesEnabled = false;
   menuOpen = false;
   isDropdownVisible: boolean;
-  
+
   enterpriseInfo: any;
   enterpriseInfo$: Subscription;
 
@@ -69,7 +71,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     this.enterpriseInfo$ = this.enterpriseService.info$.subscribe(info => {
       this.enterpriseInfo = info;
     });
-    
+
     this.servicesEnabled = this.officialMempoolSpace && this.stateService.env.ACCELERATOR === true && this.stateService.network === '';
     this.refreshAuth();
 

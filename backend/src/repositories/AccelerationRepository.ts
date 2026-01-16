@@ -60,6 +60,32 @@ class AccelerationRepository {
     }
   }
 
+  public async $getAccelerationInfoForTxid(txid: string): Promise<PublicAcceleration | null> {
+    const [rows] = await DB.query(`
+      SELECT *, UNIX_TIMESTAMP(requested) as requested_timestamp, UNIX_TIMESTAMP(added) as block_timestamp FROM accelerations
+      JOIN pools on pools.unique_id = accelerations.pool
+      WHERE txid = ?
+    `, [txid]) as RowDataPacket[][];
+    if (rows?.length) {
+      const row = rows[0];
+      return {
+        txid: row.txid,
+        height: row.height,
+        added: row.requested_timestamp || row.block_timestamp,
+        pool: {
+          id: row.id,
+          slug: row.slug,
+          name: row.name,
+        },
+        effective_vsize: row.effective_vsize,
+        effective_fee: row.effective_fee,
+        boost_rate: row.boost_rate,
+        boost_cost: row.boost_cost,
+      };
+    }
+    return null;
+  }
+
   public async $getAccelerationInfo(poolSlug: string | null = null, height: number | null = null, interval: string | null = null): Promise<PublicAcceleration[]> {
     if (!interval || !['24h', '3d', '1w', '1m'].includes(interval)) {
       interval = '1m';
@@ -74,7 +100,7 @@ class AccelerationRepository {
       SELECT *, UNIX_TIMESTAMP(requested) as requested_timestamp, UNIX_TIMESTAMP(added) as block_timestamp FROM accelerations
       JOIN pools on pools.unique_id = accelerations.pool
     `;
-    let params: any[] = [];
+    const params: any[] = [];
     let hasFilter = false;
 
     if (interval && height === null) {
@@ -137,7 +163,7 @@ class AccelerationRepository {
       SELECT SUM(boost_cost) as total_cost, COUNT(txid) as count FROM accelerations
       JOIN pools on pools.unique_id = accelerations.pool
     `;
-    let params: any[] = [];
+    const params: any[] = [];
     let hasFilter = false;
 
     if (interval) {
@@ -256,7 +282,7 @@ class AccelerationRepository {
     try {
       while (!done) {
         // don't DDoS the services backend
-        Common.sleep$(500 + (Math.random() * 1000));
+        await Common.sleep$(500 + (Math.random() * 1000));
         const accelerations = await accelerationApi.$fetchAccelerationHistory(page);
         page++;
         if (!accelerations?.length) {
@@ -320,7 +346,7 @@ class AccelerationRepository {
         const accelerationSummaries = accelerations.map(acc => ({
           ...acc,
           pools: acc.pools,
-        }))
+        }));
         for (const acc of accelerations) {
           if (blockTxs[acc.txid] && acc.pools.includes(block.extras.pool.id)) {
             const tx = blockTxs[acc.txid];

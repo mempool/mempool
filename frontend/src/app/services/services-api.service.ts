@@ -54,7 +54,7 @@ export class ServicesApiServices {
     if (this.stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE) {
       this.getServicesBackendInfo$().subscribe(version => {
         this.stateService.servicesBackendInfo$.next(version);
-      })
+      });
     }
 
     this.getUserInfo$().subscribe();
@@ -82,7 +82,7 @@ export class ServicesApiServices {
         return of(null);
       }),
       share(),
-    )
+    );
   }
 
   /**
@@ -161,6 +161,10 @@ export class ServicesApiServices {
 
   getAccelerationHistory$(params: AccelerationHistoryParams): Observable<Acceleration[]> {
     return this.httpClient.get<Acceleration[]>(`${this.stateService.env.SERVICES_API}/accelerator/accelerations/history`, { params: { ...params } });
+  }
+
+  getAccelerationDataForTxid$(txid: string) {
+    return this.httpClient.get<Acceleration>(`${this.stateService.env.SERVICES_API}/accelerator/accelerations/${txid}`);
   }
 
   getAllAccelerationHistory$(params: AccelerationHistoryParams, limit?: number, findTxid?: string): Observable<Acceleration[]> {

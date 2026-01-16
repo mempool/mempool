@@ -17,7 +17,8 @@ import { WalletStats } from '@app/shared/wallet-stats';
 @Component({
   selector: 'app-wallet',
   templateUrl: './wallet.component.html',
-  styleUrls: ['./wallet.component.scss']
+  styleUrls: ['./wallet.component.scss'],
+  standalone: false,
 })
 export class WalletComponent implements OnInit, OnDestroy {
   network = '';
@@ -154,8 +155,8 @@ export class WalletComponent implements OnInit, OnDestroy {
     );
 
     this.walletSubscription = this.walletAddresses$.subscribe(wallet => {
-      this.addressStrings = Object.keys(wallet);
-      this.addresses = Object.values(wallet);
+      this.addressStrings = Object.keys(wallet).filter(address => address !== 'private');
+      this.addresses = Object.values(wallet).filter(address => address.address !== 'private');
     });
 
     this.walletSummary$ = this.wallet$.pipe(

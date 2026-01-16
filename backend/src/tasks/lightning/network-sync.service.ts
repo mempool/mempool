@@ -47,7 +47,7 @@ class NetworkSyncService {
       await this.$lookUpCreationDateFromChain();
       await this.$updateNodeFirstSeen();
       await this.$scanForClosedChannels();
-      
+
       if (config.MEMPOOL.BACKEND === 'esplora') {
         // run forensics on new channels only
         await forensicsService.$runClosedChannelsForensics(true);
@@ -226,7 +226,7 @@ class NetworkSyncService {
 
       if (channels.length > 0) {
         logger.debug(`Updated ${channels.length} channels' creation date`, logger.tags.ln);
-      }      
+      }
     } catch (e) {
       logger.err(`$lookUpCreationDateFromChain() error: ${e instanceof Error ? e.message : e}`, logger.tags.ln);
     }
@@ -269,17 +269,16 @@ class NetworkSyncService {
 
   private async $scanForClosedChannels(): Promise<void> {
     let currentBlockHeight = blocks.getCurrentBlockHeight();
-    if (config.MEMPOOL.ENABLED === false) { // https://github.com/mempool/mempool/issues/3582
-      currentBlockHeight = await bitcoinApi.$getBlockHeightTip();
-    }
-    if (this.closedChannelsScanBlock === currentBlockHeight) {
-      logger.debug(`We've already scan closed channels for this block, skipping.`);
-      return;
-    }
-
-    let progress = 0;
-
     try {
+      if (config.MEMPOOL.ENABLED === false) { // https://github.com/mempool/mempool/issues/3582
+        currentBlockHeight = await bitcoinApi.$getBlockHeightTip();
+      }
+      if (this.closedChannelsScanBlock === currentBlockHeight) {
+        logger.debug(`We've already scan closed channels for this block, skipping.`);
+        return;
+      }
+
+      let progress = 0;
       let log = `Starting closed channels scan`;
       if (this.closedChannelsScanBlock > 0) {
         log += `. Last scan was at block ${this.closedChannelsScanBlock}`;

@@ -1,42 +1,42 @@
 <ng-container *ngIf="{ val: network$ | async } as network">
 <header class="sticky-header">
+
   <nav class="navbar navbar-expand-md navbar-dark">
-  <a class="navbar-brand" [routerLink]="['/' | relativeUrl]" style="position: relative;">
+
+  <!-- Large screen -->
+  <a class="navbar-brand d-none d-md-flex" [ngClass]="{'dual-logos': enterpriseInfo?.dualLogo}" [routerLink]="['/' | relativeUrl]">
     <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
-      <div class="logo" [ngStyle]="{'opacity': connectionState.val === 2 ? 1 : 0.5 }">
-        <svg width="140" viewBox="0 0 500 126" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <g clip-path="url(#clip0)">
-          <path d="M123.794 110.244C123.794 118.781 116.911 125.672 108.384 125.672H15.4101C6.88316 125.672 0 118.781 0 110.244V17.164C0 8.62734 6.93453 1.73633 15.4101 1.73633H108.384C116.911 1.73633 123.794 8.62734 123.794 17.164V110.244Z" fill="#2E3349"/>
-          <path d="M0 63.8574V110.243C0 118.78 6.93453 125.671 15.4614 125.671H108.384C116.911 125.671 123.846 118.78 123.846 110.243V63.8574H0Z" fill="url(#paint0_linear)"/>
-          <path opacity="0.3" d="M109.108 109.109C109.108 111.011 107.824 112.554 106.231 112.554H90.2047C88.6123 112.554 87.3281 111.011 87.3281 109.109V18.2912C87.3281 16.3885 88.6123 14.8457 90.2047 14.8457H106.231C107.824 14.8457 109.108 16.3885 109.108 18.2912V109.109Z" fill="white"/>
-          <path d="M155.766 58.4592H163.422V5.30273H155.766V58.4592Z" fill="white"/>
-          <path d="M173.413 58.4592H181.07V18.1358H173.413V58.4592Z" fill="white"/>
-          <path d="M230.874 18.1358H223.217V23.9206H223.047C220.07 19.582 214.455 17.115 209.011 17.115C196.505 17.115 188.509 26.3876 188.509 38.2975C188.509 50.3775 196.59 59.48 209.011 59.48C214.796 59.48 220.325 56.8428 223.047 52.6744H223.217V70.525H230.874V18.1358ZM209.947 24.2609C218.113 24.2609 223.217 30.1307 223.217 38.2975C223.217 46.4642 218.113 52.3341 209.947 52.3341C201.78 52.3341 196.676 46.4642 196.676 38.2975C196.676 30.1307 201.78 24.2609 209.947 24.2609Z" fill="white"/>
-          <path d="M275.412 18.1358H267.755V38.893C267.755 48.2507 262.906 52.3341 256.526 52.3341C251.677 52.3341 247.338 49.5268 247.338 41.9555V18.1358H239.682V44.0823C239.682 54.8011 246.488 59.48 254.314 59.48C260.524 59.48 265.629 56.5025 267.585 52.249H267.755V58.4592H275.412V18.1358Z" fill="white"/>
-          <path d="M284.759 58.4592H292.415V18.1358H284.759V58.4592Z" fill="white"/>
-          <path d="M340.825 5.30273H333.168V23.9206H332.998C330.276 19.7521 324.746 17.115 318.962 17.115C306.541 17.115 298.46 26.2175 298.46 38.2975C298.46 50.2073 306.456 59.48 318.962 59.48C324.406 59.48 330.021 57.013 332.998 52.6744H333.168V58.4592H340.825V5.30273ZM319.897 52.3341C311.731 52.3341 306.626 46.4642 306.626 38.2975C306.626 30.1307 311.731 24.2609 319.897 24.2609C328.064 24.2609 333.168 30.1307 333.168 38.2975C333.168 46.4642 328.064 52.3341 319.897 52.3341Z" fill="white"/>
-          <path d="M177.161 9.93971C174.634 9.93971 172.527 7.83338 172.527 5.30579C172.527 2.7782 174.634 0.671875 177.161 0.671875C179.689 0.671875 181.795 2.7782 181.795 5.30579C181.795 7.83338 179.689 9.93971 177.161 9.93971Z" fill="white"/>
-          <path d="M155.771 115.885C153.243 115.885 151.137 113.779 151.137 111.251C151.137 108.724 153.243 106.617 155.771 106.617C158.298 106.617 160.405 108.724 160.405 111.251C160.405 113.779 158.298 115.885 155.771 115.885Z" fill="#2CCCBF"/>
-          <path d="M288.384 9.93971C285.856 9.93971 283.75 7.83338 283.75 5.30579C283.75 2.7782 285.856 0.671875 288.384 0.671875C290.912 0.671875 293.018 2.7782 293.018 5.30579C293.018 7.83338 290.912 9.93971 288.384 9.93971Z" fill="white"/>
-          <path d="M166.199 115.799H173.856V95.042C173.856 85.6843 178.705 81.6009 185.085 81.6009C189.934 81.6009 194.272 84.4082 194.272 91.9795V115.799H201.929V89.8527C201.929 79.1339 195.123 74.455 187.297 74.455C181.087 74.455 175.982 77.4325 174.026 81.686H173.856V75.4758H166.199V115.799Z" fill="#2CCCBF"/>
-          <path d="M247.398 98.4448V95.7226C247.398 85.344 241.953 74.455 227.746 74.455C215.666 74.455 206.904 83.5575 206.904 95.6375C206.904 107.632 214.901 116.82 227.661 116.82C235.403 116.82 241.272 114.098 245.526 108.568L239.741 104.145C236.764 107.803 233.361 110.185 228.682 110.185C221.621 110.185 215.071 105.506 215.071 98.4448H247.398ZM215.071 92.3198C215.071 86.9604 220.005 80.5801 227.576 80.5801C235.318 80.5801 239.061 85.5992 239.231 92.3198H215.071Z" fill="#2CCCBF"/>
-          <path d="M275.375 75.4758H264.401V64.1615H256.745V75.4758H247.897V82.1113H256.745V103.124C256.745 109.589 256.915 116.82 268.74 116.82C270.271 116.82 273.844 116.48 275.63 115.459V108.483C274.099 109.419 271.972 109.674 270.186 109.674C264.401 109.674 264.401 104.91 264.401 100.401V82.1113H275.375V75.4758Z" fill="#2CCCBF"/>
-          <path d="M293.675 115.799H301.927L311.54 85.6843H311.71L322.344 115.799H330.085L343.101 75.4758H335.02L326.342 105.591H326.172L315.964 75.4758H307.882L298.269 105.591H298.099L288.996 75.4758H280.404L293.675 115.799Z" fill="#2CCCBF"/>
-          <path d="M353.225 95.6375C353.225 87.4708 358.329 81.6009 366.496 81.6009C374.663 81.6009 379.767 87.4708 379.767 95.6375C379.767 103.804 374.663 109.674 366.496 109.674C358.329 109.674 353.225 103.804 353.225 95.6375ZM345.058 95.6375C345.058 107.377 354.501 116.82 366.496 116.82C378.491 116.82 387.933 107.377 387.933 95.6375C387.933 83.8978 378.491 74.455 366.496 74.455C354.501 74.455 345.058 83.8978 345.058 95.6375Z" fill="#2CCCBF"/>
-          <path d="M394.736 115.799H402.392V95.5525C402.392 86.7051 406.476 82.6218 413.962 82.6218C415.153 82.6218 416.429 82.877 417.705 83.2172L418.045 74.9654C417.024 74.6251 415.833 74.455 414.642 74.455C409.623 74.455 404.519 77.4325 402.562 81.686H402.392V75.4758H394.736V115.799Z" fill="#2CCCBF"/>
-          <path d="M423.433 115.799H431.089V94.8719L449.805 115.799H460.694L440.277 93.8511L459.077 75.5609H448.443L431.089 93.0003V58.459H423.433V115.799Z" fill="#2CCCBF"/>
-          </g>
-          <defs>
-          <linearGradient id="paint0_linear" x1="61.9228" y1="63.8574" x2="61.9228" y2="137.373" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#64DED2"/>
-          <stop offset="1" stop-color="white"/>
-          </linearGradient>
-          <clipPath id="clip0">
-          <rect width="500" height="125" fill="white" transform="translate(0 0.671875)"/>
-          </clipPath>
-          </defs>
-        </svg>
+      @if (enterpriseInfo) {
+        <div class="subdomain_container">
+          <img [src]="enterpriseInfo.logoUrl" [alt]="enterpriseInfo.title" class="subdomain_logo" [class.custom_logo]="!enterpriseInfo?.dualLogo" [class.rounded]="enterpriseInfo.rounded_corner">
+        </div>
+        @if (enterpriseInfo.dualLogo) {
+          <div class="vertical-line"></div>
+        }
+      }
+      @if (!enterpriseInfo || enterpriseInfo.dualLogo) {
+        <app-svg-images name="liquidNetwork" viewBox="0 0 500 126" class="mempool-logo" [ngStyle]="{'opacity': connectionState.val === 2 ? 1 : 0.5 }"></app-svg-images>
+      }
+      <div class="connection-badge">
+        <div class="badge badge-warning" *ngIf="connectionState.val === 0" i18n="master-page.offline">Offline</div>
+        <div class="badge badge-warning" *ngIf="connectionState.val === 1" i18n="master-page.reconnecting">Reconnecting...</div>
       </div>
+    </ng-container>
+  </a>
+  <!-- Mobile -->
+  <a class="navbar-brand d-flex d-md-none" [ngClass]="{'dual-logos': enterpriseInfo?.dualLogo, 'mr-0': enterpriseInfo?.dualLogo}" [routerLink]="['/' | relativeUrl]">
+    <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
+      @if (enterpriseInfo) {
+        <div class="subdomain_container">
+          <img [src]="enterpriseInfo.logoUrl" [alt]="enterpriseInfo.title" class="subdomain_logo mobile_logo" [class.custom_logo]="!enterpriseInfo?.dualLogo" [class.rounded]="enterpriseInfo.rounded_corner">
+        </div>
+        @if (enterpriseInfo.dualLogo) {
+          <div class="vertical-line"></div>
+        }
+      }
+      @if (!enterpriseInfo || enterpriseInfo.dualLogo) {
+        <app-svg-images name="liquidNetwork" viewBox="0 0 500 126" class="mempool-logo" [ngStyle]="{'opacity': connectionState.val === 2 ? 1 : 0.5 }"></app-svg-images>
+      }
       <div class="connection-badge">
         <div class="badge badge-warning" *ngIf="connectionState.val === 0" i18n="master-page.offline">Offline</div>
         <div class="badge badge-warning" *ngIf="connectionState.val === 1" i18n="master-page.reconnecting">Reconnecting...</div>

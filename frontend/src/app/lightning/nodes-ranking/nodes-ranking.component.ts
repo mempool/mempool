@@ -9,6 +9,7 @@ import { INodesStatistics } from '@interfaces/node-api.interface';
   selector: 'app-nodes-ranking',
   templateUrl: './nodes-ranking.component.html',
   styleUrls: ['./nodes-ranking.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesRanking implements OnInit {

@@ -40,6 +40,7 @@ const MULTISELECT_VALUE_ACCESSOR: any = {
   templateUrl: './ngx-bootstrap-multiselect.component.html',
   styleUrls: ['./ngx-bootstrap-multiselect.component.css'],
   providers: [MULTISELECT_VALUE_ACCESSOR, MultiSelectSearchFilter],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NgxDropdownMultiselectComponent implements OnInit,
@@ -463,7 +464,7 @@ export class NgxDropdownMultiselectComponent implements OnInit,
       this.model = this.model.slice();
       this.fireModelChange();
 
-    }, 0)
+    }, 0);
   }
 
   updateNumSelected() {

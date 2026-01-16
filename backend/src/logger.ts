@@ -36,7 +36,7 @@ class Logger {
     mining: 'Mining',
     ln: 'Lightning',
     goggles: 'Goggles',
-  };  
+  };
 
   // @ts-ignore
   public emerg: ((msg: string, tag?: string) => void);
@@ -67,6 +67,8 @@ class Logger {
       }
     }
     this.client = dgram.createSocket('udp4');
+    // Unref the socket so it doesn't prevent Node.js from exiting
+    this.client.unref();
     this.network = this.getNetwork();
   }
 
@@ -84,7 +86,7 @@ class Logger {
 
   private getNetwork(): string {
     if (config.LIGHTNING.ENABLED) {
-      return config.MEMPOOL.NETWORK === 'mainnet' ? 'lightning' : `${config.MEMPOOL.NETWORK}-lightning`; 
+      return config.MEMPOOL.NETWORK === 'mainnet' ? 'lightning' : `${config.MEMPOOL.NETWORK}-lightning`;
     }
     if (config.MEMPOOL.NETWORK && config.MEMPOOL.NETWORK !== 'mainnet') {
       return config.MEMPOOL.NETWORK;
@@ -152,6 +154,20 @@ class Logger {
     }
     months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     return months[month] + ' ' + day + ' ' + hours + ':' + minutes + ':' + seconds;
+  }
+
+  /**
+   * Close the UDP socket used for syslog
+   * This should only be called when shutting down or in test teardown
+   */
+  public close(): void {
+    if (this.client) {
+      // Unref allows Node.js to exit even if the socket is open
+      this.client.unref();
+      this.client.close(() => {
+        // Socket closed callback
+      });
+    }
   }
 }
 

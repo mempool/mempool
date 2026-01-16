@@ -32,6 +32,7 @@ export interface Customization {
     header_img?: string;
     footer_img?: string;
     rounded_corner: boolean;
+    cobranded?: boolean;
   },
   dashboard: {
     widgets: {
@@ -138,6 +139,7 @@ export class StateService {
   referrer: string = '';
   isBrowser: boolean = isPlatformBrowser(this.platformId);
   isMempoolSpaceBuild = window['isMempoolSpaceBuild'] ?? false;
+  isProdDomain: boolean;
   backend: 'esplora' | 'electrum' | 'none' = 'esplora';
   network = '';
   lightningNetworks = ['', 'mainnet', 'bitcoin', 'testnet', 'signet'];
@@ -249,6 +251,8 @@ export class StateService {
       this.setLightningBasedonUrl('/');
       this.isTabHidden$ = new BehaviorSubject(false);
     }
+
+    this.isProdDomain = this.testIsProdDomain(this.env.PROD_DOMAINS);
 
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
@@ -364,7 +368,7 @@ export class StateService {
     this.hideAudit.subscribe((hide) => {
       this.storageService.setValue('audit-preference', hide ? 'hide' : 'show');
     });
-    
+
     const fiatPreference = this.storageService.getValue('fiat-preference');
     this.fiatCurrency$ = new BehaviorSubject<string>(fiatPreference || 'USD');
 
@@ -510,6 +514,13 @@ export class StateService {
   focusSearchInputDesktop() {
     if (!hasTouchScreen()) {
       this.searchFocus$.next(true);
-    }    
+    }
+  }
+
+  private testIsProdDomain(prodDomains: string[]): boolean {
+    const hostname = document.location.hostname;
+    return prodDomains.some(domain =>
+      hostname === domain || hostname.endsWith('.' + domain)
+    );
   }
 }

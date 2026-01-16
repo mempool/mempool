@@ -107,12 +107,13 @@ li.nav-item {
 }
 
 .navbar-brand {
-  width: 60%;
+  position: relative;
 }
 
-@media (min-width: 576px) {
-  .navbar-brand {
-    width: 130px;
+.navbar-brand.dual-logos {
+  justify-content: space-between;
+  @media (max-width: 767.98px) {
+    width: 100%;
   }
 }
 
@@ -178,6 +179,77 @@ nav {
 }
 .navbar-dark .navbar-nav .nav-link {
   color: var(--icon);
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: var(--icon);
+}
+
+.subdomain_logo {
+  height: 35px;
+  overflow: clip;
+  max-width: 140px;
+  margin: auto;
+  align-self: center;
+  .rounded {
+    border-radius: 5px;
+  }
+
+  &.custom_logo {
+    height: 48px;
+    margin-right: 1em;
+  }
+
+  &.mobile_logo {
+    margin-right: 0;
+  }
+
+  &.custom_logo.mobile_logo {
+    height: 42px;
+  }
+}
+
+.subdomain_container {
+  max-width: 140px;
+  text-align: center;
+  align-self: center;
+}
+
+.vertical-line {
+  border-left: 1px solid #444;
+  height: 30px;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-top: 3px;
+}
+
+.logo-holder {
+  display: flex;
+  flex-direction: row;
+}
+
+.navbar-brand {
+  width: 60%;
+  flex-direction: row;
+  display: flex;
+
+  @media screen and (min-width: 576px) {
+    width: 130px;
+  }
+
+  &.dual-logos {
+    width: auto;
+  }
+}
+
+.mempool-logo, app-svg-images {
+  align-self: start;
+  width: 140px;
+  height: 35px;
+
+  @media screen and (min-width: 576px) {
+    align-self: center;
+  }
 }
 
 .current-network-svg {

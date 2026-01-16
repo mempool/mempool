@@ -7,6 +7,7 @@ import { StorageService } from '@app/services/storage.service';
   selector: 'app-blockchain',
   templateUrl: './blockchain.component.html',
   styleUrls: ['./blockchain.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlockchainComponent implements OnInit, OnDestroy, OnChanges {
@@ -32,7 +33,7 @@ export class BlockchainComponent implements OnInit, OnDestroy, OnChanges {
   dividerOffset: number | null = null;
   mempoolOffset: number | null = null;
   positionStyle = {
-    transform: "translateX(1280px)",
+    transform: 'translateX(1280px)',
   };
   blockDisplayToggleStyle = {};
 
@@ -90,8 +91,8 @@ export class BlockchainComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   toggleBlockDisplayMode(): void {
-    if (this.blockDisplayMode === 'size') this.blockDisplayMode = 'fees';
-    else this.blockDisplayMode = 'size';
+    if (this.blockDisplayMode === 'size') {this.blockDisplayMode = 'fees';}
+    else {this.blockDisplayMode = 'size';}
     this.StorageService.setValue('block-display-mode-preference', this.blockDisplayMode);
     this.stateService.blockDisplayMode$.next(this.blockDisplayMode);
   }

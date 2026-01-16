@@ -56,6 +56,7 @@ class PriceUpdater {
   private feeds: PriceFeed[] = [];
   private currencies: string[] = ['USD', 'EUR', 'GBP', 'CAD', 'CHF', 'AUD', 'JPY'];
   private latestPrices: ApiPrice;
+  private latestGoodPrices: ApiPrice;
   private currencyConversionFeed: ConversionFeed | undefined;
   private newCurrencies: string[] = ['BGN', 'BRL', 'CNY', 'CZK', 'DKK', 'HKD', 'HRK', 'HUF', 'IDR', 'ILS', 'INR', 'ISK', 'KRW', 'MXN', 'MYR', 'NOK', 'NZD', 'PHP', 'PLN', 'RON', 'RUB', 'SEK', 'SGD', 'THB', 'TRY', 'ZAR'];
   private lastTimeConversionsRatesFetched: number = 0;
@@ -64,6 +65,7 @@ class PriceUpdater {
 
   constructor() {
     this.latestPrices = this.getEmptyPricesObj();
+    this.latestGoodPrices = this.getEmptyPricesObj();
 
     this.feeds.push(new BitflyerApi()); // Does not have historical endpoint
     this.feeds.push(new KrakenApi());
@@ -76,7 +78,7 @@ class PriceUpdater {
   }
 
   public getLatestPrices(): ApiPrice {
-    return this.latestPrices;
+    return this.latestGoodPrices;
   }
 
   public getEmptyPricesObj(): ApiPrice {
@@ -128,10 +130,11 @@ class PriceUpdater {
    */
   public async $initializeLatestPriceWithDb(): Promise<void> {
     this.latestPrices = await PricesRepository.$getLatestConversionRates();
+    this.latestGoodPrices = JSON.parse(JSON.stringify(this.latestPrices));
   }
 
   public async $run(): Promise<void> {
-    if (config.MEMPOOL.NETWORK === 'signet' || config.MEMPOOL.NETWORK === 'testnet') {
+    if (['testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK)) {
       // Coins have no value on testnet/signet, so we want to always show 0
       return;
     }
@@ -177,6 +180,14 @@ class PriceUpdater {
     }
 
     this.running = false;
+  }
+
+  private setLatestPrice(currency, price): void {
+    this.latestPrices[currency] = price;
+    if (price > 0) {
+      this.latestGoodPrices[currency] = price;
+      this.latestGoodPrices.time = Math.round(new Date().getTime() / 1000);
+    }
   }
 
   private getMillisecondsSinceBeginningOfHour(): number {
@@ -245,16 +256,16 @@ class PriceUpdater {
       // Compute average price, non weighted
       prices = prices.filter(price => price > 0);
       if (prices.length === 0) {
-        this.latestPrices[currency] = -1;
+        this.setLatestPrice(currency, -1);
       } else {
-        this.latestPrices[currency] = Math.round(getMedian(prices));
+        this.setLatestPrice(currency, Math.round(getMedian(prices)));
       }
     }
 
     if (config.FIAT_PRICE.API_KEY && this.latestPrices.USD > 0 && Object.keys(this.latestConversionsRatesFromFeed).length > 0) {
       for (const conversionCurrency of this.newCurrencies) {
         if (this.latestConversionsRatesFromFeed[conversionCurrency] > 0 && this.latestPrices.USD * this.latestConversionsRatesFromFeed[conversionCurrency] < MAX_PRICES[conversionCurrency]) {
-          this.latestPrices[conversionCurrency] = Math.round(this.latestPrices.USD * this.latestConversionsRatesFromFeed[conversionCurrency]);
+          this.setLatestPrice(conversionCurrency, Math.round(this.latestPrices.USD * this.latestConversionsRatesFromFeed[conversionCurrency]));
         }
       }
     }
@@ -277,14 +288,13 @@ class PriceUpdater {
     }
 
     if (this.latestPrices.USD === -1) {
-      this.latestPrices = await PricesRepository.$getLatestConversionRates();
-      logger.warn(`No BTC price available, falling back to latest known price: ${JSON.stringify(this.latestPrices)}`);
+      logger.warn(`No BTC price available, falling back to latest known price: ${JSON.stringify(this.latestGoodPrices)}`);
     } else {
-      logger.info(`Latest BTC fiat averaged price: ${JSON.stringify(this.latestPrices)}`);
+      logger.info(`Latest BTC fiat averaged price: ${JSON.stringify(this.latestGoodPrices)}`);
     }
 
-    if (this.ratesChangedCallback && this.latestPrices.USD > 0) {
-      this.ratesChangedCallback(this.latestPrices);
+    if (this.ratesChangedCallback && this.latestGoodPrices.USD > 0) {
+      this.ratesChangedCallback(this.latestGoodPrices);
     }
   }
 
@@ -422,7 +432,7 @@ class PriceUpdater {
     this.additionalCurrenciesHistoryRunning = true;
     logger.debug(`Inserting missing historical conversion rates using conversions API to fill ${priceTimesToFill.length} rows`, logger.tags.mining);
 
-    let conversionRates: { [timestamp: number]: ConversionRates } = {};
+    const conversionRates: { [timestamp: number]: ConversionRates } = {};
     let totalInserted = 0;
 
     for (let i = 0; i < priceTimesToFill.length; i++) {
@@ -454,7 +464,7 @@ class PriceUpdater {
       }
 
       const prices: ApiPrice = this.getEmptyPricesObj();
-      
+
       let willInsert = false;
       for (const conversionCurrency of this.newCurrencies.concat(missingLegacyCurrencies)) {
         if (conversionRates[yearMonthTimestamp][conversionCurrency] > 0 && priceTime.USD * conversionRates[yearMonthTimestamp][conversionCurrency] < MAX_PRICES[conversionCurrency]) {
@@ -464,7 +474,7 @@ class PriceUpdater {
           prices[conversionCurrency] = 0;
         }
       }
-      
+
       if (willInsert) {
         await PricesRepository.$saveAdditionalCurrencyPrices(priceTime.time, prices, missingLegacyCurrencies);
         ++totalInserted;

@@ -82,11 +82,11 @@ pkg install -y zsh sudo git screen curl wget neovim rsync nginx openssl openssh-
 
 ### Node.js + npm
 
-Build Node.js v22.14.0 and npm v9 from source using `nvm`:
+Build Node.js v24.13.0 and npm v9 from source using `nvm`:
 ```
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | zsh
 source $HOME/.zshrc
-nvm install v22.14.0 --shared-zlib
+nvm install v24.13.0 --shared-zlib
 nvm alias default node
 ```
 
@@ -222,11 +222,11 @@ Start `elementsd` and wait for it to sync the Liquid blockchain.
 
 ### Electrs
 
-Install [Electrs](https://github.com/Blockstream/electrs) from source:
+Install [Electrs](https://github.com/mempool/electrs) from source:
 ```
-git clone https://github.com/Blockstream/electrs
+git clone https://github.com/mempool/electrs
 cd electrs
-git checkout new-index
+git checkout mempool
 ```
 
 You'll need one instance per network. Build and run them one at a time:

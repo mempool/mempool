@@ -14,17 +14,17 @@ const baseModule = Cypress.env('BASE_MODULE');
 const areOverlapping = (rect1, rect2) => {
   // if one rectangle is on the left side of the other
   if (rect1.right < rect2.left || rect2.right < rect1.left) {
-    return false
+    return false;
   }
 
   // if one rectangle is above the other
   if (rect1.bottom < rect2.top || rect2.bottom < rect1.top) {
-    return false
+    return false;
   }
 
   // the rectangles must overlap
-  return true
-}
+  return true;
+};
 
 /**
  * Returns the bounding rectangle of the first DOM
@@ -134,7 +134,7 @@ describe('Mainnet', () => {
 
         cy.get('.search-box-container > .form-control').type('A').then(() => {
           cy.wait('@search-1wizSA');
-          cy.get('app-search-results button.dropdown-item').should('have.length', 1)
+          cy.get('app-search-results button.dropdown-item').should('have.length', 1);
         });
 
         cy.get('app-search-results button.dropdown-item.active').click().then(() => {

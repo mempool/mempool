@@ -16,6 +16,7 @@ import { EnterpriseService } from '@app/services/enterprise.service';
   selector: 'app-about',
   templateUrl: './about.component.html',
   styleUrls: ['./about.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AboutComponent implements OnInit {
@@ -57,11 +58,11 @@ export class AboutComponent implements OnInit {
         if (scrollToSponsors && !profiles?.whales?.length && !profiles?.chads?.length) {
           return;
         } else {
-          this.goToAnchor(scrollToSponsors)
+          this.goToAnchor(scrollToSponsors);
         }
       }),
       share(),
-    )
+    );
 
     this.translators$ = this.apiService.getTranslators$()
       .pipe(

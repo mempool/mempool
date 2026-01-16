@@ -21,8 +21,7 @@ class Mempool {
   private mempoolCandidates: { [txid: string ]: boolean } = {};
   private spendMap = new Map<string, MempoolTransactionExtended>();
   private recentlyDeleted: MempoolTransactionExtended[][] = []; // buffer of transactions deleted in recent mempool updates
-  private mempoolInfo: IBitcoinApi.MempoolInfo = { loaded: false, size: 0, bytes: 0, usage: 0, total_fee: 0,
-                                                    maxmempool: 300000000, mempoolminfee: Common.isLiquid() ? 0.00000100 : 0.00001000, minrelaytxfee: Common.isLiquid() ? 0.00000100 : 0.00001000 };
+  private mempoolInfo: IBitcoinApi.MempoolInfo;
   private mempoolChangedCallback: ((newMempool: {[txId: string]: MempoolTransactionExtended; }, newTransactions: MempoolTransactionExtended[],
     deletedTransactions: MempoolTransactionExtended[][], accelerationDelta: string[]) => void) | undefined;
   private $asyncMempoolChangedCallback: ((newMempool: {[txId: string]: MempoolTransactionExtended; }, mempoolSize: number, newTransactions: MempoolTransactionExtended[],
@@ -39,16 +38,41 @@ class Mempool {
   private mempoolProtection = 0;
   private latestTransactions: any[] = [];
 
-  private ESPLORA_MISSING_TX_WARNING_THRESHOLD = 100; 
+  private ESPLORA_MISSING_TX_WARNING_THRESHOLD = 100;
   private SAMPLE_TIME = 10000; // In ms
   private timer = new Date().getTime();
   private missingTxCount = 0;
   private mainLoopTimeout: number = 120000;
+  private txPerSecondInterval: NodeJS.Timeout | null = null;
 
   public limitGBT = config.MEMPOOL.USE_SECOND_NODE_FOR_MINFEE && config.MEMPOOL.LIMIT_GBT;
 
   constructor() {
-    setInterval(this.updateTxPerSecond.bind(this), 1000);
+    // Initialize mempoolInfo here to avoid circular dependency issues
+    // Use config directly instead of Common.isLiquid() to break circular dependency
+    const isLiquid = config.MEMPOOL.NETWORK === 'liquid' || config.MEMPOOL.NETWORK === 'liquidtestnet';
+    this.mempoolInfo = {
+      loaded: false,
+      size: 0,
+      bytes: 0,
+      usage: 0,
+      total_fee: 0,
+      maxmempool: 300000000,
+      mempoolminfee: isLiquid ? 0.00000100 : 0.00001000,
+      minrelaytxfee: isLiquid ? 0.00000100 : 0.00001000
+    };
+    this.txPerSecondInterval = setInterval(this.updateTxPerSecond.bind(this), 1000);
+  }
+
+  /**
+   * Cleanup resources (timers, etc.)
+   * This should only be called when shutting down or in test teardown
+   */
+  public destroy(): void {
+    if (this.txPerSecondInterval) {
+      clearInterval(this.txPerSecondInterval);
+      this.txPerSecondInterval = null;
+    }
   }
 
   /**
@@ -411,7 +435,7 @@ class Mempool {
     }
   }
 
-  public async getNextCandidates(minFeeTransactions: string[], blockHeight: number, deletedTransactions: MempoolTransactionExtended[]): Promise<GbtCandidates | undefined> {
+  public getNextCandidates(minFeeTransactions: string[], blockHeight: number, deletedTransactions: MempoolTransactionExtended[]): GbtCandidates | undefined {
     if (this.limitGBT) {
       const deletedTxsMap = {};
       for (const tx of deletedTransactions) {

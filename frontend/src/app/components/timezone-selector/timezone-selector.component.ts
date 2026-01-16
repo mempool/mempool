@@ -9,6 +9,7 @@ import { timezones } from '@app/app.constants';
   selector: 'app-timezone-selector',
   templateUrl: './timezone-selector.component.html',
   styleUrls: ['./timezone-selector.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TimezoneSelectorComponent implements OnInit {
@@ -41,7 +42,7 @@ export class TimezoneSelectorComponent implements OnInit {
 
   setLocalTimezone() {
     const offset = new Date().getTimezoneOffset();
-    const sign = offset <= 0 ? "+" : "-";
+    const sign = offset <= 0 ? '+' : '-';
     const absOffset = Math.abs(offset);
     const hours = String(Math.floor(absOffset / 60));
     const minutes = String(absOffset % 60).padStart(2, '0');

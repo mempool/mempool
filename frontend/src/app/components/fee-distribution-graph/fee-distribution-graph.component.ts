@@ -11,6 +11,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './fee-distribution-graph.component.html',
   styleUrls: ['./fee-distribution-graph.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class FeeDistributionGraphComponent implements OnInit, OnChanges, OnDestroy {
   @Input() feeRange: number[];
@@ -144,7 +145,7 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges, OnDestr
             const unitValue = this.weightMode ? value / 4 : value;
             const selectedPowerOfTen = selectPowerOfTen(unitValue);
             const scaledValue = unitValue / selectedPowerOfTen.divider;
-            let newVal = '';
+            const newVal = '';
             switch (true) {
               case scaledValue >= 100:
                 return Math.round(scaledValue).toString();

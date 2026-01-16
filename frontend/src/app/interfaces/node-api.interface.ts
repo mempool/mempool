@@ -1,4 +1,4 @@
-import { AddressTxSummary, Block, ChainStats } from "./electrs.interface";
+import { AddressTxSummary, Block, ChainStats } from './electrs.interface';
 
 export interface OptimizedMempoolStats {
   added: number;
@@ -91,7 +91,7 @@ export interface PegsVolume {
   number: number;
 }
 
-export interface FederationAddress { 
+export interface FederationAddress {
   bitcoinaddress: string;
   balance: string;
 }
@@ -209,6 +209,12 @@ export interface BlockExtension {
     slug: string;
     minerNames: string[] | null;
   }
+  orphans?: {
+    height: number;
+    hash: string;
+    status: 'invalid' | 'active' | 'valid-fork' | 'valid-headers' | 'headers-only';
+    prevhash: string;
+  }[];
 }
 
 export interface BlockExtended extends Block {
@@ -244,8 +250,8 @@ export interface TransactionStripped {
   acc?: boolean;
   flags?: number | null;
   time?: number;
-  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'added_prioritized' | 'prioritized' | 'added_deprioritized' | 'deprioritized' | 'censored' | 'selected' | 'rbf' | 'accelerated';
-  context?: 'projected' | 'actual';
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'added_prioritized' | 'prioritized' | 'added_deprioritized' | 'deprioritized' | 'censored' | 'selected' | 'rbf' | 'accelerated' | 'matched' | 'unmatched';
+  context?: 'projected' | 'actual' | 'stale' | 'canonical';
 }
 
 export interface RbfTransaction extends TransactionStripped {
@@ -328,13 +334,13 @@ export interface INodesRanking {
 
 export interface INodesStatisticsEntry {
   added: string;
-  avg_base_fee_mtokens: number; 
+  avg_base_fee_mtokens: number;
   avg_capacity: number;
   avg_fee_rate: number;
   channel_count: number;
   clearnet_nodes: number;
   clearnet_tor_nodes: number;
-  id: number; 
+  id: number;
   med_base_fee_mtokens: number;
   med_capacity: number;
   med_fee_rate: number;
@@ -452,26 +458,26 @@ export interface TestMempoolAcceptResult {
   vsize?: number,
   fees?: {
     base: number,
-    "effective-feerate": number,
-    "effective-includes": string[],
+    'effective-feerate': number,
+    'effective-includes': string[],
   },
   ['reject-reason']?: string,
 }
 
 export interface SubmitPackageResult {
   package_msg: string;
-  "tx-results": { [wtxid: string]: TxResult };
-  "replaced-transactions"?: string[];
+  'tx-results': { [wtxid: string]: TxResult };
+  'replaced-transactions'?: string[];
 }
 
 export interface TxResult {
   txid: string;
-  "other-wtxid"?: string;
+  'other-wtxid'?: string;
   vsize?: number;
   fees?: {
     base: number;
-    "effective-feerate"?: number;
-    "effective-includes"?: string[];
+    'effective-feerate'?: number;
+    'effective-includes'?: string[];
   };
   error?: string;
 }
@@ -487,4 +493,18 @@ export interface Treasury {
   name: string,
   wallet: string,
   enterprise: string,
+  verifiedAddresses: string[];
+  balances?: { balance: number, time: number }[];
+}
+
+export interface ChainTip {
+  height: number;
+  hash: string;
+  branchlen: number;
+  status: 'invalid' | 'active' | 'valid-fork' | 'valid-headers' | 'headers-only';
+}
+
+export interface StaleTip extends ChainTip {
+  stale: BlockExtended;
+  canonical: BlockExtended;
 }

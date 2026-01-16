@@ -10,6 +10,7 @@ import { LightningApiService } from '@app/lightning/lightning-api.service';
   selector: 'app-top-nodes-per-capacity',
   templateUrl: './top-nodes-per-capacity.component.html',
   styleUrls: ['./top-nodes-per-capacity.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TopNodesPerCapacity implements OnInit {
@@ -60,7 +61,7 @@ export class TopNodesPerCapacity implements OnInit {
               totalCapacity: statistics.latest.total_capacity,
               totalChannels: statistics.latest.channel_count,
             }
-          }
+          };
         })
       );
     } else {
@@ -75,7 +76,7 @@ export class TopNodesPerCapacity implements OnInit {
             statistics: {
               totalCapacity: statistics.latest.total_capacity,
             }
-          }
+          };
         })
       );
     }

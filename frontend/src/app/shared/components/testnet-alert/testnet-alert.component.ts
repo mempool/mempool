@@ -6,6 +6,7 @@ import { StateService } from '@app/services/state.service';
   selector: 'app-testnet-alert',
   templateUrl: './testnet-alert.component.html',
   styleUrls: ['./testnet-alert.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TestnetAlertComponent {

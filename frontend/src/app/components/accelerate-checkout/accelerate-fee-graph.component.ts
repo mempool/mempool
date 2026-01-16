@@ -17,6 +17,7 @@ interface GraphBar {
   selector: 'app-accelerate-fee-graph',
   templateUrl: './accelerate-fee-graph.component.html',
   styleUrls: ['./accelerate-fee-graph.component.scss'],
+  standalone: false,
 })
 export class AccelerateFeeGraphComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   @Input() tx: Transaction;
@@ -92,8 +93,8 @@ export class AccelerateFeeGraphComponent implements OnInit, AfterViewInit, OnCha
         active: option.index === this.maxRateIndex,
         rateIndex: option.index,
         fee: option.fee,
-      })
-    })
+      });
+    });
 
     bars.reverse();
 
@@ -120,7 +121,7 @@ export class AccelerateFeeGraphComponent implements OnInit, AfterViewInit, OnCha
     return {
       height: `${height}px`,
       bottom: base ? `${base}px` : '0',
-    }
+    };
   }
 
   onClick(event, bar): void {

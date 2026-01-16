@@ -11,7 +11,8 @@ export interface GeolocationData {
 @Component({
   selector: 'app-geolocation',
   templateUrl: './geolocation.component.html',
-  styleUrls: ['./geolocation.component.scss']
+  styleUrls: ['./geolocation.component.scss'],
+  standalone: false,
 })
 export class GeolocationComponent implements OnChanges {
   @Input() data: GeolocationData;
@@ -66,7 +67,7 @@ export class GeolocationComponent implements OnChanges {
         }
       }
     }
-    
+
     if (this.type === 'node') {
       const city = this.data.city ? this.data.city : '';
 

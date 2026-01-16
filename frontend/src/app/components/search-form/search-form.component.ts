@@ -15,6 +15,7 @@ import { Network, findOtherNetworks, getRegex, getTargetUrl, needBaseModuleChang
   selector: 'app-search-form',
   templateUrl: './search-form.component.html',
   styleUrls: ['./search-form.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchFormComponent implements OnInit {
@@ -198,8 +199,8 @@ export class SearchFormComponent implements OnInit {
           const publicKey = matchesAddress && searchText.startsWith('0');
           const otherNetworks = findOtherNetworks(searchText, this.network as any || 'mainnet', this.env);
           const liquidAsset = this.assets ? (this.assets[searchText] || []) : [];
-          const pools = this.pools.filter(pool => pool["name"].toLowerCase().includes(searchText.toLowerCase())).slice(0, 10);
-          
+          const pools = this.pools.filter(pool => pool['name'].toLowerCase().includes(searchText.toLowerCase())).slice(0, 10);
+
           if (matchesDateTime && searchText.indexOf('/') !== -1) {
             searchText = searchText.replace(/\//g, '-');
           }
@@ -337,8 +338,8 @@ export class SearchFormComponent implements OnInit {
         }))
           // Sort: active pools first, then alphabetically
           .sort((a, b) => {
-            if (a.active && !b.active) return -1;
-            if (!a.active && b.active) return 1;
+            if (a.active && !b.active) {return -1;}
+            if (!a.active && b.active) {return 1;}
             return a.slug < b.slug ? -1 : 1;
           });
 

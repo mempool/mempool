@@ -22,10 +22,11 @@ const EPOCH_BLOCK_LENGTH = 2016; // Bitcoin mainnet
   selector: 'app-difficulty-tooltip',
   templateUrl: './difficulty-tooltip.component.html',
   styleUrls: ['./difficulty-tooltip.component.scss'],
+  standalone: false,
 })
 export class DifficultyTooltipComponent implements OnChanges {
   @Input() status: string | void;
-  @Input() progress: EpochProgress | void = null; 
+  @Input() progress: EpochProgress | void = null;
   @Input() cursorPosition: { x: number, y: number };
 
   mined: number;
@@ -48,7 +49,7 @@ export class DifficultyTooltipComponent implements OnChanges {
   ngOnChanges(changes): void {
     if (changes.cursorPosition && changes.cursorPosition.currentValue) {
       let x = changes.cursorPosition.currentValue.x;
-      let y = changes.cursorPosition.currentValue.y - 50;
+      const y = changes.cursorPosition.currentValue.y - 50;
       if (this.tooltipElement) {
         const elementBounds = this.tooltipElement.nativeElement.getBoundingClientRect();
         x -= elementBounds.width / 2;

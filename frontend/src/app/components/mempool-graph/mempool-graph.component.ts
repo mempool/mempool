@@ -21,6 +21,7 @@ import { download, formatterXAxis, formatterXAxisLabel } from '@app/shared/graph
       z-index: 99;
     }
   `],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MempoolGraphComponent implements OnInit, OnChanges {
@@ -466,7 +467,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       totalValue: totalValueTemp,
       totalValueArray: totalValueArray.reverse(),
     };
-  }
+  };
 
   orderLevels() {
     this.feeLevelsOrdered = [];

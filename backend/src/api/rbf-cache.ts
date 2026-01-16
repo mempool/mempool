@@ -1,10 +1,10 @@
-import config from "../config";
-import logger from "../logger";
-import { MempoolTransactionExtended, TransactionStripped } from "../mempool.interfaces";
+import config from '../config';
+import logger from '../logger';
+import { MempoolTransactionExtended, TransactionStripped } from '../mempool.interfaces';
 import bitcoinApi from './bitcoin/bitcoin-api-factory';
-import { IEsploraApi } from "./bitcoin/esplora-api.interface";
-import { Common } from "./common";
-import redisCache from "./redis-cache";
+import { IEsploraApi } from './bitcoin/esplora-api.interface';
+import { Common } from './common';
+import redisCache from './redis-cache';
 
 export interface RbfTransaction extends TransactionStripped {
   rbf?: boolean;
@@ -484,7 +484,7 @@ class RbfCache {
     return deflated;
   }
 
-  async importTree(mempool, root, txid, deflated, txs: Map<string, MempoolTransactionExtended>, mined: boolean = false): Promise<RbfTree | void> {
+  importTree(mempool, root, txid, deflated, txs: Map<string, MempoolTransactionExtended>, mined: boolean = false): RbfTree | void {
     const treeInfo = deflated[txid];
     const replaces: RbfTree[] = [];
 
@@ -503,7 +503,7 @@ class RbfCache {
 
     // recursively reconstruct child trees
     for (const childId of treeInfo.replaces) {
-      const replaced = await this.importTree(mempool, root, childId, deflated, txs, mined);
+      const replaced = this.importTree(mempool, root, childId, deflated, txs, mined);
       if (replaced) {
         this.replacedBy.set(replaced.tx.txid, txid);
         if (mempool[replaced.tx.txid]) {

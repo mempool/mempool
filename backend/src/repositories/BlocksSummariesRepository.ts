@@ -1,4 +1,5 @@
 import { RowDataPacket } from 'mysql2';
+import { Common } from '../api/common';
 import DB from '../database';
 import logger from '../logger';
 import { BlockSummary, TransactionClassified } from '../mempool.interfaces';
@@ -153,8 +154,8 @@ class BlocksSummariesRepository {
 
   /**
    * Get the fee percentiles if the block has already been indexed, [] otherwise
-   * 
-   * @param id 
+   *
+   * @param id
    */
   public async $getFeePercentilesByBlockId(id: string): Promise<number[] | null> {
     try {
@@ -191,6 +192,19 @@ class BlocksSummariesRepository {
       logger.err(`Cannot get block summaries transactions. Reason: ` + (e instanceof Error ? e.message : e));
       return null;
     }
+  }
+
+  public async $isSummaryIndexed(id: string): Promise<boolean> {
+    if (!Common.blocksSummariesIndexingEnabled()) {
+      return false;
+    }
+    try {
+      const [rows]: any[] = await DB.query(`SELECT id from blocks_summaries WHERE id = ?`, [id]);
+      return rows.length > 0;
+    } catch (e) {
+      logger.err(`Cannot check if block summary is indexed. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+    return false;
   }
 }
 

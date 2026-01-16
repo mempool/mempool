@@ -5,7 +5,7 @@ import { tap } from 'rxjs/operators';
 import { AddressTxSummary } from '@interfaces/electrs.interface';
 import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { StateService } from '@app/services/state.service';
-import { SeriesOption } from 'echarts';
+import { SeriesOption } from 'echarts/types/dist/echarts';
 import { WalletStats } from '@app/shared/wallet-stats';
 import { originalChartColors as chartColors } from '@app/app.constants';
 import { Treasury } from '@interfaces/node-api.interface';
@@ -36,6 +36,7 @@ const periodSeconds = {
       z-index: 99;
     }
   `],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
@@ -118,7 +119,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
     this.walletData = {};
 
     this.treasuries.forEach(treasury => {
-      if (!walletSummaries[treasury.wallet] || !walletSummaries[treasury.wallet].length) return;
+      if (!walletSummaries[treasury.wallet] || !walletSummaries[treasury.wallet].length) {return;}
 
       const total = this.walletStats[treasury.wallet] ? this.walletStats[treasury.wallet].balance : walletSummaries[treasury.wallet].reduce((acc, tx) => acc + tx.value, 0);
 
@@ -220,7 +221,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
       color: chartColors,
       animation: false,
       grid: {
-        top: 20,
+        top: this.showLegend ? 50 : 20,
         bottom: this.allowZoom ? 65 : 20,
         right: this.adjustedRight,
         left: this.adjustedLeft,
@@ -230,6 +231,17 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
         selected: this.selectedWallets,
         formatter: (name) => {
           return this.seriesNameToLabel[name];
+        },
+        type: 'plain',
+        orient: 'horizontal',
+        top: 0,
+        left: 80,
+        right: 20,
+        itemGap: 10,
+        itemWidth: 18,
+        itemHeight: 10,
+        textStyle: {
+          fontSize: 11
         }
       } : undefined,
       tooltip: {
@@ -255,8 +267,8 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
           const tooltipTime = data[0].data[0];
 
           let tooltip = '<div>';
-          const date = new Date(tooltipTime).toLocaleTimeString(this.locale, { 
-            year: 'numeric', month: 'short', day: 'numeric' 
+          const date = new Date(tooltipTime).toLocaleTimeString(this.locale, {
+            year: 'numeric', month: 'short', day: 'numeric'
           });
 
           tooltip += `<div><b style="color: white; margin-left: 2px">${date}</b><br>`;
@@ -292,7 +304,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
 
             if (mostRecentPoint) {
               // Extract balance from the point
-              const balance = Array.isArray(mostRecentPoint) ? mostRecentPoint[1] : 
+              const balance = Array.isArray(mostRecentPoint) ? mostRecentPoint[1] :
                 (mostRecentPoint && typeof mostRecentPoint === 'object' && 'value' in mostRecentPoint ? mostRecentPoint.value[1] : null);
 
               if (balance !== null && !isNaN(balance)) {
@@ -327,7 +339,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
             show: this.showYAxis,
             color: 'rgb(110, 112, 121)',
             formatter: (val): string => {
-              let valSpan = maxValue - (this.period === 'all' ? 0 : minValue);
+              const valSpan = maxValue - (this.period === 'all' ? 0 : minValue);
               if (valSpan > 100_000_000_000) {
                 return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 0, undefined, true)} BTC`;
               }
