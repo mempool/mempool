@@ -24,6 +24,12 @@ for site in mainnet;do
     screen -dmS "warmer-${site}" $HOME/mempool/production/nginx-cache-warmer
 done
 
+# start SSR cache warmer
+for site in mainnet;do
+    echo "starting SSR cache warmer: ${site}"
+    screen -dmS "warmer-ssr-${site}" $HOME/mempool/production/nginx-cache-warmer-ssr
+done
+
 # start nginx hot cacher
 for site in mainnet;do
     echo "starting mempool cache heater: ${site}"

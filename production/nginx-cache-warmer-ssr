@@ -1,0 +1,217 @@
+#!/usr/bin/env zsh
+delay=0.15
+hostname=$(hostname)
+services_host=""
+protocol="https"
+base_domain="mempool.space"
+list_refresh_interval=60
+dry_run=0
+
+if [[ "$1" == "--dry-run" ]]; then
+	dry_run=1
+	hostname="${2:-mempool.space}"
+	services_host="${3:-}"
+	protocol="http"
+	delay=0
+fi
+
+typeset -a custom_domains
+typeset -a subdomain_names
+last_refresh=0
+
+warm()
+{
+	local host_header="$2"
+	if [[ -n "$host_header" ]]; then
+		echo "${protocol}://${hostname}$1 (Host: $host_header)"
+		[[ $dry_run -eq 0 ]] && curl -o /dev/null -s -H "Host: $host_header" "${protocol}://${hostname}$1"
+	else
+		echo "${protocol}://$1"
+		[[ $dry_run -eq 0 ]] && curl -o /dev/null -s "${protocol}://$1"
+	fi
+}
+
+warmSip()
+{
+	local host_header="$2"
+	if [[ -n "$host_header" ]]; then
+		echo "${protocol}://${hostname}$1 (Host: $host_header)"
+		[[ $dry_run -eq 0 ]] && curl -o /dev/null -s -H "Host: $host_header" -H 'User-Agent: Googlebot' "${protocol}://${hostname}$1"
+	else
+		echo "${protocol}://$1"
+		[[ $dry_run -eq 0 ]] && curl -o /dev/null -s -H 'User-Agent: Googlebot' "${protocol}://$1"
+	fi
+}
+
+warmUnfurl()
+{
+	local host_header="$2"
+	if [[ -n "$host_header" ]]; then
+		echo "${protocol}://${hostname}$1 (Host: $host_header)"
+		[[ $dry_run -eq 0 ]] && curl -o /dev/null -s -H "Host: $host_header" -H 'User-Agent: Twitterbot' "${protocol}://${hostname}$1"
+	else
+		echo "${protocol}://$1"
+		[[ $dry_run -eq 0 ]] && curl -o /dev/null -s -H 'User-Agent: Twitterbot' "${protocol}://$1"
+	fi
+}
+
+sipURLs=(
+	'/'
+	'/mining'
+)
+
+unfurlURLs=(
+	'/'
+	'/mining'
+	'/lightning'
+)
+
+staticImageTypes=(
+	'header'
+	'footer'
+	'unfurl'
+	'android_chrome_512'
+	'android_chrome_192'
+	'apple_touch'
+	'favicon_32'
+	'favicon_16'
+	'favicon'
+	'mstile'
+	'site.webmanifest'
+	'browserconfig.xml'
+)
+
+refresh_dynamic_endpoints()
+{
+	echo "refreshing dynamic endpoint lists..."
+	custom_domains=()
+	subdomain_names=()
+
+	local api_host="${services_host:-$hostname}"
+	local dashboard_list
+	dashboard_list=$(curl -sSL "${protocol}://${api_host}/api/v1/internal/enterprise/dashboard/list" 2>/dev/null)
+	if [[ -n "$dashboard_list" && "$dashboard_list" != "null" ]]; then
+		local dashboards
+		dashboards=($(jq -r '.[]' <<< "$dashboard_list" 2>/dev/null))
+		for dashboard in $dashboards; do
+			local config
+			config=$(curl -sSL "${protocol}://${api_host}/api/v1/internal/enterprise/dashboard/${dashboard}" 2>/dev/null)
+			if [[ -n "$config" && "$config" != "null" ]]; then
+				local domains
+				domains=($(jq -r '.domains[]' <<< "$config" 2>/dev/null))
+				for domain in $domains; do
+					if [[ "$domain" != *.* ]]; then
+						domain="${domain}.${base_domain}"
+					fi
+					custom_domains+=("$domain")
+				done
+			fi
+		done
+	fi
+
+	local subdomains
+	subdomains=$(curl -sSL "${protocol}://${api_host}/api/v1/internal/enterprise/subdomains" 2>/dev/null)
+	if [[ -n "$subdomains" && "$subdomains" != "null" ]]; then
+		local names
+		names=($(jq -r '.[].name' <<< "$subdomains" 2>/dev/null))
+		for name in $names; do
+			local is_custom=0
+			for cd in $custom_domains; do
+				if [[ "$cd" == "$name" || "$cd" == "${name}.${base_domain}" ]]; then
+					is_custom=1
+					break
+				fi
+			done
+			if [[ $is_custom -eq 0 ]]; then
+				subdomain_names+=("$name")
+			fi
+		done
+	fi
+
+	echo "found ${#custom_domains[@]} custom dashboard domains and ${#subdomain_names[@]} subdomains"
+	last_refresh=$(date +%s)
+}
+
+if [[ $dry_run -eq 0 ]]; then
+	echo "waiting for mempool backend and SSR daemon to start..."
+	sleep 60
+fi
+
+refresh_dynamic_endpoints
+
+while true
+do
+	echo "starting SSR warm cache cycle..."
+	current_time=$(date +%s)
+
+	if (( current_time - last_refresh >= list_refresh_interval )); then
+		refresh_dynamic_endpoints
+	fi
+
+	for url in $sipURLs
+	do
+		warmSip "${hostname}${url}"
+		sleep $delay
+	done
+
+	for url in $unfurlURLs
+	do
+		warmUnfurl "${hostname}${url}"
+		sleep $delay
+	done
+
+	for domain in $custom_domains
+	do
+		warm "/" "$domain"
+		sleep $delay
+		for url in $sipURLs
+		do
+			warmSip "$url" "$domain"
+			sleep $delay
+		done
+		for url in $unfurlURLs
+		do
+			warmUnfurl "$url" "$domain"
+			sleep $delay
+		done
+	done
+
+	for name in $subdomain_names
+	do
+		local subdomain_host="${name}.${base_domain}"
+		warm "/" "$subdomain_host"
+		sleep $delay
+		for url in $sipURLs
+		do
+			warmSip "$url" "$subdomain_host"
+			sleep $delay
+		done
+		for url in $unfurlURLs
+		do
+			warmUnfurl "$url" "$subdomain_host"
+			sleep $delay
+		done
+	done
+
+	for domain in $custom_domains
+	do
+		for imageType in $staticImageTypes
+		do
+			warm "/ssr/static/${imageType}" "$domain"
+			sleep $delay
+		done
+	done
+
+	for name in $subdomain_names
+	do
+		local subdomain_host="${name}.${base_domain}"
+		for imageType in $staticImageTypes
+		do
+			warm "/ssr/static/${imageType}" "$subdomain_host"
+			sleep $delay
+		done
+	done
+
+	[[ $dry_run -eq 1 ]] && break
+	sleep 1
+done
