@@ -65,13 +65,20 @@ export class ServerHealthComponent implements OnInit {
           hosts.map(h => this.parseVersion(h.hashes?.core)).filter(Boolean)
         )].sort((a, b) => this.compareVersions(a, b));
 
+        const sortedOsVersions = [...new Set(
+          hosts.map(h => this.parseOsVersion(h.hashes?.os)).filter(Boolean)
+        )].sort((a, b) => this.compareVersions(a, b));
+
         this.colors = {};
         for (const host of hosts) {
           this.colors[host.host] = {};
-          for (const type of ['hybrid', 'frontend', 'backend', 'electrs', 'ssr', 'core']) {
+          for (const type of ['hybrid', 'frontend', 'backend', 'electrs', 'ssr', 'core', 'os']) {
             if (type === 'core') {
               const version = this.parseVersion(host.hashes?.core);
-              this.colors[host.host][type] = version ? this.getCoreVersionColor(version, sortedCoreVersions) : '';
+              this.colors[host.host][type] = version ? this.getVersionColor(version, sortedCoreVersions) : '';
+            } else if (type === 'os') {
+              const version = this.parseOsVersion(host.hashes?.os);
+              this.colors[host.host][type] = version ? this.getVersionColor(version, sortedOsVersions) : '';
             } else {
               const hash = host.hashes?.[type];
               this.colors[host.host][type] = hash ? '#' + hash.slice(0, 6) : '';
@@ -126,6 +133,17 @@ export class ServerHealthComponent implements OnInit {
     }
   }
 
+  private parseOsVersion(osVersion: string): string | undefined {
+    if (osVersion) {
+      const match = osVersion.match(/(\d+)\.(\d+)(?:\.(\d+))?/);
+      return match ? `${match[1]}.${match[2]}.${match[3] ?? 0}` : null;
+    }
+  }
+
+  public shortenVersion(version: string): string {
+    return version.match(/\d+\.\d+(?:\.\d+)?/)?.[0] ?? '';
+  }
+
   private compareVersions(a: string, b: string): number {
     const partsA = a.split('.').map(Number);
     const partsB = b.split('.').map(Number);
@@ -137,7 +155,7 @@ export class ServerHealthComponent implements OnInit {
     return 0;
   }
 
-  private getCoreVersionColor(version: string, sortedVersions: string[]): string {
+  private getVersionColor(version: string, sortedVersions: string[]): string {
     if (!version || sortedVersions.length === 0) {
       return '';
     }

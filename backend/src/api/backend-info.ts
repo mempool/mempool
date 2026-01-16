@@ -30,6 +30,7 @@ class BackendInfo {
       lightning: config.LIGHTNING.ENABLED,
       backend: config.MEMPOOL.BACKEND,
       coreVersion: '?',
+      osVersion: `${os.type()} ${os.release()}`,
     };
 
     this.timer = setInterval(async () => {

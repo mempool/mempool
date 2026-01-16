@@ -154,6 +154,7 @@ export interface HealthCheckHost {
     hybrid?: string;
     ssr?: string;
     core?: string;
+    os?: string;
   };
 }
 
