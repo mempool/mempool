@@ -11,7 +11,8 @@ import {
   tap,
   map,
   startWith,
-  retry
+  retry,
+  shareReplay
 } from 'rxjs/operators';
 import { Transaction } from '@interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, Subject, throwError, combineLatest, BehaviorSubject, timer } from 'rxjs';
@@ -103,8 +104,10 @@ export class TrackerComponent implements OnInit, OnDestroy {
   fetchCpfp$ = new Subject<string>();
   fetchRbfHistory$ = new Subject<string>();
   fetchCachedTx$ = new Subject<string>();
-  fetchAcceleration$ = new Subject<number>();
+  fetchConfirmedAcceleration$ = new Subject<number>();
   fetchMiningInfo$ = new Subject<{ hash: string, height: number, txid: string }>();
+  acceleration$: Observable<Acceleration | null>;
+  poolInfo$: Observable<Pool | null>;
   txChanged$ = new BehaviorSubject<boolean>(false); // triggered whenever this.tx changes (long term, we should refactor to make this.tx an observable itself)
   isAccelerated$ = new BehaviorSubject<boolean>(false); // refactor this to make isAccelerated an observable itself
   ETA$: Observable<ETA | null>;
@@ -282,14 +285,13 @@ export class TrackerComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.fetchAccelerationSubscription = this.fetchAcceleration$.pipe(
-      filter(() => this.stateService.env.ACCELERATOR === true),
+    this.acceleration$ = this.fetchConfirmedAcceleration$.pipe(
       tap(() => {
         this.accelerationInfo = null;
         this.setIsAccelerated();
       }),
       switchMap((blockHeight: number) => {
-        if (this.stateService.network === '' && this.stateService.env.ACCELERATOR && blockHeight >= 819500 ) {
+        if (this.stateService.network === '' && blockHeight >= 819500 ) {
           return this.servicesApiService.getAccelerationDataForTxid$(this.txId).pipe(
             switchMap((accelerationData: Acceleration) => {
               if (this.tx.acceleration && !accelerationData) { // If the just mined transaction was accelerated, but services backend did not return any acceleration data, retry
@@ -314,43 +316,40 @@ export class TrackerComponent implements OnInit, OnDestroy {
           return of(null);
         }
       }),
-      filter((acceleration: Acceleration) => !!acceleration),
-    ).subscribe((acceleration: Acceleration) => {
-      if (acceleration.txid === this.txId && (acceleration.status === 'completed' || acceleration.status === 'completed_provisional') && acceleration.pools.includes(acceleration.minedByPoolUniqueId)) {
-        const boostCost = acceleration.boostCost || acceleration.bidBoost;
-        acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
-        acceleration.boost = boostCost;
-        this.tx.acceleratedAt = acceleration.added;
-        this.accelerationInfo = acceleration;
-      }
-      if (acceleration.txid === this.txId && (acceleration.status === 'failed' || acceleration.status === 'failed_provisional')) {
-        this.tx.acceleratedAt = acceleration.added;
-        this.accelerationInfo = acceleration;
-      }
-      this.setIsAccelerated();
-    });
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
 
-    this.miningSubscription = this.fetchMiningInfo$.pipe(
+    this.poolInfo$ = this.fetchMiningInfo$.pipe(
       filter((target) => target.txid === this.txId),
-      tap(() => {
-        this.pool = null;
-        this.auditStatus = null;
-      }),
-      switchMap(({ hash, height, txid }) => {
+      switchMap(({ hash, height }) => {
+        if (this.pool) {
+          return of(this.pool);
+        }
         const foundBlock = this.cacheService.getCachedBlock(height) || null;
-        const auditAvailable = this.isAuditAvailable(height);
-        const isCoinbase = this.tx.vin.some(v => v.is_coinbase);
-        const fetchAudit = auditAvailable && !isCoinbase;
-        return combineLatest([
-          foundBlock ? of(foundBlock.extras.pool) : this.apiService.getBlock$(hash).pipe(
-            map(block => {
-              return block.extras.pool;
-            }),
-            catchError(() => {
-              return of(null);
-            })
-          ),
-          fetchAudit ? this.apiService.getBlockAudit$(hash).pipe(
+        return foundBlock ? of(foundBlock.extras.pool) : this.apiService.getBlock$(hash).pipe(
+          map(block => block.extras.pool),
+          retry({ count: 3, delay: 2000 }),
+          catchError(() => of(null))
+        );
+      }),
+      catchError(() => {
+        return of(null);
+      }),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
+
+    this.miningSubscription = combineLatest([
+      this.poolInfo$,
+      this.fetchMiningInfo$.pipe(
+        filter((target) => target.txid === this.txId),
+        tap(() => {
+          this.auditStatus = null;
+        }),
+        switchMap(({ hash, height, txid }) => {
+          const auditAvailable = this.isAuditAvailable(height);
+          const isCoinbase = this.tx.vin.some(v => v.is_coinbase);
+          const fetchAudit = auditAvailable && !isCoinbase;
+          return fetchAudit ? this.apiService.getBlockAudit$(hash).pipe(
             map(audit => {
               const isAdded = audit.addedTxs.includes(txid);
               const isPrioritized = audit.prioritizedTxs.includes(txid);
@@ -369,15 +368,35 @@ export class TrackerComponent implements OnInit, OnDestroy {
             catchError(() => {
               return of(null);
             })
-          ) : of(isCoinbase ? { coinbase: true } : null)
-        ]);
-      }),
-      catchError(() => {
-        return of(null);
-      })
-    ).subscribe(([pool, auditStatus]) => {
+          ) : of(isCoinbase ? { coinbase: true } : null);
+        }),
+        catchError(() => {
+          return of(null);
+        })
+      )
+    ]).subscribe(([pool, auditStatus]) => {
       this.pool = pool;
       this.auditStatus = auditStatus;
+      this.setIsAccelerated();
+    });
+
+    this.fetchAccelerationSubscription = combineLatest([
+      this.acceleration$,
+      this.poolInfo$
+    ]).subscribe(([acceleration, pool]) => {
+      if (!acceleration || acceleration.txid !== this.txId || !pool || !this.tx?.status?.confirmed) {
+        this.setIsAccelerated();
+        return;
+      }
+
+      if (!['failed', 'failed_provisional'].includes(acceleration.status) && acceleration.pools.includes(pool.id)) {
+        const boostCost = acceleration.boostCost || acceleration.bidBoost;
+        acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
+        acceleration.boost = boostCost;
+      }
+      this.tx.acceleratedAt = acceleration.added;
+      this.accelerationInfo = acceleration;
+      this.setIsAccelerated();
     });
 
     this.mempoolPositionSubscription = this.stateService.mempoolTxPosition$.subscribe(txPosition => {
@@ -502,7 +521,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
           } else {
             this.trackerStage = 'confirmed';
             this.loadingPosition = false;
-            this.fetchAcceleration$.next(tx.status.block_height);
+            this.fetchConfirmedAcceleration$.next(tx.status.block_height);
             this.fetchMiningInfo$.next({ hash: tx.status.block_hash, height: tx.status.block_height, txid: tx.txid });
             this.transactionTime = 0;
           }
@@ -566,7 +585,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
         } else {
           this.audioService.playSound('magic');
         }
-        this.fetchAcceleration$.next(block.height);
+        this.fetchConfirmedAcceleration$.next(block.height);
         this.fetchMiningInfo$.next({ hash: block.id, height: block.height, txid: this.tx.txid });
       }
     });
