@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 delay=0.15
 hostname=$(hostname)
-services_host=""
+#services_host=""
 protocol="https"
 base_domain="mempool.space"
 list_refresh_interval=60
