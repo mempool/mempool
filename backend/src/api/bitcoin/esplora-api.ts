@@ -30,6 +30,7 @@ interface FailoverHost {
     electrs?: string,
     ssr?: string,
     core?: string,
+    os?: string,
     lastUpdated: number,
   }
 }
@@ -323,6 +324,9 @@ class FailoverRouter {
       }
       if (response.data?.coreVersion) {
         host.hashes.core = response.data.coreVersion;
+      }
+      if (response.data?.osVersion) {
+        host.hashes.os = response.data.osVersion;
       }
     } catch (e) {
       // failed to get backend build hash - do nothing
