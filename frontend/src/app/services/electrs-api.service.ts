@@ -81,6 +81,10 @@ export class ElectrsApiService {
     return this.httpClient.get<Transaction>(this.apiBaseUrl + this.apiBasePath + '/api/tx/' + txId);
   }
 
+  getTransactionHex$(txId: string): Observable<string> {
+    return this.httpClient.get(this.apiBaseUrl + this.apiBasePath + '/api/tx/' + txId + '/hex', { responseType: 'text' });
+  }
+
   getRecentTransaction$(): Observable<Recent[]> {
     return this.httpClient.get<Recent[]>(this.apiBaseUrl + this.apiBasePath + '/api/mempool/recent');
   }

@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { EChartsOption } from '@app/graphs/echarts';
 import { ScriptInfo } from '@app/shared/script.utils';
-import { computeLeafHash, taggedHash, taprootAddressToOutputKey } from '@app/shared/transaction.utils';
+import { computeLeafHash, taggedHash, addressToScriptPubKey } from '@app/shared/transaction.utils';
 import { StateService } from '@app/services/state.service';
 import { AsmStylerPipe } from '@app/shared/pipes/asm-styler/asm-styler.pipe';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
@@ -117,7 +117,7 @@ export class TaprootAddressScriptsComponent implements OnChanges {
     // Expand the tree to include public key, internal key and merkle root
     const internalKeyNode = scripts[0].taprootInfo.scriptPath.internalKey;
     const merkleRootNode = treeStructure.length > 0 ? treeStructure[0].keys().next().value : leaves.keys().next().value;
-    const outputKeyNode = taprootAddressToOutputKey(this.address).outputKey;
+    const outputKeyNode = addressToScriptPubKey(this.address, this.stateService.network || '').scriptPubKey.slice(4);
     treeStructure.unshift(new Map<string, [string, string]>());
     treeStructure[0].set(outputKeyNode, [internalKeyNode, merkleRootNode]);
     this.depth++;
