@@ -107,7 +107,7 @@ export class BlockFiltersComponent implements OnInit, OnChanges, OnDestroy {
   @HostListener('document:click', ['$event'])
   onClick(event): boolean {
     // click away from menu
-    if (!event.target.closest('button') && !event.target.closest('label')) {
+    if (!event.target.closest('button, label, .btn-check')) {
       this.menuOpen = false;
     }
     return true;

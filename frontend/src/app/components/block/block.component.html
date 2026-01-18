@@ -67,14 +67,14 @@
                 <td>
                   <span
                     class="health-badge badge"
-                    [class.badge-success]="blockAudit?.matchRate >= 99"
-                    [class.badge-warning]="blockAudit?.matchRate >= 75 && blockAudit?.matchRate < 99"
-                    [class.badge-danger]="blockAudit?.matchRate < 75"
+                    [class.bg-success]="blockAudit?.matchRate >= 99"
+                    [class.bg-warning]="blockAudit?.matchRate >= 75 && blockAudit?.matchRate < 99"
+                    [class.bg-danger]="blockAudit?.matchRate < 75"
                     *ngIf="blockAudit?.matchRate != null && blockAudit?.id === block.id; else nullHealth"
                   >{{ blockAudit?.matchRate }}%</span>
                   <ng-template #nullHealth>
                     <ng-container *ngIf="!isLoadingOverview && blockAudit?.id === block.id; else loadingHealth">
-                      <span class="health-badge badge badge-secondary" i18n="unknown">Unknown</span>
+                      <span class="health-badge badge bg-secondary" i18n="unknown">Unknown</span>
                     </ng-container>
                   </ng-template>
                   <ng-template #loadingHealth>
@@ -201,7 +201,7 @@
         </td>
         <td *ngIf="!stateService.env.MINING_DASHBOARD && stateService.env.BASE_MODULE === 'mempool'">
           <span placement="bottom" class="badge"
-            [class]="block.extras.pool.slug === 'unknown' ? 'badge-secondary' : 'badge-primary'">
+            [class]="block.extras.pool.slug === 'unknown' ? 'bg-secondary' : 'bg-primary'">
             {{ block.extras.pool.name }}
         </span>
         </td>
@@ -328,7 +328,7 @@
               <tbody>
                 <tr>
                   <td class="td-width" i18n="transaction.version">Version</td>
-                  <td>{{ block.version | decimal2hex }} <span *ngIf="displayTaprootStatus() && hasTaproot(block.version)" class="badge badge-success ml-1" i18n="tx-features.tag.taproot|Taproot">Taproot</span></td>
+                  <td>{{ block.version | decimal2hex }} <span *ngIf="displayTaprootStatus() && hasTaproot(block.version)" class="badge bg-success ms-1" i18n="tx-features.tag.taproot|Taproot">Taproot</span></td>
                 </tr>
                 <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
                   <td i18n="block.bits">Bits</td>
@@ -367,7 +367,7 @@
     @if (!block?.stale && block?.extras?.orphans?.length > 0) {
       <br>
       <div class="header-bg box stale-block-alert">
-        <span class="stale-msg mr-1">
+        <span class="stale-msg me-1">
           @if (block.extras.orphans.length === 1) {
             <span i18n="block.stale-block-singular">There is a stale block at this height</span>
           } @else {
@@ -382,7 +382,7 @@
       </div>
     }
 
-    <div class="text-right mt-3 toggle-btns">
+    <div class="text-end mt-3 toggle-btns">
       <button
         *ngIf="webGlEnabled && auditAvailable"
         type="button"
@@ -407,12 +407,12 @@
     } @placeholder {
       <div>
         <div class="block-tx-title">
-          <h2 class="text-left">
+          <h2 class="text-start">
             <ng-container *ngTemplateOutlet="block.tx_count === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: block.tx_count | number}"></ng-container>
             <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
             <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
           </h2>
-          <ngb-pagination class="pagination-container float-right" [disabled]="true" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="stateService.env.ITEMS_PER_PAGE" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
+          <ngb-pagination class="pagination-container float-end" [disabled]="true" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="stateService.env.ITEMS_PER_PAGE" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
         </div>
         <div class="clearfix"></div>
         <div class="tx-skeleton">
@@ -450,7 +450,7 @@
 <ng-template #emptyBlockInfo let-emptyBlock>
   @if (network === '' && emptyBlock && emptyBlock.height > 100000 && emptyBlock.tx_count <= 1) {
     <a
-      class="info-bubble-link badge badge-primary"
+      class="info-bubble-link badge bg-primary"
       [routerLink]="['/docs/faq/' | relativeUrl]"
       fragment="why-empty-blocks"
     >

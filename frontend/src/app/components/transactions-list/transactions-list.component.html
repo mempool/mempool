@@ -87,7 +87,7 @@
                 }
                 <td class="address-cell">
                   <div [ngSwitch]="true">
-                    <ng-container *ngSwitchCase="vin.is_coinbase"><span i18n="transactions-list.coinbase">Coinbase</span><ng-template [ngIf]="network !== 'liquid' && network !== 'liquidtestnet'">&nbsp;<span i18n="transactions-list.newly-generated-coins">(Newly Generated Coins)</span></ng-template><br /><a placement="bottom" [ngbTooltip]="vin.scriptsig | hex2ascii"><span class="badge badge-secondary scriptmessage longer">{{ vin.scriptsig | hex2ascii }}</span></a></ng-container>
+                    <ng-container *ngSwitchCase="vin.is_coinbase"><span i18n="transactions-list.coinbase">Coinbase</span><ng-template [ngIf]="network !== 'liquid' && network !== 'liquidtestnet'">&nbsp;<span i18n="transactions-list.newly-generated-coins">(Newly Generated Coins)</span></ng-template><br /><a placement="bottom" [ngbTooltip]="vin.scriptsig | hex2ascii"><span class="badge bg-secondary scriptmessage longer">{{ vin.scriptsig | hex2ascii }}</span></a></ng-container>
                     <ng-container *ngSwitchCase="vin.is_pegin">
                       <span i18n="transactions-list.peg-in">Peg-in</span>
                     </ng-container>
@@ -119,7 +119,7 @@
                     </ng-container>
                   </div>
                 </td>
-                <td class="text-right nowrap amount" [class]="{large: tx.largeInput}">
+                <td class="text-end nowrap amount" [class]="{large: tx.largeInput}">
                   <button *ngIf="vin.isInscription" (click)="toggleOrdData(tx.txid, 'vin', vindex)" type="button" class="btn btn-sm badge badge-ord primary" style="margin-right: 10px;" i18n="transaction.inscription-tag">Inscription</button>
                   <ng-template [ngIf]="vin.prevout && vin.prevout.asset && vin.prevout.asset !== nativeAssetId" [ngIfElse]="defaultOutput">
                     <div *ngIf="assetsMinimal && assetsMinimal[vin.prevout.asset] else assetVinNotFound">
@@ -362,18 +362,18 @@
                         } @else {
                           <a placement="bottom" style="cursor: pointer;">
                             @if ((vout.scriptpubkey_asm | hex2ascii).length > 200) {
-                              <span *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" class="badge badge-secondary scriptmessage opreturn-msg" (click)="toggleShowFullOpReturnPreview(vindex)">{{ vout.scriptpubkey_asm | hex2ascii | slice:0:200 }}</span>
+                              <span *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" class="badge bg-secondary scriptmessage opreturn-msg" (click)="toggleShowFullOpReturnPreview(vindex)">{{ vout.scriptpubkey_asm | hex2ascii | slice:0:200 }}</span>
                               <ng-container *ngIf="(showDetails$ | async) === false">
                                 @if ((vout.scriptpubkey_asm | hex2ascii).length > 200) {
                                   @if (!showFullOpReturnPreview[vindex]) {
-                                    <span class="badge badge-primary" (click)="toggleShowFullOpReturnPreview(vindex)">Show more</span>
+                                    <span class="badge bg-primary" (click)="toggleShowFullOpReturnPreview(vindex)">Show more</span>
                                   } @else {
-                                    <span class="badge badge-primary" (click)="toggleShowFullOpReturnPreview(vindex)">Show less</span>
+                                    <span class="badge bg-primary" (click)="toggleShowFullOpReturnPreview(vindex)">Show less</span>
                                   }
                                 }
                               </ng-container>
                             } @else {
-                              <span *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" [ngbTooltip]="vout.scriptpubkey_asm | hex2ascii" class="badge badge-secondary scriptmessage">{{ vout.scriptpubkey_asm | hex2ascii }}</span>
+                              <span *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" [ngbTooltip]="vout.scriptpubkey_asm | hex2ascii" class="badge bg-secondary scriptmessage">{{ vout.scriptpubkey_asm | hex2ascii }}</span>
                             }
                           </a>
                         }
@@ -382,7 +382,7 @@
                     </ng-template>
                   </ng-template>
                 </td>
-                <td class="text-right nowrap amount" [class]="{large: tx.largeOutput}">
+                <td class="text-end nowrap amount" [class]="{large: tx.largeOutput}">
                   <ng-template [ngIf]="vout.asset && vout.asset !== nativeAssetId" [ngIfElse]="defaultOutput">
                     <div *ngIf="assetsMinimal && assetsMinimal[vout.asset] else assetNotFound">
                       <ng-container *ngTemplateOutlet="assetBox; context:{ $implicit: vout }"></ng-container>
@@ -512,17 +512,17 @@
     </div>
 
     <div class="summary">
-      <div class="float-left mt-2-5" *ngIf="!transactionPage && !tx.vin[0].is_coinbase && tx.fee !== -1">
+      <div class="float-start mt-2-5" *ngIf="!transactionPage && !tx.vin[0].is_coinbase && tx.fee !== -1">
         <app-fee-rate [fee]="tx.fee" [weight]="tx.weight"></app-fee-rate>
         <span class="d-none d-sm-inline-block">&nbsp;&ndash; {{ tx.fee | number }} <span class="symbol"
             i18n="shared.sats">sats</span> <span class="fiat"><app-fiat [blockConversion]="tx.price" [value]="tx.fee"></app-fiat></span></span>
       </div>
-      <div class="float-left mt-2-5 grey-info-text" *ngIf="tx.fee === -1" i18n="transactions-list.load-to-reveal-fee-info">Show more inputs to reveal fee data</div>
+      <div class="float-start mt-2-5 grey-info-text" *ngIf="tx.fee === -1" i18n="transactions-list.load-to-reveal-fee-info">Show more inputs to reveal fee data</div>
 
-      <div class="float-right" [class.has-accelerate]="!tx.status?.confirmed && acceleratedTxids">
+      <div class="float-end" [class.has-accelerate]="!tx.status?.confirmed && acceleratedTxids">
         @if (!tx.status?.confirmed && acceleratedTxids) {
-          <button type="button" class="btn btn-sm accelerate mt-2 mr-2" [class.blink]="acceleratedTxids.has(tx.txid)" [routerLink]="['/tx/' | relativeUrl, tx.txid]" [fragment]="'accelerate'">
-            <img src="/resources/mempool-accelerator-sparkles-light.svg" height="15" class="mr-2" />
+          <button type="button" class="btn btn-sm accelerate mt-2 me-2" [class.blink]="acceleratedTxids.has(tx.txid)" [routerLink]="['/tx/' | relativeUrl, tx.txid]" [fragment]="'accelerate'">
+            <img src="/resources/mempool-accelerator-sparkles-light.svg" height="15" class="me-2" />
             @if (acceleratedTxids.has(tx.txid)) {
               <span i18n="transaction.audit.accelerated">Accelerated</span>
             } @else {
@@ -533,14 +533,14 @@
         <ng-container *ngIf="showConfirmations && latestBlock$ | async as latestBlock">
           <app-confirmations [chainTip]="latestBlock?.height" [height]="tx?.status?.block_height" [buttonClass]="(!tx.status?.confirmed && acceleratedTxids) ? 'mt-2 confirmation-compact' : 'mt-2'"></app-confirmations>
         </ng-container>
-        <button *ngIf="addresses.length === 0; else viewingAddress" type="button" class="btn btn-sm btn-primary mt-2 ml-2" (click)="switchCurrency()">
+        <button *ngIf="addresses.length === 0; else viewingAddress" type="button" class="btn btn-sm btn-primary mt-2 ms-2" (click)="switchCurrency()">
           <ng-template [ngIf]="(network === 'liquid' || network === 'liquidtestnet') && haveBlindedOutputValues(tx)" [ngIfElse]="defaultAmount" i18n="shared.confidential">Confidential</ng-template>
           <ng-template #defaultAmount>
             <app-amount [blockConversion]="tx.price" [satoshis]="getTotalTxOutput(tx)"></app-amount>
           </ng-template>
         </button>
         <ng-template #viewingAddress>
-          <button type="button" class="btn btn-sm mt-2 ml-2" (click)="switchCurrency()" [ngClass]="{'btn-success': tx['addressValue'] >= 0, 'btn-danger': tx['addressValue'] < 0}">
+          <button type="button" class="btn btn-sm mt-2 ms-2" (click)="switchCurrency()" [ngClass]="{'btn-success': tx['addressValue'] >= 0, 'btn-danger': tx['addressValue'] < 0}">
             <app-amount [blockConversion]="tx.price" [satoshis]="tx['addressValue']" [addPlus]="true"></app-amount>
           </button>
         </ng-template>
