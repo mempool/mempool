@@ -145,11 +145,12 @@ ul.no-bull.block-audit code{
 #doc-nav-desktop {
   width: 300px;
   margin-top: -15px;
+  padding-left: 20px;
 }
 
 #doc-nav-desktop.relative {
   float: left;
-  overflow: hidden;
+  overflow: visible;
 }
 
 #doc-nav-desktop.fixed {
