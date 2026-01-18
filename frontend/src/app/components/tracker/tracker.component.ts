@@ -33,6 +33,7 @@ import { MiningService, MiningStats } from '@app/services/mining.service';
 import { ETA, EtaService } from '@app/services/eta.service';
 import { getTransactionFlags, getUnacceleratedFeeRate } from '@app/shared/transaction.utils';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
+import { StorageService } from '@app/services/storage.service';
 
 
 interface Pool {
@@ -125,6 +126,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
   accelerationFlowCompleted = false;
   paymentReceiptUrl: string | null = null;
   auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
+  referralCode: string | undefined;
 
   enterpriseInfo: any;
   enterpriseInfo$: Subscription;
@@ -147,11 +149,17 @@ export class TrackerComponent implements OnInit, OnDestroy {
     private router: Router,
     private cd: ChangeDetectorRef,
     private zone: NgZone,
+    private storageService: StorageService,
     @Inject(ZONE_SERVICE) private zoneService: any,
   ) {}
 
   ngOnInit() {
     this.onResize();
+
+    // Accelerator referral code
+    const urlParams = new URLSearchParams(window.location.search);
+    this.referralCode = urlParams.get('referral_code') ?? this.storageService.getValue('referral_code') ?? undefined;
+    this.storageService.setValue('referral_code', this.referralCode);
 
     this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
 

@@ -103,6 +103,7 @@
         [miningStats]="miningStats"
         [showDetails]="showAccelerationDetails"
         [noCTA]="true"
+        [referralCode]="this.referralCode"
         (hasDetails)="setHasAccelerationDetails($event)"
         (completed)="onAccelerationCompleted()"
         (unavailable)="eligibleForAcceleration = false"
