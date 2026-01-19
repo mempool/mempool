@@ -40,7 +40,7 @@
                 @if (type !== 'core' && type !== 'os' && host.hashes?.[type]) {
                   <a [style.color]="'white'" href="https://github.com/mempool/{{repoMap[type]}}/commit/{{ host.hashes[type] }}" target="_blank">{{ host.hashes[type].slice(0, 8) || '?' }}</a>
                 } @else if (host.hashes?.[type]) {
-                  <span [style.color]="'white'" ngbTooltip="{{ host.hashes[type] }}" tooltipPlacement="top">{{ shortenVersion(host.hashes[type]) || '?' }}</span>
+                  <span [style.color]="'white'" ngbTooltip="{{ host.hashes[type] }}" placement="top">{{ shortenVersion(host.hashes[type]) || '?' }}</span>
                 } @else {
                   <span>?</span>
                 }
