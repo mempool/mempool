@@ -211,7 +211,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.forceAccelerationSummary = !!urlParams.get('cash_request_id');
 
     // Accelerator referral code
-    this.referralCode = urlParams.get('referralCode') ?? this.storageService.getValue('referralCode') ?? undefined;
+    const fragmentsParams = new URLSearchParams(window.location.hash);
+    this.referralCode = fragmentsParams.get('referralCode') ?? this.storageService.getValue('referralCode') ?? undefined;
     this.storageService.setValue('referralCode', this.referralCode);
 
     this.hideAccelerationSummary = this.stateService.isMempoolSpaceBuild ? this.storageService.getValue('hide-accelerator-pref') == 'true' : true;

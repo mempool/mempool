@@ -32,7 +32,6 @@ import { TrackerStage } from '@components/tracker/tracker-bar.component';
 import { MiningService, MiningStats } from '@app/services/mining.service';
 import { ETA, EtaService } from '@app/services/eta.service';
 import { getTransactionFlags, getUnacceleratedFeeRate } from '@app/shared/transaction.utils';
-import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { StorageService } from '@app/services/storage.service';
 
 
@@ -156,9 +155,9 @@ export class TrackerComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.onResize();
 
-    // Accelerator referral code
-    const urlParams = new URLSearchParams(window.location.search);
-    this.referralCode = urlParams.get('referralCode') ?? this.storageService.getValue('referralCode') ?? undefined;
+    // Accelerator referral code in fragment
+    const fragmentsParams = new URLSearchParams(window.location.hash);
+    this.referralCode = fragmentsParams.get('referralCode') ?? this.storageService.getValue('referralCode') ?? undefined;
     this.storageService.setValue('referralCode', this.referralCode);
 
     this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
