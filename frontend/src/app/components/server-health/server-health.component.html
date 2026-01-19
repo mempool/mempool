@@ -25,6 +25,7 @@
             <th class="electrs hash">Electrs</th>
             <th class="ssr hash">SSR</th>
             <th class="core">Core</th>
+            <th class="os">OS</th>
           </tr>
           <tr *ngFor="let host of hosts; let i = index; trackBy: trackByFn">
             <td class="rank">{{ i + 1 }}</td>
@@ -34,13 +35,13 @@
             <td class="rtt only-small">{{ (host.rtt / 1000) | number : '1.1-1' }} {{ host.rtt == null ? '' : 's'}} {{ !host.checked ? '⏳' : (host.unreachable ? '🔥' : '✅') }}</td>
             <td class="rtt only-large">{{ host.rtt | number : '1.0-0' }} {{ host.rtt == null ? '' : 'ms'}} {{ !host.checked ? '⏳' : (host.unreachable ? '🔥' : '✅') }}</td>
             <td class="height">{{ host.latestHeight }} {{ !host.checked ? '⏳' : (host.outOfSync ? '🚫' : (host.latestHeight && host.latestHeight < maxHeight ? '🟧' : '✅')) }}</td>
-            <ng-container *ngFor="let type of ['hybrid', 'frontend', 'backend', 'electrs', 'ssr', 'core']">
-              <td class="{{type}}" [class.hash]="type !== 'core'" [style.background-color]="type !== 'core' && host.hashes?.[type] ? '#' + host.hashes[type].slice(0, 6) : ''">
-                @if (type !== 'core' && host.hashes?.[type]) {
+            <ng-container *ngFor="let type of ['hybrid', 'frontend', 'backend', 'electrs', 'ssr', 'core', 'os']">
+              <td class="{{type}}" [class.hash]="type !== 'core' && type !== 'os'" [style.background-color]="colors[host.host][type]">
+                @if (type !== 'core' && type !== 'os' && host.hashes?.[type]) {
                   <a [style.color]="'white'" href="https://github.com/mempool/{{repoMap[type]}}/commit/{{ host.hashes[type] }}" target="_blank">{{ host.hashes[type].slice(0, 8) || '?' }}</a>
                 } @else if (host.hashes?.[type]) {
                   <span [style.color]="'white'" class="only-large" style="font-size: 10px;">{{ host.hashes[type] || '?' }}</span>
-                  <span [style.color]="'white'" class="only-small" style="font-size: 10px;">{{ host.hashes[type]?.slice(9) || '?' }}</span>
+                  <span [style.color]="'white'" class="only-small" style="font-size: 10px;">{{ shortenVersion(host.hashes[type]) || '?' }}</span>
                 } @else {
                   <span>?</span>
                 }
