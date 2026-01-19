@@ -70,7 +70,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   @Input() forceMobile: boolean = false;
   @Input() showDetails: boolean = false;
   @Input() noCTA: boolean = false;
-  @Input() shareCode: string | undefined;
+  @Input() referralCode: string | undefined;
   @Output() unavailable = new EventEmitter<boolean>();
   @Output() completed = new EventEmitter<boolean>();
   @Output() hasDetails = new EventEmitter<boolean>();
@@ -535,10 +535,10 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                   cardTag,
                   `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
                   costUSD,
-                  this.shareCode
+                  this.referralCode
                 ).subscribe({
                   next: (response) => {
-                    this.storageService.removeItem('share_code'); // Consume localStorage share_code
+                    this.storageService.removeItem('referralCode'); // Consume localStorage referralCode
                     this.accelerationResponse = response;
                     this.processing = false;
                     this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
@@ -659,10 +659,10 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                 `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
                 costUSD,
                 verificationToken.userChallenged,
-                this.shareCode
+                this.referralCode
               ).subscribe({
                 next: (response) => {
-                  this.storageService.removeItem('share_code'); // Consume localStorage share_code
+                  this.storageService.removeItem('referralCode'); // Consume localStorage referralCode
                   this.accelerationResponse = response;
                   this.processing = false;
                   this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
@@ -764,10 +764,10 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
             costUSD,
             verificationToken.userChallenged,
-            this.shareCode
+            this.referralCode
           ).subscribe({
             next: (response) => {
-              this.storageService.removeItem('share_code'); // Consume localStorage share_code
+              this.storageService.removeItem('referralCode'); // Consume localStorage referralCode
               this.accelerationResponse = response;
               this.processing = false;
               this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
@@ -854,10 +854,10 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               tokenResult.details.cashAppPay.cashtag,
               tokenResult.details.cashAppPay.referenceId,
               costUSD,
-              this.shareCode
+              this.referralCode
             ).subscribe({
               next: (response) => {
-                this.storageService.removeItem('share_code'); // Consume localStorage share_code
+                this.storageService.removeItem('referralCode'); // Consume localStorage referralCode
                 this.accelerationResponse = response;
                 this.processing = false;
                 this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
@@ -921,7 +921,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
    */
   async requestBTCPayInvoice(): Promise<void> {
     this.loadingBtcpayInvoice = true;
-    this.servicesApiService.generateBTCPayAcceleratorInvoice$(this.tx.txid, this.userBid, this.shareCode).pipe(
+    this.servicesApiService.generateBTCPayAcceleratorInvoice$(this.tx.txid, this.userBid, this.referralCode).pipe(
       switchMap(response => {
         return this.servicesApiService.retrieveInvoice$(response.btcpayInvoiceId);
       }),

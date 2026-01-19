@@ -165,7 +165,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   hasAccelerationDetails = false;
   auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
   isMempoolSpaceBuild = this.stateService.isMempoolSpaceBuild;
-  acceleratorShareCode: string | undefined;
+  referralCode: string | undefined;
 
   graphContainer: ElementRef;
   @ViewChild('graphContainer')
@@ -211,8 +211,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.forceAccelerationSummary = !!urlParams.get('cash_request_id');
 
     // Accelerator referral code
-    this.acceleratorShareCode = urlParams.get('share_code') ?? this.storageService.getValue('share_code') ?? undefined;
-    this.storageService.setValue('share_code', this.acceleratorShareCode);
+    this.referralCode = urlParams.get('referralCode') ?? this.storageService.getValue('referralCode') ?? undefined;
+    this.storageService.setValue('referralCode', this.referralCode);
 
     this.hideAccelerationSummary = this.stateService.isMempoolSpaceBuild ? this.storageService.getValue('hide-accelerator-pref') == 'true' : true;
 

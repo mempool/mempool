@@ -126,7 +126,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
   accelerationFlowCompleted = false;
   paymentReceiptUrl: string | null = null;
   auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
-  acceleratorShareCode: string | undefined;
+  referralCode: string | undefined;
 
   enterpriseInfo: any;
   enterpriseInfo$: Subscription;
@@ -158,8 +158,8 @@ export class TrackerComponent implements OnInit, OnDestroy {
 
     // Accelerator referral code
     const urlParams = new URLSearchParams(window.location.search);
-    this.acceleratorShareCode = urlParams.get('share_code') ?? this.storageService.getValue('share_code') ?? undefined;
-    this.storageService.setValue('share_code', this.acceleratorShareCode);
+    this.referralCode = urlParams.get('referralCode') ?? this.storageService.getValue('referralCode') ?? undefined;
+    this.storageService.setValue('referralCode', this.referralCode);
 
     this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
 
