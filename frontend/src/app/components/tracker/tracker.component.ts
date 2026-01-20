@@ -158,7 +158,9 @@ export class TrackerComponent implements OnInit, OnDestroy {
     // Accelerator referral code in fragment
     const fragmentsParams = new URLSearchParams(window.location.hash);
     this.referralCode = fragmentsParams.get('referralCode') ?? this.storageService.getValue('referralCode') ?? undefined;
-    this.storageService.setValue('referralCode', this.referralCode);
+    if (this.referralCode) {
+      this.storageService.setValue('referralCode', this.referralCode);
+    }
 
     this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
 
