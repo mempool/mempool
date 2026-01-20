@@ -156,7 +156,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
     this.onResize();
 
     // Accelerator referral code in fragment
-    const fragmentsParams = new URLSearchParams(window.location.hash);
+    const fragmentsParams = new URLSearchParams(window.location.hash.slice(1));
     this.referralCode = fragmentsParams.get('referralCode') ?? this.storageService.getValue('referralCode') ?? undefined;
     if (this.referralCode) {
       this.storageService.setValue('referralCode', this.referralCode);

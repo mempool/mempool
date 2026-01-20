@@ -211,7 +211,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.forceAccelerationSummary = !!urlParams.get('cash_request_id');
 
     // Accelerator referral code
-    const fragmentsParams = new URLSearchParams(window.location.hash);
+    const fragmentsParams = new URLSearchParams(window.location.hash.slice(1));
     this.referralCode = fragmentsParams.get('referralCode') ?? this.storageService.getValue('referralCode') ?? undefined;
     if (this.referralCode) {
       this.storageService.setValue('referralCode', this.referralCode);
