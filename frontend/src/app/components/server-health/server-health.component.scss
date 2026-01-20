@@ -52,6 +52,11 @@
         text-overflow: ellipsis;
         white-space: nowrap;
       }
+      &.hash, &.version {
+        font-size: 11px;
+        vertical-align: middle;
+        text-align: center;
+      }
 
       span {
         &.only-small {
