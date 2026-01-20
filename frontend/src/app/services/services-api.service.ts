@@ -6,7 +6,7 @@ import { StorageService } from '@app/services/storage.service';
 import { MenuGroup } from '@interfaces/services.interface';
 import { Observable, of, ReplaySubject, tap, catchError, share, filter, switchMap, map } from 'rxjs';
 import { IBackendInfo } from '@interfaces/websocket.interface';
-import { Acceleration, AccelerationHistoryParams } from '@interfaces/node-api.interface';
+import { AccelerationHistoryParams, CompletedAcceleration, PendingAcceleration } from '@interfaces/node-api.interface';
 import { AccelerationStats } from '@components/acceleration/acceleration-stats/acceleration-stats.component';
 import { SimpleProof } from '@components/simpleproof-widget/simpleproof-widget.component';
 
@@ -151,24 +151,24 @@ export class ServicesApiServices {
     return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/cardOnFile`, { txInput: txInput, token: token, verificationToken: verificationToken, referenceId: referenceId, userApprovedUSD: userApprovedUSD, userChallenged: userChallenged });
   }
 
-  getAccelerations$(): Observable<Acceleration[]> {
-    return this.httpClient.get<Acceleration[]>(`${this.stateService.env.SERVICES_API}/accelerator/accelerations`);
+  getAccelerations$(): Observable<PendingAcceleration[]> {
+    return this.httpClient.get<PendingAcceleration[]>(`${this.stateService.env.SERVICES_API}/accelerator/accelerations`);
   }
 
   getAggregatedAccelerationHistory$(params: AccelerationHistoryParams): Observable<any> {
     return this.httpClient.get<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerations/history/aggregated`, { params: { ...params }, observe: 'response' });
   }
 
-  getAccelerationHistory$(params: AccelerationHistoryParams): Observable<Acceleration[]> {
-    return this.httpClient.get<Acceleration[]>(`${this.stateService.env.SERVICES_API}/accelerator/accelerations/history`, { params: { ...params } });
+  getAccelerationHistory$(params: AccelerationHistoryParams): Observable<CompletedAcceleration[]> {
+    return this.httpClient.get<CompletedAcceleration[]>(`${this.stateService.env.SERVICES_API}/accelerator/accelerations/history`, { params: { ...params } });
   }
 
-  getAccelerationDataForTxid$(txid: string) {
-    return this.httpClient.get<Acceleration>(`${this.stateService.env.SERVICES_API}/accelerator/accelerations/${txid}`);
+  getAccelerationDataForTxid$(txid: string): Observable<CompletedAcceleration> {
+    return this.httpClient.get<CompletedAcceleration>(`${this.stateService.env.SERVICES_API}/accelerator/accelerations/${txid}`);
   }
 
-  getAllAccelerationHistory$(params: AccelerationHistoryParams, limit?: number, findTxid?: string): Observable<Acceleration[]> {
-    const getPage$ = (page: number, accelerations: Acceleration[] = []): Observable<{ page: number, total: number, accelerations: Acceleration[] }> => {
+  getAllAccelerationHistory$(params: AccelerationHistoryParams, limit?: number, findTxid?: string): Observable<CompletedAcceleration[]> {
+    const getPage$ = (page: number, accelerations: CompletedAcceleration[] = []): Observable<{ page: number, total: number, accelerations: CompletedAcceleration[] }> => {
       return this.getAccelerationHistoryObserveResponse$({...params, page}).pipe(
         map((response) => ({
           page,
