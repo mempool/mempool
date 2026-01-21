@@ -1,0 +1,106 @@
+<div class="container-xl">
+  <h1 class="text-left" i18n="shared.verify-address|Verify Address Ownership">Verify Address Ownership</h1>
+
+  <div class="row">
+    <div class="col">
+      <form [formGroup]="verifyAddressForm">
+        <div class="mb-3">
+          <label for="address" class="form-label">
+            <strong i18n="shared.address|Address">Address</strong>
+            <span placement="bottom" class="badge badge-primary ml-2" *ngIf="addressType">
+              <app-address-type [address]="addressType"></app-address-type>
+            </span>
+          </label>
+          <input type="text" id="address" class="form-control" [class.is-invalid]="addressControl?.invalid && addressControl?.touched" formControlName="address" placeholder="bc1q9vza2e8x573nczrlzms0wvx3gsqjx7vavgkx0l">
+          <div class="invalid-feedback" *ngIf="addressControl?.invalid && addressControl?.touched" i18n="verify-address.invalid-address|Unsupported or invalid address">Unsupported or invalid address</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="spk" class="form-label"><strong i18n="verify-address.spk|SPK">ScriptPubKey (Hex)</strong></label>
+          <input type="text" id="spk" class="form-control" [class.is-invalid]="spkControl?.invalid && spkControl?.touched" formControlName="spk" placeholder="00142b05d564e6a7a33c087f16e0f730d1440123799d">
+        </div>
+
+        <div class="mb-3">
+          <label for="message" class="form-label"><strong i18n="verify-address.message|Message">Message</strong></label>
+          <textarea id="message" class="form-control" [class.is-invalid]="messageControl?.invalid && messageControl?.touched" formControlName="message" rows="1" placeholder="Address verification for Mempool Treasury Dashboard"></textarea>
+        </div>
+
+        <div class="row mb-1">
+          <div class="col-12 col-sm-6 col-md-3 order-3 order-md-1 mt-3 mt-md-0">
+            <label for="feeRate" class="form-label"><strong i18n="verify-address.fee-rate|Fee rate input label">Fee rate (sat/vB)</strong></label>
+            <input type="number" id="feeRate" class="form-control" min="0" formControlName="feeRate" [placeholder]="priorityFeeRate || 1">
+          </div>
+          <div class="col-12 col-sm-6 col-md-3 order-1 order-md-2">
+            <label for="sequence" class="form-label"><strong i18n="verify-address.input-sequence|Input sequence input label">Input Sequence</strong></label>
+            <input type="number" id="sequence" class="form-control" min="0" max="4294967295" formControlName="sequence">
+          </div>
+          <div class="col-12 col-sm-6 col-md-3 order-2 order-md-3">
+            <label for="locktime" class="form-label"><strong i18n="verify-address.timelock|Timelock input label">Timelock</strong></label>
+            <input type="number" id="locktime" class="form-control" min="0" max="4294967295" formControlName="locktime">
+          </div>
+          <div class="col-12 col-sm-6 col-md-3 order-4 order-md-4 mt-3 mt-md-0" *ngIf="showFallbackFee">
+            <label for="fallbackFee" class="form-label"><strong i18n="verify-address.fallback-fee|Fallback fee input label">Fallback fee (sats)</strong></label>
+            <input type="number" id="fallbackFee" class="form-control" min="0" formControlName="fallbackFee" placeholder="1000">
+          </div>
+        </div>
+
+        <div class="row mb-1" *ngIf="showFallbackFee">
+          <div class="col-12 text-right">
+            <small class="form-text text-muted" i18n="verify-address.fallback-fee-help|Fallback fee helper text">Provide a fallback fee if the finalized transaction size can't be estimated reliably (hidden scripts in P2SH, P2WSH, or P2TR).</small>
+          </div>
+        </div>
+
+        <div class="mb-1 mt-3">
+          <label class="form-label">
+            <strong>UTXO</strong>
+          </label>
+          <div *ngIf="isLoadingUtxos" class="spinner-border spinner-border-sm text-light ml-2" role="status"></div>
+          <div *ngIf="utxosError" class="text-danger small">{{ utxosError }}</div>
+          <div class="row g-2 utxo-grid" *ngIf="!isLoadingUtxos && utxos.length">
+            <label class="col-12 col-sm-6 col-md-3 utxo-item" *ngFor="let utxo of utxos | slice:0:8">
+              <input class="utxo-input" type="radio" [value]="utxo.txid + ':' + utxo.vout" formControlName="utxo" (change)="selectUtxo(utxo)">
+              <span class="utxo-option">
+                <div class="utxo-amount"><strong>{{ utxo.value | number }}</strong> <span class="symbol">sats</span></div>
+                <small class="text-muted d-block">{{ utxo.txid | slice:0:8 }}...:{{ utxo.vout }}</small>
+              </span>
+            </label>
+          </div>
+          <div class="row mb-3" *ngIf="utxos.length > 8">
+            <div class="col-12 text-right"><small class="form-text text-muted">+{{ utxos.length - 8 }} more</small></div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <button type="button" class="btn btn-primary me-2" [disabled]="!canGenerate()" (click)="generatePsbt()">
+            <span i18n="verify-address.generate-psbt">Generate PSBT</span>
+          </button>
+          <div *ngIf="isGeneratingPsbt" class="spinner-border spinner-border-sm text-light ml-2" role="status" aria-hidden="true"></div>
+        </div>
+
+        <div *ngIf="generateError" class="alert alert-danger" role="alert">{{ generateError }}</div>
+
+        <div *ngIf="generatedPsbt" class="mb-3">
+          <div class="input-group info-group">
+            <input type="text" class="form-control" style="background-color: var(--secondary)" [value]="generatedPsbt">
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="button">
+                <app-clipboard [text]="generatedPsbt" [leftPadding]="false"></app-clipboard>
+              </button>
+              <span class="btn btn-outline-secondary qrSpan" (mouseover)="showQR = true" (mouseout)="showQR = false" (pointerdown)="showQR = true">
+                <fa-icon [icon]="['fas', 'qrcode']" [fixedWidth]="true" [style.font-size]="'12px'"></fa-icon>
+                <div class="qr-wrapper" [hidden]="!showQR">
+                  <app-qrcode [size]="300" [data]="generatedPsbt"></app-qrcode>
+                </div>
+              </span>
+              <button class="btn btn-primary" type="button" (click)="navigateToPreview()" i18n="shared.Preview">Preview</button>
+            </div>
+          </div>
+          <small class="form-text text-warning" i18n="verify-address.verify-transaction-warning">Double check that this transaction sends the funds back to the provided address before signing</small>
+        </div>
+        <div class="mt-4" *ngIf="generatedPsbt">
+          <div><button type="button" class="btn btn-secondary" (click)="cancel()" i18n="shared.reset">Reset</button></div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
