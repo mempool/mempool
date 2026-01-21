@@ -112,6 +112,9 @@
     "mock-socket": "~9.3.1",
     "start-server-and-test": "~2.1.2"
   },
+  "overrides": {
+    "tar": "^7.5.5"
+  },
   "scarfSettings": {
     "enabled": false
   }
