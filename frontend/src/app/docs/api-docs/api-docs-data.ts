@@ -12544,7 +12544,7 @@ export const restApiDocsData = [
     fragment: 'accelerator-auto-accelerate-cancel',
     title: 'POST Cancel Auto-Acceleration (Pro)',
     description: {
-      default: '<p>Sends a request to cancel an auto-acceleration in the <code>tracking</code> status.<br>You can retrieve eligible auto-acceleration <code>txid</code> using the history endpoint GET <code>/api/v1/services/accelerator/auto-accelerate/history</code>.'
+      default: '<p>Sends a request to cancel an auto-acceleration in the <code>tracking</code> status.<br>You can retrieve eligible auto-acceleration <code>txid</code> using the history endpoint GET <code>/api/v1/services/accelerator/auto-accelerate/history</code>.</p>'
     },
     urlString: '/v1/services/accelerator/auto-accelerate/cancel',
     showConditions: [''],
