@@ -12459,7 +12459,7 @@ export const restApiDocsData = [
     fragment: 'accelerator-auto-accelerate',
     title: 'POST Auto-Accelerate A Transaction (Pro)',
     description: {
-      default: '<p>Sends a request to automatically accelerate a transaction based on specified trigger conditions.</p><p>The <code>type</code> parameter must be one of: <code>time_delay</code>, <code>block_height</code>, <code>timestamp</code>, or <code>next_block</code>.<br>The <code>value</code> parameter is required for types other than <code>next_block</code> and depends on the type: seconds for <code>time_delay</code>, block height for <code>block_height</code>, or Unix timestamp for <code>timestamp</code>.</p>'
+      default: '<p>Sends a request to automatically accelerate a transaction based on specified trigger conditions.</p><p>The <code>type</code> parameter must be one of: <code>time_delay</code>, <code>block_height</code>, <code>timestamp</code>, or <code>next_block</code>.<br>The <code>value</code> parameter is required for types other than <code>next_block</code> and depends on the type: hours (floating point, min = 0.5) for <code>time_delay</code>, block height (min = next block height) for <code>block_height</code>, or Unix timestamp (min = now + 60 seconds) for <code>timestamp</code>.</p>'
     },
     urlString: '/v1/services/accelerator/auto-accelerate',
     showConditions: [''],
@@ -12474,7 +12474,7 @@ export const restApiDocsData = [
         codeSampleMainnet: {
           esModule: [],
           commonJS: [],
-          curl: ['txInput=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&type=time_delay&value=3600'],
+          curl: ['txInput=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&type=time_delay&value=0.5'],
           headers: 'X-Mempool-Auth: stacksats',
           response: `HTTP/1.1 200 OK`,
         },
@@ -12513,7 +12513,7 @@ export const restApiDocsData = [
     "status": "accelerated",
     "added": 1706378712,
     "trigger_type": "time_delay",
-    "trigger_value": 3600
+    "trigger_value": 0.5
   },
   {
     "id": 14,
