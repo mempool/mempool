@@ -152,7 +152,7 @@ export class Hash {
     // instance must be reset to use it again.
     update(data: Uint8Array, dataLength: number = data.length): this {
         if (this.finished) {
-            throw new Error("SHA256: can't update because hash was finished.");
+            throw new Error('SHA256: can\'t update because hash was finished.');
         }
         let dataPos = 0;
         this.bytesHashed += dataLength;
@@ -353,7 +353,7 @@ function fillBuffer(buffer: Uint8Array, hmac: HMAC, info: Uint8Array | undefined
     const num = counter[0];
 
     if (num === 0) {
-        throw new Error("hkdf: cannot expand more");
+        throw new Error('hkdf: cannot expand more');
     }
 
     // Prepare HMAC instance for new data with old key.
@@ -425,7 +425,7 @@ export function pbkdf2(password: Uint8Array, salt: Uint8Array, iterations: numbe
     const dk = new Uint8Array(dkLen);
 
     for (let i = 0; i * len < dkLen; i++) {
-        let c = i + 1;
+        const c = i + 1;
         ctr[0] = (c >>> 24) & 0xff;
         ctr[1] = (c >>> 16) & 0xff;
         ctr[2] = (c >>> 8)  & 0xff;

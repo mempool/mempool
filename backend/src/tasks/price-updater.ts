@@ -432,7 +432,7 @@ class PriceUpdater {
     this.additionalCurrenciesHistoryRunning = true;
     logger.debug(`Inserting missing historical conversion rates using conversions API to fill ${priceTimesToFill.length} rows`, logger.tags.mining);
 
-    let conversionRates: { [timestamp: number]: ConversionRates } = {};
+    const conversionRates: { [timestamp: number]: ConversionRates } = {};
     let totalInserted = 0;
 
     for (let i = 0; i < priceTimesToFill.length; i++) {
@@ -464,7 +464,7 @@ class PriceUpdater {
       }
 
       const prices: ApiPrice = this.getEmptyPricesObj();
-      
+
       let willInsert = false;
       for (const conversionCurrency of this.newCurrencies.concat(missingLegacyCurrencies)) {
         if (conversionRates[yearMonthTimestamp][conversionCurrency] > 0 && priceTime.USD * conversionRates[yearMonthTimestamp][conversionCurrency] < MAX_PRICES[conversionCurrency]) {
@@ -474,7 +474,7 @@ class PriceUpdater {
           prices[conversionCurrency] = 0;
         }
       }
-      
+
       if (willInsert) {
         await PricesRepository.$saveAdditionalCurrencyPrices(priceTime.time, prices, missingLegacyCurrencies);
         ++totalInserted;

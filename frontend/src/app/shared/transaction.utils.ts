@@ -1,10 +1,10 @@
 import { TransactionFlags } from '@app/shared/filters.utils';
 import { getVarIntLength, parseMultisigScript, isPoint, parseTapscriptMultisig, parseTapscriptUnanimousMultisig, ScriptInfo } from '@app/shared/script.utils';
-import { Transaction, Vin } from '@interfaces/electrs.interface';
+import { Transaction, Vin, Utxo } from '@interfaces/electrs.interface';
 import { CpfpInfo, RbfInfo, TransactionStripped } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 import { hash, Hash } from '@app/shared/sha256';
-import { AddressType, AddressTypeInfo } from '@app/shared/address-utils';
+import { AddressType, AddressTypeInfo, detectAddressType } from '@app/shared/address-utils';
 import * as secp256k1 from '@noble/secp256k1';
 
 // Bitcoin Core default policy settings
@@ -303,7 +303,7 @@ export function processInputSignatures(vin: Vin): SigInfo[] {
   return signatures;
 }
 
-/*  
+/*
  * returns the number of missing signatures, the number of bytes to add to the transaction
  * and whether these should benefit from witness discounting
  * - Add a DER sig     in scriptsig/witness: 71 bytes signature + 1 push or witness size byte = 72 bytes
@@ -449,6 +449,18 @@ export function fillUnsignedInput(vin: Vin): { missingSigs: number, bytes: numbe
   return { missingSigs, bytes, addToWitness };
 }
 
+function getDustThreshold(scriptpubkey: string): number {
+  let dustSize = (scriptpubkey.length / 2);
+  dustSize += getVarIntLength(dustSize);
+  dustSize += 8;
+  dustSize += isWitnessProgram(scriptpubkey) ? 67 : 148;
+  return dustSize * DUST_RELAY_TX_FEE;
+}
+
+function isDustOutput(value: number, scriptpubkey: string): boolean {
+  return value < getDustThreshold(scriptpubkey);
+}
+
 /**
  * Validates most standardness rules
  *
@@ -571,22 +583,9 @@ export function isNonStandard(tx: Transaction, height?: number, network?: string
       opreturnBytes += vout.scriptpubkey.length / 2;
     }
     // dust
-    // (we could probably hardcode this for the different output types...)
-    if (vout.scriptpubkey_type !== 'op_return') {
-      let dustSize = (vout.scriptpubkey.length / 2);
-      // add varint length overhead
-      dustSize += getVarIntLength(dustSize);
-      // add value size
-      dustSize += 8;
-      if (isWitnessProgram(vout.scriptpubkey)) {
-        dustSize += 67;
-      } else {
-        dustSize += 148;
-      }
-      if (vout.value < (dustSize * DUST_RELAY_TX_FEE)) {
-        // under minimum output size
-        return !isStandardEphemeralDust(tx, height, network);
-      }
+    if (vout.scriptpubkey_type !== 'op_return' && isDustOutput(vout.value, vout.scriptpubkey)) {
+      // under minimum output size
+      return !isStandardEphemeralDust(tx, height, network);
     }
   }
 
@@ -1125,7 +1124,7 @@ function convertScriptSigAsm(hex: string): string {
  *          the script item if it is a script spend.
  */
 function witnessToP2TRScript(witness: string[]): string | null {
-  if (witness.length < 2) return null;
+  if (witness.length < 2) {return null;}
   // Note: see BIP341 for parsing details of witness stack
 
   // If there are at least two witness elements, and the first byte of the
@@ -1135,7 +1134,7 @@ function witnessToP2TRScript(witness: string[]): string | null {
   // If there are at least two witness elements left, script path spending is used.
   // Call the second-to-last stack element s, the script.
   // (Note: this phrasing from BIP341 assumes we've *removed* the annex from the stack)
-  if (hasAnnex && witness.length < 3) return null;
+  if (hasAnnex && witness.length < 3) {return null;}
   const positionOfScript = hasAnnex ? witness.length - 3 : witness.length - 2;
   return witness[positionOfScript];
 }
@@ -1188,7 +1187,7 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: PsbtKeyValueMa
       block_time: null,
     }
   } as Transaction;
-  
+
   [tx.version, offset] = readInt32(buffer, offset);
 
   let marker, flag;
@@ -1250,7 +1249,7 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: PsbtKeyValueMa
   if (offset !== buffer.length) {
     throw new Error('Transaction has unexpected data');
   }
-  
+
   // Optionally add data from PSBT: prevouts, redeem/witness scripts and signatures
   if (inputs) {
     for (let i = 0; i < tx.vin.length; i++) {
@@ -1311,7 +1310,7 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: PsbtKeyValueMa
       if (groups.redeemScript && !finalizedScriptSig) {
         const redeemScript = groups.redeemScript.value;
         if (redeemScript.length > 520) {
-          throw new Error("Redeem script must be <= 520 bytes");
+          throw new Error('Redeem script must be <= 520 bytes');
         }
         let pushOpcode;
         if (redeemScript.length < 0x4c) {
@@ -1336,7 +1335,7 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: PsbtKeyValueMa
         const scriptpubkey_type = vin.prevout?.scriptpubkey_type;
         if (scriptpubkey_type === 'multisig' && !finalizedScriptSig) {
           if (signature.length > 74) {
-            throw new Error("Signature must be <= 74 bytes");
+            throw new Error('Signature must be <= 74 bytes');
           }
           const pushOpcode = new Uint8Array([signature.length]);
           vin.scriptsig = uint8ArrayToHexString(pushOpcode) + uint8ArrayToHexString(signature) + (vin.scriptsig || '');
@@ -1351,7 +1350,7 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: PsbtKeyValueMa
           } else {
             if (!finalizedScriptSig) {
               if (signature.length > 74) {
-                throw new Error("Signature must be <= 74 bytes");
+                throw new Error('Signature must be <= 74 bytes');
               }
               const pushOpcode = new Uint8Array([signature.length]);
               vin.scriptsig = uint8ArrayToHexString(pushOpcode) + uint8ArrayToHexString(signature) + (vin.scriptsig || '');
@@ -1419,7 +1418,7 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: PsbtKeyValueMa
           }
         }
       }
-    }    
+    }
   }
 
   // Calculate final size, weight, and txid
@@ -1483,7 +1482,7 @@ function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: PsbtKe
   const expectedMagic = [0x70, 0x73, 0x62, 0x74];
   for (let i = 0; i < expectedMagic.length; i++) {
     if (psbtBuffer[offset + i] !== expectedMagic[i]) {
-      throw new Error("Invalid PSBT magic bytes");
+      throw new Error('Invalid PSBT magic bytes');
     }
   }
   offset += expectedMagic.length;
@@ -1491,7 +1490,7 @@ function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: PsbtKe
   const separator = psbtBuffer[offset];
   offset += 1;
   if (separator !== 0xff) {
-    throw new Error("Invalid PSBT separator");
+    throw new Error('Invalid PSBT separator');
   }
 
   // GLOBAL MAP
@@ -1517,7 +1516,7 @@ function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: PsbtKe
   }
 
   if (!rawTx) {
-    throw new Error("Unsigned transaction not found in PSBT");
+    throw new Error('Unsigned transaction not found in PSBT');
   }
 
   const readMaps = (count: number, startOffset: number): { map: PsbtKeyValueMap[]; offset: number } => {
@@ -1589,6 +1588,61 @@ function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: PsbtKe
   return { rawTx, inputs, outputs };
 }
 
+/**
+ * Encodes an unsigned transaction and input/output data into a PSBT buffer
+ * @param rawTx - The unsigned transaction as Uint8Array
+ * @param inputs - Array of input maps containing key-value pairs for each input
+ * @param outputs - Array of output maps containing key-value pairs for each output
+ * @returns PSBT buffer as Uint8Array
+ */
+function encodePsbt(rawTx: Uint8Array, inputs: PsbtKeyValueMap[], outputs: PsbtKeyValueMap[]): Uint8Array {
+  const result: number[] = [];
+
+  // Magic bytes: "psbt" in ASCII
+  result.push(0x70, 0x73, 0x62, 0x74);
+
+  // Separator
+  result.push(0xff);
+
+  const writeKeyValue = (keyType: number, keyData: Uint8Array, value: Uint8Array): void => {
+    const keyTypeBytes = varIntToBytes(keyType);
+    const keyLength = keyTypeBytes.length + keyData.length;
+    result.push(...varIntToBytes(keyLength));
+    result.push(...keyTypeBytes);
+    result.push(...keyData);
+    result.push(...varIntToBytes(value.length));
+    result.push(...value);
+  };
+
+  const writeMap = (records: PsbtKeyValueMap): void => {
+    for (const [keyType, items] of records) {
+      for (const record of items) {
+        writeKeyValue(keyType, record.keyData, record.value);
+      }
+    }
+    result.push(0x00);
+  };
+
+  // GLOBAL MAP
+  // Add unsigned transaction (key type 0x00)
+  writeKeyValue(0x00, new Uint8Array(), rawTx);
+
+  // End global map
+  result.push(0x00);
+
+  // INPUT MAPS
+  for (const inputMap of inputs) {
+    writeMap(inputMap);
+  }
+
+  // OUTPUT MAPS
+  for (const outputMap of outputs) {
+    writeMap(outputMap);
+  }
+
+  return new Uint8Array(result);
+}
+
 export function decodeRawTransaction(input: string, network: string): { tx: Transaction, hex: string, psbt?: string } {
   const buffer = convertTextToBuffer(input);
 
@@ -1654,6 +1708,131 @@ function txid(tx: Transaction): string {
   const hash1 = new Hash().update(serializedTx).digest();
   const hash2 = new Hash().update(hash1).digest();
   return uint8ArrayToHexString(hash2.reverse());
+}
+
+export function createMessageSigningPsbt(
+  utxo: Utxo,
+  scriptPubKey: string,
+  addressType: AddressType,
+  address: string,
+  message: string,
+  feeRate: number,
+  fallbackFee: number,
+  sequence: number,
+  locktime: number,
+  nonWitnessUtxoHex?: string,
+): string {
+  const opReturnScript = buildOpReturnScript(message);
+
+  // Build transaction
+  const tx = {
+    version: 2,
+    vin: [{
+      txid: utxo.txid,
+      vout: utxo.vout,
+      is_coinbase: false,
+      scriptsig: '',
+      scriptsig_asm: '',
+      sequence: sequence,
+      witness: [],
+      prevout: {
+        value: utxo.value,
+        scriptpubkey: scriptPubKey,
+        scriptpubkey_asm: null,
+        scriptpubkey_type: addressType,
+        scriptpubkey_address: address,
+      },
+    }],
+    vout: [
+      {
+        value: 0,
+        scriptpubkey: opReturnScript.script,
+        scriptpubkey_asm: 'OP_RETURN ' + opReturnScript.dataHex,
+        scriptpubkey_type: 'op_return',
+        scriptpubkey_address: undefined,
+      },
+      {
+        value: utxo.value, // fee will be estimated and subtracted later
+        scriptpubkey: scriptPubKey,
+        scriptpubkey_asm: null,
+        scriptpubkey_type: addressType,
+        scriptpubkey_address: address,
+      },
+    ],
+    locktime: locktime,
+  } as Transaction;
+
+  // Estimate fee
+  let rawTx = serializeTransaction(tx, false);
+  let fee = fallbackFee;
+  const { bytes, addToWitness } = fillUnsignedInput(tx.vin[0]);
+  if (bytes) {
+    let finalVsize = rawTx.length + (addToWitness ? bytes / 4 : bytes);
+    if (addToWitness) {
+      finalVsize += 2 / 4; // marker and flag
+      finalVsize += tx.vin.length / 4; // 1 byte compact size per input (assume witness stack count < 253)
+    }
+    fee = Math.ceil(finalVsize * feeRate);
+  }
+  const dustThreshold = getDustThreshold(tx.vout[1].scriptpubkey);
+  console.log(`Estimated fee: ${fee} sats, dust threshold: ${dustThreshold} sats`);
+  console.log(`Output value before fee: ${tx.vout[1].value} sats`);
+  if (tx.vout[1].value < (fee + dustThreshold)) {
+    throw new Error(`Output value is under dust threshold of ${dustThreshold} sats`);
+  }
+  tx.vout[1].value -= fee;
+
+  // Build PSBT
+  rawTx = serializeTransaction(tx, false);
+  const inputRecords: PsbtKeyValueMap = new Map<number, PsbtKeyValue[]>();
+  if (nonWitnessUtxoHex) {
+    inputRecords.set(PSBT_IN.NON_WITNESS_UTXO, [{
+      keyData: new Uint8Array(),
+      value: hexStringToUint8Array(nonWitnessUtxoHex.trim()),
+    }]);
+  }
+  if (['v0_p2wpkh', 'v0_p2wsh', 'v1_p2tr'].includes(addressType)) {
+    const spkBytes = hexStringToUint8Array(scriptPubKey);
+    const utxoData: number[] = [];
+    utxoData.push(...bigIntToBytes(BigInt(utxo.value), 8));
+    utxoData.push(...varIntToBytes(spkBytes.length));
+    utxoData.push(...spkBytes);
+    inputRecords.set(PSBT_IN.WITNESS_UTXO, [{
+      keyData: new Uint8Array(),
+      value: new Uint8Array(utxoData),
+    }]);
+  }
+
+  const inputs: PsbtKeyValueMap[] = [inputRecords];
+  const outputs: PsbtKeyValueMap[] = Array.from({ length: tx.vout.length }, () => new Map<number, PsbtKeyValue[]>());
+  const psbt = uint8ArrayToBase64(encodePsbt(rawTx, inputs, outputs));
+  return psbt;
+}
+
+function buildOpReturnScript(messageText: string): { script: string; dataHex: string } {
+  const messageBytes = new TextEncoder().encode(messageText);
+  if (messageBytes.length > MAX_OP_RETURN_RELAY) {
+    throw new Error(`Message too long, max supported size is ${MAX_OP_RETURN_RELAY} bytes.`);
+  }
+  const dataHex = uint8ArrayToHexString(messageBytes);
+  const len = messageBytes.length;
+  const pushData: number[] = [];
+
+  if (len <= 0x4b) {
+    pushData.push(len);
+  } else if (len <= 0xff) {
+    pushData.push(0x4c, len);
+  } else if (len <= 0xffff) {
+    pushData.push(0x4d, len & 0xff, (len >> 8) & 0xff);
+  } else if (len <= 0xffffffff) {
+    pushData.push(0x4e, len & 0xff, (len >> 8) & 0xff, (len >> 16) & 0xff, (len >> 24) & 0xff);
+  }
+
+  const scriptBytes = [0x6a, ...pushData, ...Array.from(messageBytes)];
+  return {
+    script: uint8ArrayToHexString(new Uint8Array(scriptBytes)),
+    dataHex,
+  };
 }
 
 // Copied from mempool backend https://github.com/mempool/mempool/blob/14e49126c3ca8416a8d7ad134a95c5e090324d69/backend/src/api/transaction-utils.ts#L177
@@ -1731,7 +1910,7 @@ function checkSigopsBIP54(tx: Transaction, limit: number = MAX_TX_LEGACY_SIGOPS)
   return true;
 }
 
-function scriptPubKeyToAddress(scriptPubKey: string, network: string): { address: string, type: string } {
+export function scriptPubKeyToAddress(scriptPubKey: string, network: string): { address: string, type: string } {
   // P2PKH
   if (/^76a914[0-9a-f]{40}88ac$/.test(scriptPubKey)) {
     return { address: p2pkh(scriptPubKey.substring(6, 6 + 40), network), type: 'p2pkh' };
@@ -1769,6 +1948,30 @@ function scriptPubKeyToAddress(scriptPubKey: string, network: string): { address
     return { address: null, type: 'op_return' };
   }
   return { address: null, type: 'unknown' };
+}
+
+export function addressToScriptPubKey(address: string, network: string): { scriptPubKey: string | null, type: AddressType } {
+  const type = detectAddressType(address, network);
+
+  if (type === 'p2pk') {
+    if (address.length === 66) {
+      return { scriptPubKey: '21' + address + 'ac', type };
+    }
+    if (address.length === 130) {
+      return { scriptPubKey: '41' + address + 'ac', type };
+    }
+    return { scriptPubKey: null, type };
+  }
+
+  if (type === 'p2pkh' || type === 'p2sh') {
+    return { scriptPubKey: base58ToSpk(address, network), type };
+  }
+
+  if (type === 'v0_p2wpkh' || type === 'v0_p2wsh' || type === 'v1_p2tr' || address === p2a(network)) {
+    return { scriptPubKey: bech32ToSpk(address, network), type };
+  }
+  
+  return { scriptPubKey: null, type };
 }
 
 function p2pkh(pubKeyHash: string, network: string): string {
@@ -1831,33 +2034,26 @@ function p2a(network: string): string {
   return bech32Address;
 }
 
-/* Convert a *valid* P2TR address to its x-only pubkey */
-export function taprootAddressToOutputKey(address: string): { outputKey: string, network: string } {
-  const { prefix, words } = bech32Decode(address);
-  const programBytes = fromWords(words.slice(1));
-  return { outputKey: uint8ArrayToHexString(programBytes), network: prefix === 'tb' ? 'testnet' : 'mainnet' };
-}
+const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 
 // base58 encoding
 function base58Encode(data: Uint8Array): string {
-  const BASE58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-
-  let hexString = Array.from(data)
+  const hexString = Array.from(data)
     .map(byte => byte.toString(16).padStart(2, '0'))
     .join('');
-  
-  let num = BigInt("0x" + hexString);
 
-  let encoded = "";
+  let num = BigInt('0x' + hexString);
+
+  let encoded = '';
   while (num > 0) {
     const remainder = Number(num % 58n);
     num = num / 58n;
     encoded = BASE58_ALPHABET[remainder] + encoded;
   }
 
-  for (let byte of data) {
+  for (const byte of data) {
     if (byte === 0) {
-      encoded = "1" + encoded;
+      encoded = '1' + encoded;
     } else {
       break;
     }
@@ -1866,9 +2062,83 @@ function base58Encode(data: Uint8Array): string {
   return encoded;
 }
 
+// base58 decoding
+function base58Decode(s: string): Uint8Array {
+  let num = BigInt(0);
+  const base = BigInt(58);
+
+  for (let i = 0; i < s.length; i++) {
+    const char = s[i];
+    const index = BASE58_ALPHABET.indexOf(char);
+    if (index < 0) {
+      throw new Error('Invalid base58 character');
+    }
+    num = num * base + BigInt(index);
+  }
+
+  let hex = num.toString(16);
+  if (hex.length % 2) hex = '0' + hex;
+
+  const bytes = [];
+  for (let i = 0; i < hex.length; i += 2) {
+    bytes.push(parseInt(hex.substr(i, 2), 16));
+  }
+
+  for (let i = 0; i < s.length && s[i] === '1'; i++) {
+    bytes.unshift(0);
+  }
+
+  return new Uint8Array(bytes);
+}
+
+function base58ToSpk(address: string, network: string): string | null {
+  try {
+    const decoded = base58Decode(address);
+    if (decoded.length !== 25) {
+      return null;
+    }
+
+    const version = decoded[0];
+    const payload = decoded.slice(1, 21);
+    const checksum = decoded.slice(21, 25);
+
+    // Verify checksum
+    const versionedPayload = new Uint8Array([version, ...payload]);
+    const hash1 = new Hash().update(versionedPayload).digest();
+    const hash2 = new Hash().update(hash1).digest();
+    const expectedChecksum = hash2.slice(0, 4);
+    if (checksum.length !== expectedChecksum.length) {
+      return null;
+    }
+    for (let i = 0; i < checksum.length; i++) {
+      if (checksum[i] !== expectedChecksum[i]) {
+        return null;
+      }
+    }
+
+    const payloadHex = uint8ArrayToHexString(payload);
+
+    // P2PKH
+    const p2pkhVersion = ['testnet', 'testnet4', 'signet'].includes(network) ? 0x6f : 0x00;
+    if (version === p2pkhVersion) {
+      return '76a914' + payloadHex + '88ac';
+    }
+
+    // P2SH
+    const p2shVersion = ['testnet', 'testnet4', 'signet'].includes(network) ? 0xc4 : 0x05;
+    if (version === p2shVersion) {
+      return 'a914' + payloadHex + '87';
+    }
+
+  } catch (e) {
+    // Invalid base58
+  }
+  return null;
+}
+
 // bech32 encoding / decoding
 // Adapted from https://github.com/bitcoinjs/bech32/blob/5ceb0e3d4625561a459c85643ca6947739b2d83c/src/index.ts
-const BECH32_ALPHABET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
+const BECH32_ALPHABET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
 type Bech32Encoding = 'bech32' | 'bech32m';
 
 function bech32Encode(prefix: string, words: number[], encoding: Bech32Encoding = 'bech32'): string {
@@ -1904,6 +2174,24 @@ function bech32Decode(address: string): { prefix: string, words: number[], encod
   }
 
   return { prefix, words: words.slice(0, -6), encoding };
+}
+
+function bech32ToSpk(address: string, network: string): string | null {
+  const expectedHrp = ['testnet', 'testnet4', 'signet'].includes(network) ? 'tb' : 'bc';
+  try {
+    const decoded = bech32Decode(address);
+    if (decoded.prefix !== expectedHrp) {
+      return null;
+    }
+    const version = decoded.words[0];
+    const data = fromWords(decoded.words.slice(1));
+    const versionOpcode = version === 0 ? '00' : (version + 0x50).toString(16).padStart(2, '0');
+    const pushLen = data.length.toString(16).padStart(2, '0');
+    return versionOpcode + pushLen + uint8ArrayToHexString(data);
+  } catch (e) {
+    // Invalid bech32 address
+  }
+  return null;
 }
 
 function bech32Polymod(prefix: string, words: number[]): number {
@@ -1968,7 +2256,7 @@ function convertBits(data, fromBits, toBits, pad) {
 
   for (let i = 0; i < data.length; ++i) {
     const value = data[i];
-    if (value < 0 || value >> fromBits) throw new Error('Invalid value');
+    if (value < 0 || value >> fromBits) {throw new Error('Invalid value');}
     acc = (acc << fromBits) | value;
     bits += fromBits;
     while (bits >= toBits) {
@@ -2010,6 +2298,14 @@ export function hexStringToUint8Array(hex: string): Uint8Array {
 function base64ToUint8Array(base64: string): Uint8Array {
   const binaryString = atob(base64);
   return new Uint8Array([...binaryString].map(char => char.charCodeAt(0)));
+}
+
+function uint8ArrayToBase64(uint8Array: Uint8Array): string {
+  let binaryString = '';
+  for (let i = 0; i < uint8Array.length; i++) {
+    binaryString += String.fromCharCode(uint8Array[i]);
+  }
+  return btoa(binaryString);
 }
 
 function intToBytes(value: number, byteLength: number): number[] {
@@ -2098,13 +2394,13 @@ function readVarInt(buffer: Uint8Array, offset: number): [number, number] {
     const [bigValue, nextOffset] = readInt64(buffer, newOffset);
 
     if (bigValue > Number.MAX_SAFE_INTEGER) {
-      throw new Error("VarInt exceeds safe integer range");
+      throw new Error('VarInt exceeds safe integer range');
     }
 
     const numValue = Number(bigValue);
     return [numValue, nextOffset];
   } else {
-    throw new Error("Invalid VarInt prefix");
+    throw new Error('Invalid VarInt prefix');
   }
 }
 

@@ -236,7 +236,7 @@ export function calculateMempoolTxCpfp(tx: MempoolTransactionExtended, mempool: 
 /**
    * Given a root transaction and a list of in-mempool ancestors,
    * Calculate the CPFP cluster
-   * 
+   *
    * @param tx
    * @param ancestors
    */

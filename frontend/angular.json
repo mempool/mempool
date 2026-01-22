@@ -171,25 +171,15 @@
               "src/robots.txt",
               "src/config.js",
               "src/customize.js",
-              "src/config.template.js"
+              "src/config.template.js",
+              {
+                "glob": "*.css",
+                "input": ".theme-build",
+                "output": "/"
+              }
             ],
             "styles": [
               "src/styles.scss",
-              {
-                "input": "src/theme-contrast.scss",
-                "bundleName": "contrast",
-                "inject": false
-              },
-              {
-                "input": "src/theme-softsimon.scss",
-                "bundleName": "softsimon",
-                "inject": false
-              },
-              {
-                "input": "src/theme-bukele.scss",
-                "bundleName": "bukele",
-                "inject": false
-              },
               "node_modules/@fortawesome/fontawesome-svg-core/styles.css"
             ],
             "vendorChunk": true,
@@ -197,7 +187,10 @@
             "buildOptimizer": false,
             "sourceMap": true,
             "optimization": false,
-            "namedChunks": true
+            "namedChunks": true,
+            "allowedCommonJsDependencies": [
+              "qrcode"
+            ]
           },
           "configurations": {
             "production": {

@@ -51,12 +51,12 @@ class StatisticsReplication {
       logger.info(`Statistics table is complete, no replication needed`, 'Replication');
       return;
     }
-    
+
     for (const interval of missingIntervals) {
       logger.debug(`Missing ${missingStatistics[interval].size} statistics rows in '${interval}' timespan`, 'Replication');
     }
     logger.debug(`Fetching ${missingIntervals.join(', ')} statistics endpoints from trusted servers to fill ${totalMissing} rows missing in statistics`, 'Replication');
-    
+
     let totalSynced = 0;
     let totalMissed = 0;
 
@@ -75,15 +75,15 @@ class StatisticsReplication {
   }
 
   private async $syncStatistics(interval: string, missingTimes: Set<number>): Promise<any> {
-  
+
     let success = false;
     let synced = 0;
-    let missed = new Set(missingTimes);
+    const missed = new Set(missingTimes);
     const syncResult = await $sync(`/api/v1/statistics/${interval}`);
     if (syncResult && syncResult.data?.length) {
       success = true;
-      logger.info(`Fetched /api/v1/statistics/${interval} from ${syncResult.server}`);     
-    
+      logger.info(`Fetched /api/v1/statistics/${interval} from ${syncResult.server}`);
+
       for (const stat of syncResult.data) {
         const time = this.roundToNearestStep(stat.added, steps[interval]);
         if (missingTimes.has(time)) {
@@ -129,7 +129,7 @@ class StatisticsReplication {
         startTime < now - day * 30 ?      [now - day * 90,      now - day * 30,      '3m' ] : null, // from 3 months ago to 1 month ago = 2 hours granularity
         startTime < now - day * 90 ?      [now - day * 180,     now - day * 90,      '6m' ] : null, // from 6 months ago to 3 months ago = 3 hours granularity
         startTime < now - day * 180 ?     [now - day * 365 * 2, now - day * 180,     '2y' ] : null, // from 2 years ago to 6 months ago = 8 hours granularity
-        startTime < now - day * 365 * 2 ? [startTime,           now - day * 365 * 2, 'all'] : null, // from start of statistics to 2 years ago = 12 hours granularity   
+        startTime < now - day * 365 * 2 ? [startTime,           now - day * 365 * 2, 'all'] : null, // from start of statistics to 2 years ago = 12 hours granularity
       ];
 
       for (const interval of intervals) {
@@ -138,7 +138,7 @@ class StatisticsReplication {
         }
         missingStatistics[interval[2] as string] = await this.$getMissingStatisticsInterval(interval, startTime);
       }
-      
+
       return missingStatistics;
     } catch (e: any) {
       logger.err(`Cannot fetch missing statistics times from db. Reason: ` + (e instanceof Error ? e.message : e));
@@ -169,17 +169,17 @@ class StatisticsReplication {
       if (timeSteps.length === 0) {
         return new Set<number>();
       }
-      
+
       const roundedTimesAlreadyHere: number[] = Array.from(new Set(rows.map(row => this.roundToNearestStep(row.added, step))));
 
       const missingTimes = timeSteps.filter(time => !roundedTimesAlreadyHere.includes(time)).filter((time, i, arr) => {
         // Remove outsiders
         if (i === 0) {
-          return arr[i + 1] === time + step
+          return arr[i + 1] === time + step;
         } else if (i === arr.length - 1) {
           return arr[i - 1] === time - step;
         }
-        return (arr[i + 1] === time + step) && (arr[i - 1] === time - step)
+        return (arr[i + 1] === time + step) && (arr[i - 1] === time - step);
       });
 
       // Don't bother fetching if very few rows are missing

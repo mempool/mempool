@@ -49,7 +49,7 @@ export function isPoint(pointHex: string): boolean {
   }
 
   // Function modified slightly from noble-curves
-  
+
 
   // Now we know that pointHex is a 33 or 65 byte hex string.
   const isCompressed = pointHex.length === 66;

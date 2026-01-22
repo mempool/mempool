@@ -44,7 +44,7 @@ export class AccelerationStatsComponent implements OnInit, OnChanges {
         break;
       case '1y':
         this.blocksInPeriod = 30.5 * 144 * 365;
-        break;  
+        break;
       case 'all':
         this.blocksInPeriod = Infinity;
         break;

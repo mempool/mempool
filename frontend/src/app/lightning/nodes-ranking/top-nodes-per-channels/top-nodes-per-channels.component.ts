@@ -17,11 +17,11 @@ export class TopNodesPerChannels implements OnInit {
   @Input() nodes$: Observable<INodesRanking>;
   @Input() statistics$: Observable<INodesStatistics>;
   @Input() widget: boolean = false;
-  
+
   topNodesPerChannels$: Observable<{ nodes: ITopNodesPerChannels[]; statistics: { totalChannels: number; totalCapacity?: number; } }>;
   skeletonRows: number[] = [];
   currency$: Observable<string>;
-  
+
   constructor(
     private apiService: LightningApiService,
     private stateService: StateService,
@@ -30,7 +30,7 @@ export class TopNodesPerChannels implements OnInit {
 
   ngOnInit(): void {
     this.currency$ = this.stateService.fiatCurrency$;
-    
+
     for (let i = 1; i <= (this.widget ? 6 : 100); ++i) {
       this.skeletonRows.push(i);
     }
@@ -59,7 +59,7 @@ export class TopNodesPerChannels implements OnInit {
               totalChannels: statistics.latest.channel_count,
               totalCapacity: statistics.latest.total_capacity,
             }
-          }
+          };
         })
       );
     } else {
@@ -82,7 +82,7 @@ export class TopNodesPerChannels implements OnInit {
             statistics: {
               totalChannels: statistics.latest.channel_count,
             }
-          }
+          };
         })
       );
     }

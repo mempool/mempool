@@ -75,7 +75,7 @@ export const knownFields = {
 
   // delegate, with a tag of 11, see delegate docs: https://docs.ordinals.com/inscriptions/delegate.html
   delegate: 0xb
-}
+};
 
 /**
  * Retrieves the value for a given field from an array of field objects.
@@ -171,7 +171,7 @@ export function readBytes(raw: Uint8Array, pointer: number, n: number): [Uint8Ar
  */
 export function readPushdata(raw: Uint8Array, pointer: number): [Uint8Array, number] {
 
-  let [opcodeSlice, newPointer] = readBytes(raw, pointer, 1);
+  const [opcodeSlice, newPointer] = readBytes(raw, pointer, 1);
   const opcode = opcodeSlice[0];
 
   // Handle the special case of OP_0 (0x00) which pushes an empty array (interpreted as zero)
@@ -209,8 +209,8 @@ export function readPushdata(raw: Uint8Array, pointer: number): [Uint8Array, num
       throw new Error(`Invalid push opcode ${opcode} at position ${pointer}`);
   }
 
-  let [dataSizeArray, nextPointer] = readBytes(raw, newPointer, numBytes);
-  let dataSize = littleEndianBytesToNumber(dataSizeArray);
+  const [dataSizeArray, nextPointer] = readBytes(raw, newPointer, numBytes);
+  const dataSize = littleEndianBytesToNumber(dataSizeArray);
   return readBytes(raw, nextPointer, dataSize);
 }
 
@@ -393,7 +393,7 @@ export function extractInscriptionData(raw: Uint8Array, pointer: number): Inscri
     }
 
     const combinedLengthOfAllArrays = data.reduce((acc, curr) => acc + curr.length, 0);
-    let combinedData = new Uint8Array(combinedLengthOfAllArrays);
+    const combinedData = new Uint8Array(combinedLengthOfAllArrays);
 
     // Copy all segments from data into combinedData, forming a single contiguous Uint8Array
     let idx = 0;
