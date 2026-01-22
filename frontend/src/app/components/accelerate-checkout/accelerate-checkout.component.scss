@@ -238,3 +238,29 @@
     gap: 5px;
   }
 }
+
+.square-buttons-container {
+  visibility: hidden;
+  position: absolute;
+  pointer-events: none;
+
+  &.visible {
+    visibility: visible;
+    position: static;
+    pointer-events: auto;
+  }
+
+  #apple-pay-button,
+  #cash-app-pay,
+  #google-pay-button {
+    visibility: hidden;
+    position: absolute;
+    pointer-events: none;
+
+    &.visible {
+      visibility: visible;
+      position: static;
+      pointer-events: auto;
+    }
+  }
+}
