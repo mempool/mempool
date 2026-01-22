@@ -19,7 +19,7 @@ const MAX_STANDARD_TAPSCRIPT_STACK_ITEM_SIZE = 80;
 const MAX_STANDARD_P2WSH_SCRIPT_SIZE = 3600;
 const MAX_STANDARD_SCRIPTSIG_SIZE = 1650;
 const DUST_RELAY_TX_FEE = 3;
-const MAX_OP_RETURN_RELAY = 83;
+export const MAX_OP_RETURN_RELAY = 83;
 const DEFAULT_PERMIT_BAREMULTISIG = true;
 const MAX_TX_LEGACY_SIGOPS = 2_500 * 4; // witness-adjusted sigops
 
@@ -449,7 +449,7 @@ export function fillUnsignedInput(vin: Vin): { missingSigs: number, bytes: numbe
   return { missingSigs, bytes, addToWitness };
 }
 
-function getDustThreshold(scriptpubkey: string): number {
+export function getDustThreshold(scriptpubkey: string): number {
   let dustSize = (scriptpubkey.length / 2);
   dustSize += getVarIntLength(dustSize);
   dustSize += 8;
@@ -1446,9 +1446,9 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: PsbtKeyValueMa
 }
 
 export type PsbtKeyValue = { keyData: Uint8Array; value: Uint8Array; };
-type PsbtKeyValueMap = Map<number, PsbtKeyValue[]>;
+export type PsbtKeyValueMap = Map<number, PsbtKeyValue[]>;
 
-const PSBT_IN = {
+export const PSBT_IN = {
   NON_WITNESS_UTXO: 0x00,
   WITNESS_UTXO: 0x01,
   PARTIAL_SIG: 0x02,
@@ -1595,7 +1595,7 @@ function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: PsbtKe
  * @param outputs - Array of output maps containing key-value pairs for each output
  * @returns PSBT buffer as Uint8Array
  */
-function encodePsbt(rawTx: Uint8Array, inputs: PsbtKeyValueMap[], outputs: PsbtKeyValueMap[]): Uint8Array {
+export function encodePsbt(rawTx: Uint8Array, inputs: PsbtKeyValueMap[], outputs: PsbtKeyValueMap[]): Uint8Array {
   const result: number[] = [];
 
   // Magic bytes: "psbt" in ASCII
@@ -1654,7 +1654,7 @@ export function decodeRawTransaction(input: string, network: string): { tx: Tran
   return fromBuffer(buffer, network);
 }
 
-function serializeTransaction(tx: Transaction, includeWitness: boolean = true): Uint8Array {
+export function serializeTransaction(tx: Transaction, includeWitness: boolean = true): Uint8Array {
   const result: number[] = [];
 
   // Add version
@@ -2175,7 +2175,7 @@ function base64ToUint8Array(base64: string): Uint8Array {
   return new Uint8Array([...binaryString].map(char => char.charCodeAt(0)));
 }
 
-function uint8ArrayToBase64(uint8Array: Uint8Array): string {
+export function uint8ArrayToBase64(uint8Array: Uint8Array): string {
   let binaryString = '';
   for (let i = 0; i < uint8Array.length; i++) {
     binaryString += String.fromCharCode(uint8Array[i]);
@@ -2191,7 +2191,7 @@ function intToBytes(value: number, byteLength: number): number[] {
   return bytes;
 }
 
-function bigIntToBytes(value: bigint, byteLength: number): number[] {
+export function bigIntToBytes(value: bigint, byteLength: number): number[] {
   const bytes = [];
   for (let i = 0; i < byteLength; i++) {
     bytes.push(Number((value >> BigInt(8 * i)) & 0xffn));
@@ -2199,7 +2199,7 @@ function bigIntToBytes(value: bigint, byteLength: number): number[] {
   return bytes;
 }
 
-function varIntToBytes(value: number | bigint): number[] {
+export function varIntToBytes(value: number | bigint): number[] {
   const bytes = [];
 
   if (typeof value === 'number') {
