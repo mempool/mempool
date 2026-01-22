@@ -30,6 +30,7 @@ interface FailoverHost {
     electrs?: string,
     ssr?: string,
     core?: string,
+    os?: string,
     lastUpdated: number,
   }
 }
@@ -253,7 +254,12 @@ class FailoverRouter {
   private async $updateFrontendGitHash(host: FailoverHost): Promise<void> {
     try {
       const url = `${host.publicDomain}/resources/config.js`;
-      const response = await this.pollConnection.get<string>(url, { timeout: config.ESPLORA.FALLBACK_TIMEOUT });
+      const response = await this.pollConnection.get<string>(
+        url, {
+          timeout: config.ESPLORA.FALLBACK_TIMEOUT,
+          headers: Common.isLiquid() ? { 'Host': 'liquid.network' } : undefined
+        }
+      );
       const match = response.data.match(/GIT_COMMIT_HASH\s*=\s*['"](.*?)['"]/);
       if (match && match[1]?.length) {
         host.hashes.frontend = match[1];
@@ -276,7 +282,7 @@ class FailoverRouter {
           path: '/en-US/resources/config.js',
           method: 'GET',
           headers: {
-            'Host': 'mempool.space'
+            'Host': Common.isLiquid() ? 'liquid.network' : 'mempool.space'
           },
           timeout: config.ESPLORA.FALLBACK_TIMEOUT,
         }, (res) => {
@@ -307,12 +313,20 @@ class FailoverRouter {
   private async $updateBackendVersions(host: FailoverHost): Promise<void> {
     try {
       const url = `${host.publicDomain}/api/v1/backend-info`;
-      const response = await this.pollConnection.get<any>(url, { timeout: config.ESPLORA.FALLBACK_TIMEOUT });
+      const response = await this.pollConnection.get<any>(
+        url, {
+          timeout: config.ESPLORA.FALLBACK_TIMEOUT,
+          headers: Common.isLiquid() ? { 'Host': 'liquid.network' } : undefined
+        }
+      );
       if (response.data?.gitCommit) {
         host.hashes.backend = response.data.gitCommit;
       }
       if (response.data?.coreVersion) {
         host.hashes.core = response.data.coreVersion;
+      }
+      if (response.data?.osVersion) {
+        host.hashes.os = response.data.osVersion;
       }
     } catch (e) {
       // failed to get backend build hash - do nothing
@@ -322,7 +336,12 @@ class FailoverRouter {
   private async $updateSSRGitHash(host: FailoverHost): Promise<void> {
     try {
       const url = `${host.publicDomain}/ssr/api/status`;
-      const response = await this.pollConnection.get<any>(url, { timeout: config.ESPLORA.FALLBACK_TIMEOUT });
+      const response = await this.pollConnection.get<any>(
+        url, {
+          timeout: config.ESPLORA.FALLBACK_TIMEOUT,
+          headers: Common.isLiquid() ? { 'Host': 'liquid.network' } : undefined
+        }
+      );
       if (response.data?.gitHash) {
         host.hashes.ssr = response.data.gitHash;
       }

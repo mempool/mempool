@@ -1002,7 +1002,7 @@ class WebsocketHandler {
     });
     }
   }
- 
+
   async handleNewBlock(block: BlockExtended, txIds: string[], transactions: MempoolTransactionExtended[]): Promise<void> {
     if (!this.webSocketServers.length) {
       throw new Error('No WebSocket.Server have been set');
@@ -1518,7 +1518,7 @@ class WebsocketHandler {
         if (client['track-rbf']) {
           numRbfSubs++;
         }
-      })
+      });
       }
 
       let count = 0;

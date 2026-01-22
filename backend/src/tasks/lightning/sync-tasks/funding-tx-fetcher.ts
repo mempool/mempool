@@ -6,7 +6,7 @@ import logger from '../../../logger';
 
 const fsPromises = promises;
 
-const BLOCKS_CACHE_MAX_SIZE = 100;  
+const BLOCKS_CACHE_MAX_SIZE = 100;
 const CACHE_FILE_NAME = config.MEMPOOL.CACHE_DIR + '/ln-funding-txs-cache.json';
 
 class FundingTxFetcher {
@@ -33,7 +33,7 @@ class FundingTxFetcher {
       return;
     }
     this.running = true;
-    
+
     const globalTimer = new Date().getTime() / 1000;
     let cacheTimer = new Date().getTime() / 1000;
     let loggerTimer = new Date().getTime() / 1000;
@@ -70,7 +70,7 @@ class FundingTxFetcher {
 
     this.running = false;
   }
-  
+
   public async $fetchChannelOpenTx(channelId: string): Promise<{timestamp: number, txid: string, value: number} | null> {
     channelId = Common.channelIntegerIdToShortId(channelId);
 

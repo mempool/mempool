@@ -52,18 +52,18 @@ const codes = {
   ArrowUp: 38,
   ArrowRight: 39,
   ArrowDown: 40
-}
+};
 
 Cypress.Commands.add('waitForSkeletonGone', () => {
   cy.waitUntil(() => {
     return Cypress.$('.skeleton-loader').length === 0;
-  }, { verbose: true, description: "waitForSkeletonGone", errorMsg: "skeleton loaders never went away", timeout: 15000, interval: 50 });
+  }, { verbose: true, description: 'waitForSkeletonGone', errorMsg: 'skeleton loaders never went away', timeout: 15000, interval: 50 });
 });
 
 Cypress.Commands.add(
-  "waitForPageIdle",
+  'waitForPageIdle',
   () => {
-    console.warn("Waiting for page idle state");
+    console.warn('Waiting for page idle state');
     const pageIdleDetector = new PageIdleDetector();
     pageIdleDetector.WaitForPageToBeIdle();
   }
@@ -77,7 +77,7 @@ Cypress.Commands.add('mockMempoolSocketV2', () => {
   mockWebSocketV2();
 });
 
-Cypress.Commands.add('changeNetwork', (network: "testnet" | "testnet4" | "signet" | "liquid" | "mainnet") => {
+Cypress.Commands.add('changeNetwork', (network: 'testnet' | 'testnet4' | 'signet' | 'liquid' | 'mainnet') => {
   cy.get('.dropdown-toggle').click().then(() => {
     cy.get(`a.${network}`).click().then(() => {
       cy.waitForPageIdle();
@@ -88,60 +88,60 @@ Cypress.Commands.add('changeNetwork', (network: "testnet" | "testnet4" | "signet
 
 // https://github.com/bahmutov/cypress-arrows/blob/8f0303842a343550fbeaf01528d01d1ff213b70c/src/index.js
 function keydownCommand($el, key) {
-  const message = `sending the "${key}" keydown event`
+  const message = `sending the "${key}" keydown event`;
   const log = Cypress.log({
     name: `keydown: ${key}`,
     message: message,
     consoleProps: function () {
       return {
         Subject: $el
-      }
+      };
     }
-  })
+  });
 
-  const e = $el.createEvent('KeyboardEvent')
+  const e = $el.createEvent('KeyboardEvent');
 
   Object.defineProperty(e, 'key', {
     get: function () {
-      return key
+      return key;
     }
-  })
+  });
 
   Object.defineProperty(e, 'keyCode', {
     get: function () {
-      return this.keyCodeVal
+      return this.keyCodeVal;
     }
-  })
+  });
   Object.defineProperty(e, 'which', {
     get: function () {
-      return this.keyCodeVal
+      return this.keyCodeVal;
     }
-  })
-  var metaKey = false
+  });
+  const metaKey = false;
 
   Object.defineProperty(e, 'metaKey', {
     get: function () {
-      return metaKey
+      return metaKey;
     }
-  })
+  });
 
   Object.defineProperty(e, 'shiftKey', {
     get: function () {
-      return false
+      return false;
     }
-  })
-  e.keyCodeVal = codes[key]
+  });
+  e.keyCodeVal = codes[key];
 
   e.initKeyboardEvent('keydown', true, true,
-    $el.defaultView, false, false, false, false, e.keyCodeVal, e.keyCodeVal)
+    $el.defaultView, false, false, false, false, e.keyCodeVal, e.keyCodeVal);
 
-  $el.dispatchEvent(e)
-  log.snapshot().end()
-  return $el
+  $el.dispatchEvent(e);
+  log.snapshot().end();
+  return $el;
 }
 
-Cypress.Commands.add('keydown', { prevSubject: "dom" }, keydownCommand)
-Cypress.Commands.add('left', { prevSubject: "dom" }, $el => keydownCommand($el, 'ArrowLeft'))
-Cypress.Commands.add('right', { prevSubject: "dom" }, $el => keydownCommand($el, 'ArrowRight'))
-Cypress.Commands.add('up', { prevSubject: "dom" }, $el => keydownCommand($el, 'ArrowUp'))
-Cypress.Commands.add('down', { prevSubject: "dom" }, $el => keydownCommand($el, 'ArrowDown'))
+Cypress.Commands.add('keydown', { prevSubject: 'dom' }, keydownCommand);
+Cypress.Commands.add('left', { prevSubject: 'dom' }, $el => keydownCommand($el, 'ArrowLeft'));
+Cypress.Commands.add('right', { prevSubject: 'dom' }, $el => keydownCommand($el, 'ArrowRight'));
+Cypress.Commands.add('up', { prevSubject: 'dom' }, $el => keydownCommand($el, 'ArrowUp'));
+Cypress.Commands.add('down', { prevSubject: 'dom' }, $el => keydownCommand($el, 'ArrowDown'));

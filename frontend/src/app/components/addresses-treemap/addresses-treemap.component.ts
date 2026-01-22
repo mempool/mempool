@@ -122,7 +122,7 @@ export class AddressesTreemap implements OnChanges {
           }
         }
       ]
-    };    
+    };
   }
 
   formatValue(sats: number): string {

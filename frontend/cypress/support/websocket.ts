@@ -124,15 +124,15 @@ export const emitMempoolInfo = ({
 		//TODO: Refactor to take into account different parameterized mocking scenarios
 		switch (params.network) {
 			//TODO: Use network specific mocks
-			case "signet":
-			case "testnet":
-			case "mainnet":
+			case 'signet':
+			case 'testnet':
+			case 'mainnet':
 			default:
 				break;
 		}
 
 		switch (params.command) {
-			case "init": {
+			case 'init': {
 				win.mockSocket.send('{"conversions":{"USD":32365.338815782445}}');
 				cy.readFile('cypress/fixtures/mainnet_live2hchart.json', 'utf-8').then((fixture) => {
 					win.mockSocket.send(JSON.stringify(fixture));
@@ -142,7 +142,7 @@ export const emitMempoolInfo = ({
 				});
 				break;
 			}
-			case "rbfTransaction": {
+			case 'rbfTransaction': {
 				cy.readFile('cypress/fixtures/mainnet_rbf.json', 'utf-8').then((fixture) => {
 					win.mockSocket.send(JSON.stringify(fixture));
 				});
@@ -164,7 +164,7 @@ export const emitMempoolInfo = ({
 
 export const dropWebSocket = (() => {
     cy.window().then((win) => {
-        win.mockServer.simulate("error");
+        win.mockServer.simulate('error');
     });
     return cy.wait(500);
 });

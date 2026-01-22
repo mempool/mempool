@@ -37,7 +37,7 @@ export class SeoService {
       filter(event => event instanceof NavigationEnd),
       map(() => this.activatedRoute),
       map(route => {
-        while (route.firstChild) route = route.firstChild;
+        while (route.firstChild) {route = route.firstChild;}
         return route;
       }),
       filter(route => route.outlet === 'primary'),
@@ -88,15 +88,15 @@ export class SeoService {
 
   getTitle(): string {
     if (this.network === 'testnet')
-      return this.baseTitle + ' - Bitcoin Testnet3';
+      {return this.baseTitle + ' - Bitcoin Testnet3';}
     if (this.network === 'testnet4')
-      return this.baseTitle + ' - Bitcoin Testnet4';
+      {return this.baseTitle + ' - Bitcoin Testnet4';}
     if (this.network === 'signet')
-      return this.baseTitle + ' - Bitcoin Signet';
+      {return this.baseTitle + ' - Bitcoin Signet';}
     if (this.network === 'liquid')
-      return this.baseTitle + ' - Liquid Network';
+      {return this.baseTitle + ' - Liquid Network';}
     if (this.network === 'liquidtestnet')
-      return this.baseTitle + ' - Liquid Testnet';
+      {return this.baseTitle + ' - Liquid Testnet';}
     return this.baseTitle + ' - ' + (this.network ? this.ucfirst(this.network) : 'Bitcoin') + ' Explorer';
   }
 

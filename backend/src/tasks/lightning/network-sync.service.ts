@@ -47,7 +47,7 @@ class NetworkSyncService {
       await this.$lookUpCreationDateFromChain();
       await this.$updateNodeFirstSeen();
       await this.$scanForClosedChannels();
-      
+
       if (config.MEMPOOL.BACKEND === 'esplora') {
         // run forensics on new channels only
         await forensicsService.$runClosedChannelsForensics(true);
@@ -226,7 +226,7 @@ class NetworkSyncService {
 
       if (channels.length > 0) {
         logger.debug(`Updated ${channels.length} channels' creation date`, logger.tags.ln);
-      }      
+      }
     } catch (e) {
       logger.err(`$lookUpCreationDateFromChain() error: ${e instanceof Error ? e.message : e}`, logger.tags.ln);
     }

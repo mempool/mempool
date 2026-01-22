@@ -32,6 +32,7 @@ export interface Customization {
     header_img?: string;
     footer_img?: string;
     rounded_corner: boolean;
+    cobranded?: boolean;
   },
   dashboard: {
     widgets: {
@@ -367,7 +368,7 @@ export class StateService {
     this.hideAudit.subscribe((hide) => {
       this.storageService.setValue('audit-preference', hide ? 'hide' : 'show');
     });
-    
+
     const fiatPreference = this.storageService.getValue('fiat-preference');
     this.fiatCurrency$ = new BehaviorSubject<string>(fiatPreference || 'USD');
 
@@ -513,7 +514,7 @@ export class StateService {
   focusSearchInputDesktop() {
     if (!hasTouchScreen()) {
       this.searchFocus$.next(true);
-    }    
+    }
   }
 
   private testIsProdDomain(prodDomains: string[]): boolean {

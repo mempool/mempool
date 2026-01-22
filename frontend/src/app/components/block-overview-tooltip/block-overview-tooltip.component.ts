@@ -72,7 +72,7 @@ export class BlockOverviewTooltipComponent implements OnChanges {
       this.hasEffectiveRate = this.tx.acc || !(Math.abs((this.fee / this.vsize) - this.effectiveRate) <= 0.1 && Math.abs((this.fee / Math.ceil(this.vsize)) - this.effectiveRate) <= 0.1)
         || (txFlags && (txFlags & (TransactionFlags.cpfp_child | TransactionFlags.cpfp_parent)) > 0n);
       this.filters = this.tx.flags ? toFilters(txFlags).filter(f => f.tooltip) : [];
-      this.activeFilters = {}
+      this.activeFilters = {};
       for (const filter of this.filters) {
         if (this.filterFlags && (this.filterFlags & BigInt(filter.flag))) {
           this.activeFilters[filter.key] = true;

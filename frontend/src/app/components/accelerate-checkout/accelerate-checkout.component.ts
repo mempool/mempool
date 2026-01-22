@@ -591,7 +591,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     if (this.processing) {
       return;
     }
-    
+
     this.processing = true;
 
         if (this.googlePay) {
@@ -709,7 +709,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     if (this.processing) {
       return;
     }
-    
+
     this.processing = true;
 
         const costUSD = this.cost / 100_000_000 * this.conversions.USD;
@@ -722,11 +722,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           return;
         }
         this.loadingCardOnFile = false;
-        
+
         try {
           this.isCheckoutLocked += 2;
           this.isTokenizing += 2;
-          
+
           const nameParts = cardOnFile.card.name.split(' ');
           const assumedGivenName = nameParts[0];
           const assumedFamilyName = nameParts.length > 1 ? nameParts[1] : undefined;

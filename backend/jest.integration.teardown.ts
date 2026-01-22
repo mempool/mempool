@@ -43,7 +43,7 @@ module.exports = async () => {
     ];
 
     await DB.query('SET FOREIGN_KEY_CHECKS = 0');
-    
+
     for (const table of tables) {
       try {
         // Use 'silent' error logging to avoid noise for optional tables that don't exist
@@ -52,29 +52,29 @@ module.exports = async () => {
         // Table might not exist - silently ignore
       }
     }
-    
+
     await DB.query('SET FOREIGN_KEY_CHECKS = 1');
-    
+
     logger.info('Integration tests cleanup completed');
-    
+
     // Close the database connection pool to prevent Jest from hanging
     await DB.close();
     logger.info('Database connection pool closed');
-    
+
     // Clean up singleton resources that have timers or sockets
     mempool.destroy();
     logger.info('Mempool resources cleaned up');
-    
+
     // Close logger's UDP socket last (after all logging is done)
     logger.close();
-    
+
     // Stop and remove the Docker test database container
     // Skip if SKIP_DB_TEARDOWN is set (e.g., when test-with-db.sh manages the database)
     if (!process.env.SKIP_DB_TEARDOWN) {
       try {
         const composeFile = path.join(__dirname, 'docker-compose.test.yml');
         const dockerComposeCmd = getDockerComposeCmd();
-        execSync(`${dockerComposeCmd} -f "${composeFile}" down -v`, { 
+        execSync(`${dockerComposeCmd} -f "${composeFile}" down -v`, {
           stdio: 'inherit',
           cwd: __dirname
         });
