@@ -1,21 +1,51 @@
-# Workflow: Automatically set project status to "Review Needed" when a reviewer is requested
-name: Set Project Status on Review Request
+# Workflow: Automate project board management
+# - Add newly created issues to project #8
+# - Set status to "Review Needed" when a reviewer is requested on a non-draft PR
+name: Project Board Automation
 
-# Trigger: Runs whenever a reviewer is requested on a pull request
+# Triggers: Review requested on PRs, or new issues opened
 on:
   pull_request:
     types: [review_requested]
+  issues:
+    types: [opened]
 
 jobs:
   update-project-status:
     runs-on: ubuntu-latest
     steps:
-      - name: Update Project Status to Review Needed
+      - name: Update Project Board
         uses: actions/github-script@v7
         with:
           # Use the PAT stored in repository secrets (has project write access)
           github-token: ${{ secrets.PROJECT_TOKEN }}
           script: |
+            // Skip draft PRs
+            if (context.eventName === 'pull_request' && context.payload.pull_request.draft) {
+              console.log('PR is a draft, skipping Review Needed status...');
+              return;
+            }
+
+            // Handle new issues - add to project
+            if (context.eventName === 'issues') {
+              const addMutation = `
+                mutation($projectId: ID!, $contentId: ID!) {
+                  addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) {
+                    item { id }
+                  }
+                }
+              `;
+
+              await github.graphql(addMutation, {
+                projectId: "${{ secrets.PROJECT_ID }}",
+                contentId: context.payload.issue.node_id
+              });
+
+              console.log('Successfully added issue to project #8');
+              return;
+            }
+
+            // Handle PR review_requested - update status to "Review Needed"
             // GraphQL query to find the PR's project items
             // This fetches all projects the PR is linked to
             const query = `
