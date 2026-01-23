@@ -5,58 +5,42 @@
 
   <ng-container *ngIf="price$ | async; else loading">
 
-    <div class="row justify-content-center">
-
+    <div class="row justify-content-center col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4">
       <form [formGroup]="form">
         <div class="input-group input-group-lg mb-1">
-          <div class="input-group-prepend">
-            <span class="input-group-text">{{ currency$ | async }}</span>
-          </div>
+          <span class="input-group-text">{{ currency$ | async }}</span>
           <input type="text" inputmode="numeric" class="form-control" formControlName="fiat" (input)="transformInput('fiat')" (click)="selectAll($event)">
-          <app-clipboard [button]="true" [text]="form.get('fiat').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
+          <app-clipboard [button]="true" [text]="form.get('fiat').value" [class]="'btn btn-lg btn-secondary ms-1'"></app-clipboard>
         </div>
 
         <div class="input-group input-group-lg mb-1">
-          <div class="input-group-prepend">
-            <span class="input-group-text">BTC</span>
-          </div>
+          <span class="input-group-text">BTC</span>
           <input type="text" inputmode="numeric" class="form-control" formControlName="bitcoin" (input)="transformInput('bitcoin')" (click)="selectAll($event)">
-          <app-clipboard [button]="true" [text]="form.get('bitcoin').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
+          <app-clipboard [button]="true" [text]="form.get('bitcoin').value" [class]="'btn btn-lg btn-secondary ms-1'"></app-clipboard>
         </div>
 
         <div class="input-group input-group-lg mb-1">
-          <div class="input-group-prepend">
-            <span class="input-group-text" i18n="shared.sats">sats</span>
-          </div>
+          <span class="input-group-text" i18n="shared.sats">sats</span>
           <input type="text" inputmode="numeric" class="form-control" formControlName="satoshis" (input)="transformInput('satoshis')" (click)="selectAll($event)">
-          <app-clipboard [button]="true" [text]="form.get('satoshis').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
+          <app-clipboard [button]="true" [text]="form.get('satoshis').value" [class]="'btn btn-lg btn-secondary ms-1'"></app-clipboard>
         </div>
       </form>
-
-    </div>
-
-    <br>
-
-    <div class="row justify-content-center">
-      <div class="bitcoin-satoshis-text">
-        ₿
-         <span [innerHTML]="form.get('bitcoin').value | bitcoinsatoshis"></span> 
-        <span class="sats" i18n="shared.sats">sats</span>
+      <div><br></div>
+      <div class="text-center">
+        <div class="bitcoin-satoshis-text">
+          ₿
+          <span [innerHTML]="form.get('bitcoin').value | bitcoinsatoshis"></span> 
+          <span class="sats" i18n="shared.sats">sats</span>
+        </div>
+        <div class="fiat-text">
+          <app-fiat [value]="form.get('satoshis').value" digitsInfo="1.0-0"></app-fiat>
+        </div>
+        <br>
+        <div class="symbol">
+          Fiat price last updated <app-time kind="since" [time]="lastFiatPrice$ | async" [fastRender]="true"></app-time>
+        </div>
       </div>
     </div>
-
-    <div class="row justify-content-center">
-      <div class="fiat-text">
-        <app-fiat [value]="form.get('satoshis').value" digitsInfo="1.0-0"></app-fiat>
-      </div>
-    </div>
-
-    <div class="row justify-content-center mt-3">
-      <div class="symbol">
-        Fiat price last updated <app-time kind="since" [time]="lastFiatPrice$ | async" [fastRender]="true"></app-time>
-      </div>
-    </div>
-
 
   </ng-container>
 

@@ -1,56 +1,56 @@
 <div class="container-lg widget-container p-0" [class.widget]="widget" [class.full-height]="!widget">
-  <h1 *ngIf="!widget" class="float-left" i18n="accelerator.accelerations">Accelerations</h1>
-  <div *ngIf="!widget && isLoading" class="spinner-border ml-3" role="status"></div>
+  <h1 *ngIf="!widget" class="float-start" i18n="accelerator.accelerations">Accelerations</h1>
+  <div *ngIf="!widget && isLoading" class="spinner-border ms-3" role="status"></div>
 
   <div class="clearfix"></div>
 
   <div class="acceleration-list" *ngIf="{ accelerations: accelerationList$ | async } as state">
     <table *ngIf="nonEmptyAccelerations; else noData" class="table table-borderless table-fixed">
       <thead>
-        <th class="txid text-left" i18n="dashboard.latest-transactions.txid">TXID</th>
+        <th class="txid text-start" i18n="dashboard.latest-transactions.txid">TXID</th>
         <ng-container *ngIf="pending">
-          <th class="fee-rate text-right" i18n="transaction.fee-rate|Transaction fee rate">Fee rate</th>
-          <th class="bid text-right" i18n="accelerator.bid">Bid</th>
-          <th class="time text-right" i18n="accelerator.requested">Requested</th>
+          <th class="fee-rate text-end" i18n="transaction.fee-rate|Transaction fee rate">Fee rate</th>
+          <th class="bid text-end" i18n="accelerator.bid">Bid</th>
+          <th class="time text-end" i18n="accelerator.requested">Requested</th>
         </ng-container>
         <ng-container *ngIf="!pending">
-          <th class="fee text-right text-truncate" i18n="transaction.bid-boost|Bid Boost">Bid Boost</th>
-          <th class="block text-right" i18n="shared.block-title">Block</th>
-          <th class="pool text-right" i18n="mining.pool-name" *ngIf="!this.widget">Pool</th>
-          <th class="status text-right" i18n="transaction.status|Transaction Status">Status</th>
-          <th class="date text-right" i18n="accelerator.requested" *ngIf="!this.widget">Requested</th>
+          <th class="fee text-end text-truncate" i18n="transaction.bid-boost|Bid Boost">Bid Boost</th>
+          <th class="block text-end" i18n="shared.block-title">Block</th>
+          <th class="pool text-end" i18n="mining.pool-name" *ngIf="!this.widget">Pool</th>
+          <th class="status text-end" i18n="transaction.status|Transaction Status">Status</th>
+          <th class="date text-end" i18n="accelerator.requested" *ngIf="!this.widget">Requested</th>
         </ng-container>
       </thead>
       <tbody *ngIf="state.accelerations && nonEmptyAccelerations; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
         <tr *ngFor="let acceleration of state.accelerations; let i= index;">
-          <td class="txid text-left">
+          <td class="txid text-start">
             <a [routerLink]="['/tx' | relativeUrl, acceleration.txid]">
               <app-truncate [text]="acceleration.txid" [lastChars]="5"></app-truncate>
             </a>
           </td>
           <ng-container *ngIf="pending">
-            <td class="fee-rate text-right">
+            <td class="fee-rate text-end">
               <app-fee-rate [fee]="acceleration.effectiveFee" [weight]="acceleration.effectiveVsize * 4"></app-fee-rate>
             </td>
-            <td class="bid text-right">
+            <td class="bid text-end">
               {{ (acceleration.feeDelta) | number }} <span class="symbol" i18n="shared.sats">sats</span>
             </td>
-            <td class="time text-right">
+            <td class="time text-end">
               <app-time kind="since" [time]="acceleration.added" [fastRender]="true" [showTooltip]="true"></app-time>
             </td>
           </ng-container>
           <ng-container *ngIf="!pending">
-            <td *ngIf="acceleration.boost != null" class="fee text-right">
+            <td *ngIf="acceleration.boost != null" class="fee text-end">
               {{ acceleration.boost | number }} <span class="symbol" i18n="shared.sats">sats</span>
             </td>
-            <td *ngIf="acceleration.boost == null" class="fee text-right">
+            <td *ngIf="acceleration.boost == null" class="fee text-end">
               ~
             </td>
-            <td class="block text-right">
+            <td class="block text-end">
               <a *ngIf="acceleration.blockHeight" [routerLink]="['/block' | relativeUrl, acceleration.blockHeight]">{{ acceleration.blockHeight }}</a>
               <span *ngIf="!acceleration.blockHeight">~</span>
             </td>
-            <td class="pool text-right" *ngIf="!this.widget">
+            <td class="pool text-end" *ngIf="!this.widget">
               @if (acceleration.minedByPoolUniqueId && pools[acceleration.minedByPoolUniqueId]) {
                 <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, pools[acceleration.minedByPoolUniqueId].slug]" class="badge" style="color: #FFF;padding:0;">
                   <img class="pool-logo" [src]="'/resources/mining-pools/' + pools[acceleration.minedByPoolUniqueId].slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + pools[acceleration.minedByPoolUniqueId].name + ' mining pool'">
@@ -60,14 +60,14 @@
                 ~
               }
             </td>
-            <td class="status text-right">
-              <span *ngIf="acceleration.status === 'accelerating'" class="badge badge-warning" i18n="accelerator.pending">Pending</span>
-              <span *ngIf="acceleration.status.includes('completed') && acceleration.minedByPoolUniqueId && pools[acceleration.minedByPoolUniqueId]" class="badge badge-success"><ng-container i18n="accelerator.completed">Completed</ng-container><span *ngIf="acceleration.status === 'completed_provisional'">&nbsp;⌛</span></span>
-              <span *ngIf="acceleration.status.includes('completed') && (!acceleration.minedByPoolUniqueId || !pools[acceleration.minedByPoolUniqueId])" class="badge badge-success"><ng-container i18n="transaction.rbf.mined">Mined</ng-container><span *ngIf="acceleration.status === 'completed_provisional'">&nbsp;⌛</span></span>
-              <span *ngIf="acceleration.status.includes('failed') && acceleration.canceled" class="badge badge-danger"><ng-container i18n="accelerator.canceled">Canceled</ng-container><span *ngIf="acceleration.status === 'failed_provisional'">&nbsp;⌛</span></span>
-              <span *ngIf="acceleration.status.includes('failed') && !acceleration.canceled" class="badge badge-danger"><ng-container i18n="accelerator.canceled">Failed</ng-container><span *ngIf="acceleration.status === 'failed_provisional'">&nbsp;⌛</span></span>
+            <td class="status text-end">
+              <span *ngIf="acceleration.status === 'accelerating'" class="badge bg-warning" i18n="accelerator.pending">Pending</span>
+              <span *ngIf="acceleration.status.includes('completed') && acceleration.minedByPoolUniqueId && pools[acceleration.minedByPoolUniqueId]" class="badge bg-success"><ng-container i18n="accelerator.completed">Completed</ng-container><span *ngIf="acceleration.status === 'completed_provisional'">&nbsp;⌛</span></span>
+              <span *ngIf="acceleration.status.includes('completed') && (!acceleration.minedByPoolUniqueId || !pools[acceleration.minedByPoolUniqueId])" class="badge bg-success"><ng-container i18n="transaction.rbf.mined">Mined</ng-container><span *ngIf="acceleration.status === 'completed_provisional'">&nbsp;⌛</span></span>
+              <span *ngIf="acceleration.status.includes('failed') && acceleration.canceled" class="badge bg-danger"><ng-container i18n="accelerator.canceled">Canceled</ng-container><span *ngIf="acceleration.status === 'failed_provisional'">&nbsp;⌛</span></span>
+              <span *ngIf="acceleration.status.includes('failed') && !acceleration.canceled" class="badge bg-danger"><ng-container i18n="accelerator.canceled">Failed</ng-container><span *ngIf="acceleration.status === 'failed_provisional'">&nbsp;⌛</span></span>
             </td>
-            <td class="date text-right" *ngIf="!this.widget">
+            <td class="date text-end" *ngIf="!this.widget">
               <app-time kind="since" [time]="acceleration.added" [fastRender]="true" [showTooltip]="true"></app-time>
             </td>
           </ng-container>
@@ -77,22 +77,22 @@
         @if (!pending) {
           <tbody>
             <tr *ngFor="let item of skeletonLines">
-              <td class="txid text-left">
+              <td class="txid text-start">
                 <span class="skeleton-loader" style="max-width: 200px"></span>
               </td>
-              <td class="fee text-right">
+              <td class="fee text-end">
                 <span class="skeleton-loader" style="max-width: 100px"></span>
               </td>
-              <td class="block text-right">
+              <td class="block text-end">
                 <span class="skeleton-loader" style="max-width: 100px"></span>
               </td>
-              <td class="pool text-right" *ngIf="!this.widget">
+              <td class="pool text-end" *ngIf="!this.widget">
                 <span class="skeleton-loader" style="max-width: 100px"></span>
               </td>
-              <td class="status text-right">
+              <td class="status text-end">
                 <span class="skeleton-loader" style="max-width: 100px"></span>
               </td>
-              <td class="date text-right" *ngIf="!this.widget">
+              <td class="date text-end" *ngIf="!this.widget">
                 <span class="skeleton-loader" style="max-width: 100px"></span>
               </td>
             </tr>
@@ -100,16 +100,16 @@
         } @else {
           <tbody>
             <tr *ngFor="let item of skeletonLines">
-              <td class="txid text-left">
+              <td class="txid text-start">
                 <span class="skeleton-loader" style="max-width: 100px"></span>
               </td>
-              <td class="fee-rate text-right">
+              <td class="fee-rate text-end">
                 <span class="skeleton-loader" style="max-width: 100px"></span>
               </td>
-              <td class="bid text-right">
+              <td class="bid text-end">
                 <span class="skeleton-loader" style="max-width: 100px"></span>
               </td>
-              <td class="time text-right">
+              <td class="time text-end">
                 <span class="skeleton-loader" style="max-width: 100px"></span>
               </td>
             </tr>
@@ -118,7 +118,7 @@
       </ng-template>
     </table>
 
-    <ngb-pagination *ngIf="!widget" class="pagination-container float-right mt-2" [class]="isLoading ? 'disabled' : ''"
+    <ngb-pagination *ngIf="!widget" class="pagination-container float-end mt-2" [class]="isLoading ? 'disabled' : ''"
       [collectionSize]="this.accelerationCount" [rotate]="true" [maxSize]="maxSize" [pageSize]="15" [(page)]="page"
       (pageChange)="pageChange(page)" [boundaryLinks]="true" [ellipses]="false">
     </ngb-pagination>

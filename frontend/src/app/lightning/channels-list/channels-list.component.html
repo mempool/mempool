@@ -19,7 +19,7 @@
     </tbody>
   </table>
   
-  <ngb-pagination *ngIf="response.channels.length > 0" class="pagination-container float-right"
+  <ngb-pagination *ngIf="response.channels.length > 0" class="pagination-container float-end"
     [size]="paginationSize" [collectionSize]="response.totalItems" [rotate]="true"
     [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)"
     [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false">
@@ -35,18 +35,18 @@
   
 <ng-template #tableHeader>
   <thead>
-    <th class="alias text-left" i18n="lightning.alias">Alias</th>
-    <th class="nodedetails text-left">&nbsp;</th>
-    <th class="status text-left" i18n="transaction.status|Transaction Status">Status</th>
-    <th class="feerate text-left" *ngIf="status !== 'closed'" i18n="transaction.fee-rate|Transaction fee rate">Fee rate</th>
-    <th class="feerate text-left" *ngIf="status === 'closed'" i18n="channels.closing_date">Closing date</th>
-    <th class="liquidity text-right" i18n="lightning.capacity">Capacity</th>
-    <th class="channelid text-right" i18n="channels.id">Channel ID</th>
+    <th class="alias text-start" i18n="lightning.alias">Alias</th>
+    <th class="nodedetails text-start">&nbsp;</th>
+    <th class="status text-start" i18n="transaction.status|Transaction Status">Status</th>
+    <th class="feerate text-start" *ngIf="status !== 'closed'" i18n="transaction.fee-rate|Transaction fee rate">Fee rate</th>
+    <th class="feerate text-start" *ngIf="status === 'closed'" i18n="channels.closing_date">Closing date</th>
+    <th class="liquidity text-end" i18n="lightning.capacity">Capacity</th>
+    <th class="channelid text-end" i18n="channels.id">Channel ID</th>
   </thead>
 </ng-template>
 
 <ng-template #tableTemplate let-channel let-node="node">
-  <td class="alias text-left">
+  <td class="alias text-start">
     <app-truncate [text]="node.alias || '?'" [maxWidth]="200" [lastChars]="6"></app-truncate>
     <div class="second-line">
       <app-truncate [text]="node.public_key" [maxWidth]="200" [lastChars]="6" [link]="['/lightning/node' | relativeUrl, node.public_key]">
@@ -54,7 +54,7 @@
       </app-truncate>
     </div>
   </td>
-  <td class="nodedetails text-left">
+  <td class="nodedetails text-start">
     <div class="second-line"><ng-container *ngTemplateOutlet="xChannels; context: {$implicit: node.channels }"></ng-container></div>
     <div class="second-line">
       <app-amount *ngIf="node.capacity > 100000000; else smallnode" [satoshis]="node.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
@@ -65,29 +65,29 @@
     </div>
   </td>
   <td class="status">
-    <span class="badge rounded-pill badge-secondary" *ngIf="channel.status === 0" i18n="status.inactive">Inactive</span>
-    <span class="badge rounded-pill badge-success" *ngIf="channel.status === 1" i18n="status.active">Active</span>
+    <span class="badge rounded-pill bg-secondary" *ngIf="channel.status === 0" i18n="status.inactive">Inactive</span>
+    <span class="badge rounded-pill bg-success" *ngIf="channel.status === 1" i18n="status.active">Active</span>
     <ng-template [ngIf]="channel.status === 2">
-      <span class="badge rounded-pill badge-secondary" *ngIf="!channel.closing_reason; else closingReason" i18n="status.closed">Closed</span>
+      <span class="badge rounded-pill bg-secondary" *ngIf="!channel.closing_reason; else closingReason" i18n="status.closed">Closed</span>
       <ng-template #closingReason>
         <app-closing-type [type]="channel.closing_reason"></app-closing-type>
       </ng-template>
     </ng-template>
   </td>
-  <td *ngIf="status !== 'closed'" class="feerate text-left">
+  <td *ngIf="status !== 'closed'" class="feerate text-start">
     {{ channel.fee_rate }} <span class="symbol">ppm ({{ channel.fee_rate / 10000 | number }}%)</span>
   </td>
-  <td *ngIf="status === 'closed'" class="feerate text-left">
+  <td *ngIf="status === 'closed'" class="feerate text-start">
     <app-timestamp [unixTime]="channel.closing_date"></app-timestamp>
   </td>
-  <td class="liquidity text-right">
+  <td class="liquidity text-end">
     <app-amount *ngIf="channel.capacity > 100000000; else smallchannel" [satoshis]="channel.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
     <ng-template #smallchannel>
       {{ channel.capacity | amountShortener: 1 }}
       <span class="sats" i18n="shared.sats">sats</span>
     </ng-template>
   </td>
-  <td class="channelid text-right">
+  <td class="channelid text-end">
     <a [routerLink]="['/lightning/channel' | relativeUrl, channel.id]">{{ channel.short_id }}</a>
    </td>
 </ng-template>
@@ -97,22 +97,22 @@
   <ng-container *ngTemplateOutlet="tableHeader"></ng-container>
   <tbody>
     <tr *ngFor="let item of [1,2,3,4,5,6,7,8,9,10]">
-      <td class="alias text-left" style="width: 370px;">
+      <td class="alias text-start" style="width: 370px;">
         <span class="skeleton-loader"></span>
       </td>
-      <td class="nodedetails text-left">
+      <td class="nodedetails text-start">
         <span class="skeleton-loader"></span>
       </td>
-      <td class="status text-left">
+      <td class="status text-start">
         <span class="skeleton-loader"></span>
       </td>
-      <td class="feerate text-left">
+      <td class="feerate text-start">
         <span class="skeleton-loader"></span>
       </td>
-      <td class="liquidity text-right">
+      <td class="liquidity text-end">
         <span class="skeleton-loader"></span>
       </td>
-      <td class="channelid text-left">
+      <td class="channelid text-start">
         <span class="skeleton-loader"></span>
       </td>
     </tr>

@@ -5,30 +5,30 @@
   <div style="min-height: 295px">
     <table class="table table-borderless">
       <thead style="vertical-align: middle;">
-        <th class="address text-left" [ngClass]="{'widget': widget}" i18n="shared.address">Address</th>
-        <th class="amount text-right" [ngClass]="{'widget': widget}" i18n="address.balance">Balance</th>
+        <th class="address text-start" [ngClass]="{'widget': widget}" i18n="shared.address">Address</th>
+        <th class="amount text-end" [ngClass]="{'widget': widget}" i18n="address.balance">Balance</th>
       </thead>
       <tbody *ngIf="federationAddresses$ | async as addresses; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
         <ng-container *ngIf="widget; else regularRows">
           <tr *ngFor="let address of addresses | slice:0:5">
-            <td class="address text-left widget">
+            <td class="address text-start widget">
               <a href="{{ env.MEMPOOL_WEBSITE_URL + '/address/' + address.bitcoinaddress }}" target="_blank" style="color:var(--orange)">
                 <app-truncate [text]="address.bitcoinaddress" [lastChars]="6"></app-truncate>
               </a>
             </td>
-            <td class="amount text-right widget">
+            <td class="amount text-end widget">
               <app-amount [satoshis]="+address.balance" [noFiat]="true" [forceBtc]="true"></app-amount>
             </td>
           </tr>
         </ng-container>
         <ng-template #regularRows>
           <tr *ngFor="let address of addresses | slice:(page - 1) * pageSize:page * pageSize">
-            <td class="address text-left">
+            <td class="address text-start">
               <a href="{{ env.MEMPOOL_WEBSITE_URL + '/address/' + address.bitcoinaddress }}" target="_blank" style="color:var(--orange)">
                 <app-truncate [text]="address.bitcoinaddress" [lastChars]="6"></app-truncate>
               </a>
             </td>
-            <td class="amount text-right">
+            <td class="amount text-end">
               <app-amount [satoshis]="+address.balance" [noFiat]="true" [forceBtc]="true"></app-amount>
             </td>
           </tr>
@@ -37,20 +37,20 @@
       <ng-template #skeleton>
         <tbody *ngIf="widget; else regularRowsSkeleton">
           <tr *ngFor="let item of skeletonLines">
-            <td class="address text-left widget">
+            <td class="address text-start widget">
               <span class="skeleton-loader" style="max-width: 400px"></span>
             </td>
-            <td class="amount text-right widget">
+            <td class="amount text-end widget">
               <span class="skeleton-loader" style="max-width: 350px"></span>
             </td>
           </tr>
         </tbody>
         <ng-template #regularRowsSkeleton>
           <tr *ngFor="let item of skeletonLines">
-            <td class="address text-left">
+            <td class="address text-start">
               <span class="skeleton-loader" style="max-width: 600px"></span>
             </td>
-            <td class="amount text-right">
+            <td class="amount text-end">
               <span class="skeleton-loader" style="max-width: 400px"></span>
             </td>
           </tr>
@@ -58,7 +58,7 @@
       </ng-template>
     </table>
 
-    <ngb-pagination *ngIf="!widget && federationAddresses$ | async as addresses" class="pagination-container float-right mt-2" [class]="isLoading ? 'disabled' : ''"
+    <ngb-pagination *ngIf="!widget && federationAddresses$ | async as addresses" class="pagination-container float-end mt-2" [class]="isLoading ? 'disabled' : ''"
       [collectionSize]="addresses.length" [rotate]="true" [maxSize]="maxSize" [pageSize]="15" [(page)]="page"
       (pageChange)="pageChange(page)" [boundaryLinks]="true" [ellipses]="false">
     </ngb-pagination>

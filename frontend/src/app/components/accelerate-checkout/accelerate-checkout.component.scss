@@ -195,6 +195,12 @@
   @media (max-width: 640px) {
     flex-direction: column;
   }
+
+  &.row>* {
+    width: unset;
+    padding-left: unset;
+    padding-right: unset;
+  }
 }
 
 .btn-error {
@@ -237,4 +243,8 @@
     flex-direction: row;
     gap: 5px;
   }
+}
+
+.form-text {
+  display: block;
 }

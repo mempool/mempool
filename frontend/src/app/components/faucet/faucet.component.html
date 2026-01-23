@@ -19,16 +19,16 @@
     } @else if (!user) {
       <!-- User not logged in -->
       <div class="alert alert-mempool d-block text-center w-100">
-        <div class="d-inline align-middle pr-2">
+        <div class="d-inline align-middle pe-2">
           <span>To use the faucet, please</span>
         </div>
         <app-github-login customClass="btn btn-sm" width="150px" redirectTo="/testnet4/faucet" buttonString="Sign up with"></app-github-login>
       </div>
     }
     @else if (user && user.status === 'pending' && !user.email && user.snsId) {
-      <div class="alert alert-danger w-100 col d-flex justify-content-center text-left">
+      <div class="alert alert-danger w-100 col d-flex justify-content-center text-start">
         <span class="d-flex">
-          <fa-icon [icon]="['fas', 'exclamation-triangle']" [fixedWidth]="true" class="mr-1"></fa-icon>
+          <fa-icon [icon]="['fas', 'exclamation-triangle']" [fixedWidth]="true" class="me-1"></fa-icon>
           <span>Please <a class="text-primary" [routerLink]="['/services/account/settings']">verify your account</a> by providing a valid email address. To mitigate spam, we delete unverified accounts at regular intervals.</span>
         </span>
       </div>
@@ -37,7 +37,7 @@
       <!-- User logged in but not a paid user or did not link its Github account -->
       <div class="alert alert-mempool d-block text-center w-100">
         <div class="d-inline align-middle">
-          <span class="mb-2 mr-2">To use the faucet, please</span>
+          <span class="mb-2 me-2">To use the faucet, please</span>
         </div>
         <app-github-login customClass="btn btn-sm" width="180px" redirectTo="/testnet4/faucet" buttonString="Link your"></app-github-login>
       </div>
@@ -45,7 +45,7 @@
     @else if (error === 'account_limited') {
       <div class="alert alert-mempool d-block text-center w-100">
         <div class="d-inline align-middle">
-          <span class="mb-2 mr-2">Your account does not allow you to access the faucet</span>
+          <span class="mb-2 me-2">Your account does not allow you to access the faucet</span>
         </div>
       </div>
     }
@@ -58,31 +58,27 @@
       <form [formGroup]="faucetForm" class="formGroup" (submit)="requestCoins()">
         <div class="row">
           <div class="col">
-            <div class="form-group mb-0">
+            <div class="mb-0">
               <div class="input-group input-group-lg">
-                <div class="input-group-prepend">
-                  <span class="input-group-text" i18n="amount-sats">Amount (sats)</span>
-                </div>
+                <span class="input-group-text" i18n="amount-sats">Amount (sats)</span>
                 <input type="number" class="form-control" [class]="{invalid: invalidAmount}" formControlName="satoshis" id="satoshis">
                 <div class="button-group">
                   <button type="button" class="btn btn-secondary" (click)="setAmount(5000)">5k</button>
-                  <button type="button" class="btn btn-secondary ml-2" (click)="setAmount(50000)">50k</button>
-                  <button type="button" class="btn btn-secondary ml-2" (click)="setAmount(500000)">500k</button>
+                  <button type="button" class="btn btn-secondary ms-2" (click)="setAmount(50000)">50k</button>
+                  <button type="button" class="btn btn-secondary ms-2" (click)="setAmount(500000)">500k</button>
                 </div>
               </div>
-              <div class="text-danger text-left" *ngIf="invalidAmount">
+              <div class="text-danger text-start" *ngIf="invalidAmount">
                 <div *ngIf="amount?.errors?.['required']">Amount is required</div>
                 <div *ngIf="amount?.errors?.['min']">Minimum is {{ amount?.errors?.['min'].min | number }} tSats</div>
                 <div *ngIf="amount?.errors?.['max']">Maximum is {{ amount?.errors?.['max'].max | number }} tSats</div>
               </div>
               <div class="input-group input-group-lg mt-2">
-                <div class="input-group-prepend">
-                  <span class="input-group-text" i18n="address">Address</span>
-                </div>
+                <span class="input-group-text" i18n="address">Address</span>
                 <input type="text" class="form-control" [class]="{invalid: invalidAddress}" formControlName="address" id="address" placeholder="tb1q...">
                 <button type="submit" class="btn btn-primary submit-button" [disabled]="!faucetForm.valid || !faucetForm.get('address')?.dirty || isDisabled()" i18n="testnet4.request-coins">Request Testnet4 Coins</button>
               </div>
-              <div class="text-danger text-left" *ngIf="invalidAddress">
+              <div class="text-danger text-start" *ngIf="invalidAddress">
                 <div *ngIf="address?.errors?.['required']">Address is required</div>
                 <div *ngIf="address?.errors?.['pattern']">Must be a valid testnet4 address</div>
                 <div *ngIf="address?.errors?.['forbiddenAddress']">You cannot use this address</div>

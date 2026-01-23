@@ -17,9 +17,7 @@
     <form [formGroup]="searchForm">
       <div class="input-group mb-2">
         <input #instance="ngbTypeahead" [ngbTypeahead]="typeaheadSearchFn" [resultFormatter]="formatterFn" (selectItem)="itemSelected()" (focus)="focus$.next($any($event).target.value)" (click)="click$.next($any($event).target.value)" formControlName="searchText" type="text" class="form-control" i18n-placeholder="Search Assets Placeholder Text" placeholder="Search asset">
-        <div class="input-group-append">
-          <button [disabled]="!searchForm.get('searchText')?.value.length" class="btn btn-secondary" type="button" (click)="searchForm.get('searchText')?.setValue('');" autocomplete="off" i18n="Search Clear Button">Clear</button>
-        </div>
+        <button [disabled]="!searchForm.get('searchText')?.value.length" class="btn btn-secondary" type="button" (click)="searchForm.get('searchText')?.setValue('');" autocomplete="off" i18n="Search Clear Button">Clear</button>
       </div>
     </form>
 </div>

@@ -21,17 +21,19 @@
         @case ('goggles') {
           <div class="col" [style.order]="isMobile && widget.mobileOrder || 8">
             <div class="card graph-card">
-              <div class="card-body pl-lg-3 pr-lg-3 pl-2 pr-2">
+              <div class="card-body ps-lg-3 pe-lg-3 ps-2 pe-2">
                 <a class="title-link mb-0" style="margin-top: -2px" href="" [routerLink]="['/mempool-block/0' | relativeUrl]">
                   <h5 class="card-title d-inline"><span>Mempool Goggles&trade;</span> : {{ goggleCycle[goggleIndex].name }}</h5>
                   <span>&nbsp;</span>
                   <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
                 </a>
                 <div class="quick-filter">
-                  <div class="btn-group btn-group-toggle">
-                    <label class="btn btn-primary btn-xs" [class.active]="filter.index === goggleIndex"  *ngFor="let filter of goggleCycle">
-                      <input type="radio" [value]="'3m'" fragment="3m" (click)="setFilter(filter.index)" [attr.data-cy]="'3m'"> {{ filter.name }}
-                    </label>
+                  <div class="btn-group" role="group">
+                    <ng-container *ngFor="let filter of goggleCycle">
+                      <input type="radio" class="btn-check" [value]="'3m'" [id]="'btn-radio-' + filter.index"
+                        [checked]="filter.index === goggleIndex" (click)="setFilter(filter.index)" [attr.data-cy]="'3m'">
+                      <label class="btn btn-primary btn-xs" [for]="'btn-radio-' + filter.index">{{ filter.name }}</label>
+                    </ng-container>
                   </div>
                 </div>
                 <div class="mempool-block-wrapper" *ngIf="webGlEnabled">
@@ -118,9 +120,9 @@
                       <td class="table-cell-old-fee"><app-fee-rate [fee]="replacement.oldFee" [weight]="replacement.oldVsize * 4"></app-fee-rate></td>
                       <td class="table-cell-new-fee"><app-fee-rate [fee]="replacement.newFee" [weight]="replacement.newVsize * 4"></app-fee-rate></td>
                       <td class="table-cell-badges">
-                        <span *ngIf="replacement.mined" class="badge badge-success" i18n="transaction.rbf.mined">Mined</span>
-                        <span *ngIf="replacement.fullRbf" class="badge badge-info" i18n="transaction.full-rbf">Full RBF</span>
-                        <span *ngIf="!replacement.fullRbf" class="badge badge-success" i18n="tx-features.tag.rbf|RBF">RBF</span>
+                        <span *ngIf="replacement.mined" class="badge bg-success" i18n="transaction.rbf.mined">Mined</span>
+                        <span *ngIf="replacement.fullRbf" class="badge bg-info" i18n="transaction.full-rbf">Full RBF</span>
+                        <span *ngIf="!replacement.fullRbf" class="badge bg-success" i18n="tx-features.tag.rbf|RBF">RBF</span>
                       </td>
                     </tr>
                   </tbody>
@@ -294,7 +296,7 @@
         @case ('twitter') {
           <div class="col" style="min-height:410px" [style.order]="isMobile && widget.mobileOrder || 8">
             <div class="card graph-card">
-              <div class="card-body pl-lg-3 pr-lg-3 pl-2 pr-2 d-flex flex-column">
+              <div class="card-body ps-lg-3 pe-lg-3 ps-2 pe-2 d-flex flex-column">
                 <a class="title-link" [href]="'https://x.com/' + widget.props?.handle" target="_blank">
                   <h5 class="card-title d-inline" i18n="dashboard.x-timeline">X Timeline</h5>
                   <span>&nbsp;</span>

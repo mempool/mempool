@@ -18,7 +18,7 @@
     
     <form [formGroup]="paymentForm">
 
-      <div *ngIf="availableMethods.length > 1" class="form-group">
+      <div *ngIf="availableMethods.length > 1" class="mb-3">
         <div class="btn-group btn-group-toggle" data-toggle="buttons">
           <!-- <label *ngIf="invoice.addresses.BTC" class="btn btn-primary" [ngClass]="{'active': paymentForm.get('method')?.value === 'chain'}">
             <input type="radio" value="chain" formControlName="method"> <fa-icon [icon]="['fas', 'link']" [fixedWidth]="true" title="Onchain"></fa-icon>
@@ -44,9 +44,7 @@
 
         <div class="input-group input-group-sm info-group">
           <input type="text" class="form-control input-dark" readonly [value]="invoice.addresses.BTC">
-          <div class="input-group-append">
-              <button class="btn btn-outline-secondary" type="button" ><app-clipboard [text]="invoice.addresses.BTC"></app-clipboard></button>
-          </div>
+          <button class="btn btn-outline-secondary" type="button" ><app-clipboard [text]="invoice.addresses.BTC"></app-clipboard></button>
         </div>
         @if (!minimal) {
           <p>{{ invoice.btcDue | number: '1.0-8' }} <span class="symbol">BTC</span></p>
@@ -64,9 +62,7 @@
 
         <div class="input-group input-group-sm info-group">
           <input type="text" class="form-control input-dark" readonly [value]="invoice.addresses.BTC_LightningLike">
-          <div class="input-group-append">
-              <button class="btn btn-outline-secondary" type="button"><app-clipboard [text]="invoice.addresses.BTC_LightningLike"></app-clipboard></button>
-          </div>
+          <button class="btn btn-outline-secondary" type="button"><app-clipboard [text]="invoice.addresses.BTC_LightningLike"></app-clipboard></button>
         </div>
 
         @if (!minimal) {
@@ -85,9 +81,7 @@
         <br>
         <div class="input-group input-group-sm info-group">
           <input type="text" class="form-control input-dark" readonly [value]="invoice.addresses.LBTC" />
-          <div class="input-group-append">
-              <button class="btn btn-outline-secondary" type="button" ><app-clipboard [text]="invoice.addresses.LBTC"></app-clipboard></button>
-          </div>
+          <button class="btn btn-outline-secondary" type="button" ><app-clipboard [text]="invoice.addresses.LBTC"></app-clipboard></button>
         </div>
         @if (!minimal) {
           <p>{{ invoice.btcDue | number: '1.0-8' }} <span class="symbol">BTC</span></p>

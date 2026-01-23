@@ -34,43 +34,50 @@
   <div class="card-header" *ngIf="!widget">
     <div class="d-flex d-md-table-cell align-items-baseline">
       <span i18n="mining.pools">Pools Ranking</span>
-      <button class="btn p-0 pl-2" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
+      <button class="btn p-0 ps-2" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
         <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
       </button>
     </div>  
-    <form [formGroup]="radioGroupForm" class="formRadioGroup"
-      *ngIf="!widget && (miningStatsObservable$ | async) as stats">
-      <div class="btn-group btn-group-toggle" name="radioBasic">
-        <label class="btn btn-primary btn-sm" *ngIf="stats.totalBlockCount >= 144" [class.active]="radioGroupForm.get('dateSpan').value === '24h'">
-          <input type="radio" [value]="'24h'" fragment="24h" [routerLink]="['/graphs/mining/pools' | relativeUrl]" [attr.data-cy]="'24h'" formControlName="dateSpan"> 24h
-        </label>
-        <label class="btn btn-primary btn-sm" *ngIf="stats.totalBlockCount >= 432" [class.active]="radioGroupForm.get('dateSpan').value === '3d'">
-          <input type="radio" [value]="'3d'" fragment="3d" [routerLink]="['/graphs/mining/pools' | relativeUrl]" [attr.data-cy]="'3d'" formControlName="dateSpan"> 3D
-        </label>
-        <label class="btn btn-primary btn-sm" *ngIf="stats.totalBlockCount >= 1008" [class.active]="radioGroupForm.get('dateSpan').value === '1w'">
-          <input type="radio" [value]="'1w'" fragment="1w" [routerLink]="['/graphs/mining/pools' | relativeUrl]" [attr.data-cy]="'1w'" formControlName="dateSpan"> 1W
-        </label>
-        <label class="btn btn-primary btn-sm" *ngIf="stats.totalBlockCount >= 4320" [class.active]="radioGroupForm.get('dateSpan').value === '1m'">
-          <input type="radio" [value]="'1m'" fragment="1m" [routerLink]="['/graphs/mining/pools' | relativeUrl]" [attr.data-cy]="'1m'" formControlName="dateSpan"> 1M
-        </label>
-        <label class="btn btn-primary btn-sm" *ngIf="stats.totalBlockCount >= 12960" [class.active]="radioGroupForm.get('dateSpan').value === '3m'">
-          <input type="radio" [value]="'3m'" fragment="3m" [routerLink]="['/graphs/mining/pools' | relativeUrl]" [attr.data-cy]="'3m'" formControlName="dateSpan"> 3M
-        </label>
-        <label class="btn btn-primary btn-sm" *ngIf="stats.totalBlockCount >= 25920" [class.active]="radioGroupForm.get('dateSpan').value === '6m'">
-          <input type="radio" [value]="'6m'" fragment="6m" [routerLink]="['/graphs/mining/pools' | relativeUrl]" [attr.data-cy]="'6m'" formControlName="dateSpan"> 6M
-        </label>
-        <label class="btn btn-primary btn-sm" *ngIf="stats.totalBlockCount >= 52560" [class.active]="radioGroupForm.get('dateSpan').value === '1y'">
-          <input type="radio" [value]="'1y'" fragment="1y" [routerLink]="['/graphs/mining/pools' | relativeUrl]" [attr.data-cy]="'1y'" formControlName="dateSpan"> 1Y
-        </label>
-        <label class="btn btn-primary btn-sm" *ngIf="stats.totalBlockCount >= 105120" [class.active]="radioGroupForm.get('dateSpan').value === '2y'">
-          <input type="radio" [value]="'2y'" fragment="2y" [routerLink]="['/graphs/mining/pools' | relativeUrl]" [attr.data-cy]="'2y'" formControlName="dateSpan"> 2Y
-        </label>
-        <label class="btn btn-primary btn-sm" *ngIf="stats.totalBlockCount >= 157680" [class.active]="radioGroupForm.get('dateSpan').value === '3y'">
-          <input type="radio" [value]="'3y'" fragment="3y" [routerLink]="['/graphs/mining/pools' | relativeUrl]" [attr.data-cy]="'3y'" formControlName="dateSpan"> 3Y
-        </label>
-        <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === 'all'">
-          <input type="radio" [value]="'all'" fragment="all" [routerLink]="['/graphs/mining/pools' | relativeUrl]" [attr.data-cy]="'all'" formControlName="dateSpan"><span i18n>All</span>
-        </label>
+    <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="!widget && (miningStatsObservable$ | async) as stats">
+      <div class="btn-group" role="group" name="radioBasic">
+        <ng-container *ngIf="stats.totalBlockCount >= 144">
+          <input type="radio" class="btn-check" id="mining-24h" [value]="'24h'" fragment="24h" [routerLink]="['/graphs/mining/pools' | relativeUrl]" [attr.data-cy]="'24h'" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="mining-24h">24h</label>
+        </ng-container>
+        <ng-container *ngIf="stats.totalBlockCount >= 432">
+          <input type="radio" class="btn-check" id="mining-3d" [value]="'3d'" fragment="3d" [routerLink]="['/graphs/mining/pools' | relativeUrl]" [attr.data-cy]="'3d'" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="mining-3d">3D</label>
+        </ng-container>
+        <ng-container *ngIf="stats.totalBlockCount >= 1008">
+          <input type="radio" class="btn-check" id="mining-1w" [value]="'1w'" fragment="1w" [routerLink]="['/graphs/mining/pools' | relativeUrl]" [attr.data-cy]="'1w'" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="mining-1w">1W</label>
+        </ng-container>
+        <ng-container *ngIf="stats.totalBlockCount >= 4320">
+          <input type="radio" class="btn-check" id="mining-1m" [value]="'1m'" fragment="1m" [routerLink]="['/graphs/mining/pools' | relativeUrl]" [attr.data-cy]="'1m'" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="mining-1m">1M</label>
+        </ng-container>
+        <ng-container *ngIf="stats.totalBlockCount >= 12960">
+          <input type="radio" class="btn-check" id="mining-3m" [value]="'3m'" fragment="3m" [routerLink]="['/graphs/mining/pools' | relativeUrl]" [attr.data-cy]="'3m'" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="mining-3m">3M</label>
+        </ng-container>
+        <ng-container *ngIf="stats.totalBlockCount >= 25920">
+          <input type="radio" class="btn-check" id="mining-6m" [value]="'6m'" fragment="6m" [routerLink]="['/graphs/mining/pools' | relativeUrl]" [attr.data-cy]="'6m'" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="mining-6m">6M</label>
+        </ng-container>
+        <ng-container *ngIf="stats.totalBlockCount >= 52560">
+          <input type="radio" class="btn-check" id="mining-1y" [value]="'1y'" fragment="1y" [routerLink]="['/graphs/mining/pools' | relativeUrl]" [attr.data-cy]="'1y'" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="mining-1y">1Y</label>
+        </ng-container>
+        <ng-container *ngIf="stats.totalBlockCount >= 105120">
+          <input type="radio" class="btn-check" id="mining-2y" [value]="'2y'" fragment="2y" [routerLink]="['/graphs/mining/pools' | relativeUrl]" [attr.data-cy]="'2y'" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="mining-2y">2Y</label>
+        </ng-container>
+        <ng-container *ngIf="stats.totalBlockCount >= 157680">
+          <input type="radio" class="btn-check" id="mining-3y" [value]="'3y'" fragment="3y" [routerLink]="['/graphs/mining/pools' | relativeUrl]" [attr.data-cy]="'3y'" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="mining-3y">3Y</label>
+        </ng-container>
+        <input type="radio" class="btn-check" id="mining-all" [value]="'all'" fragment="all"[routerLink]="['/graphs/mining/pools' | relativeUrl]" [attr.data-cy]="'all'" formControlName="dateSpan">
+        <label class="btn btn-primary btn-sm" for="mining-all"><span i18n>All</span></label>
       </div>
     </form>
   </div>
@@ -92,7 +99,7 @@
           <th class="" i18n="mining.pool-name">Pool</th>
           <th class="" *ngIf="['24h', '3d', '1w'].includes(this.miningWindowPreference)" i18n="mining.hashrate">Hashrate</th>
           <th class="" i18n="master-page.blocks">Blocks</th>
-          <th *ngIf="auditAvailable" class="health text-right widget" [ngClass]="{'health-column': ['24h', '3d', '1w'].includes(this.miningWindowPreference)}" i18n="latest-blocks.avg_health"
+          <th *ngIf="auditAvailable" class="health text-end widget" [ngClass]="{'health-column': ['24h', '3d', '1w'].includes(this.miningWindowPreference)}" i18n="latest-blocks.avg_health"
             i18n-ngbTooltip="latest-blocks.avg_health" ngbTooltip="Avg Health" placement="bottom" #health [disableTooltip]="!isEllipsisActive(health)">Avg Health</th>
           <th *ngIf="auditAvailable" class="d-none d-sm-table-cell" i18n="mining.fees-per-block">Avg Block Fees</th>
           <th class="d-none d-lg-table-cell" i18n="mining.empty-blocks">Empty Blocks</th>
@@ -101,7 +108,7 @@
       <tbody [attr.data-cy]="'pools-table'" *ngIf="(miningStatsObservable$ | async) as miningStats">
         <tr *ngFor="let pool of miningStats.pools">
           <td class="d-none d-md-table-cell">{{ pool.rank }}</td>
-          <td class="text-right">
+          <td class="text-end">
             <img width="25" height="25" src="{{ pool.logo }}" [alt]="pool.name + ' mining pool logo'" onError="this.onerror=null; this.src = '/resources/mining-pools/default.svg'">
           </td>
           <td class="pool-name"><a [routerLink]="[('/mining/pool/' + pool.slug) | relativeUrl]">{{ pool.name }}</a></td>
@@ -111,16 +118,16 @@
           <td class="d-flex justify-content-center">
             {{ pool.blockCount }}<span class="d-none d-md-table-cell">&nbsp;({{ pool.share }}%)</span>
           </td>
-          <td *ngIf="auditAvailable" class="health text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable, 'health-column': ['24h', '3d', '1w'].includes(this.miningWindowPreference)}">
+          <td *ngIf="auditAvailable" class="health text-end" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable, 'health-column': ['24h', '3d', '1w'].includes(this.miningWindowPreference)}">
             <a
               class="health-badge badge"
-              [class.badge-success]="pool.avgMatchRate >= 99"
-              [class.badge-warning]="pool.avgMatchRate >= 75 && pool.avgMatchRate < 99"
-              [class.badge-danger]="pool.avgMatchRate < 75"
+              [class.bg-success]="pool.avgMatchRate >= 99"
+              [class.bg-warning]="pool.avgMatchRate >= 75 && pool.avgMatchRate < 99"
+              [class.bg-danger]="pool.avgMatchRate < 75"
               *ngIf="pool.avgMatchRate != null; else nullHealth"
             >{{ pool.avgMatchRate }}%</a>
             <ng-template #nullHealth>
-              <span class="health-badge badge badge-secondary" i18n="unknown">Unknown</span>
+              <span class="health-badge badge bg-secondary" i18n="unknown">Unknown</span>
             </ng-template>
           </td>
           <td *ngIf="auditAvailable" class="d-none d-sm-table-cell">
@@ -135,7 +142,7 @@
         </tr>
         <tr style="border-top: 1px solid #555">
           <td class="d-none d-md-table-cell"></td>
-          <td class="text-right"></td>
+          <td class="text-end"></td>
           <td class=""><b i18n="mining.all-miners">All miners</b></td>
           <td class="" *ngIf="'24h' === this.miningWindowPreference">{{ miningStats.lastEstimatedHashrate| number: '1.2-2' }} {{ miningStats.miningUnits.hashrateUnit }}</td>
           <td class="" *ngIf="'3d' === this.miningWindowPreference">{{ miningStats.lastEstimatedHashrate3d | number: '1.2-2' }} {{ miningStats.miningUnits.hashrateUnit }}</td>

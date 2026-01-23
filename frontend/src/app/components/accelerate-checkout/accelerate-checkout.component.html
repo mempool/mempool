@@ -90,7 +90,7 @@
           </div>
           <div class="row">
             <div class="col">
-              <div class="form-group">
+              <div class="mb-3">
                 <div class="fee-card">
                   <div class="d-flex mb-0">
                     <ng-container *ngFor="let option of maxRateOptions">
@@ -129,7 +129,7 @@
                         </td>
                         <td class="units">
                           <span class="symbol" i18n="shared.sats">sats</span>
-                          <span class="fiat ml-1"><app-fiat [value]="math.max(0, estimate.nextBlockFee - estimate.txSummary.effectiveFee)"></app-fiat></span>
+                          <span class="fiat ms-1"><app-fiat [value]="math.max(0, estimate.nextBlockFee - estimate.txSummary.effectiveFee)"></app-fiat></span>
                         </td>
                       </tr>
                     }
@@ -151,7 +151,7 @@
                         </td>
                         <td class="units">
                           <span class="symbol" i18n="shared.sats">sats</span>
-                          <span class="fiat ml-1"><app-fiat [value]="maxRateOptions[selectFeeRateIndex].fee"></app-fiat></span>
+                          <span class="fiat ms-1"><app-fiat [value]="maxRateOptions[selectFeeRateIndex].fee"></app-fiat></span>
                         </td>
                       </tr>
                     }
@@ -169,7 +169,7 @@
                       </td>
                       <td class="units">
                         <span class="symbol" i18n="shared.sats">sats</span>
-                        <span class="fiat ml-1"><app-fiat [value]="estimate.mempoolBaseFee"></app-fiat></span>
+                        <span class="fiat ms-1"><app-fiat [value]="estimate.mempoolBaseFee"></app-fiat></span>
                       </td>
                     </tr>
                     <tr class="info group-last dashed-bottom" *ngIf="estimate.vsizeFee">
@@ -181,7 +181,7 @@
                       </td>
                       <td class="units">
                         <span class="symbol" i18n="shared.sats">sats</span>
-                        <span class="fiat ml-1"><app-fiat [value]="estimate.vsizeFee"></app-fiat></span>
+                        <span class="fiat ms-1"><app-fiat [value]="estimate.vsizeFee"></app-fiat></span>
                       </td>
                     </tr>
                   </ng-container>
@@ -190,16 +190,16 @@
                   <ng-container *ngIf="hasAccessToBalanceMode">
                     <tr class="group-first">
                       <td class="item">
-                        <b style="background-color: #5E35B1" class="p-1 pl-0" i18n="accelerator.estimated-cost">Estimated acceleration cost</b> ~{{ estimate.targetFeeRate | number : '1.0-0' }} sat/vB
+                        <b style="background-color: #5E35B1" class="p-1" i18n="accelerator.estimated-cost">Estimated acceleration cost</b> ~{{ estimate.targetFeeRate | number : '1.0-0' }} sat/vB
                       </td>
                       <td class="amt">
-                        <span style="background-color: #5E35B1" class="p-1 pl-0">
+                        <span style="background-color: #5E35B1" class="p-1">
                           {{ estimate.cost + estimate.mempoolBaseFee + estimate.vsizeFee | number }}
                         </span>
                       </td>
                       <td class="units">
                         <span class="symbol" i18n="shared.sats">sats</span>
-                        <span class="fiat ml-1"><app-fiat [value]="estimate.cost + estimate.mempoolBaseFee + estimate.vsizeFee"></app-fiat></span>
+                        <span class="fiat ms-1"><app-fiat [value]="estimate.cost + estimate.mempoolBaseFee + estimate.vsizeFee"></app-fiat></span>
                       </td>
                     </tr>
                   </ng-container>
@@ -209,19 +209,19 @@
                     <tr class="group-first group-last">
                       <td class="item">
                         @if (hasAccessToBalanceMode) {
-                          <b style="background-color: var(--primary);" class="p-1 pl-0" i18n="accelerator.maximum-cost">Maximum acceleration cost</b>
+                          <b style="background-color: var(--primary);" class="p-1" i18n="accelerator.maximum-cost">Maximum acceleration cost</b>
                         } @else {
-                          <b style="background-color: var(--primary);" class="p-1 pl-0" i18n="accelerator.cost">Acceleration cost</b>
+                          <b style="background-color: var(--primary);" class="p-1" i18n="accelerator.cost">Acceleration cost</b>
                         }
                       </td>
                       <td class="amt">
-                        <span style="background-color: var(--primary)" class="p-1 pl-0">
+                        <span style="background-color: var(--primary)" class="p-1">
                           {{ cost | number }}
                         </span>
                       </td>
                       <td class="units">
                         <span class="symbol" i18n="shared.sats">sats</span>
-                        <span class="fiat ml-1">
+                        <span class="fiat ms-1">
                           <app-fiat [value]="cost" [colorClass]="hasAccessToBalanceMode && estimate.userBalance < cost ? 'red-color' : 'green-color'"></app-fiat>
                         </span>
                       </td>
@@ -237,7 +237,7 @@
                       </td>
                       <td class="units">
                         <span class="symbol" i18n="shared.sats">sats</span>
-                        <span class="fiat ml-1">
+                        <span class="fiat ms-1">
                           <app-fiat [value]="estimate.userBalance" [colorClass]="estimate.userBalance < cost ? 'red-color' : 'green-color'"></app-fiat>
                         </span>
                       </td>
@@ -287,10 +287,10 @@
         <form>
           <div class="row">
             <div class="col-md">
-              <div class="form-group form-check mb-2">
+              <div class="form-check mb-2">
                 <input type="radio" [checked]="selectedOption === 'wait'"  class="form-check-input" id="wait" name="accel" (change)="selectedOptionChanged($event)">
                 <label class="form-check-label d-flex flex-column" for="wait">
-                  <span class="font-weight-bold" i18n="accelerator.wait">Wait</span>
+                  <span class="fw-bold" i18n="accelerator.wait">Wait</span>
                   @if (eta.blocks < 7) {
                     <span class="checkout-text"><ng-container i18n="accelerator.confirmation-expected">Confirmation expected</ng-container>&nbsp;<app-time kind="within" [time]="eta.time" [fastRender]="false" [fixedRender]="true"></app-time></span>
                   } @else {
@@ -300,7 +300,7 @@
                   }
                 </label>
               </div>
-              <div class="form-group form-check mb-2">
+              <div class="form-check mb-2">
                 <input type="radio" [checked]="selectedOption === 'accel'"  class="form-check-input" id="accel" name="accel" (change)="selectedOptionChanged($event)">
                 <label class="form-check-label d-flex flex-column" for="accel">
                   <ng-container *ngTemplateOutlet="accelerateOption; context: {etaInfo}"></ng-container>
@@ -326,7 +326,7 @@
             </div>
             <div class="pie d-none d-lg-flex">
               <small class="form-text checkout-text mb-2"><ng-container *ngTemplateOutlet="prioritizedBy; context: {$implicit:etaInfo.hashratePercentage}"></ng-container></small>
-              <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true" class="ml-2"></app-active-acceleration-box>
+              <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true" class="ms-2"></app-active-acceleration-box>
             </div>
             <ng-container *ngTemplateOutlet="accelerateButton"></ng-container>
           </div>
@@ -362,7 +362,7 @@
         </div>
         <div class="col-md pie d-none d-md-flex" *ngIf="!forceMobile">
           <small class="form-text checkout-text mb-2" *ngIf="(etaInfo$ | async) as etaInfo"><ng-container *ngTemplateOutlet="prioritizedBy; context: {$implicit:etaInfo.hashratePercentage}"></ng-container></small>
-          <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true" class="ml-2"></app-active-acceleration-box>
+          <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true" class="ms-2"></app-active-acceleration-box>
         </div>
       </div>
       <div class="payment-area" style="font-size: 14px;">
@@ -428,9 +428,9 @@
                   @if (canPayWithCashapp || canPayWithApplePay || canPayWithGooglePay) { <span class="mt-1 mb-1"></span> }
                   <div class="paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px" (click)="moveToStep('cardonfile')">
                     @if (['VISA', 'MASTERCARD', 'JCB', 'DISCOVER', 'DISCOVER_DINERS', 'AMERICAN_EXPRESS'].includes(estimate?.availablePaymentMethods?.cardOnFile?.card?.brand)) {
-                      <app-svg-images [name]="estimate?.availablePaymentMethods?.cardOnFile?.card?.brand" height="33" class="mr-2"></app-svg-images>
+                      <app-svg-images [name]="estimate?.availablePaymentMethods?.cardOnFile?.card?.brand" height="33" class="me-2"></app-svg-images>
                     } @else {
-                      <app-svg-images name="OTHER_BRAND" height="33" class="mr-2"></app-svg-images>
+                      <app-svg-images name="OTHER_BRAND" height="33" class="me-2"></app-svg-images>
                     }
                     <span style="font-size: 22px; padding-bottom: 3px">{{ estimate?.availablePaymentMethods?.cardOnFile?.card?.last_4 }}</span>
                   </div>
@@ -467,7 +467,7 @@
 
     <div class="row text-center">
       <div class="col-sm">
-        <div class="form-group w-100" style="font-size: 14px">
+        <div class="w-100 mb-3" style="font-size: 14px">
           <ng-container i18n="accelerator.payment-to-mempool-space">Payment to mempool.space for acceleration of txid <a [routerLink]="'/tx/' + tx.txid" target="_blank">{{ tx.txid.substr(0, 10) }}..{{ tx.txid.substr(-10) }}</a></ng-container>
         </div>
       </div>
@@ -476,7 +476,7 @@
     @if (step === 'cashapp' && !loadingCashapp || step === 'applepay' && !loadingApplePay || step === 'googlepay' && !loadingGooglePay || step === 'cardonfile' && !loadingCardOnFile) {
       <div class="row text-center mt-1">
         <div class="col-sm">
-          <div class="form-group w-100">
+          <div class="w-100 mb-3">
             <span><u><strong i18n="accelerator.total-additional-cost">Total additional cost</strong></u><br>
               <span style="font-size: 16px" class="d-block mt-2">
                 <ng-container i18n="transaction.pay|Pay button label">Pay</ng-container>
@@ -491,7 +491,7 @@
 
     <div class="row text-center mt-1">
       <div class="col-sm">
-        <div class="form-group w-100">
+        <div class="w-100 mb-3">
           @if (step === 'applepay') {
             <div id="apple-pay-button" class="apple-pay-button apple-pay-button-black" style="height: 50px"  [style]="loadingApplePay ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
           } @else if (step === 'cashapp') {          
@@ -499,11 +499,11 @@
           } @else if (step === 'googlepay') {
             <div id="google-pay-button" class="d-inline-block" style="height: 50px" [style]="loadingGooglePay ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
           } @else if (step === 'cardonfile') {
-            <div class="ml-auto mr-auto paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px" (click)="requestCardOnFilePayment()" [style]="loadingCardOnFile ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''">
+            <div class="ms-auto me-auto paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px" (click)="requestCardOnFilePayment()" [style]="loadingCardOnFile ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''">
               @if (['VISA', 'MASTERCARD', 'JCB', 'DISCOVER', 'DISCOVER_DINERS', 'AMERICAN_EXPRESS'].includes(estimate?.availablePaymentMethods?.cardOnFile?.card?.brand)) {
-                <app-svg-images [name]="estimate?.availablePaymentMethods?.cardOnFile?.card?.brand" height="33" class="mr-2"></app-svg-images>
+                <app-svg-images [name]="estimate?.availablePaymentMethods?.cardOnFile?.card?.brand" height="33" class="me-2"></app-svg-images>
               } @else {
-                <app-svg-images name="OTHER_BRAND" height="33" class="mr-2"></app-svg-images>
+                <app-svg-images name="OTHER_BRAND" height="33" class="me-2"></app-svg-images>
               }
               <span style="font-size: 22px; padding-bottom: 3px">{{ estimate?.availablePaymentMethods?.cardOnFile?.card?.last_4 }}</span>
             </div>
@@ -511,13 +511,13 @@
           @if (loadingCashapp || loadingApplePay || loadingGooglePay || loadingCardOnFile) {
           <div display="d-flex flex-row justify-content-center">
             <span i18n="accelerator.loading-payment-method">Loading payment method...</span>
-            <div class="ml-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
+            <div class="ms-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
           </div>
           }
         </div>
         @if (isTokenizing > 0) {
           <div class="d-flex flex-row justify-content-center">
-            <div class="ml-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
+            <div class="ms-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
           </div>
         }
       </div>
@@ -539,12 +539,12 @@
 
     <div class="row text-center mt-1">
       <div class="col-sm">
-        <div class="form-group w-100">
+        <div class="w-100 mb-3">
           <!-- Processing payment -->
           <div id="cash-app-pay" class="d-inline-block" [style]="'opacity: 0; width: 0px; height: 0px; pointer-events: none;'"></div>
           <div display="d-flex flex-row justify-content-center">
             <span i18n="accelerator.payment-processing">We are processing your payment...</span>
-            <div class="ml-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
+            <div class="ms-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
           </div>
         </div>
       </div>
@@ -609,7 +609,7 @@
 </ng-template>
 
 <ng-template #customizeButton>
-  <button type="button" *ngIf="advancedEnabled" class="btn btn-sm btn-outline-info btn-small-height ml-2" (click)="moveToStep('quote')" i18n="accelerator.customize">customize</button>
+  <button type="button" *ngIf="advancedEnabled" class="btn btn-sm btn-outline-info btn-small-height ms-2" (click)="moveToStep('quote')" i18n="accelerator.customize">customize</button>
 </ng-template>
 
 <ng-template id="accelerate-to" #accelerateTo let-x i18n="accelerator.accelerate-to-x">Accelerate to ~{{ x | number : '1.0-0' }} sat/vB</ng-template>
@@ -617,7 +617,7 @@
 <ng-template #accelerateButton>
   <div class="position-relative">
     <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" [class.disabled]="!canPay || quoteError || cantPayReason || calculating || (!advancedEnabled && selectedOption !== 'accel')" style="width: 200px" (click)="moveToStep('checkout')">
-      <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
+      <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="me-2" style="margin-left: -10px">
       <span i18n="transaction.accelerate|Accelerate button label">Accelerate</span>
     </button>
     @if (quoteError || cantPayReason) {
@@ -629,12 +629,12 @@
 <ng-template #accountPayButton>
   @if (hasAccessToBalanceMode) {
     <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" [class.disabled]="!canPay || calculating" style="width: 200px" (click)="accelerateWithMempoolAccount()">
-      <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
+      <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="me-2" style="margin-left: -10px">
       <span i18n="transaction.pay|Pay button label">Pay</span>
     </button>
   } @else {
     <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center disabled" style="width: 200px">
-      <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="mr-2" style="margin-left: -10px">
+      <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="me-2" style="margin-left: -10px">
       <span>Coming soon</span>
     </button>
   }

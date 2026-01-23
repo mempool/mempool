@@ -158,6 +158,9 @@
 .accelerateDeepMempool {
   background-color: var(--tertiary);
   margin-left: 5px;
+  --bs-btn-active-bg: var(--tertiary);
+  --bs-btn-active-border-color: transparent;
+  --bs-btn-active-color: var(--fg);
 }
 
 .goggles-icon {

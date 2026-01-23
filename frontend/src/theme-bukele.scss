@@ -38,7 +38,7 @@ $pagination-hover-bg:              $hover-bg;
 $pagination-hover-border-color:     $bg;
 $pagination-disabled-bg:          $bg;
 
-$custom-select-indicator-color: $fg;
+$form-select-indicator-color: $fg;
 
 .input-group-text {
   background-color: #1c2031 !important;
@@ -106,6 +106,7 @@ $dropdown-link-active-bg: $active-bg;
   --grey: #7e7e7e;
   --tooltip-grey: #b1b1b1;
   --orange: #ff9f00;
+  --pink: #e83e8c;
 
   --search-button: #d5a90a;
   --search-button-border: #d5a90a;

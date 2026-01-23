@@ -25,31 +25,35 @@
   <div class="card-header mb-0 mb-md-4" [style]="widget ? 'display:none' : ''">
     <div class="d-flex d-md-block align-items-baseline">
       <span i18n="mining.hashrate-difficulty">Hashrate & Difficulty</span>
-      <button class="btn p-0 pl-2" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
+      <button class="btn p-0 ps-2" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
         <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
       </button>
     </div>  
 
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(hashrateObservable$ | async) as stats">
-      <div class="btn-group btn-group-toggle" name="radioBasic">
-        <label class="btn btn-primary btn-sm" *ngIf="stats.blockCount >= 12960" [class.active]="radioGroupForm.get('dateSpan').value === '3m'">
-          <input type="radio" [value]="'3m'" fragment="3m" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" [attr.data-cy]="'3m'" formControlName="dateSpan"> 3M
-        </label>
-        <label class="btn btn-primary btn-sm" *ngIf="stats.blockCount >= 25920" [class.active]="radioGroupForm.get('dateSpan').value === '6m'">
-          <input type="radio" [value]="'6m'" fragment="6m" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" [attr.data-cy]="'6m'" formControlName="dateSpan"> 6M
-        </label>
-        <label class="btn btn-primary btn-sm" *ngIf="stats.blockCount >= 52560" [class.active]="radioGroupForm.get('dateSpan').value === '1y'">
-          <input type="radio" [value]="'1y'" fragment="1y" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" [attr.data-cy]="'1y'" formControlName="dateSpan"> 1Y
-        </label>
-        <label class="btn btn-primary btn-sm" *ngIf="stats.blockCount >= 105120" [class.active]="radioGroupForm.get('dateSpan').value === '2y'">
-          <input type="radio" [value]="'2y'" fragment="2y" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" [attr.data-cy]="'2y'" formControlName="dateSpan"> 2Y
-        </label>
-        <label class="btn btn-primary btn-sm" *ngIf="stats.blockCount >= 157680" [class.active]="radioGroupForm.get('dateSpan').value === '3y'">
-          <input type="radio" [value]="'3y'" fragment="3y" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" [attr.data-cy]="'3y'" formControlName="dateSpan"> 3Y
-        </label>
-        <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === 'all'">
-          <input type="radio" [value]="'all'" fragment="all" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" [attr.data-cy]="'all'" formControlName="dateSpan"> ALL
-        </label>
+      <div class="btn-group" role="group" name="radioBasic">
+        <ng-container *ngIf="stats.blockCount >= 12960">
+          <input type="radio" class="btn-check" id="hashrate-3m" [value]="'3m'" fragment="3m" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" [attr.data-cy]="'3m'" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="hashrate-3m">3M</label>
+        </ng-container>
+        <ng-container *ngIf="stats.blockCount >= 25920">
+          <input type="radio" class="btn-check" id="hashrate-6m" [value]="'6m'" fragment="6m" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" [attr.data-cy]="'6m'" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="hashrate-6m">6M</label>
+        </ng-container>
+        <ng-container *ngIf="stats.blockCount >= 52560">
+          <input type="radio" class="btn-check" id="hashrate-1y" [value]="'1y'" fragment="1y" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" [attr.data-cy]="'1y'" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="hashrate-1y">1Y</label>
+        </ng-container>
+        <ng-container *ngIf="stats.blockCount >= 105120">
+          <input type="radio" class="btn-check" id="hashrate-2y" [value]="'2y'" fragment="2y" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" [attr.data-cy]="'2y'" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="hashrate-2y">2Y</label>
+        </ng-container>
+        <ng-container *ngIf="stats.blockCount >= 157680">
+          <input type="radio" class="btn-check" id="hashrate-3y" [value]="'3y'" fragment="3y" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" [attr.data-cy]="'3y'" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="hashrate-3y">3Y</label>
+        </ng-container>
+        <input type="radio" class="btn-check" id="hashrate-all" [value]="'all'" fragment="all" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" [attr.data-cy]="'all'" formControlName="dateSpan">
+        <label class="btn btn-primary btn-sm" for="hashrate-all">ALL</label>
       </div>
     </form>
   </div>

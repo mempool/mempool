@@ -165,6 +165,7 @@ div.scrollable {
 }
 .skeleton-loader.data {
   max-width: 70px;
+  background-color: var(--skeleton-bg);
 }
 
 
@@ -283,4 +284,8 @@ div.scrollable {
   display: block;
   text-decoration: none;
   color: inherit;
+}
+
+.health-badge {
+  padding: 0.25em 0.4em;
 }
