@@ -36,12 +36,29 @@ jobs:
                 }
               `;
 
-              await github.graphql(addMutation, {
-                projectId: "${{ secrets.PROJECT_ID }}",
-                contentId: context.payload.issue.node_id
-              });
+              try {
+                await github.graphql(addMutation, {
+                  projectId: "${{ secrets.PROJECT_ID }}",
+                  contentId: context.payload.issue.node_id
+                });
 
-              console.log('Successfully added issue to project #8');
+                console.log('Successfully added issue to project #8');
+              } catch (error) {
+                // Handle case where the issue is already in the project, or log other failures
+                const errors = error && error.errors ? error.errors : [];
+                const alreadyInProject = errors.some(e =>
+                  typeof e.message === 'string' &&
+                  e.message.toLowerCase().includes('already') &&
+                  e.message.toLowerCase().includes('project')
+                );
+
+                if (alreadyInProject) {
+                  console.log('Issue is already in project #8, skipping add.');
+                } else {
+                  console.error('Failed to add issue to project #8:', error);
+                  throw error;
+                }
+              }
               return;
             }
 
