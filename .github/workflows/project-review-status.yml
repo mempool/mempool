@@ -11,7 +11,7 @@ on:
     types: [opened]
 
 jobs:
-  update-project-status:
+  manage-project-board:
     runs-on: ubuntu-latest
     steps:
       - name: Update Project Board
