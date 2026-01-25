@@ -398,7 +398,7 @@ class Config implements IConfig {
       });
       return next;
     });
-  }
+  };
 }
 
 export default new Config();

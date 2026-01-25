@@ -97,7 +97,7 @@ export class NodesPerCountry implements OnInit {
           };
         }),
         tap(() => {
-          this.isLoading = false
+          this.isLoading = false;
           this.cd.markForCheck();
         }),
         share()

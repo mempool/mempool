@@ -43,7 +43,7 @@ describe('PoolsRepository Integration Tests', () => {
     });
 
     const pool = await PoolsRepository.$getPool('antpool');
-    
+
     expect(pool).toBeDefined();
     expect(pool!.name).toBe('AntPool');
     expect(pool!.slug).toBe('antpool');
@@ -64,7 +64,7 @@ describe('PoolsRepository Integration Tests', () => {
     });
 
     const pools = await PoolsRepository.$getPools();
-    
+
     expect(pools.length).toBeGreaterThanOrEqual(3);
   });
 
@@ -77,7 +77,7 @@ describe('PoolsRepository Integration Tests', () => {
     });
 
     const pool = await PoolsRepository.$getPool('multi-address-pool', false);
-    
+
     expect(pool).toBeDefined();
     const poolAddresses = JSON.parse(pool!.addresses);
     expect(poolAddresses).toHaveLength(3);
@@ -93,7 +93,7 @@ describe('PoolsRepository Integration Tests', () => {
     });
 
     const pool = await PoolsRepository.$getPool('regex-pool', false);
-    
+
     expect(pool).toBeDefined();
     const poolRegexes = JSON.parse(pool!.regexes);
     expect(poolRegexes).toHaveLength(2);

@@ -38,7 +38,7 @@ class Mempool {
   private mempoolProtection = 0;
   private latestTransactions: any[] = [];
 
-  private ESPLORA_MISSING_TX_WARNING_THRESHOLD = 100; 
+  private ESPLORA_MISSING_TX_WARNING_THRESHOLD = 100;
   private SAMPLE_TIME = 10000; // In ms
   private timer = new Date().getTime();
   private missingTxCount = 0;
@@ -51,15 +51,15 @@ class Mempool {
     // Initialize mempoolInfo here to avoid circular dependency issues
     // Use config directly instead of Common.isLiquid() to break circular dependency
     const isLiquid = config.MEMPOOL.NETWORK === 'liquid' || config.MEMPOOL.NETWORK === 'liquidtestnet';
-    this.mempoolInfo = { 
-      loaded: false, 
-      size: 0, 
-      bytes: 0, 
-      usage: 0, 
+    this.mempoolInfo = {
+      loaded: false,
+      size: 0,
+      bytes: 0,
+      usage: 0,
       total_fee: 0,
-      maxmempool: 300000000, 
-      mempoolminfee: isLiquid ? 0.00000100 : 0.00001000, 
-      minrelaytxfee: isLiquid ? 0.00000100 : 0.00001000 
+      maxmempool: 300000000,
+      mempoolminfee: isLiquid ? 0.00000100 : 0.00001000,
+      minrelaytxfee: isLiquid ? 0.00000100 : 0.00001000
     };
     this.txPerSecondInterval = setInterval(this.updateTxPerSecond.bind(this), 1000);
   }

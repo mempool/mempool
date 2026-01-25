@@ -144,7 +144,7 @@ describe('Mempool Backend Config', () => {
       });
 
       expect(config.MEMPOOL_SERVICES).toStrictEqual({
-        API: "",
+        API: '',
         ACCELERATIONS: false,
       });
 

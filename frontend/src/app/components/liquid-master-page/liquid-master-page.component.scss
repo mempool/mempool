@@ -194,6 +194,19 @@ nav {
   .rounded {
     border-radius: 5px;
   }
+
+  &.custom_logo {
+    height: 48px;
+    margin-right: 1em;
+  }
+
+  &.mobile_logo {
+    margin-right: 0;
+  }
+
+  &.custom_logo.mobile_logo {
+    height: 42px;
+  }
 }
 
 .subdomain_container {

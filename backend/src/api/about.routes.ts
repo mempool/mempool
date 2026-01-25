@@ -1,7 +1,7 @@
-import { Application } from "express";
-import config from "../config";
-import axios from "axios";
-import logger from "../logger";
+import { Application } from 'express';
+import config from '../config';
+import axios from 'axios';
+import logger from '../logger';
 
 class AboutRoutes {
   public initRoutes(app: Application) {

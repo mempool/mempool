@@ -45,7 +45,7 @@ export async function cleanupTestData(): Promise<void> {
   try {
     // Disable foreign key checks temporarily for faster cleanup
     await DB.query('SET FOREIGN_KEY_CHECKS = 0');
-    
+
     for (const table of tables) {
       try {
         // Use 'silent' error logging to avoid noise for optional tables that don't exist
@@ -55,7 +55,7 @@ export async function cleanupTestData(): Promise<void> {
         // Silently ignore - no need to log since these are expected for optional features
       }
     }
-    
+
     // Re-enable foreign key checks
     await DB.query('SET FOREIGN_KEY_CHECKS = 1');
   } catch (error) {
@@ -143,7 +143,7 @@ export async function insertTestBlock(blockData: {
   const size = blockData.size || 1000000;
   const weight = blockData.weight || 4000000;
   const txCount = blockData.tx_count || 2000;
-  
+
   await DB.query(
     `INSERT INTO blocks (
       height, hash, blockTimestamp, size, weight, tx_count, 

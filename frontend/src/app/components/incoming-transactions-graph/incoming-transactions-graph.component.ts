@@ -76,7 +76,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
 
   rendered() {
     if (!this.data) {
-      return; 
+      return;
     }
   }
 
@@ -161,7 +161,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
         symbol: 'none',
         lineStyle: {
           width: 2,
-          color: "white",
+          color: 'white',
         }
       });
     }

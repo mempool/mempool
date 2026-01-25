@@ -43,7 +43,7 @@ export class AsmComponent {
       let chars = 0;
       for (let i = 0; i < instructions.length; i++) {
         if (chars + instructions[i].length + 3 > this.crop) {
-          let croppedInstruction = instructions[i];
+          const croppedInstruction = instructions[i];
           instructions = instructions.slice(0, i);
           // add cropped instruction
           let remainingChars = this.crop - chars;

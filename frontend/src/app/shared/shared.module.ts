@@ -112,6 +112,7 @@ import { PendingStatsComponent } from '@components/acceleration/pending-stats/pe
 import { AccelerationStatsComponent } from '@components/acceleration/acceleration-stats/acceleration-stats.component';
 import { AccelerationSparklesComponent } from '@components/acceleration/sparkles/acceleration-sparkles.component';
 import { OrdDataComponent } from '@components/ord-data/ord-data.component';
+import { VerifyAddressComponent } from '../components/verify-address/verify-address.component';
 
 import { BlockViewComponent } from '@components/block-view/block-view.component';
 import { EightBlocksComponent } from '@components/eight-blocks/eight-blocks.component';
@@ -256,6 +257,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     TwitterLogin,
     GithubLogin,
     BitcoinInvoiceComponent,
+    VerifyAddressComponent,
   ],
   imports: [
     CommonModule,
@@ -397,6 +399,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     GithubLogin,
     BitcoinInvoiceComponent,
     BitcoinsatoshisPipe,
+    VerifyAddressComponent,
 
     MempoolBlockOverviewComponent,
     ClockchainComponent,

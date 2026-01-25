@@ -10,7 +10,7 @@ import { IChannel, INodesRanking, IOldestNodes, ITopNodesPerCapacity, ITopNodesP
 export class LightningApiService {
   private apiBaseUrl: string; // base URL is protocol, hostname, and port
   private apiBasePath = ''; // network path is /testnet, etc. or '' for mainnet
-  
+
   private requestCache = new Map<string, { subject: BehaviorSubject<any>, expiry: number }>;
 
   constructor(

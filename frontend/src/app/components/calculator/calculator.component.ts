@@ -41,7 +41,7 @@ export class CalculatorComponent implements OnInit {
     let currency;
     this.price$ = this.currency$.pipe(
       switchMap((result) => {
-        currency = result; 
+        currency = result;
         return this.stateService.conversions$.asObservable();
       }),
       map((conversions) => {
@@ -124,7 +124,7 @@ export class CalculatorComponent implements OnInit {
 
   countDecimals(numberString: string): number {
     const decimalPos = numberString.indexOf('.');
-    if (decimalPos === -1) return 0;
+    if (decimalPos === -1) {return 0;}
     return numberString.length - decimalPos - 1;
   }
 
