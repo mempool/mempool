@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 104;
+  private static currentVersion = 105;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -1177,6 +1177,24 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 103) {
       await this.$executeQuery('ALTER TABLE `blocks` ADD INDEX `stale` (`stale`)');
       await this.updateToSchemaVersion(103);
+    }
+
+    // reindex liquid federation addresses and txos, and add hardcoded federation addresses
+    // (safe to make this conditional on the network since it doesn't change the database schema)
+    if (databaseSchemaVersion < 105 && config.MEMPOOL.NETWORK === 'liquid') {
+      await this.$executeQuery('TRUNCATE TABLE elements_pegs');
+      await this.$executeQuery('TRUNCATE TABLE federation_txos');
+      await this.$executeQuery('SET FOREIGN_KEY_CHECKS = 0');
+      await this.$executeQuery('TRUNCATE TABLE federation_addresses');
+      await this.$executeQuery('SET FOREIGN_KEY_CHECKS = 1');
+      // Hardcoded federation addresses
+      await this.$executeQuery(`INSERT INTO federation_addresses (bitcoinaddress) VALUES ('3EiAcrzq1cELXScc98KeCswGWZaPGceT1d')`);
+      await this.$executeQuery(`INSERT INTO federation_addresses (bitcoinaddress) VALUES ('3G6neksSBMp51kHJ2if8SeDUrzT8iVETWT')`);
+      await this.$executeQuery(`INSERT INTO federation_addresses (bitcoinaddress) VALUES ('bc1qxvay4an52gcghxq5lavact7r6qe9l4laedsazz8fj2ee2cy47tlqff4aj4')`);
+      await this.$executeQuery(`INSERT INTO federation_addresses (bitcoinaddress) VALUES ('bc1qwnevjp8nsq7adu3hxlvdvslrf242q4vuavfg0y929jp2zntp3vgq7cq6z2')`);
+      await this.$executeQuery(`UPDATE state SET number = 0 WHERE name = 'last_elements_block';`);
+      await this.$executeQuery(`UPDATE state SET number = 0 WHERE name = 'last_bitcoin_block_audit';`);
+      await this.updateToSchemaVersion(105);
     }
   }
 
