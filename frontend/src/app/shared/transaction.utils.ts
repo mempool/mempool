@@ -19,7 +19,7 @@ const MAX_STANDARD_TAPSCRIPT_STACK_ITEM_SIZE = 80;
 const MAX_STANDARD_P2WSH_SCRIPT_SIZE = 3600;
 const MAX_STANDARD_SCRIPTSIG_SIZE = 1650;
 const DUST_RELAY_TX_FEE = 3;
-const MAX_OP_RETURN_RELAY = 83;
+export const MAX_OP_RETURN_RELAY = 83;
 const DEFAULT_PERMIT_BAREMULTISIG = true;
 const MAX_TX_LEGACY_SIGOPS = 2_500 * 4; // witness-adjusted sigops
 
@@ -449,7 +449,7 @@ export function fillUnsignedInput(vin: Vin): { missingSigs: number, bytes: numbe
   return { missingSigs, bytes, addToWitness };
 }
 
-function getDustThreshold(scriptpubkey: string): number {
+export function getDustThreshold(scriptpubkey: string): number {
   let dustSize = (scriptpubkey.length / 2);
   dustSize += getVarIntLength(dustSize);
   dustSize += 8;
@@ -1446,9 +1446,9 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: PsbtKeyValueMa
 }
 
 export type PsbtKeyValue = { keyData: Uint8Array; value: Uint8Array; };
-type PsbtKeyValueMap = Map<number, PsbtKeyValue[]>;
+export type PsbtKeyValueMap = Map<number, PsbtKeyValue[]>;
 
-const PSBT_IN = {
+export const PSBT_IN = {
   NON_WITNESS_UTXO: 0x00,
   WITNESS_UTXO: 0x01,
   PARTIAL_SIG: 0x02,
@@ -1595,7 +1595,7 @@ function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: PsbtKe
  * @param outputs - Array of output maps containing key-value pairs for each output
  * @returns PSBT buffer as Uint8Array
  */
-function encodePsbt(rawTx: Uint8Array, inputs: PsbtKeyValueMap[], outputs: PsbtKeyValueMap[]): Uint8Array {
+export function encodePsbt(rawTx: Uint8Array, inputs: PsbtKeyValueMap[], outputs: PsbtKeyValueMap[]): Uint8Array {
   const result: number[] = [];
 
   // Magic bytes: "psbt" in ASCII
@@ -1654,7 +1654,7 @@ export function decodeRawTransaction(input: string, network: string): { tx: Tran
   return fromBuffer(buffer, network);
 }
 
-function serializeTransaction(tx: Transaction, includeWitness: boolean = true): Uint8Array {
+export function serializeTransaction(tx: Transaction, includeWitness: boolean = true): Uint8Array {
   const result: number[] = [];
 
   // Add version
@@ -1708,131 +1708,6 @@ function txid(tx: Transaction): string {
   const hash1 = new Hash().update(serializedTx).digest();
   const hash2 = new Hash().update(hash1).digest();
   return uint8ArrayToHexString(hash2.reverse());
-}
-
-export function createMessageSigningPsbt(
-  utxo: Utxo,
-  scriptPubKey: string,
-  addressType: AddressType,
-  address: string,
-  message: string,
-  feeRate: number,
-  fallbackFee: number,
-  sequence: number,
-  locktime: number,
-  nonWitnessUtxoHex?: string,
-): string {
-  const opReturnScript = buildOpReturnScript(message);
-
-  // Build transaction
-  const tx = {
-    version: 2,
-    vin: [{
-      txid: utxo.txid,
-      vout: utxo.vout,
-      is_coinbase: false,
-      scriptsig: '',
-      scriptsig_asm: '',
-      sequence: sequence,
-      witness: [],
-      prevout: {
-        value: utxo.value,
-        scriptpubkey: scriptPubKey,
-        scriptpubkey_asm: null,
-        scriptpubkey_type: addressType,
-        scriptpubkey_address: address,
-      },
-    }],
-    vout: [
-      {
-        value: 0,
-        scriptpubkey: opReturnScript.script,
-        scriptpubkey_asm: 'OP_RETURN ' + opReturnScript.dataHex,
-        scriptpubkey_type: 'op_return',
-        scriptpubkey_address: undefined,
-      },
-      {
-        value: utxo.value, // fee will be estimated and subtracted later
-        scriptpubkey: scriptPubKey,
-        scriptpubkey_asm: null,
-        scriptpubkey_type: addressType,
-        scriptpubkey_address: address,
-      },
-    ],
-    locktime: locktime,
-  } as Transaction;
-
-  // Estimate fee
-  let rawTx = serializeTransaction(tx, false);
-  let fee = fallbackFee;
-  const { bytes, addToWitness } = fillUnsignedInput(tx.vin[0]);
-  if (bytes) {
-    let finalVsize = rawTx.length + (addToWitness ? bytes / 4 : bytes);
-    if (addToWitness) {
-      finalVsize += 2 / 4; // marker and flag
-      finalVsize += tx.vin.length / 4; // 1 byte compact size per input (assume witness stack count < 253)
-    }
-    fee = Math.ceil(finalVsize * feeRate);
-  }
-  const dustThreshold = getDustThreshold(tx.vout[1].scriptpubkey);
-  console.log(`Estimated fee: ${fee} sats, dust threshold: ${dustThreshold} sats`);
-  console.log(`Output value before fee: ${tx.vout[1].value} sats`);
-  if (tx.vout[1].value < (fee + dustThreshold)) {
-    throw new Error(`Output value is under dust threshold of ${dustThreshold} sats`);
-  }
-  tx.vout[1].value -= fee;
-
-  // Build PSBT
-  rawTx = serializeTransaction(tx, false);
-  const inputRecords: PsbtKeyValueMap = new Map<number, PsbtKeyValue[]>();
-  if (nonWitnessUtxoHex) {
-    inputRecords.set(PSBT_IN.NON_WITNESS_UTXO, [{
-      keyData: new Uint8Array(),
-      value: hexStringToUint8Array(nonWitnessUtxoHex.trim()),
-    }]);
-  }
-  if (['v0_p2wpkh', 'v0_p2wsh', 'v1_p2tr'].includes(addressType)) {
-    const spkBytes = hexStringToUint8Array(scriptPubKey);
-    const utxoData: number[] = [];
-    utxoData.push(...bigIntToBytes(BigInt(utxo.value), 8));
-    utxoData.push(...varIntToBytes(spkBytes.length));
-    utxoData.push(...spkBytes);
-    inputRecords.set(PSBT_IN.WITNESS_UTXO, [{
-      keyData: new Uint8Array(),
-      value: new Uint8Array(utxoData),
-    }]);
-  }
-
-  const inputs: PsbtKeyValueMap[] = [inputRecords];
-  const outputs: PsbtKeyValueMap[] = Array.from({ length: tx.vout.length }, () => new Map<number, PsbtKeyValue[]>());
-  const psbt = uint8ArrayToBase64(encodePsbt(rawTx, inputs, outputs));
-  return psbt;
-}
-
-function buildOpReturnScript(messageText: string): { script: string; dataHex: string } {
-  const messageBytes = new TextEncoder().encode(messageText);
-  if (messageBytes.length > MAX_OP_RETURN_RELAY) {
-    throw new Error(`Message too long, max supported size is ${MAX_OP_RETURN_RELAY} bytes.`);
-  }
-  const dataHex = uint8ArrayToHexString(messageBytes);
-  const len = messageBytes.length;
-  const pushData: number[] = [];
-
-  if (len <= 0x4b) {
-    pushData.push(len);
-  } else if (len <= 0xff) {
-    pushData.push(0x4c, len);
-  } else if (len <= 0xffff) {
-    pushData.push(0x4d, len & 0xff, (len >> 8) & 0xff);
-  } else if (len <= 0xffffffff) {
-    pushData.push(0x4e, len & 0xff, (len >> 8) & 0xff, (len >> 16) & 0xff, (len >> 24) & 0xff);
-  }
-
-  const scriptBytes = [0x6a, ...pushData, ...Array.from(messageBytes)];
-  return {
-    script: uint8ArrayToHexString(new Uint8Array(scriptBytes)),
-    dataHex,
-  };
 }
 
 // Copied from mempool backend https://github.com/mempool/mempool/blob/14e49126c3ca8416a8d7ad134a95c5e090324d69/backend/src/api/transaction-utils.ts#L177
@@ -2300,7 +2175,7 @@ function base64ToUint8Array(base64: string): Uint8Array {
   return new Uint8Array([...binaryString].map(char => char.charCodeAt(0)));
 }
 
-function uint8ArrayToBase64(uint8Array: Uint8Array): string {
+export function uint8ArrayToBase64(uint8Array: Uint8Array): string {
   let binaryString = '';
   for (let i = 0; i < uint8Array.length; i++) {
     binaryString += String.fromCharCode(uint8Array[i]);
@@ -2316,7 +2191,7 @@ function intToBytes(value: number, byteLength: number): number[] {
   return bytes;
 }
 
-function bigIntToBytes(value: bigint, byteLength: number): number[] {
+export function bigIntToBytes(value: bigint, byteLength: number): number[] {
   const bytes = [];
   for (let i = 0; i < byteLength; i++) {
     bytes.push(Number((value >> BigInt(8 * i)) & 0xffn));
@@ -2324,7 +2199,7 @@ function bigIntToBytes(value: bigint, byteLength: number): number[] {
   return bytes;
 }
 
-function varIntToBytes(value: number | bigint): number[] {
+export function varIntToBytes(value: number | bigint): number[] {
   const bytes = [];
 
   if (typeof value === 'number') {
