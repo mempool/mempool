@@ -20,6 +20,16 @@
   background-color: var(--secondary);
   border-radius: 10px;
   cursor: pointer;
+
+  &.card-on-file {
+    width: 200px;
+    height: 48px;
+    background: black;
+
+    &:hover {
+      background-color: rgb(51, 51, 51);
+    }
+  }
 }
 
 .default-slot:not(:only-child) {
@@ -155,8 +165,9 @@
   background: var(--bg);
   margin-top: 0.5rem;
   padding: 0.5rem;
+  padding-bottom: 0;
   @media (max-width: 575px) {
-    padding-bottom: 1.25rem;
+    padding-bottom: 0;
   }
 }
 
@@ -236,5 +247,66 @@
     height: 75px;
     flex-direction: row;
     gap: 5px;
+  }
+}
+
+.checkout-payment-area {
+  visibility: hidden;
+  position: absolute;
+  pointer-events: none;
+  width: 100%;
+
+  &.visible {
+    visibility: visible;
+    position: static;
+    pointer-events: auto;
+  }
+}
+
+.square-checkout-buttons {
+  .square-buttons {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1em;
+    min-height: 50px;
+  }
+
+  #cash-app-pay {
+    width: 182.5px;
+  }
+
+  .square-loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-width: 50px;
+    min-height: 50px;
+    background: var(--bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .square-buttons.loading .square-loading-overlay {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .square-button {
+    width: 240px;
+    height: 48px;
+  }
+
+  #google-pay-button, #cash-app-pay {
+    min-height: 50px;
   }
 }
