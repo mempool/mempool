@@ -1182,13 +1182,14 @@ class DatabaseMigration {
     // reindex liquid federation addresses and txos, and add hardcoded federation addresses
     // (safe to make this conditional on the network since it doesn't change the database schema)
     if (databaseSchemaVersion < 105 && config.MEMPOOL.NETWORK === 'liquid') {
-      await this.$executeQuery('DELETE FROM elements_pegs WHERE block > 3729730');
-      await this.$executeQuery('DELETE FROM federation_txos WHERE blocknumber > 933800');
+      await this.$executeQuery('DELETE FROM elements_pegs WHERE block > 3686608');
+      await this.$executeQuery('DELETE FROM federation_txos WHERE blocknumber > 929701');
       // Hardcoded federation addresses
       await this.$executeQuery(`INSERT IGNORE INTO federation_addresses (bitcoinaddress) VALUES ('3G6neksSBMp51kHJ2if8SeDUrzT8iVETWT')`);
       await this.$executeQuery(`INSERT IGNORE INTO federation_addresses (bitcoinaddress) VALUES ('bc1qwnevjp8nsq7adu3hxlvdvslrf242q4vuavfg0y929jp2zntp3vgq7cq6z2')`);
-      await this.$executeQuery(`UPDATE state SET number = 3729730 WHERE name = 'last_elements_block';`);
-      await this.$executeQuery(`UPDATE state SET number = 933800 WHERE name = 'last_bitcoin_block_audit';`);
+      await this.$executeQuery(`UPDATE federation_txos SET lastblockupdate = 929700 WHERE unspent = 1;`);
+      await this.$executeQuery(`UPDATE state SET number = 3686608 WHERE name = 'last_elements_block';`);
+      await this.$executeQuery(`UPDATE state SET number = 929700 WHERE name = 'last_bitcoin_block_audit';`);
       await this.updateToSchemaVersion(105);
     }
   }
