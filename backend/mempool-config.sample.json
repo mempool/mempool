@@ -64,6 +64,9 @@
     "FALLBACK": [],
     "MAX_BEHIND_TIP": 2
   },
+  "SECOND_ESPLORA": {
+    "UNIX_SOCKET_PATH": "/tmp/esplora-bitcoin-mainnet"
+  },
   "SECOND_CORE_RPC": {
     "HOST": "127.0.0.1",
     "PORT": 8332,

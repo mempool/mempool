@@ -70,6 +70,9 @@
       "http://node206.tk7.mempool.space:3001"
     ]
   },
+  "SECOND_ESPLORA": {
+    "UNIX_SOCKET_PATH": "/bitcoin/socket/esplora-bitcoin-mainnet"
+  },
   "DATABASE": {
     "ENABLED": true,
     "HOST": "127.0.0.1",

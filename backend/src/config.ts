@@ -54,6 +54,11 @@ interface IConfig {
     FALLBACK: string[];
     MAX_BEHIND_TIP: number;
   };
+  SECOND_ESPLORA: {
+    REST_API_URL: string;
+    UNIX_SOCKET_PATH: string | void | null;
+    REQUEST_TIMEOUT: number;
+  };
   LIGHTNING: {
     ENABLED: boolean;
     BACKEND: 'lnd' | 'cln' | 'ldk';
@@ -225,6 +230,11 @@ const defaults: IConfig = {
     'FALLBACK': [],
     'MAX_BEHIND_TIP': 2,
   },
+  'SECOND_ESPLORA': {
+    'REST_API_URL': 'http://127.0.0.1:3000',
+    'UNIX_SOCKET_PATH': null,
+    'REQUEST_TIMEOUT': 10000,
+  },
   'ELECTRUM': {
     'HOST': '127.0.0.1',
     'PORT': 3306,
@@ -347,6 +357,7 @@ const defaults: IConfig = {
 class Config implements IConfig {
   MEMPOOL: IConfig['MEMPOOL'];
   ESPLORA: IConfig['ESPLORA'];
+  SECOND_ESPLORA: IConfig['SECOND_ESPLORA'];
   ELECTRUM: IConfig['ELECTRUM'];
   CORE_RPC: IConfig['CORE_RPC'];
   SECOND_CORE_RPC: IConfig['SECOND_CORE_RPC'];
@@ -370,6 +381,7 @@ class Config implements IConfig {
     const configs = this.merge(configFromFile, defaults);
     this.MEMPOOL = configs.MEMPOOL;
     this.ESPLORA = configs.ESPLORA;
+    this.SECOND_ESPLORA = configs.SECOND_ESPLORA;
     this.ELECTRUM = configs.ELECTRUM;
     this.CORE_RPC = configs.CORE_RPC;
     this.SECOND_CORE_RPC = configs.SECOND_CORE_RPC;
