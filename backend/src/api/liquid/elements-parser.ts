@@ -255,7 +255,7 @@ class ElementsParser {
           // Check that the UTXO was not already added in the DB by previous scans
           const [rows_check] = await DB.query(`SELECT txid FROM federation_txos WHERE txid = ? AND txindex = ?`, [tx.txid, output.n]) as any[];
           if (rows_check.length === 0) {
-            const timelock = output.scriptPubKey.address === federationChangeAddresses[0] ? 4032 : 2016; // P2WSH change address has a 4032 timelock, P2SH change address has a 2016 timelock
+            const timelock = output.scriptPubKey.address === federationChangeAddresses[1] ? 2016 : 4032; // hardcode timelock for 3EiAcrzq... This will be addressed better in the future
             const query_utxos = `INSERT INTO federation_txos (txid, txindex, bitcoinaddress, amount, blocknumber, blocktime, unspent, lastblockupdate, lasttimeupdate, timelock, expiredAt, emergencyKey, pegtxid, pegindex, pegblocktime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
             const params_utxos: (string | number)[] = [tx.txid, output.n, output.scriptPubKey.address, output.value * 100000000, block.height, block.time, 1, block.height, 0, timelock, 0, 0, '', 0, 0];
             await DB.query(query_utxos, params_utxos);
