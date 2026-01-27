@@ -1,9 +1,11 @@
 import { IBitcoinApi } from '../bitcoin/bitcoin-api.interface';
 import bitcoinClient from '../bitcoin/bitcoin-client';
 import bitcoinSecondClient from '../bitcoin/bitcoin-second-client';
+import bitcoinEsploraApi from '../bitcoin/esplora-second-api';
 import { Common } from '../common';
 import DB from '../../database';
 import logger from '../../logger';
+import { IEsploraApi } from '../bitcoin/esplora-api.interface';
 
 const federationChangeAddresses = ['bc1qxvay4an52gcghxq5lavact7r6qe9l4laedsazz8fj2ee2cy47tlqff4aj4', '3EiAcrzq1cELXScc98KeCswGWZaPGceT1d', '3G6neksSBMp51kHJ2if8SeDUrzT8iVETWT', 'bc1qwnevjp8nsq7adu3hxlvdvslrf242q4vuavfg0y929jp2zntp3vgq7cq6z2'];
 const auditBlockOffsetWithTip = 1; // Wait for 1 block confirmation before processing the block in the audit process to reduce the risk of reorgs
@@ -52,12 +54,18 @@ class ElementsParser {
   }
 
   protected async $parsePegIn(input: IBitcoinApi.Vin, vindex: number, txid: string, block: IBitcoinApi.Block) {
-    const bitcoinTx: IBitcoinApi.Transaction = await bitcoinSecondClient.getRawTransaction(input.txid, true);
-    const bitcoinBlock: IBitcoinApi.Block = await bitcoinSecondClient.getBlock(bitcoinTx.blockhash);
-    const prevout = bitcoinTx.vout[input.vout || 0];
-    const outputAddress = prevout.scriptPubKey.address || (prevout.scriptPubKey.addresses && prevout.scriptPubKey.addresses[0]) || '';
-    await this.$savePegToDatabase(block.height, block.time, prevout.value * 100000000, txid, vindex,
-      outputAddress, bitcoinTx.txid, prevout.n, bitcoinBlock.height, bitcoinBlock.time, 1);
+    if (!input.txid || input.vout == null) {
+      return;
+    }
+    const bitcoinTx: IEsploraApi.Transaction = await bitcoinEsploraApi.$getRawTransaction(input.txid);
+    if (!bitcoinTx.status.block_hash) {
+      return;
+    }
+    const bitcoinBlock: IEsploraApi.Block = await bitcoinEsploraApi.$getBlock(bitcoinTx.status.block_hash);
+    const prevout = bitcoinTx.vout[input.vout];
+    const outputAddress = prevout.scriptpubkey_address || '';
+    await this.$savePegToDatabase(bitcoinBlock.height, bitcoinBlock.timestamp, prevout.value * 100000000, txid, vindex,
+      outputAddress, bitcoinTx.txid, input.vout, bitcoinBlock.height, bitcoinBlock.timestamp, 1);
   }
 
   protected async $parseOutputs(tx: IBitcoinApi.Transaction, block: IBitcoinApi.Block) {
@@ -184,7 +192,7 @@ class ElementsParser {
         }
 
         // The slow way: parse the block to look for the spending tx
-        const blockHash: IBitcoinApi.ChainTips = await bitcoinSecondClient.getBlockHash(auditProgress.lastBlockAudit);
+        const blockHash: string = await bitcoinEsploraApi.$getBlockHash(auditProgress.lastBlockAudit);
         const block: IBitcoinApi.Block = await bitcoinSecondClient.getBlock(blockHash, 2);
         await this.$parseBitcoinBlock(block, spentAsTip, unspentAsTip, auditProgress.confirmedTip, redeemAddresses);
 
@@ -217,8 +225,12 @@ class ElementsParser {
     const unspentAsTip: any[] = [];
 
     for (const utxo of utxos) {
-      const result = await bitcoinSecondClient.getTxOut(utxo.txid, utxo.txindex, false);
-      result ? unspentAsTip.push(utxo) : spentAsTip.push(utxo);
+      const outspend = await bitcoinEsploraApi.$getOutspend(utxo.txid, utxo.txindex);
+      if (outspend?.spent) {
+        spentAsTip.push(utxo);
+      } else {
+        unspentAsTip.push(utxo);
+      }
     }
 
     return {spentAsTip, unspentAsTip};
@@ -323,10 +335,10 @@ class ElementsParser {
   // Get the bitcoin block where the audit process was last updated
   protected async $getAuditProgress(): Promise<any> {
     const lastblockaudit = await this.$getLastBlockAudit();
-    const bitcoinBlocksToSync = await this.$getBitcoinBlockchainState();
+    const bitcoinHeight = await bitcoinEsploraApi.$getBlockHeightTip();
     return {
       lastBlockAudit: lastblockaudit,
-      confirmedTip: bitcoinBlocksToSync.bitcoinBlocks - auditBlockOffsetWithTip,
+      confirmedTip: bitcoinHeight - auditBlockOffsetWithTip,
     };
   }
 
@@ -393,7 +405,7 @@ class ElementsParser {
   public async $getCurrentLbtcSupply(): Promise<any> {
     const [rows] = await DB.query(`SELECT SUM(amount) AS LBTC_supply FROM elements_pegs;`);
     const lastblockupdate = await this.$getLatestBlockHeightFromDatabase();
-    const hash = await bitcoinClient.getBlockHash(lastblockupdate);
+    const hash = await bitcoinEsploraApi.$getBlockHash(lastblockupdate);
     return {
       amount: rows[0]['LBTC_supply'],
       lastBlockUpdate: lastblockupdate,
@@ -405,7 +417,7 @@ class ElementsParser {
   public async $getCurrentFederationReserves(): Promise<any> {
     const [rows] = await DB.query(`SELECT SUM(amount) AS total_balance FROM federation_txos WHERE unspent = 1 AND expiredAt = 0;`);
     const lastblockaudit = await this.$getLastBlockAudit();
-    const hash = await bitcoinSecondClient.getBlockHash(lastblockaudit);
+    const hash = await bitcoinEsploraApi.$getBlockHash(lastblockaudit);
     return {
       amount: rows[0]['total_balance'],
       lastBlockUpdate: lastblockaudit,
