@@ -1,4 +1,11 @@
 <div class="echarts" *browserOnly echarts [initOpts]="ratioChartInitOptions" [options]="ratioChartOptions" (chartRendered)="rendered()"></div>
 <div class="text-center loadingGraphs" *ngIf="isLoading">
-  <div class="spinner-border text-light"></div>
+  <ng-container *ngIf="auditInProgress; else ratioSpinner">
+    <div class="audit-in-progress-text">
+      <span i18n="liquid.audit-in-progress">Audit in progress</span><span>...</span>
+    </div>
+  </ng-container>
+  <ng-template #ratioSpinner>
+    <div class="spinner-border text-light"></div>
+  </ng-template>
 </div>
