@@ -13,6 +13,7 @@ import { CurrentPegs } from '@interfaces/node-api.interface';
 export class ReservesRatioComponent implements OnInit, OnChanges {
   @Input() currentPeg: CurrentPegs;
   @Input() currentReserves: CurrentPegs;
+  @Input() auditInProgress = false;
   ratioChartOptions: EChartsOption;
 
   height: number | string = '200';
