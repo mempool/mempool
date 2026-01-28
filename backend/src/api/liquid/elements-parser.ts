@@ -11,7 +11,6 @@ const auditSyncToleranceBlocks = 105; // Audit lag from bitcoin tip to avoid pot
 
 class ElementsParser {
   private isRunning = false;
-  private isUtxosUpdatingRunning = false;
 
   constructor() { }
 
@@ -30,6 +29,7 @@ class ElementsParser {
         await this.$parseBlock(block);
         await this.$saveLatestBlockToDatabase(block.height);
       }
+      await this.$updateFederationUtxos();
       this.isRunning = false;
     } catch (e) {
       this.isRunning = false;
@@ -124,18 +124,11 @@ class ElementsParser {
   ///////////// FEDERATION AUDIT //////////////
 
   public async $updateFederationUtxos() {
-    if (this.isUtxosUpdatingRunning) {
-      return;
-    }
-
-    this.isUtxosUpdatingRunning = true;
-
     try {
       let auditProgress = await this.$getAuditProgress();
       // If no peg in transaction was found in the database, return
       if (!auditProgress.lastBlockAudit) {
         logger.debug(`No Federation UTXOs found in the database. Waiting for some to be confirmed before starting the Federation UTXOs audit`);
-        this.isUtxosUpdatingRunning = false;
         return;
       }
 
@@ -143,7 +136,6 @@ class ElementsParser {
       // If the bitcoin blockchain is not synced yet, return
       if (bitcoinBlocksToSync.bitcoinHeaders > bitcoinBlocksToSync.bitcoinBlocks + 1) {
         logger.debug(`Bitcoin client is not synced yet. ${bitcoinBlocksToSync.bitcoinHeaders - bitcoinBlocksToSync.bitcoinBlocks} blocks remaining to sync before the Federation audit process can start`);
-        this.isUtxosUpdatingRunning = false;
         return;
       }
 
@@ -205,9 +197,7 @@ class ElementsParser {
         indexedThisRun++;
       }
 
-      this.isUtxosUpdatingRunning = false;
     } catch (e) {
-      this.isUtxosUpdatingRunning = false;
       throw new Error(e instanceof Error ? e.message : 'Error');
     }
   }

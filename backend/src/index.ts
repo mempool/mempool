@@ -325,7 +325,6 @@ class Server {
       blocks.setNewBlockCallback(async () => {
         try {
           await elementsParser.$parse();
-          await elementsParser.$updateFederationUtxos();
         } catch (e) {
           logger.warn('Elements parsing error: ' + (e instanceof Error ? e.message : e));
         }
