@@ -297,6 +297,12 @@ main {
   }
 }
 
+.audit-in-progress .skeleton-loader {
+  animation: none;
+  background-image: none;
+  background-color: var(--skeleton-bg);
+}
+
 @keyframes progress {
   0% {
     background-position: -200px 0;
