@@ -53,6 +53,7 @@ export namespace IBitcoinApi {
     nTx: number;                     //  (numeric) The number of transactions in the block
     previousblockhash: string;       //  (string) The hash of the previous block
     nextblockhash: string;           //  (string) The hash of the next block
+    dynamic_parameters?: any;        //  (object) Elements only: dynamic parameters at this block
   }
 
   export interface Transaction {
