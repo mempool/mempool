@@ -146,19 +146,28 @@ class ElementsParser {
 
         // Get the peg-out addresses that need to be scanned
         const redeemAddresses = await this.$getRedeemAddressesToScan();
+        const redeemAddressesByAddress = new Map<string, any[]>();
+        for (const redeemAddress of redeemAddresses) {
+          const entries = redeemAddressesByAddress.get(redeemAddress.bitcoinaddress);
+          if (entries) {
+            entries.push(redeemAddress);
+          } else {
+            redeemAddressesByAddress.set(redeemAddress.bitcoinaddress, [redeemAddress]);
+          }
+        }
 
         // The fast way: check if these UTXOs are still unspent as of the current block with gettxout
-        let spentAsTip: any[];
-        let unspentAsTip: any[];
+        let spentAsTip: Map<string, any>;
+        let unspentAsTip: Map<string, any>;
         if (auditProgress.confirmedTip - auditProgress.lastBlockAudit <= 150) { // If the audit status is not too far in the past, we can use gettxout (fast way)
           const utxosToParse = await this.$getFederationUtxosToParse(utxos);
           spentAsTip = utxosToParse.spentAsTip;
           unspentAsTip = utxosToParse.unspentAsTip;
           logger.debug(`Found ${utxos.length} Federation UTXOs and ${redeemAddresses.length} Peg-Out Addresses to scan in Bitcoin block height #${auditProgress.lastBlockAudit} / #${auditProgress.confirmedTip}`);
-          logger.debug(`${unspentAsTip.length} / ${utxos.length} Federation UTXOs are unspent as of tip`);
+          logger.debug(`${unspentAsTip.size} / ${utxos.length} Federation UTXOs are unspent as of tip`);
         } else { // If the audit status is too far in the past, it is useless and wasteful to look for still unspent txos since they will all be spent as of the tip
-          spentAsTip = utxos;
-          unspentAsTip = [];
+          spentAsTip = new Map<string, any>(utxos.map(utxo => [`${utxo.txid}:${utxo.txindex}`, utxo]));
+          unspentAsTip = new Map<string, any>();
 
           // Logging
           const elapsedSeconds = (Date.now() / 1000) - timer;
@@ -178,7 +187,7 @@ class ElementsParser {
         // The slow way: parse the block to look for the spending tx
         const blockHash: IBitcoinApi.ChainTips = await bitcoinSecondClient.getBlockHash(auditProgress.lastBlockAudit);
         const block: IBitcoinApi.Block = await bitcoinSecondClient.getBlock(blockHash, 2);
-        await this.$parseBitcoinBlock(block, spentAsTip, unspentAsTip, auditProgress.confirmedTip, redeemAddresses);
+        await this.$parseBitcoinBlock(block, spentAsTip, unspentAsTip, auditProgress.confirmedTip, redeemAddressesByAddress);
 
         // Finally, update the lastblockupdate of the remaining UTXOs and save to the database
         const [minBlockUpdate] = await DB.query(`SELECT MIN(lastblockupdate) AS lastblockupdate FROM federation_txos WHERE unspent = 1`);
@@ -202,25 +211,25 @@ class ElementsParser {
   }
 
   // Returns the UTXOs that are spent as of tip and need to be scanned
-  protected async $getFederationUtxosToParse(utxos: any[]): Promise<any> {
-    const spentAsTip: any[] = [];
-    const unspentAsTip: any[] = [];
+  protected async $getFederationUtxosToParse(utxos: any[]): Promise<{ spentAsTip: Map<string, any>; unspentAsTip: Map<string, any> }> {
+    const spentAsTip = new Map<string, any>();
+    const unspentAsTip = new Map<string, any>();
 
     for (const utxo of utxos) {
       const result = await bitcoinSecondClient.getTxOut(utxo.txid, utxo.txindex, false);
-      result ? unspentAsTip.push(utxo) : spentAsTip.push(utxo);
+      const key = `${utxo.txid}:${utxo.txindex}`;
+      result ? unspentAsTip.set(key, utxo) : spentAsTip.set(key, utxo);
     }
 
     return {spentAsTip, unspentAsTip};
   }
 
-  protected async $parseBitcoinBlock(block: IBitcoinApi.Block, spentAsTip: any[], unspentAsTip: any[], confirmedTip: number, redeemAddressesData: any[] = []) {
-    const redeemAddresses: string[] = redeemAddressesData.map(redeemAddress => redeemAddress.bitcoinaddress);
+  protected async $parseBitcoinBlock(block: IBitcoinApi.Block, spentAsTip: Map<string, any>, unspentAsTip: Map<string, any>, confirmedTip: number, redeemAddressesByAddress: Map<string, any[]>) {
     for (const tx of block.tx) {
       let mightRedeemInThisTx = false;
       // Check if the Federation UTXOs that was spent as of tip are spent in this block
       for (const input of tx.vin) {
-        const txo = spentAsTip.find(txo => txo.txid === input.txid && txo.txindex === input.vout);
+        const txo = spentAsTip.get(`${input.txid!}:${input.vout!}`);
         if (txo) {
           mightRedeemInThisTx = true; // A Federation UTXO is spent in this block: we might find a peg-out address in the outputs
           if (txo.expiredAt > 0 ) {
@@ -235,8 +244,8 @@ class ElementsParser {
             await DB.query(`UPDATE federation_txos SET unspent = 0, lastblockupdate = ?, lasttimeupdate = ? WHERE txid = ? AND txindex = ?`, [block.height, block.time, txo.txid, txo.txindex]);
             logger.debug(`Federation UTXO ${txo.txid}:${txo.txindex} (${txo.amount} sats) was spent in block ${block.height}`);
           }
-          // Remove the TXO from the utxo array
-          spentAsTip.splice(spentAsTip.indexOf(txo), 1);
+          // Remove the TXO from the map
+          spentAsTip.delete(`${txo.txid}:${txo.txindex}`);
         }
       }
       // Check if an output is sent to a change address of the federation
@@ -249,8 +258,8 @@ class ElementsParser {
             const query_utxos = `INSERT INTO federation_txos (txid, txindex, bitcoinaddress, amount, blocknumber, blocktime, unspent, lastblockupdate, lasttimeupdate, timelock, expiredAt, emergencyKey, pegtxid, pegindex, pegblocktime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
             const params_utxos: (string | number)[] = [tx.txid, output.n, output.scriptPubKey.address, output.value * 100000000, block.height, block.time, 1, block.height, 0, timelock, 0, 0, '', 0, 0];
             await DB.query(query_utxos, params_utxos);
-            // Add the UTXO to the utxo array
-            spentAsTip.push({
+            // Add the UTXO to the map
+            spentAsTip.set(`${tx.txid}:${output.n}`, {
               txid: tx.txid,
               txindex: output.n,
               bitcoinaddress: output.scriptPubKey.address,
@@ -262,9 +271,13 @@ class ElementsParser {
             logger.debug(`Added new Federation UTXO ${tx.txid}:${output.n} (${Math.round(output.value * 100000000)} sats), change address: ${output.scriptPubKey.address}`);
           }
         }
-        if (mightRedeemInThisTx && output.scriptPubKey.address && redeemAddresses.includes(output.scriptPubKey.address)) {
-          // Find the number of times output.scriptPubKey.address appears in redeemAddresses. There can be address reuse for peg-outs...
-          const matchingAddress: any[] = redeemAddressesData.filter(redeemAddress => redeemAddress.bitcoinaddress === output.scriptPubKey.address && -redeemAddress.amount === Math.round(output.value * 100000000));
+        if (mightRedeemInThisTx && output.scriptPubKey.address) {
+          const redeemCandidates = redeemAddressesByAddress.get(output.scriptPubKey.address);
+          if (!redeemCandidates) {
+            continue;
+          }
+          // Find the number of times output.scriptPubKey.address appears in the candidates. There can be address reuse for peg-outs...
+          const matchingAddress: any[] = redeemCandidates.filter(redeemAddress => -redeemAddress.amount === Math.round(output.value * 100000000));
           if (matchingAddress.length > 0) {
             if (matchingAddress.length > 1) {
               // If there are more than one peg out address with the same amount, we can't know which one redeemed the UTXO: we take the oldest one
@@ -276,9 +289,13 @@ class ElementsParser {
             const query_add_redeem = `UPDATE elements_pegs SET bitcointxid = ?, bitcoinindex = ? WHERE bitcoinaddress = ? AND amount = ? AND datetime = ?`;
             const params_add_redeem: (string | number)[] = [tx.txid, output.n, matchingAddress[0].bitcoinaddress, matchingAddress[0].amount, matchingAddress[0].datetime];
             await DB.query(query_add_redeem, params_add_redeem);
-            const index = redeemAddressesData.indexOf(matchingAddress[0]);
-            redeemAddressesData.splice(index, 1);
-            redeemAddresses.splice(index, 1);
+            const index = redeemCandidates.indexOf(matchingAddress[0]);
+            if (index !== -1) {
+              redeemCandidates.splice(index, 1);
+              if (redeemCandidates.length === 0) {
+                redeemAddressesByAddress.delete(output.scriptPubKey.address);
+              }
+            }
           } else { // The output amount does not match the peg-out amount... log it
             logger.debug(`Found redeem txid ${tx.txid}:${output.n} to peg-out address ${output.scriptPubKey.address} but output amount ${Math.round(output.value * 100000000)} does not match the peg-out amount!`);
           }
@@ -286,7 +303,7 @@ class ElementsParser {
       }
     }
 
-    for (const utxo of spentAsTip) {
+    for (const utxo of spentAsTip.values()) {
       if (utxo.expiredAt === 0 && block.height >= utxo.blocknumber + utxo.timelock) { // The UTXO is expiring in this block
         await DB.query(`UPDATE federation_txos SET lastblockupdate = ?, expiredAt = ? WHERE txid = ? AND txindex = ?`, [block.height, block.time, utxo.txid, utxo.txindex]);
       } else {
@@ -294,7 +311,7 @@ class ElementsParser {
       }
     }
 
-    for (const utxo of unspentAsTip) {
+    for (const utxo of unspentAsTip.values()) {
       if (utxo.expiredAt === 0 && block.height >= utxo.blocknumber + utxo.timelock) { // The UTXO is expiring in this block
         await DB.query(`UPDATE federation_txos SET lastblockupdate = ?, expiredAt = ? WHERE txid = ? AND txindex = ?`, [confirmedTip, block.time, utxo.txid, utxo.txindex]);
       } else if (utxo.expiredAt === 0 && confirmedTip >= utxo.blocknumber + utxo.timelock) { // The UTXO is expiring before the tip: we need to keep track of it
