@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { Env, StateService } from '@app/services/state.service';
 import { Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -11,10 +11,10 @@ import { faqData } from '@app/docs/api-docs/api-docs-data';
   styleUrls: ['./api-docs-nav.component.scss'],
   standalone: false,
 })
-export class ApiDocsNavComponent implements OnInit {
-
+export class ApiDocsNavComponent implements OnInit, OnDestroy {
   @Input() network: any;
   @Input() whichTab: string;
+  @Input() activeFragment: string = "";
   @Output() navLinkClickEvent: EventEmitter<any> = new EventEmitter();
   private destroy$: Subject<any> = new Subject<any>();
   env: Env;
@@ -50,6 +50,10 @@ export class ApiDocsNavComponent implements OnInit {
   navLinkClick(event, fragment) {
     event.preventDefault();
     this.navLinkClickEvent.emit({event: event, fragment: fragment});
+  }
+
+  isActive(fragment: string): boolean {
+    return this.activeFragment === fragment;
   }
 
   ngOnDestroy(): void {
