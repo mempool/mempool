@@ -1193,9 +1193,9 @@ class DatabaseMigration {
       if (lastElementsBlock > 3686608 && lastBlockAudit > 929700) {
         await this.$executeQuery('DELETE FROM elements_pegs WHERE block > 3686608');
         await this.$executeQuery('DELETE FROM federation_txos WHERE blocknumber > 929701');
+        await this.$executeQuery(`UPDATE federation_txos SET lastblockupdate = 929700 WHERE unspent = 1;`);
         await this.$executeQuery(`UPDATE state SET number = 3686608 WHERE name = 'last_elements_block';`);
         await this.$executeQuery(`UPDATE state SET number = 929700 WHERE name = 'last_bitcoin_block_audit';`);
-        await this.$executeQuery(`UPDATE federation_txos SET lastblockupdate = 929700 WHERE unspent = 1;`);
       }
       await this.updateToSchemaVersion(105);
     }
