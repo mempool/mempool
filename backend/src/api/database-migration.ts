@@ -1179,17 +1179,24 @@ class DatabaseMigration {
       await this.updateToSchemaVersion(103);
     }
 
-    // reindex liquid federation addresses and txos, and add hardcoded federation addresses
+    // reindex liquid federation addresses and txos when needed, and add hardcoded federation addresses
     // (safe to make this conditional on the network since it doesn't change the database schema)
     if (databaseSchemaVersion < 105 && config.MEMPOOL.NETWORK === 'liquid') {
-      await this.$executeQuery('DELETE FROM elements_pegs WHERE block > 3686608');
-      await this.$executeQuery('DELETE FROM federation_txos WHERE blocknumber > 929701');
       // Hardcoded federation addresses
       await this.$executeQuery(`INSERT IGNORE INTO federation_addresses (bitcoinaddress) VALUES ('3G6neksSBMp51kHJ2if8SeDUrzT8iVETWT')`);
       await this.$executeQuery(`INSERT IGNORE INTO federation_addresses (bitcoinaddress) VALUES ('bc1qwnevjp8nsq7adu3hxlvdvslrf242q4vuavfg0y929jp2zntp3vgq7cq6z2')`);
-      await this.$executeQuery(`UPDATE federation_txos SET lastblockupdate = 929700 WHERE unspent = 1;`);
-      await this.$executeQuery(`UPDATE state SET number = 3686608 WHERE name = 'last_elements_block';`);
-      await this.$executeQuery(`UPDATE state SET number = 929700 WHERE name = 'last_bitcoin_block_audit';`);
+
+      // Rollback only on up to date instances
+      const [stateRows]: any[] = await DB.query(`SELECT name, number FROM state WHERE name IN ('last_elements_block', 'last_bitcoin_block_audit')`);
+      const lastElementsBlock = Number(stateRows?.find((row: any) => row.name === 'last_elements_block')?.number ?? 0);
+      const lastBlockAudit = Number(stateRows?.find((row: any) => row.name === 'last_bitcoin_block_audit')?.number ?? 0);
+      if (lastElementsBlock > 3686608 && lastBlockAudit > 929700) {
+        await this.$executeQuery('DELETE FROM elements_pegs WHERE block > 3686608');
+        await this.$executeQuery('DELETE FROM federation_txos WHERE blocknumber > 929701');
+        await this.$executeQuery(`UPDATE state SET number = 3686608 WHERE name = 'last_elements_block';`);
+        await this.$executeQuery(`UPDATE state SET number = 929700 WHERE name = 'last_bitcoin_block_audit';`);
+        await this.$executeQuery(`UPDATE federation_txos SET lastblockupdate = 929700 WHERE unspent = 1;`);
+      }
       await this.updateToSchemaVersion(105);
     }
   }
