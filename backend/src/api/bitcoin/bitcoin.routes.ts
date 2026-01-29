@@ -143,17 +143,14 @@ class BitcoinRoutes {
   }
 
   private getTransactionTimes(req: Request, res: Response) {
-    if (!Array.isArray(req.query.txId)) {
-      handleError(req, res, 500, 'Not an array');
+    if (!req.query.txId || typeof req.query.txId !== 'object') {
+      handleError(req, res, 500, 'invalid txId format');
       return;
     }
     const txIds: string[] = [];
-    for (const _txId in req.query.txId) {
-      if (typeof req.query.txId[_txId] === 'string') {
-        const txid = req.query.txId[_txId].toString();
-        if (TXID_REGEX.test(txid)) {
-          txIds.push(txid);
-        }
+    for (const txid of Object.values(req.query.txId)) {
+      if (typeof txid === 'string' && TXID_REGEX.test(txid)) {
+        txIds.push(txid);
       }
     }
 
