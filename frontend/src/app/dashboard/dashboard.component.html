@@ -297,7 +297,7 @@
 </ng-template>
 
 <ng-template #loadingSkeletonLiquid let-auditInProgress="auditInProgress">
-  <div class="container-xl dashboard-container">
+  <div class="container-xl dashboard-container" [class.audit-in-progress]="auditInProgress">
 
     <div class="row row-cols-1 row-cols-md-2">
 
