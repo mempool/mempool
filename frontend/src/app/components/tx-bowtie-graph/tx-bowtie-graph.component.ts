@@ -95,6 +95,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     testnet4: ['#4edf77', '#10a0af', '#4edf7700'],
     // signet: ['#6f1d5d', '#471850'],
     signet: ['#d24fc8', '#a84fd2', '#d24fc800'],
+    regtest: ['var(--regtest)', 'var(--regtest-alt)', '#7d7d7d00'],
   };
 
   gradient: string[] = ['var(--primary)', 'var(--primary)'];

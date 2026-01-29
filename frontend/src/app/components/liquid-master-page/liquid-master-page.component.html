@@ -44,7 +44,7 @@
     </ng-container>
   </a>
 
-  <div ngbDropdown (window:resize)="onResize()" class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.LIQUID_TESTNET_ENABLED">
+  <div ngbDropdown (window:resize)="onResize()" class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.REGTEST_ENABLED || env.LIQUID_ENABLED || env.LIQUID_TESTNET_ENABLED">
     <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split d-flex justify-content-center align-items-center" aria-haspopup="true">
       <app-svg-images class="d-flex justify-content-center align-items-center current-network-svg" [name]="network.val === '' ? 'liquid' : network.val" width="20" height="20" viewBox="0 0 125 125"></app-svg-images>
     </button>
@@ -53,6 +53,7 @@
       <a [href]="env.MEMPOOL_WEBSITE_URL + urlLanguage + (networkPaths['signet'] || '/signet')" ngbDropdownItem *ngIf="env.SIGNET_ENABLED" class="signet"><app-svg-images name="signet" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Signet</a>
       <a [href]="env.MEMPOOL_WEBSITE_URL + urlLanguage + (networkPaths['testnet'] || '/testnet')" ngbDropdownItem *ngIf="env.TESTNET_ENABLED" class="testnet"><app-svg-images name="testnet" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Testnet3</a>
       <a [href]="env.MEMPOOL_WEBSITE_URL + urlLanguage + (networkPaths['testnet4'] || '/testnet4')" ngbDropdownItem *ngIf="env.TESTNET4_ENABLED" class="testnet"><app-svg-images name="testnet4" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Testnet4</a>
+      <a [href]="env.MEMPOOL_WEBSITE_URL + urlLanguage + (networkPaths['regtest'] || '/regtest')" ngbDropdownItem *ngIf="env.REGTEST_ENABLED" class="regtest"><app-svg-images name="regtest" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Regtest</a>
       <h6 class="dropdown-header" i18n="master-page.layer2-networks-header">Layer 2 Networks</h6>
       <a ngbDropdownItem class="liquid mr-1" [class.active]="network.val === 'liquid'" [routerLink]="networkPaths['liquid'] || '/'"><app-svg-images name="liquid" width="22" height="22" viewBox="0 0 125 125" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Liquid</a>
       <a ngbDropdownItem *ngIf="env.LIQUID_TESTNET_ENABLED" class="liquidtestnet" [class.active]="network.val === 'liquidtestnet'" [routerLink]="networkPaths['liquidtestnet'] || '/testnet'"><app-svg-images name="liquidtestnet" width="22" height="22" viewBox="0 0 125 125" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Liquid Testnet</a>
