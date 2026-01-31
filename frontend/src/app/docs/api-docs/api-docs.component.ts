@@ -241,7 +241,9 @@ export class ApiDocsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   highlightHeading(element: any): void {
     this.activeFragment = element.id;
-    document.getElementById(this.activeFragment + '-nav-link').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if(document.getElementById("doc-nav-desktop").classList.contains("fixed")) {
+      document.getElementById(this.activeFragment + '-nav-link').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   }
   
   wrapUrl(network: string, code: any, websocket: boolean = false) {
