@@ -39,6 +39,8 @@ export class ApiDocsComponent implements OnInit, AfterViewInit, OnDestroy {
   isMempoolSpaceBuild = this.stateService.isMempoolSpaceBuild;
   activeFragment: string = '';
   observer: IntersectionObserver;
+  visibleItems: any;
+  visibleItemsArr: any[];
 
   @ViewChildren(FaqTemplateDirective) faqTemplates: QueryList<FaqTemplateDirective>;
   dict = {};
@@ -75,24 +77,31 @@ export class ApiDocsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   setupIntersectionObserver(): void {
     const intersectionOptions = {
-      rootMargin: '-20% 0px -70% 0px',
+      rootMargin: '-60px 0px 0px 0px',
       threshold: [0, 0.25, 0.5, 0.75, 1],
     };
 
     this.observer = new IntersectionObserver((entries) => {
-      let mostVisibleEntry = null;
-      let maxRatio = 0;
-
+      
       entries.forEach((entry) => {
-        if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
-          maxRatio = entry.intersectionRatio;
-          mostVisibleEntry = entry;
+        if(entry.isIntersecting) {
+          this.visibleItems[entry.target.id] = {"id": entry.target.id, "element": entry.target, "top": entry.target.getBoundingClientRect().top + window.scrollY, "visibleRatio": entry.intersectionRatio};
+        } else {
+          delete this.visibleItems[entry.target.id];
         }
       });
 
-      if (mostVisibleEntry) {
-        this.activeFragment = mostVisibleEntry.target.id;
-        document.getElementById(this.activeFragment + '-nav-link').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      this.visibleItemsArr = Object.values(this.visibleItems);
+      if(this.visibleItemsArr.length === 1) {
+        this.highlightHeading(this.visibleItemsArr[0]['element']);
+      } else {
+        this.visibleItemsArr.sort((a, b) => {
+          if (b.visibleRatio !== a.visibleRatio) {
+            return b.visibleRatio - a.visibleRatio;
+          }
+          return a.top - b.top;
+        });
+        this.highlightHeading(this.visibleItemsArr[0]['element']);
       }
     }, intersectionOptions);
 
@@ -125,6 +134,8 @@ export class ApiDocsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.stateService.backend$.pipe(takeUntil(this.destroy$)).subscribe((backend) => {
       this.runningElectrs = !!(backend == 'esplora');
     });
+    this.visibleItems = {};
+    this.visibleItemsArr = [];
     this.auditEnabled = this.env.AUDIT;
     this.network$ = merge(of(''), this.stateService.networkChanged$).pipe(
       tap((network: string) => {
@@ -196,6 +207,9 @@ export class ApiDocsComponent implements OnInit, AfterViewInit, OnDestroy {
       top: document.getElementById( targetId ).offsetTop - vOffset
     });
     window.history.pushState({}, null, document.location.href.split('#')[0] + '#' + targetId);
+    window.setTimeout(() => { //wait for smooth scrolling to finish (needed for links at page bottom which aren't captured by the intersection observer)
+      this.highlightHeading(document.getElementById(e.fragment));
+    }, 800);
     this.openEndpointContainer( targetId );
   }
 
@@ -223,6 +237,11 @@ export class ApiDocsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  highlightHeading(element: any): void {
+    this.activeFragment = element.id;
+    document.getElementById(this.activeFragment + '-nav-link').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  
   wrapUrl(network: string, code: any, websocket: boolean = false) {
 
     let curlResponse = [];
