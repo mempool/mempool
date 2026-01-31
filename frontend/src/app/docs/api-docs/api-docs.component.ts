@@ -39,6 +39,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit, OnDestroy {
   isMempoolSpaceBuild = this.stateService.isMempoolSpaceBuild;
   activeFragment: string = '';
   observer: IntersectionObserver;
+  tabData: any[];
   visibleItems: any;
   visibleItemsArr: any[];
 
@@ -105,19 +106,8 @@ export class ApiDocsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }, intersectionOptions);
 
-    let tabData = [];
-    if (this.whichTab === 'rest') {
-      tabData = restApiDocsData;
-    } else if (this.whichTab === 'websocket') {
-      tabData = wsApiDocsData;
-    } else if (this.whichTab === 'faq') {
-      tabData = faqData;
-    } else if (this.whichTab === 'electrs') {
-      tabData = electrumApiDocsData;
-    }
-
-    if (tabData) {
-      tabData.forEach((item) => {
+    if (this.tabData) {
+      this.tabData.forEach((item) => {
         if (item.type !== 'category' && item.fragment) {
           const element = document.getElementById(item.fragment);
           if (element) {
@@ -134,6 +124,16 @@ export class ApiDocsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.stateService.backend$.pipe(takeUntil(this.destroy$)).subscribe((backend) => {
       this.runningElectrs = !!(backend == 'esplora');
     });
+    this.tabData = [];
+    if (this.whichTab === 'rest') {
+      this.tabData = restApiDocsData;
+    } else if (this.whichTab === 'websocket') {
+      this.tabData = wsApiDocsData;
+    } else if (this.whichTab === 'faq') {
+      this.tabData = faqData;
+    } else if (this.whichTab === 'electrs') {
+      this.tabData = electrumApiDocsData;
+    }
     this.visibleItems = {};
     this.visibleItemsArr = [];
     this.auditEnabled = this.env.AUDIT;
@@ -207,9 +207,11 @@ export class ApiDocsComponent implements OnInit, AfterViewInit, OnDestroy {
       top: document.getElementById( targetId ).offsetTop - vOffset
     });
     window.history.pushState({}, null, document.location.href.split('#')[0] + '#' + targetId);
-    window.setTimeout(() => { //wait for smooth scrolling to finish (needed for links at page bottom which aren't captured by the intersection observer)
+    
+    let highlightTimeout = ( Object.keys(this.visibleItems).includes(this.tabData[this.tabData.length - 1]['fragment']) && this.visibleItems[this.tabData[this.tabData.length - 1]['fragment']]['visibleRatio'] === 1 ) ? 0 : 600;
+    window.setTimeout(() => { //for links at page bottom which aren't captured by the intersection observer's window)
       this.highlightHeading(document.getElementById(e.fragment));
-    }, 800);
+    }, highlightTimeout);
     this.openEndpointContainer( targetId );
   }
 
