@@ -65,7 +65,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit, OnDestroy {
       if( this.route.snapshot.fragment ) {
         this.openEndpointContainer( this.route.snapshot.fragment );
         if (document.getElementById( this.route.snapshot.fragment )) {
-          const vOffset = ( window.innerWidth <= 992 ) ? 100 : 60;
+          const vOffset = ( window.innerWidth <= 992 ) ? 100 : 62;
           window.scrollTo({
             top: document.getElementById( this.route.snapshot.fragment ).offsetTop - vOffset
           });
@@ -95,7 +95,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.visibleItemsArr = Object.values(this.visibleItems);
       if(this.visibleItemsArr.length === 1) {
         this.highlightHeading(this.visibleItemsArr[0]['element']);
-      } else {
+      } else if(this.visibleItemsArr.length > 1) {
         this.visibleItemsArr.sort((a, b) => {
           if (b.visibleRatio !== a.visibleRatio) {
             return b.visibleRatio - a.visibleRatio;
