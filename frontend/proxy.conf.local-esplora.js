@@ -78,6 +78,27 @@ PROXY_CONFIG.push(...[
         "^/testnet": ""
     },
   },
+  {
+    context: ['/regtest/api/v1/**'],
+    target: `http://127.0.0.1:8999`,
+    secure: false,
+    ws: true,
+    changeOrigin: true,
+    proxyTimeout: 30000,
+    pathRewrite: {
+        "^/regtest": ""
+    },
+  },
+  {
+    context: ['/regtest/api/**'],
+    target: `http://127.0.0.1:3000`,
+    secure: false,
+    changeOrigin: true,
+    proxyTimeout: 30000,
+    pathRewrite: {
+        "^/regtest/api": ""
+    },
+  },
   /* Optional proxy to route dev to official acceleration services
   {
     context: ['/api/v1/services/accelerator/**'],

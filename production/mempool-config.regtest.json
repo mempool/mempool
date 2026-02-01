@@ -1,0 +1,44 @@
+{
+  "MEMPOOL": {
+    "OFFICIAL": true,
+    "NETWORK": "regtest",
+    "BACKEND": "esplora",
+    "HTTP_PORT": 8989,
+    "MINED_BLOCKS_CACHE": 144,
+    "SPAWN_CLUSTER_PROCS": 0,
+    "API_URL_PREFIX": "/api/v1/",
+    "INDEXING_BLOCKS_AMOUNT": -1,
+    "AUTOMATIC_POOLS_UPDATE": false,
+    "POOLS_UPDATE_DELAY": 3600,
+    "AUDIT": true,
+    "RUST_GBT": true,
+    "POLL_RATE_MS": 500,
+    "DISK_CACHE_BLOCK_INTERVAL": 1,
+    "MAX_PUSH_TX_SIZE_WEIGHT": 4000000,
+    "ALLOW_UNREACHABLE": true,
+    "MAX_TRACKED_ADDRESSES": 10
+  },
+  "SYSLOG" : {
+    "MIN_PRIORITY": "debug"
+  },
+  "CORE_RPC": {
+    "PORT": 18443,
+    "USERNAME": "__BITCOIN_RPC_USER__",
+    "PASSWORD": "__BITCOIN_RPC_PASS__"
+  },
+  "ESPLORA": {
+    "UNIX_SOCKET_PATH": "/bitcoin/socket/esplora-bitcoin-regtest"
+  },
+  "DATABASE": {
+    "ENABLED": true,
+    "HOST": "127.0.0.1",
+    "SOCKET": "/var/run/mysql/mysql.sock",
+    "USERNAME": "__MEMPOOL_REGTEST_USER__",
+    "PASSWORD": "__MEMPOOL_REGTEST_PASS__",
+    "DATABASE": "mempool_regtest"
+  },
+  "STATISTICS": {
+    "ENABLED": true,
+    "TX_PER_SECOND_SAMPLE_PERIOD": 150
+  }
+}
