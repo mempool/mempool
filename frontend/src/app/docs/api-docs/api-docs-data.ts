@@ -2651,6 +2651,508 @@ export const restApiDocsData = [
   },
   {
     type: 'category',
+    category: 'accelerator-public',
+    fragment: 'accelerator-public',
+    title: 'Accelerator (Public)',
+    showConditions: [''],
+    options: { officialOnly: true },
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-public',
+    httpRequestMethod: 'POST',
+    fragment: 'accelerator-estimate',
+    title: 'POST Calculate Estimated Costs',
+    description: {
+      default: '<p>Returns estimated costs to accelerate a transaction. Optionally set the <code>X-Mempool-Auth</code> header to get customized estimation.</p>'
+    },
+    urlString: '/v1/services/accelerator/estimate',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/accelerator/estimate`, //custom interpolation technique handled in replaceCurlPlaceholder()
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ['txInput=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29'],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: `{
+  "txSummary": {
+    "txid": "ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29",
+    "effectiveVsize": 154,
+    "effectiveFee": 154,
+    "ancestorCount": 1
+  },
+  "cost": 1386,
+  "targetFeeRate": 10,
+  "nextBlockFee": 1540,
+  "userBalance": 0,
+  "mempoolBaseFee": 50000,
+  "vsizeFee": 0,
+  "pools": [
+    111,
+    102,
+    112,
+    142,
+    115
+  ],
+  "options": [
+    {
+      "fee": 1500
+    },
+    {
+      "fee": 3000
+    },
+    {
+      "fee": 12500
+    }
+  ],
+  "hasAccess": false,
+  "availablePaymentMethods": {
+    "bitcoin": {
+      "enabled": true,
+      "min": 1000,
+      "max": 10000000
+    },
+    "cashapp": {
+      "enabled": true,
+      "min": 10,
+      "max": 200
+    }
+  },
+  "unavailable": false
+}`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-public',
+    httpRequestMethod: 'POST',
+    fragment: 'accelerator-get-invoice',
+    title: 'POST Generate Acceleration Invoice',
+    description: {
+      default: '<p>Request a LN invoice to accelerate a transaction.</p>'
+    },
+    urlString: '/v1/services/payments/bitcoin',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/payments/bitcoin`, //custom interpolation technique handled in replaceCurlPlaceholder()
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ['product=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&amount=12500'],
+          headers: '',
+          response: `[
+  {
+    "btcpayInvoiceId": "4Ww53d7VgSa596jmCFufe7",
+    "btcDue": "0.000625",
+    "addresses": {
+      "BTC": "bc1qcvqx2kr5mktd7gvym0atrrx0sn27mwv5kkghl3m78kegndm5t8ksvcqpja",
+      "BTC_LNURLPAY": null,
+      "BTC_LightningLike": "lnbc625u1pngl0wzpp56j7cqghsw2y5q7vdu9shmpxgpzsx4pqra4wcm9vdnvqegutplk2qdxj2pskjepqw3hjqnt9d4cx7mmvypqkxcm9d3jhyct5daezq2z0wfjx2u3qf9zr5grpvd3k2mr9wfshg6t0dckk2ef3xdjkyc3e8ymrxv3nxumkxvf4vvungwfcxqen2dmxxcmngepj8q6kzce5xyengdfjxq6nqvpnx9jkzdnyvdjrxefevgexgcej8yknzdejxqmrjd3jx5mrgdpj9ycqzpuxqrpr5sp58593dzj2uauaj3afa7x47qeam8k9yyqrh9qasj2ssdzstew6qv3q9qxpqysgqj8qshfkxmj0gfkly5xfydysvsx55uhnc6fgpw66uf6hl8leu07454axe2kq0q788yysg8guel2r36d6f75546nkhmdcmec4mmlft8dsq62rnsj"
+    }
+  }
+]`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-public',
+    httpRequestMethod: 'GET',
+    fragment: 'accelerator-pending',
+    title: 'GET Pending Accelerations',
+    description: {
+      default: '<p>Returns all transactions currently being accelerated.</p>'
+    },
+    urlString: '/v1/services/accelerator/accelerations',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/services/accelerator/accelerations`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          headers: '',
+          response: `[
+  {
+    "txid": "8a183c8ae929a2afb857e7f2acd440aaefdf2797f8f7eab1c5f95ff8602abc81",
+    "added": 1707558316,
+    "feeDelta": 3500,
+    "effectiveVsize": 111,
+    "effectiveFee": 1671,
+    "pools": [
+      111
+    ]
+  },
+  {
+    "txid": "6097f295e21bdd8d725bd8d9ad4dd72b05bd795dc648bfef52150a9b2b7f7a45",
+    "added": 1707560464,
+    "feeDelta": 60000,
+    "effectiveVsize": 812,
+    "effectiveFee": 7790,
+    "pools": [
+      111
+    ]
+  }
+]`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-public',
+    httpRequestMethod: 'GET',
+    fragment: 'accelerator-public-history',
+    title: 'GET Acceleration History',
+    description: {
+      default: `<p>Returns all past accelerated transactions.
+      Filters can be applied:<ul>
+      <li><code>status</code>: <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code></li>
+      <li><code>timeframe</code>: <code>24h</code>, <code>3d</code>, <code>1w</code>, <code>1m</code>, <code>3m</code>, <code>6m</code>, <code>1y</code>, <code>2y</code>, <code>3y</code>, <code>4y</code>, <code>all</code></li>
+      <li><code>minedByPoolUniqueId</code>: any id from <a target="_blank" href="https://github.com/mempool/mining-pools/blob/master/pools-v2.json">pools-v2.json</a>
+      <li><code>blockHash</code>: a block hash</a>
+      <li><code>blockHeight</code>: a block height</a>
+      <li><code>page</code>: the requested page number if using pagination <i>(min: 1)</i></a>
+      <li><code>pageLength</code>: the page lenght if using pagination <i>(min: 1, max: 50)</i></a>
+      <li><code>from</code>: unix timestamp (<i>overrides <code>timeframe</code></i>)</a>
+      <li><code>to</code>: unix timestamp (<i>overrides <code>timeframe</code></i>)</a>
+      </ul></p>`
+    },
+    urlString: '/v1/services/accelerator/accelerations/history',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/services/accelerator/accelerations/history?blockHash=00000000000000000000482f0746d62141694b9210a813b97eb8445780a32003`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          headers: '',
+          response: `[
+  {
+    "txid": "f829900985aad885c13fb90555d27514b05a338202c7ef5d694f4813ad474487",
+    "status": "completed_provisional",
+    "added": 1728111527,
+    "lastUpdated": 1728112113,
+    "effectiveFee": 1385,
+    "effectiveVsize": 276,
+    "feeDelta": 3000,
+    "blockHash": "00000000000000000000cde89e34036ece454ca2d07ddd7f71ab46307ca87423",
+    "blockHeight": 864248,
+    "bidBoost": 65,
+    "boostVersion": "v2",
+    "pools": [
+      111,
+      115,
+    ],
+    "minedByPoolUniqueId": 115
+  }
+]`,
+        },
+      }
+    }
+  },
+  {
+    type: 'category',
+    category: 'accelerator-private',
+    fragment: 'accelerator-private',
+    title: 'Accelerator (Authenticated)',
+    showConditions: [''],
+    options: { officialOnly: true },
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-private',
+    httpRequestMethod: 'GET',
+    fragment: 'accelerator-top-up-history',
+    title: 'GET Top Up History',
+    description: {
+      default: '<p>Returns a list of top ups the user has made as prepayment for the accelerator service.</p>'
+    },
+    urlString: '/v1/services/accelerator/top-up-history',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/services/accelerator/top-up-history`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: `[
+  {
+    "type": "Bitcoin",
+    "invoiceId": "CCunucVyNw7jUiUz64mmHz",
+    "amount": 10311031,
+    "status": "pending",
+    "date": 1706372653000,
+    "link": "/payment/bitcoin/CCunucVyNw7jUiUz64mmHz"
+  },
+  {
+    "type": "Bitcoin",
+    "invoiceId": "SG1U27R9PdWi3gH3jB9tm9",
+    "amount": 21000000,
+    "status": "paid",
+    "date": 1706372582000,
+    "link": null
+  },
+  ...
+]`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-private',
+    httpRequestMethod: 'GET',
+    fragment: 'accelerator-balance',
+    title: 'GET Available Balance',
+    description: {
+      default: '<p>Returns the user\'s currently available balance, currently locked funds, and total fees paid so far.</p>'
+    },
+    urlString: '/v1/services/accelerator/balance',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/services/accelerator/balance`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: `{
+  "balance": 99900000,
+  "hold": 101829,
+  "feesPaid": 133721
+}`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-private',
+    httpRequestMethod: 'POST',
+    fragment: 'accelerator-accelerate',
+    title: 'POST Accelerate A Transaction (Pro)',
+    description: {
+      default: '<p>Sends a request to accelerate a transaction.</p>'
+    },
+    urlString: '/v1/services/accelerator/accelerate',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/accelerator/accelerate`, //custom interpolation technique handled in replaceCurlPlaceholder()
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ['txInput=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&userBid=21000000'],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: `HTTP/1.1 200 OK`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-private',
+    httpRequestMethod: 'GET',
+    fragment: 'accelerator-history',
+    title: 'GET Acceleration History',
+    description: {
+      default: '<p>Returns the user\'s past acceleration requests.</p><p>Pass one of the following for <code>:status</code> (required): <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code>.<br>Pass <code>true</code> in <code>:details</code> to get a detailed <code>history</code> of the acceleration request.</p>'
+    },
+    urlString: '/v1/services/accelerator/history?status=:status&details=:details',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/services/accelerator/history?status=all&details=true`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: `[
+  {
+    "id": 89,
+    "user_id": 1,
+    "txid": "ae2639469ec000ed1d14e2550cbb01794e1cd288a00cdc7cce18398ba3cc2ffe",
+    "status": "failed"
+    "fee_paid": 0,
+    "added": 1706378712,
+    "last_updated": 1706378712,
+    "confirmations": 4,
+    "base_fee": 0,
+    "vsize_fee": 0,
+    "max_bid": 7000,
+    "effective_vsize": 135,
+    "effective_fee": 3128,
+    "history": [
+      {
+        "event": "user-requested-acceleration",
+        "timestamp": 1706378712
+      },
+      {
+        "event": "accepted_test-api-key",
+        "timestamp": 1706378712
+      },
+      {
+        "event": "failed-at-block-827672",
+        "timestamp": 1706380261
+      }
+    ]
+  },
+  {
+    "id": 88,
+    "user_id": 1,
+    "txid": "c5840e89173331760e959a190b24e2a289121277ed7f8a095fe289b37cee9fde",
+    "status": "completed"
+    "fee_paid": 140019,
+    "added": 1706378704,
+    "last_updated": 1706380231,
+    "confirmations": 6,
+    "base_fee": 40000,
+    "vsize_fee": 100000,
+    "max_bid": 14000,
+    "effective_vsize": 135,
+    "effective_fee": 3152,
+    "history": [
+      {
+        "event": "user-requested-acceleration",
+        "timestamp": 1706378704
+      },
+      {
+        "event": "accepted_test-api-key",
+        "timestamp": 1706378704
+      },
+      {
+        "event": "complete-at-block-827670",
+        "timestamp": 1706380231
+      }
+    ]
+  },
+  {
+    "id": 87,
+    "user_id": 1,
+    "txid": "178b5b9b310f0d667d7ea563a2cdcc17bc8cd15261b58b1653860a724ca83458",
+    "status": "completed"
+    "fee_paid": 90062,
+    "added": 1706378684,
+    "last_updated": 1706380231,
+    "confirmations": 6,
+    "base_fee": 40000,
+    "vsize_fee": 50000,
+    "max_bid": 14000,
+    "effective_vsize": 135,
+    "effective_fee": 3260,
+    "history": [
+      {
+        "event": "user-requested-acceleration",
+        "timestamp": 1706378684
+      },
+      {
+        "event": "accepted_test-api-key",
+        "timestamp": 1706378684
+      },
+      {
+        "event": "complete-at-block-827670",
+        "timestamp": 1706380231
+      }
+    ]
+  }
+]`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-private',
+    httpRequestMethod: 'POST',
+    fragment: 'accelerator-cancel',
+    title: 'POST Cancel Acceleration (Pro)',
+    description: {
+      default: '<p>Sends a request to cancel an acceleration in the <code>accelerating</code> status.<br>You can retrieve eligible acceleration <code>id</code> using the history endpoint GET <code>/api/v1/services/accelerator/history?status=accelerating</code>.'
+    },
+    urlString: '/v1/services/accelerator/cancel',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/accelerator/cancel`, //custom interpolation technique handled in replaceCurlPlaceholder()
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ['id=42'],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: `HTTP/1.1 200 OK`,
+        },
+      }
+    }
+  },
+  {
+    type: 'category',
     category: 'addresses',
     fragment: 'addresses',
     title: 'Addresses',
@@ -11946,508 +12448,6 @@ export const restApiDocsData = [
         },
         codeSampleLiquid: emptyCodeSample,
         codeSampleLiquidTestnet: emptyCodeSample,
-      }
-    }
-  },
-  {
-    type: 'category',
-    category: 'accelerator-public',
-    fragment: 'accelerator-public',
-    title: 'Accelerator (Public)',
-    showConditions: [''],
-    options: { officialOnly: true },
-  },
-  {
-    options: { officialOnly: true },
-    type: 'endpoint',
-    category: 'accelerator-public',
-    httpRequestMethod: 'POST',
-    fragment: 'accelerator-estimate',
-    title: 'POST Calculate Estimated Costs',
-    description: {
-      default: '<p>Returns estimated costs to accelerate a transaction. Optionally set the <code>X-Mempool-Auth</code> header to get customized estimation.</p>'
-    },
-    urlString: '/v1/services/accelerator/estimate',
-    showConditions: [''],
-    showJsExamples: showJsExamplesDefaultFalse,
-    codeExample: {
-      default: {
-        codeTemplate: {
-          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/accelerator/estimate`, //custom interpolation technique handled in replaceCurlPlaceholder()
-          commonJS: ``,
-          esModule: ``
-        },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: ['txInput=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29'],
-          headers: 'X-Mempool-Auth: stacksats',
-          response: `{
-  "txSummary": {
-    "txid": "ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29",
-    "effectiveVsize": 154,
-    "effectiveFee": 154,
-    "ancestorCount": 1
-  },
-  "cost": 1386,
-  "targetFeeRate": 10,
-  "nextBlockFee": 1540,
-  "userBalance": 0,
-  "mempoolBaseFee": 50000,
-  "vsizeFee": 0,
-  "pools": [
-    111,
-    102,
-    112,
-    142,
-    115
-  ],
-  "options": [
-    {
-      "fee": 1500
-    },
-    {
-      "fee": 3000
-    },
-    {
-      "fee": 12500
-    }
-  ],
-  "hasAccess": false,
-  "availablePaymentMethods": {
-    "bitcoin": {
-      "enabled": true,
-      "min": 1000,
-      "max": 10000000
-    },
-    "cashapp": {
-      "enabled": true,
-      "min": 10,
-      "max": 200
-    }
-  },
-  "unavailable": false
-}`,
-        },
-      }
-    }
-  },
-  {
-    options: { officialOnly: true },
-    type: 'endpoint',
-    category: 'accelerator-public',
-    httpRequestMethod: 'POST',
-    fragment: 'accelerator-get-invoice',
-    title: 'POST Generate Acceleration Invoice',
-    description: {
-      default: '<p>Request a LN invoice to accelerate a transaction.</p>'
-    },
-    urlString: '/v1/services/payments/bitcoin',
-    showConditions: [''],
-    showJsExamples: showJsExamplesDefaultFalse,
-    codeExample: {
-      default: {
-        codeTemplate: {
-          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/payments/bitcoin`, //custom interpolation technique handled in replaceCurlPlaceholder()
-          commonJS: ``,
-          esModule: ``
-        },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: ['product=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&amount=12500'],
-          headers: '',
-          response: `[
-  {
-    "btcpayInvoiceId": "4Ww53d7VgSa596jmCFufe7",
-    "btcDue": "0.000625",
-    "addresses": {
-      "BTC": "bc1qcvqx2kr5mktd7gvym0atrrx0sn27mwv5kkghl3m78kegndm5t8ksvcqpja",
-      "BTC_LNURLPAY": null,
-      "BTC_LightningLike": "lnbc625u1pngl0wzpp56j7cqghsw2y5q7vdu9shmpxgpzsx4pqra4wcm9vdnvqegutplk2qdxj2pskjepqw3hjqnt9d4cx7mmvypqkxcm9d3jhyct5daezq2z0wfjx2u3qf9zr5grpvd3k2mr9wfshg6t0dckk2ef3xdjkyc3e8ymrxv3nxumkxvf4vvungwfcxqen2dmxxcmngepj8q6kzce5xyengdfjxq6nqvpnx9jkzdnyvdjrxefevgexgcej8yknzdejxqmrjd3jx5mrgdpj9ycqzpuxqrpr5sp58593dzj2uauaj3afa7x47qeam8k9yyqrh9qasj2ssdzstew6qv3q9qxpqysgqj8qshfkxmj0gfkly5xfydysvsx55uhnc6fgpw66uf6hl8leu07454axe2kq0q788yysg8guel2r36d6f75546nkhmdcmec4mmlft8dsq62rnsj"
-    }
-  }
-]`,
-        },
-      }
-    }
-  },
-  {
-    options: { officialOnly: true },
-    type: 'endpoint',
-    category: 'accelerator-public',
-    httpRequestMethod: 'GET',
-    fragment: 'accelerator-pending',
-    title: 'GET Pending Accelerations',
-    description: {
-      default: '<p>Returns all transactions currently being accelerated.</p>'
-    },
-    urlString: '/v1/services/accelerator/accelerations',
-    showConditions: [''],
-    showJsExamples: showJsExamplesDefaultFalse,
-    codeExample: {
-      default: {
-        codeTemplate: {
-          curl: `/api/v1/services/accelerator/accelerations`,
-          commonJS: ``,
-          esModule: ``
-        },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          headers: '',
-          response: `[
-  {
-    "txid": "8a183c8ae929a2afb857e7f2acd440aaefdf2797f8f7eab1c5f95ff8602abc81",
-    "added": 1707558316,
-    "feeDelta": 3500,
-    "effectiveVsize": 111,
-    "effectiveFee": 1671,
-    "pools": [
-      111
-    ]
-  },
-  {
-    "txid": "6097f295e21bdd8d725bd8d9ad4dd72b05bd795dc648bfef52150a9b2b7f7a45",
-    "added": 1707560464,
-    "feeDelta": 60000,
-    "effectiveVsize": 812,
-    "effectiveFee": 7790,
-    "pools": [
-      111
-    ]
-  }
-]`,
-        },
-      }
-    }
-  },
-  {
-    options: { officialOnly: true },
-    type: 'endpoint',
-    category: 'accelerator-public',
-    httpRequestMethod: 'GET',
-    fragment: 'accelerator-public-history',
-    title: 'GET Acceleration History',
-    description: {
-      default: `<p>Returns all past accelerated transactions.
-      Filters can be applied:<ul>
-      <li><code>status</code>: <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code></li>
-      <li><code>timeframe</code>: <code>24h</code>, <code>3d</code>, <code>1w</code>, <code>1m</code>, <code>3m</code>, <code>6m</code>, <code>1y</code>, <code>2y</code>, <code>3y</code>, <code>4y</code>, <code>all</code></li>
-      <li><code>minedByPoolUniqueId</code>: any id from <a target="_blank" href="https://github.com/mempool/mining-pools/blob/master/pools-v2.json">pools-v2.json</a>
-      <li><code>blockHash</code>: a block hash</a>
-      <li><code>blockHeight</code>: a block height</a>
-      <li><code>page</code>: the requested page number if using pagination <i>(min: 1)</i></a>
-      <li><code>pageLength</code>: the page lenght if using pagination <i>(min: 1, max: 50)</i></a>
-      <li><code>from</code>: unix timestamp (<i>overrides <code>timeframe</code></i>)</a>
-      <li><code>to</code>: unix timestamp (<i>overrides <code>timeframe</code></i>)</a>
-      </ul></p>`
-    },
-    urlString: '/v1/services/accelerator/accelerations/history',
-    showConditions: [''],
-    showJsExamples: showJsExamplesDefaultFalse,
-    codeExample: {
-      default: {
-        codeTemplate: {
-          curl: `/api/v1/services/accelerator/accelerations/history?blockHash=00000000000000000000482f0746d62141694b9210a813b97eb8445780a32003`,
-          commonJS: ``,
-          esModule: ``
-        },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          headers: '',
-          response: `[
-  {
-    "txid": "f829900985aad885c13fb90555d27514b05a338202c7ef5d694f4813ad474487",
-    "status": "completed_provisional",
-    "added": 1728111527,
-    "lastUpdated": 1728112113,
-    "effectiveFee": 1385,
-    "effectiveVsize": 276,
-    "feeDelta": 3000,
-    "blockHash": "00000000000000000000cde89e34036ece454ca2d07ddd7f71ab46307ca87423",
-    "blockHeight": 864248,
-    "bidBoost": 65,
-    "boostVersion": "v2",
-    "pools": [
-      111,
-      115,
-    ],
-    "minedByPoolUniqueId": 115
-  }
-]`,
-        },
-      }
-    }
-  },
-  {
-    type: 'category',
-    category: 'accelerator-private',
-    fragment: 'accelerator-private',
-    title: 'Accelerator (Authenticated)',
-    showConditions: [''],
-    options: { officialOnly: true },
-  },
-  {
-    options: { officialOnly: true },
-    type: 'endpoint',
-    category: 'accelerator-private',
-    httpRequestMethod: 'GET',
-    fragment: 'accelerator-top-up-history',
-    title: 'GET Top Up History',
-    description: {
-      default: '<p>Returns a list of top ups the user has made as prepayment for the accelerator service.</p>'
-    },
-    urlString: '/v1/services/accelerator/top-up-history',
-    showConditions: [''],
-    showJsExamples: showJsExamplesDefaultFalse,
-    codeExample: {
-      default: {
-        codeTemplate: {
-          curl: `/api/v1/services/accelerator/top-up-history`,
-          commonJS: ``,
-          esModule: ``
-        },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          headers: 'X-Mempool-Auth: stacksats',
-          response: `[
-  {
-    "type": "Bitcoin",
-    "invoiceId": "CCunucVyNw7jUiUz64mmHz",
-    "amount": 10311031,
-    "status": "pending",
-    "date": 1706372653000,
-    "link": "/payment/bitcoin/CCunucVyNw7jUiUz64mmHz"
-  },
-  {
-    "type": "Bitcoin",
-    "invoiceId": "SG1U27R9PdWi3gH3jB9tm9",
-    "amount": 21000000,
-    "status": "paid",
-    "date": 1706372582000,
-    "link": null
-  },
-  ...
-]`,
-        },
-      }
-    }
-  },
-  {
-    options: { officialOnly: true },
-    type: 'endpoint',
-    category: 'accelerator-private',
-    httpRequestMethod: 'GET',
-    fragment: 'accelerator-balance',
-    title: 'GET Available Balance',
-    description: {
-      default: '<p>Returns the user\'s currently available balance, currently locked funds, and total fees paid so far.</p>'
-    },
-    urlString: '/v1/services/accelerator/balance',
-    showConditions: [''],
-    showJsExamples: showJsExamplesDefaultFalse,
-    codeExample: {
-      default: {
-        codeTemplate: {
-          curl: `/api/v1/services/accelerator/balance`,
-          commonJS: ``,
-          esModule: ``
-        },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          headers: 'X-Mempool-Auth: stacksats',
-          response: `{
-  "balance": 99900000,
-  "hold": 101829,
-  "feesPaid": 133721
-}`,
-        },
-      }
-    }
-  },
-  {
-    options: { officialOnly: true },
-    type: 'endpoint',
-    category: 'accelerator-private',
-    httpRequestMethod: 'POST',
-    fragment: 'accelerator-accelerate',
-    title: 'POST Accelerate A Transaction (Pro)',
-    description: {
-      default: '<p>Sends a request to accelerate a transaction.</p>'
-    },
-    urlString: '/v1/services/accelerator/accelerate',
-    showConditions: [''],
-    showJsExamples: showJsExamplesDefaultFalse,
-    codeExample: {
-      default: {
-        codeTemplate: {
-          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/accelerator/accelerate`, //custom interpolation technique handled in replaceCurlPlaceholder()
-          commonJS: ``,
-          esModule: ``
-        },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: ['txInput=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&userBid=21000000'],
-          headers: 'X-Mempool-Auth: stacksats',
-          response: `HTTP/1.1 200 OK`,
-        },
-      }
-    }
-  },
-  {
-    options: { officialOnly: true },
-    type: 'endpoint',
-    category: 'accelerator-private',
-    httpRequestMethod: 'GET',
-    fragment: 'accelerator-history',
-    title: 'GET Acceleration History',
-    description: {
-      default: '<p>Returns the user\'s past acceleration requests.</p><p>Pass one of the following for <code>:status</code> (required): <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code>.<br>Pass <code>true</code> in <code>:details</code> to get a detailed <code>history</code> of the acceleration request.</p>'
-    },
-    urlString: '/v1/services/accelerator/history?status=:status&details=:details',
-    showConditions: [''],
-    showJsExamples: showJsExamplesDefaultFalse,
-    codeExample: {
-      default: {
-        codeTemplate: {
-          curl: `/api/v1/services/accelerator/history?status=all&details=true`,
-          commonJS: ``,
-          esModule: ``
-        },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          headers: 'X-Mempool-Auth: stacksats',
-          response: `[
-  {
-    "id": 89,
-    "user_id": 1,
-    "txid": "ae2639469ec000ed1d14e2550cbb01794e1cd288a00cdc7cce18398ba3cc2ffe",
-    "status": "failed"
-    "fee_paid": 0,
-    "added": 1706378712,
-    "last_updated": 1706378712,
-    "confirmations": 4,
-    "base_fee": 0,
-    "vsize_fee": 0,
-    "max_bid": 7000,
-    "effective_vsize": 135,
-    "effective_fee": 3128,
-    "history": [
-      {
-        "event": "user-requested-acceleration",
-        "timestamp": 1706378712
-      },
-      {
-        "event": "accepted_test-api-key",
-        "timestamp": 1706378712
-      },
-      {
-        "event": "failed-at-block-827672",
-        "timestamp": 1706380261
-      }
-    ]
-  },
-  {
-    "id": 88,
-    "user_id": 1,
-    "txid": "c5840e89173331760e959a190b24e2a289121277ed7f8a095fe289b37cee9fde",
-    "status": "completed"
-    "fee_paid": 140019,
-    "added": 1706378704,
-    "last_updated": 1706380231,
-    "confirmations": 6,
-    "base_fee": 40000,
-    "vsize_fee": 100000,
-    "max_bid": 14000,
-    "effective_vsize": 135,
-    "effective_fee": 3152,
-    "history": [
-      {
-        "event": "user-requested-acceleration",
-        "timestamp": 1706378704
-      },
-      {
-        "event": "accepted_test-api-key",
-        "timestamp": 1706378704
-      },
-      {
-        "event": "complete-at-block-827670",
-        "timestamp": 1706380231
-      }
-    ]
-  },
-  {
-    "id": 87,
-    "user_id": 1,
-    "txid": "178b5b9b310f0d667d7ea563a2cdcc17bc8cd15261b58b1653860a724ca83458",
-    "status": "completed"
-    "fee_paid": 90062,
-    "added": 1706378684,
-    "last_updated": 1706380231,
-    "confirmations": 6,
-    "base_fee": 40000,
-    "vsize_fee": 50000,
-    "max_bid": 14000,
-    "effective_vsize": 135,
-    "effective_fee": 3260,
-    "history": [
-      {
-        "event": "user-requested-acceleration",
-        "timestamp": 1706378684
-      },
-      {
-        "event": "accepted_test-api-key",
-        "timestamp": 1706378684
-      },
-      {
-        "event": "complete-at-block-827670",
-        "timestamp": 1706380231
-      }
-    ]
-  }
-]`,
-        },
-      }
-    }
-  },
-  {
-    options: { officialOnly: true },
-    type: 'endpoint',
-    category: 'accelerator-private',
-    httpRequestMethod: 'POST',
-    fragment: 'accelerator-cancel',
-    title: 'POST Cancel Acceleration (Pro)',
-    description: {
-      default: '<p>Sends a request to cancel an acceleration in the <code>accelerating</code> status.<br>You can retrieve eligible acceleration <code>id</code> using the history endpoint GET <code>/api/v1/services/accelerator/history?status=accelerating</code>.'
-    },
-    urlString: '/v1/services/accelerator/cancel',
-    showConditions: [''],
-    showJsExamples: showJsExamplesDefaultFalse,
-    codeExample: {
-      default: {
-        codeTemplate: {
-          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/accelerator/cancel`, //custom interpolation technique handled in replaceCurlPlaceholder()
-          commonJS: ``,
-          esModule: ``
-        },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: ['id=42'],
-          headers: 'X-Mempool-Auth: stacksats',
-          response: `HTTP/1.1 200 OK`,
-        },
       }
     }
   },
