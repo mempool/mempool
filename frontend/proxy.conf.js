@@ -24,7 +24,7 @@ PROXY_CONFIG = [
         '/api/**', '!/api/v1/ws',
         '!/liquid', '!/liquid/**', '!/liquid/',
         '!/liquidtestnet', '!/liquidtestnet/**', '!/liquidtestnet/',
-        '/testnet/api/**', '/signet/api/**', '/testnet4/api/**'
+        '/testnet/api/**', '/signet/api/**', '/testnet4/api/**', '/regtest/api/**'
         ],
         target: "https://mempool.space",
         ws: true,

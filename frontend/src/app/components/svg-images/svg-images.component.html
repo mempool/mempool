@@ -184,6 +184,9 @@
   <ng-container *ngSwitchCase="'testnet4'">
     <ng-component *ngTemplateOutlet="bitcoinLogo; context: {$implicit: '#5fd15c', width, height, viewBox}"></ng-component>
   </ng-container>
+  <ng-container *ngSwitchCase="'regtest'">
+    <ng-component *ngTemplateOutlet="bitcoinLogo; context: {$implicit: '#a5a5a5', width, height, viewBox}"></ng-component>
+  </ng-container>
   <ng-container *ngSwitchCase="'liquid'">
     <ng-component *ngTemplateOutlet="liquidLogo; context: {$implicit: '', width, height, viewBox}"></ng-component>
   </ng-container>

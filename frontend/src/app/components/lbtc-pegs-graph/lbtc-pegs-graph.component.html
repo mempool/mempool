@@ -1,4 +1,11 @@
 <div class="echarts" *browserOnly echarts [initOpts]="pegsChartInitOption" [options]="pegsChartOptions" (chartInit)="onChartInit($event)" (chartRendered)="rendered()"></div>
 <div class="text-center loadingGraphs" *ngIf="!stateService.isBrowser || isLoading">
-  <div class="spinner-border text-light"></div>
+  <ng-container *ngIf="auditInProgress; else lbtcSpinner">
+    <div class="audit-in-progress-text">
+      <span i18n="liquid.audit-in-progress">Audit in progress</span><span>...</span>
+    </div>
+  </ng-container>
+  <ng-template #lbtcSpinner>
+    <div class="spinner-border text-light"></div>
+  </ng-template>
 </div>
