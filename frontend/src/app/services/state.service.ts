@@ -497,7 +497,7 @@ export class StateService {
   }
 
   isAnyTestnet(): boolean {
-    return ['testnet', 'testnet4', 'signet', 'liquidtestnet'].includes(this.network);
+    return ['testnet', 'testnet4', 'signet', 'regtest', 'liquidtestnet'].includes(this.network);
   }
 
   resetChainTip() {
