@@ -15,7 +15,7 @@ jobs:
         node: ["24.13.0"]
         flavor: ["dev", "prod"]
       fail-fast: false
-    runs-on: ubuntu-latest
+    runs-on: mempool-ci
 
     name: Backend (${{ matrix.flavor }}) - node ${{ matrix.node }}
     steps:
@@ -97,7 +97,7 @@ jobs:
     strategy:
       matrix:
         node: ["24.13.0"]
-    runs-on: ubuntu-latest
+    runs-on: mempool-ci
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -205,7 +205,7 @@ jobs:
         node: ["24.13.0"]
         flavor: ["dev", "prod"]
       fail-fast: false
-    runs-on: ubuntu-latest
+    runs-on: mempool-ci
 
     name: Frontend (${{ matrix.flavor }}) - node ${{ matrix.node }}
     steps:
@@ -299,7 +299,7 @@ jobs:
   
   e2e:
     if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
-    runs-on: ubuntu-latest
+    runs-on: mempool-ci
     needs: frontend
     strategy:
       fail-fast: false
@@ -440,7 +440,7 @@ jobs:
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
   validate_docker_json:
     if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
-    runs-on: ubuntu-latest
+    runs-on: mempool-ci
     name: Validate generated backend Docker JSON
 
     steps: 
