@@ -135,6 +135,7 @@ class PriceUpdater {
     this.latestGoodPrices = JSON.parse(JSON.stringify(this.latestPrices));
   }
 
+  /** @asyncSafe */
   public async $run(): Promise<void> {
     if (['testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK)) {
       // Coins have no value on testnet/signet, so we want to always show 0

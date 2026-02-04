@@ -31,6 +31,7 @@ export interface PublicAcceleration {
 class AccelerationRepository {
   private bidBoostV2Activated = 831580;
 
+  /** @asyncSafe */
   public async $saveAcceleration(acceleration: AccelerationInfo, block: IEsploraApi.Block, pool_id: number, accelerationData: Acceleration[]): Promise<void> {
     const accelerationMap: { [txid: string]: Acceleration } = {};
     for (const acc of accelerationData) {

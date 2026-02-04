@@ -112,7 +112,9 @@ class NetworkSyncService {
     await nodesApi.$setNodesInactive(graphNodesPubkeys);
 
     if (config.MAXMIND.ENABLED) {
-      void $lookupNodeLocation();
+      $lookupNodeLocation().catch((e) => {
+        logger.err(`Error in $lookupNodeLocation: ${e instanceof Error ? e.message : e}`);
+      });
     }
   }
 

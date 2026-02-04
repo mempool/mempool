@@ -96,6 +96,7 @@ class Server {
     }
   }
 
+  /** @asyncSafe */
   async startServer(worker = false): Promise<void> {
     logger.notice(`Starting Mempool Server${worker ? ' (worker)' : ''}... (${backendInfo.getShortCommitHash()})`);
 
@@ -237,6 +238,7 @@ class Server {
     void poolsUpdater.$startService();
   }
 
+  /** @asyncSafe */
   async runMainUpdateLoop(): Promise<void> {
     const start = Date.now();
     try {

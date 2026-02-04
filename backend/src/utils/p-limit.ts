@@ -21,6 +21,8 @@ CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFT
 OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+import logger from "../logger";
+
 /*
 How it works:
 `this._head` is an instance of `Node` which keeps track of its current value and nests
@@ -143,7 +145,7 @@ export default function pLimit(concurrency: number): LimitFunction {
   const enqueue = (fn, resolve, args) => {
     queue.enqueue(run.bind(undefined, fn, resolve, args));
 
-    void (
+    (
       /** @asyncUnsafe */
       async () => {
       // This function needs to wait until the next microtask before comparing
@@ -155,7 +157,9 @@ export default function pLimit(concurrency: number): LimitFunction {
       if (activeCount < concurrency && queue.size > 0) {
         queue.dequeue()();
       }
-    })();
+    })().catch((e) => {
+      logger.err(`Error in pLimit enqueue: ${e instanceof Error ? e.message : e}`);
+    });
   };
 
   const generator = (fn, ...args) =>

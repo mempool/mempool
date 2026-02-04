@@ -21,6 +21,8 @@ module.exports = {
       messages: {
         unhandled:
           'await of non-@asyncSafe callee in @asyncSafe context; use try/catch or annotate callee (@asyncSafe) or context (@asyncUnsafe)',
+        unhandledVoid:
+          'void of non-@asyncSafe callee; annotate callee with @asyncSafe or handle the promise properly',
       },
     },
 
@@ -308,8 +310,8 @@ module.exports = {
         return fnHasTag(m, opt.safeTag);
       }
 
-      function calleeIsAnnotatedSafe(awaitNode) {
-        const arg = unwrapChain(awaitNode.argument);
+      function calleeIsAnnotatedSafe(callExpr) {
+        const arg = unwrapChain(callExpr);
         if (!arg) return false;
 
         if (arg.type === 'CallExpression') {
@@ -368,13 +370,27 @@ module.exports = {
           if (inTryBlock(node) || isHandledAwaitArg(node)) return;
 
           // callee carries @asyncSafe? → ok anywhere
-          if (calleeIsAnnotatedSafe(node)) return;
+          if (calleeIsAnnotatedSafe(node.argument)) return;
 
           // context explicitly @asyncUnsafe? → ok to bubble
           if (contextIsAnnotatedUnsafe(node)) return;
 
           // default: context is safe, callee is unsafe → error
           context.report({ node, messageId: 'unhandled' });
+        },
+
+        // void someAsyncCall() — only allowed if callee is @asyncSafe
+        UnaryExpression(node) {
+          if (node.operator !== 'void') return;
+
+          const arg = unwrapChain(node.argument);
+          if (!arg || arg.type !== 'CallExpression') return;
+
+          // callee carries @asyncSafe? → ok
+          if (calleeIsAnnotatedSafe(node.argument)) return;
+
+          // void of non-safe callee → error
+          context.report({ node, messageId: 'unhandledVoid' });
         },
       };
     },

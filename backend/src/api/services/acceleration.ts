@@ -240,6 +240,7 @@ class AccelerationApi {
     }
   }
 
+  /** @asyncSafe */
   public async connectWebsocket(): Promise<void> {
     if (this.startedWebsocketLoop) {
       return;

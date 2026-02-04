@@ -42,6 +42,7 @@ class RedisCache {
     }
   }
 
+  /* @asyncSafe */
   private async $ensureConnected(): Promise<boolean> {
     if (!this.connected && config.REDIS.ENABLED) {
       try {
@@ -95,6 +96,7 @@ class RedisCache {
     await this.$flushRbfQueues();
   }
 
+  /** @asyncSafe */
   async $updateBlocks(blocks: BlockExtended[]): Promise<void> {
     if (!config.REDIS.ENABLED) {
       return;

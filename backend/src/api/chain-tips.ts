@@ -136,6 +136,7 @@ class ChainTips {
     }
   }
 
+  /** @asyncSafe */
   private async $indexOrphanedBlocks(): Promise<void> {
     if (this.indexingOrphanedBlocks) {
       return;

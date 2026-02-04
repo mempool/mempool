@@ -106,6 +106,7 @@ class FailoverRouter {
   }
 
   // start polling hosts to measure availability & rtt
+  /** @asyncSafe */
   private async pollHosts(): Promise<void> {
     if (this.pollTimer) {
       clearTimeout(this.pollTimer);

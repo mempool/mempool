@@ -127,6 +127,8 @@ class Indexer {
    * Runs a single task immediately
    *
    * (use `scheduleSingleTask` instead to queue a task to run after some timeout)
+   *
+   * @asyncSafe
    */
   public async runSingleTask(task: TaskName): Promise<void> {
     if (!Common.indexingEnabled() || this.tasksRunning[task]) {
@@ -165,7 +167,7 @@ class Indexer {
     this.tasksRunning[task] = false;
   }
 
-  /** @asyncUnsafe */
+  /** @asyncSafe */
   public async $run(): Promise<void> {
     if (!Common.indexingEnabled() || this.runIndexer === false ||
       this.indexerRunning === true || mempool.hasPriority()

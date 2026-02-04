@@ -182,7 +182,8 @@ import { execSync } from 'child_process';
     if (this.pool === null) {
       this.pool = createPool(this.poolConfig);
       this.pool.on('connection', function (newConnection: PoolConnection) {
-        void newConnection.query(`SET time_zone='+00:00'`);
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises -- callback API, not a promise despite types
+        newConnection.query(`SET time_zone='+00:00'`);
       });
     }
     return this.pool;

@@ -660,7 +660,7 @@ class Blocks {
   /**
    * [INDEXING] Index transaction classification flags for Goggles
    *
-   * @asyncUnsafe
+   * @asyncSafe
    */
   public async $classifyBlocks(): Promise<void> {
     if (this.classifyingBlocks) {
@@ -1615,6 +1615,7 @@ class Blocks {
     }
   }
 
+  /** @asyncSafe */
   public async $saveCpfp(hash: string, height: number, cpfpSummary: CpfpSummary): Promise<void> {
     try {
       const result = await cpfpRepository.$batchSaveClusters(cpfpSummary.clusters);

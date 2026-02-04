@@ -58,7 +58,9 @@ class FundingTxFetcher {
       elapsedSeconds = Math.round((new Date().getTime() / 1000) - cacheTimer);
       if (elapsedSeconds > 60) {
         logger.debug(`Saving ${Object.keys(this.fundingTxCache).length} funding txs cache into disk`, logger.tags.ln);
-        void fsPromises.writeFile(CACHE_FILE_NAME, JSON.stringify(this.fundingTxCache));
+        fsPromises.writeFile(CACHE_FILE_NAME, JSON.stringify(this.fundingTxCache)).catch((e) => {
+          logger.err(`Error saving funding txs cache to disk: ${e instanceof Error ? e.message : e}`, logger.tags.ln);
+        });
         cacheTimer = new Date().getTime() / 1000;
       }
     }
@@ -66,7 +68,9 @@ class FundingTxFetcher {
     if (this.channelNewlyProcessed > 0) {
       logger.info(`Indexed ${this.channelNewlyProcessed} additional channels funding tx`, logger.tags.ln);
       logger.debug(`Saving ${Object.keys(this.fundingTxCache).length} funding txs cache into disk`, logger.tags.ln);
-      void fsPromises.writeFile(CACHE_FILE_NAME, JSON.stringify(this.fundingTxCache));
+      fsPromises.writeFile(CACHE_FILE_NAME, JSON.stringify(this.fundingTxCache)).catch((e) => {
+        logger.err(`Error saving funding txs cache to disk: ${e instanceof Error ? e.message : e}`, logger.tags.ln);
+      });
     }
 
     this.running = false;

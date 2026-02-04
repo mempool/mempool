@@ -59,6 +59,7 @@ class StratumApi {
     }
   }
 
+  /** @asyncSafe */
   public async connectWebsocket(): Promise<void> {
     if (!config.STRATUM.ENABLED) {
       return;

@@ -43,6 +43,7 @@ class BackendInfo {
     void this.$updateCoreVersion(); // starting immediately
   }
 
+  /** @asyncSafe */
   private async $updateCoreVersion(): Promise<void> {
     try {
       const networkInfo = await bitcoinClient.getNetworkInfo();
