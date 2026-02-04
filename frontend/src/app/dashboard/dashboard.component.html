@@ -18,10 +18,11 @@
       <div class="card graph-card">
         <div class="card-body pl-lg-3 pr-lg-3 pl-2 pr-2">
           <a class="title-link mb-0" style="margin-top: -2px" href="" [routerLink]="['/mempool-block/0' | relativeUrl]">
-            <h5 class="card-title d-inline"><span>Mempool Goggles&trade;</span> : {{ goggleCycle[goggleIndex].name }}</h5>
-            <span>&nbsp;</span>
-            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
-          </a>
+  <h5 class="card-title d-inline"><span>Mempool Goggles&trade;</span> : {{ goggleCycle[goggleIndex].name }}</h5>
+  <span>&nbsp;</span>
+  <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)" title="View details"></fa-icon>
+</a>
+
           <div class="quick-filter">
             <div class="btn-group btn-group-toggle">
               <label class="btn btn-primary btn-xs" [class.active]="filter.index === goggleIndex"  *ngFor="let filter of goggleCycle">
@@ -61,11 +62,12 @@
     <div class="col" style="max-height: 410px">
       <div class="card" *ngIf="(network$ | async) !== 'liquidtestnet'; else latestBlocks">
         <div class="card-body">
-          <a class="title-link" href="" [routerLink]="['/rbf' | relativeUrl]">
-            <h5 class="card-title d-inline" i18n="dashboard.recent-rbf-replacements">Recent Replacements</h5>
-            <span>&nbsp;</span>
-            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
-          </a>
+         <a class="title-link mb-0" style="margin-top: -2px" href="" [routerLink]="['/mempool-block/0' | relativeUrl]">
+  <h5 class="card-title d-inline"><span>Mempool Goggles&trade;</span> : {{ goggleCycle[goggleIndex].name }}</h5>
+  <span>&nbsp;</span>
+  <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)" title="View details"></fa-icon>
+</a>
+
           <table class="table lastest-replacements-table">
             <thead>
               <th class="table-cell-txid" i18n="dashboard.latest-transactions.txid">TXID</th>
@@ -95,11 +97,12 @@
       <ng-template #latestBlocks>
         <div class="card">
           <div class="card-body">
-            <a class="title-link" href="" [routerLink]="['/blocks' | relativeUrl]">
-              <h5 class="card-title d-inline" i18n="dashboard.recent-blocks">Recent Blocks</h5>
-              <span>&nbsp;</span>
-              <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
-            </a>
+           <a class="title-link mb-0" style="margin-top: -2px" href="" [routerLink]="['/mempool-block/0' | relativeUrl]">
+  <h5 class="card-title d-inline"><span>Mempool Goggles&trade;</span> : {{ goggleCycle[goggleIndex].name }}</h5>
+  <span>&nbsp;</span>
+  <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)" title="View details"></fa-icon>
+</a>
+
             <table class="table lastest-blocks-table">
               <thead>
                 <th class="table-cell-height" i18n="dashboard.latest-blocks.height">Height</th>
