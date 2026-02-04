@@ -4,13 +4,22 @@ import bitcoinSecondClient from '../bitcoin/bitcoin-second-client';
 import { Common } from '../common';
 import DB from '../../database';
 import logger from '../../logger';
+import * as bitcoinjs from 'bitcoinjs-lib';
 
-const federationChangeAddresses = ['bc1qxvay4an52gcghxq5lavact7r6qe9l4laedsazz8fj2ee2cy47tlqff4aj4', '3EiAcrzq1cELXScc98KeCswGWZaPGceT1d', '3G6neksSBMp51kHJ2if8SeDUrzT8iVETWT', 'bc1qwnevjp8nsq7adu3hxlvdvslrf242q4vuavfg0y929jp2zntp3vgq7cq6z2'];
 const auditBlockOffsetWithTip = 1; // Wait for 1 block confirmation before processing the block in the audit process to reduce the risk of reorgs
+const DYNAFED_ACTIVATION_HEIGHT = 1517040;
+const DYNAFED_CHECK_INTERVAL = 20160;
+
+interface FederationAddress {
+  fedpegscript: string;
+  address: string;
+  timelock: number;
+  blocknumber: number;
+}
 
 class ElementsParser {
   private isRunning = false;
-  private isUtxosUpdatingRunning = false;
+  private federationPegScripts: FederationAddress[] = [];
 
   constructor() { }
 
@@ -20,15 +29,23 @@ class ElementsParser {
     }
     try {
       this.isRunning = true;
+      const startedAt = Date.now() / 1000;
+      const stopAt = startedAt + 3600; // Limit one parse run to 1 hour to keep the tip sufficiently up to date
       const result = await bitcoinClient.getChainTips();
       const tip = result[0].height;
       const latestBlockHeight = await this.$getLatestBlockHeightFromDatabase();
       for (let height = latestBlockHeight + 1; height <= tip; height++) {
-        const blockHash: IBitcoinApi.ChainTips = await bitcoinClient.getBlockHash(height);
+        if ((Date.now() / 1000) >= stopAt) {
+          logger.debug(`Reached max Elements parsing runtime of one hour, pausing parse to resume later`);
+          break;
+        }
+        const blockHash: string = await bitcoinClient.getBlockHash(height);
         const block: IBitcoinApi.Block = await bitcoinClient.getBlock(blockHash, 2);
+        await this.$updateFederationPegScripts(block);
         await this.$parseBlock(block);
         await this.$saveLatestBlockToDatabase(block.height);
       }
+      await this.$updateFederationUtxos(stopAt);
       this.isRunning = false;
     } catch (e) {
       this.isRunning = false;
@@ -56,8 +73,9 @@ class ElementsParser {
     const bitcoinBlock: IBitcoinApi.Block = await bitcoinSecondClient.getBlock(bitcoinTx.blockhash);
     const prevout = bitcoinTx.vout[input.vout || 0];
     const outputAddress = prevout.scriptPubKey.address || (prevout.scriptPubKey.addresses && prevout.scriptPubKey.addresses[0]) || '';
+    const timelock = await this.$resolvePegInTimelock(input, outputAddress);
     await this.$savePegToDatabase(block.height, block.time, prevout.value * 100000000, txid, vindex,
-      outputAddress, bitcoinTx.txid, prevout.n, bitcoinBlock.height, bitcoinBlock.time, 1);
+      outputAddress, bitcoinTx.txid, prevout.n, bitcoinBlock.height, bitcoinBlock.time, 1, timelock);
   }
 
   protected async $parseOutputs(tx: IBitcoinApi.Transaction, block: IBitcoinApi.Block) {
@@ -75,7 +93,7 @@ class ElementsParser {
   }
 
   protected async $savePegToDatabase(height: number, blockTime: number, amount: number, txid: string,
-    txindex: number, bitcoinaddress: string, bitcointxid: string, bitcoinindex: number, bitcoinblock: number, bitcoinBlockTime: number, final_tx: number): Promise<void> {
+    txindex: number, bitcoinaddress: string, bitcointxid: string, bitcoinindex: number, bitcoinblock: number, bitcoinBlockTime: number, final_tx: number, pegInTimelock: number | null = null): Promise<void> {
     const query = `INSERT IGNORE INTO elements_pegs(
         block, datetime, amount, txid, txindex, bitcoinaddress, bitcointxid, bitcoinindex, final_tx
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
@@ -88,18 +106,131 @@ class ElementsParser {
 
     if (amount > 0) { // Peg-in
 
-      // Add the address to the federation addresses table
-      await DB.query(`INSERT IGNORE INTO federation_addresses (bitcoinaddress) VALUES (?)`, [bitcoinaddress]);
-
+      if (pegInTimelock === null) {
+        // This should never happen, but just in case fallback to 4032 timelock so that the UTXO is at least added to the federation UTXO set
+        logger.err(`Unable to resolve timelock for peg in address ${bitcoinaddress} in ${txid}:${txindex}, fallback to 4032.`);
+        pegInTimelock = 4032;
+      }
       // Add the UTXO to the federation txos table
       const query_utxos = `INSERT IGNORE INTO federation_txos (txid, txindex, bitcoinaddress, amount, blocknumber, blocktime, unspent, lastblockupdate, lasttimeupdate, timelock, expiredAt, emergencyKey, pegtxid, pegindex, pegblocktime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-      const params_utxos: (string | number)[] = [bitcointxid, bitcoinindex, bitcoinaddress, amount, bitcoinblock, bitcoinBlockTime, 1, bitcoinblock - 1, 0, 4032, 0, 0, txid, txindex, blockTime];
+      const params_utxos: (string | number)[] = [bitcointxid, bitcoinindex, bitcoinaddress, amount, bitcoinblock, bitcoinBlockTime, 1, bitcoinblock - 1, 0, pegInTimelock, 0, 0, txid, txindex, blockTime];
       await DB.query(query_utxos, params_utxos);
       const [minBlockUpdate] = await DB.query(`SELECT MIN(lastblockupdate) AS lastblockupdate FROM federation_txos WHERE unspent = 1`);
       await this.$saveLastBlockAuditToDatabase(minBlockUpdate[0]['lastblockupdate']);
       logger.debug(`Saved new Federation UTXO ${bitcointxid}:${bitcoinindex} belonging to ${bitcoinaddress} to federation txos`);
 
     }
+  }
+
+  private async $getFederationPegScripts(): Promise<FederationAddress[]> {
+    if (this.federationPegScripts.length === 0) {
+      const [rows] = await DB.query(`SELECT fedpegscript, address, timelock, blocknumber FROM federation_peg_scripts ORDER BY blocknumber DESC`);
+      this.federationPegScripts = rows as FederationAddress[];
+    }
+    return this.federationPegScripts;
+  }
+
+  private async $updateFederationPegScripts(block: IBitcoinApi.Block): Promise<void> {
+    const height = block.height;
+    if (height < DYNAFED_ACTIVATION_HEIGHT || height % DYNAFED_CHECK_INTERVAL !== 0) {
+      return;
+    }
+
+    const fedpegscript = block.dynamic_parameters?.current?.fedpegscript as string | undefined;
+    const fedpegProgram = block.dynamic_parameters?.current?.fedpeg_program as string | undefined;
+    if (!fedpegscript || !fedpegProgram) {
+      logger.err(`Missing fedpeg fields at height ${height}, skipping dynamic federation address update.`);
+      return;
+    }
+
+    if ((await this.$getFederationPegScripts()).some(entry => entry.fedpegscript === fedpegscript)) {
+      logger.debug(`Fedpegscript at height ${height} is already known, skipping.`);
+      return;
+    }
+
+    logger.debug(`New fedpegscript found at height ${height}, deriving new federation address and storing in database.`);
+    const address = bitcoinjs.address.fromOutputScript(Buffer.from(fedpegProgram, 'hex'), bitcoinjs.networks.bitcoin)
+    if (!address) {
+      logger.err(`Unable to derive federation address from fedpeg program at height ${height}.`);
+      return;
+    }
+
+    const timelock = this.extractTimelockFromFedpegscript(fedpegscript);
+    if (timelock === null) {
+      logger.err(`Unable to extract federation address timelock from fedpegscript at height ${height}.`);
+      return;
+    }
+
+    await DB.query(
+      `INSERT INTO federation_peg_scripts (fedpegscript, address, timelock, blocknumber) VALUES (?, ?, ?, ?)`,
+      [fedpegscript, address, timelock, height]
+    );
+    this.federationPegScripts.unshift({ fedpegscript, address, timelock, blocknumber: height });
+    logger.debug(`Added new federation address ${address} with timelock ${timelock} at height ${height} to the database.`);
+  }
+
+  private extractTimelockFromFedpegscript(fedpegscript: string): number | null {
+    const chunks = bitcoinjs.script.decompile(Buffer.from(fedpegscript, 'hex'));
+    if (!chunks) {
+      return null;
+    }
+
+    for (let i = 0; i < chunks.length; i++) {
+      if (chunks[i] !== bitcoinjs.opcodes.OP_CHECKSEQUENCEVERIFY) {
+        continue;
+      }
+
+      const previous = chunks[i - 1];
+      if (previous === undefined) {
+        return null;
+      }
+
+      if (Buffer.isBuffer(previous)) {
+        try {
+          return bitcoinjs.script.number.decode(previous, 5, true);
+        } catch (e) {
+          return null;
+        }
+      }
+
+      if (typeof previous === 'number') {
+        if (previous === bitcoinjs.opcodes.OP_0) {
+          return 0;
+        }
+        if (previous >= bitcoinjs.opcodes.OP_1 && previous <= bitcoinjs.opcodes.OP_16) {
+          return previous - bitcoinjs.opcodes.OP_1 + 1;
+        }
+      }
+
+      return null;
+    }
+
+    return null;
+  }
+
+  private async $resolvePegInTimelock(input: IBitcoinApi.Vin, bitcoinaddress: string): Promise<number | null> {
+    const claimScript = input.pegin_witness?.[3];
+    if (!claimScript) {
+      logger.err(`Missing claim_script for peg-in input to address ${bitcoinaddress}.`);
+      return null;
+    }
+
+    // Check claim script against each fedpegscript most recent first
+    for (const pegScript of (await this.$getFederationPegScripts())) {
+      try {
+        const tweakResult = await bitcoinClient.tweakFedPegScript(claimScript, pegScript.fedpegscript);
+        const matches = tweakResult?.p2wsh === bitcoinaddress || tweakResult?.p2shwsh === bitcoinaddress;
+        if (matches) {
+          return pegScript.timelock;
+        }
+      } catch (e) {
+        const message = e instanceof Error ? e.message : String(e);
+        logger.err(`tweakfedpegscript failed for address ${bitcoinaddress}: ${message}`);
+      }
+    }
+
+    logger.err(`No matching fedpegscript found for address ${bitcoinaddress}.`);
+    return null;
   }
 
   protected async $getLatestBlockHeightFromDatabase(): Promise<number> {
@@ -115,19 +246,12 @@ class ElementsParser {
 
   ///////////// FEDERATION AUDIT //////////////
 
-  public async $updateFederationUtxos() {
-    if (this.isUtxosUpdatingRunning) {
-      return;
-    }
-
-    this.isUtxosUpdatingRunning = true;
-
+  public async $updateFederationUtxos(stopAt: number) {
     try {
       let auditProgress = await this.$getAuditProgress();
       // If no peg in transaction was found in the database, return
       if (!auditProgress.lastBlockAudit) {
         logger.debug(`No Federation UTXOs found in the database. Waiting for some to be confirmed before starting the Federation UTXOs audit`);
-        this.isUtxosUpdatingRunning = false;
         return;
       }
 
@@ -135,7 +259,6 @@ class ElementsParser {
       // If the bitcoin blockchain is not synced yet, return
       if (bitcoinBlocksToSync.bitcoinHeaders > bitcoinBlocksToSync.bitcoinBlocks + 1) {
         logger.debug(`Bitcoin client is not synced yet. ${bitcoinBlocksToSync.bitcoinHeaders - bitcoinBlocksToSync.bitcoinBlocks} blocks remaining to sync before the Federation audit process can start`);
-        this.isUtxosUpdatingRunning = false;
         return;
       }
 
@@ -154,19 +277,28 @@ class ElementsParser {
 
         // Get the peg-out addresses that need to be scanned
         const redeemAddresses = await this.$getRedeemAddressesToScan();
+        const redeemAddressesByAddress = new Map<string, any[]>();
+        for (const redeemAddress of redeemAddresses) {
+          const entries = redeemAddressesByAddress.get(redeemAddress.bitcoinaddress);
+          if (entries) {
+            entries.push(redeemAddress);
+          } else {
+            redeemAddressesByAddress.set(redeemAddress.bitcoinaddress, [redeemAddress]);
+          }
+        }
 
         // The fast way: check if these UTXOs are still unspent as of the current block with gettxout
-        let spentAsTip: any[];
-        let unspentAsTip: any[];
+        let spentAsTip: Map<string, any>;
+        let unspentAsTip: Map<string, any>;
         if (auditProgress.confirmedTip - auditProgress.lastBlockAudit <= 150) { // If the audit status is not too far in the past, we can use gettxout (fast way)
           const utxosToParse = await this.$getFederationUtxosToParse(utxos);
           spentAsTip = utxosToParse.spentAsTip;
           unspentAsTip = utxosToParse.unspentAsTip;
           logger.debug(`Found ${utxos.length} Federation UTXOs and ${redeemAddresses.length} Peg-Out Addresses to scan in Bitcoin block height #${auditProgress.lastBlockAudit} / #${auditProgress.confirmedTip}`);
-          logger.debug(`${unspentAsTip.length} / ${utxos.length} Federation UTXOs are unspent as of tip`);
+          logger.debug(`${unspentAsTip.size} / ${utxos.length} Federation UTXOs are unspent as of tip`);
         } else { // If the audit status is too far in the past, it is useless and wasteful to look for still unspent txos since they will all be spent as of the tip
-          spentAsTip = utxos;
-          unspentAsTip = [];
+          spentAsTip = new Map<string, any>(utxos.map(utxo => [`${utxo.txid}:${utxo.txindex}`, utxo]));
+          unspentAsTip = new Map<string, any>();
 
           // Logging
           const elapsedSeconds = (Date.now() / 1000) - timer;
@@ -186,7 +318,7 @@ class ElementsParser {
         // The slow way: parse the block to look for the spending tx
         const blockHash: IBitcoinApi.ChainTips = await bitcoinSecondClient.getBlockHash(auditProgress.lastBlockAudit);
         const block: IBitcoinApi.Block = await bitcoinSecondClient.getBlock(blockHash, 2);
-        await this.$parseBitcoinBlock(block, spentAsTip, unspentAsTip, auditProgress.confirmedTip, redeemAddresses);
+        await this.$parseBitcoinBlock(block, spentAsTip, unspentAsTip, auditProgress.confirmedTip, redeemAddressesByAddress);
 
         // Finally, update the lastblockupdate of the remaining UTXOs and save to the database
         const [minBlockUpdate] = await DB.query(`SELECT MIN(lastblockupdate) AS lastblockupdate FROM federation_txos WHERE unspent = 1`);
@@ -195,11 +327,14 @@ class ElementsParser {
         auditProgress = await this.$getAuditProgress();
         auditProgress.lastBlockAudit++;
         indexedThisRun++;
+
+        if ((Date.now() / 1000) >= stopAt) {
+          logger.debug(`Reached max federation audit runtime, pausing audit to let Liquid parsing run and resuming later`);
+          break;
+        }
       }
 
-      this.isUtxosUpdatingRunning = false;
     } catch (e) {
-      this.isUtxosUpdatingRunning = false;
       throw new Error(e instanceof Error ? e.message : 'Error');
     }
   }
@@ -212,27 +347,26 @@ class ElementsParser {
   }
 
   // Returns the UTXOs that are spent as of tip and need to be scanned
-  protected async $getFederationUtxosToParse(utxos: any[]): Promise<any> {
-    const spentAsTip: any[] = [];
-    const unspentAsTip: any[] = [];
+  protected async $getFederationUtxosToParse(utxos: any[]): Promise<{ spentAsTip: Map<string, any>; unspentAsTip: Map<string, any> }> {
+    const spentAsTip = new Map<string, any>();
+    const unspentAsTip = new Map<string, any>();
 
     for (const utxo of utxos) {
       const result = await bitcoinSecondClient.getTxOut(utxo.txid, utxo.txindex, false);
-      result ? unspentAsTip.push(utxo) : spentAsTip.push(utxo);
+      const key = `${utxo.txid}:${utxo.txindex}`;
+      result ? unspentAsTip.set(key, utxo) : spentAsTip.set(key, utxo);
     }
 
     return {spentAsTip, unspentAsTip};
   }
 
-  protected async $parseBitcoinBlock(block: IBitcoinApi.Block, spentAsTip: any[], unspentAsTip: any[], confirmedTip: number, redeemAddressesData: any[] = []) {
-    const redeemAddresses: string[] = redeemAddressesData.map(redeemAddress => redeemAddress.bitcoinaddress);
+  protected async $parseBitcoinBlock(block: IBitcoinApi.Block, spentAsTip: Map<string, any>, unspentAsTip: Map<string, any>, confirmedTip: number, redeemAddressesByAddress: Map<string, any[]>) {
+    const federationTimelockByAddress = new Map<string, number>((await this.$getFederationPegScripts()).map(fedAddress => [fedAddress.address, fedAddress.timelock]));
     for (const tx of block.tx) {
-      let mightRedeemInThisTx = false;
       // Check if the Federation UTXOs that was spent as of tip are spent in this block
       for (const input of tx.vin) {
-        const txo = spentAsTip.find(txo => txo.txid === input.txid && txo.txindex === input.vout);
+        const txo = spentAsTip.get(`${input.txid!}:${input.vout!}`);
         if (txo) {
-          mightRedeemInThisTx = true; // A Federation UTXO is spent in this block: we might find a peg-out address in the outputs
           if (txo.expiredAt > 0 ) {
             if (input.txinwitness?.length !== 13) { // Check if the witness data of the input contains the 11 signatures: if it doesn't, emergency keys are being used
               await DB.query(`UPDATE federation_txos SET unspent = 0, lastblockupdate = ?, lasttimeupdate = ?, emergencyKey = 1 WHERE txid = ? AND txindex = ?`, [block.height, block.time, txo.txid, txo.txindex]);
@@ -245,36 +379,41 @@ class ElementsParser {
             await DB.query(`UPDATE federation_txos SET unspent = 0, lastblockupdate = ?, lasttimeupdate = ? WHERE txid = ? AND txindex = ?`, [block.height, block.time, txo.txid, txo.txindex]);
             logger.debug(`Federation UTXO ${txo.txid}:${txo.txindex} (${txo.amount} sats) was spent in block ${block.height}`);
           }
-          // Remove the TXO from the utxo array
-          spentAsTip.splice(spentAsTip.indexOf(txo), 1);
+          // Remove the TXO from the map
+          spentAsTip.delete(`${txo.txid}:${txo.txindex}`);
         }
       }
       // Check if an output is sent to a change address of the federation
       for (const output of tx.vout) {
-        if (output.scriptPubKey.address && federationChangeAddresses.includes(output.scriptPubKey.address)) {
-          // Check that the UTXO was not already added in the DB by previous scans
-          const [rows_check] = await DB.query(`SELECT txid FROM federation_txos WHERE txid = ? AND txindex = ?`, [tx.txid, output.n]) as any[];
-          if (rows_check.length === 0) {
-            const timelock = output.scriptPubKey.address === federationChangeAddresses[1] ? 2016 : 4032; // hardcode timelock for 3EiAcrzq... This will be addressed better in the future
-            const query_utxos = `INSERT INTO federation_txos (txid, txindex, bitcoinaddress, amount, blocknumber, blocktime, unspent, lastblockupdate, lasttimeupdate, timelock, expiredAt, emergencyKey, pegtxid, pegindex, pegblocktime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-            const params_utxos: (string | number)[] = [tx.txid, output.n, output.scriptPubKey.address, output.value * 100000000, block.height, block.time, 1, block.height, 0, timelock, 0, 0, '', 0, 0];
-            await DB.query(query_utxos, params_utxos);
-            // Add the UTXO to the utxo array
-            spentAsTip.push({
-              txid: tx.txid,
-              txindex: output.n,
-              bitcoinaddress: output.scriptPubKey.address,
-              amount: output.value * 100000000,
-              blocknumber: block.height,
-              timelock: timelock,
-              expiredAt: 0,
-            });
-            logger.debug(`Added new Federation UTXO ${tx.txid}:${output.n} (${Math.round(output.value * 100000000)} sats), change address: ${output.scriptPubKey.address}`);
+        if (output.scriptPubKey.address) {
+          const timelock = federationTimelockByAddress.get(output.scriptPubKey.address);
+          if (timelock !== undefined) {
+            // Check that the UTXO was not already added in the DB by previous scans
+            const [rows_check] = await DB.query(`SELECT txid FROM federation_txos WHERE txid = ? AND txindex = ?`, [tx.txid, output.n]) as any[];
+            if (rows_check.length === 0) {
+              const query_utxos = `INSERT INTO federation_txos (txid, txindex, bitcoinaddress, amount, blocknumber, blocktime, unspent, lastblockupdate, lasttimeupdate, timelock, expiredAt, emergencyKey, pegtxid, pegindex, pegblocktime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+              const params_utxos: (string | number)[] = [tx.txid, output.n, output.scriptPubKey.address, output.value * 100000000, block.height, block.time, 1, block.height, 0, timelock, 0, 0, '', 0, 0];
+              await DB.query(query_utxos, params_utxos);
+              // Add the UTXO to the map
+              spentAsTip.set(`${tx.txid}:${output.n}`, {
+                txid: tx.txid,
+                txindex: output.n,
+                bitcoinaddress: output.scriptPubKey.address,
+                amount: output.value * 100000000,
+                blocknumber: block.height,
+                timelock: timelock,
+                expiredAt: 0,
+              });
+              logger.debug(`Added new Federation UTXO ${tx.txid}:${output.n} (${Math.round(output.value * 100000000)} sats), change address: ${output.scriptPubKey.address}`);
+            }
           }
-        }
-        if (mightRedeemInThisTx && output.scriptPubKey.address && redeemAddresses.includes(output.scriptPubKey.address)) {
-          // Find the number of times output.scriptPubKey.address appears in redeemAddresses. There can be address reuse for peg-outs...
-          const matchingAddress: any[] = redeemAddressesData.filter(redeemAddress => redeemAddress.bitcoinaddress === output.scriptPubKey.address && -redeemAddress.amount === Math.round(output.value * 100000000));
+
+          const redeemCandidates = redeemAddressesByAddress.get(output.scriptPubKey.address);
+          if (!redeemCandidates) {
+            continue;
+          }
+          // Find the number of times output.scriptPubKey.address appears in the candidates. There can be address reuse for peg-outs...
+          const matchingAddress: any[] = redeemCandidates.filter(redeemAddress => -redeemAddress.amount === Math.round(output.value * 100000000));
           if (matchingAddress.length > 0) {
             if (matchingAddress.length > 1) {
               // If there are more than one peg out address with the same amount, we can't know which one redeemed the UTXO: we take the oldest one
@@ -286,9 +425,13 @@ class ElementsParser {
             const query_add_redeem = `UPDATE elements_pegs SET bitcointxid = ?, bitcoinindex = ? WHERE bitcoinaddress = ? AND amount = ? AND datetime = ?`;
             const params_add_redeem: (string | number)[] = [tx.txid, output.n, matchingAddress[0].bitcoinaddress, matchingAddress[0].amount, matchingAddress[0].datetime];
             await DB.query(query_add_redeem, params_add_redeem);
-            const index = redeemAddressesData.indexOf(matchingAddress[0]);
-            redeemAddressesData.splice(index, 1);
-            redeemAddresses.splice(index, 1);
+            const index = redeemCandidates.indexOf(matchingAddress[0]);
+            if (index !== -1) {
+              redeemCandidates.splice(index, 1);
+              if (redeemCandidates.length === 0) {
+                redeemAddressesByAddress.delete(output.scriptPubKey.address);
+              }
+            }
           } else { // The output amount does not match the peg-out amount... log it
             logger.debug(`Found redeem txid ${tx.txid}:${output.n} to peg-out address ${output.scriptPubKey.address} but output amount ${Math.round(output.value * 100000000)} does not match the peg-out amount!`);
           }
@@ -296,7 +439,7 @@ class ElementsParser {
       }
     }
 
-    for (const utxo of spentAsTip) {
+    for (const utxo of spentAsTip.values()) {
       if (utxo.expiredAt === 0 && block.height >= utxo.blocknumber + utxo.timelock) { // The UTXO is expiring in this block
         await DB.query(`UPDATE federation_txos SET lastblockupdate = ?, expiredAt = ? WHERE txid = ? AND txindex = ?`, [block.height, block.time, utxo.txid, utxo.txindex]);
       } else {
@@ -304,7 +447,7 @@ class ElementsParser {
       }
     }
 
-    for (const utxo of unspentAsTip) {
+    for (const utxo of unspentAsTip.values()) {
       if (utxo.expiredAt === 0 && block.height >= utxo.blocknumber + utxo.timelock) { // The UTXO is expiring in this block
         await DB.query(`UPDATE federation_txos SET lastblockupdate = ?, expiredAt = ? WHERE txid = ? AND txindex = ?`, [confirmedTip, block.time, utxo.txid, utxo.txindex]);
       } else if (utxo.expiredAt === 0 && confirmedTip >= utxo.blocknumber + utxo.timelock) { // The UTXO is expiring before the tip: we need to keep track of it
