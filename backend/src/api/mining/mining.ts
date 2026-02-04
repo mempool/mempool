@@ -708,6 +708,7 @@ class Mining {
     return blocks[0];
   }
 
+  /** @asyncUnsafe */
   private async getGenesisData(): Promise<{timestamp: number, bits: number, difficulty: number}> {
     if (this.genesisData == null) {
       const genesisBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(await bitcoinApi.$getBlockHash(0));

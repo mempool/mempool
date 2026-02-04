@@ -195,7 +195,11 @@ import { execSync } from 'child_process';
    */
   public async close(): Promise<void> {
     if (this.pool !== null) {
-      await this.pool.end();
+      try {
+        await this.pool.end();
+      } catch (e) {
+        logger.err(`Exception in close. Reason: ${(e instanceof Error ? e.message : e)}`);
+      }
       this.pool = null;
       logger.debug('Database connection pool closed');
     }

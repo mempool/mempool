@@ -61,27 +61,32 @@ class AccelerationRepository {
   }
 
   public async $getAccelerationInfoForTxid(txid: string): Promise<PublicAcceleration | null> {
-    const [rows] = await DB.query(`
-      SELECT *, UNIX_TIMESTAMP(requested) as requested_timestamp, UNIX_TIMESTAMP(added) as block_timestamp FROM accelerations
-      JOIN pools on pools.unique_id = accelerations.pool
-      WHERE txid = ?
-    `, [txid]) as RowDataPacket[][];
-    if (rows?.length) {
-      const row = rows[0];
-      return {
-        txid: row.txid,
-        height: row.height,
-        added: row.requested_timestamp || row.block_timestamp,
-        pool: {
-          id: row.id,
-          slug: row.slug,
-          name: row.name,
-        },
-        effective_vsize: row.effective_vsize,
-        effective_fee: row.effective_fee,
-        boost_rate: row.boost_rate,
-        boost_cost: row.boost_cost,
-      };
+    try {
+      const [rows] = await DB.query(`
+        SELECT *, UNIX_TIMESTAMP(requested) as requested_timestamp, UNIX_TIMESTAMP(added) as block_timestamp FROM accelerations
+        JOIN pools on pools.unique_id = accelerations.pool
+        WHERE txid = ?
+      `, [txid]) as RowDataPacket[][];
+      if (rows?.length) {
+        const row = rows[0];
+        return {
+          txid: row.txid,
+          height: row.height,
+          added: row.requested_timestamp || row.block_timestamp,
+          pool: {
+            id: row.id,
+            slug: row.slug,
+            name: row.name,
+          },
+          effective_vsize: row.effective_vsize,
+          effective_fee: row.effective_fee,
+          boost_rate: row.boost_rate,
+          boost_cost: row.boost_cost,
+        };
+      }
+    } catch (e: any) {
+      logger.err(`Cannot get acceleration info for txid ${txid}. Reason: ` + (e instanceof Error ? e.message : e));
+      return null;
     }
     return null;
   }

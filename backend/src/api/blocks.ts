@@ -553,6 +553,7 @@ class Blocks {
     }
   }
 
+  /** @asyncUnsafe */
   public async $indexBlockSummary(hash: string, height: number, stale?: boolean): Promise<void> {
     if (config.MEMPOOL.BACKEND === 'esplora') {
       const txs = (await bitcoinApi.$getTxsForBlock(hash, stale)).map(tx => transactionUtils.extendMempoolTransaction(tx));
@@ -1188,6 +1189,7 @@ class Blocks {
     return this.$indexBlock(hash);
   }
 
+  /** @asyncUnsafe */
   private async $handleReorgs(blockExtended: BlockExtended, timer: any): Promise<void> {
     let forkTail = blockExtended;
     let currentlyIndexed = await blocksRepository.$getBlockByHeight(forkTail.height - 1);
@@ -1259,6 +1261,8 @@ class Blocks {
 
   /**
    * Index a block if it's missing from the database. Returns the block after indexing
+   *
+   * @asyncUnsafe
    */
   public async $indexBlock(hash: string, block?: IEsploraApi.Block, skipDb = false): Promise<BlockExtended> {
     if (Common.indexingEnabled() && !skipDb) {

@@ -16,6 +16,15 @@ module.exports = {
     "prettier"
   ],
   "ignorePatterns": ["dist", "eslint-local-rules", ".eslintrc.js", "testSetup.ts", "__tests__", "*.config.ts"],
+  "overrides": [
+    {
+      "files": ["src/__integration_tests__/**/*"],
+      "rules": {
+        "@typescript-eslint/no-floating-promises": "off",
+        "local-rules/no-unhandled-await": "off"
+      }
+    }
+  ],
   "rules": {
     "@typescript-eslint/ban-ts-comment": 1,
     "@typescript-eslint/ban-types": 1,

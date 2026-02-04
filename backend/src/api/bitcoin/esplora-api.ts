@@ -446,6 +446,7 @@ class ElectrsApi implements AbstractBitcoinApi {
     return this.failoverRouter.$get<string>('/blocks/tip/hash');
   }
 
+  /** @asyncUnsafe */
   async $getTxIdsForBlock(hash: string, fallbackToCore = false): Promise<string[]> {
     try {
       const txids = await this.failoverRouter.$get<string[]>('/block/' + hash + '/txids');
@@ -462,6 +463,7 @@ class ElectrsApi implements AbstractBitcoinApi {
     }
   }
 
+  /** @asyncUnsafe */
   async $getTxsForBlock(hash: string, fallbackToCore = false): Promise<IEsploraApi.Transaction[]> {
     try {
       const txs = await this.failoverRouter.$get<IEsploraApi.Transaction[]>('/internal/block/' + hash + '/txs');
