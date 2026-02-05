@@ -21,6 +21,7 @@ class KrakenApi implements PriceFeed {
     return ticker;
   }
 
+  /** @asyncUnsafe */
   public async $fetchPrice(currency): Promise<number> {
     const response = await query(this.url + currency);
     const ticker = this.getTicker(currency);
@@ -33,6 +34,7 @@ class KrakenApi implements PriceFeed {
     }
   }
 
+  /** @asyncUnsafe */
   public async $fetchRecentPrice(currencies: string[], type: 'hour' | 'day'): Promise<PriceHistory> {
     const priceHistory: PriceHistory = {};
 
@@ -57,6 +59,7 @@ class KrakenApi implements PriceFeed {
 
   /**
    * Fetch weekly price and save it into the database
+   * @asyncUnsafe
    */
   public async $insertHistoricalPrice(): Promise<void> {
     const existingPriceTimes = await PricesRepository.$getPricesTimes();

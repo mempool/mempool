@@ -31,6 +31,7 @@ const steps = {
 class StatisticsReplication {
   inProgress: boolean = false;
 
+  /** @asyncUnsafe */
   public async $sync(): Promise<void> {
     if (!config.REPLICATION.ENABLED || !config.REPLICATION.STATISTICS || !config.STATISTICS.ENABLED) {
       // replication not enabled, or statistics not enabled
@@ -74,6 +75,7 @@ class StatisticsReplication {
     this.inProgress = false;
   }
 
+  /** @asyncUnsafe */
   private async $syncStatistics(interval: string, missingTimes: Set<number>): Promise<any> {
 
     let success = false;
@@ -105,6 +107,8 @@ class StatisticsReplication {
     return { success, synced, missed: missed.size };
   }
 
+  
+  /** @asyncUnsafe */
   private async $getMissingStatistics(): Promise<MissingStatistics> {
     try {
       const now = Math.floor(Date.now() / 1000);
@@ -146,6 +150,7 @@ class StatisticsReplication {
     }
   }
 
+  /** @asyncUnsafe */
   private async $getMissingStatisticsInterval(interval: any, startTime: number): Promise<Set<number>> {
     try {
       const start = interval[0];

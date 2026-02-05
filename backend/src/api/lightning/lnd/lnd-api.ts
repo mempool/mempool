@@ -40,6 +40,7 @@ class LndApi implements AbstractLightningApi {
       .then((response) => response.data);
   }
 
+  /** @asyncUnsafe */
   async $getNetworkGraph(): Promise<ILightningApi.NetworkGraph> {
     const graph = await axios.get<ILightningApi.NetworkGraph>(config.LND.REST_API_URL + '/v1/graph', this.axiosConfig)
       .then((response) => response.data);

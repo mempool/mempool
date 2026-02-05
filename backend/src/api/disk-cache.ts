@@ -33,11 +33,12 @@ class DiskCache {
       return;
     }
     process.on('SIGINT', (e) => {
-      this.$saveCacheToDisk(true);
+      void this.$saveCacheToDisk(true);
       process.exit(0);
     });
   }
 
+  /** @asyncSafe */
   async $saveCacheToDisk(sync: boolean = false): Promise<void> {
     if (!cluster.isPrimary || !config.MEMPOOL.CACHE_ENABLED) {
       return;
@@ -174,6 +175,7 @@ class DiskCache {
     }
   }
 
+  /** @asyncSafe */
   async $loadMempoolCache(): Promise<void> {
     if (!config.MEMPOOL.CACHE_ENABLED || !fs.existsSync(DiskCache.FILE_NAME)) {
       return;

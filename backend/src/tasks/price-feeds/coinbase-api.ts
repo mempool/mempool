@@ -11,6 +11,7 @@ class CoinbaseApi implements PriceFeed {
   constructor() {
   }
 
+  /** @asyncUnsafe */
   public async $fetchPrice(currency): Promise<number> {
     const response = await query(this.url.replace('{CURRENCY}', currency));
     if (response && response['data'] && response['data']['amount']) {
@@ -20,6 +21,7 @@ class CoinbaseApi implements PriceFeed {
     }
   }
 
+  /** @asyncUnsafe */
   public async $fetchRecentPrice(currencies: string[], type: 'hour' | 'day'): Promise<PriceHistory> {
     const priceHistory: PriceHistory = {};
 

@@ -34,11 +34,16 @@ class BackendInfo {
     };
 
     this.timer = setInterval(async () => {
-      await this.$updateCoreVersion();
+      try {
+        await this.$updateCoreVersion();
+      } catch (e) {
+        logger.err(`Exception in $updateCoreVersion. Reason: ${(e instanceof Error ? e.message : e)}`);
+      }
     }, 10 * 60 * 1000); // every 10 minutes
-    this.$updateCoreVersion(); // starting immediately
+    void this.$updateCoreVersion(); // starting immediately
   }
 
+  /** @asyncSafe */
   private async $updateCoreVersion(): Promise<void> {
     try {
       const networkInfo = await bitcoinClient.getNetworkInfo();

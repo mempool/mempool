@@ -9,6 +9,7 @@ export interface NodeRecord {
 }
 
 class NodesRecordsRepository {
+  /** @asyncSafe */
   public async $saveRecord(record: NodeRecord): Promise<void> {
     try {
       const payloadBytes = Buffer.from(record.payload, 'base64');
@@ -26,6 +27,7 @@ class NodesRecordsRepository {
     }
    }
 
+  /** @asyncSafe */
   public async $getRecordTypes(publicKey: string): Promise<any> {
     try {
       const query = `
@@ -40,6 +42,7 @@ class NodesRecordsRepository {
     }
   }
 
+  /** @asyncSafe */
   public async $deleteUnusedRecords(publicKey: string, recordTypes: number[]): Promise<number> {
     try {
       let query;

@@ -5,6 +5,7 @@ import { BlockExtended } from '../../mempool.interfaces';
 import axios from 'axios';
 import mempool from '../mempool';
 import websocketHandler from '../websocket-handler';
+import { Common } from '../common';
 
 type MyAccelerationStatus = 'requested' | 'accelerating' | 'done';
 
@@ -74,6 +75,7 @@ class AccelerationApi {
     this.forcePoll = true;
   }
 
+  /** @asyncSafe */
   private async $fetchAccelerations(): Promise<Acceleration[] | null> {
     try {
       const response = await axios.get(this.apiPath, { responseType: 'json', timeout: 10000 });
@@ -238,6 +240,7 @@ class AccelerationApi {
     }
   }
 
+  /** @asyncSafe */
   public async connectWebsocket(): Promise<void> {
     if (this.startedWebsocketLoop) {
       return;
@@ -314,7 +317,7 @@ class AccelerationApi {
           }
         }
       }
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      await Common.sleep$(5000);
     }
   }
 }

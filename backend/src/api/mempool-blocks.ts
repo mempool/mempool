@@ -45,6 +45,7 @@ class MempoolBlocks {
     return this.mempoolBlockDeltas;
   }
 
+  /** @asyncUnsafe */
   public async updatePools$(): Promise<void> {
     if (['mainnet', 'testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK) === false) {
       this.pools = {};
@@ -98,6 +99,7 @@ class MempoolBlocks {
     return mempoolBlockDeltas;
   }
 
+  /** @asyncSafe */
   public async $makeBlockTemplates(transactions: string[], newMempool: { [txid: string]: MempoolTransactionExtended }, candidates: GbtCandidates | undefined, saveResults: boolean = false, useAccelerations: boolean = false, accelerationPool?: number): Promise<MempoolBlockWithTransactions[]> {
     const start = Date.now();
 
@@ -172,6 +174,7 @@ class MempoolBlocks {
     return this.mempoolBlocks;
   }
 
+  /** @asyncSafe */
   public async $updateBlockTemplates(transactions: string[], newMempool: { [txid: string]: MempoolTransactionExtended }, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[], candidates: GbtCandidates | undefined, accelerationDelta: string[] = [], saveResults: boolean = false, useAccelerations: boolean = false): Promise<void> {
     if (!this.txSelectionWorker) {
       // need to reset the worker
@@ -228,11 +231,13 @@ class MempoolBlocks {
     }
   }
 
+  /** @asyncSafe */
   private resetRustGbt(): void {
     this.rustInitialized = false;
     this.rustGbtGenerator = new GbtGenerator(config.MEMPOOL.BLOCK_WEIGHT_UNITS, config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT);
   }
 
+  /** @asyncSafe */
   public async $rustMakeBlockTemplates(txids: string[], newMempool: { [txid: string]: MempoolTransactionExtended }, candidates: GbtCandidates | undefined, saveResults: boolean = false, useAccelerations: boolean = false, accelerationPool?: number): Promise<MempoolBlockWithTransactions[]> {
     const start = Date.now();
 
@@ -285,10 +290,12 @@ class MempoolBlocks {
     return this.mempoolBlocks;
   }
 
+  /** @asyncSafe */
   public async $oneOffRustBlockTemplates(transactions: string[], newMempool: { [txid: string]: MempoolTransactionExtended }, candidates: GbtCandidates | undefined, useAccelerations: boolean, accelerationPool?: number): Promise<MempoolBlockWithTransactions[]> {
     return this.$rustMakeBlockTemplates(transactions, newMempool, candidates, false, useAccelerations, accelerationPool);
   }
 
+  /** @asyncSafe */
   public async $rustUpdateBlockTemplates(transactions: string[], newMempool: { [txid: string]: MempoolTransactionExtended }, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[], candidates: GbtCandidates | undefined, useAccelerations: boolean, accelerationPool?: number): Promise<MempoolBlockWithTransactions[]> {
     // GBT optimization requires that uids never get too sparse
     // as a sanity check, we should also explicitly prevent uint32 uid overflow

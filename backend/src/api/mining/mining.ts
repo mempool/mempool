@@ -326,6 +326,7 @@ class Mining {
 
   /**
    * Generate daily hashrate data
+   * @asyncUnsafe
    */
   public async $generateNetworkHashrateHistory(): Promise<void> {
     // If a re-index was requested, truncate first
@@ -439,6 +440,7 @@ class Mining {
 
   /**
    * Index difficulty adjustments
+   * @asyncUnsafe
    */
   public async $indexDifficultyAdjustments(): Promise<void> {
     // If a re-index was requested, truncate first
@@ -528,6 +530,8 @@ class Mining {
 
   /**
    * Create a link between blocks and the latest price at when they were mined
+   *
+   * @asyncSafe
    */
   public async $indexBlockPrices(): Promise<void> {
     if (this.blocksPriceIndexingRunning === true) {
@@ -598,6 +602,8 @@ class Mining {
 
   /**
    * Index core coinstatsindex
+   *
+   * @asyncUnsafe
    */
   public async $indexCoinStatsIndex(): Promise<void> {
     let timer = new Date().getTime() / 1000;
@@ -635,6 +641,7 @@ class Mining {
 
   /**
    * List existing mining pools
+   * @asyncUnsafe
    */
   public async $listPools(): Promise<{name: string, slug: string, unique_id: number}[] | null> {
     const [rows] = await database.query(`
@@ -701,6 +708,7 @@ class Mining {
     return blocks[0];
   }
 
+  /** @asyncUnsafe */
   private async getGenesisData(): Promise<{timestamp: number, bits: number, difficulty: number}> {
     if (this.genesisData == null) {
       const genesisBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(await bitcoinApi.$getBlockHash(0));
