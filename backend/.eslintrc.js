@@ -15,7 +15,7 @@ module.exports = {
     "plugin:@typescript-eslint/recommended",
     "prettier"
   ],
-  "ignorePatterns": ["dist", "eslint-local-rules", ".eslintrc.js", "testSetup.ts", "__tests__", "*.config.ts"],
+  "ignorePatterns": ["dist", "eslint-local-rules", ".eslintrc.js", "testSetup*.ts", "jest.integration.*.ts", "__tests__", "*.config.ts"],
   "overrides": [
     {
       "files": ["src/__integration_tests__/**/*"],
