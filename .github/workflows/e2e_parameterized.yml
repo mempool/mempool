@@ -22,7 +22,7 @@ on:
 jobs:
   cache:
     name: "Cache assets for builds"
-    runs-on: ubuntu-latest
+    runs-on: mempool-ci
     steps:
       - name: Determine checkout ref
         id: determine-ref
@@ -123,7 +123,7 @@ jobs:
           key: promo-video-assets-cache
 
   e2e:
-    runs-on: ubuntu-latest
+    runs-on: mempool-ci
     needs: cache
     strategy:
       fail-fast: false
