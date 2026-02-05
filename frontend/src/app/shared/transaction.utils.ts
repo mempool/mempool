@@ -1,10 +1,10 @@
 import { TransactionFlags } from '@app/shared/filters.utils';
 import { getVarIntLength, parseMultisigScript, isPoint, parseTapscriptMultisig, parseTapscriptUnanimousMultisig, ScriptInfo } from '@app/shared/script.utils';
-import { Transaction, Vin, Utxo } from '@interfaces/electrs.interface';
-import { CpfpInfo, RbfInfo, TransactionStripped } from '@interfaces/node-api.interface';
-import { StateService } from '@app/services/state.service';
+import { Transaction, Vin } from '@interfaces/electrs.interface';
+import { CpfpInfo, TransactionStripped } from '@interfaces/node-api.interface';
 import { hash, Hash } from '@app/shared/sha256';
 import { AddressType, AddressTypeInfo, detectAddressType } from '@app/shared/address-utils';
+import { isBitcoinTestnet } from '@app/shared/regex.utils';
 import * as secp256k1 from '@noble/secp256k1';
 
 // Bitcoin Core default policy settings
@@ -13,10 +13,6 @@ const MAX_BLOCK_SIGOPS_COST = 80_000;
 const MAX_STANDARD_TX_SIGOPS_COST = (MAX_BLOCK_SIGOPS_COST / 5);
 const MIN_STANDARD_TX_NONWITNESS_SIZE = 65;
 const MAX_P2SH_SIGOPS = 15;
-const MAX_STANDARD_P2WSH_STACK_ITEMS = 100;
-const MAX_STANDARD_P2WSH_STACK_ITEM_SIZE = 80;
-const MAX_STANDARD_TAPSCRIPT_STACK_ITEM_SIZE = 80;
-const MAX_STANDARD_P2WSH_SCRIPT_SIZE = 3600;
 const MAX_STANDARD_SCRIPTSIG_SIZE = 1650;
 const DUST_RELAY_TX_FEE = 3;
 export const MAX_OP_RETURN_RELAY = 83;
@@ -612,8 +608,8 @@ const V3_STANDARDNESS_ACTIVATION_HEIGHT = {
 function isNonStandardVersion(tx: Transaction, height?: number, network?: string): boolean {
   let TX_MAX_STANDARD_VERSION = 3;
   if (
-    height != null
-    && network != null
+    height !== null
+    && network !== null
     && V3_STANDARDNESS_ACTIVATION_HEIGHT[network]
     && height <= V3_STANDARDNESS_ACTIVATION_HEIGHT[network]
   ) {
@@ -635,8 +631,8 @@ const ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT = {
 };
 function isNonStandardAnchor(vin: Vin, height?: number, network?: string): boolean {
   if (
-    height != null
-    && network != null
+    height !== null
+    && network !== null
     && ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT[network]
     && height <= ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT[network]
     && vin.prevout?.scriptpubkey === '51024e73'
@@ -657,7 +653,7 @@ const EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT = {
 function isStandardEphemeralDust(tx: Transaction, height?: number, network?: string): boolean {
   if (
     tx.fee === 0
-    && (height == null || (
+    && (height === null || (
       EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[network]
       && height >= EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[network]
     ))
@@ -677,7 +673,7 @@ const OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT = {
 const MAX_DATACARRIER_BYTES = 83;
 function isStandardOpReturn(bytes: number, outputs: number,height?: number, network?: string): boolean {
   if (
-    (height == null || (
+    (height === null || (
       OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[network]
       && height >= OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[network]
     )) // limits lifted
@@ -1851,7 +1847,7 @@ export function addressToScriptPubKey(address: string, network: string): { scrip
 
 function p2pkh(pubKeyHash: string, network: string): string {
   const pubkeyHashArray = hexStringToUint8Array(pubKeyHash);
-  const version = ['testnet', 'testnet4', 'signet'].includes(network) ? 0x6f : 0x00;
+  const version = isBitcoinTestnet(network) ? 0x6f : 0x00;
   const versionedPayload = Uint8Array.from([version, ...pubkeyHashArray]);
   const hash1 = new Hash().update(versionedPayload).digest();
   const hash2 = new Hash().update(hash1).digest();
@@ -1863,7 +1859,7 @@ function p2pkh(pubKeyHash: string, network: string): string {
 
 function p2sh(scriptHash: string, network: string): string {
   const scriptHashArray = hexStringToUint8Array(scriptHash);
-  const version = ['testnet', 'testnet4', 'signet'].includes(network) ? 0xc4 : 0x05;
+  const version = isBitcoinTestnet(network) ? 0xc4 : 0x05;
   const versionedPayload = Uint8Array.from([version, ...scriptHashArray]);
   const hash1 = new Hash().update(versionedPayload).digest();
   const hash2 = new Hash().update(hash1).digest();
@@ -1875,7 +1871,7 @@ function p2sh(scriptHash: string, network: string): string {
 
 function p2wpkh(pubKeyHash: string, network: string): string {
   const pubkeyHashArray = hexStringToUint8Array(pubKeyHash);
-  const hrp = ['testnet', 'testnet4', 'signet'].includes(network) ? 'tb' : 'bc';
+  const hrp = isBitcoinTestnet(network) ? 'tb' : 'bc';
   const version = 0;
   const words = [version].concat(toWords(pubkeyHashArray));
   const bech32Address = bech32Encode(hrp, words);
@@ -1884,7 +1880,7 @@ function p2wpkh(pubKeyHash: string, network: string): string {
 
 function p2wsh(scriptHash: string, network: string): string {
   const scriptHashArray = hexStringToUint8Array(scriptHash);
-  const hrp = ['testnet', 'testnet4', 'signet'].includes(network) ? 'tb' : 'bc';
+  const hrp = isBitcoinTestnet(network) ? 'tb' : 'bc';
   const version = 0;
   const words = [version].concat(toWords(scriptHashArray));
   const bech32Address = bech32Encode(hrp, words);
@@ -1893,7 +1889,7 @@ function p2wsh(scriptHash: string, network: string): string {
 
 function p2tr(pubKey: string, network: string): string {
   const pubkeyArray = hexStringToUint8Array(pubKey);
-  const hrp = ['testnet', 'testnet4', 'signet'].includes(network) ? 'tb' : 'bc';
+  const hrp = isBitcoinTestnet(network) ? 'tb' : 'bc';
   const version = 1;
   const words = [version].concat(toWords(pubkeyArray));
   const bech32Address = bech32Encode(hrp, words, 'bech32m');
@@ -1902,7 +1898,7 @@ function p2tr(pubKey: string, network: string): string {
 
 function p2a(network: string): string {
   const pubkeyHashArray = hexStringToUint8Array('4e73');
-  const hrp = ['testnet', 'testnet4', 'signet'].includes(network) ? 'tb' : 'bc';
+  const hrp = isBitcoinTestnet(network) ? 'tb' : 'bc';
   const version = 1;
   const words = [version].concat(toWords(pubkeyHashArray));
   const bech32Address = bech32Encode(hrp, words, 'bech32m');
@@ -1994,13 +1990,13 @@ function base58ToSpk(address: string, network: string): string | null {
     const payloadHex = uint8ArrayToHexString(payload);
 
     // P2PKH
-    const p2pkhVersion = ['testnet', 'testnet4', 'signet'].includes(network) ? 0x6f : 0x00;
+    const p2pkhVersion = isBitcoinTestnet(network) ? 0x6f : 0x00;
     if (version === p2pkhVersion) {
       return '76a914' + payloadHex + '88ac';
     }
 
     // P2SH
-    const p2shVersion = ['testnet', 'testnet4', 'signet'].includes(network) ? 0xc4 : 0x05;
+    const p2shVersion = isBitcoinTestnet(network) ? 0xc4 : 0x05;
     if (version === p2shVersion) {
       return 'a914' + payloadHex + '87';
     }
@@ -2052,7 +2048,7 @@ function bech32Decode(address: string): { prefix: string, words: number[], encod
 }
 
 function bech32ToSpk(address: string, network: string): string | null {
-  const expectedHrp = ['testnet', 'testnet4', 'signet'].includes(network) ? 'tb' : 'bc';
+  const expectedHrp = isBitcoinTestnet(network) ? 'tb' : 'bc';
   try {
     const decoded = bech32Decode(address);
     if (decoded.prefix !== expectedHrp) {

@@ -1,5 +1,3 @@
-import { Vin } from '../interfaces/electrs.interface';
-import { AddressType, detectAddressType } from './address-utils';
 import { ParsedTaproot } from './transaction.utils';
 
 const opcodes = {

@@ -1,4 +1,4 @@
-import { MempoolBlockDelta, MempoolBlockDeltaCompressed, MempoolDeltaChange, TransactionCompressed } from '../interfaces/websocket.interface';
+import { MempoolBlockDelta, MempoolBlockDeltaCompressed, TransactionCompressed } from '../interfaces/websocket.interface';
 import { TransactionStripped } from '@interfaces/node-api.interface';
 import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { Router, ActivatedRoute } from '@angular/router';

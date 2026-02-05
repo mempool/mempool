@@ -6,7 +6,7 @@ import { Transaction } from '@interfaces/electrs.interface';
 import { MiningService, MiningStats } from '@app/services/mining.service';
 import { getUnacceleratedFeeRate } from '@app/shared/transaction.utils';
 import { AccelerationEstimate } from '@components/accelerate-checkout/accelerate-checkout.component';
-import { Observable, combineLatest, map, of, share, shareReplay, tap } from 'rxjs';
+import { Observable, combineLatest, map, of, shareReplay } from 'rxjs';
 
 export interface ETA {
   now: number, // time at which calculation performed

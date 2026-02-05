@@ -159,6 +159,13 @@ export type RegexType = `address` | `blockhash` | RegexTypeNoAddrNoBlockHash;
 export const NETWORKS = [`mainnet`, `testnet4`, `testnet`, `signet`, `regtest`, `liquid`, `liquidtestnet`] as const;
 export type Network = typeof NETWORKS[number]; // Turn const array into union type
 
+/** Bitcoin testnet-like networks (same address prefixes: tb1, m/n/2 base58) */
+export const BITCOIN_TESTNET_NETWORKS: readonly Network[] = ['testnet', 'testnet4', 'signet'];
+
+export function isBitcoinTestnet(network: string): boolean {
+  return (BITCOIN_TESTNET_NETWORKS as readonly string[]).includes(network);
+}
+
 export const ADDRESS_REGEXES: [RegExp, Network][] = NETWORKS
   .map(network => [getRegex('address', network), network]);
 
