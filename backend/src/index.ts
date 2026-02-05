@@ -149,7 +149,6 @@ class Server {
       ;
 
     if (config.DATABASE.ENABLED && config.FIAT_PRICE.ENABLED) {
-      /** @asyncUnsafe */
       await priceUpdater.$initializeLatestPriceWithDb();
     }
 
@@ -170,14 +169,12 @@ class Server {
 
     await syncAssets.syncAssets$();
     if (config.DATABASE.ENABLED) {
-      /** @asyncUnsafe */
       await mempoolBlocks.updatePools$();
     }
     if (config.MEMPOOL.ENABLED) {
       if (config.MEMPOOL.CACHE_ENABLED) {
         await diskCache.$loadMempoolCache();
       } else if (config.REDIS.ENABLED) {
-        /** @asyncUnsafe */
         await redisCache.$loadCache();
       }
     }
@@ -308,7 +305,6 @@ class Server {
       await forensicsService.$startService();
     } catch(e) {
       logger.err(`Exception in $runLightningBackend. Restarting in 1 minute. Reason: ${(e instanceof Error ? e.message : e)}`);
-      /** @asyncUnsafe */
       await Common.sleep$(1000 * 60);
       void this.$runLightningBackend();
     };

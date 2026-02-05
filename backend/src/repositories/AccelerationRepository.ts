@@ -61,6 +61,7 @@ class AccelerationRepository {
     }
   }
 
+  /** @asyncSafe */
   public async $getAccelerationInfoForTxid(txid: string): Promise<PublicAcceleration | null> {
     try {
       const [rows] = await DB.query(`

@@ -76,7 +76,7 @@ class FundingTxFetcher {
     this.running = false;
   }
 
-/** @asyncUnsafe */
+  /** @asyncUnsafe */
   public async $fetchChannelOpenTx(channelId: string): Promise<{timestamp: number, txid: string, value: number} | null> {
     channelId = Common.channelIntegerIdToShortId(channelId);
 

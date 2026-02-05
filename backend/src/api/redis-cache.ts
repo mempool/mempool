@@ -38,11 +38,11 @@ class RedisCache {
         database: NetworkDB[config.MEMPOOL.NETWORK],
       };
       void this.$ensureConnected();
-      setInterval(() => { void  this.$ensureConnected(); }, 10000);
+      setInterval(() => { void this.$ensureConnected(); }, 10000);
     }
   }
 
-  /* @asyncSafe */
+  /** @asyncSafe */
   private async $ensureConnected(): Promise<boolean> {
     if (!this.connected && config.REDIS.ENABLED) {
       try {
