@@ -149,6 +149,7 @@ class Server {
       ;
 
     if (config.DATABASE.ENABLED && config.FIAT_PRICE.ENABLED) {
+      /** @asyncUnsafe */
       await priceUpdater.$initializeLatestPriceWithDb();
     }
 
@@ -169,12 +170,14 @@ class Server {
 
     await syncAssets.syncAssets$();
     if (config.DATABASE.ENABLED) {
+      /** @asyncUnsafe */
       await mempoolBlocks.updatePools$();
     }
     if (config.MEMPOOL.ENABLED) {
       if (config.MEMPOOL.CACHE_ENABLED) {
         await diskCache.$loadMempoolCache();
       } else if (config.REDIS.ENABLED) {
+        /** @asyncUnsafe */
         await redisCache.$loadCache();
       }
     }
