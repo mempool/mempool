@@ -59,7 +59,7 @@
 
     <div class="row justify-content-center mt-3">
       <div class="symbol">
-        Fiat price last updated <app-time kind="since" [time]="lastFiatPrice$ | async" [fastRender]="true"></app-time>
+        Fiat price last updated <app-time kind="since" [time]="lastFiatPrice$ | async" [fastRender]="true"></app-time>: {{ price$ | async | fiatCurrency : '1.0-0' : (currency$ | async) }}
       </div>
     </div>
 
