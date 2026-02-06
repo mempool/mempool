@@ -132,6 +132,9 @@ export class CalculatorComponent implements OnInit {
     if (name === 'bitcoin' && this.countDecimals(sanitizedValue) > 8) {
       sanitizedValue = this.toFixedWithoutRounding(sanitizedValue, 8);
     }
+    if (name === 'fiat' && this.countDecimals(sanitizedValue) > 2) {
+      sanitizedValue = this.toFixedWithoutRounding(sanitizedValue, 2);
+    }
     if (sanitizedValue === '') {
       sanitizedValue = '0';
     }
