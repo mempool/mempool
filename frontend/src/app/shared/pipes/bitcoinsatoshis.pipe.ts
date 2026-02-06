@@ -10,7 +10,12 @@ export class BitcoinsatoshisPipe implements PipeTransform {
   constructor(private sanitizer: DomSanitizer) { }
 
   transform(value: string, firstPartClass?: string): SafeHtml {
-    const newValue = this.insertSpaces(parseFloat(value || '0').toFixed(8));
+    const numValue = parseFloat(value || '0');
+    // Don't show decimals at max supply (21M BTC)
+    if (numValue >= 21000000) {
+      return this.sanitizer.bypassSecurityTrustHtml('21 000 000');
+    }
+    const newValue = this.insertSpaces(numValue.toFixed(8));
     const position = (newValue || '0').search(/[1-9]/);
 
     const firstPart = newValue.slice(0, position);

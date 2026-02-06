@@ -53,12 +53,15 @@ export class CalculatorComponent implements OnInit {
       this.price$,
       this.form.get('fiat').valueChanges
     ]).subscribe(([price, value]) => {
-      const rate = (value / price).toFixed(8);
-      const satsRate = Math.round(value / price * 100_000_000);
+      let rate = parseFloat((value / price).toFixed(8));
+      if (rate > 21000000) {
+        rate = 21000000;
+      }
+      const satsRate = Math.round(rate * 100_000_000);
       if (isNaN(value)) {
         return;
       }
-      this.form.get('bitcoin').setValue(rate, { emitEvent: false });
+      this.form.get('bitcoin').setValue(rate.toFixed(8), { emitEvent: false });
       this.form.get('satoshis').setValue(satsRate, { emitEvent: false } );
     });
 
@@ -70,7 +73,7 @@ export class CalculatorComponent implements OnInit {
       if (isNaN(value)) {
         return;
       }
-      this.form.get('fiat').setValue(rate, { emitEvent: false } );
+      this.form.get('fiat').setValue(this.formatFiat(rate), { emitEvent: false } );
       this.form.get('satoshis').setValue(Math.round(value * 100_000_000), { emitEvent: false } );
     });
 
@@ -78,12 +81,17 @@ export class CalculatorComponent implements OnInit {
       this.price$,
       this.form.get('satoshis').valueChanges
     ]).subscribe(([price, value]) => {
-      const rate = parseFloat((value / 100_000_000 * price).toFixed(8));
-      const bitcoinRate = (value / 100_000_000).toFixed(8);
+      let bitcoinValue = value / 100_000_000;
+      if (bitcoinValue > 21000000) {
+        bitcoinValue = 21000000;
+        value = 21000000 * 100_000_000;
+      }
+      const rate = parseFloat((bitcoinValue * price).toFixed(8));
+      const bitcoinRate = bitcoinValue.toFixed(8);
       if (isNaN(value)) {
         return;
       }
-      this.form.get('fiat').setValue(rate, { emitEvent: false } );
+      this.form.get('fiat').setValue(this.formatFiat(rate), { emitEvent: false } );
       this.form.get('bitcoin').setValue(bitcoinRate, { emitEvent: false });
     });
 
@@ -109,6 +117,12 @@ export class CalculatorComponent implements OnInit {
     }
     if (name === 'satoshis') {
       sanitizedValue = parseFloat(sanitizedValue).toFixed(0);
+    }
+    if (name === 'bitcoin' && parseFloat(sanitizedValue) >= 21000000) {
+      sanitizedValue = '21000000';
+    }
+    if (name === 'satoshis' && parseFloat(sanitizedValue) > 2100000000000000) {
+      sanitizedValue = '2100000000000000';
     }
     formControl.setValue(sanitizedValue, {emitEvent: true});
   }
@@ -136,5 +150,16 @@ export class CalculatorComponent implements OnInit {
 
   selectAll(event): void {
     event.target.select();
+  }
+
+  formatFiat(num: number): string | number {
+    if (Math.abs(num) >= 1000) {
+      // For values >= 1000: show 2 decimals, or 0 if whole number
+      if (num % 1 === 0) {
+        return Math.round(num);
+      }
+      return (Math.round(num * 100) / 100).toFixed(2);
+    }
+    return num;
   }
 }
