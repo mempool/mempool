@@ -180,6 +180,9 @@ export class CalculatorComponent implements OnInit {
       }
       return (Math.round(num * 100) / 100).toFixed(2);
     }
-    return num;
+    if (num % 1 === 0) {
+      return Math.round(num);
+    }
+    return (Math.round(num * 100) / 100).toFixed(2);
   }
 }
