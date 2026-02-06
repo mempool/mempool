@@ -14,7 +14,7 @@
               <div class="progress-text" *only-weight>&lrm;{{ mempoolInfoData.vBytesPerSecond * 4 | ceil | number }} <ng-container i18n="shared.weight-per-second|WU/s">WU/s</ng-container></div>
             </div>
           </ng-template>
-        </ng-template>  
+        </ng-template>
       </div>
       <div class="col">
         <span class="unconfirmedTx"><ng-container i18n="dashboard.unconfirmed|Unconfirmed count">Unconfirmed</ng-container>:</span>
@@ -26,6 +26,15 @@
         <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
         <ng-template #blocksSingular let-i i18n="shared.block">{{ i }} <span class="shared-block">block</span></ng-template>
       </div>
+    </div>
+
+    <!-- Enlaces del Footer -->
+    <div class="footer-links">
+      <a href="/terms" i18n="footer.terms-of-service">Terms of Service</a>
+      <span>|</span>
+      <a href="/privacy" i18n="footer.privacy-policy">Privacy Policy</a>
+      <span>|</span>
+      <a href="/broadcast" i18n="footer.broadcast-transaction">Broadcast Transaction</a>
     </div>
   </div>
 </footer>
