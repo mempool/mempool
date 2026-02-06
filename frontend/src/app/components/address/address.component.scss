@@ -19,6 +19,10 @@
 
 .fiat {
   display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
   @media (min-width: 992px){
     display: inline-block;
     margin-left: 10px;
@@ -45,10 +49,12 @@ h1 {
   padding: 0px;
   margin-right: 10px;
   font-size: 1.9rem;
+
   @media (min-width: 576px) {
     font-size: 2rem;
     float: left;
   }
+
   @media (min-width: 768px) {
     font-size: 2.5rem;
   }
@@ -59,25 +65,28 @@ h1 {
   margin-left: 0px;
   top: -2px;
   position: relative;
+
   @media (min-width: 768px) {
     line-height: 69px;
   }
 }
 
-.row{
-	flex-direction: column;
-	@media (min-width: 576px) {
-		flex-direction: row;
-	}
+.row {
+  flex-direction: column;
+
+  @media (min-width: 576px) {
+    flex-direction: row;
+  }
 }
 
 @media (max-width: 767.98px) {
-	.mobile-bottomcol {
-		margin-top: 15px;
-	}
-	.details-table td:first-child {
-		white-space: pre-wrap;
-	}
+  .mobile-bottomcol {
+    margin-top: 15px;
+  }
+
+  .details-table td:first-child {
+    white-space: pre-wrap;
+  }
 }
 
 .tx-link {
@@ -85,10 +94,12 @@ h1 {
   height: 100%;
   top: 9px;
   position: relative;
-	@media (min-width: 576px) {
+
+  @media (min-width: 576px) {
     max-width: calc(100% - 180px);
     top: 11px;
-	}
+  }
+
   @media (min-width: 768px) {
     top: 17px;
   }
