@@ -369,6 +369,7 @@ export class StateService {
       }
     });
 
+
     const savedAuditPreference = this.storageService.getValue('audit-preference');
     this.hideAudit = new BehaviorSubject<boolean>(savedAuditPreference === 'hide');
     this.hideAudit.subscribe((hide) => {

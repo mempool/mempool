@@ -1,6 +1,7 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, HostListener, ViewChild, ElementRef, Inject, ChangeDetectorRef } from '@angular/core';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { TransactionsListComponent } from '@components/transactions-list/transactions-list.component';
 import {
   switchMap,
   filter,
@@ -144,6 +145,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   hideFlow: boolean = this.stateService.hideFlow.value;
   overrideFlowPreference: boolean = null;
   flowEnabled: boolean;
+  isDetailsOpen: boolean = false;
   tooltipPosition: { x: number, y: number };
   isMobile: boolean;
   firstLoad = true;
@@ -170,6 +172,18 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   referralCode: string | undefined;
 
   graphContainer: ElementRef;
+  private txList: TransactionsListComponent;
+
+  @ViewChild('txList')
+  set txListSetter(component: TransactionsListComponent | undefined) {
+    if (component) {
+      this.txList = component;
+      if (this.isDetailsOpen) {
+        this.txList.toggleDetails();
+      }
+    }
+  }
+
   @ViewChild('graphContainer')
   set flowAnchor(element: ElementRef | null | undefined) {
     if (element) {
@@ -208,11 +222,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     this.enterpriseService.page();
+    this.isDetailsOpen = this.route.snapshot.queryParams['showDetails'] === 'true';
 
     const urlParams = new URLSearchParams(window.location.search);
     this.forceAccelerationSummary = !!urlParams.get('cash_request_id');
 
-    // Accelerator referral code
     const fragmentsParams = new URLSearchParams(window.location.hash.slice(1));
     this.referralCode = fragmentsParams.get('referralCode') ?? this.storageService.getValue('referralCode') ?? undefined;
     if (this.referralCode) {
@@ -621,6 +635,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           const seoDescription = seoDescriptionNetwork(this.stateService.network);
           this.seoService.setDescription($localize`:@@meta.description.bitcoin.transaction:Get real-time status, addresses, fees, script info, and more for ${network}${seoDescription} transaction with txid ${this.txId}.`);
           this.resetTransaction();
+
           return merge(
             of(true),
             this.stateService.connectionState$.pipe(
@@ -860,6 +875,20 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.setGraphSize();
   }
 
+  toggleDetailsFromTxPage(): void {
+    this.isDetailsOpen = !this.isDetailsOpen;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { showDetails: this.isDetailsOpen ? 'true' : 'false' },
+      queryParamsHandling: 'merge',
+      preserveFragment: true,
+      replaceUrl: true,
+    });
+    if (this.txList) {
+      this.txList.toggleDetails();
+    }
+  }
+
   dismissAccelAlert(): void {
     this.storageService.setValue('accel-cta-type', 'button');
     this.accelerateCtaType = 'button';
@@ -1074,6 +1103,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.pool = null;
     this.auditStatus = null;
     this.accelerationPositions = null;
+    this.isDetailsOpen = false;
     document.body.scrollTo(0, 0);
     this.isAcceleration = false;
     this.isAccelerated$.next(this.isAcceleration);
@@ -1163,20 +1193,20 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onAccelerationCompleted(): void {
-    this.router.navigate([], { fragment: null });
+    this.router.navigate([], { fragment: null, queryParamsHandling: 'merge' });
     this.accelerationFlowCompleted = true;
     this.forceAccelerationSummary = false;
   }
 
   closeAccelerator(): void {
-    this.router.navigate([], { fragment: null });
+    this.router.navigate([], { fragment: null, queryParamsHandling: 'merge' });
     this.hideAccelerationSummary = true;
     this.forceAccelerationSummary = false;
     this.storageService.setValue('hide-accelerator-pref', 'true');
   }
 
   openAccelerator(): void {
-    this.router.navigate([], { fragment: 'accelerate' });
+    this.router.navigate([], { fragment: 'accelerate', queryParamsHandling: 'merge' });
     this.accelerationFlowCompleted = false;
     this.hideAccelerationSummary = false;
     this.storageService.setValue('hide-accelerator-pref', 'false');
