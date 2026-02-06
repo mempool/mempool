@@ -54,14 +54,14 @@ export class CalculatorComponent implements OnInit {
       this.form.get('fiat').valueChanges
     ]).subscribe(([price, value]) => {
       let rate = parseFloat((value / price).toFixed(8));
-      if (rate > 21000000) {
+      if (rate >= 21000000) {
         rate = 21000000;
       }
       const satsRate = Math.round(rate * 100_000_000);
       if (isNaN(value)) {
         return;
       }
-      this.form.get('bitcoin').setValue(rate.toFixed(8), { emitEvent: false });
+      this.form.get('bitcoin').setValue(rate >= 21000000 ? '21000000' : rate.toFixed(8), { emitEvent: false });
       this.form.get('satoshis').setValue(satsRate, { emitEvent: false } );
     });
 
@@ -82,12 +82,12 @@ export class CalculatorComponent implements OnInit {
       this.form.get('satoshis').valueChanges
     ]).subscribe(([price, value]) => {
       let bitcoinValue = value / 100_000_000;
-      if (bitcoinValue > 21000000) {
+      if (bitcoinValue >= 21000000) {
         bitcoinValue = 21000000;
         value = 21000000 * 100_000_000;
       }
       const rate = parseFloat((bitcoinValue * price).toFixed(8));
-      const bitcoinRate = bitcoinValue.toFixed(8);
+      const bitcoinRate = bitcoinValue >= 21000000 ? '21000000' : bitcoinValue.toFixed(8);
       if (isNaN(value)) {
         return;
       }
