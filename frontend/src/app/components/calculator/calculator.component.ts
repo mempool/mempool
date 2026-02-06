@@ -5,6 +5,9 @@ import { map, switchMap } from 'rxjs/operators';
 import { StateService } from '@app/services/state.service';
 import { WebsocketService } from '@app/services/websocket.service';
 
+const MAX_BTC_SUPPLY = 21000000;
+const MAX_SATOSHI_SUPPLY = MAX_BTC_SUPPLY * 100_000_000;
+
 @Component({
   selector: 'app-calculator',
   templateUrl: './calculator.component.html',
@@ -15,6 +18,8 @@ import { WebsocketService } from '@app/services/websocket.service';
 export class CalculatorComponent implements OnInit {
   satoshis = 10000;
   form: FormGroup;
+  currentPrice = 0;
+  isMaxSupply = false;
 
   currency$ = this.stateService.fiatCurrency$;
   price$: Observable<number>;
@@ -53,15 +58,23 @@ export class CalculatorComponent implements OnInit {
       this.price$,
       this.form.get('fiat').valueChanges
     ]).subscribe(([price, value]) => {
+      this.currentPrice = price;
+      const maxFiat = price * MAX_BTC_SUPPLY;
+      const isMaxSupply = value >= maxFiat;
+      this.isMaxSupply = isMaxSupply;
+      if (isMaxSupply) {
+        value = maxFiat;
+        this.form.get('fiat').setValue(this.formatFiat(value), { emitEvent: false });
+      }
       let rate = parseFloat((value / price).toFixed(8));
-      if (rate >= 21000000) {
-        rate = 21000000;
+      if (rate >= MAX_BTC_SUPPLY) {
+        rate = MAX_BTC_SUPPLY;
       }
       const satsRate = Math.round(rate * 100_000_000);
       if (isNaN(value)) {
         return;
       }
-      this.form.get('bitcoin').setValue(rate >= 21000000 ? '21000000' : rate.toFixed(8), { emitEvent: false });
+      this.form.get('bitcoin').setValue(isMaxSupply ? MAX_BTC_SUPPLY.toString() : rate.toFixed(8), { emitEvent: false });
       this.form.get('satoshis').setValue(satsRate, { emitEvent: false } );
     });
 
@@ -69,25 +82,32 @@ export class CalculatorComponent implements OnInit {
       this.price$,
       this.form.get('bitcoin').valueChanges
     ]).subscribe(([price, value]) => {
+      this.currentPrice = price;
+      const isMaxSupply = parseFloat(value) >= MAX_BTC_SUPPLY;
+      this.isMaxSupply = isMaxSupply;
       const rate = parseFloat((value * price).toFixed(8));
       if (isNaN(value)) {
         return;
       }
       this.form.get('fiat').setValue(this.formatFiat(rate), { emitEvent: false } );
-      this.form.get('satoshis').setValue(Math.round(value * 100_000_000), { emitEvent: false } );
+      this.form.get('satoshis').setValue(Math.min(Math.round(value * 100_000_000), MAX_SATOSHI_SUPPLY), { emitEvent: false } );
     });
 
     combineLatest([
       this.price$,
       this.form.get('satoshis').valueChanges
     ]).subscribe(([price, value]) => {
+      this.currentPrice = price;
       let bitcoinValue = value / 100_000_000;
-      if (bitcoinValue >= 21000000) {
-        bitcoinValue = 21000000;
-        value = 21000000 * 100_000_000;
+      const isMaxSupply = bitcoinValue >= MAX_BTC_SUPPLY;
+      this.isMaxSupply = isMaxSupply;
+      if (isMaxSupply) {
+        bitcoinValue = MAX_BTC_SUPPLY;
+        value = MAX_SATOSHI_SUPPLY;
+        this.form.get('satoshis').setValue(value, { emitEvent: false });
       }
       const rate = parseFloat((bitcoinValue * price).toFixed(8));
-      const bitcoinRate = bitcoinValue >= 21000000 ? '21000000' : bitcoinValue.toFixed(8);
+      const bitcoinRate = isMaxSupply ? MAX_BTC_SUPPLY.toString() : bitcoinValue.toFixed(8);
       if (isNaN(value)) {
         return;
       }
@@ -118,11 +138,11 @@ export class CalculatorComponent implements OnInit {
     if (name === 'satoshis') {
       sanitizedValue = parseFloat(sanitizedValue).toFixed(0);
     }
-    if (name === 'bitcoin' && parseFloat(sanitizedValue) >= 21000000) {
-      sanitizedValue = '21000000';
+    if (name === 'bitcoin' && parseFloat(sanitizedValue) >= MAX_BTC_SUPPLY) {
+      sanitizedValue = MAX_BTC_SUPPLY.toString();
     }
-    if (name === 'satoshis' && parseFloat(sanitizedValue) > 2100000000000000) {
-      sanitizedValue = '2100000000000000';
+    if (name === 'satoshis' && parseFloat(sanitizedValue) > MAX_SATOSHI_SUPPLY) {
+      sanitizedValue = MAX_SATOSHI_SUPPLY.toString();
     }
     formControl.setValue(sanitizedValue, {emitEvent: true});
   }

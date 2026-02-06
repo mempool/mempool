@@ -35,6 +35,12 @@
 
     </div>
 
+    <div class="row justify-content-center mt-3" *ngIf="isMaxSupply">
+      <div class="alert alert-warning" role="alert" i18n="calculator.max-supply-warning|Max supply warning message">
+        Values were capped at the max supply of 21M BTC
+      </div>
+    </div>
+
     <br>
 
     <div class="row justify-content-center">

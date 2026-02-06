@@ -11,10 +11,6 @@ export class BitcoinsatoshisPipe implements PipeTransform {
 
   transform(value: string, firstPartClass?: string): SafeHtml {
     const numValue = parseFloat(value || '0');
-    // Don't show decimals at max supply (21M BTC)
-    if (numValue >= 21000000) {
-      return this.sanitizer.bypassSecurityTrustHtml('21 000 000');
-    }
     const newValue = this.insertSpaces(numValue.toFixed(8));
     const position = (newValue || '0').search(/[1-9]/);
 
@@ -27,8 +23,17 @@ export class BitcoinsatoshisPipe implements PipeTransform {
   }
 
   insertSpaces(str: string): string {
-    const length = str.length;
-    return str.slice(0, length - 6) + ' ' + str.slice(length - 6, length - 3) + ' ' + str.slice(length - 3);
+    const [integerPart, decimalPart] = str.split('.');
+
+    // Format integer part with thousand separators (right to left)
+    const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+    // Format decimal part: first 2 digits, then groups of 3
+    const formattedDecimal = decimalPart.slice(0, 2) + ' ' +
+                             decimalPart.slice(2, 5) + ' ' +
+                             decimalPart.slice(5);
+
+    return formattedInteger + '.' + formattedDecimal;
   }
 
 }
