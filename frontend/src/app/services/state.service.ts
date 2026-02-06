@@ -213,6 +213,7 @@ export class StateService {
   resetScroll$: Subject<boolean> = new Subject<boolean>();
   timeLtr: BehaviorSubject<boolean>;
   hideFlow: BehaviorSubject<boolean>;
+  hideDetails: BehaviorSubject<boolean>;
   hideAudit: BehaviorSubject<boolean>;
   fiatCurrency$: BehaviorSubject<string>;
   rateUnits$: BehaviorSubject<string>;
@@ -366,6 +367,16 @@ export class StateService {
         this.storageService.setValue('flow-preference', hide ? 'hide' : 'show');
       } else {
         this.storageService.removeItem('flow-preference');
+      }
+    });
+
+    const savedDetailsPreference = this.storageService.getValue('details-preference');
+    this.hideDetails = new BehaviorSubject<boolean>(savedDetailsPreference === 'hide');
+    this.hideDetails.subscribe((hide) => {
+      if (hide) {
+        this.storageService.setValue('details-preference', hide ? 'hide' : 'show');
+      } else {
+        this.storageService.removeItem('details-preference');
       }
     });
 

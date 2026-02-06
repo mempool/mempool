@@ -142,6 +142,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   hideFlow: boolean = this.stateService.hideFlow.value;
   overrideFlowPreference: boolean = null;
   flowEnabled: boolean;
+  detailsPrefSubscription: Subscription;
+  hideDetails: boolean = this.stateService.hideDetails.value;
+  overrideDetailsPreference: boolean = null;
+  detailsEnabled: boolean;
   tooltipPosition: { x: number, y: number };
   isMobile: boolean;
   firstLoad = true;
@@ -241,6 +245,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.flowPrefSubscription = this.stateService.hideFlow.subscribe((hide) => {
       this.hideFlow = !!hide;
       this.setFlowEnabled();
+    });
+
+    this.setDetailsEnabled();
+    this.detailsPrefSubscription = this.stateService.hideDetails.subscribe((hide) => {
+      this.hideDetails = !!hide;
+      this.setDetailsEnabled();
     });
 
     this.da$ = this.stateService.difficultyAdjustment$.pipe(
@@ -796,6 +806,15 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.setFlowEnabled();
       this.setGraphSize();
+
+      if (params.showDetails === 'false') {
+        this.overrideDetailsPreference = false;
+      } else if (params.showDetails === 'true') {
+        this.overrideDetailsPreference = true;
+      } else {
+        this.overrideDetailsPreference = null;
+      }
+      this.setDetailsEnabled();
     });
 
     this.mempoolBlocksSubscription = this.stateService.mempoolBlocks$.subscribe((mempoolBlocks) => {
@@ -1094,8 +1113,22 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  toggleDetails() {
+    const showDetails = !this.detailsEnabled;
+    this.stateService.hideDetails.next(!showDetails);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { showDetails: showDetails },
+      queryParamsHandling: 'merge'
+    });
+  }
+
   setFlowEnabled() {
     this.flowEnabled = (this.overrideFlowPreference != null ? this.overrideFlowPreference : !this.hideFlow);
+  }
+
+  setDetailsEnabled() {
+    this.detailsEnabled = (this.overrideDetailsPreference != null ? this.overrideDetailsPreference : !this.hideDetails);
   }
 
   expandGraph() {
@@ -1200,6 +1233,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.txRbfInfoSubscription.unsubscribe();
     this.queryParamsSubscription.unsubscribe();
     this.flowPrefSubscription.unsubscribe();
+    this.detailsPrefSubscription.unsubscribe();
     this.urlFragmentSubscription.unsubscribe();
     this.mempoolBlocksSubscription.unsubscribe();
     this.mempoolPositionSubscription.unsubscribe();

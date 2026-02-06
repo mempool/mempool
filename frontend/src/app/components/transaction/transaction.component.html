@@ -187,10 +187,18 @@
 
     <app-transactions-list #txList [transactions]="[tx]" [cached]="isCached" [errorUnblinded]="errorUnblinded" [inputIndex]="inputIndex" [outputIndex]="outputIndex" [transactionPage]="true"></app-transactions-list>
 
-    <div class="title text-left">
-      <h2 i18n="transaction.details|Transaction Details">Details</h2>
+    <div class="subtitle-block">
+      <div class="title text-left">
+        <h2 i18n="transaction.details|Transaction Details">Details</h2>
+      </div>
+
+      <div class="title-buttons">
+        <button *ngIf="!detailsEnabled" type="button" class="btn btn-outline-info btn-sm" (click)="toggleDetails()" i18n="transaction.show-details">Show details</button>
+        <button *ngIf="detailsEnabled" type="button" class="btn btn-outline-info btn-sm" (click)="toggleDetails()" i18n="transaction.hide-details">Hide details</button>
+      </div>
     </div>
-    <div class="box">
+
+    <div *ngIf="detailsEnabled" class="box">
       <div class="row">
         <div class="col-sm">
           <table class="table table-borderless table-striped">
@@ -312,11 +320,18 @@
 
     <br>
 
-    <div class="title">
-      <h2 i18n="transaction.details|Transaction Details">Details</h2>
+    <div class="subtitle-block">
+      <div class="title">
+        <h2 i18n="transaction.details|Transaction Details">Details</h2>
+      </div>
+
+      <div class="title-buttons">
+        <button *ngIf="!detailsEnabled" type="button" class="btn btn-outline-info btn-sm" (click)="toggleDetails()" i18n="transaction.show-details">Show details</button>
+        <button *ngIf="detailsEnabled" type="button" class="btn btn-outline-info btn-sm" (click)="toggleDetails()" i18n="transaction.hide-details">Hide details</button>
+      </div>
     </div>
 
-    <div class="box">
+    <div *ngIf="detailsEnabled" class="box">
       <div class="row">
         <div class="col-sm">
           <table class="table table-borderless table-striped">
