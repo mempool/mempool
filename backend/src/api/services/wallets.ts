@@ -56,10 +56,11 @@ class WalletApi {
 
     // Load cache on startup
     if (config.WALLETS.ENABLED) {
-      this.$loadCache();
+      void this.$loadCache();
     }
   }
 
+  /** @asyncSafe */
   private async $loadCache(): Promise<void> {
     try {
       const cacheData = await fsPromises.readFile(WalletApi.FILE_NAME, 'utf8');
@@ -148,6 +149,7 @@ class WalletApi {
   }
 
   // resync wallet addresses from the services backend
+  /** @asyncSafe */
   async $syncWallets(): Promise<void> {
     if (!config.WALLETS.ENABLED || this.syncing) {
       return;

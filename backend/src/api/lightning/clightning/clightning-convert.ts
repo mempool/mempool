@@ -156,6 +156,7 @@ export function convertNode(clNode: any): ILightningApi.Node {
 
 /**
  * Convert clightning "listchannels" response to lnd "describegraph.edges" format
+ * @asyncUnsafe
  */
 export async function convertAndmergeBidirectionalChannels(clChannels: any[]): Promise<ILightningApi.Channel[]> {
   logger.debug(`Converting clightning nodes and channels to lnd graph format`, logger.tags.ln);
@@ -212,6 +213,7 @@ export async function convertAndmergeBidirectionalChannels(clChannels: any[]): P
 /**
  * Convert two clightning "getchannels" entries into a full a lnd "describegraph.edges" format
  * In this case, clightning knows the channel policy for both nodes
+ * @asyncUnsafe
  */
 async function buildFullChannel(clChannelA: any, clChannelB: any): Promise<ILightningApi.Channel | null> {
   const lastUpdate = Math.max(clChannelA.last_update ?? 0, clChannelB.last_update ?? 0);
@@ -238,6 +240,7 @@ async function buildFullChannel(clChannelA: any, clChannelB: any): Promise<ILigh
 /**
  * Convert one clightning "getchannels" entry into a full a lnd "describegraph.edges" format
  * In this case, clightning knows the channel policy of only one node
+ * @asyncUnsafe
  */
 async function buildIncompleteChannel(clChannel: any): Promise<ILightningApi.Channel | null> {
   const tx = await FundingTxFetcher.$fetchChannelOpenTx(clChannel.short_channel_id);

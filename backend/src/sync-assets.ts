@@ -10,6 +10,7 @@ const PATH = './';
 class SyncAssets {
   constructor() { }
 
+  /** @asyncSafe */
   public async syncAssets$() {
     for (const url of config.MEMPOOL.EXTERNAL_ASSETS) {
       try {

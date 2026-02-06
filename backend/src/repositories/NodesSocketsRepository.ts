@@ -9,6 +9,7 @@ export interface NodeSocket {
 }
 
 class NodesSocketsRepository {
+  /** @asyncSafe */
   public async $saveSocket(socket: NodeSocket): Promise<void> {
     try {
       await DB.query(`
@@ -23,6 +24,7 @@ class NodesSocketsRepository {
     }
    }
 
+  /** @asyncSafe */
    public async $deleteUnusedSockets(publicKey: string, addresses: string[]): Promise<number> {
     if (addresses.length === 0) {
       return 0;

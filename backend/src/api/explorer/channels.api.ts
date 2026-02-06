@@ -298,6 +298,7 @@ class ChannelsApi {
     }
   }
 
+  /** @asyncSafe */
   public async $getChannelByClosingId(transactionId: string): Promise<any> {
     try {
       const query = `
@@ -338,6 +339,7 @@ class ChannelsApi {
     }
   }
 
+  /** @asyncSafe */
   public async $updateClosingInfo(channelInfo: { id: string, node1_closing_balance: number, node2_closing_balance: number, closed_by: string | null, closing_fee: number, outputs: ILightningApi.ForensicOutput[]}): Promise<void> {
     try {
       const query = `
@@ -363,6 +365,7 @@ class ChannelsApi {
     }
   }
 
+  /** @asyncSafe */
   public async $updateOpeningInfo(channelInfo: { id: string, node1_funding_balance: number, node2_funding_balance: number, funding_ratio: number, single_funded: boolean | void }): Promise<void> {
     try {
       const query = `
@@ -578,6 +581,7 @@ class ChannelsApi {
 
   /**
    * Save or update a channel present in the graph
+   * @asyncUnsafe
    */
   public async $saveChannel(channel: ILightningApi.Channel, status = 1): Promise<void> {
     if (!channel.chan_point?.length) {
@@ -717,6 +721,7 @@ class ChannelsApi {
     }
   }
 
+  /** @asyncSafe */
   public async $getLatestChannelUpdateForNode(publicKey: string): Promise<number> {
     try {
       const query = `

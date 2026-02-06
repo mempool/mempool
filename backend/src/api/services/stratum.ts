@@ -2,6 +2,7 @@ import { WebSocket } from 'ws';
 import logger from '../../logger';
 import config from '../../config';
 import websocketHandler from '../websocket-handler';
+import { Common } from '../common';
 
 export interface StratumJob {
   pool: number;
@@ -58,6 +59,7 @@ class StratumApi {
     }
   }
 
+  /** @asyncSafe */
   public async connectWebsocket(): Promise<void> {
     if (!config.STRATUM.ENABLED) {
       return;
@@ -97,7 +99,7 @@ class StratumApi {
           }
         });
       }
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      await Common.sleep$(5000);
     }
   }
 }
