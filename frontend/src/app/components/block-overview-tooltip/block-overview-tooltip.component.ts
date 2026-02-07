@@ -44,16 +44,27 @@ export class BlockOverviewTooltipComponent implements OnChanges {
 
   ngOnChanges(changes): void {
     if (changes.cursorPosition && changes.cursorPosition.currentValue) {
-      let x = changes.cursorPosition.currentValue.x + 10;
-      let y = changes.cursorPosition.currentValue.y + 10;
+      const baseX = changes.cursorPosition.currentValue.x;
+      const baseY = changes.cursorPosition.currentValue.y;
+      let x = baseX + 10;
+      let y = baseY + 10;
       if (this.tooltipElement) {
         const elementBounds = this.tooltipElement.nativeElement.getBoundingClientRect();
         const parentBounds = this.tooltipElement.nativeElement.offsetParent.getBoundingClientRect();
+        const belowY = baseY + 10;
+        const aboveY = baseY - elementBounds.height - 20;
+        const viewportBottom = window.innerHeight;
         if ((parentBounds.left + x + elementBounds.width) > parentBounds.right) {
           x = Math.max(0, parentBounds.width - elementBounds.width - 10);
         }
-        if (y + elementBounds.height > parentBounds.height) {
-          y = y - elementBounds.height - 20;
+        
+        if (parentBounds.top + belowY + elementBounds.height <= viewportBottom) {
+          y = belowY;
+        } else if (parentBounds.top + aboveY >= 0) {
+          y = aboveY;
+        } else {
+          const maxYInParent = viewportBottom - parentBounds.top - elementBounds.height;
+          y = Math.max(0, Math.min(parentBounds.height - elementBounds.height, maxYInParent));
         }
       }
       this.tooltipPosition = { x, y };
