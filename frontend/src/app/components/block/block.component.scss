@@ -1,11 +1,13 @@
 .title-block {
   flex-wrap: wrap;
   align-items: baseline;
+
   @media (min-width: 650px) {
     flex-direction: row;
   }
+
   h1 {
-    margin: 0rem;
+    margin: 0;
     margin-right: 15px;
     line-height: 1;
   }
@@ -24,26 +26,31 @@
 .fiat {
   display: block;
   font-size: 13px;
+
   @media (min-width: 768px) {
     font-size: 14px;
     display: inline-block;
     margin-left: 10px;
   }
 }
+
 .table {
   tr td {
     &:last-child {
       text-align: right;
+
       @media (min-width: 768px) {
         text-align: left;
       }
     }
+
     .difference {
       margin-left: 0.5em;
-  
+
       &.positive {
         color: rgb(66, 183, 71);
       }
+
       &.negative {
         color: rgb(183, 66, 66);
       }
@@ -71,12 +78,14 @@
 }
 
 h1 {
-  margin: 0px;
-  padding: 0px;
+  margin: 0;
+  padding: 0;
   line-height: 1;
+
   a {
-    &:hover, &:focus{
-      text-decoration: none;;
+    &:hover,
+    &:focus {
+      text-decoration: none;
     }
   }
 }
@@ -87,8 +96,8 @@ h1 {
 }
 
 .pool-logo {
-  width: 25px;
-  height: 25px;
+  width: 15px;
+  height: 15px;
   position: relative;
   top: -1px;
   margin-right: 2px;
@@ -101,31 +110,36 @@ h1 {
 }
 
 .row {
-	flex-direction: column;
-	@media (min-width: 768px) {
-		flex-direction: row;
-	}
+  flex-direction: column;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
 }
+
 @media (max-width: 767.98px) {
-	.mobile-bottomcol {
-		margin-top: 15px;
-	}
-	.details-table td:first-child {
-		white-space: pre-wrap;
-	}
+  .mobile-bottomcol {
+    margin-top: 15px;
+  }
+
+  .details-table td:first-child {
+    white-space: pre-wrap;
+  }
 }
+
 
 .toggle-btns {
   position: relative;
   z-index: 2;
-  top: 7px;
+  margin-top: 7px;
+
   @media (min-width: 550px) {
-    top: 0px;
+    margin-top: 0;
   }
 }
 
 .btn-audit {
-  margin-right: .5em;
+  margin-right: 0.5em;
 }
 
 .grow {
@@ -136,12 +150,14 @@ h1 {
   font-size: 28px;
   display: inline-flex;
   flex-direction: row;
+
   @media (min-width: 768px) {
     font-size: 36px;
   }
 
   a {
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       display: inline-block;
     }
   }
@@ -151,12 +167,15 @@ h1 {
   .nav-arrow {
     transform: scaleX(-1);
   }
+
   .nav-arrow.next {
     order: 2;
   }
+
   .block-link {
     order: 1;
   }
+
   .nav-arrow.prev {
     order: 0;
   }
@@ -165,13 +184,15 @@ h1 {
 .disable {
   font-size: 28px;
   color: #393e5c73;
+
   @media (min-width: 768px) {
     font-size: 36px;
   }
 }
 
-.chart-container{
+.chart-container {
   margin: 20px auto;
+
   @media (min-width: 768px) {
     margin: auto;
   }
@@ -205,7 +226,8 @@ h1 {
     background: var(--box-bg);
   }
 
-  &.active, &:hover {
+  &.active,
+  &:hover {
     border-color: white;
   }
 }
@@ -232,8 +254,8 @@ h1 {
 
 .beta {
   font-size: 10px;
-  margin: 5p;
-  padding: 5p;
+  margin: 5px;
+  padding: 5px;
   position: absolute;
   top: 11px;
   margin-left: 10px;
@@ -241,6 +263,7 @@ h1 {
 
 .audit-details-table {
   margin-top: 1.25rem;
+
   @media (max-width: 767.98px) {
     margin-top: 0.75rem;
   }
@@ -254,23 +277,28 @@ h1 {
   flex-grow: 1.11;
 }
 
+
 .block-tx-title {
   display: flex;
   justify-content: space-between;
   flex-direction: column;
-  margin-top: -15px;
+  margin-top: 0;
+  padding-top: 15px;
   position: relative;
+
   @media (min-width: 550px) {
-    margin-top: 1rem;
+    padding-top: 1rem;
     flex-direction: row;
   }
+
   h2 {
     line-height: 1;
     margin: 0;
     position: relative;
     padding-bottom: 10px;
+
     @media (min-width: 550px) {
-      padding-bottom: 0px;
+      padding-bottom: 0;
       align-self: end;
     }
   }
@@ -279,25 +307,19 @@ h1 {
 .tx-skeleton {
   margin-top: 10px;
   margin-bottom: 10px;
+
   .header-bg {
     &:first-child {
       padding: 10px;
       margin-bottom: 10px;
     }
+
     &:nth-child(2) {
       .row {
         height: 107px;
       }
     }
   }
-}
-
-.pool-logo {
-  width: 15px;
-  height: 15px;
-  position: relative;
-  top: -1px;
-  margin-right: 2px;
 }
 
 .stale-block-alert {
@@ -314,6 +336,7 @@ h1 {
 
   ul.stale-list {
     max-width: 100%;
+
     li {
       max-width: 100%;
       white-space: nowrap;
