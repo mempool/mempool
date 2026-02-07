@@ -43,9 +43,10 @@
                   </a>
                   <div>
                     <div #collapse="ngbCollapse" [(ngbCollapse)]="gfg">
-                      <a class="addresses-data" *ngFor="let address of poolStats.pool.addresses | slice: 1"
-                        [routerLink]="['/address' | relativeUrl, address]">{{
-                        address }}<br></a>
+                     <a class="addresses-data"
+                        *ngFor="let address of poolStats.pool.addresses | slice: 1"
+                        [routerLink]="['/address' | relativeUrl, address]">
+                        <app-truncate [text]="address" [lastChars]="8"></app-truncate></a>
                     </div>
                     <button *ngIf="poolStats.pool.addresses.length >= 2" type="button"
                       class="btn btn-sm btn-primary small-button" (click)="collapse.toggle()"
@@ -65,7 +66,9 @@
                     <button *ngIf="poolStats.pool.addresses.length >= 2" type="button"
                       class="btn btn-sm btn-primary float-right small-button mobile" (click)="collapse.toggle()"
                       [attr.aria-expanded]="!gfg" aria-controls="collapseExample">
-                      <span i18n="show-all">Show all</span> ({{ poolStats.pool.addresses.length }})
+                      <span *ngIf="gfg" i18n="show-all">Show all</span>
+                      <span *ngIf="!gfg" i18n="hide">Hide</span>
+                      ({{ poolStats.pool.addresses.length }})
                     </button>
                     <a class="addresses-data" [routerLink]="['/address' | relativeUrl, poolStats.pool.addresses[0]]">
                       {{ poolStats.pool.addresses[0] | shortenString: 30 }}
