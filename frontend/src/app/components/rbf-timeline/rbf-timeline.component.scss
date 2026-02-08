@@ -226,4 +226,236 @@
       }
     }
   }
+
+  // RBF Structural Diff Section
+  .diff-button-wrapper {
+    width: 100%;
+    text-align: center;
+    margin: 0.75em 0 0;
+  }
+}
+
+
+.rbf-diff-section {
+  margin-top: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 0;
+
+  .diff-content {
+    padding: 1.5rem;
+
+    .tx-comparison-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem;
+      background: var(--box-bg);
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--box-border);
+
+      .tx-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+
+        .label {
+          font-size: 0.875rem;
+          opacity: 0.7;
+          font-weight: 500;
+        }
+
+        .txid {
+          font-family: monospace;
+          font-size: 0.9rem;
+        }
+      }
+
+      .arrow {
+        font-size: 1.5rem;
+        opacity: 0.5;
+      }
+    }
+
+    .diff-subsection {
+      margin-bottom: 2rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      h5 {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
+        opacity: 0.9;
+      }
+
+      &.metrics {
+        .metrics-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+          gap: 1rem;
+
+          .metric-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: var(--box-bg);
+            border-radius: 6px;
+            border: 1px solid var(--box-border);
+
+            .metric-label {
+              font-size: 0.85rem;
+              opacity: 0.7;
+            }
+
+            .metric-value {
+              font-size: 1.15rem;
+              font-weight: 600;
+              font-family: monospace;
+
+              &.positive {
+                color: var(--green);
+              }
+
+              &.negative {
+                color: var(--red);
+              }
+            }
+          }
+        }
+      }
+
+      .change-group {
+        margin-bottom: 1rem;
+        border-radius: 6px;
+        overflow: hidden;
+        border: 1px solid var(--box-border);
+
+        .change-header {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1rem;
+          font-weight: 600;
+          font-size: 0.9rem;
+        }
+
+        &.added {
+          background: rgba(40, 167, 69, 0.08);
+          border-color: rgba(40, 167, 69, 0.2);
+          .change-header {
+            color: var(--green);
+          }
+        }
+
+        &.removed {
+          background: rgba(220, 53, 69, 0.08);
+          border-color: rgba(220, 53, 69, 0.2);
+          .change-header {
+            color: var(--red);
+          }
+        }
+
+        &.modified {
+          background: rgba(255, 193, 7, 0.08);
+          border-color: rgba(255, 193, 7, 0.2);
+          .change-header {
+            color: var(--yellow);
+          }
+        }
+
+        &.unchanged {
+          background: var(--box-bg);
+          border-color: var(--box-border);
+          .change-header {
+            opacity: 0.6;
+          }
+        }
+
+        .change-list {
+          padding: 0.5rem 1rem 1rem;
+
+          .input-item,
+          .output-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            background: var(--box-bg);
+            border-radius: 4px;
+            border: 1px solid var(--box-border);
+
+            code {
+              font-size: 0.85rem;
+            }
+
+            .input-value,
+            .output-value {
+              font-family: monospace;
+              font-size: 0.85rem;
+              opacity: 0.7;
+            }
+          }
+
+          .output-modification {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: var(--box-bg);
+            border-radius: 4px;
+            border: 1px solid var(--box-border);
+
+            .mod-row {
+              display: flex;
+              gap: 0.5rem;
+              align-items: center;
+              padding: 0.25rem;
+
+              .index {
+                font-family: monospace;
+                font-size: 0.85rem;
+                opacity: 0.5;
+                min-width: 2rem;
+              }
+
+              code.address {
+                flex: 1;
+                font-size: 0.85rem;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+              }
+
+              .output-value {
+                font-family: monospace;
+                font-size: 0.85rem;
+                white-space: nowrap;
+              }
+
+              &.old {
+                opacity: 0.6;
+                text-decoration: line-through;
+              }
+
+              &.new {
+                font-weight: 500;
+              }
+            }
+
+            .mod-arrow {
+              text-align: center;
+              opacity: 0.5;
+              margin: 0.25rem 0;
+              font-size: 0.9rem;
+            }
+          }
+        }
+      }
+    }
+  }
 }

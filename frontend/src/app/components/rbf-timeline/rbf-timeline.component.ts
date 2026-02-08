@@ -3,6 +3,9 @@ import { Router } from '@angular/router';
 import { RbfTree, RbfTransaction } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 import { ApiService } from '@app/services/api.service';
+import { forkJoin } from 'rxjs';
+import { Transaction } from '@interfaces/electrs.interface';
+import { calculateRbfDiff, RbfDiff } from '@app/shared/rbf-diff.utils';
 
 type Connector = 'pipe' | 'corner';
 
@@ -34,6 +37,12 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
   tooltipPosition = null;
 
   dir: 'rtl' | 'ltr' = 'ltr';
+
+  // RBF Diff state
+  selectedOldTx: Transaction | null = null;
+  selectedNewTx: Transaction | null = null;
+  rbfDiff: RbfDiff | null = null;
+  showDiff: boolean = false;
 
   constructor(
     private router: Router,
@@ -216,5 +225,65 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
 
   onBlur(event): void {
     this.hoverInfo = null;
+  }
+
+  /**
+    Fetches full transaction details for two transactions and computes their structural diff
+    @param oldTxid - The original transaction ID
+    @param newTxid - The replacement transaction ID
+   */
+  compareTxs(oldTxid: string, newTxid: string): void {
+    forkJoin({
+      oldTx: this.apiService.getRbfCachedTx$(oldTxid),
+      newTx: this.apiService.getRbfCachedTx$(newTxid),
+    }).subscribe(({ oldTx, newTx }) => {
+      this.selectedOldTx = oldTx;
+      this.selectedNewTx = newTx;
+      this.rbfDiff = calculateRbfDiff(oldTx, newTx);
+      this.showDiff = true;
+    });
+  }
+
+  closeDiff(): void {
+    this.showDiff = false;
+    this.selectedOldTx = null;
+    this.selectedNewTx = null;
+    this.rbfDiff = null;
+  }
+
+  // Finds the RbfTree node for the currently viewed transaction
+
+  private findCurrentNode(tree: RbfTree): RbfTree | null {
+    if (!tree) { return null; }
+    if (tree.tx.txid === this.txid) {
+      return tree;
+    }
+    for (const replaced of tree.replaces) {
+      const found = this.findCurrentNode(replaced);
+      if (found) { return found; }
+    }
+    return null;
+  }
+
+  // Gets the immediate predecessor (transaction that was replaced) for the current txid
+
+  getPredecessorTxid(): string | null {
+    const currentNode = this.findCurrentNode(this.replacements);
+    if (currentNode && currentNode.replaces.length > 0) {
+      return currentNode.replaces[0].tx.txid;
+    }
+    return null;
+  }
+
+  // Toggles the structural diff visibility
+  toggleStructuralDiff(): void {
+    if (this.showDiff) {
+      this.closeDiff();
+    } else {
+      const predecessorTxid = this.getPredecessorTxid();
+      if (predecessorTxid && this.txid) {
+        this.compareTxs(predecessorTxid, this.txid);
+      }
+    }
   }
 }
