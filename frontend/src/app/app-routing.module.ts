@@ -193,6 +193,17 @@ let routes: Routes = [
     loadChildren: () => import('@app/master-page.module').then(m => m.MasterPageModule),
     data: { preload: true },
   },
+{
+  path: 'address',
+  canMatch: [TrackerGuard],
+  runGuardsAndResolvers: 'always',
+  loadChildren: () => import('@components/address-tracker/address-tracker.module').then(m => m.AddressTrackerModule),
+ },
+ {
+  path: '',
+  loadChildren: () => import('@app/master-page.module').then(m => m.MasterPageModule),
+  data: { preload: true },
+ },
   {
     path: 'widget/wallet',
     children: [],
