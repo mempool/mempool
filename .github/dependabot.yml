@@ -34,6 +34,12 @@ updates:
       interval: daily
     open-pull-requests-limit: 10
     ignore:
+      - dependency-name: "@angular*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@ng-*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "ngx-*"
+        update-types: ["version-update:semver-major"]
       - dependency-name: "*"
         update-types:
           ["version-update:semver-major", "version-update:semver-patch"]
