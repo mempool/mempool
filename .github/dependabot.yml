@@ -1,68 +1,79 @@
 version: 2
 updates:
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    ignore:
+      - dependency-name: "*"
+
   - package-ecosystem: npm
-    versioning-strategy: increase
     directory: "/backend"
     schedule:
       interval: daily
     open-pull-requests-limit: 10
-    ignore:
-      - dependency-name: "*"
-        update-types:
-          ["version-update:semver-major", "version-update:semver-patch"]
+    versioning-strategy: increase
     allow:
       - dependency-type: "production"
+    groups:
+      backend-prod-patch-minor:
+        dependency-type: "production"
+        update-types: ["patch", "minor"]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: npm
     directory: "/frontend"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
     versioning-strategy: increase
+    allow:
+      - dependency-type: "production"
+
     groups:
       frontend-angular-dependencies:
         patterns:
           - "@angular*"
           - "@ng-*"
           - "ngx-*"
+        update-types: ["patch", "minor"]
+
       frontend-jest-dependencies:
         patterns:
           - "@types/jest"
           - "jest"
+        update-types: ["patch", "minor"]
+
       frontend-eslint-dependencies:
         patterns:
           - "@typescript-eslint*"
           - "eslint"
-    schedule:
-      interval: daily
-    open-pull-requests-limit: 10
-    ignore:
-      - dependency-name: "*"
-        update-types:
-          ["version-update:semver-major", "version-update:semver-patch"]
-    allow:
-      - dependency-type: "production"
+        update-types: ["patch", "minor"]
 
-  - package-ecosystem: docker
-    directory: "/docker/backend"
-    schedule:
-      interval: weekly
-    ignore:
-      - dependency-name: "*"
-        update-types:
-          ["version-update:semver-major", "version-update:semver-patch"]
+      frontend-prod-patch-minor:
+        dependency-type: "production"
+        update-types: ["patch", "minor"]
 
-  - package-ecosystem: docker
-    directory: "/docker/frontend"
-    schedule:
-      interval: weekly
     ignore:
       - dependency-name: "*"
-        update-types:
-          ["version-update:semver-major", "version-update:semver-patch"]
+        update-types: ["version-update:semver-major"]
+
+      - dependency-name: "@angular*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@ng-*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "ngx-*"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: weekly
+    groups:
+      gha-patch-minor:
+        update-types: ["patch", "minor"]
     ignore:
       - dependency-name: "*"
-        update-types:
-          ["version-update:semver-major", "version-update:semver-patch"]
+        update-types: ["version-update:semver-major"]

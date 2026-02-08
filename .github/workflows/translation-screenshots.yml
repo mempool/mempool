@@ -1,0 +1,44 @@
+name: Generate Translation Context Screenshots
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'frontend/src/locale/messages.xlf'
+
+jobs:
+  screenshots:
+    runs-on: mempool-ci
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: 'frontend/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build with keys locale
+        working-directory: frontend
+        run: npm run build:keys
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run screenshot tests
+        working-directory: frontend
+        run: |
+          npx http-server dist/mempool/browser -p 4200 &
+          npx wait-on http://localhost:4200/keys/
+          npx cypress run --spec "cypress/e2e/translation-keys/**/*.spec.ts"
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: translation-screenshots
+          path: frontend/cypress/screenshots/
