@@ -35,8 +35,6 @@ import mempool from './mempool';
 import CpfpRepository from '../repositories/CpfpRepository';
 import { parseDATUMTemplateCreator } from '../utils/bitcoin-script';
 import database from '../database';
-import { raw } from 'mysql2';
-import { stat } from 'node:fs';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
