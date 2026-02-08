@@ -1080,7 +1080,47 @@ export class Common {
       ].flat(),
     };
   }
+  static calcMinMaxFeeRates(
+    transactions: {
+      weight: number;
+      fee?: number;
+      effectiveFeePerVsize?: number;
+      txid: string;
+      acceleration?: boolean;
+    }[]
+  ) {
+    let rawMin = Infinity;
+    let rawMax = 0;
+    let effMin = Infinity;
+    let effMax = 0;
 
+    for (const tx of transactions) {
+
+      if (!tx.fee || tx.fee <= 0) continue; // skip free transactions, as they can have 0 fee rate but still be valid (e.g. with high acceleration)
+      if (!tx.weight || tx.weight <= 0) continue; // skip transactions with invalid weight
+
+      const rawRate = tx.fee / (tx.weight / 4);
+      if (Number.isFinite(rawRate) && rawRate > 0) {//calculate raw fee rate only for transactions with valid fee and weight
+        rawMin = Math.min(rawMin, rawRate);
+        rawMax = Math.max(rawMax, rawRate);
+      }
+
+      if (typeof tx.effectiveFeePerVsize === 'number') {//calculate effective fee rate only for transactions where it's available
+        const effRate = tx.effectiveFeePerVsize;
+        if (Number.isFinite(effRate) && effRate > 0) {
+          effMin = Math.min(effMin, effRate);
+          effMax = Math.max(effMax, effRate);
+        }
+      }
+    }
+
+    return {
+      minfeerate: rawMin === Infinity ? 0 : rawMin,
+      maxfeerate: rawMax,
+      effective_minfeerate: effMin === Infinity ? 0 : effMin,
+      effective_maxfeerate: effMax
+    };
+  }
   static getNthPercentile(n: number, sortedDistribution: any[]): any {
     return sortedDistribution[Math.floor((sortedDistribution.length - 1) * (n / 100))];
   }

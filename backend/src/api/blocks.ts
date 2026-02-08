@@ -35,6 +35,8 @@ import mempool from './mempool';
 import CpfpRepository from '../repositories/CpfpRepository';
 import { parseDATUMTemplateCreator } from '../utils/bitcoin-script';
 import database from '../database';
+import { raw } from 'mysql2';
+import { stat } from 'node:fs';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -270,14 +272,26 @@ class Blocks {
       extras.segwitTotalTxs = 0;
       extras.segwitTotalSize = 0;
       extras.segwitTotalWeight = 0;
+      extras.minfeerate = 0;
+      extras.maxfeerate = 0;
+      extras.effective_minfeerate = 0;
+      extras.effective_maxfeerate = 0;
     } else {
       const stats: IBitcoinApi.BlockStats = await this.$getBlockStats(block, transactions);
       let feeStats = {
         medianFee: stats.feerate_percentiles[2], // 50th percentiles
         feeRange: [stats.minfeerate, stats.feerate_percentiles, stats.maxfeerate].flat(),
       };
+      //get the raw and effective min/max fee rates for the block (not percentiles)
+      let rawFeeStats = {
+        minfeerate: stats.minfeerate,
+        maxfeerate: stats.maxfeerate,
+        effective_minfeerate: stats.minfeerate, 
+        effective_maxfeerate: stats.maxfeerate,
+      };
       if (transactions?.length > 1) {
         feeStats = Common.calcEffectiveFeeStatistics(transactions);
+        rawFeeStats = Common.calcMinMaxFeeRates(transactions);
       }
       extras.medianFee = feeStats.medianFee;
       extras.feeRange = feeStats.feeRange;
@@ -292,6 +306,11 @@ class Blocks {
       extras.segwitTotalTxs = stats.swtxs;
       extras.segwitTotalSize = stats.swtotal_size;
       extras.segwitTotalWeight = stats.swtotal_weight;
+
+      extras.minfeerate = rawFeeStats.minfeerate;  // raw
+      extras.maxfeerate = rawFeeStats.maxfeerate;  // raw
+      extras.effective_minfeerate = rawFeeStats.effective_minfeerate; // effective
+      extras.effective_maxfeerate = rawFeeStats.effective_maxfeerate; // effective
     }
 
     if (Common.blocksSummariesIndexingEnabled()) {
