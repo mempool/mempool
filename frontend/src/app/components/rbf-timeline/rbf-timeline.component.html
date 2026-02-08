@@ -62,6 +62,155 @@
     </ng-template>
   </div>
 
+  <!-- RBF Structural Diff Button -->
+  <div class="diff-button-wrapper" *ngIf="getPredecessorTxid()">
+    <button class="btn btn-sm btn-secondary diff-toggle" (click)="toggleStructuralDiff();">
+      <i class="bi bi-code-slash"></i>
+      <span *ngIf="!showDiff" i18n="rbf-diff-show">Show structural diff</span>
+      <span *ngIf="showDiff" i18n="rbf-diff-hide">Hide structural diff</span>
+    </button>
+  </div>
+
+  <!-- RBF Structural Diff Content (Inline Expandable) -->
+  <div class="rbf-diff-section box" *ngIf="showDiff && rbfDiff">
+    <div class="diff-content">
+      <div class="tx-comparison-header">
+        <div class="tx-info old">
+          <span class="label" i18n="original-tx">Original:</span>
+          <span class="txid">{{ selectedOldTx.txid.substring(0, 8) }}...</span>
+        </div>
+        <div class="arrow">→</div>
+        <div class="tx-info new">
+          <span class="label" i18n="replacement-tx">Replacement:</span>
+          <span class="txid">{{ selectedNewTx.txid.substring(0, 8) }}...</span>
+        </div>
+      </div>
+
+      <!-- Metrics Section -->
+      <div class="diff-subsection metrics">
+        <h5 i18n="metrics-deltas">Metrics Deltas</h5>
+        <div class="metrics-grid">
+          <div class="metric-item">
+            <span class="metric-label" i18n="fee-delta">Fee Change:</span>
+            <span class="metric-value" [class.positive]="rbfDiff.metrics.feeDelta > 0" [class.negative]="rbfDiff.metrics.feeDelta < 0">
+              {{ rbfDiff.metrics.feeDelta > 0 ? '+' : '' }}{{ rbfDiff.metrics.feeDelta | number }} sats
+            </span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label" i18n="weight-delta">Weight Change:</span>
+            <span class="metric-value" [class.positive]="rbfDiff.metrics.weightDelta > 0" [class.negative]="rbfDiff.metrics.weightDelta < 0">
+              {{ rbfDiff.metrics.weightDelta > 0 ? '+' : '' }}{{ rbfDiff.metrics.weightDelta | number }} WU
+            </span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label" i18n="vsize-delta">vSize Change:</span>
+            <span class="metric-value" [class.positive]="rbfDiff.metrics.vsizeDelta > 0" [class.negative]="rbfDiff.metrics.vsizeDelta < 0">
+              {{ rbfDiff.metrics.vsizeDelta > 0 ? '+' : '' }}{{ rbfDiff.metrics.vsizeDelta | number }} vB
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inputs Section -->
+      <div class="diff-subsection inputs">
+        <h5 i18n="inputs-changes">Inputs Changes</h5>
+
+        <div class="change-group added" *ngIf="rbfDiff.inputs.added.length > 0">
+          <div class="change-header">
+            <i class="bi bi-plus-circle"></i>
+            <span i18n="inputs-added">Added ({{ rbfDiff.inputs.added.length }})</span>
+          </div>
+          <div class="change-list">
+            <div class="input-item" *ngFor="let input of rbfDiff.inputs.added">
+              <code class="input-ref">{{ input.txid.substring(0, 12) }}...{{ input.txid.substring(input.txid.length - 4) }}:{{ input.vout }}</code>
+              <span class="input-value" *ngIf="input.prevout">{{ input.prevout.value | number }} sats</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="change-group removed" *ngIf="rbfDiff.inputs.removed.length > 0">
+          <div class="change-header">
+            <i class="bi bi-dash-circle"></i>
+            <span i18n="inputs-removed">Removed ({{ rbfDiff.inputs.removed.length }})</span>
+          </div>
+          <div class="change-list">
+            <div class="input-item" *ngFor="let input of rbfDiff.inputs.removed">
+              <code class="input-ref">{{ input.txid.substring(0, 12) }}...{{ input.txid.substring(input.txid.length - 4) }}:{{ input.vout }}</code>
+              <span class="input-value" *ngIf="input.prevout">{{ input.prevout.value | number }} sats</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="change-group unchanged" *ngIf="rbfDiff.inputs.unchanged.length > 0">
+          <div class="change-header">
+            <i class="bi bi-check-circle"></i>
+            <span i18n="inputs-unchanged">Unchanged ({{ rbfDiff.inputs.unchanged.length }})</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Outputs Section -->
+      <div class="diff-subsection outputs">
+        <h5 i18n="outputs-changes">Outputs Changes</h5>
+
+        <div class="change-group added" *ngIf="rbfDiff.outputs.added.length > 0">
+          <div class="change-header">
+            <i class="bi bi-plus-circle"></i>
+            <span i18n="outputs-added">Added ({{ rbfDiff.outputs.added.length }})</span>
+          </div>
+          <div class="change-list">
+            <div class="output-item" *ngFor="let output of rbfDiff.outputs.added">
+              <code class="address">{{ output.scriptpubkey_address || 'OP_RETURN' }}</code>
+              <span class="output-value">{{ output.value | number }} sats</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="change-group removed" *ngIf="rbfDiff.outputs.removed.length > 0">
+          <div class="change-header">
+            <i class="bi bi-dash-circle"></i>
+            <span i18n="outputs-removed">Removed ({{ rbfDiff.outputs.removed.length }})</span>
+          </div>
+          <div class="change-list">
+            <div class="output-item" *ngFor="let output of rbfDiff.outputs.removed">
+              <code class="address">{{ output.scriptpubkey_address || 'OP_RETURN' }}</code>
+              <span class="output-value">{{ output.value | number }} sats</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="change-group modified" *ngIf="rbfDiff.outputs.modified.length > 0">
+          <div class="change-header">
+            <i class="bi bi-arrow-left-right"></i>
+            <span i18n="outputs-modified">Modified ({{ rbfDiff.outputs.modified.length }})</span>
+          </div>
+          <div class="change-list">
+            <div class="output-modification" *ngFor="let mod of rbfDiff.outputs.modified">
+              <div class="mod-row old">
+                <span class="index">[{{ mod.index }}]</span>
+                <code class="address">{{ mod.old.scriptpubkey_address || 'OP_RETURN' }}</code>
+                <span class="output-value">{{ mod.old.value | number }} sats</span>
+              </div>
+              <div class="mod-arrow">↓</div>
+              <div class="mod-row new">
+                <span class="index">[{{ mod.index }}]</span>
+                <code class="address">{{ mod.new.scriptpubkey_address || 'OP_RETURN' }}</code>
+                <span class="output-value">{{ mod.new.value | number }} sats</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="change-group unchanged" *ngIf="rbfDiff.outputs.unchanged.length > 0">
+          <div class="change-header">
+            <i class="bi bi-check-circle"></i>
+            <span i18n="outputs-unchanged">Unchanged ({{ rbfDiff.outputs.unchanged.length }})</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <ng-template #nodeSpacer>
     <div class="node-spacer"></div>
   </ng-template>
