@@ -371,13 +371,9 @@ export class StateService {
     });
 
     const savedDetailsPreference = this.storageService.getValue('details-preference');
-    this.hideDetails = new BehaviorSubject<boolean>(savedDetailsPreference === 'hide');
+    this.hideDetails = new BehaviorSubject<boolean>(savedDetailsPreference !== 'show');
     this.hideDetails.subscribe((hide) => {
-      if (hide) {
-        this.storageService.setValue('details-preference', hide ? 'hide' : 'show');
-      } else {
-        this.storageService.removeItem('details-preference');
-      }
+      this.storageService.setValue('details-preference', hide ? 'hide' : 'show');
     });
 
     const savedAuditPreference = this.storageService.getValue('audit-preference');

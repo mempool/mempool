@@ -144,7 +144,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   flowEnabled: boolean;
   detailsPrefSubscription: Subscription;
   hideDetails: boolean = this.stateService.hideDetails.value;
-  overrideDetailsPreference: boolean = null;
+  overrideDetailsPreference: boolean | null = null;
   detailsEnabled: boolean;
   tooltipPosition: { x: number, y: number };
   isMobile: boolean;
@@ -1113,6 +1113,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  setFlowEnabled() {
+    this.flowEnabled = (this.overrideFlowPreference != null ? this.overrideFlowPreference : !this.hideFlow);
+  }
+
   toggleDetails() {
     const showDetails = !this.detailsEnabled;
     this.stateService.hideDetails.next(!showDetails);
@@ -1121,10 +1125,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       queryParams: { showDetails: showDetails },
       queryParamsHandling: 'merge'
     });
-  }
-
-  setFlowEnabled() {
-    this.flowEnabled = (this.overrideFlowPreference != null ? this.overrideFlowPreference : !this.hideFlow);
   }
 
   setDetailsEnabled() {
