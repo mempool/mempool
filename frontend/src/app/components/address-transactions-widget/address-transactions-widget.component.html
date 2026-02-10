@@ -12,7 +12,14 @@
           <app-truncate [text]="transaction.txid" [lastChars]="5"></app-truncate>
         </a>
       </td>
-      <td class="table-cell-satoshis"><app-amount [satoshis]="transaction.value" [digitsInfo]="getAmountDigits(transaction.value)" [noFiat]="true"></app-amount></td>
+      <td class="table-cell-satoshis">
+        <a class="satoshis-link" [routerLink]="['/tx' | relativeUrl, transaction.txid]">
+          <app-amount [satoshis]="transaction.value" [digitsInfo]="getAmountDigits(transaction.value)" [noFiat]="true"></app-amount>
+        </a>
+        <span class="satoshis-nolink">
+          <app-amount [satoshis]="transaction.value" [digitsInfo]="getAmountDigits(transaction.value)" [noFiat]="true"></app-amount>
+        </span>
+      </td>
       <td class="table-cell-fiat" ><app-fiat [value]="transaction.value" [blockConversion]="transaction.price" digitsInfo="1.0-0"></app-fiat></td>
       <td class="table-cell-date"><app-time kind="since" [time]="transaction.time" [fastRender]="true" [showTooltip]="true"></app-time></td>
     </tr>
