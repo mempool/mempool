@@ -219,7 +219,7 @@ export class SearchFormComponent implements OnInit {
             blockHash: matchesBlockHash,
             address: matchesAddress,
             publicKey: publicKey,
-            addresses: matchesAddress && addressPrefixSearchResults.length === 1 && searchText === addressPrefixSearchResults[0] ? [] : addressPrefixSearchResults, // If there is only one address and it matches the search text, don't show it in the dropdown
+            addresses: matchesAddress && addressPrefixSearchResults.length === 1 && addressPrefixSearchResults[0].startsWith(searchText) ? [] : addressPrefixSearchResults, // If there is only one address and it matches the search text, don't show it in the dropdown
             otherNetworks: otherNetworks,
             nodes: lightningResults.nodes,
             channels: lightningResults.channels,
