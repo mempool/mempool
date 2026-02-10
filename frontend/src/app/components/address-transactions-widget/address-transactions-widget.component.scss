@@ -19,8 +19,8 @@
   }
   .table-cell-satoshis {
     text-align: right;
-    @media (max-width: 395px) {
-      padding-right: 2.5rem ;
+    @media (max-width: 1100px) {
+      padding-right: 3rem ;
     }
     .satoshis-link {
       display: inline;
@@ -38,17 +38,14 @@
   .table-cell-fiat {
     display: none;
     text-align: right;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-    @media (min-width: 395px) {
+    @media (min-width: 1100px) {
       display: table-cell;
     }
   }
   .table-cell-date {
     text-align: right;
-    @media (max-width: 395px) {
-      padding-right: 2.5rem ;
+    @media (max-width: 1100px) {
+      padding-right: 3rem ;
     }
   }
 }
