@@ -38,14 +38,11 @@
   .table-cell-fiat {
     display: none;
     text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
     @media (min-width: 395px) {
       display: table-cell;
-    }
-    span {
-      display: block;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
     }
   }
   .table-cell-date {
