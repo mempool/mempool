@@ -20,7 +20,12 @@
           <app-amount [satoshis]="transaction.value" [digitsInfo]="getAmountDigits(transaction.value)" [noFiat]="true"></app-amount>
         </span>
       </td>
-      <td class="table-cell-fiat" ><app-fiat [value]="transaction.value" [blockConversion]="transaction.price" digitsInfo="1.0-0"></app-fiat></td>
+      <td class="table-cell-fiat">
+        <span #fiatCell [ngbTooltip]="fiatTooltip" [disableTooltip]="!isOverflowing(fiatCell)" placement="top" triggers="hover focus click">
+          <app-fiat [value]="transaction.value" [blockConversion]="transaction.price" digitsInfo="1.0-0"></app-fiat>
+        </span>
+        <ng-template #fiatTooltip><app-fiat [value]="transaction.value" [blockConversion]="transaction.price" digitsInfo="1.0-0"></app-fiat></ng-template>
+      </td>
       <td class="table-cell-date"><app-time kind="since" [time]="transaction.time" [fastRender]="true" [showTooltip]="true"></app-time></td>
     </tr>
   </tbody>

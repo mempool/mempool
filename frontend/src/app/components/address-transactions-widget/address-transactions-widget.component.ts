@@ -72,6 +72,12 @@ export class AddressTransactionsWidgetComponent implements OnInit, OnChanges, On
 
   }
 
+  isOverflowing(el: HTMLElement): boolean {
+    const contentWidth = el.scrollWidth;
+    const visibleWidth = el.clientWidth;
+    return contentWidth > visibleWidth;
+  }
+
   getAmountDigits(value: number): string {
     const decimals = Math.max(0, 4 - Math.ceil(Math.log10(Math.abs(value / 100_000_000))));
     return `1.${decimals}-${decimals}`;
