@@ -19,6 +19,9 @@
   }
   .table-cell-satoshis {
     text-align: right;
+    @media (max-width: 395px) {
+      padding-right: 2.5rem ;
+    }
     .satoshis-link {
       display: inline;
       @media (min-width: 1100px) {
@@ -47,6 +50,9 @@
   }
   .table-cell-date {
     text-align: right;
+    @media (max-width: 395px) {
+      padding-right: 2.5rem ;
+    }
   }
 }
 .skeleton-loader-transactions {
