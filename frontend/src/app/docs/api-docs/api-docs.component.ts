@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, QueryList, AfterViewInit, ViewChildren } from '@angular/core';
+import { Component, OnInit, Input, QueryList, AfterViewInit, ViewChildren, OnDestroy } from '@angular/core';
 import { Env, StateService } from '@app/services/state.service';
 import { Observable, merge, of, Subject, Subscription } from 'rxjs';
 import { tap, takeUntil } from 'rxjs/operators';
@@ -12,7 +12,7 @@ import { FaqTemplateDirective } from '@app/docs/faq-template/faq-template.compon
   styleUrls: ['./api-docs.component.scss'],
   standalone: false,
 })
-export class ApiDocsComponent implements OnInit, AfterViewInit {
+export class ApiDocsComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$: Subject<any> = new Subject<any>();
   plainHostname = document.location.hostname;
   electrsPort = 0;
@@ -37,6 +37,11 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
   timeLtrSubscription: Subscription;
   timeLtr: boolean = this.stateService.timeLtr.value;
   isMempoolSpaceBuild = this.stateService.isMempoolSpaceBuild;
+  activeFragment: string = '';
+  observer: IntersectionObserver;
+  tabData: any[];
+  visibleItems: any;
+  visibleItemsArr: any[];
 
   @ViewChildren(FaqTemplateDirective) faqTemplates: QueryList<FaqTemplateDirective>;
   dict = {};
@@ -60,14 +65,57 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
       if( this.route.snapshot.fragment ) {
         this.openEndpointContainer( this.route.snapshot.fragment );
         if (document.getElementById( this.route.snapshot.fragment )) {
-          const vOffset = ( window.innerWidth <= 992 ) ? 100 : 60;
+          const vOffset = ( window.innerWidth <= 992 ) ? 100 : 62;
           window.scrollTo({
             top: document.getElementById( this.route.snapshot.fragment ).offsetTop - vOffset
           });
         }
       }
       window.addEventListener('scroll', that.onDocScroll, { passive: true });
+      this.setupIntersectionObserver();
     }, 1 );
+  }
+
+  setupIntersectionObserver(): void {
+    const intersectionOptions = {
+      rootMargin: '-60px 0px 0px 0px',
+      threshold: [0, 0.25, 0.5, 0.75, 1],
+    };
+
+    this.observer = new IntersectionObserver((entries) => {
+      
+      entries.forEach((entry) => {
+        if(entry.isIntersecting) {
+          this.visibleItems[entry.target.id] = {"id": entry.target.id, "element": entry.target, "top": entry.target.getBoundingClientRect().top + window.scrollY, "visibleRatio": entry.intersectionRatio};
+        } else {
+          delete this.visibleItems[entry.target.id];
+        }
+      });
+
+      this.visibleItemsArr = Object.values(this.visibleItems);
+      if(this.visibleItemsArr.length === 1) {
+        this.highlightHeading(this.visibleItemsArr[0]['element']);
+      } else if(this.visibleItemsArr.length > 1) {
+        this.visibleItemsArr.sort((a, b) => {
+          if (b.visibleRatio !== a.visibleRatio) {
+            return b.visibleRatio - a.visibleRatio;
+          }
+          return a.top - b.top;
+        });
+        this.highlightHeading(this.visibleItemsArr[0]['element']);
+      }
+    }, intersectionOptions);
+
+    if (this.tabData) {
+      this.tabData.forEach((item) => {
+        if (item.type !== 'category' && item.fragment) {
+          const element = document.getElementById(item.fragment);
+          if (element) {
+            this.observer.observe(element);
+          }
+        }
+      });
+    }
   }
 
   ngOnInit(): void {
@@ -76,6 +124,18 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
     this.stateService.backend$.pipe(takeUntil(this.destroy$)).subscribe((backend) => {
       this.runningElectrs = !!(backend == 'esplora');
     });
+    this.tabData = [];
+    if (this.whichTab === 'rest') {
+      this.tabData = restApiDocsData;
+    } else if (this.whichTab === 'websocket') {
+      this.tabData = wsApiDocsData;
+    } else if (this.whichTab === 'faq') {
+      this.tabData = faqData;
+    } else if (this.whichTab === 'electrs') {
+      this.tabData = electrumApiDocsData;
+    }
+    this.visibleItems = {};
+    this.visibleItemsArr = [];
     this.auditEnabled = this.env.AUDIT;
     this.network$ = merge(of(''), this.stateService.networkChanged$).pipe(
       tap((network: string) => {
@@ -131,6 +191,9 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
     this.destroy$.complete();
     window.removeEventListener('scroll', this.onDocScroll);
     this.timeLtrSubscription.unsubscribe();
+    if (this.observer) {
+      this.observer.disconnect();
+    }
   }
 
   onDocScroll() {
@@ -144,6 +207,11 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
       top: document.getElementById( targetId ).offsetTop - vOffset
     });
     window.history.pushState({}, null, document.location.href.split('#')[0] + '#' + targetId);
+    
+    let highlightTimeout = ( Object.keys(this.visibleItems).includes(this.tabData[this.tabData.length - 1]['fragment']) && this.visibleItems[this.tabData[this.tabData.length - 1]['fragment']]['visibleRatio'] === 1 ) ? 0 : 600;
+    window.setTimeout(() => { //for links at page bottom which aren't captured by the intersection observer's window)
+      this.highlightHeading(document.getElementById(e.fragment));
+    }, highlightTimeout);
     this.openEndpointContainer( targetId );
   }
 
@@ -171,6 +239,13 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
     }
   }
 
+  highlightHeading(element: any): void {
+    this.activeFragment = element.id;
+    if(document.getElementById("doc-nav-desktop").classList.contains("fixed")) {
+      document.getElementById(this.activeFragment + '-nav-link').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+  
   wrapUrl(network: string, code: any, websocket: boolean = false) {
 
     let curlResponse = [];

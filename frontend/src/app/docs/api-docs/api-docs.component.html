@@ -4,7 +4,7 @@
     <div id="faq" *ngIf="whichTab === 'faq'">
 
       <div id="doc-nav-desktop" class="hide-on-mobile" [ngClass]="desktopDocsNavPosition">
-        <app-api-docs-nav (navLinkClickEvent)="anchorLinkClick( $event )" [network]="{ val: network$ | async }" [whichTab]="whichTab"></app-api-docs-nav>
+        <app-api-docs-nav (navLinkClickEvent)="anchorLinkClick( $event )" [network]="{ val: network$ | async }" [whichTab]="whichTab" [activeFragment]="activeFragment"></app-api-docs-nav>
       </div>
 
       <div class="doc-content">
@@ -34,7 +34,7 @@
     <div id="restAPI" *ngIf="whichTab === 'rest'">
 
       <div id="doc-nav-desktop" class="hide-on-mobile" [ngClass]="desktopDocsNavPosition">
-        <app-api-docs-nav (navLinkClickEvent)="anchorLinkClick( $event )" [network]="{ val: network$ | async }" [whichTab]="whichTab"></app-api-docs-nav>
+        <app-api-docs-nav (navLinkClickEvent)="anchorLinkClick( $event )" [network]="{ val: network$ | async }" [whichTab]="whichTab" [activeFragment]="activeFragment"></app-api-docs-nav>
       </div>
 
       <div class="doc-content">
@@ -111,7 +111,7 @@
     <div id="websocketAPI" *ngIf="whichTab === 'websocket'">
 
       <div id="doc-nav-desktop" class="hide-on-mobile" [ngClass]="desktopDocsNavPosition">
-        <app-api-docs-nav (navLinkClickEvent)="anchorLinkClick( $event )" [network]="{ val: network$ | async }" [whichTab]="whichTab"></app-api-docs-nav>
+        <app-api-docs-nav (navLinkClickEvent)="anchorLinkClick( $event )" [network]="{ val: network$ | async }" [whichTab]="whichTab" [activeFragment]="activeFragment"></app-api-docs-nav>
       </div>
 
       <div class="doc-content">
@@ -152,7 +152,7 @@
     <div id="electrs" *ngIf="whichTab === 'electrs'">
 
       <div id="doc-nav-desktop" class="hide-on-mobile" [ngClass]="desktopDocsNavPosition">
-        <app-api-docs-nav (navLinkClickEvent)="anchorLinkClick( $event )" [network]="{ val: network$ | async }" [whichTab]="whichTab"></app-api-docs-nav>
+        <app-api-docs-nav (navLinkClickEvent)="anchorLinkClick( $event )" [network]="{ val: network$ | async }" [whichTab]="whichTab" [activeFragment]="activeFragment"></app-api-docs-nav>
       </div>
 
       <div class="doc-content">

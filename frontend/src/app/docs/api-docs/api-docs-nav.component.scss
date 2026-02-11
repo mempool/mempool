@@ -11,6 +11,24 @@ a {
   display: block;
   margin: 5px 0;
   cursor: pointer;
+  position: relative;
+
+  &.active {
+    color: var(--info);
+    font-weight: 600;
+  }
+
+  .active-fragment {
+    position: absolute;
+    left: -20px;
+    top: 0;
+    margin-top: 0.1em;
+    font-size: 14px;
+    color: var(--info);
+    display: inline-block;
+    width: 20px;
+    line-height: inherit;
+  }
 }
 
 #enterprise-cta-desktop {
