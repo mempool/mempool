@@ -189,7 +189,9 @@
             "optimization": false,
             "namedChunks": true,
             "allowedCommonJsDependencies": [
-              "qrcode"
+              "qrcode",
+              "bech32",
+              "bs58check"
             ]
           },
           "configurations": {
