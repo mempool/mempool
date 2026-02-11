@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 105;
+  private static currentVersion = 106;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -1200,6 +1200,27 @@ class DatabaseMigration {
         await this.$executeQuery(`UPDATE state SET number = 929700 WHERE name = 'last_bitcoin_block_audit';`);
       }
       await this.updateToSchemaVersion(105);
+    }
+
+    // another liquid failure, fix bad timelocks on federation txos
+    // (safe to make this conditional on the network since it doesn't change the database schema)
+    if (databaseSchemaVersion < 106 && config.MEMPOOL.NETWORK === 'liquid') {
+      // In a specific setup it's possible that 3G6neksSBMp51kHJ2if8SeDUrzT8iVETWT and bc1qwnevjp8nsq7adu3hxlvdvslrf242q4vuavfg0y929jp2zntp3vgq7cq6z2
+      // were set with a timelock of 2016 instead of 4032
+      // This rollbacks the tables to before bc1qwnevjp8nsq7adu3hxlvdvslrf242q4vuavfg0y929jp2zntp3vgq7cq6z2 is used, and 
+      // manually fixes the timelock for 3G6neksSBMp51kHJ2if8SeDUrzT8iVETWT
+      const [stateRows]: any[] = await DB.query(`SELECT name, number FROM state WHERE name IN ('last_elements_block', 'last_bitcoin_block_audit')`);
+      const lastElementsBlock = Number(stateRows?.find((row: any) => row.name === 'last_elements_block')?.number ?? 0);
+      const lastBlockAudit = Number(stateRows?.find((row: any) => row.name === 'last_bitcoin_block_audit')?.number ?? 0);
+      if (lastElementsBlock > 3686608 && lastBlockAudit > 929700) {
+        await this.$executeQuery('DELETE FROM elements_pegs WHERE block > 3686608');
+        await this.$executeQuery('DELETE FROM federation_txos WHERE blocknumber > 929701');
+        await this.$executeQuery(`UPDATE federation_txos SET lastblockupdate = 929700 WHERE unspent = 1;`);
+        await this.$executeQuery(`UPDATE federation_txos SET timelock = 4032 WHERE bitcoinaddress = '3G6neksSBMp51kHJ2if8SeDUrzT8iVETWT';`);
+        await this.$executeQuery(`UPDATE state SET number = 3686608 WHERE name = 'last_elements_block';`);
+        await this.$executeQuery(`UPDATE state SET number = 929700 WHERE name = 'last_bitcoin_block_audit';`);
+      }
+      await this.updateToSchemaVersion(106);
     }
   }
 
