@@ -1,3 +1,9 @@
+@mixin responsive-breakpoint {
+  @media (min-width: 420px) and (max-width: 767px), (min-width: 900px) {
+    @content;
+  }
+}
+
 .latest-transactions {
   width: 100%;
   text-align: left;
@@ -11,34 +17,45 @@
     overflow:hidden;
     width: 25%;
   }
-  .table-cell-satoshis {
+  .table-cell-txid {
     display: none;
+    @include responsive-breakpoint {
+      display: table-cell;
+    }
+  }
+  .table-cell-satoshis-desktop {
+    display: none;
+    @include responsive-breakpoint {
+      display: table-cell;
+      text-align: right;
+    }
+  }
+  .table-cell-satoshis-mobile {
+    display: table-cell;
     text-align: right;
-    @media (min-width: 576px) {
-      display: table-cell;
-    }
-    @media (min-width: 768px) {
+    @include responsive-breakpoint {
       display: none;
-    }
-    @media (min-width: 1100px) {
-      display: table-cell;
     }
   }
   .table-cell-fiat {
     display: none;
     text-align: right;
-    @media (min-width: 485px) {
-      display: table-cell;
-    }
-    @media (min-width: 768px) {
-      display: none;
-    }
-    @media (min-width: 992px) {
+    @media (min-width: 650px) and (max-width: 767px), (min-width: 1100px) {
       display: table-cell;
     }
   }
   .table-cell-date {
-    text-align: right;
+    text-align: left;
+    @include responsive-breakpoint {
+      text-align: right;
+    }
+  }
+  .mobile-tx-link {
+    display: inline;
+    @include responsive-breakpoint {
+      color: inherit;
+      pointer-events: none;
+    }
   }
 }
 .skeleton-loader-transactions {

@@ -1,9 +1,10 @@
 <table class="table latest-transactions">
   <thead>
     <th class="table-cell-txid" i18n="dashboard.latest-transactions.txid">TXID</th>
-    <th class="table-cell-satoshis" i18n="dashboard.latest-transactions.amount">Amount</th>
+    <th class="table-cell-satoshis-desktop" i18n="dashboard.latest-transactions.amount">Amount</th>
     <th class="table-cell-fiat">{{ currency }}</th>
     <th class="table-cell-date" i18n="shared.date">Date</th>
+    <th class="table-cell-satoshis-mobile" i18n="dashboard.latest-transactions.amount">Amount</th>
   </thead>
   <tbody *ngIf="transactions$ | async as transactions else recentTransactionsSkeleton">
     <tr *ngFor="let transaction of transactions; let i = index;">
@@ -12,9 +13,18 @@
           <app-truncate [text]="transaction.txid" [lastChars]="5"></app-truncate>
         </a>
       </td>
-      <td class="table-cell-satoshis"><app-amount [satoshis]="transaction.value" [digitsInfo]="getAmountDigits(transaction.value)" [noFiat]="true"></app-amount></td>
+      <td class="table-cell-satoshis-desktop">
+        <app-amount [satoshis]="transaction.value" [digitsInfo]="getAmountDigits(transaction.value)" [noFiat]="true"></app-amount>
+      </td>
       <td class="table-cell-fiat" ><app-fiat [value]="transaction.value" [blockConversion]="transaction.price" digitsInfo="1.0-0"></app-fiat></td>
-      <td class="table-cell-date"><app-time kind="since" [time]="transaction.time" [fastRender]="true" [showTooltip]="true"></app-time></td>
+      <td class="table-cell-date">
+        <a class="mobile-tx-link" [routerLink]="['/tx' | relativeUrl, transaction.txid]">
+          <app-time kind="since" [time]="transaction.time" [fastRender]="true" [showTooltip]="true"></app-time>
+        </a>
+      </td>
+      <td class="table-cell-satoshis-mobile">
+        <app-amount [satoshis]="transaction.value" [digitsInfo]="getAmountDigits(transaction.value)" [noFiat]="true"></app-amount>
+      </td>
     </tr>
   </tbody>
   <div class="">&nbsp;</div>
@@ -24,9 +34,10 @@
   <tbody>
     <tr *ngFor="let i of [1,2,3,4,5,6]">
       <td class="table-cell-txid"><div class="skeleton-loader skeleton-loader-transactions"></div> </td>
-      <td class="table-cell-satoshis"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+      <td class="table-cell-satoshis-desktop"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
       <td class="table-cell-fiat"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
-      <td class="table-cell-fees"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+      <td class="table-cell-date"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+      <td class="table-cell-satoshis-mobile"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
     </tr>
   </tbody>
 </ng-template>
