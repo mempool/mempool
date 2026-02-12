@@ -14,7 +14,7 @@ class LiquidRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'asset/:assetId/icon', this.getLiquidIcon)
       .get(config.MEMPOOL.API_URL_PREFIX + 'assets/group/:id', this.$getAssetGroup)
       ;
-    
+
     if (config.DATABASE.ENABLED) {
       app
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs', this.$getElementsPegs)
@@ -262,7 +262,7 @@ class LiquidRoutes {
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
-      if (['testnet', 'signet', 'liquidtestnet', 'testnet4'].includes(config.MEMPOOL.NETWORK)) {
+      if (['testnet', 'signet', 'liquidtestnet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK)) {
         handleError(req, res, 400, 'Prices are not available on testnets.');
         return;
       }

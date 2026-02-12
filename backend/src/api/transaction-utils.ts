@@ -47,6 +47,7 @@ class TransactionUtils {
    * @param addPrevouts
    * @param lazyPrevouts
    * @param forceCore - See https://github.com/mempool/mempool/issues/2904
+   * @asyncUnsafe
    */
   public async $getTransactionExtended(txId: string, addPrevouts = false, lazyPrevouts = false, forceCore = false, addMempoolData = false): Promise<TransactionExtended> {
     let transaction: IEsploraApi.Transaction;
@@ -69,10 +70,12 @@ class TransactionUtils {
     }
   }
 
+  /** @asyncUnsafe */
   public async $getMempoolTransactionExtended(txId: string, addPrevouts = false, lazyPrevouts = false, forceCore = false): Promise<MempoolTransactionExtended> {
     return (await this.$getTransactionExtended(txId, addPrevouts, lazyPrevouts, forceCore, true)) as MempoolTransactionExtended;
   }
 
+  /** @asyncUnsafe */
   public async $getMempoolTransactionsExtended(txids: string[], addPrevouts = false, lazyPrevouts = false, forceCore = false): Promise<MempoolTransactionExtended[]> {
     if (forceCore || config.MEMPOOL.BACKEND !== 'esplora') {
       const limiter = pLimit(8); // Run 8 requests at a time
@@ -116,7 +119,7 @@ class TransactionUtils {
   public extendMempoolTransaction(transaction: IEsploraApi.Transaction): MempoolTransactionExtended {
     const vsize = Math.ceil(transaction.weight / 4);
     const fractionalVsize = (transaction.weight / 4);
-    let sigops = Common.isLiquid() ? 0 : (transaction.sigops != null ? transaction.sigops : this.countSigops(transaction));
+    const sigops = Common.isLiquid() ? 0 : (transaction.sigops != null ? transaction.sigops : this.countSigops(transaction));
     // https://github.com/bitcoin/bitcoin/blob/e9262ea32a6e1d364fb7974844fadc36f931f8c6/src/policy/policy.cpp#L295-L298
     const adjustedVsize = Math.max(fractionalVsize, sigops *  5); // adjusted vsize = Max(weight, sigops * bytes_per_sigop) / witness_scale_factor
     const feePerVbytes = (transaction.fee || 0) / fractionalVsize;
@@ -365,7 +368,7 @@ class TransactionUtils {
    *          the script item if it is a script spend.
    */
   public witnessToP2TRScript(witness: string[]): string | null {
-    if (witness.length < 2) return null;
+    if (witness.length < 2) {return null;}
     // Note: see BIP341 for parsing details of witness stack
 
     // If there are at least two witness elements, and the first byte of the
@@ -375,7 +378,7 @@ class TransactionUtils {
     // If there are at least two witness elements left, script path spending is used.
     // Call the second-to-last stack element s, the script.
     // (Note: this phrasing from BIP341 assumes we've *removed* the annex from the stack)
-    if (hasAnnex && witness.length < 3) return null;
+    if (hasAnnex && witness.length < 3) {return null;}
     const positionOfScript = hasAnnex ? witness.length - 3 : witness.length - 2;
     return witness[positionOfScript];
   }
@@ -482,7 +485,7 @@ class TransactionUtils {
       return 'unknown';
     }
   }
-  
+
 }
 
 export default new TransactionUtils();

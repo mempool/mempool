@@ -165,6 +165,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   hasAccelerationDetails = false;
   auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
   isMempoolSpaceBuild = this.stateService.isMempoolSpaceBuild;
+  referralCode: string | undefined;
 
   graphContainer: ElementRef;
   @ViewChild('graphContainer')
@@ -174,7 +175,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       setTimeout(() => { this.applyFragment(); }, 0);
     }
   }
-  
+
   @ViewChild('accelerate')
   set accelerateAnchor(element: ElementRef | null | undefined) {
     if (element) {
@@ -208,6 +209,15 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const urlParams = new URLSearchParams(window.location.search);
     this.forceAccelerationSummary = !!urlParams.get('cash_request_id');
+
+    // Accelerator referral code
+    const fragmentsParams = new URLSearchParams(window.location.hash.slice(1));
+    this.referralCode = fragmentsParams.get('referralCode') ?? this.storageService.getValue('referralCode') ?? undefined;
+    if (this.referralCode) {
+      this.storageService.setValue('referralCode', this.referralCode);
+      // Cleanup referralCode from url after storing it in localStorage to avoid re-use upon page reload
+      window.location.hash = window.location.hash.replace(`&referralCode=${this.referralCode}`, '').replace(`#referralCode=${this.referralCode}`, '');
+    }
 
     this.hideAccelerationSummary = this.stateService.isMempoolSpaceBuild ? this.storageService.getValue('hide-accelerator-pref') == 'true' : true;
 
@@ -483,7 +493,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               catchError(() => {
                 return of({ audit: null });
               })
-            )
+            );
           } else {
             return this.apiService.getBlockTxAudit$(hash, txid).pipe(
               retry({ count: 3, delay: 2000 }),
@@ -491,7 +501,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               catchError(() => {
                 return of({ audit: null });
               })
-            )
+            );
           }
         } else {
           const audit = isCoinbase ? { coinbase: true } : null;
@@ -906,7 +916,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.accelerationCanceled = true;
       this.setIsAccelerated(firstCpfp);
     }
-    
+
     if (this.notAcceleratedOnLoad === null) {
       this.notAcceleratedOnLoad = !this.isAcceleration;
     }
@@ -923,11 +933,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   setIsAccelerated(initialState: boolean = false) {
-    this.isAcceleration = 
+    this.isAcceleration =
       (
-        (this.tx.acceleration && (!this.tx.status.confirmed || this.waitingForAccelerationInfo)) || 
+        (this.tx.acceleration && (!this.tx.status.confirmed || this.waitingForAccelerationInfo)) ||
         (this.accelerationInfo && this.pool && this.accelerationInfo.pools.some(pool => (pool === this.pool.id)))
-      ) && 
+      ) &&
       !this.accelerationCanceled;
     if (this.isAcceleration) {
       if (initialState) {

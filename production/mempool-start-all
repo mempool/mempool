@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 export NVM_DIR="$HOME/.nvm"
 source "$NVM_DIR/nvm.sh"
-nvm use v22.14.0
+nvm use v24.13.0
 
 # start all mempool backends that exist
 for site in mainnet mainnet-lightning testnet testnet-lightning testnet4 signet signet-lightning liquid liquidtestnet;do
@@ -22,6 +22,12 @@ fi
 for site in mainnet;do
     echo "starting mempool cache warmer: ${site}"
     screen -dmS "warmer-${site}" $HOME/mempool/production/nginx-cache-warmer
+done
+
+# start SSR cache warmer
+for site in mainnet;do
+    echo "starting SSR cache warmer: ${site}"
+    screen -dmS "warmer-ssr-${site}" $HOME/mempool/production/nginx-cache-warmer-ssr
 done
 
 # start nginx hot cacher

@@ -64,7 +64,8 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   @ViewChild('blockCanvas')
   canvas: ElementRef<HTMLCanvasElement>;
-  themeChangedSubscription: Subscription;
+  themeStateSubscription: Subscription;
+  loadedTheme = 'default';
 
   gl: WebGLRenderingContext;
   animationFrameRequest: number;
@@ -129,7 +130,11 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
       if (this.gl) {
         this.initCanvas();
         this.resizeCanvas();
-        this.themeChangedSubscription = this.themeService.themeChanged$.subscribe(() => {
+        this.themeStateSubscription = this.themeService.themeState$.subscribe((state) => {
+          if (state.loading) {
+            return;
+          }
+          this.loadedTheme = state.theme;
           this.scene.setColorFunction(this.getColorFunction());
         });
       }
@@ -184,7 +189,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     }
     this.vertexArray.destroy();
     this.vertexArray = null;
-    this.themeChangedSubscription?.unsubscribe();
+    this.themeStateSubscription?.unsubscribe();
     this.searchSubscription?.unsubscribe();
   }
 
@@ -670,13 +675,13 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
           break;
       }
       if (matches) {
-        if (this.themeService.theme !== 'contrast' && this.themeService.theme !== 'bukele') {
+        if (this.loadedTheme !== 'contrast' && this.loadedTheme !== 'bukele') {
           return (gradient === 'age') ? ageColorFunction(tx, defaultColors.fee, defaultAuditColors, this.relativeTime || (Date.now() / 1000)) : defaultColorFunction(tx, defaultColors.fee, defaultAuditColors, this.relativeTime || (Date.now() / 1000));
         } else {
           return (gradient === 'age') ? ageColorFunction(tx, contrastColors.fee, contrastAuditColors, this.relativeTime || (Date.now() / 1000)) : contrastColorFunction(tx, contrastColors.fee, contrastAuditColors, this.relativeTime || (Date.now() / 1000));
         }
       } else {
-        if (this.themeService.theme !== 'contrast' && this.themeService.theme !== 'bukele') {
+        if (this.loadedTheme !== 'contrast' && this.loadedTheme !== 'bukele') {
           return (gradient === 'age') ? { r: 1, g: 1, b: 1, a: 0.05 } : defaultColorFunction(
             tx,
             defaultColors.unmatchedfee,

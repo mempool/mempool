@@ -73,6 +73,8 @@ class CpfpRepository {
     }
   }
 
+
+  /** @asyncUnsafe */
   public async $getCluster(clusterRoot: string): Promise<CpfpCluster | void> {
     const [clusterRows]: any = await DB.query(
       `
@@ -91,6 +93,7 @@ class CpfpRepository {
     return;
   }
 
+  /** @asyncUnsafe */
   public async $getClustersAt(height: number): Promise<CpfpCluster[]> {
     const [clusterRows]: any = await DB.query(
       `

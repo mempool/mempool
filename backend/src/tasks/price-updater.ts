@@ -127,14 +127,17 @@ class PriceUpdater {
   /**
    * We execute this function before the websocket initialization since
    * the websocket init is not done asyncronously
+   *
+   * @asyncUnsafe
    */
   public async $initializeLatestPriceWithDb(): Promise<void> {
     this.latestPrices = await PricesRepository.$getLatestConversionRates();
     this.latestGoodPrices = JSON.parse(JSON.stringify(this.latestPrices));
   }
 
+  /** @asyncSafe */
   public async $run(): Promise<void> {
-    if (['testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK)) {
+    if (['testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK)) {
       // Coins have no value on testnet/signet, so we want to always show 0
       return;
     }
@@ -210,6 +213,7 @@ class PriceUpdater {
 
   /**
    * Fetch last BTC price from exchanges, average them, and save it in the database once every hour
+   * @asyncUnsafe
    */
   private async $updatePrice(): Promise<void> {
     let forceUpdate = false;
@@ -303,6 +307,8 @@ class PriceUpdater {
    * We use MtGox weekly price from July 19, 2010 to September 30, 2013
    * We use Kraken weekly price from October 3, 2013 up to last month
    * We use Kraken hourly price for the past month
+   *
+   * @asyncUnsafe
    */
   private async $insertHistoricalPrices(): Promise<void> {
     const existingPriceTimes = await PricesRepository.$getPricesTimes();
@@ -345,6 +351,8 @@ class PriceUpdater {
   /**
    * Find missing hourly prices and insert them in the database
    * It has a limited backward range and it depends on which API are available
+   *
+   * @asyncUnsafe
    */
   private async $insertMissingRecentPrices(type: 'hour' | 'day'): Promise<void> {
     const existingPriceTimes = await PricesRepository.$getPricesTimes();
@@ -410,6 +418,8 @@ class PriceUpdater {
   /**
    * Find missing prices for additional currencies and insert them in the database
    * We calculate the additional prices from the USD price and the conversion rates
+   *
+   * @asyncUnsafe
    */
   private async $insertMissingAdditionalPrices(): Promise<void> {
     this.lastFailedHistoricalRun = 0;
@@ -432,7 +442,7 @@ class PriceUpdater {
     this.additionalCurrenciesHistoryRunning = true;
     logger.debug(`Inserting missing historical conversion rates using conversions API to fill ${priceTimesToFill.length} rows`, logger.tags.mining);
 
-    let conversionRates: { [timestamp: number]: ConversionRates } = {};
+    const conversionRates: { [timestamp: number]: ConversionRates } = {};
     let totalInserted = 0;
 
     for (let i = 0; i < priceTimesToFill.length; i++) {
@@ -464,7 +474,7 @@ class PriceUpdater {
       }
 
       const prices: ApiPrice = this.getEmptyPricesObj();
-      
+
       let willInsert = false;
       for (const conversionCurrency of this.newCurrencies.concat(missingLegacyCurrencies)) {
         if (conversionRates[yearMonthTimestamp][conversionCurrency] > 0 && priceTime.USD * conversionRates[yearMonthTimestamp][conversionCurrency] < MAX_PRICES[conversionCurrency]) {
@@ -474,7 +484,7 @@ class PriceUpdater {
           prices[conversionCurrency] = 0;
         }
       }
-      
+
       if (willInsert) {
         await PricesRepository.$saveAdditionalCurrencyPrices(priceTime.time, prices, missingLegacyCurrencies);
         ++totalInserted;

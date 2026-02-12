@@ -376,6 +376,7 @@ export class Common {
     'testnet4': 42_000,
     'testnet': 2_900_000,
     'signet': 211_000,
+    'regtest': 0,
     '': 863_500,
   };
   static isNonStandardVersion(tx: TransactionExtended, height?: number): boolean {
@@ -399,6 +400,7 @@ export class Common {
     'testnet4': 42_000,
     'testnet': 2_900_000,
     'signet': 211_000,
+    'regtest': 0,
     '': 863_500,
   };
   static isNonStandardAnchor(vin: IEsploraApi.Vin, height?: number): boolean {
@@ -419,6 +421,7 @@ export class Common {
     'testnet4': 90_500,
     'testnet': 4_550_000,
     'signet': 260_000,
+    'regtest': 0,
     '': 905_000,
   };
   static isStandardEphemeralDust(tx: TransactionExtended, height?: number): boolean {
@@ -439,6 +442,7 @@ export class Common {
     'testnet4': 108_000,
     'testnet': 4_750_000,
     'signet': 276_500,
+    'regtest': 0,
     '': 921_000,
   };
   static MAX_DATACARRIER_BYTES = 83;
@@ -461,6 +465,7 @@ export class Common {
     'testnet4': 108_000,
     'testnet': 4_750_000,
     'signet': 276_500,
+    'regtest': 0,
     '': 921_000,
   };
   static isNonStandardLegacySigops(tx: TransactionExtended, height?: number): boolean {
@@ -797,6 +802,7 @@ export class Common {
     return txs.map(Common.stripTransaction);
   }
 
+  /** @asyncSafe */
   static sleep$(ms: number): Promise<void> {
     return new Promise((resolve) => {
        setTimeout(() => {
@@ -854,7 +860,7 @@ export class Common {
 
   static indexingEnabled(): boolean {
     return (
-      ['mainnet', 'testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK) &&
+      ['mainnet', 'testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK) &&
       config.DATABASE.ENABLED === true &&
       config.MEMPOOL.INDEXING_BLOCKS_AMOUNT !== 0
     );
@@ -911,7 +917,7 @@ export class Common {
     if (id.indexOf('/') !== -1) {
       id = id.slice(0, -2);
     }
-    
+
     if (id.indexOf('x') !== -1) { // Already a short id
       return id;
     }
@@ -1081,7 +1087,7 @@ export class Common {
   }
 
   static getTransactionFromRequest(req: Request, form: boolean): string {
-    let rawTx: any = typeof req.body === 'object' && form
+    const rawTx: any = typeof req.body === 'object' && form
       ? Object.values(req.body)[0] as any
       : req.body;
     if (typeof rawTx !== 'string') {
@@ -1182,7 +1188,7 @@ export class Common {
             }
           }
         }
-      })
+      });
     }
 
     // Pass through the input string untouched
@@ -1220,14 +1226,14 @@ export class Common {
 /**
  * Class to calculate average fee rates of a list of transactions
  * at certain weight percentiles, in a single pass
- * 
+ *
  * init with:
  *   maxWeight - the total weight to measure percentiles relative to (e.g. 4MW for a single block)
  *   percentileBandWidth - how many weight units to average over for each percentile (as a % of maxWeight)
  *   percentiles - an array of weight percentiles to compute, in %
- * 
+ *
  * then call .processNext(tx) for each transaction, in descending order
- * 
+ *
  * retrieve the final results with .getFeeStats()
  */
 export class OnlineFeeStatsCalculator {

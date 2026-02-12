@@ -15,31 +15,32 @@
             <th class="rank"></th>
             <th class="flag"></th>
             <th class="host">Host</th>
-            <th class="updated">Updated</th>
+            <th class="updated only-large">Updated</th>
             <th class="rtt only-small">RTT</th>
             <th class="rtt only-large">RTT</th>
             <th class="height">Height</th>
-            <th class="hybrid only-large">Hybrid</th>
-            <th class="frontend only-large">Front</th>
-            <th class="backend only-large">Back</th>
-            <th class="electrs only-large">Electrs</th>
-            <th class="ssr only-large">SSR</th>
-            <th class="core only-large">Core</th>
+            <th class="hybrid hash">Hybrid</th>
+            <th class="frontend hash">Front</th>
+            <th class="backend hash">Back</th>
+            <th class="electrs hash">Electrs</th>
+            <th class="ssr hash">SSR</th>
+            <th class="core">Core</th>
+            <th class="os">OS</th>
           </tr>
           <tr *ngFor="let host of hosts; let i = index; trackBy: trackByFn">
             <td class="rank">{{ i + 1 }}</td>
             <td class="flag">{{ host.active ? '⭐️' : host.flag }}</td>
             <td class="host">{{ host.link }}</td>
-            <td class="updated">{{ getLastUpdateSeconds(host) }}</td>
+            <td class="updated only-large">{{ getLastUpdateSeconds(host) }}</td>
             <td class="rtt only-small">{{ (host.rtt / 1000) | number : '1.1-1' }} {{ host.rtt == null ? '' : 's'}} {{ !host.checked ? '⏳' : (host.unreachable ? '🔥' : '✅') }}</td>
             <td class="rtt only-large">{{ host.rtt | number : '1.0-0' }} {{ host.rtt == null ? '' : 'ms'}} {{ !host.checked ? '⏳' : (host.unreachable ? '🔥' : '✅') }}</td>
             <td class="height">{{ host.latestHeight }} {{ !host.checked ? '⏳' : (host.outOfSync ? '🚫' : (host.latestHeight && host.latestHeight < maxHeight ? '🟧' : '✅')) }}</td>
-            <ng-container *ngFor="let type of ['hybrid', 'frontend', 'backend', 'electrs', 'ssr', 'core']">
-              <td class="{{type}} only-large" [style.background-color]="type !== 'core' && host.hashes?.[type] ? '#' + host.hashes[type].slice(0, 6) : ''">
-                @if (type !== 'core' && host.hashes?.[type]) {
+            <ng-container *ngFor="let type of ['hybrid', 'frontend', 'backend', 'electrs', 'ssr', 'core', 'os']">
+              <td class="{{type}}" [class.hash]="type !== 'core' && type !== 'os'" [class.version]="type === 'core' || type === 'os'" [style.background-color]="colors[host.host][type]">
+                @if (type !== 'core' && type !== 'os' && host.hashes?.[type]) {
                   <a [style.color]="'white'" href="https://github.com/mempool/{{repoMap[type]}}/commit/{{ host.hashes[type] }}" target="_blank">{{ host.hashes[type].slice(0, 8) || '?' }}</a>
                 } @else if (host.hashes?.[type]) {
-                  <span [style.color]="'white'" style="font-size: 10px;">{{ host.hashes[type] || '?' }}</span>
+                  <span [style.color]="'white'" ngbTooltip="{{ host.hashes[type] }}" placement="top">{{ shortenVersion(host.hashes[type]) || '?' }}</span>
                 } @else {
                   <span>?</span>
                 }

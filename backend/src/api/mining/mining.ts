@@ -26,7 +26,7 @@ class Mining {
   private blocksPriceIndexingRunning = false;
   public lastHashrateIndexingDate: number | null = null;
   public lastWeeklyHashrateIndexingDate: number | null = null;
-  
+
   public reindexHashrateRequested = false;
   public reindexDifficultyAdjustmentRequested = false;
 
@@ -66,7 +66,7 @@ class Mining {
       {from, to}
     );
   }
-  
+
   /**
    * Get historical block rewards
    */
@@ -175,8 +175,8 @@ class Mining {
     const blockCount1w: number = await BlocksRepository.$blockCount(pool.id, '1w');
     const totalBlock1w: number = await BlocksRepository.$blockCount(null, '1w');
 
-    const avgHealth = await BlocksRepository.$getAvgBlockHealthPerPoolId(pool.id);    
-    const totalReward = await BlocksRepository.$getTotalRewardForPoolId(pool.id);    
+    const avgHealth = await BlocksRepository.$getAvgBlockHealthPerPoolId(pool.id);
+    const totalReward = await BlocksRepository.$getTotalRewardForPoolId(pool.id);
 
     let currentEstimatedHashrate = 0;
     try {
@@ -235,7 +235,7 @@ class Mining {
 
       const indexedTimestamp = await HashratesRepository.$getWeeklyHashrateTimestamps();
       const hashrates: any[] = [];
- 
+
       const lastMonday = new Date(now.setDate(now.getDate() - (now.getDay() + 6) % 7));
       const lastMondayMidnight = this.getDateMidnight(lastMonday);
       let toTimestamp = lastMondayMidnight.getTime();
@@ -326,6 +326,7 @@ class Mining {
 
   /**
    * Generate daily hashrate data
+   * @asyncUnsafe
    */
   public async $generateNetworkHashrateHistory(): Promise<void> {
     // If a re-index was requested, truncate first
@@ -439,6 +440,7 @@ class Mining {
 
   /**
    * Index difficulty adjustments
+   * @asyncUnsafe
    */
   public async $indexDifficultyAdjustments(): Promise<void> {
     // If a re-index was requested, truncate first
@@ -528,6 +530,8 @@ class Mining {
 
   /**
    * Create a link between blocks and the latest price at when they were mined
+   *
+   * @asyncSafe
    */
   public async $indexBlockPrices(): Promise<void> {
     if (this.blocksPriceIndexingRunning === true) {
@@ -537,7 +541,7 @@ class Mining {
 
     let totalInserted = 0;
     try {
-      const prices: any[] = await PricesRepository.$getPricesTimesAndId();    
+      const prices: any[] = await PricesRepository.$getPricesTimesAndId();
       const blocksWithoutPrices: any[] = await BlocksRepository.$getBlocksWithoutPrice();
 
       const blocksPrices: BlockPrice[] = [];
@@ -598,6 +602,8 @@ class Mining {
 
   /**
    * Index core coinstatsindex
+   *
+   * @asyncUnsafe
    */
   public async $indexCoinStatsIndex(): Promise<void> {
     let timer = new Date().getTime() / 1000;
@@ -609,11 +615,11 @@ class Mining {
     while (currentBlockHeight > 0) {
       const indexedBlocks = await BlocksRepository.$getBlocksMissingCoinStatsIndex(
         currentBlockHeight, currentBlockHeight - 10000);
-        
+
       for (const block of indexedBlocks) {
         const txoutset = await bitcoinClient.getTxoutSetinfo('none', block.height);
         await BlocksRepository.$updateCoinStatsIndexData(block.hash, txoutset.txouts,
-          Math.round(txoutset.block_info.prevout_spent * 100000000));        
+          Math.round(txoutset.block_info.prevout_spent * 100000000));
         ++totalIndexed;
 
         const elapsedSeconds = Math.max(1, new Date().getTime() / 1000 - timer);
@@ -635,6 +641,7 @@ class Mining {
 
   /**
    * List existing mining pools
+   * @asyncUnsafe
    */
   public async $listPools(): Promise<{name: string, slug: string, unique_id: number}[] | null> {
     const [rows] = await database.query(`
@@ -688,7 +695,7 @@ class Mining {
       default: return 1 * scale;
     }
   }
-  
+
 
   // Finds the oldest block in a consecutive chain back from the tip
   // assumes `blocks` is sorted in ascending height order
@@ -701,6 +708,7 @@ class Mining {
     return blocks[0];
   }
 
+  /** @asyncUnsafe */
   private async getGenesisData(): Promise<{timestamp: number, bits: number, difficulty: number}> {
     if (this.genesisData == null) {
       const genesisBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(await bitcoinApi.$getBlockHash(0));

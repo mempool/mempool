@@ -9,17 +9,19 @@ class LightningStatsUpdater {
     logger.info(`Starting Lightning Stats service`, logger.tags.ln);
 
     await this.$runTasks();
-    LightningStatsImporter.$run();
+    void LightningStatsImporter.$run();
   }
 
+  /** @asyncSafe */
   private async $runTasks(): Promise<void> {
     await this.$logStatsDaily();
 
-    setTimeout(() => { this.$runTasks(); }, 1000 * config.LIGHTNING.STATS_REFRESH_INTERVAL);
+    setTimeout(() => { void this.$runTasks(); }, 1000 * config.LIGHTNING.STATS_REFRESH_INTERVAL);
   }
 
   /**
    * Update the latest entry for each node every config.LIGHTNING.STATS_REFRESH_INTERVAL seconds
+   * @asyncSafe
    */
   private async $logStatsDaily(): Promise<void> {
     try {

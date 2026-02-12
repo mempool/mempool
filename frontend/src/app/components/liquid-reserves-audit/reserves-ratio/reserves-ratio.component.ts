@@ -13,6 +13,7 @@ import { CurrentPegs } from '@interfaces/node-api.interface';
 export class ReservesRatioComponent implements OnInit, OnChanges {
   @Input() currentPeg: CurrentPegs;
   @Input() currentReserves: CurrentPegs;
+  @Input() auditInProgress = false;
   ratioChartOptions: EChartsOption;
 
   height: number | string = '200';
@@ -103,9 +104,9 @@ export class ReservesRatioComponent implements OnInit, OnChanges {
             }
           },
           axisLabel: {
-            color: 'inherit',        
-            fontFamily: 'inherit',  
-            fontSize: axisFontSize,  
+            color: 'inherit',
+            fontFamily: 'inherit',
+            fontSize: axisFontSize,
             formatter: function (value) {
               if (value === 0.999) {
                 return hideMinAxisLabels ? '' : '99.9%';

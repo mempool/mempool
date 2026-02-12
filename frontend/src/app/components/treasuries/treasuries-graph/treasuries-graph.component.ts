@@ -119,7 +119,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
     this.walletData = {};
 
     this.treasuries.forEach(treasury => {
-      if (!walletSummaries[treasury.wallet] || !walletSummaries[treasury.wallet].length) return;
+      if (!walletSummaries[treasury.wallet] || !walletSummaries[treasury.wallet].length) {return;}
 
       const total = this.walletStats[treasury.wallet] ? this.walletStats[treasury.wallet].balance : walletSummaries[treasury.wallet].reduce((acc, tx) => acc + tx.value, 0);
 
@@ -267,8 +267,8 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
           const tooltipTime = data[0].data[0];
 
           let tooltip = '<div>';
-          const date = new Date(tooltipTime).toLocaleTimeString(this.locale, { 
-            year: 'numeric', month: 'short', day: 'numeric' 
+          const date = new Date(tooltipTime).toLocaleTimeString(this.locale, {
+            year: 'numeric', month: 'short', day: 'numeric'
           });
 
           tooltip += `<div><b style="color: white; margin-left: 2px">${date}</b><br>`;
@@ -304,7 +304,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
 
             if (mostRecentPoint) {
               // Extract balance from the point
-              const balance = Array.isArray(mostRecentPoint) ? mostRecentPoint[1] : 
+              const balance = Array.isArray(mostRecentPoint) ? mostRecentPoint[1] :
                 (mostRecentPoint && typeof mostRecentPoint === 'object' && 'value' in mostRecentPoint ? mostRecentPoint.value[1] : null);
 
               if (balance !== null && !isNaN(balance)) {
@@ -339,7 +339,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
             show: this.showYAxis,
             color: 'rgb(110, 112, 121)',
             formatter: (val): string => {
-              let valSpan = maxValue - (this.period === 'all' ? 0 : minValue);
+              const valSpan = maxValue - (this.period === 'all' ? 0 : minValue);
               if (valSpan > 100_000_000_000) {
                 return `${this.amountShortenerPipe.transform(Math.round(val / 100_000_000), 0, undefined, true)} BTC`;
               }

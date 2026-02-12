@@ -8,6 +8,7 @@ import { ResultSetHeader } from 'mysql2';
 import * as IPCheck from '../../../utils/ipcheck.js';
 import { Reader } from 'mmdb-lib';
 
+/** @asyncSafe */
 export async function $lookupNodeLocation(): Promise<void> {
   let loggerTimer = new Date().getTime() / 1000;
   let progress = 0;
@@ -60,13 +61,13 @@ export async function $lookupNodeLocation(): Promise<void> {
 
           if (city && (asn || isp)) {
             const query = `
-              UPDATE nodes SET 
-                as_number = ?, 
-                city_id = ?, 
-                country_id = ?, 
-                subdivision_id = ?, 
-                longitude = ?, 
-                latitude = ?, 
+              UPDATE nodes SET
+                as_number = ?,
+                city_id = ?,
+                country_id = ?,
+                subdivision_id = ?,
+                longitude = ?,
+                latitude = ?,
                 accuracy_radius = ?
               WHERE public_key = ?
             `;

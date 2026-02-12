@@ -296,8 +296,8 @@
   </div>
 </ng-template>
 
-<ng-template #loadingSkeletonLiquid>
-  <div class="container-xl dashboard-container">
+<ng-template #loadingSkeletonLiquid let-auditInProgress="auditInProgress">
+  <div class="container-xl dashboard-container" [class.audit-in-progress]="auditInProgress">
 
     <div class="row row-cols-1 row-cols-md-2">
 
@@ -323,7 +323,7 @@
         <div class="card-liquid card">
           <h5 class="card-title" style="padding-top: 20px;" i18n="dashboard.lbtc-supply-against-btc-holdings">LBTC Supply Against BTC Holdings</h5>
           <div class="card-body pl-0" style="padding-top: 25px;">
-            <app-lbtc-pegs-graph [height]="lbtcPegGraphHeight"></app-lbtc-pegs-graph>
+            <app-lbtc-pegs-graph [height]="lbtcPegGraphHeight" [auditInProgress]="auditInProgress"></app-lbtc-pegs-graph>
           </div>
         </div>
       </div>
@@ -332,7 +332,7 @@
         <div class="card-liquid card"> 
           <div class="card-body">
             <app-reserves-ratio-stats></app-reserves-ratio-stats>
-            <app-reserves-ratio></app-reserves-ratio>
+            <app-reserves-ratio [auditInProgress]="auditInProgress"></app-reserves-ratio>
           </div>
         </div>
       </div>
@@ -359,10 +359,18 @@
 </ng-template>
 
 <ng-template #auditInProgress>
-  <ng-container *ngIf="(auditStatus$ | async) as auditStatus; else loadingSkeletonLiquid">
-    <div class="in-progress-message" *ngIf="auditStatus.lastBlockAudit && auditStatus.bitcoinHeaders; else loadingSkeletonLiquid">
-      <div i18n="lightning.indexing-in-progress">Indexing in progress</div>
-      <div>#{{ auditStatus.lastBlockAudit }} / #{{ auditStatus.bitcoinHeaders }}</div>
-    </div>
-  </ng-container>
+  <div class="liquid-indexing">
+    <ng-container *ngIf="(auditStatus$ | async) as auditStatus; else auditSkeleton">
+      <div class="liquid-indexing-banner" *ngIf="auditStatus.lastBlockAudit && auditStatus.bitcoinHeaders">
+        <span class="badge badge-pill badge-warning liquid-indexing-badge">
+          <span i18n="liquid.audit-in-progress">Audit in progress</span>
+          ({{ (auditStatus.lastBlockAudit / auditStatus.bitcoinHeaders * 100) | number:'1.0-0' }}%)
+        </span>
+      </div>
+      <ng-container *ngTemplateOutlet="loadingSkeletonLiquid; context: { auditInProgress: true }"></ng-container>
+    </ng-container>
+    <ng-template #auditSkeleton>
+      <ng-container *ngTemplateOutlet="loadingSkeletonLiquid; context: { auditInProgress: false }"></ng-container>
+    </ng-template>
+  </div>
 </ng-template>

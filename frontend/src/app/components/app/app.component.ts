@@ -46,7 +46,7 @@ export class AppComponent implements OnInit {
       return;
     }
     // prevent arrow key horizontal scrolling
-    if(["ArrowLeft","ArrowRight"].indexOf(event.code) > -1) {
+    if(['ArrowLeft','ArrowRight'].indexOf(event.code) > -1) {
       event.preventDefault();
     }
     this.stateService.keyNavigation$.next(event);

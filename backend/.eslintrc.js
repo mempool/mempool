@@ -1,14 +1,29 @@
-{
+module.exports = {
   "root": true,
   "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json",
+    "tsconfigRootDir": __dirname
+  },
   "plugins": [
-    "@typescript-eslint"
+    "@typescript-eslint",
+    "local-rules"
   ],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
     "prettier"
+  ],
+  "ignorePatterns": ["dist", "eslint-local-rules", ".eslintrc.js", "testSetup*.ts", "jest.integration.*.ts", "__tests__", "*.config.ts"],
+  "overrides": [
+    {
+      "files": ["src/__integration_tests__/**/*"],
+      "rules": {
+        "@typescript-eslint/no-floating-promises": "off",
+        "local-rules/no-unhandled-await": "off"
+      }
+    }
   ],
   "rules": {
     "@typescript-eslint/ban-ts-comment": 1,
@@ -21,6 +36,8 @@
     "@typescript-eslint/no-var-requires": 1,
     "@typescript-eslint/explicit-function-return-type": 1,
     "@typescript-eslint/no-unused-vars": 1,
+    "@typescript-eslint/no-floating-promises": "error",
+    "local-rules/no-unhandled-await": "error",
     "no-console": 1,
     "no-constant-condition": 1,
     "no-dupe-else-if": 1,

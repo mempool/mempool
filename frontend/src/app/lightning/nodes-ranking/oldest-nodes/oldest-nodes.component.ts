@@ -14,7 +14,7 @@ import { LightningApiService } from '@app/lightning/lightning-api.service';
 })
 export class OldestNodes implements OnInit {
   @Input() widget: boolean = false;
-  
+
   oldestNodes$: Observable<IOldestNodes[]>;
   skeletonRows: number[] = [];
 

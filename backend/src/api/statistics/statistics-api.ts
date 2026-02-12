@@ -514,7 +514,7 @@ class StatisticsApi {
         vsize_1600: completeVsizes[36],
         vsize_1800: completeVsizes[37],
         vsize_2000: completeVsizes[38],
-      }
+      };
     });
   }
 }

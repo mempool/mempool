@@ -434,6 +434,22 @@
   margin-left: 10px;
 }
 
+.liquid-indexing {
+  position: relative;
+
+  .liquid-indexing-banner {
+    position: absolute;
+    left: 90px;
+    top: -288px;
+    transform: translateX(-50%);
+  }
+
+  .liquid-indexing-badge {
+    font-size: 11px;
+    line-height: 1.2;
+  }
+}
+
 .in-progress-message {
   position: relative;
   color: var(--fg);

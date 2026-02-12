@@ -14,6 +14,7 @@ const fsPromises = promises;
 class LightningStatsImporter {
   topologiesFolder = config.LIGHTNING.TOPOLOGY_FOLDER;
 
+  /** @asyncSafe */
   async $run(): Promise<void> {
     try {
       const [channels]: any[] = await DB.query('SELECT short_id from channels;');
@@ -33,6 +34,7 @@ class LightningStatsImporter {
 
   /**
    * Generate LN network stats for one day
+   * @asyncUnsafe
    */
   public async computeNetworkStats(timestamp: number,
     networkGraph: ILightningApi.NetworkGraph, isHistorical: boolean = false): Promise<unknown> {
@@ -99,7 +101,7 @@ class LightningStatsImporter {
     const feeRates: number[] = [];
     const baseFees: number[] = [];
     const alreadyCountedChannels = {};
-    
+
     const [channelsInDbRaw]: any[] = await DB.query(`SELECT short_id FROM channels`);
     const channelsInDb = {};
     for (const channel of channelsInDbRaw) {
@@ -145,7 +147,7 @@ class LightningStatsImporter {
           channels: 0,
         };
       }
-      
+
       if (!alreadyCountedChannels[short_id]) {
         capacity += Math.round(tx.value * 100000000);
         capacities.push(Math.round(tx.value * 100000000));
@@ -162,7 +164,7 @@ class LightningStatsImporter {
           if (policy && parseInt(policy.fee_rate_milli_msat, 10) < 5000) {
             avgFeeRate += parseInt(policy.fee_rate_milli_msat, 10);
             feeRates.push(parseInt(policy.fee_rate_milli_msat, 10));
-          }  
+          }
           if (policy && parseInt(policy.fee_base_msat, 10) < 5000) {
             avgBaseFee += parseInt(policy.fee_base_msat, 10);
             baseFees.push(parseInt(policy.fee_base_msat, 10));
@@ -388,7 +390,7 @@ class LightningStatsImporter {
           totalProcessed++;
           continue;
         }
-    
+
         if (this.isIncorrectSnapshot(timestamp, graph)) {
           logger.debug(`Ignoring ${this.topologiesFolder}/${filename}, because we defined it as an incorrect snapshot`);
           ++totalProcessed;
@@ -399,7 +401,7 @@ class LightningStatsImporter {
           logger.info(`Founds a topology file that we did not import. Importing historical lightning stats now.`, logger.tags.ln);
           logStarted = true;
         }
-        
+
         const datestr = `${new Date(timestamp * 1000).toUTCString()} (${timestamp})`;
         logger.debug(`${datestr}: Found ${graph.nodes.length} nodes and ${graph.edges.length} channels`, logger.tags.ln);
 
@@ -475,7 +477,7 @@ class LightningStatsImporter {
               fee_rate_milli_msat: edge.fee_proportional_millionths,
               max_htlc_msat: edge.htlc_maximum_msat,
               last_update: edge.timestamp,
-              disabled: false,          
+              disabled: false,
             },
             node2_policy: null,
           });
@@ -545,7 +547,7 @@ class LightningStatsImporter {
     //   UNIX_TIMESTAMP(added) >= 1591142400 AND UNIX_TIMESTAMP(added) <= 1592006400 OR
     //   UNIX_TIMESTAMP(added) >= 1632787200 AND UNIX_TIMESTAMP(added) <= 1633564800 OR
     //   UNIX_TIMESTAMP(added) >= 1634256000 AND UNIX_TIMESTAMP(added) <= 1645401600 OR
-    //   UNIX_TIMESTAMP(added) >= 1654992000 AND UNIX_TIMESTAMP(added) <= 1661472000 
+    //   UNIX_TIMESTAMP(added) >= 1654992000 AND UNIX_TIMESTAMP(added) <= 1661472000
     // )
   }
 }

@@ -138,6 +138,19 @@
       </defs>
     </svg>
   </ng-container>
+  <ng-container *ngSwitchCase="'mempoolSquare'">
+    <svg [class]="class" [style]="style" [attr.width]="width" [attr.height]="height" [attr.viewBox]="viewBox" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M124.706 110.25C124.706 118.849 117.772 125.791 109.183 125.791H15.5236C6.93387 125.791 0 118.849 0 110.25V16.4837C0 7.88416 6.98561 0.942383 15.5236 0.942383H109.183C117.772 0.942383 124.706 7.88416 124.706 16.4837V110.25Z" fill="#2E3349"/>
+      <path d="M0 63.5225V110.25C0 118.849 6.98561 125.791 15.5753 125.791H109.183C117.772 125.791 124.758 118.849 124.758 110.25V63.5225H0Z" [attr.fill]="'url(#paint0_linear' + randomId + ')'"/>
+      <path opacity="0.3" d="M109.909 109.11C109.909 111.026 108.615 112.581 107.011 112.581H90.8665C89.2624 112.581 87.9688 111.026 87.9688 109.11V17.6232C87.9688 15.7065 89.2624 14.1523 90.8665 14.1523H107.011C108.615 14.1523 109.909 15.7065 109.909 17.6232V109.11Z" fill="white"/>
+      <defs>
+        <linearGradient [id]="'paint0_linear' + randomId" x1="62.3768" y1="36.3949" x2="62.3768" y2="156.837" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#AE61FF"/>
+          <stop offset="1" stop-color="#13EFD8"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  </ng-container>
   <ng-container *ngSwitchCase="'liquidNetwork'">
     <svg width="140" viewBox="0 0 500 126" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g clip-path="url(#clip0)">
@@ -183,6 +196,9 @@
   </ng-container>
   <ng-container *ngSwitchCase="'testnet4'">
     <ng-component *ngTemplateOutlet="bitcoinLogo; context: {$implicit: '#5fd15c', width, height, viewBox}"></ng-component>
+  </ng-container>
+  <ng-container *ngSwitchCase="'regtest'">
+    <ng-component *ngTemplateOutlet="bitcoinLogo; context: {$implicit: '#a5a5a5', width, height, viewBox}"></ng-component>
   </ng-container>
   <ng-container *ngSwitchCase="'liquid'">
     <ng-component *ngTemplateOutlet="liquidLogo; context: {$implicit: '', width, height, viewBox}"></ng-component>

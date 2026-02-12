@@ -53,7 +53,7 @@ class ChannelsApi {
           GROUP BY nodes_1.public_key, nodes_2.public_key
           ORDER BY channels.capacity DESC
           LIMIT 10000
-        `;        
+        `;
       }
 
       const [rows]: any = await DB.query(query, params);
@@ -241,10 +241,10 @@ class ChannelsApi {
       let [feeRates2]: any = await DB.query(query);
       feeRates2 = feeRates2.map(rate => rate.node2_fee_rate);
 
-      let feeRates = (feeRates1.concat(feeRates2)).sort((a, b) => a - b);
+      const feeRates = (feeRates1.concat(feeRates2)).sort((a, b) => a - b);
       let avgFeeRate = 0;
       for (const rate of feeRates) {
-        avgFeeRate += rate; 
+        avgFeeRate += rate;
       }
       avgFeeRate /= feeRates.length;
       const medianFeeRate = feeRates[Math.floor(feeRates.length / 2)];
@@ -257,14 +257,14 @@ class ChannelsApi {
       let [baseFees2]: any = await DB.query(query);
       baseFees2 = baseFees2.map(rate => rate.node2_base_fee_mtokens);
 
-      let baseFees = (baseFees1.concat(baseFees2)).sort((a, b) => a - b);
+      const baseFees = (baseFees1.concat(baseFees2)).sort((a, b) => a - b);
       let avgBaseFee = 0;
       for (const fee of baseFees) {
-        avgBaseFee += fee; 
+        avgBaseFee += fee;
       }
       avgBaseFee /= baseFees.length;
       const medianBaseFee = feeRates[Math.floor(baseFees.length / 2)];
-      
+
       return {
         avgCapacity: parseInt(avgCapacity[0].avgCapacity, 10),
         avgFeeRate: avgFeeRate,
@@ -272,7 +272,7 @@ class ChannelsApi {
         medianCapacity: medianCapacity,
         medianFeeRate: medianFeeRate,
         medianBaseFee: medianBaseFee,
-      }
+      };
 
     } catch (e) {
       logger.err(`Cannot calculate channels statistics. Reason: ${e instanceof Error ? e.message : e}`);
@@ -298,6 +298,7 @@ class ChannelsApi {
     }
   }
 
+  /** @asyncSafe */
   public async $getChannelByClosingId(transactionId: string): Promise<any> {
     try {
       const query = `
@@ -338,6 +339,7 @@ class ChannelsApi {
     }
   }
 
+  /** @asyncSafe */
   public async $updateClosingInfo(channelInfo: { id: string, node1_closing_balance: number, node2_closing_balance: number, closed_by: string | null, closing_fee: number, outputs: ILightningApi.ForensicOutput[]}): Promise<void> {
     try {
       const query = `
@@ -363,6 +365,7 @@ class ChannelsApi {
     }
   }
 
+  /** @asyncSafe */
   public async $updateOpeningInfo(channelInfo: { id: string, node1_funding_balance: number, node2_funding_balance: number, funding_ratio: number, single_funded: boolean | void }): Promise<void> {
     try {
       const query = `
@@ -456,7 +459,7 @@ class ChannelsApi {
         allChannels = allChannels.slice(0, 1000);
       }
 
-      const channels: any[] = []
+      const channels: any[] = [];
       for (const row of allChannels) {
         let channel;
         if (index >= 0) {
@@ -578,6 +581,7 @@ class ChannelsApi {
 
   /**
    * Save or update a channel present in the graph
+   * @asyncUnsafe
    */
   public async $saveChannel(channel: ILightningApi.Channel, status = 1): Promise<void> {
     if (!channel.chan_point?.length) {
@@ -717,6 +721,7 @@ class ChannelsApi {
     }
   }
 
+  /** @asyncSafe */
   public async $getLatestChannelUpdateForNode(publicKey: string): Promise<number> {
     try {
       const query = `

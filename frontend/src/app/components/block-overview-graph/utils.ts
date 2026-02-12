@@ -67,7 +67,7 @@ const defaultColors: { [key: string]: ColorPalette } = {
     marginal: [],
     baseLevel: (tx: TxView, rate: number) => feeLevels.findIndex((feeLvl) => Math.max(0, rate) < feeLvl) - 1
   },
-}
+};
 for (const key in defaultColors) {
   const base = defaultColors[key].base;
   defaultColors[key].audit = base.map((color) => darken(desaturate(color, 0.3), 0.9));
@@ -98,7 +98,7 @@ const contrastColors: { [key: string]: ColorPalette } = {
     marginal: [],
     baseLevel: (tx: TxView, rate: number) => feeLevels.findIndex((feeLvl) => Math.max(0, rate) < feeLvl) - 1
   },
-}
+};
 for (const key in contrastColors) {
   const base = contrastColors[key].base;
   contrastColors[key].audit = base.map((color) => darken(desaturate(color, 0.3), 0.9));

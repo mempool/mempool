@@ -29,6 +29,7 @@ class NetworkSyncService {
     await this.$runTasks();
   }
 
+  /** @asyncSafe */
   private async $runTasks(): Promise<void> {
     const taskStartTime = Date.now();
     try {
@@ -37,7 +38,7 @@ class NetworkSyncService {
       const networkGraph = await lightningApi.$getNetworkGraph();
       if (networkGraph.nodes.length === 0 || networkGraph.edges.length === 0) {
         logger.info(`LN Network graph is empty, retrying in 10 seconds`, logger.tags.ln);
-        setTimeout(() => { this.$runTasks(); }, 10000);
+        setTimeout(() => { void this.$runTasks(); }, 10000);
         return;
       }
 
@@ -47,7 +48,7 @@ class NetworkSyncService {
       await this.$lookUpCreationDateFromChain();
       await this.$updateNodeFirstSeen();
       await this.$scanForClosedChannels();
-      
+
       if (config.MEMPOOL.BACKEND === 'esplora') {
         // run forensics on new channels only
         await forensicsService.$runClosedChannelsForensics(true);
@@ -57,7 +58,7 @@ class NetworkSyncService {
       logger.err(`$runTasks() error: ${e instanceof Error ? e.message : e}`, logger.tags.ln);
     }
 
-    setTimeout(() => { this.$runTasks(); }, Math.max(1, (1000 * config.LIGHTNING.GRAPH_REFRESH_INTERVAL) - (Date.now() - taskStartTime)));
+    setTimeout(() => { void this.$runTasks(); }, Math.max(1, (1000 * config.LIGHTNING.GRAPH_REFRESH_INTERVAL) - (Date.now() - taskStartTime)));
   }
 
   /**
@@ -111,7 +112,9 @@ class NetworkSyncService {
     await nodesApi.$setNodesInactive(graphNodesPubkeys);
 
     if (config.MAXMIND.ENABLED) {
-      $lookupNodeLocation();
+      $lookupNodeLocation().catch((e) => {
+        logger.err(`Error in $lookupNodeLocation: ${e instanceof Error ? e.message : e}`);
+      });
     }
   }
 
@@ -226,7 +229,7 @@ class NetworkSyncService {
 
       if (channels.length > 0) {
         logger.debug(`Updated ${channels.length} channels' creation date`, logger.tags.ln);
-      }      
+      }
     } catch (e) {
       logger.err(`$lookUpCreationDateFromChain() error: ${e instanceof Error ? e.message : e}`, logger.tags.ln);
     }

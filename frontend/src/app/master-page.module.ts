@@ -115,7 +115,7 @@ const routes: Routes = [
       {
         path: 'tools/calculator',
         component: CalculatorComponent
-      },
+      }
     ],
   }
 ];
@@ -144,7 +144,7 @@ if (window['__env']?.OFFICIAL_MEMPOOL_SPACE) {
         data: { networks: ['bitcoin'] },
         component: FaucetComponent,
       }]
-    })
+    });
   }
 }
 

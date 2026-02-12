@@ -17,7 +17,7 @@ export class ClosingTypeComponent implements OnChanges {
 
   getLabelFromType(type: number): { label: string; class: string } {
     switch (type) {
-      case 1: return { 
+      case 1: return {
         label: $localize`Mutually closed`,
         class: 'success',
       };

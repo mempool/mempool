@@ -179,7 +179,7 @@ class PricesRepository {
         prices[currency] = 0;
       }
     }
-    
+
     try {
       if (!config.FIAT_PRICE.API_KEY) { // Store only the 7 main currencies
           await DB.query(`
@@ -191,8 +191,8 @@ class PricesRepository {
         await DB.query(`
           INSERT INTO prices(time,             USD, EUR, GBP, CAD, CHF, AUD, JPY, BGN, BRL, CNY, CZK, DKK, HKD, HRK, HUF, IDR, ILS, INR, ISK, KRW, MXN, MYR, NOK, NZD, PHP, PLN, RON, RUB, SEK, SGD, THB, TRY, ZAR)
           VALUE             (FROM_UNIXTIME(?), ?,   ?,   ?,   ?,   ?,   ?,   ?,   ?  , ?,   ?,   ?,   ?,   ?,   ?,   ?,   ?  , ?,   ?,   ?,   ?,   ?,   ?,   ?,   ?,   ?,   ?,   ?,   ?,   ?,   ?,   ?,   ?  , ?  )`,
-          [time, prices.USD, prices.EUR, prices.GBP, prices.CAD, prices.CHF, prices.AUD, prices.JPY, prices.BGN, prices.BRL, prices.CNY, prices.CZK, prices.DKK, 
-                prices.HKD, prices.HRK, prices.HUF, prices.IDR, prices.ILS, prices.INR, prices.ISK, prices.KRW, prices.MXN, prices.MYR, prices.NOK, prices.NZD, 
+          [time, prices.USD, prices.EUR, prices.GBP, prices.CAD, prices.CHF, prices.AUD, prices.JPY, prices.BGN, prices.BRL, prices.CNY, prices.CZK, prices.DKK,
+                prices.HKD, prices.HRK, prices.HUF, prices.IDR, prices.ILS, prices.INR, prices.ISK, prices.KRW, prices.MXN, prices.MYR, prices.NOK, prices.NZD,
                 prices.PHP, prices.PLN, prices.RON, prices.RUB, prices.SEK, prices.SGD, prices.THB, prices.TRY, prices.ZAR]
         );
       }
@@ -224,6 +224,7 @@ class PricesRepository {
     }
   }
 
+  /** @asyncUnsafe */
   public async $getOldestPriceTime(): Promise<number> {
     const [oldestRow] = await DB.query(`
       SELECT UNIX_TIMESTAMP(time) AS time
@@ -234,6 +235,7 @@ class PricesRepository {
     return oldestRow[0] ? oldestRow[0].time : 0;
   }
 
+  /** @asyncUnsafe */
   public async $getLatestPriceId(): Promise<number | null> {
     const [oldestRow] = await DB.query(`
       SELECT id
@@ -244,6 +246,7 @@ class PricesRepository {
     return oldestRow[0] ? oldestRow[0].id : null;
   }
 
+  /** @asyncUnsafe */
   public async $getLatestPriceTime(): Promise<number> {
     const [oldestRow] = await DB.query(`
       SELECT UNIX_TIMESTAMP(time) AS time
@@ -254,6 +257,7 @@ class PricesRepository {
     return oldestRow[0] ? oldestRow[0].time : 0;
   }
 
+  /** @asyncUnsafe */
   public async $getPricesTimes(): Promise<number[]> {
     const [times] = await DB.query(`
       SELECT UNIX_TIMESTAMP(time) AS time
@@ -267,6 +271,7 @@ class PricesRepository {
     return times.map(time => time.time);
   }
 
+  /** @asyncUnsafe */
   public async $getPricesTimesWithMissingFields(): Promise<{time: number, USD: number, eur_missing: boolean, gbp_missing: boolean, cad_missing: boolean, chf_missing: boolean, aud_missing: boolean, jpy_missing: boolean}[]> {
     const [times] = await DB.query(`
       SELECT UNIX_TIMESTAMP(time) AS time, 
@@ -289,6 +294,7 @@ class PricesRepository {
     return times as {time: number, USD: number, eur_missing: boolean, gbp_missing: boolean, cad_missing: boolean, chf_missing: boolean, aud_missing: boolean, jpy_missing: boolean}[];
   }
 
+  /** @asyncUnsafe */
   public async $getPricesTimesAndId(): Promise<{time: number, id: number, USD: number}[]> {
     const [times] = await DB.query(`
       SELECT
@@ -302,6 +308,7 @@ class PricesRepository {
     return times as {time: number, id: number, USD: number}[];
   }
 
+  /** @asyncUnsafe */
   public async $getLatestConversionRates(): Promise<ApiPrice> {
     const [rates] = await DB.query(`
       SELECT ${ApiPriceFields}
@@ -317,6 +324,7 @@ class PricesRepository {
     return rates[0] as ApiPrice;
   }
 
+  /** @asyncSafe */
   public async $getNearestHistoricalPrice(timestamp: number | undefined, currency?: string): Promise<Conversion | null> {
     try {
       const [rates] = await DB.query(`
@@ -341,8 +349,8 @@ class PricesRepository {
       `);
       if (!Array.isArray(latestPrices)) {
         throw Error(`Cannot get single historical price from the database`);
-      }      
-      
+      }
+
       // Compute fiat exchange rates
       let latestPrice = latestPrices[0] as ApiPrice;
       if (!latestPrice || latestPrice.USD === -1) {
@@ -350,8 +358,8 @@ class PricesRepository {
       }
 
       const computeFx = (usd: number, other: number): number => usd <= 0.05 ? 0 : Math.round(Math.max(other, 0) / usd * 100) / 100;
-      
-      const exchangeRates: ExchangeRates = config.FIAT_PRICE.API_KEY ? 
+
+      const exchangeRates: ExchangeRates = config.FIAT_PRICE.API_KEY ?
         {
           USDEUR: computeFx(latestPrice.USD, latestPrice.EUR),
           USDGBP: computeFx(latestPrice.USD, latestPrice.GBP),
@@ -428,6 +436,7 @@ class PricesRepository {
     }
   }
 
+  /** @asyncSafe */
   public async $getHistoricalPrices(currency?: string): Promise<Conversion | null> {
     try {
       const [rates] = await DB.query(`
@@ -446,10 +455,10 @@ class PricesRepository {
         latestPrice = priceUpdater.getEmptyPricesObj();
       }
 
-      const computeFx = (usd: number, other: number): number => 
+      const computeFx = (usd: number, other: number): number =>
         usd <= 0 ? 0 : Math.round(Math.max(other, 0) / usd * 100) / 100;
-      
-      const exchangeRates: ExchangeRates = config.FIAT_PRICE.API_KEY ? 
+
+      const exchangeRates: ExchangeRates = config.FIAT_PRICE.API_KEY ?
         {
           USDEUR: computeFx(latestPrice.USD, latestPrice.EUR),
           USDGBP: computeFx(latestPrice.USD, latestPrice.GBP),

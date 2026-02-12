@@ -35,6 +35,8 @@ class Indexer {
 
   /**
    * Check which core index is available for indexing
+   * 
+   * @asyncUnsafe
    */
   public async checkAvailableCoreIndexes(): Promise<void> {
     const updatedCoreIndexes: CoreIndex[] = [];
@@ -46,13 +48,13 @@ class Indexer {
         synced: indexes[indexName].synced,
         best_block_height: indexes[indexName].best_block_height,
       };
-      logger.info(`Core index '${indexName}' is ${indexes[indexName].synced ? 'synced' : 'not synced'}. Best block height is ${indexes[indexName].best_block_height}`);      
+      logger.info(`Core index '${indexName}' is ${indexes[indexName].synced ? 'synced' : 'not synced'}. Best block height is ${indexes[indexName].best_block_height}`);
       updatedCoreIndexes.push(newState);
 
       if (indexName === 'coinstatsindex' && newState.synced === true) {
         const previousState = this.isCoreIndexReady('coinstatsindex');
         // if (!previousState || previousState.synced === false) {
-          this.runSingleTask('coinStatsIndex');
+          void this.runSingleTask('coinStatsIndex');
         // }
       }
     }
@@ -62,9 +64,9 @@ class Indexer {
 
   /**
    * Return the best block height if a core index is available, or 0 if not
-   * 
-   * @param name 
-   * @returns 
+   *
+   * @param name
+   * @returns
    */
   public isCoreIndexReady(name: string): CoreIndex | null {
     for (const index of this.coreIndexes) {
@@ -125,6 +127,8 @@ class Indexer {
    * Runs a single task immediately
    *
    * (use `scheduleSingleTask` instead to queue a task to run after some timeout)
+   *
+   * @asyncSafe
    */
   public async runSingleTask(task: TaskName): Promise<void> {
     if (!Common.indexingEnabled() || this.tasksRunning[task]) {
@@ -134,7 +138,7 @@ class Indexer {
 
     switch (task) {
       case 'blocksPrices': {
-        if (!['testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK) && config.FIAT_PRICE.ENABLED) {
+        if (!['testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK) && config.FIAT_PRICE.ENABLED) {
           let lastestPriceId;
           try {
             lastestPriceId = await PricesRepository.$getLatestPriceId();
@@ -163,6 +167,7 @@ class Indexer {
     this.tasksRunning[task] = false;
   }
 
+  /** @asyncSafe */
   public async $run(): Promise<void> {
     if (!Common.indexingEnabled() || this.runIndexer === false ||
       this.indexerRunning === true || mempool.hasPriority()
@@ -207,7 +212,7 @@ class Indexer {
         return;
       }
 
-      this.runSingleTask('blocksPrices');
+      void this.runSingleTask('blocksPrices');
       await blocks.$indexCoinbaseAddresses();
       await mining.$indexDifficultyAdjustments();
       await mining.$generateNetworkHashrateHistory();
@@ -221,7 +226,7 @@ class Indexer {
       await BlocksAuditsRepository.$migrateAuditsV0toV1();
       await BlocksRepository.$migrateBlocks();
       // do not wait for classify blocks to finish
-      blocks.$classifyBlocks();
+      void blocks.$classifyBlocks();
       runSuccessful = true;
     } catch (e) {
       nextRunDelay = retryDelay;

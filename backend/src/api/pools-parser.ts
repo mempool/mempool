@@ -33,6 +33,7 @@ class PoolsParser {
   /**
    * Populate our db with updated mining pool definition
    * @param pools
+   * @asyncUnsafe
    */
   public async migratePoolsJson(): Promise<void> {
     // We also need to wipe the backend cache to make sure we don't serve blocks with
@@ -126,8 +127,8 @@ class PoolsParser {
         block.extras.pool = reindexedBlock.extras.pool;
       }
       // update persistent cache with the reindexed data
-      diskCache.$saveCacheToDisk();
-      redisCache.$updateBlocks(blocks.getBlocks());
+      void diskCache.$saveCacheToDisk();
+      void redisCache.$updateBlocks(blocks.getBlocks());
     }
   }
 
@@ -159,6 +160,7 @@ class PoolsParser {
 
   /**
    * Manually add the 'unknown pool'
+   * @asyncSafe
    */
   public async $insertUnknownPool(): Promise<void> {
     if (!config.DATABASE.ENABLED) {
@@ -190,12 +192,13 @@ class PoolsParser {
    * re-index pool assignment for blocks previously associated with pool
    *
    * @param pool local id of existing pool to reindex
+   * @asyncUnsafe
    */
   private async $reindexBlocksForPool(poolId: number): Promise<void> {
     let firstKnownBlockPool = 130635; // https://mempool.space/block/0000000000000a067d94ff753eec72830f1205ad3a4c216a08a80c832e551a52
     if (config.MEMPOOL.NETWORK === 'testnet') {
       firstKnownBlockPool = 21106; // https://mempool.space/testnet/block/0000000070b701a5b6a1b965f6a38e0472e70b2bb31b973e4638dec400877581
-    } else if (['signet', 'testnet4'].includes(config.MEMPOOL.NETWORK)) {
+    } else if (['signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK)) {
       firstKnownBlockPool = 0;
     }
 
