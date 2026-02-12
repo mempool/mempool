@@ -12451,6 +12451,121 @@ export const restApiDocsData = [
       }
     }
   },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-private',
+    httpRequestMethod: 'POST',
+    fragment: 'accelerator-auto-accelerate',
+    title: 'POST Auto-Accelerate A Transaction (Pro)',
+    description: {
+      default: '<p>Sends a request to automatically accelerate a transaction based on specified trigger conditions.</p><p>The <code>type</code> parameter must be one of: <code>time_delay</code>, <code>block_height</code>, <code>timestamp</code>, or <code>next_block</code>.<br>The <code>value</code> parameter is required for types other than <code>next_block</code> and depends on the type: hours (floating point, min = 0.5) for <code>time_delay</code>, block height (min = next block height) for <code>block_height</code>, or Unix timestamp (min = now + 60 seconds) for <code>timestamp</code>.</p>'
+    },
+    urlString: '/v1/services/accelerator/auto-accelerate',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/accelerator/auto-accelerate`, //custom interpolation technique handled in replaceCurlPlaceholder()
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ['txInput=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&type=time_delay&value=0.5'],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: `HTTP/1.1 200 OK`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-private',
+    httpRequestMethod: 'GET',
+    fragment: 'accelerator-auto-accelerate-history',
+    title: 'GET Auto-Acceleration History',
+    description: {
+      default: '<p>Returns the user\'s auto-acceleration requests history.</p><p>Possible status values: <code>tracking</code>, <code>accelerated</code>, <code>confirmed</code>, <code>canceled</code>.</p>'
+    },
+    urlString: '/v1/services/accelerator/auto-accelerate/history',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/services/accelerator/auto-accelerate/history`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: `[
+  {
+    "id": 15,
+    "txid": "ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29",
+    "status": "accelerated",
+    "added": 1706378712,
+    "trigger_type": "time_delay",
+    "trigger_value": 0.5
+  },
+  {
+    "id": 14,
+    "txid": "c5840e89173331760e959a190b24e2a289121277ed7f8a095fe289b37cee9fde",
+    "status": "confirmed",
+    "added": 1706378704,
+    "trigger_type": "block_height",
+    "trigger_value": 827670
+  },
+  {
+    "id": 13,
+    "txid": "178b5b9b310f0d667d7ea563a2cdcc17bc8cd15261b58b1653860a724ca83458",
+    "status": "tracking",
+    "added": 1706378684,
+    "trigger_type": "next_block",
+    "trigger_value": null
+  }
+]`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-private',
+    httpRequestMethod: 'POST',
+    fragment: 'accelerator-auto-accelerate-cancel',
+    title: 'POST Cancel Auto-Acceleration (Pro)',
+    description: {
+      default: '<p>Sends a request to cancel an auto-acceleration in the <code>tracking</code> status.<br>You can retrieve eligible auto-acceleration <code>txid</code> using the history endpoint GET <code>/api/v1/services/accelerator/auto-accelerate/history</code>.</p>'
+    },
+    urlString: '/v1/services/accelerator/auto-accelerate/cancel',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/accelerator/auto-accelerate/cancel`, //custom interpolation technique handled in replaceCurlPlaceholder()
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ['txid=178b5b9b310f0d667d7ea563a2cdcc17bc8cd15261b58b1653860a724ca83458'],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: `HTTP/1.1 200 OK`,
+        },
+      }
+    }
+  },
 ];
 
 export const faqData = [
