@@ -1,5 +1,9 @@
 import * as fs from 'fs';
 
+jest.mock('../config-sanitizer', () => ({
+  validateConfig: jest.fn(),
+}));
+
 describe('Mempool Backend Config', () => {
   beforeEach(() => {
     jest.resetAllMocks();
