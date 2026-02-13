@@ -280,3 +280,17 @@ export function md5(inputString): string {
     }
     return rh(a)+rh(b)+rh(c)+rh(d);
 }
+
+// getCssVar('--tooltip-grey') -> #b1b1b1
+export function getCssVar(name: string): string {
+  if (typeof document === 'undefined' || typeof window === 'undefined') {
+    return '';
+  }
+  try {
+    return getComputedStyle(document.documentElement)
+      .getPropertyValue(name)
+      .trim();
+  } catch {
+    return '';
+  }
+}

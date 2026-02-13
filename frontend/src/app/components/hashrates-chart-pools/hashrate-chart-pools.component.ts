@@ -11,6 +11,7 @@ import { MiningService } from '@app/services/mining.service';
 import { download } from '@app/shared/graphs.utils';
 import { ActivatedRoute } from '@angular/router';
 import { StateService } from '@app/services/state.service';
+import { getCssVar } from '@app/shared/common.utils';
 
 interface Hashrate {
   timestamp: number;
@@ -226,7 +227,7 @@ export class HashrateChartPoolsComponent implements OnInit {
         borderRadius: 4,
         shadowColor: 'rgba(0, 0, 0, 0.5)',
         textStyle: {
-          color: 'var(--tooltip-grey)',
+          color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
           align: 'left',
         },
         borderColor: '#000',

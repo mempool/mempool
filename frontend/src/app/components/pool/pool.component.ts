@@ -13,6 +13,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { StratumJob } from '@interfaces/websocket.interface';
 import { WebsocketService } from '@app/services/websocket.service';
 import { MiningService } from '@app/services/mining.service';
+import { getCssVar } from '@app/shared/common.utils';
 
 interface AccelerationTotal {
   cost: number,
@@ -209,7 +210,7 @@ export class PoolComponent implements OnInit {
         borderRadius: 4,
         shadowColor: 'rgba(0, 0, 0, 0.5)',
         textStyle: {
-          color: 'var(--tooltip-grey)',
+          color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
           align: 'left',
         },
         borderColor: '#000',

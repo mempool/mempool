@@ -6,7 +6,7 @@ import { originalChartColors as chartColors } from '@app/app.constants';
 import { ApiService } from '@app/services/api.service';
 import { SeoService } from '@app/services/seo.service';
 import { StateService } from '@app/services/state.service';
-import { isMobile } from '@app/shared/common.utils';
+import { isMobile, getCssVar } from '@app/shared/common.utils';
 import { download } from '@app/shared/graphs.utils';
 import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
@@ -145,7 +145,7 @@ export class NodesPerISPChartComponent implements OnInit {
         label: {
           overflow: 'truncate',
           width: isMobile() ? 75 : this.widget ? 125 : 250,
-          color: 'var(--tooltip-grey)',
+          color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
           alignTo: 'edge',
           edgeDistance: edgeDistance,
         },
@@ -155,7 +155,7 @@ export class NodesPerISPChartComponent implements OnInit {
           borderRadius: 4,
           shadowColor: 'rgba(0, 0, 0, 0.5)',
           textStyle: {
-            color: 'var(--tooltip-grey)',
+            color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
           },
           borderColor: '#000',
           formatter: () => {
@@ -179,7 +179,7 @@ export class NodesPerISPChartComponent implements OnInit {
       name: $localize`Other (${totalShareOther.toFixed(2) + '%'})`,
       label: {
         overflow: 'truncate',
-        color: 'var(--tooltip-grey)',
+        color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
         alignTo: 'edge',
         edgeDistance: edgeDistance
       },
@@ -188,7 +188,7 @@ export class NodesPerISPChartComponent implements OnInit {
         borderRadius: 4,
         shadowColor: 'rgba(0, 0, 0, 0.5)',
         textStyle: {
-          color: 'var(--tooltip-grey)',
+          color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
         },
         borderColor: '#000',
         formatter: () => {

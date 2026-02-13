@@ -5,7 +5,7 @@ import { Utxo } from '@interfaces/electrs.interface';
 import { StateService } from '@app/services/state.service';
 import { Router } from '@angular/router';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
-import { renderSats } from '@app/shared/common.utils';
+import { renderSats, getCssVar } from '@app/shared/common.utils';
 import { colorToHex, hexToColor, mix } from '@components/block-overview-graph/utils';
 import { TimeService } from '@app/services/time.service';
 import { WebsocketService } from '@app/services/websocket.service';
@@ -328,7 +328,7 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
         borderRadius: 4,
         shadowColor: 'rgba(0, 0, 0, 0.5)',
         textStyle: {
-          color: 'var(--tooltip-grey)',
+          color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
           align: 'left',
         },
         borderColor: '#000',

@@ -11,7 +11,7 @@ import { StateService } from '@app/services/state.service';
 import { originalChartColors as chartColors, poolsColor } from '@app/app.constants';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { download } from '@app/shared/graphs.utils';
-import { isMobile } from '@app/shared/common.utils';
+import { isMobile, getCssVar } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-pool-ranking',
@@ -147,7 +147,7 @@ export class PoolRankingComponent implements OnInit {
         name: pool.name + ((isMobile() || this.widget) ? `` : ` (${pool.share}%)`),
         label: {
           overflow: 'none',
-          color: 'var(--tooltip-grey)',
+          color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
           alignTo: 'edge',
           edgeDistance: edgeDistance,
         },
@@ -157,7 +157,7 @@ export class PoolRankingComponent implements OnInit {
           borderRadius: 4,
           shadowColor: 'rgba(0, 0, 0, 0.5)',
           textStyle: {
-            color: 'var(--tooltip-grey)',
+            color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
           },
           borderColor: '#000',
           formatter: () => {
@@ -190,7 +190,7 @@ export class PoolRankingComponent implements OnInit {
       name:  $localize`Other (${percentage})`,
       label: {
         overflow: 'none',
-        color: 'var(--tooltip-grey)',
+        color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
         alignTo: 'edge',
         edgeDistance: edgeDistance
       },
@@ -199,7 +199,7 @@ export class PoolRankingComponent implements OnInit {
         borderRadius: 4,
         shadowColor: 'rgba(0, 0, 0, 0.5)',
         textStyle: {
-          color: 'var(--tooltip-grey)',
+          color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
         },
         borderColor: '#000',
         formatter: () => {

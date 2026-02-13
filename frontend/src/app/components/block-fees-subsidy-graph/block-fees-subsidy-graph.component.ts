@@ -14,6 +14,7 @@ import { StateService } from '@app/services/state.service';
 import { MiningService } from '@app/services/mining.service';
 import { StorageService } from '@app/services/storage.service';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
+import { getCssVar } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-block-fees-subsidy-graph',
@@ -164,7 +165,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
         borderRadius: 4,
         shadowColor: 'rgba(0, 0, 0, 0.5)',
         textStyle: {
-          color: 'var(--tooltip-grey)',
+          color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
           align: 'left',
         },
         borderColor: 'var(--active-bg)',

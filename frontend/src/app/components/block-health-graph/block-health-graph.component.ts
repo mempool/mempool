@@ -11,6 +11,7 @@ import { StorageService } from '@app/services/storage.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from '@app/services/state.service';
+import { getCssVar } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-block-health-graph',
@@ -132,7 +133,7 @@ export class BlockHealthGraphComponent implements OnInit {
         borderRadius: 4,
         shadowColor: 'rgba(0, 0, 0, 0.5)',
         textStyle: {
-          color: 'var(--tooltip-grey)',
+          color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
           align: 'left',
         },
         borderColor: '#000',

@@ -3,7 +3,7 @@ import { EChartsOption, PieSeriesOption } from '@app/graphs/echarts';
 import { BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 import { download } from '@app/shared/graphs.utils';
-import { isMobile } from '@app/shared/common.utils';
+import { isMobile, getCssVar } from '@app/shared/common.utils';
 import { WalletStats } from '@app/shared/wallet-stats';
 import { AddressTxSummary } from '@interfaces/electrs.interface';
 import { originalChartColors as chartColors } from '@app/app.constants';
@@ -147,7 +147,7 @@ export class TreasuriesPieComponent implements OnChanges {
         name: entry.id,
         label: {
           overflow: 'none',
-          color: 'var(--tooltip-grey)',
+          color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
           alignTo: 'edge',
           edgeDistance: edgeDistance,
           formatter: () => {
@@ -160,7 +160,7 @@ export class TreasuriesPieComponent implements OnChanges {
           borderRadius: 4,
           shadowColor: 'rgba(0, 0, 0, 0.5)',
           textStyle: {
-            color: 'var(--tooltip-grey)',
+            color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
           },
           borderColor: '#000',
           formatter: () => {
@@ -183,7 +183,7 @@ export class TreasuriesPieComponent implements OnChanges {
         name:  $localize`Other (${percentage})`,
         label: {
           overflow: 'none',
-          color: 'var(--tooltip-grey)',
+          color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
           alignTo: 'edge',
           edgeDistance: edgeDistance
         },
@@ -192,7 +192,7 @@ export class TreasuriesPieComponent implements OnChanges {
           borderRadius: 4,
           shadowColor: 'rgba(0, 0, 0, 0.5)',
           textStyle: {
-            color: 'var(--tooltip-grey)',
+            color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
           },
           borderColor: '#000',
           formatter: () => {

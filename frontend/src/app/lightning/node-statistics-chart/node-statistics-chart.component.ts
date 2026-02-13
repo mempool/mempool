@@ -5,10 +5,10 @@ import { switchMap, tap } from 'rxjs/operators';
 import { formatNumber } from '@angular/common';
 import { UntypedFormGroup } from '@angular/forms';
 import { StorageService } from '@app/services/storage.service';
-import { download } from '@app/shared/graphs.utils';
 import { LightningApiService } from '@app/lightning/lightning-api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { StateService } from '@app/services/state.service';
+import { getCssVar } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-node-statistics-chart',
@@ -113,7 +113,7 @@ export class NodeStatisticsChartComponent implements OnInit {
         borderRadius: 4,
         shadowColor: 'rgba(0, 0, 0, 0.5)',
         textStyle: {
-          color: 'var(--tooltip-grey)',
+          color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
           align: 'left',
         },
         borderColor: '#000',

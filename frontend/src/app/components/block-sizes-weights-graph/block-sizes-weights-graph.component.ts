@@ -11,6 +11,7 @@ import { MiningService } from '@app/services/mining.service';
 import { ActivatedRoute } from '@angular/router';
 import { download, formatterXAxis } from '@app/shared/graphs.utils';
 import { StateService } from '@app/services/state.service';
+import { getCssVar } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-block-sizes-weights-graph',
@@ -147,7 +148,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
         borderRadius: 4,
         shadowColor: 'rgba(0, 0, 0, 0.5)',
         textStyle: {
-          color: 'var(--tooltip-grey)',
+          color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
           align: 'left',
         },
         borderColor: '#000',

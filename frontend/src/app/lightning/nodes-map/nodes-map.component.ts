@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from '@app/services/state.service';
 import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
-import { getFlagEmoji } from '@app/shared/common.utils';
+import { getFlagEmoji, getCssVar } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-nodes-map',
@@ -197,7 +197,7 @@ export class NodesMap implements OnInit, OnChanges {
             borderRadius: 0,
             shadowColor: 'rgba(0, 0, 0, 0.5)',
             textStyle: {
-              color: 'var(--tooltip-grey)',
+              color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
               align: 'left',
             },
             borderColor: '#000',

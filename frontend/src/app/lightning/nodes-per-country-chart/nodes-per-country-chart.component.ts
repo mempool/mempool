@@ -9,7 +9,7 @@ import { StateService } from '@app/services/state.service';
 import { download } from '@app/shared/graphs.utils';
 import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
-import { getFlagEmoji } from '@app/shared/common.utils';
+import { getFlagEmoji, getCssVar } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-nodes-per-country-chart',
@@ -86,7 +86,7 @@ export class NodesPerCountryChartComponent implements OnInit {
         name: country.name.en + (this.isMobile() ? `` : ` (${country.share}%)`),
         label: {
           overflow: 'truncate',
-          color: 'var(--tooltip-grey)',
+          color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
           alignTo: 'edge',
           edgeDistance: edgeDistance,
         },
@@ -96,7 +96,7 @@ export class NodesPerCountryChartComponent implements OnInit {
           borderRadius: 4,
           shadowColor: 'rgba(0, 0, 0, 0.5)',
           textStyle: {
-            color: 'var(--tooltip-grey)',
+            color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
           },
           borderColor: '#000',
           formatter: () => {
@@ -120,7 +120,7 @@ export class NodesPerCountryChartComponent implements OnInit {
       name: $localize`Other (${totalShareOther.toFixed(2) + '%'})`,
       label: {
         overflow: 'truncate',
-        color: 'var(--tooltip-grey)',
+        color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
         alignTo: 'edge',
         edgeDistance: edgeDistance
       },
@@ -129,7 +129,7 @@ export class NodesPerCountryChartComponent implements OnInit {
         borderRadius: 4,
         shadowColor: 'rgba(0, 0, 0, 0.5)',
         textStyle: {
-          color: 'var(--tooltip-grey)',
+          color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
         },
         borderColor: '#000',
         formatter: () => {

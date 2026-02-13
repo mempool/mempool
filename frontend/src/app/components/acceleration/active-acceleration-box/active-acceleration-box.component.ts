@@ -1,8 +1,8 @@
 import { Component, ChangeDetectionStrategy, Input, Output, OnChanges, SimpleChanges, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import { Transaction } from '@interfaces/electrs.interface';
 import { Acceleration, SinglePoolStats } from '@interfaces/node-api.interface';
 import { EChartsOption, PieSeriesOption } from '@app/graphs/echarts';
 import { MiningStats } from '@app/services/mining.service';
+import { getCssVar } from '@app/shared/common.utils';
 
 function lighten(color, p): { r, g, b } {
   return {
@@ -120,7 +120,7 @@ export class ActiveAccelerationBox implements OnChanges {
         borderRadius: 4,
         shadowColor: 'rgba(0, 0, 0, 0.5)',
         textStyle: {
-          color: 'var(--tooltip-grey)',
+          color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
         },
         borderColor: '#000',
         formatter: (item) => {

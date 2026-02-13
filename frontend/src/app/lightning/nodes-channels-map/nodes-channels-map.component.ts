@@ -9,7 +9,7 @@ import { StateService } from '@app/services/state.service';
 import { EChartsOption, echarts } from '@app/graphs/echarts';
 import { isMobile } from '@app/shared/common.utils';
 import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
-import { getFlagEmoji } from '@app/shared/common.utils';
+import { getFlagEmoji, getCssVar } from '@app/shared/common.utils';
 import { lerpColor } from '@app/shared/graphs.utils';
 
 @Component({
@@ -297,7 +297,7 @@ export class NodesChannelsMap implements OnInit {
             borderRadius: 4,
             shadowColor: 'rgba(0, 0, 0, 0.5)',
             textStyle: {
-              color: 'var(--tooltip-grey)',
+              color: getCssVar('--tooltip-grey') || 'var(--tooltip-grey)',
               align: 'left',
             },
             borderColor: '#000',
