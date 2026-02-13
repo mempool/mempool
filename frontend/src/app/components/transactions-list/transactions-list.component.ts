@@ -221,7 +221,9 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   ngOnChanges(changes): void {
     // Sync detailsVisible input with internal showDetails$ state
     if (changes.detailsVisible) {
-      this.showDetails$.next(this.detailsVisible);
+      if (this.detailsVisible !== this.showDetails$.value) {
+        this.toggleDetails();
+      }
     }
 
     if (changes.inputIndex || changes.outputIndex || changes.rowLimit) {

@@ -180,12 +180,13 @@
 
       <div class="title-buttons">
         <button *ngIf="!flowEnabled" type="button" class="btn btn-outline-info flow-toggle btn-sm" (click)="toggleGraph()" i18n="show-diagram">Show diagram</button>
-        <button type="button" class="btn btn-outline-info btn-sm" (click)="toggleDetails()" i18n="transaction.details|Transaction Details">Details</button>
+        <button *ngIf="!detailsEnabled" type="button" class="btn btn-outline-info btn-sm" (click)="toggleDetails()" i18n="transaction.show-details|Show Transaction Details">Show Details</button>
+        <button *ngIf="detailsEnabled" type="button" class="btn btn-outline-info btn-sm" (click)="toggleDetails()" i18n="transaction.hide-details|Hide Transaction Details">Hide Details</button>
       </div>
     </div>
 
 
-    <app-transactions-list #txList [transactions]="[tx]" [cached]="isCached" [errorUnblinded]="errorUnblinded" [inputIndex]="inputIndex" [outputIndex]="outputIndex" [transactionPage]="true" [detailsVisible]="detailsEnabled"></app-transactions-list>
+    <app-transactions-list [transactions]="[tx]" [cached]="isCached" [errorUnblinded]="errorUnblinded" [inputIndex]="inputIndex" [outputIndex]="outputIndex" [transactionPage]="true" [detailsVisible]="detailsEnabled"></app-transactions-list>
 
     <div class="title text-left">
       <h2 i18n="transaction.details|Transaction Details">Details</h2>

@@ -629,6 +629,17 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           const seoDescription = seoDescriptionNetwork(this.stateService.network);
           this.seoService.setDescription($localize`:@@meta.description.bitcoin.transaction:Get real-time status, addresses, fees, script info, and more for ${network}${seoDescription} transaction with txid ${this.txId}.`);
           this.resetTransaction();
+
+          // Reset Details state to collapsed for new transaction unless query param overrides
+          // This prevents inheriting open state from previous transaction in same browser session
+          const currentQueryParams = this.route.snapshot.queryParams;
+          if (!currentQueryParams.showDetails) {
+            // No showDetails query param: force collapsed state
+            this.stateService.hideDetails.next(true);
+            this.overrideDetailsPreference = null;
+            this.detailsEnabled = false;
+          }
+
           return merge(
             of(true),
             this.stateService.connectionState$.pipe(
