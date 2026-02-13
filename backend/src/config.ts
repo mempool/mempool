@@ -1,4 +1,4 @@
-import { validateConfig } from './config-sanitizer';
+import { validateConfig, ConfigValidationError } from './config-sanitizer';
 
 const configFromFile = require(
     process.env.MEMPOOL_CONFIG_FILE ? process.env.MEMPOOL_CONFIG_FILE : '../mempool-config.json'
@@ -391,7 +391,17 @@ class Config implements IConfig {
     this.WALLETS = configs.WALLETS;
     this.STRATUM = configs.STRATUM;
 
-    validateConfig(this);
+    try {
+      validateConfig(this);
+    } catch (err) {
+      if (err instanceof ConfigValidationError) {
+        console.error('\n[config sanitizer] Invalid configuration:\n');
+        err.messages.forEach((msg) => console.error(`  - ${msg}`));
+        console.error('\n');
+        process.exit(1);
+      }
+      throw err;
+    }
   }
 
   merge = (...objects: object[]): IConfig => {

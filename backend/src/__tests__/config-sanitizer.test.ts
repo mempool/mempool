@@ -1,7 +1,4 @@
-import { validateConfig } from '../config-sanitizer';
-
-const exitMock = jest.spyOn(process, 'exit').mockImplementation((() => {}) as (code?: number) => never);
-const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => {});
+import { validateConfig, ConfigValidationError } from '../config-sanitizer';
 
 function validConfig() {
   return {
@@ -12,59 +9,73 @@ function validConfig() {
   };
 }
 
-beforeEach(() => {
-  exitMock.mockClear();
-  consoleErrorMock.mockClear();
-});
-
-afterAll(() => {
-  exitMock.mockRestore();
-  consoleErrorMock.mockRestore();
-});
-
 describe('config-sanitizer', () => {
-  test('does not exit when config is valid', () => {
-    validateConfig(validConfig());
-    expect(exitMock).not.toHaveBeenCalled();
+  test('does not throw when config is valid', () => {
+    expect(() => validateConfig(validConfig())).not.toThrow();
   });
 
-  test('exits when LIGHTNING.ENABLED is true and DATABASE.ENABLED is false', () => {
-    validateConfig({
-      ...validConfig(),
-      LIGHTNING: { ENABLED: true },
-      DATABASE: { ENABLED: false },
-    });
-    expect(exitMock).toHaveBeenCalledWith(1);
-    expect(consoleErrorMock).toHaveBeenCalled();
-    const output = consoleErrorMock.mock.calls.flat(1).join(' ');
-    expect(output).toContain('config.LIGHTNING.ENABLED');
-    expect(output).toContain('config.DATABASE.ENABLED');
+  test('throws ConfigValidationError when LIGHTNING.ENABLED is true and DATABASE.ENABLED is false', () => {
+    expect(() =>
+      validateConfig({
+        ...validConfig(),
+        LIGHTNING: { ENABLED: true },
+        DATABASE: { ENABLED: false },
+      })
+    ).toThrow(ConfigValidationError);
+
+    try {
+      validateConfig({
+        ...validConfig(),
+        LIGHTNING: { ENABLED: true },
+        DATABASE: { ENABLED: false },
+      });
+    } catch (e) {
+      expect(e).toBeInstanceOf(ConfigValidationError);
+      expect((e as ConfigValidationError).messages).toHaveLength(1);
+      expect((e as ConfigValidationError).messages[0]).toContain('config.LIGHTNING.ENABLED');
+      expect((e as ConfigValidationError).messages[0]).toContain('config.DATABASE.ENABLED');
+    }
   });
 
-  test('exits when ACCELERATIONS is true and NETWORK is not mainnet', () => {
-    validateConfig({
-      ...validConfig(),
-      MEMPOOL: { NETWORK: 'testnet' },
-      MEMPOOL_SERVICES: { ACCELERATIONS: true },
-    });
-    expect(exitMock).toHaveBeenCalledWith(1);
-    const output = consoleErrorMock.mock.calls.flat(1).join(' ');
-    expect(output).toContain('config.MEMPOOL_SERVICES.ACCELERATIONS');
-    expect(output).toContain("config.MEMPOOL.NETWORK: 'testnet'");
+  test('throws ConfigValidationError when ACCELERATIONS is true and NETWORK is not mainnet', () => {
+    expect(() =>
+      validateConfig({
+        ...validConfig(),
+        MEMPOOL: { NETWORK: 'testnet' },
+        MEMPOOL_SERVICES: { ACCELERATIONS: true },
+      })
+    ).toThrow(ConfigValidationError);
+
+    try {
+      validateConfig({
+        ...validConfig(),
+        MEMPOOL: { NETWORK: 'testnet' },
+        MEMPOOL_SERVICES: { ACCELERATIONS: true },
+      });
+    } catch (e) {
+      expect((e as ConfigValidationError).messages[0]).toContain('config.MEMPOOL_SERVICES.ACCELERATIONS');
+      expect((e as ConfigValidationError).messages[0]).toContain("config.MEMPOOL.NETWORK: 'testnet'");
+    }
   });
 
   test('reports all errors when multiple invalid combinations are present', () => {
-    validateConfig({
-      MEMPOOL: { NETWORK: 'signet' },
-      LIGHTNING: { ENABLED: true },
-      DATABASE: { ENABLED: false },
-      MEMPOOL_SERVICES: { ACCELERATIONS: true },
-    });
-    expect(exitMock).toHaveBeenCalledWith(1);
-    const output = consoleErrorMock.mock.calls.flat(1).join(' ');
-    expect(output).toContain('LIGHTNING.ENABLED');
-    expect(output).toContain('DATABASE.ENABLED');
-    expect(output).toContain('ACCELERATIONS');
-    expect(output).toContain('signet');
+    let thrown: ConfigValidationError;
+    try {
+      validateConfig({
+        MEMPOOL: { NETWORK: 'signet' },
+        LIGHTNING: { ENABLED: true },
+        DATABASE: { ENABLED: false },
+        MEMPOOL_SERVICES: { ACCELERATIONS: true },
+      });
+    } catch (e) {
+      thrown = e as ConfigValidationError;
+    }
+    expect(thrown!).toBeInstanceOf(ConfigValidationError);
+    expect(thrown!.messages).toHaveLength(2);
+    const joined = thrown!.messages.join(' ');
+    expect(joined).toContain('LIGHTNING.ENABLED');
+    expect(joined).toContain('DATABASE.ENABLED');
+    expect(joined).toContain('ACCELERATIONS');
+    expect(joined).toContain('signet');
   });
 });
