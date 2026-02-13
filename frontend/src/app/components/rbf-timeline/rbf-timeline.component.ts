@@ -16,6 +16,40 @@ interface TimelineCell {
   fullRbf?: boolean,
 }
 
+/**
+ * Represents a single row in the comparison table
+ * Each row shows: label, previous value, current value, and optional highlighting
+ */
+interface ComparisonRow {
+  label: string;                    // e.g., "Version", "Locktime", "Fee"
+  previous: string | number | null; // Value from old transaction
+  current: string | number | null;  // Value from new transaction
+  changed: boolean;                 // Whether the value changed
+  changeType?: 'positive' | 'negative' | 'neutral'; // For styling
+  i18nKey?: string;                 // For internationalization
+  percentage?: number | null;       // Pre-calculated percentage change
+  isAmount?: boolean;               // Whether this row displays an amount (for app-amount component)
+}
+
+/**
+ * Represents a comparison section (metadata, metrics, inputs, outputs)
+ */
+interface ComparisonSection {
+  title: string;
+  rows: ComparisonRow[];
+  hasChanges: boolean; // Whether any row in this section changed
+}
+
+/**
+ * Complete comparison table data structure
+ */
+interface ComparisonTableData {
+  metadata: ComparisonSection;  // Version, Locktime
+  metrics: ComparisonSection;   // Fee, Weight, vSize
+  inputs: ComparisonSection;    // Input changes summary
+  outputs: ComparisonSection;   // Output changes summary
+}
+
 function isTimelineCell(val: RbfTree | TimelineCell): boolean {
   return !val || !('tx' in val);
 }
@@ -43,6 +77,7 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
   selectedNewTx: Transaction | null = null;
   rbfDiff: RbfDiff | null = null;
   showDiff: boolean = false;
+  comparisonData: ComparisonTableData | null = null;
 
   constructor(
     private router: Router,
@@ -240,6 +275,7 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
       this.selectedOldTx = oldTx;
       this.selectedNewTx = newTx;
       this.rbfDiff = calculateRbfDiff(oldTx, newTx);
+      this.prepareComparisonTable();
       this.showDiff = true;
     });
   }
@@ -249,6 +285,224 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
     this.selectedOldTx = null;
     this.selectedNewTx = null;
     this.rbfDiff = null;
+    this.comparisonData = null;
+  }
+
+  /**
+   * Prepares the RBF diff data into a block-audit-style comparison table structure
+   * This creates aligned rows of Previous vs Current values
+   */
+  prepareComparisonTable(): void {
+    if (!this.rbfDiff || !this.selectedOldTx || !this.selectedNewTx) {
+      return;
+    }
+
+    // METADATA SECTION
+    const metadataRows: ComparisonRow[] = [];
+
+    // Version row
+    metadataRows.push({
+      label: 'Version',
+      i18nKey: 'transaction.version',
+      previous: this.rbfDiff.transaction.oldVersion,
+      current: this.rbfDiff.transaction.newVersion,
+      changed: this.rbfDiff.transaction.versionChanged,
+      changeType: 'neutral'
+    });
+
+    // Locktime row
+    metadataRows.push({
+      label: 'Locktime',
+      i18nKey: 'transaction.locktime',
+      previous: this.rbfDiff.transaction.oldLocktime,
+      current: this.rbfDiff.transaction.newLocktime,
+      changed: this.rbfDiff.transaction.locktimeChanged,
+      changeType: 'neutral'
+    });
+
+    // METRICS SECTION (only include rows with changes)
+    const metricsRows: ComparisonRow[] = [];
+
+    if (this.rbfDiff.metrics.feeDelta !== null) {
+      const oldFee = this.selectedOldTx.fee;
+      const newFee = this.selectedNewTx.fee;
+      const feePercentage = oldFee > 0 ? ((newFee - oldFee) / oldFee) * 100 : null;
+      metricsRows.push({
+        label: 'Fee',
+        i18nKey: 'transaction.fee',
+        previous: oldFee,
+        current: newFee,
+        changed: true,
+        changeType: this.rbfDiff.metrics.feeDelta > 0 ? 'positive' : 'negative',
+        percentage: feePercentage,
+        isAmount: true
+      });
+    }
+
+    if (this.rbfDiff.metrics.weightDelta !== null) {
+      const oldWeight = this.selectedOldTx.weight;
+      const newWeight = this.selectedNewTx.weight;
+      const weightPercentage = oldWeight > 0 ? ((newWeight - oldWeight) / oldWeight) * 100 : null;
+      metricsRows.push({
+        label: 'Weight',
+        i18nKey: 'transaction.weight',
+        previous: oldWeight,
+        current: newWeight,
+        changed: true,
+        changeType: this.rbfDiff.metrics.weightDelta > 0 ? 'negative' : 'positive',
+        percentage: weightPercentage,
+        isAmount: false
+      });
+    }
+
+    if (this.rbfDiff.metrics.vsizeDelta !== null) {
+      const oldVsize = this.selectedOldTx.size;
+      const newVsize = this.selectedNewTx.size;
+      const vsizePercentage = oldVsize > 0 ? ((newVsize - oldVsize) / oldVsize) * 100 : null;
+      metricsRows.push({
+        label: 'Virtual size',
+        i18nKey: 'transaction.vsize',
+        previous: oldVsize,
+        current: newVsize,
+        changed: true,
+        changeType: this.rbfDiff.metrics.vsizeDelta > 0 ? 'negative' : 'positive',
+        percentage: vsizePercentage,
+        isAmount: false
+      });
+    }
+
+    // INPUTS SECTION (summary counts)
+    const inputsRows: ComparisonRow[] = [];
+
+    const oldInputCount = this.selectedOldTx.vin.length;
+    const newInputCount = this.selectedNewTx.vin.length;
+    const inputCountChanged = oldInputCount !== newInputCount;
+
+    inputsRows.push({
+      label: 'Total Inputs',
+      i18nKey: 'transaction.inputs-count',
+      previous: oldInputCount,
+      current: newInputCount,
+      changed: inputCountChanged,
+      changeType: 'neutral'
+    });
+
+    if (this.rbfDiff.inputs.added.length > 0) {
+      inputsRows.push({
+        label: 'Added Inputs',
+        i18nKey: 'rbf-diff.inputs-added',
+        previous: null,
+        current: this.rbfDiff.inputs.added.length,
+        changed: true,
+        changeType: 'positive'
+      });
+    }
+
+    if (this.rbfDiff.inputs.removed.length > 0) {
+      inputsRows.push({
+        label: 'Removed Inputs',
+        i18nKey: 'rbf-diff.inputs-removed',
+        previous: this.rbfDiff.inputs.removed.length,
+        current: null,
+        changed: true,
+        changeType: 'negative'
+      });
+    }
+
+    // OUTPUTS SECTION (summary counts)
+    const outputsRows: ComparisonRow[] = [];
+
+    const oldOutputCount = this.selectedOldTx.vout.length;
+    const newOutputCount = this.selectedNewTx.vout.length;
+    const outputCountChanged = oldOutputCount !== newOutputCount;
+
+    outputsRows.push({
+      label: 'Total Outputs',
+      i18nKey: 'transaction.outputs-count',
+      previous: oldOutputCount,
+      current: newOutputCount,
+      changed: outputCountChanged,
+      changeType: 'neutral'
+    });
+
+    if (this.rbfDiff.outputs.added.length > 0) {
+      outputsRows.push({
+        label: 'Added Outputs',
+        i18nKey: 'rbf-diff.outputs-added',
+        previous: null,
+        current: this.rbfDiff.outputs.added.length,
+        changed: true,
+        changeType: 'positive'
+      });
+    }
+
+    if (this.rbfDiff.outputs.removed.length > 0) {
+      outputsRows.push({
+        label: 'Removed Outputs',
+        i18nKey: 'rbf-diff.outputs-removed',
+        previous: this.rbfDiff.outputs.removed.length,
+        current: null,
+        changed: true,
+        changeType: 'negative'
+      });
+    }
+
+    if (this.rbfDiff.outputs.modified.length > 0) {
+      outputsRows.push({
+        label: 'Modified Outputs',
+        i18nKey: 'rbf-diff.outputs-modified',
+        previous: null,
+        current: this.rbfDiff.outputs.modified.length,
+        changed: true,
+        changeType: 'neutral'
+      });
+    }
+
+    if (this.rbfDiff.outputs.feeAdjusted.length > 0) {
+      outputsRows.push({
+        label: 'Fee-Adjusted Outputs',
+        i18nKey: 'rbf-diff.outputs-fee-adjusted',
+        previous: null,
+        current: this.rbfDiff.outputs.feeAdjusted.length,
+        changed: true,
+        changeType: 'neutral'
+      });
+    }
+
+    // Construct the final comparison data
+    this.comparisonData = {
+      metadata: {
+        title: 'Transaction Metadata',
+        rows: metadataRows,
+        hasChanges: metadataRows.some(row => row.changed)
+      },
+      metrics: {
+        title: 'Metrics',
+        rows: metricsRows,
+        hasChanges: metricsRows.length > 0 // If any metric rows exist, there are changes
+      },
+      inputs: {
+        title: 'Inputs',
+        rows: inputsRows,
+        hasChanges: this.rbfDiff.inputs.added.length > 0 || this.rbfDiff.inputs.removed.length > 0
+      },
+      outputs: {
+        title: 'Outputs',
+        rows: outputsRows,
+        hasChanges: this.rbfDiff.outputs.added.length > 0 ||
+                    this.rbfDiff.outputs.removed.length > 0 ||
+                    this.rbfDiff.outputs.modified.length > 0 ||
+                    this.rbfDiff.outputs.feeAdjusted.length > 0
+      }
+    };
+  }
+
+  /**
+   * Type-safe helper to convert comparison row values to numbers
+   * Used for app-amount component which requires strict number type
+   */
+  asNumber(value: any): number {
+    return value as number;
   }
 
   // Finds the RbfTree node for the currently viewed transaction

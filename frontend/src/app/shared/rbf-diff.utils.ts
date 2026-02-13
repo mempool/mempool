@@ -1,6 +1,14 @@
 import { Transaction, Vin, Vout } from '@interfaces/electrs.interface';
 
 export interface RbfDiff {
+  transaction: {
+    versionChanged: boolean;
+    locktimeChanged: boolean;
+    oldVersion: number;
+    newVersion: number;
+    oldLocktime: number;
+    newLocktime: number;
+  };
   inputs: {
     added: Vin[];
     removed: Vin[];
@@ -9,19 +17,26 @@ export interface RbfDiff {
   outputs: {
     added: Vout[];
     removed: Vout[];
-    modified: Array<{ old: Vout; new: Vout; index: number }>;
+    modified: Array<{ old: Vout; new: Vout; index: number; changeType: 'address' | 'value' | 'both' }>;
+    feeAdjusted: Array<{ old: Vout; new: Vout; index: number }>; // Value reduced by exactly feeDelta
     unchanged: Array<{ old: Vout; new: Vout; index: number }>;
   };
   metrics: {
-    feeDelta: number;        // newTx.fee - oldTx.fee
-    weightDelta: number;     // newTx.weight - oldTx.weight
-    vsizeDelta: number;      // newTx.size - oldTx.size (vsize)
+    feeDelta: number | null;      // null if unchanged
+    weightDelta: number | null;   // null if unchanged
+    vsizeDelta: number | null;    // null if unchanged
   };
 }
 
 // Compares structural differences between an original transaction and its RBF replacement
 
 export function calculateRbfDiff(oldTx: Transaction, newTx: Transaction): RbfDiff {
+  const feeDelta = newTx.fee - oldTx.fee;
+
+  // TRANSACTION METADATA
+  const versionChanged = oldTx.version !== newTx.version;
+  const locktimeChanged = oldTx.locktime !== newTx.locktime;
+
   // INPUT COMPARISON
   const oldInputs = new Map(
     oldTx.vin.map((vin, idx) => [`${vin.txid}:${vin.vout}`, { vin, idx }])
@@ -48,10 +63,11 @@ export function calculateRbfDiff(oldTx: Transaction, newTx: Transaction): RbfDif
     }
   });
 
-  // OUTPUT COMPARISON
+  // OUTPUT COMPARISON (ENHANCED LOGIC)
   const addedOutputs: Vout[] = [];
   const removedOutputs: Vout[] = [];
-  const modifiedOutputs: Array<{ old: Vout; new: Vout; index: number }> = [];
+  const modifiedOutputs: Array<{ old: Vout; new: Vout; index: number; changeType: 'address' | 'value' | 'both' }> = [];
+  const feeAdjustedOutputs: Array<{ old: Vout; new: Vout; index: number }> = [];
   const unchangedOutputs: Array<{ old: Vout; new: Vout; index: number }> = [];
 
   const maxOutputs = Math.max(oldTx.vout.length, newTx.vout.length);
@@ -65,20 +81,60 @@ export function calculateRbfDiff(oldTx: Transaction, newTx: Transaction): RbfDif
     } else if (oldOut && !newOut) {
       removedOutputs.push(oldOut);
     } else if (oldOut && newOut) {
-      // Check if address or value changed
-      if (
-        oldOut.scriptpubkey_address !== newOut.scriptpubkey_address ||
-        oldOut.value !== newOut.value
-      ) {
-        modifiedOutputs.push({ old: oldOut, new: newOut, index: i });
-      } else {
+      const addressChanged = oldOut.scriptpubkey_address !== newOut.scriptpubkey_address;
+      const valueChanged = oldOut.value !== newOut.value;
+
+      if (!addressChanged && !valueChanged) {
+        // Truly unchanged
         unchangedOutputs.push({ old: oldOut, new: newOut, index: i });
+      } else if (!addressChanged && valueChanged) {
+        // Same address, value changed
+        const valueDelta = oldOut.value - newOut.value;
+
+        // Check if this is just a fee adjustment
+        // If the value decreased by exactly the feeDelta, it's a fee-adjusted output
+        if (valueDelta === feeDelta && feeDelta > 0) {
+          feeAdjustedOutputs.push({ old: oldOut, new: newOut, index: i });
+        } else {
+          modifiedOutputs.push({
+            old: oldOut,
+            new: newOut,
+            index: i,
+            changeType: 'value'
+          });
+        }
+      } else if (addressChanged && !valueChanged) {
+        modifiedOutputs.push({
+          old: oldOut,
+          new: newOut,
+          index: i,
+          changeType: 'address'
+        });
+      } else {
+        // Both changed
+        modifiedOutputs.push({
+          old: oldOut,
+          new: newOut,
+          index: i,
+          changeType: 'both'
+        });
       }
     }
   }
 
-  // METRICS
+  // METRICS (only include if changed)
+  const weightDelta = newTx.weight - oldTx.weight;
+  const vsizeDelta = newTx.size - oldTx.size;
+
   return {
+    transaction: {
+      versionChanged,
+      locktimeChanged,
+      oldVersion: oldTx.version,
+      newVersion: newTx.version,
+      oldLocktime: oldTx.locktime,
+      newLocktime: newTx.locktime,
+    },
     inputs: {
       added: addedInputs,
       removed: removedInputs,
@@ -88,12 +144,13 @@ export function calculateRbfDiff(oldTx: Transaction, newTx: Transaction): RbfDif
       added: addedOutputs,
       removed: removedOutputs,
       modified: modifiedOutputs,
+      feeAdjusted: feeAdjustedOutputs,
       unchanged: unchangedOutputs,
     },
     metrics: {
-      feeDelta: newTx.fee - oldTx.fee,
-      weightDelta: newTx.weight - oldTx.weight,
-      vsizeDelta: newTx.size - oldTx.size, 
+      feeDelta: feeDelta !== 0 ? feeDelta : null,
+      weightDelta: weightDelta !== 0 ? weightDelta : null,
+      vsizeDelta: vsizeDelta !== 0 ? vsizeDelta : null,
     },
   };
 }
