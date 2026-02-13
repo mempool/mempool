@@ -1,8 +1,11 @@
 import '@angular/localize/init';
 import { ScriptInfo } from '@app/shared/script.utils';
 import { Vin, Vout } from '@interfaces/electrs.interface';
-import { BECH32_CHARS_LW, BASE58_CHARS, HEX_CHARS } from '@app/shared/regex.utils';
+import { BECH32_CHARS_LW, BASE58_CHARS, HEX_CHARS, Network } from '@app/shared/regex.utils';
 import { parseTaproot } from './transaction.utils';
+import * as bitcoin from 'bitcoinjs-lib';
+import { bech32, bech32m } from 'bech32';
+import bs58check from 'bs58check';
 
 export type AddressType = 'fee'
   | 'empty'
@@ -394,3 +397,72 @@ export function checkedCompareAddressStrings(a: string, b: string, type: Address
   );
 }
 
+export function validateAddressNetwork(
+  address: string,
+  network: Network
+): boolean {
+  if (!address) return false;
+
+  const value = address.trim();
+
+  switch (network) {
+    case 'mainnet':
+    case 'testnet':
+    case 'testnet4':
+    case 'regtest':
+    case 'signet':
+      return isValidBitcoinAddress(value);
+
+    case 'liquid':
+    case 'liquidtestnet':
+      return isValidLiquidAddress(value);
+
+    default:
+      return false;
+  }
+}
+
+// Bitcoin
+function isValidBitcoinAddress(address: string): boolean {
+  const networks = [
+    bitcoin.networks.bitcoin,
+    bitcoin.networks.testnet,
+    bitcoin.networks.regtest,
+  ];
+
+  return networks.some((net) => {
+    try {
+      bitcoin.address.toOutputScript(address, net);
+      return true;
+    } catch {
+      return false;
+    }
+  });
+}
+
+// Liquid
+function isValidLiquidAddress(address: string): boolean {
+  // Base58
+  try {
+    bs58check.decode(address);
+    return true;
+  } catch {}
+
+  // Bech32
+  if (isLiquidBech32(address, false)) return true;
+
+  // Bech32m
+  if (isLiquidBech32(address, true)) return true;
+
+  return false;
+}
+
+function isLiquidBech32(address: string, useM: boolean): boolean {
+  try {
+    const decoder = useM ? bech32m : bech32;
+    const { prefix } = decoder.decode(address);
+    return prefix === 'ex' || prefix === 'tex';
+  } catch {
+    return false;
+  }
+}
