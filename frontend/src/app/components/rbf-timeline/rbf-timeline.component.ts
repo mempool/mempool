@@ -29,6 +29,7 @@ interface ComparisonRow {
   i18nKey?: string;                 // For internationalization
   percentage?: number | null;       // Pre-calculated percentage change
   isAmount?: boolean;               // Whether this row displays an amount (for app-amount component)
+  unit?: string;                    // Unit label for metrics (e.g., 'WU', 'vB')
 }
 
 /**
@@ -290,43 +291,51 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
 
   /**
    * Prepares the RBF diff data into a block-audit-style comparison table structure
-   * This creates aligned rows of Previous vs Current values
+   * FIXED: Only includes changed rows, calculates deltas in TypeScript, correct units
    */
   prepareComparisonTable(): void {
     if (!this.rbfDiff || !this.selectedOldTx || !this.selectedNewTx) {
       return;
     }
 
-    // METADATA SECTION
+    // ========================================
+    // METADATA SECTION - Only add if changed
+    // ========================================
     const metadataRows: ComparisonRow[] = [];
 
-    // Version row
-    metadataRows.push({
-      label: 'Version',
-      i18nKey: 'transaction.version',
-      previous: this.rbfDiff.transaction.oldVersion,
-      current: this.rbfDiff.transaction.newVersion,
-      changed: this.rbfDiff.transaction.versionChanged,
-      changeType: 'neutral'
-    });
+    if (this.rbfDiff.transaction.versionChanged) {
+      metadataRows.push({
+        label: 'Version',
+        i18nKey: 'transaction.version',
+        previous: this.rbfDiff.transaction.oldVersion,
+        current: this.rbfDiff.transaction.newVersion,
+        changed: true,
+        changeType: 'neutral'
+      });
+    }
 
-    // Locktime row
-    metadataRows.push({
-      label: 'Locktime',
-      i18nKey: 'transaction.locktime',
-      previous: this.rbfDiff.transaction.oldLocktime,
-      current: this.rbfDiff.transaction.newLocktime,
-      changed: this.rbfDiff.transaction.locktimeChanged,
-      changeType: 'neutral'
-    });
+    if (this.rbfDiff.transaction.locktimeChanged) {
+      metadataRows.push({
+        label: 'Locktime',
+        i18nKey: 'transaction.locktime',
+        previous: this.rbfDiff.transaction.oldLocktime,
+        current: this.rbfDiff.transaction.newLocktime,
+        changed: true,
+        changeType: 'neutral'
+      });
+    }
 
-    // METRICS SECTION (only include rows with changes)
+    // ========================================
+    // METRICS SECTION - Only metrics that changed
+    // ========================================
     const metricsRows: ComparisonRow[] = [];
 
+    // Fee (always changed if in this section)
     if (this.rbfDiff.metrics.feeDelta !== null) {
       const oldFee = this.selectedOldTx.fee;
       const newFee = this.selectedNewTx.fee;
       const feePercentage = oldFee > 0 ? ((newFee - oldFee) / oldFee) * 100 : null;
+
       metricsRows.push({
         label: 'Fee',
         i18nKey: 'transaction.fee',
@@ -339,10 +348,12 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
       });
     }
 
+    // Weight (with percentage)
     if (this.rbfDiff.metrics.weightDelta !== null) {
       const oldWeight = this.selectedOldTx.weight;
       const newWeight = this.selectedNewTx.weight;
       const weightPercentage = oldWeight > 0 ? ((newWeight - oldWeight) / oldWeight) * 100 : null;
+
       metricsRows.push({
         label: 'Weight',
         i18nKey: 'transaction.weight',
@@ -351,14 +362,17 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
         changed: true,
         changeType: this.rbfDiff.metrics.weightDelta > 0 ? 'negative' : 'positive',
         percentage: weightPercentage,
-        isAmount: false
+        isAmount: false,
+        unit: 'WU'
       });
     }
 
+    // Virtual size (with percentage) - FIXED: unit is vB
     if (this.rbfDiff.metrics.vsizeDelta !== null) {
       const oldVsize = this.selectedOldTx.size;
       const newVsize = this.selectedNewTx.size;
       const vsizePercentage = oldVsize > 0 ? ((newVsize - oldVsize) / oldVsize) * 100 : null;
+
       metricsRows.push({
         label: 'Virtual size',
         i18nKey: 'transaction.vsize',
@@ -367,26 +381,36 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
         changed: true,
         changeType: this.rbfDiff.metrics.vsizeDelta > 0 ? 'negative' : 'positive',
         percentage: vsizePercentage,
-        isAmount: false
+        isAmount: false,
+        unit: 'vB'
       });
     }
 
-    // INPUTS SECTION (summary counts)
+    // ========================================
+    // INPUTS SECTION - FIXED: Delta formatting in TypeScript
+    // ========================================
     const inputsRows: ComparisonRow[] = [];
 
     const oldInputCount = this.selectedOldTx.vin.length;
     const newInputCount = this.selectedNewTx.vin.length;
-    const inputCountChanged = oldInputCount !== newInputCount;
+    const inputDelta = newInputCount - oldInputCount;
 
-    inputsRows.push({
-      label: 'Total Inputs',
-      i18nKey: 'transaction.inputs-count',
-      previous: oldInputCount,
-      current: newInputCount,
-      changed: inputCountChanged,
-      changeType: 'neutral'
-    });
+    // Total Inputs - ONLY add if count changed, with formatted delta
+    if (inputDelta !== 0) {
+      const sign = inputDelta > 0 ? '+' : '';
+      const formattedCurrent = `${newInputCount} (${sign}${inputDelta})`;
 
+      inputsRows.push({
+        label: 'Total Inputs',
+        i18nKey: 'transaction.inputs-count',
+        previous: oldInputCount,
+        current: formattedCurrent,
+        changed: true,
+        changeType: 'neutral'
+      });
+    }
+
+    // Added Inputs
     if (this.rbfDiff.inputs.added.length > 0) {
       inputsRows.push({
         label: 'Added Inputs',
@@ -398,6 +422,7 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
       });
     }
 
+    // Removed Inputs
     if (this.rbfDiff.inputs.removed.length > 0) {
       inputsRows.push({
         label: 'Removed Inputs',
@@ -409,22 +434,31 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
       });
     }
 
-    // OUTPUTS SECTION (summary counts)
+    // ========================================
+    // OUTPUTS SECTION - FIXED: Delta formatting in TypeScript
+    // ========================================
     const outputsRows: ComparisonRow[] = [];
 
     const oldOutputCount = this.selectedOldTx.vout.length;
     const newOutputCount = this.selectedNewTx.vout.length;
-    const outputCountChanged = oldOutputCount !== newOutputCount;
+    const outputDelta = newOutputCount - oldOutputCount;
 
-    outputsRows.push({
-      label: 'Total Outputs',
-      i18nKey: 'transaction.outputs-count',
-      previous: oldOutputCount,
-      current: newOutputCount,
-      changed: outputCountChanged,
-      changeType: 'neutral'
-    });
+    // Total Outputs - ONLY add if count changed, with formatted delta
+    if (outputDelta !== 0) {
+      const sign = outputDelta > 0 ? '+' : '';
+      const formattedCurrent = `${newOutputCount} (${sign}${outputDelta})`;
 
+      outputsRows.push({
+        label: 'Total Outputs',
+        i18nKey: 'transaction.outputs-count',
+        previous: oldOutputCount,
+        current: formattedCurrent,
+        changed: true,
+        changeType: 'neutral'
+      });
+    }
+
+    // Added Outputs
     if (this.rbfDiff.outputs.added.length > 0) {
       outputsRows.push({
         label: 'Added Outputs',
@@ -436,6 +470,7 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
       });
     }
 
+    // Removed Outputs
     if (this.rbfDiff.outputs.removed.length > 0) {
       outputsRows.push({
         label: 'Removed Outputs',
@@ -447,6 +482,7 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
       });
     }
 
+    // Modified Outputs
     if (this.rbfDiff.outputs.modified.length > 0) {
       outputsRows.push({
         label: 'Modified Outputs',
@@ -458,6 +494,7 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
       });
     }
 
+    // Fee-Adjusted Outputs
     if (this.rbfDiff.outputs.feeAdjusted.length > 0) {
       outputsRows.push({
         label: 'Fee-Adjusted Outputs',
@@ -469,30 +506,29 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
       });
     }
 
-    // Construct the final comparison data
+    // ========================================
+    // CONSTRUCT FINAL DATA - hasChanges based on row count
+    // ========================================
     this.comparisonData = {
       metadata: {
         title: 'Transaction Metadata',
         rows: metadataRows,
-        hasChanges: metadataRows.some(row => row.changed)
+        hasChanges: metadataRows.length > 0
       },
       metrics: {
         title: 'Metrics',
         rows: metricsRows,
-        hasChanges: metricsRows.length > 0 // If any metric rows exist, there are changes
+        hasChanges: metricsRows.length > 0
       },
       inputs: {
         title: 'Inputs',
         rows: inputsRows,
-        hasChanges: this.rbfDiff.inputs.added.length > 0 || this.rbfDiff.inputs.removed.length > 0
+        hasChanges: inputsRows.length > 0
       },
       outputs: {
         title: 'Outputs',
         rows: outputsRows,
-        hasChanges: this.rbfDiff.outputs.added.length > 0 ||
-                    this.rbfDiff.outputs.removed.length > 0 ||
-                    this.rbfDiff.outputs.modified.length > 0 ||
-                    this.rbfDiff.outputs.feeAdjusted.length > 0
+        hasChanges: outputsRows.length > 0
       }
     };
   }
