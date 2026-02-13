@@ -114,3 +114,10 @@
     direction: rtl;
   }
 }
+.blocks-wrapper {
+  cursor: grab;
+}
+
+.blocks-wrapper:active {
+  cursor: grabbing;
+}
