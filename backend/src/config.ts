@@ -1,3 +1,5 @@
+import { validateConfig } from './config-sanitizer';
+
 const configFromFile = require(
     process.env.MEMPOOL_CONFIG_FILE ? process.env.MEMPOOL_CONFIG_FILE : '../mempool-config.json'
 );
@@ -388,6 +390,8 @@ class Config implements IConfig {
     this.FIAT_PRICE = configs.FIAT_PRICE;
     this.WALLETS = configs.WALLETS;
     this.STRATUM = configs.STRATUM;
+
+    validateConfig(this);
   }
 
   merge = (...objects: object[]): IConfig => {
