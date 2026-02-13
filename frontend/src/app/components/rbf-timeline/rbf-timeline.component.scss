@@ -3,26 +3,6 @@
   width: 100%;
   padding: 1em 0;
 
-  &::after, &::before {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 2em;
-    z-index: 2;
-  }
-
-  &::before {
-    left: 0;
-    background: linear-gradient(to right, var(--box-bg), var(--box-bg), transparent);
-  }
-
-  &::after {
-    right: 0;
-    background: linear-gradient(to left, var(--box-bg), var(--box-bg), transparent);
-  }
-
   .timeline-wrapper {
     position: relative;
     width: calc(100% - 2em);
@@ -30,33 +10,50 @@
     overflow-x: auto;
     -ms-overflow-style: none;
     scrollbar-width: none;
-  
+
     &::-webkit-scrollbar {
       display: none;
     }
-  }
 
-  .fade-out {
-    position: relative;
-
-    &::before {
+    /* Fade SOLO para el timeline (no afecta al diff) */
+    &::before,
+    &::after {
       content: '';
       position: absolute;
-      width: 100%;
-      height: 70px;
-      top: -70px;
-      background: linear-gradient(to bottom, var(--fade-out-box-bg-start), var(--fade-out-box-bg-end));
-      z-index: 1;
+      top: 0;
+      bottom: 0;
+      width: 2em;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    &::before {
+      left: 0;
+      background: linear-gradient(to right, var(--box-bg), var(--box-bg), transparent);
+    }
+
+    &::after {
+      right: 0;
+      background: linear-gradient(to left, var(--box-bg), var(--box-bg), transparent);
     }
   }
 
+  /* Alinear TODO (toggle, botón diff, diff) al mismo ancho del timeline-wrapper */
+  .toggle-wrapper,
+  .diff-button-wrapper,
+  .rbf-diff-section {
+    width: calc(100% - 2em);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   .toggle-wrapper {
-    width: 100%;
     text-align: center;
     margin: 1.25em 0 0;
   }
 
-  .intervals, .nodes {
+  .intervals,
+  .nodes {
     min-width: 100%;
     display: flex;
     flex-direction: row;
@@ -64,13 +61,16 @@
     align-items: flex-start;
     text-align: center;
 
-    .node, .node-spacer, .connector {
+    .node,
+    .node-spacer,
+    .connector {
       width: 6em;
       min-width: 6em;
       flex-grow: 1;
     }
 
-    .interval, .interval-spacer {
+    .interval,
+    .interval-spacer {
       width: 8em;
       min-width: 5em;
       max-width: 8em;
@@ -92,8 +92,10 @@
     }
   }
 
-  .node, .interval-spacer {
+  .node,
+  .interval-spacer {
     position: relative;
+
     .track {
       position: absolute;
       height: 10px;
@@ -107,6 +109,7 @@
       &.left {
         right: 50%;
       }
+
       &.right {
         left: 50%;
       }
@@ -115,11 +118,13 @@
         background: var(--info);
       }
     }
+
     &.first-node {
       .track.left {
         display: none;
       }
     }
+
     &:last-child {
       .track.right {
         display: none;
@@ -130,6 +135,7 @@
   .nodes {
     position: relative;
     margin-top: 1em;
+
     .node {
       .shape-border {
         display: block;
@@ -152,7 +158,8 @@
           transition: background-color 300ms, border 300ms;
         }
 
-        &.rbf, &.rbf .shape {
+        &.rbf,
+        &.rbf .shape {
           border-radius: 50%;
         }
       }
@@ -171,6 +178,7 @@
 
       .shape-border:hover {
         padding: 0px;
+
         .shape {
           background: var(--info);
         }
@@ -188,9 +196,10 @@
 
           &:hover {
             padding: 4px;
+
             .shape {
               border-width: 1px;
-              border-color: var(--info)
+              border-color: var(--info);
             }
           }
         }
@@ -201,16 +210,19 @@
       position: relative;
       height: 10px;
 
-      .corner, .pipe {
+      .corner,
+      .pipe {
         position: absolute;
         left: -10px;
         width: 20px;
         height: 108px;
         bottom: 50%;
         border-right: solid 10px var(--primary);
+
         &.fullrbf {
           border-right: solid 10px var(--info);
         }
+
         &.last-pipe {
           height: 150px;
           bottom: -42px;
@@ -220,6 +232,7 @@
       .corner {
         border-bottom: solid 10px var(--primary);
         border-bottom-right-radius: 10px;
+
         &.fullrbf {
           border-bottom: solid 10px var(--info);
         }
@@ -227,235 +240,52 @@
     }
   }
 
-  // RBF Structural Diff Section
   .diff-button-wrapper {
-    width: 100%;
     text-align: center;
     margin: 0.75em 0 0;
   }
 }
 
-
 .rbf-diff-section {
   margin-top: 1rem;
-  background: var(--bg-secondary);
-  border-radius: 8px;
-  padding: 0;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--box-border);
 
-  .diff-content {
-    padding: 1.5rem;
+  /* quitar cualquier línea roja/verde arriba */
+  .diff-head.previous td,
+  .diff-head.current td {
+    border-top: none !important;
+  }
 
-    .tx-comparison-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      padding: 1rem;
-      background: var(--box-bg);
-      border-radius: 6px;
-      margin-bottom: 1.5rem;
-      border: 1px solid var(--box-border);
+  .diff-head td {
+    font-weight: 600;
+    text-align: left;
+  }
 
-      .tx-info {
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
+  .diff-txid td {
+    text-align: center;
+    padding-top: 0.25rem;
+    padding-bottom: 0.75rem;
 
-        .label {
-          font-size: 0.875rem;
-          opacity: 0.7;
-          font-weight: 500;
-        }
-
-        .txid {
-          font-family: monospace;
-          font-size: 0.9rem;
-        }
-      }
-
-      .arrow {
-        font-size: 1.5rem;
-        opacity: 0.5;
-      }
+    code {
+      font-size: 0.85rem;
+      opacity: 0.7;
+      background: transparent;
+      padding: 0;
     }
+  }
 
-    .diff-subsection {
-      margin-bottom: 2rem;
+  .changed-indicator {
+    margin-left: 0.5rem;
+    font-size: 0.6rem;
+    color: var(--green);
+  }
 
-      &:last-child {
-        margin-bottom: 0;
-      }
+  .difference.positive {
+    color: var(--green);
+  }
 
-      h5 {
-        font-size: 1rem;
-        margin-bottom: 1rem;
-        font-weight: 600;
-        opacity: 0.9;
-      }
-
-      &.metrics {
-        .metrics-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-          gap: 1rem;
-
-          .metric-item {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            padding: 1rem;
-            background: var(--box-bg);
-            border-radius: 6px;
-            border: 1px solid var(--box-border);
-
-            .metric-label {
-              font-size: 0.85rem;
-              opacity: 0.7;
-            }
-
-            .metric-value {
-              font-size: 1.15rem;
-              font-weight: 600;
-              font-family: monospace;
-
-              &.positive {
-                color: var(--green);
-              }
-
-              &.negative {
-                color: var(--red);
-              }
-            }
-          }
-        }
-      }
-
-      .change-group {
-        margin-bottom: 1rem;
-        border-radius: 6px;
-        overflow: hidden;
-        border: 1px solid var(--box-border);
-
-        .change-header {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.75rem 1rem;
-          font-weight: 600;
-          font-size: 0.9rem;
-        }
-
-        &.added {
-          background: rgba(40, 167, 69, 0.08);
-          border-color: rgba(40, 167, 69, 0.2);
-          .change-header {
-            color: var(--green);
-          }
-        }
-
-        &.removed {
-          background: rgba(220, 53, 69, 0.08);
-          border-color: rgba(220, 53, 69, 0.2);
-          .change-header {
-            color: var(--red);
-          }
-        }
-
-        &.modified {
-          background: rgba(255, 193, 7, 0.08);
-          border-color: rgba(255, 193, 7, 0.2);
-          .change-header {
-            color: var(--yellow);
-          }
-        }
-
-        &.unchanged {
-          background: var(--box-bg);
-          border-color: var(--box-border);
-          .change-header {
-            opacity: 0.6;
-          }
-        }
-
-        .change-list {
-          padding: 0.5rem 1rem 1rem;
-
-          .input-item,
-          .output-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem;
-            margin-bottom: 0.5rem;
-            background: var(--box-bg);
-            border-radius: 4px;
-            border: 1px solid var(--box-border);
-
-            code {
-              font-size: 0.85rem;
-            }
-
-            .input-value,
-            .output-value {
-              font-family: monospace;
-              font-size: 0.85rem;
-              opacity: 0.7;
-            }
-          }
-
-          .output-modification {
-            margin-bottom: 1rem;
-            padding: 0.75rem;
-            background: var(--box-bg);
-            border-radius: 4px;
-            border: 1px solid var(--box-border);
-
-            .mod-row {
-              display: flex;
-              gap: 0.5rem;
-              align-items: center;
-              padding: 0.25rem;
-
-              .index {
-                font-family: monospace;
-                font-size: 0.85rem;
-                opacity: 0.5;
-                min-width: 2rem;
-              }
-
-              code.address {
-                flex: 1;
-                font-size: 0.85rem;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-              }
-
-              .output-value {
-                font-family: monospace;
-                font-size: 0.85rem;
-                white-space: nowrap;
-              }
-
-              &.old {
-                opacity: 0.6;
-                text-decoration: line-through;
-              }
-
-              &.new {
-                font-weight: 500;
-              }
-            }
-
-            .mod-arrow {
-              text-align: center;
-              opacity: 0.5;
-              margin: 0.25rem 0;
-              font-size: 0.9rem;
-            }
-          }
-        }
-      }
-    }
+  .difference.negative {
+    color: var(--red);
   }
 }
