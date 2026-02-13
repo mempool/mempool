@@ -38,8 +38,8 @@
               <tr *ngIf="!isMobile()" class="taller-row">
                 <td class="label addresses" i18n="mining.addresses">Addresses</td>
                 <td *ngIf="poolStats.pool.addresses.length else nodata" style="padding-top: 25px">
-                  <a  class="addresses-data" [routerLink]="['/address' | relativeUrl, poolStats.pool.addresses[0]]">
-                    {{ poolStats.pool.addresses[0] }}
+                  <a class="addresses-data" [routerLink]="['/address' | relativeUrl, poolStats.pool.addresses[0]]">
+                    <app-truncate [text]="poolStats.pool.addresses[0]" [lastChars]="8"></app-truncate>
                   </a>
                   <div>
                     <div #collapse="ngbCollapse" [(ngbCollapse)]="gfg">
@@ -66,9 +66,8 @@
                     <button *ngIf="poolStats.pool.addresses.length >= 2" type="button"
                       class="btn btn-sm btn-primary float-right small-button mobile" (click)="collapse.toggle()"
                       [attr.aria-expanded]="!gfg" aria-controls="collapseExample">
-                      <span *ngIf="gfg" i18n="show-all">Show all</span>
+                      <span *ngIf="gfg"><span i18n="show-all">Show all</span> ({{ poolStats.pool.addresses.length }})</span>
                       <span *ngIf="!gfg" i18n="hide">Hide</span>
-                      ({{ poolStats.pool.addresses.length }})
                     </button>
                     <a class="addresses-data" [routerLink]="['/address' | relativeUrl, poolStats.pool.addresses[0]]">
                       {{ poolStats.pool.addresses[0] | shortenString: 30 }}
