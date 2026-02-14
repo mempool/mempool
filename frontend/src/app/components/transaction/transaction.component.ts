@@ -837,6 +837,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     ]).pipe(
       debounceTime(50),
       map(([position, mempoolBlocks, da, isAccelerated]) => {
+        if (!this.tx) return null;
         if (position && position.txid !== this.tx.txid) return null;
         return this.etaService.calculateETA(
           this.network,
@@ -849,7 +850,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.accelerationPositions,
         );
       }),
-      distinctUntilChanged()
+      distinctUntilChanged((prev: ETA | null, curr: ETA | null) => {
+        if (prev === curr) return true;
+        if (!prev || !curr) return false;
+        return prev.time === curr.time && prev.blocks === curr.blocks;
+      })
     );
   }
 
