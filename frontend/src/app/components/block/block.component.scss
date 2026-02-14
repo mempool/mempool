@@ -320,3 +320,27 @@ h1 {
     }
   }
 }
+
+
+div#mempool-block-7.bitcoin-block.text-center.mempool-block.ng-tns-c41619706-0.ng-star-inserted::before {
+  content: "";
+  position: absolute;
+  top: -15px;
+  left: -26.5px;
+  width: 20%;
+  height: 123px;
+  background: repeating-linear-gradient(90deg, #ED7D39, #ED7D39 2px, transparent 10px, transparent 10px);
+  z-index: -1;
+}
+
+
+div#mempool-block-7.bitcoin-block.text-center.mempool-block.ng-tns-c41619706-0.ng-star-inserted::after {
+  content: "";
+  position: absolute;
+  top: -31px;
+  left: -28px;
+  width: 127px;
+  height: 25%;
+  background: repeating-linear-gradient(180deg, #ED7D39, #ED7D39 2px, transparent 12px, transparent 1px);
+  z-index: -1;
+}
