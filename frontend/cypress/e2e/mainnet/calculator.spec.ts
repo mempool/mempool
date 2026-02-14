@@ -94,12 +94,11 @@ describe('Calculator', () => {
       });
 
       it('updates fiat and sats when entering 1 sat (0.00000001 BTC)', () => {
-        const expectedFiat = Math.round((MOCK_BTC_PRICE_USD / 100_000_000) * 100) / 100;
+        const expectedFiat = (MOCK_BTC_PRICE_USD / 100_000_000 * 100 / 100).toFixed(8);
         cy.get('input[formControlName="bitcoin"]').clear().type('0.00000001');
         cy.get('input[formControlName="satoshis"]').invoke('val').should('equal', '1');
         cy.get('input[formControlName="fiat"]').invoke('val').then((fiatVal) => {
-          const fiat = parseFloat(String(fiatVal).replace(/,/g, '')) || 0;
-          expect(fiat).to.equal(expectedFiat);
+          expect(String(fiatVal)).to.equal(expectedFiat);
         });
       });
     });

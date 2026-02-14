@@ -186,6 +186,10 @@ export class CalculatorComponent implements OnInit {
     if (num % 1 === 0) {
       return Math.round(num);
     }
+    // For small values (< 1), show more precision
+    if (Math.abs(num) < 1 && num !== 0) {
+      return num.toFixed(8);
+    }
     return (Math.round(num * 100) / 100).toFixed(2);
   }
 }
