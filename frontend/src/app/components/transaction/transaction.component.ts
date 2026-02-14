@@ -837,7 +837,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     ]).pipe(
       debounceTime(50),
       map(([position, mempoolBlocks, da, isAccelerated]) => {
-        if (position &&  position.txid !== this.tx.txid) return null;
+        if (position && position.txid !== this.tx.txid) return null;
         return this.etaService.calculateETA(
           this.network,
           this.tx,
