@@ -1134,7 +1134,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { showDetails: showDetails },
-      queryParamsHandling: 'merge'
+      queryParamsHandling: 'merge',
+      preserveFragment: true,
     });
   }
 
@@ -1199,13 +1200,13 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onAccelerationCompleted(): void {
-    this.router.navigate([], { fragment: null });
+    this.router.navigate([], { fragment: null, queryParamsHandling: 'merge' });
     this.accelerationFlowCompleted = true;
     this.forceAccelerationSummary = false;
   }
 
   closeAccelerator(): void {
-    this.router.navigate([], { fragment: null });
+    this.router.navigate([], { fragment: null, queryParamsHandling: 'merge' });
     this.hideAccelerationSummary = true;
     this.forceAccelerationSummary = false;
     this.storageService.setValue('hide-accelerator-pref', 'true');
