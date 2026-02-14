@@ -13,7 +13,9 @@ import {
   retry,
   startWith,
   repeat,
-  take
+  take,
+  debounceTime,
+  distinctUntilChanged
 } from 'rxjs/operators';
 import { Transaction } from '@interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, Subject, from, throwError, combineLatest, BehaviorSubject, timer } from 'rxjs';
@@ -833,7 +835,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.isAccelerated$,
       this.txChanged$,
     ]).pipe(
+      debounceTime(50),
       map(([position, mempoolBlocks, da, isAccelerated]) => {
+        if (position &&  position.txid !== this.tx.txid) return null;
         return this.etaService.calculateETA(
           this.network,
           this.tx,
@@ -844,7 +848,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           isAccelerated,
           this.accelerationPositions,
         );
-      })
+      }),
+      distinctUntilChanged()
     );
   }
 
