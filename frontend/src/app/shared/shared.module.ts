@@ -26,7 +26,6 @@ import { ScriptpubkeyTypePipe } from '@app/shared/pipes/scriptpubkey-type-pipe/s
 import { BytesPipe } from '@app/shared/pipes/bytes-pipe/bytes.pipe';
 import { WuBytesPipe } from '@app/shared/pipes/bytes-pipe/wubytes.pipe';
 import { FiatCurrencyPipe } from '@app/shared/pipes/fiat-currency.pipe';
-import { FiatShortenerPipe } from '@app/shared/pipes/fiat-shortener.pipe';
 import { HttpErrorPipe } from '@app/shared/pipes/http-error-pipe/http-error.pipe';
 import { BlockchainComponent } from '@components/blockchain/blockchain.component';
 import { TimeComponent } from '@components/time/time.component';
@@ -164,7 +163,6 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     Decimal2HexPipe,
     FeeRoundingPipe,
     FiatCurrencyPipe,
-    FiatShortenerPipe,
     HttpErrorPipe,
     ColoredPriceDirective,
     BrowserOnlyDirective,
@@ -316,7 +314,6 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     VbytesPipe,
     WuBytesPipe,
     FiatCurrencyPipe,
-    FiatShortenerPipe,
     HttpErrorPipe,
     CeilPipe,
     ShortenStringPipe,

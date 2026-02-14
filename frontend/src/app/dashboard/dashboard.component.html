@@ -144,7 +144,7 @@
                   </a>
                 </td>
                 <td class="table-cell-satoshis"><app-amount *ngIf="(network$ | async) !== 'liquidtestnet'; else liquidAmount" [satoshis]="transaction.value" digitsInfo="1.2-4" [noFiat]="true"></app-amount><ng-template #liquidAmount i18n="shared.confidential">Confidential</ng-template></td>
-                <td class="table-cell-fiat" *ngIf="(network$ | async) === ''" ><app-fiat [value]="transaction.value" pipe="fiatShortener"></app-fiat></td>
+                <td class="table-cell-fiat" *ngIf="(network$ | async) === ''" ><app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat></td>
                 <td class="table-cell-fees"><app-fee-rate [fee]="transaction.fee" [weight]="transaction.vsize * 4"></app-fee-rate></td>
               </tr>
             </tbody>

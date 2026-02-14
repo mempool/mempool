@@ -19,7 +19,6 @@ export class FiatComponent implements OnInit, OnDestroy {
   @Input() digitsInfo = '1.2-2';
   @Input() blockConversion: Price;
   @Input() colorClass = 'green-color';
-  @Input() pipe: 'fiatShortener' | 'fiatCurrency' = 'fiatCurrency';
 
   constructor(
     private stateService: StateService,
