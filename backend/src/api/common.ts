@@ -29,7 +29,7 @@ const MAX_TX_LEGACY_SIGOPS = 2_500 * 4; // witness-adjusted sigops
 export class Common {
   static nativeAssetId = config.MEMPOOL.NETWORK === 'liquidtestnet' ?
     '144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49'
-  : '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d';
+    : '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d';
 
   static isLiquid(): boolean {
     return config?.MEMPOOL?.NETWORK === 'liquid' || config?.MEMPOOL?.NETWORK === 'liquidtestnet';
@@ -39,9 +39,9 @@ export class Common {
     let medianNr = 0;
     const numsLen = numbers.length;
     if (numsLen % 2 === 0) {
-        medianNr = (numbers[numsLen / 2 - 1] + numbers[numsLen / 2]) / 2;
+      medianNr = (numbers[numsLen / 2 - 1] + numbers[numsLen / 2]) / 2;
     } else {
-        medianNr = numbers[(numsLen - 1) / 2];
+      medianNr = numbers[(numsLen - 1) / 2];
     }
     return medianNr;
   }
@@ -80,8 +80,8 @@ export class Common {
     return arr;
   }
 
-  static findRbfTransactions(added: MempoolTransactionExtended[], deleted: MempoolTransactionExtended[], forceScalable = false): { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }} {
-    const matches: { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }} = {};
+  static findRbfTransactions(added: MempoolTransactionExtended[], deleted: MempoolTransactionExtended[], forceScalable = false): { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended } } {
+    const matches: { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended } } = {};
 
     // For small N, a naive nested loop is extremely fast, but it doesn't scale
     if (added.length < 1000 && deleted.length < 50 && !forceScalable) {
@@ -94,7 +94,7 @@ export class Common {
             // Spends one or more of the same inputs
             && deletedTx.vin.some((deletedVin) =>
               addedTx.vin.some((vin) => vin.txid === deletedVin.txid && vin.vout === deletedVin.vout));
-            });
+        });
         if (foundMatches?.length) {
           matches[addedTx.txid] = { replaced: [...new Set(foundMatches)], replacedBy: addedTx };
         }
@@ -116,10 +116,10 @@ export class Common {
         for (const vin of addedTx.vin) {
           const deletedTx = deletedSpendMap[vin.txid]?.[vin.vout];
           if (deletedTx && deletedTx.txid !== addedTx.txid
-              // The new tx must, absolutely speaking, pay at least as much fee as the replaced tx.
-              && addedTx.fee > deletedTx.fee
-              // The new transaction must pay more fee per kB than the replaced tx.
-              && addedTx.adjustedFeePerVsize > deletedTx.adjustedFeePerVsize
+            // The new tx must, absolutely speaking, pay at least as much fee as the replaced tx.
+            && addedTx.fee > deletedTx.fee
+            // The new transaction must pay more fee per kB than the replaced tx.
+            && addedTx.adjustedFeePerVsize > deletedTx.adjustedFeePerVsize
           ) {
             foundMatches.add(deletedTx);
           }
@@ -133,8 +133,8 @@ export class Common {
     return matches;
   }
 
-  static findMinedRbfTransactions(minedTransactions: TransactionExtended[], spendMap: Map<string, MempoolTransactionExtended>): { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }} {
-    const matches: { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }} = {};
+  static findMinedRbfTransactions(minedTransactions: TransactionExtended[], spendMap: Map<string, MempoolTransactionExtended>): { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended } } {
+    const matches: { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended } } = {};
     for (const tx of minedTransactions) {
       const replaced: Set<MempoolTransactionExtended> = new Set();
       for (let i = 0; i < tx.vin.length; i++) {
@@ -356,11 +356,11 @@ export class Common {
     if (scriptpubkey.length < 8 || scriptpubkey.length > 84) {
       return false;
     }
-    const version = parseInt(scriptpubkey.slice(0,2), 16);
+    const version = parseInt(scriptpubkey.slice(0, 2), 16);
     if (version !== 0 && version < 0x51 || version > 0x60) {
-        return false;
+      return false;
     }
-    const push = parseInt(scriptpubkey.slice(2,4), 16);
+    const push = parseInt(scriptpubkey.slice(2, 4), 16);
     if (push + 2 === (scriptpubkey.length / 2)) {
       return {
         version: version ? version - 0x50 : 0,
@@ -446,7 +446,7 @@ export class Common {
     '': 921_000,
   };
   static MAX_DATACARRIER_BYTES = 83;
-  static isStandardOpReturn(bytes: number, outputs: number,height?: number): boolean {
+  static isStandardOpReturn(bytes: number, outputs: number, height?: number): boolean {
     if (
       (height == null || (
         this.OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
@@ -527,7 +527,7 @@ export class Common {
   }
 
   static setSighashFlags(flags: bigint, signature: string): bigint {
-    switch(signature.slice(-2)) {
+    switch (signature.slice(-2)) {
       case '01': return flags | TransactionFlags.sighash_all;
       case '02': return flags | TransactionFlags.sighash_none;
       case '03': return flags | TransactionFlags.sighash_single;
@@ -637,8 +637,8 @@ export class Common {
     } else if (tx.version === 3) {
       flags |= TransactionFlags.v3;
     }
-    const reusedInputAddresses: { [address: string ]: number } = {};
-    const reusedOutputAddresses: { [address: string ]: number } = {};
+    const reusedInputAddresses: { [address: string]: number } = {};
+    const reusedOutputAddresses: { [address: string]: number } = {};
     const inValues = {};
     const outValues = {};
     let rbf = false;
@@ -749,7 +749,7 @@ export class Common {
     // fast but bad heuristic to detect possible coinjoins
     // (at least 5 inputs and 5 outputs, less than half of which are unique amounts, with no address reuse)
     const addressReuse = Object.keys(reusedOutputAddresses).reduce((acc, key) => Math.max(acc, (reusedInputAddresses[key] || 0) + (reusedOutputAddresses[key] || 0)), 0) > 1;
-    if (!addressReuse && tx.vin.length >= 5 && tx.vout.length >= 5 && (Object.keys(inValues).length + Object.keys(outValues).length) <= (tx.vin.length + tx.vout.length) / 2 ) {
+    if (!addressReuse && tx.vin.length >= 5 && tx.vout.length >= 5 && (Object.keys(inValues).length + Object.keys(outValues).length) <= (tx.vin.length + tx.vout.length) / 2) {
       flags |= TransactionFlags.coinjoin;
     }
     // more than 5:1 input:output ratio
@@ -804,16 +804,16 @@ export class Common {
 
   static sleep$(ms: number): Promise<void> {
     return new Promise((resolve) => {
-       setTimeout(() => {
-         resolve();
-       }, ms);
+      setTimeout(() => {
+        resolve();
+      }, ms);
     });
   }
 
   static shuffleArray(array: any[]) {
     for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
     }
   }
 
@@ -937,7 +937,7 @@ export class Common {
     return d.toISOString().split('T')[0] + ' ' + d.toTimeString().split(' ')[0];
   }
 
-  static findSocketNetwork(addr: string): {network: string | null, url: string} {
+  static findSocketNetwork(addr: string): { network: string | null, url: string } {
     if (!addr?.length) {
       return {
         network: null,
@@ -1011,7 +1011,7 @@ export class Common {
     };
   }
 
-  static formatSocket(publicKey: string, socket: {network: string, addr: string}): NodeSocket {
+  static formatSocket(publicKey: string, socket: { network: string, addr: string }): NodeSocket {
     if (config.LIGHTNING.BACKEND === 'cln') {
       return {
         publicKey: publicKey,
@@ -1046,7 +1046,7 @@ export class Common {
       const right = weightCount + sortedTxs[i].weight;
       if (right > leftBound) {
         const weight = Math.min(right, rightBound) - Math.max(left, leftBound);
-        medianFee += (sortedTxs[i].rate * (weight / 4) );
+        medianFee += (sortedTxs[i].rate * (weight / 4));
         medianWeight += weight;
       }
       weightCount += sortedTxs[i].weight;
@@ -1075,26 +1075,43 @@ export class Common {
       medianFee: medianFeeRate,
       feeRange: [
         minFee,
-        [10,25,50,75,90].map(n => Common.getNthPercentile(n, sortedTxs).rate),
+        [10, 25, 50, 75, 90].map(n => Common.getNthPercentile(n, sortedTxs).rate),
         maxFee,
       ].flat(),
     };
   }
   static calcMinMaxFeeRates(
     transactions: TransactionExtended[]
-  ): { minfeerate: number; maxfeerate: number; effective_minfeerate: number; effective_maxfeerate: number; } {
-    const minmax = transactions.reduce((a: { min?: number; max?: number; effMin?: number; effMax?: number; }, tx) => ({
-      min: tx.feePerVsize ? Math.min(tx.feePerVsize, a.min ?? tx.feePerVsize) : a.min,
-      max: tx.feePerVsize ? Math.max(tx.feePerVsize, a.max ?? tx.feePerVsize) : a.max,
-      effMin: tx.effectiveFeePerVsize ? Math.min(tx.effectiveFeePerVsize, a.effMin ?? tx.effectiveFeePerVsize) : a.effMin,
-      effMax: tx.effectiveFeePerVsize ? Math.max(tx.effectiveFeePerVsize, a.effMax ?? tx.effectiveFeePerVsize) : a.effMax,
-    }), {});
+  ): {
+    minFeeRate: number;
+    maxFeeRate: number;
+    effectiveMinFeeRate: number;
+    effectiveMaxFeeRate: number;
+  } {
+    const result = transactions.reduce(
+      (acc, tx) => {
+        const raw = tx.feePerVsize;
+        const eff = tx.effectiveFeePerVsize;
 
+        acc.min = Math.min(acc.min, raw);
+        acc.max = Math.max(acc.max, raw);
+        acc.effMin = Math.min(acc.effMin, eff);
+        acc.effMax = Math.max(acc.effMax, eff);
+
+        return acc;
+      },
+      {
+        min: Infinity,
+        max: -Infinity,
+        effMin: Infinity,
+        effMax: -Infinity,
+      }
+    );
     return {
-      minfeerate: minmax.min ?? 0,
-      maxfeerate: minmax.max ?? 0,
-      effective_minfeerate: minmax.effMin ?? 0,
-      effective_maxfeerate: minmax.effMax ?? 0,
+      minFeeRate: result.min === Infinity ? 0 : result.min,
+      maxFeeRate: result.max === -Infinity ? 0 : result.max,
+      effectiveMinFeeRate: result.effMin === Infinity ? 0 : result.effMin,
+      effectiveMaxFeeRate: result.effMax === -Infinity ? 0 : result.effMax,
     };
   }
   static getNthPercentile(n: number, sortedDistribution: any[]): any {
@@ -1159,7 +1176,7 @@ export class Common {
     let tx: bitcoinjs.Transaction;
     try {
       tx = bitcoinjs.Transaction.fromHex(txhex);
-    } catch(e) {
+    } catch (e) {
       throw Object.assign(new Error('Invalid transaction (could not parse)'), { code: -4 });
     }
 
@@ -1253,7 +1270,7 @@ export class Common {
  */
 export class OnlineFeeStatsCalculator {
   private maxWeight: number;
-  private percentiles = [10,25,50,75,90];
+  private percentiles = [10, 25, 50, 75, 90];
 
   private bandWidthPercent = 2;
   private bandWidth: number = 0;
@@ -1269,7 +1286,7 @@ export class OnlineFeeStatsCalculator {
   private feeRange: { avg: number, min: number, max: number }[] = [];
   private totalWeight: number = 0;
 
-  constructor (maxWeight: number, percentileBandWidth?: number, percentiles?: number[]) {
+  constructor(maxWeight: number, percentileBandWidth?: number, percentiles?: number[]) {
     this.maxWeight = maxWeight;
     if (percentiles && percentiles.length) {
       this.percentiles = percentiles;

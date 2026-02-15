@@ -270,10 +270,10 @@ class Blocks {
       extras.segwitTotalTxs = 0;
       extras.segwitTotalSize = 0;
       extras.segwitTotalWeight = 0;
-      extras.minfeerate = 0;
-      extras.maxfeerate = 0;
-      extras.effective_minfeerate = 0;
-      extras.effective_maxfeerate = 0;
+      extras.minFeeRate = 0;
+      extras.maxFeeRate = 0;
+      extras.effectiveMinFeeRate = 0;
+      extras.effectiveMaxFeeRate = 0;
     } else {
       const stats: IBitcoinApi.BlockStats = await this.$getBlockStats(block, transactions);
       let feeStats = {
@@ -281,15 +281,9 @@ class Blocks {
         feeRange: [stats.minfeerate, stats.feerate_percentiles, stats.maxfeerate].flat(),
       };
       //get the raw and effective min/max fee rates for the block (not percentiles)
-      let rawFeeStats = {
-        minfeerate: stats.minfeerate,
-        maxfeerate: stats.maxfeerate,
-        effective_minfeerate: stats.minfeerate, 
-        effective_maxfeerate: stats.maxfeerate,
-      };
+      let rawFeeStats = Common.calcMinMaxFeeRates(transactions);
       if (transactions?.length > 1) {
         feeStats = Common.calcEffectiveFeeStatistics(transactions);
-        rawFeeStats = Common.calcMinMaxFeeRates(transactions);
       }
       extras.medianFee = feeStats.medianFee;
       extras.feeRange = feeStats.feeRange;
@@ -305,10 +299,10 @@ class Blocks {
       extras.segwitTotalSize = stats.swtotal_size;
       extras.segwitTotalWeight = stats.swtotal_weight;
 
-      extras.minfeerate = rawFeeStats.minfeerate;  // raw
-      extras.maxfeerate = rawFeeStats.maxfeerate;  // raw
-      extras.effective_minfeerate = rawFeeStats.effective_minfeerate; // effective
-      extras.effective_maxfeerate = rawFeeStats.effective_maxfeerate; // effective
+      extras.minFeeRate = rawFeeStats.minFeeRate;  // raw
+      extras.maxFeeRate = rawFeeStats.maxFeeRate;  // raw
+      extras.effectiveMinFeeRate = rawFeeStats.effectiveMinFeeRate; // effective
+      extras.effectiveMaxFeeRate = rawFeeStats.effectiveMaxFeeRate; // effective
     }
 
     if (Common.blocksSummariesIndexingEnabled()) {

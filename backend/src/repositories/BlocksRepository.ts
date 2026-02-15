@@ -61,6 +61,10 @@ interface DatabaseBlock {
   totalInputAmt: number;
   firstSeen: number;
   stale: boolean;
+  minFeeRate: number;
+  maxFeeRate: number;
+  effectiveMinFeeRate: number;
+  effectiveMaxFeeRate: number;
 }
 
 const BLOCK_DB_FIELDS = `
@@ -106,7 +110,11 @@ const BLOCK_DB_FIELDS = `
   blocks.utxoset_size AS utxoSetSize,
   blocks.total_input_amt AS totalInputAmt,
   UNIX_TIMESTAMP(blocks.first_seen) AS firstSeen,
-  blocks.stale
+  blocks.stale,
+  blocks.min_feerate AS minFeeRate,
+  blocks.max_feerate AS maxFeeRate,
+  blocks.effective_min_feerate AS effectiveMinFeeRate,
+  blocks.effective_max_feerate AS effectiveMaxFeeRate
 `;
 
 class BlocksRepository {
@@ -131,7 +139,8 @@ class BlocksRepository {
         total_inputs,       total_outputs,            total_input_amt,   total_output_amt,
         fee_percentiles,    segwit_total_txs,         segwit_total_size, segwit_total_weight,
         median_fee_amt,     coinbase_signature_ascii, definition_hash,   index_version,
-        stale
+        stale,              min_feerate,              max_feerate,       effective_min_feerate, 
+        effective_max_feerate
       ) VALUE (
         ?, ?, FROM_UNIXTIME(?), ?,
         ?, ?, ?, ?,
@@ -143,6 +152,7 @@ class BlocksRepository {
         ?, ?, ?, ?,
         ?, ?, ?, ?,
         ?, ?, ?, ?,
+        ?, ?, ?, ?, 
         ?
       )`;
 
@@ -193,6 +203,10 @@ class BlocksRepository {
         poolsUpdater.currentSha,
         BlocksRepository.version,
         (block.stale ? 1 : 0),
+        block.extras.minFeeRate,
+        block.extras.maxFeeRate,
+        block.extras.effectiveMinFeeRate,
+        block.extras.effectiveMaxFeeRate,
       ];
 
       await DB.query(query, params);
@@ -1206,6 +1220,10 @@ class BlocksRepository {
     extras.totalInputAmt = dbBlk.totalInputAmt;
     extras.virtualSize = dbBlk.weight / 4.0;
     extras.firstSeen = dbBlk.firstSeen;
+    extras.minFeeRate = dbBlk.minFeeRate;
+    extras.maxFeeRate = dbBlk.maxFeeRate;
+    extras.effectiveMinFeeRate = dbBlk.effectiveMinFeeRate;
+    extras.effectiveMaxFeeRate = dbBlk.effectiveMaxFeeRate;
 
     // Re-org can happen after indexing so we need to always get the
     // latest state from core
