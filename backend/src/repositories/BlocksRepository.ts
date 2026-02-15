@@ -111,10 +111,10 @@ const BLOCK_DB_FIELDS = `
   blocks.total_input_amt AS totalInputAmt,
   UNIX_TIMESTAMP(blocks.first_seen) AS firstSeen,
   blocks.stale,
-  blocks.min_feerate AS minFeeRate,
-  blocks.max_feerate AS maxFeeRate,
-  blocks.effective_min_feerate AS effectiveMinFeeRate,
-  blocks.effective_max_feerate AS effectiveMaxFeeRate
+  blocks.min_fee_rate AS minFeeRate,
+  blocks.max_fee_rate AS maxFeeRate,
+  blocks.effective_min_fee_rate AS effectiveMinFeeRate,
+  blocks.effective_max_fee_rate AS effectiveMaxFeeRate
 `;
 
 class BlocksRepository {
@@ -139,8 +139,8 @@ class BlocksRepository {
         total_inputs,       total_outputs,            total_input_amt,   total_output_amt,
         fee_percentiles,    segwit_total_txs,         segwit_total_size, segwit_total_weight,
         median_fee_amt,     coinbase_signature_ascii, definition_hash,   index_version,
-        stale,              min_feerate,              max_feerate,       effective_min_feerate, 
-        effective_max_feerate
+        stale,              min_fee_rate,              max_fee_rate,       effective_min_fee_rate, 
+        effective_max_fee_rate
       ) VALUE (
         ?, ?, FROM_UNIXTIME(?), ?,
         ?, ?, ?, ?,

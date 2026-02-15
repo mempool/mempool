@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 105;
+  private static currentVersion = 106;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -559,7 +559,7 @@ class DatabaseMigration {
       await this.updateToSchemaVersion(66);
     }
 
-    if (databaseSchemaVersion < 67  && isBitcoin === true) {
+    if (databaseSchemaVersion < 67 && isBitcoin === true) {
       await this.$executeQuery('ALTER TABLE `blocks_summaries` ADD version INT NOT NULL DEFAULT 0');
       await this.$executeQuery('ALTER TABLE `blocks_summaries` ADD INDEX `version` (`version`)');
       await this.$executeQuery('ALTER TABLE `blocks_templates` ADD version INT NOT NULL DEFAULT 0');
@@ -1198,6 +1198,16 @@ class DatabaseMigration {
         await this.$executeQuery(`UPDATE state SET number = 929700 WHERE name = 'last_bitcoin_block_audit';`);
       }
       await this.updateToSchemaVersion(105);
+    }
+    if (databaseSchemaVersion < 106) {
+      await this.$executeQuery(`
+    ALTER TABLE blocks
+      ADD COLUMN min_fee_rate BIGINT UNSIGNED NOT NULL DEFAULT 0,
+      ADD COLUMN max_fee_rate BIGINT UNSIGNED NOT NULL DEFAULT 0,
+      ADD COLUMN effective_min_fee_rate BIGINT UNSIGNED NOT NULL DEFAULT 0,
+      ADD COLUMN effective_max_fee_rate BIGINT UNSIGNED NOT NULL DEFAULT 0;
+  `);
+      await this.updateToSchemaVersion(106);
     }
   }
 
