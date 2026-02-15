@@ -213,6 +213,7 @@ export class StateService {
   resetScroll$: Subject<boolean> = new Subject<boolean>();
   timeLtr: BehaviorSubject<boolean>;
   hideFlow: BehaviorSubject<boolean>;
+  hideDetails: BehaviorSubject<boolean>;
   hideAudit: BehaviorSubject<boolean>;
   fiatCurrency$: BehaviorSubject<string>;
   rateUnits$: BehaviorSubject<string>;
@@ -368,6 +369,16 @@ export class StateService {
         this.storageService.removeItem('flow-preference');
       }
     });
+
+    // Always initialize Details as collapsed (hideDetails = true)
+    // Do NOT read from localStorage to prevent auto-opening on new page loads
+    // Only query param ?showDetails=true or explicit user click should open Details
+    this.hideDetails = new BehaviorSubject<boolean>(true);
+
+    // Clean up legacy localStorage key if it exists
+    if (this.storageService.getValue('details-preference')) {
+      this.storageService.removeItem('details-preference');
+    }
 
     const savedAuditPreference = this.storageService.getValue('audit-preference');
     this.hideAudit = new BehaviorSubject<boolean>(savedAuditPreference === 'hide');

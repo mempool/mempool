@@ -142,6 +142,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   hideFlow: boolean = this.stateService.hideFlow.value;
   overrideFlowPreference: boolean = null;
   flowEnabled: boolean;
+  detailsPrefSubscription: Subscription;
+  hideDetails: boolean = this.stateService.hideDetails.value;
+  overrideDetailsPreference: boolean | null = null;
+  detailsEnabled: boolean;
   tooltipPosition: { x: number, y: number };
   isMobile: boolean;
   firstLoad = true;
@@ -241,6 +245,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.flowPrefSubscription = this.stateService.hideFlow.subscribe((hide) => {
       this.hideFlow = !!hide;
       this.setFlowEnabled();
+    });
+
+    this.setDetailsEnabled();
+    this.detailsPrefSubscription = this.stateService.hideDetails.subscribe((hide) => {
+      this.hideDetails = !!hide;
+      this.setDetailsEnabled();
     });
 
     this.da$ = this.stateService.difficultyAdjustment$.pipe(
@@ -619,6 +629,17 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           const seoDescription = seoDescriptionNetwork(this.stateService.network);
           this.seoService.setDescription($localize`:@@meta.description.bitcoin.transaction:Get real-time status, addresses, fees, script info, and more for ${network}${seoDescription} transaction with txid ${this.txId}.`);
           this.resetTransaction();
+
+          // Reset Details state to collapsed for new transaction unless query param overrides
+          // This prevents inheriting open state from previous transaction in same browser session
+          const currentQueryParams = this.route.snapshot.queryParams;
+          if (!currentQueryParams.showDetails) {
+            // No showDetails query param: force collapsed state
+            this.stateService.hideDetails.next(true);
+            this.overrideDetailsPreference = null;
+            this.detailsEnabled = false;
+          }
+
           return merge(
             of(true),
             this.stateService.connectionState$.pipe(
@@ -796,6 +817,15 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.setFlowEnabled();
       this.setGraphSize();
+
+      if (params.showDetails === 'false') {
+        this.overrideDetailsPreference = false;
+      } else if (params.showDetails === 'true') {
+        this.overrideDetailsPreference = true;
+      } else {
+        this.overrideDetailsPreference = null;
+      }
+      this.setDetailsEnabled();
     });
 
     this.mempoolBlocksSubscription = this.stateService.mempoolBlocks$.subscribe((mempoolBlocks) => {
@@ -1098,6 +1128,21 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.flowEnabled = (this.overrideFlowPreference != null ? this.overrideFlowPreference : !this.hideFlow);
   }
 
+  toggleDetails() {
+    const showDetails = !this.detailsEnabled;
+    this.stateService.hideDetails.next(!showDetails);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { showDetails: showDetails },
+      queryParamsHandling: 'merge',
+      preserveFragment: true,
+    });
+  }
+
+  setDetailsEnabled() {
+    this.detailsEnabled = (this.overrideDetailsPreference != null ? this.overrideDetailsPreference : !this.hideDetails);
+  }
+
   expandGraph() {
     this.graphExpanded = true;
     this.graphHeight = this.maxInOut * 15;
@@ -1155,13 +1200,13 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onAccelerationCompleted(): void {
-    this.router.navigate([], { fragment: null });
+    this.router.navigate([], { fragment: null, queryParamsHandling: 'merge' });
     this.accelerationFlowCompleted = true;
     this.forceAccelerationSummary = false;
   }
 
   closeAccelerator(): void {
-    this.router.navigate([], { fragment: null });
+    this.router.navigate([], { fragment: null, queryParamsHandling: 'merge' });
     this.hideAccelerationSummary = true;
     this.forceAccelerationSummary = false;
     this.storageService.setValue('hide-accelerator-pref', 'true');
@@ -1200,6 +1245,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.txRbfInfoSubscription.unsubscribe();
     this.queryParamsSubscription.unsubscribe();
     this.flowPrefSubscription.unsubscribe();
+    this.detailsPrefSubscription.unsubscribe();
     this.urlFragmentSubscription.unsubscribe();
     this.mempoolBlocksSubscription.unsubscribe();
     this.mempoolPositionSubscription.unsubscribe();

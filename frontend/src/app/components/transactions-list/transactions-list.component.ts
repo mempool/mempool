@@ -46,6 +46,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   @Input() blockTime: number = 0; // Used for price calculation if all the transactions are in the same block
   @Input() txPreview = false;
   @Input() forceSignaturesMode: SignaturesMode = null;
+  @Input() detailsVisible: boolean = false;
 
   @Output() loadMore = new EventEmitter();
 
@@ -218,6 +219,13 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes): void {
+    // Sync detailsVisible input with internal showDetails$ state
+    if (changes.detailsVisible) {
+      if (this.detailsVisible !== this.showDetails$.value) {
+        this.toggleDetails();
+      }
+    }
+
     if (changes.inputIndex || changes.outputIndex || changes.rowLimit) {
       this.inputRowLimit = Math.max(this.rowLimit, (this.inputIndex || 0) + 3);
       this.outputRowLimit = Math.max(this.rowLimit, (this.outputIndex || 0) + 3);
