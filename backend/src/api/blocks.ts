@@ -274,12 +274,18 @@ class Blocks {
       extras.segwitTotalTxs = 0;
       extras.segwitTotalSize = 0;
       extras.segwitTotalWeight = 0;
+      extras.minFeeRate = 0;
+      extras.maxFeeRate = 0;
+      extras.effectiveMinFeeRate = 0;
+      extras.effectiveMaxFeeRate = 0;
     } else {
       const stats: IBitcoinApi.BlockStats = await this.$getBlockStats(block, transactions);
       let feeStats = {
         medianFee: stats.feerate_percentiles[2], // 50th percentiles
         feeRange: [stats.minfeerate, stats.feerate_percentiles, stats.maxfeerate].flat(),
       };
+      //get the raw and effective min/max fee rates for the block (not percentiles)
+      let rawFeeStats = Common.calcMinMaxFeeRates(transactions);
       if (transactions?.length > 1) {
         feeStats = Common.calcEffectiveFeeStatistics(transactions);
       }
@@ -296,6 +302,11 @@ class Blocks {
       extras.segwitTotalTxs = stats.swtxs;
       extras.segwitTotalSize = stats.swtotal_size;
       extras.segwitTotalWeight = stats.swtotal_weight;
+
+      extras.minFeeRate = rawFeeStats.minFeeRate;  // raw
+      extras.maxFeeRate = rawFeeStats.maxFeeRate;  // raw
+      extras.effectiveMinFeeRate = rawFeeStats.effectiveMinFeeRate; // effective
+      extras.effectiveMaxFeeRate = rawFeeStats.effectiveMaxFeeRate; // effective
     }
 
     if (Common.blocksSummariesIndexingEnabled()) {

@@ -291,6 +291,10 @@ export interface BlockExtension {
   totalFees: number;
   medianFee: number; // median fee rate
   feeRange: number[]; // fee rate percentiles
+  minFeeRate: number;
+  maxFeeRate: number;
+  effectiveMinFeeRate: number;
+  effectiveMaxFeeRate: number;
   reward: number;
   matchRate: number | null;
   expectedFees: number | null;
