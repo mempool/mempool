@@ -19,6 +19,7 @@ class PoolsUpdater {
   poolsUrl: string = config.MEMPOOL.POOLS_JSON_URL;
   treeUrl: string = config.MEMPOOL.POOLS_JSON_TREE_URL;
 
+  /** @asyncSafe */
   public async $startService(): Promise<void> {
     while ('Bitcoin is still alive') {
       try {
@@ -30,6 +31,7 @@ class PoolsUpdater {
     }
   }
 
+  /** @asyncSafe */
   public async updatePoolsJson(): Promise<void> {
     if (['mainnet', 'testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK) === false ||
       config.MEMPOOL.ENABLED === false
@@ -134,6 +136,7 @@ class PoolsUpdater {
 
   /**
    * Fetch our latest pools-v2.json sha from github
+   * @asyncUnsafe
    */
   private async fetchPoolsSha(): Promise<string | null> {
     const response = await this.query(this.treeUrl);
@@ -152,6 +155,7 @@ class PoolsUpdater {
 
   /**
    * Http request wrapper
+   * @asyncUnsafe
    */
   private async query(path): Promise<any[] | undefined> {
     type axiosOptions = {

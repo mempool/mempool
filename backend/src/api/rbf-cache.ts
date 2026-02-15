@@ -407,6 +407,7 @@ class RbfCache {
     };
   }
 
+  /** @asyncSafe */
   public async load({ txs, trees, expiring, mempool, spendMap }): Promise<void> {
     try {
       txs.forEach(txEntry => {

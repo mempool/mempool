@@ -22,13 +22,14 @@ class Statistics {
     const difference = nextInterval.getTime() - now.getTime();
 
     setTimeout(() => {
-      this.runStatistics();
+      void this.runStatistics();
       this.intervalTimer = setInterval(() => {
-        this.runStatistics(true);
+        void this.runStatistics(true);
       }, 1 * 60 * 1000);
     }, difference);
   }
 
+  /** @asyncSafe */
   public async runStatistics(skipIfRecent = false): Promise<void> {
     if (!memPool.isInSync()) {
       return;

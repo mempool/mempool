@@ -40,6 +40,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
       });
   }
 
+  /** @asyncUnsafe */
   async $getAddress(address: string): Promise<IEsploraApi.Address> {
     const addressInfo = await this.bitcoindClient.validateAddress(address);
     if (!addressInfo || !addressInfo.isvalid) {
@@ -91,6 +92,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
     }
   }
 
+  /** @asyncUnsafe */
   async $getAddressTransactions(address: string, lastSeenTxId: string): Promise<IEsploraApi.Transaction[]> {
     const addressInfo = await this.bitcoindClient.validateAddress(address);
     if (!addressInfo || !addressInfo.isvalid) {
@@ -160,6 +162,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
     }
   }
 
+  /** @asyncUnsafe */
   async $getAddressUtxos(address: string): Promise<IEsploraApi.UTXO[]> {
     const addressInfo = await this.bitcoindClient.validateAddress(address);
     if (!addressInfo || !addressInfo.isvalid) {
@@ -206,6 +209,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
     }
   }
 
+  /** @asyncUnsafe */
   async $getScriptHashUtxos(scripthash: string): Promise<IEsploraApi.UTXO[]> {
     const utxos = await this.$getScriptHashUnspent(scripthash);
     const result: IEsploraApi.UTXO[] = [];
@@ -244,6 +248,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
     return this.electrumClient.blockchainScripthash_listunspent(scriptHash);
   }
 
+  /** @asyncUnsafe */
   async $getTransactionMerkleProof(txId: string): Promise<IEsploraApi.MerkleProof> {
     const tx = await this.$getRawTransaction(txId);
     return this.electrumClient.blockchainTransaction_getMerkle(txId, tx.status.block_height);
