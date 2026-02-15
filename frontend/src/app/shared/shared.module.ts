@@ -133,6 +133,9 @@ import { BitcoinInvoiceComponent } from '@components/bitcoin-invoice/bitcoin-inv
 import { OnlyVsizeDirective, OnlyWeightDirective } from '@app/shared/components/weight-directives/weight-directives';
 import { GithubLogin } from '@components/github-login.component/github-login.component';
 
+import { AddressChunkPipe } from '@app/shared/pipes/address-chunk.pipe';
+import { AddressFormattingSelectorComponent } from '@components/address-formatting-selector/address-formatting-selector.component';
+
 @NgModule({
   declarations: [
     ClipboardComponent,
@@ -256,6 +259,8 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     TwitterLogin,
     GithubLogin,
     BitcoinInvoiceComponent,
+    AddressChunkPipe,
+    AddressFormattingSelectorComponent
   ],
   imports: [
     CommonModule,
@@ -405,6 +410,9 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
 
     OnlyVsizeDirective,
     OnlyWeightDirective,
+
+    AddressChunkPipe,
+    AddressFormattingSelectorComponent,
   ]
 })
 export class SharedModule {

@@ -1,0 +1,13 @@
+<div [formGroup]="form" class="text-small text-center">
+  <select 
+    formControlName="mode" 
+    class="custom-select custom-select-sm form-control-secondary form-control mx-auto" 
+    style="width: 140px;" 
+    id="addressFormatSelector"
+  >
+    <option value="off" i18n="address-formatting.default">Default adresses</option>
+    <option value="color" i18n="address-formatting.color">Colored</option>
+    <option value="spacing" i18n="address-formatting.color-spacing">+ Spacing</option>
+    <option value="copy" i18n="address-formatting.color-spacing-copy">+ Clipboard</option>
+  </select>
+</div>
