@@ -10,14 +10,14 @@ export class FeeRoundingPipe implements PipeTransform {
     @Inject(LOCALE_ID) private locale: string,
   ) {}
 
-  transform(fee: number, rounding = null, dp = 3): string {
+  transform(fee: number, rounding = null, dp = 2): string {
     if (rounding) {
       return formatNumber(fee, this.locale, rounding);
     }
 
-    if (fee >= Math.pow(10, (dp || 3) - 1)) {
+    if (fee >= Math.pow(10, (dp || 2) - 1)) {
       return formatNumber(fee, this.locale, '1.0-0');
-    } else if (fee < Math.pow(10, (dp || 3) - 2)) {
+    } else if (fee < Math.pow(10, (dp || 2) - 2)) {
       return formatNumber(fee, this.locale, '1.2-2');
     }
     return formatNumber(fee, this.locale, '1.1-1');
