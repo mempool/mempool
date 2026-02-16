@@ -561,7 +561,7 @@ class DatabaseMigration {
       await this.updateToSchemaVersion(66);
     }
 
-    if (databaseSchemaVersion < 67 && isBitcoin === true) {
+    if (databaseSchemaVersion < 67 &&  isBitcoin === true) {
       await this.$executeQuery('ALTER TABLE `blocks_summaries` ADD version INT NOT NULL DEFAULT 0');
       await this.$executeQuery('ALTER TABLE `blocks_summaries` ADD INDEX `version` (`version`)');
       await this.$executeQuery('ALTER TABLE `blocks_templates` ADD version INT NOT NULL DEFAULT 0');
@@ -1222,16 +1222,17 @@ class DatabaseMigration {
       }
       await this.updateToSchemaVersion(106);
     }
-      if (databaseSchemaVersion < 107) {
-          await this.$executeQuery(`
-          ALTER TABLE blocks
-            ADD COLUMN IF NOT EXISTS min_fee_rate BIGINT UNSIGNED NOT NULL DEFAULT 0,
-            ADD COLUMN IF NOT EXISTS max_fee_rate BIGINT UNSIGNED NOT NULL DEFAULT 0,
-            ADD COLUMN IF NOT EXISTS effective_min_fee_rate BIGINT UNSIGNED NOT NULL DEFAULT 0,
-            ADD COLUMN IF NOT EXISTS effective_max_fee_rate BIGINT UNSIGNED NOT NULL DEFAULT 0;
-        `);
-       await this.updateToSchemaVersion(107);
-      }
+
+    if (databaseSchemaVersion < 107) {
+        await this.$executeQuery(`
+            ALTER TABLE blocks
+              ADD COLUMN IF NOT EXISTS min_fee_rate DOUBLE UNSIGNED NOT NULL DEFAULT 0,
+              ADD COLUMN IF NOT EXISTS max_fee_rate DOUBLE UNSIGNED NOT NULL DEFAULT 0,
+              ADD COLUMN IF NOT EXISTS effective_min_fee_rate DOUBLE UNSIGNED NOT NULL DEFAULT 0,
+              ADD COLUMN IF NOT EXISTS effective_max_fee_rate DOUBLE UNSIGNED NOT NULL DEFAULT 0;
+      `);
+      await this.updateToSchemaVersion(107);
+    }
   }
 
   /**
