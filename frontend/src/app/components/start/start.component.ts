@@ -10,6 +10,7 @@ import { handleDemoRedirect } from '@app/shared/common.utils';
   selector: 'app-start',
   templateUrl: './start.component.html',
   styleUrls: ['./start.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
@@ -164,7 +165,7 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
       if (reset) {
         this.resetScroll();
         this.stateService.resetScroll$.next(false);
-      } 
+      }
     });
 
   }
@@ -310,7 +311,7 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   updateVelocity(x: number) {
     const now = performance.now();
-    let dt = now - this.lastUpdate;
+    const dt = now - this.lastUpdate;
     if (dt > 0) {
       this.lastUpdate = now;
       const velocity = (x - this.lastMouseX) / dt;

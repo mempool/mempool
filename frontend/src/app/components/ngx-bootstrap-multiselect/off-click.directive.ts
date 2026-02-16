@@ -5,6 +5,7 @@ import { Output } from '@angular/core';
 @Directive({
   // tslint:disable-next-line:directive-selector
   selector: '[offClick]',
+  standalone: false,
 })
 
 export class OffClickDirective {
@@ -13,7 +14,7 @@ export class OffClickDirective {
   private _clickEvent: MouseEvent;
   private _touchEvent: TouchEvent;
 
-  @HostListener('click', ['$event']) 
+  @HostListener('click', ['$event'])
   public onClick(event: MouseEvent): void {
     this._clickEvent = event;
   }
@@ -23,7 +24,7 @@ export class OffClickDirective {
     this._touchEvent = event;
   }
 
-  @HostListener('document:click', ['$event']) 
+  @HostListener('document:click', ['$event'])
   public onDocumentClick(event: MouseEvent): void {
     if (event !== this._clickEvent) {
       this.onOffClick.emit(event);

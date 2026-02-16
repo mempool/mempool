@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 104;
+  private static currentVersion = 106;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -28,6 +28,7 @@ class DatabaseMigration {
 
   /**
    * Entry point
+   * @asyncUnsafe
    */
   public async $initializeOrMigrateDatabase(): Promise<void> {
     logger.debug('MIGRATIONS: Running migrations');
@@ -100,11 +101,12 @@ class DatabaseMigration {
 
   /**
    * Create all missing tables
+   * @asyncUnsafe
    */
   private async $createMissingTablesAndIndexes(databaseSchemaVersion: number) {
     await this.$setStatisticsAddedIndexedFlag(databaseSchemaVersion);
 
-    const isBitcoin = ['mainnet', 'testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK);
+    const isBitcoin = ['mainnet', 'testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK);
 
     await this.$executeQuery(this.getCreateElementsTableQuery(), await this.$checkIfTableExists('elements_pegs'));
     await this.$executeQuery(this.getCreateStatisticsQuery(), await this.$checkIfTableExists('statistics'));
@@ -566,8 +568,8 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `blocks_templates` ADD INDEX `version` (`version`)');
       await this.updateToSchemaVersion(67);
     }
-    
-    if (databaseSchemaVersion < 68 && config.MEMPOOL.NETWORK === "liquid") {
+
+    if (databaseSchemaVersion < 68 && config.MEMPOOL.NETWORK === 'liquid') {
       await this.$executeQuery('TRUNCATE TABLE elements_pegs');
       await this.$executeQuery('ALTER TABLE elements_pegs ADD PRIMARY KEY (txid, txindex);');
       await this.$executeQuery(`UPDATE state SET number = 0 WHERE name = 'last_elements_block';`);
@@ -931,24 +933,24 @@ class DatabaseMigration {
 
         // Version 34
         await this.$executeQuery('ALTER TABLE `lightning_stats` ADD clearnet_tor_nodes int(11) NOT NULL DEFAULT "0"');
-    
+
         // Version 35
         await this.$executeQuery('DELETE from `lightning_stats` WHERE added > "2021-09-19"');
         await this.$executeQuery('ALTER TABLE `lightning_stats` ADD CONSTRAINT added_unique UNIQUE (added);');
 
         // Version 36
         await this.$executeQuery('ALTER TABLE `nodes` ADD status TINYINT NOT NULL DEFAULT "1"');
-    
+
         // Version 37
         await this.$executeQuery(this.getCreateLNNodesSocketsTableQuery(), await this.$checkIfTableExists('nodes_sockets'));
-        
+
         // Version 38
         await this.$executeQuery(`TRUNCATE lightning_stats`);
         await this.$executeQuery(`TRUNCATE node_stats`);
         await this.$executeQuery('ALTER TABLE `lightning_stats` CHANGE `added` `added` timestamp NULL');
         await this.$executeQuery('ALTER TABLE `node_stats` CHANGE `added` `added` timestamp NULL');
         await this.updateToSchemaVersion(38);
-      
+
         // Version 39
         await this.$executeQuery('ALTER TABLE `nodes` ADD alias_search TEXT NULL DEFAULT NULL AFTER `alias`');
         await this.$executeQuery('ALTER TABLE nodes ADD FULLTEXT(alias_search)');
@@ -963,7 +965,7 @@ class DatabaseMigration {
 
         // Version 42
         await this.$executeQuery('ALTER TABLE `channels` ADD closing_resolved tinyint(1) DEFAULT 0');
-      
+
         // Version 43
         await this.$executeQuery(this.getCreateLNNodeRecordsTableQuery(), await this.$checkIfTableExists('nodes_records'));
 
@@ -972,7 +974,7 @@ class DatabaseMigration {
 
         // Version 45
         await this.$executeQuery('ALTER TABLE `blocks_audits` ADD fresh_txs JSON DEFAULT "[]"');
-    
+
         // Version 48
         await this.$executeQuery('ALTER TABLE `channels` ADD source_checked tinyint(1) DEFAULT 0');
         await this.$executeQuery('ALTER TABLE `channels` ADD closing_fee bigint(20) unsigned DEFAULT 0');
@@ -1002,13 +1004,13 @@ class DatabaseMigration {
         // Version 62
         await this.$executeQuery('ALTER TABLE `blocks_audits` ADD expected_fees BIGINT UNSIGNED DEFAULT NULL');
         await this.$executeQuery('ALTER TABLE `blocks_audits` ADD expected_weight BIGINT UNSIGNED DEFAULT NULL');
-      
+
         // Version 63
         await this.$executeQuery('ALTER TABLE `blocks_audits` ADD fullrbf_txs JSON DEFAULT "[]"');
-    
+
         // Version 64
         await this.$executeQuery('ALTER TABLE `nodes` ADD features text NULL');
-    
+
         // Version 65
         await this.$executeQuery('ALTER TABLE `blocks_audits` ADD accelerated_txs JSON DEFAULT "[]"');
 
@@ -1044,8 +1046,8 @@ class DatabaseMigration {
             ADD INDEX \`closing_reason\` (\`closing_reason\`),
             ADD INDEX \`closing_resolved\` (\`closing_resolved\`)
         `);
-        
-        // Version 86        
+
+        // Version 86
         await this.$executeQuery(`
           ALTER TABLE \`nodes\`
             ADD INDEX \`status\` (\`status\`),
@@ -1058,20 +1060,20 @@ class DatabaseMigration {
         // Version 87
         await this.$executeQuery('ALTER TABLE `nodes_sockets` ADD INDEX `type` (`type`)');
         await this.updateToSchemaVersion(87);
-        
+
         // Version 88
         await this.$executeQuery('ALTER TABLE `lightning_stats` ADD INDEX `added` (`added`)');
-    
+
         // Version 89
         await this.$executeQuery('ALTER TABLE `geo_names` ADD INDEX `names` (`names`)');
-    
+
         // Version 90
         await this.$executeQuery('ALTER TABLE `hashrates` ADD INDEX `type` (`type`)');
 
         // Version 91
         await this.$executeQuery('ALTER TABLE `blocks_audits` ADD INDEX `time` (`time`)');
       }
-      
+
       if (config.MEMPOOL.NETWORK !== 'liquid') {
         // Apply all the liquid specific migrations to all other networks
         // Version 68
@@ -1093,7 +1095,7 @@ class DatabaseMigration {
             ADD INDEX \`bitcoinaddress\` (\`bitcoinaddress\`),
             ADD INDEX \`bitcointxid\` (\`bitcointxid\`)
         `);
-    
+
         // Version 93
         await this.$executeQuery(`
           ALTER TABLE \`federation_txos\`
@@ -1178,6 +1180,48 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `blocks` ADD INDEX `stale` (`stale`)');
       await this.updateToSchemaVersion(103);
     }
+
+    // reindex liquid federation addresses and txos when needed, and add hardcoded federation addresses
+    // (safe to make this conditional on the network since it doesn't change the database schema)
+    if (databaseSchemaVersion < 105 && config.MEMPOOL.NETWORK === 'liquid') {
+      // Hardcoded federation addresses
+      await this.$executeQuery(`INSERT IGNORE INTO federation_addresses (bitcoinaddress) VALUES ('3G6neksSBMp51kHJ2if8SeDUrzT8iVETWT')`);
+      await this.$executeQuery(`INSERT IGNORE INTO federation_addresses (bitcoinaddress) VALUES ('bc1qwnevjp8nsq7adu3hxlvdvslrf242q4vuavfg0y929jp2zntp3vgq7cq6z2')`);
+
+      // Rollback only on up to date instances
+      const [stateRows]: any[] = await DB.query(`SELECT name, number FROM state WHERE name IN ('last_elements_block', 'last_bitcoin_block_audit')`);
+      const lastElementsBlock = Number(stateRows?.find((row: any) => row.name === 'last_elements_block')?.number ?? 0);
+      const lastBlockAudit = Number(stateRows?.find((row: any) => row.name === 'last_bitcoin_block_audit')?.number ?? 0);
+      if (lastElementsBlock > 3686608 && lastBlockAudit > 929700) {
+        await this.$executeQuery('DELETE FROM elements_pegs WHERE block > 3686608');
+        await this.$executeQuery('DELETE FROM federation_txos WHERE blocknumber > 929701');
+        await this.$executeQuery(`UPDATE federation_txos SET lastblockupdate = 929700 WHERE unspent = 1;`);
+        await this.$executeQuery(`UPDATE state SET number = 3686608 WHERE name = 'last_elements_block';`);
+        await this.$executeQuery(`UPDATE state SET number = 929700 WHERE name = 'last_bitcoin_block_audit';`);
+      }
+      await this.updateToSchemaVersion(105);
+    }
+
+    // another liquid failure, fix bad timelocks on federation txos
+    // (safe to make this conditional on the network since it doesn't change the database schema)
+    if (databaseSchemaVersion < 106 && config.MEMPOOL.NETWORK === 'liquid') {
+      // In a specific setup it's possible that 3G6neksSBMp51kHJ2if8SeDUrzT8iVETWT and bc1qwnevjp8nsq7adu3hxlvdvslrf242q4vuavfg0y929jp2zntp3vgq7cq6z2
+      // were set with a timelock of 2016 instead of 4032
+      // This rollbacks the tables to before bc1qwnevjp8nsq7adu3hxlvdvslrf242q4vuavfg0y929jp2zntp3vgq7cq6z2 is used, and 
+      // manually fixes the timelock for 3G6neksSBMp51kHJ2if8SeDUrzT8iVETWT
+      const [stateRows]: any[] = await DB.query(`SELECT name, number FROM state WHERE name IN ('last_elements_block', 'last_bitcoin_block_audit')`);
+      const lastElementsBlock = Number(stateRows?.find((row: any) => row.name === 'last_elements_block')?.number ?? 0);
+      const lastBlockAudit = Number(stateRows?.find((row: any) => row.name === 'last_bitcoin_block_audit')?.number ?? 0);
+      if (lastElementsBlock > 3686608 && lastBlockAudit > 929700) {
+        await this.$executeQuery('DELETE FROM elements_pegs WHERE block > 3686608');
+        await this.$executeQuery('DELETE FROM federation_txos WHERE blocknumber > 929701');
+        await this.$executeQuery(`UPDATE federation_txos SET lastblockupdate = 929700 WHERE unspent = 1;`);
+        await this.$executeQuery(`UPDATE federation_txos SET timelock = 4032 WHERE bitcoinaddress = '3G6neksSBMp51kHJ2if8SeDUrzT8iVETWT';`);
+        await this.$executeQuery(`UPDATE state SET number = 3686608 WHERE name = 'last_elements_block';`);
+        await this.$executeQuery(`UPDATE state SET number = 929700 WHERE name = 'last_bitcoin_block_audit';`);
+      }
+      await this.updateToSchemaVersion(106);
+    }
   }
 
   /**
@@ -1224,6 +1268,7 @@ class DatabaseMigration {
 
   /**
    * Check if 'table' exists in the database
+   * @asyncUnsafe
    */
   private async $checkIfTableExists(table: string): Promise<boolean> {
     const query = `SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '${config.DATABASE.DATABASE}' AND TABLE_NAME = '${table}'`;
@@ -1233,6 +1278,7 @@ class DatabaseMigration {
 
   /**
    * Get current database version
+   * @asyncUnsafe
    */
   private async $getSchemaVersionFromDatabase(): Promise<number> {
     const query = `SELECT number FROM state WHERE name = 'schema_version';`;
@@ -1242,6 +1288,7 @@ class DatabaseMigration {
 
   /**
    * Create the `state` table
+   * @asyncUnsafe
    */
   private async $createMigrationStateTable(): Promise<void> {
     const query = `CREATE TABLE IF NOT EXISTS state (
@@ -1259,6 +1306,7 @@ class DatabaseMigration {
 
   /**
    * We actually execute the migrations queries here
+   * @asyncUnsafe
    */
   private async $migrateTableSchemaFromVersion(version: number): Promise<void> {
     const transactionQueries: string[] = [];
@@ -1286,7 +1334,7 @@ class DatabaseMigration {
    */
   private getMigrationQueriesFromVersion(version: number): string[] {
     const queries: string[] = [];
-    const isBitcoin = ['mainnet', 'testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK);
+    const isBitcoin = ['mainnet', 'testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK);
 
     if (version < 1) {
       if (config.MEMPOOL.NETWORK !== 'liquid' && config.MEMPOOL.NETWORK !== 'liquidtestnet') {
@@ -1325,11 +1373,13 @@ class DatabaseMigration {
 
   /**
    * Save the schema version in the database
+   * @asyncUnsafe
    */
   private getUpdateToLatestSchemaVersionQuery(): string {
     return `UPDATE state SET number = ${DatabaseMigration.currentVersion} WHERE name = 'schema_version';`;
   }
 
+  /** @asyncUnsafe */
   private async updateToSchemaVersion(version): Promise<void> {
     await this.$executeQuery(`UPDATE state SET number = ${version} WHERE name = 'schema_version';`);
   }
@@ -1456,7 +1506,7 @@ class DatabaseMigration {
       pegtxid varchar(65) NOT NULL,
       pegindex int(11) NOT NULL,
       pegblocktime int(11) unsigned NOT NULL,
-      PRIMARY KEY (txid, txindex), 
+      PRIMARY KEY (txid, txindex),
       FOREIGN KEY (bitcoinaddress) REFERENCES federation_addresses (bitcoinaddress)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
@@ -1748,6 +1798,7 @@ class DatabaseMigration {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
+  /** @asyncUnsafe */
   public async $blocksReindexingTruncate(): Promise<void> {
     logger.warn(`Truncating pools, blocks, hashrates and difficulty_adjustments tables for re-indexing (using '--reindex-blocks'). You can cancel this command within 5 seconds`);
     await Common.sleep$(5000);

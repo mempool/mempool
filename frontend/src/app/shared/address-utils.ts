@@ -2,6 +2,7 @@ import '@angular/localize/init';
 import { ScriptInfo } from '@app/shared/script.utils';
 import { Vin, Vout } from '@interfaces/electrs.interface';
 import { BECH32_CHARS_LW, BASE58_CHARS, HEX_CHARS } from '@app/shared/regex.utils';
+import { parseTaproot } from './transaction.utils';
 
 export type AddressType = 'fee'
   | 'empty'
@@ -48,6 +49,13 @@ const ADDRESS_PREFIXES = {
       script: '2',
     },
     bech32: 'tb1',
+  },
+  regtest: {
+    base58: {
+      pubkey: ['m', 'n'],
+      script: '2',
+    },
+    bech32: 'bcrt1',
   },
   liquid: {
     base58: {
@@ -150,6 +158,7 @@ export class AddressTypeInfo {
     cloned.scripts = new Map(Array.from(this.scripts, ([key, value]) => [key, value?.clone()]));
     cloned.isMultisig = this.isMultisig;
     cloned.tapscript = this.tapscript;
+    cloned.simplicity = this.simplicity;
     return cloned;
   }
 
@@ -158,20 +167,18 @@ export class AddressTypeInfo {
     if (this.type === 'v1_p2tr') {
       for (let i = 0; i < vin.length; i++) {
         const v = vin[i];
-        const hasAnnex = v.witness[v.witness.length - 1].startsWith('50');
-        const isScriptSpend = v.witness.length > (hasAnnex ? 2 : 1);
-        if (isScriptSpend) {
-          const controlBlock = hasAnnex ? v.witness[v.witness.length - 2] : v.witness[v.witness.length - 1];
-          const scriptHex = hasAnnex ? v.witness[v.witness.length - 3] : v.witness[v.witness.length - 2];
-          const tapleafVersion = parseInt(controlBlock.slice(0, 2), 16) & 0xfe;
-
-          if (tapleafVersion === 0xc0 && v.inner_witnessscript_asm) {
+        if (!v.taprootInfo) {
+          v.taprootInfo = parseTaproot(v.witness);
+        }
+        const taprootInfo = v.taprootInfo;
+        if (taprootInfo.scriptPath) {
+          if (taprootInfo.scriptPath.leafVersion === 0xc0 && v.inner_witnessscript_asm) {
             this.tapscript = true;
-            this.processScript(new ScriptInfo('inner_witnessscript', scriptHex, v.inner_witnessscript_asm, v.witness, controlBlock, vinIds?.[i]));
-          } else if (this.network === 'liquid' || this.network === 'liquidtestnet' && tapleafVersion === 0xbe) {
+            this.processScript(new ScriptInfo('inner_witnessscript', taprootInfo.scriptPath.script, v.inner_witnessscript_asm, v.witness, taprootInfo, vinIds?.[i]));
+          } else if (this.network === 'liquid' || this.network === 'liquidtestnet' && taprootInfo.scriptPath.leafVersion === 0xbe) {
             this.simplicity = true;
             v.inner_simplicityscript = v.witness[1];
-            this.processScript(new ScriptInfo('inner_simplicityscript', scriptHex, null, v.witness, controlBlock, vinIds?.[i]));
+            this.processScript(new ScriptInfo('inner_simplicityscript', taprootInfo.scriptPath.simplicityScript, null, v.witness, taprootInfo, vinIds?.[i]));
           }
         }
       }
@@ -237,14 +244,15 @@ export class AddressTypeInfo {
     return this.compareTo(otherInfo);
   }
 
-  private processScript(script: ScriptInfo): void {
+  public processScript(script: ScriptInfo): boolean {
     if (this.scripts.has(script.key)) {
-      return;
+      return false;
     }
     this.scripts.set(script.key, script);
     if (script.template?.type === 'multisig') {
       this.isMultisig = { m: script.template['m'], n: script.template['n'] };
     }
+    return true;
   }
 }
 

@@ -14,7 +14,8 @@ import { environment } from '@environments/environment';
 @Component({
   selector: 'app-assets-nav',
   templateUrl: './assets-nav.component.html',
-  styleUrls: ['./assets-nav.component.scss']
+  styleUrls: ['./assets-nav.component.scss'],
+  standalone: false,
 })
 export class AssetsNavComponent implements OnInit {
   @ViewChild('instance', {static: true}) instance: NgbTypeahead;
@@ -72,10 +73,10 @@ export class AssetsNavComponent implements OnInit {
                 return assets.array.slice(0, this.itemsPerPage);
               }
             })
-          )
+          );
         }),
       );
-  }
+  };
 
   itemSelected() {
     setTimeout(() => this.search());

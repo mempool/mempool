@@ -9,13 +9,14 @@ import { PriceService } from '@app/services/price.service';
   selector: 'app-address-transactions-widget',
   templateUrl: './address-transactions-widget.component.html',
   styleUrls: ['./address-transactions-widget.component.scss'],
+  standalone: false,
 })
 export class AddressTransactionsWidgetComponent implements OnInit, OnChanges, OnDestroy {
   @Input() address: string;
   @Input() addressInfo: Address;
   @Input() addressSummary$: Observable<AddressTxSummary[]> | null;
   @Input() isPubkey: boolean = false;
-  
+
   currencySubscription: Subscription;
   currency: string;
 

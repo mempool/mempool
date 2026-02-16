@@ -1,10 +1,10 @@
-import config from "../config";
-import logger from "../logger";
-import { MempoolTransactionExtended, TransactionStripped } from "../mempool.interfaces";
+import config from '../config';
+import logger from '../logger';
+import { MempoolTransactionExtended, TransactionStripped } from '../mempool.interfaces';
 import bitcoinApi from './bitcoin/bitcoin-api-factory';
-import { IEsploraApi } from "./bitcoin/esplora-api.interface";
-import { Common } from "./common";
-import redisCache from "./redis-cache";
+import { IEsploraApi } from './bitcoin/esplora-api.interface';
+import { Common } from './common';
+import redisCache from './redis-cache';
 
 export interface RbfTransaction extends TransactionStripped {
   rbf?: boolean;
@@ -407,6 +407,7 @@ class RbfCache {
     };
   }
 
+  /** @asyncSafe */
   public async load({ txs, trees, expiring, mempool, spendMap }): Promise<void> {
     try {
       txs.forEach(txEntry => {

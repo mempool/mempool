@@ -3,11 +3,12 @@ import priceUpdater, { PriceFeed, PriceHistory } from '../price-updater';
 
 class BitfinexApi implements PriceFeed {
   public name: string = 'Bitfinex';
-  public currencies: string[] = ['USD', 'EUR', 'GPB', 'JPY'];
+  public currencies: string[] = ['USD', 'EUR', 'GBP'];
 
   public url: string = 'https://api.bitfinex.com/v1/pubticker/BTC';
   public urlHist: string = 'https://api-pub.bitfinex.com/v2/candles/trade:{GRANULARITY}:tBTC{CURRENCY}/hist';
 
+  /** @asyncUnsafe */
   public async $fetchPrice(currency): Promise<number> {
     const response = await query(this.url + currency);
     if (response && response['last_price']) {
@@ -17,6 +18,7 @@ class BitfinexApi implements PriceFeed {
     }
   }
 
+  /** @asyncUnsafe */
   public async $fetchRecentPrice(currencies: string[], type: 'hour' | 'day'): Promise<PriceHistory> {
     const priceHistory: PriceHistory = {};
 

@@ -24,15 +24,15 @@ const MAX_STANDARD_SCRIPTSIG_SIZE = 1650;
 const DUST_RELAY_TX_FEE = 3;
 const MAX_OP_RETURN_RELAY = 83;
 const DEFAULT_PERMIT_BAREMULTISIG = true;
+const MAX_TX_LEGACY_SIGOPS = 2_500 * 4; // witness-adjusted sigops
 
 export class Common {
   static nativeAssetId = config.MEMPOOL.NETWORK === 'liquidtestnet' ?
     '144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49'
   : '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d';
-  static _isLiquid = config.MEMPOOL.NETWORK === 'liquid' || config.MEMPOOL.NETWORK === 'liquidtestnet';
 
   static isLiquid(): boolean {
-    return this._isLiquid;
+    return config?.MEMPOOL?.NETWORK === 'liquid' || config?.MEMPOOL?.NETWORK === 'liquidtestnet';
   }
 
   static median(numbers: number[]) {
@@ -225,6 +225,11 @@ export class Common {
       return true;
     }
 
+    // legacy sigops
+    if (this.isNonStandardLegacySigops(tx, height)) {
+      return true;
+    }
+
     // input validation
     for (const vin of tx.vin) {
       if (vin.is_coinbase) {
@@ -236,7 +241,7 @@ export class Common {
         return true;
       }
       // scriptsig-not-pushonly
-      if (vin.scriptsig_asm) {
+      if (vin.scriptsig_asm?.length) {
         for (const op of vin.scriptsig_asm.split(' ')) {
           if (opcodes[op] && opcodes[op] > opcodes['OP_16']) {
             return true;
@@ -286,6 +291,7 @@ export class Common {
 
     // output validation
     let opreturnCount = 0;
+    let opreturnBytes = 0;
     for (const vout of tx.vout) {
       // scriptpubkey
       if (['nonstandard', 'provably_unspendable', 'empty'].includes(vout.scriptpubkey_type)) {
@@ -309,10 +315,7 @@ export class Common {
         }
       } else if (vout.scriptpubkey_type === 'op_return') {
         opreturnCount++;
-        if ((vout.scriptpubkey.length / 2) > MAX_OP_RETURN_RELAY) {
-          // over default datacarrier limit
-          return true;
-        }
+        opreturnBytes += vout.scriptpubkey.length / 2;
       }
       // dust
       // (we could probably hardcode this for the different output types...)
@@ -334,9 +337,11 @@ export class Common {
       }
     }
 
-    // multi-op-return
-    if (opreturnCount > 1) {
-      return true;
+    // op_return
+    if (opreturnCount > 0) {
+      if (!this.isStandardOpReturn(opreturnBytes, opreturnCount, height)) {
+        return true;
+      }
     }
 
     // TODO: non-mandatory-script-verify-flag
@@ -371,6 +376,7 @@ export class Common {
     'testnet4': 42_000,
     'testnet': 2_900_000,
     'signet': 211_000,
+    'regtest': 0,
     '': 863_500,
   };
   static isNonStandardVersion(tx: TransactionExtended, height?: number): boolean {
@@ -394,6 +400,7 @@ export class Common {
     'testnet4': 42_000,
     'testnet': 2_900_000,
     'signet': 211_000,
+    'regtest': 0,
     '': 863_500,
   };
   static isNonStandardAnchor(vin: IEsploraApi.Vin, height?: number): boolean {
@@ -414,6 +421,7 @@ export class Common {
     'testnet4': 90_500,
     'testnet': 4_550_000,
     'signet': 260_000,
+    'regtest': 0,
     '': 905_000,
   };
   static isStandardEphemeralDust(tx: TransactionExtended, height?: number): boolean {
@@ -425,6 +433,51 @@ export class Common {
       ))
     ) {
       return true;
+    }
+    return false;
+  }
+
+  // OP_RETURN size & count limits were lifted in v28.3/v29.2/v30.0
+  static OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT = {
+    'testnet4': 108_000,
+    'testnet': 4_750_000,
+    'signet': 276_500,
+    'regtest': 0,
+    '': 921_000,
+  };
+  static MAX_DATACARRIER_BYTES = 83;
+  static isStandardOpReturn(bytes: number, outputs: number,height?: number): boolean {
+    if (
+      (height == null || (
+        this.OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+        && height >= this.OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+      )) // limits lifted
+      || // OR
+      (bytes <= this.MAX_DATACARRIER_BYTES && outputs <= 1) // below old limits
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  // New legacy sigops limit started to be enforced in v30.0
+  static LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT = {
+    'testnet4': 108_000,
+    'testnet': 4_750_000,
+    'signet': 276_500,
+    'regtest': 0,
+    '': 921_000,
+  };
+  static isNonStandardLegacySigops(tx: TransactionExtended, height?: number): boolean {
+    if (
+      height == null || (
+        this.LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+        && height >= this.LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+      )
+    ) {
+      if (!transactionUtils.checkSigopsBIP54(tx, MAX_TX_LEGACY_SIGOPS)) {
+        return true;
+      }
     }
     return false;
   }
@@ -460,7 +513,7 @@ export class Common {
   }
 
   static setLegacySighashFlags(flags: bigint, scriptsig_asm: string): bigint {
-    for (const item of scriptsig_asm.split(' ')) {
+    for (const item of scriptsig_asm?.split(' ') ?? []) {
       // skip op_codes
       if (item.startsWith('OP_')) {
         continue;
@@ -749,6 +802,7 @@ export class Common {
     return txs.map(Common.stripTransaction);
   }
 
+  /** @asyncSafe */
   static sleep$(ms: number): Promise<void> {
     return new Promise((resolve) => {
        setTimeout(() => {
@@ -806,7 +860,7 @@ export class Common {
 
   static indexingEnabled(): boolean {
     return (
-      ['mainnet', 'testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK) &&
+      ['mainnet', 'testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK) &&
       config.DATABASE.ENABLED === true &&
       config.MEMPOOL.INDEXING_BLOCKS_AMOUNT !== 0
     );
@@ -863,7 +917,7 @@ export class Common {
     if (id.indexOf('/') !== -1) {
       id = id.slice(0, -2);
     }
-    
+
     if (id.indexOf('x') !== -1) { // Already a short id
       return id;
     }
@@ -885,6 +939,13 @@ export class Common {
   }
 
   static findSocketNetwork(addr: string): {network: string | null, url: string} {
+    if (!addr?.length) {
+      return {
+        network: null,
+        url: ''
+      };
+    }
+
     let network: string | null = null;
     let url: string = addr;
 
@@ -892,7 +953,7 @@ export class Common {
       url = addr.split('://')[1];
     }
 
-    if (!url) {
+    if (!url?.length) {
       return {
         network: null,
         url: addr,
@@ -918,7 +979,15 @@ export class Common {
         };
       }
     } else if (addr.indexOf('ipv6') !== -1 || (config.LIGHTNING.BACKEND === 'lnd' && url.indexOf(']:'))) {
-      url = url.split('[')[1].split(']')[0];
+      const parts = url.split('[');
+      if (parts.length < 2) {
+        return {
+          network: null,
+          url: addr,
+        };
+      } else {
+        url = parts[1].split(']')[0];
+      }
       const ipv = isIP(url);
       if (ipv === 6) {
         const parts = addr.split(':');
@@ -1018,7 +1087,7 @@ export class Common {
   }
 
   static getTransactionFromRequest(req: Request, form: boolean): string {
-    let rawTx: any = typeof req.body === 'object' && form
+    const rawTx: any = typeof req.body === 'object' && form
       ? Object.values(req.body)[0] as any
       : req.body;
     if (typeof rawTx !== 'string') {
@@ -1119,7 +1188,7 @@ export class Common {
             }
           }
         }
-      })
+      });
     }
 
     // Pass through the input string untouched
@@ -1157,14 +1226,14 @@ export class Common {
 /**
  * Class to calculate average fee rates of a list of transactions
  * at certain weight percentiles, in a single pass
- * 
+ *
  * init with:
  *   maxWeight - the total weight to measure percentiles relative to (e.g. 4MW for a single block)
  *   percentileBandWidth - how many weight units to average over for each percentile (as a % of maxWeight)
  *   percentiles - an array of weight percentiles to compute, in %
- * 
+ *
  * then call .processNext(tx) for each transaction, in descending order
- * 
+ *
  * retrieve the final results with .getFeeStats()
  */
 export class OnlineFeeStatsCalculator {

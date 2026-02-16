@@ -10,10 +10,11 @@ import {
   mergeMap,
   tap,
   map,
-  startWith
+  startWith,
+  retry
 } from 'rxjs/operators';
 import { Transaction } from '@interfaces/electrs.interface';
-import { of, merge, Subscription, Observable, Subject, throwError, combineLatest, BehaviorSubject } from 'rxjs';
+import { of, merge, Subscription, Observable, Subject, throwError, combineLatest, BehaviorSubject, timer } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 import { CacheService } from '@app/services/cache.service';
 import { WebsocketService } from '@app/services/websocket.service';
@@ -31,7 +32,7 @@ import { TrackerStage } from '@components/tracker/tracker-bar.component';
 import { MiningService, MiningStats } from '@app/services/mining.service';
 import { ETA, EtaService } from '@app/services/eta.service';
 import { getTransactionFlags, getUnacceleratedFeeRate } from '@app/shared/transaction.utils';
-import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
+import { StorageService } from '@app/services/storage.service';
 
 
 interface Pool {
@@ -55,6 +56,7 @@ interface AuditStatus {
   selector: 'app-tracker',
   templateUrl: './tracker.component.html',
   styleUrls: ['./tracker.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TrackerComponent implements OnInit, OnDestroy {
@@ -101,7 +103,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
   fetchCpfp$ = new Subject<string>();
   fetchRbfHistory$ = new Subject<string>();
   fetchCachedTx$ = new Subject<string>();
-  fetchAcceleration$ = new Subject<string>();
+  fetchAcceleration$ = new Subject<number>();
   fetchMiningInfo$ = new Subject<{ hash: string, height: number, txid: string }>();
   txChanged$ = new BehaviorSubject<boolean>(false); // triggered whenever this.tx changes (long term, we should refactor to make this.tx an observable itself)
   isAccelerated$ = new BehaviorSubject<boolean>(false); // refactor this to make isAccelerated an observable itself
@@ -123,6 +125,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
   accelerationFlowCompleted = false;
   paymentReceiptUrl: string | null = null;
   auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
+  referralCode: string | undefined;
 
   enterpriseInfo: any;
   enterpriseInfo$: Subscription;
@@ -145,11 +148,21 @@ export class TrackerComponent implements OnInit, OnDestroy {
     private router: Router,
     private cd: ChangeDetectorRef,
     private zone: NgZone,
+    private storageService: StorageService,
     @Inject(ZONE_SERVICE) private zoneService: any,
   ) {}
 
   ngOnInit() {
     this.onResize();
+
+    // Accelerator referral code in fragment
+    const fragmentsParams = new URLSearchParams(window.location.hash.slice(1));
+    this.referralCode = fragmentsParams.get('referralCode') ?? this.storageService.getValue('referralCode') ?? undefined;
+    if (this.referralCode) {
+      this.storageService.setValue('referralCode', this.referralCode);
+      // Cleanup referralCode from url after storing it in localStorage to avoid re-use upon page reload
+      window.location.hash = window.location.hash.replace(`&referralCode=${this.referralCode}`, '').replace(`#referralCode=${this.referralCode}`, '');
+    }
 
     this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
 
@@ -284,24 +297,48 @@ export class TrackerComponent implements OnInit, OnDestroy {
       filter(() => this.stateService.env.ACCELERATOR === true),
       tap(() => {
         this.accelerationInfo = null;
+        this.setIsAccelerated();
       }),
-      switchMap((blockHash: string) => {
-        return this.servicesApiService.getAllAccelerationHistory$({ blockHash }, null, this.txId);
-      }),
-      catchError(() => {
-        return of(null);
-      })
-    ).subscribe((accelerationHistory) => {
-      for (const acceleration of accelerationHistory) {
-        if (acceleration.txid === this.txId && (acceleration.status === 'completed' || acceleration.status === 'completed_provisional') && acceleration.pools.includes(acceleration.minedByPoolUniqueId)) {
-          const boostCost = acceleration.boostCost || acceleration.bidBoost;
-          acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
-          acceleration.boost = boostCost;
-
-          this.accelerationInfo = acceleration;
-          this.setIsAccelerated();
+      switchMap((blockHeight: number) => {
+        if (this.stateService.network === '' && this.stateService.env.ACCELERATOR && blockHeight >= 819500 ) {
+          return this.servicesApiService.getAccelerationDataForTxid$(this.txId).pipe(
+            switchMap((accelerationData: Acceleration) => {
+              if (this.tx.acceleration && !accelerationData) { // If the just mined transaction was accelerated, but services backend did not return any acceleration data, retry
+                return throwError(() => 'retry');
+              }
+              return of(accelerationData);
+            }),
+            retry({
+              count: 3,
+              delay: (error) => {
+                if (error === 'retry') {
+                  return timer(2000);
+                }
+                return throwError(() => error);  // Don't retry, just rethrow
+              }
+            }),
+            catchError(() => {
+              return of(null);
+            })
+          );
+        } else {
+          return of(null);
         }
+      }),
+      filter((acceleration: Acceleration) => !!acceleration),
+    ).subscribe((acceleration: Acceleration) => {
+      if (acceleration.txid === this.txId && (acceleration.status === 'completed' || acceleration.status === 'completed_provisional') && acceleration.pools.includes(acceleration.minedByPoolUniqueId)) {
+        const boostCost = acceleration.boostCost || acceleration.bidBoost;
+        acceleration.acceleratedFeeRate = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + boostCost) / acceleration.effectiveVsize;
+        acceleration.boost = boostCost;
+        this.tx.acceleratedAt = acceleration.added;
+        this.accelerationInfo = acceleration;
       }
+      if (acceleration.txid === this.txId && (acceleration.status === 'failed' || acceleration.status === 'failed_provisional')) {
+        this.tx.acceleratedAt = acceleration.added;
+        this.accelerationInfo = acceleration;
+      }
+      this.setIsAccelerated();
     });
 
     this.miningSubscription = this.fetchMiningInfo$.pipe(
@@ -476,7 +513,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
           } else {
             this.trackerStage = 'confirmed';
             this.loadingPosition = false;
-            this.fetchAcceleration$.next(tx.status.block_hash);
+            this.fetchAcceleration$.next(tx.status.block_height);
             this.fetchMiningInfo$.next({ hash: tx.status.block_hash, height: tx.status.block_height, txid: tx.txid });
             this.transactionTime = 0;
           }
@@ -540,7 +577,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
         } else {
           this.audioService.playSound('magic');
         }
-        this.fetchAcceleration$.next(block.id);
+        this.fetchAcceleration$.next(block.height);
         this.fetchMiningInfo$.next({ hash: block.id, height: block.height, txid: this.tx.txid });
       }
     });
@@ -616,7 +653,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
       }),
       tap(eta => {
         if (this.replaced) {
-          this.trackerStage = 'replaced'
+          this.trackerStage = 'replaced';
         } else if (eta?.blocks === 0) {
           this.trackerStage = 'next';
         } else if (eta?.blocks < 3){
@@ -625,7 +662,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
           this.trackerStage = 'pending';
         }
       })
-    )
+    );
   }
 
   handleLoadElectrsTransactionError(error: any): Observable<any> {

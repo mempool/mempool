@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { AppPreloadingStrategy } from '@app/app.preloading-strategy'
+import { AppPreloadingStrategy } from '@app/app.preloading-strategy';
 import { BlockViewComponent } from '@components/block-view/block-view.component';
 import { EightBlocksComponent } from '@components/eight-blocks/eight-blocks.component';
 import { MempoolBlockViewComponent } from '@components/mempool-block-view/mempool-block-view.component';
@@ -134,6 +134,49 @@ let routes: Routes = [
     ]
   },
   {
+    path: 'regtest',
+    children: [
+      {
+        path: 'mining/blocks',
+        redirectTo: 'blocks',
+        pathMatch: 'full'
+      },
+      {
+        path: '',
+        pathMatch: 'full',
+        loadChildren: () => import('@app/bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
+        data: { preload: true },
+      },
+      {
+        path: '',
+        loadChildren: () => import('@app/master-page.module').then(m => m.MasterPageModule),
+        data: { preload: true },
+      },
+      {
+        path: 'widget/wallet',
+        children: [],
+        component: AddressGroupComponent,
+        data: {
+          networkSpecific: true,
+        }
+      },
+      {
+        path: 'status',
+        data: { networks: ['bitcoin', 'liquid'] },
+        component: StatusViewComponent
+      },
+      {
+        path: '',
+        loadChildren: () => import('@app/bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
+        data: { preload: true },
+      },
+      {
+        path: '**',
+        redirectTo: '/regtest'
+      },
+    ]
+  },
+  {
     path: '',
     pathMatch: 'full',
     loadChildren: () => import('@app/bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
@@ -175,6 +218,10 @@ let routes: Routes = [
       },
       {
         path: 'signet',
+        loadChildren: () => import('@app/previews.module').then(m => m.PreviewsModule)
+      },
+      {
+        path: 'regtest',
         loadChildren: () => import('@app/previews.module').then(m => m.PreviewsModule)
       },
     ],

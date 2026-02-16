@@ -25,6 +25,7 @@ import { execSync } from 'child_process';
     timezone: '+00:00',
   };
 
+  /** @asyncUnsafe */
   private checkDBFlag() {
     if (config.DATABASE.ENABLED === false) {
       const stack = new Error().stack;
@@ -32,6 +33,7 @@ import { execSync } from 'child_process';
     }
   }
 
+  /** @asyncUnsafe */
   public async query<T extends RowDataPacket[][] | RowDataPacket[] | OkPacket |
     OkPacket[] | ResultSetHeader>(query, params?, errorLogLevel: LogLevel | 'silent' = 'debug', connection?: PoolConnection): Promise<[T, FieldPacket[]]>
   {
@@ -76,6 +78,7 @@ import { execSync } from 'child_process';
     }
   }
 
+  /** @asyncSafe */
   private async $rollbackAtomic(connection: PoolConnection): Promise<void> {
     try {
       await connection.rollback();
@@ -85,6 +88,7 @@ import { execSync } from 'child_process';
     }
   }
 
+  /** @asyncSafe */
   public async $atomicQuery<T extends RowDataPacket[][] | RowDataPacket[] | OkPacket |
     OkPacket[] | ResultSetHeader>(queries: { query, params }[], errorLogLevel: LogLevel | 'silent' = 'debug'): Promise<[T, FieldPacket[]][]>
   {
@@ -116,6 +120,8 @@ import { execSync } from 'child_process';
     }
   }
 
+
+  /** @asyncSafe */
   public async checkDbConnection() {
     this.checkDBFlag();
     try {
@@ -171,14 +177,33 @@ import { execSync } from 'child_process';
     }
   }
 
+  /** @asyncSafe */
   private async getPool(): Promise<Pool> {
     if (this.pool === null) {
       this.pool = createPool(this.poolConfig);
       this.pool.on('connection', function (newConnection: PoolConnection) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises -- callback API, not a promise despite types
         newConnection.query(`SET time_zone='+00:00'`);
       });
     }
     return this.pool;
+  }
+
+  /**
+   * Close the database connection pool
+   * This should only be called when the application is shutting down
+   * or at the end of test suites
+   */
+  public async close(): Promise<void> {
+    if (this.pool !== null) {
+      try {
+        await this.pool.end();
+      } catch (e) {
+        logger.err(`Exception in close. Reason: ${(e instanceof Error ? e.message : e)}`);
+      }
+      this.pool = null;
+      logger.debug('Database connection pool closed');
+    }
   }
 }
 

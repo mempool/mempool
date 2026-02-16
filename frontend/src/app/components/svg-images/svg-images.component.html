@@ -19,6 +19,10 @@
     <svg [attr.width]="width" [attr.height]="height" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="white" d="M96 0C43 0 0 43 0 96V416c0 53 43 96 96 96H384h32c17.7 0 32-14.3 32-32s-14.3-32-32-32V384c17.7 0 32-14.3 32-32V32c0-17.7-14.3-32-32-32H384 96zm0 384H352v64H96c-17.7 0-32-14.3-32-32s14.3-32 32-32zm32-240c0-8.8 7.2-16 16-16H336c8.8 0 16 7.2 16 16s-7.2 16-16 16H144c-8.8 0-16-7.2-16-16zm16 48H336c8.8 0 16 7.2 16 16s-7.2 16-16 16H144c-8.8 0-16-7.2-16-16s7.2-16 16-16z"></path></svg>
   </ng-container>
 
+  <ng-container *ngSwitchCase="'nav-enterprise'">
+    <svg [attr.width]="width" [attr.height]="height" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none"><path fill="#fff" fill-rule="evenodd" d="M236.414 21.438c7.09-2.51 10.636-3.765 14.282-4.286a37.5 37.5 0 0 1 10.607 0c3.647.521 7.192 1.776 14.283 4.286l161.565 57.179c40.616 14.374 60.925 21.561 67.057 31.791 5.802 9.679 5.802 21.44 0 31.119-6.132 10.23-26.44 17.416-67.057 31.791l-161.565 57.179c-7.09 2.51-10.636 3.764-14.283 4.286a37.5 37.5 0 0 1-10.607 0c-3.645-.522-7.191-1.777-14.28-4.285l-161.567-57.18c-40.617-14.375-60.925-21.561-67.057-31.791-5.802-9.679-5.802-21.44 0-31.119 6.132-10.23 26.44-17.417 67.056-31.791zm7.657 28.724c5.828-2.272 11.8-2.198 17.582.188l148.066 53.413c6.448 2.66 6.612 11.739.265 14.631l-28.173 11.368c-8.336 3.8-22.055 2.466-30.414-1.286L210.534 76.58c-8.402-1.977-6.92-11.862 1.483-13.839 10.915-4.267 22.36-8.798 32.054-12.578" clip-rule="evenodd" style="stroke-width:.988512"/><path fill="#fff" d="m47.772 218.635-23.495 8.444c-29.502 10.603-29.502 49.216 0 59.82l219.16 78.763a37.32 37.32 0 0 0 25.127 0l219.159-78.764c29.502-10.603 29.502-49.216 0-59.819l-23.494-8.444-195.845 69.23a37.32 37.32 0 0 1-24.767 0z" style="stroke-width:.988512"/><path fill="#fff" d="m24.277 353.465 23.495-8.443 195.845 69.23a37.32 37.32 0 0 0 24.767 0l195.845-69.23 23.494 8.443c29.502 10.603 29.502 49.216 0 59.818l-219.16 78.765a37.32 37.32 0 0 1-25.126 0l-219.16-78.765c-29.502-10.602-29.502-49.215 0-59.818" style="stroke-width:.988512"/></svg>
+  </ng-container>
+
   <ng-container *ngSwitchCase="'nav-chart-area'">
     <svg [attr.width]="width" [attr.height]="height" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="white" d="M64 64c0-17.7-14.3-32-32-32S0 46.3 0 64V400c0 44.2 35.8 80 80 80H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H80c-8.8 0-16-7.2-16-16V64zm96 288H448c17.7 0 32-14.3 32-32V251.8c0-7.6-2.7-15-7.7-20.8l-65.8-76.8c-12.1-14.2-33.7-15-46.9-1.8l-21 21c-10 10-26.4 9.2-35.4-1.6l-39.2-47c-12.6-15.1-35.7-15.4-48.7-.6L135.9 215c-5.1 5.8-7.9 13.3-7.9 21.1v84c0 17.7 14.3 32 32 32z"></path></svg>
   </ng-container>
@@ -134,6 +138,19 @@
       </defs>
     </svg>
   </ng-container>
+  <ng-container *ngSwitchCase="'mempoolSquare'">
+    <svg [class]="class" [style]="style" [attr.width]="width" [attr.height]="height" [attr.viewBox]="viewBox" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M124.706 110.25C124.706 118.849 117.772 125.791 109.183 125.791H15.5236C6.93387 125.791 0 118.849 0 110.25V16.4837C0 7.88416 6.98561 0.942383 15.5236 0.942383H109.183C117.772 0.942383 124.706 7.88416 124.706 16.4837V110.25Z" fill="#2E3349"/>
+      <path d="M0 63.5225V110.25C0 118.849 6.98561 125.791 15.5753 125.791H109.183C117.772 125.791 124.758 118.849 124.758 110.25V63.5225H0Z" [attr.fill]="'url(#paint0_linear' + randomId + ')'"/>
+      <path opacity="0.3" d="M109.909 109.11C109.909 111.026 108.615 112.581 107.011 112.581H90.8665C89.2624 112.581 87.9688 111.026 87.9688 109.11V17.6232C87.9688 15.7065 89.2624 14.1523 90.8665 14.1523H107.011C108.615 14.1523 109.909 15.7065 109.909 17.6232V109.11Z" fill="white"/>
+      <defs>
+        <linearGradient [id]="'paint0_linear' + randomId" x1="62.3768" y1="36.3949" x2="62.3768" y2="156.837" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#AE61FF"/>
+          <stop offset="1" stop-color="#13EFD8"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  </ng-container>
   <ng-container *ngSwitchCase="'liquidNetwork'">
     <svg width="140" viewBox="0 0 500 126" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g clip-path="url(#clip0)">
@@ -179,6 +196,9 @@
   </ng-container>
   <ng-container *ngSwitchCase="'testnet4'">
     <ng-component *ngTemplateOutlet="bitcoinLogo; context: {$implicit: '#5fd15c', width, height, viewBox}"></ng-component>
+  </ng-container>
+  <ng-container *ngSwitchCase="'regtest'">
+    <ng-component *ngTemplateOutlet="bitcoinLogo; context: {$implicit: '#a5a5a5', width, height, viewBox}"></ng-component>
   </ng-container>
   <ng-container *ngSwitchCase="'liquid'">
     <ng-component *ngTemplateOutlet="liquidLogo; context: {$implicit: '', width, height, viewBox}"></ng-component>

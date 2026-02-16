@@ -157,6 +157,10 @@ nav {
   background-color: var(--signet);
 }
 
+.regtest.active {
+  background-color: var(--regtest);
+}
+
 .dropdown-divider {
   border-top: 1px solid #121420;
 }
@@ -193,6 +197,19 @@ nav {
   align-self: center;
   .rounded {
     border-radius: 5px;
+  }
+
+  &.custom_logo {
+    height: 48px;
+    margin-right: 1em;
+  }
+
+  &.mobile_logo {
+    margin-right: 0;
+  }
+
+  &.custom_logo.mobile_logo {
+    height: 42px;
   }
 }
 

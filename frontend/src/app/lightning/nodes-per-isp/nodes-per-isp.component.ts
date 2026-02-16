@@ -10,6 +10,7 @@ import { GeolocationData } from '@app/shared/components/geolocation/geolocation.
   selector: 'app-nodes-per-isp',
   templateUrl: './nodes-per-isp.component.html',
   styleUrls: ['./nodes-per-isp.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesPerISP implements OnInit {
@@ -76,7 +77,7 @@ export class NodesPerISP implements OnInit {
             }
           }
           topCountry.flag = getFlagEmoji(topCountry.iso);
-          
+
           return {
             nodes: response.nodes,
             sumLiquidity: sumLiquidity,

@@ -68,7 +68,7 @@ export class LiquidUnblinding {
         tx._unblinded = { matched, total: this.commitments.size };
         this.deduceBlinded(tx);
         if (matched < this.commitments.size) {
-          throw new Error(`Invalid blinding data.`)
+          throw new Error(`Invalid blinding data.`);
         }
         tx._deduced = false; // invalidate cache so deduction is attempted again
         return tx;

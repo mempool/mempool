@@ -20,6 +20,7 @@ interface MempoolInfoData {
   selector: 'app-footer',
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FooterComponent implements OnInit {
@@ -49,7 +50,7 @@ export class FooterComponent implements OnInit {
       .pipe(
         map(([mempoolInfo, vbytesPerSecond]) => {
           const percent = Math.round((Math.min(vbytesPerSecond, this.vBytesPerSecondLimit) / this.vBytesPerSecondLimit) * 100);
-  
+
           let progressColor = '#7CB342';
           if (vbytesPerSecond > 1667) {
             progressColor = '#FDD835';
@@ -66,7 +67,7 @@ export class FooterComponent implements OnInit {
           if (vbytesPerSecond > 3500) {
             progressColor = '#D81B60';
           }
-  
+
           const mempoolSizePercentage = (mempoolInfo.usage / mempoolInfo.maxmempool * 100);
           let mempoolSizeProgress = 'bg-danger';
           if (mempoolSizePercentage <= 50) {
@@ -74,7 +75,7 @@ export class FooterComponent implements OnInit {
           } else if (mempoolSizePercentage <= 75) {
             mempoolSizeProgress = 'bg-warning';
           }
-  
+
           return {
             memPoolInfo: mempoolInfo,
             vBytesPerSecond: vbytesPerSecond,

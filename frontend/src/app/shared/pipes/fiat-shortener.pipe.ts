@@ -4,7 +4,8 @@ import { Subscription } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 
 @Pipe({
-  name: 'fiatShortener'
+  name: 'fiatShortener',
+  standalone: false,
 })
 export class FiatShortenerPipe implements PipeTransform {
   fiatSubscription: Subscription;
@@ -41,7 +42,7 @@ export class FiatShortenerPipe implements PipeTransform {
 
     let result = item ? (num / item.value).toFixed(digits).replace(rx, '$1') : '0';
     result = new Intl.NumberFormat(this.locale, { style: 'currency', currency, maximumFractionDigits: 0 }).format(item ? num / item.value : 0);
-    
+
     return result + item.symbol;
   }
 }

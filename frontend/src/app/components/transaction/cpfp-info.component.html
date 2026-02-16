@@ -16,7 +16,7 @@
     </thead>
     <tbody>
       <ng-template [ngIf]="cpfpInfo?.descendants?.length">
-        <tr *ngFor="let cpfpTx of cpfpInfo.descendants">
+        <tr *ngFor="let cpfpTx of cpfpInfo.descendants; trackBy: trackByIndex">
           <td><span class="badge badge-primary" i18n="transaction.descendant|Descendant">Descendant</span></td>
           <td>
             <app-truncate [text]="cpfpTx.txid" [link]="['/tx' | relativeUrl, cpfpTx.txid]"></app-truncate>
@@ -40,7 +40,7 @@
         </tr>
       </ng-template>
       <ng-template [ngIf]="cpfpInfo?.ancestors?.length">
-        <tr *ngFor="let cpfpTx of cpfpInfo.ancestors">
+        <tr *ngFor="let cpfpTx of cpfpInfo.ancestors; trackBy: trackByIndex">
           <td><span class="badge badge-primary" i18n="transaction.ancestor|Transaction Ancestor">Ancestor</span></td>
           <td class="txids">
             <app-truncate [text]="cpfpTx.txid" [link]="['/tx' | relativeUrl, cpfpTx.txid]"></app-truncate>

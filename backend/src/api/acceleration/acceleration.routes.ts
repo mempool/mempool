@@ -11,6 +11,7 @@ class AccelerationRoutes {
   public initRoutes(app: Application): void {
     app
       .get(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/accelerations', this.$getAcceleratorAccelerations.bind(this))
+      .get(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/accelerations/:txid', this.$getAcceleratorAcceleration.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/accelerations/history', this.$getAcceleratorAccelerationsHistory.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/accelerations/history/aggregated', this.$getAcceleratorAccelerationsHistoryAggregated.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'services/accelerator/accelerations/stats', this.$getAcceleratorAccelerationsStats.bind(this))
@@ -23,6 +24,21 @@ class AccelerationRoutes {
     res.status(200).send(Object.values(accelerations));
   }
 
+  /** @asyncUnsafe */
+  private async $getAcceleratorAcceleration(req: Request, res: Response): Promise<void> {
+    if (req.params.txid) {
+      const acceleration = await AccelerationRepository.$getAccelerationInfoForTxid(req.params.txid);
+      if (acceleration) {
+        res.status(200).send(acceleration);
+      } else {
+        res.status(404).send('Acceleration not found');
+      }
+    } else {
+      res.status(400).send('txid is required');
+    }
+  }
+
+  /** @asyncUnsafe */
   private async $getAcceleratorAccelerationsHistory(req: Request, res: Response): Promise<void> {
     const history = await AccelerationRepository.$getAccelerationInfo(null, req.query.blockHeight ? parseInt(req.query.blockHeight as string, 10) : null);
     res.status(200).send(history.map(accel => ({

@@ -36,6 +36,7 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'cpfp/:txId', this.$getCpfpInfo)
       .get(config.MEMPOOL.API_URL_PREFIX + 'difficulty-adjustment', this.getDifficultyChange)
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/recommended', this.getRecommendedFees)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'fees/precise', this.getPreciseRecommendedFees)
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/mempool-blocks', this.getMempoolBlocks)
       .get(config.MEMPOOL.API_URL_PREFIX + 'backend-info', this.getBackendInfo)
       .get(config.MEMPOOL.API_URL_PREFIX + 'init-data', this.getInitData)
@@ -122,6 +123,16 @@ class BitcoinRoutes {
     res.json(result);
   }
 
+  private getPreciseRecommendedFees(req: Request, res: Response) {
+    if (!mempool.isInSync()) {
+      res.statusCode = 503;
+      res.send('Service Unavailable');
+      return;
+    }
+    const result = feeApi.getPreciseRecommendedFee();
+    res.json(result);
+  }
+
   private getMempoolBlocks(req: Request, res: Response) {
     try {
       const result = mempoolBlocks.getMempoolBlocks();
@@ -132,17 +143,14 @@ class BitcoinRoutes {
   }
 
   private getTransactionTimes(req: Request, res: Response) {
-    if (!Array.isArray(req.query.txId)) {
-      handleError(req, res, 500, 'Not an array');
+    if (!req.query.txId || typeof req.query.txId !== 'object') {
+      handleError(req, res, 500, 'invalid txId format');
       return;
     }
     const txIds: string[] = [];
-    for (const _txId in req.query.txId) {
-      if (typeof req.query.txId[_txId] === 'string') {
-        const txid = req.query.txId[_txId].toString();
-        if (TXID_REGEX.test(txid)) {
-          txIds.push(txid);
-        }
+    for (const txid of Object.values(req.query.txId)) {
+      if (typeof txid === 'string' && TXID_REGEX.test(txid)) {
+        txIds.push(txid);
       }
     }
 
@@ -475,7 +483,7 @@ class BitcoinRoutes {
 
   private async getBlocks(req: Request, res: Response) {
     try {
-      if (['mainnet', 'testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK)) { // Bitcoin
+      if (['mainnet', 'testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK)) { // Bitcoin
         const height = req.params.height === undefined ? undefined : parseInt(req.params.height, 10);
         res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
         res.json(await blocks.$getBlocks(height, 15));
@@ -489,7 +497,7 @@ class BitcoinRoutes {
 
   private async getBlocksByBulk(req: Request, res: Response) {
     try {
-      if (['mainnet', 'testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK) === false) { // Liquid - Not implemented
+      if (['mainnet', 'testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK) === false) { // Liquid - Not implemented
         handleError(req, res, 404, `This API is only available for Bitcoin networks`);
         return;
       }
@@ -531,7 +539,7 @@ class BitcoinRoutes {
 
   private async getChainTips(req: Request, res: Response) {
     try {
-      if (['mainnet', 'testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK)) { // Bitcoin
+      if (['mainnet', 'testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK)) { // Bitcoin
         res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
         const tips = await chainTips.getChainTips();
         if (tips.length > 0) {
@@ -551,7 +559,7 @@ class BitcoinRoutes {
 
   private async getStaleTips(req: Request, res: Response) {
     try {
-      if (['mainnet', 'testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK)) { // Bitcoin
+      if (['mainnet', 'testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK)) { // Bitcoin
         res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
         const tips = await chainTips.getStaleTips();
         if (tips.length > 0) {

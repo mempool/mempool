@@ -11,6 +11,7 @@ import { seoDescriptionNetwork } from '@app/shared/common.utils';
   selector: 'app-stale-list',
   templateUrl: './stale-list.component.html',
   styleUrls: ['./stale-list.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StaleList implements OnInit {
@@ -26,6 +27,7 @@ export class StaleList implements OnInit {
     testnet: ['var(--testnet)', 'var(--testnet-alt)'],
     testnet4: ['var(--testnet)', 'var(--testnet-alt)'],
     signet: ['var(--signet)', 'var(--signet-alt)'],
+    regtest: ['var(--regtest)', 'var(--regtest-alt)'],
   };
 
   constructor(

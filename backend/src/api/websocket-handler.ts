@@ -100,7 +100,7 @@ class WebsocketHandler {
       'backendInfo': backendInfo.getBackendInfo(),
       'loadingIndicators': loadingIndicators.getLoadingIndicators(),
       'da': da?.previousTime ? da : undefined,
-      'fees': feeApi.getRecommendedFee(),
+      'fees': feeApi.getPreciseRecommendedFee(),
     });
   }
 
@@ -637,7 +637,7 @@ class WebsocketHandler {
     }
     memPool.removeFromSpendMap(deletedTransactions);
     memPool.addToSpendMap(newTransactions);
-    const recommendedFees = feeApi.getRecommendedFee();
+    const recommendedFees = feeApi.getPreciseRecommendedFee();
 
     const latestTransactions = memPool.getLatestTransactions();
 
@@ -1000,7 +1000,8 @@ class WebsocketHandler {
     });
     }
   }
- 
+
+  /** @asyncUnsafe */
   async handleNewBlock(block: BlockExtended, txIds: string[], transactions: MempoolTransactionExtended[]): Promise<void> {
     if (!this.webSocketServers.length) {
       throw new Error('No WebSocket.Server have been set');
@@ -1053,7 +1054,7 @@ class WebsocketHandler {
           totalWeight += (tx.vsize * 4);
         }
 
-        BlocksSummariesRepository.$saveTemplate({
+        void BlocksSummariesRepository.$saveTemplate({
           height: block.height,
           template: {
             id: block.id,
@@ -1062,7 +1063,7 @@ class WebsocketHandler {
           version: 1,
         });
 
-        BlocksAuditsRepository.$saveAudit({
+        void BlocksAuditsRepository.$saveAudit({
           version: 1,
           time: block.timestamp,
           height: block.height,
@@ -1125,7 +1126,7 @@ class WebsocketHandler {
     const mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
 
     const da = difficultyAdjustment.getDifficultyAdjustment();
-    const fees = feeApi.getRecommendedFee();
+    const fees = feeApi.getPreciseRecommendedFee();
     const mempoolInfo = memPool.getMempoolInfo();
 
     // pre-compute address transactions
@@ -1473,6 +1474,7 @@ class WebsocketHandler {
     return addressCache;
   }
 
+  /** @asyncSafe */
   private async getFullTransactions(transactions: MempoolTransactionExtended[]): Promise<MempoolTransactionExtended[]> {
     for (let i = 0; i < transactions.length; i++) {
       try {
@@ -1506,7 +1508,7 @@ class WebsocketHandler {
         if (client['track-rbf']) {
           numRbfSubs++;
         }
-      })
+      });
       }
 
       let count = 0;

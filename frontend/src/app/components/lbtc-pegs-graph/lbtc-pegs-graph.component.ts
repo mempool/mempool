@@ -13,16 +13,27 @@ import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
   .loadingGraphs {
       position: absolute;
       top: 50%;
-      left: calc(50% - 16px);
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      text-align: center;
       z-index: 99;
+
+      .audit-in-progress-text {
+        color: var(--transparent-fg);
+        font-size: 14px;
+        font-weight: 500;
+      } 
     }
   `],
   templateUrl: './lbtc-pegs-graph.component.html',
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LbtcPegsGraphComponent implements OnInit, OnChanges {
   @Input() data: any;
   @Input() height: number | string = '360';
+  @Input() auditInProgress = false;
   pegsChartOptions: EChartsOption;
   subscription: Subscription;
 
@@ -271,18 +282,22 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
     this.pegsChartOptions = {
       ...this.pegsChartOptions,
       grid: {
-        ...this.pegsChartOptions.grid,
+        ...(Array.isArray(this.pegsChartOptions?.grid)
+          ? (this.pegsChartOptions.grid[0] ?? {})
+          : (this.pegsChartOptions?.grid ?? {})) as Record<string, any>,
         right: this.adjustedRight,
         left: this.adjustedLeft,
       },
       legend: {
-        ...this.pegsChartOptions.legend,
+        ...(Array.isArray(this.pegsChartOptions?.legend)
+          ? (this.pegsChartOptions.legend[0] ?? {})
+          : (this.pegsChartOptions?.legend ?? {})) as Record<string, any>,
         selected: this.selected,
       },
     };
   }
 
-  onChartInit(ec) {
+  onChartInit(ec: any): void {
     this.chartInstance = ec;
     this.chartInstance.on('legendselectchanged', this.onLegendSelectChanged.bind(this));
   }

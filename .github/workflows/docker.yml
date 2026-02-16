@@ -1,0 +1,399 @@
+name: Docker build on tag
+env:
+  DOCKER_CLI_EXPERIMENTAL: enabled
+  TAG_FMT: "^refs/tags/(((.?[0-9]+){3,4}))$"
+  DOCKER_BUILDKIT: 1  # Enable BuildKit for better performance
+  COMPOSE_DOCKER_CLI_BUILD: 0
+
+on:
+  push:
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+
+      - v[0-9]+.[0-9]+.[0-9]+-*
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+
+permissions:
+  contents: read
+
+jobs:
+  test-images:
+    # Always run on tag pushes and all pull requests
+    runs-on: mempool-ci
+    timeout-minutes: 30
+    name: Test built Docker images
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Add SHORT_SHA env property with commit short sha
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            SHA="${{ github.event.pull_request.head.sha }}"
+          else
+            SHA="${GITHUB_SHA}"
+          fi
+          echo "SHORT_SHA=${SHA:0:8}" >> $GITHUB_ENV
+
+      - name: Set TAG from pushed tag or package.json
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            TAG="${GITHUB_REF/refs\/tags\//}"
+          else
+            FRONTEND_VERSION=$(jq -r '.version' frontend/package.json)
+            BACKEND_VERSION=$(jq -r '.version' backend/package.json)
+            if [ "$FRONTEND_VERSION" != "$BACKEND_VERSION" ]; then
+              echo "Error: Frontend version ($FRONTEND_VERSION) and backend version ($BACKEND_VERSION) do not match"
+              exit 1
+            fi
+            TAG="v${FRONTEND_VERSION}-${SHORT_SHA}"
+          fi
+          echo "TAG=${TAG}" >> $GITHUB_ENV
+
+      - name: Show set environment variables
+        run: |
+          printf "      TAG: %s\n"  "$TAG"
+          printf " SHORT_SHA: %s\n" "$SHORT_SHA"
+
+      - name: Init repo for Dockerization
+        run: docker/init.sh "$TAG"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build frontend image locally
+        run: |
+          docker buildx build \
+            --tag test-frontend:$TAG \
+            --build-arg commitHash=$SHORT_SHA \
+            --load \
+            --platform linux/amd64 \
+            ./frontend/
+
+      - name: Build backend image locally
+        run: |
+          docker buildx build \
+            --tag test-backend:$TAG \
+            --build-context rustgbt=./rust \
+            --build-context backend=./backend \
+            --build-arg commitHash=$SHORT_SHA \
+            --load \
+            --platform linux/amd64 \
+            ./backend/
+
+      - name: Prepare docker-compose test file
+        run: |
+          cat > /tmp/modify_compose.py << 'SCRIPT_END'
+          import re
+          import os
+          import sys
+          
+          # Read the base docker-compose file
+          with open('docker/docker-compose.yml', 'r') as f:
+              content = f.read()
+          
+          # Get TAG from environment
+          tag = os.environ.get('TAG', '')
+          
+          # Replace image names with locally built test images
+          content = content.replace('image: mempool/frontend:latest', f'image: test-frontend:{tag}')
+          content = content.replace('image: mempool/backend:latest', f'image: test-backend:{tag}')
+          
+          # Change web port mapping from 80:8080 to 8080:8080
+          content = content.replace('- 80:8080', '- 8080:8080')
+          
+          # Remove volumes from api service
+          content = re.sub(r'    volumes:\n      - \.\/data:\/backend\/cache\n', '', content)
+          
+          # For db service: remove user and volumes, add tmpfs and healthcheck
+          # Remove user line from db service (only the one in db service)
+          lines = content.split('\n')
+          in_db_service = False
+          new_lines = []
+          for i, line in enumerate(lines):
+              if line.strip().startswith('db:'):
+                  in_db_service = True
+              elif line.strip() and not line.startswith(' ') and not line.startswith('\t'):
+                  in_db_service = False
+              if in_db_service and line.strip() == 'user: "1000:1000"':
+                  continue
+              new_lines.append(line)
+          content = '\n'.join(new_lines)
+          
+          # Remove volumes section from db service
+          content = re.sub(r'    volumes:\n      - \.\/mysql\/data:\/var\/lib\/mysql\n', '', content)
+          
+          # Add tmpfs after stop_grace_period in db service (healthcheck already exists in base file)
+          db_stop_grace = '    stop_grace_period: 1m'
+          db_additions = '    stop_grace_period: 1m\n    tmpfs:\n      - /var/lib/mysql'
+          content = content.replace(db_stop_grace, db_additions, 1)
+          
+          # Add depends_on to web service after ports
+          web_ports = '    ports:\n      - 8080:8080'
+          web_with_depends = '    ports:\n      - 8080:8080\n    depends_on:\n      - api\n      - db'
+          content = content.replace(web_ports, web_with_depends, 1)
+          
+          # Add depends_on to api service after command
+          api_command = '    command: "./wait-for-it.sh db:3306 --timeout=720 --strict -- ./start.sh"'
+          api_with_depends = '    command: "./wait-for-it.sh db:3306 --timeout=720 --strict -- ./start.sh"\n    depends_on:\n      - db'
+          content = content.replace(api_command, api_with_depends, 1)
+          
+          # Write the modified content
+          with open('docker-compose.test.yml', 'w') as f:
+              f.write(content)
+          
+          print("Generated docker-compose.test.yml")
+          SCRIPT_END
+          python3 /tmp/modify_compose.py
+          cat docker-compose.test.yml
+
+      - name: Start containers
+        run: |
+          docker compose -f docker-compose.test.yml up -d
+
+      - name: Wait for services to be ready
+        run: |
+          echo "Waiting for all services (web, api, db) to be healthy..."
+          timeout=120
+          elapsed=0
+          while [ $elapsed -lt $timeout ]; do
+            # Check health status for all services
+            PS_OUTPUT=$(docker compose -f docker-compose.test.yml ps)
+            HEALTHY_COUNT=$(echo "$PS_OUTPUT" | grep -c "(healthy)" || true)
+            if [ "$HEALTHY_COUNT" -ge 3 ]; then
+              echo "All services are healthy!"
+              echo "$PS_OUTPUT"
+              break
+            fi
+            echo "Waiting for services to be healthy... (${elapsed}s/${timeout}s)"
+            echo "$PS_OUTPUT"
+            sleep 2
+            elapsed=$((elapsed + 2))
+          done
+          if [ $elapsed -ge $timeout ]; then
+            echo "Services did not become healthy in time"
+            docker compose -f docker-compose.test.yml ps
+            docker compose -f docker-compose.test.yml logs
+            exit 1
+          fi
+
+      - name: Verify containers are healthy
+        run: |
+          echo "Checking container health status..."
+          PS_OUTPUT=$(docker compose -f docker-compose.test.yml ps)
+          echo "$PS_OUTPUT"
+          
+          # Check that all three services (web, api, db) are healthy
+          HEALTHY_COUNT=$(echo "$PS_OUTPUT" | grep -c "(healthy)" || true)
+          if [ "$HEALTHY_COUNT" -lt 3 ]; then
+            echo "Not all containers are healthy. Expected 3 healthy services, found $HEALTHY_COUNT"
+            docker compose -f docker-compose.test.yml logs
+            exit 1
+          fi
+          
+          # Verify each service individually for better error messages
+          if ! echo "$PS_OUTPUT" | grep -q "web.*(healthy)"; then
+            echo "Web service is not healthy"
+            docker compose -f docker-compose.test.yml logs web
+            exit 1
+          fi
+          if ! echo "$PS_OUTPUT" | grep -q "api.*(healthy)"; then
+            echo "API service is not healthy"
+            docker compose -f docker-compose.test.yml logs api
+            exit 1
+          fi
+          if ! echo "$PS_OUTPUT" | grep -q "db.*(healthy)"; then
+            echo "Database service is not healthy"
+            docker compose -f docker-compose.test.yml logs db
+            exit 1
+          fi
+          
+          echo "All containers are healthy!"
+
+      - name: Show container logs
+        if: failure()
+        run: |
+          docker compose -f docker-compose.test.yml logs
+
+      - name: Clean up containers
+        if: always()
+        run: |
+          docker compose -f docker-compose.test.yml down -v
+
+  build:
+    needs: test-images
+    # Run on tag pushes OR on PRs with "docker-push" label (after test-images passes)
+    if: |
+      needs.test-images.result == 'success' &&
+      (github.event_name == 'push' ||
+       (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'docker-push')))
+    strategy:
+      matrix:
+        service:
+          - frontend
+          - backend
+    runs-on: mempool-ci
+    timeout-minutes: 120
+    name: Build and push to DockerHub
+    outputs:
+      image-digest-frontend: ${{ matrix.service == 'frontend' && steps.docker-build.outputs.digest || '' }}
+      image-digest-backend: ${{ matrix.service == 'backend' && steps.docker-build.outputs.digest || '' }}
+      tag: ${{ matrix.service == 'frontend' && (steps.set-tag-push.outputs.tag || steps.set-tag-pr.outputs.tag) || '' }}
+    steps:
+      - name: Replace the current swap file
+        shell: bash
+        run: |
+          sudo swapoff /mnt/swapfile || true
+          sudo rm -f /mnt/swapfile
+          sudo fallocate -l 16G /mnt/swapfile
+          sudo chmod 600 /mnt/swapfile
+          sudo mkswap /mnt/swapfile
+          sudo swapon /mnt/swapfile
+
+      - name: Show current memory and swap status
+        shell: bash
+        run: |
+          sudo free -h
+          echo
+          sudo swapon --show
+
+      - name: Mount a tmpfs over /var/lib/docker
+        shell: bash
+        run: |
+          if [ ! -d "/var/lib/docker" ]; then
+            echo "Directory '/var/lib/docker' not found"
+            exit 1
+          fi
+          sudo mount -t tmpfs -o size=12G tmpfs /var/lib/docker
+          sudo systemctl restart docker
+          sudo df -h | grep docker
+
+      # Only for tag pushes: use the Git tag as TAG
+      - name: Set TAG from pushed tag
+        if: github.event_name == 'push'
+        id: set-tag-push
+        run: |
+          TAG="${GITHUB_REF/refs\/tags\//}"
+          echo "TAG=${TAG}" >> $GITHUB_ENV
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+
+      - name: Add SHORT_SHA env property with commit short sha
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            SHA="${{ github.event.pull_request.head.sha }}"
+          else
+            SHA="${GITHUB_SHA}"
+          fi
+          echo "SHORT_SHA=${SHA:0:8}" >> $GITHUB_ENV
+
+
+      - name: Login to Docker for building
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      # For PRs: use package.json version + short sha as TAG
+      - name: Set TAG from service package.json for pull requests
+        if: github.event_name == 'pull_request'
+        id: set-tag-pr
+        run: |
+          if [ "${{ matrix.service }}" = "frontend" ]; then
+            VERSION=$(jq -r '.version' frontend/package.json)
+          else
+            VERSION=$(jq -r '.version' backend/package.json)
+          fi
+          TAG="v${VERSION}-${SHORT_SHA}"
+          echo "TAG=${TAG}" >> $GITHUB_ENV
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+
+      - name: Show set environment variables
+        run: |
+          printf "      TAG: %s\n"  "$TAG"
+          printf " SHORT_SHA: %s\n" "$SHORT_SHA"
+
+      - name: Init repo for Dockerization
+        run: docker/init.sh "$TAG"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+        id: qemu
+
+      - name: Setup Docker buildx action
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+          driver-opts: |
+            network=host
+        id: buildx
+
+      - name: Available platforms
+        run: echo ${{ steps.buildx.outputs.platforms }}
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        id: cache
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ matrix.service }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-${{ matrix.service }}-
+
+      - name: Run Docker buildx for ${{ matrix.service }} against tag
+        id: docker-build
+        run: |
+          docker buildx build \
+          --cache-from "type=local,src=/tmp/.buildx-cache" \
+          --cache-to "type=local,dest=/tmp/.buildx-cache,mode=max" \
+          --platform linux/amd64,linux/arm64 \
+          --tag ${{ secrets.DOCKER_HUB_USER }}/${{ matrix.service }}:$TAG \
+          --build-context rustgbt=./rust \
+          --build-context backend=./backend \
+          --output "type=registry,push=true" \
+          --build-arg commitHash=$SHORT_SHA \
+          ./${{ matrix.service }}/
+
+  tag-latest:
+    needs: build
+    # Only for successful tag pushes (not PRs with docker-push label) and only for "plain" versions (no '-')
+    if: ${{ needs.build.result == 'success' && github.event_name == 'push' && !contains(github.ref_name, '-') }}
+    runs-on: mempool-ci
+    timeout-minutes: 30
+    name: Tag release build as latest
+    strategy:
+      matrix:
+        service:
+          - frontend
+          - backend
+    steps:
+      - name: Set env variables
+        run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+
+      - name: Setup Docker buildx action
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+          driver-opts: |
+            network=host
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Tag as latest for ${{ matrix.service }}
+        run: |
+          docker buildx imagetools create \
+            --tag ${{ secrets.DOCKER_HUB_USER }}/${{ matrix.service }}:latest \
+            ${{ secrets.DOCKER_HUB_USER }}/${{ matrix.service }}:$TAG

@@ -5,6 +5,7 @@ import { Observable, combineLatest, map, of } from 'rxjs';
   selector: 'app-federation-addresses-stats',
   templateUrl: './federation-addresses-stats.component.html',
   styleUrls: ['./federation-addresses-stats.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FederationAddressesStatsComponent implements OnInit {
@@ -23,9 +24,9 @@ export class FederationAddressesStatsComponent implements OnInit {
         if (address_count === undefined || utxo_count === undefined) {
           return undefined;
         }
-        return { address_count, utxo_count}
+        return { address_count, utxo_count};
       })
-    )
+    );
   }
 
 }

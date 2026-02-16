@@ -21,6 +21,7 @@ function isTimelineCell(val: RbfTree | TimelineCell): boolean {
   selector: 'app-rbf-timeline',
   templateUrl: './rbf-timeline.component.html',
   styleUrls: ['./rbf-timeline.component.scss'],
+  standalone: false,
 })
 export class RbfTimelineComponent implements OnInit, OnChanges {
   @Input() replacements: RbfTree;
@@ -58,7 +59,7 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
 
   // converts a tree of RBF events into a format that can be more easily rendered in HTML
   buildTimelines(tree: RbfTree): TimelineCell[][] {
-    if (!tree) return [];
+    if (!tree) {return [];}
 
     this.flagFullRbf(tree);
     const split = this.splitTimelines(tree);

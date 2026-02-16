@@ -11,6 +11,7 @@ import { LightningApiService } from '@app/lightning/lightning-api.service';
   selector: 'app-channel',
   templateUrl: './channel.component.html',
   styleUrls: ['./channel.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChannelComponent implements OnInit {
@@ -83,7 +84,7 @@ export class ChannelComponent implements OnInit {
   }
 
   showCloseBoxes(channel: IChannel): boolean {
-    return !!(channel.node_left.funding_balance || channel.node_left.closing_balance 
+    return !!(channel.node_left.funding_balance || channel.node_left.closing_balance
       || channel.node_right.funding_balance || channel.node_right.closing_balance);
   }
 

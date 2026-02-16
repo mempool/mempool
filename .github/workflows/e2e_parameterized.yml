@@ -22,7 +22,7 @@ on:
 jobs:
   cache:
     name: "Cache assets for builds"
-    runs-on: ubuntu-latest
+    runs-on: mempool-ci
     steps:
       - name: Determine checkout ref
         id: determine-ref
@@ -43,7 +43,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 22.14.0
+          node-version: 24.13.0
           registry-url: "https://registry.npmjs.org"
 
       - name: Install (Prod dependencies only)
@@ -123,7 +123,7 @@ jobs:
           key: promo-video-assets-cache
 
   e2e:
-    runs-on: ubuntu-latest
+    runs-on: mempool-ci
     needs: cache
     strategy:
       fail-fast: false
@@ -151,7 +151,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: 22.14.0
+          node-version: 24.13.0
           cache: "npm"
           cache-dependency-path: ${{ matrix.module }}/frontend/package-lock.json
 

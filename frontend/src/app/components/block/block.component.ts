@@ -32,6 +32,7 @@ interface ComparisonStats {
 @Component({
   selector: 'app-block',
   templateUrl: './block.component.html',
+  standalone: false,
   styleUrls: ['./block.component.scss'],
   styles: [`
     .loadingGraphs {
@@ -384,7 +385,7 @@ export class BlockComponent implements OnInit, OnDestroy {
 
     this.accelerationsSubscription = this.block$.pipe(
       switchMap((block) => {
-        return this.stateService.env.ACCELERATOR === true && block.height > 819500
+        return this.stateService.env.ACCELERATOR === true && block.height > 819500 && this.stateService.network === ''
           ? this.servicesApiService.getAllAccelerationHistory$({ blockHeight: block.height })
             .pipe(catchError(() => {
               return of([]);
@@ -568,7 +569,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       } else {
         this.showPreviousBlocklink = true;
       }
-      if (this.latestBlock.height && this.latestBlock.height === this.blockHeight) {
+      if (this.latestBlock.height != null && this.latestBlock.height === this.blockHeight) {
         this.showNextBlocklink = false;
       } else {
         this.showNextBlocklink = true;

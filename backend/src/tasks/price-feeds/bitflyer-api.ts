@@ -11,6 +11,7 @@ class BitflyerApi implements PriceFeed {
   constructor() {
   }
 
+  /** @asyncUnsafe */
   public async $fetchPrice(currency): Promise<number> {
     const response = await query(this.url + currency);
     if (response && response['ltp']) {

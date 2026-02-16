@@ -12,6 +12,7 @@ import { SeoService } from '@app/services/seo.service';
   selector: 'app-recent-pegs-list',
   templateUrl: './recent-pegs-list.component.html',
   styleUrls: ['./recent-pegs-list.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecentPegsListComponent implements OnInit {

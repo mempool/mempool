@@ -12,10 +12,10 @@ jobs:
     if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
     strategy:
       matrix:
-        node: ["22.14.0"]
+        node: ["24.13.0"]
         flavor: ["dev", "prod"]
       fail-fast: false
-    runs-on: ubuntu-latest
+    runs-on: mempool-ci
 
     name: Backend (${{ matrix.flavor }}) - node ${{ matrix.node }}
     steps:
@@ -63,7 +63,7 @@ jobs:
       - name: Install ${{ steps.gettoolchain.outputs.toolchain }} Rust toolchain
         # Latest version available on this commit is 1.71.1
         # Commit date is Aug 3, 2023
-        uses: dtolnay/rust-toolchain@d8352f6b1d2e870bc5716e7a6d9b65c4cc244a1a
+        uses: dtolnay/rust-toolchain@f7ccc83f9ed1e5b9c81d8a67d7ad1a747e22a561
         with:
           toolchain: ${{ steps.gettoolchain.outputs.toolchain }}
 
@@ -96,8 +96,8 @@ jobs:
     name: "Cache assets for builds"
     strategy:
       matrix:
-        node: ["22.14.0"]
-    runs-on: ubuntu-latest
+        node: ["24.13.0"]
+    runs-on: mempool-ci
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -202,10 +202,10 @@ jobs:
     if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
     strategy:
       matrix:
-        node: ["22.14.0"]
+        node: ["24.13.0"]
         flavor: ["dev", "prod"]
       fail-fast: false
-    runs-on: ubuntu-latest
+    runs-on: mempool-ci
 
     name: Frontend (${{ matrix.flavor }}) - node ${{ matrix.node }}
     steps:
@@ -299,11 +299,12 @@ jobs:
   
   e2e:
     if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
-    runs-on: ubuntu-latest
+    runs-on: mempool-ci
     needs: frontend
     strategy:
       fail-fast: false
       matrix:
+        node: ["24.13.0"]
         module: ["mempool", "liquid", "testnet4"]
 
     name: E2E tests for ${{ matrix.module }}
@@ -316,7 +317,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: 22
+          node-version: ${{ matrix.node }}
           cache: "npm"
           cache-dependency-path: ${{ matrix.module }}/frontend/package-lock.json
 
@@ -324,9 +325,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ matrix.module }}/frontend/node_modules
-          key: ${{ runner.os }}-e2e-${{ matrix.module }}-node-22-${{ hashFiles('${{ matrix.module }}/frontend/package-lock.json') }}
+          key: ${{ runner.os }}-e2e-${{ matrix.module }}-node-${{ matrix.node }}-${{ hashFiles('${{ matrix.module }}/frontend/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-e2e-${{ matrix.module }}-node-22-
+            ${{ runner.os }}-e2e-${{ matrix.module }}-node-${{ matrix.node }}-
             ${{ runner.os }}-e2e-${{ matrix.module }}-
 
       - name: Restore cached mining pool assets
@@ -439,7 +440,7 @@ jobs:
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
   validate_docker_json:
     if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
-    runs-on: ubuntu-latest
+    runs-on: mempool-ci
     name: Validate generated backend Docker JSON
 
     steps: 

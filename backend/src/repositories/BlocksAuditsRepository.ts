@@ -15,6 +15,7 @@ interface MigrationAudit {
 }
 
 class BlocksAuditRepositories {
+  /** @asyncSafe */
   public async $saveAudit(audit: BlockAudit): Promise<void> {
     try {
       await DB.query(`INSERT INTO blocks_audits(version, time, height, hash, unseen_txs, missing_txs, added_txs, prioritized_txs, fresh_txs, sigop_txs, fullrbf_txs, accelerated_txs, match_rate, expected_fees, expected_weight)
@@ -29,6 +30,7 @@ class BlocksAuditRepositories {
     }
   }
 
+  /** @asyncSafe */
   public async $setSummary(hash: string, expectedFees: number, expectedWeight: number) {
     try {
       await DB.query(`
@@ -42,6 +44,7 @@ class BlocksAuditRepositories {
     }
   }
 
+  /** @asyncSafe */
   public async $getBlocksHealthHistory(div: number, interval: string | null): Promise<any> {
     try {
       let query = `SELECT UNIX_TIMESTAMP(time) as time, height, match_rate FROM blocks_audits`;
@@ -60,6 +63,7 @@ class BlocksAuditRepositories {
     }
   }
 
+  /** @asyncSafe */
   public async $getBlocksHealthCount(): Promise<number> {
     try {
       const [rows] = await DB.query(`SELECT count(hash) as count FROM blocks_audits`);
@@ -70,6 +74,7 @@ class BlocksAuditRepositories {
     }
   }
 
+  /** @asyncSafe */
   public async $getBlockAudit(hash: string): Promise<BlockAudit | null> {
     try {
       const [rows]: any[] = await DB.query(
@@ -94,7 +99,7 @@ class BlocksAuditRepositories {
         JOIN blocks_templates ON blocks_templates.id = blocks_audits.hash
         WHERE blocks_audits.hash = ?
       `, [hash]);
-      
+
       if (rows.length) {
         rows[0].unseenTxs = JSON.parse(rows[0].unseenTxs);
         rows[0].missingTxs = JSON.parse(rows[0].missingTxs);
@@ -115,6 +120,7 @@ class BlocksAuditRepositories {
     }
   }
 
+  /** @asyncSafe */
   public async $getBlockTxAudit(hash: string, txid: string): Promise<TransactionAudit | null> {
     try {
       const blockAudit = await this.$getBlockAudit(hash);
@@ -151,6 +157,7 @@ class BlocksAuditRepositories {
     }
   }
 
+  /** @asyncSafe */
   public async $getBlockAuditScore(hash: string): Promise<AuditScore> {
     try {
       const [rows]: any[] = await DB.query(
@@ -165,6 +172,7 @@ class BlocksAuditRepositories {
     }
   }
 
+  /** @asyncSafe */
   public async $getBlockAuditScores(maxHeight: number, minHeight: number): Promise<AuditScore[]> {
     try {
       const [rows]: any[] = await DB.query(
@@ -179,6 +187,7 @@ class BlocksAuditRepositories {
     }
   }
 
+  /** @asyncSafe */
   public async $getBlocksWithoutSummaries(): Promise<string[]> {
     try {
       const [fromRows]: any[] = await DB.query(`
@@ -207,6 +216,7 @@ class BlocksAuditRepositories {
 
   /**
    * [INDEXING] Migrate audits from v0 to v1
+   * @asyncSafe
    */
   public async $migrateAuditsV0toV1(): Promise<void> {
     try {

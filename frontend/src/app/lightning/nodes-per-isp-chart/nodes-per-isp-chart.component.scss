@@ -10,13 +10,13 @@
   padding: 0px 15px;
   width: 100%;
   height: calc(100% - 140px);
+  margin-bottom: 25px;
   @media (max-width: 992px) {
     height: calc(100% - 190px);
   };
   @media (max-width: 575px) {
     height: calc(100% - 230px);
   };
-  margin-bottom: 25px;
 }
 
 .chart {

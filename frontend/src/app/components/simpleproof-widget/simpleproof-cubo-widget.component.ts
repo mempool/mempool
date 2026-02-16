@@ -20,6 +20,7 @@ export type SortDirection = 'asc' | 'desc';
   selector: 'app-simpleproof-cubo-widget',
   templateUrl: './simpleproof-cubo-widget.component.html',
   styleUrls: ['./simpleproof-widget.component.scss'],
+  standalone: false,
 })
 export class SimpleProofCuboWidgetComponent implements OnChanges {
   @Input() key: string = window['__env']?.customize?.dashboard.widgets?.find(w => w.component ==='simpleproof_cubo')?.props?.key ?? '';

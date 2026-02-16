@@ -13,6 +13,7 @@ import { StateService } from '@app/services/state.service';
   selector: 'app-node-channels',
   templateUrl: './node-channels.component.html',
   styleUrls: ['./node-channels.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodeChannels implements OnChanges {
@@ -126,7 +127,7 @@ export class NodeChannels implements OnChanges {
           }
         }
       ]
-    };    
+    };
   }
 
   onChartInit(ec: any): void {
