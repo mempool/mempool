@@ -1081,24 +1081,22 @@ export class Common {
       ].flat(),
     };
   }
-  
- static calcMinMaxFeeRates(
-  transactions: TransactionExtended[]
-): { minfeerate: number; maxfeerate: number; effective_minfeerate: number; effective_maxfeerate: number; } {
-  const minmax = transactions.reduce((a: { min?: number; max?: number; effMin?: number; effMax?: number; }, tx) => ({
-    min: tx.feePerVsize ? Math.min(tx.feePerVsize, a.min ?? tx.feePerVsize) : a.min,
-    max: tx.feePerVsize ? Math.max(tx.feePerVsize, a.max ?? tx.feePerVsize) : a.max,
-    effMin: tx.effectiveFeePerVsize ? Math.min(tx.effectiveFeePerVsize, a.effMin ?? tx.effectiveFeePerVsize) : a.effMin,
-    effMax: tx.effectiveFeePerVsize ? Math.max(tx.effectiveFeePerVsize, a.effMax ?? tx.effectiveFeePerVsize) : a.effMax,
-  }), {});
 
-  return {
-    minfeerate: minmax.min ?? 0,
-    maxfeerate: minmax.max ?? 0,
-    effective_minfeerate: minmax.effMin ?? 0,
-    effective_maxfeerate: minmax.effMax ?? 0,
-  };
-}
+  static calcMinMaxFeeRates(transactions: TransactionExtended[]): 
+    {minFeeRate: number; maxFeeRate: number; effectiveMinFeeRate: number; effectiveMaxFeeRate: number; } {
+      const minmax = transactions.reduce((a: { min?: number; max?: number; effMin?: number; effMax?: number; }, tx) => ({
+      min: tx.feePerVsize ? Math.min(tx.feePerVsize, a.min ?? tx.feePerVsize) : a.min,
+      max: tx.feePerVsize ? Math.max(tx.feePerVsize, a.max ?? tx.feePerVsize) : a.max,
+      effMin: tx.effectiveFeePerVsize ? Math.min(tx.effectiveFeePerVsize, a.effMin ?? tx.effectiveFeePerVsize) : a.effMin,
+      effMax: tx.effectiveFeePerVsize ? Math.max(tx.effectiveFeePerVsize, a.effMax ?? tx.effectiveFeePerVsize) : a.effMax,
+    }), {});
+    return {
+      minFeeRate: minmax.min ?? 0,
+      maxFeeRate: minmax.max ?? 0,
+      effectiveMinFeeRate: minmax.effMin ?? 0,
+      effectiveMaxFeeRate: minmax.effMax ?? 0,
+    };
+  }
   
   static getNthPercentile(n: number, sortedDistribution: any[]): any {
     return sortedDistribution[Math.floor((sortedDistribution.length - 1) * (n / 100))];
