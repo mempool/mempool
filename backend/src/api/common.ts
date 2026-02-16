@@ -938,7 +938,7 @@ export class Common {
     return d.toISOString().split('T')[0] + ' ' + d.toTimeString().split(' ')[0];
   }
 
-  static findSocketNetwork(addr: string): {network: string | null, url: string } {
+  static findSocketNetwork(addr: string): {network: string | null, url: string} {
     if (!addr?.length) {
       return {
         network: null,

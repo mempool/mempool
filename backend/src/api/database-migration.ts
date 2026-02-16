@@ -561,7 +561,7 @@ class DatabaseMigration {
       await this.updateToSchemaVersion(66);
     }
 
-    if (databaseSchemaVersion < 67 &&  isBitcoin === true) {
+    if (databaseSchemaVersion < 67  && isBitcoin === true) {
       await this.$executeQuery('ALTER TABLE `blocks_summaries` ADD version INT NOT NULL DEFAULT 0');
       await this.$executeQuery('ALTER TABLE `blocks_summaries` ADD INDEX `version` (`version`)');
       await this.$executeQuery('ALTER TABLE `blocks_templates` ADD version INT NOT NULL DEFAULT 0');
