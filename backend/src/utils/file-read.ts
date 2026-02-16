@@ -5,6 +5,7 @@ import config from '../config';
 const CHUNK_SIZE = 1024;
 const MAX_WINDOW_SIZE = 50 * CHUNK_SIZE;
 const MAX_ITERATIONS = 100;
+const SMALL_BATCH_THRESHOLD = 5000;
 
 function extractDateFromLogLine(line: string): number | undefined {
   // Extract time from log: "2021-08-31T12:34:56Z" or "2021-08-31T12:34:56.123456Z"
@@ -212,9 +213,8 @@ function searchForFirstSeen(fd: number, anchor: number, startTimestamp: number, 
           bestMatch = { timestamp: logTimestamp, nextPos };
         }
       }
-    } else {
-      fDone = true;
     }
+    fDone = fDone || fPos >= maxOffset;
 
     if (!bDone && bPos > minOffset) {
       const backwardLimit = Math.max(minOffset, bPos - CHUNK_SIZE);
@@ -243,9 +243,8 @@ function searchForFirstSeen(fd: number, anchor: number, startTimestamp: number, 
           bestMatch = { timestamp: logTimestamp, nextPos };
         }
       }
-    } else {
-      bDone = true;
     }
+    bDone = bDone || bPos <= minOffset;
   }
   return bestMatch;
 }
@@ -278,14 +277,15 @@ export function scanLogsForBlocksFirstSeen(blocks: { hash: string; timestamp: nu
     return blocks.map(block => ({ hash: block.hash, firstSeen: null }));
   }
 
-  if (blocks.length < 5000) { // for small batches, individually binary-search each block's first seen time
+  if (blocks.length < SMALL_BATCH_THRESHOLD) { // for small batches, individually binary-search each block's first seen time
     return blocks.map(block => ({ hash: block.hash, firstSeen: getBlockFirstSeenFromLogs(block.hash, block.timestamp, oldestLogTimestamp) }));
   }
 
   const firstSeenMap = new Map<string, number | null>();
   const missing = new Map<string, { start: number; end: number }>();
 
-  let startTimestamp = Number.POSITIVE_INFINITY;
+  let earliestTimestamp = Number.POSITIVE_INFINITY;
+  let latestTimestamp = Number.NEGATIVE_INFINITY;
   for (const block of blocks) {
     firstSeenMap.set(block.hash, null);
 
@@ -294,8 +294,11 @@ export function scanLogsForBlocksFirstSeen(blocks: { hash: string; timestamp: nu
       const end = block.timestamp + 3600;
 
       missing.set(block.hash, { start, end });
-      if (start < startTimestamp) {
-        startTimestamp = start;
+      if (start < earliestTimestamp) {
+        earliestTimestamp = start;
+      }
+      if (end > latestTimestamp) {
+        latestTimestamp = end;
       }
     }
   }
@@ -322,11 +325,14 @@ export function scanLogsForBlocksFirstSeen(blocks: { hash: string; timestamp: nu
         return blocks.map(block => ({ hash: block.hash, firstSeen: null }));
       }
 
-      for (let record = readLineAt(fd, findTimestampPosition(fd, startTimestamp)); record; record = readLineAt(fd, record.nextPos, true)) {
+      for (let record = readLineAt(fd, findTimestampPosition(fd, earliestTimestamp)); record; record = readLineAt(fd, record.nextPos, true)) {
         const { line } = record;
         const logTimestamp = extractDateFromLogLine(line);
         if (!logTimestamp) {
           continue;
+        }
+        if (logTimestamp > latestTimestamp) {
+          break;
         }
 
         let hash: string | null = null;
@@ -350,10 +356,12 @@ export function scanLogsForBlocksFirstSeen(blocks: { hash: string; timestamp: nu
           continue;
         }
 
-        missing.delete(hash);
-        if (logTimestamp >= window.start && logTimestamp <= window.end) {
-          firstSeenMap.set(hash, logTimestamp);
+        if (logTimestamp < window.start || logTimestamp > window.end) {
+          continue;
         }
+
+        missing.delete(hash);
+        firstSeenMap.set(hash, logTimestamp);
 
         if (!missing.size) {
           break;
