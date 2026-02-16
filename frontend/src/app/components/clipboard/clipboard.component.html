@@ -9,7 +9,7 @@
 
 <ng-template #btnLink>
   <span style="position: relative;">
-    <button class="btn btn-sm btn-link pt-0 {{ leftPadding ? 'padding' : '' }}" style="box-shadow: none;" (click)="copyText()"   type="button" [attr.aria-label]="showMessage ? 'Copied to clipboard' : 'Copy to clipboard'" [attr.title]="showMessage ? 'Copied' : 'Copy'">
+    <button class="btn btn-sm btn-link pt-0 {{ leftPadding ? 'padding' : '' }}" style="box-shadow: none;" (click)="copyText()" tabindex="-1" type="button" [attr.aria-label]="showMessage ? 'Copied to clipboard' : 'Copy to clipboard'" [attr.title]="showMessage ? 'Copied' : 'Copy'">
       <app-svg-images name="clippy" [width]="widths[size]" viewBox="0 0 1000 1000"></app-svg-images>
     </button>
     <span *ngIf="showMessage" class="copied-message" style="top: 29px; left: -23.5px;">{{ copiedMessage }}</span>
