@@ -50,6 +50,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
   timespan = '';
   chartInstance: any = undefined;
   displayMode: 'normal' | 'fiat' | 'percentage' = 'normal';
+  legendState: { [mode: string]: { subsidy: boolean, fees: boolean } };
   updateZoom = false;
   zoomSpan = 100;
   zoomTimeSpan = '';
@@ -69,6 +70,21 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
     private fiatCurrencyPipe: FiatCurrencyPipe,
     private cd: ChangeDetectorRef,
   ) {
+    const parseLegend = (key: string) => {
+      try {
+        return JSON.parse(this.storageService.getValue(key) || 'null') ?? { subsidy: true, fees: true };
+      } catch {
+        return { subsidy: true, fees: true };
+      }
+    };
+    this.legendState = {
+      normal: parseLegend('fees_subsidy_legend_normal'),
+      fiat: parseLegend('fees_subsidy_legend_fiat'),
+      percentage: parseLegend('fees_subsidy_legend_percentage'),
+    };
+    const storedMode = this.storageService.getValue('fees_subsidy_display_mode');
+    this.displayMode = storedMode === 'fiat' || storedMode === 'percentage' ? storedMode : 'normal';
+
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
     this.radioGroupForm.controls.dateSpan.setValue('1y');
 
@@ -273,12 +289,12 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           },
         ],
         selected: {
-          'Subsidy (USD)': this.displayMode === 'fiat',
-          'Fees (USD)': this.displayMode === 'fiat',
-          'Subsidy': this.displayMode === 'normal',
-          'Fees': this.displayMode === 'normal',
-          'Subsidy (%)': this.displayMode === 'percentage',
-          'Fees (%)': this.displayMode === 'percentage',
+          'Subsidy': this.displayMode === 'normal' && this.legendState.normal.subsidy,
+          'Fees': this.displayMode === 'normal' && this.legendState.normal.fees,
+          'Subsidy (USD)': this.displayMode === 'fiat' && this.legendState.fiat.subsidy,
+          'Fees (USD)': this.displayMode === 'fiat' && this.legendState.fiat.fees,
+          'Subsidy (%)': this.displayMode === 'percentage' && this.legendState.percentage.subsidy,
+          'Fees (%)': this.displayMode === 'percentage' && this.legendState.percentage.fees,
         },
       },
       yAxis: this.data.blockFees.length === 0 ? undefined : [
@@ -410,18 +426,33 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
         mode = 'normal';
       }
 
-      if (this.displayMode === mode) {return;}
-
+      const isSubsidy = params.name.startsWith('Subsidy');
       const isActivation = params.selected[params.name];
+
+      if (this.displayMode === mode) {
+        // Toggle within same mode
+        if (isSubsidy) {
+          this.legendState[mode].subsidy = isActivation;
+        } else {
+          this.legendState[mode].fees = isActivation;
+        }
+        this.storageService.setValue(`fees_subsidy_legend_${mode}`, JSON.stringify(this.legendState[mode]));
+        return;
+      }
 
       if (isActivation) {
         this.displayMode = mode;
-        this.chartInstance.dispatchAction({ type: this.displayMode === 'normal' ? 'legendSelect' : 'legendUnSelect', name: 'Subsidy' });
-        this.chartInstance.dispatchAction({ type: this.displayMode === 'normal' ? 'legendSelect' : 'legendUnSelect', name: 'Fees' });
-        this.chartInstance.dispatchAction({ type: this.displayMode === 'fiat' ? 'legendSelect' : 'legendUnSelect', name: 'Subsidy (USD)' });
-        this.chartInstance.dispatchAction({ type: this.displayMode === 'fiat' ? 'legendSelect' : 'legendUnSelect', name: 'Fees (USD)' });
-        this.chartInstance.dispatchAction({ type: this.displayMode === 'percentage' ? 'legendSelect' : 'legendUnSelect', name: 'Subsidy (%)' });
-        this.chartInstance.dispatchAction({ type: this.displayMode === 'percentage' ? 'legendSelect' : 'legendUnSelect', name: 'Fees (%)' });
+        this.storageService.setValue('fees_subsidy_display_mode', mode);
+        // Reset the newly activated mode's legend to both visible
+        this.legendState[mode] = { subsidy: true, fees: true };
+        this.storageService.setValue(`fees_subsidy_legend_${mode}`, JSON.stringify(this.legendState[mode]));
+
+        this.chartInstance.dispatchAction({ type: mode === 'normal' ? 'legendSelect' : 'legendUnSelect', name: 'Subsidy' });
+        this.chartInstance.dispatchAction({ type: mode === 'normal' ? 'legendSelect' : 'legendUnSelect', name: 'Fees' });
+        this.chartInstance.dispatchAction({ type: mode === 'fiat' ? 'legendSelect' : 'legendUnSelect', name: 'Subsidy (USD)' });
+        this.chartInstance.dispatchAction({ type: mode === 'fiat' ? 'legendSelect' : 'legendUnSelect', name: 'Fees (USD)' });
+        this.chartInstance.dispatchAction({ type: mode === 'percentage' ? 'legendSelect' : 'legendUnSelect', name: 'Subsidy (%)' });
+        this.chartInstance.dispatchAction({ type: mode === 'percentage' ? 'legendSelect' : 'legendUnSelect', name: 'Fees (%)' });
       }
     });
 
