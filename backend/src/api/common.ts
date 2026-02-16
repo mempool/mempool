@@ -1081,40 +1081,25 @@ export class Common {
       ].flat(),
     };
   }
-  static calcMinMaxFeeRates(
-    transactions: TransactionExtended[]
-  ): {
-    minFeeRate: number;
-    maxFeeRate: number;
-    effectiveMinFeeRate: number;
-    effectiveMaxFeeRate: number;
-  } {
-    const result = transactions.reduce(
-      (acc, tx) => {
-        const raw = tx.feePerVsize;
-        const eff = tx.effectiveFeePerVsize;
+  
+ static calcMinMaxFeeRates(
+  transactions: TransactionExtended[]
+): { minfeerate: number; maxfeerate: number; effective_minfeerate: number; effective_maxfeerate: number; } {
+  const minmax = transactions.reduce((a: { min?: number; max?: number; effMin?: number; effMax?: number; }, tx) => ({
+    min: tx.feePerVsize ? Math.min(tx.feePerVsize, a.min ?? tx.feePerVsize) : a.min,
+    max: tx.feePerVsize ? Math.max(tx.feePerVsize, a.max ?? tx.feePerVsize) : a.max,
+    effMin: tx.effectiveFeePerVsize ? Math.min(tx.effectiveFeePerVsize, a.effMin ?? tx.effectiveFeePerVsize) : a.effMin,
+    effMax: tx.effectiveFeePerVsize ? Math.max(tx.effectiveFeePerVsize, a.effMax ?? tx.effectiveFeePerVsize) : a.effMax,
+  }), {});
 
-        acc.min = Math.min(acc.min, raw);
-        acc.max = Math.max(acc.max, raw);
-        acc.effMin = Math.min(acc.effMin, eff);
-        acc.effMax = Math.max(acc.effMax, eff);
-
-        return acc;
-      },
-      {
-        min: Infinity,
-        max: -Infinity,
-        effMin: Infinity,
-        effMax: -Infinity,
-      }
-    );
-    return {
-      minFeeRate: result.min === Infinity ? 0 : result.min,
-      maxFeeRate: result.max === -Infinity ? 0 : result.max,
-      effectiveMinFeeRate: result.effMin === Infinity ? 0 : result.effMin,
-      effectiveMaxFeeRate: result.effMax === -Infinity ? 0 : result.effMax,
-    };
-  }
+  return {
+    minfeerate: minmax.min ?? 0,
+    maxfeerate: minmax.max ?? 0,
+    effective_minfeerate: minmax.effMin ?? 0,
+    effective_maxfeerate: minmax.effMax ?? 0,
+  };
+}
+  
   static getNthPercentile(n: number, sortedDistribution: any[]): any {
     return sortedDistribution[Math.floor((sortedDistribution.length - 1) * (n / 100))];
   }
