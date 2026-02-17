@@ -23,6 +23,7 @@ $nav-tabs-link-active-bg: $active-bg;
 $primary: #105fb0;
 $secondary: #2d3348;
 $tertiary: #653b9c;
+$selected-button-color: #177ad8; 
 $success: #1a9436;
 $info: #1bd8f4;
 
@@ -30,13 +31,13 @@ $h5-font-size: 1.15rem !default;
 
 $pagination-bg: $body-bg;
 $pagination-border-color: $gray-800;
-$pagination-disabled-bg:           $fg;
+$pagination-disabled-bg: $fg;
 $pagination-disabled-border-color: $bg;
-$pagination-active-color:          $fg;
-$pagination-active-bg:             $tertiary;
-$pagination-hover-bg:              $hover-bg;
-$pagination-hover-border-color:     $bg;
-$pagination-disabled-bg:          $bg;
+$pagination-active-color: $fg;
+$pagination-active-bg: $tertiary;
+$pagination-hover-bg: $hover-bg;
+$pagination-hover-border-color: $bg;
+$pagination-disabled-bg: $bg;
 
 $custom-select-indicator-color: $fg;
 
@@ -45,17 +46,15 @@ $custom-select-indicator-color: $fg;
   border: 1px solid #20263e !important;
 }
 
-$link-color:                $info;
-$link-decoration:           none !default;
-$link-hover-color:          color.adjust($link-color, $lightness: -15%) !default;
-$link-hover-decoration:     underline !default;
+$link-color: $info;
+$link-decoration: none !default;
+$link-hover-color: color.adjust($link-color, $lightness: -15%) !default;
+$link-hover-decoration: underline !default;
 
 $dropdown-bg: $bg;
 $dropdown-link-color: $fg;
-
 $dropdown-link-hover-color: $fg;
 $dropdown-link-hover-bg: $active-bg;
-
 $dropdown-link-active-color: $fg;
 $dropdown-link-active-bg: $active-bg;
 
@@ -66,10 +65,10 @@ $dropdown-link-active-bg: $active-bg;
   --fg: #{$fg};
   --nav-bg: #{$nav-bg};
   --title-fg: #{$title-fg};
-
   --primary: #{$primary};
   --secondary: #{$secondary};
   --tertiary: #{$tertiary};
+  --selected-button-color: #{$selected-button-color}; 
   --success: #{$success};
   --info: #{$info};
   --link-color: #{$link-color};
@@ -77,7 +76,6 @@ $dropdown-link-active-bg: $active-bg;
   --icon: #f1f1f1;
   --skeleton-bg: #2e324e;
   --skeleton-bg-light: #5d6182;
-
   --box-bg: #24273e;
   --stat-box-bg: #181b2d;
   --alert-bg: #3a1c61;
@@ -85,32 +83,37 @@ $dropdown-link-active-bg: $active-bg;
   --fade-out-box-bg-start: rgba(36, 39, 62, 0);
   --fade-out-box-bg-end: rgba(36, 39, 62, 1);
   --opacity: 0.57;
-
   --testnet: #1d486f;
   --signet: #6f1d5d;
   --regtest: #7d7d7d;
   --liquid: #116761;
   --liquidtestnet: #494a4a;
-
   --mainnet-alt: #9339f4;
   --testnet-alt: #183550;
   --signet-alt: #471850;
   --regtest-alt: #4a4a4a;
   --liquidtestnet-alt: #272e46;
-
   --taproot: #eba814;
   --taproot-light: #d5a90a;
   --taproot-dark: #9d7c05;
-
   --green: #3bcc49;
   --red: #dc3545;
   --yellow: #fff000;
   --grey: #6c757d;
   --tooltip-grey: #b1b1b1;
   --orange: #b86d12;
-
   --search-button: #4d2d77;
   --search-button-border: #472a6e;
   --search-button-focus: #533180;
   --search-button-shadow: #7c58ab80;
+}
+
+
+.theme-softsimon {
+  .btn-primary:not(:disabled):not(.disabled):active,
+  .btn-primary:not(:disabled):not(.disabled).active,
+  .show > .btn-primary.dropdown-toggle {
+    background-color: var(--selected-button-color) !important;
+    border-color: var(--selected-button-color) !important;
+  }
 }
