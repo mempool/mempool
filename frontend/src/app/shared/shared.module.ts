@@ -133,7 +133,6 @@ import { BitcoinInvoiceComponent } from '@components/bitcoin-invoice/bitcoin-inv
 import { OnlyVsizeDirective, OnlyWeightDirective } from '@app/shared/components/weight-directives/weight-directives';
 import { GithubLogin } from '@components/github-login.component/github-login.component';
 
-import { AddressChunkPipe } from '@app/shared/pipes/address-chunk.pipe';
 import { AddressFormattingSelectorComponent } from '@components/address-formatting-selector/address-formatting-selector.component';
 
 @NgModule({
@@ -259,7 +258,6 @@ import { AddressFormattingSelectorComponent } from '@components/address-formatti
     TwitterLogin,
     GithubLogin,
     BitcoinInvoiceComponent,
-    AddressChunkPipe,
     AddressFormattingSelectorComponent
   ],
   imports: [
@@ -411,7 +409,6 @@ import { AddressFormattingSelectorComponent } from '@components/address-formatti
     OnlyVsizeDirective,
     OnlyWeightDirective,
 
-    AddressChunkPipe,
     AddressFormattingSelectorComponent,
   ]
 })

@@ -11,10 +11,7 @@
     </span>
   </div>
 } @else {
-  <div class="d-flex align-items-center">
-    <a class="address" [routerLink]="['/address/' | relativeUrl, address]" title="{{ address }}" [style.user-select]="formattingService.useSpacing ? 'none' : 'auto'" style="user-select: none; min-width: 0;">
-      <app-truncate [text]="address" [lastChars]="8"></app-truncate>
-    </a>
-    <app-clipboard *ngIf="formattingService.showCopyButton" [text]="address" size="normal"></app-clipboard>
-  </div>
+  <a class="address" [routerLink]="['/address/' | relativeUrl, address]" title="{{ address }}">
+    <app-truncate [text]="address" [lastChars]="8"></app-truncate>
+  </a>
 }

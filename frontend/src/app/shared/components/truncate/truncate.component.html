@@ -11,13 +11,11 @@
 </span>
 
 <ng-template #ltrTruncated>
-  <span class="first" [innerHTML]="text.slice(0,-lastChars) | addressChunk : 0 : text"></span>
-  <span class="last-four" [innerHTML]="text.slice(-lastChars) | addressChunk : (text.length - lastChars) : text"></span>
+  <span class="first">{{text.slice(0,-lastChars)}}</span><span class="last-four">{{text.slice(-lastChars)}}</span>
   <div class="hidden-content">{{ text }}</div>
 </ng-template>
 
 <ng-template #rtlTruncated>
-  <span class="first" [innerHTML]="text.slice(lastChars) | addressChunk : lastChars : text"></span>
-  <span class="last-four" [innerHTML]="text.slice(0, lastChars) | addressChunk : 0 : text"></span>
+  <span class="first">{{text.slice(lastChars)}}</span><span class="last-four">{{text.slice(0,lastChars)}}</span>
   <div class="hidden-content">{{ text }}</div>
 </ng-template>

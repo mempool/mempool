@@ -1,6 +1,5 @@
-import { Component, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
-import { AddressFormattingService } from '@app/services/address-formatting.service';
-import { Subscription } from 'rxjs';
+import { Component, Input, Inject, LOCALE_ID, ChangeDetectionStrategy } from '@angular/core';
+
 @Component({
   selector: 'app-truncate',
   templateUrl: './truncate.component.html',
@@ -19,27 +18,12 @@ export class TruncateComponent {
   @Input() textAlign: 'start' | 'end' = 'start';
   @Input() disabled: boolean = false;
   rtl: boolean;
-  private formattingStateSubscription: Subscription;
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
-    public formattingService: AddressFormattingService,
-    private cd: ChangeDetectorRef
   ) {
     if (this.locale.startsWith('ar') || this.locale.startsWith('fa') || this.locale.startsWith('he')) {
       this.rtl = true;
-    }
-  }
-
-  ngOnInit() {
-    this.formattingStateSubscription = this.formattingService.mode$.subscribe(() => {
-      this.cd.markForCheck();
-    });
-  }
-
-  ngOnDestroy() {
-    if (this.formattingStateSubscription) {
-      this.formattingStateSubscription.unsubscribe();
     }
   }
 }
