@@ -317,7 +317,15 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             index
           }));
 
-          this.defaultBid = this.maxRateOptions[1].fee;
+          // if the difference in cost between the first two options is more than 20% of the base fee, default to the cheaper one
+          if (this.maxRateOptions.length > 2) {
+            const costDiff = this.maxRateOptions[1].fee - this.maxRateOptions[0].fee;
+            if (costDiff >= (this.estimate.mempoolBaseFee + this.estimate.vsizeFee) * 0.2) {
+              this.selectFeeRateIndex = 0;
+            }
+          }
+
+          this.defaultBid = this.maxRateOptions[this.selectFeeRateIndex].fee;
           this.userBid = this.defaultBid;
           this.cost = this.userBid + this.estimate.mempoolBaseFee + this.estimate.vsizeFee;
 
