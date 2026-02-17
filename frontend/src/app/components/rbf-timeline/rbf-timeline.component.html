@@ -76,16 +76,15 @@
   <div class="row">
     <!-- Left Column: Previous Transaction -->
     <div class="col-sm">
-      <table class="table table-borderless table-striped">
+      <table class="table table-borderless table-striped previous-box">
         <tbody>
           <tr class="diff-head previous">
             <td colspan="2">
-              <span i18n="rbf-diff.previous-tx">Previous Transaction</span>
-            </td>
-          </tr>
-          <tr class="diff-txid">
-            <td colspan="2">
-              <code>{{ selectedOldTx.txid.substring(0, 12) }}...{{ selectedOldTx.txid.substring(selectedOldTx.txid.length - 8) }}</code>
+              <div class="diff-head-content">
+                <span i18n="rbf-diff.previous-tx">Previous Transaction</span>
+                <span class="txid-separator">:</span>
+                <code>{{ selectedOldTx.txid.substring(0, 12) }}...{{ selectedOldTx.txid.substring(selectedOldTx.txid.length - 8) }}</code>
+              </div>
             </td>
           </tr>
 
@@ -96,16 +95,15 @@
 
     <!-- Right Column: Current Transaction -->
     <div class="col-sm">
-      <table class="table table-borderless table-striped">
+      <table class="table table-borderless table-striped current-box">
         <tbody>
           <tr class="diff-head current">
             <td colspan="2">
-              <span i18n="rbf-diff.current-tx">Current Transaction</span>
-            </td>
-          </tr>
-          <tr class="diff-txid">
-            <td colspan="2">
-              <code>{{ selectedNewTx.txid.substring(0, 12) }}...{{ selectedNewTx.txid.substring(selectedNewTx.txid.length - 8) }}</code>
+              <div class="diff-head-content">
+                <span i18n="rbf-diff.current-tx">Current Transaction</span>
+                <span class="txid-separator">:</span>
+                <code>{{ selectedNewTx.txid.substring(0, 12) }}...{{ selectedNewTx.txid.substring(selectedNewTx.txid.length - 8) }}</code>
+              </div>
             </td>
           </tr>
 
@@ -135,7 +133,7 @@
               <td [attr.i18n]="row.i18nKey">{{ row.label }}</td>
               <td>
                 <ng-container *ngIf="row.isAmount">
-                  <app-amount [satoshis]="asNumber(row.previous)" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
+                  <app-amount [satoshis]="asNumber(row.previous)" [noFiat]="true" [forceSats]="row.i18nKey === 'transaction.fee'"></app-amount>
                 </ng-container>
                 <ng-container *ngIf="!row.isAmount">
                   <span [innerHTML]="'&lrm;' + (row.previous | number) + ' ' + row.unit"></span>
@@ -152,7 +150,7 @@
               <td [attr.i18n]="row.i18nKey">{{ row.label }}</td>
               <td>
                 <span *ngIf="row.previous !== null">{{ row.previous }}</span>
-                <span *ngIf="row.previous === null" class="text-muted">—</span>
+                <span *ngIf="row.previous === null" class="text-muted null-placeholder">—</span>
               </td>
             </tr>
           </ng-container>
@@ -165,7 +163,7 @@
               <td [attr.i18n]="row.i18nKey">{{ row.label }}</td>
               <td>
                 <span *ngIf="row.previous !== null">{{ row.previous }}</span>
-                <span *ngIf="row.previous === null" class="text-muted">—</span>
+                <span *ngIf="row.previous === null" class="text-muted null-placeholder">—</span>
               </td>
             </tr>
           </ng-container>
@@ -196,7 +194,7 @@
               <td [attr.i18n]="row.i18nKey">{{ row.label }}</td>
               <td>
                 <ng-container *ngIf="row.isAmount">
-                  <app-amount [satoshis]="asNumber(row.current)" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
+                  <app-amount [satoshis]="asNumber(row.current)" [noFiat]="true" [forceSats]="row.i18nKey === 'transaction.fee'"></app-amount>
                 </ng-container>
                 <ng-container *ngIf="!row.isAmount">
                   <span [innerHTML]="'&lrm;' + (row.current | number) + ' ' + row.unit"></span>
@@ -216,7 +214,7 @@
               <td [attr.i18n]="row.i18nKey">{{ row.label }}</td>
               <td>
                 <span *ngIf="row.current !== null">{{ row.current }}</span>
-                <span *ngIf="row.current === null" class="text-muted">—</span>
+                <span *ngIf="row.current === null" class="text-muted null-placeholder">—</span>
               </td>
             </tr>
           </ng-container>
@@ -229,7 +227,7 @@
               <td [attr.i18n]="row.i18nKey">{{ row.label }}</td>
               <td>
                 <span *ngIf="row.current !== null">{{ row.current }}</span>
-                <span *ngIf="row.current === null" class="text-muted">—</span>
+                <span *ngIf="row.current === null" class="text-muted null-placeholder">—</span>
               </td>
             </tr>
           </ng-container>
