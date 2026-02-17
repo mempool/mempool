@@ -152,7 +152,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
     if (document.getElementById( targetId + '-tab-header' )) {
       tabHeaderHeight = document.getElementById( targetId + '-tab-header' ).scrollHeight;
     }
-    if( ( window.innerWidth <= 992 ) && ( ( this.whichTab === 'rest' ) || ( this.whichTab === 'faq' ) || ( this.whichTab === 'websocket' ) ) && targetId ) {
+    if( ( window.innerWidth <= 992 ) && ( ( this.whichTab === 'rest' ) || ( this.whichTab === 'faq' ) || ( this.whichTab === 'websocket' ) || ( this.whichTab === 'electrs' )) && targetId ) {
       const endpointContainerEl = document.querySelector<HTMLElement>( '#' + targetId );
       const endpointContentEl = document.querySelector<HTMLElement>( '#' + targetId + ' .endpoint-content' );
       const endPointContentElHeight = endpointContentEl.clientHeight;

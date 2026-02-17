@@ -12852,7 +12852,7 @@ export const electrumApiDocsData = [
     type: 'endpoint',
     category: 'server',
     fragment: 'server-version',
-    title: 'server.version',
+    title: 'Version',
     description: {
       default: 'Returns the server version and protocol version.'
     },
@@ -12868,7 +12868,7 @@ export const electrumApiDocsData = [
     type: 'endpoint',
     category: 'server',
     fragment: 'server-banner',
-    title: 'server.banner',
+    title: 'Banner',
     description: {
       default: 'Returns the server banner message.'
     },
@@ -12884,7 +12884,7 @@ export const electrumApiDocsData = [
     type: 'endpoint',
     category: 'server',
     fragment: 'server-ping',
-    title: 'server.ping',
+    title: 'Ping',
     description: {
       default: 'A simple ping to check if the server is responsive.'
     },
@@ -12907,7 +12907,7 @@ export const electrumApiDocsData = [
     type: 'endpoint',
     category: 'blockchain',
     fragment: 'blockchain-block-header',
-    title: 'blockchain.block.header',
+    title: 'Header',
     description: {
       default: 'Returns the block header at a given height. Optionally includes a merkle proof if <code>cp_height</code> is specified.'
     },
@@ -12923,7 +12923,7 @@ export const electrumApiDocsData = [
     type: 'endpoint',
     category: 'blockchain',
     fragment: 'blockchain-block-headers',
-    title: 'blockchain.block.headers',
+    title: 'Headers',
     description: {
       default: 'Returns a range of block headers. Maximum of 2016 headers can be requested at once.'
     },
@@ -12943,7 +12943,7 @@ export const electrumApiDocsData = [
     type: 'endpoint',
     category: 'blockchain',
     fragment: 'blockchain-headers-subscribe',
-    title: 'blockchain.headers.subscribe',
+    title: 'Subscribe',
     description: {
       default: 'Subscribe to new block headers. Returns the current best block header and sends notifications when new blocks are found.'
     },
@@ -12962,7 +12962,7 @@ export const electrumApiDocsData = [
     type: 'endpoint',
     category: 'blockchain',
     fragment: 'blockchain-estimatefee',
-    title: 'blockchain.estimatefee',
+    title: 'Estimate Fee',
     description: {
       default: 'Returns the estimated transaction fee for confirmation within a given number of blocks. Returns fee in BTC/kB, or -1 if estimation is not available.'
     },
@@ -12978,7 +12978,7 @@ export const electrumApiDocsData = [
     type: 'endpoint',
     category: 'blockchain',
     fragment: 'blockchain-relayfee',
-    title: 'blockchain.relayfee',
+    title: 'Relay Fee',
     description: {
       default: 'Returns the minimum relay fee for low-priority transactions in BTC/kB.'
     },
@@ -13001,7 +13001,7 @@ export const electrumApiDocsData = [
     type: 'endpoint',
     category: 'scripthash',
     fragment: 'blockchain-scripthash-get-balance',
-    title: 'blockchain.scripthash.get_balance',
+    title: 'GET Balance',
     description: {
       default: 'Returns the confirmed and unconfirmed balance for a script hash. Script hashes are the SHA256 hash of the output script (scriptPubKey), encoded as hexadecimal with the bytes reversed.<br><br><b>Not available on Liquid networks.</b>'
     },
@@ -13020,7 +13020,7 @@ export const electrumApiDocsData = [
     type: 'endpoint',
     category: 'scripthash',
     fragment: 'blockchain-scripthash-get-history',
-    title: 'blockchain.scripthash.get_history',
+    title: 'GET History',
     description: {
       default: 'Returns the transaction history for a script hash. Returns an array of objects containing transaction ID, height, and fee (for mempool transactions).'
     },
@@ -13081,7 +13081,7 @@ export const electrumApiDocsData = [
     type: 'endpoint',
     category: 'scripthash',
     fragment: 'blockchain-scripthash-listunspent',
-    title: 'blockchain.scripthash.listunspent',
+    title: 'List Unspent',
     description: {
       default: 'Returns the list of unspent transaction outputs for a script hash.'
     },
@@ -13164,7 +13164,7 @@ export const electrumApiDocsData = [
     type: 'endpoint',
     category: 'scripthash',
     fragment: 'blockchain-scripthash-subscribe',
-    title: 'blockchain.scripthash.subscribe',
+    title: 'Subscribe',
     description: {
       default: 'Subscribe to notifications for a script hash. Returns the current status hash and sends notifications when the history changes.'
     },
@@ -13180,7 +13180,7 @@ export const electrumApiDocsData = [
     type: 'endpoint',
     category: 'scripthash',
     fragment: 'blockchain-scripthash-unsubscribe',
-    title: 'blockchain.scripthash.unsubscribe',
+    title: 'Unsubscribe',
     description: {
       default: 'Unsubscribe from notifications for a script hash.'
     },
@@ -13203,7 +13203,7 @@ export const electrumApiDocsData = [
     type: 'endpoint',
     category: 'transaction',
     fragment: 'blockchain-transaction-broadcast',
-    title: 'blockchain.transaction.broadcast',
+    title: 'Broadcast',
     description: {
       default: 'Broadcast a raw transaction to the network. Returns the transaction ID on success.'
     },
@@ -13219,7 +13219,7 @@ export const electrumApiDocsData = [
     type: 'endpoint',
     category: 'transaction',
     fragment: 'blockchain-transaction-get',
-    title: 'blockchain.transaction.get',
+    title: 'GET Transaction',
     description: {
       default: 'Returns a raw transaction by its transaction ID. Returns hex-encoded raw transaction.'
     },
@@ -13235,7 +13235,7 @@ export const electrumApiDocsData = [
     type: 'endpoint',
     category: 'transaction',
     fragment: 'blockchain-transaction-get-merkle',
-    title: 'blockchain.transaction.get_merkle',
+    title: 'GET Merkle',
     description: {
       default: 'Returns the merkle proof for a transaction. Requires the transaction to be confirmed.'
     },
@@ -13263,7 +13263,7 @@ export const electrumApiDocsData = [
     type: 'endpoint',
     category: 'transaction',
     fragment: 'blockchain-transaction-id-from-pos',
-    title: 'blockchain.transaction.id_from_pos',
+    title: 'ID From Pos',
     description: {
       default: 'Returns the transaction ID at a given position in a block. Optionally includes the merkle proof.'
     },
@@ -13286,7 +13286,7 @@ export const electrumApiDocsData = [
     type: 'endpoint',
     category: 'mempool',
     fragment: 'mempool-get-fee-histogram',
-    title: 'mempool.get_fee_histogram',
+    title: 'GET Fee Histogram',
     description: {
       default: 'Returns a histogram of transaction fees in the mempool. Each entry is a pair of [fee_rate, cumulative_vsize] where fee_rate is in satoshis per virtual byte.'
     },
