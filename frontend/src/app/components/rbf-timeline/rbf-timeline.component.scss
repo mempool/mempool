@@ -251,28 +251,47 @@
   padding-top: 0.5rem;
   border-top: 1px solid var(--box-border);
 
-  /* quitar cualquier línea roja/verde arriba */
-  .diff-head.previous td,
-  .diff-head.current td {
-    border-top: none !important;
+  table {
+    margin-bottom: 0;
+  }
+
+  .previous-box {
+    border-top: 3px solid #B74242;
+  }
+
+  .current-box {
+    border-top: 3px solid #42B747;
   }
 
   .diff-head td {
     font-weight: 600;
     text-align: left;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
   }
 
-  .diff-txid td {
-    text-align: center;
-    padding-top: 0.25rem;
-    padding-bottom: 0.75rem;
+  .diff-head-content {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    white-space: nowrap;
 
     code {
+      margin: 0;
       font-size: 0.85rem;
-      opacity: 0.7;
+      color: var(--link-color);
       background: transparent;
       padding: 0;
+      opacity: 0.9;
     }
+  }
+
+  td:last-child {
+    text-align: left;
+  }
+
+  .null-placeholder {
+    opacity: 0.5;
   }
 
   .changed-indicator {
