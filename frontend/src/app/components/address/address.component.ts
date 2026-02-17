@@ -14,6 +14,7 @@ import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { AddressInformation } from '@interfaces/node-api.interface';
 import { AddressTypeInfo } from '@app/shared/address-utils';
 import { extractTapLeaves, fillTapTree, convertTextToBuffer, PsbtKeyValue } from '@app/shared/transaction.utils';
+import { AddressFormattingService, FormattingMode } from '@app/services/address-formatting.service';
 
 class AddressStats implements ChainStats {
   address: string;
@@ -23,6 +24,7 @@ class AddressStats implements ChainStats {
   spent_txo_count: number;
   spent_txo_sum: number;
   tx_count: number;
+  mode: FormattingMode = "off"
 
   constructor (stats: ChainStats, address: string, scriptpubkey?: string) {
     Object.assign(this, stats);
@@ -151,6 +153,7 @@ export class AddressComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private seoService: SeoService,
     private formBuilder: UntypedFormBuilder,
+    public formattingService: AddressFormattingService
   ) { }
 
   ngOnInit(): void {

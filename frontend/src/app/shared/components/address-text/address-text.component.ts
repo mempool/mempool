@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { AddressMatch, AddressTypeInfo } from '@app/shared/address-utils';
+import { AddressFormattingService, FormattingMode } from '@app/services/address-formatting.service';
 
 @Component({
   selector: 'app-address-text',
@@ -11,6 +12,7 @@ export class AddressTextComponent {
   @Input() address: string;
   @Input() info: AddressTypeInfo | null;
   @Input() similarity: { score: number, match: AddressMatch, group: number } | null;
+  mode: FormattingMode = "off"
 
   min = Math.min;
 
@@ -20,4 +22,8 @@ export class AddressTextComponent {
     'var(--info)',
     'white',
   ];
+
+  constructor(
+    public formattingService: AddressFormattingService
+  ) {}
 }

@@ -1,0 +1,52 @@
+<span class="truncate" [style.max-width]="maxWidth ? maxWidth + 'px' : null" [style.justify-content]="textAlign" [class.inline]="inline">
+  
+  <ng-container *ngIf="link">
+    <a [routerLink]="link" [queryParams]="queryParams" class="truncate-link" [target]="external ? '_blank' : '_self'" [class.disabled]="disabled">
+      <ng-container *ngIf="rtl; then rtlTruncated; else ltrTruncated;"></ng-container>
+    </a>
+  </ng-container>
+
+  <ng-container *ngIf="!link">
+    <ng-container *ngIf="rtl; then rtlTruncated; else ltrTruncated;"></ng-container>
+  </ng-container>
+  
+  <ng-content></ng-content>
+</span>
+
+<ng-template #ltrTruncated>
+  <span class="first">
+    <ng-container *ngIf="headChunks.length; else simpleHead">
+      <span *ngFor="let chunk of headChunks" 
+            [style.color]="chunk.color" 
+            [class.spacer]="chunk.hasMargin">{{ chunk.text }}</span>
+    </ng-container>
+    <ng-template #simpleHead>{{ address.slice(0, -lastChars) }}</ng-template>
+  </span>
+
+  <span class="last-four">
+    <ng-container *ngIf="tailChunks.length; else simpleTail">
+      <span *ngFor="let chunk of tailChunks" 
+            [style.color]="chunk.color" 
+            [class.spacer]="chunk.hasMargin">{{ chunk.text }}</span>
+    </ng-container>
+    <ng-template #simpleTail>{{ address.slice(-lastChars) }}</ng-template>
+  </span>
+
+  <div class="hidden-content">{{ address }}</div>
+</ng-template>
+
+<ng-template #rtlTruncated>
+  <span class="first">
+      <ng-container *ngIf="tailChunks.length; else simpleTailRTL">
+          <span *ngFor="let chunk of tailChunks" [style.color]="chunk.color">{{ chunk.text }}</span>
+      </ng-container>
+      <ng-template #simpleTailRTL>{{ address.slice(-lastChars) }}</ng-template>
+  </span>
+  <span class="last-four">
+      <ng-container *ngIf="headChunks.length; else simpleHeadRTL">
+          <span *ngFor="let chunk of headChunks" [style.color]="chunk.color">{{ chunk.text }}</span>
+      </ng-container>
+      <ng-template #simpleHeadRTL>{{ address.slice(0, -lastChars) }}</ng-template>
+  </span>
+  <div class="hidden-content">{{ address }}</div>
+</ng-template>

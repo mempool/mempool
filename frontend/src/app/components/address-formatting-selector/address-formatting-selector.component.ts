@@ -1,36 +1,36 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { AddressFormattingService, FormattingMode } from '@app/services/address-formatting.service';
-import { Subscription } from 'rxjs';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { AddressFormattingService } from '@app/services/address-formatting.service';
 
 @Component({
   selector: 'app-address-formatting-selector',
   templateUrl: './address-formatting-selector.component.html',
   styles: [],
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AddressFormattingSelectorComponent implements OnInit, OnDestroy {
-  form: FormGroup;
-  private formattingStateSubscription: Subscription;
+export class AddressFormattingSelectorComponent implements OnInit {
+  form: UntypedFormGroup;
+  
+  modes = ['off', 'color', 'spacing', 'copy']; 
 
   constructor(
-    private fb: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private formattingService: AddressFormattingService
   ) {}
 
   ngOnInit(): void {
-    this.form = this.fb.group({
-      mode: [this.formattingService.mode]
+    this.form = this.formBuilder.group({
+      mode: ['off']
     });
 
-    this.formattingStateSubscription = this.form.get('mode').valueChanges.subscribe((mode: FormattingMode) => {
-      this.formattingService.setMode(mode);
+    this.formattingService.mode$.subscribe((mode) => {
+      this.form.get('mode')?.setValue(mode, { emitEvent: false });
     });
   }
 
-  ngOnDestroy(): void {
-    if (this.formattingStateSubscription) {
-      this.formattingStateSubscription.unsubscribe();
-    }
+  changeMode(): void {
+    const newMode = this.form.get('mode')?.value;
+    this.formattingService.setMode(newMode);
   }
 }
