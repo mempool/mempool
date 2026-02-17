@@ -21,7 +21,7 @@
     <span i18n="shared.confidential">Confidential</span>
   </ng-template>
   <ng-template #default>
-    @if ((viewAmountMode$ | async) === 'btc' || (viewAmountMode$ | async) === 'fiat' || ignoreViewMode === true) {
+    @if (forceSats !== true && ((viewAmountMode$ | async) === 'btc' || (viewAmountMode$ | async) === 'fiat' || ignoreViewMode === true)) {
       &lrm;{{ addPlus && satoshis >= 0 ? '+' : '' }}{{ satoshis / 100000000 | number : digitsInfo }}
       <span class="symbol">
         <ng-container *ngTemplateOutlet="prefix"></ng-container>BTC
