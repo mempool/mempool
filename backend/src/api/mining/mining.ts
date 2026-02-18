@@ -218,7 +218,7 @@ class Mining {
     const now = new Date();
 
     // Run only if:
-    // * this.lastWeeklyHashrateIndexingDate is set to null (node backend restart, reorg)
+    // * this.lastWeeklyHashrateIndexingDate is set to null (node backend restart, reorg, or re-indexing was requested after mining pools update)
     // * we started a new week (around Monday midnight)
     const runIndexing = this.lastWeeklyHashrateIndexingDate === null ||
       now.getUTCDay() === 1 && this.lastWeeklyHashrateIndexingDate !== now.getUTCDate();
@@ -334,6 +334,7 @@ class Mining {
       logger.notice(`hashrates will now be re-indexed`);
       await database.query(`TRUNCATE hashrates`);
       this.lastHashrateIndexingDate = 0;
+      this.lastWeeklyHashrateIndexingDate = null;
       this.reindexHashrateRequested = false;
     }
 
