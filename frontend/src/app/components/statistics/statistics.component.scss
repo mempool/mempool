@@ -189,7 +189,25 @@
   flex-direction: row;
   align-items: stretch;
   justify-content: stretch;
+  .btn-primary {
+    
+    transition: all 0.2s ease-in-out;
 
+    &:hover {
+      background-color: var(--hover-bg) !important;
+      color: #fff !important;
+    }
+
+    &.active {
+      background-color: #1a1d30 !important; 
+      border-color: #2d3348 !important;
+      
+      color: #ffffff !important; 
+      font-weight: bold;
+      box-shadow: 0 0 10px rgba(16, 95, 176, 0.3); 
+      z-index: 2;
+    }
+  }
   .btn-group {
     flex-grow: 1;
     flex-shrink: 1;
