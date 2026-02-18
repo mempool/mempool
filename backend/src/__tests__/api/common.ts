@@ -37,4 +37,27 @@ describe('Common', () => {
       });
     });
   });
+
+  describe('Effective Fee Statistics', () => {
+    test('returns safe defaults for blocks with only coinbase', () => {
+      const coinbaseTx = { weight: 1000, fee: 0, txid: 'coinbase0' };
+      const result = Common.calcEffectiveFeeStatistics([coinbaseTx]);
+
+      expect(result.medianFee).toBe(0);
+      expect(result.feeRange).toEqual([0, 0, 0, 0, 0, 0, 0]);
+    });
+
+    test('excludes coinbase from fee stats when multiple txs', () => {
+      const coinbaseTx = { weight: 1000, fee: 0, txid: 'coinbase0' };
+      const tx1 = { weight: 400, fee: 100, txid: 'tx1' }; // vsize 100, rate 1 sat/vB
+      const tx2 = { weight: 400, fee: 250, txid: 'tx2' }; // vsize 100, rate 2.5 sat/vB
+
+      const result = Common.calcEffectiveFeeStatistics([coinbaseTx, tx1, tx2]);
+
+      // Verify that coinbase (fee 0) was excluded from stats
+      // Fee range min/max should be > 0 (not affected by coinbase's 0 fee)
+      expect(result.feeRange[0]).toBeGreaterThan(0); // min fee
+      expect(result.feeRange[6]).toBeGreaterThan(0); // max fee
+    });
+  });
 });
