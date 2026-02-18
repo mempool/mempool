@@ -58,7 +58,7 @@
   </a>
 
   <div (window:resize)="onResize()" ngbDropdown class="dropdown-container" *ngIf="isDropdownVisible">
-    <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split d-flex justify-content-center align-items-center" aria-haspopup="true">
+    <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split d-flex justify-content-center align-items-center" aria-haspopup="true" aria-label="Select network">
       <app-svg-images class="d-flex justify-content-center align-items-center current-network-svg" [name]="network.val === '' ? 'bitcoin' : network.val" width="20" height="20" viewBox="0 0 65 65"></app-svg-images>
     </button>
     <div ngbDropdownMenu [ngClass]="{'dropdown-menu-right' : isMobile}">
@@ -116,7 +116,7 @@
         </a>
       </li>
       <li class="nav-item" routerLinkActive="active" id="btn-enterprise" *ngIf="officialMempoolSpaceBuild">
-        <a class="nav-link" [routerLink]="['/enterprise' | relativeUrl ]" (click)="collapse()">
+        <a class="nav-link" [routerLink]="['/enterprise']" [queryParams]="{network: network.val.length ? network.val : null}" (click)="collapse()">
           <div class="svg-wrapper"><app-svg-images name="nav-enterprise" width="21.59" height="100%"></app-svg-images></div>
         </a>
       </li>

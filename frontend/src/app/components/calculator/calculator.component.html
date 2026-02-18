@@ -12,7 +12,7 @@
           <div class="input-group-prepend">
             <span class="input-group-text">{{ currency$ | async }}</span>
           </div>
-          <input type="text" inputmode="numeric" class="form-control" formControlName="fiat" (input)="transformInput('fiat')" (click)="selectAll($event)">
+          <input type="text" inputmode="decimal" class="form-control" formControlName="fiat" (input)="transformInput('fiat')" (click)="selectAll($event)">
           <app-clipboard [button]="true" [text]="form.get('fiat').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
         </div>
 
@@ -20,7 +20,7 @@
           <div class="input-group-prepend">
             <span class="input-group-text">BTC</span>
           </div>
-          <input type="text" inputmode="numeric" class="form-control" formControlName="bitcoin" (input)="transformInput('bitcoin')" (click)="selectAll($event)">
+          <input type="text" inputmode="decimal" class="form-control" formControlName="bitcoin" (input)="transformInput('bitcoin')" (click)="selectAll($event)">
           <app-clipboard [button]="true" [text]="form.get('bitcoin').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
         </div>
 
@@ -35,6 +35,12 @@
 
     </div>
 
+    <div class="row justify-content-center mt-3" *ngIf="isMaxSupply">
+      <div class="alert alert-warning" role="alert" i18n="calculator.max-supply-warning|Max supply warning message">
+        Values were capped at the max supply of 21M BTC
+      </div>
+    </div>
+
     <br>
 
     <div class="row justify-content-center">
@@ -47,13 +53,13 @@
 
     <div class="row justify-content-center">
       <div class="fiat-text">
-        <app-fiat [value]="form.get('satoshis').value" digitsInfo="1.0-0"></app-fiat>
+        <app-fiat [value]="form.get('satoshis').value" digitsInfo="1.2-2"></app-fiat>
       </div>
     </div>
 
     <div class="row justify-content-center mt-3">
       <div class="symbol">
-        Fiat price last updated <app-time kind="since" [time]="lastFiatPrice$ | async" [fastRender]="true"></app-time>
+        Fiat price last updated <app-time kind="since" [time]="lastFiatPrice$ | async" [fastRender]="true"></app-time>: {{ price$ | async | fiatCurrency : '1.0-0' : (currency$ | async) }}
       </div>
     </div>
 

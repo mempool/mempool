@@ -10,7 +10,7 @@
             <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true"
               style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
           </a>
-          <app-top-nodes-per-capacity [nodes$]="nodesRanking$" [widget]="true"></app-top-nodes-per-capacity>
+          <app-top-nodes-per-capacity [nodes$]="nodesRanking$" [statistics$]="statistics$" [widget]="true"></app-top-nodes-per-capacity>
         </div>
       </div>
     </div>
@@ -24,7 +24,7 @@
             <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true"
               style="vertical-align: text-top; font-size: 13px; color: var(--title-fg)"></fa-icon>
           </a>
-          <app-top-nodes-per-channels [nodes$]="nodesRanking$" [widget]="true"></app-top-nodes-per-channels>
+          <app-top-nodes-per-channels [nodes$]="nodesRanking$" [statistics$]="statistics$" [widget]="true"></app-top-nodes-per-channels>
         </div>
       </div>
     </div>
