@@ -35,3 +35,30 @@
 .nav-tabs .nav-link {
   white-space: nowrap;
 }
+
+.tabs-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.scroll-btn {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  bottom: 0;
+  width: 32px;
+  border: none;
+  background: var(--active-bg);
+  font-size: 22px;
+  cursor: pointer;
+  color: white;
+}
+
+.scroll-btn.left {
+  left: 0;
+}
+
+.scroll-btn.right {
+  right: 0;
+}

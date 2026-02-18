@@ -1,58 +1,72 @@
 <div class="container-xl master-page--no-min-width">
   <div class="text-center">
     <h2 i18n="documentation.title">Documentation</h2>
+    <div class="tabs-wrapper">
+      <button *ngIf="showLeft" class="scroll-btn left" (click)="scrollTabs(-1)">
+        <
+      </button>
+      <ul
+        ngbNav
+        #nav="ngbNav"
+        [animation]="false"
+        [(activeId)]="activeTab"
+        class="nav-tabs"
+        role="tablist"
+        (activeIdChange)="onTabChange($event)"
+      >
+        <li [ngbNavItem]="0" *ngIf="showFaqTab" role="presentation">
+          <a ngbNavLink [routerLink]="['/docs/faq' | relativeUrl]" role="tab"
+            >FAQ</a
+          >
+          <ng-template ngbNavContent>
+            <app-api-docs [whichTab]="'faq'"></app-api-docs>
+          </ng-template>
+        </li>
 
-    <ul
-      ngbNav
-      #nav="ngbNav"
-      [animation]="false"
-      [(activeId)]="activeTab"
-      class="nav-tabs"
-      role="tablist"
-      (activeIdChange)="onTabChange($event)"
-    >
-      <li [ngbNavItem]="0" *ngIf="showFaqTab" role="presentation">
-        <a ngbNavLink [routerLink]="['/docs/faq' | relativeUrl]" role="tab"
-          >FAQ</a
-        >
-        <ng-template ngbNavContent>
-          <app-api-docs [whichTab]="'faq'"></app-api-docs>
-        </ng-template>
-      </li>
+        <li [ngbNavItem]="1" role="presentation">
+          <a
+            ngbNavLink
+            [routerLink]="['/docs/api/rest' | relativeUrl]"
+            role="tab"
+            >API - REST</a
+          >
+          <ng-template ngbNavContent>
+            <app-api-docs [whichTab]="'rest'"></app-api-docs>
+          </ng-template>
+        </li>
 
-      <li [ngbNavItem]="1" role="presentation">
-        <a ngbNavLink [routerLink]="['/docs/api/rest' | relativeUrl]" role="tab"
-          >API - REST</a
-        >
-        <ng-template ngbNavContent>
-          <app-api-docs [whichTab]="'rest'"></app-api-docs>
-        </ng-template>
-      </li>
+        <li [ngbNavItem]="2" *ngIf="showWebSocketTab" role="presentation">
+          <a
+            ngbNavLink
+            [routerLink]="['/docs/api/websocket' | relativeUrl]"
+            role="tab"
+            >API - WebSocket</a
+          >
+          <ng-template ngbNavContent>
+            <app-api-docs [whichTab]="'websocket'"></app-api-docs>
+          </ng-template>
+        </li>
 
-      <li [ngbNavItem]="2" *ngIf="showWebSocketTab" role="presentation">
-        <a
-          ngbNavLink
-          [routerLink]="['/docs/api/websocket' | relativeUrl]"
-          role="tab"
-          >API - WebSocket</a
+        <li [ngbNavItem]="3" *ngIf="showElectrsTab" role="presentation">
+          <a
+            ngbNavLink
+            [routerLink]="['/docs/api/electrs' | relativeUrl]"
+            role="tab"
+            >API - Electrum RPC</a
+          >
+          <ng-template ngbNavContent>
+            <app-api-docs [whichTab]="'electrs'"></app-api-docs>
+          </ng-template>
+        </li>
+      </ul>
+      <button
+        *ngIf="showRight"
+        class="scroll-btn right"
+        (click)="scrollTabs(1)"
+      >
         >
-        <ng-template ngbNavContent>
-          <app-api-docs [whichTab]="'websocket'"></app-api-docs>
-        </ng-template>
-      </li>
-
-      <li [ngbNavItem]="3" *ngIf="showElectrsTab" role="presentation">
-        <a
-          ngbNavLink
-          [routerLink]="['/docs/api/electrs' | relativeUrl]"
-          role="tab"
-          >API - Electrum RPC</a
-        >
-        <ng-template ngbNavContent>
-          <app-api-docs [whichTab]="'electrs'"></app-api-docs>
-        </ng-template>
-      </li>
-    </ul>
+      </button>
+    </div>
 
     <div id="main-tab-content" [ngbNavOutlet]="nav"></div>
   </div>

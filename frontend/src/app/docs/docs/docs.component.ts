@@ -18,6 +18,10 @@ export class DocsComponent implements OnInit {
   showWebSocketTab = true;
   showFaqTab = true;
   showElectrsTab = true;
+  showLeft = true;
+  showRight = true;
+  resizeTimeout: any;
+  resizeHandler: any;
 
   @HostBinding('attr.dir') dir = 'ltr';
 
@@ -37,6 +41,31 @@ export class DocsComponent implements OnInit {
 
     document.querySelector<HTMLElement>( 'html' ).style.scrollBehavior = 'smooth';
   }
+
+  ngAfterViewInit() {
+    requestAnimationFrame(() => {
+      this.updateScrollButtons();
+
+      const container = document.querySelector('.nav-tabs') as HTMLElement;
+
+      container?.addEventListener('scroll', () =>
+        this.updateScrollButtons()
+      );
+
+      this.resizeHandler = () => {
+      clearTimeout(this.resizeTimeout);
+        this.resizeTimeout = setTimeout(() => {
+          this.updateScrollButtons();
+          this.onTabChange(this.activeTab);
+        }, 100);
+      };
+
+
+      window.addEventListener('resize', this.resizeHandler);
+    });
+  }
+
+
 
   ngDoCheck(): void {
 
@@ -91,9 +120,32 @@ export class DocsComponent implements OnInit {
     });
   }
 
+  scrollTabs(direction: number) {
+    const container = document.querySelector('.nav-tabs') as HTMLElement;
+    if (!container) return;
+
+    const scrollAmount = container.offsetWidth * 0.6;
+
+    container.scrollBy({
+      left: scrollAmount * direction,
+      behavior: 'smooth'
+    });
+  }
+
+  updateScrollButtons() {
+    const container = document.querySelector('.nav-tabs') as HTMLElement;
+    if (!container) return;
+
+    this.showLeft = container.scrollLeft > 5;
+    this.showRight =
+      container.scrollLeft + container.offsetWidth <
+      container.scrollWidth - 5;
+  }
+
 
 
   ngOnDestroy(): void {
     document.querySelector<HTMLElement>( 'html' ).style.scrollBehavior = 'auto';
+    window.removeEventListener('resize', this.resizeHandler);
   }
 }
