@@ -70,6 +70,29 @@ export class DocsComponent implements OnInit {
     }
   }
 
+  onTabChange(tabId: number) {
+    requestAnimationFrame(() => {
+      const container = document.querySelector('.nav-tabs') as HTMLElement;
+      const tabs = container.querySelectorAll('li');
+      const el = tabs[tabId] as HTMLElement;
+
+      if (!el || !container) return;
+
+      const elCenter =
+        el.offsetLeft + el.offsetWidth / 2;
+
+      const containerCenter =
+        container.offsetWidth / 2;
+
+      container.scrollTo({
+        left: elCenter - containerCenter,
+        behavior: 'smooth'
+      });
+    });
+  }
+
+
+
   ngOnDestroy(): void {
     document.querySelector<HTMLElement>( 'html' ).style.scrollBehavior = 'auto';
   }

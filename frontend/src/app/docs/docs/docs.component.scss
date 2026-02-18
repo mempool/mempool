@@ -14,3 +14,24 @@
     display: none;
   }
 }
+
+.nav-tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.nav-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-tabs li {
+  flex: 0 0 auto;
+}
+
+.nav-tabs .nav-link {
+  white-space: nowrap;
+}
