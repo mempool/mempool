@@ -1719,12 +1719,12 @@ class Blocks {
       if (this.oldestCoreLogTimestamp !== null) {
         logger.info(`Core debug log entries date back to ${new Date(this.oldestCoreLogTimestamp * 1000).toISOString()}`);
       } else {
-        logger.err(`Unable to read Core debug log file at ${debugLogPath}`);
+        logger.err(`Could not find oldest timestamp in Core debug log file at ${debugLogPath}`);
       }
       return this.oldestCoreLogTimestamp;
-    } catch {
+    } catch (e) {
       this.oldestCoreLogTimestamp = null;
-      logger.err(`Unable to read Core debug log file at ${debugLogPath}`);
+      logger.err(`Could not read Core debug log file at ${debugLogPath}. Reason: ${e instanceof Error ? e.message : e}`);
       return null;
     }
   }
