@@ -256,11 +256,11 @@
   }
 
   .previous-box {
-    border-top: 3px solid #B74242;
+    border-top: 3px solid var(--red);
   }
 
   .current-box {
-    border-top: 3px solid #42B747;
+    border-top: 3px solid var(--green);
   }
 
   .diff-head td {
