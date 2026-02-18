@@ -53,6 +53,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
   updateZoom = false;
   zoomSpan = 100;
   zoomTimeSpan = '';
+  legend: { mode: 'normal' | 'fiat' | 'percentage', subsidy: boolean, fees: boolean } = { mode: 'normal', subsidy: true, fees: true };
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
@@ -82,6 +83,16 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
     this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
+
+    try {
+      this.legend = JSON.parse(this.storageService.getValue('fees_subsidy_legend'));
+      if (!this.legend) {
+        this.legend = { mode: 'normal', subsidy: true, fees: true };
+      }
+      this.displayMode = this.legend.mode;
+    } catch (e) {
+      this.storageService.removeItem('fees_subsidy_legend');
+    }
 
     this.route
     .fragment
@@ -273,12 +284,12 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           },
         ],
         selected: {
-          'Subsidy (USD)': this.displayMode === 'fiat',
-          'Fees (USD)': this.displayMode === 'fiat',
-          'Subsidy': this.displayMode === 'normal',
-          'Fees': this.displayMode === 'normal',
-          'Subsidy (%)': this.displayMode === 'percentage',
-          'Fees (%)': this.displayMode === 'percentage',
+          'Subsidy (USD)': this.displayMode === 'fiat' && this.legend.subsidy,
+          'Fees (USD)': this.displayMode === 'fiat' && this.legend.fees,
+          'Subsidy': this.displayMode === 'normal' && this.legend.subsidy,
+          'Fees': this.displayMode === 'normal' && this.legend.fees,
+          'Subsidy (%)': this.displayMode === 'percentage' && this.legend.subsidy,
+          'Fees (%)': this.displayMode === 'percentage' && this.legend.fees,
         },
       },
       yAxis: this.data.blockFees.length === 0 ? undefined : [
@@ -410,11 +421,18 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
         mode = 'normal';
       }
 
-      if (this.displayMode === mode) {return;}
+      const switchingMode = params.selected[params.name];
 
-      const isActivation = params.selected[params.name];
+      this.legend.mode = mode;
+      this.legend.fees = switchingMode || params.selected['Fees'] || params.selected['Fees (%)'] || params.selected['Fees (USD)'];
+      this.legend.subsidy = switchingMode || params.selected['Subsidy'] || params.selected['Subsidy (%)'] || params.selected['Subsidy (USD)'];
+      this.storageService.setValue('fees_subsidy_legend', JSON.stringify(this.legend));
 
-      if (isActivation) {
+      if (this.displayMode === mode) {
+        return;
+      }
+
+      if (switchingMode) {
         this.displayMode = mode;
         this.chartInstance.dispatchAction({ type: this.displayMode === 'normal' ? 'legendSelect' : 'legendUnSelect', name: 'Subsidy' });
         this.chartInstance.dispatchAction({ type: this.displayMode === 'normal' ? 'legendSelect' : 'legendUnSelect', name: 'Fees' });

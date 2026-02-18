@@ -59,7 +59,7 @@ interface DatabaseBlock {
   utxoSetChange: number;
   utxoSetSize: number;
   totalInputAmt: number;
-  firstSeen: number;
+  firstSeen: string; // UNIX_TIMESTAMP() returns a string when applied to datetime(6)
   stale: boolean;
 }
 
@@ -132,7 +132,7 @@ class BlocksRepository {
         total_inputs,       total_outputs,            total_input_amt,   total_output_amt,
         fee_percentiles,    segwit_total_txs,         segwit_total_size, segwit_total_weight,
         median_fee_amt,     coinbase_signature_ascii, definition_hash,   index_version,
-        stale
+        stale,              first_seen
       ) VALUE (
         ?, ?, FROM_UNIXTIME(?), ?,
         ?, ?, ?, ?,
@@ -144,7 +144,7 @@ class BlocksRepository {
         ?, ?, ?, ?,
         ?, ?, ?, ?,
         ?, ?, ?, ?,
-        ?
+        ?, FROM_UNIXTIME(?)
       )`;
 
       const poolDbId = await PoolsRepository.$getPoolByUniqueId(block.extras.pool.id);
@@ -194,6 +194,7 @@ class BlocksRepository {
         poolsUpdater.currentSha,
         BlocksRepository.version,
         (block.stale ? 1 : 0),
+        block.extras.firstSeen === null ? 1 : block.extras.firstSeen // Sentinel value 1 indicates that we could not find first seen time
       ];
 
       await DB.query(query, params);
@@ -1137,20 +1138,55 @@ class BlocksRepository {
   }
 
   /**
-   * Save block first seen time
+   * Save block first seen times
    *
-   * @param id
+   * @param results
    * @asyncSafe
    */
-  public async $saveFirstSeenTime(id: string, firstSeen: number): Promise<void> {
+  public async $saveFirstSeenTimes(results: { hash: string; firstSeen: number | null }[]): Promise<void> {
+    if (!results.length) {
+      return;
+    }
+    const CHUNK_SIZE = 1000;
+    for (let i = 0; i < results.length; i += CHUNK_SIZE) {
+      const chunk = results.slice(i, i + CHUNK_SIZE);
+      const params: Array<string | number> = [];
+      const selects = chunk.map(() => 'SELECT ? AS hash, FROM_UNIXTIME(?) AS first_seen').join(' UNION ALL ');
+      for (const { hash, firstSeen } of chunk) {
+        params.push(hash, firstSeen === null ? 1 : firstSeen); // Sentinel value 1 indicates that we could not find first seen time
+      }
+      const query = `
+        UPDATE blocks AS b
+        JOIN (
+          ${selects}
+        ) AS updates ON updates.hash = b.hash
+        SET b.first_seen = updates.first_seen
+      `;
+      try {
+        await DB.query(query, params);
+      } catch (e) {
+        logger.err(`Cannot batch update block first seen times. Reason: ` + (e instanceof Error ? e.message : e));
+        throw e;
+      }
+    }
+  }
+
+  /**
+   * Get all blocks which do not have a first seen time yet
+   * 
+   * @param includeAlreadyTried Include blocks we have already tried to fetch first seen time for, identified by sentinel value 1
+   */
+  public async $getBlocksWithoutFirstSeen(includeAlreadyTried = false): Promise<{ hash: string; timestamp: number }[]> {
     try {
-      await DB.query(`
-        UPDATE blocks SET first_seen = FROM_UNIXTIME(?)
-        WHERE hash = ?`,
-        [firstSeen, id]
-      );
-    } catch (e) {
-      logger.err(`Cannot update block first seen time. Reason: ` + (e instanceof Error ? e.message : e));
+      const [rows]: any[] = await DB.query(`
+        SELECT hash, UNIX_TIMESTAMP(blockTimestamp) as timestamp
+        FROM blocks
+        WHERE first_seen IS NULL
+        ${includeAlreadyTried ? ' OR first_seen = FROM_UNIXTIME(1)' : ''}
+      `);
+      return rows;
+    } catch (e: any) {
+      logger.err(`Cannot fetch block first seen from db. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -1241,7 +1277,14 @@ class BlocksRepository {
     extras.utxoSetSize = dbBlk.utxoSetSize;
     extras.totalInputAmt = dbBlk.totalInputAmt;
     extras.virtualSize = dbBlk.weight / 4.0;
-    extras.firstSeen = dbBlk.firstSeen;
+
+    extras.firstSeen = null;
+    if (config.CORE_RPC.DEBUG_LOG_PATH) {
+      const dbFirstSeen = parseFloat(dbBlk.firstSeen);
+      if (dbFirstSeen > 1) { // Sentinel value 1 indicates that we could not find first seen time
+        extras.firstSeen = dbFirstSeen;
+      }
+    }
 
     // Re-org can happen after indexing so we need to always get the
     // latest state from core
