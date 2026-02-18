@@ -65,7 +65,7 @@
   <!-- RBF Structural Diff Button -->
   <div class="diff-button-wrapper" *ngIf="getPredecessorTxid()">
     <button class="btn btn-sm btn-secondary diff-toggle" (click)="toggleStructuralDiff();">
-      <i class="bi bi-code-slash"></i>
+      <i class="bi bi-code-slash" aria-hidden="true"></i>
       <span *ngIf="!showDiff" i18n="rbf-diff-show">Show structural diff</span>
       <span *ngIf="showDiff" i18n="rbf-diff-hide">Hide structural diff</span>
     </button>
