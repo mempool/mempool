@@ -134,7 +134,6 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from '@app/shared/components/
 import { GithubLogin } from '@components/github-login.component/github-login.component';
 
 import { ChunkedAddressComponent } from '@app/shared/components/chunked-address/chunked-address.component';
-import { AddressFormattingSelectorComponent } from '@components/address-formatting-selector/address-formatting-selector.component';
 
 @NgModule({
   declarations: [
@@ -259,8 +258,7 @@ import { AddressFormattingSelectorComponent } from '@components/address-formatti
     TwitterLogin,
     GithubLogin,
     BitcoinInvoiceComponent,
-    ChunkedAddressComponent,
-    AddressFormattingSelectorComponent
+    ChunkedAddressComponent
   ],
   imports: [
     CommonModule,
@@ -411,7 +409,6 @@ import { AddressFormattingSelectorComponent } from '@components/address-formatti
     OnlyVsizeDirective,
     OnlyWeightDirective,
 
-    AddressFormattingSelectorComponent,
     ChunkedAddressComponent
   ]
 })
