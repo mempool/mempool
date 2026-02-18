@@ -342,7 +342,7 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
         previous: oldFee,
         current: newFee,
         changed: true,
-        changeType: this.rbfDiff.metrics.feeDelta > 0 ? 'positive' : 'negative',
+        changeType: this.rbfDiff.metrics.feeDelta > 0 ? 'negative' : 'positive',
         percentage: feePercentage,
         isAmount: true
       });
