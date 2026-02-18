@@ -35,6 +35,7 @@ import mempool from './mempool';
 import CpfpRepository from '../repositories/CpfpRepository';
 import { parseDATUMTemplateCreator } from '../utils/bitcoin-script';
 import database from '../database';
+import { getBlockFirstSeenFromLogs, getOldestLogTimestampFromLogs, scanLogsForBlocksFirstSeen } from '../utils/file-read';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -47,6 +48,7 @@ class Blocks {
   private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
   private newAsyncBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: MempoolTransactionExtended[]) => Promise<void>)[] = [];
   private classifyingBlocks: boolean = false;
+  private oldestCoreLogTimestamp: number | undefined | null = undefined;
 
   private mainLoopTimeout: number = 120000;
 
@@ -368,6 +370,13 @@ class Blocks {
           extras.matchRate = auditScore.matchRate;
           extras.expectedFees = auditScore.expectedFees;
           extras.expectedWeight = auditScore.expectedWeight;
+        }
+      }
+
+      if (config.CORE_RPC.DEBUG_LOG_PATH) {
+        const oldestLog = this.getOldestCoreLogTimestamp();
+        if (oldestLog) {
+          extras.firstSeen = getBlockFirstSeenFromLogs(block.id, block.timestamp, oldestLog);
         }
       }
     }
@@ -917,6 +926,45 @@ class Blocks {
     }
 
     return await BlocksRepository.$validateChain();
+  }
+
+  /**
+   * [INDEXING] Index all blocks first seen time from Bitcoin Core debug logs
+   * 
+   * @asyncUnsafe
+   */
+  public async $indexBlocksFirstSeen(): Promise<void> {
+    const previous = this.oldestCoreLogTimestamp;
+    const oldestLogTimestamp = this.getOldestCoreLogTimestamp(true);
+    const hasLogFileChanged = previous !== undefined && oldestLogTimestamp !== previous;
+
+    if (!oldestLogTimestamp) {
+      return;
+    }
+
+    // If the log file changed since last run, re-try to index blocks marked with sentinel value
+    const blocks = await BlocksRepository.$getBlocksWithoutFirstSeen(hasLogFileChanged);
+
+    if (!blocks?.length) {
+      return;
+    }
+    logger.debug(`Indexing ${blocks.length} block first seen times${hasLogFileChanged ? ' (log file changed since last run)' : ''}`);
+    const startedAt = Date.now();
+    const results = scanLogsForBlocksFirstSeen(blocks, oldestLogTimestamp);
+    const foundCount = results.filter(result => result.firstSeen !== null).length;
+    logger.debug(`Found first seen times of ${foundCount} / ${results.length} blocks in Core logs, saving to database...`);
+    await BlocksRepository.$saveFirstSeenTimes(results);
+
+    for (const { hash, firstSeen } of results) {
+      if (firstSeen !== null) {
+        const cachedBlock = this.blocks.find(blk => blk.id === hash);
+        if (cachedBlock) {
+          cachedBlock.extras.firstSeen = firstSeen;
+        }
+      }
+    }
+
+    logger.debug(`Indexed ${foundCount} / ${blocks.length} block first seen times in ${((Date.now() - startedAt) / 1000).toFixed(2)} seconds`);
   }
 
   /** @asyncUnsafe */
@@ -1653,6 +1701,30 @@ class Blocks {
       }
     } catch (e) {
       logger.debug(`Unable to retrieve list of blocks for definition hash ${definitionHash} from db (exception: ${e})`);
+      return null;
+    }
+  }
+
+  public getOldestCoreLogTimestamp(forceRefresh = false): number | null {
+    if (!forceRefresh && this.oldestCoreLogTimestamp !== undefined) {
+      return this.oldestCoreLogTimestamp;
+    }
+    const debugLogPath = config.CORE_RPC.DEBUG_LOG_PATH;
+    if (!debugLogPath) {
+      this.oldestCoreLogTimestamp = null;
+      return null;
+    }
+    try {
+      this.oldestCoreLogTimestamp = getOldestLogTimestampFromLogs(debugLogPath);
+      if (this.oldestCoreLogTimestamp !== null) {
+        logger.info(`Core debug log entries date back to ${new Date(this.oldestCoreLogTimestamp * 1000).toISOString()}`);
+      } else {
+        logger.err(`Could not find oldest timestamp in Core debug log file at ${debugLogPath}`);
+      }
+      return this.oldestCoreLogTimestamp;
+    } catch (e) {
+      this.oldestCoreLogTimestamp = null;
+      logger.err(`Could not read Core debug log file at ${debugLogPath}. Reason: ${e instanceof Error ? e.message : e}`);
       return null;
     }
   }
