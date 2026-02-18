@@ -165,6 +165,10 @@ main {
   margin-top: 24px;
 }
 
+main.master-page:has(.master-page--no-min-width) {
+  min-width: auto !important;
+}
+
 .full-height {
   @media (max-width: 767.98px) {
     min-height: 100vh;
