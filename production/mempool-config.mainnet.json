@@ -178,5 +178,10 @@
   "STRATUM": {
     "ENABLED": true,
     "API": "http://127.0.0.1:81/api/v1/stratum/ws"
+  },
+  "FIAT_PRICE": {
+    "ENABLED": true,
+    "PAID": true,
+    "API_KEY": "__FIAT_PRICE_API_KEY__"
   }
 }

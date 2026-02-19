@@ -17,6 +17,12 @@ if [ -f "${MYSQL_CRED_FILE}" ];then
     . ${MYSQL_CRED_FILE}
 fi
 
+# get persistent secret env variables like fiat price api key
+MEMPOOL_ENV_FILE=${HOME}/.mempool_env
+if [ -f "${MEMPOOL_ENV_FILE}" ];then
+    . ${MEMPOOL_ENV_FILE}
+fi
+
 if [ -f "${LOCKFILE}" ];then
     echo "upgrade already running? check lockfile ${LOCKFILE}"
     exit 1
@@ -97,6 +103,7 @@ build_backend()
         -e "s!__MEMPOOL_LIQUID_PASS__!${MEMPOOL_LIQUID_PASS}!" \
         -e "s!__MEMPOOL_LIQUIDTESTNET_USER__!${MEMPOOL_LIQUIDTESTNET_USER}!" \
         -e "s!__MEMPOOL_LIQUIDTESTNET_PASS__!${MEMPOOL_LIQUIDTESTNET_PASS}!" \
+        -e "s!__FIAT_PRICE_API_KEY__!${FIAT_PRICE_API_KEY}!" \
 	"mempool-config.json"
     fi
     npm install --omit=dev --omit=optional || exit 1
