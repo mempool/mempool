@@ -514,6 +514,12 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
     return Math.pow(base, exponent);
   }
 
+  setDetailsOpen(open: boolean): void {
+    if (open !== this.showDetails$.value) {
+      this.toggleDetails();
+    }
+  }
+
   toggleDetails(): void {
     if (this.showDetails$.value === true) {
       this.showDetails$.next(false);

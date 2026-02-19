@@ -178,9 +178,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   set txListSetter(component: TransactionsListComponent | undefined) {
     if (component) {
       this.txList = component;
-      if (this.isDetailsOpen) {
-        this.txList.toggleDetails();
-      }
+      this.txList.setDetailsOpen(this.isDetailsOpen);
     }
   }
 
@@ -227,6 +225,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     const urlParams = new URLSearchParams(window.location.search);
     this.forceAccelerationSummary = !!urlParams.get('cash_request_id');
 
+    // Accelerator referral code
     const fragmentsParams = new URLSearchParams(window.location.hash.slice(1));
     this.referralCode = fragmentsParams.get('referralCode') ?? this.storageService.getValue('referralCode') ?? undefined;
     if (this.referralCode) {
@@ -875,11 +874,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.setGraphSize();
   }
 
-  toggleDetailsFromTxPage(): void {
+  toggleDetails(): void {
     this.isDetailsOpen = !this.isDetailsOpen;
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { showDetails: this.isDetailsOpen ? 'true' : 'false' },
+      queryParams: { showDetails: this.isDetailsOpen ? 'true' : null },
       queryParamsHandling: 'merge',
       preserveFragment: true,
       replaceUrl: true,
