@@ -18,7 +18,6 @@ import { ADDRESS_SIMILARITY_THRESHOLD, AddressMatch, AddressSimilarity, AddressT
 import { processInputSignatures, Sighash, SigInfo, SighashLabels, parseTaproot } from '@app/shared/transaction.utils';
 import { ActivatedRoute } from '@angular/router';
 import { SighashFlag } from '@app/shared/transaction.utils';
-import { AddressFormattingService, FormattingMode } from '@app/services/address-formatting.service';
 
 @Component({
   selector: 'app-transactions-list',
@@ -82,8 +81,6 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   signaturesOverride: SignaturesMode = null;
   signaturesMode: SignaturesMode = 'interesting';
 
-  mode: FormattingMode = "off"
-
   constructor(
     public stateService: StateService,
     private cacheService: CacheService,
@@ -94,8 +91,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
     private ref: ChangeDetectorRef,
     private priceService: PriceService,
     private storageService: StorageService,
-    private route: ActivatedRoute,
-    public formattingService: AddressFormattingService
+    private route: ActivatedRoute
   ) {
     this.signaturesMode = this.forceSignaturesMode || this.stateService.signaturesMode$.value;
   }

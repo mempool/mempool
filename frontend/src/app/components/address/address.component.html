@@ -2,16 +2,7 @@
   <div class="title-address">
     <h1 i18n="shared.address">Address</h1>
     <div class="tx-link">
-      <app-truncate *ngIf="(formattingService.mode$ | async) === 'off'" [text]="addressString" [lastChars]="8" [link]="['/address/' | relativeUrl, addressString]">
-        <span class="qrSpan" (mouseover)="showQR = true" (mouseout)="showQR = false" (pointerdown)="showQR = true">
-          <fa-icon [icon]="['fas', 'qrcode']" [fixedWidth]="true" [style.font-size]="isMobile ? '18px' : '12px'"></fa-icon>
-          <div class="qr-wrapper" [hidden]="!showQR">
-            <app-qrcode [size]="200" [data]="addressString"></app-qrcode>
-          </div>
-        </span>
-        <app-clipboard [text]="addressString" [size]="isMobile ? 'large' : 'normal'"></app-clipboard>
-      </app-truncate>
-      <app-chunked-address *ngIf="(formattingService.mode$ | async) !== 'off'" [address]="addressString" [lastChars]="8" [link]="['/address/' | relativeUrl, addressString]">
+      <app-chunked-address [address]="addressString" [lastChars]="8" [link]="['/address/' | relativeUrl, addressString]">
         <span class="qrSpan" (mouseover)="showQR = true" (mouseout)="showQR = false" (pointerdown)="showQR = true">
           <fa-icon [icon]="['fas', 'qrcode']" [fixedWidth]="true" [style.font-size]="isMobile ? '18px' : '12px'"></fa-icon>
           <div class="qr-wrapper" [hidden]="!showQR">

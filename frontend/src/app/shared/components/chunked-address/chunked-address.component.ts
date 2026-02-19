@@ -1,5 +1,4 @@
-import { Component, Input, ChangeDetectionStrategy, OnChanges, OnInit, OnDestroy, ChangeDetectorRef, LOCALE_ID, Inject } from '@angular/core';
-import { AddressFormattingService, FormattingMode } from '@app/services/address-formatting.service';
+import { Component, Input, ChangeDetectionStrategy, OnChanges, OnInit, OnDestroy, LOCALE_ID, Inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 interface AddressChunk {
@@ -29,14 +28,10 @@ export class ChunkedAddressComponent implements OnChanges, OnInit, OnDestroy {
 
   headChunks: AddressChunk[] = [];
   tailChunks: AddressChunk[] = [];
-  mode: FormattingMode = 'off';
 
-  private modeSub: Subscription;
   private colors = ['var(--info)', 'var(--primary)'];
 
   constructor(
-    public formattingService: AddressFormattingService,
-    private cd: ChangeDetectorRef,
     @Inject(LOCALE_ID) private locale: string
   ) {
     if (this.locale.startsWith('ar') || this.locale.startsWith('fa') || this.locale.startsWith('he')) {
@@ -44,23 +39,13 @@ export class ChunkedAddressComponent implements OnChanges, OnInit, OnDestroy {
     }
   }
 
-  ngOnInit(): void {
-    this.modeSub = this.formattingService.mode$.subscribe(mode => {
-      this.mode = mode;
-      this.updateView();
-      this.cd.markForCheck();
-    });
-  }
+  ngOnInit(): void {}
 
   ngOnChanges(): void {
       this.updateView();
   }
 
-  ngOnDestroy(): void {
-    if (this.modeSub) {
-      this.modeSub.unsubscribe();
-    }
-  }
+  ngOnDestroy(): void {}
 
   private updateView() {
     if (!this.address) {
@@ -77,7 +62,6 @@ export class ChunkedAddressComponent implements OnChanges, OnInit, OnDestroy {
 
   private chunkify(chunk: string, offset: number): AddressChunk[] {
     const result: AddressChunk[] = [];
-    const useSpacing = (this.mode === 'spacing' || this.mode === 'copy');
     const totalLen = this.address.length;
 
     let i = 0;
@@ -91,7 +75,7 @@ export class ChunkedAddressComponent implements OnChanges, OnInit, OnDestroy {
       result.push({
         text: segment,
         color: this.colors[Math.floor(realIndex / 4) % 2],
-        hasMargin: useSpacing && (currentEndIndex % 4 === 0) && (currentEndIndex !== totalLen)
+        hasMargin: (currentEndIndex % 4 === 0) && (currentEndIndex !== totalLen)
       });
       i += lengthToTake;
     }

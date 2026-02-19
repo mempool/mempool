@@ -12,24 +12,23 @@
   </div>
 } @else {
   <div class="d-flex align-items-center" style="max-width: 100%; min-width: 0;">
-    <app-truncate 
-      *ngIf="(formattingService.mode$ | async) === 'off'" 
-      [text]="address" 
-      [lastChars]="8" 
-      [link]="['/address/' | relativeUrl, address]"
-      style="flex: 1; min-width: 0;">
-    </app-truncate>
     <app-chunked-address 
-      *ngIf="(formattingService.mode$ | async) !== 'off'" 
       [address]="address" 
       [lastChars]="8" 
       [link]="['/address/' | relativeUrl, address]"
-      style="flex: 1; min-width: 0;">
+      class="d-none d-md-block"
+      style="flex: 0 1 auto; min-width: 0;">
+    </app-chunked-address>
+    <app-chunked-address 
+      [address]="address" 
+      [lastChars]="4" 
+      [link]="['/address/' | relativeUrl, address]"
+      class="d-md-none"
+      style="flex: 0 1 auto; min-width: 0;">
     </app-chunked-address>
     <app-clipboard 
-      *ngIf="(formattingService.mode$ | async) === 'copy'" 
       [text]="address" size="normal" 
-      class="ml-2">
+      class="ml-1 ml-md-2">
     </app-clipboard>
   </div>
 }

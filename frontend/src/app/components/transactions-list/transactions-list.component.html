@@ -93,10 +93,9 @@
                     </ng-container>
                     <ng-container *ngSwitchCase="vin.prevout && vin.prevout.scriptpubkey_type === 'p2pk'">
                       <span>P2PK <a class="address p2pk-address" [routerLink]="['/address/' | relativeUrl, vin.prevout.scriptpubkey.slice(2, -2)]" title="{{ vin.prevout.scriptpubkey.slice(2, -2) }}">
-                        <app-truncate [text]="vin.prevout.scriptpubkey.slice(2, -2)" *ngIf="(formattingService.mode$ | async) === 'off'" [lastChars]="8"></app-truncate>
-                        <app-chunked-address [address]="vin.prevout.scriptpubkey.slice(2, -2)" *ngIf="(formattingService.mode$ | async) !== 'off'" [lastChars]="8"></app-chunked-address>
+                        <app-chunked-address [address]="vin.prevout.scriptpubkey.slice(2, -2)" [lastChars]="8"></app-chunked-address>
                       </a>
-                      <app-clipboard *ngIf="(formattingService.mode$ | async) === 'copy'" [text]="vin.prevout.scriptpubkey.slice(2, -2)" class="ml-2" size="normal"></app-clipboard></span>
+                      <app-clipboard [text]="vin.prevout.scriptpubkey.slice(2, -2)" class="ml-2" size="normal"></app-clipboard></span>
                     </ng-container>
                     <ng-container *ngSwitchDefault>
                       <ng-template [ngIf]="!vin.prevout" [ngIfElse]="defaultAddress">
@@ -335,10 +334,9 @@
                   <ng-template #pubkey_type>
                     <ng-container *ngIf="vout.scriptpubkey_type === 'p2pk'; else scriptpubkey_type">
                       P2PK <a class="address p2pk-address" [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey.slice(2, -2)]" title="{{ vout.scriptpubkey.slice(2, -2) }}">
-                        <app-truncate [text]="vout.scriptpubkey.slice(2, -2)" *ngIf="(formattingService.mode$ | async) === 'off'" [lastChars]="8"></app-truncate>
-                        <app-chunked-address [address]="vout.scriptpubkey.slice(2, -2)" *ngIf="(formattingService.mode$ | async) !== 'off'" [lastChars]="8"></app-chunked-address>
+                        <app-chunked-address [address]="vout.scriptpubkey.slice(2, -2)" [lastChars]="8"></app-chunked-address>
                       </a>
-                      <app-clipboard *ngIf="(formattingService.mode$ | async) === 'copy'" [text]="vout.scriptpubkey.slice(2, -2)" class="ml-2" size="normal"></app-clipboard>
+                      <app-clipboard [text]="vout.scriptpubkey.slice(2, -2)" class="ml-2" size="normal"></app-clipboard>
                     </ng-container>
                   </ng-template>
                   <div>
