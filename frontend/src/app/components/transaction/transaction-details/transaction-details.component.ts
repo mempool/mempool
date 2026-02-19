@@ -30,6 +30,7 @@ export class TransactionDetailsComponent implements OnInit {
   @Input() hasEffectiveFeeRate: boolean;
   @Input() cpfpInfo: CpfpInfo;
   @Input() hasCpfp: boolean;
+  @Input() recommendedChildFeeRate: number | null = null;
   @Input() accelerationInfo: Acceleration;
   @Input() acceleratorAvailable: boolean;
   @Input() accelerateCtaType: string;

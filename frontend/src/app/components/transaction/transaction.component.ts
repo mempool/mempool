@@ -110,6 +110,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   rbfInfo: RbfTree;
   cpfpInfo: CpfpInfo | null;
   hasCpfp: boolean = false;
+  recommendedChildFeeRate$: Observable<number | null>;
   accelerationInfo: Acceleration | null = null;
   sigops: number | null;
   adjustedVsize: number | null;
@@ -277,6 +278,35 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.transactionTime = transactionTimes[0];
       }
     });
+
+    this.recommendedChildFeeRate$ = combineLatest([
+      this.stateService.mempoolBlocks$.pipe(startWith(null)),
+      this.stateService.mempoolTxPosition$.pipe(startWith(null)),
+      this.txChanged$
+    ]).pipe(
+      map(([mempoolBlocks, position]) => {
+        if (!this.tx || !position || this.tx.status?.confirmed || !this.cpfpInfo || !mempoolBlocks || !mempoolBlocks.length || position.position.block === 0) {
+          return null;
+        }
+
+        const targetFeeRate = mempoolBlocks[0].medianFee;
+
+        const relatives = [...(this.cpfpInfo.ancestors || []), ...(this.cpfpInfo.descendants || [])];
+        if (this.cpfpInfo.bestDescendant && !this.cpfpInfo.descendants?.length) {
+          relatives.push(this.cpfpInfo.bestDescendant);
+        }
+
+        const totalWeight = this.tx.weight + relatives.reduce((prev, tx) => prev + tx.weight, 0);
+        const totalFees = this.tx.fee + relatives.reduce((prev, tx) => prev + tx.fee, 0);
+
+        const estimatedVsize = 140;
+        const combinedVsize = Math.ceil(totalWeight / 4) + estimatedVsize;
+        const childFeeNeeded = (combinedVsize * targetFeeRate) - totalFees;
+        
+        return childFeeNeeded > 0 ? Math.max(Math.ceil(childFeeNeeded / estimatedVsize), targetFeeRate) : null;
+      }),
+      distinctUntilChanged()
+    );
 
     this.fetchCpfpSubscription = this.fetchCpfp$
       .pipe(

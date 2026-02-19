@@ -228,7 +228,15 @@
 <ng-template #feeRateRow>
   @if (!isLoadingTx) {
     <tr>
-      <td i18n="transaction.fee-rate|Transaction fee rate">Fee rate</td>
+      <td>
+        <span i18n="transaction.fee-rate|Transaction fee rate">Fee rate</span>
+        @if (!tx?.status?.confirmed && recommendedChildFeeRate) {
+          <fa-icon class="info-badges ml-1" [icon]="['fas', 'angles-up']" style="color:gray" [fixedWidth]="true" 
+                   i18n-ngbTooltip="tx-details.recommended.fee.rate.child|Tooltip recommended fee rate child" 
+                   ngbTooltip="A child ~140 vBytes transaction must pay ~{{ recommendedChildFeeRate }} sat/vB to bump this transaction to high priority" 
+                   placement="bottom"></fa-icon>
+        }
+      </td>
       <td>
         <app-fee-rate [fee]="tx.feePerVsize"></app-fee-rate>
         @if (tx?.status?.confirmed && tx.fee && !hasEffectiveFeeRate && !accelerationInfo) {
