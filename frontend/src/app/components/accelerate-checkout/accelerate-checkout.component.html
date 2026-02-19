@@ -244,8 +244,12 @@
                     </tr>
                   </ng-container>
 
-                  <tr class="group-first group-last" style="border-top: 1px dashed grey">
-                    <td class="item"></td>
+                  <tr class="group-first group-last dashed-top">
+                    <td class="item p-0" style="vertical-align:middle">
+                      @if (referralCode) {
+                        <ng-container *ngTemplateOutlet="referralCodeDisplay; context: {referralCode: referralCode}"></ng-container>
+                      }
+                    </td>
                     <td colspan="2">
                       <div class="d-flex">
                         <ng-container *ngTemplateOutlet="accelerateButton"></ng-container>
@@ -284,7 +288,12 @@
       }
 
       @if (!advancedEnabled) {
-        <form>
+       <form>
+          @if (referralCode) {
+            <div class="row mb-4" style="margin-top: -15px">
+              <ng-container *ngTemplateOutlet="referralCodeDisplay; context: {referralCode: referralCode}"></ng-container>
+            </div>
+          }
           <div class="row">
             <div class="col-md">
               <div class="form-group form-check mb-2">
@@ -318,11 +327,14 @@
         <div>
           <div class="row summary-row">
             <div>
-              <div class="mb-2">
-                <div class="d-flex flex-column" for="accel">
-                  <ng-container *ngTemplateOutlet="accelerateOption; context: {etaInfo}"></ng-container>
-                </div>
+              <div class="d-flex flex-column" for="accel">
+                <ng-container *ngTemplateOutlet="accelerateOption; context: {etaInfo}"></ng-container>
               </div>
+              @if (referralCode) {
+                <div class="row mb-2">
+                  <ng-container *ngTemplateOutlet="referralCodeDisplay; context: {referralCode: referralCode}"></ng-container>
+                </div>
+              }
             </div>
             <div class="pie d-none d-lg-flex">
               <small class="form-text checkout-text mb-2"><ng-container *ngTemplateOutlet="prioritizedBy; context: {$implicit:etaInfo.hashratePercentage}"></ng-container></small>
@@ -598,7 +610,10 @@
 </div>
 
 <ng-template #accelerateOption let-etaInfo="etaInfo">
-  <span><ng-container *ngTemplateOutlet="accelerateTo; context: {$implicit:(userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize}"></ng-container> <ng-container *ngTemplateOutlet="customizeButton"></ng-container></span>
+  <span class="d-flex">
+    <ng-container *ngTemplateOutlet="accelerateTo; context: {$implicit:(userBid + estimate.txSummary.effectiveFee) / estimate.txSummary.effectiveVsize}"></ng-container>
+    <ng-container *ngTemplateOutlet="customizeButton"></ng-container>
+  </span>
   <span class="checkout-text"><ng-container i18n="accelerator.confirmation-expected">Confirmation expected</ng-container>&nbsp;<app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time><br>
     @if (!calculating) {
       <app-fiat [value]="cost"></app-fiat> (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
@@ -641,3 +656,9 @@
 </ng-template>
 
 <ng-template #prioritizedBy let-i i18n="accelerator.hashrate-percentage-description">Your transaction will be prioritized by up to <strong>{{ i | number : '1.1-1' }}%</strong> of miners.</ng-template>
+
+<ng-template #referralCodeDisplay let-referralCode="referralCode">
+  <div class="col small font-italic">
+    <span>Using referral code</span>&nbsp;<span class="badge badge-secondary">{{ referralCode }}</span>
+  </div>  
+</ng-template>
