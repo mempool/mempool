@@ -245,7 +245,7 @@
                   </ng-container>
 
                   <tr class="group-first group-last dashed-top">
-                    <td class="item p-0" style="vertical-align:middle">
+                    <td class="item" style="vertical-align:middle">
                       @if (referralCode) {
                         <ng-container *ngTemplateOutlet="referralCodeDisplay; context: {referralCode: referralCode}"></ng-container>
                       }
@@ -288,10 +288,12 @@
       }
 
       @if (!advancedEnabled) {
-       <form>
+        <form>
           @if (referralCode) {
             <div class="row mb-4" style="margin-top: -15px">
-              <ng-container *ngTemplateOutlet="referralCodeDisplay; context: {referralCode: referralCode}"></ng-container>
+              <div class="col">
+                <ng-container *ngTemplateOutlet="referralCodeDisplay; context: {referralCode: referralCode}"></ng-container>
+              </div>
             </div>
           }
           <div class="row">
@@ -332,7 +334,9 @@
               </div>
               @if (referralCode) {
                 <div class="row mb-2">
-                  <ng-container *ngTemplateOutlet="referralCodeDisplay; context: {referralCode: referralCode}"></ng-container>
+                  <div class="col">
+                    <ng-container *ngTemplateOutlet="referralCodeDisplay; context: {referralCode: referralCode}"></ng-container>
+                  </div>    
                 </div>
               }
             </div>
@@ -658,7 +662,7 @@
 <ng-template #prioritizedBy let-i i18n="accelerator.hashrate-percentage-description">Your transaction will be prioritized by up to <strong>{{ i | number : '1.1-1' }}%</strong> of miners.</ng-template>
 
 <ng-template #referralCodeDisplay let-referralCode="referralCode">
-  <div class="col small font-italic">
-    <span>Using referral code</span>&nbsp;<span class="badge badge-secondary">{{ referralCode }}</span>
-  </div>  
+  <div class="small font-italic">
+    <span i18n="accelerator.using-referral-code">Using referral code</span>&nbsp;<span class="badge badge-secondary">{{ referralCode }}</span>
+  </div>
 </ng-template>
