@@ -1,5 +1,5 @@
 import { Component, Input, ChangeDetectionStrategy, OnChanges, OnInit, OnDestroy, LOCALE_ID, Inject } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { AddressMatch } from '@app/shared/address-utils';
 
 interface AddressChunk {
   text: string;
@@ -16,6 +16,7 @@ interface AddressChunk {
 })
 export class ChunkedAddressComponent implements OnChanges, OnInit, OnDestroy {
   @Input() address: string;
+  @Input() similarity: { score: number, match: AddressMatch, group: number } | null;
   @Input() link: any = null;
   @Input() external: boolean = false;
   @Input() queryParams: any = undefined;
@@ -29,7 +30,20 @@ export class ChunkedAddressComponent implements OnChanges, OnInit, OnDestroy {
   headChunks: AddressChunk[] = [];
   tailChunks: AddressChunk[] = [];
 
+  prefixChunks: AddressChunk[] = [];
+  infixChunks: AddressChunk[] = [];
+  postfixChunks: AddressChunk[] = [];
+
   private colors = ['var(--info)', 'var(--primary)'];
+
+  min = Math.min;
+  
+  groupColors: string[] = [
+    'var(--primary)',
+    'var(--success)',
+    'var(--info)',
+    'white',
+  ];
 
   constructor(
     @Inject(LOCALE_ID) private locale: string
@@ -52,12 +66,25 @@ export class ChunkedAddressComponent implements OnChanges, OnInit, OnDestroy {
       return
     };
 
-    const splitIndex = this.address.length - this.lastChars;
-    const headText = this.address.slice(0, splitIndex);
-    const tailText = this.address.slice(splitIndex);
+    if (this.similarity) {
+      const prefixLen = Math.min(this.similarity.match.prefix.length, 16) || 0;
+      const postfixLen = Math.min(this.similarity.match.postfix.length, 16) || 0;
 
-    this.headChunks = this.chunkify(headText, 0);
-    this.tailChunks = this.chunkify(tailText, splitIndex);
+      const prefixText = this.address.slice(0, prefixLen);
+      const infixText = this.address.slice(prefixLen, this.address.length - postfixLen);
+      const postfixText = this.address.slice(this.address.length - postfixLen);
+
+      this.prefixChunks = this.chunkify(prefixText, 0);
+      this.infixChunks = this.chunkify(infixText, prefixLen);
+      this.postfixChunks = this.chunkify(postfixText, this.address.length - postfixLen);
+    } else {
+      const splitIndex = this.address.length - this.lastChars;
+      const headText = this.address.slice(0, splitIndex);
+      const tailText = this.address.slice(splitIndex);
+
+      this.headChunks = this.chunkify(headText, 0);
+      this.tailChunks = this.chunkify(tailText, splitIndex);
+    }
   }
 
   private chunkify(chunk: string, offset: number): AddressChunk[] {

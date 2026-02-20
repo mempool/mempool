@@ -1,17 +1,54 @@
-<span class="truncate" [style.max-width]="maxWidth ? maxWidth + 'px' : null" [style.justify-content]="textAlign" [class.inline]="inline">
-  
-  <ng-container *ngIf="link">
-    <a [routerLink]="link" [queryParams]="queryParams" class="truncate-link" [target]="external ? '_blank' : '_self'" [class.disabled]="disabled">
-      <ng-container *ngIf="rtl; then rtlTruncated; else ltrTruncated;"></ng-container>
-    </a>
-  </ng-container>
+@if (similarity) {
+  <div class="address-poisoned">
+    <ng-container *ngIf="link">
+      <a style="display: contents;" [routerLink]="['/address/' | relativeUrl, address]" title="{{ address }}">
+        <ng-container *ngTemplateOutlet="poisonedContent"></ng-container>
+      </a>
+    </ng-container>
+    <ng-container *ngIf="!link">
+      <ng-container *ngTemplateOutlet="poisonedContent"></ng-container>
+    </ng-container>
+      <span class="poison-alert" *ngIf="similarity" i18n-ngbTooltip="address-poisoning.warning-tooltip" ngbTooltip="This address is deceptively similar to another output. It may be part of an address poisoning attack.">
+        <fa-icon [icon]="['fas', 'exclamation-triangle']" [fixedWidth]="true"></fa-icon>
+      </span>
+  </div>
+} @else {
+  <div class="address" [style.max-width]="maxWidth ? maxWidth + 'px' : null" [style.justify-content]="textAlign" [class.inline]="inline">
+    <ng-container *ngIf="link">
+      <a [routerLink]="link" [queryParams]="queryParams" class="address-link" [target]="external ? '_blank' : '_self'" [class.disabled]="disabled">
+        <ng-container *ngIf="rtl; then rtlTruncated; else ltrTruncated;"></ng-container>
+      </a>
+    </ng-container>
 
-  <ng-container *ngIf="!link">
-    <ng-container *ngIf="rtl; then rtlTruncated; else ltrTruncated;"></ng-container>
-  </ng-container>
-  
-  <ng-content></ng-content>
-</span>
+    <ng-container *ngIf="!link">
+      <ng-container *ngIf="rtl; then rtlTruncated; else ltrTruncated;"></ng-container>
+    </ng-container>
+
+    <app-clipboard 
+      [text]="address" size="normal" 
+      class="d-none d-lg-block ml-lg-2">
+    </app-clipboard>
+    <ng-content></ng-content>
+  </div>
+}
+
+<ng-template #poisonedContent>
+  <span class="prefix">
+    <span *ngFor="let chunk of prefixChunks" 
+          [style.color]="chunk.color" 
+          [class.spacer]="chunk.hasMargin">{{ chunk.text }}</span>
+  </span>
+  <span class="infix" [ngStyle]="{'text-decoration-color': groupColors[similarity.group % (groupColors.length)]}">
+    <span *ngFor="let chunk of infixChunks" 
+          [style.color]="chunk.color" 
+          [class.spacer]="chunk.hasMargin">{{ chunk.text }}</span>
+  </span>
+  <span class="postfix">
+     <span *ngFor="let chunk of postfixChunks" 
+           [style.color]="chunk.color" 
+           [class.spacer]="chunk.hasMargin">{{ chunk.text }}</span>
+  </span>
+</ng-template>
 
 <ng-template #ltrTruncated>
   <span class="first">
@@ -23,7 +60,7 @@
     <ng-template #simpleHead>{{ address.slice(0, -lastChars) }}</ng-template>
   </span>
 
-  <span class="last-four">
+  <span class="last">
     <ng-container *ngIf="tailChunks.length; else simpleTail">
       <span *ngFor="let chunk of tailChunks" 
             [style.color]="chunk.color" 
@@ -42,7 +79,7 @@
       </ng-container>
       <ng-template #simpleTailRTL>{{ address.slice(-lastChars) }}</ng-template>
   </span>
-  <span class="last-four">
+  <span class="last">
       <ng-container *ngIf="headChunks.length; else simpleHeadRTL">
           <span *ngFor="let chunk of headChunks" [style.color]="chunk.color">{{ chunk.text }}</span>
       </ng-container>

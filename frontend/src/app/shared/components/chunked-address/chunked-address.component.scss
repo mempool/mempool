@@ -1,11 +1,43 @@
-.truncate {
+.address-poisoned {
   text-overflow: unset;
   display: flex;
   flex-direction: row;
   align-items: start;
   position: relative;
+	font-family: monospace;
 
-  .truncate-link {
+  &:hover {
+      filter: brightness(0.85);
+  }
+
+  .infix {
+    flex-grow: 0;
+    flex-shrink: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    user-select: none;
+
+    text-decoration: underline 2px;
+  }
+
+  .prefix, .postfix {
+    flex-shrink: 0;
+    flex-grow: 0;
+    user-select: none;
+
+    text-decoration: underline var(--red) 2px;
+  }
+}
+
+.address {
+  text-overflow: unset;
+  display: flex;
+  flex-direction: row;
+  align-items: start;
+  position: relative;
+  font-family: monospace;
+
+  .address-link {
     display: flex;
     flex-direction: row;
     align-items: baseline;
@@ -26,7 +58,7 @@
     user-select: none;
   }
 
-  .last-four {
+  .last {
     flex-shrink: 0;
     flex-grow: 0;
     user-select: none;
@@ -51,6 +83,11 @@
 
 .spacer {
   margin-right: 2px;
+}
+
+.poison-alert {
+  margin-left: .5em;
+  color: var(--yellow);
 }
 
 @media (max-width: 567px) {
