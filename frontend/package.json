@@ -88,7 +88,7 @@
     "qrcode": "1.5.1",
     "rxjs": "~7.8.1",
     "tslib": "~2.8.0",
-    "zone.js": "~0.15.1"
+    "zone.js": "~0.16.1"
   },
   "devDependencies": {
     "@angular/compiler-cli": "^20.3.16",
