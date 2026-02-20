@@ -25,6 +25,7 @@ export class ChunkedAddressComponent implements OnChanges, OnInit, OnDestroy {
   @Input() inline: boolean = false;
   @Input() textAlign: 'start' | 'end' = 'start';
   @Input() disabled: boolean = false;
+  @Input() showClipboard: boolean = false;
   rtl: boolean;
 
   headChunks: AddressChunk[] = [];

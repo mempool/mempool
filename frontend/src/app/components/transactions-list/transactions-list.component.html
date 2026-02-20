@@ -110,6 +110,7 @@
                           [address]="vin.prevout.scriptpubkey_address"
                           [similarity]="similarityMatches.get(tx.txid)?.get(vin.prevout.scriptpubkey_address)"
                           [link]="['/address/' | relativeUrl, vin.prevout.scriptpubkey_address]"
+                          [showClipboard]="true"
                         ></app-chunked-address>
                         <ng-template #vinScriptPubkeyType>
                           {{ vin.prevout.scriptpubkey_type?.toUpperCase() }}
@@ -332,6 +333,7 @@
                     [address]="vout.scriptpubkey_address"
                     [similarity]="similarityMatches.get(tx.txid)?.get(vout.scriptpubkey_address)"
                     [link]="['/address/' | relativeUrl, vout.scriptpubkey_address]"
+                    [showClipboard]="true"
                   ></app-chunked-address>
                   <ng-template #pubkey_type>
                     <ng-container *ngIf="vout.scriptpubkey_type === 'p2pk'; else scriptpubkey_type">

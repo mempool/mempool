@@ -25,7 +25,8 @@
     </ng-container>
 
     <app-clipboard 
-      [text]="address" size="normal" 
+    *ngIf="showClipboard"  
+    [text]="address" size="normal" 
       class="d-none d-lg-block ml-lg-2">
     </app-clipboard>
     <ng-content></ng-content>
