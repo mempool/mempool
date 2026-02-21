@@ -1,34 +1,3 @@
-.address-poisoned {
-  text-overflow: unset;
-  display: flex;
-  flex-direction: row;
-  align-items: start;
-  position: relative;
-	font-family: monospace;
-
-  &:hover {
-      filter: brightness(0.85);
-  }
-
-  .infix {
-    flex-grow: 0;
-    flex-shrink: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    user-select: none;
-
-    text-decoration: underline 2px;
-  }
-
-  .prefix, .postfix {
-    flex-shrink: 0;
-    flex-grow: 0;
-    user-select: none;
-
-    text-decoration: underline var(--red) 2px;
-  }
-}
-
 .address {
   text-overflow: unset;
   display: flex;
@@ -64,6 +33,41 @@
     user-select: none;
   }
 
+  .first, .last {
+   > span {
+      padding-inline-end: 2px;
+      &:nth-child(even) {
+        color: #18e2cf;
+      }
+
+      &.partial {
+        padding-inline-end: 0;
+      }
+
+      &.hidden {
+        visibility: hidden;
+        width: 0;
+        padding-inline-end: 0;
+      }
+
+      &:has(> .prefix, > .infix, > .postfix) {
+        padding-inline-end: 0;
+
+        > :last-child {
+          padding-inline-end: 2px;
+        }
+
+        &.partial > :last-child {
+          padding-inline-end: 0;
+        }
+      }
+    }
+  }
+
+  .last span:last-child {
+    padding-inline-end: 0;
+  }
+
   &.inline {
     display: inline-flex;
   }
@@ -79,10 +83,24 @@
     pointer-events: none;
     opacity: 0.8;
   }
-}
 
-.spacer {
-  margin-right: 2px;
+  .infix {
+    flex-grow: 0;
+    flex-shrink: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    user-select: none;
+
+    border-bottom: 2px solid;
+  }
+
+  .prefix, .postfix {
+    flex-shrink: 0;
+    flex-grow: 0;
+    user-select: none;
+
+    border-bottom: 2px solid var(--red);
+  }
 }
 
 .poison-alert {

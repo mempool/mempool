@@ -1,10 +1,10 @@
-import { Component, Input, ChangeDetectionStrategy, OnChanges, OnInit, OnDestroy, LOCALE_ID, Inject } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, OnChanges, LOCALE_ID, Inject } from '@angular/core';
 import { AddressMatch } from '@app/shared/address-utils';
 
 interface AddressChunk {
   text: string;
-  color: string;
-  hasMargin: boolean;
+  prefixLength?: number;
+  postfixLength?: number;
 }
 
 @Component({
@@ -14,7 +14,7 @@ interface AddressChunk {
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: false
 })
-export class ChunkedAddressComponent implements OnChanges, OnInit, OnDestroy {
+export class ChunkedAddressComponent implements OnChanges {
   @Input() address: string;
   @Input() similarity: { score: number, match: AddressMatch, group: number } | null;
   @Input() link: any = null;
@@ -26,25 +26,20 @@ export class ChunkedAddressComponent implements OnChanges, OnInit, OnDestroy {
   @Input() textAlign: 'start' | 'end' = 'start';
   @Input() disabled: boolean = false;
   @Input() showClipboard: boolean = false;
+  @Input() chunkSize = 4;
   rtl: boolean;
 
   headChunks: AddressChunk[] = [];
   tailChunks: AddressChunk[] = [];
 
-  prefixChunks: AddressChunk[] = [];
-  infixChunks: AddressChunk[] = [];
-  postfixChunks: AddressChunk[] = [];
-
-  private colors = ['var(--info)', 'var(--primary)'];
-
-  min = Math.min;
-  
   groupColors: string[] = [
     'var(--primary)',
     'var(--success)',
     'var(--info)',
     'white',
   ];
+
+  matchColor: string = 'var(--primary)';
 
   constructor(
     @Inject(LOCALE_ID) private locale: string
@@ -54,59 +49,53 @@ export class ChunkedAddressComponent implements OnChanges, OnInit, OnDestroy {
     }
   }
 
-  ngOnInit(): void {}
-
   ngOnChanges(): void {
-      this.updateView();
-  }
-
-  ngOnDestroy(): void {}
-
-  private updateView() {
-    if (!this.address) {
-      return
-    };
-
     if (this.similarity) {
-      const prefixLen = Math.min(this.similarity.match.prefix.length, 16) || 0;
-      const postfixLen = Math.min(this.similarity.match.postfix.length, 16) || 0;
+      this.matchColor = this.groupColors[this.similarity.group % (this.groupColors.length)];
+    }
+    this.updateView();
+  }
 
-      const prefixText = this.address.slice(0, prefixLen);
-      const infixText = this.address.slice(prefixLen, this.address.length - postfixLen);
-      const postfixText = this.address.slice(this.address.length - postfixLen);
+  private updateView(): void {
+    if (!this.address) {
+      return;
+    }
 
-      this.prefixChunks = this.chunkify(prefixText, 0);
-      this.infixChunks = this.chunkify(infixText, prefixLen);
-      this.postfixChunks = this.chunkify(postfixText, this.address.length - postfixLen);
-    } else {
-      const splitIndex = this.address.length - this.lastChars;
-      const headText = this.address.slice(0, splitIndex);
-      const tailText = this.address.slice(splitIndex);
+    const split = this.address.length - this.lastChars;
+    const prefixLen = this.similarity?.match?.prefix?.length || 0;
+    const postfixStart = this.address.length - (this.similarity?.match?.postfix?.length || 0);
+    this.headChunks = [];
+    this.tailChunks = [];
 
-      this.headChunks = this.chunkify(headText, 0);
-      this.tailChunks = this.chunkify(tailText, splitIndex);
+    for (let i = 0; i < this.address.length; i += this.chunkSize) {
+      const text = this.address.slice(i, i + this.chunkSize);
+      const chunk = {
+        text,
+        prefixLength: prefixLen > i ? Math.min(text.length, prefixLen - i) : undefined,
+        postfixLength: postfixStart < i + text.length ? Math.min(text.length, i + text.length - postfixStart) : undefined,
+      };
+      if (i + this.chunkSize <= split) {
+        this.headChunks.push(chunk);
+      } else if (i >= split) {
+        this.tailChunks.push(chunk);
+      } else {
+        // split chunk across head and tail
+        const [ headChunk, tailChunk ] = this.splitChunk(chunk, split - i);
+        this.headChunks.push(headChunk);
+        this.tailChunks.push(tailChunk);
+      }
     }
   }
 
-  private chunkify(chunk: string, offset: number): AddressChunk[] {
-    const result: AddressChunk[] = [];
-    const totalLen = this.address.length;
-
-    let i = 0;
-    while (i < chunk.length) {
-      const realIndex = i + offset;
-      const lengthToTake = Math.min(4 - (realIndex % 4), chunk.length - i);
-      const segment = chunk.substring(i, i + lengthToTake);
-      
-      const currentEndIndex = realIndex + lengthToTake;
-
-      result.push({
-        text: segment,
-        color: this.colors[Math.floor(realIndex / 4) % 2],
-        hasMargin: (currentEndIndex % 4 === 0) && (currentEndIndex !== totalLen)
-      });
-      i += lengthToTake;
-    }
-    return result;
+  private splitChunk(chunk: AddressChunk, at: number): [AddressChunk, AddressChunk] {
+    return [{
+      text: chunk.text.slice(0, at),
+      prefixLength: chunk.prefixLength ? Math.min(chunk.prefixLength, at) : undefined,
+      postfixLength: chunk.postfixLength ? Math.max(0, at - chunk.postfixLength) : undefined,
+    }, {
+      text: chunk.text.slice(at),
+      prefixLength: chunk.prefixLength ? Math.max(0, at - chunk.prefixLength) : undefined,
+      postfixLength: chunk.postfixLength ? Math.min(chunk.postfixLength, chunk.text.length - at) : undefined,
+    }];
   }
 }
