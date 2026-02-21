@@ -1,12 +1,12 @@
 <div class="address" [style.max-width]="maxWidth ? maxWidth + 'px' : null" [style.justify-content]="textAlign" [class.inline]="inline">
   <ng-container *ngIf="link">
     <a [routerLink]="link" [queryParams]="queryParams" class="address-link" [target]="external ? '_blank' : '_self'" [class.disabled]="disabled">
-      <ng-container *ngIf="rtl; then rtlTruncated; else ltrTruncated;"></ng-container>
+      <ng-container *ngTemplateOutlet="truncated"></ng-container>
     </a>
   </ng-container>
 
   <ng-container *ngIf="!link">
-    <ng-container *ngIf="rtl; then rtlTruncated; else ltrTruncated;"></ng-container>
+    <ng-container *ngTemplateOutlet="truncated"></ng-container>
   </ng-container>
 
   <app-clipboard
@@ -27,38 +27,21 @@
   <ng-template #plain>{{ chunk.text }}</ng-template>
 </ng-template>
 
-<ng-template #ltrTruncated>
-  <span class="first">
-    <ng-container *ngIf="headChunks.length; else simpleHead">
-      <span *ngFor="let chunk of headChunks" [class.partial]="chunk.text.length < chunkSize"><ng-container *ngTemplateOutlet="chunkTpl; context: { $implicit: chunk }"></ng-container></span>
-    </ng-container>
-    <ng-template #simpleHead>{{ address.slice(0, -lastChars) }}</ng-template>
-  </span>
-
-  <span class="last">
-    <ng-container *ngIf="tailChunks.length; else simpleTail">
-      <span *ngIf="(address.length - lastChars) % (chunkSize * 2) >= chunkSize" class="hidden"></span>
-      <span *ngFor="let chunk of tailChunks"><ng-container *ngTemplateOutlet="chunkTpl; context: { $implicit: chunk }"></ng-container></span>
-    </ng-container>
-    <ng-template #simpleTail>{{ address.slice(-lastChars) }}</ng-template>
-  </span>
-
-  <div class="hidden-content">{{ address }}</div>
-</ng-template>
-
-<ng-template #rtlTruncated>
-  <span class="first">
-      <ng-container *ngIf="tailChunks.length; else simpleTailRTL">
-          <span *ngFor="let chunk of tailChunks" [class.partial]="chunk.text.length < chunkSize"><ng-container *ngTemplateOutlet="chunkTpl; context: { $implicit: chunk }"></ng-container></span>
+<ng-template #truncated>
+  <div class="address-content">
+    <span class="first">
+      <ng-container *ngIf="headChunks.length; else simpleHead">
+        <span *ngFor="let chunk of headChunks" [class.partial]="chunk.text.length < chunkSize"><ng-container *ngTemplateOutlet="chunkTpl; context: { $implicit: chunk }"></ng-container></span>
       </ng-container>
-      <ng-template #simpleTailRTL>{{ address.slice(-lastChars) }}</ng-template>
-  </span>
-  <span class="last">
-      <ng-container *ngIf="headChunks.length; else simpleHeadRTL">
+      <ng-template #simpleHead>{{ address.slice(0, -lastChars) }}</ng-template>
+    </span>
+    <span class="last">
+      <ng-container *ngIf="tailChunks.length; else simpleTail">
         <span *ngIf="(address.length - lastChars) % (chunkSize * 2) >= chunkSize" class="hidden"></span>
-        <span *ngFor="let chunk of headChunks"><ng-container *ngTemplateOutlet="chunkTpl; context: { $implicit: chunk }"></ng-container></span>
+        <span *ngFor="let chunk of tailChunks"><ng-container *ngTemplateOutlet="chunkTpl; context: { $implicit: chunk }"></ng-container></span>
       </ng-container>
-      <ng-template #simpleHeadRTL>{{ address.slice(0, -lastChars) }}</ng-template>
-  </span>
-  <div class="hidden-content">{{ address }}</div>
+      <ng-template #simpleTail>{{ address.slice(-lastChars) }}</ng-template>
+    </span>
+    <div class="hidden-content">{{ address }}</div>
+  </div>
 </ng-template>

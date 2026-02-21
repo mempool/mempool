@@ -1,4 +1,4 @@
-import { Component, Input, ChangeDetectionStrategy, OnChanges, LOCALE_ID, Inject } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, OnChanges } from '@angular/core';
 import { AddressMatch } from '@app/shared/address-utils';
 
 interface AddressChunk {
@@ -27,7 +27,6 @@ export class ChunkedAddressComponent implements OnChanges {
   @Input() disabled: boolean = false;
   @Input() showClipboard: boolean = false;
   @Input() chunkSize = 4;
-  rtl: boolean;
 
   headChunks: AddressChunk[] = [];
   tailChunks: AddressChunk[] = [];
@@ -40,14 +39,6 @@ export class ChunkedAddressComponent implements OnChanges {
   ];
 
   matchColor: string = 'var(--primary)';
-
-  constructor(
-    @Inject(LOCALE_ID) private locale: string
-  ) {
-    if (this.locale.startsWith('ar') || this.locale.startsWith('fa') || this.locale.startsWith('he')) {
-      this.rtl = true;
-    }
-  }
 
   ngOnChanges(): void {
     if (this.similarity) {
