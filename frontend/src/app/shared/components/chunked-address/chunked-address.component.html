@@ -18,6 +18,8 @@
   <span *ngIf="similarity" class="poison-alert" i18n-ngbTooltip="address-poisoning.warning-tooltip" ngbTooltip="This address is deceptively similar to another output. It may be part of an address poisoning attack.">
     <fa-icon [icon]="['fas', 'exclamation-triangle']" [fixedWidth]="true"></fa-icon>
   </span>
+
+  <ng-content></ng-content>
 </div>
 
 <ng-template #chunkTpl let-chunk>
