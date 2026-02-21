@@ -36,6 +36,8 @@ export class BlockOverviewTooltipComponent implements OnChanges {
 
   tooltipPosition: Position = { x: 0, y: 0 };
 
+  positionRafId: number | null = null;
+
   @ViewChild('tooltip') tooltipElement: ElementRef<HTMLCanvasElement>;
 
   constructor(
@@ -44,19 +46,7 @@ export class BlockOverviewTooltipComponent implements OnChanges {
 
   ngOnChanges(changes): void {
     if (changes.cursorPosition && changes.cursorPosition.currentValue) {
-      let x = changes.cursorPosition.currentValue.x + 10;
-      let y = changes.cursorPosition.currentValue.y + 10;
-      if (this.tooltipElement) {
-        const elementBounds = this.tooltipElement.nativeElement.getBoundingClientRect();
-        const parentBounds = this.tooltipElement.nativeElement.offsetParent.getBoundingClientRect();
-        if ((parentBounds.left + x + elementBounds.width) > parentBounds.right) {
-          x = Math.max(0, parentBounds.width - elementBounds.width - 10);
-        }
-        if (y + elementBounds.height > parentBounds.height) {
-          y = y - elementBounds.height - 20;
-        }
-      }
-      this.tooltipPosition = { x, y };
+      this.updatePosition();
     }
 
     if (this.tx && (changes.tx || changes.filterFlags || changes.filterMode)) {
@@ -94,8 +84,40 @@ export class BlockOverviewTooltipComponent implements OnChanges {
         }
       }
 
+      if (this.cursorPosition) {
+        this.tooltipPosition = { x: this.cursorPosition.x + 10, y: this.cursorPosition.y + 10 };
+      }
+      this.schedulePositionAfterLayout();
       this.cd.markForCheck();
     }
+  }
+
+  updatePosition(): void {
+    if (!this.cursorPosition) return;
+    let x = this.cursorPosition.x + 10;
+    let y = this.cursorPosition.y + 10;
+    if (this.tooltipElement?.nativeElement?.offsetParent) {
+      const elementBounds = this.tooltipElement.nativeElement.getBoundingClientRect();
+      const parentBounds = this.tooltipElement.nativeElement.offsetParent.getBoundingClientRect();
+      if ((parentBounds.left + x + elementBounds.width) > parentBounds.right) {
+        x = Math.max(0, parentBounds.width - elementBounds.width - 10);
+      }
+      if (y + elementBounds.height > parentBounds.height) {
+        y = y - elementBounds.height - 20;
+      }
+    }
+    this.tooltipPosition = { x, y };
+  }
+
+  schedulePositionAfterLayout(): void {
+    if (this.positionRafId != null) cancelAnimationFrame(this.positionRafId);
+    this.positionRafId = requestAnimationFrame(() => {
+      this.positionRafId = null;
+      if (this.tx && this.cursorPosition && this.tooltipElement?.nativeElement?.offsetParent) {
+        this.updatePosition();
+        this.cd.markForCheck();
+      }
+    });
   }
 
   getTooltipLeftPosition(): string {
