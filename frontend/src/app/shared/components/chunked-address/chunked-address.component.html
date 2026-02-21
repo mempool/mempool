@@ -1,90 +1,47 @@
-@if (similarity) {
-  <div class="address-poisoned">
-    <ng-container *ngIf="link">
-      <a style="display: contents;" [routerLink]="['/address/' | relativeUrl, address]" title="{{ address }}">
-        <ng-container *ngTemplateOutlet="poisonedContent"></ng-container>
-      </a>
-    </ng-container>
-    <ng-container *ngIf="!link">
-      <ng-container *ngTemplateOutlet="poisonedContent"></ng-container>
-    </ng-container>
-      <span class="poison-alert" *ngIf="similarity" i18n-ngbTooltip="address-poisoning.warning-tooltip" ngbTooltip="This address is deceptively similar to another output. It may be part of an address poisoning attack.">
-        <fa-icon [icon]="['fas', 'exclamation-triangle']" [fixedWidth]="true"></fa-icon>
-      </span>
-  </div>
-} @else {
-  <div class="address" [style.max-width]="maxWidth ? maxWidth + 'px' : null" [style.justify-content]="textAlign" [class.inline]="inline">
-    <ng-container *ngIf="link">
-      <a [routerLink]="link" [queryParams]="queryParams" class="address-link" [target]="external ? '_blank' : '_self'" [class.disabled]="disabled">
-        <ng-container *ngIf="rtl; then rtlTruncated; else ltrTruncated;"></ng-container>
-      </a>
-    </ng-container>
+<div class="address" [style.max-width]="maxWidth ? maxWidth + 'px' : null" [style.justify-content]="textAlign" [class.inline]="inline">
+  <ng-container *ngIf="link">
+    <a [routerLink]="link" [queryParams]="queryParams" class="address-link" [target]="external ? '_blank' : '_self'" [class.disabled]="disabled">
+      <ng-container *ngTemplateOutlet="truncated"></ng-container>
+    </a>
+  </ng-container>
 
-    <ng-container *ngIf="!link">
-      <ng-container *ngIf="rtl; then rtlTruncated; else ltrTruncated;"></ng-container>
-    </ng-container>
+  <ng-container *ngIf="!link">
+    <ng-container *ngTemplateOutlet="truncated"></ng-container>
+  </ng-container>
 
-    <app-clipboard 
-    *ngIf="showClipboard"  
-    [text]="address" size="normal" 
-      class="d-none d-lg-block ml-lg-2">
-    </app-clipboard>
-    <ng-content></ng-content>
-  </div>
-}
+  <app-clipboard
+    *ngIf="!similarity && showClipboard"
+    [text]="address" size="normal"
+    class="d-none d-sm-block"
+  ></app-clipboard>
 
-<ng-template #poisonedContent>
-  <span class="prefix">
-    <span *ngFor="let chunk of prefixChunks" 
-          [style.color]="chunk.color" 
-          [class.spacer]="chunk.hasMargin">{{ chunk.text }}</span>
+  <span *ngIf="similarity" class="poison-alert" i18n-ngbTooltip="address-poisoning.warning-tooltip" ngbTooltip="This address is deceptively similar to another output. It may be part of an address poisoning attack.">
+    <fa-icon [icon]="['fas', 'exclamation-triangle']" [fixedWidth]="true"></fa-icon>
   </span>
-  <span class="infix" [ngStyle]="{'text-decoration-color': groupColors[similarity.group % (groupColors.length)]}">
-    <span *ngFor="let chunk of infixChunks" 
-          [style.color]="chunk.color" 
-          [class.spacer]="chunk.hasMargin">{{ chunk.text }}</span>
-  </span>
-  <span class="postfix">
-     <span *ngFor="let chunk of postfixChunks" 
-           [style.color]="chunk.color" 
-           [class.spacer]="chunk.hasMargin">{{ chunk.text }}</span>
-  </span>
+</div>
+
+<ng-template #chunkTpl let-chunk>
+  <ng-container *ngIf="similarity; else plain">
+    <span class="prefix" *ngIf="chunk.prefixLength">{{ chunk.text.slice(0, chunk.prefixLength) }}</span><span class="infix" *ngIf="chunk.text.length - (chunk.prefixLength || 0) - (chunk.postfixLength || 0) > 0" [style.border-bottom-color]="matchColor">{{ chunk.text.slice(chunk.prefixLength || 0, chunk.text.length - (chunk.postfixLength || 0)) }}</span><span class="postfix" *ngIf="chunk.postfixLength">{{ chunk.text.slice(chunk.text.length - chunk.postfixLength) }}</span>
+  </ng-container>
+  <ng-template #plain>{{ chunk.text }}</ng-template>
 </ng-template>
 
-<ng-template #ltrTruncated>
-  <span class="first">
-    <ng-container *ngIf="headChunks.length; else simpleHead">
-      <span *ngFor="let chunk of headChunks" 
-            [style.color]="chunk.color" 
-            [class.spacer]="chunk.hasMargin">{{ chunk.text }}</span>
-    </ng-container>
-    <ng-template #simpleHead>{{ address.slice(0, -lastChars) }}</ng-template>
-  </span>
-
-  <span class="last">
-    <ng-container *ngIf="tailChunks.length; else simpleTail">
-      <span *ngFor="let chunk of tailChunks" 
-            [style.color]="chunk.color" 
-            [class.spacer]="chunk.hasMargin">{{ chunk.text }}</span>
-    </ng-container>
-    <ng-template #simpleTail>{{ address.slice(-lastChars) }}</ng-template>
-  </span>
-
-  <div class="hidden-content">{{ address }}</div>
-</ng-template>
-
-<ng-template #rtlTruncated>
-  <span class="first">
-      <ng-container *ngIf="tailChunks.length; else simpleTailRTL">
-          <span *ngFor="let chunk of tailChunks" [style.color]="chunk.color">{{ chunk.text }}</span>
+<ng-template #truncated>
+  <div class="address-content">
+    <span class="first">
+      <ng-container *ngIf="headChunks.length; else simpleHead">
+        <span *ngFor="let chunk of headChunks" [class.partial]="chunk.text.length < chunkSize"><ng-container *ngTemplateOutlet="chunkTpl; context: { $implicit: chunk }"></ng-container></span>
       </ng-container>
-      <ng-template #simpleTailRTL>{{ address.slice(-lastChars) }}</ng-template>
-  </span>
-  <span class="last">
-      <ng-container *ngIf="headChunks.length; else simpleHeadRTL">
-          <span *ngFor="let chunk of headChunks" [style.color]="chunk.color">{{ chunk.text }}</span>
+      <ng-template #simpleHead>{{ address.slice(0, -lastChars) }}</ng-template>
+    </span>
+    <span class="last">
+      <ng-container *ngIf="tailChunks.length; else simpleTail">
+        <span *ngIf="(address.length - lastChars) % (chunkSize * 2) >= chunkSize" class="hidden"></span>
+        <span *ngFor="let chunk of tailChunks"><ng-container *ngTemplateOutlet="chunkTpl; context: { $implicit: chunk }"></ng-container></span>
       </ng-container>
-      <ng-template #simpleHeadRTL>{{ address.slice(0, -lastChars) }}</ng-template>
-  </span>
-  <div class="hidden-content">{{ address }}</div>
+      <ng-template #simpleTail>{{ address.slice(-lastChars) }}</ng-template>
+    </span>
+    <div class="hidden-content">{{ address }}</div>
+  </div>
 </ng-template>
