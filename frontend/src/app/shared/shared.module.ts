@@ -97,7 +97,6 @@ import { SatsComponent } from '@app/shared/components/sats/sats.component';
 import { BtcComponent } from '@app/shared/components/btc/btc.component';
 import { FeeRateComponent } from '@app/shared/components/fee-rate/fee-rate.component';
 import { AddressTypeComponent } from '@app/shared/components/address-type/address-type.component';
-import { AddressTextComponent } from '@app/shared/components/address-text/address-text.component';
 import { TruncateComponent } from '@app/shared/components/truncate/truncate.component';
 import { SearchResultsComponent } from '@components/search-form/search-results/search-results.component';
 import { TimestampComponent } from '@app/shared/components/timestamp/timestamp.component';
@@ -132,6 +131,8 @@ import { BitcoinInvoiceComponent } from '@components/bitcoin-invoice/bitcoin-inv
 
 import { OnlyVsizeDirective, OnlyWeightDirective } from '@app/shared/components/weight-directives/weight-directives';
 import { GithubLogin } from '@components/github-login.component/github-login.component';
+
+import { ChunkedAddressComponent } from '@app/shared/components/chunked-address/chunked-address.component';
 
 @NgModule({
   declarations: [
@@ -222,7 +223,6 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     BtcComponent,
     FeeRateComponent,
     AddressTypeComponent,
-    AddressTextComponent,
     TruncateComponent,
     SearchResultsComponent,
     TimestampComponent,
@@ -256,6 +256,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     TwitterLogin,
     GithubLogin,
     BitcoinInvoiceComponent,
+    ChunkedAddressComponent
   ],
   imports: [
     CommonModule,
@@ -373,7 +374,6 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     BtcComponent,
     FeeRateComponent,
     AddressTypeComponent,
-    AddressTextComponent,
     TruncateComponent,
     SearchResultsComponent,
     TimestampComponent,
@@ -405,6 +405,8 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
 
     OnlyVsizeDirective,
     OnlyWeightDirective,
+
+    ChunkedAddressComponent
   ]
 })
 export class SharedModule {
