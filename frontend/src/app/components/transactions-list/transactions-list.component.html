@@ -93,7 +93,7 @@
                     </ng-container>
                     <ng-container *ngSwitchCase="vin.prevout && vin.prevout.scriptpubkey_type === 'p2pk'">
                       <span>P2PK <a class="address p2pk-address" [routerLink]="['/address/' | relativeUrl, vin.prevout.scriptpubkey.slice(2, -2)]" title="{{ vin.prevout.scriptpubkey.slice(2, -2) }}">
-                        <app-chunked-address [address]="vin.prevout.scriptpubkey.slice(2, -2)" [showClipboard]="true"></app-chunked-address>
+                        <app-chunked-address [address]="vin.prevout.scriptpubkey.slice(2, -2)"></app-chunked-address>
                       </a>
                       <app-clipboard [text]="vin.prevout.scriptpubkey.slice(2, -2)" class="ml-2" size="normal"></app-clipboard></span>
                     </ng-container>
