@@ -62,6 +62,178 @@
     </ng-template>
   </div>
 
+  <!-- RBF Structural Diff Button -->
+  <div class="diff-button-wrapper" *ngIf="getPredecessorTxid()">
+    <button class="btn btn-sm btn-secondary diff-toggle" (click)="toggleStructuralDiff();">
+      <i class="bi bi-code-slash" aria-hidden="true"></i>
+      <span *ngIf="!showDiff" i18n="rbf-diff-show">Show structural diff</span>
+      <span *ngIf="showDiff" i18n="rbf-diff-hide">Hide structural diff</span>
+    </button>
+  </div>
+
+<!-- RBF Structural Diff Content -->
+<div class="rbf-diff-section" *ngIf="showDiff && comparisonData">
+  <div class="row">
+    <!-- Left Column: Previous Transaction -->
+    <div class="col-sm">
+      <table class="table table-borderless table-striped previous-box">
+        <tbody>
+          <tr class="diff-head previous">
+            <td colspan="2">
+              <div class="diff-head-content">
+                <span i18n="rbf-diff.previous-tx">Previous Transaction</span>
+                <span class="txid-separator">:</span>
+                <code>{{ selectedOldTx.txid.substring(0, 12) }}...{{ selectedOldTx.txid.substring(selectedOldTx.txid.length - 8) }}</code>
+              </div>
+            </td>
+          </tr>
+
+          <ng-container *ngTemplateOutlet="previousDetails"></ng-container>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Right Column: Current Transaction -->
+    <div class="col-sm">
+      <table class="table table-borderless table-striped current-box">
+        <tbody>
+          <tr class="diff-head current">
+            <td colspan="2">
+              <div class="diff-head-content">
+                <span i18n="rbf-diff.current-tx">Current Transaction</span>
+                <span class="txid-separator">:</span>
+                <code>{{ selectedNewTx.txid.substring(0, 12) }}...{{ selectedNewTx.txid.substring(selectedNewTx.txid.length - 8) }}</code>
+              </div>
+            </td>
+          </tr>
+
+          <ng-container *ngTemplateOutlet="currentDetails"></ng-container>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+  <!-- Previous Transaction Table -->
+  <ng-template #previousDetails>
+        <!-- Metadata Section -->
+        <ng-container *ngIf="comparisonData.metadata.hasChanges">
+          <ng-container *ngFor="let row of comparisonData.metadata.rows">
+            <tr>
+              <td [attr.i18n]="row.i18nKey">{{ row.label }}</td>
+              <td>{{ row.previous }}</td>
+            </tr>
+          </ng-container>
+        </ng-container>
+
+        <!-- Metrics Section -->
+        <ng-container *ngIf="comparisonData.metrics.hasChanges">
+          <ng-container *ngFor="let row of comparisonData.metrics.rows">
+            <tr>
+              <td [attr.i18n]="row.i18nKey">{{ row.label }}</td>
+              <td>
+                <ng-container *ngIf="row.isAmount">
+                  <app-amount [satoshis]="asNumber(row.previous)" [noFiat]="true" [forceSats]="row.i18nKey === 'transaction.fee'"></app-amount>
+                </ng-container>
+                <ng-container *ngIf="!row.isAmount">
+                  <span [innerHTML]="'&lrm;' + (row.previous | number) + ' ' + row.unit"></span>
+                </ng-container>
+              </td>
+            </tr>
+          </ng-container>
+        </ng-container>
+
+        <!-- Inputs Section -->
+        <ng-container *ngIf="comparisonData.inputs.hasChanges">
+          <ng-container *ngFor="let row of comparisonData.inputs.rows">
+            <tr>
+              <td [attr.i18n]="row.i18nKey">{{ row.label }}</td>
+              <td>
+                <span *ngIf="row.previous !== null">{{ row.previous }}</span>
+                <span *ngIf="row.previous === null" class="text-muted null-placeholder">—</span>
+              </td>
+            </tr>
+          </ng-container>
+        </ng-container>
+
+        <!-- Outputs Section -->
+        <ng-container *ngIf="comparisonData.outputs.hasChanges">
+          <ng-container *ngFor="let row of comparisonData.outputs.rows">
+            <tr>
+              <td [attr.i18n]="row.i18nKey">{{ row.label }}</td>
+              <td>
+                <span *ngIf="row.previous !== null">{{ row.previous }}</span>
+                <span *ngIf="row.previous === null" class="text-muted null-placeholder">—</span>
+              </td>
+            </tr>
+          </ng-container>
+        </ng-container>
+
+
+  </ng-template>
+
+  <!-- Current Transaction Table -->
+  <ng-template #currentDetails>
+        <!-- Metadata Section -->
+        <ng-container *ngIf="comparisonData.metadata.hasChanges">
+          <ng-container *ngFor="let row of comparisonData.metadata.rows">
+            <tr>
+              <td [attr.i18n]="row.i18nKey">{{ row.label }}</td>
+              <td>
+                {{ row.current }}
+                <span class="changed-indicator">●</span>
+              </td>
+            </tr>
+          </ng-container>
+        </ng-container>
+
+        <!-- Metrics Section -->
+        <ng-container *ngIf="comparisonData.metrics.hasChanges">
+          <ng-container *ngFor="let row of comparisonData.metrics.rows">
+            <tr>
+              <td [attr.i18n]="row.i18nKey">{{ row.label }}</td>
+              <td>
+                <ng-container *ngIf="row.isAmount">
+                  <app-amount [satoshis]="asNumber(row.current)" [noFiat]="true" [forceSats]="row.i18nKey === 'transaction.fee'"></app-amount>
+                </ng-container>
+                <ng-container *ngIf="!row.isAmount">
+                  <span [innerHTML]="'&lrm;' + (row.current | number) + ' ' + row.unit"></span>
+                </ng-container>
+                <span *ngIf="row.percentage !== null" class="difference" [class.positive]="row.changeType === 'positive'" [class.negative]="row.changeType === 'negative'">
+                  {{ row.percentage > 0 ? '+' : '' }}{{ row.percentage | number: '1.0-1' }}%
+                </span>
+              </td>
+            </tr>
+          </ng-container>
+        </ng-container>
+
+        <!-- Inputs Section -->
+        <ng-container *ngIf="comparisonData.inputs.hasChanges">
+          <ng-container *ngFor="let row of comparisonData.inputs.rows">
+            <tr>
+              <td [attr.i18n]="row.i18nKey">{{ row.label }}</td>
+              <td>
+                <span *ngIf="row.current !== null">{{ row.current }}</span>
+                <span *ngIf="row.current === null" class="text-muted null-placeholder">—</span>
+              </td>
+            </tr>
+          </ng-container>
+        </ng-container>
+
+        <!-- Outputs Section -->
+        <ng-container *ngIf="comparisonData.outputs.hasChanges">
+          <ng-container *ngFor="let row of comparisonData.outputs.rows">
+            <tr>
+              <td [attr.i18n]="row.i18nKey">{{ row.label }}</td>
+              <td>
+                <span *ngIf="row.current !== null">{{ row.current }}</span>
+                <span *ngIf="row.current === null" class="text-muted null-placeholder">—</span>
+              </td>
+            </tr>
+          </ng-container>
+        </ng-container>
+  </ng-template>
+
   <ng-template #nodeSpacer>
     <div class="node-spacer"></div>
   </ng-template>
