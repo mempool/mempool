@@ -121,7 +121,7 @@
       </div>
     </ng-container>
 
-    <ng-container *ngIf="(stateService.backend$ | async) === 'esplora' && address && utxos && utxos.length > 2">
+    <ng-container *ngIf="address && utxos && utxos.length > 2">
       <br>
       <div class="title-tx">
         <h2 class="text-left" i18n="address.unspent-outputs">Unspent Outputs</h2>
