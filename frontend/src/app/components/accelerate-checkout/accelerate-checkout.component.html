@@ -488,17 +488,15 @@
         </div>
       </div>
     }
+  }
 
-    <div class="row text-center mt-1">
+    <div class="row text-center mt-1 square-buttons-container" [class.visible]="step === 'cashapp' || step === 'applepay' || step === 'googlepay' || step === 'cardonfile'">
       <div class="col-sm">
         <div class="form-group w-100">
-          @if (step === 'applepay') {
-            <div id="apple-pay-button" class="apple-pay-button apple-pay-button-black" style="height: 50px"  [style]="loadingApplePay ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
-          } @else if (step === 'cashapp') {          
-            <div id="cash-app-pay" class="d-inline-block" style="height: 50px" [style]="loadingCashapp ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
-          } @else if (step === 'googlepay') {
-            <div id="google-pay-button" class="d-inline-block" style="height: 50px" [style]="loadingGooglePay ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
-          } @else if (step === 'cardonfile') {
+              <div id="apple-pay-button" class="apple-pay-button apple-pay-button-black" [class.visible]="step === 'applepay'" style="height: 50px"  [style]="loadingApplePay ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
+              <div id="cash-app-pay" class="d-inline-block" [class.visible]="step === 'cashapp'" style="height: 50px" [style]="loadingCashapp ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
+              <div id="google-pay-button" class="d-inline-block" [class.visible]="step === 'googlepay'" style="height: 50px" [style]="loadingGooglePay ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
+          @if (step === 'cardonfile') {
             <div class="ml-auto mr-auto paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px" (click)="requestCardOnFilePayment()" [style]="loadingCardOnFile ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''">
               @if (['VISA', 'MASTERCARD', 'JCB', 'DISCOVER', 'DISCOVER_DINERS', 'AMERICAN_EXPRESS'].includes(estimate?.availablePaymentMethods?.cardOnFile?.card?.brand)) {
                 <app-svg-images [name]="estimate?.availablePaymentMethods?.cardOnFile?.card?.brand" height="33" class="mr-2"></app-svg-images>
@@ -522,7 +520,7 @@
         }
       </div>
     </div>
-
+  @if (step === 'cashapp' || step === 'applepay' || step === 'googlepay' || step === 'cardonfile') {
     <hr>
     <div class="row mt-2 mb-2 text-center">
       <div class="col-sm d-flex flex-column">
@@ -541,7 +539,6 @@
       <div class="col-sm">
         <div class="form-group w-100">
           <!-- Processing payment -->
-          <div id="cash-app-pay" class="d-inline-block" [style]="'opacity: 0; width: 0px; height: 0px; pointer-events: none;'"></div>
           <div display="d-flex flex-row justify-content-center">
             <span i18n="accelerator.payment-processing">We are processing your payment...</span>
             <div class="ml-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
