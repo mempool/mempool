@@ -1,6 +1,6 @@
 import { TransactionFlags } from '@app/shared/filters.utils';
 import { getVarIntLength, parseMultisigScript, isPoint, parseTapscriptMultisig, parseTapscriptUnanimousMultisig, ScriptInfo } from '@app/shared/script.utils';
-import { Transaction, Vin, Utxo } from '@interfaces/electrs.interface';
+import { Transaction, Vin, Vout } from '@interfaces/electrs.interface';
 import { CpfpInfo, RbfInfo, TransactionStripped } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 import { hash, Hash } from '@app/shared/sha256';
@@ -1641,6 +1641,112 @@ export function encodePsbt(rawTx: Uint8Array, inputs: PsbtKeyValueMap[], outputs
   }
 
   return new Uint8Array(result);
+}
+
+export interface PsbtCheck {
+  label: (params: any) => string;
+  run: (tx: Transaction, params: any) => boolean;
+}
+
+export interface PsbtCheckDefinitions {
+  [key: string]: PsbtCheck;
+}
+
+export const PSBT_CHECKS: PsbtCheckDefinitions = {
+  feeRange: {
+    label: (params: { min: number; max: number }) => `Absolute fee between ${params.min} and ${params.max} sats`,
+    run: (tx: Transaction, params: { min: number; max: number }) => tx.fee >= params.min && tx.fee <= params.max,
+  },
+  input: {
+    label: (params: { index: number; expected: Vin; }) => `Input #${params.index} match`,
+    run: (tx: Transaction, params: { index: number; expected: Vin; }) =>
+      tx.vin[params.index]?.txid === params.expected.txid &&
+      tx.vin[params.index]?.vout === params.expected.vout
+  },
+  output: {
+    label: (params: { index: number; expected: Vout; }) => `Output #${params.index} match`,
+    run: (tx: Transaction, params: { index: number; expected: Vout; }) =>
+      tx.vout[params.index]?.value === params.expected.value &&
+      tx.vout[params.index]?.scriptpubkey === params.expected.scriptpubkey
+  },
+  sequence: {
+    label: (params: { index: number; expected: number; }) => `Input #${params.index} sequence: 0x${params.expected.toString(16).padStart(8, '0')}`,
+    run: (tx: Transaction, params: { index: number; expected: number }) => tx.vin[params.index]?.sequence === params.expected
+  },
+  locktime: {
+    label: (params: { expected: number; }) => `Locktime: ${params.expected}`,
+    run: (tx: Transaction, params: { expected: number }) => tx.locktime === params.expected
+  },
+};
+
+export type PsbtCheckResult = {
+  label: string;
+  passed: boolean;
+};
+
+export function checkPsbt(psbt: string, checks: { key: string; params: any }[]): PsbtCheckResult[] {
+  const { tx } = decodeRawTransaction(psbt, '');
+
+  if (tx.vin.every(input => input.prevout || input.is_coinbase)) {
+    tx.fee = (tx.vin.length === 1 && tx.vin[0].is_coinbase) ? 0 : tx.vin.reduce((fee, input) => {
+      return fee + (input.prevout.value || 0);
+    }, 0) - tx.vout.reduce((sum, output) => sum + output.value, 0);
+  }
+
+  const results: PsbtCheckResult[] = [];
+
+  for (const check of checks) {
+    const checkDef = PSBT_CHECKS[check.key];
+    if (checkDef) {
+      results.push({ label: checkDef.label(check.params), passed: checkDef.run(tx, check.params) });
+    }
+  }
+
+  return results;
+}
+
+export type SignedTxCheck = 'bad_tx_structure' | 'missing_sig' | 'invalid_sighash' | null;
+
+export function checkSignedTransaction(rawTx: string, expectedUnsignedTx: Transaction, network: string): SignedTxCheck {
+  const { tx } = decodeRawTransaction(rawTx, network);
+
+  // Basic checks on tx structure
+  if (expectedUnsignedTx.version !== tx.version ||
+    expectedUnsignedTx.locktime !== tx.locktime ||
+    expectedUnsignedTx.vin.length !== tx.vin.length ||
+    expectedUnsignedTx.vout.length !== tx.vout.length) {
+    return 'bad_tx_structure';
+  }
+  for (let i = 0; i < expectedUnsignedTx.vin.length; i++) {
+    if (expectedUnsignedTx.vin[i].txid !== tx.vin[i].txid || expectedUnsignedTx.vin[i].vout !== tx.vin[i].vout || expectedUnsignedTx.vin[i].sequence !== tx.vin[i].sequence) {
+      return 'bad_tx_structure';
+    }
+  }
+  for (let i = 0; i < expectedUnsignedTx.vout.length; i++) {
+    if (expectedUnsignedTx.vout[i].value !== tx.vout[i].value || expectedUnsignedTx.vout[i].scriptpubkey !== tx.vout[i].scriptpubkey) {
+      return 'bad_tx_structure';
+    }
+  }
+
+  // check that there is at least one sig per input, and that all sigs use SIGHASH_ALL or SIGHASH_DEFAULT
+  for (const input of tx.vin) {
+    let signatures: SigInfo[] = [];
+    signatures = signatures.concat(extractDERSignaturesASM(input.scriptsig_asm));
+    signatures = signatures.concat(extractDERSignaturesWitness(input.witness));
+    signatures = signatures.concat(extractSchnorrSignatures(input.witness));
+
+    if (signatures.length === 0) {
+      return 'missing_sig';
+    }
+    for (const sigInfo of signatures) {
+      if (sigInfo.sighash !== SighashFlag.DEFAULT && sigInfo.sighash !== SighashFlag.ALL) {
+        return 'invalid_sighash';
+      }
+    }
+  }
+
+  // tx looks good!
+  return null;
 }
 
 export function decodeRawTransaction(input: string, network: string): { tx: Transaction, hex: string, psbt?: string } {
