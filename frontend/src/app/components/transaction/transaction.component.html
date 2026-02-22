@@ -86,11 +86,17 @@
     <ng-container *ngIf="!tx?.status?.confirmed && showAccelerationSummary && (ETA$ | async) as eta;">
       <span id='accelerate' #accelerate class="anchor"></span>
       <br>
-      <div class="title float-left mb-1">
-        <h2><a [href]="[ isMempoolSpaceBuild ? '/accelerator' : 'https://mempool.space/accelerator']" [target]="isMempoolSpaceBuild ? '' : 'blank'"><app-svg-images name="accelerator" [height]="isMobile ? '35px' : '45px'"></app-svg-images></a></h2>
+      <div class="d-flex flex-row justify-content-between align-items-center">
+        <div class="title float-left mb-1">
+          <h2>
+            <a [href]="[ isMempoolSpaceBuild ? '/accelerator' : 'https://mempool.space/accelerator']" [target]="isMempoolSpaceBuild ? '' : 'blank'"><app-svg-images name="accelerator" [height]="isMobile ? '35px' : '45px'"></app-svg-images></a>
+          </h2>
+        </div>
+        <div>
+          <button type="button" class="btn btn-outline-info accelerator-toggle btn-sm float-right" [class.hide-on-mobile]="hasAccelerationDetails" (click)="closeAccelerator()" i18n="accelerator.hide">Hide accelerator</button>
+          <button *ngIf="hasAccelerationDetails" class="btn btn-sm btn-outline-info details-button float-right ml-2" (click)="showAccelerationDetails = !showAccelerationDetails" i18n="transaction.details|Transaction Details">Details</button>
+        </div>
       </div>
-      <button type="button" class="btn btn-outline-info accelerator-toggle btn-sm float-right" [class.hide-on-mobile]="hasAccelerationDetails" (click)="closeAccelerator()" i18n="accelerator.hide">Hide accelerator</button>
-      <button *ngIf="hasAccelerationDetails" class="btn btn-sm btn-outline-info details-button float-right ml-2" (click)="showAccelerationDetails = !showAccelerationDetails" i18n="transaction.details|Transaction Details">Details</button>
 
       <div class="clearfix"></div>
 
