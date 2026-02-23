@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import { SigInfo, SighashLabels } from '@app/shared/transaction.utils';
+import { detectCltvTimestamps, formatCltvTimestamp } from '@app/shared/script.utils';
 
 @Component({
   selector: 'app-asm',
@@ -39,25 +40,7 @@ export class AsmComponent {
   parseASM(): void {
     const allInstructions = this.asm.split('OP_').filter(instruction => instruction.trim() !== '');
 
-    const cltvTimestamps: Map<number, number> = new Map();
-    allInstructions.forEach((instruction, index, arr) => {
-      const parts = instruction.split(' ');
-      const instructionName = parts[0];
-      const args = parts.slice(1);
-
-      if (instructionName === 'PUSHBYTES_4' && args.length > 0 && args[0].length === 8 && /^[0-9a-fA-F]+$/.test(args[0])) {
-        if (index + 1 < arr.length) {
-          const nextInstruction = arr[index + 1].split(' ')[0];
-          if (nextInstruction === 'CLTV') {
-            const bytes = args[0].match(/.{2}/g) || [];
-            const littleEndianValue = bytes.reverse().join('');
-            const timestamp = parseInt(littleEndianValue, 16);
-            cltvTimestamps.set(index, timestamp);
-            cltvTimestamps.set(index + 1, timestamp);
-          }
-        }
-      }
-    });
+    const cltvTimestamps = detectCltvTimestamps(allInstructions);
 
     let instructions = allInstructions;
     if (this.crop && this.asm.length > this.crop) {
@@ -110,14 +93,7 @@ export class AsmComponent {
   }
 
   formatTimestamp(timestamp: number): string {
-    if (timestamp < 500000000) {
-      return `Block height: ${timestamp}`;
-    }
-    if (timestamp > 4294967295) {
-      return `Invalid timestamp: ${timestamp}`;
-    }
-    const date = new Date(timestamp * 1000);
-    return date.toISOString().replace('T', ' ').replace(/\.\d{3}Z$/, ' UTC');
+    return formatCltvTimestamp(timestamp);
   }
 
   readonly opcodeStyles: Map<string, string> = new Map([

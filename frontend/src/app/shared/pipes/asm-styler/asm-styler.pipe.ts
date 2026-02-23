@@ -1,4 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { detectCltvTimestamps, formatCltvTimestamp } from '@app/shared/script.utils';
 
 @Pipe({
   name: 'asmStyler',
@@ -11,27 +12,7 @@ export class AsmStylerPipe implements PipeTransform {
     let out = '';
     let chars = -3;
 
-    // First pass: find CLTV timestamps
-    const cltvTimestamps: Map<number, number> = new Map();
-    for (let i = 0; i < instructions.length; i++) {
-      const instruction = instructions[i];
-      const parts = instruction.split(' ');
-      const opcode = parts[0];
-      const args = parts.slice(1);
-
-      if (opcode === 'PUSHBYTES_4' && args.length > 0 && args[0].length === 8 && /^[0-9a-fA-F]+$/.test(args[0])) {
-        if (i + 1 < instructions.length) {
-          const nextOpcode = instructions[i + 1].split(' ')[0];
-          if (nextOpcode === 'CLTV') {
-            const bytes = args[0].match(/.{2}/g) || [];
-            const littleEndianValue = bytes.reverse().join('');
-            const timestamp = parseInt(littleEndianValue, 16);
-            cltvTimestamps.set(i, timestamp);
-            cltvTimestamps.set(i + 1, timestamp);
-          }
-        }
-      }
-    }
+    const cltvTimestamps = detectCltvTimestamps(instructions);
 
     for (let i = 0; i < instructions.length; i++) {
       const instruction = instructions[i];
@@ -349,14 +330,7 @@ export class AsmStylerPipe implements PipeTransform {
   }
 
   formatTimestamp(timestamp: number): string {
-    if (timestamp < 500000000) {
-      return `Block height: ${timestamp}`;
-    }
-    if (timestamp > 4294967295) {
-      return `Invalid timestamp: ${timestamp}`;
-    }
-    const date = new Date(timestamp * 1000);
-    return date.toISOString().replace('T', ' ').replace(/\.\d{3}Z$/, ' UTC');
+    return formatCltvTimestamp(timestamp);
   }
 
 }
