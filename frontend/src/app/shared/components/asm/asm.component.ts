@@ -23,7 +23,7 @@ export class AsmComponent {
   @Output() showSigInfo = new EventEmitter<SigInfo>();
   @Output() hideSigInfo = new EventEmitter<void>();
 
-  instructions: { instruction: string, args: string[] }[] = [];
+  instructions: { instruction: string, args: string[], cltvTimestamp?: number }[] = [];
   sighashLabels: Record<number, string> = SighashLabels;
 
   ngOnInit(): void {
@@ -70,11 +70,43 @@ export class AsmComponent {
         chars += instructions[i].length + 3;
       }
     }
-    this.instructions = instructions.filter(instruction => instruction.trim() !== '').map(instruction => {
+
+    const filteredInstructions = instructions.filter(instruction => instruction.trim() !== '');
+
+    // First pass: calculate CLTV timestamps
+    const cltvTimestamps: Map<number, number> = new Map();
+    filteredInstructions.forEach((instruction, index, arr) => {
       const parts = instruction.split(' ');
+      const instructionName = parts[0];
+      const args = parts.slice(1);
+
+      // Check if this is a PUSHBYTES_4 followed by CLTV
+      if (instructionName === 'PUSHBYTES_4' && args.length > 0 && args[0].length === 8) {
+        // Check if next instruction is CLTV
+        if (index + 1 < arr.length) {
+          const nextInstruction = arr[index + 1].split(' ')[0];
+          if (nextInstruction === 'CLTV') {
+            // Decode little-endian hex to timestamp
+            const bytes = args[0].match(/.{2}/g) || [];
+            const littleEndianValue = bytes.reverse().join('');
+            const timestamp = parseInt(littleEndianValue, 16);
+            // Store timestamp for both PUSHBYTES_4 and CLTV instructions
+            cltvTimestamps.set(index, timestamp);
+            cltvTimestamps.set(index + 1, timestamp);
+          }
+        }
+      }
+    });
+
+    this.instructions = filteredInstructions.map((instruction, index) => {
+      const parts = instruction.split(' ');
+      const instructionName = parts[0];
+      const args = parts.slice(1);
+
       return {
-        instruction: parts[0],
-        args: parts.slice(1)
+        instruction: instructionName,
+        args: args,
+        cltvTimestamp: cltvTimestamps.get(index)
       };
     });
   }
@@ -85,6 +117,14 @@ export class AsmComponent {
 
   doHideSigInfo(): void {
     this.hideSigInfo.emit();
+  }
+
+  formatTimestamp(timestamp: number): string {
+    const date = new Date(timestamp * 1000);
+    if (timestamp < 500000000) {
+      return `Block height: ${timestamp}`;
+    }
+    return date.toISOString().replace('T', ' ').replace(/\.\d{3}Z$/, ' UTC');
   }
 
   readonly opcodeStyles: Map<string, string> = new Map([
