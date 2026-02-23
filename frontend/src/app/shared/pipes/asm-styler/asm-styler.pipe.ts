@@ -7,23 +7,44 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class AsmStylerPipe implements PipeTransform {
 
   transform(asm: string, crop: number = 0): string {
-    const instructions = asm.split('OP_');
+    const instructions = asm.split('OP_').filter(i => i !== '');
     let out = '';
     let chars = -3;
-    for (const instruction of instructions) {
-      if (instruction === '') {
-        continue;
+
+    // First pass: find CLTV timestamps
+    const cltvTimestamps: Map<number, number> = new Map();
+    for (let i = 0; i < instructions.length; i++) {
+      const instruction = instructions[i];
+      const parts = instruction.split(' ');
+      const opcode = parts[0];
+      const args = parts.slice(1);
+
+      if (opcode === 'PUSHBYTES_4' && args.length > 0 && args[0].length === 8) {
+        if (i + 1 < instructions.length) {
+          const nextOpcode = instructions[i + 1].split(' ')[0];
+          if (nextOpcode === 'CLTV') {
+            const bytes = args[0].match(/.{2}/g) || [];
+            const littleEndianValue = bytes.reverse().join('');
+            const timestamp = parseInt(littleEndianValue, 16);
+            cltvTimestamps.set(i, timestamp);
+            cltvTimestamps.set(i + 1, timestamp);
+          }
+        }
       }
+    }
+
+    for (let i = 0; i < instructions.length; i++) {
+      const instruction = instructions[i];
       if (crop && chars > crop) {
         break;
       }
       chars += instruction.length + 3;
-      out += this.addStyling(instruction);
+      out += this.addStyling(instruction, cltvTimestamps.get(i));
     }
     return out;
   }
 
-  addStyling(instruction: string): string {
+  addStyling(instruction: string, cltvTimestamp?: number): string {
     const opcode = instruction.split(' ')[0];
     let style = '';
     switch (opcode) {
@@ -318,7 +339,21 @@ export class AsmStylerPipe implements PipeTransform {
     if (args === opcode) {
       args = '';
     }
+
+    if (cltvTimestamp !== undefined) {
+      const tooltipText = this.formatTimestamp(cltvTimestamp);
+      return `<span class='${style} cltv-tooltip' title='${tooltipText}'>OP_${opcode}</span> <span class='cltv-tooltip' title='${tooltipText}'>${args}</span><br>`;
+    }
+
     return `<span class='${style}'>OP_${opcode}</span> ${args}<br>`;
+  }
+
+  formatTimestamp(timestamp: number): string {
+    if (timestamp < 500000000) {
+      return `Block height: ${timestamp}`;
+    }
+    const date = new Date(timestamp * 1000);
+    return date.toISOString().replace('T', ' ').replace(/\.\d{3}Z$/, ' UTC');
   }
 
 }
