@@ -37,18 +37,37 @@ export class AsmComponent {
   }
 
   parseASM(): void {
-    let instructions = this.asm.split('OP_');
-    // trim instructions to a whole number of instructions with at most `crop` characters total
+    const allInstructions = this.asm.split('OP_').filter(instruction => instruction.trim() !== '');
+
+    const cltvTimestamps: Map<number, number> = new Map();
+    allInstructions.forEach((instruction, index, arr) => {
+      const parts = instruction.split(' ');
+      const instructionName = parts[0];
+      const args = parts.slice(1);
+
+      if (instructionName === 'PUSHBYTES_4' && args.length > 0 && args[0].length === 8 && /^[0-9a-fA-F]+$/.test(args[0])) {
+        if (index + 1 < arr.length) {
+          const nextInstruction = arr[index + 1].split(' ')[0];
+          if (nextInstruction === 'CLTV') {
+            const bytes = args[0].match(/.{2}/g) || [];
+            const littleEndianValue = bytes.reverse().join('');
+            const timestamp = parseInt(littleEndianValue, 16);
+            cltvTimestamps.set(index, timestamp);
+            cltvTimestamps.set(index + 1, timestamp);
+          }
+        }
+      }
+    });
+
+    let instructions = allInstructions;
     if (this.crop && this.asm.length > this.crop) {
       let chars = 0;
       for (let i = 0; i < instructions.length; i++) {
         if (chars + instructions[i].length + 3 > this.crop) {
           const croppedInstruction = instructions[i];
           instructions = instructions.slice(0, i);
-          // add cropped instruction
           let remainingChars = this.crop - chars;
           let parts = croppedInstruction.split(' ');
-          // only render this instruction if there is space for the instruction name and a few args
           if (remainingChars > parts[0].length + 10) {
             remainingChars -= parts[0].length + 1;
             for (let j = 1; j < parts.length; j++) {
@@ -56,9 +75,7 @@ export class AsmComponent {
               if (remainingChars >= arg.length) {
                 remainingChars -= arg.length + 1;
               } else {
-                // crop this argument
                 parts[j] = arg.slice(0, remainingChars);
-                // and remove all following arguments
                 parts = parts.slice(0, j + 1);
                 break;
               }
@@ -71,34 +88,7 @@ export class AsmComponent {
       }
     }
 
-    const filteredInstructions = instructions.filter(instruction => instruction.trim() !== '');
-
-    // First pass: calculate CLTV timestamps
-    const cltvTimestamps: Map<number, number> = new Map();
-    filteredInstructions.forEach((instruction, index, arr) => {
-      const parts = instruction.split(' ');
-      const instructionName = parts[0];
-      const args = parts.slice(1);
-
-      // Check if this is a PUSHBYTES_4 followed by CLTV
-      if (instructionName === 'PUSHBYTES_4' && args.length > 0 && args[0].length === 8) {
-        // Check if next instruction is CLTV
-        if (index + 1 < arr.length) {
-          const nextInstruction = arr[index + 1].split(' ')[0];
-          if (nextInstruction === 'CLTV') {
-            // Decode little-endian hex to timestamp
-            const bytes = args[0].match(/.{2}/g) || [];
-            const littleEndianValue = bytes.reverse().join('');
-            const timestamp = parseInt(littleEndianValue, 16);
-            // Store timestamp for both PUSHBYTES_4 and CLTV instructions
-            cltvTimestamps.set(index, timestamp);
-            cltvTimestamps.set(index + 1, timestamp);
-          }
-        }
-      }
-    });
-
-    this.instructions = filteredInstructions.map((instruction, index) => {
+    this.instructions = instructions.map((instruction, index) => {
       const parts = instruction.split(' ');
       const instructionName = parts[0];
       const args = parts.slice(1);
@@ -120,10 +110,13 @@ export class AsmComponent {
   }
 
   formatTimestamp(timestamp: number): string {
-    const date = new Date(timestamp * 1000);
     if (timestamp < 500000000) {
       return `Block height: ${timestamp}`;
     }
+    if (timestamp > 4294967295) {
+      return `Invalid timestamp: ${timestamp}`;
+    }
+    const date = new Date(timestamp * 1000);
     return date.toISOString().replace('T', ' ').replace(/\.\d{3}Z$/, ' UTC');
   }
 

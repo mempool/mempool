@@ -177,8 +177,8 @@
                               <ng-container *ngIf="tx['_sigmap']?.[witness] as sigInfo">
                                 <span class="sig sig-key sig-inline sighash-{{sigInfo.sig.sighash}}"
                                       [class.hovered]="selectedSig && selectedSig.txIndex === i && selectedSig.vindex === vindex && selectedSig.sig === sigInfo.sig"
-                                      (mouseenter)="showSigInfo(i, vindex, sigInfo.sig)" 
-                                      (mouseleave)="hideSigInfo()" 
+                                      (mouseenter)="showSigInfo(i, vindex, sigInfo.sig)"
+                                      (mouseleave)="hideSigInfo()"
                                       [ngbTooltip]="sighashLabels[sigInfo.sig.sighash]">
                                   <fa-icon [icon]="['fas', 'key']" [fixedWidth]="true"></fa-icon>
                                 </span>
@@ -207,10 +207,10 @@
                                 } @else if (witness) {
                                   <ng-container *ngIf="tx['_sigmap']?.[witness]?.sig.sighash !== 0 && tx['_sigmap']?.[witness] as sigInfo; else plainSig">
                                     <span class="witness">
-                                      {{witness.slice(0, -2)}}<span class="sig sighash-{{sigInfo.sig.sighash}}" 
+                                      {{witness.slice(0, -2)}}<span class="sig sighash-{{sigInfo.sig.sighash}}"
                                             [class.hovered]="selectedSig && selectedSig.txIndex === i && selectedSig.vindex === vindex && selectedSig.sig === sigInfo.sig"
-                                            (mouseenter)="showSigInfo(i, vindex, sigInfo.sig)" 
-                                            (mouseleave)="hideSigInfo()" 
+                                            (mouseenter)="showSigInfo(i, vindex, sigInfo.sig)"
+                                            (mouseleave)="hideSigInfo()"
                                             [ngbTooltip]="sighashLabels[sigInfo.sig.sighash]">{{witness.slice(-2)}}</span>
                                     </span>
                                   </ng-container>
@@ -241,7 +241,9 @@
                       </tr>
                       <tr *ngIf="vin.inner_redeemscript_asm">
                         <td i18n="transactions-list.p2sh-redeem-script">P2SH redeem script</td>
-                        <td style="text-align: left;" [innerHTML]="vin.inner_redeemscript_asm | asmStyler"></td>
+                        <td style="text-align: left;">
+                          <app-asm [asm]="vin.inner_redeemscript_asm"></app-asm>
+                        </td>
                       </tr>
                       @if (vin.taprootInfo?.scriptPath && showTaprootControlBlock[vindex]) {
                         <tr>
@@ -288,7 +290,9 @@
                       <ng-template [ngIf]="vin.prevout">
                         <tr>
                           <td i18n="transactions-list.previous-output-script">Previous output script</td>
-                          <td style="text-align: left;" [innerHTML]="vin.prevout.scriptpubkey_asm | asmStyler"></td>
+                          <td style="text-align: left;">
+                            <app-asm [asm]="vin.prevout.scriptpubkey_asm"></app-asm>
+                          </td>
                         </tr>
                         <tr>
                           <td i18n="transactions-list.previous-output-type">Previous output type</td>
