@@ -7,7 +7,7 @@
     }
     @for (arg of instruction.args; track arg; let j = $index) {
       @if (j === 0 && instruction.cltvTimestamp) {
-        <span class="cltv-annotation">{{ arg }}</span>
+        <span class="cltv-annotation" [ngbTooltip]="formatTimestamp(instruction.cltvTimestamp)" placement="top" container="body" tooltipClass="cltv-tooltip-class">{{ arg }}</span>
       } @else {
         <ng-container *ngIf="annotations.signatures?.[arg] as sigInfo; else plainArg">
           <span class="sig sig-key sig-inline sighash-{{sigInfo.sig.sighash}}"
