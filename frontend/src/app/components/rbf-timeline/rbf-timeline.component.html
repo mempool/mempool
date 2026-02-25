@@ -71,48 +71,53 @@
     </button>
   </div>
 
-<!-- RBF Structural Diff Content -->
-<div class="rbf-diff-section" *ngIf="showDiff && comparisonData">
-  <div class="row">
-    <!-- Left Column: Previous Transaction -->
-    <div class="col-sm">
-      <table class="table table-borderless table-striped previous-box">
-        <tbody>
-          <tr class="diff-head previous">
-            <td colspan="2">
-              <div class="diff-head-content">
-                <span i18n="rbf-diff.previous-tx">Previous Transaction</span>
-                <span class="txid-separator">:</span>
-                <code>{{ selectedOldTx.txid.substring(0, 12) }}...{{ selectedOldTx.txid.substring(selectedOldTx.txid.length - 8) }}</code>
-              </div>
-            </td>
-          </tr>
+  <!-- RBF Diff Error -->
+  <div class="diff-error alert alert-danger" *ngIf="diffError" i18n="rbf-diff.load-error">
+    Failed to load transaction diff.
+  </div>
 
-          <ng-container *ngTemplateOutlet="previousDetails"></ng-container>
-        </tbody>
-      </table>
-    </div>
+  <!-- RBF Structural Diff Content -->
+  <div class="rbf-diff-section" *ngIf="showDiff && comparisonData && selectedOldTx && selectedNewTx">
+    <div class="row">
+      <!-- Left Column: Previous Transaction -->
+      <div class="col-sm">
+        <table class="table table-borderless table-striped previous-box">
+          <tbody>
+            <tr class="diff-head previous">
+              <td colspan="2">
+                <div class="diff-head-content">
+                  <span i18n="rbf-diff.previous-tx">Previous Transaction</span>
+                  <span class="txid-separator">:</span>
+                  <code>{{ selectedOldTx.txid.substring(0, 12) }}...{{ selectedOldTx.txid.substring(selectedOldTx.txid.length - 8) }}</code>
+                </div>
+              </td>
+            </tr>
 
-    <!-- Right Column: Current Transaction -->
-    <div class="col-sm">
-      <table class="table table-borderless table-striped current-box">
-        <tbody>
-          <tr class="diff-head current">
-            <td colspan="2">
-              <div class="diff-head-content">
-                <span i18n="rbf-diff.current-tx">Current Transaction</span>
-                <span class="txid-separator">:</span>
-                <code>{{ selectedNewTx.txid.substring(0, 12) }}...{{ selectedNewTx.txid.substring(selectedNewTx.txid.length - 8) }}</code>
-              </div>
-            </td>
-          </tr>
+            <ng-container *ngTemplateOutlet="previousDetails"></ng-container>
+          </tbody>
+        </table>
+      </div>
 
-          <ng-container *ngTemplateOutlet="currentDetails"></ng-container>
-        </tbody>
-      </table>
+      <!-- Right Column: Current Transaction -->
+      <div class="col-sm">
+        <table class="table table-borderless table-striped current-box">
+          <tbody>
+            <tr class="diff-head current">
+              <td colspan="2">
+                <div class="diff-head-content">
+                  <span i18n="rbf-diff.current-tx">Current Transaction</span>
+                  <span class="txid-separator">:</span>
+                  <code>{{ selectedNewTx.txid.substring(0, 12) }}...{{ selectedNewTx.txid.substring(selectedNewTx.txid.length - 8) }}</code>
+                </div>
+              </td>
+            </tr>
+
+            <ng-container *ngTemplateOutlet="currentDetails"></ng-container>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
-</div>
 
   <!-- Previous Transaction Table -->
   <ng-template #previousDetails>
