@@ -150,7 +150,7 @@
               <td [attr.i18n]="row.i18nKey">{{ row.label }}</td>
               <td>
                 <span *ngIf="row.previous !== null">{{ row.previous }}</span>
-                <span *ngIf="row.previous === null" class="text-muted null-placeholder">—</span>
+                <span *ngIf="row.previous === null" class="text-muted null-placeholder" aria-label="Not applicable">—</span>
               </td>
             </tr>
           </ng-container>
@@ -163,7 +163,7 @@
               <td [attr.i18n]="row.i18nKey">{{ row.label }}</td>
               <td>
                 <span *ngIf="row.previous !== null">{{ row.previous }}</span>
-                <span *ngIf="row.previous === null" class="text-muted null-placeholder">—</span>
+                <span *ngIf="row.previous === null" class="text-muted null-placeholder" aria-label="Not applicable">—</span>
               </td>
             </tr>
           </ng-container>
@@ -181,7 +181,7 @@
               <td [attr.i18n]="row.i18nKey">{{ row.label }}</td>
               <td>
                 {{ row.current }}
-                <span class="changed-indicator">●</span>
+                <span class="changed-indicator" role="img" aria-label="Changed value">●</span>
               </td>
             </tr>
           </ng-container>
@@ -214,7 +214,7 @@
               <td [attr.i18n]="row.i18nKey">{{ row.label }}</td>
               <td>
                 <span *ngIf="row.current !== null">{{ row.current }}</span>
-                <span *ngIf="row.current === null" class="text-muted null-placeholder">—</span>
+                <span *ngIf="row.current === null" class="text-muted null-placeholder" aria-label="Not applicable">—</span>
               </td>
             </tr>
           </ng-container>
@@ -227,7 +227,7 @@
               <td [attr.i18n]="row.i18nKey">{{ row.label }}</td>
               <td>
                 <span *ngIf="row.current !== null">{{ row.current }}</span>
-                <span *ngIf="row.current === null" class="text-muted null-placeholder">—</span>
+                <span *ngIf="row.current === null" class="text-muted null-placeholder" aria-label="Not applicable">—</span>
               </td>
             </tr>
           </ng-container>
