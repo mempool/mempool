@@ -12,7 +12,7 @@ export interface RbfDiff {
   inputs: {
     added: Vin[];
     removed: Vin[];
-    unchanged: Array<{ old: Vin; new: Vin }>;
+    unchanged: Vin[];
   };
   outputs: {
     added: Vout[];
@@ -46,11 +46,11 @@ export function calculateRbfDiff(oldTx: Transaction, newTx: Transaction): RbfDif
   );
 
   const addedInputs: Vin[] = [];
-  const unchangedInputs: Array<{ old: Vin; new: Vin }> = [];
+  const unchangedInputs: Vin[] = [];
 
   newInputs.forEach((newInput, key) => {
     if (oldInputs.has(key)) {
-      unchangedInputs.push({ old: oldInputs.get(key).vin, new: newInput.vin });
+      unchangedInputs.push(newInput.vin);
     } else {
       addedInputs.push(newInput.vin);
     }

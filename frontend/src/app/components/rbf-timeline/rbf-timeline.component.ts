@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { RbfTree, RbfTransaction } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 import { ApiService } from '@app/services/api.service';
-import { forkJoin } from 'rxjs';
+import { forkJoin, catchError, of } from 'rxjs';
 import { Transaction } from '@interfaces/electrs.interface';
 import { calculateRbfDiff, RbfDiff } from '@app/shared/rbf-diff.utils';
 
@@ -78,6 +78,7 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
   selectedNewTx: Transaction | null = null;
   rbfDiff: RbfDiff | null = null;
   showDiff: boolean = false;
+  diffError: boolean = false;
   comparisonData: ComparisonTableData | null = null;
 
   constructor(
@@ -264,18 +265,25 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
   }
 
   /**
-    Fetches full transaction details for two transactions and computes their structural diff
-    @param oldTxid - The original transaction ID
-    @param newTxid - The replacement transaction ID
+   * Fetches full transaction details for two transactions and computes their structural diff
+   * @param oldTxid - The original transaction ID
+   * @param newTxid - The replacement transaction ID
    */
   compareTxs(oldTxid: string, newTxid: string): void {
+    this.diffError = false;
     forkJoin({
       oldTx: this.apiService.getRbfCachedTx$(oldTxid),
       newTx: this.apiService.getRbfCachedTx$(newTxid),
-    }).subscribe(({ oldTx, newTx }) => {
-      this.selectedOldTx = oldTx;
-      this.selectedNewTx = newTx;
-      this.rbfDiff = calculateRbfDiff(oldTx, newTx);
+    }).pipe(
+      catchError(() => {
+        this.diffError = true;
+        return of(null);
+      })
+    ).subscribe((result) => {
+      if (!result) { return; }
+      this.selectedOldTx = result.oldTx;
+      this.selectedNewTx = result.newTx;
+      this.rbfDiff = calculateRbfDiff(result.oldTx, result.newTx);
       this.prepareComparisonTable();
       this.showDiff = true;
     });
@@ -283,6 +291,7 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
 
   closeDiff(): void {
     this.showDiff = false;
+    this.diffError = false;
     this.selectedOldTx = null;
     this.selectedNewTx = null;
     this.rbfDiff = null;
@@ -537,8 +546,17 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
    * Type-safe helper to convert comparison row values to numbers
    * Used for app-amount component which requires strict number type
    */
-  asNumber(value: any): number {
-    return value as number;
+  asNumber(value: unknown): number {
+    if (typeof value === 'number' && !Number.isNaN(value)) {
+      return value;
+    }
+    if (typeof value === 'string') {
+      const parsed = Number(value);
+      if (!Number.isNaN(parsed)) {
+        return parsed;
+      }
+    }
+    throw new TypeError(`asNumber: Expected a numeric value or numeric string, received ${typeof value}`);
   }
 
   // Finds the RbfTree node for the currently viewed transaction
