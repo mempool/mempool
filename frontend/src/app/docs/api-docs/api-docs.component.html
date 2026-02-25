@@ -53,7 +53,15 @@
         <div class="doc-item-container" *ngFor="let item of restDocs">
           <div *ngIf="!item.hasOwnProperty('options') || ( item.hasOwnProperty('options') && item.options.hasOwnProperty('officialOnly') && item.options.officialOnly && officialMempoolInstance ) || ( item.hasOwnProperty('options') && item.options.hasOwnProperty('electrsOnly') && item.options.electrsOnly && runningElectrs )">
             <h3 *ngIf="( item.type === 'category' ) && ( item.showConditions.indexOf(network.val) > -1 )">{{ item.title }}</h3>
-            <div *ngIf="( item.type !== 'category' ) && ( item.showConditions.indexOf(network.val) > -1 )" class="endpoint-container" id="{{ item.fragment }}">
+            <div *ngIf="( item.type !== 'category' ) && ( item.showConditions.indexOf(network.val) > -1 ) && !item.httpRequestMethod" class="endpoint-container" id="{{ item.fragment }}">
+              <a id="{{ item.fragment + '-tab-header' }}" class="section-header" (click)="anchorLinkClick({event: $event, fragment: item.fragment})">{{ item.title }} <span>{{ item.category }}</span></a>
+              <div class="endpoint-content">
+                <div class="description">
+                  <div [innerHTML]="item.description.default"></div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="( item.type !== 'category' ) && ( item.showConditions.indexOf(network.val) > -1 ) && item.httpRequestMethod" class="endpoint-container" id="{{ item.fragment }}">
               <a id="{{ item.fragment + '-tab-header' }}" class="section-header" (click)="anchorLinkClick({event: $event, fragment: item.fragment})">{{ item.title }} <span>{{ item.category }}</span></a>
               <div class="endpoint-content">
                 <div class="endpoint">
@@ -226,8 +234,302 @@
       </div>
     </div>
 
+    <div id="acceleratorDocs" *ngIf="whichTab === 'accelerator'">
+
+      <div class="doc-content no-sidebar">
+
+        <p class="doc-welcome-note" i18n="accelerator-api-docs.welcome">Mempool Accelerator&reg; speeds up confirmation of stuck Bitcoin transactions by paying an out-of-band fee to mining pool partners. You can accelerate by clicking the Accelerate button on any transaction page, or programmatically using the API endpoints below. See the <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="what-is-accelerator">FAQ</a> for questions about how the accelerator works and when to use it.</p>
+
+        <!-- Reusable detail panel template -->
+        <ng-template #accDetailPanel let-ep>
+          <h4>{{ ep.httpRequestMethod }} /api{{ ep.urlString }}</h4>
+          <p [innerHTML]="ep.description"></p>
+          <div class="acc-detail-section" *ngIf="ep.params.length">
+            <div class="subtitle">Parameters</div>
+            <table class="acc-param-table">
+              <thead><tr><th>Parameter</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr *ngFor="let param of ep.params">
+                  <td><code>{{ param.name }}</code><ng-container *ngIf="param.badge"> <span class="acc-beta-badge">{{ param.badge }}</span></ng-container></td>
+                  <td [innerHTML]="param.description"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="acc-detail-section">
+            <div class="subtitle">Example Request</div>
+            <pre><code>{{ replaceHostname(ep.curlExample) }}</code></pre>
+          </div>
+          <div class="acc-detail-section">
+            <div class="subtitle">Example Response</div>
+            <pre><code>{{ ep.response }}</code></pre>
+          </div>
+        </ng-template>
+
+        <ul ngbNav #accNav="ngbNav" [animation]="false" [(activeId)]="activeAcceleratorTab" (activeIdChange)="onAccTabChange($event)" class="acc-sub-tabs nav-tabs" role="tablist">
+
+          <!-- PUBLIC API TAB -->
+          <li [ngbNavItem]="0" role="presentation">
+            <a ngbNavLink role="tab">Public API</a>
+            <ng-template ngbNavContent>
+
+              <p class="acc-tab-desc">Accelerate any unconfirmed transaction by paying with Bitcoin Lightning. No account required.</p>
+
+              <div class="acc-flow-cols">
+                <ng-container *ngIf="accEndpoints['pub-estimate'] as ep">
+                  <div class="acc-flow-card" [class.active]="activeAccDetail === ep.fragment" (click)="toggleAccDetail(ep.fragment)">
+                    <span class="acc-flow-tag optional">Optional</span>
+                    <h4>{{ ep.cardTitle }}</h4>
+                    <code class="acc-path clickable">{{ ep.httpRequestMethod }} /api{{ ep.urlString }}</code>
+                    <p><span [innerHTML]="ep.cardSummary"></span> <span class="acc-see-details">See details.</span></p>
+                  </div>
+                </ng-container>
+
+                <span class="acc-flow-arrow">&rarr;</span>
+
+                <ng-container *ngIf="accEndpoints['pub-accelerate'] as ep">
+                  <div class="acc-flow-card main" [class.active]="activeAccDetail === ep.fragment" (click)="toggleAccDetail(ep.fragment)">
+                    <h4>{{ ep.cardTitle }}</h4>
+                    <code class="acc-path clickable">{{ ep.httpRequestMethod }} /api{{ ep.urlString }}</code>
+                    <p><span [innerHTML]="ep.cardSummary"></span> <span class="acc-see-details">See details.</span></p>
+                  </div>
+                </ng-container>
+
+                <span class="acc-flow-arrow">&rarr;</span>
+
+                <ng-container *ngIf="accEndpoints['pub-pending'] as ep">
+                  <div class="acc-flow-card" [class.active]="activeAccDetail === ep.fragment" (click)="toggleAccDetail(ep.fragment)">
+                    <span class="acc-flow-tag optional">Optional</span>
+                    <h4>{{ ep.cardTitle }}</h4>
+                    <code class="acc-path clickable">{{ ep.httpRequestMethod }} /api{{ ep.urlString }}</code>
+                    <p><span [innerHTML]="ep.cardSummary"></span> <span class="acc-see-details">See details.</span></p>
+                  </div>
+                </ng-container>
+              </div>
+
+              <ng-container *ngFor="let fragment of ['pub-estimate', 'pub-accelerate', 'pub-pending']">
+                <div class="acc-detail-panel" *ngIf="activeAccDetail === fragment">
+                  <ng-container *ngTemplateOutlet="accDetailPanel; context: { $implicit: accEndpoints[fragment] }"></ng-container>
+                </div>
+              </ng-container>
+
+              <p class="acc-also-note" *ngIf="accSecondary['public']?.length">See also:
+                <ng-container *ngFor="let ep of accSecondary['public']; let last = last">
+                  <a class="acc-toggle-link" (click)="toggleAccDetail(ep.fragment)">{{ ep.cardTitle }}</a><ng-container *ngIf="!last">, </ng-container>
+                </ng-container>
+              </p>
+
+              <ng-container *ngFor="let ep of accSecondary['public']">
+                <div class="acc-detail-panel" *ngIf="activeAccDetail === ep.fragment">
+                  <ng-container *ngTemplateOutlet="accDetailPanel; context: { $implicit: ep }"></ng-container>
+                </div>
+              </ng-container>
+
+            </ng-template>
+          </li>
+
+          <!-- PRO API TAB -->
+          <li [ngbNavItem]="1" role="presentation">
+            <a ngbNavLink role="tab">Pro API</a>
+            <ng-template ngbNavContent>
+
+              <p class="acc-tab-desc">Pre-load account credit for lower costs. You specify a maximum bid and are retrospectively charged only the fee needed.</p>
+
+              <div class="acc-flow-cols">
+                <ng-container *ngIf="accEndpoints['pro-topup'] as ep">
+                  <div class="acc-flow-card" [class.active]="activeAccDetail === ep.fragment" (click)="toggleAccDetail(ep.fragment)">
+                    <h4>{{ ep.cardTitle }}</h4>
+                    <code class="acc-path clickable">{{ ep.httpRequestMethod }} /api{{ ep.urlString }}</code>
+                    <p><span [innerHTML]="ep.cardSummary"></span> <span class="acc-see-details">See details.</span></p>
+                  </div>
+                </ng-container>
+
+                <span class="acc-flow-arrow">&rarr;</span>
+
+                <ng-container *ngIf="accEndpoints['pro-accelerate'] as ep">
+                  <div class="acc-flow-card main" [class.active]="activeAccDetail === ep.fragment" (click)="toggleAccDetail(ep.fragment)">
+                    <h4>{{ ep.cardTitle }}</h4>
+                    <code class="acc-path clickable">{{ ep.httpRequestMethod }} /api{{ ep.urlString }}</code>
+                    <p><span [innerHTML]="ep.cardSummary"></span> <span class="acc-see-details">See details.</span></p>
+                  </div>
+                </ng-container>
+
+                <span class="acc-flow-arrow">&rarr;</span>
+
+                <ng-container *ngIf="accEndpoints['pro-cancel'] as ep">
+                  <div class="acc-flow-card" [class.active]="activeAccDetail === ep.fragment" (click)="toggleAccDetail(ep.fragment)">
+                    <span class="acc-flow-tag optional">Optional</span>
+                    <h4>{{ ep.cardTitle }}</h4>
+                    <code class="acc-path clickable">{{ ep.httpRequestMethod }} /api{{ ep.urlString }}</code>
+                    <p><span [innerHTML]="ep.cardSummary"></span> <span class="acc-see-details">See details.</span></p>
+                  </div>
+                </ng-container>
+              </div>
+
+              <ng-container *ngFor="let fragment of ['pro-topup', 'pro-accelerate', 'pro-cancel']">
+                <div class="acc-detail-panel" *ngIf="activeAccDetail === fragment">
+                  <ng-container *ngTemplateOutlet="accDetailPanel; context: { $implicit: accEndpoints[fragment] }"></ng-container>
+                </div>
+              </ng-container>
+
+              <p class="acc-also-note" *ngIf="accSecondary['pro']?.length">See also:
+                <ng-container *ngFor="let ep of accSecondary['pro']; let last = last">
+                  <a class="acc-toggle-link" (click)="toggleAccDetail(ep.fragment)">{{ ep.cardTitle }}</a><ng-container *ngIf="!last">, </ng-container>
+                </ng-container>
+              </p>
+
+              <ng-container *ngFor="let ep of accSecondary['pro']">
+                <div class="acc-detail-panel" *ngIf="activeAccDetail === ep.fragment">
+                  <ng-container *ngTemplateOutlet="accDetailPanel; context: { $implicit: ep }"></ng-container>
+                </div>
+              </ng-container>
+
+            </ng-template>
+          </li>
+
+          <!-- AUTO ACCELERATOR TAB -->
+          <li [ngbNavItem]="2" role="presentation">
+            <a ngbNavLink role="tab">Auto Accelerator</a>
+            <ng-template ngbNavContent>
+
+              <p class="acc-tab-desc">Set conditions for transactions to be automatically accelerated when fee rates meet your threshold.</p>
+
+              <div class="acc-flow-cols">
+                <ng-container *ngIf="accEndpoints['auto-create'] as ep">
+                  <div class="acc-flow-card main" [class.active]="activeAccDetail === ep.fragment" (click)="toggleAccDetail(ep.fragment)">
+                    <h4>{{ ep.cardTitle }}</h4>
+                    <code class="acc-path clickable">{{ ep.httpRequestMethod }} /api{{ ep.urlString }}</code>
+                    <p><span [innerHTML]="ep.cardSummary"></span> <span class="acc-see-details">See details.</span></p>
+                  </div>
+                </ng-container>
+
+                <span class="acc-flow-arrow">&rarr;</span>
+
+                <ng-container *ngIf="accEndpoints['auto-history'] as ep">
+                  <div class="acc-flow-card" [class.active]="activeAccDetail === ep.fragment" (click)="toggleAccDetail(ep.fragment)">
+                    <span class="acc-flow-tag optional">Optional</span>
+                    <h4>{{ ep.cardTitle }}</h4>
+                    <code class="acc-path clickable">{{ ep.httpRequestMethod }} /api{{ ep.urlString }}</code>
+                    <p><span [innerHTML]="ep.cardSummary"></span> <span class="acc-see-details">See details.</span></p>
+                  </div>
+                </ng-container>
+
+                <span class="acc-flow-arrow">&rarr;</span>
+
+                <ng-container *ngIf="accEndpoints['auto-cancel'] as ep">
+                  <div class="acc-flow-card" [class.active]="activeAccDetail === ep.fragment" (click)="toggleAccDetail(ep.fragment)">
+                    <span class="acc-flow-tag optional">Optional</span>
+                    <h4>{{ ep.cardTitle }}</h4>
+                    <code class="acc-path clickable">{{ ep.httpRequestMethod }} /api{{ ep.urlString }}</code>
+                    <p><span [innerHTML]="ep.cardSummary"></span> <span class="acc-see-details">See details.</span></p>
+                  </div>
+                </ng-container>
+              </div>
+
+              <ng-container *ngFor="let fragment of ['auto-create', 'auto-history', 'auto-cancel']">
+                <div class="acc-detail-panel" *ngIf="activeAccDetail === fragment">
+                  <ng-container *ngTemplateOutlet="accDetailPanel; context: { $implicit: accEndpoints[fragment] }"></ng-container>
+                </div>
+              </ng-container>
+
+            </ng-template>
+          </li>
+
+        </ul>
+
+        <div [ngbNavOutlet]="accNav"></div>
+
+      </div>
+
+    </div>
+
   </div>
 </ng-container>
+
+<ng-template type="what-is-accelerator">
+  <p>Mempool Accelerator&reg; is a service to get your stuck Bitcoin transactions confirmed by paying an out-of-band fee to mining pool partners. No account is required&mdash;view your transaction on mempool.space, click Accelerate, and pay with Lightning, Apple Pay, Cash App Pay, or Google Pay.</p>
+</ng-template>
+
+<ng-template type="how-does-accelerator-work">
+  <p>Mempool sends your acceleration request to our mining pool partners. Partners who choose to accept your acceleration request prioritize your transaction based on your new accelerated fee rate.</p>
+  <p>For example, if you use Mempool Accelerator&reg; to accelerate a 1 sat/vB transaction to a 20 sat/vB target fee rate, mining pool partners will treat the transaction as though it has a 20 sat/vB fee rate.</p>
+</ng-template>
+
+<ng-template type="what-is-accelerator-cost">
+  <p>Acceleration cost includes:</p>
+  <ul>
+    <li>The fee to boost to your selected target fee rate.</li>
+    <li>The Mempool Accelerator&reg; service fee.</li>
+  </ul>
+  <p>View your transaction on mempool.space to see the cost breakdown (see customize and details).</p>
+</ng-template>
+
+<ng-template type="accelerator-modify-request">
+  <p>Once requested, an acceleration cannot currently be modified or canceled by the user.</p>
+</ng-template>
+
+<ng-template type="accelerator-canceled">
+  <p>In order to ensure that Mempool Accelerator&reg; is not used for transaction pinning or other types of abuse we may occasionally cancel an unconfirmed acceleration.</p>
+  <p>For example, if we detect a transaction in conflict with your accelerated transaction the acceleration request will be canceled, and no refund will be given.</p>
+</ng-template>
+
+<ng-template type="accelerator-transparency">
+  <p>All accelerations made using Mempool Accelerator&reg; are made public, an overview of which can be seen on the <a [href]="[ isMempoolSpaceBuild ? '/acceleration' : 'https://mempool.space/acceleration']" [target]="isMempoolSpaceBuild ? '' : 'blank'">Mempool Accelerator&reg; dashboard</a>.</p>
+  <p>Recent accelerations can be seen on the <a [href]="[ isMempoolSpaceBuild ? '/acceleration' : 'https://mempool.space/acceleration']" [target]="isMempoolSpaceBuild ? '' : 'blank'">recent accelerations page</a> or fetched using the <a [routerLink]="['/docs/api/rest' | relativeUrl]" fragment="accelerator-public-history">public API</a>.</p>
+  <p>The additional fees paid to increase the priority of the transaction are displayed on each block page.</p>
+</ng-template>
+
+<ng-template type="accelerator-vs-rbf-cpfp">
+  <p>Miners pick which valid transactions to include in blocks, and generally aim to maximize the transaction fees they earn.</p>
+  <p>There are 3 ways to increase the incentive for a miner to include your transaction:</p>
+
+  <h4>Replace By Fee (RBF)</h4>
+  <p>The sender in an unconfirmed transaction creates a new, higher fee transaction spending some of the same inputs as the transaction being replaced. Often the new transaction will be confirmed instead of the original transaction.</p>
+  <p><b>Limitations of RBF:</b></p>
+  <ul>
+    <li>A new transaction must be signed</li>
+    <li>The sender's wallet must support RBF</li>
+    <li>The txid of the transaction will change</li>
+  </ul>
+
+  <h4>Child Pays for Parent (CPFP)</h4>
+  <p>The recipient in an unconfirmed transaction spends their unconfirmed transaction output, increasing the effective fee of the original transaction. A miner can't confirm the new (child) transaction without also confirming the original (parent) transaction.</p>
+  <p><b>Limitations of CPFP:</b></p>
+  <ul>
+    <li>A new transaction must be signed</li>
+    <li>The sender's wallet must support CPFP</li>
+    <li>The BIP125 unconfirmed ancestor limit may make it impossible to CPFP some transactions</li>
+  </ul>
+
+  <h4>Out of Band Offer</h4>
+  <p>Mempool Accelerator&reg; uses out of band payment rather than a new onchain bitcoin transaction. Unlike RBF and CPFP a new bitcoin transaction does not need to be signed and the prioritization can be paid for using Lightning.</p>
+  <p><b>Limitations of Mempool Accelerator&reg;:</b></p>
+  <ul>
+    <li>A trusted centralized third party is used instead of the trustless peer to peer network</li>
+  </ul>
+</ng-template>
+
+<ng-template type="why-use-accelerator">
+  <p>You should always use RBF or CPFP if you can, and if it makes sense for your use case. If you cannot use RBF, or it doesn't work for your use case, Mempool Accelerator&reg; is available as an option to bump your fee.</p>
+  <p>Mempool Accelerator&reg; is useful in the following scenarios when RBF or CPFP may not be practical:</p>
+  <ul>
+    <li><b>Limited wallet functionality</b> &mdash; Many wallets lack support for RBF or CPFP. Users may be reluctant to switch wallets. Even after switching, a stuck transaction may be purged from most nodes' mempools, making it difficult or impossible for the sender to use RBF or for the receiver to use CPFP.</li>
+    <li><b>Multisig complexities</b> &mdash; Both RBF and CPFP require signing a new transaction, which can be time-consuming or inconvenient for multisig setups. For example, geographically separated multisig wallets may have a signing process that takes several days to complete.</li>
+    <li><b>Lightning Network channel opens</b> &mdash; Channel open transactions that don't have a change output can't have the fee increased using RBF or CPFP. It's also not possible to bump the fee of channels opened to your node using RBF or CPFP.</li>
+    <li><b>Lightning Network channel closes</b> &mdash; Channel close transactions with a fee rate below the network's minimum threshold will not propagate, and therefore can't be accelerated with CPFP. While innovations like anchor outputs + package relay aim to address this issue, many stuck channel closes predate the adoption of these improvements.</li>
+    <li><b>Transaction ID (TXID) immutability requirement</b> &mdash; As a sender, you may need the transaction ID to remain constant, which precludes the use of RBF.</li>
+    <li><b>Excessive unconfirmed descendants</b> &mdash; As a recipient, your transaction may have too many unconfirmed descendant transactions to be eligible for CPFP acceleration.</li>
+    <li><b>Relative timelock restrictions</b> &mdash; As a recipient, your transaction may be subject to a relative timelock, limiting your ability to CPFP it.</li>
+  </ul>
+</ng-template>
+
+<ng-template type="cant-accelerate">
+  <p>A transaction cannot be accelerated using Mempool Accelerator&reg; if it has any of the following properties:</p>
+  <ul>
+    <li><b>Replaceable inputs</b> &mdash; At least one of the transaction's inputs is signed with either the SIGHASH_NONE or SIGHASH_ANYONECANPAY flag, which may allow a third party to replace the transaction.</li>
+    <li><b>Too many sigops</b> &mdash; The number of signature operations multiplied by 20 exceeds the transaction's weight (see <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="what-are-sigops">what are sigops?</a>).</li>
+  </ul>
+</ng-template>
 
 <ng-template type="what-is-a-mempool">
   <p>A mempool (short for "memory pool") is the queue of pending and unconfirmed transactions for a cryptocurrency network node. There is no one global mempool: every node on the network maintains its own mempool, so different nodes may hold different transactions in their mempools.</p>
