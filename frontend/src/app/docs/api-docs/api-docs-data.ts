@@ -12837,6 +12837,86 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: 'address-lookup-issues',
     title: 'Why do I get an error for certain address lookups on my Mempool instance?',
+  },
+  {
+    type: 'category',
+    category: 'accelerator',
+    fragment: 'accelerator',
+    title: 'Accelerator',
+    showConditions: bitcoinNetworks,
+    options: { officialOnly: true }
+  },
+  {
+    type: 'endpoint',
+    category: 'accelerator',
+    showConditions: bitcoinNetworks,
+    fragment: 'what-is-accelerator',
+    title: 'What is Mempool Accelerator\u00AE?',
+    options: { officialOnly: true }
+  },
+  {
+    type: 'endpoint',
+    category: 'accelerator',
+    showConditions: bitcoinNetworks,
+    fragment: 'how-does-accelerator-work',
+    title: 'How does Mempool Accelerator\u00AE work?',
+    options: { officialOnly: true }
+  },
+  {
+    type: 'endpoint',
+    category: 'accelerator',
+    showConditions: bitcoinNetworks,
+    fragment: 'what-is-accelerator-cost',
+    title: 'What is the cost to use Mempool Accelerator\u00AE?',
+    options: { officialOnly: true }
+  },
+  {
+    type: 'endpoint',
+    category: 'accelerator',
+    showConditions: bitcoinNetworks,
+    fragment: 'accelerator-vs-rbf-cpfp',
+    title: 'How does Mempool Accelerator\u00AE compare to other fee bumping methods?',
+    options: { officialOnly: true }
+  },
+  {
+    type: 'endpoint',
+    category: 'accelerator',
+    showConditions: bitcoinNetworks,
+    fragment: 'why-use-accelerator',
+    title: 'Why use Mempool Accelerator\u00AE instead of RBF or CPFP?',
+    options: { officialOnly: true }
+  },
+  {
+    type: 'endpoint',
+    category: 'accelerator',
+    showConditions: bitcoinNetworks,
+    fragment: 'cant-accelerate',
+    title: 'Why can\'t I accelerate my transaction?',
+    options: { officialOnly: true }
+  },
+  {
+    type: 'endpoint',
+    category: 'accelerator',
+    showConditions: bitcoinNetworks,
+    fragment: 'accelerator-modify-request',
+    title: 'Can I modify an active acceleration request?',
+    options: { officialOnly: true }
+  },
+  {
+    type: 'endpoint',
+    category: 'accelerator',
+    showConditions: bitcoinNetworks,
+    fragment: 'accelerator-canceled',
+    title: 'Why did my acceleration request get canceled?',
+    options: { officialOnly: true }
+  },
+  {
+    type: 'endpoint',
+    category: 'accelerator',
+    showConditions: bitcoinNetworks,
+    fragment: 'accelerator-transparency',
+    title: 'How does Mempool Accelerator\u00AE improve transparency?',
+    options: { officialOnly: true }
   }
 ];
 
@@ -13304,3 +13384,4 @@ export const electrumApiDocsData = [
 }`
   }
 ];
+
