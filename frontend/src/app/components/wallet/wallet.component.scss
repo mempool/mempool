@@ -8,6 +8,18 @@
 .treemap-col {
   width: 45%;
   height: 300px;
+
+  @media (max-width: 767.98px) {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .treemap-col app-addresses-treemap {
+    display: block;
+    width: 100%;
+  }
 }
 
 .fiat {
@@ -32,6 +44,31 @@
 .address-list {
   width: 100%;
   max-width: 200px;
+}
+
+@media (max-width: 575.98px) {
+  .address-table tr {
+    display: block;
+
+    td {
+      display: block;
+      width: 100%;
+    }
+
+    td:first-child {
+      padding-bottom: 0.25rem;
+      font-weight: 600;
+    }
+
+    td:last-child {
+      padding-top: 0;
+      text-align: left;
+    }
+  }
+
+  .address-table tr.addresses-row .address-list {
+    max-width: none;
+  }
 }
 
 h1 {
