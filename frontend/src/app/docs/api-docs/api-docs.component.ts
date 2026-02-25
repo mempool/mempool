@@ -37,6 +37,8 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
   timeLtrSubscription: Subscription;
   timeLtr: boolean = this.stateService.timeLtr.value;
   isMempoolSpaceBuild = this.stateService.isMempoolSpaceBuild;
+  activeAcceleratorTab = 0;
+  activeAccDetail: string = 'pub-accelerate';
 
   @ViewChildren(FaqTemplateDirective) faqTemplates: QueryList<FaqTemplateDirective>;
   dict = {};
@@ -152,7 +154,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
     if (document.getElementById( targetId + '-tab-header' )) {
       tabHeaderHeight = document.getElementById( targetId + '-tab-header' ).scrollHeight;
     }
-    if( ( window.innerWidth <= 992 ) && ( ( this.whichTab === 'rest' ) || ( this.whichTab === 'faq' ) || ( this.whichTab === 'websocket' ) ) && targetId ) {
+    if( ( window.innerWidth <= 992 ) && ( ( this.whichTab === 'rest' ) || ( this.whichTab === 'faq' ) || ( this.whichTab === 'accelerator' ) || ( this.whichTab === 'websocket' ) ) && targetId ) {
       const endpointContainerEl = document.querySelector<HTMLElement>( '#' + targetId );
       const endpointContentEl = document.querySelector<HTMLElement>( '#' + targetId + ' .endpoint-content' );
       const endPointContentElHeight = endpointContentEl.clientHeight;
@@ -169,6 +171,15 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
         endpointContentEl.classList.add( 'open' );
       }
     }
+  }
+
+  toggleAccDetail(id: string) {
+    this.activeAccDetail = this.activeAccDetail === id ? null : id;
+  }
+
+  onAccTabChange(tabId: number) {
+    const defaults = { 0: 'pub-accelerate', 1: 'pro-accelerate', 2: 'auto-create' };
+    this.activeAccDetail = defaults[tabId] || null;
   }
 
   wrapUrl(network: string, code: any, websocket: boolean = false) {

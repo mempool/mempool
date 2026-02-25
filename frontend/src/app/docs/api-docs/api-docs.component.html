@@ -226,8 +226,655 @@
       </div>
     </div>
 
+    <div id="acceleratorDocs" *ngIf="whichTab === 'accelerator'">
+
+      <div class="doc-content no-sidebar">
+
+        <p class="doc-welcome-note" i18n="accelerator-api-docs.welcome">Mempool Accelerator&reg; speeds up confirmation of stuck Bitcoin transactions by paying an out-of-band fee to mining pool partners. You can accelerate by clicking the Accelerate button on any transaction page, or programmatically using the API endpoints below. See the <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="what-is-accelerator">FAQ</a> for questions about how the accelerator works and when to use it.</p>
+        <ul ngbNav #accNav="ngbNav" [animation]="false" [(activeId)]="activeAcceleratorTab" (activeIdChange)="onAccTabChange($event)" class="acc-sub-tabs nav-tabs" role="tablist">
+
+          <!-- PUBLIC API TAB -->
+          <li [ngbNavItem]="0" role="presentation">
+            <a ngbNavLink role="tab">Public API</a>
+            <ng-template ngbNavContent>
+
+              <p class="acc-tab-desc">Accelerate any unconfirmed transaction by paying with Bitcoin Lightning. No account required.</p>
+
+              <div class="acc-flow-cols">
+                <div class="acc-flow-card" [class.active]="activeAccDetail === 'pub-estimate'" (click)="toggleAccDetail('pub-estimate')">
+                  <span class="acc-flow-tag optional">Optional</span>
+                  <h4>Get Estimate</h4>
+                  <code class="acc-path clickable">POST /api/v1/services/accelerator/estimate</code>
+                  <p>Returns a cost breakdown including the fee needed to boost to your target fee rate and the service fee. <span class="acc-see-details">See details.</span></p>
+                </div>
+
+                <span class="acc-flow-arrow hide-on-mobile">&rarr;</span>
+
+                <div class="acc-flow-card main" [class.active]="activeAccDetail === 'pub-accelerate'" (click)="toggleAccDetail('pub-accelerate')">
+                  <h4>Accelerate</h4>
+                  <code class="acc-path clickable">POST /api/v1/services/payments/bitcoin</code>
+                  <p>Submit a transaction to accelerate and receive a Lightning invoice. Pay the invoice to start acceleration. <span class="acc-see-details">See details.</span></p>
+                </div>
+
+                <span class="acc-flow-arrow hide-on-mobile">&rarr;</span>
+
+                <div class="acc-flow-card" [class.active]="activeAccDetail === 'pub-pending'" (click)="toggleAccDetail('pub-pending')">
+                  <span class="acc-flow-tag optional">Optional</span>
+                  <h4>Check Status</h4>
+                  <code class="acc-path clickable">GET /api/v1/services/accelerator/accelerations</code>
+                  <p>Returns all transactions currently being accelerated. Use this to confirm your acceleration is active. <span class="acc-see-details">See details.</span></p>
+                </div>
+              </div>
+
+              <!-- Expandable detail panels -->
+              <div class="acc-detail-panel" *ngIf="activeAccDetail === 'pub-estimate'">
+                <h4>POST /api/v1/services/accelerator/estimate</h4>
+                <p>Returns estimated costs to accelerate a transaction. Optionally set the <code>X-Mempool-Auth</code> header to get customized estimation.</p>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Parameters</div>
+                  <table class="acc-param-table">
+                    <thead><tr><th>Parameter</th><th>Description</th></tr></thead>
+                    <tbody>
+                    <tr><td><code>txInput</code></td><td>The txid of the transaction to accelerate</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Request</div>
+                  <pre><code>curl -X POST {{ hostname }}/api/v1/services/accelerator/estimate \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "txInput=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29"</code></pre>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Response</div>
+                  <pre><code>{{ '{' }}
+  "txSummary": {{ '{' }}
+    "txid": "ee13ebb9...b2dc29",
+    "effectiveVsize": 154,
+    "effectiveFee": 154,
+    "ancestorCount": 1
+  {{ '}' }},
+  "cost": 1386,
+  "targetFeeRate": 10,
+  "nextBlockFee": 1540,
+  "userBalance": 0,
+  "mempoolBaseFee": 50000,
+  "vsizeFee": 0,
+  "pools": [111, 102, 112, 142, 115],
+  "options": [
+    {{ '{' }} "fee": 1500 {{ '}' }},
+    {{ '{' }} "fee": 3000 {{ '}' }},
+    {{ '{' }} "fee": 12500 {{ '}' }}
+  ],
+  "hasAccess": false,
+  "availablePaymentMethods": {{ '{' }}
+    "bitcoin": {{ '{' }} "enabled": true, "min": 1000, "max": 10000000 {{ '}' }},
+    "cashapp": {{ '{' }} "enabled": true, "min": 10, "max": 200 {{ '}' }}
+  {{ '}' }},
+  "unavailable": false
+{{ '}' }}</code></pre>
+                </div>
+              </div>
+
+              <div class="acc-detail-panel" *ngIf="activeAccDetail === 'pub-accelerate'">
+                <h4>POST /api/v1/services/payments/bitcoin</h4>
+                <p>Request a Lightning invoice to accelerate a transaction. Pay the returned invoice to start acceleration.</p>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Parameters</div>
+                  <table class="acc-param-table">
+                    <thead><tr><th>Parameter</th><th>Description</th></tr></thead>
+                    <tbody>
+                    <tr><td><code>product</code></td><td>The txid of the transaction to accelerate</td></tr>
+                    <tr><td><code>amount</code></td><td>Amount in sats. The estimate endpoint returns low, medium, and high priority suggestions in <code>options[].fee</code>, but you can set any value</td></tr>
+                    <tr><td><code>referralCode</code> <span class="acc-beta-badge">Beta</span></td><td>Optional. Your <a href="https://mempool.space/services/accelerator/commission">partner referral code</a> &mdash; earn a commission on every acceleration. Currently available to invited partners only.</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Request</div>
+                  <pre><code>curl -X POST {{ hostname }}/api/v1/services/payments/bitcoin \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "product=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29" \
+  -d "amount=12500" \
+  -d "referralCode=IWzhmhR7"</code></pre>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Response</div>
+                  <pre><code>[
+  {{ '{' }}
+    "btcpayInvoiceId": "4Ww53d7VgSa596jmCFufe7",
+    "btcDue": "0.000625",
+    "addresses": {{ '{' }}
+      "BTC": "bc1qcvqx2kr5mkt...",
+      "BTC_LNURLPAY": null,
+      "BTC_LightningLike": "lnbc625u1pngl0wz..."
+    {{ '}' }}
+  {{ '}' }}
+]</code></pre>
+                </div>
+              </div>
+
+              <div class="acc-detail-panel" *ngIf="activeAccDetail === 'pub-pending'">
+                <h4>GET /api/v1/services/accelerator/accelerations</h4>
+                <p>Returns all transactions currently being accelerated.</p>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Request</div>
+                  <pre><code>curl {{ hostname }}/api/v1/services/accelerator/accelerations</code></pre>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Response</div>
+                  <pre><code>[
+  {{ '{' }}
+    "txid": "8a183c8ae929...abc81",
+    "added": 1707558316,
+    "feeDelta": 3500,
+    "effectiveVsize": 111,
+    "effectiveFee": 1671,
+    "pools": [111]
+  {{ '}' }}
+]</code></pre>
+                </div>
+              </div>
+
+              <p class="acc-also-note">See also: <a class="acc-toggle-link" (click)="toggleAccDetail('pub-history')">Acceleration History</a></p>
+
+              <div class="acc-detail-panel" *ngIf="activeAccDetail === 'pub-history'">
+                <h4>GET /api/v1/services/accelerator/accelerations/history</h4>
+                <p>Returns all past accelerated transactions. Supports filtering by status, timeframe, pool, block, and pagination.</p>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Parameters</div>
+                  <table class="acc-param-table">
+                    <thead><tr><th>Parameter</th><th>Description</th></tr></thead>
+                    <tbody>
+                    <tr><td><code>status</code></td><td>Optional. <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code></td></tr>
+                    <tr><td><code>timeframe</code></td><td>Optional. <code>24h</code>, <code>3d</code>, <code>1w</code>, <code>1m</code>, <code>3m</code>, <code>6m</code>, <code>1y</code>, <code>2y</code>, <code>3y</code>, <code>4y</code>, <code>all</code></td></tr>
+                    <tr><td><code>blockHash</code></td><td>Optional. Filter by block hash</td></tr>
+                    <tr><td><code>blockHeight</code></td><td>Optional. Filter by block height</td></tr>
+                    <tr><td><code>page</code></td><td>Optional. Page number (min 1)</td></tr>
+                    <tr><td><code>pageLength</code></td><td>Optional. Results per page (min 1, max 50)</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Request</div>
+                  <pre><code>curl {{ hostname }}/api/v1/services/accelerator/accelerations/history?blockHash=00000000000000000000482f0746d62141694b9210a813b97eb8445780a32003</code></pre>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Response</div>
+                  <pre><code>[
+  {{ '{' }}
+    "txid": "f829900985aa...d474487",
+    "status": "completed_provisional",
+    "added": 1728111527,
+    "lastUpdated": 1728112113,
+    "effectiveFee": 1385,
+    "effectiveVsize": 276,
+    "feeDelta": 3000,
+    "blockHash": "00000000...ca87423",
+    "blockHeight": 864248,
+    "bidBoost": 65,
+    "pools": [111, 115],
+    "minedByPoolUniqueId": 115
+  {{ '}' }}
+]</code></pre>
+                </div>
+              </div>
+
+            </ng-template>
+          </li>
+
+          <!-- PRO API TAB -->
+          <li [ngbNavItem]="1" role="presentation">
+            <a ngbNavLink role="tab">Pro API</a>
+            <ng-template ngbNavContent>
+
+              <p class="acc-tab-desc">Pre-load account credit for lower costs. You specify a maximum bid and are retrospectively charged only the fee needed.</p>
+
+              <div class="acc-flow-cols">
+                <div class="acc-flow-card" [class.active]="activeAccDetail === 'pro-topup'" (click)="toggleAccDetail('pro-topup')">
+                  <h4>Top Up</h4>
+                  <code class="acc-path clickable">POST /api/v1/services/payments/bitcoin/top-up</code>
+                  <p>Add credit to your account via Lightning. <span class="acc-see-details">See details.</span></p>
+                </div>
+
+                <span class="acc-flow-arrow hide-on-mobile">&rarr;</span>
+
+                <div class="acc-flow-card main" [class.active]="activeAccDetail === 'pro-accelerate'" (click)="toggleAccDetail('pro-accelerate')">
+                  <h4>Accelerate</h4>
+                  <code class="acc-path clickable">POST /api/v1/services/accelerator/accelerate</code>
+                  <p>Accelerate a transaction using your account credit. Specify a max bid &mdash; you only pay what's needed. <span class="acc-see-details">See details.</span></p>
+                </div>
+
+                <span class="acc-flow-arrow hide-on-mobile">&rarr;</span>
+
+                <div class="acc-flow-card" [class.active]="activeAccDetail === 'pro-cancel'" (click)="toggleAccDetail('pro-cancel')">
+                  <span class="acc-flow-tag optional">Optional</span>
+                  <h4>Cancel</h4>
+                  <code class="acc-path clickable">POST /api/v1/services/accelerator/cancel</code>
+                  <p>Cancel an active acceleration that is in <code>accelerating</code> status. <span class="acc-see-details">See details.</span></p>
+                </div>
+              </div>
+
+              <div class="acc-detail-panel" *ngIf="activeAccDetail === 'pro-topup'">
+                <h4>POST /api/v1/services/payments/bitcoin/top-up</h4>
+                <p>Request a Lightning invoice to add credit to your account balance for use with Pro accelerations.</p>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Parameters</div>
+                  <table class="acc-param-table">
+                    <thead><tr><th>Parameter</th><th>Description</th></tr></thead>
+                    <tbody>
+                    <tr><td><code>X-Mempool-Auth</code></td><td>Required header. Your API key &mdash; generate one at <a href="https://mempool.space/services/account/api-key" target="_blank">Account &gt; API Key</a> (select &ldquo;Authenticated API&rdquo;)</td></tr>
+                    <tr><td><code>amount</code></td><td>Amount in sats to top up</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Request</div>
+                  <pre><code>curl -X POST {{ hostname }}/api/v1/services/payments/bitcoin/top-up \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -H "X-Mempool-Auth: YOUR_API_KEY" \
+  -d "amount=1000000"</code></pre>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Response</div>
+                  <pre><code>{{ '{' }}
+  "btcpayInvoiceId": "NS9aqa5PUW2MNnSazaFnX3",
+  "btcDue": "0.01",
+  "addresses": {{ '{' }}
+    "BTC-LN": "lnbc10m1p5eaat...",
+    "BTC": "bc1qrvwcm825qa...",
+    "BTC-LNURL": null
+  {{ '}' }},
+  "expirationTime": 1772026108
+{{ '}' }}</code></pre>
+                </div>
+              </div>
+
+              <div class="acc-detail-panel" *ngIf="activeAccDetail === 'pro-accelerate'">
+                <h4>POST /api/v1/services/accelerator/accelerate</h4>
+                <p>Sends a request to accelerate a transaction using account credit.</p>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Parameters</div>
+                  <table class="acc-param-table">
+                    <thead><tr><th>Parameter</th><th>Description</th></tr></thead>
+                    <tbody>
+                    <tr><td><code>X-Mempool-Auth</code></td><td>Required header. Your API key &mdash; generate one at <a href="https://mempool.space/services/account/api-key" target="_blank">Account &gt; API Key</a> (select &ldquo;Authenticated API&rdquo;)</td></tr>
+                    <tr><td><code>txInput</code></td><td>The txid of the transaction to accelerate</td></tr>
+                    <tr><td><code>userBid</code></td><td>Maximum bid in sats</td></tr>
+                    <tr><td><code>referralCode</code> <span class="acc-beta-badge">Beta</span></td><td>Optional. Your <a href="https://mempool.space/services/accelerator/commission">partner referral code</a> &mdash; earn a commission on every acceleration. Currently available to invited partners only.</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Request</div>
+                  <pre><code>curl -X POST {{ hostname }}/api/v1/services/accelerator/accelerate \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -H "X-Mempool-Auth: YOUR_API_KEY" \
+  -d "txInput=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29" \
+  -d "userBid=21000000" \
+  -d "referralCode=IWzhmhR7"</code></pre>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Response</div>
+                  <pre><code>HTTP/1.1 200 OK</code></pre>
+                </div>
+              </div>
+
+              <div class="acc-detail-panel" *ngIf="activeAccDetail === 'pro-cancel'">
+                <h4>POST /api/v1/services/accelerator/cancel</h4>
+                <p>Cancel an acceleration in the <code>accelerating</code> status. Retrieve eligible acceleration <code>id</code> using the history endpoint.</p>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Parameters</div>
+                  <table class="acc-param-table">
+                    <thead><tr><th>Parameter</th><th>Description</th></tr></thead>
+                    <tbody>
+                    <tr><td><code>X-Mempool-Auth</code></td><td>Required header. Your API key &mdash; generate one at <a href="https://mempool.space/services/account/api-key" target="_blank">Account &gt; API Key</a> (select &ldquo;Authenticated API&rdquo;)</td></tr>
+                    <tr><td><code>id</code></td><td>The acceleration ID to cancel</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Request</div>
+                  <pre><code>curl -X POST {{ hostname }}/api/v1/services/accelerator/cancel \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -H "X-Mempool-Auth: YOUR_API_KEY" \
+  -d "id=42"</code></pre>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Response</div>
+                  <pre><code>HTTP/1.1 200 OK</code></pre>
+                </div>
+              </div>
+
+              <p class="acc-also-note">See also: <a class="acc-toggle-link" (click)="toggleAccDetail('pro-history')">Acceleration History</a>, <a class="acc-toggle-link" (click)="toggleAccDetail('pro-balance')">Balance</a>, <a class="acc-toggle-link" (click)="toggleAccDetail('pro-topup-history')">Top-Up History</a></p>
+
+              <div class="acc-detail-panel" *ngIf="activeAccDetail === 'pro-history'">
+                <h4>GET /api/v1/services/accelerator/history</h4>
+                <p>Returns your past acceleration requests.</p>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Parameters</div>
+                  <table class="acc-param-table">
+                    <thead><tr><th>Parameter</th><th>Description</th></tr></thead>
+                    <tbody>
+                    <tr><td><code>X-Mempool-Auth</code></td><td>Required header. Your API key</td></tr>
+                    <tr><td><code>status</code></td><td>Required. <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code></td></tr>
+                    <tr><td><code>details</code></td><td>Optional. Pass <code>true</code> to include a detailed <code>history</code> of each request</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Request</div>
+                  <pre><code>curl {{ hostname }}/api/v1/services/accelerator/history?status=all&amp;details=true \
+  -H "X-Mempool-Auth: YOUR_API_KEY"</code></pre>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Response</div>
+                  <pre><code>[
+  {{ '{' }}
+    "id": 88,
+    "user_id": 1,
+    "txid": "c5840e89...cee9fde",
+    "status": "completed",
+    "fee_paid": 140019,
+    "added": 1706378704,
+    "last_updated": 1706380231,
+    "max_bid": 14000,
+    "effective_vsize": 135,
+    "effective_fee": 3152,
+    "history": [
+      {{ '{' }} "event": "user-requested-acceleration", "timestamp": 1706378704 {{ '}' }},
+      {{ '{' }} "event": "complete-at-block-827670", "timestamp": 1706380231 {{ '}' }}
+    ]
+  {{ '}' }}
+]</code></pre>
+                </div>
+              </div>
+
+              <div class="acc-detail-panel" *ngIf="activeAccDetail === 'pro-balance'">
+                <h4>GET /api/v1/services/accelerator/balance</h4>
+                <p>Returns your currently available balance, locked funds, and total fees paid.</p>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Parameters</div>
+                  <table class="acc-param-table">
+                    <thead><tr><th>Parameter</th><th>Description</th></tr></thead>
+                    <tbody>
+                    <tr><td><code>X-Mempool-Auth</code></td><td>Required header. Your API key</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Request</div>
+                  <pre><code>curl {{ hostname }}/api/v1/services/accelerator/balance \
+  -H "X-Mempool-Auth: YOUR_API_KEY"</code></pre>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Response</div>
+                  <pre><code>{{ '{' }}
+  "balance": 99900000,
+  "hold": 101829,
+  "feesPaid": 133721
+{{ '}' }}</code></pre>
+                </div>
+              </div>
+
+              <div class="acc-detail-panel" *ngIf="activeAccDetail === 'pro-topup-history'">
+                <h4>GET /api/v1/services/accelerator/top-up-history</h4>
+                <p>Returns a list of top-ups you have made as prepayment for the accelerator service.</p>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Parameters</div>
+                  <table class="acc-param-table">
+                    <thead><tr><th>Parameter</th><th>Description</th></tr></thead>
+                    <tbody>
+                    <tr><td><code>X-Mempool-Auth</code></td><td>Required header. Your API key</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Request</div>
+                  <pre><code>curl {{ hostname }}/api/v1/services/accelerator/top-up-history \
+  -H "X-Mempool-Auth: YOUR_API_KEY"</code></pre>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Response</div>
+                  <pre><code>[
+  {{ '{' }}
+    "type": "Bitcoin",
+    "invoiceId": "SG1U27R9PdWi3gH3jB9tm9",
+    "amount": 21000000,
+    "status": "paid",
+    "date": 1706372582000,
+    "link": null
+  {{ '}' }}
+]</code></pre>
+                </div>
+              </div>
+
+            </ng-template>
+          </li>
+
+          <!-- AUTO ACCELERATOR TAB -->
+          <li [ngbNavItem]="2" role="presentation">
+            <a ngbNavLink role="tab">Auto Accelerator</a>
+            <ng-template ngbNavContent>
+
+              <p class="acc-tab-desc">Set conditions for transactions to be automatically accelerated when fee rates meet your threshold.</p>
+
+              <div class="acc-flow-cols">
+                <div class="acc-flow-card main" [class.active]="activeAccDetail === 'auto-create'" (click)="toggleAccDetail('auto-create')">
+                  <h4>Set Up Auto-Acceleration</h4>
+                  <code class="acc-path clickable">POST /api/v1/services/accelerator/auto-accelerate</code>
+                  <p>Configure trigger conditions for a transaction to be automatically accelerated. <span class="acc-see-details">See details.</span></p>
+                </div>
+
+                <span class="acc-flow-arrow hide-on-mobile">&rarr;</span>
+
+                <div class="acc-flow-card" [class.active]="activeAccDetail === 'auto-history'" (click)="toggleAccDetail('auto-history')">
+                  <span class="acc-flow-tag optional">Optional</span>
+                  <h4>Check History</h4>
+                  <code class="acc-path clickable">GET /api/v1/services/accelerator/auto-accelerate/history</code>
+                  <p>View your auto-acceleration requests and their current status. <span class="acc-see-details">See details.</span></p>
+                </div>
+
+                <span class="acc-flow-arrow hide-on-mobile">&rarr;</span>
+
+                <div class="acc-flow-card" [class.active]="activeAccDetail === 'auto-cancel'" (click)="toggleAccDetail('auto-cancel')">
+                  <span class="acc-flow-tag optional">Optional</span>
+                  <h4>Cancel</h4>
+                  <code class="acc-path clickable">POST /api/v1/services/accelerator/auto-accelerate/cancel</code>
+                  <p>Cancel an auto-acceleration that is in <code>tracking</code> status. <span class="acc-see-details">See details.</span></p>
+                </div>
+              </div>
+
+              <div class="acc-detail-panel" *ngIf="activeAccDetail === 'auto-create'">
+                <h4>POST /api/v1/services/accelerator/auto-accelerate</h4>
+                <p>Set up auto-acceleration with trigger conditions. The <code>type</code> parameter must be one of: <code>time_delay</code>, <code>block_height</code>, <code>timestamp</code>, or <code>next_block</code>.</p>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Parameters</div>
+                  <table class="acc-param-table">
+                    <thead><tr><th>Parameter</th><th>Description</th></tr></thead>
+                    <tbody>
+                    <tr><td><code>X-Mempool-Auth</code></td><td>Required header. Your API key &mdash; generate one at <a href="https://mempool.space/services/account/api-key" target="_blank">Account &gt; API Key</a> (select &ldquo;Authenticated API&rdquo;)</td></tr>
+                    <tr><td><code>txInput</code></td><td>The txid of the transaction</td></tr>
+                    <tr><td><code>type</code></td><td>Trigger type: <code>time_delay</code>, <code>block_height</code>, <code>timestamp</code>, or <code>next_block</code></td></tr>
+                    <tr><td><code>value</code></td><td>Required for all types except <code>next_block</code>:<br>
+                      &bull; <code>time_delay</code> &mdash; hours, floating point (min 0.5)<br>
+                      &bull; <code>block_height</code> &mdash; target block height (min = next block)<br>
+                      &bull; <code>timestamp</code> &mdash; Unix timestamp (min = now + 60s)</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Request</div>
+                  <pre><code>curl -X POST {{ hostname }}/api/v1/services/accelerator/auto-accelerate \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -H "X-Mempool-Auth: YOUR_API_KEY" \
+  -d "txInput=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29" \
+  -d "type=time_delay" \
+  -d "value=0.5"</code></pre>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Response</div>
+                  <pre><code>HTTP/1.1 200 OK</code></pre>
+                </div>
+              </div>
+
+              <div class="acc-detail-panel" *ngIf="activeAccDetail === 'auto-history'">
+                <h4>GET /api/v1/services/accelerator/auto-accelerate/history</h4>
+                <p>Returns your auto-acceleration requests history. Possible status values: <code>tracking</code>, <code>accelerated</code>, <code>confirmed</code>, <code>canceled</code>.</p>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Parameters</div>
+                  <table class="acc-param-table">
+                    <thead><tr><th>Parameter</th><th>Description</th></tr></thead>
+                    <tbody>
+                    <tr><td><code>X-Mempool-Auth</code></td><td>Required header. Your API key &mdash; generate one at <a href="https://mempool.space/services/account/api-key" target="_blank">Account &gt; API Key</a> (select &ldquo;Authenticated API&rdquo;)</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Request</div>
+                  <pre><code>curl {{ hostname }}/api/v1/services/accelerator/auto-accelerate/history \
+  -H "X-Mempool-Auth: YOUR_API_KEY"</code></pre>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Response</div>
+                  <pre><code>[
+  {{ '{' }}
+    "id": 15,
+    "txid": "ee13ebb9...b2dc29",
+    "status": "accelerated",
+    "added": 1706378712,
+    "trigger_type": "time_delay",
+    "trigger_value": 0.5
+  {{ '}' }}
+]</code></pre>
+                </div>
+              </div>
+
+              <div class="acc-detail-panel" *ngIf="activeAccDetail === 'auto-cancel'">
+                <h4>POST /api/v1/services/accelerator/auto-accelerate/cancel</h4>
+                <p>Cancel an auto-acceleration in the <code>tracking</code> status. Retrieve eligible <code>txid</code> using the history endpoint.</p>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Parameters</div>
+                  <table class="acc-param-table">
+                    <thead><tr><th>Parameter</th><th>Description</th></tr></thead>
+                    <tbody>
+                    <tr><td><code>X-Mempool-Auth</code></td><td>Required header. Your API key &mdash; generate one at <a href="https://mempool.space/services/account/api-key" target="_blank">Account &gt; API Key</a> (select &ldquo;Authenticated API&rdquo;)</td></tr>
+                    <tr><td><code>txid</code></td><td>The txid of the auto-acceleration to cancel</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Request</div>
+                  <pre><code>curl -X POST {{ hostname }}/api/v1/services/accelerator/auto-accelerate/cancel \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -H "X-Mempool-Auth: YOUR_API_KEY" \
+  -d "txid=178b5b9b310f0d667d7ea563a2cdcc17bc8cd15261b58b1653860a724ca83458"</code></pre>
+                </div>
+                <div class="acc-detail-section">
+                  <div class="subtitle">Example Response</div>
+                  <pre><code>HTTP/1.1 200 OK</code></pre>
+                </div>
+              </div>
+
+
+            </ng-template>
+          </li>
+
+        </ul>
+
+        <div [ngbNavOutlet]="accNav"></div>
+
+      </div>
+
+    </div>
+
   </div>
 </ng-container>
+
+<ng-template type="what-is-accelerator">
+  <p>Mempool Accelerator&reg; is a service to get your stuck Bitcoin transactions confirmed by paying an out-of-band fee to mining pool partners. No account is required&mdash;view your transaction on mempool.space, click Accelerate, and pay with Lightning, Apple Pay, Cash App Pay, or Google Pay.</p>
+</ng-template>
+
+<ng-template type="how-does-accelerator-work">
+  <p>Mempool sends your acceleration request to our mining pool partners. Partners who choose to accept your acceleration request prioritize your transaction based on your new accelerated fee rate.</p>
+  <p>For example, if you use Mempool Accelerator&reg; to accelerate a 1 sat/vB transaction to a 20 sat/vB target fee rate, mining pool partners will treat the transaction as though it has a 20 sat/vB fee rate.</p>
+</ng-template>
+
+<ng-template type="what-is-accelerator-cost">
+  <p>Acceleration cost includes:</p>
+  <ul>
+    <li>The fee to boost to your selected target fee rate.</li>
+    <li>The Mempool Accelerator&reg; service fee.</li>
+  </ul>
+  <p>View your transaction on mempool.space to see the cost breakdown (see customize and details).</p>
+</ng-template>
+
+<ng-template type="accelerator-modify-request">
+  <p>Once requested, an acceleration cannot currently be modified or canceled by the user.</p>
+</ng-template>
+
+<ng-template type="accelerator-canceled">
+  <p>In order to ensure that Mempool Accelerator&reg; is not used for transaction pinning or other types of abuse we may occasionally cancel an unconfirmed acceleration.</p>
+  <p>For example, if we detect a transaction in conflict with your accelerated transaction the acceleration request will be canceled, and no refund will be given.</p>
+</ng-template>
+
+<ng-template type="accelerator-transparency">
+  <p>All accelerations made using Mempool Accelerator&reg; are made public, an overview of which can be seen on the <a [href]="[ isMempoolSpaceBuild ? '/acceleration' : 'https://mempool.space/acceleration']" [target]="isMempoolSpaceBuild ? '' : 'blank'">Mempool Accelerator&reg; dashboard</a>.</p>
+  <p>Recent accelerations can be seen on the <a [href]="[ isMempoolSpaceBuild ? '/acceleration' : 'https://mempool.space/acceleration']" [target]="isMempoolSpaceBuild ? '' : 'blank'">recent accelerations page</a> or fetched using the <a [routerLink]="['/docs/api/rest' | relativeUrl]" fragment="accelerator-public-history">public API</a>.</p>
+  <p>The additional fees paid to increase the priority of the transaction are displayed on each block page.</p>
+</ng-template>
+
+<ng-template type="accelerator-vs-rbf-cpfp">
+  <p>Miners pick which valid transactions to include in blocks, and generally aim to maximize the transaction fees they earn.</p>
+  <p>There are 3 ways to increase the incentive for a miner to include your transaction:</p>
+
+  <h4>Replace By Fee (RBF)</h4>
+  <p>The sender in an unconfirmed transaction creates a new, higher fee transaction spending some of the same inputs as the transaction being replaced. Often the new transaction will be confirmed instead of the original transaction.</p>
+  <p><b>Limitations of RBF:</b></p>
+  <ul>
+    <li>A new transaction must be signed</li>
+    <li>The sender's wallet must support RBF</li>
+    <li>The txid of the transaction will change</li>
+  </ul>
+
+  <h4>Child Pays for Parent (CPFP)</h4>
+  <p>The recipient in an unconfirmed transaction spends their unconfirmed transaction output, increasing the effective fee of the original transaction. A miner can't confirm the new (child) transaction without also confirming the original (parent) transaction.</p>
+  <p><b>Limitations of CPFP:</b></p>
+  <ul>
+    <li>A new transaction must be signed</li>
+    <li>The sender's wallet must support CPFP</li>
+    <li>The BIP125 unconfirmed ancestor limit may make it impossible to CPFP some transactions</li>
+  </ul>
+
+  <h4>Out of Band Offer</h4>
+  <p>Mempool Accelerator&reg; uses out of band payment rather than a new onchain bitcoin transaction. Unlike RBF and CPFP a new bitcoin transaction does not need to be signed and the prioritization can be paid for using Lightning.</p>
+  <p><b>Limitations of Mempool Accelerator&reg;:</b></p>
+  <ul>
+    <li>A trusted centralized third party is used instead of the trustless peer to peer network</li>
+  </ul>
+</ng-template>
+
+<ng-template type="why-use-accelerator">
+  <p>You should always use RBF or CPFP if you can, and if it makes sense for your use case. If you cannot use RBF, or it doesn't work for your use case, Mempool Accelerator&reg; is available as an option to bump your fee.</p>
+  <p>Mempool Accelerator&reg; is useful in the following scenarios when RBF or CPFP may not be practical:</p>
+  <ul>
+    <li><b>Limited wallet functionality</b> &mdash; Many wallets lack support for RBF or CPFP. Users may be reluctant to switch wallets. Even after switching, a stuck transaction may be purged from most nodes' mempools, making it difficult or impossible for the sender to use RBF or for the receiver to use CPFP.</li>
+    <li><b>Multisig complexities</b> &mdash; Both RBF and CPFP require signing a new transaction, which can be time-consuming or inconvenient for multisig setups. For example, geographically separated multisig wallets may have a signing process that takes several days to complete.</li>
+    <li><b>Lightning Network channel opens</b> &mdash; Channel open transactions that don't have a change output can't have the fee increased using RBF or CPFP. It's also not possible to bump the fee of channels opened to your node using RBF or CPFP.</li>
+    <li><b>Lightning Network channel closes</b> &mdash; Channel close transactions with a fee rate below the network's minimum threshold will not propagate, and therefore can't be accelerated with CPFP. While innovations like anchor outputs + package relay aim to address this issue, many stuck channel closes predate the adoption of these improvements.</li>
+    <li><b>Transaction ID (TXID) immutability requirement</b> &mdash; As a sender, you may need the transaction ID to remain constant, which precludes the use of RBF.</li>
+    <li><b>Excessive unconfirmed descendants</b> &mdash; As a recipient, your transaction may have too many unconfirmed descendant transactions to be eligible for CPFP acceleration.</li>
+    <li><b>Relative timelock restrictions</b> &mdash; As a recipient, your transaction may be subject to a relative timelock, limiting your ability to CPFP it.</li>
+  </ul>
+</ng-template>
+
+<ng-template type="cant-accelerate">
+  <p>A transaction cannot be accelerated using Mempool Accelerator&reg; if it has any of the following properties:</p>
+  <ul>
+    <li><b>Replaceable inputs</b> &mdash; At least one of the transaction's inputs is signed with either the SIGHASH_NONE or SIGHASH_ANYONECANPAY flag, which may allow a third party to replace the transaction.</li>
+    <li><b>Too many sigops</b> &mdash; The number of signature operations multiplied by 20 exceeds the transaction's weight (see <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="what-are-sigops">what are sigops?</a>).</li>
+  </ul>
+</ng-template>
 
 <ng-template type="what-is-a-mempool">
   <p>A mempool (short for "memory pool") is the queue of pending and unconfirmed transactions for a cryptocurrency network node. There is no one global mempool: every node on the network maintains its own mempool, so different nodes may hold different transactions in their mempools.</p>
