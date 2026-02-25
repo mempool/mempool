@@ -63,69 +63,79 @@ export function calculateRbfDiff(oldTx: Transaction, newTx: Transaction): RbfDif
     }
   });
 
-  // OUTPUT COMPARISON (ENHANCED LOGIC)
+  // OUTPUT COMPARISON (CONTENT-BASED MATCHING)
   const addedOutputs: Vout[] = [];
   const removedOutputs: Vout[] = [];
   const modifiedOutputs: Array<{ old: Vout; new: Vout; index: number; changeType: 'address' | 'value' | 'both' }> = [];
   const feeAdjustedOutputs: Array<{ old: Vout; new: Vout; index: number }> = [];
   const unchangedOutputs: Array<{ old: Vout; new: Vout; index: number }> = [];
 
-  const maxOutputs = Math.max(oldTx.vout.length, newTx.vout.length);
+  // Annotate outputs with their original indices and a matched flag
+  const oldOutputs = oldTx.vout.map((out, index) => ({ out, index, matched: false }));
+  const newOutputs = newTx.vout.map((out, index) => ({ out, index, matched: false }));
 
-  for (let i = 0; i < maxOutputs; i++) {
-    const oldOut = oldTx.vout[i];
-    const newOut = newTx.vout[i];
-
-    if (!oldOut && newOut) {
-      addedOutputs.push(newOut);
-    } else if (oldOut && !newOut) {
-      removedOutputs.push(oldOut);
-    } else if (oldOut && newOut) {
-      const addressChanged = oldOut.scriptpubkey_address !== newOut.scriptpubkey_address;
-      const valueChanged = oldOut.value !== newOut.value;
-
-      if (!addressChanged && !valueChanged) {
-        // Truly unchanged
-        unchangedOutputs.push({ old: oldOut, new: newOut, index: i });
-      } else if (!addressChanged && valueChanged) {
-        // Same address, value changed
-        const valueDelta = oldOut.value - newOut.value;
-
-        // Check if this is just a fee adjustment
-        // If the value decreased by exactly the feeDelta and this looks like a change output,
-        // treat it as a fee-adjusted output.
-        const addr = oldOut.scriptpubkey_address;
-        const isLikelyChangeOutput =
-          !!addr &&
-          oldTx.vout.filter(o => o.scriptpubkey_address === addr).length === 1 &&
-          newTx.vout.filter(o => o.scriptpubkey_address === addr).length === 1;
-        if (valueDelta === feeDelta && feeDelta > 0 && isLikelyChangeOutput) {
-          feeAdjustedOutputs.push({ old: oldOut, new: newOut, index: i });
-        } else {
-          modifiedOutputs.push({
-            old: oldOut,
-            new: newOut,
-            index: i,
-            changeType: 'value'
-          });
-        }
-      } else if (addressChanged && !valueChanged) {
-        modifiedOutputs.push({
-          old: oldOut,
-          new: newOut,
-          index: i,
-          changeType: 'address'
-        });
-      } else {
-        // Both changed
-        modifiedOutputs.push({
-          old: oldOut,
-          new: newOut,
-          index: i,
-          changeType: 'both'
-        });
-      }
+  // Pass 1: match truly unchanged outputs (same address AND value, regardless of position)
+  for (const oldItem of oldOutputs) {
+    const match = newOutputs.find(
+      (newItem) =>
+        !newItem.matched &&
+        oldItem.out.scriptpubkey_address === newItem.out.scriptpubkey_address &&
+        oldItem.out.value === newItem.out.value
+    );
+    if (match) {
+      oldItem.matched = true;
+      match.matched = true;
+      unchangedOutputs.push({ old: oldItem.out, new: match.out, index: oldItem.index });
     }
+  }
+
+  // Pass 2: match remaining outputs by address to detect fee-adjusted or value-modified outputs
+  for (const oldItem of oldOutputs) {
+    if (oldItem.matched) { continue; }
+    const match = newOutputs.find(
+      (newItem) =>
+        !newItem.matched &&
+        oldItem.out.scriptpubkey_address === newItem.out.scriptpubkey_address
+    );
+    if (!match) { continue; }
+    oldItem.matched = true;
+    match.matched = true;
+    const valueDelta = oldItem.out.value - match.out.value;
+    // Only classify as fee-adjusted if this looks like a change output (address unique in both txs),
+    // to avoid false positives from unrelated outputs that coincidentally match the fee delta.
+    const addr = oldItem.out.scriptpubkey_address;
+    const isLikelyChangeOutput =
+      !!addr &&
+      oldTx.vout.filter(o => o.scriptpubkey_address === addr).length === 1 &&
+      newTx.vout.filter(o => o.scriptpubkey_address === addr).length === 1;
+    if (valueDelta === feeDelta && feeDelta > 0 && isLikelyChangeOutput) {
+      feeAdjustedOutputs.push({ old: oldItem.out, new: match.out, index: oldItem.index });
+    } else {
+      modifiedOutputs.push({ old: oldItem.out, new: match.out, index: oldItem.index, changeType: 'value' });
+    }
+  }
+
+  // Pass 3: match any still-unmatched outputs as best-effort (address changed)
+  for (const oldItem of oldOutputs) {
+    if (oldItem.matched) { continue; }
+    const match = newOutputs.find((newItem) => !newItem.matched);
+    if (!match) { continue; }
+    oldItem.matched = true;
+    match.matched = true;
+    const addressChanged = oldItem.out.scriptpubkey_address !== match.out.scriptpubkey_address;
+    const valueChanged = oldItem.out.value !== match.out.value;
+    const changeType: 'address' | 'value' | 'both' =
+      addressChanged && valueChanged ? 'both' :
+      addressChanged ? 'address' : 'value';
+    modifiedOutputs.push({ old: oldItem.out, new: match.out, index: oldItem.index, changeType });
+  }
+
+  // Pass 4: remaining unmatched old = removed, remaining unmatched new = added
+  for (const oldItem of oldOutputs) {
+    if (!oldItem.matched) { removedOutputs.push(oldItem.out); }
+  }
+  for (const newItem of newOutputs) {
+    if (!newItem.matched) { addedOutputs.push(newItem.out); }
   }
 
   // METRICS (only include if changed)
