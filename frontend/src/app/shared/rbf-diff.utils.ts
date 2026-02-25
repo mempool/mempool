@@ -92,8 +92,14 @@ export function calculateRbfDiff(oldTx: Transaction, newTx: Transaction): RbfDif
         const valueDelta = oldOut.value - newOut.value;
 
         // Check if this is just a fee adjustment
-        // If the value decreased by exactly the feeDelta, it's a fee-adjusted output
-        if (valueDelta === feeDelta && feeDelta > 0) {
+        // If the value decreased by exactly the feeDelta and this looks like a change output,
+        // treat it as a fee-adjusted output.
+        const addr = oldOut.scriptpubkey_address;
+        const isLikelyChangeOutput =
+          !!addr &&
+          oldTx.vout.filter(o => o.scriptpubkey_address === addr).length === 1 &&
+          newTx.vout.filter(o => o.scriptpubkey_address === addr).length === 1;
+        if (valueDelta === feeDelta && feeDelta > 0 && isLikelyChangeOutput) {
           feeAdjustedOutputs.push({ old: oldOut, new: newOut, index: i });
         } else {
           modifiedOutputs.push({
