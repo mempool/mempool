@@ -382,7 +382,7 @@ jobs:
             cypress/e2e/signet/*.spec.ts
           group: Tests on Chrome (${{ matrix.module }})
           browser: "chrome"
-          ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
+          ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}-${{ matrix.module }}-${{ github.run_id }}-${{ github.run_attempt }}"
         env:
           COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
@@ -407,7 +407,7 @@ jobs:
             cypress/e2e/liquidtestnet/liquidtestnet.spec.ts
           group: Tests on Chrome (${{ matrix.module }})
           browser: "chrome"
-          ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
+          ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}-${{ matrix.module }}-${{ github.run_id }}-${{ github.run_attempt }}"
         env:
           COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
@@ -431,7 +431,7 @@ jobs:
             cypress/e2e/testnet4/*.spec.ts
           group: Tests on Chrome (${{ matrix.module }})
           browser: "chrome"
-          ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
+          ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}-${{ matrix.module }}-${{ github.run_id }}-${{ github.run_attempt }}"
         env:
           CYPRESS_REROUTE_TESTNET: true
           COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
