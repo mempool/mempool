@@ -91,6 +91,7 @@ export interface Env {
   SERVICES_API?: string;
   customize?: Customization;
   PROD_DOMAINS: string[];
+  ANALYTICS_URL?: string;
 }
 
 const defaultEnv: Env = {
