@@ -73,6 +73,20 @@ export function calculateRbfDiff(oldTx: Transaction, newTx: Transaction): RbfDif
   // Annotate outputs with their original indices and a matched flag
   const oldOutputs = oldTx.vout.map((out, index) => ({ out, index, matched: false }));
   const newOutputs = newTx.vout.map((out, index) => ({ out, index, matched: false }));
+  const oldAddressCounts = new Map<string, number>();
+  const newAddressCounts = new Map<string, number>();
+
+  for (const out of oldTx.vout) {
+    const addr = out.scriptpubkey_address;
+    if (!addr) { continue; }
+    oldAddressCounts.set(addr, (oldAddressCounts.get(addr) ?? 0) + 1);
+  }
+
+  for (const out of newTx.vout) {
+    const addr = out.scriptpubkey_address;
+    if (!addr) { continue; }
+    newAddressCounts.set(addr, (newAddressCounts.get(addr) ?? 0) + 1);
+  }
 
   // Pass 1: match truly unchanged outputs (same address AND value, regardless of position)
   for (const oldItem of oldOutputs) {
@@ -106,8 +120,8 @@ export function calculateRbfDiff(oldTx: Transaction, newTx: Transaction): RbfDif
     const addr = oldItem.out.scriptpubkey_address;
     const isLikelyChangeOutput =
       !!addr &&
-      oldTx.vout.filter(o => o.scriptpubkey_address === addr).length === 1 &&
-      newTx.vout.filter(o => o.scriptpubkey_address === addr).length === 1;
+      oldAddressCounts.get(addr) === 1 &&
+      newAddressCounts.get(addr) === 1;
     if (valueDelta === feeDelta && feeDelta > 0 && isLikelyChangeOutput) {
       feeAdjustedOutputs.push({ old: oldItem.out, new: match.out, index: oldItem.index });
     } else {

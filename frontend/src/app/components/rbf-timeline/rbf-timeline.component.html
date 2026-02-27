@@ -125,7 +125,13 @@
         <ng-container *ngIf="comparisonData.metadata.hasChanges">
           <ng-container *ngFor="let row of comparisonData.metadata.rows">
             <tr>
-              <td [attr.i18n]="row.i18nKey">{{ row.label }}</td>
+              <td>
+                <ng-container [ngSwitch]="row.i18nKey">
+                  <span *ngSwitchCase="'transaction.version'" i18n="transaction.version">Version</span>
+                  <span *ngSwitchCase="'transaction.locktime'" i18n="transaction.locktime">Locktime</span>
+                  <span *ngSwitchDefault>{{ row.label }}</span>
+                </ng-container>
+              </td>
               <td>{{ row.previous }}</td>
             </tr>
           </ng-container>
@@ -135,7 +141,14 @@
         <ng-container *ngIf="comparisonData.metrics.hasChanges">
           <ng-container *ngFor="let row of comparisonData.metrics.rows">
             <tr>
-              <td [attr.i18n]="row.i18nKey">{{ row.label }}</td>
+              <td>
+                <ng-container [ngSwitch]="row.i18nKey">
+                  <span *ngSwitchCase="'transaction.fee'" i18n="transaction.fee">Fee</span>
+                  <span *ngSwitchCase="'transaction.weight'" i18n="transaction.weight">Weight</span>
+                  <span *ngSwitchCase="'transaction.vsize'" i18n="transaction.vsize">Virtual size</span>
+                  <span *ngSwitchDefault>{{ row.label }}</span>
+                </ng-container>
+              </td>
               <td>
                 <ng-container *ngIf="row.isAmount">
                   <app-amount [satoshis]="asNumber(row.previous)" [noFiat]="true" [forceSats]="row.i18nKey === 'transaction.fee'"></app-amount>
