@@ -3,7 +3,8 @@ import { Router } from '@angular/router';
 import { RbfTree, RbfTransaction } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 import { ApiService } from '@app/services/api.service';
-import { forkJoin, catchError, of } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { Transaction } from '@interfaces/electrs.interface';
 import { calculateRbfDiff, RbfDiff } from '@app/shared/rbf-diff.utils';
 

@@ -15,7 +15,7 @@
       display: none;
     }
 
-    /* Fade SOLO para el timeline (no afecta al diff) */
+    /* Fade just for the timeline (doesn't affect the diff) */
     &::before,
     &::after {
       content: '';
