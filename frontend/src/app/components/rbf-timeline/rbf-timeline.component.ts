@@ -81,6 +81,7 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
   showDiff: boolean = false;
   diffError: boolean = false;
   comparisonData: ComparisonTableData | null = null;
+  predecessorTxid: string | null = null;
 
   constructor(
     private router: Router,
@@ -95,10 +96,12 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.rows = this.buildTimelines(this.replacements);
+    this.updatePredecessorTxid();
   }
 
   ngOnChanges(changes): void {
     this.rows = this.buildTimelines(this.replacements);
+    this.updatePredecessorTxid();
     if (changes.txid && !changes.txid.firstChange && changes.txid.previousValue !== changes.txid.currentValue) {
       setTimeout(() => { this.scrollToSelected(); });
     }
@@ -574,14 +577,11 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
     return null;
   }
 
-  // Gets the immediate predecessor (transaction that was replaced) for the current txid
-
-  getPredecessorTxid(): string | null {
+  private updatePredecessorTxid(): void {
     const currentNode = this.findCurrentNode(this.replacements);
-    if (currentNode && currentNode.replaces.length > 0) {
-      return currentNode.replaces[0].tx.txid;
-    }
-    return null;
+    this.predecessorTxid = currentNode && currentNode.replaces.length > 0
+      ? currentNode.replaces[0].tx.txid
+      : null;
   }
 
   // Toggles the structural diff visibility
@@ -589,7 +589,7 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
     if (this.showDiff) {
       this.closeDiff();
     } else {
-      const predecessorTxid = this.getPredecessorTxid();
+      const predecessorTxid = this.predecessorTxid;
       if (predecessorTxid && this.txid) {
         this.compareTxs(predecessorTxid, this.txid);
       }
