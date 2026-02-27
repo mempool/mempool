@@ -70,9 +70,20 @@ export function calculateRbfDiff(oldTx: Transaction, newTx: Transaction): RbfDif
   const feeAdjustedOutputs: Array<{ old: Vout; new: Vout; index: number }> = [];
   const unchangedOutputs: Array<{ old: Vout; new: Vout; index: number }> = [];
 
-  // Annotate outputs with their original indices and a matched flag
-  const oldOutputs = oldTx.vout.map((out, index) => ({ out, index, matched: false }));
-  const newOutputs = newTx.vout.map((out, index) => ({ out, index, matched: false }));
+  // Annotate outputs with their original indices, a matched flag, and a stable match key
+  // Use address when available; fallback to raw scriptpubkey for addressless outputs.
+  const oldOutputs = oldTx.vout.map((out, index) => ({
+    out,
+    index,
+    matched: false,
+    outputId: out.scriptpubkey_address ?? `scriptpubkey:${out.scriptpubkey}`,
+  }));
+  const newOutputs = newTx.vout.map((out, index) => ({
+    out,
+    index,
+    matched: false,
+    outputId: out.scriptpubkey_address ?? `scriptpubkey:${out.scriptpubkey}`,
+  }));
   const oldAddressCounts = new Map<string, number>();
   const newAddressCounts = new Map<string, number>();
 
@@ -93,7 +104,7 @@ export function calculateRbfDiff(oldTx: Transaction, newTx: Transaction): RbfDif
     const match = newOutputs.find(
       (newItem) =>
         !newItem.matched &&
-        oldItem.out.scriptpubkey_address === newItem.out.scriptpubkey_address &&
+        oldItem.outputId === newItem.outputId &&
         oldItem.out.value === newItem.out.value
     );
     if (match) {
@@ -109,7 +120,7 @@ export function calculateRbfDiff(oldTx: Transaction, newTx: Transaction): RbfDif
     const match = newOutputs.find(
       (newItem) =>
         !newItem.matched &&
-        oldItem.out.scriptpubkey_address === newItem.out.scriptpubkey_address
+        oldItem.outputId === newItem.outputId
     );
     if (!match) { continue; }
     oldItem.matched = true;
