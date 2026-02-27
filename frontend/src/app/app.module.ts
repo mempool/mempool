@@ -29,6 +29,7 @@ import { ShortenStringPipe } from '@app/shared/pipes/shorten-string-pipe/shorten
 import { CapAddressPipe } from '@app/shared/pipes/cap-address-pipe/cap-address-pipe';
 import { AppPreloadingStrategy } from '@app/app.preloading-strategy';
 import { ServicesApiServices } from '@app/services/services-api.service';
+import { SquarePaymentService } from '@app/services/square-payment.service';
 import { DatePipe } from '@angular/common';
 
 const providers = [
@@ -53,6 +54,7 @@ const providers = [
   AppPreloadingStrategy,
   ServicesApiServices,
   PreloadService,
+  SquarePaymentService,
   { provide: HTTP_INTERCEPTORS, useClass: HttpCacheInterceptor, multi: true },
   { provide: ZONE_SERVICE, useClass: ZoneService },
 ];
