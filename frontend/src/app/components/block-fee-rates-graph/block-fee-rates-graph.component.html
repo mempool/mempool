@@ -9,6 +9,11 @@
       </button>
     </div>
 
+    <label class="toggle-checkbox">
+      <input type="checkbox" [checked]="logScale" (change)="toggleLogScale()">
+      <span i18n="mining.block-fee-rates.log.scale">Log Scale</span>
+    </label>
+
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(statsObservable$ | async) as stats">
       <div class="btn-group btn-group-toggle" name="radioBasic">
         <label class="btn btn-primary btn-sm" *ngIf="stats.blockCount >= 144" [class.active]="radioGroupForm.get('dateSpan').value === '24h'">

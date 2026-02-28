@@ -33,6 +33,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
   @Input() widget = false;
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
+  logScale = false;
 
   miningWindowPreference: string;
   radioGroupForm: UntypedFormGroup;
@@ -123,18 +124,19 @@ export class BlockFeeRatesGraphComponent implements OnInit {
                   '90th': [],
                   'Max': []
                 };
+                const clamp = (val: number) => Math.max(val, 1);
                 for (const rate of response.body) {
                   const timestamp = rate.timestamp * 1000;
                   if (this.widget) {
                     seriesData['Median'].push([timestamp, rate.avgFee_50, rate.avgHeight]);
                   } else {
-                    seriesData['Min'].push([timestamp, rate.avgFee_0, rate.avgHeight]);
-                    seriesData['10th'].push([timestamp, rate.avgFee_10, rate.avgHeight]);
-                    seriesData['25th'].push([timestamp, rate.avgFee_25, rate.avgHeight]);
-                    seriesData['Median'].push([timestamp, rate.avgFee_50, rate.avgHeight]);
-                    seriesData['75th'].push([timestamp, rate.avgFee_75, rate.avgHeight]);
-                    seriesData['90th'].push([timestamp, rate.avgFee_90, rate.avgHeight]);
-                    seriesData['Max'].push([timestamp, rate.avgFee_100, rate.avgHeight]);
+                    seriesData['Min'].push([timestamp, clamp(rate.avgFee_0), rate.avgHeight]);
+                    seriesData['10th'].push([timestamp, clamp(rate.avgFee_10), rate.avgHeight]);
+                    seriesData['25th'].push([timestamp, clamp(rate.avgFee_25), rate.avgHeight]);
+                    seriesData['Median'].push([timestamp, clamp(rate.avgFee_50), rate.avgHeight]);
+                    seriesData['75th'].push([timestamp, clamp(rate.avgFee_75), rate.avgHeight]);
+                    seriesData['90th'].push([timestamp, clamp(rate.avgFee_90), rate.avgHeight]);
+                    seriesData['Max'].push([timestamp, clamp(rate.avgFee_100), rate.avgHeight]);
                   }
                 }
 
@@ -144,11 +146,16 @@ export class BlockFeeRatesGraphComponent implements OnInit {
                 for (const percentile in seriesData) {
                   series.push({
                     zlevel: 0,
-                    stack: 'Total',
+                    stack: this.logScale ? undefined : 'Total',
                     name: percentile,
                     data: seriesData[percentile],
-                    type: 'bar',
-                    barWidth: '100%',
+                    type: this.logScale ? 'line' : 'bar',
+                    showSymbol: false,
+                    symbol: 'none',
+                    lineStyle: {
+                      width: 1
+                    },
+                    barWidth: this.logScale ? undefined : '100%',
                     large: true,
                   });
 
@@ -314,8 +321,9 @@ export class BlockFeeRatesGraphComponent implements OnInit {
             opacity: 0.25,
           }
         },
-        type: 'value',
-        max: (val) => this.timespan === 'all' ? Math.min(val.max, 5000) : undefined,
+        type: this.logScale ? 'log' : 'value',
+        min: this.logScale ? 1 : undefined,
+        max: (val) => (!this.logScale && this.timespan === 'all') ? Math.min(val.max, 5000) : undefined,
       },
       series: data.series,
       dataZoom: this.widget ? null : [{
@@ -387,5 +395,31 @@ export class BlockFeeRatesGraphComponent implements OnInit {
     this.chartOptions.grid.bottom = prevBottom;
     this.chartOptions.backgroundColor = 'none';
     this.chartInstance.setOption(this.chartOptions);
+  }
+
+  toggleLogScale() {
+    this.logScale = !this.logScale;
+    
+    if (!this.chartInstance || !this.chartOptions.yAxis || !this.chartOptions.series) {
+      return;
+    }
+
+    const yAxis = this.chartOptions.yAxis as any;
+    yAxis.type = this.logScale ? 'log' : 'value';
+    yAxis.min = this.logScale ? 1 : null; 
+    yAxis.max = (!this.logScale && this.timespan === 'all') ? (val) => Math.min(val.max, 5000) : null;
+
+    (this.chartOptions.series as any[]).forEach(seriesItem => {
+      if (seriesItem.name !== 'Moving average') {
+        seriesItem.type = this.logScale ? 'line' : 'bar';
+        seriesItem.stack = this.logScale ? undefined : 'Total';
+        seriesItem.barWidth = this.logScale ? undefined : '100%';
+      }
+    });
+
+    this.chartInstance.setOption({
+      yAxis: yAxis,
+      series: this.chartOptions.series
+    });
   }
 }
