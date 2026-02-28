@@ -33,6 +33,8 @@ export class BlockFeesGraphComponent implements OnInit {
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
 
+  logScale = true;
+
   miningWindowPreference: string;
   radioGroupForm: UntypedFormGroup;
 
@@ -92,9 +94,10 @@ export class BlockFeesGraphComponent implements OnInit {
           return this.apiService.getHistoricalBlockFees$(timespan)
             .pipe(
               tap((response) => {
+                const clampSats = (val: number) => Math.max(val, 1);
                 this.prepareChartOptions({
-                  blockFees: response.body.map(val => [val.timestamp * 1000, val.avgFees / 100000000, val.avgHeight]),
-                  blockFeesFiat: response.body.filter(val => val[this.currency] > 0).map(val => [val.timestamp * 1000, val.avgFees / 100000000 * val[this.currency], val.avgHeight]),
+                  blockFees: response.body.map(val => [val.timestamp * 1000, clampSats(val.avgFees) / 100000000, val.avgHeight]),
+                  blockFeesFiat: response.body.filter(val => val[this.currency] > 0).map(val => [val.timestamp * 1000, clampSats(val.avgFees) / 100000000 * val[this.currency], val.avgHeight]),
                 });
                 this.isLoading = false;
               }),
@@ -205,7 +208,8 @@ export class BlockFeesGraphComponent implements OnInit {
       },
       yAxis: data.blockFees.length === 0 ? undefined : [
         {
-          type: 'value',
+          type: this.logScale ? 'log' : 'value',
+          min: this.logScale ? 0.01 : null,
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: (val) => {
@@ -221,7 +225,8 @@ export class BlockFeesGraphComponent implements OnInit {
           },
         },
         {
-          type: 'value',
+          type: this.logScale ? 'log' : 'value',
+          min: this.logScale ? 0.01 : null,
           position: 'right',
           axisLabel: {
             color: 'rgb(110, 112, 121)',
@@ -316,5 +321,25 @@ export class BlockFeesGraphComponent implements OnInit {
     this.chartOptions.grid.bottom = prevBottom;
     this.chartOptions.backgroundColor = 'none';
     this.chartInstance.setOption(this.chartOptions);
+  }
+
+  toggleLogScale() {
+    this.logScale = !this.logScale;
+    
+    if (!this.chartInstance || !this.chartOptions.yAxis) {
+      return;
+    }
+
+    const yAxes = this.chartOptions.yAxis as any[];
+
+    yAxes[0].type = this.logScale ? 'log' : 'value';
+    yAxes[0].min = this.logScale ? 0.01 : null;
+
+    yAxes[1].type = this.logScale ? 'log' : 'value';
+    yAxes[1].min = this.logScale ? 0.01 : null;
+
+    this.chartInstance.setOption({
+      yAxis: yAxes
+    });
   }
 }
