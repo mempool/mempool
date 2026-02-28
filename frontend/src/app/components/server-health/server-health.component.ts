@@ -18,7 +18,8 @@ export class ServerHealthComponent implements OnInit {
   interval: number;
   now: number = Date.now();
   colors: Record<string, Record<string, string>> = {};
-  isLiquid = false;
+  isLiquidMainnet = false;
+  showHybridHash = false;
 
   repoMap = {
     frontend: 'mempool',
@@ -95,7 +96,8 @@ export class ServerHealthComponent implements OnInit {
       this.cd.markForCheck();
     }, 1000);
 
-    this.isLiquid = this.stateService.network === 'liquid';
+    this.isLiquidMainnet = this.stateService.network === 'liquid';
+    this.showHybridHash = !this.stateService.isLiquid();
   }
 
   trackByFn(index: number, host: HealthCheckHost): string {
