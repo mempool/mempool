@@ -12,8 +12,8 @@
         <div class="col-md">
           <table class="table table-borderless table-striped address-table">
             <tbody>
-              <tr class="addresses-row">
-                <td class="addresses-label" i18n="address.number-addresses">Addresses</td>
+              <tr>
+                <td i18n="address.number-addresses">Addresses</td>
                 <td *ngIf="addressStrings.length" class="address-list">
                   <app-truncate [text]="addressStrings[0]" [lastChars]="8" [link]="['/address/' | relativeUrl, addressStrings[0]]"></app-truncate>
                   <ng-container *ngIf="addressStrings.length > 1">

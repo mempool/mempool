@@ -46,31 +46,6 @@
   max-width: 200px;
 }
 
-@media (max-width: 575.98px) {
-  .address-table tr {
-    display: block;
-
-    td {
-      display: block;
-      width: 100%;
-    }
-
-    td:first-child {
-      padding-bottom: 0.25rem;
-      font-weight: 600;
-    }
-
-    td:last-child {
-      padding-top: 0;
-      text-align: left;
-    }
-  }
-
-  .address-table tr.addresses-row .address-list {
-    max-width: none;
-  }
-}
-
 h1 {
   margin: 0px;
   padding: 0px;
