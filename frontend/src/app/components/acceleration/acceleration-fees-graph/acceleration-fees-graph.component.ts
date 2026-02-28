@@ -36,6 +36,8 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
   @Input() period: '24h' | '1w' | '1m' | '1y' | 'all' = '1y';
   @Input() accelerations$: Observable<Acceleration[]>;
 
+  logScale = false
+
   miningWindowPreference: string;
   radioGroupForm: UntypedFormGroup;
 
@@ -242,7 +244,8 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
       },
       yAxis: data.length === 0 ? undefined : [
         {
-          type: 'value',
+          type: this.logScale ? 'log' : 'value',
+          min: this.logScale ? 1 : null,
           name: 'Total bid boost',
           position: 'right',
           nameTextStyle: {
@@ -263,7 +266,8 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
           splitLine: null
         },
         {
-          type: 'value',
+          type: this.logScale ? 'log' : 'value',
+          min: this.logScale ? 1 : null,
           name: 'Accelerated',
           position: 'left',
           axisLabel: {
@@ -287,7 +291,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
         {
           name: 'Total bid boost',
           data: data.map(h =>  {
-            return [h.timestamp * 1000, h.sumBidBoost, h.avgHeight];
+            return [h.timestamp * 1000, Math.max(h.sumBidBoost, 1), h.avgHeight];
           }),
           type: 'line',
           symbol: 'none',
@@ -300,10 +304,10 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
           name: 'Accelerated',
           yAxisIndex: 1,
           data: data.map(h =>  {
-            return [h.timestamp * 1000, h.count, h.avgHeight];
+            return [h.timestamp * 1000, Math.max(h.count, 1), h.avgHeight];
           }),
           type: 'bar',
-          barWidth: '90%',
+          barWidth: this.logScale ? undefined : '90%',
         },
       ],
       dataZoom: (this.widget || data.length === 0 )? undefined : [{
@@ -364,5 +368,28 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
     this.aggregatedHistorySubscription?.unsubscribe();
     this.fragmentSubscription?.unsubscribe();
     this.statsSubscription?.unsubscribe();
+  }
+
+  toggleLogScale() {
+    this.logScale = !this.logScale;
+    
+    if (!this.chartInstance || !this.chartOptions.yAxis || !this.chartOptions.series) {
+      return;
+    }
+    const yAxes = this.chartOptions.yAxis as any[];
+    const series = this.chartOptions.series as any[];
+
+    yAxes[0].type = this.logScale ? 'log' : 'value';
+    yAxes[0].min = this.logScale ? 1 : null;
+
+    yAxes[1].type = this.logScale ? 'log' : 'value';
+    yAxes[1].min = this.logScale ? 1 : null;
+
+    series[1].barWidth = this.logScale ? undefined : '90%';
+
+    this.chartInstance.setOption({
+      yAxis: yAxes,
+      series: series
+    });
   }
 }

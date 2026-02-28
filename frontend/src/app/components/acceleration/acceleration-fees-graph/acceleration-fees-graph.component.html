@@ -8,6 +8,10 @@
         <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
       </button>
     </div>  
+    <label class="toggle-checkbox">
+      <input type="checkbox" [checked]="logScale" (change)="toggleLogScale()">
+      <span i18n="acceleration.fees.log.scale">Log Scale</span>
+    </label>
 
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="daysAvailable">
       <div class="btn-group btn-group-toggle" name="radioBasic">
