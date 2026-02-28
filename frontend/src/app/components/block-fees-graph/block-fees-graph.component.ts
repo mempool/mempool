@@ -33,7 +33,7 @@ export class BlockFeesGraphComponent implements OnInit {
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
 
-  logScale = true;
+  logScale = false;
 
   miningWindowPreference: string;
   radioGroupForm: UntypedFormGroup;
