@@ -7,30 +7,40 @@
       <button class="btn p-0 pl-2" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
         <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
       </button>
-    </div>  
+    </div>
 
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(statsObservable$ | async) as stats">
       <div class="btn-group btn-group-toggle" name="radioBasic">
         <label class="btn btn-primary btn-sm" *ngIf="stats.blockCount >= 4320" [class.active]="radioGroupForm.get('dateSpan').value === '1m'">
-          <input type="radio" [value]="'1m'" fragment="1m" [routerLink]="['/graphs/mining/block-fees' | relativeUrl]" formControlName="dateSpan"> 1M
+          <input type="radio" [value]="'1m'" [fragment]="getFragment({time: '1m'})" [routerLink]="['/graphs/mining/block-fees' | relativeUrl]" formControlName="dateSpan"> 1M
         </label>
         <label class="btn btn-primary btn-sm" *ngIf="stats.blockCount >= 12960" [class.active]="radioGroupForm.get('dateSpan').value === '3m'">
-          <input type="radio" [value]="'3m'" fragment="3m" [routerLink]="['/graphs/mining/block-fees' | relativeUrl]" formControlName="dateSpan"> 3M
+          <input type="radio" [value]="'3m'" [fragment]="getFragment({time: '3m'})" [routerLink]="['/graphs/mining/block-fees' | relativeUrl]" formControlName="dateSpan"> 3M
         </label>
         <label class="btn btn-primary btn-sm" *ngIf="stats.blockCount >= 25920" [class.active]="radioGroupForm.get('dateSpan').value === '6m'">
-          <input type="radio" [value]="'6m'" fragment="6m" [routerLink]="['/graphs/mining/block-fees' | relativeUrl]" formControlName="dateSpan"> 6M
+          <input type="radio" [value]="'6m'" [fragment]="getFragment({time: '6m'})" [routerLink]="['/graphs/mining/block-fees' | relativeUrl]" formControlName="dateSpan"> 6M
         </label>
         <label class="btn btn-primary btn-sm" *ngIf="stats.blockCount >= 52560" [class.active]="radioGroupForm.get('dateSpan').value === '1y'">
-          <input type="radio" [value]="'1y'" fragment="1y" [routerLink]="['/graphs/mining/block-fees' | relativeUrl]" formControlName="dateSpan"> 1Y
+          <input type="radio" [value]="'1y'" [fragment]="getFragment({time: '1y'})" [routerLink]="['/graphs/mining/block-fees' | relativeUrl]" formControlName="dateSpan"> 1Y
         </label>
         <label class="btn btn-primary btn-sm" *ngIf="stats.blockCount >= 105120" [class.active]="radioGroupForm.get('dateSpan').value === '2y'">
-          <input type="radio" [value]="'2y'" fragment="2y" [routerLink]="['/graphs/mining/block-fees' | relativeUrl]" formControlName="dateSpan"> 2Y
+          <input type="radio" [value]="'2y'" [fragment]="getFragment({time: '2y'})" [routerLink]="['/graphs/mining/block-fees' | relativeUrl]" formControlName="dateSpan"> 2Y
         </label>
         <label class="btn btn-primary btn-sm" *ngIf="stats.blockCount >= 157680" [class.active]="radioGroupForm.get('dateSpan').value === '3y'">
-          <input type="radio" [value]="'3y'" fragment="3y" [routerLink]="['/graphs/mining/block-fees' | relativeUrl]" formControlName="dateSpan"> 3Y
+          <input type="radio" [value]="'3y'" [fragment]="getFragment({time: '3y'})" [routerLink]="['/graphs/mining/block-fees' | relativeUrl]" formControlName="dateSpan"> 3Y
         </label>
         <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === 'all'">
-          <input type="radio" [value]="'all'" fragment="all" [routerLink]="['/graphs/mining/block-fees' | relativeUrl]" formControlName="dateSpan"> ALL
+          <input type="radio" [value]="'all'" [fragment]="getFragment({time: 'all'})" [routerLink]="['/graphs/mining/block-fees' | relativeUrl]" formControlName="dateSpan"> ALL
+        </label>
+      </div>
+    </form>
+    <form [formGroup]="scaleForm" class="formRadioGroup mr-0 mr-md-2">
+      <div class="btn-group btn-group-toggle" name="radioScale">
+        <label class="btn btn-primary btn-sm" [class.active]="scaleForm.get('scaleFunction').value === 'linear'">
+          <input type="radio" [value]="'linear'" [fragment]="getFragment({scale: 'linear'})" [routerLink]="['/graphs/mining/block-fees' | relativeUrl]" formControlName="scaleFunction"> <span i18n="charts.linear-scale">Linear</span>
+        </label>
+        <label class="btn btn-primary btn-sm" [class.active]="scaleForm.get('scaleFunction').value === 'log'">
+          <input type="radio" [value]="'log'" [fragment]="getFragment({scale: 'log'})" [routerLink]="['/graphs/mining/block-fees' | relativeUrl]" formControlName="scaleFunction"> <span i18n="charts.log-scale">Log</span>
         </label>
       </div>
     </form>
