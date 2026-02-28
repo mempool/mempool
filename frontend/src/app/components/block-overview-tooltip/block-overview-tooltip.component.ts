@@ -5,14 +5,13 @@ import { TransactionStripped } from '@interfaces/node-api.interface.js';
 import { Filter, FilterMode, TransactionFlags, toFilters } from '@app/shared/filters.utils';
 import { Block } from '@interfaces/electrs.interface.js';
 
-
 @Component({
   selector: 'app-block-overview-tooltip',
   templateUrl: './block-overview-tooltip.component.html',
   styleUrls: ['./block-overview-tooltip.component.scss'],
   standalone: false,
 })
-export class BlockOverviewTooltipComponent implements OnChanges, AfterViewChecked {
+export class BlockOverviewTooltipComponent implements OnChanges {
   @Input() tx: TransactionStripped | void;
   @Input() relativeTime?: number;
   @Input() cursorPosition: Position;
@@ -21,7 +20,6 @@ export class BlockOverviewTooltipComponent implements OnChanges, AfterViewChecke
   @Input() blockConversion: Price;
   @Input() filterFlags: bigint | null = null;
   @Input() filterMode: FilterMode = 'and';
-
 
   txid = '';
   time: number = 0;
@@ -36,29 +34,19 @@ export class BlockOverviewTooltipComponent implements OnChanges, AfterViewChecke
   filters: Filter[] = [];
   activeFilters: { [key: string]: boolean } = {};
 
-
-
-
   tooltipPosition: Position = { x: 0, y: 0 };
-  private pendingPositionRecalc = false;
-
-
-
 
   @ViewChild('tooltip') tooltipElement: ElementRef<HTMLCanvasElement>;
-
 
   constructor(
     private cd: ChangeDetectorRef,
     private appRef: ApplicationRef,
   ) { }
 
-
   ngOnChanges(changes): void {
     if (changes.cursorPosition && changes.cursorPosition.currentValue) {
       this.updateTooltipPosition(changes.cursorPosition.currentValue, false);
     }
-
 
     if (this.tx && (changes.tx || changes.filterFlags || changes.filterMode)) {
       this.txid = this.tx.txid || '';
@@ -79,8 +67,6 @@ export class BlockOverviewTooltipComponent implements OnChanges, AfterViewChecke
           this.activeFilters[filter.key] = true;
         }
       }
-
-
       if (!this.relativeTime) {
         this.timeMode = 'mempool';
       } else {
@@ -95,26 +81,19 @@ export class BlockOverviewTooltipComponent implements OnChanges, AfterViewChecke
           }
         }
       }
-
-
       this.cd.markForCheck();
       if (this.cursorPosition) {
-        this.pendingPositionRecalc = true;
+        this.schedulePositionRecalc();
       }
     }
   }
 
-
-  ngAfterViewChecked(): void {
-    if (this.pendingPositionRecalc && this.cursorPosition && this.tx) {
-      this.pendingPositionRecalc = false;
-      requestAnimationFrame(() => {
-        this.updateTooltipPosition(this.cursorPosition, true);
-        this.appRef.tick();
-      });
-    }
+  private schedulePositionRecalc(): void {
+    requestAnimationFrame(() => {
+      this.updateTooltipPosition(this.cursorPosition, true);
+      this.appRef.tick();
+    });
   }
-
 
   private updateTooltipPosition(cursor: Position, yOnly: boolean = false): void {
     const baseX = cursor.x;
@@ -128,13 +107,11 @@ export class BlockOverviewTooltipComponent implements OnChanges, AfterViewChecke
       const aboveY = baseY - elementBounds.height - 20;
       const maxYInParent = parentBounds.height - elementBounds.height;
 
-
       if (!yOnly) {
         if ((parentBounds.left + x + elementBounds.width) > parentBounds.right) {
           x = Math.max(0, parentBounds.width - elementBounds.width - 10);
         }
       }
-
 
       if (belowY <= maxYInParent) {
         y = belowY;
@@ -143,8 +120,8 @@ export class BlockOverviewTooltipComponent implements OnChanges, AfterViewChecke
       } else {
         y = maxYInParent;
       }
-      y = Math.min(y, maxYInParent);
     }
+    
     if (yOnly) {
       this.tooltipPosition = { ...this.tooltipPosition, y };
     } else {
@@ -152,7 +129,6 @@ export class BlockOverviewTooltipComponent implements OnChanges, AfterViewChecke
     }
     this.cd.markForCheck();
   }
-
 
   getTooltipLeftPosition(): string {
     return window.innerWidth < 392 ? '-50px' : this.tooltipPosition.x + 'px';
