@@ -150,10 +150,12 @@ class ElementsParser {
       return;
     }
 
-    logger.debug(`New fedpegscript found at height ${height}, deriving new federation address and storing in database.`);
-    const address = bitcoinjs.address.fromOutputScript(Buffer.from(fedpegProgram, 'hex'), bitcoinjs.networks.bitcoin)
-    if (!address) {
-      logger.err(`Unable to derive federation address from fedpeg program at height ${height}.`);
+    logger.debug(`New fedpegscript found at height ${height}, deriving federation address.`);
+    let address: string;
+    try {
+      address = bitcoinjs.address.fromOutputScript(Buffer.from(fedpegProgram, 'hex'), bitcoinjs.networks.bitcoin);
+    } catch (e) {
+      logger.err(`Unable to derive federation address from fedpeg program at height ${height}: ${e instanceof Error ? e.message : 'Error'}`);
       return;
     }
 
@@ -376,10 +378,12 @@ class ElementsParser {
   protected async $parseBitcoinBlock(block: IBitcoinApi.Block, spentAsTip: Map<string, any>, unspentAsTip: Map<string, any>, confirmedTip: number, redeemAddressesByAddress: Map<string, any[]>) {
     const federationTimelockByAddress = new Map<string, number>((await this.$getFederationPegScripts()).map(fedAddress => [fedAddress.address, fedAddress.timelock]));
     for (const tx of block.tx) {
+      let mightRedeemInThisTx = false;
       // Check if the Federation UTXOs that was spent as of tip are spent in this block
       for (const input of tx.vin) {
         const txo = spentAsTip.get(`${input.txid!}:${input.vout!}`);
         if (txo) {
+          mightRedeemInThisTx = true; // A Federation UTXO is spent in this tx: a peg-out redeem output may be present
           if (txo.expiredAt > 0 ) {
             if (input.txinwitness?.length !== 13) { // Check if the witness data of the input contains the 11 signatures: if it doesn't, emergency keys are being used
               await DB.query(`UPDATE federation_txos SET unspent = 0, lastblockupdate = ?, lasttimeupdate = ?, emergencyKey = 1 WHERE txid = ? AND txindex = ?`, [block.height, block.time, txo.txid, txo.txindex]);
@@ -421,6 +425,9 @@ class ElementsParser {
             }
           }
 
+          if (!mightRedeemInThisTx) {
+            continue;
+          }
           const redeemCandidates = redeemAddressesByAddress.get(output.scriptPubKey.address);
           if (!redeemCandidates) {
             continue;
