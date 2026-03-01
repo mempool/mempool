@@ -79,10 +79,40 @@ export const formatterXAxisTimeCategory = (
   }
 };
 
-export const download = (href, name) => {
+function resolveCssVars(svg: string): string {
+  return svg.replace(/var\(--[\w-]+\)/g, (match) => {
+    try {
+      const varName = match.slice(4, -1);
+      return getComputedStyle(document.documentElement)
+        .getPropertyValue(varName)
+        .trim() || match;
+    } catch {
+      return match;
+    }
+  });
+}
+
+function resolveCssVarsInSvg(dataUrl: string): string {
+  try {
+    const utf8Prefix = 'data:image/svg+xml;charset=UTF-8,';
+    if (dataUrl.startsWith(utf8Prefix)) {
+      const svg = decodeURIComponent(dataUrl.slice(utf8Prefix.length));
+      return utf8Prefix + encodeURIComponent(resolveCssVars(svg));
+    }
+
+    const b64Prefix = 'data:image/svg+xml;base64,';
+    if (dataUrl.startsWith(b64Prefix)) {
+      const svg = atob(dataUrl.slice(b64Prefix.length));
+      return b64Prefix + btoa(resolveCssVars(svg));
+    }
+  } catch { }
+  return dataUrl;
+}
+
+export const download = (href: string, name: string, skipCssVarResolve = false): void => {
   const a = document.createElement('a');
   a.download = name;
-  a.href = href;
+  a.href = (!skipCssVarResolve && href.startsWith('data:image/svg+xml')) ? resolveCssVarsInSvg(href) : href;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);

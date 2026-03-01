@@ -32,6 +32,11 @@ interface FailoverHost {
     core?: string,
     os?: string,
     lastUpdated: number,
+  },
+  liquidAudit?: {
+    pegRatio: number,
+    bitcoinLastBlockUpdate: number,
+    liquidLastBlockUpdate: number,
   }
 }
 
@@ -144,6 +149,8 @@ class FailoverRouter {
               host.hashes.electrs = match[1];
             }
           }
+
+          await this.$updateLiquidAudit(host);
 
           // Check front and backend git hashes less often
           if (Date.now() - host.hashes.lastUpdated > this.gitHashInterval) {
@@ -348,6 +355,43 @@ class FailoverRouter {
       }
     } catch (e) {
       // failed to get ssr build hash - do nothing
+    }
+  }
+
+  private async $updateLiquidAudit(host: FailoverHost): Promise<void> {
+    if (config.MEMPOOL.NETWORK !== 'liquid') {
+      return;
+    }
+    try {
+      const [reservesResponse, pegsResponse] = await Promise.all([
+        this.pollConnection.get<any>(
+          `${host.publicDomain}/api/v1/liquid/reserves`, {
+          timeout: config.ESPLORA.FALLBACK_TIMEOUT,
+          headers: { 'Host': 'liquid.network' }
+        }
+        ),
+        this.pollConnection.get<any>(
+          `${host.publicDomain}/api/v1/liquid/pegs`, {
+          timeout: config.ESPLORA.FALLBACK_TIMEOUT,
+          headers: { 'Host': 'liquid.network' }
+        }
+        ),
+      ]);
+
+      const reservesAmount = Number(reservesResponse.data?.amount);
+      const pegsAmount = Number(pegsResponse.data?.amount);
+      const bitcoinLastBlockUpdate = Number(reservesResponse.data?.lastBlockUpdate);
+      const liquidLastBlockUpdate = Number(pegsResponse.data?.lastBlockUpdate);
+
+      if (Number.isFinite(reservesAmount) && Number.isFinite(pegsAmount) && Number.isFinite(bitcoinLastBlockUpdate) && Number.isFinite(liquidLastBlockUpdate) && pegsAmount > 0) {
+        host.liquidAudit = {
+          pegRatio: (reservesAmount / pegsAmount) * 100,
+          bitcoinLastBlockUpdate,
+          liquidLastBlockUpdate,
+        };
+      }
+    } catch (e) {
+      // failed to get liquid audit values - do nothing
     }
   }
 
@@ -585,6 +629,7 @@ class ElectrsApi implements AbstractBitcoinApi {
         checked: !!host.checked,
         lastChecked: host.lastChecked || 0,
         hashes: host.hashes,
+        ...(config.MEMPOOL.NETWORK === 'liquid' ? { liquidAudit: host.liquidAudit } : {}),
       }));
     } else {
       return [];

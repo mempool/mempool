@@ -156,6 +156,11 @@ export interface HealthCheckHost {
     core?: string;
     os?: string;
   };
+  liquidAudit?: {
+    pegRatio: number;
+    bitcoinLastBlockUpdate: number;
+    liquidLastBlockUpdate: number;
+  };
 }
 
 export interface StratumJob {

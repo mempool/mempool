@@ -181,7 +181,7 @@
   
       <div class="col">
         <div class="card-liquid card">
-          <h5 class="card-title" style="padding-top: 20px;" i18n="dashboard.lbtc-supply-against-btc-holdings">LBTC Supply Against BTC Holdings</h5>
+          <h5 class="card-title" style="padding-top: 20px;" i18n="dashboard.lbtc-supply-vs-btc-holdings">LBTC Supply vs. BTC Holdings</h5>
           <div class="card-body pl-0" style="padding-top: 10px;">
             <app-lbtc-pegs-graph [data]="fullHistory$ | async" [height]="lbtcPegGraphHeight"></app-lbtc-pegs-graph>
           </div>
@@ -200,7 +200,9 @@
       <div class="col">
         <div class="card card-liquid smaller">
           <div class="card-body">
-            <app-recent-pegs-stats [pegsVolume$]="pegsVolume$"></app-recent-pegs-stats>
+            <a class="title-link" [routerLink]="['/audit/pegs' | relativeUrl]">
+              <h5 class="card-title"><ng-container i18n="liquid.recent-pegs">Recent Peg-In / Out's</ng-container>&nbsp;<fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: var(--title-fg)"></fa-icon></h5>
+            </a>
             <app-recent-pegs-list [recentPegsList$]="recentPegsList$" [widget]="true"></app-recent-pegs-list>
           </div>
         </div>
@@ -209,7 +211,9 @@
       <div class="col" style="margin-bottom: 1.47rem">
         <div class="card-liquid card smaller">
           <div class="card-body">
-            <app-federation-addresses-stats [federationAddressesNumber$]="federationAddressesNumber$" [federationUtxosNumber$]="federationUtxosNumber$"></app-federation-addresses-stats>
+            <a class="title-link" [routerLink]="['/audit/wallet/addresses' | relativeUrl]">
+              <h5 class="card-title"><ng-container i18n="liquid.federation-wallet">Liquid Federation Wallet</ng-container>&nbsp;<fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: var(--title-fg)"></fa-icon></h5>
+            </a>
             <app-federation-addresses-list [federationAddresses$]="federationAddresses$" [widget]="true"></app-federation-addresses-list>
           </div>
         </div>
@@ -321,7 +325,7 @@
   
       <div class="col">
         <div class="card-liquid card">
-          <h5 class="card-title" style="padding-top: 20px;" i18n="dashboard.lbtc-supply-against-btc-holdings">LBTC Supply Against BTC Holdings</h5>
+          <h5 class="card-title" style="padding-top: 20px;" i18n="dashboard.lbtc-supply-vs-btc-holdings">LBTC Supply vs. BTC Holdings</h5>
           <div class="card-body pl-0" style="padding-top: 25px;">
             <app-lbtc-pegs-graph [height]="lbtcPegGraphHeight" [auditInProgress]="auditInProgress"></app-lbtc-pegs-graph>
           </div>
@@ -340,7 +344,9 @@
       <div class="col">
         <div class="card card-liquid smaller">
           <div class="card-body">
-            <app-recent-pegs-stats></app-recent-pegs-stats>
+            <a class="title-link" [routerLink]="['/audit/pegs' | relativeUrl]">
+              <h5 class="card-title"><ng-container i18n="liquid.recent-pegs">Recent Peg-In / Out's</ng-container>&nbsp;<fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: var(--title-fg)"></fa-icon></h5>
+            </a>
             <app-recent-pegs-list [widget]="true"></app-recent-pegs-list>
           </div>
         </div>
@@ -349,7 +355,9 @@
       <div class="col" style="margin-bottom: 1.47rem">
         <div class="card-liquid card smaller">
           <div class="card-body">
-            <app-federation-addresses-stats></app-federation-addresses-stats>
+            <a class="title-link" [routerLink]="['/audit/wallet/addresses' | relativeUrl]">
+              <h5 class="card-title"><ng-container i18n="liquid.federation-wallet">Liquid Federation Wallet</ng-container>&nbsp;<fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: var(--title-fg)"></fa-icon></h5>
+            </a>
             <app-federation-addresses-list [widget]="true"></app-federation-addresses-list>
           </div>
         </div>
@@ -364,7 +372,7 @@
       <div class="liquid-indexing-banner" *ngIf="auditStatus.lastBlockAudit && auditStatus.bitcoinHeaders">
         <span class="badge badge-pill badge-warning liquid-indexing-badge">
           <span i18n="liquid.audit-in-progress">Audit in progress</span>
-          ({{ (auditStatus.lastBlockAudit / auditStatus.bitcoinHeaders * 100) | number:'1.0-0' }}%)
+          ({{ ((auditStatus.lastBlockAudit / auditStatus.bitcoinHeaders * 100) > 99.9 ? 99.9 : (auditStatus.lastBlockAudit / auditStatus.bitcoinHeaders * 100)) | number:'1.0-1' }}%)
         </span>
       </div>
       <ng-container *ngTemplateOutlet="loadingSkeletonLiquid; context: { auditInProgress: true }"></ng-container>
