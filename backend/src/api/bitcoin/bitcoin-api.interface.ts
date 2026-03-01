@@ -91,6 +91,7 @@ export namespace IBitcoinApi {
     };
     sequence: number;                //  (numeric) The script sequence number
     txinwitness?: string[];          //  (string) hex-encoded witness data
+    pegin_witness?: string[];        //  (string) Elements peg-in witness
     coinbase?: string;
     is_pegin?: boolean;              //  (boolean) Elements peg-in
   }
