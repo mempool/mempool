@@ -122,6 +122,7 @@ class ElementsParser {
     }
   }
 
+  /** @asyncUnsafe */
   private async $getFederationPegScripts(): Promise<FederationAddress[]> {
     if (this.federationPegScripts.length === 0) {
       const [rows] = await DB.query(`SELECT fedpegscript, address, timelock, blocknumber FROM federation_peg_scripts ORDER BY blocknumber DESC`);
@@ -130,6 +131,7 @@ class ElementsParser {
     return this.federationPegScripts;
   }
 
+  /** @asyncUnsafe */
   private async $updateFederationPegScripts(block: IBitcoinApi.Block): Promise<void> {
     const height = block.height;
     if (height < DYNAFED_ACTIVATION_HEIGHT || height % DYNAFED_CHECK_INTERVAL !== 0) {
@@ -213,6 +215,7 @@ class ElementsParser {
     return null;
   }
 
+  /** @asyncUnsafe */
   private async $resolvePegInTimelock(input: IBitcoinApi.Vin, bitcoinaddress: string): Promise<number> {
     const claimScript = input.pegin_witness?.[3];
     if (!claimScript) {
