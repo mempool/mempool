@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { CanMatchFn, Route, Router, UrlSegment } from '@angular/router';
+import { CanMatchFn, Route, Router, UrlSegment, UrlTree } from '@angular/router';
 import { NavigationService } from '@app/services/navigation.service';
 
 @Injectable({
@@ -27,11 +27,10 @@ class GuardService {
     }
   }
 
-  networkEnabledGuard(route: Route, segments: UrlSegment[]): boolean {
+  networkEnabledGuard(route: Route, segments: UrlSegment[]): boolean | UrlTree {
     const network = (route.path ?? segments[0]?.path ?? '') as string;
     if (!this.isNetworkEnabled(network)) {
-      this.router.navigateByUrl('/');
-      return false;
+      return this.router.createUrlTree(['/']);
     }
     return true;
   }
@@ -43,3 +42,4 @@ export const TrackerGuard: CanMatchFn = (route: Route, segments: UrlSegment[]): 
 
 export const NetworkEnabledGuard: CanMatchFn = (route, segments) =>
   inject(GuardService).networkEnabledGuard(route, segments);
+
