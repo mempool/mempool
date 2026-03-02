@@ -366,15 +366,15 @@ class FailoverRouter {
       const [reservesResponse, pegsResponse] = await Promise.all([
         this.pollConnection.get<any>(
           `${host.publicDomain}/api/v1/liquid/reserves`, {
-          timeout: config.ESPLORA.FALLBACK_TIMEOUT,
-          headers: { 'Host': 'liquid.network' }
-        }
+            timeout: config.ESPLORA.FALLBACK_TIMEOUT,
+            headers: { 'Host': 'liquid.network' }
+          }
         ),
         this.pollConnection.get<any>(
           `${host.publicDomain}/api/v1/liquid/pegs`, {
-          timeout: config.ESPLORA.FALLBACK_TIMEOUT,
-          headers: { 'Host': 'liquid.network' }
-        }
+            timeout: config.ESPLORA.FALLBACK_TIMEOUT,
+            headers: { 'Host': 'liquid.network' }
+          }
         ),
       ]);
 
