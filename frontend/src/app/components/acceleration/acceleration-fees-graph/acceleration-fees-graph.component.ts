@@ -40,6 +40,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
 
   miningWindowPreference: string;
   radioGroupForm: UntypedFormGroup;
+  scaleForm: UntypedFormGroup;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -70,6 +71,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1w' });
     this.radioGroupForm.controls.dateSpan.setValue('1w');
+    this.scaleForm = this.formBuilder.group({scaleFunction: 'steps'});
   }
 
   ngOnInit(): void {
@@ -370,8 +372,8 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
     this.statsSubscription?.unsubscribe();
   }
 
-  toggleLogScale() {
-    this.logScale = !this.logScale;
+  onScaleChange() {
+    this.logScale = this.scaleForm.get('scaleFunction')?.value === 'logarithmic';
     
     if (!this.chartInstance || !this.chartOptions.yAxis || !this.chartOptions.series) {
       return;

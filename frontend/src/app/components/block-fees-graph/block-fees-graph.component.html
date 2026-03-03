@@ -7,12 +7,7 @@
       <button class="btn p-0 pl-2" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
         <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
       </button>
-    </div>  
-    
-    <label class="toggle-checkbox">
-      <input type="checkbox" [checked]="logScale" (change)="toggleLogScale()">
-      <span i18n="mining.block-fees.log.scale">Log Scale</span>
-    </label>
+    </div>
 
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(statsObservable$ | async) as stats">
       <div class="btn-group btn-group-toggle" name="radioBasic">
@@ -36,6 +31,16 @@
         </label>
         <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === 'all'">
           <input type="radio" [value]="'all'" fragment="all" [routerLink]="['/graphs/mining/block-fees' | relativeUrl]" formControlName="dateSpan"> ALL
+        </label>
+      </div>
+    </form>
+    <form [formGroup]="scaleForm" class="formRadioGroup mr-0 mr-md-2">
+      <div class="btn-group btn-group-toggle" name="radioScale">
+        <label class="btn btn-primary btn-sm" [class.active]="scaleForm.get('scaleFunction').value === 'steps'">
+          <input type="radio" [value]="'steps'" formControlName="scaleFunction" (change)="onScaleChange()"> Steps
+        </label>
+        <label class="btn btn-primary btn-sm" [class.active]="scaleForm.get('scaleFunction').value === 'logarithmic'">
+          <input type="radio" [value]="'logarithmic'" formControlName="scaleFunction" (change)="onScaleChange()"> Logarithmic
         </label>
       </div>
     </form>

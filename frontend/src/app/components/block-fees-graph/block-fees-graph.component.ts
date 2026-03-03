@@ -37,6 +37,7 @@ export class BlockFeesGraphComponent implements OnInit {
 
   miningWindowPreference: string;
   radioGroupForm: UntypedFormGroup;
+  scaleForm: UntypedFormGroup;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -65,6 +66,7 @@ export class BlockFeesGraphComponent implements OnInit {
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
     this.radioGroupForm.controls.dateSpan.setValue('1y');
+    this.scaleForm = this.formBuilder.group({scaleFunction: 'steps'});
     this.currency = 'USD';
   }
 
@@ -323,9 +325,9 @@ export class BlockFeesGraphComponent implements OnInit {
     this.chartInstance.setOption(this.chartOptions);
   }
 
-  toggleLogScale() {
-    this.logScale = !this.logScale;
-    
+  onScaleChange() {
+    this.logScale = this.scaleForm.get('scaleFunction')?.value === 'logarithmic';
+
     if (!this.chartInstance || !this.chartOptions.yAxis) {
       return;
     }
