@@ -1,5 +1,22 @@
 <div [ngClass]="{'widget': widget, 'extra-margin-right': widget}">
 
+  <ng-container *ngIf="!widget">
+    <div class="fee-estimation-container">
+      <div class="item">
+        <div class="card-text">
+          <div class="fee-text">
+            <ng-container *ngIf="federationAddresses$ | async as federationAddresses; else addressCountSkeleton">
+              {{ federationAddresses.length }} <span i18n="shared.addresses">addresses</span>
+            </ng-container>
+            <ng-template #addressCountSkeleton>
+              <div class="skeleton-loader"></div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
   <div class="clearfix"></div>
 
   <div style="min-height: 295px">
@@ -10,7 +27,7 @@
       </thead>
       <tbody *ngIf="federationAddresses$ | async as addresses; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
         <ng-container *ngIf="widget; else regularRows">
-          <tr *ngFor="let address of addresses | slice:0:5">
+          <tr *ngFor="let address of addresses | slice:0:6">
             <td class="address text-left widget">
               <a href="{{ env.MEMPOOL_WEBSITE_URL + '/address/' + address.bitcoinaddress }}" target="_blank" style="color:var(--orange)">
                 <app-truncate [text]="address.bitcoinaddress" [lastChars]="6"></app-truncate>

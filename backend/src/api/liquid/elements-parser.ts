@@ -7,6 +7,7 @@ import logger from '../../logger';
 
 const federationChangeAddresses = ['bc1qxvay4an52gcghxq5lavact7r6qe9l4laedsazz8fj2ee2cy47tlqff4aj4', '3EiAcrzq1cELXScc98KeCswGWZaPGceT1d', '3G6neksSBMp51kHJ2if8SeDUrzT8iVETWT', 'bc1qwnevjp8nsq7adu3hxlvdvslrf242q4vuavfg0y929jp2zntp3vgq7cq6z2'];
 const auditBlockOffsetWithTip = 1; // Wait for 1 block confirmation before processing the block in the audit process to reduce the risk of reorgs
+const auditSyncToleranceBlocks = 105; // Audit lag from bitcoin tip to avoid potential unsynced state on peg-ins, which require 102 confirmations
 
 class ElementsParser {
   private isRunning = false;
@@ -380,7 +381,7 @@ class ElementsParser {
       bitcoinBlocks: bitcoinBlocksToSync.bitcoinBlocks,
       bitcoinHeaders: bitcoinBlocksToSync.bitcoinHeaders,
       lastBlockAudit: lastBlockAudit,
-      isAuditSynced: bitcoinBlocksToSync.bitcoinHeaders - bitcoinBlocksToSync.bitcoinBlocks <= 2 && bitcoinBlocksToSync.bitcoinBlocks - lastBlockAudit <= 3,
+      isAuditSynced: bitcoinBlocksToSync.bitcoinHeaders - bitcoinBlocksToSync.bitcoinBlocks <= 3 && bitcoinBlocksToSync.bitcoinBlocks - lastBlockAudit <= auditSyncToleranceBlocks,
     };
   }
 

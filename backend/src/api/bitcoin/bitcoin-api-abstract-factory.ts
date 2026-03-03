@@ -57,4 +57,19 @@ export interface HealthCheckHost {
   unreachable: boolean;
   checked: boolean;
   lastChecked: number;
+  hashes?: {
+    frontend?: string;
+    hybrid?: string;
+    backend?: string;
+    electrs?: string;
+    ssr?: string;
+    core?: string;
+    os?: string;
+    lastUpdated?: number;
+  };
+  liquidAudit?: {
+    pegRatio: number;
+    bitcoinLastBlockUpdate: number;
+    liquidLastBlockUpdate: number;
+  };
 }

@@ -220,6 +220,7 @@ class Indexer {
       await blocks.$generateBlocksSummariesDatabase();
       await blocks.$generateCPFPDatabase();
       await blocks.$generateAuditStats();
+      await blocks.$indexBlocksFirstSeen();
       await auditReplicator.$sync();
       await statisticsReplicator.$sync();
       await AccelerationRepository.$indexPastAccelerations();

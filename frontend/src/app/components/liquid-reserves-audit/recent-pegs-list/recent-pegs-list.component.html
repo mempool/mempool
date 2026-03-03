@@ -2,6 +2,7 @@
 
   <div *ngIf="!widget">
     <h1 i18n="liquid.recent-pegs">Recent Peg-In / Out's</h1>
+    <app-recent-pegs-stats [pegsVolume$]="pegsVolume$"></app-recent-pegs-stats>
   </div>
 
   <div class="clearfix"></div>
@@ -17,7 +18,7 @@
       </thead>
       <tbody *ngIf="recentPegsList$ | async as pegs; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
         <ng-container *ngIf="widget; else regularRows">
-          <tr *ngFor="let peg of pegs | slice:0:5">
+          <tr *ngFor="let peg of pegs | slice:0:6">
             <td class="transaction text-left widget">
               <ng-container *ngIf="peg.amount > 0">
                 <a [routerLink]="['/tx' | relativeUrl, peg.txid]" [fragment]="'vin=' + peg.txindex">

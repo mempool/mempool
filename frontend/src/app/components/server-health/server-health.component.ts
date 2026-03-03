@@ -18,6 +18,8 @@ export class ServerHealthComponent implements OnInit {
   interval: number;
   now: number = Date.now();
   colors: Record<string, Record<string, string>> = {};
+  isLiquidMainnet = false;
+  showHybridHash = false;
 
   repoMap = {
     frontend: 'mempool',
@@ -93,6 +95,9 @@ export class ServerHealthComponent implements OnInit {
       this.now = Date.now();
       this.cd.markForCheck();
     }, 1000);
+
+    this.isLiquidMainnet = this.stateService.network === 'liquid';
+    this.showHybridHash = !this.stateService.isLiquid();
   }
 
   trackByFn(index: number, host: HealthCheckHost): string {
@@ -170,5 +175,14 @@ export class ServerHealthComponent implements OnInit {
 
     const hue = (index / (sortedVersions.length - 1)) * 120;
     return `hsl(${hue}, 70%, 35%)`;
+  }
+
+  public formatPegRatio(pegRatio: number | null | undefined): string {
+    if (pegRatio == null) {
+      return '?';
+    }
+
+    const ratio = Math.floor(pegRatio);
+    return `${ratio}%${ratio >= 100 ? ' ✅' : ' 🔥'}`;
   }
 }

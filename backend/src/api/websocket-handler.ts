@@ -16,7 +16,6 @@ import transactionUtils from './transaction-utils';
 import rbfCache, { ReplacementInfo } from './rbf-cache';
 import difficultyAdjustment from './difficulty-adjustment';
 import feeApi from './fee-api';
-import BlocksRepository from '../repositories/BlocksRepository';
 import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
 import Audit from './audit';
@@ -37,7 +36,6 @@ interface AddressTransactions {
 }
 import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
 import { calculateMempoolTxCpfp } from './cpfp';
-import { getRecentFirstSeen } from '../utils/file-read';
 import stratumApi, { StratumJob } from './services/stratum';
 
 // valid 'want' subscriptions
@@ -1094,16 +1092,6 @@ class WebsocketHandler {
       const mBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
       if (mBlocks?.length && mBlocks[0].transactions) {
         block.extras.similarity = Common.getSimilarity(mBlocks[0], transactions);
-      }
-    }
-
-    if (config.CORE_RPC.DEBUG_LOG_PATH && block.extras) {
-      const firstSeen = getRecentFirstSeen(block.id);
-      if (firstSeen) {
-        if (config.DATABASE.ENABLED) {
-          void BlocksRepository.$saveFirstSeenTime(block.id, firstSeen);
-        }
-        block.extras.firstSeen = firstSeen;
       }
     }
 

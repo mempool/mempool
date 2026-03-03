@@ -1,21 +1,25 @@
 <div class="fee-estimation-container">
   <div class="item"> 
-    <h5 class="card-title" i18n="liquid.unpeg">Unpeg</h5> 
+    <h5 class="card-title" i18n="liquid.reserve-deficit">Reserve Deficit</h5> 
     <div *ngIf="(unbackedMonths$ | async) as unbackedMonths; else loadingData" class="card-text">
       <ng-container *ngIf="unbackedMonths.historyComplete; else loadingData">
-        <div class="fee-text" [ngClass]="{'danger' : unbackedMonths.total > 0, 'correct': unbackedMonths.total === 0}" i18n-ngbTooltip="liquid.unpeg-info" ngbTooltip="Number of times that the Federation's BTC holdings fall below 95% of the total LBTC supply">
-          {{ unbackedMonths.total }} <span i18n="liquid.unpeg-event">Unpeg Event</span>
+        <div class="fee-text" i18n-ngbTooltip="liquid.unpeg-info" ngbTooltip="Number of times that the Federation's BTC holdings fall below 95% of the total LBTC supply">
+          {{ unbackedMonths.total }}
+          <span *ngIf="unbackedMonths.total === 1; else occurrencePlural" i18n="shared.occurrence">occurrence</span>
+          <ng-template #occurrencePlural>
+            <span i18n="shared.occurrences">occurrences</span>
+          </ng-template>
         </div>
       </ng-container>
     </div>
   </div>
 
   <div class="item avg-ratio"> 
-    <h5 class="card-title" i18n="liquid.avg-peg-ratio">Avg Peg Ratio</h5> 
+    <h5 class="card-title" i18n="dashboard.30d-change">Change (30d)</h5>
     <div *ngIf="(unbackedMonths$ | async) as unbackedMonths; else loadingData" class="card-text">
       <ng-container *ngIf="unbackedMonths.historyComplete; else loadingData">
-        <div class="fee-text" [ngClass]="{'danger' : unbackedMonths.avg < 1, 'correct': unbackedMonths.avg >= 1}">
-          {{ (unbackedMonths.avg * 100).toFixed(3) }} %
+        <div class="fee-text">
+          {{ unbackedMonths.delta1m > 0 ? '+' : ''}}{{ unbackedMonths.delta1m | number: '1.2-2' }} <span i18n="shared.btc|BTC">BTC</span>
         </div>
       </ng-container>
     </div>
@@ -27,8 +31,12 @@
     </a> -->
     <h5 class="card-title" i18n="liquid.emergency-keys">Emergency Keys</h5>
     <div *ngIf="(emergencyUtxosStats$ | async) as emergencyUtxosStats; else loadingData" class="card-text">
-      <div class="fee-text" [ngClass]="{'danger' : emergencyUtxosStats.utxo_count > 0, 'correct': emergencyUtxosStats.utxo_count === 0}">
-        {{ emergencyUtxosStats.utxo_count }} <span i18n="shared.usage">usage</span>
+      <div class="fee-text">
+        {{ emergencyUtxosStats.utxo_count }}
+        <span *ngIf="emergencyUtxosStats.utxo_count === 1; else usagePlural" i18n="shared.usage">usage</span>
+        <ng-template #usagePlural>
+          <span i18n="shared.usages">usages</span>
+        </ng-template>
       </div>
     </div>
   </div>
@@ -39,5 +47,4 @@
     <div class="skeleton-loader"></div>
   </div>
 </ng-template>
-
 
