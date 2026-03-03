@@ -58,7 +58,11 @@
   </a>
 
   <div (window:resize)="onResize()" ngbDropdown class="dropdown-container" *ngIf="isDropdownVisible">
+<<<<<<< Updated upstream
     <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split d-flex justify-content-center align-items-center" aria-haspopup="true" [attr.aria-label]="'Select network. Current: ' + (network.val === '' ? 'Mainnet' : network.val)" [attr.title]="'Select network. Current: ' + (network.val === '' ? 'Mainnet' : network.val)">
+=======
+    <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split d-flex justify-content-center align-items-center" aria-haspopup="true" [attr.aria-label]="'Select network. Current: ' + networkDisplayName" [attr.title]="'Select network. Current: ' + networkDisplayName">
+>>>>>>> Stashed changes
       <app-svg-images class="d-flex justify-content-center align-items-center current-network-svg" [name]="network.val === '' ? 'bitcoin' : network.val" width="20" height="20" viewBox="0 0 65 65"></app-svg-images>
     </button>
     <div ngbDropdownMenu [ngClass]="{'dropdown-menu-right' : isMobile}">
