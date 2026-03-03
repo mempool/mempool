@@ -36,7 +36,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
   @Input() period: '24h' | '1w' | '1m' | '1y' | 'all' = '1y';
   @Input() accelerations$: Observable<Acceleration[]>;
 
-  logScale = false
+  logScale = false;
 
   miningWindowPreference: string;
   radioGroupForm: UntypedFormGroup;
@@ -247,7 +247,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
       yAxis: data.length === 0 ? undefined : [
         {
           type: this.logScale ? 'log' : 'value',
-          min: this.logScale ? 1 : null,
+          min: this.logScale ? 1 : undefined,
           name: 'Total bid boost',
           position: 'right',
           nameTextStyle: {
@@ -269,7 +269,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
         },
         {
           type: this.logScale ? 'log' : 'value',
-          min: this.logScale ? 1 : null,
+          min: this.logScale ? 1 : undefined,
           name: 'Accelerated',
           position: 'left',
           axisLabel: {
@@ -293,7 +293,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
         {
           name: 'Total bid boost',
           data: data.map(h =>  {
-            return [h.timestamp * 1000, Math.max(h.sumBidBoost, 1), h.avgHeight];
+            return [h.timestamp * 1000, h.sumBidBoost, h.avgHeight];
           }),
           type: 'line',
           symbol: 'none',
@@ -306,7 +306,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
           name: 'Accelerated',
           yAxisIndex: 1,
           data: data.map(h =>  {
-            return [h.timestamp * 1000, Math.max(h.count, 1), h.avgHeight];
+            return [h.timestamp * 1000, h.count, h.avgHeight];
           }),
           type: 'bar',
           barWidth: this.logScale ? undefined : '90%',
@@ -382,10 +382,10 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
     const series = this.chartOptions.series as any[];
 
     yAxes[0].type = this.logScale ? 'log' : 'value';
-    yAxes[0].min = this.logScale ? 1 : null;
+    yAxes[0].min = this.logScale ? 1 : undefined;
 
     yAxes[1].type = this.logScale ? 'log' : 'value';
-    yAxes[1].min = this.logScale ? 1 : null;
+    yAxes[1].min = this.logScale ? 1 : undefined;
 
     series[1].barWidth = this.logScale ? undefined : '90%';
 

@@ -126,19 +126,19 @@ export class BlockFeeRatesGraphComponent implements OnInit {
                   '90th': [],
                   'Max': []
                 };
-                const clamp = (val: number) => Math.max(val, 1);
+                const clamp = (val: number) => this.logScale ? Math.max(val, 0.1) : val;
                 for (const rate of response.body) {
                   const timestamp = rate.timestamp * 1000;
                   if (this.widget) {
-                    seriesData['Median'].push([timestamp, rate.avgFee_50, rate.avgHeight]);
+                    seriesData['Median'].push([timestamp, rate.avgFee_50, rate.avgHeight, rate.avgFee_50]);
                   } else {
-                    seriesData['Min'].push([timestamp, clamp(rate.avgFee_0), rate.avgHeight]);
-                    seriesData['10th'].push([timestamp, clamp(rate.avgFee_10), rate.avgHeight]);
-                    seriesData['25th'].push([timestamp, clamp(rate.avgFee_25), rate.avgHeight]);
-                    seriesData['Median'].push([timestamp, clamp(rate.avgFee_50), rate.avgHeight]);
-                    seriesData['75th'].push([timestamp, clamp(rate.avgFee_75), rate.avgHeight]);
-                    seriesData['90th'].push([timestamp, clamp(rate.avgFee_90), rate.avgHeight]);
-                    seriesData['Max'].push([timestamp, clamp(rate.avgFee_100), rate.avgHeight]);
+                    seriesData['Min'].push([timestamp, clamp(rate.avgFee_0), rate.avgHeight, rate.avgFee_0]);
+                    seriesData['10th'].push([timestamp, clamp(rate.avgFee_10), rate.avgHeight, rate.avgFee_10]);
+                    seriesData['25th'].push([timestamp, clamp(rate.avgFee_25), rate.avgHeight, rate.avgFee_25]);
+                    seriesData['Median'].push([timestamp, clamp(rate.avgFee_50), rate.avgHeight, rate.avgFee_50]);
+                    seriesData['75th'].push([timestamp, clamp(rate.avgFee_75), rate.avgHeight, rate.avgFee_75]);
+                    seriesData['90th'].push([timestamp, clamp(rate.avgFee_90), rate.avgHeight, rate.avgFee_90]);
+                    seriesData['Max'].push([timestamp, clamp(rate.avgFee_100), rate.avgHeight, rate.avgFee_100]);
                   }
                 }
 
@@ -179,7 +179,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
                   for (let i = maResolution - 1; i < seriesData['Median'].length; ++i) {
                     let avg = 0;
                     for (let y = maResolution - 1; y >= 0; --y) {
-                      avg += seriesData['Median'][i - y][1];
+                      avg += seriesData['Median'][i - y][3];
                     }
                     avg /= maResolution;
                     medianMa.push([seriesData['Median'][i][0], avg, seriesData['Median'][i][2]]);
@@ -255,9 +255,9 @@ export class BlockFeeRatesGraphComponent implements OnInit {
 
           for (const rate of data.reverse()) {
             if (weightMode) {
-              tooltip += `${rate.marker} ${rate.seriesName}: ${(rate.data[1] / 4).toFixed(2)} sats/WU<br>`;
+              tooltip += `${rate.marker} ${rate.seriesName}: ${(rate.data[3] / 4).toFixed(2)} sats/WU<br>`;
             } else {
-              tooltip += `${rate.marker} ${rate.seriesName}: ${rate.data[1].toFixed(2)} sats/vByte<br>`;
+              tooltip += `${rate.marker} ${rate.seriesName}: ${rate.data[3].toFixed(2)} sats/vByte<br>`;
             }
           }
 
@@ -408,8 +408,8 @@ export class BlockFeeRatesGraphComponent implements OnInit {
 
     const yAxis = this.chartOptions.yAxis as any;
     yAxis.type = this.logScale ? 'log' : 'value';
-    yAxis.min = this.logScale ? 1 : null; 
-    yAxis.max = (!this.logScale && this.timespan === 'all') ? (val) => Math.min(val.max, 5000) : null;
+    yAxis.min = this.logScale ? 0.1 : undefined; 
+    yAxis.max = (!this.logScale && this.timespan === 'all') ? (val) => Math.min(val.max, 5000) : undefined;
 
     (this.chartOptions.series as any[]).forEach(seriesItem => {
       if (seriesItem.name !== 'Moving average') {
@@ -417,6 +417,10 @@ export class BlockFeeRatesGraphComponent implements OnInit {
         seriesItem.stack = this.logScale ? undefined : 'Total';
         seriesItem.barWidth = this.logScale ? undefined : '100%';
       }
+
+      seriesItem.data.forEach(point => {
+        point [1] = this.logScale ? Math.max(point[3], 0.1) : point[3];
+      });
     });
 
     this.chartInstance.setOption({

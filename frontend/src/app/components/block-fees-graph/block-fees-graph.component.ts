@@ -96,10 +96,10 @@ export class BlockFeesGraphComponent implements OnInit {
           return this.apiService.getHistoricalBlockFees$(timespan)
             .pipe(
               tap((response) => {
-                const clampSats = (val: number) => Math.max(val, 1);
+                const clampSats = (val: number) => this.logScale ? Math.max(val, 1) : val;
                 this.prepareChartOptions({
-                  blockFees: response.body.map(val => [val.timestamp * 1000, clampSats(val.avgFees) / 100000000, val.avgHeight]),
-                  blockFeesFiat: response.body.filter(val => val[this.currency] > 0).map(val => [val.timestamp * 1000, clampSats(val.avgFees) / 100000000 * val[this.currency], val.avgHeight]),
+                  blockFees: response.body.map(val => [val.timestamp * 1000, clampSats(val.avgFees) / 100000000, val.avgHeight, val.avgFees / 100000000]),
+                  blockFeesFiat: response.body.filter(val => val[this.currency] > 0).map(val => [val.timestamp * 1000, clampSats(val.avgFees) / 100000000 * val[this.currency], val.avgHeight, val.avgFees / 100000000 * val[this.currency]]),
                 });
                 this.isLoading = false;
               }),
@@ -170,9 +170,9 @@ export class BlockFeesGraphComponent implements OnInit {
 
           for (const tick of data) {
             if (tick.seriesIndex === 0) {
-              tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.3-3')} BTC<br>`;
+              tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[3], this.locale, '1.3-3')} BTC<br>`;
             } else if (tick.seriesIndex === 1) {
-              tooltip += `${tick.marker} ${tick.seriesName}: ${this.fiatCurrencyPipe.transform(tick.data[1], null, this.currency) }<br>`;
+              tooltip += `${tick.marker} ${tick.seriesName}: ${this.fiatCurrencyPipe.transform(tick.data[3], null, this.currency) }<br>`;
             }
           }
 
@@ -211,7 +211,7 @@ export class BlockFeesGraphComponent implements OnInit {
       yAxis: data.blockFees.length === 0 ? undefined : [
         {
           type: this.logScale ? 'log' : 'value',
-          min: this.logScale ? 0.01 : null,
+          min: this.logScale ? 0.001 : undefined,
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: (val) => {
@@ -228,7 +228,7 @@ export class BlockFeesGraphComponent implements OnInit {
         },
         {
           type: this.logScale ? 'log' : 'value',
-          min: this.logScale ? 0.01 : null,
+          min: this.logScale ? 0.01 : undefined,
           position: 'right',
           axisLabel: {
             color: 'rgb(110, 112, 121)',
@@ -335,13 +335,24 @@ export class BlockFeesGraphComponent implements OnInit {
     const yAxes = this.chartOptions.yAxis as any[];
 
     yAxes[0].type = this.logScale ? 'log' : 'value';
-    yAxes[0].min = this.logScale ? 0.01 : null;
+    yAxes[0].min = this.logScale ? 0.001 : undefined;
 
     yAxes[1].type = this.logScale ? 'log' : 'value';
-    yAxes[1].min = this.logScale ? 0.01 : null;
+    yAxes[1].min = this.logScale ? 0.01 : undefined;
+
+    (this.chartOptions.series as any[]).forEach((seriesItem, index) => {
+      seriesItem.data.forEach(point => {
+        if (index === 0) {
+          point [1] = this.logScale ? Math.max(point[3], 0.001) : point[3];
+        } else if (index === 1) {
+          point [1] = this.logScale ? Math.max(point[3], 0.01) : point[3];
+        }
+      });
+    })
 
     this.chartInstance.setOption({
-      yAxis: yAxes
+      yAxis: yAxes,
+      series: this.chartOptions.series
     });
   }
 }
