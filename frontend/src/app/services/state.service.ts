@@ -466,7 +466,18 @@ export class StateService {
   networkSupportsLightning() {
     return this.env.LIGHTNING && this.lightningNetworks.includes(this.network);
   }
-
+  get networkDisplayName(): string {
+    const labels: Record<string, string> = {
+      '': 'Mainnet',
+      'signet': 'Signet',
+      'testnet': 'Testnet3',
+      'testnet4': 'Testnet4',
+      'regtest': 'Regtest',
+      'liquid': 'Liquid',
+      'liquidtestnet': 'Liquid Testnet',
+    };
+    return labels[this.network] ?? this.network;
+  }
   getHiddenProp(){
     const prefixes = ['webkit', 'moz', 'ms', 'o'];
     if ('hidden' in document) { return 'hidden'; }
@@ -499,7 +510,6 @@ export class StateService {
   isAnyTestnet(): boolean {
     return ['testnet', 'testnet4', 'signet', 'regtest', 'liquidtestnet'].includes(this.network);
   }
-
   resetChainTip() {
     this.latestBlockHeight = -1;
     this.chainTip$.next(-1);
@@ -528,7 +538,6 @@ export class StateService {
       this.searchFocus$.next(true);
     }
   }
-
   private testIsProdDomain(prodDomains: string[]): boolean {
     const hostname = document.location.hostname;
     return prodDomains.some(domain =>

@@ -80,6 +80,10 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     this.setDropdownVisibility();
   }
 
+  get networkDisplayName(): string {
+    return this.stateService.networkDisplayName;
+  }
+
   setDropdownVisibility(): void {
     const networks = [
       this.env.TESTNET_ENABLED,
