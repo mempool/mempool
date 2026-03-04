@@ -665,7 +665,7 @@ class BitcoinRoutes {
       res.json(addressData);
     } catch (e) {
       if (e instanceof Error && e.message === 'Invalid Bitcoin address') {
-        handleError(req, res, 400, e.message);
+        res.status(400).send(e.message);
         return;
       }
       if (e instanceof Error && e.message && (e.message.indexOf('too long') > 0 || e.message.indexOf('confirmed status') > 0)) {
@@ -695,7 +695,7 @@ class BitcoinRoutes {
       res.json(transactions);
     } catch (e) {
       if (e instanceof Error && e.message === 'Invalid Bitcoin address') {
-        handleError(req, res, 400, e.message);
+        res.status(400).send(e.message);
         return;
       }
       if (e instanceof Error && e.message && (e.message.indexOf('too long') > 0 || e.message.indexOf('confirmed status') > 0)) {
@@ -721,7 +721,7 @@ class BitcoinRoutes {
       res.json(addressData);
     } catch (e) {
       if (e instanceof Error && e.message === 'Invalid Bitcoin address') {
-        handleError(req, res, 400, e.message);
+        res.status(400).send(e.message);
         return;
       }
       if (e instanceof Error && e.message && (e.message.indexOf('too long') > 0 || e.message.indexOf('confirmed status') > 0)) {
