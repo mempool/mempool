@@ -46,10 +46,10 @@
     <form [formGroup]="scaleForm" class="formRadioGroup mr-0 mr-md-2">
       <div class="btn-group btn-group-toggle" name="radioScale">
         <label class="btn btn-primary btn-sm" [class.active]="scaleForm.get('scaleFunction').value === 'steps'">
-          <input type="radio" [value]="'steps'" formControlName="scaleFunction" (change)="onScaleChange()"> <span i18n="mining.steps-scale-function">Steps</span>
+          <input type="radio" [value]="'steps'" fragment="steps" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="scaleFunction"> <span i18n="mining.steps-scale-function">Steps</span>
         </label>
-        <label class="btn btn-primary btn-sm" [class.active]="scaleForm.get('scaleFunction').value === 'logarithmic'">
-          <input type="radio" [value]="'logarithmic'" formControlName="scaleFunction" (change)="onScaleChange()"> <span i18n="mining.log-scale-function">Logarithmic</span>
+        <label class="btn btn-primary btn-sm" [class.active]="scaleForm.get('scaleFunction').value === 'log'">
+          <input type="radio" [value]="'log'" fragment="log" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="scaleFunction"> <span i18n="mining.log-scale-function">Logarithmic</span>
         </label>
       </div>
     </form>

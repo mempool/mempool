@@ -66,6 +66,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
     private storageService: StorageService,
     private miningService: MiningService,
     private route: ActivatedRoute,
+    private router: Router,
     public stateService: StateService,
     private cd: ChangeDetectorRef
   ) {
@@ -85,8 +86,33 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
     this.fragmentSubscription = this.route.fragment.subscribe((fragment) => {
-      if (['1w', '1m', '1y', 'all'].indexOf(fragment) > -1) {
-        this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
+      if (!fragment) {
+        return;
+      }
+
+      let timeVal = null;
+      let scaleVal = null;
+
+      if (fragment.includes('=')) {
+        const params = new URLSearchParams(fragment);
+        timeVal = params.get('time');
+        scaleVal = params.get('scale');
+      } else {
+        if (['1w', '1m', '1y', 'all'].includes(fragment)) {
+          timeVal = fragment;
+        }
+        if (['steps', 'log'].includes(fragment)) {
+          scaleVal = fragment;
+        }
+      }
+
+      if (timeVal && ['1w', '1m', '1y', 'all'].includes(timeVal)) {
+        this.radioGroupForm.controls.dateSpan.setValue(timeVal, { emitEvent: false });
+      }
+
+      if (scaleVal && ['steps', 'log'].includes(scaleVal)) {
+        this.scaleForm.controls.scaleFunction.setValue(scaleVal, { emitEvent: false });
+        this.onScaleChange();
       }
     });
     this.aggregatedHistory$ = combineLatest([
@@ -99,6 +125,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
         switchMap((timespan) => {
           if (!this.widget) {
             this.storageService.setValue('miningWindowPreference', timespan);
+            this.updateUrlFragment();
           }
           if (timespan !== this.timespan) {
             this.isLoading = true;
@@ -372,8 +399,27 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
     this.statsSubscription?.unsubscribe();
   }
 
+  updateUrlFragment() {
+    if (this.widget) {
+      return;
+    }
+
+    const time = this.radioGroupForm.controls.dateSpan.value;
+    const scale = this.scaleForm.controls.scaleFunction.value;
+    const newFragment = `time=${time}&scale=${scale}`;
+
+    if (this.route.snapshot.fragment !== newFragment) {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        fragment: newFragment,
+        replaceUrl: true
+      })
+    }
+  }
+
   onScaleChange() {
-    this.logScale = this.scaleForm.get('scaleFunction')?.value === 'logarithmic';
+    this.logScale = this.scaleForm.get('scaleFunction')?.value === 'log';
+    this.updateUrlFragment();
     
     if (!this.chartInstance || !this.chartOptions.yAxis || !this.chartOptions.series) {
       return;
