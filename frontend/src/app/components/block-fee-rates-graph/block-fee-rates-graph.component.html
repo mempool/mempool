@@ -45,11 +45,11 @@
     </form>
     <form [formGroup]="scaleForm" class="formRadioGroup mr-0 mr-md-2">
       <div class="btn-group btn-group-toggle" name="radioScale">
-        <label class="btn btn-primary btn-sm" [class.active]="scaleForm.get('scaleFunction').value === 'steps'">
-          <input type="radio" [value]="'steps'" fragment="steps" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="scaleFunction"> <span i18n="mining.steps-scale-function">Steps</span>
+        <label class="btn btn-primary btn-sm" [class.active]="scaleForm.get('scaleFunction').value === 'linear'">
+          <input type="radio" [value]="'linear'" fragment="linear" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="scaleFunction"> <span i18n="mining.linear-scale-function">Linear</span>
         </label>
         <label class="btn btn-primary btn-sm" [class.active]="scaleForm.get('scaleFunction').value === 'log'">
-          <input type="radio" [value]="'log'" fragment="log" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="scaleFunction"> <span i18n="mining.log-scale-function">Logarithmic</span>
+          <input type="radio" [value]="'log'" fragment="log" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="scaleFunction"> <span i18n="mining.log-scale-function">Log</span>
         </label>
       </div>
     </form>

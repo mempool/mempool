@@ -72,7 +72,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1w' });
     this.radioGroupForm.controls.dateSpan.setValue('1w');
-    this.scaleForm = this.formBuilder.group({scaleFunction: 'steps'});
+    this.scaleForm = this.formBuilder.group({scaleFunction: 'linear'});
   }
 
   ngOnInit(): void {
@@ -101,7 +101,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
         if (['1w', '1m', '1y', 'all'].includes(fragment)) {
           timeVal = fragment;
         }
-        if (['steps', 'log'].includes(fragment)) {
+        if (['linear', 'log'].includes(fragment)) {
           scaleVal = fragment;
         }
       }
@@ -110,7 +110,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
         this.radioGroupForm.controls.dateSpan.setValue(timeVal, { emitEvent: false });
       }
 
-      if (scaleVal && ['steps', 'log'].includes(scaleVal)) {
+      if (scaleVal && ['linear', 'log'].includes(scaleVal)) {
         this.scaleForm.controls.scaleFunction.setValue(scaleVal, { emitEvent: false });
         this.onScaleChange();
       }

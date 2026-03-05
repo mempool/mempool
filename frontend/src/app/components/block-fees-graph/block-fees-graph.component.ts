@@ -67,7 +67,7 @@ export class BlockFeesGraphComponent implements OnInit {
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
     this.radioGroupForm.controls.dateSpan.setValue('1y');
-    this.scaleForm = this.formBuilder.group({scaleFunction: 'steps'});
+    this.scaleForm = this.formBuilder.group({scaleFunction: 'linear'});
     this.currency = 'USD';
   }
 
@@ -96,7 +96,7 @@ export class BlockFeesGraphComponent implements OnInit {
           if (['1m', '3m', '6m', '1y', '2y', '3y', 'all'].includes(fragment)) {
             timeVal = fragment;
           }
-          if (['steps', 'log'].includes(fragment)) {
+          if (['linear', 'log'].includes(fragment)) {
             scaleVal = fragment;
           }
         }
@@ -105,7 +105,7 @@ export class BlockFeesGraphComponent implements OnInit {
           this.radioGroupForm.controls.dateSpan.setValue(timeVal, { emitEvent: false });
         }
 
-        if (scaleVal && ['steps', 'log'].includes(scaleVal)) {
+        if (scaleVal && ['linear', 'log'].includes(scaleVal)) {
           this.scaleForm.controls.scaleFunction.setValue(scaleVal, { emitEvent: false });
           this.onScaleChange();
         }
