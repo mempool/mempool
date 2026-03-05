@@ -184,10 +184,10 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
 
           for (const tick of ticks) {
             if (tick.seriesName === 'Total bid boost') {
-              if (tick.data[1] > 10_000_000) {
-                tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1] / 100_000_000, this.locale, '1.0-8')} BTC<br>`;
+              if (tick.data[3] > 10_000_000) {
+                tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[3] / 100_000_000, this.locale, '1.0-8')} BTC<br>`;
               } else {
-                tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-0')} sats<br>`;
+                tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[3], this.locale, '1.0-0')} sats<br>`;
               }
             } else if (tick && tick.seriesName === 'Accelerated') {
               tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-0')}<br>`;
@@ -293,7 +293,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
         {
           name: 'Total bid boost',
           data: data.map(h =>  {
-            return [h.timestamp * 1000, h.sumBidBoost, h.avgHeight];
+            return [h.timestamp * 1000, Math.max(h.sumBidBoost, 0.1), h.avgHeight, h.sumBidBoost];
           }),
           type: 'line',
           symbol: 'none',
