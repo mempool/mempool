@@ -350,7 +350,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
           }
         },
         type: this.logScale ? 'log' : 'value',
-        min: this.logScale ? 1 : undefined,
+        min: this.logScale ? 0.1 : undefined,
         max: (val) => (!this.logScale && this.timespan === 'all') ? Math.min(val.max, 5000) : undefined,
       },
       series: data.series,
