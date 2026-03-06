@@ -1,5 +1,5 @@
 import fs from 'fs';
-import path from "path";
+import path from 'path';
 const { spawnSync } = require('child_process');
 
 function getVersion(): string {
@@ -29,9 +29,9 @@ function getGitCommit(): string {
 const versionInfo = {
   version: getVersion(),
   gitCommit: getGitCommit()
-}
+};
 
 fs.writeFileSync(
   path.join(__dirname, 'version.json'),
-  JSON.stringify(versionInfo, null, 2) + "\n"
+  JSON.stringify(versionInfo, null, 2) + '\n'
 );

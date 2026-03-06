@@ -4,6 +4,7 @@ import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit } from '@a
   selector: 'app-closing-type',
   templateUrl: './closing-type.component.html',
   styleUrls: ['./closing-type.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClosingTypeComponent implements OnChanges {
@@ -16,7 +17,7 @@ export class ClosingTypeComponent implements OnChanges {
 
   getLabelFromType(type: number): { label: string; class: string } {
     switch (type) {
-      case 1: return { 
+      case 1: return {
         label: $localize`Mutually closed`,
         class: 'success',
       };

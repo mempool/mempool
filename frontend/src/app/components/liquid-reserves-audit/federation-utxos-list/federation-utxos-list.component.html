@@ -1,5 +1,22 @@
 <div [ngClass]="{'widget': widget}">
 
+    <ng-container *ngIf="!widget">
+    <div class="fee-estimation-container">
+      <div class="item">
+        <div class="card-text">
+          <div class="fee-text">
+            <ng-container *ngIf="federationUtxos$ | async as utxos; else utxoCountSkeleton">
+              {{ utxos.length }} <span i18n="shared.utxos">UTXOs</span>
+            </ng-container>
+            <ng-template #utxoCountSkeleton>
+              <div class="skeleton-loader"></div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
   <div class="clearfix"></div>
   
   <div style="min-height: 295px">

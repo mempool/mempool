@@ -23,6 +23,7 @@ import { LiquidUnblinding } from '@components/transaction/liquid-ublinding';
   selector: 'app-transaction-preview',
   templateUrl: './transaction-preview.component.html',
   styleUrls: ['./transaction-preview.component.scss'],
+  standalone: false,
 })
 export class TransactionPreviewComponent implements OnInit, OnDestroy {
   network = '';

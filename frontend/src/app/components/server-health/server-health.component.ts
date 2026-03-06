@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, SecurityContext, ChangeDetectorRef } from '@angular/core';
 import { WebsocketService } from '@app/services/websocket.service';
-import { Observable, Subject, map, tap } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 import { HealthCheckHost } from '@interfaces/websocket.interface';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -9,6 +9,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   selector: 'app-server-health',
   templateUrl: './server-health.component.html',
   styleUrls: ['./server-health.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ServerHealthComponent implements OnInit {
@@ -16,12 +17,16 @@ export class ServerHealthComponent implements OnInit {
   maxHeight: number;
   interval: number;
   now: number = Date.now();
+  colors: Record<string, Record<string, string>> = {};
+  isLiquidMainnet = false;
+  showHybridHash = false;
 
   repoMap = {
     frontend: 'mempool',
     hybrid: 'mempool.space',
     backend: 'mempool',
     electrs: 'electrs',
+    ssr: 'mempool.space',
   };
 
   constructor(
@@ -57,6 +62,31 @@ export class ServerHealthComponent implements OnInit {
         for (const host of hosts) {
           newMaxHeight = Math.max(newMaxHeight, host.latestHeight);
         }
+
+        const sortedCoreVersions = [...new Set(
+          hosts.map(h => this.parseVersion(h.hashes?.core)).filter(Boolean)
+        )].sort((a, b) => this.compareVersions(a, b));
+
+        const sortedOsVersions = [...new Set(
+          hosts.map(h => this.parseOsVersion(h.hashes?.os)).filter(Boolean)
+        )].sort((a, b) => this.compareVersions(a, b));
+
+        this.colors = {};
+        for (const host of hosts) {
+          this.colors[host.host] = {};
+          for (const type of ['hybrid', 'frontend', 'backend', 'electrs', 'ssr', 'core', 'os']) {
+            if (type === 'core') {
+              const version = this.parseVersion(host.hashes?.core);
+              this.colors[host.host][type] = version ? this.getVersionColor(version, sortedCoreVersions) : '';
+            } else if (type === 'os') {
+              const version = this.parseOsVersion(host.hashes?.os);
+              this.colors[host.host][type] = version ? this.getVersionColor(version, sortedOsVersions) : '';
+            } else {
+              const hash = host.hashes?.[type];
+              this.colors[host.host][type] = hash ? '#' + hash.slice(0, 6) : '';
+            }
+          }
+        }
       })
     );
     this.websocketService.want(['mempool-blocks', 'stats', 'blocks', 'tomahawk']);
@@ -65,6 +95,9 @@ export class ServerHealthComponent implements OnInit {
       this.now = Date.now();
       this.cd.markForCheck();
     }, 1000);
+
+    this.isLiquidMainnet = this.stateService.network === 'liquid';
+    this.showHybridHash = !this.stateService.isLiquid();
   }
 
   trackByFn(index: number, host: HealthCheckHost): string {
@@ -96,5 +129,60 @@ export class ServerHealthComponent implements OnInit {
     } else {
       return '';
     }
+  }
+
+  private parseVersion(subver: string): string | undefined {
+    if (subver) {
+      const match = subver.match(/:(\d+\.\d+\.\d+)/);
+      return match ? match[1] : null;
+    }
+  }
+
+  private parseOsVersion(osVersion: string): string | undefined {
+    if (osVersion) {
+      const match = osVersion.match(/(\d+)\.(\d+)(?:\.(\d+))?/);
+      return match ? `${match[1]}.${match[2]}.${match[3] ?? 0}` : null;
+    }
+  }
+
+  public shortenVersion(version: string): string {
+    return version.match(/\d+\.\d+(?:\.\d+)?/)?.[0] ?? '';
+  }
+
+  private compareVersions(a: string, b: string): number {
+    const partsA = a.split('.').map(Number);
+    const partsB = b.split('.').map(Number);
+    for (let i = 0; i < 3; i++) {
+      if (partsA[i] !== partsB[i]) {
+        return partsA[i] - partsB[i];
+      }
+    }
+    return 0;
+  }
+
+  private getVersionColor(version: string, sortedVersions: string[]): string {
+    if (!version || sortedVersions.length === 0) {
+      return '';
+    }
+    const index = sortedVersions.indexOf(version);
+    if (index === -1) {
+      return '';
+    }
+
+    if (sortedVersions.length === 1) {
+      return 'hsl(120, 70%, 35%)';
+    }
+
+    const hue = (index / (sortedVersions.length - 1)) * 120;
+    return `hsl(${hue}, 70%, 35%)`;
+  }
+
+  public formatPegRatio(pegRatio: number | null | undefined): string {
+    if (pegRatio == null) {
+      return '?';
+    }
+
+    const ratio = Math.floor(pegRatio);
+    return `${ratio}%${ratio >= 100 ? ' ✅' : ' 🔥'}`;
   }
 }

@@ -1,9 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({ name: 'httpErrorMsg' })
+@Pipe({
+  name: 'httpErrorMsg',
+  standalone: false,
+})
 export class HttpErrorPipe implements PipeTransform {
   transform(e: HttpErrorResponse | null): string {
-    return e ? `${e.status} ${e.statusText}: ${e.error}` : '';
+    const errorMsg = typeof e.error === 'string' ? e.error : e.error?.error ?? '';
+    return e ? `${e.status} ${e.statusText}: ${errorMsg}` : '';
   }
 }

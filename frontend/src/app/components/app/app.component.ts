@@ -11,6 +11,7 @@ import { SeoService } from '@app/services/seo.service';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  standalone: false,
   providers: [NgbTooltipConfig]
 })
 export class AppComponent implements OnInit {
@@ -45,7 +46,7 @@ export class AppComponent implements OnInit {
       return;
     }
     // prevent arrow key horizontal scrolling
-    if(["ArrowLeft","ArrowRight"].indexOf(event.code) > -1) {
+    if(['ArrowLeft','ArrowRight'].indexOf(event.code) > -1) {
       event.preventDefault();
     }
     this.stateService.keyNavigation$.next(event);

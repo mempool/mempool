@@ -4,6 +4,7 @@ import { Component, Input, ChangeDetectionStrategy, ChangeDetectorRef } from '@a
   selector: 'app-clipboard',
   templateUrl: './clipboard.component.html',
   styleUrls: ['./clipboard.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClipboardComponent {

@@ -90,6 +90,20 @@ const ADDRESS_CHARS: {
         + `{6,100}`
       + `)`,
   },
+  regtest: {
+    base58: `[mn2]` // Same as testnet
+      + BASE58_CHARS
+      + `{33,34}`,
+    bech32: `(?:`
+        + `bcrt1` // Starts with bcrt1
+        + BECH32_CHARS_LW
+        + `{6,100}`
+      + `|`
+        + `BCRT1` // All upper case version
+        + BECH32_CHARS_UP
+        + `{6,100}`
+      + `)`,
+  },
   liquid: {
     base58: `[GHPQ]` // PQ is P2PKH, GH is P2SH
         + BASE58_CHARS
@@ -97,7 +111,7 @@ const ADDRESS_CHARS: {
       + `|`
         + `[V][TJ]` // Confidential P2PKH or P2SH starts with VT or VJ
         + BASE58_CHARS
-        + `{78}`, 
+        + `{78}`,
     bech32: `(?:`
         + `(?:` // bech32 liquid starts with ex1 (unconfidential) or lq1 (confidential)
           + `ex1`
@@ -138,15 +152,15 @@ const ADDRESS_CHARS: {
         + `{6,100}`
       + `)`,
   },
-}
+};
 type RegexTypeNoAddrNoBlockHash = | `transaction` | `blockheight` | `date` | `timestamp`;
 export type RegexType = `address` | `blockhash` | RegexTypeNoAddrNoBlockHash;
 
-export const NETWORKS = [`mainnet`, `testnet4`, `testnet`, `signet`, `liquid`, `liquidtestnet`] as const;
+export const NETWORKS = [`mainnet`, `testnet4`, `testnet`, `signet`, `regtest`, `liquid`, `liquidtestnet`] as const;
 export type Network = typeof NETWORKS[number]; // Turn const array into union type
 
 export const ADDRESS_REGEXES: [RegExp, Network][] = NETWORKS
-  .map(network => [getRegex('address', network), network])
+  .map(network => [getRegex('address', network), network]);
 
 export function findOtherNetworks(address: string, skipNetwork: Network, env: Env): { network: Network, address: string, isNetworkAvailable: boolean }[] {
   return ADDRESS_REGEXES
@@ -162,6 +176,8 @@ function isNetworkAvailable(network: Network, env: Env): boolean {
       return env.TESTNET4_ENABLED === true;
     case 'signet':
       return env.SIGNET_ENABLED === true;
+    case 'regtest':
+      return env.REGTEST_ENABLED === true;
     case 'liquid':
       return env.LIQUID_ENABLED === true;
     case 'liquidtestnet':
@@ -174,9 +190,9 @@ function isNetworkAvailable(network: Network, env: Env): boolean {
 }
 
 export function needBaseModuleChange(fromBaseModule: 'mempool' | 'liquid', toNetwork: Network): boolean {
-  if (!toNetwork) return false; // No target network means no change needed
+  if (!toNetwork) {return false;} // No target network means no change needed
   if (fromBaseModule === 'mempool') {
-    return toNetwork !== 'mainnet' && toNetwork !== 'testnet' && toNetwork !== 'testnet4' && toNetwork !== 'signet';
+    return toNetwork !== 'mainnet' && toNetwork !== 'testnet' && toNetwork !== 'testnet4' && toNetwork !== 'signet' && toNetwork !== 'regtest';
   }
   if (fromBaseModule === 'liquid') {
     return toNetwork !== 'liquid' && toNetwork !== 'liquidtestnet';
@@ -191,7 +207,7 @@ export function getTargetUrl(toNetwork: Network, address: string, env: Env): str
     targetUrl += '/address/';
     targetUrl += address;
   }
-  if (toNetwork === 'mainnet' || toNetwork === 'testnet' || toNetwork === 'testnet4' || toNetwork === 'signet') {
+  if (toNetwork === 'mainnet' || toNetwork === 'testnet' || toNetwork === 'testnet4' || toNetwork === 'signet' || toNetwork === 'regtest') {
     targetUrl = env.MEMPOOL_WEBSITE_URL;
     targetUrl += (toNetwork === 'mainnet' ? '' : `/${toNetwork}`);
     targetUrl += '/address/';
@@ -230,6 +246,9 @@ export function getRegex(type: RegexType, network?: Network): RegExp {
           break;
         case `signet`:
           leadingZeroes = 5;
+          break;
+        case `regtest`:
+          leadingZeroes = 1; // Regtest has very low difficulty
           break;
         case `liquid`:
           leadingZeroes = 8; // We are not interested in Liquid block hashes
@@ -293,6 +312,15 @@ export function getRegex(type: RegexType, network?: Network): RegExp {
           regex += ADDRESS_CHARS.signet.base58;
           regex += `|`; // OR
           regex += ADDRESS_CHARS.signet.bech32;
+          regex += `|`; // OR
+          regex += `04${HEX_CHARS}{128}`; // Uncompressed pubkey
+          regex += `|`; // OR
+          regex += `(?:02|03)${HEX_CHARS}{64}`; // Compressed pubkey
+          break;
+        case `regtest`:
+          regex += ADDRESS_CHARS.regtest.base58;
+          regex += `|`; // OR
+          regex += ADDRESS_CHARS.regtest.bech32;
           regex += `|`; // OR
           regex += `04${HEX_CHARS}{128}`; // Uncompressed pubkey
           regex += `|`; // OR

@@ -17,5 +17,8 @@
   "ACCELERATOR": true,
   "ACCELERATOR_BUTTON": true,
   "PUBLIC_ACCELERATIONS": true,
-  "AUDIT": true
+  "AUDIT": true,
+  "PROD_DOMAINS": [
+    "mempool.space"
+  ]
 }

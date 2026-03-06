@@ -4,6 +4,7 @@ import { Component, Input, Inject, LOCALE_ID, ChangeDetectionStrategy } from '@a
   selector: 'app-truncate',
   templateUrl: './truncate.component.html',
   styleUrls: ['./truncate.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TruncateComponent {

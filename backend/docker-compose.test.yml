@@ -1,0 +1,21 @@
+version: "3.7"
+
+services:
+  db-test:
+    image: mariadb:10.5.21
+    environment:
+      MYSQL_DATABASE: "mempool_test"
+      MYSQL_USER: "mempool_test"
+      MYSQL_PASSWORD: "mempool_test"
+      MYSQL_ROOT_PASSWORD: "admin"
+      MARIADB_AUTO_UPGRADE: "1"
+    ports:
+      - "33306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "mempool_test", "-pmempool_test"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    tmpfs:
+      - /var/lib/mysql
+

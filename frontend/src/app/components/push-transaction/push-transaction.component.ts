@@ -12,7 +12,8 @@ import { TxResult } from '@interfaces/node-api.interface';
 @Component({
   selector: 'app-push-transaction',
   templateUrl: './push-transaction.component.html',
-  styleUrls: ['./push-transaction.component.scss']
+  styleUrls: ['./push-transaction.component.scss'],
+  standalone: false,
 })
 export class PushTransactionComponent implements OnInit {
   pushTxForm: UntypedFormGroup;
@@ -133,7 +134,7 @@ export class PushTransactionComponent implements OnInit {
         this.isLoadingPackage = false;
 
         this.packageMessage = result['package_msg'];
-        for (let wtxid in result['tx-results']) {
+        for (const wtxid in result['tx-results']) {
           this.results.push(result['tx-results'][wtxid]);
         }
 
@@ -177,7 +178,7 @@ export class PushTransactionComponent implements OnInit {
           return false;
         }
         const rawCheck = this.base64UrlToU8Array(fragmentParams.get('c'));
-        
+
 
         // check checksum
         const hashTx = await crypto.subtle.digest('SHA-256', rawTx);

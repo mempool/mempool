@@ -12,6 +12,7 @@ import { isMobile } from '@app/shared/common.utils';
   selector: 'app-node-preview',
   templateUrl: './node-preview.component.html',
   styleUrls: ['./node-preview.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodePreviewComponent implements OnInit {
@@ -72,7 +73,7 @@ export class NodePreviewComponent implements OnInit {
               label: label,
               socket: node.public_key + '@' + socket,
             });
-            socketTypesMap[label] = true
+            socketTypesMap[label] = true;
           }
           node.socketsObject = socketsObject;
           this.socketTypes = Object.keys(socketTypesMap);

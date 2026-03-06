@@ -156,11 +156,12 @@
 	transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
-.annex {
+.annex, .control-block, .script {
 	margin-right: -5px;
 	position: relative;
 	left: 0px;
 	top: 0px;
+	cursor: pointer;
 }
 
 .mobile-bottomcol {
@@ -287,6 +288,16 @@ h2 {
 
 .summary {
 	margin-top: 10px;
+
+	@media (max-width: 430px) {
+		.accelerate img {
+			display: none;
+		}
+
+		.has-accelerate .btn {
+			font-size: 12px;
+		}
+	}
 }
 
 .address {
@@ -351,4 +362,58 @@ h2 {
 	@media (min-width: 1200px) {
 		max-width: 180px;
 	}
+}
+
+.merkle-branch:nth-child(2n + 1), .internal-key	{
+	color: #cccccc;
+	font-weight: 500;
+}
+
+.merkle-branch, .internal-key, .leaf-version {
+	&:hover {
+		color: white;
+		font-weight: 600;
+	}
+}
+
+.internal-key.nums {
+	color: #ffdddd;
+	&:hover {
+		color: #ffdddd;
+	}
+}
+
+.control-block-info {
+	padding: 0;
+
+	tr td {
+		width: 50%;
+		white-space: nowrap;
+
+		&:first-child {
+			color: white;
+			width: 50%;
+			white-space: nowrap;
+		}
+
+		@media (max-width: 480px) {
+			padding: 4px;
+		}
+	}
+}
+
+.accelerate {
+	background-color: var(--tertiary);
+	margin-left: 5px;
+
+	&.blink {
+		animation: acceleratePulse 1s infinite;
+		pointer-events: none;
+	}
+}
+
+@keyframes acceleratePulse {
+  0% { background-color: #653b9c; box-shadow: #ad7de57f 0px 0px 12px -2px; }
+  50% { background-color: #8457bb; box-shadow: #ad7de5 0px 0px 18px -2px;}
+  100% { background-color: #653b9c; box-shadow: #ad7de57f 0px 0px 12px -2px; }
 }

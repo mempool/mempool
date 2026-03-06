@@ -1,0 +1,131 @@
+# Workflow: Automate project board management
+# - Add newly created issues to project #8
+# - Set status to "Review Needed" when a reviewer is requested on a non-draft PR
+name: Project Board Automation
+
+# Triggers: Review requested on PRs, or new issues opened
+on:
+  pull_request:
+    types: [review_requested]
+  issues:
+    types: [opened]
+
+jobs:
+  manage-project-board:
+    runs-on: mempool-ci
+    steps:
+      - name: Update Project Board
+        uses: actions/github-script@v7
+        with:
+          # Use the PAT stored in repository secrets (has project write access)
+          github-token: ${{ secrets.PROJECT_TOKEN }}
+          script: |
+            // Skip draft PRs
+            if (context.eventName === 'pull_request' && context.payload.pull_request.draft) {
+              console.log('PR is a draft, skipping Review Needed status...');
+              return;
+            }
+
+            // Handle new issues - add to project
+            if (context.eventName === 'issues') {
+              const addMutation = `
+                mutation($projectId: ID!, $contentId: ID!) {
+                  addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) {
+                    item { id }
+                  }
+                }
+              `;
+
+              try {
+                await github.graphql(addMutation, {
+                  projectId: "${{ secrets.PROJECT_ID }}",
+                  contentId: context.payload.issue.node_id
+                });
+
+                console.log('Successfully added issue to project #8');
+              } catch (error) {
+                // Handle case where the issue is already in the project, or log other failures
+                const errors = error && error.errors ? error.errors : [];
+                const alreadyInProject = errors.some(e =>
+                  typeof e.message === 'string' &&
+                  e.message.toLowerCase().includes('already') &&
+                  e.message.toLowerCase().includes('project')
+                );
+
+                if (alreadyInProject) {
+                  console.log('Issue is already in project #8, skipping add.');
+                } else {
+                  console.error('Failed to add issue to project #8:', error);
+                  throw error;
+                }
+              }
+              return;
+            }
+
+            // Handle PR review_requested - update status to "Review Needed"
+            // GraphQL query to find the PR's project items
+            // This fetches all projects the PR is linked to
+            const query = `
+              query($owner: String!, $repo: String!, $pr: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  pullRequest(number: $pr) {
+                    projectItems(first: 10) {
+                      nodes {
+                        id
+                        project {
+                          number
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            // Execute the query with current repo/PR context
+            const result = await github.graphql(query, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pr: context.payload.pull_request.number
+            });
+
+            // Find the project item that belongs to project #8
+            const projectItems = result.repository.pullRequest.projectItems.nodes;
+            const projectItem = projectItems.find(item => item.project.number === 8);
+
+            // Exit early if PR isn't in project #8
+            if (!projectItem) {
+              console.log('PR is not in project #8, skipping...');
+              return;
+            }
+
+            // GraphQL mutation to update the Status field
+            const mutation = `
+              mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+                updateProjectV2ItemFieldValue(
+                  input: {
+                    projectId: $projectId
+                    itemId: $itemId
+                    fieldId: $fieldId
+                    value: { singleSelectOptionId: $optionId }
+                  }
+                ) {
+                  projectV2Item {
+                    id
+                  }
+                }
+              }
+            `;
+
+            // Execute the mutation using IDs stored in repository variables
+            // PROJECT_ID: The project's unique identifier
+            // STATUS_FIELD_ID: The "Status" field's unique identifier
+            // REVIEW_NEEDED_OPTION_ID: The "Review Needed" option's unique identifier
+            await github.graphql(mutation, {
+              projectId: "${{ secrets.PROJECT_ID }}",
+              itemId: projectItem.id,
+              fieldId: "${{ secrets.STATUS_FIELD_ID }}",
+              optionId: "${{ secrets.REVIEW_NEEDED_OPTION_ID }}"
+            });
+
+            console.log('Successfully updated project status to Review Needed');

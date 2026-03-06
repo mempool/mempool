@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 export NVM_DIR="$HOME/.nvm"
 source "$NVM_DIR/nvm.sh"
-nvm use v22.14.0
+nvm use v24.13.0
 
 # start all mempool backends that exist
 for site in mainnet mainnet-lightning testnet testnet-lightning testnet4 signet signet-lightning liquid liquidtestnet;do
@@ -11,21 +11,23 @@ for site in mainnet mainnet-lightning testnet testnet-lightning testnet4 signet 
     screen -dmS "${site}" sh -c 'while true;do npm run start-production;sleep 1;done'
 done
 
-export DISPLAY=:0
-screen -dmS x startx
-sleep 3
-
-# start unfurlers for each frontend
-for site in mainnet liquid onbtc bitb meta river strategy xxi;do
-    cd "$HOME/${site}/unfurler" && \
-    echo "starting mempool unfurler: ${site}" && \
-    screen -dmS "unfurler-${site}" sh -c 'while true;do npm run unfurler;sleep 2;done'
-done
+# start SSR for services
+if [ -e "${HOME}/services" ];then
+    cd "${HOME}/services/ssr" && \
+    echo "starting SSR daemon: services" && \
+    screen -dmS "ssr" sh -c 'while true;do npm run start;sleep 2;done'
+fi
 
 # start nginx warm cacher
 for site in mainnet;do
     echo "starting mempool cache warmer: ${site}"
     screen -dmS "warmer-${site}" $HOME/mempool/production/nginx-cache-warmer
+done
+
+# start SSR cache warmer
+for site in mainnet;do
+    echo "starting SSR cache warmer: ${site}"
+    screen -dmS "warmer-ssr-${site}" $HOME/mempool/production/nginx-cache-warmer-ssr
 done
 
 # start nginx hot cacher

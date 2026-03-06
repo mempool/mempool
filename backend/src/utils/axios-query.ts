@@ -5,6 +5,7 @@ import config from '../config';
 import logger from '../logger';
 import * as https from 'https';
 
+/** @asyncUnsafe */
 export async function query(path, throwOnFail: boolean = false): Promise<object | undefined> {
  type axiosOptions = {
    headers: {

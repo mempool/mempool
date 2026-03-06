@@ -39,7 +39,7 @@ class NodesRoutes {
   private async $getNodeGroup(req: Request, res: Response) {
     try {
       let nodesList;
-      let nodes: any[] = [];
+      const nodes: any[] = [];
       switch (config.MEMPOOL.NETWORK) {
         case 'testnet':
           nodesList = [
@@ -174,7 +174,7 @@ class NodesRoutes {
           ];
       }
 
-      for (let pubKey of nodesList) {
+      for (const pubKey of nodesList) {
         try {
           const node = await nodesApi.$getNode(pubKey);
           if (node) {
@@ -354,7 +354,7 @@ class NodesRoutes {
         return;
       }
 
-      const nodes = await nodesApi.$getNodesPerISP(req.params.isp);
+      const nodes = await nodesApi.$getNodesPerISP(req.params.isp || '');
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());

@@ -7,6 +7,7 @@ import { StateService } from '@app/services/state.service';
   selector: 'app-fiat',
   templateUrl: './fiat.component.html',
   styleUrls: [],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FiatComponent implements OnInit, OnDestroy {

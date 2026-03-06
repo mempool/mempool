@@ -34,10 +34,10 @@
 .chart {
   margin-top: 10px;
   margin-bottom: 20px;
+  height: 400px;
   @media (max-width: 768px) {
     margin-bottom: 10px;
   }
-  height: 400px;
 }
 
 div.scrollable {
@@ -121,9 +121,6 @@ div.scrollable {
 }
 
 .txs {
-  @media (max-width: 938px) {
-    display: none;
-  }
   padding-right: 40px;
   @media (max-width: 1100px) {
     padding-right: 10px;
@@ -133,6 +130,9 @@ div.scrollable {
   }
   @media (max-width: 567px) {
     padding-right: 10px;
+  }
+  @media (max-width: 938px) {
+    display: none;
   }
 }
 

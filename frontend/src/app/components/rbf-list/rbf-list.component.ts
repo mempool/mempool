@@ -14,6 +14,7 @@ import { seoDescriptionNetwork } from '@app/shared/common.utils';
   selector: 'app-rbf-list',
   templateUrl: './rbf-list.component.html',
   styleUrls: ['./rbf-list.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RbfList implements OnInit, OnDestroy {

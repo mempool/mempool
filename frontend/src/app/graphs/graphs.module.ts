@@ -6,6 +6,7 @@ import { SharedModule } from '@app/shared/shared.module';
 import { AccelerationFeesGraphComponent } from '@components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component';
 import { BlockFeesGraphComponent } from '@components/block-fees-graph/block-fees-graph.component';
 import { BlockFeesSubsidyGraphComponent } from '@components/block-fees-subsidy-graph/block-fees-subsidy-graph.component';
+import { PriceChartComponent } from '@components/price-chart/price-chart.component';
 import { BlockRewardsGraphComponent } from '@components/block-rewards-graph/block-rewards-graph.component';
 import { BlockFeeRatesGraphComponent } from '@components/block-fee-rates-graph/block-fee-rates-graph.component';
 import { BlockSizesWeightsGraphComponent } from '@components/block-sizes-weights-graph/block-sizes-weights-graph.component';
@@ -19,7 +20,6 @@ import { ReservesRatioStatsComponent } from '@components/liquid-reserves-audit/r
 import { ReservesRatioComponent } from '@components/liquid-reserves-audit/reserves-ratio/reserves-ratio.component';
 import { RecentPegsStatsComponent } from '@components/liquid-reserves-audit/recent-pegs-stats/recent-pegs-stats.component';
 import { RecentPegsListComponent } from '@components/liquid-reserves-audit/recent-pegs-list/recent-pegs-list.component';
-import { FederationAddressesStatsComponent } from '@components/liquid-reserves-audit/federation-addresses-stats/federation-addresses-stats.component';
 import { FederationAddressesListComponent } from '@components/liquid-reserves-audit/federation-addresses-list/federation-addresses-list.component';
 import { GraphsComponent } from '@components/graphs/graphs.component';
 import { StatisticsComponent } from '@components/statistics/statistics.component';
@@ -40,6 +40,8 @@ import { WalletPreviewComponent } from '@components/wallet/wallet-preview.compon
 import { AddressGraphComponent } from '@components/address-graph/address-graph.component';
 import { TreasuriesGraphComponent } from '@components/treasuries/treasuries-graph/treasuries-graph.component';
 import { TreasuriesPieComponent } from '@components/treasuries/treasuries-pie/treasuries-pie.component';
+import { TreasuriesSupplyComponent } from '@components/treasuries/supply/treasuries-supply.component';
+import { TreasuriesVerifyProgressComponent } from '@components/treasuries/verify/treasuries-verify.component';
 import { UtxoGraphComponent } from '@components/utxo-graph/utxo-graph.component';
 import { ActiveAccelerationBox } from '@components/acceleration/active-acceleration-box/active-acceleration-box.component';
 import { AddressesTreemap } from '@components/addresses-treemap/addresses-treemap.component';
@@ -66,6 +68,7 @@ import { AsmStylerPipe } from '@app/shared/pipes/asm-styler/asm-styler.pipe';
     AccelerationFeesGraphComponent,
     BlockFeesGraphComponent,
     BlockFeesSubsidyGraphComponent,
+    PriceChartComponent,
     BlockRewardsGraphComponent,
     BlockFeeRatesGraphComponent,
     BlockSizesWeightsGraphComponent,
@@ -79,7 +82,6 @@ import { AsmStylerPipe } from '@app/shared/pipes/asm-styler/asm-styler.pipe';
     ReservesRatioComponent,
     RecentPegsStatsComponent,
     RecentPegsListComponent,
-    FederationAddressesStatsComponent,
     FederationAddressesListComponent,
     HashrateChartComponent,
     HashrateChartPoolsComponent,
@@ -87,6 +89,8 @@ import { AsmStylerPipe } from '@app/shared/pipes/asm-styler/asm-styler.pipe';
     AddressGraphComponent,
     TreasuriesGraphComponent,
     TreasuriesPieComponent,
+    TreasuriesSupplyComponent,
+    TreasuriesVerifyProgressComponent,
     UtxoGraphComponent,
     ActiveAccelerationBox,
     AddressesTreemap,

@@ -11,6 +11,7 @@ import { WebsocketService } from '@app/services/websocket.service';
   selector: 'app-federation-utxos-list',
   templateUrl: './federation-utxos-list.component.html',
   styleUrls: ['./federation-utxos-list.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FederationUtxosListComponent implements OnInit {
@@ -35,7 +36,7 @@ export class FederationUtxosListComponent implements OnInit {
   isLoad: boolean = true;
 
   private destroy$ = new Subject();
-  
+
   constructor(
     private apiService: ApiService,
     public stateService: StateService,
@@ -124,7 +125,7 @@ export class FederationUtxosListComponent implements OnInit {
     const distanceToGreen = Math.abs(4032 - value);
     const green = '#3bcc49';
     const red = '#dc3545';
-  
+
     if (value < 0) {
       return red;
     } else if (value >= 4032) {
@@ -134,11 +135,11 @@ export class FederationUtxosListComponent implements OnInit {
       const r = parseInt(red.slice(1, 3), 16);
       const g = parseInt(green.slice(1, 3), 16);
       const b = parseInt(red.slice(5, 7), 16);
-      
+
       const newR = Math.floor(r + (g - r) * scaleFactor);
       const newG = Math.floor(g - (g - r) * scaleFactor);
       const newB = b;
-      
+
       return '#' + this.componentToHex(newR) + this.componentToHex(newG) + this.componentToHex(newB);
     }
   }

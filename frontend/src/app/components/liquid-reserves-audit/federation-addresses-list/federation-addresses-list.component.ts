@@ -10,6 +10,7 @@ import { WebsocketService } from '@app/services/websocket.service';
   selector: 'app-federation-addresses-list',
   templateUrl: './federation-addresses-list.component.html',
   styleUrls: ['./federation-addresses-list.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FederationAddressesListComponent implements OnInit {
@@ -42,7 +43,7 @@ export class FederationAddressesListComponent implements OnInit {
   ngOnInit(): void {
     this.isLoading = !this.widget;
     this.env = this.stateService.env;
-    this.skeletonLines = this.widget === true ? [...Array(5).keys()] : [...Array(15).keys()];
+    this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
     if (!this.widget) {
       this.websocketService.want(['blocks']);
       this.auditStatus$ = this.stateService.blocks$.pipe(

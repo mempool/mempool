@@ -1,6 +1,6 @@
 # Contributing to The Mempool Open Source Project
 
-Thank you for contributing to The Mempool Open Source Project managed by Mempool Space K.K. (“Mempool”).
+Thank you for contributing to The Mempool Open Source Project managed by Mempool Holdings S.A. de C.V. in El Salvador (“Mempool”).
 
 In order to clarify the intellectual property license granted with Contributions from any person or entity, Mempool must have a statement on file from each Contributor indicating their agreement to the Contributor License Agreement (“Agreement”). This license is for your protection as a Contributor as well as the protection of Mempool and its other contributors and users; it does not change your rights to use your own Contributions for any other purpose.
 

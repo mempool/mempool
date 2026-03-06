@@ -8,6 +8,7 @@ import { MiningService } from '@app/services/mining.service';
   selector: 'app-acceleration-timeline',
   templateUrl: './acceleration-timeline.component.html',
   styleUrls: ['./acceleration-timeline.component.scss'],
+  standalone: false,
 })
 export class AccelerationTimelineComponent implements OnInit, OnChanges {
   @Input() transactionTime: number;
@@ -51,7 +52,7 @@ export class AccelerationTimelineComponent implements OnInit, OnChanges {
     this.firstSeenToAccelerated = Math.max(0, this.acceleratedAt - this.transactionTime);
     this.acceleratedToMined = Math.max(0, this.tx.status.block_time - this.acceleratedAt);
   }
-  
+
   onHover(event, status: string): void {
     if (status === 'seen') {
       this.hoverInfo = {

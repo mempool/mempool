@@ -6,6 +6,7 @@ import { StateService } from '@app/services/state.service';
   selector: 'app-clockchain',
   templateUrl: './clockchain.component.html',
   styleUrls: ['./clockchain.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClockchainComponent implements OnInit, OnChanges, OnDestroy {

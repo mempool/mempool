@@ -50,7 +50,7 @@ export class CacheService {
       this.txCache[tx.txid] = tx;
     });
   }
- 
+
   getTxFromCache(txid) {
     if (this.txCache && this.txCache[txid]) {
       return this.txCache[txid];
@@ -78,7 +78,7 @@ export class CacheService {
       try {
         result = await firstValueFrom(this.apiService.getBlocks$(maxHeight));
       } catch (e) {
-        console.log("failed to load blocks: ", e.message);
+        console.log('failed to load blocks: ', e.message);
       }
       if (result && result.length) {
         result.forEach(block => {

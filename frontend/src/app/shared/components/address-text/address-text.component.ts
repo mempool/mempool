@@ -4,12 +4,15 @@ import { AddressMatch, AddressTypeInfo } from '@app/shared/address-utils';
 @Component({
   selector: 'app-address-text',
   templateUrl: './address-text.component.html',
-  styleUrls: ['./address-text.component.scss']
+  styleUrls: ['./address-text.component.scss'],
+  standalone: false,
 })
 export class AddressTextComponent {
   @Input() address: string;
   @Input() info: AddressTypeInfo | null;
   @Input() similarity: { score: number, match: AddressMatch, group: number } | null;
+
+  min = Math.min;
 
   groupColors: string[] = [
     'var(--primary)',

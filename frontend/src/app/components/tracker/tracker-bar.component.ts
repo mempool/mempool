@@ -6,13 +6,14 @@ export type TrackerStage = 'waiting' | 'pending' | 'soon' | 'next' | 'confirmed'
   selector: 'app-tracker-bar',
   templateUrl: './tracker-bar.component.html',
   styleUrls: ['./tracker-bar.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TrackerBarComponent implements OnInit, OnChanges {
   @Input() stage: TrackerStage = 'waiting';
 
   transitionsEnabled: boolean = false;
-  
+
   stages = {
     waiting: {
       state: 'blank',
@@ -40,7 +41,7 @@ export class TrackerBarComponent implements OnInit, OnChanges {
     this.setStage();
     setTimeout(() => {
       this.transitionsEnabled = true;
-    }, 100)
+    }, 100);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -51,7 +52,7 @@ export class TrackerBarComponent implements OnInit, OnChanges {
 
   setStage() {
     let matched = 0;
-    for (let stage of this.stageOrder) {
+    for (const stage of this.stageOrder) {
       if (stage === this.stage) {
         this.stages[stage].state = 'current';
         matched = 1;

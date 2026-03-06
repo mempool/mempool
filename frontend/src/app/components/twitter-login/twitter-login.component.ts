@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 @Component({
   selector: 'app-twitter-login',
   templateUrl: './twitter-login.component.html',
+  standalone: false,
 })
 export class TwitterLogin {
   @Input() width: string | null = null;
@@ -18,7 +19,7 @@ export class TwitterLogin {
     if (this.redirectTo) {
       location.replace(`/api/v1/services/auth/login/twitter?redirectTo=${encodeURIComponent(this.redirectTo)}`);
     } else {
-      location.replace(`/api/v1/services/auth/login/twitter?redirectTo=${location.href}`);
+      location.replace(`/api/v1/services/auth/login/twitter`);
     }
     return false;
   }

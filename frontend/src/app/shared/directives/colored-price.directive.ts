@@ -2,6 +2,7 @@ import { Directive, ElementRef, Input, OnChanges } from '@angular/core';
 
 @Directive({
   selector: '[appColoredPrice]',
+  standalone: false,
 })
 export class ColoredPriceDirective implements OnChanges {
   @Input() appColoredPrice: number;

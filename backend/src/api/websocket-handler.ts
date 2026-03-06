@@ -16,7 +16,6 @@ import transactionUtils from './transaction-utils';
 import rbfCache, { ReplacementInfo } from './rbf-cache';
 import difficultyAdjustment from './difficulty-adjustment';
 import feeApi from './fee-api';
-import BlocksRepository from '../repositories/BlocksRepository';
 import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
 import Audit from './audit';
@@ -37,7 +36,6 @@ interface AddressTransactions {
 }
 import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
 import { calculateMempoolTxCpfp } from './cpfp';
-import { getRecentFirstSeen } from '../utils/file-read';
 import stratumApi, { StratumJob } from './services/stratum';
 
 // valid 'want' subscriptions
@@ -102,7 +100,7 @@ class WebsocketHandler {
       'backendInfo': backendInfo.getBackendInfo(),
       'loadingIndicators': loadingIndicators.getLoadingIndicators(),
       'da': da?.previousTime ? da : undefined,
-      'fees': feeApi.getRecommendedFee(),
+      'fees': feeApi.getPreciseRecommendedFee(),
     });
   }
 
@@ -639,7 +637,7 @@ class WebsocketHandler {
     }
     memPool.removeFromSpendMap(deletedTransactions);
     memPool.addToSpendMap(newTransactions);
-    const recommendedFees = feeApi.getRecommendedFee();
+    const recommendedFees = feeApi.getPreciseRecommendedFee();
 
     const latestTransactions = memPool.getLatestTransactions();
 
@@ -1002,7 +1000,8 @@ class WebsocketHandler {
     });
     }
   }
- 
+
+  /** @asyncUnsafe */
   async handleNewBlock(block: BlockExtended, txIds: string[], transactions: MempoolTransactionExtended[]): Promise<void> {
     if (!this.webSocketServers.length) {
       throw new Error('No WebSocket.Server have been set');
@@ -1016,7 +1015,7 @@ class WebsocketHandler {
     }
 
     const _memPool = memPool.getMempool();
-    const candidateTxs = await memPool.getMempoolCandidates();
+    const candidateTxs = memPool.getMempoolCandidates();
     let candidates: GbtCandidates | undefined = (memPool.limitGBT && candidateTxs) ? { txs: candidateTxs, added: [], removed: [] } : undefined;
     let transactionIds: string[] = (memPool.limitGBT) ? Object.keys(candidates?.txs || {}) : Object.keys(_memPool);
 
@@ -1055,7 +1054,7 @@ class WebsocketHandler {
           totalWeight += (tx.vsize * 4);
         }
 
-        BlocksSummariesRepository.$saveTemplate({
+        void BlocksSummariesRepository.$saveTemplate({
           height: block.height,
           template: {
             id: block.id,
@@ -1064,7 +1063,7 @@ class WebsocketHandler {
           version: 1,
         });
 
-        BlocksAuditsRepository.$saveAudit({
+        void BlocksAuditsRepository.$saveAudit({
           version: 1,
           time: block.timestamp,
           height: block.height,
@@ -1096,16 +1095,6 @@ class WebsocketHandler {
       }
     }
 
-    if (config.CORE_RPC.DEBUG_LOG_PATH && block.extras) {
-      const firstSeen = getRecentFirstSeen(block.id);
-      if (firstSeen) {
-        if (config.DATABASE.ENABLED) {
-          BlocksRepository.$saveFirstSeenTime(block.id, firstSeen);
-        }
-        block.extras.firstSeen = firstSeen;
-      }
-    }
-
     const confirmedTxids: { [txid: string]: boolean } = {};
 
     // Update mempool to remove transactions included in the new block
@@ -1118,7 +1107,7 @@ class WebsocketHandler {
     if (memPool.limitGBT) {
       const minFeeMempool = memPool.limitGBT ? await bitcoinSecondClient.getRawMemPool() : null;
       const minFeeTip = memPool.limitGBT ? await bitcoinSecondClient.getBlockCount() : -1;
-      candidates = await memPool.getNextCandidates(minFeeMempool, minFeeTip, transactions);
+      candidates = memPool.getNextCandidates(minFeeMempool, minFeeTip, transactions);
       transactionIds = Object.keys(candidates?.txs || {});
     } else {
       candidates = undefined;
@@ -1137,7 +1126,7 @@ class WebsocketHandler {
     const mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
 
     const da = difficultyAdjustment.getDifficultyAdjustment();
-    const fees = feeApi.getRecommendedFee();
+    const fees = feeApi.getPreciseRecommendedFee();
     const mempoolInfo = memPool.getMempoolInfo();
 
     // pre-compute address transactions
@@ -1485,6 +1474,7 @@ class WebsocketHandler {
     return addressCache;
   }
 
+  /** @asyncSafe */
   private async getFullTransactions(transactions: MempoolTransactionExtended[]): Promise<MempoolTransactionExtended[]> {
     for (let i = 0; i < transactions.length; i++) {
       try {
@@ -1518,7 +1508,7 @@ class WebsocketHandler {
         if (client['track-rbf']) {
           numRbfSubs++;
         }
-      })
+      });
       }
 
       let count = 0;

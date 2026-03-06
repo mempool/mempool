@@ -1,9 +1,11 @@
 import { RowDataPacket } from 'mysql2';
+import { Common } from '../api/common';
 import DB from '../database';
 import logger from '../logger';
 import { BlockSummary, TransactionClassified } from '../mempool.interfaces';
 
 class BlocksSummariesRepository {
+  /** @asyncSafe */
   public async $getByBlockId(id: string): Promise<BlockSummary | undefined> {
     try {
       const [summary]: any[] = await DB.query(`SELECT * from blocks_summaries WHERE id = ?`, [id]);
@@ -18,6 +20,7 @@ class BlocksSummariesRepository {
     return undefined;
   }
 
+  /** @asyncSafe */
   public async $saveTransactions(blockHeight: number, blockId: string, transactions: TransactionClassified[], version: number): Promise<void> {
     try {
       const transactionsStr = JSON.stringify(transactions);
@@ -32,6 +35,7 @@ class BlocksSummariesRepository {
     }
   }
 
+  /** @asyncSafe */
   public async $saveTemplate(params: { height: number, template: BlockSummary, version: number}): Promise<void> {
     const blockId = params.template?.id;
     try {
@@ -52,6 +56,7 @@ class BlocksSummariesRepository {
     }
   }
 
+  /** @asyncSafe */
   public async $getTemplate(id: string): Promise<BlockSummary | undefined> {
     try {
       const [templates]: any[] = await DB.query(`SELECT * from blocks_templates WHERE id = ?`, [id]);
@@ -68,6 +73,7 @@ class BlocksSummariesRepository {
     return undefined;
   }
 
+  /** @asyncSafe */
   public async $getIndexedSummariesId(): Promise<string[]> {
     try {
       const [rows] = await DB.query(`SELECT id from blocks_summaries`) as RowDataPacket[][];
@@ -79,6 +85,7 @@ class BlocksSummariesRepository {
     return [];
   }
 
+  /** @asyncSafe */
   public async $getSummariesWithVersion(version: number): Promise<{ height: number, id: string }[]> {
     try {
       const [rows]: any[] = await DB.query(`
@@ -96,6 +103,7 @@ class BlocksSummariesRepository {
     return [];
   }
 
+  /** @asyncSafe */
   public async $getTemplatesWithVersion(version: number): Promise<{ height: number, id: string }[]> {
     try {
       const [rows]: any[] = await DB.query(`
@@ -114,6 +122,7 @@ class BlocksSummariesRepository {
     return [];
   }
 
+  /** @asyncSafe */
   public async $getSummariesBelowVersion(version: number): Promise<{ height: number, id: string, version: number }[]> {
     try {
       const [rows]: any[] = await DB.query(`
@@ -132,6 +141,7 @@ class BlocksSummariesRepository {
     return [];
   }
 
+  /** @asyncSafe */
   public async $getTemplatesBelowVersion(version: number): Promise<{ height: number, id: string, version: number }[]> {
     try {
       const [rows]: any[] = await DB.query(`
@@ -153,8 +163,9 @@ class BlocksSummariesRepository {
 
   /**
    * Get the fee percentiles if the block has already been indexed, [] otherwise
-   * 
-   * @param id 
+   *
+   * @param id
+   * @asyncSafe
    */
   public async $getFeePercentilesByBlockId(id: string): Promise<number[] | null> {
     try {
@@ -191,6 +202,19 @@ class BlocksSummariesRepository {
       logger.err(`Cannot get block summaries transactions. Reason: ` + (e instanceof Error ? e.message : e));
       return null;
     }
+  }
+
+  public async $isSummaryIndexed(id: string): Promise<boolean> {
+    if (!Common.blocksSummariesIndexingEnabled()) {
+      return false;
+    }
+    try {
+      const [rows]: any[] = await DB.query(`SELECT id from blocks_summaries WHERE id = ?`, [id]);
+      return rows.length > 0;
+    } catch (e) {
+      logger.err(`Cannot check if block summary is indexed. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+    return false;
   }
 }
 

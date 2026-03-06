@@ -18,7 +18,8 @@ import { IncomingTransactionsGraphComponent } from '@components/incoming-transac
 @Component({
   selector: 'app-statistics',
   templateUrl: './statistics.component.html',
-  styleUrls: ['./statistics.component.scss']
+  styleUrls: ['./statistics.component.scss'],
+  standalone: false,
 })
 export class StatisticsComponent implements OnInit {
   @ViewChild('mempoolgraph') mempoolGraph: MempoolGraphComponent;
@@ -208,7 +209,7 @@ export class StatisticsComponent implements OnInit {
       }
     });
   }
-  
+
   onOutlierToggleChange(e): void {
     this.outlierCappingEnabled = e.target.checked;
     this.storageService.setValue('cap-outliers', e.target.checked);

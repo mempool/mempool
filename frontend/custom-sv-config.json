@@ -35,7 +35,8 @@
         "props": {
           "wallet": "ONBTC",
           "period": "1m",
-          "label": "bitcoin.gob.sv"
+          "label": "bitcoin.gob.sv",
+          "image": "/resources/elsalvador-flag.svg"
         }
       },
       {

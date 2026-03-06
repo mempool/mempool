@@ -17,6 +17,7 @@ import { isMobile } from '@app/shared/common.utils';
   selector: 'app-pool-ranking',
   templateUrl: './pool-ranking.component.html',
   styleUrls: ['./pool-ranking.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PoolRankingComponent implements OnInit {

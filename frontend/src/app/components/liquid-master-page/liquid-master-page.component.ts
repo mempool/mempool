@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Env, StateService } from '@app/services/state.service';
-import { merge, Observable, of} from 'rxjs';
+import { merge, Observable, of, Subscription} from 'rxjs';
 import { LanguageService } from '@app/services/language.service';
 import { EnterpriseService } from '@app/services/enterprise.service';
 import { NavigationService } from '@app/services/navigation.service';
@@ -9,17 +9,22 @@ import { NavigationService } from '@app/services/navigation.service';
   selector: 'app-liquid-master-page',
   templateUrl: './liquid-master-page.component.html',
   styleUrls: ['./liquid-master-page.component.scss'],
+  standalone: false,
 })
-export class LiquidMasterPageComponent implements OnInit {
+export class LiquidMasterPageComponent implements OnInit, OnDestroy {
   env: Env;
   connectionState$: Observable<number>;
   navCollapsed = false;
   isMobile = window.innerWidth <= 767.98;
   officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
+  subdomain = '';
   network$: Observable<string>;
   urlLanguage: string;
   networkPaths: { [network: string]: string };
   footerVisible = true;
+
+  enterpriseInfo: any;
+  enterpriseInfo$: Subscription;
 
   constructor(
     private stateService: StateService,
@@ -33,6 +38,7 @@ export class LiquidMasterPageComponent implements OnInit {
     this.connectionState$ = this.stateService.connectionState$;
     this.network$ = merge(of(''), this.stateService.networkChanged$);
     this.urlLanguage = this.languageService.getLanguageForUrl();
+    this.subdomain = this.enterpriseService.getSubdomain();
     this.navigationService.subnetPaths.subscribe((paths) => {
       this.networkPaths = paths;
       if (paths.liquid.indexOf('docs') > -1) {
@@ -40,6 +46,9 @@ export class LiquidMasterPageComponent implements OnInit {
       } else {
         this.footerVisible = true;
       }
+    });
+    this.enterpriseInfo$ = this.enterpriseService.info$.subscribe(info => {
+      this.enterpriseInfo = info;
     });
   }
 
@@ -49,5 +58,11 @@ export class LiquidMasterPageComponent implements OnInit {
 
   onResize(): void {
     this.isMobile = window.innerWidth <= 767.98;
+  }
+
+  ngOnDestroy(): void {
+    if (this.enterpriseInfo$) {
+      this.enterpriseInfo$.unsubscribe();
+    }
   }
 }

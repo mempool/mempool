@@ -4,6 +4,7 @@ import axios, { AxiosResponse } from 'axios';
 import { SocksProxyAgent } from 'socks-proxy-agent';
 import * as https from 'https';
 
+/** @asyncSafe */
 export async function $sync(path): Promise<{ data?: any, exists: boolean, server?: string }> {
   // start with a random server so load is uniformly spread
   let allMissing = true;
@@ -14,7 +15,7 @@ export async function $sync(path): Promise<{ data?: any, exists: boolean, server
     if (server === backendInfo.getBackendInfo().hostname) {
       continue;
     }
-    
+
     try {
       const result = await query(`https://${server}${path}`);
       if (result) {
@@ -33,6 +34,7 @@ export async function $sync(path): Promise<{ data?: any, exists: boolean, server
   return { exists: !allMissing };
 }
 
+/** @asyncUnsafe */
 export async function query(path): Promise<object> {
   type axiosOptions = {
     headers: {

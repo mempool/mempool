@@ -18,7 +18,7 @@ if (parentPort) {
         mempool.delete(uid);
       });
     }
-    
+
     const { blocks, rates, clusters } = makeBlockTemplates(mempool);
 
     // return the result to main thread.
@@ -38,7 +38,7 @@ function makeBlockTemplates(mempool: Map<number, CompactThreadTransaction>)
   const auditPool: Map<number, AuditTransaction> = new Map();
   const mempoolArray: AuditTransaction[] = [];
   const cpfpClusters: Map<number, number[]> = new Map();
-  
+
   mempool.forEach(tx => {
     tx.dirty = false;
     // initializing everything up front helps V8 optimize property access later
@@ -85,7 +85,7 @@ function makeBlockTemplates(mempool: Map<number, CompactThreadTransaction>)
   // (i.e. the package rooted in the transaction with the best ancestor score)
   const blocks: number[][] = [];
   let blockWeight = 4000;
-  let blockSigops = 0;
+  const blockSigops = 0;
   let transactions: AuditTransaction[] = [];
   const modified: PairingHeap<AuditTransaction> = new PairingHeap((a, b): boolean => {
     if (a.score === b.score) {

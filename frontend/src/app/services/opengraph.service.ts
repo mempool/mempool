@@ -25,13 +25,13 @@ export class OpenGraphService {
     private activatedRoute: ActivatedRoute,
   ) {
     // save og:image tag from original template
-    const initialOgImageTag = metaService.getTag("property='og:image'");
+    const initialOgImageTag = metaService.getTag('property=\'og:image\'');
     this.defaultImageUrl = initialOgImageTag?.content || 'https://mempool.space/resources/previews/mempool-space-preview.jpg';
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd),
       map(() => this.activatedRoute),
       map(route => {
-        while (route.firstChild) route = route.firstChild;
+        while (route.firstChild) {route = route.firstChild;}
         return route;
       }),
       filter(route => route.outlet === 'primary'),
@@ -55,7 +55,6 @@ export class OpenGraphService {
     const ogImageUrl = `${window.location.protocol}//${window.location.host}/render/${lang}/preview${this.router.url}`;
     this.metaService.updateTag({ property: 'og:image', content: ogImageUrl });
     this.metaService.updateTag({ name: 'twitter:image', content: ogImageUrl });
-    this.metaService.updateTag({ property: 'og:image:type', content: 'image/png' });
     this.metaService.updateTag({ property: 'og:image:width', content: '1200' });
     this.metaService.updateTag({ property: 'og:image:height', content: '600' });
   }
@@ -63,7 +62,6 @@ export class OpenGraphService {
   clearOgImage() {
     this.metaService.updateTag({ property: 'og:image', content: this.defaultImageUrl });
     this.metaService.updateTag({ name: 'twitter:image', content: this.defaultImageUrl });
-    this.metaService.updateTag({ property: 'og:image:type', content: 'image/png' });
     this.metaService.updateTag({ property: 'og:image:width', content: '1000' });
     this.metaService.updateTag({ property: 'og:image:height', content: '500' });
   }
@@ -71,7 +69,6 @@ export class OpenGraphService {
   setManualOgImage(imageFilename) {
     const ogImage = `${window.location.protocol}//${window.location.host}/resources/previews/${imageFilename}`;
     this.metaService.updateTag({ property: 'og:image', content: ogImage });
-    this.metaService.updateTag({ property: 'og:image:type', content: 'image/jpeg' });
     this.metaService.updateTag({ property: 'og:image:width', content: '2000' });
     this.metaService.updateTag({ property: 'og:image:height', content: '1000' });
     this.metaService.updateTag({ name: 'twitter:image', content: ogImage });
@@ -120,10 +117,10 @@ export class OpenGraphService {
     this.previewLoadingEvents = {};
     this.previewLoadingCount = 0;
     this.sessionId++;
-    this.metaService.removeTag("property='og:preview:loading'");
-    this.metaService.removeTag("property='og:preview:ready'");
-    this.metaService.removeTag("property='og:preview:fail'");
-    this.metaService.removeTag("property='og:meta:ready'");
+    this.metaService.removeTag('property=\'og:preview:loading\'');
+    this.metaService.removeTag('property=\'og:preview:ready\'');
+    this.metaService.removeTag('property=\'og:preview:fail\'');
+    this.metaService.removeTag('property=\'og:meta:ready\'');
   }
 
   loadPage(path) {

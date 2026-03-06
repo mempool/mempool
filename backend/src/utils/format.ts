@@ -4,7 +4,7 @@ export function getBytesUnit(bytes: number): string {
   if (isNaN(bytes) || !isFinite(bytes)) {
     return 'B';
   }
-  
+
   let unitIndex = 0;
   while (unitIndex < byteUnits.length && bytes > 1024) {
     unitIndex++;
@@ -18,7 +18,7 @@ export function formatBytes(bytes: number, toUnit: string, skipUnit = false): st
   if (isNaN(bytes) || !isFinite(bytes)) {
     return `${bytes}`;
   }
-  
+
   let unitIndex = 0;
   while (unitIndex < byteUnits.length && (toUnit && byteUnits[unitIndex] !== toUnit || (!toUnit && bytes > 1024))) {
     unitIndex++;

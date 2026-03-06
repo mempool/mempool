@@ -8,6 +8,7 @@ import { ResultSetHeader } from 'mysql2';
 import * as IPCheck from '../../../utils/ipcheck.js';
 import { Reader } from 'mmdb-lib';
 
+/** @asyncSafe */
 export async function $lookupNodeLocation(): Promise<void> {
   let loggerTimer = new Date().getTime() / 1000;
   let progress = 0;
@@ -25,7 +26,7 @@ export async function $lookupNodeLocation(): Promise<void> {
     } catch (e) { }
 
     for (const node of nodes) {
-      const sockets: string[] = node.sockets.split(',');
+      const sockets: string[] = node.sockets?.split(',') ?? [];
       for (const socket of sockets) {
         const ip = socket.substring(0, socket.lastIndexOf(':')).replace('[', '').replace(']', '');
         const hasClearnet = [4, 6].includes(net.isIP(ip));
@@ -60,13 +61,13 @@ export async function $lookupNodeLocation(): Promise<void> {
 
           if (city && (asn || isp)) {
             const query = `
-              UPDATE nodes SET 
-                as_number = ?, 
-                city_id = ?, 
-                country_id = ?, 
-                subdivision_id = ?, 
-                longitude = ?, 
-                latitude = ?, 
+              UPDATE nodes SET
+                as_number = ?,
+                city_id = ?,
+                country_id = ?,
+                subdivision_id = ?,
+                longitude = ?,
+                latitude = ?,
                 accuracy_radius = ?
               WHERE public_key = ?
             `;

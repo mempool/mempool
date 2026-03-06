@@ -6,7 +6,7 @@ interface IConfig {
   MEMPOOL: {
     ENABLED: boolean;
     OFFICIAL: boolean;
-    NETWORK: 'mainnet' | 'testnet' | 'signet' | 'liquid' | 'liquidtestnet';
+    NETWORK: 'mainnet' | 'testnet' | 'testnet4' | 'signet' | 'liquid' | 'liquidtestnet' | 'regtest';
     BACKEND: 'esplora' | 'electrum' | 'none';
     HTTP_PORT: number;
     UNIX_SOCKET_PATH: string;
@@ -398,7 +398,7 @@ class Config implements IConfig {
       });
       return next;
     });
-  }
+  };
 }
 
 export default new Config();

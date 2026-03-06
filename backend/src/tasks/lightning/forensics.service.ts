@@ -23,6 +23,7 @@ class ForensicsService {
     await this.$runTasks();
   }
 
+  /** @asyncSafe */
   private async $runTasks(): Promise<void> {
     try {
       logger.debug(`Running forensics scans`);
@@ -36,7 +37,7 @@ class ForensicsService {
       logger.err('ForensicsService.$runTasks() error: ' + (e instanceof Error ? e.message : e));
     }
 
-    setTimeout(() => { this.$runTasks(); }, 1000 * config.LIGHTNING.FORENSICS_INTERVAL);
+    setTimeout(() => { void this.$runTasks(); }, 1000 * config.LIGHTNING.FORENSICS_INTERVAL);
   }
 
   /*
@@ -340,6 +341,7 @@ class ForensicsService {
     }
   }
 
+  /** @asyncSafe */
   private async $attributeChannelBalances(
     prevChannel, openChannel, input: IEsploraApi.Vin, openContribution: number | null = null,
     initiator: 'remote' | 'local' | null = null, linkedOpenings: boolean = false
@@ -449,7 +451,7 @@ class ForensicsService {
           const initiatorSide = initiator === 'remote' ? prevRemote : prevLocal;
           prevChannel.closed_by = prevChannel[`node${initiatorSide}_public_key`];
         }
-  
+
         // save changes to the closing channel
         await channelsApi.$updateClosingInfo(prevChannel);
       } else {
@@ -465,6 +467,7 @@ class ForensicsService {
     }
   }
 
+  /** @asyncSafe */
   async fetchTransaction(txid: string, temp: boolean = false): Promise<IEsploraApi.Transaction | null> {
     let tx = this.txCache[txid];
     if (!tx) {
@@ -485,6 +488,7 @@ class ForensicsService {
 
   // fetches a batch of transactions and adds them to the txCache
   // the returned list of txs does *not* preserve ordering or number
+  /** @asyncSafe */
   async fetchTransactions(txids, temp: boolean = false): Promise<(IEsploraApi.Transaction | null)[]> {
     // deduplicate txids
     const uniqueTxids = [...new Set<string>(txids)];

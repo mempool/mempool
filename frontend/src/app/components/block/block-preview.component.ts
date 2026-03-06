@@ -15,7 +15,8 @@ import { ServicesApiServices } from '@app/services/services-api.service';
 @Component({
   selector: 'app-block-preview',
   templateUrl: './block-preview.component.html',
-  styleUrls: ['./block-preview.component.scss']
+  styleUrls: ['./block-preview.component.scss'],
+  standalone: false,
 })
 export class BlockPreviewComponent implements OnInit, OnDestroy {
   network = '';
@@ -138,7 +139,7 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
                   return of(transactions);
                 })
               ),
-            this.stateService.env.ACCELERATOR === true && block.height > 819500
+            this.stateService.env.ACCELERATOR === true && block.height > 819500 && this.stateService.network === ''
               ? this.servicesApiService.getAllAccelerationHistory$({ blockHeight: block.height })
                 .pipe(
                   catchError(() => {

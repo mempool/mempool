@@ -14,6 +14,7 @@ import { formatNumber } from '@angular/common';
   templateUrl: './addresses-treemap.component.html',
   styleUrls: ['./addresses-treemap.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class AddressesTreemap implements OnChanges {
   @Input() addresses: Address[];
@@ -121,7 +122,7 @@ export class AddressesTreemap implements OnChanges {
           }
         }
       ]
-    };    
+    };
   }
 
   formatValue(sats: number): string {

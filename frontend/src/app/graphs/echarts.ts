@@ -4,7 +4,8 @@ import { LineChart, LinesChart, BarChart, TreemapChart, PieChart, ScatterChart, 
 import { TitleComponent, TooltipComponent, GridComponent, LegendComponent, GeoComponent, DataZoomComponent, VisualMapComponent, MarkLineComponent, GraphicComponent } from 'echarts/components';
 import { SVGRenderer, CanvasRenderer } from 'echarts/renderers';
 // Typescript interfaces
-import { EChartsOption, TreemapSeriesOption, LineSeriesOption, PieSeriesOption } from 'echarts';
+import type { EChartsCoreOption } from 'echarts/core';
+import type { TreemapSeriesOption, LineSeriesOption, PieSeriesOption } from 'echarts/charts';
 
 
 echarts.use([
@@ -15,4 +16,4 @@ echarts.use([
   LineChart, LinesChart, BarChart, TreemapChart, PieChart, ScatterChart, GaugeChart,
   CustomChart, GraphicComponent, TreeChart
 ]);
-export { echarts, EChartsOption, TreemapSeriesOption, LineSeriesOption, PieSeriesOption };
+export { echarts, EChartsCoreOption as EChartsOption, TreemapSeriesOption, LineSeriesOption, PieSeriesOption };

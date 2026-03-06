@@ -66,19 +66,6 @@ build_frontend()
     npm run build || exit 1
 }
 
-build_unfurler()
-{
-    local site="$1"
-    echo "[*] Building unfurler for ${site}"
-    [ -z "${HASH}" ] && exit 1
-    cd "$HOME/${site}/unfurler" || exit 1
-    if [ ! -e "config.json" ];then
-        cp "${HOME}/mempool/production/unfurler-config.${site}.json" "config.json"
-    fi
-    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true npm install || exit 1
-    npm run build || exit 1
-}
-
 build_backend()
 {
     local site="$1"
@@ -163,11 +150,6 @@ done
 # ship frontend dist folders to public_html
 for target in $frontend_repos;do
     ship_frontend "${target}"
-done
-
-# build unfurlers
-for repo in $frontend_repos;do
-    build_unfurler "${repo}"
 done
 
 # notify everyone

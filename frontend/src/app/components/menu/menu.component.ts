@@ -10,14 +10,15 @@ import { AuthServiceMempool } from '@app/services/auth.service';
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.scss']
+  styleUrls: ['./menu.component.scss'],
+  standalone: false,
 })
 
 export class MenuComponent implements OnInit, OnDestroy {
   @Input() navOpen: boolean = false;
   @Output() loggedOut = new EventEmitter<boolean>();
   @Output() menuToggled = new EventEmitter<boolean>();
-  
+
   userMenuGroups$: Observable<MenuGroup[]> | undefined;
   user$: Observable<IUser | null>;
   userAuth: any | undefined;
@@ -33,7 +34,7 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.userAuth = this.storageService.getAuth();
-    
+
     if (this.stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE) {
       this.userMenuGroups$ = this.servicesApiServices.getUserMenuGroups$();
       this.user$ = this.servicesApiServices.userSubject$;

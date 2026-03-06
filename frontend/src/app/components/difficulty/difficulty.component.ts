@@ -39,6 +39,7 @@ const EPOCH_BLOCK_LENGTH = 2016; // Bitcoin mainnet
   selector: 'app-difficulty',
   templateUrl: './difficulty.component.html',
   styleUrls: ['./difficulty.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DifficultyComponent implements OnInit {
@@ -47,7 +48,7 @@ export class DifficultyComponent implements OnInit {
   @Input() showTitle = true;
 
   @ViewChild('epochSvg') epochSvgElement: ElementRef<SVGElement>;
- 
+
   isLoadingWebSocket$: Observable<boolean>;
   difficultyEpoch$: Observable<EpochProgress>;
 
