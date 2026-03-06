@@ -46,7 +46,7 @@
 <ng-template #detailsRight>
   <ng-container *ngTemplateOutlet="feeRow"></ng-container>
   <ng-container *ngTemplateOutlet="feeRateRow"></ng-container>
-  @if (!isLoadingTx && !tx?.status?.confirmed && isAcceleration && ((cpfpInfo && hasEffectiveFeeRate) || accelerationInfo)) {
+  @if (!isLoadingTx && !tx?.status?.confirmed && (isAcceleration || (isAcceleration && cpfpInfo && hasEffectiveFeeRate))) {
     <ng-container *ngTemplateOutlet="acceleratingRow"></ng-container>
   } @else {
     <ng-container *ngTemplateOutlet="effectiveRateRow"></ng-container>
@@ -275,12 +275,21 @@
 </ng-template>
 
 <ng-template #acceleratingRow>
-  <tr>
-    <td rowspan="2" colspan="2" style="padding: 0;">
-      <app-active-acceleration-box [acceleratedBy]="tx.acceleratedBy" [effectiveFeeRate]="tx.effectiveFeePerVsize" [accelerationInfo]="accelerationInfo" [miningStats]="miningStats" [hasCpfp]="hasCpfp" (toggleCpfp)="toggleCpfp()" [chartPositionLeft]="isMobile"></app-active-acceleration-box>
-    </td>
-  </tr>
-  <tr></tr>
+  @if (accelerationInfo) {
+    <tr>
+      <td rowspan="2" colspan="2" style="padding: 0;">
+        <app-active-acceleration-box [acceleratedBy]="tx.acceleratedBy" [effectiveFeeRate]="tx.effectiveFeePerVsize" [accelerationInfo]="accelerationInfo" [miningStats]="miningStats" [hasCpfp]="hasCpfp" (toggleCpfp)="toggleCpfp()" [chartPositionLeft]="isMobile"></app-active-acceleration-box>
+      </td>
+    </tr>
+    <tr></tr>
+  } @else {
+    <tr>
+      <td colspan="2"><span class="skeleton-loader"></span></td>
+    </tr>
+    <tr>
+      <td colspan="2"><span class="skeleton-loader"></span></td>
+    </tr>
+  }
 </ng-template>
 
 <ng-template #minerRow>
