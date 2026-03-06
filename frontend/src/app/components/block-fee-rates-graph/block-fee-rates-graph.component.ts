@@ -33,9 +33,11 @@ export class BlockFeeRatesGraphComponent implements OnInit {
   @Input() widget = false;
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
+  logScale = false;
 
   miningWindowPreference: string;
   radioGroupForm: UntypedFormGroup;
+  scaleForm: UntypedFormGroup;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -64,6 +66,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
     this.radioGroupForm.controls.dateSpan.setValue('1y');
+    this.scaleForm = this.formBuilder.group({scaleFunction: 'linear'});
   }
 
   ngOnInit(): void {
@@ -81,8 +84,33 @@ export class BlockFeeRatesGraphComponent implements OnInit {
       this.route
         .fragment
         .subscribe((fragment) => {
-          if (['24h', '3d', '1w', '1m', '3m', '6m', '1y', '2y', '3y', 'all'].indexOf(fragment) > -1) {
-            this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
+          if (!fragment) {
+            return;
+          }
+
+          let timeVal = null;
+          let scaleVal = null;
+
+          if (fragment.includes('=')) {
+            const params = new URLSearchParams(fragment);
+            timeVal = params.get('time');
+            scaleVal = params.get('scale');
+          } else {
+            if (['24h', '3d', '1w', '1m', '3m', '6m', '1y', '2y', '3y', 'all'].includes(fragment)) {
+              timeVal = fragment;
+            }
+            if (['linear', 'log'].includes(fragment)) {
+              scaleVal = fragment;
+            }
+          }
+
+          if (timeVal && ['1m', '3m', '6m', '1y', '2y', '3y', 'all'].includes(timeVal)) {
+            this.radioGroupForm.controls.dateSpan.setValue(timeVal, { emitEvent: false });
+          }
+
+          if (scaleVal && ['linear', 'log'].includes(scaleVal)) {
+            this.scaleForm.controls.scaleFunction.setValue(scaleVal, { emitEvent: false });
+            this.onScaleChange();
           }
         });
     }
@@ -107,6 +135,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
         switchMap(([timespan, rateUnits]) => {
           if (!this.widget) {
             this.storageService.setValue('miningWindowPreference', timespan);
+            this.updateUrlFragment();
           }
           this.timespan = timespan;
           this.isLoading = true;
@@ -123,18 +152,19 @@ export class BlockFeeRatesGraphComponent implements OnInit {
                   '90th': [],
                   'Max': []
                 };
+                const clamp = (val: number) => this.logScale ? Math.max(val, 0.1) : val;
                 for (const rate of response.body) {
                   const timestamp = rate.timestamp * 1000;
                   if (this.widget) {
-                    seriesData['Median'].push([timestamp, rate.avgFee_50, rate.avgHeight]);
+                    seriesData['Median'].push([timestamp, rate.avgFee_50, rate.avgHeight, rate.avgFee_50]);
                   } else {
-                    seriesData['Min'].push([timestamp, rate.avgFee_0, rate.avgHeight]);
-                    seriesData['10th'].push([timestamp, rate.avgFee_10, rate.avgHeight]);
-                    seriesData['25th'].push([timestamp, rate.avgFee_25, rate.avgHeight]);
-                    seriesData['Median'].push([timestamp, rate.avgFee_50, rate.avgHeight]);
-                    seriesData['75th'].push([timestamp, rate.avgFee_75, rate.avgHeight]);
-                    seriesData['90th'].push([timestamp, rate.avgFee_90, rate.avgHeight]);
-                    seriesData['Max'].push([timestamp, rate.avgFee_100, rate.avgHeight]);
+                    seriesData['Min'].push([timestamp, clamp(rate.avgFee_0), rate.avgHeight, rate.avgFee_0]);
+                    seriesData['10th'].push([timestamp, clamp(rate.avgFee_10), rate.avgHeight, rate.avgFee_10]);
+                    seriesData['25th'].push([timestamp, clamp(rate.avgFee_25), rate.avgHeight, rate.avgFee_25]);
+                    seriesData['Median'].push([timestamp, clamp(rate.avgFee_50), rate.avgHeight, rate.avgFee_50]);
+                    seriesData['75th'].push([timestamp, clamp(rate.avgFee_75), rate.avgHeight, rate.avgFee_75]);
+                    seriesData['90th'].push([timestamp, clamp(rate.avgFee_90), rate.avgHeight, rate.avgFee_90]);
+                    seriesData['Max'].push([timestamp, clamp(rate.avgFee_100), rate.avgHeight, rate.avgFee_100]);
                   }
                 }
 
@@ -144,11 +174,16 @@ export class BlockFeeRatesGraphComponent implements OnInit {
                 for (const percentile in seriesData) {
                   series.push({
                     zlevel: 0,
-                    stack: 'Total',
+                    stack: this.logScale ? undefined : 'Total',
                     name: percentile,
                     data: seriesData[percentile],
-                    type: 'bar',
-                    barWidth: '100%',
+                    type: this.logScale ? 'line' : 'bar',
+                    showSymbol: false,
+                    symbol: 'none',
+                    lineStyle: {
+                      width: 1
+                    },
+                    barWidth: this.logScale ? undefined : '100%',
                     large: true,
                   });
 
@@ -170,7 +205,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
                   for (let i = maResolution - 1; i < seriesData['Median'].length; ++i) {
                     let avg = 0;
                     for (let y = maResolution - 1; y >= 0; --y) {
-                      avg += seriesData['Median'][i - y][1];
+                      avg += seriesData['Median'][i - y][3];
                     }
                     avg /= maResolution;
                     medianMa.push([seriesData['Median'][i][0], avg, seriesData['Median'][i][2]]);
@@ -246,9 +281,9 @@ export class BlockFeeRatesGraphComponent implements OnInit {
 
           for (const rate of data.reverse()) {
             if (weightMode) {
-              tooltip += `${rate.marker} ${rate.seriesName}: ${(rate.data[1] / 4).toFixed(2)} sats/WU<br>`;
+              tooltip += `${rate.marker} ${rate.seriesName}: ${(rate.data[3] / 4).toFixed(2)} sats/WU<br>`;
             } else {
-              tooltip += `${rate.marker} ${rate.seriesName}: ${rate.data[1].toFixed(2)} sats/vByte<br>`;
+              tooltip += `${rate.marker} ${rate.seriesName}: ${rate.data[3].toFixed(2)} sats/vByte<br>`;
             }
           }
 
@@ -314,8 +349,9 @@ export class BlockFeeRatesGraphComponent implements OnInit {
             opacity: 0.25,
           }
         },
-        type: 'value',
-        max: (val) => this.timespan === 'all' ? Math.min(val.max, 5000) : undefined,
+        type: this.logScale ? 'log' : 'value',
+        min: this.logScale ? 0.1 : undefined,
+        max: (val) => (!this.logScale && this.timespan === 'all') ? Math.min(val.max, 5000) : undefined,
       },
       series: data.series,
       dataZoom: this.widget ? null : [{
@@ -387,5 +423,50 @@ export class BlockFeeRatesGraphComponent implements OnInit {
     this.chartOptions.grid.bottom = prevBottom;
     this.chartOptions.backgroundColor = 'none';
     this.chartInstance.setOption(this.chartOptions);
+  }
+
+  updateUrlFragment() {
+    const time = this.radioGroupForm.controls.dateSpan.value;
+    const scale = this.scaleForm.controls.scaleFunction.value;
+    const newFragment = `time=${time}&scale=${scale}`;
+
+    if (this.route.snapshot.fragment !== newFragment) {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        fragment: newFragment,
+        replaceUrl: true
+      })
+    }
+  }
+
+  onScaleChange() {
+    this.logScale = this.scaleForm.get('scaleFunction')?.value === 'log';
+    this.updateUrlFragment();
+    
+    if (!this.chartInstance || !this.chartOptions.yAxis || !this.chartOptions.series) {
+      return;
+    }
+
+    const yAxis = this.chartOptions.yAxis as any;
+    yAxis.type = this.logScale ? 'log' : 'value';
+    yAxis.min = this.logScale ? 0.1 : undefined; 
+    yAxis.max = (!this.logScale && this.timespan === 'all') ? (val) => Math.min(val.max, 5000) : undefined;
+
+    (this.chartOptions.series as any[]).forEach(seriesItem => {
+      if (seriesItem.name !== 'Moving average') {
+        seriesItem.type = this.logScale ? 'line' : 'bar';
+        seriesItem.stack = this.logScale ? undefined : 'Total';
+        seriesItem.barWidth = this.logScale ? undefined : '100%';
+      }
+
+      seriesItem.data.forEach(point => {
+        point [1] = this.logScale ? Math.max(point[3], 0.1) : point[3];
+      });
+    });
+
+    this.chartInstance.setOption({
+      yAxis: yAxis,
+      series: this.chartOptions.series
+    });
   }
 }
