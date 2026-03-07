@@ -1,7 +1,7 @@
 import DB from '../database';
 import logger from '../logger';
 import bitcoinApi from '../api/bitcoin/bitcoin-api-factory';
-import { BlockAudit, AuditScore, TransactionAudit, TransactionStripped } from '../mempool.interfaces';
+import { BlockAudit, AuditScore, TransactionAudit, TransactionStripped, TemplateAlgorithm } from '../mempool.interfaces';
 
 interface MigrationAudit {
   version: number,
@@ -18,8 +18,8 @@ class BlocksAuditRepositories {
   /** @asyncSafe */
   public async $saveAudit(audit: BlockAudit): Promise<void> {
     try {
-      await DB.query(`INSERT INTO blocks_audits(version, time, height, hash, unseen_txs, missing_txs, added_txs, prioritized_txs, fresh_txs, sigop_txs, fullrbf_txs, accelerated_txs, match_rate, expected_fees, expected_weight)
-        VALUE (?, FROM_UNIXTIME(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [audit.version, audit.time, audit.height, audit.hash, JSON.stringify(audit.unseenTxs), JSON.stringify(audit.missingTxs),
+      await DB.query(`INSERT INTO blocks_audits(version, template_algo, time, height, hash, unseen_txs, missing_txs, added_txs, prioritized_txs, fresh_txs, sigop_txs, fullrbf_txs, accelerated_txs, match_rate, expected_fees, expected_weight)
+        VALUE (?, ?, FROM_UNIXTIME(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [audit.version, audit.templateAlgorithm ?? 0, audit.time, audit.height, audit.hash, JSON.stringify(audit.unseenTxs), JSON.stringify(audit.missingTxs),
           JSON.stringify(audit.addedTxs), JSON.stringify(audit.prioritizedTxs), JSON.stringify(audit.freshTxs), JSON.stringify(audit.sigopTxs), JSON.stringify(audit.fullrbfTxs), JSON.stringify(audit.acceleratedTxs), audit.matchRate, audit.expectedFees, audit.expectedWeight]);
     } catch (e: any) {
       if (e.errno === 1062) { // ER_DUP_ENTRY - This scenario is possible upon node backend restart
@@ -80,6 +80,7 @@ class BlocksAuditRepositories {
       const [rows]: any[] = await DB.query(
         `SELECT
           blocks_audits.version,
+          blocks_audits.template_algo as templateAlgorithm,
           blocks_audits.height,
           blocks_audits.hash as id,
           UNIX_TIMESTAMP(blocks_audits.time) as timestamp,
@@ -117,6 +118,23 @@ class BlocksAuditRepositories {
     } catch (e: any) {
       logger.err(`Cannot fetch block audit from db. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
+    }
+  }
+
+  /** @asyncSafe */
+  public async $getBlockTemplateAlgo(hash: string): Promise<TemplateAlgorithm | null> {
+    try {
+      const [rows]: any[] = await DB.query(
+        `SELECT template_algo FROM blocks_audits WHERE hash = ?`,
+        [hash]
+      );
+      if (rows.length) {
+        return rows[0].template_algo as TemplateAlgorithm;
+      }
+      return null;
+    } catch (e: any) {
+      logger.err(`Cannot fetch block template algo from db. Reason: ` + (e instanceof Error ? e.message : e));
+      return null;
     }
   }
 
