@@ -50,6 +50,7 @@ export interface BlockAudit {
   expectedFees?: number,
   expectedWeight?: number,
   template?: any[];
+  templateAlgorithm?: TemplateAlgorithm,
 }
 
 export interface TransactionAudit {
@@ -396,6 +397,25 @@ export interface CpfpCluster {
   height: number,
   txs: Ancestor[],
   effectiveFeePerVsize: number,
+  templateAlgorithm?: TemplateAlgorithm,
+  clusterData?: CpfpClusterData,
+}
+
+export interface CpfpClusterTx {
+  txid: string;
+  fee: number;
+  weight: number;
+  parents: number[];
+}
+
+export interface CpfpClusterChunk {
+  txs: number[];
+  feerate: number;
+}
+
+export interface CpfpClusterData {
+  txs: CpfpClusterTx[];
+  chunks: CpfpClusterChunk[];
 }
 
 export interface CpfpSummary {

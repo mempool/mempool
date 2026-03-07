@@ -2,7 +2,7 @@ import config from '../config';
 import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import logger from '../logger';
 import memPool from './mempool';
-import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionMinerInfo, CpfpSummary, MempoolTransactionExtended, TransactionClassified, BlockAudit, TransactionAudit } from '../mempool.interfaces';
+import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionMinerInfo, CpfpSummary, MempoolTransactionExtended, TransactionClassified, BlockAudit, TransactionAudit, TemplateAlgorithm } from '../mempool.interfaces';
 import { Common } from './common';
 import diskCache from './disk-cache';
 import transactionUtils from './transaction-utils';
@@ -30,7 +30,7 @@ import redisCache from './redis-cache';
 import rbfCache from './rbf-cache';
 import { calcBitsDifference } from './difficulty-adjustment';
 import AccelerationRepository from '../repositories/AccelerationRepository';
-import { calculateFastBlockCpfp, calculateGoodBlockCpfp } from './cpfp';
+import { calculateFastBlockCpfp, calculateGoodBlockCpfp, calculateClusterMempoolBlockCpfp } from './cpfp';
 import mempool from './mempool';
 import CpfpRepository from '../repositories/CpfpRepository';
 import { parseDATUMTemplateCreator } from '../utils/bitcoin-script';
@@ -1059,7 +1059,11 @@ class Blocks {
         const pool = await this.$findBlockMiner(transactionUtils.stripCoinbaseTransaction(transactions[0]));
         accelerations = accelerations.filter(a => a.pools.includes(pool.uniqueId));
       }
-      const cpfpSummary: CpfpSummary = calculateGoodBlockCpfp(block.height, transactions, accelerations.map(a => ({ txid: a.txid, max_bid: a.feeDelta })));
+      const cpfpTransactions = structuredClone(transactions);
+      const accelForCpfp = accelerations.map(a => ({ txid: a.txid, max_bid: a.feeDelta }));
+      const cpfpSummary: CpfpSummary = config.MEMPOOL.CLUSTER_MEMPOOL
+        ? calculateClusterMempoolBlockCpfp(block.height, cpfpTransactions, accelForCpfp)
+        : calculateGoodBlockCpfp(block.height, cpfpTransactions, accelForCpfp);
       const blockExtended: BlockExtended = await this.$getBlockExtended(block, cpfpSummary.transactions);
       const blockSummary: BlockSummary = this.summarizeBlockTransactions(block.id, block.height, cpfpSummary.transactions);
       this.updateTimerProgress(timer, `got block data for ${this.currentBlockHeight}`);
@@ -1096,7 +1100,7 @@ class Blocks {
             await this.$getStrippedBlockTransactions(blockExtended.id, true, false, cpfpSummary, blockExtended.height);
             this.updateTimerProgress(timer, `saved block summary for ${this.currentBlockHeight}`);
           }
-          if (config.MEMPOOL.CPFP_INDEXING) {
+          if (config.MEMPOOL.CPFP_INDEXING && !config.MEMPOOL.AUDIT) {
             void this.$saveCpfp(blockExtended.id, this.currentBlockHeight, cpfpSummary);
             this.updateTimerProgress(timer, `saved cpfp for ${this.currentBlockHeight}`);
           }
@@ -1648,7 +1652,14 @@ class Blocks {
     }
 
     if (transactions?.length != null) {
-      const summary = calculateFastBlockCpfp(height, transactions);
+      const algo = await this.detectTemplateAlgorithm(hash, height, transactions);
+
+      let summary: CpfpSummary;
+      if (algo === TemplateAlgorithm.clusterMempool) {
+        summary = calculateClusterMempoolBlockCpfp(height, transactions, []);
+      } else {
+        summary = calculateFastBlockCpfp(height, transactions);
+      }
 
       if (!stale) {
         await this.$saveCpfp(hash, height, summary);
@@ -1662,6 +1673,30 @@ class Blocks {
       logger.err(`Cannot index CPFP for block ${height} - missing transaction data`);
       return null;
     }
+  }
+
+  private static CM_ACTIVATION_HEIGHT: { [network: string]: number } = {
+    'mainnet': 945000,
+    'testnet': 4860000,
+    'testnet4': 125000,
+    'signet': 294000,
+    'regtest': 0,
+  };
+
+  private async detectTemplateAlgorithm(hash: string, height: number, transactions: MempoolTransactionExtended[]): Promise<TemplateAlgorithm> {
+    const network = config.MEMPOOL.NETWORK || 'mainnet';
+    const activationHeight = Blocks.CM_ACTIVATION_HEIGHT[network] ?? Infinity;
+
+    if (height < activationHeight) {
+      return TemplateAlgorithm.legacy;
+    }
+
+    const auditAlgo = await BlocksAuditsRepository.$getBlockTemplateAlgo(hash);
+    if (auditAlgo !== null) {
+      return auditAlgo;
+    }
+
+    return detectAlgorithmHeuristic(transactions);
   }
 
   /** @asyncSafe */
@@ -1729,6 +1764,118 @@ class Blocks {
       return null;
     }
   }
+}
+
+export function detectAlgorithmHeuristic(transactions: MempoolTransactionExtended[]): TemplateAlgorithm {
+  const txMap: { [txid: string]: MempoolTransactionExtended } = {};
+  for (const tx of transactions) {
+    txMap[tx.txid] = tx;
+  }
+
+  const parentMap = new Map<string, Set<string>>();
+  const childMap = new Map<string, Set<string>>();
+  for (const tx of transactions) {
+    for (const vin of tx.vin) {
+      if (txMap[vin.txid]) {
+        let parents = parentMap.get(tx.txid);
+        if (!parents) {
+          parents = new Set();
+          parentMap.set(tx.txid, parents);
+        }
+        parents.add(vin.txid);
+        let children = childMap.get(vin.txid);
+        if (!children) {
+          children = new Set();
+          childMap.set(vin.txid, children);
+        }
+        children.add(tx.txid);
+      }
+    }
+  }
+
+  const visited = new Set<string>();
+  let cmLikely = false;
+
+  for (const tx of transactions) {
+    if (visited.has(tx.txid)) {
+      continue;
+    }
+    const component = new Set<string>();
+    const stack = [tx.txid];
+    while (stack.length > 0) {
+      const current = stack.pop();
+      if (current === undefined || visited.has(current)) {
+        continue;
+      }
+      visited.add(current);
+      component.add(current);
+      for (const p of (parentMap.get(current) || [])) {
+        if (!visited.has(p)) {
+          stack.push(p);
+        }
+      }
+      for (const c of (childMap.get(current) || [])) {
+        if (!visited.has(c)) {
+          stack.push(c);
+        }
+      }
+    }
+
+    if (component.size < 3) {
+      continue;
+    }
+
+    const leaves: string[] = [];
+    for (const txid of component) {
+      const children = childMap.get(txid);
+      if (!children || children.size === 0) {
+        leaves.push(txid);
+      }
+    }
+
+    if (leaves.length >= 2) {
+      let totalFee = 0;
+      let totalWeight = 0;
+      for (const txid of component) {
+        totalFee += txMap[txid].fee || 0;
+        totalWeight += txMap[txid].weight;
+      }
+      const aggregateRate = totalWeight > 0 ? totalFee / (totalWeight / 4) : 0;
+
+      let bestSingleRate = 0;
+      for (const leaf of leaves) {
+        let pkgFee = txMap[leaf].fee || 0;
+        let pkgWeight = txMap[leaf].weight;
+        const ancestorStack = [...(parentMap.get(leaf) || [])];
+        const ancestorVisited = new Set<string>([leaf]);
+        while (ancestorStack.length) {
+          const anc = ancestorStack.pop();
+          if (anc === undefined || ancestorVisited.has(anc)) {
+            continue;
+          }
+          ancestorVisited.add(anc);
+          pkgFee += txMap[anc].fee || 0;
+          pkgWeight += txMap[anc].weight;
+          for (const p of (parentMap.get(anc) || [])) {
+            if (!ancestorVisited.has(p)) {
+              ancestorStack.push(p);
+            }
+          }
+        }
+        const rate = pkgWeight > 0 ? pkgFee / (pkgWeight / 4) : 0;
+        if (rate > bestSingleRate) {
+          bestSingleRate = rate;
+        }
+      }
+
+      if (aggregateRate > bestSingleRate * 1.01) {
+        cmLikely = true;
+        break;
+      }
+    }
+  }
+
+  return cmLikely ? TemplateAlgorithm.clusterMempool : TemplateAlgorithm.legacy;
 }
 
 export default new Blocks();
