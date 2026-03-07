@@ -276,6 +276,7 @@ export class ClusterMempool {
   ): void {
     const txid = clusterTx.txid;
     if (!this.mempool[txid]) {
+      logger.warn(`ClusterMempool.writeBackTx: ${txid} missing from mempool (cluster ${cluster.id})`);
       return;
     }
     const tx = this.mempool[txid];
@@ -308,6 +309,8 @@ export class ClusterMempool {
         const mempoolTx = this.mempool[rel.txid];
         if (mempoolTx) {
           relatives.push({ txid: rel.txid, fee: mempoolTx.fee, weight: mempoolTx.weight });
+        } else {
+          logger.warn(`ClusterMempool.getChunkRelatives: ${rel.txid} missing from mempool`);
         }
       }
     }
@@ -315,11 +318,16 @@ export class ClusterMempool {
   }
 
   private processRemovals(removed: string[]): void {
-    for (const tx of removed.map(txid => this.mempool[txid]).filter(tx => !!tx)) {
-      for (const vin of tx.vin) {
-        if (!vin.is_coinbase) {
-          this.spentBy.delete(`${vin.txid}:${vin.vout}`);
+    for (const txid of removed) {
+      const tx = this.mempool[txid];
+      if (tx) {
+        for (const vin of tx.vin) {
+          if (!vin.is_coinbase) {
+            this.spentBy.delete(`${vin.txid}:${vin.vout}`);
+          }
         }
+      } else if (this.txToCluster.has(txid)) {
+        logger.warn(`ClusterMempool.processRemovals: ${txid} missing from mempool, spentBy cleanup skipped`);
       }
     }
 
@@ -626,6 +634,8 @@ export class ClusterMempool {
           }
           const mempoolTx = this.mempool[clusterTx.txid];
           txs.push({ txid: clusterTx.txid, fee: mempoolTx.fee, weight: mempoolTx.weight, parents });
+        } else {
+          logger.warn(`ClusterMempool.buildClusterData: ${clusterTx.txid} missing from mempool (cluster ${cluster.id})`);
         }
       }
     }
