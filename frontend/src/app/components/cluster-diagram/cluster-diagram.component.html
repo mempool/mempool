@@ -1,0 +1,93 @@
+<div class="graph-container" #graphContainer>
+  <svg [attr.width]="svgWidth" [attr.height]="svgHeight" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient *ngFor="let edge of edges; trackBy: trackByEdgeId"
+        [attr.id]="edge.gradientId"
+        gradientUnits="userSpaceOnUse"
+        [attr.x1]="edge.x1" [attr.y1]="edge.y1"
+        [attr.x2]="edge.x2" [attr.y2]="edge.y2">
+        <stop offset="0%" [attr.stop-color]="edge.parentColor" [attr.stop-opacity]="edge.parentInactive ? 0.45 : 1" />
+        <stop offset="100%" [attr.stop-color]="edge.childColor" [attr.stop-opacity]="edge.childInactive ? 0.45 : 1" />
+      </linearGradient>
+      <marker *ngFor="let edge of edges; trackBy: trackByEdgeId"
+        [attr.id]="edge.markerId"
+        markerUnits="userSpaceOnUse"
+        markerWidth="8" markerHeight="8"
+        refX="5" refY="4"
+        orient="auto">
+        <path d="M 0,0.5 L 7.5,4 L 0,7.5 Z"
+          [attr.fill]="edge.childColor"
+          [attr.fill-opacity]="edge.childInactive ? 0.45 : 1" />
+      </marker>
+      <marker id="edge-arrow-highlight"
+        markerUnits="userSpaceOnUse"
+        markerWidth="8" markerHeight="8"
+        refX="5" refY="4"
+        orient="auto">
+        <path d="M 0,0.5 L 7.5,4 L 0,7.5 Z" fill="white" />
+      </marker>
+    </defs>
+
+    <path *ngFor="let outline of chunkOutlines; trackBy: trackByChunkIndex"
+      class="chunk-border"
+      [class.inactive]="outline.chunkIndex !== activeChunkIndex"
+      [attr.d]="outline.path" />
+
+    <text *ngFor="let outline of chunkOutlines; trackBy: trackByChunkIndex"
+      class="chunk-label"
+      [class.inactive]="outline.chunkIndex !== activeChunkIndex"
+      [attr.x]="outline.labelX" [attr.y]="outline.labelY"
+      text-anchor="middle">
+      {{ outline.feerate | feeRounding }} sat/vB
+    </text>
+
+    <g *ngFor="let edge of edges; let i = index; trackBy: trackByEdgeId">
+      <path class="edge-hitarea"
+        [attr.d]="edge.path"
+        fill="none"
+        stroke="transparent"
+        stroke-width="12"
+        (mouseenter)="onEdgeEnter(i)"
+        (mouseleave)="onEdgeLeave()" />
+      <path class="edge-line"
+        [class.highlighted]="edge.highlighted"
+        [attr.d]="edge.path"
+        [attr.stroke]="edge.highlighted ? 'white' : 'url(#' + edge.gradientId + ')'"
+        [attr.marker-end]="edge.highlighted ? 'url(#edge-arrow-highlight)' : 'url(#' + edge.markerId + ')'"
+        fill="none" />
+    </g>
+
+    <g *ngFor="let node of nodes; trackBy: trackByNodeIndex"
+      class="node-group"
+      [class.inactive-fill]="node.inactive"
+      (mouseenter)="onNodeEnter(node, $event)"
+      (mousemove)="onNodeMove($event)"
+      (mouseleave)="onNodeLeave()"
+      (click)="onNodeClick(node)">
+      <rect class="node-rect"
+        [class.current]="node.isCurrent"
+        [class.hovered]="node.hovered"
+        [class.related]="node.related"
+        [attr.x]="node.rectX" [attr.y]="node.rectY"
+        [attr.width]="nodeW" [attr.height]="nodeH"
+        [attr.rx]="nodeRx"
+        [attr.fill]="node.color" />
+      <text class="node-label"
+        [attr.x]="node.x" [attr.y]="node.y"
+        text-anchor="middle" dominant-baseline="central">
+        {{ node.feerate | feeRounding }}
+      </text>
+    </g>
+  </svg>
+
+  <div #tooltip
+    class="cluster-tooltip"
+    *ngIf="hoverNode"
+    [style.left.px]="tooltipPosition.x"
+    [style.top.px]="tooltipPosition.y">
+    <p>{{ hoverNode.tx.txid | shortenString }}</p>
+    <p>{{ hoverNode.tx.fee | number }} sat</p>
+    <p [innerHTML]="hoverNode.tx.weight / 4 | vbytes: 2"></p>
+    <p>{{ hoverNode.feerate | feeRounding }} sat/vB</p>
+  </div>
+</div>
