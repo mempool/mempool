@@ -19,6 +19,7 @@ const config: Config.InitialOptions = {
   testPathIgnorePatterns: [
     '/node_modules/',
     '/__integration_tests__/',
+    'test-utils\\.ts$',
   ],
 };
 export default config;
