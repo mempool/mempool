@@ -6,6 +6,7 @@ import { OpenGraphService } from '@app/services/opengraph.service';
 import { NgbTooltipConfig } from '@ng-bootstrap/ng-bootstrap';
 import { ThemeService } from '@app/services/theme.service';
 import { SeoService } from '@app/services/seo.service';
+import { AnalyticsService } from '@app/services/analytics.service';
 
 @Component({
   selector: 'app-root',
@@ -21,6 +22,7 @@ export class AppComponent implements OnInit {
     private openGraphService: OpenGraphService,
     private seoService: SeoService,
     private themeService: ThemeService,
+    private analyticsService: AnalyticsService,
     private location: Location,
     tooltipConfig: NgbTooltipConfig,
     @Inject(LOCALE_ID) private locale: string,

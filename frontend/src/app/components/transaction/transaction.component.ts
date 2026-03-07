@@ -40,6 +40,7 @@ import { EnterpriseService } from '@app/services/enterprise.service';
 import { ZONE_SERVICE } from '@app/injection-tokens';
 import { MiningService, MiningStats } from '@app/services/mining.service';
 import { ETA, EtaService } from '@app/services/eta.service';
+import { AnalyticsService } from '@app/services/analytics.service';
 
 export interface Pool {
   id: number;
@@ -212,6 +213,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     private priceService: PriceService,
     private storageService: StorageService,
     private enterpriseService: EnterpriseService,
+    private analyticsService: AnalyticsService,
     private miningService: MiningService,
     private etaService: EtaService,
     private cd: ChangeDetectorRef,
@@ -703,6 +705,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.setupGraph();
 
           if (!tx.status?.confirmed) {
+            this.analyticsService.action('/tx/:txid', 'unconfirmed-tx');
             if (tx.firstSeen) {
               this.transactionTime = tx.firstSeen;
             } else {
