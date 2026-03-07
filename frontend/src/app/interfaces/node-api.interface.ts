@@ -32,6 +32,23 @@ export interface CpfpInfo {
   acceleratedBy?: number[];
   acceleratedAt?: number;
   feeDelta?: number;
+  cluster?: {
+    txs: CpfpClusterTx[];
+    chunks: CpfpClusterChunk[];
+    chunkIndex: number;
+  };
+}
+
+export interface CpfpClusterTx {
+  txid: string;
+  fee: number;
+  weight: number;
+  parents: number[];
+}
+
+export interface CpfpClusterChunk {
+  txs: number[];
+  feerate: number;
 }
 
 export interface RbfInfo {

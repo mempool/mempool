@@ -1,0 +1,93 @@
+.graph-container {
+  position: relative;
+  width: 100%;
+  background: var(--stat-box-bg);
+  padding: 10px 0;
+  overflow-x: auto;
+  text-align: center;
+
+  svg {
+    display: inline-block;
+  }
+}
+
+.chunk-border {
+  stroke-dasharray: 6 4;
+  stroke: var(--fg);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  fill: none;
+
+  &.inactive {
+    opacity: 0.35;
+  }
+}
+
+.chunk-label {
+  font-size: 11px;
+  fill: var(--fg);
+
+  &.inactive {
+    opacity: 0.4;
+  }
+}
+
+.edge-hitarea {
+  cursor: pointer;
+}
+
+.edge-line {
+  stroke-width: 2;
+  transition: stroke 150ms;
+  pointer-events: none;
+}
+
+.node-group {
+  cursor: pointer;
+
+  &.inactive-fill {
+    opacity: 0.45;
+  }
+}
+
+.node-rect {
+  stroke: transparent;
+  stroke-width: 4;
+  transition: stroke 150ms;
+
+  &.current {
+    stroke: var(--mainnet-alt);
+  }
+
+  &.related {
+    stroke: rgba(255, 255, 255, 0.6);
+  }
+
+  &.hovered {
+    stroke: white;
+  }
+}
+
+.node-label {
+  font-size: 12px;
+  fill: white;
+  pointer-events: none;
+  font-weight: 700;
+}
+
+.cluster-tooltip {
+  position: absolute;
+  background: color-mix(in srgb, var(--active-bg) 95%, transparent);
+  border-radius: 4px;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
+  color: var(--tooltip-grey);
+  padding: 10px 15px;
+  text-align: left;
+  pointer-events: none;
+  max-width: 350px;
+
+  p {
+    margin: 0;
+    white-space: nowrap;
+  }
+}
