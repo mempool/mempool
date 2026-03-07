@@ -93,7 +93,23 @@
       (toggleCpfp$)="this.showCpfpDetails = !this.showCpfpDetails"
     ></app-transaction-details>
   
-    <app-cpfp-info *ngIf="showCpfpDetails" [cpfpInfo]="cpfpInfo" [tx]="transaction"></app-cpfp-info>
+    <ng-container *ngIf="showCpfpDetails">
+      <ng-container *ngIf="cpfpInfo?.cluster; else legacyCpfpRaw">
+        <br>
+        <div class="title float-left">
+          <h2 i18n="transaction.cluster-mempool-chunking|Cluster Mempool Chunking">Cluster Mempool Chunking</h2>
+        </div>
+        <div class="clearfix"></div>
+        <div class="box">
+          <app-cluster-diagram
+            [cluster]="cpfpInfo.cluster" [txid]="transaction.txid">
+          </app-cluster-diagram>
+        </div>
+      </ng-container>
+      <ng-template #legacyCpfpRaw>
+        <app-cpfp-info [cpfpInfo]="cpfpInfo" [tx]="transaction"></app-cpfp-info>
+      </ng-template>
+    </ng-container>
     <br>
 
     <ng-container *ngIf="flowEnabled; else flowPlaceholder">
