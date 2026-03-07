@@ -1,6 +1,6 @@
 import DB from '../database';
 import logger from '../logger';
-import { Ancestor, CpfpInfo } from '../mempool.interfaces';
+import { Ancestor, CpfpCluster, CpfpInfo, TemplateAlgorithm } from '../mempool.interfaces';
 import cpfpRepository from './CpfpRepository';
 
 class TransactionRepository {
@@ -72,6 +72,9 @@ class TransactionRepository {
         const clusterId = txRows[0].root.toLowerCase();
         const cluster = await cpfpRepository.$getCluster(clusterId);
         if (cluster) {
+          if (cluster.templateAlgorithm === TemplateAlgorithm.clusterMempool && cluster.clusterData) {
+            return this.convertCpfpCM(txid, cluster);
+          }
           return this.convertCpfp(txid, cluster);
         }
       }
@@ -114,6 +117,95 @@ class TransactionRepository {
       descendants,
       ancestors,
       effectiveFeePerVsize: cluster.effectiveFeePerVsize,
+    };
+  }
+
+  private convertCpfpCM(txid: string, cluster: CpfpCluster): CpfpInfo {
+    const clusterData = cluster.clusterData;
+    if (!clusterData) {
+      return { ancestors: [], descendants: [], effectiveFeePerVsize: 0 };
+    }
+
+    // Find which chunk this tx belongs to
+    let txFlatIdx = -1;
+    let txChunkIndex = -1;
+    for (let i = 0; i < clusterData.txs.length; i++) {
+      if (clusterData.txs[i].txid === txid) {
+        txFlatIdx = i;
+        break;
+      }
+    }
+
+    // Find the chunk containing this tx
+    for (let chunkIdx = 0; chunkIdx < clusterData.chunks.length; chunkIdx++) {
+      if (clusterData.chunks[chunkIdx].txs.includes(txFlatIdx)) {
+        txChunkIndex = chunkIdx;
+        break;
+      }
+    }
+
+    // Derive ancestors/descendants from in-chunk depgraph parents
+    // For CM, ancestors are the tx's depgraph parents within the cluster,
+    // descendants are txs that depend on this tx
+    const ancestors: Ancestor[] = [];
+    const descendants: Ancestor[] = [];
+
+    if (txFlatIdx >= 0) {
+      // Build child map
+      const childMap = new Map<number, number[]>();
+      for (let i = 0; i < clusterData.txs.length; i++) {
+        for (const parentIdx of clusterData.txs[i].parents) {
+          let children = childMap.get(parentIdx);
+          if (!children) {
+            children = [];
+            childMap.set(parentIdx, children);
+          }
+          children.push(i);
+        }
+      }
+
+      const ancestorSet = new Set<number>();
+      const stack = [...clusterData.txs[txFlatIdx].parents];
+      while (stack.length) {
+        const idx = stack.pop();
+        if (idx === undefined || ancestorSet.has(idx)) {
+          continue;
+        }
+        ancestorSet.add(idx);
+        stack.push(...clusterData.txs[idx].parents);
+      }
+
+      const descendantSet = new Set<number>();
+      const dStack = [...(childMap.get(txFlatIdx) || [])];
+      while (dStack.length) {
+        const idx = dStack.pop();
+        if (idx === undefined || descendantSet.has(idx)) {
+          continue;
+        }
+        descendantSet.add(idx);
+        dStack.push(...(childMap.get(idx) || []));
+      }
+
+      for (const idx of ancestorSet) {
+        const tx = clusterData.txs[idx];
+        ancestors.push({ txid: tx.txid, weight: tx.weight, fee: tx.fee });
+      }
+      for (const idx of descendantSet) {
+        const tx = clusterData.txs[idx];
+        descendants.push({ txid: tx.txid, weight: tx.weight, fee: tx.fee });
+      }
+    }
+
+    const effectiveFeePerVsize = txChunkIndex >= 0 ? clusterData.chunks[txChunkIndex].feerate : 0;
+
+    return {
+      ancestors,
+      descendants,
+      effectiveFeePerVsize,
+      cluster: {
+        ...clusterData,
+        chunkIndex: txChunkIndex,
+      },
     };
   }
 }
