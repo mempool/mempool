@@ -68,6 +68,12 @@ export class BlockchainComponent implements OnInit, OnDestroy, OnChanges {
     return item.index;
   }
 
+  get isBlockDisplayToggled(): boolean {
+    // Return true when the alternate block display mode is active.
+    // Derive this directly from the same state variable used in toggleBlockDisplayMode().
+    return this.blockDisplayMode === 'fees';
+  }
+
   toggleTimeDirection(): void {
     this.ltrTransitionEnabled = false;
     const prevOffset = this.mempoolOffset;

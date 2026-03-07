@@ -1,4 +1,4 @@
-<div class="text-center" class="blockchain-wrapper" [class.time-ltr]="timeLtr" [class.ltr-transition]="ltrTransitionEnabled" #container>
+<div class="text-center blockchain-wrapper" [class.time-ltr]="timeLtr" [class.ltr-transition]="ltrTransitionEnabled" #container>
   <div #positionContainer class="position-container" [ngClass]="network ? network : ''" [style]="positionStyle">
     <span>
       <div class="blocks-wrapper">
@@ -10,8 +10,25 @@
         </ng-container>
       </div>
       <div id="divider" [hidden]="pageIndex > 0">
-        <button class="block-display-toggle" (click)="toggleBlockDisplayMode()"><fa-icon [icon]="['fas', 'exchange-alt']" [fixedWidth]="true"></fa-icon></button>
-        <button class="time-toggle" (click)="toggleTimeDirection()"><fa-icon [icon]="['fas', 'exchange-alt']" [fixedWidth]="true"></fa-icon></button>
+        <button
+          type="button"
+          class="block-display-toggle"
+          (click)="toggleBlockDisplayMode()"
+          aria-label="Toggle block display mode"
+          title="Toggle block display mode"
+          [attr.aria-pressed]="isBlockDisplayToggled">
+          <fa-icon [icon]="['fas', 'exchange-alt']" [fixedWidth]="true"></fa-icon>
+        </button>
+      
+        <button
+          type="button"
+          class="time-toggle"
+          (click)="toggleTimeDirection()"
+          aria-label="Toggle time direction"
+          title="Toggle time direction"
+          [attr.aria-pressed]="timeLtr">
+          <fa-icon [icon]="['fas', 'exchange-alt']" [fixedWidth]="true"></fa-icon>
+        </button>
       </div>
     </span>
   </div>
