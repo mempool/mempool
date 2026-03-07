@@ -3,7 +3,7 @@ import * as WebSocket from 'ws';
 import {
   BlockExtended, TransactionExtended, MempoolTransactionExtended, WebsocketResponse,
   OptimizedStatistic, ILoadingIndicators, GbtCandidates, TxTrackingInfo,
-  MempoolDelta, MempoolDeltaTxids
+  MempoolDelta, MempoolDeltaTxids, TemplateAlgorithm, CpfpInfo
 } from '../mempool.interfaces';
 import blocks from './blocks';
 import memPool from './mempool';
@@ -35,7 +35,7 @@ interface AddressTransactions {
   removed: MempoolTransactionExtended[],
 }
 import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
-import { calculateMempoolTxCpfp } from './cpfp';
+import { calculateMempoolTxCpfp, calculateGoodBlockCpfp, calculateClusterMempoolBlockCpfp } from './cpfp';
 import stratumApi, { StratumJob } from './services/stratum';
 
 // valid 'want' subscriptions
@@ -607,7 +607,10 @@ class WebsocketHandler {
       removed = candidates?.removed || [];
     }
 
-    if (config.MEMPOOL.RUST_GBT) {
+    if (config.MEMPOOL.CLUSTER_MEMPOOL) {
+      const cmBlocks = mempool.clusterMempool?.getBlocks(config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT) ?? [];
+      mempoolBlocks.processClusterMempoolBlocks(cmBlocks, newMempool, mempool.getAccelerations());
+    } else if (config.MEMPOOL.RUST_GBT) {
       await mempoolBlocks.$rustUpdateBlockTemplates(transactionIds, newMempool, added, removed, candidates, true);
     } else {
       await mempoolBlocks.$updateBlockTemplates(transactionIds, newMempool, added, removed, candidates, accelerationDelta, true, true);
@@ -904,15 +907,22 @@ class WebsocketHandler {
             calculateMempoolTxCpfp(mempoolTx, newMempool);
           }
           if (mempoolTx.cpfpDirty) {
-            positionData['cpfp'] = {
-              ancestors: mempoolTx.ancestors,
+            const cpfp: CpfpInfo = {
+              ancestors: mempoolTx.ancestors || [],
               bestDescendant: mempoolTx.bestDescendant || null,
-              descendants: mempoolTx.descendants || null,
-              effectiveFeePerVsize: mempoolTx.effectiveFeePerVsize || null,
+              descendants: mempoolTx.descendants,
+              effectiveFeePerVsize: mempoolTx.effectiveFeePerVsize,
               sigops: mempoolTx.sigops,
               adjustedVsize: mempoolTx.adjustedVsize,
               acceleration: mempoolTx.acceleration,
             };
+            if (config.MEMPOOL.CLUSTER_MEMPOOL && mempoolTx.clusterId != null) {
+              const cluster = mempool.clusterMempool?.getClusterForApi(mempoolTx.txid);
+              if (cluster) {
+                cpfp.cluster = cluster;
+              }
+            }
+            positionData['cpfp'] = cpfp;
           }
           response['txPosition'] = JSON.stringify(positionData);
         }
@@ -947,11 +957,17 @@ class WebsocketHandler {
               txInfo.cpfp = {
                 ancestors: mempoolTx.ancestors,
                 bestDescendant: mempoolTx.bestDescendant || null,
-                descendants: mempoolTx.descendants || null,
-                effectiveFeePerVsize: mempoolTx.effectiveFeePerVsize || null,
+                descendants: mempoolTx.descendants,
+                effectiveFeePerVsize: mempoolTx.effectiveFeePerVsize,
                 sigops: mempoolTx.sigops,
                 adjustedVsize: mempoolTx.adjustedVsize,
               };
+              if (config.MEMPOOL.CLUSTER_MEMPOOL && mempoolTx.clusterId != null) {
+                const cluster = mempool.clusterMempool?.getClusterForApi(mempoolTx.txid);
+                if (cluster) {
+                  (txInfo.cpfp as CpfpInfo).cluster = cluster;
+                }
+              }
             }
           }
           txs[txid] = txInfo;

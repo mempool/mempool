@@ -1,7 +1,8 @@
-import { Ancestor, CpfpCluster, CpfpInfo, CpfpSummary, MempoolTransactionExtended, TransactionExtended } from '../mempool.interfaces';
+import { Ancestor, CpfpCluster, CpfpInfo, CpfpSummary, MempoolTransactionExtended, TemplateAlgorithm, TransactionExtended } from '../mempool.interfaces';
 import { GraphTx, convertToGraphTx, expandRelativesGraph, initializeRelatives, makeBlockTemplate, mempoolComparator, removeAncestors, setAncestorScores } from './mini-miner';
 import memPool from './mempool';
 import { Acceleration } from './acceleration/acceleration';
+import { ClusterMempool } from '../cluster-mempool/cluster-mempool';
 
 const CPFP_UPDATE_INTERVAL = 60_000; // update CPFP info at most once per 60s per transaction
 const MAX_CLUSTER_ITERATIONS = 100;
@@ -161,6 +162,53 @@ export function calculateGoodBlockCpfp(height: number, transactions: MempoolTran
     transactions: transactions.map(tx => txMap[tx.txid]),
     clusters: clusterArray,
     version: 2,
+  };
+}
+
+export function calculateClusterMempoolBlockCpfp(height: number, transactions: MempoolTransactionExtended[], accelerations: Acceleration[]): CpfpSummary {
+  const txMap: { [txid: string]: MempoolTransactionExtended } = {};
+  for (const tx of transactions) {
+    txMap[tx.txid] = tx;
+  }
+
+  const accelMap: { [txid: string]: { feeDelta: number } } = {};
+  for (const acc of accelerations) {
+    accelMap[acc.txid] = { feeDelta: acc.max_bid };
+  }
+
+  const cm = new ClusterMempool(txMap, accelMap);
+
+  const seenClusters = new Set<number>();
+  const clusters: CpfpCluster[] = [];
+
+  for (const tx of transactions) {
+    if (tx.clusterId !== undefined && !seenClusters.has(tx.clusterId)) {
+      seenClusters.add(tx.clusterId);
+
+      const clusterData = cm.getCluster(tx.clusterId);
+      if (clusterData && clusterData.txs.length > 1) {
+        let totalFee = 0;
+        let totalWeight = 0;
+        for (const t of clusterData.txs) {
+          totalFee += t.fee;
+          totalWeight += t.weight;
+        }
+        clusters.push({
+          root: clusterData.txs[0].txid,
+          height,
+          txs: clusterData.txs.map(t => ({ txid: t.txid, weight: t.weight, fee: t.fee })),
+          effectiveFeePerVsize: totalFee / (totalWeight / 4),
+          templateAlgorithm: TemplateAlgorithm.clusterMempool,
+          clusterData,
+        });
+      }
+    }
+  }
+
+  return {
+    transactions: transactions.map(tx => txMap[tx.txid]),
+    clusters,
+    version: 3,
   };
 }
 

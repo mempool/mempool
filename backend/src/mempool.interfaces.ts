@@ -28,6 +28,11 @@ export interface PoolStats extends PoolInfo {
   emptyBlocks: number;
 }
 
+export enum TemplateAlgorithm {
+  legacy = 0,
+  clusterMempool = 1,
+}
+
 export interface BlockAudit {
   version: number,
   time: number,
@@ -132,6 +137,8 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
   replacement?: boolean;
   uid?: number;
   flags?: number;
+  clusterId?: number;
+  chunkIndex?: number;
 }
 
 export interface MempoolTransactionExtended extends TransactionExtended {
@@ -227,6 +234,7 @@ export interface CpfpInfo {
   adjustedVsize?: number,
   acceleration?: boolean,
   fee?: number;
+  cluster?: CpfpClusterData & { chunkIndex: number };
 }
 
 export interface TransactionStripped {
