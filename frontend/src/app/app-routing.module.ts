@@ -7,7 +7,7 @@ import { MempoolBlockViewComponent } from '@components/mempool-block-view/mempoo
 import { ClockComponent } from '@components/clock/clock.component';
 import { StatusViewComponent } from '@components/status-view/status-view.component';
 import { AddressGroupComponent } from '@components/address-group/address-group.component';
-import { TrackerGuard } from '@app/route-guards';
+import { NetworkEnabledGuard, TrackerGuard } from '@app/route-guards';
 
 const browserWindow = window || {};
 // @ts-ignore
@@ -16,6 +16,7 @@ const browserWindowEnv = browserWindow.__env || {};
 let routes: Routes = [
   {
     path: 'testnet',
+    canMatch: [NetworkEnabledGuard],
     children: [
       {
         path: '',
@@ -54,6 +55,7 @@ let routes: Routes = [
   },
   {
     path: 'testnet4',
+    canMatch: [NetworkEnabledGuard],
     children: [
       {
         path: '',
@@ -92,6 +94,7 @@ let routes: Routes = [
   },
   {
     path: 'signet',
+    canMatch: [NetworkEnabledGuard],
     children: [
       {
         path: 'mining/blocks',
