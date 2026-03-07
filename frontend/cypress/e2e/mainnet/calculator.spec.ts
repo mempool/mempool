@@ -83,22 +83,28 @@ describe('Calculator', () => {
     });
 
     describe('bitcoin input updates fiat and sats', () => {
-      it('updates fiat and sats when entering 0.5 BTC', () => {
-        const expectedFiat = Math.round(MOCK_BTC_PRICE_USD * 0.5 * 100) / 100;
-        cy.get('input[formControlName="bitcoin"]').clear().type('0.5');
-        cy.get('input[formControlName="satoshis"]').invoke('val').should('equal', '50000000');
+      it('updates fiat and sats when entering 0.33 BTC', () => {
+        const expectedFiat = Math.round(MOCK_BTC_PRICE_USD * 0.33 * 100) / 100; // 40740.48 USD
+        cy.get('input[formControlName="bitcoin"]').clear().type('0.33');
+        cy.get('input[formControlName="satoshis"]').invoke('val').should('equal', '33000000');
         cy.get('input[formControlName="fiat"]').invoke('val').then((fiatVal) => {
           const fiat = parseFloat(String(fiatVal).replace(/,/g, ''));
           expect(fiat).to.equal(expectedFiat);
         });
+        cy.get('.fiat-text').invoke('text').then((text) => {
+          expect(text.trim()).to.equal('$40,740.48');
+        });
       });
 
       it('updates fiat and sats when entering 1 sat (0.00000001 BTC)', () => {
-        const expectedFiat = (MOCK_BTC_PRICE_USD / 100_000_000 * 100 / 100).toFixed(8);
+        const expectedFiat = (MOCK_BTC_PRICE_USD / 100_000_000 * 100 / 100);
         cy.get('input[formControlName="bitcoin"]').clear().type('0.00000001');
         cy.get('input[formControlName="satoshis"]').invoke('val').should('equal', '1');
         cy.get('input[formControlName="fiat"]').invoke('val').then((fiatVal) => {
-          expect(String(fiatVal)).to.equal(expectedFiat);
+          expect(String(fiatVal)).to.equal(String(expectedFiat));
+        });
+        cy.get('.fiat-text').invoke('text').then((text) => {
+          expect(text.trim()).to.equal('$0.00');
         });
       });
     });
@@ -220,6 +226,9 @@ describe('Calculator', () => {
         cy.get('.symbol').invoke('text').then((text) => {
           expect(text.replace(/,/g, '')).to.include(String(MOCK_BTC_PRICE_JPY));
         });
+        cy.get('.fiat-text').invoke('text').then((text) => {
+          expect(text.trim()).to.equal('¥11,057,757');
+        });
       });
 
       it('displays 1 BTC with correct sats and fiat in JPY', () => {
@@ -234,13 +243,17 @@ describe('Calculator', () => {
       });
 
       it('updates fiat and sats when entering 0.5 BTC in JPY', () => {
-        const expectedFiat = Math.round(MOCK_BTC_PRICE_JPY * 0.5 * 100) / 100;
+        const expectedFiat = Math.round(MOCK_BTC_PRICE_JPY * 0.5)
         cy.get('input[formControlName="bitcoin"]').clear().type('0.5');
         cy.get('input[formControlName="satoshis"]').invoke('val').should('equal', '50000000');
         cy.get('input[formControlName="fiat"]').invoke('val').then((fiatVal) => {
           const fiat = parseFloat(String(fiatVal).replace(/,/g, ''));
           expect(fiat).to.equal(expectedFiat);
         });
+        cy.get('.fiat-text').invoke('text').then((text) => {
+          expect(text.trim()).to.equal('¥5,528,879');
+        });
+
       });
 
       it('updates BTC and sats when entering fiat value in JPY', () => {
@@ -258,12 +271,15 @@ describe('Calculator', () => {
 
       it('updates BTC and fiat when entering 10000 sats in JPY', () => {
         const satsAmount = 10000;
-        const expectedFiat = Math.round((satsAmount / 100_000_000) * MOCK_BTC_PRICE_JPY * 100) / 100;
+        const expectedFiat = Math.round((satsAmount / 100_000_000) * MOCK_BTC_PRICE_JPY);
         cy.get('input[formControlName="satoshis"]').clear().type(String(satsAmount));
         cy.get('input[formControlName="bitcoin"]').invoke('val').should('equal', '0.00010000');
         cy.get('input[formControlName="fiat"]').invoke('val').then((fiatVal) => {
           const fiat = parseFloat(String(fiatVal).replace(/,/g, ''));
           expect(fiat).to.equal(expectedFiat);
+        });
+        cy.get('.fiat-text').invoke('text').then((text) => {
+          expect(text.trim()).to.equal('¥1,106');
         });
       });
     });
