@@ -32,6 +32,7 @@
     "AUDIT": true,
     "RUST_GBT": false,
     "LIMIT_GBT": false,
+    "CLUSTER_MEMPOOL": false,
     "CPFP_INDEXING": true,
     "MAX_BLOCKS_BULK_QUERY": 999,
     "DISK_CACHE_BLOCK_INTERVAL": 999,
