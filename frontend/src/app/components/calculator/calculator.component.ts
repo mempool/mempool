@@ -21,6 +21,7 @@ export class CalculatorComponent implements OnInit {
   currentPrice = 0;
   isMaxSupply = false;
   currentCurrency = 'USD';
+  currencyDecimals = 2;
 
   currency$ = this.stateService.fiatCurrency$;
   price$: Observable<number>;
@@ -50,6 +51,7 @@ export class CalculatorComponent implements OnInit {
       switchMap((result) => {
         currency = result;
         this.currentCurrency = result;
+        this.updateCurrencyDecimals();
         return this.stateService.conversions$.asObservable();
       }),
       map((conversions) => {
@@ -208,17 +210,19 @@ export class CalculatorComponent implements OnInit {
     return (Math.round(num * factor) / factor).toFixed(decimals);
   }
 
-  getCurrencyDecimals(): number {
+  private updateCurrencyDecimals(): void {
     try {
       const formatter = new Intl.NumberFormat(this.locale, {
         style: 'currency',
         currency: this.currentCurrency
       });
-      const parts = formatter.formatToParts(1.11);
-      const fractionPart = parts.find(part => part.type === 'fraction');
-      return fractionPart ? fractionPart.value.length : 0;
+      this.currencyDecimals = formatter.resolvedOptions().maximumFractionDigits;
     } catch {
-      return 2; // Default to 2 decimal places
+      this.currencyDecimals = 2; // Default to 2 decimal places
     }
+  }
+
+  getCurrencyDecimals(): number {
+    return this.currencyDecimals;
   }
 }
