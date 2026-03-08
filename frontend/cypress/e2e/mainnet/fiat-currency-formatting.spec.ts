@@ -156,48 +156,29 @@ describe('Fiat Currency Formatting', () => {
       });
 
       it('displays USD fiat values in block reward with dollar symbol', () => {
-
-        selectCurrency('USD');
-        selectFiatMode();
-
-        cy.get(':nth-child(3) > .row > :nth-child(1) .fiat').eq(1).scrollIntoView();
-        cy.get('app-amount .fiat').eq(1).scrollIntoView();
-
-        // transaction details
-        cy.get(':nth-child(3) > .row > :nth-child(1) .fiat').eq(1).scrollIntoView();
-        cy.get(':nth-child(3) > .row > :nth-child(1) .fiat').eq(1).invoke('text').then((text) => {
-          expect(text.trim()).to.include('$');
-        });
-
-        // block reward
-        cy.get('app-amount .fiat').eq(1).invoke('text').then((text) => {
-          expect(text.trim()).to.include('$');
-        });
-
-      });
-
-      it('displays JPY fiat values without decimals', () => {
-        selectCurrency('JPY');
-        selectFiatMode();
-        
-        cy.get(':nth-child(3) > .row > :nth-child(1) .fiat').eq(1).scrollIntoView();
-        cy.get('app-amount .fiat').eq(1).scrollIntoView();
-
-        cy.get(':nth-child(3) > .row > :nth-child(1) .fiat').eq(1).invoke('text').then((text) => {
-          expect(text.trim()).to.include('¥');
-          expect(text).to.not.match(/\.\d+/);
-        }); 
-        
-        // block reward
-        cy.get('app-amount .fiat').eq(1).scrollIntoView();
-        cy.get('app-amount .fiat').first().should(($el) => {
-          const text = $el.text().trim();
-          expect(text).to.include('¥');
-          expect(text).to.not.match(/\.\d+/);
+        cy.wait('@outspends').then(() => {
+          cy.waitUntil(() => cy.get('.fiat').each(($el) => $el.is(':visible') && $el.text().trim().includes('$')));
+          selectCurrency('USD');
+          selectFiatMode();
+          cy.get('.fiat').each(($el) => {
+            expect($el.text().trim()).to.include('$');
+          });
         });
       });
-    });
-
+    
+    it('displays JPY fiat values without decimals', () => {
+        cy.wait('@outspends').then(() => {
+          cy.waitUntil(() => cy.get('.fiat').each(($el) => $el.is(':visible') && $el.text().trim().includes('$')));
+          selectCurrency('JPY');
+          selectFiatMode();
+          cy.get('.fiat').each(($el) => {
+            expect($el.text().trim()).to.include('¥');
+            expect($el.text().trim()).to.not.match(/\.\d+/);
+          });
+        });        
+    })
+  });
+  
     describe('Address Page', () => {
       beforeEach(() => {
         cy.visit('/address/1wizaAB16Wrua9V58uNvqktyq2LBLtYso');
@@ -206,8 +187,8 @@ describe('Fiat Currency Formatting', () => {
       it('displays USD fiat values with dollar symbol', () => {
         selectCurrency('USD');
         selectFiatMode();
-        cy.get('app-amount .fiat', { timeout: 10000 }).first().invoke('text').then((text) => {
-          expect(text.trim()).to.include('$');
+        cy.get('app-amount .fiat', { timeout: 10000 }).each(($el) => {
+          expect($el.text().trim()).to.include('$');
         });
       });
 
@@ -269,8 +250,8 @@ describe('Fiat Currency Formatting', () => {
 
         cy.waitForSkeletonGone();
 
-        cy.get('app-mempool-block .fiat').invoke('text').then((text) => {
-          expect(text.trim()).to.include('$');
+        cy.get('app-mempool-block .fiat').each(($el) => {
+          expect($el.text().trim()).to.include('$');
         });
       });
 
