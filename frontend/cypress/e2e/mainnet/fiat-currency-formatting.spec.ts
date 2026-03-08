@@ -147,6 +147,7 @@ describe('Fiat Currency Formatting', () => {
 
     describe('Block Page', () => {
       beforeEach(() => {
+        cy.viewport(1080, 1920); // force taller screen to avoid scrollbars
         cy.intercept('/api/v1/blocks/0').as('blocks-0');
         cy.intercept('/api/v1/blocks/10').as('blocks-10');
         cy.intercept('/api/v1/blocks/20').as('blocks-20');
