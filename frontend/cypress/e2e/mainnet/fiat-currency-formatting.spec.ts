@@ -151,7 +151,7 @@ describe('Fiat Currency Formatting', () => {
         cy.intercept('/api/v1/blocks/10').as('blocks-10');
         cy.intercept('/api/v1/blocks/20').as('blocks-20');
         cy.intercept('/api/txs/outspends*').as('outspends');
-        cy.visit('/block/0');
+        cy.visit('/block/100000');
       });
 
       it('displays USD fiat values in block reward with dollar symbol', () => {
