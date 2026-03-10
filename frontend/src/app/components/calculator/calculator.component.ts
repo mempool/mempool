@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { combineLatest, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
@@ -20,12 +20,15 @@ export class CalculatorComponent implements OnInit {
   form: FormGroup;
   currentPrice = 0;
   isMaxSupply = false;
+  currentCurrency = 'USD';
+  currencyDecimals = 2;
 
   currency$ = this.stateService.fiatCurrency$;
   price$: Observable<number>;
   lastFiatPrice$: Observable<number>;
 
   constructor(
+    @Inject(LOCALE_ID) private locale: string,
     private stateService: StateService,
     private formBuilder: FormBuilder,
     private websocketService: WebsocketService,
@@ -47,6 +50,8 @@ export class CalculatorComponent implements OnInit {
     this.price$ = this.currency$.pipe(
       switchMap((result) => {
         currency = result;
+        this.currentCurrency = result;
+        this.updateCurrencyDecimals();
         return this.stateService.conversions$.asObservable();
       }),
       map((conversions) => {
@@ -132,8 +137,11 @@ export class CalculatorComponent implements OnInit {
     if (name === 'bitcoin' && this.countDecimals(sanitizedValue) > 8) {
       sanitizedValue = this.toFixedWithoutRounding(sanitizedValue, 8);
     }
-    if (name === 'fiat' && this.countDecimals(sanitizedValue) > 2) {
-      sanitizedValue = this.toFixedWithoutRounding(sanitizedValue, 2);
+    if (name === 'fiat') {
+      const decimals = this.getCurrencyDecimals();
+      if (this.countDecimals(sanitizedValue) > decimals) {
+        sanitizedValue = this.toFixedWithoutRounding(sanitizedValue, decimals);
+      }
     }
     if (sanitizedValue === '') {
       sanitizedValue = '0';
@@ -176,12 +184,20 @@ export class CalculatorComponent implements OnInit {
   }
 
   formatFiat(num: number): string | number {
+    // Get the number of decimal places for the current currency
+    const decimals = this.getCurrencyDecimals();
+
+    if (decimals === 0) {
+      return Math.round(num);
+    }
+
     if (Math.abs(num) >= 1000) {
-      // For values >= 1000: show 2 decimals, or 0 if whole number
+      // For values >= 1000: show currency-specific decimals, or 0 if whole number
       if (num % 1 === 0) {
         return Math.round(num);
       }
-      return (Math.round(num * 100) / 100).toFixed(2);
+      const factor = Math.pow(10, decimals);
+      return (Math.round(num * factor) / factor).toFixed(decimals);
     }
     if (num % 1 === 0) {
       return Math.round(num);
@@ -190,6 +206,23 @@ export class CalculatorComponent implements OnInit {
     if (Math.abs(num) < 1 && num !== 0) {
       return num.toFixed(8);
     }
-    return (Math.round(num * 100) / 100).toFixed(2);
+    const factor = Math.pow(10, decimals);
+    return (Math.round(num * factor) / factor).toFixed(decimals);
+  }
+
+  private updateCurrencyDecimals(): void {
+    try {
+      const formatter = new Intl.NumberFormat(this.locale, {
+        style: 'currency',
+        currency: this.currentCurrency
+      });
+      this.currencyDecimals = formatter.resolvedOptions().maximumFractionDigits;
+    } catch {
+      this.currencyDecimals = 2; // Default to 2 decimal places
+    }
+  }
+
+  getCurrencyDecimals(): number {
+    return this.currencyDecimals;
   }
 }
