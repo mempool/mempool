@@ -6,11 +6,13 @@ import { Cluster } from './cluster-mempool';
 export interface ProjectedBlock {
   txids: string[];
   weight: number;
+  sigops: number;
 }
 
 interface ChunkHeapEntry {
   fee: number;
   weight: number;
+  sigops: number;
   equalFeeratePrefixWeight: number;
   maxOrder: number;
   clusterId: number;
@@ -18,6 +20,7 @@ interface ChunkHeapEntry {
 }
 
 const BLOCK_WEIGHT_UNITS = 4_000_000;
+const MAX_BLOCK_SIGOPS_COST = 80_000;
 const COINBASE_RESERVED_WEIGHT = 8000;
 const MAX_CONSECUTIVE_FAILURES = 1000;
 const MAX_WASTED_WEIGHT = 4000;
@@ -37,12 +40,17 @@ function equalFeerate(a: LinearizationChunk, b: LinearizationChunk): boolean {
   return a.fee * b.weight === b.fee * a.weight;
 }
 
-function makeChunkHeapEntry(cluster: Cluster, chunkIndex: number): ChunkHeapEntry {
+function makeChunkHeapEntry(cluster: Cluster, chunkIndex: number, mempool: { [txid: string]: MempoolTransactionExtended }): ChunkHeapEntry {
   const chunk = cluster.chunks[chunkIndex];
   let maxOrder = 0;
+  let sigops = 0;
   for (const tx of chunk.txs) {
     if (tx.order > maxOrder) {
       maxOrder = tx.order;
+    }
+    const mempoolTx = mempool[tx.txid];
+    if (mempoolTx) {
+      sigops += mempoolTx.sigops || 0;
     }
   }
   let prefixWeight = chunk.weight;
@@ -56,6 +64,7 @@ function makeChunkHeapEntry(cluster: Cluster, chunkIndex: number): ChunkHeapEntr
   return {
     fee: chunk.fee,
     weight: chunk.weight,
+    sigops,
     equalFeeratePrefixWeight: prefixWeight,
     maxOrder,
     clusterId: cluster.id,
@@ -63,11 +72,11 @@ function makeChunkHeapEntry(cluster: Cluster, chunkIndex: number): ChunkHeapEntr
   };
 }
 
-function buildChunkHeap(clusters: Map<number, Cluster>): PairingHeap<ChunkHeapEntry> {
+function buildChunkHeap(clusters: Map<number, Cluster>, mempool: { [txid: string]: MempoolTransactionExtended }): PairingHeap<ChunkHeapEntry> {
   const heap = new PairingHeap<ChunkHeapEntry>(chunkHeapHigherPriority);
   for (const cluster of clusters.values()) {
     if (cluster.chunks.length > 0) {
-      heap.add(makeChunkHeapEntry(cluster, 0));
+      heap.add(makeChunkHeapEntry(cluster, 0, mempool));
     }
   }
   return heap;
@@ -79,11 +88,13 @@ export function assembleBlocks(
   mempool: { [txid: string]: MempoolTransactionExtended },
   enforceLimit: boolean,
 ): ProjectedBlock[] {
-  const heap = buildChunkHeap(clusters);
+  const heap = buildChunkHeap(clusters, mempool);
   const blocks: ProjectedBlock[] = [];
   for (let blockIdx = 0; blockIdx < n; blockIdx++) {
-    const maxWeight = enforceLimit || blockIdx < n - 1 ? BLOCK_WEIGHT_UNITS : Infinity;
-    const block = fillBlock(heap, clusters, mempool, maxWeight);
+    const limited = enforceLimit || blockIdx < n - 1;
+    const maxWeight = limited ? BLOCK_WEIGHT_UNITS : Infinity;
+    const maxSigops = limited ? MAX_BLOCK_SIGOPS_COST : Infinity;
+    const block = fillBlock(heap, clusters, mempool, maxWeight, maxSigops);
     if (block.txids.length === 0) {
       break;
     }
@@ -97,8 +108,9 @@ function fillBlock(
   clusters: Map<number, Cluster>,
   mempool: { [txid: string]: MempoolTransactionExtended },
   maxWeight: number,
+  maxSigops: number,
 ): ProjectedBlock {
-  const block: ProjectedBlock = { txids: [], weight: COINBASE_RESERVED_WEIGHT };
+  const block: ProjectedBlock = { txids: [], weight: COINBASE_RESERVED_WEIGHT, sigops: 0 };
   const deferred: ChunkHeapEntry[] = [];
   let consecutiveFailed = 0;
   let full = false;
@@ -110,14 +122,16 @@ function fillBlock(
 
     if (!cluster || !chunk) {
       // stale entry
-    } else if (block.weight + entry.weight < maxWeight) {
+    } else if (block.weight + entry.weight < maxWeight
+      && block.sigops + entry.sigops < maxSigops) {
       consecutiveFailed = 0;
       block.weight += chunkWeight(chunk, mempool);
+      block.sigops += entry.sigops;
       for (const tx of chunk.txs) {
         block.txids.push(tx.txid);
       }
       if (entry.chunkIndex + 1 < cluster.chunks.length) {
-        heap.add(makeChunkHeapEntry(cluster, entry.chunkIndex + 1));
+        heap.add(makeChunkHeapEntry(cluster, entry.chunkIndex + 1, mempool));
       }
     } else {
       deferred.push(entry);
