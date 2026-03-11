@@ -13,6 +13,7 @@ import { Acceleration } from './services/acceleration';
 import accelerationApi from './services/acceleration';
 import redisCache from './redis-cache';
 import blocks from './blocks';
+import { ClusterMempool } from '../cluster-mempool/cluster-mempool';
 
 class Mempool {
   private inSync: boolean = false;
@@ -22,6 +23,7 @@ class Mempool {
   private spendMap = new Map<string, MempoolTransactionExtended>();
   private recentlyDeleted: MempoolTransactionExtended[][] = []; // buffer of transactions deleted in recent mempool updates
   private mempoolInfo: IBitcoinApi.MempoolInfo;
+  public clusterMempool: ClusterMempool | null = null;
   private mempoolChangedCallback: ((newMempool: {[txId: string]: MempoolTransactionExtended; }, newTransactions: MempoolTransactionExtended[],
     deletedTransactions: MempoolTransactionExtended[][], accelerationDelta: string[]) => void) | undefined;
   private $asyncMempoolChangedCallback: ((newMempool: {[txId: string]: MempoolTransactionExtended; }, mempoolSize: number, newTransactions: MempoolTransactionExtended[],
@@ -62,6 +64,9 @@ class Mempool {
       minrelaytxfee: isLiquid ? 0.00000100 : 0.00001000
     };
     this.txPerSecondInterval = setInterval(this.updateTxPerSecond.bind(this), 1000);
+    if (config.MEMPOOL.CLUSTER_MEMPOOL) {
+      this.clusterMempool = new ClusterMempool(this.mempoolCache, this.accelerations);
+    }
   }
 
   /**
@@ -152,6 +157,9 @@ class Mempool {
     if (config.MEMPOOL.CACHE_ENABLED && config.REDIS.ENABLED) {
       await redisCache.$flushTransactions();
       logger.debug(`Finished migrating cache transactions in ${((Date.now() - redisTimer) / 1000).toFixed(2)} seconds`);
+    }
+    if (config.MEMPOOL.CLUSTER_MEMPOOL) {
+      this.clusterMempool = new ClusterMempool(this.mempoolCache, this.accelerations);
     }
     if (this.mempoolChangedCallback) {
       this.mempoolChangedCallback(this.mempoolCache, [], [], []);
@@ -385,6 +393,14 @@ class Mempool {
     const accelerationDelta = accelerations != null ? await this.updateAccelerations(accelerations) : [];
     if (accelerationDelta.length) {
       hasChange = true;
+    }
+
+    if (config.MEMPOOL.CLUSTER_MEMPOOL && (newTransactions.length || deletedTransactions.length || accelerationDelta.length)) {
+      this.clusterMempool?.applyMempoolChange({
+        added: newTransactions,
+        removed: deletedTransactions.map(tx => tx.txid),
+        accelerations: this.getAccelerations(),
+      });
     }
 
     this.mempoolCacheDelta = Math.abs(transactions.length - newMempoolSize);
