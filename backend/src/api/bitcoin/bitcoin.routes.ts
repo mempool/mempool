@@ -12,7 +12,7 @@ import backendInfo from '../backend-info';
 import transactionUtils from '../transaction-utils';
 import { IEsploraApi } from './esplora-api.interface';
 import loadingIndicators from '../loading-indicators';
-import { TransactionExtended } from '../../mempool.interfaces';
+import { CpfpInfo, TransactionExtended } from '../../mempool.interfaces';
 import logger from '../../logger';
 import blocks from '../blocks';
 import bitcoinClient from './bitcoin-client';
@@ -191,11 +191,11 @@ class BitcoinRoutes {
     const tx = mempool.getMempool()[req.params.txId];
     if (tx) {
       if (tx?.cpfpChecked) {
-        res.json({
-          ancestors: tx.ancestors,
+        const response: CpfpInfo & { acceleratedBy?: number[], acceleratedAt?: number, feeDelta?: number } = {
+          ancestors: tx.ancestors || [],
           bestDescendant: tx.bestDescendant || null,
-          descendants: tx.descendants || null,
-          effectiveFeePerVsize: tx.effectiveFeePerVsize || null,
+          descendants: tx.descendants,
+          effectiveFeePerVsize: tx.effectiveFeePerVsize,
           sigops: tx.sigops,
           fee: tx.fee,
           adjustedVsize: tx.adjustedVsize,
@@ -203,7 +203,14 @@ class BitcoinRoutes {
           acceleratedBy: tx.acceleratedBy || undefined,
           acceleratedAt: tx.acceleratedAt || undefined,
           feeDelta: tx.feeDelta || undefined,
-        });
+        };
+        if (config.MEMPOOL.CLUSTER_MEMPOOL && tx.clusterId != null) {
+          const cluster = mempool.clusterMempool?.getClusterForApi(req.params.txId);
+          if (cluster) {
+            response.cluster = cluster;
+          }
+        }
+        res.json(response);
         return;
       }
 
