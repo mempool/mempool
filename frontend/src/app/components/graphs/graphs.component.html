@@ -1,4 +1,4 @@
-<div *ngIf="stateService.env.MINING_DASHBOARD || stateService.env.LIGHTNING || stateService.env.ACCELERATOR" class="mb-3 d-flex menu" [style]="{'flex-wrap': flexWrap ? 'wrap' : ''}">
+<div *ngIf="stateService.env.MINING_DASHBOARD || stateService.env.LIGHTNING || stateService.env.ACCELERATOR || (stateService.env.HISTORICAL_PRICE && isMainnet)" class="mb-3 d-flex menu" [style]="{'flex-wrap': flexWrap ? 'wrap' : ''}">
 
   <a routerLinkActive="active" class="btn btn-primary w-33"
     [routerLink]="['/graphs/mempool' | relativeUrl]">Mempool</a>
@@ -52,6 +52,12 @@
         i18n="accelerator.acceleration-fees">Acceleration Fees</a>
     </div>
   </div>
+
+  @if (stateService.env.HISTORICAL_PRICE && isMainnet) {
+    <a routerLinkActive="active" class="btn btn-primary w-33"
+      [routerLink]="['/graphs/price' | relativeUrl]" i18n="price">Price</a>
+  }
+
 </div>
 
 <router-outlet></router-outlet>

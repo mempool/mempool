@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
 import { echarts, EChartsOption } from '@app/graphs/echarts';
-import { Observable } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '@app/services/api.service';
 import { SeoService } from '@app/services/seo.service';
@@ -45,7 +45,7 @@ export class PriceChartComponent implements OnInit {
     renderer: 'svg',
   };
 
-  statsObservable$: Observable<any>;
+  pricesObservable$: Observable<any>;
   isLoading = true;
   formatNumber = formatNumber;
   chartInstance: any = undefined;
@@ -89,32 +89,48 @@ export class PriceChartComponent implements OnInit {
         }
       });
 
-    this.statsObservable$ = this.radioGroupForm.get('dateSpan').valueChanges
-      .pipe(
-        startWith(this.radioGroupForm.controls.dateSpan.value),
-        switchMap((timespan) => {
+    this.pricesObservable$ = combineLatest([
+      this.radioGroupForm.get('dateSpan').valueChanges.pipe(startWith(this.radioGroupForm.controls.dateSpan.value)),
+      this.stateService.fiatCurrency$,
+    ]).pipe(
+        switchMap(([timespan, currency]) => {
+          this.currency = currency;
+          const now = new Date();
+          let startTimestamp = 0;
+          if (timespan === '1m') {
+            startTimestamp = Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, now.getUTCDate());
+          } else if (timespan === '3m') {
+            startTimestamp = Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 3, now.getUTCDate());
+          } else if (timespan === '6m') {
+            startTimestamp = Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 6, now.getUTCDate());
+          } else if (timespan === '1y') {
+            startTimestamp = Date.UTC(now.getUTCFullYear() - 1, now.getUTCMonth(), now.getUTCDate());
+          } else if (timespan === '2y') {
+            startTimestamp = Date.UTC(now.getUTCFullYear() - 2, now.getUTCMonth(), now.getUTCDate());
+          } else if (timespan === '3y') {
+            startTimestamp = Date.UTC(now.getUTCFullYear() - 3, now.getUTCMonth(), now.getUTCDate());
+          } // 'all' keeps startTimestamp = 0
+
           this.isLoading = true;
           if (!this.widget) {
             this.storageService.setValue('miningWindowPreference', timespan);
           }
           this.currentTimespan = timespan;
-          this.isLoading = true;
-          return this.apiService.getHistoricalBlockFees$(timespan)
+          return this.apiService.getHistoricalPrice$(undefined, this.currency)
             .pipe(
-              tap((response) => {
+              tap((response: any) => {
                 this.prepareChartOptions({
-                  priceData: response.body.filter(val => val[this.currency] > 0).map(val => [val.timestamp * 1000, val[this.currency], val.avgHeight]),
+                  priceData: response.prices.filter((p: any) => p[this.currency] > 0 && p.time * 1000 >= startTimestamp).map((p: any) => [p.time * 1000, p[this.currency]]),
                 });
                 this.isLoading = false;
               }),
-              map((response) => {
-                const priceData = response.body.filter(val => val[this.currency] > 0);
-                const latestPrice = priceData.length > 0 ? priceData[priceData.length - 1][this.currency] : null;
-                const firstPrice = priceData.length > 0 ? priceData[0][this.currency] : null;
+              map((response: any) => {
+                const priceData = response.prices.filter((p: any) => p[this.currency] > 0 && p.time * 1000 >= startTimestamp).map((p: any) => p[this.currency]);
+                const latestPrice = priceData.length > 0 ? priceData[0] : null;
+                const firstPrice = priceData.length > 0 ? priceData[priceData.length - 1] : null;
                 const percentChange = (latestPrice && firstPrice) ? ((latestPrice - firstPrice) / firstPrice) * 100 : 0;
 
                 return {
-                  blockCount: parseInt(response.headers.get('x-total-count'), 10),
                   latestPrice: latestPrice,
                   percentChange: percentChange,
                 };
@@ -179,8 +195,6 @@ export class PriceChartComponent implements OnInit {
           for (const tick of data) {
             tooltip += `${tick.marker} ${tick.seriesName}: ${this.fiatCurrencyPipe.transform(tick.data[1], null, this.currency)}<br>`;
           }
-
-          tooltip += `<small>* On average around block ${data[0].data[2]}</small>`;
           return tooltip;
         }.bind(this)
       },
@@ -192,18 +206,6 @@ export class PriceChartComponent implements OnInit {
           hideOverlap: true,
         }
       },
-      // legend: data.priceData.length === 0 ? undefined : {
-      //   data: [
-      //     {
-      //       name: 'BTC Price (' + this.currency + ')',
-      //       inactiveColor: 'rgb(110, 112, 121)',
-      //       textStyle: {
-      //         color: 'white',
-      //       },
-      //       icon: 'roundRect',
-      //     },
-      //   ],
-      // },
       yAxis: data.priceData.length === 0 ? undefined : [
         {
           type: 'value',
@@ -228,7 +230,7 @@ export class PriceChartComponent implements OnInit {
           // legendHoverLink: false,
           zlevel: 0,
           yAxisIndex: 0,
-          name: 'BTC Price (' + this.currency + ')',
+          name: `BTC${this.currency}`,
           data: data.priceData,
           type: 'line',
           smooth: 0.25,
