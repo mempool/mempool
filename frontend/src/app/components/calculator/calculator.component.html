@@ -3,7 +3,26 @@
     <h2 i18n="shared.calculator">Calculator</h2>
   </div>
 
-  <ng-container *ngIf="price$ | async; else loading">
+  <ng-container *ngIf="(price$ | async) !== undefined; else loading">
+
+    <div class="row justify-content-center align-item-center mb-3">
+      <div class="input-group-prepend">
+        <input
+          class="form-control flex-grow-1"
+          style="max-width: 125px"
+          placeholder="yyyy-mm-dd"
+          name="startDate"
+          [(ngModel)]="dateModel"
+          ngbDatepicker
+          #startDate="ngbDatepicker"
+          (ngModelChange)="updatePrice()"
+          [minDate]="{year: 2010, month: 7, day: 19}"
+          [maxDate]="todayDateModel"
+          [dayTemplate]="dayTemplate"
+        />
+        <button class="btn btn-outline-secondary text-light" (click)="startDate.toggle()" type="button"><fa-icon [icon]="['fas', 'calendar']"></fa-icon></button>
+      </div>
+    </div>
 
     <div class="row justify-content-center">
 
@@ -53,13 +72,19 @@
 
     <div class="row justify-content-center">
       <div class="fiat-text">
-        <app-fiat [value]="form.get('satoshis').value" digitsInfo="1.2-2"></app-fiat>
+        <app-fiat [value]="form.get('satoshis').value" digitsInfo="1.2-2" [blockConversion]="blockConversion"></app-fiat>
       </div>
     </div>
 
     <div class="row justify-content-center mt-3">
-      <div class="symbol">
-        Fiat price last updated <app-time kind="since" [time]="lastFiatPrice$ | async" [fastRender]="true"></app-time>: {{ price$ | async | fiatCurrency : '1.0-0' : (currency$ | async) }}
+      <div class="symbol" *ngIf="{ value: (price$ | async) } as priceData">
+        @if (todaySelected) {
+          <span>Fiat price last updated <app-time kind="since" [time]="lastFiatPrice$ | async" [fastRender]="true"></app-time>: {{ priceData.value | fiatCurrency : '1.0-0' : (currency$ | async) }}</span>
+        } @else if (priceData.value > 0) {
+          <span>Fiat daily closing price <app-time kind="since" [time]="timestamp$ | async" [fastRender]="true"></app-time>: {{ priceData.value | fiatCurrency : '1.0-0' : (currency$ | async) }}</span>
+        } @else {
+          <span>Fiat price not available for the selected date</span>
+        }
       </div>
     </div>
 
@@ -73,3 +98,9 @@
   </ng-template>
 
 </div>
+
+<ng-template #dayTemplate let-date="date" let-currentMonth="currentMonth" let-selected="selected" let-disabled="disabled" let-focused="focused">
+  <span class="btn btn-sm" [class.focused]="focused" [class.bg-primary]="selected" [class.hidden]="date.month !== currentMonth" [class.text-muted]="disabled">
+    {{ date.day }}
+  </span>
+</ng-template>
