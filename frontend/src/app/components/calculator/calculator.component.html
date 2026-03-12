@@ -8,14 +8,14 @@
     <div class="row justify-content-center align-item-center mb-3">
       <div class="input-group-prepend">
         <input
-          class="form-control flex-grow-1"
+          class="form-control flex-grow-1 disabled"
           style="max-width: 125px"
           placeholder="yyyy-mm-dd"
           name="startDate"
           [(ngModel)]="dateModel"
           ngbDatepicker
           #startDate="ngbDatepicker"
-          (ngModelChange)="updatePrice()"
+          (dateSelect)="updatePrice()"
           [minDate]="{year: 2010, month: 7, day: 19}"
           [maxDate]="todayDateModel"
           [dayTemplate]="dayTemplate"
