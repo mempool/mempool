@@ -539,6 +539,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                 ).subscribe({
                   next: (response) => {
                     this.storageService.removeItem('partnerCode'); // Consume localStorage partnerCode
+                    this.partnerCode = undefined;
                     this.accelerationResponse = response;
                     this.processing = false;
                     this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
@@ -663,6 +664,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               ).subscribe({
                 next: (response) => {
                   this.storageService.removeItem('partnerCode'); // Consume localStorage partnerCode
+                  this.partnerCode = undefined;
                   this.accelerationResponse = response;
                   this.processing = false;
                   this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
@@ -768,6 +770,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           ).subscribe({
             next: (response) => {
               this.storageService.removeItem('partnerCode'); // Consume localStorage partnerCode
+              this.partnerCode = undefined;
               this.accelerationResponse = response;
               this.processing = false;
               this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
@@ -858,6 +861,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             ).subscribe({
               next: (response) => {
                 this.storageService.removeItem('partnerCode'); // Consume localStorage partnerCode
+                this.partnerCode = undefined;
                 this.accelerationResponse = response;
                 this.processing = false;
                 this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
@@ -939,6 +943,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   bitcoinPaymentCompleted(): void {
+    this.storageService.removeItem('partnerCode'); // Consume localStorage partnerCode
+    this.partnerCode = undefined;
     this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
     this.audioService.playSound('ascend-chime-cartoon');
     this.estimateSubscription.unsubscribe();
