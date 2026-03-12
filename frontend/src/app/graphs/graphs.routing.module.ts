@@ -24,7 +24,7 @@ import { AccelerationFeesGraphComponent } from '@components/acceleration/acceler
 import { AccelerationsListComponent } from '@components/acceleration/accelerations-list/accelerations-list.component';
 import { AddressComponent } from '@components/address/address.component';
 import { WalletComponent } from '@components/wallet/wallet.component';
-import { CalculatorComponent } from '../components/calculator/calculator.component';
+import { CalculatorComponent } from '@components/calculator/calculator.component';
 
 const browserWindow = window || {};
 // @ts-ignore
