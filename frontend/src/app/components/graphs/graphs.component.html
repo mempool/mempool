@@ -45,17 +45,20 @@
     </div>
   </div>
 
-  <div ngbDropdown class="w-33" *ngIf="stateService.env.ACCELERATOR && isMainnet">
-    <button class="btn btn-primary w-100" id="dropdownBasic1" ngbDropdownToggle i18n="accelerator.accelerations">Accelerations</button>
-    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-      <a class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]"
-        i18n="accelerator.acceleration-fees">Acceleration Fees</a>
+  @if (isMainnet) {
+    <div ngbDropdown class="w-33">
+      <button class="btn btn-primary w-100" id="dropdownBasic1" ngbDropdownToggle i18n="more">More</button>
+        <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+          @if (stateService.env.ACCELERATOR) {
+            <a class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]"
+              i18n="accelerator.acceleration-fees">Acceleration Fees</a>
+          }
+          @if (stateService.env.HISTORICAL_PRICE) {
+            <a class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/price' | relativeUrl]"
+              i18n="price">Price</a>
+          }
+        </div>
     </div>
-  </div>
-
-  @if (stateService.env.HISTORICAL_PRICE && isMainnet) {
-    <a routerLinkActive="active" class="btn btn-primary w-33"
-      [routerLink]="['/graphs/price' | relativeUrl]" i18n="price">Price</a>
   }
 
 </div>
