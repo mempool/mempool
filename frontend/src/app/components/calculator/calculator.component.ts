@@ -237,7 +237,7 @@ export class CalculatorComponent implements OnInit {
   }
 
   updatePrice(): void {
-    this.timestamp$.next(Date.UTC(this.dateModel.year, this.dateModel.month - 1, this.dateModel.day, 23, 59, 59) / 1000);
+    this.timestamp$.next(Date.UTC(this.dateModel.year, this.dateModel.month - 1, this.dateModel.day + 1) / 1000);
   }
 
   get todaySelected() {
