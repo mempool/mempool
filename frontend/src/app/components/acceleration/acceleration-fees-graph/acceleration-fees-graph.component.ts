@@ -1,15 +1,15 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, NgZone, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { echarts, EChartsOption } from '@app/graphs/echarts';
 import { Observable, Subject, Subscription, combineLatest, fromEvent, merge, share } from 'rxjs';
-import { startWith, switchMap, tap } from 'rxjs/operators';
+import { distinctUntilChanged, startWith, switchMap, tap } from 'rxjs/operators';
 import { SeoService } from '@app/services/seo.service';
 import { formatNumber } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { download, formatterXAxis, formatterXAxisLabel, formatterXAxisTimeCategory } from '@app/shared/graphs.utils';
 import { StorageService } from '@app/services/storage.service';
 import { MiningService } from '@app/services/mining.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Acceleration } from '@interfaces/node-api.interface';
+import { ActivatedRoute } from '@angular/router';
+import { Acceleration, BlockExtended } from '@interfaces/node-api.interface';
 import { ServicesApiServices } from '@app/services/services-api.service';
 import { StateService } from '@app/services/state.service';
 
@@ -86,13 +86,16 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
       }
     });
     this.aggregatedHistory$ = combineLatest([
-      merge(
-        this.radioGroupForm.get('dateSpan').valueChanges.pipe(
-          startWith(this.radioGroupForm.controls.dateSpan.value),
+      combineLatest({
+        timespan: merge(
+          this.radioGroupForm.get('dateSpan').valueChanges.pipe(
+            startWith(this.radioGroupForm.controls.dateSpan.value),
+          ),
+          this.periodSubject$,
         ),
-        this.periodSubject$
-      ).pipe(
-        switchMap((timespan) => {
+        chainTip: this.stateService.chainTip$.pipe(distinctUntilChanged()),
+      }).pipe(
+        switchMap(({ timespan }: { timespan: '24h' | '1w' | '1m' | '1y' | 'all'; chainTip: number }) => {
           if (!this.widget) {
             this.storageService.setValue('miningWindowPreference', timespan);
           }
