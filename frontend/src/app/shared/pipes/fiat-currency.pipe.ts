@@ -21,17 +21,7 @@ export class FiatCurrencyPipe implements PipeTransform {
   }
 
   transform(num: number, ...args: any[]): unknown {
-    const digits = args[0] || 1;
     const currency = args[1] || this.currency || 'USD';
-
-    if (Math.abs(num) >= 1000) {
-      // Check if decimals are exactly 0
-      if (num % 1 === 0) {
-        return new Intl.NumberFormat(this.locale, { style: 'currency', currency, maximumFractionDigits: 0 }).format(num);
-      }
-      return new Intl.NumberFormat(this.locale, { style: 'currency', currency, minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num);
-    } else {
-      return new Intl.NumberFormat(this.locale, { style: 'currency', currency }).format(num);
-    }
+    return new Intl.NumberFormat(this.locale, { style: 'currency', currency }).format(num);
   }
 }
