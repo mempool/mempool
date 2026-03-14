@@ -9,7 +9,7 @@ import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { download, formatterXAxis } from '@app/shared/graphs.utils';
 import { StorageService } from '@app/services/storage.service';
 import { MiningService } from '@app/services/mining.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FiatShortenerPipe } from '@app/shared/pipes/fiat-shortener.pipe';
 import { FiatCurrencyPipe } from '@app/shared/pipes/fiat-currency.pipe';
 import { StateService } from '@app/services/state.service';
@@ -33,8 +33,11 @@ export class BlockFeesGraphComponent implements OnInit {
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
 
+  logScale = false;
+
   miningWindowPreference: string;
   radioGroupForm: UntypedFormGroup;
+  scaleForm: UntypedFormGroup;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -58,11 +61,13 @@ export class BlockFeesGraphComponent implements OnInit {
     private miningService: MiningService,
     public stateService: StateService,
     private route: ActivatedRoute,
+    private router: Router,
     private fiatShortenerPipe: FiatShortenerPipe,
     private fiatCurrencyPipe: FiatCurrencyPipe,
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
     this.radioGroupForm.controls.dateSpan.setValue('1y');
+    this.scaleForm = this.formBuilder.group({scaleFunction: 'linear'});
     this.currency = 'USD';
   }
 
@@ -76,8 +81,33 @@ export class BlockFeesGraphComponent implements OnInit {
     this.route
       .fragment
       .subscribe((fragment) => {
-        if (['1m', '3m', '6m', '1y', '2y', '3y', 'all'].indexOf(fragment) > -1) {
-          this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
+        if (!fragment) {
+          return;
+        }
+
+        let timeVal = null;
+        let scaleVal = null;
+
+        if (fragment.includes('=')) {
+          const params = new URLSearchParams(fragment);
+          timeVal = params.get('time');
+          scaleVal = params.get('scale');
+        } else {
+          if (['1m', '3m', '6m', '1y', '2y', '3y', 'all'].includes(fragment)) {
+            timeVal = fragment;
+          }
+          if (['linear', 'log'].includes(fragment)) {
+            scaleVal = fragment;
+          }
+        }
+
+        if (timeVal && ['1m', '3m', '6m', '1y', '2y', '3y', 'all'].includes(timeVal)) {
+          this.radioGroupForm.controls.dateSpan.setValue(timeVal, { emitEvent: false });
+        }
+
+        if (scaleVal && ['linear', 'log'].includes(scaleVal)) {
+          this.scaleForm.controls.scaleFunction.setValue(scaleVal, { emitEvent: false });
+          this.onScaleChange();
         }
       });
 
@@ -89,12 +119,14 @@ export class BlockFeesGraphComponent implements OnInit {
           this.storageService.setValue('miningWindowPreference', timespan);
           this.timespan = timespan;
           this.isLoading = true;
+
           return this.apiService.getHistoricalBlockFees$(timespan)
             .pipe(
               tap((response) => {
+                const clampSats = (val: number) => this.logScale ? Math.max(val, 1) : val;
                 this.prepareChartOptions({
-                  blockFees: response.body.map(val => [val.timestamp * 1000, val.avgFees / 100000000, val.avgHeight]),
-                  blockFeesFiat: response.body.filter(val => val[this.currency] > 0).map(val => [val.timestamp * 1000, val.avgFees / 100000000 * val[this.currency], val.avgHeight]),
+                  blockFees: response.body.map(val => [val.timestamp * 1000, clampSats(val.avgFees) / 100000000, val.avgHeight, val.avgFees / 100000000]),
+                  blockFeesFiat: response.body.filter(val => val[this.currency] > 0).map(val => [val.timestamp * 1000, clampSats(val.avgFees) / 100000000 * val[this.currency], val.avgHeight, val.avgFees / 100000000 * val[this.currency]]),
                 });
                 this.isLoading = false;
               }),
@@ -165,9 +197,9 @@ export class BlockFeesGraphComponent implements OnInit {
 
           for (const tick of data) {
             if (tick.seriesIndex === 0) {
-              tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.3-3')} BTC<br>`;
+              tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[3], this.locale, '1.3-3')} BTC<br>`;
             } else if (tick.seriesIndex === 1) {
-              tooltip += `${tick.marker} ${tick.seriesName}: ${this.fiatCurrencyPipe.transform(tick.data[1], null, this.currency) }<br>`;
+              tooltip += `${tick.marker} ${tick.seriesName}: ${this.fiatCurrencyPipe.transform(tick.data[3], null, this.currency) }<br>`;
             }
           }
 
@@ -205,7 +237,8 @@ export class BlockFeesGraphComponent implements OnInit {
       },
       yAxis: data.blockFees.length === 0 ? undefined : [
         {
-          type: 'value',
+          type: this.logScale ? 'log' : 'value',
+          min: this.logScale ? 0.001 : undefined,
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: (val) => {
@@ -221,7 +254,8 @@ export class BlockFeesGraphComponent implements OnInit {
           },
         },
         {
-          type: 'value',
+          type: this.logScale ? 'log' : 'value',
+          min: this.logScale ? 0.01 : undefined,
           position: 'right',
           axisLabel: {
             color: 'rgb(110, 112, 121)',
@@ -316,5 +350,43 @@ export class BlockFeesGraphComponent implements OnInit {
     this.chartOptions.grid.bottom = prevBottom;
     this.chartOptions.backgroundColor = 'none';
     this.chartInstance.setOption(this.chartOptions);
+  }
+
+  getFragment(setParams: Record<string, string> = {}): string {
+    const params = new URLSearchParams(this.route.snapshot.fragment || '');
+    params.set('time', setParams.time || this.radioGroupForm.controls.dateSpan.value);
+    params.set('scale', setParams.scale || this.scaleForm.controls.scaleFunction.value);
+    return params.toString();
+  }
+
+  onScaleChange() {
+    this.logScale = this.scaleForm.get('scaleFunction')?.value === 'log';
+
+    if (!this.chartInstance || !this.chartOptions.yAxis) {
+      return;
+    }
+
+    const yAxes = this.chartOptions.yAxis as any[];
+
+    yAxes[0].type = this.logScale ? 'log' : 'value';
+    yAxes[0].min = this.logScale ? 0.001 : undefined;
+
+    yAxes[1].type = this.logScale ? 'log' : 'value';
+    yAxes[1].min = this.logScale ? 0.01 : undefined;
+
+    (this.chartOptions.series as any[]).forEach((seriesItem, index) => {
+      seriesItem.data.forEach(point => {
+        if (index === 0) {
+          point[1] = this.logScale ? Math.max(point[3], 0.001) : point[3];
+        } else if (index === 1) {
+          point[1] = this.logScale ? Math.max(point[3], 0.01) : point[3];
+        }
+      });
+    });
+
+    this.chartInstance.setOption({
+      yAxis: yAxes,
+      series: this.chartOptions.series
+    });
   }
 }
