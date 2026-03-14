@@ -24,7 +24,7 @@ import { SighashFlag } from '@app/shared/transaction.utils';
   templateUrl: './transactions-list.component.html',
   styleUrls: ['./transactions-list.component.scss'],
   standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   network = '';
@@ -91,7 +91,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
     private ref: ChangeDetectorRef,
     private priceService: PriceService,
     private storageService: StorageService,
-    private route: ActivatedRoute,
+    private route: ActivatedRoute
   ) {
     this.signaturesMode = this.forceSignaturesMode || this.stateService.signaturesMode$.value;
   }
