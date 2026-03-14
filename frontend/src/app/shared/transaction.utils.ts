@@ -1840,7 +1840,7 @@ export function serializeTransaction(tx: Transaction, includeWitness: boolean = 
   return new Uint8Array(result);
 }
 
-function txid(tx: Transaction): string {
+export function txid(tx: Transaction): string {
   const serializedTx = serializeTransaction(tx, false);
   const hash1 = new Hash().update(serializedTx).digest();
   const hash2 = new Hash().update(hash1).digest();
