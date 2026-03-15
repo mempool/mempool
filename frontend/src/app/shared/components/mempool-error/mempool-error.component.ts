@@ -35,6 +35,7 @@ export const MempoolErrors = {
   'payment_method_not_allowed_out_of_bound': `You are not allowed to use this payment method with this amount`,
   'invalid_credentials': `Invalid credentials`,
   'forbidden': `You are not allowed to do this.`,
+  'unable_to_generate_unique_partner_code': `Unable to generate new partner code`
 } as { [error: string]: string };
 
 export function isMempoolError(error: string) {
