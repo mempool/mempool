@@ -33,6 +33,7 @@ import { MiningService, MiningStats } from '@app/services/mining.service';
 import { ETA, EtaService } from '@app/services/eta.service';
 import { getTransactionFlags, getUnacceleratedFeeRate } from '@app/shared/transaction.utils';
 import { StorageService } from '@app/services/storage.service';
+import { AnalyticsService } from '@app/services/analytics.service';
 
 
 interface Pool {
@@ -144,6 +145,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
     private seoService: SeoService,
     private priceService: PriceService,
     private enterpriseService: EnterpriseService,
+    private analyticsService: AnalyticsService,
     private miningService: MiningService,
     private router: Router,
     private cd: ChangeDetectorRef,
@@ -504,6 +506,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
           this.websocketService.startTrackTransaction(tx.txid);
 
           if (!tx.status?.confirmed) {
+            this.analyticsService.action('/tx/:txid/tracker', 'unconfirmed-tx');
             this.trackerStage = 'pending';
             if (tx.firstSeen) {
               this.transactionTime = tx.firstSeen;
