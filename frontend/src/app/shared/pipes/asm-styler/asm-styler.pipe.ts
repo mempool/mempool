@@ -1,4 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { detectCltvTimestamps, formatCltvTimestamp } from '@app/shared/script.utils';
 
 @Pipe({
   name: 'asmStyler',
@@ -7,23 +8,24 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class AsmStylerPipe implements PipeTransform {
 
   transform(asm: string, crop: number = 0): string {
-    const instructions = asm.split('OP_');
+    const instructions = asm.split('OP_').filter(i => i !== '');
     let out = '';
     let chars = -3;
-    for (const instruction of instructions) {
-      if (instruction === '') {
-        continue;
-      }
+
+    const cltvTimestamps = detectCltvTimestamps(instructions);
+
+    for (let i = 0; i < instructions.length; i++) {
+      const instruction = instructions[i];
       if (crop && chars > crop) {
         break;
       }
       chars += instruction.length + 3;
-      out += this.addStyling(instruction);
+      out += this.addStyling(instruction, cltvTimestamps.get(i));
     }
     return out;
   }
 
-  addStyling(instruction: string): string {
+  addStyling(instruction: string, cltvTimestamp?: number): string {
     const opcode = instruction.split(' ')[0];
     let style = '';
     switch (opcode) {
@@ -318,7 +320,17 @@ export class AsmStylerPipe implements PipeTransform {
     if (args === opcode) {
       args = '';
     }
+
+    if (cltvTimestamp !== undefined) {
+      const tooltipText = this.formatTimestamp(cltvTimestamp);
+      return `<span class='${style} cltv-tooltip' title='${tooltipText}'>OP_${opcode}</span> <span class='cltv-tooltip' title='${tooltipText}'>${args}</span><br>`;
+    }
+
     return `<span class='${style}'>OP_${opcode}</span> ${args}<br>`;
+  }
+
+  formatTimestamp(timestamp: number): string {
+    return formatCltvTimestamp(timestamp);
   }
 
 }
