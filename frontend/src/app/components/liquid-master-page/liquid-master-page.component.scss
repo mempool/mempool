@@ -157,6 +157,10 @@ nav {
   background-color: var(--signet);
 }
 
+.regtest.active {
+  background-color: var(--regtest);
+}
+
 .dropdown-divider {
   border-top: 1px solid #121420;
 }

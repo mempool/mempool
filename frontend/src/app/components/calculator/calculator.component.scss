@@ -28,3 +28,9 @@
 .row {
   margin: auto;
 }
+
+.form-control.disabled {
+  pointer-events: none;
+  background-color: var(--secondary);
+  opacity: 0.75;
+}

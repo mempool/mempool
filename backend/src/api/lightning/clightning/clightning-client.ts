@@ -249,6 +249,7 @@ export default class CLightningClient extends EventEmitter implements AbstractLi
       }));
   }
 
+  /** @asyncUnsafe */
   async $getNetworkGraph(): Promise<ILightningApi.NetworkGraph> {
     const listnodes: any[] = await this.call('listnodes');
     const listchannels: any[] = await this.call('listchannels');

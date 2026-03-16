@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable, Subject, Subscription, combineLatest, of, 
 import { delayWhen, filter, map, share, shareReplay, switchMap, take, takeUntil, tap, throttleTime } from 'rxjs/operators';
 import { ApiService } from '@app/services/api.service';
 import { Env, StateService } from '@app/services/state.service';
-import { AuditStatus, CurrentPegs, RecentPeg } from '@interfaces/node-api.interface';
+import { AuditStatus, CurrentPegs, PegsVolume, RecentPeg } from '@interfaces/node-api.interface';
 import { WebsocketService } from '@app/services/websocket.service';
 import { SeoService } from '@app/services/seo.service';
 
@@ -28,6 +28,7 @@ export class RecentPegsListComponent implements OnInit {
   skeletonLines: number[] = [];
   auditStatus$: Observable<AuditStatus>;
   auditUpdated$: Observable<boolean>;
+  pegsVolume$: Observable<PegsVolume[]>;
   lastReservesBlockUpdate: number = 0;
   currentPeg$: Observable<CurrentPegs>;
   pegsCount$: Observable<number>;
@@ -61,7 +62,7 @@ export class RecentPegsListComponent implements OnInit {
   ngOnInit(): void {
     this.isLoading = !this.widget;
     this.env = this.stateService.env;
-    this.skeletonLines = this.widget === true ? [...Array(5).keys()] : [...Array(15).keys()];
+    this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
 
     if (!this.widget) {
       this.seoService.setTitle($localize`:@@a8b0889ea1b41888f1e247f2731cc9322198ca04:Recent Peg-In / Out's`);
@@ -147,6 +148,13 @@ export class RecentPegsListComponent implements OnInit {
           this.isPegCountLoading = false;
           this.pegsCount = pegsCount;
         }),
+        share()
+      );
+
+      this.pegsVolume$ = this.auditUpdated$.pipe(
+        filter(auditUpdated => auditUpdated === true),
+        throttleTime(40000),
+        switchMap(_ => this.apiService.pegsVolume$()),
         share()
       );
 

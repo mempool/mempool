@@ -20,7 +20,6 @@ import { ReservesRatioStatsComponent } from '@components/liquid-reserves-audit/r
 import { ReservesRatioComponent } from '@components/liquid-reserves-audit/reserves-ratio/reserves-ratio.component';
 import { RecentPegsStatsComponent } from '@components/liquid-reserves-audit/recent-pegs-stats/recent-pegs-stats.component';
 import { RecentPegsListComponent } from '@components/liquid-reserves-audit/recent-pegs-list/recent-pegs-list.component';
-import { FederationAddressesStatsComponent } from '@components/liquid-reserves-audit/federation-addresses-stats/federation-addresses-stats.component';
 import { FederationAddressesListComponent } from '@components/liquid-reserves-audit/federation-addresses-list/federation-addresses-list.component';
 import { GraphsComponent } from '@components/graphs/graphs.component';
 import { StatisticsComponent } from '@components/statistics/statistics.component';
@@ -83,7 +82,6 @@ import { AsmStylerPipe } from '@app/shared/pipes/asm-styler/asm-styler.pipe';
     ReservesRatioComponent,
     RecentPegsStatsComponent,
     RecentPegsListComponent,
-    FederationAddressesStatsComponent,
     FederationAddressesListComponent,
     HashrateChartComponent,
     HashrateChartPoolsComponent,

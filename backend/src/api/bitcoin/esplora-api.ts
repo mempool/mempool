@@ -30,7 +30,13 @@ interface FailoverHost {
     electrs?: string,
     ssr?: string,
     core?: string,
+    os?: string,
     lastUpdated: number,
+  },
+  liquidAudit?: {
+    pegRatio: number,
+    bitcoinLastBlockUpdate: number,
+    liquidLastBlockUpdate: number,
   }
 }
 
@@ -100,11 +106,12 @@ class FailoverRouter {
     });
 
     if (this.multihost) {
-      this.pollHosts();
+      void this.pollHosts();
     }
   }
 
   // start polling hosts to measure availability & rtt
+  /** @asyncSafe */
   private async pollHosts(): Promise<void> {
     if (this.pollTimer) {
       clearTimeout(this.pollTimer);
@@ -142,6 +149,8 @@ class FailoverRouter {
               host.hashes.electrs = match[1];
             }
           }
+
+          await this.$updateLiquidAudit(host);
 
           // Check front and backend git hashes less often
           if (Date.now() - host.hashes.lastUpdated > this.gitHashInterval) {
@@ -194,7 +203,7 @@ class FailoverRouter {
 
     const elapsed = Date.now() - start;
 
-    this.pollTimer = setTimeout(() => { this.pollHosts(); }, Math.max(1, this.pollInterval - elapsed));
+    this.pollTimer = setTimeout(() => { void this.pollHosts(); }, Math.max(1, this.pollInterval - elapsed));
   }
 
   private formatRanking(index: number, host: FailoverHost, active: FailoverHost, maxHeight: number): string {
@@ -324,6 +333,9 @@ class FailoverRouter {
       if (response.data?.coreVersion) {
         host.hashes.core = response.data.coreVersion;
       }
+      if (response.data?.osVersion) {
+        host.hashes.os = response.data.osVersion;
+      }
     } catch (e) {
       // failed to get backend build hash - do nothing
     }
@@ -343,6 +355,43 @@ class FailoverRouter {
       }
     } catch (e) {
       // failed to get ssr build hash - do nothing
+    }
+  }
+
+  private async $updateLiquidAudit(host: FailoverHost): Promise<void> {
+    if (config.MEMPOOL.NETWORK !== 'liquid') {
+      return;
+    }
+    try {
+      const [reservesResponse, pegsResponse] = await Promise.all([
+        this.pollConnection.get<any>(
+          `${host.publicDomain}/api/v1/liquid/reserves`, {
+            timeout: config.ESPLORA.FALLBACK_TIMEOUT,
+            headers: { 'Host': 'liquid.network' }
+          }
+        ),
+        this.pollConnection.get<any>(
+          `${host.publicDomain}/api/v1/liquid/pegs`, {
+            timeout: config.ESPLORA.FALLBACK_TIMEOUT,
+            headers: { 'Host': 'liquid.network' }
+          }
+        ),
+      ]);
+
+      const reservesAmount = Number(reservesResponse.data?.amount);
+      const pegsAmount = Number(pegsResponse.data?.amount);
+      const bitcoinLastBlockUpdate = Number(reservesResponse.data?.lastBlockUpdate);
+      const liquidLastBlockUpdate = Number(pegsResponse.data?.lastBlockUpdate);
+
+      if (Number.isFinite(reservesAmount) && Number.isFinite(pegsAmount) && Number.isFinite(bitcoinLastBlockUpdate) && Number.isFinite(liquidLastBlockUpdate) && pegsAmount > 0) {
+        host.liquidAudit = {
+          pegRatio: (reservesAmount / pegsAmount) * 100,
+          bitcoinLastBlockUpdate,
+          liquidLastBlockUpdate,
+        };
+      }
+    } catch (e) {
+      // failed to get liquid audit values - do nothing
     }
   }
 
@@ -442,6 +491,7 @@ class ElectrsApi implements AbstractBitcoinApi {
     return this.failoverRouter.$get<string>('/blocks/tip/hash');
   }
 
+  /** @asyncUnsafe */
   async $getTxIdsForBlock(hash: string, fallbackToCore = false): Promise<string[]> {
     try {
       const txids = await this.failoverRouter.$get<string[]>('/block/' + hash + '/txids');
@@ -458,6 +508,7 @@ class ElectrsApi implements AbstractBitcoinApi {
     }
   }
 
+  /** @asyncUnsafe */
   async $getTxsForBlock(hash: string, fallbackToCore = false): Promise<IEsploraApi.Transaction[]> {
     try {
       const txs = await this.failoverRouter.$get<IEsploraApi.Transaction[]>('/internal/block/' + hash + '/txs');
@@ -551,6 +602,7 @@ class ElectrsApi implements AbstractBitcoinApi {
     return this.failoverRouter.$post<IEsploraApi.Outspend[]>('/internal/txs/outspends/by-outpoint', outpoints.map(out => `${out.txid}:${out.vout}`), 'json');
   }
 
+  /** @asyncUnsafe */
   async $getCoinbaseTx(blockhash: string): Promise<IEsploraApi.Transaction> {
     const txid = await this.failoverRouter.$get<string>(`/block/${blockhash}/txid/0`);
     return this.failoverRouter.$get<IEsploraApi.Transaction>('/tx/' + txid);
@@ -577,6 +629,7 @@ class ElectrsApi implements AbstractBitcoinApi {
         checked: !!host.checked,
         lastChecked: host.lastChecked || 0,
         hashes: host.hashes,
+        ...(config.MEMPOOL.NETWORK === 'liquid' ? { liquidAudit: host.liquidAudit } : {}),
       }));
     } else {
       return [];

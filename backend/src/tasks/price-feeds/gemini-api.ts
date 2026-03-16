@@ -11,6 +11,7 @@ class GeminiApi implements PriceFeed {
   constructor() {
   }
 
+  /** @asyncUnsafe */
   public async $fetchPrice(currency): Promise<number> {
     const response = await query(this.url + currency);
     if (response && response['last']) {
@@ -20,6 +21,7 @@ class GeminiApi implements PriceFeed {
     }
   }
 
+  /** @asyncUnsafe */
   public async $fetchRecentPrice(currencies: string[], type: 'hour' | 'day'): Promise<PriceHistory> {
     const priceHistory: PriceHistory = {};
 

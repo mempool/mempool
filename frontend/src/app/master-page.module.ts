@@ -7,7 +7,6 @@ import { SharedModule } from '@app/shared/shared.module';
 import { StartComponent } from '@components/start/start.component';
 import { PushTransactionComponent } from '@components/push-transaction/push-transaction.component';
 import { TestTransactionsComponent } from '@components/test-transactions/test-transactions.component';
-import { CalculatorComponent } from '@components/calculator/calculator.component';
 import { BlocksList } from '@components/blocks-list/blocks-list.component';
 import { RbfList } from '@components/rbf-list/rbf-list.component';
 import { StaleList } from '@components/stale-list/stale-list.component';
@@ -111,11 +110,7 @@ const routes: Routes = [
         path: 'lightning',
         loadChildren: () => import('@app/lightning/lightning.module').then(m => m.LightningModule),
         data: { preload: browserWindowEnv && browserWindowEnv.LIGHTNING === true, networks: ['bitcoin'] },
-      },
-      {
-        path: 'tools/calculator',
-        component: CalculatorComponent
-      },
+      }
     ],
   }
 ];

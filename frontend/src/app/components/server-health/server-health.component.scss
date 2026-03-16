@@ -13,10 +13,12 @@
     margin: auto;
     padding: 1em;
     background: var(--box-bg);
+    overflow-x: auto;
   }
 
   .status-table {
-    width: 100%;
+    width: max-content;
+    min-width: 100%;
 
     td, th {
       padding: 0.25em;
@@ -33,6 +35,10 @@
       &.rtt, &.height {
         text-align: right;
       }
+      &.peg {
+        text-align: right;
+        white-space: nowrap;
+      }
       &.only-small {
         display: table-cell;
       }
@@ -45,9 +51,15 @@
       &.host {
         width: 100%;
         max-width: 0;
+        min-width: 130px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+      }
+      &.hash, &.version {
+        font-size: 11px;
+        vertical-align: middle;
+        text-align: center;
       }
 
       span {

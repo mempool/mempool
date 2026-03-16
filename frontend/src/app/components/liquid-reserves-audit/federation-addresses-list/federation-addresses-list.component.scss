@@ -52,3 +52,46 @@ tr, td, th {
 .amount.widget {
   width: 40%;
 }
+.fee-estimation-container {
+  display: flex;
+  margin-bottom: 10px;
+
+  .item {
+    max-width: 300px;
+    margin: 0;
+
+    @media (min-width: 376px) {
+      margin: 0 auto 0px;
+    }
+
+    .card-text {
+      font-size: 22px;
+
+      span {
+        font-size: 11px;
+        position: relative;
+        top: -2px;
+      }
+
+      .skeleton-loader {
+        width: 100%;
+        display: block;
+        min-width: 90px;
+        margin: 15px auto 3px;
+      }
+
+    }
+
+    .card-text span {
+      color: var(--transparent-fg);
+      font-size: 12px;
+      top: 0px;
+    }
+
+    .fee-text {
+      width: fit-content;
+      margin: auto;
+      line-height: 1.45;
+    }
+  }
+}

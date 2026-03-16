@@ -376,6 +376,7 @@ export class Common {
     'testnet4': 42_000,
     'testnet': 2_900_000,
     'signet': 211_000,
+    'regtest': 0,
     '': 863_500,
   };
   static isNonStandardVersion(tx: TransactionExtended, height?: number): boolean {
@@ -399,6 +400,7 @@ export class Common {
     'testnet4': 42_000,
     'testnet': 2_900_000,
     'signet': 211_000,
+    'regtest': 0,
     '': 863_500,
   };
   static isNonStandardAnchor(vin: IEsploraApi.Vin, height?: number): boolean {
@@ -419,6 +421,7 @@ export class Common {
     'testnet4': 90_500,
     'testnet': 4_550_000,
     'signet': 260_000,
+    'regtest': 0,
     '': 905_000,
   };
   static isStandardEphemeralDust(tx: TransactionExtended, height?: number): boolean {
@@ -439,6 +442,7 @@ export class Common {
     'testnet4': 108_000,
     'testnet': 4_750_000,
     'signet': 276_500,
+    'regtest': 0,
     '': 921_000,
   };
   static MAX_DATACARRIER_BYTES = 83;
@@ -461,6 +465,7 @@ export class Common {
     'testnet4': 108_000,
     'testnet': 4_750_000,
     'signet': 276_500,
+    'regtest': 0,
     '': 921_000,
   };
   static isNonStandardLegacySigops(tx: TransactionExtended, height?: number): boolean {
@@ -797,6 +802,7 @@ export class Common {
     return txs.map(Common.stripTransaction);
   }
 
+  /** @asyncSafe */
   static sleep$(ms: number): Promise<void> {
     return new Promise((resolve) => {
        setTimeout(() => {
@@ -854,7 +860,7 @@ export class Common {
 
   static indexingEnabled(): boolean {
     return (
-      ['mainnet', 'testnet', 'signet', 'testnet4'].includes(config.MEMPOOL.NETWORK) &&
+      ['mainnet', 'testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK) &&
       config.DATABASE.ENABLED === true &&
       config.MEMPOOL.INDEXING_BLOCKS_AMOUNT !== 0
     );
@@ -1024,8 +1030,18 @@ export class Common {
   }
 
   static calcEffectiveFeeStatistics(transactions: { weight: number, fee?: number, effectiveFeePerVsize?: number, txid: string, acceleration?: boolean }[]): EffectiveFeeStats {
-    const sortedTxs = transactions.map(tx => { return { txid: tx.txid, weight: tx.weight, rate: tx.effectiveFeePerVsize || ((tx.fee || 0) / (tx.weight / 4)) }; }).sort((a, b) => a.rate - b.rate);
-    const totalWeight = transactions.reduce((acc, tx) => acc + tx.weight, 0);
+    // return early with safe default values
+    if (transactions.length <= 1) {
+      return {
+        medianFee: 0,
+        feeRange: [0, 0, 0, 0, 0, 0, 0],
+      };
+    }
+    // assume the first transaction is a coinbase if the fee is falsy (0 or undefined)
+    const nonCoinbaseTransactions = transactions[0].fee ? transactions : transactions.slice(1);
+
+    const sortedTxs = nonCoinbaseTransactions.map(tx => { return { txid: tx.txid, weight: tx.weight, rate: tx.effectiveFeePerVsize || ((tx.fee || 0) / (tx.weight / 4)) }; }).sort((a, b) => a.rate - b.rate);
+    const totalWeight = nonCoinbaseTransactions.reduce((acc, tx) => acc + tx.weight, 0);
 
     // include any unused space
     let weightCount = config.MEMPOOL.BLOCK_WEIGHT_UNITS - totalWeight;
@@ -1054,7 +1070,7 @@ export class Common {
     // b) the minimum effective fee rate in the last 2% of transactions (in block order)
     const minFee = Math.min(
       Common.getNthPercentile(1, sortedTxs).rate,
-      transactions.slice(-transactions.length / 50).reduce((min, tx) => { return Math.min(min, tx.effectiveFeePerVsize || ((tx.fee || 0) / (tx.weight / 4))); }, Infinity)
+      nonCoinbaseTransactions.slice(Math.ceil(nonCoinbaseTransactions.length * 49 / 50)).reduce((min, tx) => { return Math.min(min, tx.effectiveFeePerVsize || ((tx.fee || 0) / (tx.weight / 4))); }, Infinity)
     );
 
     // maximum effective fee heuristic:
@@ -1063,7 +1079,7 @@ export class Common {
     // b) the maximum effective fee rate in the first 2% of transactions (in block order)
     const maxFee = Math.max(
       Common.getNthPercentile(99, sortedTxs).rate,
-      transactions.slice(0, transactions.length / 50).reduce((max, tx) => { return Math.max(max, tx.effectiveFeePerVsize || ((tx.fee || 0) / (tx.weight / 4))); }, 0)
+      nonCoinbaseTransactions.slice(0, nonCoinbaseTransactions.length / 50).reduce((max, tx) => { return Math.max(max, tx.effectiveFeePerVsize || ((tx.fee || 0) / (tx.weight / 4))); }, 0)
     );
 
     return {
@@ -1077,6 +1093,9 @@ export class Common {
   }
 
   static getNthPercentile(n: number, sortedDistribution: any[]): any {
+    if (sortedDistribution.length === 0) {
+      return { rate: 0 };
+    }
     return sortedDistribution[Math.floor((sortedDistribution.length - 1) * (n / 100))];
   }
 

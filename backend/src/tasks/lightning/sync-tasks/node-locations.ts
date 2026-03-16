@@ -8,6 +8,7 @@ import { ResultSetHeader } from 'mysql2';
 import * as IPCheck from '../../../utils/ipcheck.js';
 import { Reader } from 'mmdb-lib';
 
+/** @asyncSafe */
 export async function $lookupNodeLocation(): Promise<void> {
   let loggerTimer = new Date().getTime() / 1000;
   let progress = 0;

@@ -505,6 +505,7 @@ export interface IBackendInfo {
   version: string;
   lightning: boolean;
   coreVersion: string;
+  osVersion: string;
   backend: 'esplora' | 'electrum' | 'none';
 }
 

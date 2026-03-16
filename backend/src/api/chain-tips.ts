@@ -39,6 +39,7 @@ class ChainTips {
   private staleTipsCacheSize = 50;
   private maxIndexingQueueSize = 100;
 
+  /** @asyncSafe */
   public async updateOrphanedBlocks(): Promise<void> {
     try {
       this.chainTips = await bitcoinClient.getChainTips();
@@ -135,6 +136,7 @@ class ChainTips {
     }
   }
 
+  /** @asyncSafe */
   private async $indexOrphanedBlocks(): Promise<void> {
     if (this.indexingOrphanedBlocks) {
       return;
@@ -146,13 +148,13 @@ class ChainTips {
       if (!block && !blockhash) {
         continue;
       }
-      if (blockhash && !block) {
-        block = await bitcoinCoreApi.$getBlock(blockhash);
-      }
-      if (!block) {
-        continue;
-      }
       try {
+        if (blockhash && !block) {
+          block = await bitcoinCoreApi.$getBlock(blockhash);
+        }
+        if (!block) {
+          continue;
+        }
         let staleBlock: BlockExtended | undefined;
         const alreadyIndexed = await BlocksSummariesRepository.$isSummaryIndexed(block.id);
         const needToCache = Object.keys(this.staleTips).length < this.staleTipsCacheSize || block.height > Object.keys(this.staleTips).map(Number).sort((a, b) => b - a)[this.staleTipsCacheSize - 1];
@@ -178,7 +180,7 @@ class ChainTips {
           this.trimStaleTipsCache();
         }
       } catch (e) {
-        logger.err(`Failed to index orphaned block ${block.id} at height ${block.height}. Reason: ${e instanceof Error ? e.message : e}`);
+        logger.err(`Failed to index orphaned block ${block?.id} at height ${block?.height}. Reason: ${e instanceof Error ? e.message : e}`);
       }
     }
     this.indexingOrphanedBlocks = false;

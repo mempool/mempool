@@ -532,6 +532,12 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  setDetailsOpen(open: boolean): void {
+    if (open !== this.showDetails$.value) {
+      this.toggleDetails();
+    }
+  }
+
   loadMoreInputs(tx: Transaction): void {
     if (!tx['@vinLoaded'] && !this.txPreview) {
       this.electrsApiService.getTransaction$(tx.txid)

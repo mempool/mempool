@@ -175,6 +175,10 @@ nav {
   background-color: var(--signet);
 }
 
+.regtest.active {
+  background-color: var(--regtest);
+}
+
 .dropdown-divider {
   border-top: 1px solid #121420;
 }
@@ -200,9 +204,9 @@ nav {
 }
 
 .subdomain_logo {
-  height: 35px;
+  max-height: 35px;
   overflow: clip;
-  max-width: 140px;
+  max-width: 100%;
   margin: auto;
   align-self: center;
   .rounded {
@@ -210,7 +214,7 @@ nav {
   }
 
   &.custom_logo {
-    height: 48px;
+    max-height: 48px;
     margin-right: 1em;
   }
  
@@ -219,7 +223,7 @@ nav {
   }
 
   &.custom_logo.mobile_logo {
-    height: 42px;
+    max-height: 42px;
   }
 }
 

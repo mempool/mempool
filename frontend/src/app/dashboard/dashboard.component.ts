@@ -1,7 +1,7 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { combineLatest, EMPTY, fromEvent, interval, merge, Observable, of, Subject, Subscription, timer } from 'rxjs';
 import { catchError, delayWhen, distinctUntilChanged, filter, map, scan, share, shareReplay, startWith, switchMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
-import { AuditStatus, BlockExtended, CurrentPegs, FederationAddress, FederationUtxo, OptimizedMempoolStats, PegsVolume, RecentPeg, TransactionStripped } from '@interfaces/node-api.interface';
+import { AuditStatus, BlockExtended, CurrentPegs, FederationAddress, FederationUtxo, OptimizedMempoolStats, RecentPeg, TransactionStripped } from '@interfaces/node-api.interface';
 import { MempoolInfo, ReplacementInfo } from '@interfaces/websocket.interface';
 import { ApiService } from '@app/services/api.service';
 import { StateService } from '@app/services/state.service';
@@ -55,10 +55,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   liquidReservesMonth$: Observable<any>;
   currentReserves$: Observable<CurrentPegs>;
   recentPegsList$: Observable<RecentPeg[]>;
-  pegsVolume$: Observable<PegsVolume[]>;
   federationAddresses$: Observable<FederationAddress[]>;
-  federationAddressesNumber$: Observable<number>;
-  federationUtxosNumber$: Observable<number>;
   expiredUtxos$: Observable<FederationUtxo[]>;
   emergencySpentUtxosStats$: Observable<any>;
   fullHistory$: Observable<any>;
@@ -316,33 +313,10 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         share()
       );
 
-      this.pegsVolume$ = this.auditUpdated$.pipe(
-        filter(auditUpdated => auditUpdated === true),
-        throttleTime(40000),
-        switchMap(_ => this.apiService.pegsVolume$()),
-        share()
-      );
-
       this.federationAddresses$ = this.auditUpdated$.pipe(
         filter(auditUpdated => auditUpdated === true),
         throttleTime(40000),
         switchMap(_ => this.apiService.federationAddresses$()),
-        share()
-      );
-
-      this.federationAddressesNumber$ = this.auditUpdated$.pipe(
-        filter(auditUpdated => auditUpdated === true),
-        throttleTime(40000),
-        switchMap(_ => this.apiService.federationAddressesNumber$()),
-        map(count => count.address_count),
-        share()
-      );
-
-      this.federationUtxosNumber$ = this.auditUpdated$.pipe(
-        filter(auditUpdated => auditUpdated === true),
-        throttleTime(40000),
-        switchMap(_ => this.apiService.federationUtxosNumber$()),
-        map(count => count.utxo_count),
         share()
       );
 

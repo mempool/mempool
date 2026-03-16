@@ -94,4 +94,5 @@ module.exports = {
   getTxoutSetinfo: 'gettxoutsetinfo',
   getIndexInfo: 'getindexinfo',
   testMempoolAccept: 'testmempoolaccept',
+  tweakFedPegScript: 'tweakfedpegscript',
 };

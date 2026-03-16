@@ -22,28 +22,30 @@ export class ReservesRatioStatsComponent implements OnInit {
     this.unbackedMonths$ = this.fullHistory$
       .pipe(
         map((fullHistory) => {
-          if (fullHistory.liquidPegs.series.length !== fullHistory.liquidReserves.series.length) {
+          const pegsSeries = fullHistory?.liquidPegs?.series || [];
+          const reservesSeries = fullHistory?.liquidReserves?.series || [];
+          if (pegsSeries.length < 2 || pegsSeries.length !== reservesSeries.length) {
             return {
               historyComplete: false,
               total: null
             };
           }
           // Only check the last 3 years
-          let ratioSeries = fullHistory.liquidReserves.series.map((value: number, index: number) => value / fullHistory.liquidPegs.series[index]);
+          let ratioSeries = reservesSeries.map((value: number, index: number) => value / pegsSeries[index]);
           ratioSeries = ratioSeries.slice(Math.max(ratioSeries.length - 36, 0));
           let total = 0;
-          let avg = 0;
           for (let i = 0; i < ratioSeries.length; i++) {
-            avg += ratioSeries[i];
             if (ratioSeries[i] < 0.95) {
               total++;
             }
           }
-          avg = avg / ratioSeries.length;
+          const currentBalance = reservesSeries[reservesSeries.length - 1];
+          const previousBalance = reservesSeries[reservesSeries.length - 2];
+          const delta1m = currentBalance - previousBalance;
           return {
             historyComplete: true,
             total: total,
-            avg: avg,
+            delta1m: delta1m,
           };
         })
       );

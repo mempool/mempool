@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgbCollapseModule, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbCollapseModule, NgbTypeaheadModule, NgbNavModule, NgbTooltipModule, NgbPaginationModule, NgbDropdownModule, NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faCogs, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faClock, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
@@ -8,7 +8,8 @@ import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, fa
   faFastForward, faWallet, faUserClock, faWrench, faUserFriends, faQuestionCircle, faHistory, faSignOutAlt, faKey, faSuitcase, faIdCardAlt, faNetworkWired, faUserCheck,
   faCircleCheck, faUserCircle, faCheck, faRocket, faScaleBalanced, faHourglassStart, faHourglassHalf, faHourglassEnd, faWandMagicSparkles, faTimeline,
   faCircleXmark, faCalendarCheck, faMoneyBillTrendUp, faRobot, faShareNodes, faCreditCard, faMicroscope, faExclamationTriangle, faLockOpen, faPaperclip, faAddressCard,
-  faMedal, faBug, faFilePdf, faPiggyBank, faLayerGroup, faHeart, faCashRegister, faCodeFork, faCode } from '@fortawesome/free-solid-svg-icons';
+  faMedal, faBug, faFilePdf, faPiggyBank, faLayerGroup, faHeart, faCashRegister, faCodeFork, faCode, 
+  faCalendar} from '@fortawesome/free-solid-svg-icons';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MenuComponent } from '@components/menu/menu.component';
 import { PreviewTitleComponent } from '@components/master-page-preview/preview-title.component';
@@ -32,10 +33,9 @@ import { TimeComponent } from '@components/time/time.component';
 import { ClipboardComponent } from '@components/clipboard/clipboard.component';
 import { QrcodeComponent } from '@components/qrcode/qrcode.component';
 import { FiatComponent } from '@app/fiat/fiat.component';
-import { NgbNavModule, NgbTooltipModule, NgbPaginationModule, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { TxFeaturesComponent } from '@components/tx-features/tx-features.component';
 import { TxFeeRatingComponent } from '@components/tx-fee-rating/tx-fee-rating.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LanguageSelectorComponent } from '@components/language-selector/language-selector.component';
 import { FiatSelectorComponent } from '@components/fiat-selector/fiat-selector.component';
 import { RateUnitSelectorComponent } from '@components/rate-unit-selector/rate-unit-selector.component';
@@ -260,6 +260,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
   imports: [
     CommonModule,
     RouterModule,
+    FormsModule,
     ReactiveFormsModule,
     NgbNavModule,
     NgbTooltipModule,
@@ -267,6 +268,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     NgbTypeaheadModule,
     NgbDropdownModule,
     NgbCollapseModule,
+    NgbDatepickerModule,
     InfiniteScrollModule,
     FontAwesomeModule,
   ],
@@ -469,6 +471,7 @@ export class SharedModule {
     library.addIcons(faTimeline);
     library.addIcons(faCircleXmark);
     library.addIcons(faCalendarCheck);
+    library.addIcons(faCalendar);
     library.addIcons(faMoneyBillTrendUp);
     library.addIcons(faRobot);
     library.addIcons(faShareNodes);
