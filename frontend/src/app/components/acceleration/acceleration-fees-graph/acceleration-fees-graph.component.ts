@@ -55,6 +55,9 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
   chartInstance: any = undefined;
   daysAvailable: number = 0;
 
+  private readonly totalBidBoostLabel = $localize`:@@graphs.accelerationFees.totalBidBoost:Total bid boost`;
+  private readonly acceleratedLabel = $localize`:@@graphs.accelerationFees.accelerated:Accelerated`;
+
   constructor(
     @Inject(LOCALE_ID) public locale: string,
     private seoService: SeoService,
@@ -182,14 +185,14 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
           let tooltip = `<b style="color: white; margin-left: 2px">${formatterXAxis(this.locale, this.timespan, parseInt(ticks[0].axisValue, 10))}</b><br>`;
 
           for (const tick of ticks) {
-            if (tick.seriesName === 'Total bid boost') {
+            if (tick.seriesName === this.totalBidBoostLabel) {
               if (tick.data[1] > 10_000_000) {
-                tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1] / 100_000_000, this.locale, '1.0-8')} BTC<br>`;
+                tooltip += `${tick.marker} ${this.totalBidBoostLabel}: ${formatNumber(tick.data[1] / 100_000_000, this.locale, '1.0-8')} BTC<br>`;
               } else {
-                tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-0')} sats<br>`;
+                tooltip += `${tick.marker} ${this.totalBidBoostLabel}: ${formatNumber(tick.data[1], this.locale, '1.0-0')} sats<br>`;
               }
-            } else if (tick && tick.seriesName === 'Accelerated') {
-              tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-0')}<br>`;
+            } else if (tick && tick.seriesName === this.acceleratedLabel) {
+              tooltip += `${tick.marker} ${this.acceleratedLabel}: ${formatNumber(tick.data[1], this.locale, '1.0-0')}<br>`;
             }
           }
           tooltip += `<small>` + $localize`Around block: ${ticks[0].data[2]}` + `</small>`;
@@ -219,7 +222,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
       legend: {
         data: [
           {
-            name: 'Total bid boost',
+            name: this.totalBidBoostLabel,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -230,7 +233,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
             icon: 'roundRect',
           },
           {
-            name: 'Accelerated',
+            name: this.acceleratedLabel,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -239,14 +242,14 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
           },
         ],
         selected: {
-          'Total bid boost': true,
+          [this.totalBidBoostLabel]: true,
         },
         show: !this.widget,
       },
       yAxis: data.length === 0 ? undefined : [
         {
           type: 'value',
-          name: 'Total bid boost',
+          name: this.totalBidBoostLabel,
           position: 'right',
           nameTextStyle: {
             align: 'right',
@@ -267,7 +270,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
         },
         {
           type: 'value',
-          name: 'Accelerated',
+          name: this.acceleratedLabel,
           position: 'left',
           axisLabel: {
             color: 'rgb(110, 112, 121)',
@@ -288,7 +291,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
       ],
       series: data.length === 0 ? undefined : [
         {
-          name: 'Total bid boost',
+          name: this.totalBidBoostLabel,
           data: data.map(h =>  {
             return [h.timestamp * 1000, h.sumBidBoost, h.avgHeight];
           }),
@@ -300,7 +303,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
           smooth: true,
         },
         {
-          name: 'Accelerated',
+          name: this.acceleratedLabel,
           yAxisIndex: 1,
           data: data.map(h =>  {
             return [h.timestamp * 1000, h.count, h.avgHeight];
