@@ -332,13 +332,16 @@ h2 {
 }
 
 .badge-ord {
-	background-color: var(--grey);
+	--bs-btn-bg: var(--grey);
+	--bs-btn-border-color: transparent;
+	background-color: var(--bs-btn-bg);
+	border-color: var(--bs-btn-border-color);
 	position: relative;
 	top: -2px;
 	font-size: 81%;
 	border: 0;
 	&.primary {
-		background-color: var(--primary);
+		--bs-btn-bg: var(--primary);
 	}
 }
 

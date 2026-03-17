@@ -218,8 +218,7 @@ main {
 .navbar-nav.liquidtestnet > .active {
   background-color: var(--liquidtestnet) !important;
 }
-
-.form-control {
+.form-control, .form-select {
   color: var(--fg);
   background-color: var(--secondary);
   border: 1px solid rgba(17, 19, 31, 0.2);
@@ -1454,6 +1453,12 @@ a {
   color: var(--bg);
 }
 
+.btn {
+  --bs-btn-active-color: var(--bs-btn-color);
+  --bs-btn-active-bg: var(--bs-btn-bg);
+  --bs-btn-active-border-color: var(--bs-btn-border-color);
+}
+
 .btn-primary {
   --bs-btn-color: var(--fg);
   --bs-btn-bg: var(--primary);
@@ -1480,7 +1485,7 @@ button {
 
 .btn-success {
   color: #fff;
-  &:focus, &:hover, &:active {
+  &:focus, &:hover, &:active, &:disabled {
     color: #fff;
   }
 }
@@ -1568,4 +1573,8 @@ button {
 
 .nav-tabs .nav-link.active {
   color: #fff;
+}
+
+.text-muted {
+  color: var(--grey) !important;
 }
