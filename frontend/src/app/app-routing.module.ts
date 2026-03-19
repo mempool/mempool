@@ -312,7 +312,7 @@ const liquidTestnetRoutes: Routes = browserWindowEnv.LIQUID_TESTNET_ENABLED ? [
       },
       {
         path: '**',
-        redirectTo: '/'
+        redirectTo: '/testnet'
       },
     ]
   },
