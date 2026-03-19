@@ -10,7 +10,6 @@ import { AddressGroupComponent } from '@components/address-group/address-group.c
 import { TrackerGuard } from '@app/route-guards';
 
 const browserWindow = window as typeof window & { __env?: any };
-// @ts-ignore
 const browserWindowEnv = browserWindow.__env || {};
 
 const testnetRoutes: Routes = browserWindowEnv.TESTNET_ENABLED ? [
@@ -313,7 +312,7 @@ const liquidTestnetRoutes: Routes = browserWindowEnv.LIQUID_TESTNET_ENABLED ? [
       },
       {
         path: '**',
-        redirectTo: '/signet'
+        redirectTo: '/testnet'
       },
     ]
   },
