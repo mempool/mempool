@@ -25,12 +25,15 @@ jobs:
           path: ${{ matrix.node }}/${{ matrix.flavor }}
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
           registry-url: "https://registry.npmjs.org"
           cache: 'npm'
           cache-dependency-path: '${{ matrix.node }}/${{ matrix.flavor }}/backend/package-lock.json'
+
+      - name: Install npm 11.12.0
+        run: npm install -g npm@11.12.0
 
       - name: Cache node modules
         uses: actions/cache@v4
@@ -105,12 +108,15 @@ jobs:
           path: assets
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
           registry-url: "https://registry.npmjs.org"
           cache: 'npm'
           cache-dependency-path: 'assets/frontend/package-lock.json'
+
+      - name: Install npm 11.12.0
+        run: npm install -g npm@11.12.0
 
       - name: Cache node modules for frontend
         uses: actions/cache@v4
@@ -215,12 +221,15 @@ jobs:
           path: ${{ matrix.node }}/${{ matrix.flavor }}
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
           registry-url: "https://registry.npmjs.org"
           cache: 'npm'
           cache-dependency-path: '${{ matrix.node }}/${{ matrix.flavor }}/frontend/package-lock.json'
+
+      - name: Install npm 11.12.0
+        run: npm install -g npm@11.12.0
 
       - name: Cache node modules
         uses: actions/cache@v4
@@ -315,11 +324,14 @@ jobs:
           path: ${{ matrix.module }}
 
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
           cache: "npm"
           cache-dependency-path: ${{ matrix.module }}/frontend/package-lock.json
+
+      - name: Install npm 11.12.0
+        run: npm install -g npm@11.12.0
 
       - name: Cache node modules for e2e
         uses: actions/cache@v4
