@@ -110,6 +110,9 @@ export class BlockFeesGraphComponent implements OnInit {
   }
 
   prepareChartOptions(data) {
+    const feesBtcLabel = $localize`:@@graphs.blockFees.feesBtc:Fees BTC`;
+    const feesFiatLabel = $localize`:@@graphs.blockFees.feesFiat:Fees ${this.currency}:currency:`;
+
     let title: object;
     if (data.blockFees.length === 0) {
       title = {
@@ -165,13 +168,13 @@ export class BlockFeesGraphComponent implements OnInit {
 
           for (const tick of data) {
             if (tick.seriesIndex === 0) {
-              tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.3-3')} BTC<br>`;
+              tooltip += `${tick.marker} ${feesBtcLabel}: ${formatNumber(tick.data[1], this.locale, '1.3-3')} BTC<br>`;
             } else if (tick.seriesIndex === 1) {
-              tooltip += `${tick.marker} ${tick.seriesName}: ${this.fiatCurrencyPipe.transform(tick.data[1], null, this.currency) }<br>`;
+              tooltip += `${tick.marker} ${feesFiatLabel}: ${this.fiatCurrencyPipe.transform(tick.data[1], null, this.currency) }<br>`;
             }
           }
 
-          tooltip += `<small>* On average around block ${data[0].data[2]}</small>`;
+          tooltip += `<small>` + $localize`:@@graphs.blockFees.avgBlock:* On average around block ${data[0].data[2]}:block:` + `</small>`;
           return tooltip;
         }.bind(this)
       },
@@ -186,7 +189,7 @@ export class BlockFeesGraphComponent implements OnInit {
       legend: data.blockFees.length === 0 ? undefined : {
         data: [
           {
-            name: 'Fees BTC',
+            name: feesBtcLabel,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -194,7 +197,7 @@ export class BlockFeesGraphComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: 'Fees ' + this.currency,
+            name: feesFiatLabel,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -239,7 +242,7 @@ export class BlockFeesGraphComponent implements OnInit {
           legendHoverLink: false,
           zlevel: 0,
           yAxisIndex: 0,
-          name: 'Fees BTC',
+          name: feesBtcLabel,
           data: data.blockFees,
           type: 'line',
           smooth: 0.25,
@@ -253,7 +256,7 @@ export class BlockFeesGraphComponent implements OnInit {
           legendHoverLink: false,
           zlevel: 1,
           yAxisIndex: 1,
-          name: 'Fees ' + this.currency,
+          name: feesFiatLabel,
           data: data.blockFeesFiat,
           type: 'line',
           smooth: 0.25,
