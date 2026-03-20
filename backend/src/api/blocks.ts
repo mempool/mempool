@@ -28,9 +28,14 @@ import chainTips from './chain-tips';
 import websocketHandler from './websocket-handler';
 import redisCache from './redis-cache';
 import rbfCache from './rbf-cache';
+import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
+import mempoolBlocks from './mempool-blocks';
+import statistics from './statistics/statistics';
+import { Acceleration } from './services/acceleration';
 import { calcBitsDifference } from './difficulty-adjustment';
 import AccelerationRepository from '../repositories/AccelerationRepository';
 import { calculateFastBlockCpfp, calculateGoodBlockCpfp, calculateClusterMempoolBlockCpfp } from './cpfp';
+import blockProcessor, { BlockProcessingResult, detectTemplateAlgorithm } from './block-processor';
 import mempool from './mempool';
 import CpfpRepository from '../repositories/CpfpRepository';
 import { parseDATUMTemplateCreator } from '../utils/bitcoin-script';
@@ -46,7 +51,6 @@ class Blocks {
   private previousDifficultyRetarget = 0;
   private quarterEpochBlockTime: number | null = null;
   private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
-  private newAsyncBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: MempoolTransactionExtended[]) => Promise<void>)[] = [];
   private classifyingBlocks: boolean = false;
   private oldestCoreLogTimestamp: number | undefined | null = undefined;
 
@@ -72,10 +76,6 @@ class Blocks {
 
   public setNewBlockCallback(fn: (block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void) {
     this.newBlockCallbacks.push(fn);
-  }
-
-  public setNewAsyncBlockCallback(fn: (block: BlockExtended, txIds: string[], transactions: MempoolTransactionExtended[]) => Promise<void>) {
-    this.newAsyncBlockCallbacks.push(fn);
   }
 
   /**
@@ -252,7 +252,7 @@ class Blocks {
    *
    * @asyncUnsafe
    */
-  private async $getBlockExtended(block: IEsploraApi.Block, transactions: TransactionExtended[]): Promise<BlockExtended> {
+  public async $getBlockExtended(block: IEsploraApi.Block, transactions: TransactionExtended[], providedPool?: PoolTag): Promise<BlockExtended> {
     const coinbaseTx = transactionUtils.stripCoinbaseTransaction(transactions[0]);
 
     const blk: Partial<BlockExtended> = Object.assign({}, block);
@@ -335,7 +335,9 @@ class Blocks {
 
     if (['mainnet', 'testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK)) {
       let pool: PoolTag;
-      if (coinbaseTx !== undefined) {
+      if (providedPool) {
+        pool = providedPool;
+      } else if (coinbaseTx !== undefined) {
         pool = await this.$findBlockMiner(coinbaseTx);
       } else {
         if (config.DATABASE.ENABLED === true) {
@@ -386,7 +388,7 @@ class Blocks {
     return <BlockExtended>blk;
   }
 
-  private async $getBlockStats(block: IEsploraApi.Block, transactions: TransactionExtended[]): Promise<IBitcoinApi.BlockStats> {
+  public async $getBlockStats(block: IEsploraApi.Block, transactions: TransactionExtended[]): Promise<IBitcoinApi.BlockStats> {
     if (!block.stale) {
       return bitcoinClient.getBlockStats(block.id);
     }
@@ -493,6 +495,128 @@ class Blocks {
       return await poolsRepository.$getUnknownPool();
     } else {
       return poolsParser.unknownPool;
+    }
+  }
+
+  /** @asyncUnsafe */
+  private async $applyBlockTransactionsToMempool(
+    txIds: string[],
+    transactions: MempoolTransactionExtended[]
+  ): Promise<{ rbfTransactions: { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }}}> {
+    const _memPool = memPool.getMempool();
+
+    const rbfTransactions = Common.findMinedRbfTransactions(transactions, memPool.getSpendMap());
+    memPool.handleRbfTransactions(rbfTransactions);
+    memPool.removeFromSpendMap(transactions);
+
+    if (config.MEMPOOL.CLUSTER_MEMPOOL) {
+      memPool.clusterMempool?.applyMempoolChange({
+        added: [],
+        removed: txIds,
+        accelerations: mempool.getAccelerations(),
+      });
+    }
+
+    for (const txId of txIds) {
+      delete _memPool[txId];
+      rbfCache.mined(txId);
+    }
+
+    let candidates;
+    let transactionIds: string[];
+
+    if (memPool.limitGBT) {
+      const minFeeMempool = await bitcoinSecondClient.getRawMemPool();
+      const minFeeTip = await bitcoinSecondClient.getBlockCount();
+      candidates = memPool.getNextCandidates(minFeeMempool, minFeeTip, transactions);
+      transactionIds = Object.keys(candidates?.txs || {});
+    } else {
+      candidates = undefined;
+      transactionIds = Object.keys(memPool.getMempool());
+    }
+
+    if (config.MEMPOOL.CLUSTER_MEMPOOL) {
+      const cmBlocks = mempool.clusterMempool?.getBlocks(config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT) ?? [];
+      mempoolBlocks.processClusterMempoolBlocks(cmBlocks, _memPool, mempool.getAccelerations());
+    } else if (config.MEMPOOL.RUST_GBT) {
+      const added = memPool.limitGBT ? (candidates?.added || []) : [];
+      const removed = memPool.limitGBT ? (candidates?.removed || []) : transactions;
+      await mempoolBlocks.$rustUpdateBlockTemplates(transactionIds, _memPool, added, removed, candidates, true);
+    } else {
+      await mempoolBlocks.$makeBlockTemplates(transactionIds, _memPool, candidates, true, true);
+    }
+
+    return { rbfTransactions };
+  }
+
+  /** @asyncUnsafe */
+  private async $saveBlockData(
+    processingResult: BlockProcessingResult,
+    timer: number
+  ): Promise<void> {
+    const blockExtended = processingResult.blockExtended;
+    const cpfpSummary = processingResult.cpfpSummary;
+
+    let latestPriceId;
+    try {
+      latestPriceId = await PricesRepository.$getLatestPriceId();
+      this.updateTimerProgress(timer, `got latest price id ${this.currentBlockHeight}`);
+    } catch (e) {
+      logger.debug('failed to fetch latest price id from db: ' + (e instanceof Error ? e.message : e));
+    }
+    if (priceUpdater.historyInserted === true && latestPriceId !== null) {
+      await blocksRepository.$saveBlockPrices([{
+        height: blockExtended.height,
+        priceId: latestPriceId,
+      }]);
+      this.updateTimerProgress(timer, `saved prices for ${this.currentBlockHeight}`);
+    } else {
+      logger.debug(`Cannot save block price for ${blockExtended.height} because the price updater hasnt completed yet. Trying again in 10 seconds.`, logger.tags.mining);
+      indexer.scheduleSingleTask('blocksPrices', 10000);
+    }
+
+    if (Common.blocksSummariesIndexingEnabled() === true) {
+      // indexes the summary as a side effect
+      await this.$getStrippedBlockTransactions(blockExtended.id, true, false, cpfpSummary, blockExtended.height);
+      this.updateTimerProgress(timer, `saved block summary for ${this.currentBlockHeight}`);
+    }
+
+    if (config.MEMPOOL.CPFP_INDEXING) {
+      // can be slow, and isn't critical, so don't await
+      void this.$saveCpfp(blockExtended.id, this.currentBlockHeight, cpfpSummary);
+      this.updateTimerProgress(timer, `saved cpfp for ${this.currentBlockHeight}`);
+    }
+
+    if (processingResult.auditResult) {
+      void BlocksSummariesRepository.$saveTemplate({
+        height: blockExtended.height,
+        template: {
+          id: blockExtended.id,
+          transactions: processingResult.auditResult.projectedBlocks[0].transactions,
+        },
+        version: 1,
+      });
+      this.updateTimerProgress(timer, `saved audit template for ${this.currentBlockHeight}`);
+
+      void BlocksAuditsRepository.$saveAudit({
+        version: 1,
+        templateAlgorithm: processingResult.templateAlgorithm,
+        time: blockExtended.timestamp,
+        height: blockExtended.height,
+        hash: blockExtended.id,
+        unseenTxs: processingResult.auditResult.unseen,
+        addedTxs: processingResult.auditResult.added,
+        prioritizedTxs: processingResult.auditResult.prioritized,
+        missingTxs: processingResult.auditResult.censored,
+        freshTxs: processingResult.auditResult.fresh,
+        sigopTxs: processingResult.auditResult.sigop,
+        fullrbfTxs: processingResult.auditResult.fullrbf,
+        acceleratedTxs: processingResult.auditResult.accelerated,
+        matchRate: processingResult.auditResult.matchRate,
+        expectedFees: processingResult.auditResult.expectedFees,
+        expectedWeight: processingResult.auditResult.expectedWeight,
+      });
+      this.updateTimerProgress(timer, `saved audit results for ${this.currentBlockHeight}`);
     }
   }
 
@@ -1054,62 +1178,54 @@ class Blocks {
         }
       }
 
-      let accelerations = Object.values(mempool.getAccelerations());
-      if (accelerations?.length > 0) {
-        const pool = await this.$findBlockMiner(transactionUtils.stripCoinbaseTransaction(transactions[0]));
-        accelerations = accelerations.filter(a => a.pools.includes(pool.uniqueId));
-      }
-      const cpfpTransactions = structuredClone(transactions);
-      const accelForCpfp = accelerations.map(a => ({ txid: a.txid, max_bid: a.feeDelta }));
-      const cpfpSummary: CpfpSummary = config.MEMPOOL.CLUSTER_MEMPOOL
-        ? calculateClusterMempoolBlockCpfp(block.height, cpfpTransactions, accelForCpfp)
-        : calculateGoodBlockCpfp(block.height, cpfpTransactions, accelForCpfp);
-      const blockExtended: BlockExtended = await this.$getBlockExtended(block, cpfpSummary.transactions);
-      const blockSummary: BlockSummary = this.summarizeBlockTransactions(block.id, block.height, cpfpSummary.transactions);
+      const pool = await this.$findBlockMiner(transactionUtils.stripCoinbaseTransaction(transactions[0]));
+      const accelerations = mempool.getAccelerations();
+
+      const processingResult = await blockProcessor.$processNewBlock(
+        block,
+        transactions,
+        pool,
+        accelerations
+      );
+
+      const blockExtended = processingResult.blockExtended;
+      const blockSummary = processingResult.blockSummary;
+      const cpfpSummary = processingResult.cpfpSummary;
       this.updateTimerProgress(timer, `got block data for ${this.currentBlockHeight}`);
 
-      if (Common.indexingEnabled()) {
-        if (!fastForwarded) {
-          await this.$handleReorgs(blockExtended, timer);
-        }
+      if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {
+        await statistics.runStatistics();
+      }
 
+      const { rbfTransactions } = await this.$applyBlockTransactionsToMempool(txIds, cpfpSummary.transactions);
+      this.updateTimerProgress(timer, `applied mempool changes for ${this.currentBlockHeight}`);
+
+      if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {
+        await statistics.runStatistics();
+      }
+
+      if (Common.indexingEnabled() && !fastForwarded) {
+        await this.$handleReorgs(blockExtended, timer);
+      }
+
+      await websocketHandler.handleNewBlock(blockExtended, txIds, cpfpSummary.transactions, rbfTransactions);
+      this.updateTimerProgress(timer, `sent websocket updates for ${this.currentBlockHeight}`);
+
+      if (Common.indexingEnabled()) {
         await blocksRepository.$saveBlockInDatabase(blockExtended);
         this.updateTimerProgress(timer, `saved ${this.currentBlockHeight} to database`);
 
-        if (!fastForwarded) {
-          let lastestPriceId;
-          try {
-            lastestPriceId = await PricesRepository.$getLatestPriceId();
-            this.updateTimerProgress(timer, `got latest price id ${this.currentBlockHeight}`);
-          } catch (e) {
-            logger.debug('failed to fetch latest price id from db: ' + (e instanceof Error ? e.message : e));
-          }
-          if (priceUpdater.historyInserted === true && lastestPriceId !== null) {
-            await blocksRepository.$saveBlockPrices([{
-              height: blockExtended.height,
-              priceId: lastestPriceId,
-            }]);
-            this.updateTimerProgress(timer, `saved prices for ${this.currentBlockHeight}`);
-          } else {
-            logger.debug(`Cannot save block price for ${blockExtended.height} because the price updater hasnt completed yet. Trying again in 10 seconds.`, logger.tags.mining);
-            indexer.scheduleSingleTask('blocksPrices', 10000);
-          }
+        await AccelerationRepository.$indexAccelerationsForBlock(
+          blockExtended,
+          Object.values(accelerations),
+          structuredClone(cpfpSummary.transactions)
+        );
+        this.updateTimerProgress(timer, `indexed accelerations for ${this.currentBlockHeight}`);
 
-          // Save blocks summary for visualization if it's enabled
-          if (Common.blocksSummariesIndexingEnabled() === true) {
-            await this.$getStrippedBlockTransactions(blockExtended.id, true, false, cpfpSummary, blockExtended.height);
-            this.updateTimerProgress(timer, `saved block summary for ${this.currentBlockHeight}`);
-          }
-          if (config.MEMPOOL.CPFP_INDEXING && !config.MEMPOOL.AUDIT) {
-            void this.$saveCpfp(blockExtended.id, this.currentBlockHeight, cpfpSummary);
-            this.updateTimerProgress(timer, `saved cpfp for ${this.currentBlockHeight}`);
-          }
+        if (!fastForwarded) {
+          await this.$saveBlockData(processingResult, timer);
         }
       }
-
-      // start async callbacks
-      this.updateTimerProgress(timer, `starting async callbacks for ${this.currentBlockHeight}`);
-      const callbackPromises = this.newAsyncBlockCallbacks.map((cb) => cb(blockExtended, txIds, cpfpSummary.transactions));
 
       if (block.height % 2016 === 0) {
         if (Common.indexingEnabled()) {
@@ -1147,11 +1263,6 @@ class Blocks {
         this.updateTimerProgress(timer, `getting orphaned blocks for ${this.currentBlockHeight}`);
         await chainTips.updateOrphanedBlocks();
       }
-
-      // wait for pending async callbacks to finish
-      this.updateTimerProgress(timer, `waiting for async callbacks to complete for ${this.currentBlockHeight}`);
-      await Promise.all(callbackPromises);
-      this.updateTimerProgress(timer, `async callbacks completed for ${this.currentBlockHeight}`);
 
       this.blocks.push(blockExtended);
       if (this.blocks.length > config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4) {
@@ -1652,51 +1763,20 @@ class Blocks {
     }
 
     if (transactions?.length != null) {
-      const algo = await this.detectTemplateAlgorithm(hash, height, transactions);
-
-      let summary: CpfpSummary;
-      if (algo === TemplateAlgorithm.clusterMempool) {
-        summary = calculateClusterMempoolBlockCpfp(height, transactions, []);
-      } else {
-        summary = calculateFastBlockCpfp(height, transactions);
-      }
+      const { cpfpSummary } = await detectTemplateAlgorithm(height, transactions, []);
 
       if (!stale) {
-        await this.$saveCpfp(hash, height, summary);
+        await this.$saveCpfp(hash, height, cpfpSummary);
       }
 
-      const effectiveFeeStats = Common.calcEffectiveFeeStatistics(summary.transactions);
+      const effectiveFeeStats = Common.calcEffectiveFeeStatistics(cpfpSummary.transactions);
       await blocksRepository.$saveEffectiveFeeStats(hash, effectiveFeeStats);
 
-      return summary;
+      return cpfpSummary;
     } else {
       logger.err(`Cannot index CPFP for block ${height} - missing transaction data`);
       return null;
     }
-  }
-
-  private static CM_ACTIVATION_HEIGHT: { [network: string]: number } = {
-    'mainnet': 945000,
-    'testnet': 4860000,
-    'testnet4': 125000,
-    'signet': 294000,
-    'regtest': 0,
-  };
-
-  private async detectTemplateAlgorithm(hash: string, height: number, transactions: MempoolTransactionExtended[]): Promise<TemplateAlgorithm> {
-    const network = config.MEMPOOL.NETWORK || 'mainnet';
-    const activationHeight = Blocks.CM_ACTIVATION_HEIGHT[network] ?? Infinity;
-
-    if (height < activationHeight) {
-      return TemplateAlgorithm.legacy;
-    }
-
-    const auditAlgo = await BlocksAuditsRepository.$getBlockTemplateAlgo(hash);
-    if (auditAlgo !== null) {
-      return auditAlgo;
-    }
-
-    return detectAlgorithmHeuristic(transactions);
   }
 
   /** @asyncSafe */
@@ -1764,118 +1844,6 @@ class Blocks {
       return null;
     }
   }
-}
-
-export function detectAlgorithmHeuristic(transactions: MempoolTransactionExtended[]): TemplateAlgorithm {
-  const txMap: { [txid: string]: MempoolTransactionExtended } = {};
-  for (const tx of transactions) {
-    txMap[tx.txid] = tx;
-  }
-
-  const parentMap = new Map<string, Set<string>>();
-  const childMap = new Map<string, Set<string>>();
-  for (const tx of transactions) {
-    for (const vin of tx.vin) {
-      if (txMap[vin.txid]) {
-        let parents = parentMap.get(tx.txid);
-        if (!parents) {
-          parents = new Set();
-          parentMap.set(tx.txid, parents);
-        }
-        parents.add(vin.txid);
-        let children = childMap.get(vin.txid);
-        if (!children) {
-          children = new Set();
-          childMap.set(vin.txid, children);
-        }
-        children.add(tx.txid);
-      }
-    }
-  }
-
-  const visited = new Set<string>();
-  let cmLikely = false;
-
-  for (const tx of transactions) {
-    if (visited.has(tx.txid)) {
-      continue;
-    }
-    const component = new Set<string>();
-    const stack = [tx.txid];
-    while (stack.length > 0) {
-      const current = stack.pop();
-      if (current === undefined || visited.has(current)) {
-        continue;
-      }
-      visited.add(current);
-      component.add(current);
-      for (const p of (parentMap.get(current) || [])) {
-        if (!visited.has(p)) {
-          stack.push(p);
-        }
-      }
-      for (const c of (childMap.get(current) || [])) {
-        if (!visited.has(c)) {
-          stack.push(c);
-        }
-      }
-    }
-
-    if (component.size < 3) {
-      continue;
-    }
-
-    const leaves: string[] = [];
-    for (const txid of component) {
-      const children = childMap.get(txid);
-      if (!children || children.size === 0) {
-        leaves.push(txid);
-      }
-    }
-
-    if (leaves.length >= 2) {
-      let totalFee = 0;
-      let totalWeight = 0;
-      for (const txid of component) {
-        totalFee += txMap[txid].fee || 0;
-        totalWeight += txMap[txid].weight;
-      }
-      const aggregateRate = totalWeight > 0 ? totalFee / (totalWeight / 4) : 0;
-
-      let bestSingleRate = 0;
-      for (const leaf of leaves) {
-        let pkgFee = txMap[leaf].fee || 0;
-        let pkgWeight = txMap[leaf].weight;
-        const ancestorStack = [...(parentMap.get(leaf) || [])];
-        const ancestorVisited = new Set<string>([leaf]);
-        while (ancestorStack.length) {
-          const anc = ancestorStack.pop();
-          if (anc === undefined || ancestorVisited.has(anc)) {
-            continue;
-          }
-          ancestorVisited.add(anc);
-          pkgFee += txMap[anc].fee || 0;
-          pkgWeight += txMap[anc].weight;
-          for (const p of (parentMap.get(anc) || [])) {
-            if (!ancestorVisited.has(p)) {
-              ancestorStack.push(p);
-            }
-          }
-        }
-        const rate = pkgWeight > 0 ? pkgFee / (pkgWeight / 4) : 0;
-        if (rate > bestSingleRate) {
-          bestSingleRate = rate;
-        }
-      }
-
-      if (aggregateRate > bestSingleRate * 1.01) {
-        cmLikely = true;
-        break;
-      }
-    }
-  }
-
-  return cmLikely ? TemplateAlgorithm.clusterMempool : TemplateAlgorithm.legacy;
 }
 
 export default new Blocks();

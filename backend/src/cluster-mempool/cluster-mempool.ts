@@ -667,5 +667,4 @@ export class ClusterMempool {
     }
     return null;
   }
-
 }

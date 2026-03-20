@@ -3,7 +3,7 @@ import * as WebSocket from 'ws';
 import {
   BlockExtended, TransactionExtended, MempoolTransactionExtended, WebsocketResponse,
   OptimizedStatistic, ILoadingIndicators, GbtCandidates, TxTrackingInfo,
-  MempoolDelta, MempoolDeltaTxids, TemplateAlgorithm, CpfpInfo
+  MempoolDelta, MempoolDeltaTxids, CpfpInfo
 } from '../mempool.interfaces';
 import blocks from './blocks';
 import memPool from './mempool';
@@ -16,16 +16,12 @@ import transactionUtils from './transaction-utils';
 import rbfCache, { ReplacementInfo } from './rbf-cache';
 import difficultyAdjustment from './difficulty-adjustment';
 import feeApi from './fee-api';
-import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
-import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
-import Audit from './audit';
 import priceUpdater from '../tasks/price-updater';
 import { ApiPrice } from '../repositories/PricesRepository';
 import { Acceleration } from './services/acceleration';
 import accelerationApi from './services/acceleration';
 import mempool from './mempool';
 import statistics from './statistics/statistics';
-import accelerationRepository from '../repositories/AccelerationRepository';
 import bitcoinApi from './bitcoin/bitcoin-api-factory';
 import walletApi from './services/wallets';
 
@@ -35,7 +31,7 @@ interface AddressTransactions {
   removed: MempoolTransactionExtended[],
 }
 import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
-import { calculateMempoolTxCpfp, calculateGoodBlockCpfp, calculateClusterMempoolBlockCpfp } from './cpfp';
+import { calculateMempoolTxCpfp } from './cpfp';
 import stratumApi, { StratumJob } from './services/stratum';
 
 // valid 'want' subscriptions
@@ -1017,179 +1013,25 @@ class WebsocketHandler {
     }
   }
 
-  /** @asyncUnsafe */
-  async handleNewBlock(block: BlockExtended, txIds: string[], transactions: MempoolTransactionExtended[]): Promise<void> {
+  /** @asyncSafe */
+  async handleNewBlock(
+    block: BlockExtended,
+    txIds: string[],
+    transactions: MempoolTransactionExtended[],
+    rbfTransactions: { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }}
+  ): Promise<void> {
     if (!this.webSocketServers.length) {
       throw new Error('No WebSocket.Server have been set');
     }
 
-    const blockTransactions = structuredClone(transactions);
-
     this.printLogs();
-    if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {
-      await statistics.runStatistics();
-    }
 
     const _memPool = memPool.getMempool();
-    const candidateTxs = memPool.getMempoolCandidates();
-    let candidates: GbtCandidates | undefined = (memPool.limitGBT && candidateTxs) ? { txs: candidateTxs, added: [], removed: [] } : undefined;
-    let transactionIds: string[] = (memPool.limitGBT) ? Object.keys(candidates?.txs || {}) : Object.keys(_memPool);
-
-    if (config.DATABASE.ENABLED) {
-      const accelerations = Object.values(mempool.getAccelerations());
-      await accelerationRepository.$indexAccelerationsForBlock(block, accelerations, structuredClone(transactions));
-    }
-
-    const rbfTransactions = Common.findMinedRbfTransactions(transactions, memPool.getSpendMap());
-    memPool.handleRbfTransactions(rbfTransactions);
-    memPool.removeFromSpendMap(transactions);
-
-    if (config.MEMPOOL.AUDIT && memPool.isInSync()) {
-      const auditMempool = _memPool;
-      const isAccelerated = accelerationApi.isAcceleratedBlock(block, Object.values(mempool.getAccelerations()));
-      const auditAccelerations = mempool.getAccelerations();
-
-      let projectedBlocks;
-      const auditVersion = 1;
-      let templateAlgorithm = TemplateAlgorithm.legacy;
-
-      if (config.MEMPOOL.CLUSTER_MEMPOOL) {
-        const cmBlocks = mempoolBlocks.processClusterMempoolBlocks(mempool.clusterMempool?.getBlocks(config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT) ?? [], auditMempool, auditAccelerations, false, block.extras.pool.id);
-        const cmAudit = Audit.auditBlock(block.height, blockTransactions, cmBlocks, auditMempool);
-
-        const added = memPool.limitGBT ? (candidates?.added || []) : [];
-        const removed = memPool.limitGBT ? (candidates?.removed || []) : [];
-        const legacyBlocks = config.MEMPOOL.RUST_GBT
-          ? await mempoolBlocks.$rustUpdateBlockTemplates(transactionIds, auditMempool, added, removed, candidates, isAccelerated, block.extras.pool.id, true)
-          : await mempoolBlocks.$makeBlockTemplates(transactionIds, auditMempool, candidates, false, isAccelerated, block.extras.pool.id);
-        const legacyAudit = Audit.auditBlock(block.height, blockTransactions, legacyBlocks, auditMempool);
-
-        const SCORE_MARGIN = 0.001;
-        if (cmAudit.score > legacyAudit.score + SCORE_MARGIN) {
-          projectedBlocks = cmBlocks;
-          templateAlgorithm = TemplateAlgorithm.clusterMempool;
-        } else {
-          projectedBlocks = legacyBlocks;
-        }
-      } else {
-        if (config.MEMPOOL.RUST_GBT) {
-          const added = memPool.limitGBT ? (candidates?.added || []) : [];
-          const removed = memPool.limitGBT ? (candidates?.removed || []) : [];
-          projectedBlocks = await mempoolBlocks.$rustUpdateBlockTemplates(transactionIds, auditMempool, added, removed, candidates, isAccelerated, block.extras.pool.id);
-        } else {
-          projectedBlocks = await mempoolBlocks.$makeBlockTemplates(transactionIds, auditMempool, candidates, false, isAccelerated, block.extras.pool.id);
-        }
-      }
-
-      if (Common.indexingEnabled()) {
-        const { unseen, censored, added, prioritized, fresh, sigop, fullrbf, accelerated, score, similarity } = Audit.auditBlock(block.height, blockTransactions, projectedBlocks, auditMempool);
-        const matchRate = Math.round(score * 100 * 100) / 100;
-
-        const stripped = projectedBlocks[0]?.transactions ? projectedBlocks[0].transactions : [];
-
-        let totalFees = 0;
-        let totalWeight = 0;
-        for (const tx of stripped) {
-          totalFees += tx.fee;
-          totalWeight += (tx.vsize * 4);
-        }
-
-        void BlocksSummariesRepository.$saveTemplate({
-          height: block.height,
-          template: {
-            id: block.id,
-            transactions: stripped,
-          },
-          version: auditVersion,
-        });
-
-        void BlocksAuditsRepository.$saveAudit({
-          version: auditVersion,
-          templateAlgorithm,
-          time: block.timestamp,
-          height: block.height,
-          hash: block.id,
-          unseenTxs: unseen,
-          addedTxs: added,
-          prioritizedTxs: prioritized,
-          missingTxs: censored,
-          freshTxs: fresh,
-          sigopTxs: sigop,
-          fullrbfTxs: fullrbf,
-          acceleratedTxs: accelerated,
-          matchRate: matchRate,
-          expectedFees: totalFees,
-          expectedWeight: totalWeight,
-        });
-
-        if (block.extras) {
-          block.extras.matchRate = matchRate;
-          block.extras.expectedFees = totalFees;
-          block.extras.expectedWeight = totalWeight;
-          block.extras.similarity = similarity;
-        }
-
-        // Save CPFP data using the algorithm that best matched the mined block
-        // blockTransactions is already a structuredClone (line above), safe to mutate
-        if (config.MEMPOOL.CPFP_INDEXING) {
-          const blockAccelerations = Object.values(mempool.getAccelerations())
-            .filter(a => a.pools.includes(block.extras.pool.id))
-            .map(a => ({ txid: a.txid, max_bid: a.feeDelta }));
-
-          let cpfpSummary;
-          if (templateAlgorithm === TemplateAlgorithm.clusterMempool) {
-            cpfpSummary = calculateClusterMempoolBlockCpfp(block.height, blockTransactions as MempoolTransactionExtended[], blockAccelerations);
-          } else {
-            cpfpSummary = calculateGoodBlockCpfp(block.height, blockTransactions as MempoolTransactionExtended[], blockAccelerations);
-          }
-          void blocks.$saveCpfp(block.id, block.height, cpfpSummary);
-        }
-      }
-    } else if (block.extras) {
-      const mBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
-      if (mBlocks?.length && mBlocks[0].transactions) {
-        block.extras.similarity = Common.getSimilarity(mBlocks[0], transactions);
-      }
-    }
-
     const confirmedTxids: { [txid: string]: boolean } = {};
-
-    if (config.MEMPOOL.CLUSTER_MEMPOOL) {
-      memPool.clusterMempool?.applyMempoolChange({
-        added: [],
-        removed: txIds,
-        accelerations: mempool.getAccelerations(),
-      });
-    }
-
-    // Update mempool to remove transactions included in the new block
     for (const txId of txIds) {
-      delete _memPool[txId];
-      rbfCache.mined(txId);
       confirmedTxids[txId] = true;
     }
 
-    if (memPool.limitGBT) {
-      const minFeeMempool = memPool.limitGBT ? await bitcoinSecondClient.getRawMemPool() : null;
-      const minFeeTip = memPool.limitGBT ? await bitcoinSecondClient.getBlockCount() : -1;
-      candidates = memPool.getNextCandidates(minFeeMempool, minFeeTip, transactions);
-      transactionIds = Object.keys(candidates?.txs || {});
-    } else {
-      candidates = undefined;
-      transactionIds = Object.keys(memPool.getMempool());
-    }
-
-
-    if (config.MEMPOOL.CLUSTER_MEMPOOL) {
-      const cmBlocks = mempool.clusterMempool?.getBlocks(config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT) ?? [];
-      mempoolBlocks.processClusterMempoolBlocks(cmBlocks, _memPool, mempool.getAccelerations());
-    } else if (config.MEMPOOL.RUST_GBT) {
-      const added = memPool.limitGBT ? (candidates?.added || []) : [];
-      const removed = memPool.limitGBT ? (candidates?.removed || []) : transactions;
-      await mempoolBlocks.$rustUpdateBlockTemplates(transactionIds, _memPool, added, removed, candidates, true);
-    } else {
-      await mempoolBlocks.$makeBlockTemplates(transactionIds, _memPool, candidates, true, true);
-    }
     const mBlocks = mempoolBlocks.getMempoolBlocks();
     const mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
 
@@ -1453,10 +1295,6 @@ class WebsocketHandler {
         client.send(this.serializeResponse(response));
       }
     });
-    }
-
-    if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {
-      await statistics.runStatistics();
     }
   }
 
