@@ -84,7 +84,7 @@
       <br>
       <div class="subtitle-block">
         <div class="title">
-          <h2 *ngIf="cpfpInfo?.cluster && cpfpMode === 'advanced'" i18n="transaction.cluster-mempool-chunking|Cluster Mempool Chunking">Cluster Mempool Chunking</h2>
+          <h2 *ngIf="cpfpInfo?.cluster && cpfpMode === 'advanced'"><span i18n="transaction.cluster-mempool-chunking|Cluster Mempool Chunking">Cluster Mempool Chunking</span><span class="badge badge-pill badge-warning cpfp-beta" i18n="beta">beta</span></h2>
           <h2 *ngIf="!(cpfpInfo?.cluster && cpfpMode === 'advanced')" i18n="transaction.related-transactions|CPFP List">Related Transactions</h2>
         </div>
         <div class="title-buttons" *ngIf="cpfpInfo?.cluster">
