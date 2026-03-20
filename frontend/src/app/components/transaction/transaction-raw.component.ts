@@ -68,7 +68,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
   fetchCpfp: boolean;
   cpfpInfo: CpfpInfo | null;
   hasCpfp: boolean = false;
-  showCpfpDetails = false;
+  cpfpMode: 'advanced' | 'simple' | null = null;
   mempoolBlocksSubscription: Subscription;
 
   constructor(
@@ -90,6 +90,10 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.seoService.setTitle($localize`:@@d7f92e6fe26fba6fff568cbdae5db4a5c8c6a55c:Preview Transaction`);
     this.seoService.setDescription($localize`:@@meta.description.preview-tx:Preview a transaction to the Bitcoin${seoDescriptionNetwork(this.stateService.network)} network using the transaction's raw hex data.`);
     this.websocketService.want(['blocks', 'mempool-blocks']);
+    const cpfpParam = this.route.snapshot.queryParams['cpfp'];
+    if (cpfpParam === 'advanced' || cpfpParam === 'simple') {
+      this.cpfpMode = cpfpParam;
+    }
     this.pushTxForm = this.formBuilder.group({
       txRaw: ['', Validators.required],
     });
@@ -334,7 +338,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.isLoadingCpfpInfo = false;
     this.isLoadingBroadcast = false;
     this.adjustedVsize = null;
-    this.showCpfpDetails = false;
+    this.cpfpMode = null;
     this.hasCpfp = false;
     this.fetchCpfp = false;
     this.cpfpInfo = null;
@@ -387,6 +391,27 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
   toggleGraph() {
     const showFlow = !this.flowEnabled;
     this.stateService.hideFlow.next(!showFlow);
+  }
+
+  toggleCpfp() {
+    const newMode = this.cpfpMode ? null : (this.cpfpInfo?.cluster ? 'advanced' : 'simple');
+    this.updateCpfpMode(newMode);
+  }
+
+  toggleCpfpView() {
+    const newMode = this.cpfpMode === 'advanced' ? 'simple' : 'advanced';
+    this.updateCpfpMode(newMode);
+  }
+
+  private updateCpfpMode(mode: 'advanced' | 'simple' | null) {
+    this.cpfpMode = mode;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { cpfp: mode },
+      queryParamsHandling: 'merge',
+      preserveFragment: true,
+      replaceUrl: true,
+    });
   }
 
   setFlowEnabled() {

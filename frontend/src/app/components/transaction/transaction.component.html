@@ -73,20 +73,28 @@
       [isCached]="isCached"
       [ETA$]="ETA$"
       (accelerateClicked)="onAccelerateClicked()"
-      (toggleCpfp$)="this.showCpfpDetails = !this.showCpfpDetails"
+      (toggleCpfp$)="toggleCpfp()"
     ></app-transaction-details>
   }
 
   <ng-template [ngIf]="!isLoadingTx && !error">
 
     <!-- CPFP Details -->
-    <ng-container *ngIf="showCpfpDetails">
-      <ng-container *ngIf="cpfpInfo?.cluster; else legacyCpfp">
-        <br>
-        <div class="title float-left">
-          <h2 i18n="transaction.cluster-mempool-chunking|Cluster Mempool Chunking">Cluster Mempool Chunking</h2>
+    <ng-container *ngIf="cpfpMode && hasCpfp">
+      <br>
+      <div class="subtitle-block">
+        <div class="title">
+          <h2 *ngIf="cpfpInfo?.cluster && cpfpMode === 'advanced'" i18n="transaction.cluster-mempool-chunking|Cluster Mempool Chunking">Cluster Mempool Chunking</h2>
+          <h2 *ngIf="!(cpfpInfo?.cluster && cpfpMode === 'advanced')" i18n="transaction.related-transactions|CPFP List">Related Transactions</h2>
         </div>
-        <div class="clearfix"></div>
+        <div class="title-buttons" *ngIf="cpfpInfo?.cluster">
+          <button type="button" class="btn btn-outline-info btn-sm" (click)="toggleCpfpView()">
+            <ng-container *ngIf="cpfpMode === 'advanced'" i18n="transaction.cpfp-simple-view|Simple CPFP view">Simple</ng-container>
+            <ng-container *ngIf="cpfpMode !== 'advanced'" i18n="transaction.cpfp-advanced-view|Advanced CPFP view">Advanced</ng-container>
+          </button>
+        </div>
+      </div>
+      <ng-container *ngIf="cpfpInfo?.cluster && cpfpMode === 'advanced'; else legacyCpfp">
         <div class="box">
           <app-cluster-diagram
             [cluster]="cpfpInfo.cluster" [txid]="tx.txid">
