@@ -31,11 +31,10 @@ import rbfCache from './rbf-cache';
 import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
 import mempoolBlocks from './mempool-blocks';
 import statistics from './statistics/statistics';
-import { Acceleration } from './services/acceleration';
 import { calcBitsDifference } from './difficulty-adjustment';
 import AccelerationRepository from '../repositories/AccelerationRepository';
-import { calculateFastBlockCpfp, calculateGoodBlockCpfp, calculateClusterMempoolBlockCpfp } from './cpfp';
-import blockProcessor, { BlockProcessingResult, detectTemplateAlgorithm } from './block-processor';
+import { calculateGoodBlockCpfp } from './cpfp';
+import blockProcessor, { BlockProcessingResult, detectTemplateAlgorithm, saveCpfpDataToCpfpSummary } from './block-processor';
 import mempool from './mempool';
 import CpfpRepository from '../repositories/CpfpRepository';
 import { parseDATUMTemplateCreator } from '../utils/bitcoin-script';
@@ -852,7 +851,8 @@ class Blocks {
           // fetch transactions
           txs = (await bitcoinApi.$getTxsForBlock(blockHash, true)).map(tx => transactionUtils.extendMempoolTransaction(tx)) || [];
           // add CPFP
-          const cpfpSummary = calculateGoodBlockCpfp(height, txs, []);
+          const blockCpfpData = calculateGoodBlockCpfp(height, txs, []);
+          const cpfpSummary = saveCpfpDataToCpfpSummary(txs, blockCpfpData);
           // classify
           const { transactions: classifiedTxs } = this.summarizeBlockTransactions(blockHash, height, cpfpSummary.transactions);
           await BlocksSummariesRepository.$saveTransactions(height, blockHash, classifiedTxs, 2);
@@ -889,7 +889,8 @@ class Blocks {
               }
               templateTxs.push(tx || templateTx);
             }
-            const cpfpSummary = calculateGoodBlockCpfp(height, templateTxs?.filter(tx => tx['effectiveFeePerVsize'] != null) as MempoolTransactionExtended[], []);
+            const blockCpfpData = calculateGoodBlockCpfp(height, templateTxs?.filter(tx => tx['effectiveFeePerVsize'] != null) as MempoolTransactionExtended[], []);
+            const cpfpSummary = saveCpfpDataToCpfpSummary(templateTxs as MempoolTransactionExtended[], blockCpfpData);
             // classify
             const { transactions: classifiedTxs } = this.summarizeBlockTransactions(blockHash, height, cpfpSummary.transactions);
             const classifiedTxMap: { [txid: string]: TransactionClassified } = {};
@@ -1218,7 +1219,7 @@ class Blocks {
         await AccelerationRepository.$indexAccelerationsForBlock(
           blockExtended,
           Object.values(accelerations),
-          structuredClone(cpfpSummary.transactions)
+          cpfpSummary.transactions
         );
         this.updateTimerProgress(timer, `indexed accelerations for ${this.currentBlockHeight}`);
 
@@ -1763,7 +1764,7 @@ class Blocks {
     }
 
     if (transactions?.length != null) {
-      const { cpfpSummary } = await detectTemplateAlgorithm(height, transactions, []);
+      const { cpfpSummary } = await detectTemplateAlgorithm(height, transactions, [], true);
 
       if (!stale) {
         await this.$saveCpfp(hash, height, cpfpSummary);

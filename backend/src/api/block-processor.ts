@@ -11,7 +11,7 @@ import {
 } from '../mempool.interfaces';
 import { IEsploraApi } from './bitcoin/esplora-api.interface';
 import { Acceleration } from './services/acceleration';
-import { calculateGoodBlockCpfp, calculateClusterMempoolBlockCpfp, calculateFastBlockCpfp } from './cpfp';
+import { calculateGoodBlockCpfp, calculateClusterMempoolBlockCpfp, calculateFastBlockCpfp, BlockCpfpData } from './cpfp';
 import mempoolBlocks from './mempool-blocks';
 import memPool from './mempool';
 import Audit, { AuditResult } from './audit';
@@ -62,7 +62,6 @@ class BlockProcessor {
       poolAccelerations
     );
 
-    logger.debug(`Block #${block.height} detected template algorithm: ${templateAlgorithm === TemplateAlgorithm.clusterMempool ? 'cluster mempool' : 'legacy GBT'}`);
 
     const blockExtended = await blocks.$getBlockExtended(block, cpfpSummary.transactions, pool);
     const blockSummary = blocks.summarizeBlockTransactions(block.id, block.height, cpfpSummary.transactions);
@@ -120,7 +119,7 @@ class BlockProcessor {
     let projectedBlocks: MempoolBlockWithTransactions[];
 
     if (templateAlgorithm === TemplateAlgorithm.clusterMempool) {
-      const clusterMempool = memPool.clusterMempool ?? new ClusterMempool(auditMempool, accelerations);
+      const clusterMempool = memPool.clusterMempool ?? new ClusterMempool(auditMempool, accelerations, true, 75000);
       const cmBlocks = clusterMempool.getBlocks(config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT) ?? [];
       projectedBlocks = mempoolBlocks.processClusterMempoolBlocks(
         cmBlocks,
@@ -153,7 +152,7 @@ class BlockProcessor {
       );
     }
 
-    const auditResult = Audit.auditBlock(block.height, structuredClone(transactions), projectedBlocks, auditMempool);
+    const auditResult = Audit.auditBlock(block.height, transactions, projectedBlocks, auditMempool);
 
     const stripped = projectedBlocks[0]?.transactions ? projectedBlocks[0].transactions : [];
 
@@ -173,6 +172,32 @@ class BlockProcessor {
   }
 }
 
+function saveCpfpDataToTransactions(transactions: MempoolTransactionExtended[], cpfpData: BlockCpfpData): void {
+  for (const tx of transactions) {
+    if (cpfpData.txs[tx.txid]) {
+      Object.assign(tx, cpfpData.txs[tx.txid]);
+    }
+  }
+}
+
+export function saveCpfpDataToCpfpSummary(transactions: MempoolTransactionExtended[], cpfpData: BlockCpfpData): CpfpSummary {
+  saveCpfpDataToTransactions(transactions, cpfpData);
+  return {
+    transactions,
+    clusters: cpfpData.clusters,
+    version: cpfpData.version,
+  };
+}
+
+/**
+ *
+ * @param height
+ * @param blockTransactions
+ * @param poolAccelerations
+ * @param fast
+ *
+ * saves effective fee rates from detected algorithm to blockTransactions
+ */
 export function detectTemplateAlgorithm(
   height: number,
   blockTransactions: MempoolTransactionExtended[],
@@ -183,58 +208,46 @@ export function detectTemplateAlgorithm(
   const network = config.MEMPOOL.NETWORK || 'mainnet';
   const activationHeight = CM_ACTIVATION_HEIGHT[network] ?? Infinity;
 
-  // always need the legacy CPFP summary
-  const legacyCpfpSummary = fast ? calculateFastBlockCpfp(
+  const legacyCpfpData = fast ? calculateFastBlockCpfp(
     height,
-    structuredClone(blockTransactions),
+    blockTransactions,
   ) : calculateGoodBlockCpfp(
     height,
-    structuredClone(blockTransactions),
+    blockTransactions,
     poolAccelerations
   );
 
-  // assume legacy below the activation height
   if (height < activationHeight) {
     return {
       templateAlgorithm: TemplateAlgorithm.legacy,
-      cpfpSummary: legacyCpfpSummary,
+      cpfpSummary: saveCpfpDataToCpfpSummary(blockTransactions, legacyCpfpData),
     };
   }
 
-  // calculate single-block CPFP rates for each algorithm
-  const clusterCpfpSummary = calculateClusterMempoolBlockCpfp(
+  const clusterCpfpData = calculateClusterMempoolBlockCpfp(
     height,
-    structuredClone(blockTransactions),
+    blockTransactions,
     poolAccelerations
   );
-  const clusterRates = new Map<string, number>();
-  const legacyRates = new Map<string, number>();
-  for (const tx of clusterCpfpSummary.transactions) {
-    clusterRates.set(tx.txid, tx.effectiveFeePerVsize);
-  }
-  for (const tx of legacyCpfpSummary.transactions) {
-    legacyRates.set(tx.txid, tx.effectiveFeePerVsize);
-  }
-  const clusterTxs = blockTransactions.map(tx => ({...tx, effectiveFeePerVsize: clusterRates.get(tx.txid) || tx.effectiveFeePerVsize}));
-  const legacyTxs = blockTransactions.map(tx => ({...tx, effectiveFeePerVsize: legacyRates.get(tx.txid) || tx.effectiveFeePerVsize}));
 
-  // identify apparent prioritizations using each algorithm's rates
-  const clusterPrioritization = transactionUtils.identifyPrioritizedTransactions(clusterTxs, 'effectiveFeePerVsize');
-  const legacyPrioritization = transactionUtils.identifyPrioritizedTransactions(legacyTxs, 'effectiveFeePerVsize');
+  const clusterTxs = blockTransactions.map(tx => ({ txid: tx.txid, rate: clusterCpfpData.txs[tx.txid].effectiveFeePerVsize ?? tx.effectiveFeePerVsize }));
+  const legacyTxs = blockTransactions.map(tx => ({ txid: tx.txid, rate: legacyCpfpData.txs[tx.txid].effectiveFeePerVsize ?? tx.effectiveFeePerVsize }));
+  const clusterPrioritization = transactionUtils.identifyPrioritizedTransactions(clusterTxs, 'rate');
+  const legacyPrioritization = transactionUtils.identifyPrioritizedTransactions(legacyTxs, 'rate');
 
-  // choose the best fitting algorithm (or legacy if tied)
   const clusterCount = clusterPrioritization.prioritized.length + clusterPrioritization.deprioritized.length;
   const legacyCount = legacyPrioritization.prioritized.length + legacyPrioritization.deprioritized.length;
-  logger.debug(`Prioritization counts - cluster: ${clusterCount}, legacy: ${legacyCount}`);
+
   if (clusterCount < legacyCount) {
+    saveCpfpDataToTransactions(blockTransactions, clusterCpfpData);
     return {
       templateAlgorithm: TemplateAlgorithm.clusterMempool,
-      cpfpSummary: clusterCpfpSummary,
+      cpfpSummary: saveCpfpDataToCpfpSummary(blockTransactions, clusterCpfpData),
     };
   } else {
     return {
       templateAlgorithm: TemplateAlgorithm.legacy,
-      cpfpSummary: legacyCpfpSummary,
+      cpfpSummary: saveCpfpDataToCpfpSummary(blockTransactions, legacyCpfpData),
     };
   }
 }

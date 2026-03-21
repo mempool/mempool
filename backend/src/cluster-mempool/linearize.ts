@@ -161,12 +161,10 @@ const enum MergeDir { Up, Down, Both }
 
 interface SFLCost { cost: number; }
 
-const DEFAULT_COST_BUDGET = 75_000;
-
 export function spanningForestLinearize(
   txs: Set<ClusterTx>,
+  costBudget: number,
   existingLinearization?: ClusterTx[],
-  costBudget: number = DEFAULT_COST_BUDGET,
 ): ClusterTx[] {
   const allTxs = [...txs];
   if (allTxs.length === 0) {
@@ -1199,10 +1197,10 @@ function bfsComponentWithinChunk(
 
 export function linearizeCluster(
   txs: Set<ClusterTx>,
+  costBudget: number,
   existingLinearization?: ClusterTx[],
-  costBudget?: number,
 ): { linearization: ClusterTx[]; chunks: LinearizationChunk[] } {
-  let linearization = spanningForestLinearize(txs, existingLinearization, costBudget);
+  let linearization = spanningForestLinearize(txs, costBudget, existingLinearization);
   linearization = postLinearize(linearization);
   let chunks = chunkify(linearization);
   chunks = minimizeChunks(chunks);

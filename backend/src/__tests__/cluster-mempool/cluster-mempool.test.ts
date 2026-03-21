@@ -198,6 +198,7 @@ describe('ClusterMempool', () => {
       expect(cm.getClusterCount()).toBe(3);
 
       const bridge = makeTx(txid('d1'), 400, 100, [a, b, c]);
+      mempool[bridge.txid] = bridge;
       cm.applyMempoolChange({ added: [bridge], removed: [], accelerations: {} });
 
       expect(cm.getClusterCount()).toBe(1);
@@ -215,6 +216,7 @@ describe('ClusterMempool', () => {
       expect(cm.getClusterCount()).toBe(1);
 
       const c = makeTx(txid('c1'), 300, 100, [a]);
+      mempool[c.txid] = c;
       cm.applyMempoolChange({ added: [c], removed: [], accelerations: {} });
 
       expect(cm.getClusterCount()).toBe(1);
@@ -227,9 +229,11 @@ describe('ClusterMempool', () => {
       const cm = new ClusterMempool(mempool);
 
       const b = makeTx(txid('b1'), 200, 100, [a]);
+      mempool[b.txid] = b;
       cm.applyMempoolChange({ added: [b], removed: [], accelerations: {} });
 
       const c = makeTx(txid('c1'), 300, 100, [txid('b1')]);
+      mempool[c.txid] = c;
       cm.applyMempoolChange({ added: [c], removed: [], accelerations: {} });
 
       expect(cm.getClusterCount()).toBe(1);

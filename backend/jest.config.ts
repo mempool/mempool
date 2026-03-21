@@ -17,6 +17,7 @@ const config: Config.InitialOptions = {
     './testSetup.ts',
   ],
   testPathIgnorePatterns: [
+    '/dist/',
     '/node_modules/',
     '/__integration_tests__/',
     'test-utils\\.ts$',

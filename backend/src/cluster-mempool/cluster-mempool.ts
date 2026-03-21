@@ -1,7 +1,7 @@
 import { ClusterTx, DepGraph, sortTopological, subgraph } from './depgraph';
 import { linearizeCluster, LinearizationChunk } from './linearize';
 import { ProjectedBlock, assembleBlocks } from './block-builder';
-import { CpfpClusterData, CpfpClusterTx, MempoolTransactionExtended } from '../mempool.interfaces';
+import { Ancestor, CpfpClusterData, CpfpClusterTx, MempoolTransactionExtended } from '../mempool.interfaces';
 import logger from '../logger';
 
 export interface MempoolDiff {
@@ -27,19 +27,36 @@ export interface Cluster {
   dirty: boolean;
 }
 
+export interface TxCpfpData {
+  effectiveFeePerVsize: number;
+  clusterId: number;
+  chunkIndex: number;
+  cpfpDirty: boolean;
+  cpfpChecked: boolean;
+  ancestors: Ancestor[];
+  descendants: Ancestor[];
+}
+
+const DEFAULT_COST_BUDGET = 75000;
+
 export class ClusterMempool {
   private clusters = new Map<number, Cluster>();
   private txToCluster = new Map<string, number>();
+  private parentMap = new Map<string, Set<string>>();
   private spentBy = new Map<string, string>();
   private mempool: Readonly<{ [txid: string]: MempoolTransactionExtended }>;
   private accelerations: { [txid: string]: { feeDelta: number } } = {};
   private nextClusterId = 0;
+  private modifyTxs: boolean;
+  private costBudget: number = DEFAULT_COST_BUDGET;
 
-  constructor(mempool: { [txid: string]: MempoolTransactionExtended }, accelerations?: { [txid: string]: { feeDelta: number } }) {
+  constructor(mempool: { [txid: string]: MempoolTransactionExtended }, accelerations?: { [txid: string]: { feeDelta: number } }, modifyTxs: boolean = true, costBudget: number = DEFAULT_COST_BUDGET) {
     this.mempool = mempool;
     if (accelerations) {
       this.accelerations = accelerations;
     }
+    this.modifyTxs = modifyTxs;
+    this.costBudget = costBudget;
     this.buildFromMempool();
   }
 
@@ -83,6 +100,28 @@ export class ClusterMempool {
     return { ...cluster, chunkIndex: info.chunkIndex };
   }
 
+  getCpfpDataForTx(txid: string): TxCpfpData | null {
+    const clusterInfo = this.getClusterForTx(txid);
+    if (!clusterInfo) {
+      return null;
+    }
+    const chunkInfo = this.findChunkInfo(clusterInfo.cluster, clusterInfo.clusterTx);
+    if (!chunkInfo) {
+      return null;
+    }
+    const chunk = clusterInfo.cluster.chunks[chunkInfo?.chunkIndex];
+    const chunkSet = chunk.txs.length > 1 ? new Set(chunk.txs) : null;
+    return {
+      effectiveFeePerVsize: chunkInfo.chunkFeerate,
+      clusterId: clusterInfo.cluster.id,
+      chunkIndex: chunkInfo.chunkIndex,
+      cpfpDirty: true,
+      cpfpChecked: true,
+      ancestors: chunkSet ? this.getChunkRelatives(clusterInfo.clusterTx, chunkSet, 'ancestors') : [],
+      descendants: chunkSet ? this.getChunkRelatives(clusterInfo.clusterTx, chunkSet, 'descendants') : [],
+    };
+  }
+
   getClusterCount(): number {
     return this.clusters.size;
   }
@@ -108,51 +147,38 @@ export class ClusterMempool {
   }
 
   private buildFromMempool(): void {
-    const parentMap = this.buildMempoolParentMap();
-    this.spentBy = this.buildSpentByMap();
-    const components = this.findMempoolComponents(parentMap);
+    this.buildRelativeMaps();
+    const components = this.findMempoolComponents();
     for (const component of components) {
-      this.createClusterFromTxids(component, parentMap);
+      this.createClusterFromTxids(component);
     }
   }
 
-  private buildMempoolParentMap(): Map<string, Set<string>> {
-    const parents = new Map<string, Set<string>>();
-    for (const [txid, tx] of Object.entries(this.mempool)) {
+  private buildRelativeMaps(): void {
+    this.parentMap.clear();
+    this.spentBy.clear();
+    for (const txid in this.mempool) {
+      const tx = this.mempool[txid];
       const txParents = new Set<string>();
       for (const vin of tx.vin) {
         if (!vin.is_coinbase && this.mempool[vin.txid]) {
           txParents.add(vin.txid);
+          this.spentBy.set(`${vin.txid}:${vin.vout}`, txid);
         }
       }
       if (txParents.size > 0) {
-        parents.set(txid, txParents);
+        this.parentMap.set(txid, txParents);
       }
     }
-    return parents;
   }
 
-  private buildSpentByMap(): Map<string, string> {
-    const spentBy = new Map<string, string>();
-    for (const [txid, tx] of Object.entries(this.mempool)) {
-      for (const vin of tx.vin) {
-        if (!vin.is_coinbase) {
-          spentBy.set(`${vin.txid}:${vin.vout}`, txid);
-        }
-      }
-    }
-    return spentBy;
-  }
-
-  private findMempoolComponents(
-    parentMap: Map<string, Set<string>>
-  ): Set<string>[] {
+  private findMempoolComponents(): Set<string>[] {
     const visited = new Set<string>();
     const components: Set<string>[] = [];
 
-    for (const txid of Object.keys(this.mempool)) {
+    for (const txid in this.mempool) {
       if (!visited.has(txid)) {
-        const component = this.dfsComponent(txid, parentMap, visited);
+        const component = this.dfsComponent(txid, visited);
         components.push(component);
       }
     }
@@ -161,7 +187,6 @@ export class ClusterMempool {
 
   private dfsComponent(
     startTxid: string,
-    parentMap: Map<string, Set<string>>,
     visited: Set<string>
   ): Set<string> {
     const component = new Set<string>();
@@ -172,7 +197,7 @@ export class ClusterMempool {
         visited.add(current);
         component.add(current);
 
-        const txParents = parentMap.get(current);
+        const txParents = this.parentMap.get(current);
         if (txParents) {
           for (const p of txParents) {
             if (!visited.has(p)) {
@@ -204,8 +229,7 @@ export class ClusterMempool {
   }
 
   private createClusterFromTxids(
-    txids: Set<string>,
-    parentMap: Map<string, Set<string>>
+    txids: Set<string>
   ): Cluster | null {
     const clusterId = this.nextClusterId++;
     const depgraph = new DepGraph();
@@ -222,7 +246,7 @@ export class ClusterMempool {
     }
 
     for (const txid of txids) {
-      const txParents = parentMap.get(txid);
+      const txParents = this.parentMap.get(txid);
       if (txParents) {
         for (const parentTxid of txParents) {
           if (txids.has(parentTxid)) {
@@ -236,7 +260,7 @@ export class ClusterMempool {
       }
     }
 
-    const { linearization, chunks } = linearizeCluster(depgraph.getTxs());
+    const { linearization, chunks } = linearizeCluster(depgraph.getTxs(), this.costBudget);
 
     const cluster: Cluster = {
       id: clusterId,
@@ -252,8 +276,16 @@ export class ClusterMempool {
       this.txToCluster.set(txid, clusterId);
     }
 
-    this.writeBackCluster(cluster);
+    if (this.modifyTxs) {
+      this.writeBackCluster(cluster);
+    }
     return cluster;
+  }
+
+  public writeBackClusters(): void {
+    for (const cluster of this.clusters.values()) {
+      this.writeBackCluster(cluster);
+    }
   }
 
   private writeBackCluster(cluster: Cluster): void {
@@ -344,7 +376,7 @@ export class ClusterMempool {
   }
 
   private splitDisconnectedClusters(): void {
-    for (const [clusterId, cluster] of [...this.clusters]) {
+    for (const [clusterId, cluster] of this.clusters.entries()) {
       if (cluster.dirty) {
         if (cluster.depgraph.size === 0) {
           this.clusters.delete(clusterId);
@@ -475,7 +507,7 @@ export class ClusterMempool {
     childTxids: string[],
   ): void {
     const txid = tx.txid;
-    const clusterId = [...relatedClusterIds][0];
+    const clusterId = relatedClusterIds.values().next().value;
     const cluster = this.clusters.get(clusterId);
     if (!cluster) {
       return;
@@ -496,27 +528,25 @@ export class ClusterMempool {
     parentTxids: string[],
     childTxids: string[],
   ): void {
-    const txid = tx.txid;
-    const clusterIds = [...relatedClusterIds];
-    const primaryId = clusterIds[0];
+    const clusterIterator = relatedClusterIds.values();
+    const primaryId: number = clusterIterator.next().value;
     const primary = this.clusters.get(primaryId);
     if (!primary) {
       return;
     }
 
-    for (let i = 1; i < clusterIds.length; i++) {
-      const otherId = clusterIds[i];
-      const other = this.clusters.get(otherId);
+    for (const clusterId of clusterIterator) {
+      const other = this.clusters.get(clusterId);
       if (other) {
         this.mergeClusterInto(primary, other);
-        this.clusters.delete(otherId);
+        this.clusters.delete(clusterId);
       }
     }
 
-    const clusterTx = primary.depgraph.addTransaction(txid, this.effectiveFee(txid, tx), this.adjustedWeight(tx), tx.order ?? 0);
-    primary.txs.set(txid, clusterTx);
+    const clusterTx = primary.depgraph.addTransaction(tx.txid, this.effectiveFee(tx.txid, tx), this.adjustedWeight(tx), tx.order ?? 0);
+    primary.txs.set(tx.txid, clusterTx);
     primary.linearization.push(clusterTx);
-    this.txToCluster.set(txid, primaryId);
+    this.txToCluster.set(tx.txid, primaryId);
 
     this.addParentDeps(primary, clusterTx, parentTxids);
     this.addChildDeps(primary, clusterTx, childTxids);
@@ -568,12 +598,12 @@ export class ClusterMempool {
 
   private processAccelerationChanges(newAccelerations: { [txid: string]: { feeDelta: number } }): void {
     const changed = new Set<string>();
-    for (const txid of Object.keys(newAccelerations)) {
+    for (const txid in newAccelerations) {
       if ((newAccelerations[txid]?.feeDelta || 0) !== (this.accelerations[txid]?.feeDelta || 0)) {
         changed.add(txid);
       }
     }
-    for (const txid of Object.keys(this.accelerations)) {
+    for (const txid in this.accelerations) {
       if (!newAccelerations[txid]) {
         changed.add(txid);
       }
@@ -593,7 +623,7 @@ export class ClusterMempool {
   }
 
   private relinearizeDirtyClusters(): void {
-    for (const [clusterId, cluster] of [...this.clusters]) {
+    for (const [clusterId, cluster] of this.clusters.entries()) {
       if (cluster.dirty) {
         cluster.dirty = false;
         const newId = this.nextClusterId++;
@@ -606,12 +636,15 @@ export class ClusterMempool {
 
         const { linearization, chunks } = linearizeCluster(
           cluster.depgraph.getTxs(),
+          this.costBudget,
           cluster.linearization,
         );
         cluster.linearization = linearization;
         cluster.chunks = chunks;
 
-        this.writeBackCluster(cluster);
+        if (this.modifyTxs) {
+          this.writeBackCluster(cluster);
+        }
       }
     }
   }

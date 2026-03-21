@@ -107,7 +107,7 @@ describe('spanningForestLinearize', () => {
     const b = dg.addTransaction('b', 500, 100);
     const c = dg.addTransaction('c', 300, 100);
 
-    const result = spanningForestLinearize(dg.getTxs());
+    const result = spanningForestLinearize(dg.getTxs(), 75000);
     expect(result[0]).toBe(b);
     expect(result[1]).toBe(c);
     expect(result[2]).toBe(a);
@@ -119,7 +119,7 @@ describe('spanningForestLinearize', () => {
     const child = dg.addTransaction('child', 500, 100);
     dg.addDependency(parent, child);
 
-    const result = spanningForestLinearize(dg.getTxs());
+    const result = spanningForestLinearize(dg.getTxs(), 75000);
     expect(result.indexOf(parent)).toBeLessThan(result.indexOf(child));
   });
 
@@ -129,7 +129,7 @@ describe('spanningForestLinearize', () => {
     const b = dg.addTransaction('b', 10000, 100);
     dg.addDependency(a, b);
 
-    const { chunks } = linearizeCluster(dg.getTxs());
+    const { chunks } = linearizeCluster(dg.getTxs(), 75000);
     expect(chunks.length).toBe(1);
     expect(chunks[0].txs.length).toBe(2);
   });
@@ -139,7 +139,7 @@ describe('spanningForestLinearize', () => {
     const a = dg.addTransaction('a', 1000, 100);
     const b = dg.addTransaction('b', 100, 100);
 
-    const { chunks } = linearizeCluster(dg.getTxs());
+    const { chunks } = linearizeCluster(dg.getTxs(), 75000);
     expect(chunks.length).toBe(2);
     expect(chunks[0].txs).toContain(a);
     expect(chunks[1].txs).toContain(b);
@@ -149,13 +149,13 @@ describe('spanningForestLinearize', () => {
     const dg = new DepGraph();
     const a = dg.addTransaction('a', 1000, 100);
 
-    const result = spanningForestLinearize(dg.getTxs());
+    const result = spanningForestLinearize(dg.getTxs(), 75000);
     expect(result).toEqual([a]);
   });
 
   it('should handle empty graph', () => {
     const dg = new DepGraph();
-    const result = spanningForestLinearize(dg.getTxs());
+    const result = spanningForestLinearize(dg.getTxs(), 75000);
     expect(result).toEqual([]);
   });
 });
@@ -171,7 +171,7 @@ describe('minimize', () => {
       dg.addDependency(txs[i - 1], txs[i]);
     }
 
-    const { chunks } = linearizeCluster(dg.getTxs());
+    const { chunks } = linearizeCluster(dg.getTxs(), 75000);
     expect(chunks.length).toBe(5);
     for (const chunk of chunks) {
       expect(chunk.txs.length).toBe(1);
@@ -184,7 +184,7 @@ describe('minimize', () => {
     const child = dg.addTransaction('child', 900, 100);
     dg.addDependency(parent, child);
 
-    const { chunks } = linearizeCluster(dg.getTxs());
+    const { chunks } = linearizeCluster(dg.getTxs(), 75000);
     expect(chunks.length).toBe(1);
     expect(chunks[0].txs.length).toBe(2);
   });
@@ -195,7 +195,7 @@ describe('minimize', () => {
     const child = dg.addTransaction('child', 1240, 248);
     dg.addDependency(parent, child);
 
-    const { chunks } = linearizeCluster(dg.getTxs());
+    const { chunks } = linearizeCluster(dg.getTxs(), 75000);
     expect(chunks.length).toBe(2);
   });
 
@@ -204,7 +204,7 @@ describe('minimize', () => {
     dg.addTransaction('a', 100, 100);
     dg.addTransaction('b', 100, 100);
 
-    const { chunks } = linearizeCluster(dg.getTxs());
+    const { chunks } = linearizeCluster(dg.getTxs(), 75000);
     expect(chunks.length).toBe(2);
     expect(chunks[0].txs.length).toBe(1);
     expect(chunks[1].txs.length).toBe(1);
@@ -319,7 +319,7 @@ describe('SFL adversarial topologies', () => {
       dg.addDependency(root, child);
     }
 
-    const { linearization, chunks } = linearizeCluster(dg.getTxs());
+    const { linearization, chunks } = linearizeCluster(dg.getTxs(), 75000);
     verifyLinearization(dg.getTxs(), linearization, chunks);
   });
 
@@ -336,7 +336,7 @@ describe('SFL adversarial topologies', () => {
       dg.addDependency(i < 2 ? mid1 : mid2, leaf);
     }
 
-    const { linearization, chunks } = linearizeCluster(dg.getTxs());
+    const { linearization, chunks } = linearizeCluster(dg.getTxs(), 75000);
     verifyLinearization(dg.getTxs(), linearization, chunks);
   });
 
@@ -358,7 +358,7 @@ describe('SFL adversarial topologies', () => {
       prev2 = tx;
     }
 
-    const { linearization, chunks } = linearizeCluster(dg.getTxs());
+    const { linearization, chunks } = linearizeCluster(dg.getTxs(), 75000);
     verifyLinearization(dg.getTxs(), linearization, chunks);
   });
 
@@ -366,7 +366,7 @@ describe('SFL adversarial topologies', () => {
     const { depgraph, txs } = buildChain(6, 10, 100);
     txs[5].effectiveFee = 50000;
 
-    const { linearization, chunks } = linearizeCluster(depgraph.getTxs());
+    const { linearization, chunks } = linearizeCluster(depgraph.getTxs(), 75000);
     verifyLinearization(depgraph.getTxs(), linearization, chunks);
     expect(chunks[0].txs.length).toBeGreaterThan(1);
   });
@@ -379,7 +379,7 @@ describe('SFL adversarial topologies', () => {
     dg.addDependency(a, c);
     dg.addDependency(b, c);
 
-    const { linearization, chunks } = linearizeCluster(dg.getTxs());
+    const { linearization, chunks } = linearizeCluster(dg.getTxs(), 75000 );
     verifyLinearization(dg.getTxs(), linearization, chunks);
     const firstChunkFee = chunks[0].fee;
     const firstChunkSize = chunks[0].weight;
@@ -396,7 +396,7 @@ describe('linearizeCluster', () => {
     dg.addDependency(a, b);
     dg.addDependency(b, c);
 
-    const { linearization } = linearizeCluster(dg.getTxs());
+    const { linearization } = linearizeCluster(dg.getTxs(), 75000);
     expect(linearization.indexOf(a)).toBeLessThan(linearization.indexOf(b));
     expect(linearization.indexOf(b)).toBeLessThan(linearization.indexOf(c));
   });
@@ -407,7 +407,7 @@ describe('linearizeCluster', () => {
       dg.addTransaction(`tx${i}`, Math.floor(Math.random() * 10000) + 100, Math.floor(Math.random() * 500) + 50);
     }
 
-    const { chunks } = linearizeCluster(dg.getTxs());
+    const { chunks } = linearizeCluster(dg.getTxs(), 75000);
     for (let i = 1; i < chunks.length; i++) {
       const prevRate = chunks[i - 1].fee * chunks[i].weight;
       const curRate = chunks[i].fee * chunks[i - 1].weight;
@@ -427,7 +427,7 @@ describe('linearizeCluster', () => {
     dg.addDependency(b, d);
     dg.addDependency(c, d);
 
-    const { linearization, chunks } = linearizeCluster(dg.getTxs());
+    const { linearization, chunks } = linearizeCluster(dg.getTxs(), 75000);
     verifyLinearization(dg.getTxs(), linearization, chunks);
   });
 
@@ -438,8 +438,8 @@ describe('linearizeCluster', () => {
     const c = dg.addTransaction('c', 1000, 100);
 
     const suboptimal = [b, a, c];
-    const { chunks: hintChunks } = linearizeCluster(dg.getTxs(), suboptimal);
-    const { chunks: freshChunks } = linearizeCluster(dg.getTxs());
+    const { chunks: hintChunks } = linearizeCluster(dg.getTxs(), 75000, suboptimal);
+    const { chunks: freshChunks } = linearizeCluster(dg.getTxs(), 75000);
 
     const hintFirstFeerate = hintChunks[0].fee * freshChunks[0].weight;
     const freshFirstFeerate = freshChunks[0].fee * hintChunks[0].weight;
@@ -453,7 +453,7 @@ describe('linearizeCluster', () => {
     const c = dg.addTransaction('c', 100, 100);
 
     const optimal = [a, b, c];
-    const { linearization } = linearizeCluster(dg.getTxs(), optimal);
+    const { linearization } = linearizeCluster(dg.getTxs(), 75000, optimal);
     expect(linearization).toEqual(optimal);
   });
 
@@ -465,21 +465,21 @@ describe('linearizeCluster', () => {
     dg.addDependency(a, c);
     dg.addDependency(b, c);
 
-    const result1 = linearizeCluster(dg.getTxs());
-    const result2 = linearizeCluster(dg.getTxs());
+    const result1 = linearizeCluster(dg.getTxs(), 75000);
+    const result2 = linearizeCluster(dg.getTxs(), 75000);
     verifyLinearization(dg.getTxs(), result1.linearization, result1.chunks);
     verifyLinearization(dg.getTxs(), result2.linearization, result2.chunks);
   });
 
   it('should pass invariant checks for fan-out topology', () => {
     const { depgraph } = buildFanOut(6, 100, 100, 500, 100);
-    const { linearization, chunks } = linearizeCluster(depgraph.getTxs());
+    const { linearization, chunks } = linearizeCluster(depgraph.getTxs(), 75000);
     verifyLinearization(depgraph.getTxs(), linearization, chunks);
   });
 
   it('should pass invariant checks for star topology', () => {
     const { depgraph } = buildStar(5, 100, 100, 300, 100);
-    const { linearization, chunks } = linearizeCluster(depgraph.getTxs());
+    const { linearization, chunks } = linearizeCluster(depgraph.getTxs(), 75000);
     verifyLinearization(depgraph.getTxs(), linearization, chunks);
   });
 });
