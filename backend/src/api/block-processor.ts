@@ -205,9 +205,6 @@ export function detectTemplateAlgorithm(
   fast: boolean = false
 ): { templateAlgorithm: TemplateAlgorithm; cpfpSummary: CpfpSummary } {
 
-  const network = config.MEMPOOL.NETWORK || 'mainnet';
-  const activationHeight = CM_ACTIVATION_HEIGHT[network] ?? Infinity;
-
   const legacyCpfpData = fast ? calculateFastBlockCpfp(
     height,
     blockTransactions,
@@ -216,6 +213,16 @@ export function detectTemplateAlgorithm(
     blockTransactions,
     poolAccelerations
   );
+
+  if (!config.MEMPOOL.CLUSTER_MEMPOOL_INDEXING) {
+    return {
+      templateAlgorithm: TemplateAlgorithm.legacy,
+      cpfpSummary: saveCpfpDataToCpfpSummary(blockTransactions, legacyCpfpData),
+    };
+  }
+
+  const network = config.MEMPOOL.NETWORK || 'mainnet';
+  const activationHeight = CM_ACTIVATION_HEIGHT[network] ?? Infinity;
 
   if (height < activationHeight) {
     return {

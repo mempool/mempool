@@ -735,6 +735,8 @@ class WebsocketHandler {
       removed: websocketAccelerationDelta.filter(txid => !accelerations[txid]),
     };
 
+    const cpfpUpdatesSent = new Set<string>();
+
     // TODO - Fix indentation after PR is merged
     for (const server of this.webSocketServers) {
     server.clients.forEach(async (client) => {
@@ -919,6 +921,7 @@ class WebsocketHandler {
               }
             }
             positionData['cpfp'] = cpfp;
+            cpfpUpdatesSent.add(trackTxid);
           }
           response['txPosition'] = JSON.stringify(positionData);
         }
@@ -964,6 +967,7 @@ class WebsocketHandler {
                   (txInfo.cpfp as CpfpInfo).cluster = cluster;
                 }
               }
+              cpfpUpdatesSent.add(txid);
             }
           }
           txs[txid] = txInfo;
@@ -1010,6 +1014,12 @@ class WebsocketHandler {
         client.send(this.serializeResponse(response));
       }
     });
+    }
+
+    for (const txid of cpfpUpdatesSent) {
+      if (newMempool[txid]) {
+        newMempool[txid].cpfpDirty = false;
+      }
     }
   }
 

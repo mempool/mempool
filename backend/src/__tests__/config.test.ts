@@ -46,6 +46,7 @@ describe('Mempool Backend Config', () => {
         RUST_GBT: true,
         LIMIT_GBT: false,
         CLUSTER_MEMPOOL: false,
+        CLUSTER_MEMPOOL_INDEXING: false,
         CPFP_INDEXING: false,
         MAX_BLOCKS_BULK_QUERY: 0,
         DISK_CACHE_BLOCK_INTERVAL: 6,
