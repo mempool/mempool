@@ -2,7 +2,7 @@ name: CI Pipeline for the Backend and Frontend
 
 on:
   pull_request:
-    types: [opened, review_requested, synchronize]
+    types: [opened, synchronize]
   push:
     branches:
       - master
