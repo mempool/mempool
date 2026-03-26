@@ -150,7 +150,7 @@ export class AddressComponent implements OnInit, OnDestroy {
     private audioService: AudioService,
     private apiService: ApiService,
     private seoService: SeoService,
-    private formBuilder: UntypedFormBuilder,
+    private formBuilder: UntypedFormBuilder
   ) { }
 
   ngOnInit(): void {
