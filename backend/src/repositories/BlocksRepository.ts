@@ -418,7 +418,7 @@ class BlocksRepository {
    * Get blocks count for a period
    * @asyncSafe
    */
-   public async $blockCountBetweenHeight(startHeight: number, endHeight: number): Promise<number> {
+  public async $blockCountBetweenHeight(startHeight: number, endHeight: number): Promise<number> {
     const params: any[] = [];
     const query = `SELECT count(height) as blockCount
       FROM blocks
@@ -822,7 +822,7 @@ class BlocksRepository {
    * Get the historical averaged block fee rate percentiles
    * @asyncSafe
    */
-   public async $getHistoricalBlockFeeRates(div: number, interval: string | null): Promise<any> {
+  public async $getHistoricalBlockFeeRates(div: number, interval: string | null): Promise<any> {
     try {
       let query = `SELECT
         CAST(AVG(height) as INT) as avgHeight,
@@ -855,7 +855,7 @@ class BlocksRepository {
    * Get the historical averaged block sizes
    * @asyncSafe
    */
-   public async $getHistoricalBlockSizes(div: number, interval: string | null): Promise<any> {
+  public async $getHistoricalBlockSizes(div: number, interval: string | null): Promise<any> {
     try {
       let query = `SELECT
         CAST(AVG(height) as INT) as avgHeight,
@@ -882,7 +882,7 @@ class BlocksRepository {
    * Get the historical averaged block weights
    * @asyncSafe
    */
-   public async $getHistoricalBlockWeights(div: number, interval: string | null): Promise<any> {
+  public async $getHistoricalBlockWeights(div: number, interval: string | null): Promise<any> {
     try {
       let query = `SELECT
         CAST(AVG(height) as INT) as avgHeight,
@@ -924,7 +924,7 @@ class BlocksRepository {
    * Get a list of blocks that have not had CPFP data indexed
    * @asyncSafe
    */
-   public async $getCPFPUnindexedBlocks(): Promise<number[]> {
+   public async $getCPFPUnindexedBlocks(): Promise<number[]> { 
     try {
       const blockchainInfo = await bitcoinClient.getBlockchainInfo();
       const currentBlockHeight = blockchainInfo.blocks;
@@ -999,7 +999,7 @@ class BlocksRepository {
    * Save block price by batch
    * @asyncSafe
    */
-   public async $saveBlockPrices(blockPrices: BlockPrice[]): Promise<void> {
+  public async $saveBlockPrices(blockPrices: BlockPrice[]): Promise<void> {
     try {
       let query = `INSERT INTO blocks_prices(height, price_id) VALUES`;
       for (const price of blockPrices) {
@@ -1406,6 +1406,57 @@ class BlocksRepository {
       throw e;
     }
     return blocksMigrated;
+  }
+
+  /**
+   * Count how many blocks are indexed
+   */
+  public async $getIndexedBlockCount(): Promise<number> {
+    try {
+      const [res]: any[] = await DB.query(`SELECT COUNT(hash) as count FROM blocks`);
+      if (!res || !res.length) {
+        logger.err(`Unable to count indexed blocks in our db`);
+        return -1;
+      }
+      return res[0].count;
+    } catch (e) {
+      logger.err(`Unable to count indexed blocks in our db. Exception: ${JSON.stringify(e)}`);
+      return -1;
+    }
+  }
+
+  /**
+   * Count how many blocks are indexed with CPFP data
+   */
+  public async $getIndexedCpfpBlockCount(): Promise<number> {
+    try {
+      const [res]: any[] = await DB.query(`SELECT COUNT(DISTINCT height) as count FROM compact_cpfp_clusters`);
+      if (!res || !res.length) {
+        logger.err(`Unable to count indexed blocks with CPFP data in our db`);
+        return -1;
+      }
+      return res[0].count;
+    } catch (e) {
+      logger.err(`Unable to count indexed blocks with CPFP data in our db. Exception: ${JSON.stringify(e)}`);
+      return -1;
+    }
+  }
+
+  /**
+   * Count how many blocks are indexed with coin stats data
+   */
+  public async $getIndexedCoinStatsBlockCount(): Promise<number> {
+    try {
+      const [res]: any[] = await DB.query(`SELECT COUNT(hash) as count FROM blocks WHERE utxoset_size IS NOT NULL && total_input_amt IS NOT NULL`);
+      if (!res || !res.length) {
+        logger.err(`Unable to count indexed blocks with coin stats data in our db`);
+        return -1;
+      }
+      return res[0].count;
+    } catch (e) {
+      logger.err(`Unable to count indexed blocks with coin stats data in our db. Exception: ${JSON.stringify(e)}`);
+      return -1;
+    }
   }
 }
 
