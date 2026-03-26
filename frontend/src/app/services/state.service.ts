@@ -3,7 +3,7 @@ import { ReplaySubject, BehaviorSubject, Subject, fromEvent, Observable } from '
 import { Transaction } from '@interfaces/electrs.interface';
 import { AccelerationDelta, HealthCheckHost, IBackendInfo, MempoolBlock, MempoolBlockUpdate, MempoolInfo, Recommendedfees, ReplacedTransaction, ReplacementInfo, StratumJob, isMempoolState } from '@interfaces/websocket.interface';
 import { Acceleration, AccelerationPosition, BlockExtended, CpfpInfo, DifficultyAdjustment, MempoolPosition, OptimizedMempoolStats, RbfTree, TransactionStripped } from '@interfaces/node-api.interface';
-import { Router, NavigationStart } from '@angular/router';
+import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { filter, map, scan, share, shareReplay } from 'rxjs/operators';
 import { StorageService } from '@app/services/storage.service';
@@ -264,6 +264,9 @@ export class StateService {
       if (event instanceof NavigationStart) {
         this.setNetworkBasedonUrl(event.url);
         this.setLightningBasedonUrl(event.url);
+      } else if (event instanceof NavigationEnd) {
+        this.setNetworkBasedonUrl(event.urlAfterRedirects);
+        this.setLightningBasedonUrl(event.urlAfterRedirects);
       }
     });
 

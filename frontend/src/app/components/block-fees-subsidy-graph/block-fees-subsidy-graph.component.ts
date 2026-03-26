@@ -55,6 +55,13 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
   zoomTimeSpan = '';
   legend: { mode: 'normal' | 'fiat' | 'percentage', subsidy: boolean, fees: boolean } = { mode: 'normal', subsidy: true, fees: true };
 
+  private readonly subsidyLabel = $localize`:@@graphs.blockFeesSubsidy.subsidy:Subsidy`;
+  private readonly feesLabel = $localize`:@@graphs.blockFeesSubsidy.fees:Fees`;
+  private readonly subsidyUsdLabel = $localize`:@@graphs.blockFeesSubsidy.subsidyUsd:Subsidy (USD)`;
+  private readonly feesUsdLabel = $localize`:@@graphs.blockFeesSubsidy.feesUsd:Fees (USD)`;
+  private readonly subsidyPercentLabel = $localize`:@@graphs.blockFeesSubsidy.subsidyPercent:Subsidy (%)`;
+  private readonly feesPercentLabel = $localize`:@@graphs.blockFeesSubsidy.feesPercent:Fees (%)`;
+
   constructor(
     @Inject(LOCALE_ID) public locale: string,
     private seoService: SeoService,
@@ -235,7 +242,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
       legend: this.data.blockFees.length === 0 ? undefined : {
         data: [
           {
-            name: 'Subsidy',
+            name: this.subsidyLabel,
             inactiveColor: 'var(--grey)',
             textStyle: {
               color: 'white',
@@ -243,7 +250,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: 'Fees',
+            name: this.feesLabel,
             inactiveColor: 'var(--grey)',
             textStyle: {
               color: 'white',
@@ -251,7 +258,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: 'Subsidy (USD)',
+            name: this.subsidyUsdLabel,
             inactiveColor: 'var(--grey)',
             textStyle: {
               color: 'white',
@@ -259,7 +266,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: 'Fees (USD)',
+            name: this.feesUsdLabel,
             inactiveColor: 'var(--grey)',
             textStyle: {
               color: 'white',
@@ -267,7 +274,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: 'Subsidy (%)',
+            name: this.subsidyPercentLabel,
             inactiveColor: 'var(--grey)',
             textStyle: {
               color: 'white',
@@ -275,7 +282,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: 'Fees (%)',
+            name: this.feesPercentLabel,
             inactiveColor: 'var(--grey)',
             textStyle: {
               color: 'white',
@@ -284,12 +291,12 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           },
         ],
         selected: {
-          'Subsidy (USD)': this.displayMode === 'fiat' && this.legend.subsidy,
-          'Fees (USD)': this.displayMode === 'fiat' && this.legend.fees,
-          'Subsidy': this.displayMode === 'normal' && this.legend.subsidy,
-          'Fees': this.displayMode === 'normal' && this.legend.fees,
-          'Subsidy (%)': this.displayMode === 'percentage' && this.legend.subsidy,
-          'Fees (%)': this.displayMode === 'percentage' && this.legend.fees,
+          [this.subsidyUsdLabel]: this.displayMode === 'fiat' && this.legend.subsidy,
+          [this.feesUsdLabel]: this.displayMode === 'fiat' && this.legend.fees,
+          [this.subsidyLabel]: this.displayMode === 'normal' && this.legend.subsidy,
+          [this.feesLabel]: this.displayMode === 'normal' && this.legend.fees,
+          [this.subsidyPercentLabel]: this.displayMode === 'percentage' && this.legend.subsidy,
+          [this.feesPercentLabel]: this.displayMode === 'percentage' && this.legend.fees,
         },
       },
       yAxis: this.data.blockFees.length === 0 ? undefined : [
@@ -331,7 +338,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
       ],
       series: this.data.blockFees.length === 0 ? undefined : [
         {
-          name: 'Subsidy',
+          name: this.subsidyLabel,
           yAxisIndex: 0,
           type: 'bar',
           barWidth: '90%',
@@ -339,7 +346,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           data: this.data.blockSubsidy,
         },
         {
-          name: 'Fees',
+          name: this.feesLabel,
           yAxisIndex: 0,
           type: 'bar',
           barWidth: '90%',
@@ -347,7 +354,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           data: this.data.blockFees,
         },
         {
-          name: 'Subsidy (USD)',
+          name: this.subsidyUsdLabel,
           yAxisIndex: 1,
           type: 'bar',
           barWidth: '90%',
@@ -355,7 +362,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           data: this.data.blockSubsidyFiat,
         },
         {
-          name: 'Fees (USD)',
+          name: this.feesUsdLabel,
           yAxisIndex: 1,
           type: 'bar',
           barWidth: '90%',
@@ -363,7 +370,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           data: this.data.blockFeesFiat,
         },
         {
-          name: 'Subsidy (%)',
+          name: this.subsidyPercentLabel,
           yAxisIndex: 0,
           type: 'bar',
           barWidth: '90%',
@@ -371,7 +378,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           data: this.data.blockSubsidyPercent,
         },
         {
-          name: 'Fees (%)',
+          name: this.feesPercentLabel,
           yAxisIndex: 0,
           type: 'bar',
           barWidth: '90%',
@@ -413,9 +420,9 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
       }
 
       let mode: 'normal' | 'fiat' | 'percentage';
-      if (params.name.includes('USD')) {
+      if (params.name === this.subsidyUsdLabel || params.name === this.feesUsdLabel) {
         mode = 'fiat';
-      } else if (params.name.includes('%')) {
+      } else if (params.name === this.subsidyPercentLabel || params.name === this.feesPercentLabel) {
         mode = 'percentage';
       } else {
         mode = 'normal';
@@ -424,8 +431,8 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
       const switchingMode = params.selected[params.name];
 
       this.legend.mode = mode;
-      this.legend.fees = switchingMode || params.selected['Fees'] || params.selected['Fees (%)'] || params.selected['Fees (USD)'];
-      this.legend.subsidy = switchingMode || params.selected['Subsidy'] || params.selected['Subsidy (%)'] || params.selected['Subsidy (USD)'];
+      this.legend.fees = switchingMode || params.selected[this.feesLabel] || params.selected[this.feesPercentLabel] || params.selected[this.feesUsdLabel];
+      this.legend.subsidy = switchingMode || params.selected[this.subsidyLabel] || params.selected[this.subsidyPercentLabel] || params.selected[this.subsidyUsdLabel];
       this.storageService.setValue('fees_subsidy_legend', JSON.stringify(this.legend));
 
       if (this.displayMode === mode) {
@@ -434,12 +441,12 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
 
       if (switchingMode) {
         this.displayMode = mode;
-        this.chartInstance.dispatchAction({ type: this.displayMode === 'normal' ? 'legendSelect' : 'legendUnSelect', name: 'Subsidy' });
-        this.chartInstance.dispatchAction({ type: this.displayMode === 'normal' ? 'legendSelect' : 'legendUnSelect', name: 'Fees' });
-        this.chartInstance.dispatchAction({ type: this.displayMode === 'fiat' ? 'legendSelect' : 'legendUnSelect', name: 'Subsidy (USD)' });
-        this.chartInstance.dispatchAction({ type: this.displayMode === 'fiat' ? 'legendSelect' : 'legendUnSelect', name: 'Fees (USD)' });
-        this.chartInstance.dispatchAction({ type: this.displayMode === 'percentage' ? 'legendSelect' : 'legendUnSelect', name: 'Subsidy (%)' });
-        this.chartInstance.dispatchAction({ type: this.displayMode === 'percentage' ? 'legendSelect' : 'legendUnSelect', name: 'Fees (%)' });
+        this.chartInstance.dispatchAction({ type: this.displayMode === 'normal' ? 'legendSelect' : 'legendUnSelect', name: this.subsidyLabel });
+        this.chartInstance.dispatchAction({ type: this.displayMode === 'normal' ? 'legendSelect' : 'legendUnSelect', name: this.feesLabel });
+        this.chartInstance.dispatchAction({ type: this.displayMode === 'fiat' ? 'legendSelect' : 'legendUnSelect', name: this.subsidyUsdLabel });
+        this.chartInstance.dispatchAction({ type: this.displayMode === 'fiat' ? 'legendSelect' : 'legendUnSelect', name: this.feesUsdLabel });
+        this.chartInstance.dispatchAction({ type: this.displayMode === 'percentage' ? 'legendSelect' : 'legendUnSelect', name: this.subsidyPercentLabel });
+        this.chartInstance.dispatchAction({ type: this.displayMode === 'percentage' ? 'legendSelect' : 'legendUnSelect', name: this.feesPercentLabel });
       }
     });
 

@@ -2,10 +2,10 @@
   <form [formGroup]="channelStatusForm" class="formRadioGroup">
     <div class="btn-group btn-group-toggle" name="radioBasic">
       <label class="btn btn-primary btn-sm" [class.active]="channelStatusForm.get('status').value === 'open'">
-        <input type="radio" [value]="'open'" fragment="open" formControlName="status"><span i18n="open">Open</span>
+        <input type="radio" class="btn-check" [value]="'open'" fragment="open" formControlName="status"><span i18n="open">Open</span>
       </label>
       <label class="btn btn-primary btn-sm" [class.active]="channelStatusForm.get('status').value === 'closed'">
-        <input type="radio" [value]="'closed'" fragment="closed" formControlName="status"><span i18n="closed">Closed</span>
+        <input type="radio" class="btn-check" [value]="'closed'" fragment="closed" formControlName="status"><span i18n="closed">Closed</span>
       </label>
     </div>
   </form>
