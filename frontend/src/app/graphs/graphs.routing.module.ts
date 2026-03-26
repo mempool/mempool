@@ -176,7 +176,7 @@ const routes: Routes = [
           },
           {
             path: 'price',
-            data: { networks: ['bitcoin'] },
+            data: { networks: ['bitcoin'], networkSpecific: true, onlySubnet: [''] },
             component: PriceChartComponent,
           },
         ]
