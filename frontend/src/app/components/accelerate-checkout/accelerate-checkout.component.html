@@ -246,8 +246,8 @@
 
                   <tr class="group-first group-last dashed-top">
                     <td class="item" style="vertical-align:middle">
-                      @if (referralCode) {
-                        <ng-container *ngTemplateOutlet="referralCodeDisplay; context: {referralCode: referralCode}"></ng-container>
+                      @if (partnerCode) {
+                        <ng-container *ngTemplateOutlet="partnerCodeDisplay; context: {partnerCode: partnerCode}"></ng-container>
                       }
                     </td>
                     <td colspan="2">
@@ -644,8 +644,8 @@
 
 <ng-template #prioritizedBy let-i i18n="accelerator.hashrate-percentage-description">Your transaction will be prioritized by up to <strong>{{ i | number : '1.1-1' }}%</strong> of miners.</ng-template>
 
-<ng-template #referralCodeDisplay let-referralCode="referralCode">
+<ng-template #partnerCodeDisplay let-partnerCode="partnerCode">
   <div class="small font-italic">
-    <span i18n="accelerator.using-referral-code">Using referral code</span>&nbsp;<span class="badge badge-secondary">{{ referralCode }}</span>
+    <span i18n="accelerator.using-partner-code">Using partner code</span>&nbsp;<span class="badge badge-secondary">{{ partnerCode }}</span>
   </div>
 </ng-template>
