@@ -412,18 +412,18 @@
               <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
                 <p><ng-container i18n="transaction.pay|Pay button label">Pay</ng-container>&nbsp;<app-fiat [value]="cost"></app-fiat> with</p>
                 @if (canPayWithCashapp) {
-                  <img class="paymentMethod mx-2" style="width: 200px" src="/resources/cash-app.svg" height=55 (click)="moveToStep('cashapp')">
+                  <img class="paymentMethod mx-2" style="width: 200px" [src]="isLightMode ? '/resources/cash-app-light.svg' : '/resources/cash-app.svg'" height=55 (click)="moveToStep('cashapp')">
                 }
                 @if (canPayWithApplePay) {
                   @if (canPayWithCashapp) { <span class="mt-1 mb-1"></span> }
                   <div class="paymentMethod mx-2" style="width: 200px; height: 55px" (click)="moveToStep('applepay')">
-                    <img src="/resources/apple-pay.png" height=37>
+                    <img [src]="isLightMode ? '/resources/apple-pay-light.png' : '/resources/apple-pay.png'" height=37>
                   </div>
                 }
                 @if (canPayWithGooglePay) {
                   @if (canPayWithCashapp || canPayWithApplePay) { <span class="mt-1 mb-1"></span> }
                   <div class="paymentMethod mx-2" style="width: 200px; height: 55px" (click)="moveToStep('googlepay')">
-                    <img src="/resources/google-pay.png" height=37>
+                    <img [src]="isLightMode ? '/resources/google-pay-light.png' : '/resources/google-pay.png'" height=37>
                   </div>
                 }
                 @if (canPayWithCardOnFile) {
