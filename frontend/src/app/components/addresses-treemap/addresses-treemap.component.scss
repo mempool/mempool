@@ -1,5 +1,12 @@
-.node-channels-container {
+:host {
+  display: block;
+  width: 100%;
+}
+
+.node-channels-container,
+.addresses-treemap-container {
   position: relative;
+  width: 100%;
 }
 
 .loading-spinner {
