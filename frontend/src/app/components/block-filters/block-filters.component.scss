@@ -55,7 +55,7 @@
 
     h5 {
       font-size: 0.8rem;
-      color: white;
+      color: var(--fg);
       margin: 0;
       margin-top: 0.5em;
     }
@@ -113,6 +113,7 @@
     pointer-events: all;
     line-height: 1.5;
     background: #181b2daf;
+    color: #fff;
 
     &:first-child {
       border-top-left-radius: 0.2rem;
@@ -156,7 +157,7 @@
 
       &:hover {
         opacity: 1;
-        background: #181b2d7f;
+        background: var(--block-goggles-overlay);
       }
     }
 
@@ -166,7 +167,7 @@
         background: none;
 
         &:hover {
-          background: #181b2d7f;
+          background: var(--block-goggles-overlay);
         }
       }
     }
@@ -178,14 +179,14 @@
       background: none;
 
       &:hover {
-        background: #181b2d7f;
+        background: var(--block-goggles-overlay);
       }
     }
   }
 
   &.menu-open {
     pointer-events: all;
-    background: #181b2d7f;
+    background: var(--block-goggles-overlay);
   }
 
   &.small {

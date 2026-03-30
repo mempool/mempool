@@ -137,7 +137,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
         silent: true,
         symbol: 'none',
         lineStyle: {
-          color: '#fff',
+          color: 'var(--fg)',
           opacity: 1,
           width: 2,
         },
@@ -145,7 +145,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
           yAxis: 1667,
           label: {
             show: false,
-            color: '#ffffff',
+            color: 'var(--fg)',
           }
         }],
       }
@@ -156,12 +156,19 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
         name: 'MA',
         data: this.MA,
         type: 'line',
+        color: 'var(--fg)',
         smooth: false,
         showSymbol: false,
         symbol: 'none',
         lineStyle: {
           width: 2,
-          color: 'white',
+          color: 'var(--fg)',
+        },
+        emphasis: {
+          lineStyle: {
+            width: 2,
+            color: 'var(--fg)',
+          },
         }
       });
     }
@@ -191,11 +198,12 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
         bottom: 0,
         selectedDataBackground: {
           lineStyle: {
-            color: '#fff',
+            color: 'var(--fg)',
             opacity: 0.45,
           },
           areaStyle: {
             opacity: 0,
+            color: 'var(--fg)',
           }
         },
       }],

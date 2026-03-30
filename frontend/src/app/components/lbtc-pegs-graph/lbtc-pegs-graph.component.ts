@@ -133,7 +133,7 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
             name: 'LBTC',
             inactiveColor: 'var(--grey)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           },
@@ -141,7 +141,7 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
             name: 'BTC',
             inactiveColor: 'var(--grey)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           },
@@ -149,7 +149,7 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
             name: 'USD',
             inactiveColor: 'var(--grey)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           }

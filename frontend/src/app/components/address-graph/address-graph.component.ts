@@ -216,7 +216,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
             name: $localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`,
             inactiveColor: 'var(--grey)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           },
@@ -224,7 +224,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
             name: 'Fiat',
             inactiveColor: 'var(--grey)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           }
@@ -413,7 +413,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         right: this.adjustedRight,
         selectedDataBackground: {
           lineStyle: {
-            color: '#fff',
+            color: 'var(--fg)',
             opacity: 0.45,
           },
         },
@@ -538,7 +538,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         top: this.image ? imgHeight + 10 : 0,
         z: 100,
         style: {
-          fill: '#fff',
+          fill: 'var(--fg)',
           text: this.label,
           font: this.isMobile() ? '18px sans-serif' : '24px sans-serif',
           textAlign: 'center'

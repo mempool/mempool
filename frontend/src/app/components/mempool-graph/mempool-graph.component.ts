@@ -180,7 +180,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
               yAxis: '1000000',
               label: {
                 show: false,
-                color: '#ffffff',
+                color: 'var(--fg)',
               }
             }],
           },
@@ -281,7 +281,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
               progressPercentageText = `<div class="total-parcial-active">
                 <span class="progress-percentage">
                   ${formatNumber(progressPercentage, this.locale, '1.2-2')}
-                  <span class="symbol">%</span>
+                  <span class="symbol" style="color: #ffffffbb">%</span>
                 </span>
                 <span class="total-parcial-vbytes">
                   ${this.vbytesPipe.transform(sum, 2, 'vB', 'MvB', false)}
@@ -308,12 +308,12 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
               </td>
               <td class="total-progress-sum">
                 <span>
-                  ${(item.value[1] / 1_000_000).toFixed(2)} <span class="symbol">MvB</span>
+                  ${(item.value[1] / 1_000_000).toFixed(2)} <span class="symbol" style="color: #ffffffbb">MvB</span>
                 </span>
               </td>
               <td class="total-progress-sum">
                 <span>
-                  ${(totalValueArray[index] / 1_000_000).toFixed(2)} <span class="symbol">MvB</span>
+                  ${(totalValueArray[index] / 1_000_000).toFixed(2)} <span class="symbol" style="color: #ffffffbb">MvB</span>
                 </span>
               </td>
               <td class="total-progress-sum-bar">
@@ -393,7 +393,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         bottom: 0,
         selectedDataBackground: {
           lineStyle: {
-            color: '#fff',
+            color: 'var(--fg)',
             opacity: 0.45,
           },
           areaStyle: {

@@ -43,7 +43,7 @@
               <a *ngIf="item.title !== 'Logout'" class="nav-link menu-click" [routerLink]="[item.link]" role="tab">
                 {{ item.title }}
                 @if (item.isExternal === true) {
-                  <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="margin-left: 5px; font-size: 13px; color: lightgray"></fa-icon>
+                  <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="margin-left: 5px; font-size: 13px; color: var(--transparent-fg)"></fa-icon>
                 }
               </a>
             </li>

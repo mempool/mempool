@@ -156,7 +156,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
                     name: percentile,
                     inactiveColor: 'rgb(110, 112, 121)',
                     textStyle: {
-                      color: 'white',
+                      color: 'var(--fg)',
                     },
                     icon: 'roundRect',
                     enabled: false,

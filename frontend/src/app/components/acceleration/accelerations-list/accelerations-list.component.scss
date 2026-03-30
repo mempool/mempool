@@ -181,7 +181,7 @@ tr, td, th {
 }
 
 .no-data {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--transparent-fg);
   display: flex;
   height: 280px;
   width: 100%;

@@ -26,7 +26,7 @@
 }
 
 .timestamp-info {
-  color: #fff;
+  color: var(--fg);
   position: relative;
   z-index: 11;
   font-size: 14px;
@@ -136,7 +136,7 @@
   position:absolute;
   top: calc(-0.192 * var(--block-size));
   left: calc(-0.16 * var(--block-size));
-  background-color: #232838;
+  background-color: var(--block-top);
   transform:skew(40deg);
   transform-origin:top;
 }
@@ -148,7 +148,7 @@
   position: absolute;
   top: calc(-0.096 * var(--block-size));
   left: calc(-0.16 * var(--block-size));
-  background-color: #191c27;
+  background-color: var(--block-side);
 
   transform: skewY(50deg);
   transform-origin: top;
@@ -173,7 +173,7 @@
   position:absolute;
   top: calc(-0.096 * var(--block-size));
   left: calc(-0.08 * var(--block-size));
-  background-color: #232838;
+  background-color: var(--block-top);
   transform:skew(40deg);
   transform-origin:top;
 }
@@ -185,7 +185,7 @@
   position: absolute;
   top: calc(-0.048 * var(--block-size));
   left: calc(-0.08 * var(--block-size));
-  background-color: #191c27;
+  background-color: var(--block-side);
 
   transform: skewY(50deg);
   transform-origin: top;
@@ -220,7 +220,7 @@
   height: 0;
   border-left: calc(var(--block-size) * 0.2) solid transparent;
   border-right: calc(var(--block-size) * 0.2) solid transparent;
-  border-bottom: calc(var(--block-size) * 0.2) solid var(--fg);
+  border-bottom: calc(var(--block-size) * 0.2) solid var(--nav-icon);
 }
 
 .flashing {
@@ -247,7 +247,7 @@
   position: relative;
   top: 19px;
   z-index: 101;
-  color: #FFF;
+  color: var(--fg);
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 145px;
@@ -273,7 +273,7 @@
   width: calc(0.6 * var(--block-size));
   height: calc(0.25 * var(--block-size));
   border-left: solid calc(0.3 * var(--block-size)) transparent;
-  border-bottom: solid calc(0.3 * var(--block-size)) white;
+  border-bottom: solid calc(0.3 * var(--block-size)) var(--fg);
   border-right: solid calc(0.3 * var(--block-size)) transparent;
   transform: translate(calc(0.2 * var(--block-size)), calc(1.1 * var(--block-size)));
   border-radius: 2px;

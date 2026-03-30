@@ -521,7 +521,7 @@
 
       <div class="float-end" [class.has-accelerate]="!tx.status?.confirmed && acceleratedTxids">
         @if (!tx.status?.confirmed && acceleratedTxids) {
-          <button type="button" class="btn btn-sm accelerate mt-2 me-2" [class.blink]="acceleratedTxids.has(tx.txid)" [routerLink]="['/tx/' | relativeUrl, tx.txid]" [fragment]="'accelerate'">
+          <button type="button" class="btn btn-sm accelerate mt-2 me-2 btn-purple" [class.blink]="acceleratedTxids.has(tx.txid)" [routerLink]="['/tx/' | relativeUrl, tx.txid]" [fragment]="'accelerate'">
             <img src="/resources/mempool-accelerator-sparkles-light.svg" height="15" class="me-2" />
             @if (acceleratedTxids.has(tx.txid)) {
               <span i18n="transaction.audit.accelerated">Accelerated</span>
@@ -541,7 +541,7 @@
         </button>
         <ng-template #viewingAddress>
           <button type="button" class="btn btn-sm mt-2 ms-2" (click)="switchCurrency()" [ngClass]="{'btn-success': tx['addressValue'] >= 0, 'btn-danger': tx['addressValue'] < 0}">
-            <app-amount [blockConversion]="tx.price" [satoshis]="tx['addressValue']" [addPlus]="true"></app-amount>
+            <app-amount [blockConversion]="tx.price" [satoshis]="tx['addressValue']" [addPlus]="true" [unitStyle]="{color: '#ffffffbb'}"></app-amount>
           </button>
         </ng-template>
       </div>

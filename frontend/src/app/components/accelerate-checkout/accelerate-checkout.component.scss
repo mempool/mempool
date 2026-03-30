@@ -45,15 +45,15 @@
     .rate {
       font-size: 0.9em;
       .symbol {
-        color: white;
+        color: var(--fg);
       }
     }
   }
 }
 
 .btn-border {
-  border: solid 1px black;
-  background-color: #0c4a87;
+  border: solid 1px color-mix(in srgb, var(--primary) 68%, black);
+  background-color: color-mix(in srgb, var(--primary) 77%, black);
 }
 
 .feerate.active {
@@ -172,11 +172,11 @@
 }
 
 .table-background {
-  background-color: var(--bg);
+  background-color: var(--stat-box-bg);
 }
 
 .checkout-text {
-  color: rgb(186, 186, 186);
+  color: var(--transparent-fg);
   font-size: 14px;
 }
 

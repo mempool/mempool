@@ -180,7 +180,7 @@ export class NodeFeeChartComponent implements OnInit {
             name: $localize`Outgoing Fees`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           },
@@ -188,7 +188,7 @@ export class NodeFeeChartComponent implements OnInit {
             name: $localize`Incoming Fees`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           },

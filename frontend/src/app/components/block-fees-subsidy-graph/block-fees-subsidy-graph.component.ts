@@ -245,7 +245,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
             name: this.subsidyLabel,
             inactiveColor: 'var(--grey)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           },
@@ -253,7 +253,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
             name: this.feesLabel,
             inactiveColor: 'var(--grey)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           },
@@ -261,7 +261,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
             name: this.subsidyUsdLabel,
             inactiveColor: 'var(--grey)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           },
@@ -269,7 +269,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
             name: this.feesUsdLabel,
             inactiveColor: 'var(--grey)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           },
@@ -277,7 +277,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
             name: this.subsidyPercentLabel,
             inactiveColor: 'var(--grey)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           },
@@ -285,7 +285,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
             name: this.feesPercentLabel,
             inactiveColor: 'var(--grey)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           },
