@@ -93,9 +93,8 @@
                     </ng-container>
                     <ng-container *ngSwitchCase="vin.prevout && vin.prevout.scriptpubkey_type === 'p2pk'">
                       <span>P2PK <a class="address p2pk-address" [routerLink]="['/address/' | relativeUrl, vin.prevout.scriptpubkey.slice(2, -2)]" title="{{ vin.prevout.scriptpubkey.slice(2, -2) }}">
-                        <app-chunked-address [address]="vin.prevout.scriptpubkey.slice(2, -2)"></app-chunked-address>
-                      </a>
-                      <app-clipboard [text]="vin.prevout.scriptpubkey.slice(2, -2)" class="ml-2" size="normal"></app-clipboard></span>
+                        <app-truncate [text]="vin.prevout.scriptpubkey.slice(2, -2)" [lastChars]="8"></app-truncate>
+                      </a></span>
                     </ng-container>
                     <ng-container *ngSwitchDefault>
                       <ng-template [ngIf]="!vin.prevout" [ngIfElse]="defaultAddress">
@@ -105,13 +104,11 @@
                         </ng-template>
                       </ng-template>
                       <ng-template #defaultAddress>
-                        <app-chunked-address
+                        <app-address-text
                           *ngIf="vin.prevout.scriptpubkey_address; else vinScriptPubkeyType"
                           [address]="vin.prevout.scriptpubkey_address"
                           [similarity]="similarityMatches.get(tx.txid)?.get(vin.prevout.scriptpubkey_address)"
-                          [link]="['/address/' | relativeUrl, vin.prevout.scriptpubkey_address]"
-                          [showClipboard]="true"
-                        ></app-chunked-address>
+                        ></app-address-text>
                         <ng-template #vinScriptPubkeyType>
                           {{ vin.prevout.scriptpubkey_type?.toUpperCase() }}
                         </ng-template>
@@ -328,19 +325,16 @@
                 'sigged': selectedSig && selectedSig.txIndex === i && sigHighlights.vout[vindex],
               }">
                 <td class="address-cell">
-                  <app-chunked-address
+                  <app-address-text
                     *ngIf="vout.scriptpubkey_address; else pubkey_type"
                     [address]="vout.scriptpubkey_address"
                     [similarity]="similarityMatches.get(tx.txid)?.get(vout.scriptpubkey_address)"
-                    [link]="['/address/' | relativeUrl, vout.scriptpubkey_address]"
-                    [showClipboard]="true"
-                  ></app-chunked-address>
+                  ></app-address-text>
                   <ng-template #pubkey_type>
                     <ng-container *ngIf="vout.scriptpubkey_type === 'p2pk'; else scriptpubkey_type">
                       P2PK <a class="address p2pk-address" [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey.slice(2, -2)]" title="{{ vout.scriptpubkey.slice(2, -2) }}">
-                        <app-chunked-address [address]="vout.scriptpubkey.slice(2, -2)"></app-chunked-address>
+                        <app-truncate [text]="vout.scriptpubkey.slice(2, -2)" [lastChars]="8"></app-truncate>
                       </a>
-                      <app-clipboard [text]="vout.scriptpubkey.slice(2, -2)" class="ml-2" size="normal"></app-clipboard>
                     </ng-container>
                   </ng-template>
                   <div>
