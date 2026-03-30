@@ -109,7 +109,7 @@
         <tr *ngFor="let pool of miningStats.pools">
           <td class="d-none d-md-table-cell">{{ pool.rank }}</td>
           <td class="text-end">
-            <img width="25" height="25" src="{{ pool.logo }}" [alt]="pool.name + ' mining pool logo'" onError="this.onerror=null; this.src = '/resources/mining-pools/default.svg'">
+            <app-mining-pool [slug]="pool.slug" [name]="pool.name" [showName]="false"[logoStyle]="'width:25px;height:25px;'"></app-mining-pool>
           </td>
           <td class="pool-name"><a [routerLink]="[('/mining/pool/' + pool.slug) | relativeUrl]">{{ pool.name }}</a></td>
           <td class="" *ngIf="'24h' === this.miningWindowPreference">{{ pool.lastEstimatedHashrate | number: '1.2-2' }} {{ miningStats.miningUnits.hashrateUnit }}</td>

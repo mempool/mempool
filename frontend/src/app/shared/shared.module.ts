@@ -107,6 +107,7 @@ import { GeolocationComponent } from '@app/shared/components/geolocation/geoloca
 import { TestnetAlertComponent } from '@app/shared/components/testnet-alert/testnet-alert.component';
 import { GlobalFooterComponent } from '@app/shared/components/global-footer/global-footer.component';
 import { MempoolErrorComponent } from '@app/shared/components/mempool-error/mempool-error.component';
+import { MiningPoolComponent } from '@app/shared/components/mining-pool/mining-pool.component';
 import { AccelerationsListComponent } from '@components/acceleration/accelerations-list/accelerations-list.component';
 import { PendingStatsComponent } from '@components/acceleration/pending-stats/pending-stats.component';
 import { AccelerationStatsComponent } from '@components/acceleration/acceleration-stats/acceleration-stats.component';
@@ -231,6 +232,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     GeolocationComponent,
     TestnetAlertComponent,
     GlobalFooterComponent,
+    MiningPoolComponent,
     CalculatorComponent,
     BitcoinsatoshisPipe,
     BlockViewComponent,
@@ -383,6 +385,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     ToggleComponent,
     GeolocationComponent,
     TestnetAlertComponent,
+    MiningPoolComponent,
     PreviewTitleComponent,
     GlobalFooterComponent,
     MempoolErrorComponent,

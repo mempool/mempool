@@ -5,8 +5,7 @@
   <!-- Pool overview -->
   <div *ngIf="poolStats$ | async as poolStats; else loadingMain">
     <div style="display:flex" class="mb-3">
-      <img width="50" height="50" src="{{ poolStats['logo'] }}" [alt]="poolStats.pool.name + ' mining pool logo'"
-        onError="this.onerror=null; this.src = '/resources/mining-pools/default.svg'" class="me-3">
+      <app-mining-pool [slug]="poolStats.pool.slug" [name]="poolStats.pool.name" [showName]="false" [logoStyle]="'width:50px;height:50px;'" [logoClass]="'me-3'"></app-mining-pool>
       <h1 class="m-0 pt-1 pt-md-0">{{ poolStats.pool.name }}</h1>
     </div>
 
@@ -108,6 +107,7 @@
                       </tr>
                     </thead>
                     <tbody>
+                      <tr>
                       <td class="text-center" style="padding: 0.1rem;"><app-amount [satoshis]="poolStats.totalReward" digitsInfo="1.0-0" [noFiat]="true" [ignoreViewMode]="true"></app-amount></td>
                       <td class="text-center" style="padding: 0.1rem;">{{ poolStats.estimatedHashrate | amountShortener : 3 : 'H/s' : false : true }}</td>
                       <td class="text-center" style="padding: 0.1rem;" *ngIf="auditAvailable; else emptyTd"><span class="health-badge badge" [class.bg-success]="poolStats.avgBlockHealth >= 99"
@@ -117,6 +117,7 @@
                             <span class="health-badge badge bg-secondary" i18n="unknown">Unknown</span>
                           </ng-template>
                       </td>
+                      </tr>
                     </tbody>
                   </table>
                 </td>
@@ -134,12 +135,14 @@
                       </tr>
                     </thead>
                     <tbody>
+                      <tr>
                       <td class="text-center" style="padding: 0.1rem;">{{ formatNumber(poolStats.blockCount['24h'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
                         poolStats.blockShare['24h'], this.locale, '1.0-0') }}%)</td>
                       <td class="text-center" style="padding: 0.1rem;">{{ formatNumber(poolStats.blockCount['1w'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
                         poolStats.blockShare['1w'], this.locale, '1.0-0') }}%)</td>
                       <td class="text-center" style="padding: 0.1rem;">{{ formatNumber(poolStats.blockCount['all'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
                         poolStats.blockShare['all'], this.locale, '1.0-0') }}%)</td>
+                      </tr>
                     </tbody>
                   </table>
                 </td>
@@ -157,7 +160,9 @@
                       </tr>
                     </thead>
                     <tbody>
+                      <tr>
                       <td *ngFor="let total of oob" class="text-center clip" style="padding: 0.1rem;"><app-amount [satoshis]="total.cost" [digitsInfo]="isMobile() ? '1.2-4' : '1.8-8'" [ignoreViewMode]="true"></app-amount></td>
+                      </tr>
                     </tbody>
                   </table>
                 </td>
@@ -491,6 +496,7 @@
                       </tr>
                     </thead>
                     <tbody>
+                      <tr>
                       <td class="text-center" style="padding: 0.1rem;">
                         <div class="skeleton-loader data"></div>
                       </td>
@@ -500,6 +506,7 @@
                       <td class="text-center" style="padding: 0.1rem;" *ngIf="auditAvailable; else emptyTd">
                         <div class="skeleton-loader data"></div>
                       </td>
+                      </tr>
                     </tbody>
                   </table>
                 </td>
@@ -516,6 +523,7 @@
                       </tr>
                     </thead>
                     <tbody>
+                      <tr>
                       <td class="text-center" style="padding: 0.1rem;">
                         <div class="skeleton-loader data"></div>
                       </td>
@@ -525,6 +533,7 @@
                       <td class="text-center" style="padding: 0.1rem;" *ngIf="auditAvailable; else emptyTd">
                         <div class="skeleton-loader data"></div>
                       </td>
+                      </tr>
                     </tbody>
                   </table>
                 </td>
@@ -542,6 +551,7 @@
                       </tr>
                     </thead>
                     <tbody>
+                      <tr>
                       <td class="text-center" style="padding: 0.1rem;">
                         <div class="skeleton-loader data"></div>
                       </td>
@@ -551,6 +561,7 @@
                       <td class="text-center" style="padding: 0.1rem;">
                         <div class="skeleton-loader data"></div>
                       </td>
+                      </tr>
                     </tbody>
                   </table>
                 </td>
@@ -567,6 +578,7 @@
                       </tr>
                     </thead>
                     <tbody>
+                      <tr>
                       <td class="text-center" style="padding: 0.1rem;">
                         <div class="skeleton-loader data"></div>
                       </td>
@@ -576,6 +588,7 @@
                       <td class="text-center" style="padding: 0.1rem;">
                         <div class="skeleton-loader data"></div>
                       </td>
+                      </tr>
                     </tbody>
                   </table>
                 </td>

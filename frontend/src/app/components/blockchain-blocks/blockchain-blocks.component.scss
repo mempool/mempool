@@ -257,18 +257,6 @@
   }
 }
 
-.pool-logo {
-  width: 15px;
-  height: 15px;
-  position: relative;
-  top: -1px;
-  margin-right: 2px;
-}
-
-.pool-logo.faded {
-  filter: grayscale(100%) brightness(1.5);
-}
-
 .animated {
   transition: all 0.15s ease-in-out;
   white-space: nowrap;

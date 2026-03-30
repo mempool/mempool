@@ -86,20 +86,6 @@ h1 {
   vertical-align: top;
 }
 
-.pool-logo {
-  width: 25px;
-  height: 25px;
-  position: relative;
-  top: -1px;
-  margin-right: 2px;
-
-  &.large {
-    width: 30px;
-    height: 30px;
-    margin: 0 0.3em;
-  }
-}
-
 .row {
 	flex-direction: column;
 	@media (min-width: 768px) {
@@ -290,14 +276,6 @@ h1 {
       }
     }
   }
-}
-
-.pool-logo {
-  width: 15px;
-  height: 15px;
-  position: relative;
-  top: -1px;
-  margin-right: 2px;
 }
 
 .stale-block-alert {

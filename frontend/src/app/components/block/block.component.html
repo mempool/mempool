@@ -195,8 +195,7 @@
                 {{ block.extras.pool.minerNames[1] }}
               }
             </span>
-            <img class="pool-logo" [src]="'/resources/mining-pools/' + block.extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'">
-            {{ block.extras.pool.name }}
+            <app-mining-pool [slug]="block.extras.pool.slug" [name]="block.extras.pool.name"></app-mining-pool>
           </a>
         </td>
         <td *ngIf="!stateService.env.MINING_DASHBOARD && stateService.env.BASE_MODULE === 'mempool'">
@@ -254,8 +253,7 @@
           <h3 class="block-subtitle" *ngIf="!isMobile">
             <ng-container i18n="block.stale-block">Stale Block</ng-container>
             @if (block?.extras?.pool) {
-              <img class="pool-logo large" [src]="'/resources/mining-pools/' + block?.extras?.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block?.extras?.pool.name + ' mining pool'">
-              <span class="pool-name">{{ block?.extras?.pool.name }}</span>
+              <app-mining-pool [slug]="block?.extras?.pool?.slug" [name]="block?.extras?.pool?.name" [logoStyle]="'width:30px;height:30px;margin: 0 .3em;'"></app-mining-pool>
             }
           </h3>
         } @else {
@@ -288,8 +286,7 @@
             } @else {
               <ng-container i18n="block.stale-block">Winning Block</ng-container>
               @if (canonicalBlock?.extras?.pool) {
-                <img class="pool-logo large" [src]="'/resources/mining-pools/' + canonicalBlock?.extras?.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + canonicalBlock?.extras?.pool.name + ' mining pool'">
-                <span class="pool-name">{{ canonicalBlock?.extras?.pool.name }}</span>
+                <app-mining-pool [slug]="canonicalBlock?.extras?.pool?.slug" [name]="canonicalBlock?.extras?.pool?.name" [showName]="true" [logoStyle]="'width:30px;height:30px;margin: 0 .3em;'"></app-mining-pool>
               }
             }
           } @else {

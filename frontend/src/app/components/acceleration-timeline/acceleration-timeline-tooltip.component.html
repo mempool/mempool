@@ -48,12 +48,14 @@
         <td class="label" i18n="transaction.accelerated-by-hashrate|Accelerated to hashrate">Accelerated by</td>
         <td class="value" *ngIf="accelerationInfo.pools">
           <ng-container *ngFor="let pool of accelerationInfo.pools; let i = index;">
-            <img *ngIf="accelerationInfo.poolsData[pool]" 
-              class="pool-logo" 
-              [style.opacity]="accelerationInfo?.minedByPoolUniqueId && pool !== accelerationInfo?.minedByPoolUniqueId ? '0.3' : '1'"
-              [src]="'/resources/mining-pools/' + accelerationInfo.poolsData[pool].slug + '.svg'" 
-              onError="this.src = '/resources/mining-pools/default.svg'" 
-              [alt]="'Logo of ' + pool.name + ' mining pool'">
+            <app-mining-pool
+              *ngIf="accelerationInfo.poolsData[pool]"
+              [slug]="accelerationInfo.poolsData[pool].slug"
+              [name]="accelerationInfo.poolsData[pool].name"
+              [showName]="false"
+              [logoStyle]="'width:22px;height:22px;margin-right:4px;margin-bottom:4px;opacity:' + (accelerationInfo?.minedByPoolUniqueId && pool !== accelerationInfo?.minedByPoolUniqueId ? '0.3' : '1') + ';'"
+              [forceStandardLogo]="true"
+              ></app-mining-pool>
             <br *ngIf="i % 6 === 5">
           </ng-container>
         </td>

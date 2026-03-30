@@ -79,11 +79,11 @@
         <div class="animated" *ngIf="block.extras?.pool != undefined && showPools">
           <a [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-pool'" class="badge" [class.miner-name]="block.extras.pool.minerNames?.length > 1 && block.extras.pool.minerNames[1] != ''" [routerLink]="[('/mining/pool/' + block.extras.pool.slug) | relativeUrl]">
             <ng-container *ngIf="block.extras.pool.minerNames?.length > 1 && block.extras.pool.minerNames[1] != ''; else centralisedPool">
-              <img [ngbTooltip]="block.extras.pool.name" class="pool-logo faded" [src]="'/resources/mining-pools/' + block.extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'">
+              <app-mining-pool [slug]="block.extras.pool.slug" [name]="block.extras.pool.minerNames[1]" [logoStyle]="'filter: grayscale(100%) brightness(1.5);'" [showName]="false"></app-mining-pool>
               {{ block.extras.pool.minerNames[1] }}
             </ng-container>
             <ng-template #centralisedPool>
-              <img class="pool-logo" [src]="'/resources/mining-pools/' + block.extras.pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'"> {{ block.extras.pool.name }}
+              <app-mining-pool [slug]="block.extras.pool.slug" [name]="block.extras.pool.name"></app-mining-pool>
             </ng-template>
           </a>
         </div>

@@ -52,9 +52,9 @@
             </td>
             <td class="pool text-end" *ngIf="!this.widget">
               @if (acceleration.minedByPoolUniqueId && pools[acceleration.minedByPoolUniqueId]) {
-                <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, pools[acceleration.minedByPoolUniqueId].slug]" class="badge" style="color: #FFF;padding:0;">
-                  <img class="pool-logo" [src]="'/resources/mining-pools/' + pools[acceleration.minedByPoolUniqueId].slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + pools[acceleration.minedByPoolUniqueId].name + ' mining pool'">
-                  {{ pools[acceleration.minedByPoolUniqueId].name }}
+                <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, pools[acceleration.minedByPoolUniqueId].slug]" class="badge" style="padding:0;">
+                  <app-mining-pool [slug]="pools[acceleration.minedByPoolUniqueId].slug" [name]="pools[acceleration.minedByPoolUniqueId].name" [logoStyle]="'width:18px;height:18px;'"
+                  ></app-mining-pool>
                 </a>
               } @else {
                 ~
