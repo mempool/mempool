@@ -1,11 +1,11 @@
 <form [class]="{hamburgerOpen: hamburgerOpen}" [formGroup]="searchForm" (submit)="searchForm.valid && search()" novalidate>
   <div class="d-flex">
-    <div class="search-box-container mr-2">
+    <div class="search-box-container me-2">
       <input #searchInput (focus)="focus$.next($any($event).target.value)" (click)="click$.next($any($event).target.value)" formControlName="searchText" type="text" class="form-control" i18n-placeholder="search-form.searchbar-placeholder" placeholder="Explore the full Bitcoin ecosystem">
       <app-search-results #searchResults [hidden]="dropdownHidden" [results]="typeAhead$ | async" (selectedResult)="selectedResult($event)"></app-search-results>
     </div>
     <div>
-      <button [disabled]="isSearching" type="submit" class="btn btn-block btn-purple">
+      <button [disabled]="isSearching" type="submit" class="btn btn-purple search-submit">
         <fa-icon *ngIf="!(isTypeaheading$ | async) else searchLoading" [icon]="['fas', 'search']" [fixedWidth]="true" i18n-title="search-form.search-title" title="Search"></fa-icon>
       </button>
     </div>

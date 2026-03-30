@@ -38,7 +38,7 @@ $pagination-hover-bg:              $hover-bg;
 $pagination-hover-border-color:     $bg;
 $pagination-disabled-bg:          $bg;
 
-$custom-select-indicator-color: $fg;
+$form-select-indicator-color: $fg;
 
 $link-color:                $info;
 $link-decoration:           none !default;
@@ -73,7 +73,7 @@ $dropdown-link-active-bg: $active-bg;
   $pagination-active-bg: $pagination-active-bg,
   $pagination-hover-bg: $pagination-hover-bg,
   $pagination-hover-border-color: $pagination-hover-border-color,
-  $custom-select-indicator-color: $custom-select-indicator-color,
+  $form-select-indicator-color: $form-select-indicator-color,
   $link-color: $link-color,
   $link-decoration: $link-decoration,
   $link-hover-color: $link-hover-color,
@@ -141,11 +141,16 @@ $dropdown-link-active-bg: $active-bg;
   --grey: #7e7e7e;
   --tooltip-grey: #b1b1b1;
   --orange: #ff9f00;
+  --pink: #e83e8c;
 
   --search-button: #4d2d77;
   --search-button-border: #472a6e;
   --search-button-focus: #533180;
   --search-button-shadow: #7c58ab80;
+  
+  --bs-border-radius: 0.25rem;
+  --bs-btn-border-color: transparent;
+  --bs-btn-disabled-border-color: transparent;
 }
 
 html, body {
@@ -213,8 +218,7 @@ main {
 .navbar-nav.liquidtestnet > .active {
   background-color: var(--liquidtestnet) !important;
 }
-
-.form-control {
+.form-control, .form-select {
   color: var(--fg);
   background-color: var(--secondary);
   border: 1px solid rgba(17, 19, 31, 0.2);
@@ -408,6 +412,11 @@ main {
 
 .yellow-color {
   color: var(--yellow);
+}
+
+.table-striped {
+  --bs-table-striped-bg: var(--stat-box-bg);
+  --bs-table-striped-color: var(--fg);
 }
 
 .table-striped tbody tr:nth-of-type(odd) {
@@ -739,6 +748,7 @@ html:lang(ru) .card-title {
 
 hr {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  opacity: 1;
 }
 
 tr {
@@ -929,7 +939,7 @@ th {
     transform: scaleX(-1);
   }
 
-  .btn.ml-2 {
+  .btn.ms-2 {
     margin-right: 0.5rem !important;
   }
 
@@ -1043,32 +1053,32 @@ th {
     text-align: right;
   }
 
-  .mr-3 {
-    @extend .ml-3;
+  .me-3 {
+    @extend .ms-3;
     margin-right: 0 !important;
   }
 
-  .mr-1 {
-      @extend .ml-1;
+  .me-1 {
+      @extend .ms-1;
   }
 
-  .mr-2 {
-    @extend .ml-2;
+  .me-2 {
+    @extend .ms-2;
   }
 
-  .float-left {
+  .float-start {
     float: right !important;
   }
 
-  .float-right {
+  .float-end {
     float: left !important;
   }
 
-  .text-left {
+  .text-start {
     text-align: right !important;
   }
 
-  .text-right {
+  .text-end {
     text-align: left !important;
   }
 
@@ -1429,19 +1439,40 @@ a {
   }
 }
 
-.badge-primary {
+.bg-primary {
   color: var(--fg);
-  background-color: var(--primary);
+  background-color: var(--primary) !important;
 }
 
-.badge-info {
+.bg-info {
+  color: var(--bg);
   background-color: var(--info);
 }
 
+.bg-warning {
+  color: var(--bg);
+}
+
+.btn {
+  --bs-btn-active-color: var(--bs-btn-color);
+  --bs-btn-active-bg: var(--bs-btn-bg);
+  --bs-btn-active-border-color: var(--bs-btn-border-color);
+}
+
 .btn-primary {
-  color: var(--fg);
-  background-color: var(--primary);
-  border-color: var(--primary);
+  --bs-btn-color: var(--fg);
+  --bs-btn-bg: var(--primary);
+  --bs-btn-border-color: var(--bs-btn-bg);
+  --bs-btn-hover-color: var(--bs-btn-color);
+  --bs-btn-hover-bg: #0069d4;
+  --bs-btn-hover-border-color: #0063c7;
+  --bs-btn-active-color: var(--bs-btn-color);
+  --bs-btn-active-bg: var(--bs-btn-hover-border-color);
+  --bs-btn-active-border-color: #005cba;
+  --bs-btn-active-shadow: none;
+  --bs-btn-disabled-color: var(--bs-btn-color);
+  --bs-btn-disabled-bg: var(--bs-btn-bg);
+  --bs-btn-disabled-border-color: var(--bs-btn-border-color);
 }
 
 .btn-small-height {
@@ -1450,4 +1481,100 @@ a {
 
 button {
   touch-action: manipulation;
+}
+
+.btn-success {
+  color: #fff;
+  &:focus, &:hover, &:active, &:disabled {
+    color: #fff;
+  }
+}
+
+.badge {
+  padding: 0.25em 0.4em;
+}
+
+.table th, .table td {
+  padding: 0.75rem;
+}
+
+.table-sm th, .table-sm td {
+  padding: 0.3rem;
+}
+
+.card-header {
+  padding: 0.75rem 1.25rem;
+  background-color: unset;
+}
+
+.card-body {
+  padding: 1.25rem;
+}
+
+.card-title {
+  margin-bottom: 0.75rem;
+}
+
+.container-xxl, .container-xl, .container-lg, .container-md, .container-sm, .container {
+  padding-right: 15px;
+  padding-left: 15px;
+  @media (min-width: 1400px) {
+    max-width: 1140px;
+  }
+}
+
+.row {
+  --bs-gutter-x: 30px;
+}
+
+.progress {
+  line-height: 0;
+}
+
+.rounded-pill {
+  padding-right: 0.6em;
+  padding-left: 0.6em;
+  border-radius: 10rem;
+}
+
+.btn-check:focus+.btn {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.btn-check+.btn:hover {
+  color: var(--bs-btn-hover-color);
+  background-color: var(--bs-btn-hover-bg);
+  border-color: var(--bs-btn-hover-border-color);
+}
+
+.table>:not(caption)>*>* {
+  border-bottom-width: 0px;
+  color: unset;
+  background-color: unset;
+}
+
+.tooltip-inner {
+  color: unset;
+}
+
+.form-control::placeholder {
+  color: var(--grey);
+}
+
+.navbar {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+}
+
+.nav-tabs .nav-link.active {
+  color: #fff;
+}
+
+.text-muted {
+  color: var(--grey) !important;
 }

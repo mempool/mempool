@@ -4,7 +4,7 @@
       <a [routerLink]="['/lightning/channel' | relativeUrl, channel.id]">
         <span 
           *ngIf="label"
-          class="badge badge-pill badge-warning {{ class }}"
+          class="badge rounded-pill bg-warning {{ class }}"
         >{{ label }}</span>
       </a>
     </div>
@@ -15,6 +15,6 @@
 <ng-template #default>
   <span
     *ngIf="label"
-    class="badge badge-pill badge-warning {{ class }}"
+    class="badge rounded-pill bg-warning {{ class }}"
   >{{ label }}</span>
 </ng-template>

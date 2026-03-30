@@ -1,6 +1,6 @@
 <div class="container-xl" style="min-height: 335px">
-  <h1 class="float-left"><span i18n="page.recent-stale-chain-tips">Recent Stale Chain Tips</span><span class="badge badge-pill badge-warning beta" i18n="beta">beta</span></h1>
-  <div *ngIf="isLoading" class="spinner-border ml-3" role="status"></div>
+  <h1 class="float-start"><span i18n="page.recent-stale-chain-tips">Recent Stale Chain Tips</span><span class="badge rounded-pill bg-warning beta" i18n="beta">beta</span></h1>
+  <div *ngIf="isLoading" class="spinner-border ms-3" role="status"></div>
 
   <div class="clearfix"></div>
 
@@ -11,19 +11,19 @@
           <span class="height"><a [routerLink]="[('/block/' + (chainTip.canonical?.id || chainTip.height)) | relativeUrl]">{{ chainTip.height }}</a></span>
           <span class="badges">
             <span class="type" [ngSwitch]="chainTip.status">
-              <span *ngSwitchCase="'headers-only'" class="badge badge-info" i18n="chain-tips.headers-only">Headers Only</span>
-              <span *ngSwitchCase="'valid-headers'" class="badge badge-info" i18n="chain-tips.valid-headers">Valid Headers</span>
-              <span *ngSwitchCase="'valid-fork'" class="badge badge-info" i18n="chain-tips.valid-fork">Valid Fork</span>
-              <span *ngSwitchCase="'invalid'" class="badge badge-info" i18n="chain-tips.invalid">Invalid</span>
+              <span *ngSwitchCase="'headers-only'" class="badge bg-info" i18n="chain-tips.headers-only">Headers Only</span>
+              <span *ngSwitchCase="'valid-headers'" class="badge bg-info" i18n="chain-tips.valid-headers">Valid Headers</span>
+              <span *ngSwitchCase="'valid-fork'" class="badge bg-info" i18n="chain-tips.valid-fork">Valid Fork</span>
+              <span *ngSwitchCase="'invalid'" class="badge bg-info" i18n="chain-tips.invalid">Invalid</span>
               <span *ngSwitchDefault>{{ chainTip.status }}</span>
             </span>
-            <span class="badge badge-secondary depth-badge" i18n="chain-tips.depth">Depth {{ chainTip.branchlen + 1 }}</span>
+            <span class="badge bg-secondary depth-badge" i18n="chain-tips.depth">Depth {{ chainTip.branchlen + 1 }}</span>
           </span>
         </p>
         <div class="stale-tip-wrapper">
           <div class="block-comparison">
             <div class="block-column stale">
-              <div class="block-label" i18n="chain-tips.stale-block"><span class="badge badge-secondary">Stale</span></div>
+              <div class="block-label" i18n="chain-tips.stale-block"><span class="badge bg-secondary">Stale</span></div>
               <div class="block-wrapper">
                 <div class="bitcoin-block mined-block stale-block" [style.background]="getBlockGradient(chainTip.stale)" [routerLink]="[('/block/' + chainTip.stale.id) | relativeUrl]"></div>
                 <div class="block-body">
@@ -70,7 +70,7 @@
             <div class="vs-label">vs</div>
 
             <div class="block-column canonical">
-              <div class="block-label" i18n="chain-tips.winning-block"><span class="badge badge-success">Winning</span></div>
+              <div class="block-label" i18n="chain-tips.winning-block"><span class="badge bg-success">Winning</span></div>
               <div class="bitcoin-block mined-block canonical-block" [style.background]="getBlockGradient(chainTip.canonical)" [routerLink]="[('/block/' + chainTip.canonical.id) | relativeUrl]">
                 <div class="block-body">
                   <div *ngIf="chainTip.canonical?.extras; else emptyCanonicalBlockFees" class="fees">

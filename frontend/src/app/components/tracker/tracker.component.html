@@ -18,13 +18,13 @@
         }
 
         @if (!enterpriseInfo || !enterpriseInfo.dualLogo) {
-          <div [ngSwitch]="network" class="network-label">
-            <span *ngSwitchCase="'signet'" class="network signet"><span class="name">Bitcoin Signet</span><app-svg-images name="signet" width="35" height="35" viewBox="0 0 65 65" style="display: inline-block" class="mainnet ml-2"></app-svg-images></span>
-            <span *ngSwitchCase="'testnet'" class="network testnet"><span class="name">Bitcoin Testnet3</span><app-svg-images name="testnet" width="35" height="35" viewBox="0 0 65 65" style="display: inline-block" class="mainnet ml-2"></app-svg-images></span>
-            <span *ngSwitchCase="'testnet4'" class="network testnet"><span class="name">Bitcoin Testnet4</span><app-svg-images name="testnet4" width="35" height="35" viewBox="0 0 65 65" style="display: inline-block" class="mainnet ml-2"></app-svg-images></span>
-            <span *ngSwitchCase="'liquid'" class="network liquid"><span class="name">Liquid</span><app-svg-images name="liquid" width="35" height="35" viewBox="0 0 125 125" style="display: inline-block" class="mainnet ml-2"></app-svg-images></span>
-            <span *ngSwitchCase="'liquidtestnet'" class="network liquidtestnet"><span class="name">Liquid Testnet</span><app-svg-images name="liquidtestnet" width="35" height="35" viewBox="0 0 125 125" style="display: inline-block" class="mainnet ml-2"></app-svg-images></span>
-            <span *ngSwitchDefault class="network mainnet"><span class="name">Bitcoin</span><app-svg-images name="bitcoin" width="35" height="35" viewBox="0 0 65 65" style="display: inline-block" class="mainnet ml-2"></app-svg-images></span>
+          <div [ngSwitch]="network" class="network-label" [class.hide-name]="enterpriseInfo?.header_img">
+            <span *ngSwitchCase="'signet'" class="network signet"><span class="name">Bitcoin Signet</span><app-svg-images name="signet" width="35" height="35" viewBox="0 0 65 65" style="display: inline-block" class="mainnet ms-2"></app-svg-images></span>
+            <span *ngSwitchCase="'testnet'" class="network testnet"><span class="name">Bitcoin Testnet3</span><app-svg-images name="testnet" width="35" height="35" viewBox="0 0 65 65" style="display: inline-block" class="mainnet ms-2"></app-svg-images></span>
+            <span *ngSwitchCase="'testnet4'" class="network testnet"><span class="name">Bitcoin Testnet4</span><app-svg-images name="testnet4" width="35" height="35" viewBox="0 0 65 65" style="display: inline-block" class="mainnet ms-2"></app-svg-images></span>
+            <span *ngSwitchCase="'liquid'" class="network liquid"><span class="name">Liquid</span><app-svg-images name="liquid" width="35" height="35" viewBox="0 0 125 125" style="display: inline-block" class="mainnet ms-2"></app-svg-images></span>
+            <span *ngSwitchCase="'liquidtestnet'" class="network liquidtestnet"><span class="name">Liquid Testnet</span><app-svg-images name="liquidtestnet" width="35" height="35" viewBox="0 0 125 125" style="display: inline-block" class="mainnet ms-2"></app-svg-images></span>
+            <span *ngSwitchDefault class="network mainnet"><span class="name">Bitcoin</span><app-svg-images name="bitcoin" width="35" height="35" viewBox="0 0 65 65" style="display: inline-block" class="mainnet ms-2"></app-svg-images></span>
           </div>
         }
       </div>

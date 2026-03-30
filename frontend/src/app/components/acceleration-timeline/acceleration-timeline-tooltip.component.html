@@ -11,11 +11,11 @@
         <td class="label" i18n="transaction.status|Transaction Status">Status</td>
         <td class="value">
           @if (accelerationInfo.status === 'seen') {
-          <span class="badge badge-primary" i18n="transaction.first-seen|Transaction first seen">First seen</span>
+          <span class="badge bg-primary" i18n="transaction.first-seen|Transaction first seen">First seen</span>
           } @else if (accelerationInfo.status === 'accelerated') {
           <span class="badge badge-accelerated" i18n="transaction.audit.accelerated">Accelerated</span>
           } @else if (accelerationInfo.status === 'mined') {
-          <span class="badge badge-success" i18n="transaction.rbf.mined">Mined</span>
+          <span class="badge bg-success" i18n="transaction.rbf.mined">Mined</span>
           }
         </td>
       </tr>
