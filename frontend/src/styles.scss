@@ -245,9 +245,27 @@ main {
 }
 
 .btn-purple {
-  background-color: var(--tertiary);
-  border-color: var(--tertiary);
-  color: #fff;
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--tertiary);
+  --bs-btn-border-color: var(--tertiary);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--search-button-focus);
+  --bs-btn-hover-border-color: var(--search-button);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--search-button);
+  --bs-btn-active-border-color: var(--search-button-border);
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: var(--tertiary);
+  --bs-btn-disabled-border-color: var(--tertiary);
+  background-color: var(--bs-btn-bg);
+  border-color: var(--bs-btn-border-color);
+  color: var(--bs-btn-color);
+}
+
+.btn-purple.disabled, .btn-purple:disabled {
+  background-color: var(--bs-btn-disabled-bg);
+  border-color: var(--bs-btn-disabled-border-color);
+  color: var(--bs-btn-disabled-color);
 }
 
 .btn-purple:not(:disabled):not(.disabled):active, .btn-purple:not(:disabled):not(.disabled).active, .show > .btn-purple.dropdown-toggle {
