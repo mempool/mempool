@@ -1,7 +1,7 @@
 .rbf-tooltip {
   position: fixed;
   z-index: 3;
-  background: color-mix(in srgb, var(--active-bg) 95%, transparent);
+	background: color-mix(in srgb, #11131f 95%, transparent);
   border-radius: 4px;
   box-shadow: 1px 1px 10px rgba(0,0,0,0.5);
   color: var(--tooltip-grey);
@@ -11,6 +11,8 @@
   padding: 10px 15px;
   text-align: left;
   pointer-events: none;
+  --link-color: #1bd8f4;
+  --link-hover-color: #09a3ba;
 
   .badge {
     margin-right: 1em;
@@ -18,6 +20,10 @@
       margin-right: 0;
     }
   }
+}
+
+.rbf-tooltip ::ng-deep .symbol {
+  color: #ffffff66;
 }
 
 .td-width {

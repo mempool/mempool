@@ -36,32 +36,32 @@
       </tr>
       <tr>
         <td class="label" i18n="dashboard.latest-transactions.amount">Amount</td>
-        <td class="value"><app-amount [blockConversion]="blockConversion" [satoshis]="value" [noFiat]="true"></app-amount></td>
+        <td class="value"><app-amount [blockConversion]="blockConversion" [satoshis]="value" [noFiat]="true" [unitStyle]="{color: '#ffffff66'}"></app-amount></td>
       </tr>
       <tr>
         <td class="label" i18n="transaction.fee|Transaction fee">Fee</td>
-        <td class="value">{{ fee | number }} <span class="symbol" i18n="shared.sats">sats</span> &nbsp; <span class="fiat"><app-fiat [blockConversion]="blockConversion" [value]="fee"></app-fiat></span>
+        <td class="value">{{ fee | number }} <span class="symbol" [style.color]="'#ffffff66'" i18n="shared.sats">sats</span> &nbsp; <span class="fiat"><app-fiat [blockConversion]="blockConversion" [value]="fee"></app-fiat></span>
       </tr>
       <tr>
         <td class="label" i18n="transaction.fee-rate|Transaction fee rate">Fee rate</td>
         <td class="value">
-          <app-fee-rate [fee]="feeRate"></app-fee-rate>
+          <app-fee-rate [fee]="feeRate" [unitStyle]="'color: #ffffff66'"></app-fee-rate>
         </td>
       </tr>
       <tr *ngIf="hasEffectiveRate && effectiveRate != null">
         <td *ngIf="!this.acceleration" class="label" i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
         <td *ngIf="this.acceleration" class="label" i18n="transaction.accelerated-fee-rate|Accelerated transaction fee rate">Accelerated fee rate</td>
         <td class="value" [class.oobFees]="this.acceleration">
-          <app-fee-rate [fee]="effectiveRate"></app-fee-rate>
+          <app-fee-rate [fee]="effectiveRate" [unitStyle]="'color: #ffffff66'"></app-fee-rate>
         </td>
       </tr>
       <tr *only-vsize>
         <td class="label" i18n="transaction.vsize|Transaction Virtual Size">Virtual size</td>
-        <td class="value" [innerHTML]="'&lrm;' + (vsize | vbytes: 2)"></td>
+        <td class="value fixed-unit-color" [innerHTML]="'&lrm;' + (vsize | vbytes: 2)"></td>
       </tr>
       <tr *only-weight>
         <td class="label" i18n="transaction.weight|Transaction Weight">Weight</td>
-        <td class="value" [innerHTML]="'&lrm;' + ((vsize * 4) | wuBytes: 2)"></td>
+        <td class="value fixed-unit-color" [innerHTML]="'&lrm;' + ((vsize * 4) | wuBytes: 2)"></td>
       </tr>
       <tr *ngIf="auditEnabled && tx && tx.status && tx.status.length">
         <td class="label" i18n="transaction.audit-status">Audit status</td>

@@ -1,6 +1,6 @@
 .block-overview-tooltip {
   position: absolute;
-	background: color-mix(in srgb, var(--active-bg) 95%, transparent);
+	background: color-mix(in srgb, #11131f 95%, transparent);
   border-radius: 4px;
   box-shadow: 1px 1px 10px rgba(0,0,0,0.5);
   color: var(--tooltip-grey);
@@ -13,10 +13,16 @@
   max-width: 400px;
   pointer-events: none;
   z-index: 11;
+  --link-color: #1bd8f4;
+  --link-hover-color: #09a3ba;
 
   &.clickable {
     pointer-events: all;
   }
+}
+
+.block-overview-tooltip ::ng-deep .fixed-unit-color .symbol {
+  color: #ffffff66;
 }
 
 th, td {
