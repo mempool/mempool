@@ -170,7 +170,7 @@ export class BlockRewardsGraphComponent implements OnInit {
             }
           }
 
-          tooltip += `<small>* On average around block ${data[0].data[2]}</small>`;
+          tooltip += `<small>${$localize`:@@graphs.blockRewards.avgBlock:* On average around block ${data[0].data[2]}:BLOCK:`}</small>`;
           return tooltip;
         }.bind(this)
       },
@@ -185,7 +185,7 @@ export class BlockRewardsGraphComponent implements OnInit {
       legend: data.blockRewards.length === 0 ? undefined : {
         data: [
           {
-            name: 'Rewards BTC',
+            name: $localize`:@@graphs.blockRewards.rewardsBtc:Rewards BTC`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -193,7 +193,7 @@ export class BlockRewardsGraphComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: 'Rewards ' + this.currency,
+            name: $localize`:@@graphs.blockRewards.rewardsFiat:Rewards ${this.currency}:currency:`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -250,7 +250,7 @@ export class BlockRewardsGraphComponent implements OnInit {
           legendHoverLink: false,
           zlevel: 0,
           yAxisIndex: 0,
-          name: 'Rewards BTC',
+          name: $localize`:@@graphs.blockRewards.rewardsBtc:Rewards BTC`,
           data: data.blockRewards,
           type: 'line',
           smooth: 0.25,
@@ -260,7 +260,7 @@ export class BlockRewardsGraphComponent implements OnInit {
           legendHoverLink: false,
           zlevel: 1,
           yAxisIndex: 1,
-          name: 'Rewards ' + this.currency,
+          name: $localize`:@@graphs.blockRewards.rewardsFiat:Rewards ${this.currency}:currency:`,
           data: data.blockRewardsFiat,
           type: 'line',
           smooth: 0.25,
