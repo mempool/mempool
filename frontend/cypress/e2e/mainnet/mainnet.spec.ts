@@ -229,15 +229,18 @@ describe('Mainnet', () => {
           cy.get('.alert-mempool').should('exist');
           cy.get('.poison-alert').its('length').should('equal', 2);
 
-          cy.get('.poison-alert').parent().find('.address-content').should('have.length', 2).then(($containers) => {
-            const prefixes = $containers.map((i, el) => Cypress.$(el).find('.prefix').text()).get();
-            const infixes = $containers.map((i, el) => Cypress.$(el).find('.infix').text()).get().sort();
+          cy.get('.prefix')
+            .should('have.length', 2)
+            .each(($el) => {
+              cy.wrap($el).should('have.text', prefix);
+            });
 
-            expect(prefixes).to.have.length(2);
-            prefixes.forEach((p) => expect(p).to.equal(prefix));
-
-            expect(infixes).to.deep.equal([infix1, infix2].sort());
-          });
+          cy.get('.infix')
+            .should('have.length', 2)
+            .then(($infixes) => {
+              cy.wrap($infixes[0]).should('have.text', infix1);
+              cy.wrap($infixes[1]).should('have.text', infix2);
+            });
         });
 
         it('highlights potential address poisoning attacks on inputs and outputs, prefix, infix and postfix', () => {
@@ -253,17 +256,26 @@ describe('Mainnet', () => {
           cy.get('.alert-mempool').should('exist');
           cy.get('.poison-alert').its('length').should('equal', 2);
 
-          cy.get('.poison-alert').parent().find('.address-content').should('have.length', 2).then(($containers) => {
-            const prefixes = $containers.map((i, el) => Cypress.$(el).find('.prefix').text()).get();
-            const infixes = $containers.map((i, el) => Cypress.$(el).find('.infix').text()).get().sort();
-            const postfixes = $containers.map((i, el) => Cypress.$(el).find('.postfix').text()).get().sort();
+          cy.get('.prefix')
+            .should('have.length', 2)
+            .each(($el) => {
+              cy.wrap($el).should('have.text', prefix);
+            });
 
-            expect(prefixes).to.have.length(2);
-            prefixes.forEach((p) => expect(p).to.equal(prefix));
+          cy.get('.infix')
+            .should('have.length', 2)
+            .then(($infixes) => {
+              cy.wrap($infixes[0]).should('have.text', infix1);
+              cy.wrap($infixes[1]).should('have.text', infix2);
+            });
 
-            expect(infixes).to.deep.equal([infix1, infix2].sort());
-            expect(postfixes).to.deep.equal([postfix1, postfix2].sort());
-          });
+            cy.get('.postfix')
+            .should('have.length', 2)
+            .then(($postfixes) => {
+              cy.wrap($postfixes[0]).should('include.text', postfix1);
+              cy.wrap($postfixes[1]).should('include.text', postfix2);
+            });
+
         });
       });
 
