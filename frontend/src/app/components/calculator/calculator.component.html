@@ -5,8 +5,8 @@
 
   <ng-container *ngIf="(price$ | async) !== undefined; else loading">
 
-    <div class="row justify-content-center align-item-center mb-3">
-      <div class="input-group-prepend">
+    <div class="row calculator-row justify-content-center align-item-center mb-3">
+      <div class="input-group calculator-date-group">
         <input
           class="form-control flex-grow-1 disabled"
           style="max-width: 125px"
@@ -20,38 +20,30 @@
           [maxDate]="todayDateModel"
           [dayTemplate]="dayTemplate"
         />
-        <button class="btn btn-outline-secondary text-light" (click)="startDate.toggle()" type="button"><fa-icon [icon]="['fas', 'calendar']"></fa-icon></button>
+        <button class="btn btn-outline-secondary" (click)="startDate.toggle()" type="button"><fa-icon [icon]="['fas', 'calendar']"></fa-icon></button>
       </div>
     </div>
 
-    <div class="row justify-content-center">
-
-      <form [formGroup]="form">
+    <div class="row calculator-row justify-content-center">
+      <form [formGroup]="form" class="calculator-form">
         <div class="input-group input-group-lg mb-1">
-          <div class="input-group-prepend">
-            <span class="input-group-text">{{ currency$ | async }}</span>
-          </div>
+          <span class="input-group-text">{{ currency$ | async }}</span>
           <input type="text" inputmode="decimal" class="form-control" formControlName="fiat" (input)="transformInput('fiat')" (click)="selectAll($event)">
-          <app-clipboard [button]="true" [text]="form.get('fiat').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
+          <app-clipboard [button]="true" [text]="form.get('fiat').value" [class]="'btn btn-lg btn-secondary ms-1'"></app-clipboard>
         </div>
 
         <div class="input-group input-group-lg mb-1">
-          <div class="input-group-prepend">
-            <span class="input-group-text">BTC</span>
-          </div>
+          <span class="input-group-text">BTC</span>
           <input type="text" inputmode="decimal" class="form-control" formControlName="bitcoin" (input)="transformInput('bitcoin')" (click)="selectAll($event)">
-          <app-clipboard [button]="true" [text]="form.get('bitcoin').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
+          <app-clipboard [button]="true" [text]="form.get('bitcoin').value" [class]="'btn btn-lg btn-secondary ms-1'"></app-clipboard>
         </div>
 
         <div class="input-group input-group-lg mb-1">
-          <div class="input-group-prepend">
-            <span class="input-group-text" i18n="shared.sats">sats</span>
-          </div>
+          <span class="input-group-text" i18n="shared.sats">sats</span>
           <input type="text" inputmode="numeric" class="form-control" formControlName="satoshis" (input)="transformInput('satoshis')" (click)="selectAll($event)">
-          <app-clipboard [button]="true" [text]="form.get('satoshis').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
+          <app-clipboard [button]="true" [text]="form.get('satoshis').value" [class]="'btn btn-lg btn-secondary ms-1'"></app-clipboard>
         </div>
       </form>
-
     </div>
 
     <div class="row justify-content-center mt-3" *ngIf="isMaxSupply">
@@ -62,7 +54,7 @@
 
     <br>
 
-    <div class="row justify-content-center">
+    <div class="row calculator-inline-row justify-content-center">
       <div class="bitcoin-satoshis-text">
         ₿
          <span [innerHTML]="form.get('bitcoin').value | bitcoinsatoshis"></span> 
@@ -70,13 +62,13 @@
       </div>
     </div>
 
-    <div class="row justify-content-center">
+    <div class="row calculator-inline-row justify-content-center">
       <div class="fiat-text">
         <app-fiat [value]="form.get('satoshis').value" digitsInfo="1.2-2" [blockConversion]="blockConversion"></app-fiat>
       </div>
     </div>
 
-    <div class="row justify-content-center mt-3">
+    <div class="row calculator-inline-row justify-content-center mt-3">
       <div class="symbol" *ngIf="{ value: (price$ | async) } as priceData">
         @if (todaySelected) {
           <span>Fiat price last updated <app-time kind="since" [time]="lastFiatPrice$ | async" [fastRender]="true"></app-time>: {{ priceData.value | fiatCurrency : '1.0-0' : (currency$ | async) }}</span>
@@ -87,8 +79,6 @@
         }
       </div>
     </div>
-
-
   </ng-container>
 
   <ng-template #loading>

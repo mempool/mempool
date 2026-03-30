@@ -9,7 +9,7 @@ footer {
 }
 
 footer a {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--footer-fg);
 }
 
 footer p {
@@ -114,6 +114,12 @@ footer .row.social-links a {
 footer .row.social-links svg {
   width: 20px;
   margin: 10px 0 10px 0;
+  fill: var(--fg);
+}
+
+footer .row.social-links svg * {
+  fill: var(--fg) !important;
+  stroke: var(--fg) !important;
 }
 
 footer .row.version {
@@ -126,7 +132,7 @@ footer .row.version p {
   margin-bottom: 0;
   text-align: center;
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--footer-fg);
 }
 
 footer .row.version p a {
@@ -359,4 +365,16 @@ footer .nowrap {
 .beta-network {
   font-size: 8px;
   margin-left: 1em;
+}
+
+.col-md-12 {
+  padding-left: 15px;
+  padding-right: 15px;
+
+  &.row>* {
+    padding-right: 0;
+    padding-left: 0;
+    flex-shrink: unset;
+    width: unset;
+  }
 }

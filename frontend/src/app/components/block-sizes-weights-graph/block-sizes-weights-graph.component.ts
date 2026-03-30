@@ -188,7 +188,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
             name: $localize`:@@7faaaa08f56427999f3be41df1093ce4089bbd75:Size`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           },
@@ -196,7 +196,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
             name: $localize`:@@919f2fd60a898850c24b1584362bbf18a4628bcb:Weight`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           },
@@ -204,7 +204,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
             name: $localize`Size per weight`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           },
@@ -262,7 +262,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
               label: {
                 position: 'end',
                 show: true,
-                color: '#ffffff',
+                color: 'var(--fg)',
                 formatter: `1 MB`
               }
             }],

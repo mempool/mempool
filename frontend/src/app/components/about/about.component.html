@@ -2,7 +2,11 @@
 
   <div class="intro">
     <span style="margin-left: auto; margin-right: -20px; margin-bottom: -20px">&reg;</span>
-    <img class="logo" src="/resources/mempool-logo-bigger.png" />
+    @if (isLightMode) {
+      <img class="logo" src="/resources/mempool-logo-bigger-light.png" />
+    } @else {
+       <img class="logo" src="/resources/mempool-logo-bigger.png" />
+    }
     <div class="version">
       <span>v{{ packetJsonVersion }} [<a href="https://github.com/mempool/mempool/commit/{{ frontendGitCommitHash }}">{{ frontendGitCommitHash }}</a>]</span>
       <span *ngIf="stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE">[{{ stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE }}]</span>
@@ -126,13 +130,23 @@
         <span>Blockstream</span>
       </a>
       <a href="https://unchained.com/" target="_blank" title="Unchained">
-        <svg id="Layer_1" width="78" height="78" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 156.68 156.68" class="image">
+        @if (isLightMode) {
+          <svg id="Layer_1" width="78" height="78" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 156.68 156.68" class="image">
+            <defs><style>.cls-bg{fill:#fff;}.cls-navy{fill:#002851;}.cls-cyan{fill:#0095d6;}.cls-star{fill:#fff;}</style></defs><ellipse class="cls-bg" cx="78.339596" cy="78.612736" rx="77.418334" ry="77.876421"/><path class="cls-cyan" d="M57.026351 111.292873C49.100201 123.36854 43.017302 135.026662 38.386035 145.479803C50.044884 152.548978 63.731367 156.604891 78.339435 156.604891C121.172597 156.604891 155.895792 121.676557 155.895792 78.589396C155.895792 77.175561 155.849758 75.761726 155.781109 74.347971H147.024797C118.454118 74.347971 81.726388 73.629424 57.026351 111.269452V111.292873Z"/><path class="cls-navy" d="M155.067165 67.255617H110.965783C57.671808 67.255617 27.211439 90.989083 9.976639 115.487697C4.101107 104.501522 0.78318 91.939662 0.78318 78.612575C0.78318 35.525575 35.506272 0.597046 78.339758 0.597046C117.325053 0.597046 149.605979 29.545729 155.067165 67.255617Z"/><path class="cls-star" d="M78.938938 20.552782L80.321437 24.840645C81.841879 29.49929 85.48267 33.161322 90.113614 34.691052L94.376279 36.081708C94.837435 36.243961 94.837435 36.89289 94.376279 37.031964L90.113614 38.42262C85.48267 39.95235 81.841879 43.614382 80.321437 48.273108L78.938938 52.56089C78.777654 53.024469 78.13252 53.024469 77.994254 52.56089L76.611836 48.273108C75.091071 43.614382 71.450603 39.95235 66.819336 38.42262L62.556671 37.031964C62.095838 36.869711 62.095838 36.220782 62.556671 36.081708L66.819336 34.691052C71.450603 33.161322 75.091071 29.49929 76.611836 24.840645L77.994254 20.552782C78.155538 20.089203 78.800752 20.089203 78.938938 20.552782V20.552782Z"/>
+          </svg>
+        } @else {
+           <svg id="Layer_1" width="78" height="78" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 156.68 156.68" class="image">
           <defs><style>.cls-unchained-1{fill:#fff;}</style></defs><path class="cls-unchained-1" d="m78.34,0C35.07,0,0,35.07,0,78.34s35.07,78.34,78.34,78.34,78.34-35.07,78.34-78.34S121.6,0,78.34,0ZM20.23,109.5c-4.99-9.28-7.81-19.89-7.81-31.16C12.42,41.93,41.93,12.42,78.34,12.42c33.15,0,60.58,24.46,65.23,56.32h-37.48c-45.29,0-71.19,20.05-85.85,40.76Zm58.11,34.76c-12.42,0-24.04-3.44-33.96-9.41,3.94-8.85,9.11-18.7,15.84-28.9,20.99-31.8,52.2-31.19,76.49-31.19h7.45c.06,1.18.1,2.38.1,3.58,0,36.41-29.51,65.92-65.92,65.92Z"/><path class="cls-unchained-1" d="m91.98,42.4l-3.62-1.18c-3.94-1.29-7.03-4.38-8.32-8.32l-1.18-3.63c-.13-.39-.68-.39-.81,0l-1.18,3.63c-1.29,3.94-4.38,7.03-8.32,8.32l-3.62,1.18c-.39.13-.39.68,0,.81l3.62,1.18c3.94,1.29,7.03,4.38,8.32,8.32l1.18,3.63c.13.39.68.39.81,0l1.18-3.63c1.29-3.94,4.38-7.03,8.32-8.32l3.62-1.18c.39-.13.39-.68,0-.81Z"/>
         </svg>
+        }
         <span>Unchained</span>
       </a>
       <a href="https://bitkey.world/" target="_blank" title="Bitkey">
-        <img class="image" src="/resources/profile/bitkey.svg" />
+        @if (isLightMode) {
+          <img class="image" src="/resources/profile/bitkey-light.svg" />
+        } @else {
+          <img class="image" src="/resources/profile/bitkey.svg" />
+        }
         <span>Bitkey</span>
       </a>
       <a href="https://metaplanet.jp" target="_blank" title="Metaplanet">
@@ -212,11 +226,19 @@
         <span>Onramp Bitcoin</span>
       </a>
       <a href="https://cakewallet.com/" target="_blank" title="Cake Wallet">
-        <img class="image not-rounded" src="/resources/profile/cake-wallet.svg" />
+        @if (isLightMode) {
+          <img class="image not-rounded" src="/resources/profile/cake-wallet-light.svg" />
+        } @else {
+          <img class="image not-rounded" src="/resources/profile/cake-wallet.svg" />
+        }
         <span>Cake Wallet</span>
       </a>
       <a href="https://leather.io/" target="_blank" title="Leather">
-        <img class="image" src="/resources/profile/leather.svg" />
+        @if (isLightMode) {
+          <img class="image" src="/resources/profile/leather-light.svg" />
+        } @else {
+          <img class="image" src="/resources/profile/leather.svg" />
+        }
         <span>Leather</span>
       </a>
 
@@ -294,7 +316,11 @@
         <span>NixOS</span>
       </a>
       <a href="https://github.com/Start9Labs/start-os" target="_blank" title="StartOS">
-        <img class="image" src="/resources/profile/start9.png" />
+        @if (isLightMode) {
+          <img class="image" src="/resources/profile/start9-light.png" />
+        } @else {
+          <img class="image" src="/resources/profile/start9.png" />
+        }
         <span>StartOS</span>
       </a>
       <a href="https://github.com/btcpayserver/btcpayserver" target="_blank" title="BTCPay Server">
@@ -384,13 +410,21 @@
     <h3 i18n="about.alliances">Community Alliances</h3>
     <div class="wrapper">
       <a href="https://liquid.net/" title="Liquid Network">
-        <img class="liquid" src="/resources/profile/liquid.svg" />
+        @if (isLightMode) {
+          <img class="liquid" src="/resources/profile/liquid-light.svg" />
+        } @else {
+          <img class="liquid" src="/resources/profile/liquid.svg" />
+        }
       </a>
       <a href="https://opencrypto.org/" title="Copa - Crypto Open Patent Alliance">
         <img class="copa" src="/resources/profile/copa.png" />
       </a>
       <a href="https://bitcoin.gob.sv" title="Oficina Nacional del Bitcoin">
-        <img class="sv" src="/resources/profile/onbtc-full.svg" />
+        @if (isLightMode) {
+          <img class="sv" src="/resources/profile/onbtc-full-light.svg" />
+        } @else {
+          <img class="sv" src="/resources/profile/onbtc-full.svg" />
+        }
       </a>
     </div>
   </div>
@@ -439,7 +473,11 @@
     <h3 i18n="about.powered-by">Powered By</h3>
     <div class="wrapper">
         <a href="https://wiz.biz" target="_blank" title="wiz & associates">
-          <img class="wiz-logo" src="/resources/wiz.png" />
+          @if (isLightMode) {
+            <img class="wiz-logo" src="/resources/wiz-light.png" />
+          } @else {
+            <img class="wiz-logo" src="/resources/wiz.png" />
+          }
         </a>
     </div>
     <br>
@@ -447,7 +485,11 @@
     <h3 i18n="about.managed-by">Managed By</h3>
     <div class="wrapper">
         <a href="https://mempool.holdings" target="_blank" title="Mempool Holdings">
-          <img class="wiz-logo" src="/resources/mempool-holdings.png" />
+          @if (isLightMode) {
+            <img class="wiz-logo" src="/resources/mempool-holdings-light.png" />
+          } @else {
+            <img class="wiz-logo" src="/resources/mempool-holdings.png" />
+          }
         </a>
     </div>
   </div>

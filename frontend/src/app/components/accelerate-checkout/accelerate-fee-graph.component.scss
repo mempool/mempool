@@ -50,7 +50,7 @@
         right: 0;
         top: 0;
         left: -4.5em;
-        border-top: dashed white 1.5px;
+        border-top: dashed var(--fg) 1.5px;
 
         .fee-rate {
           width: 100%;
@@ -68,7 +68,7 @@
           }
 
           .rate .symbol {
-            color: white;
+            color: var(--fg);
           }
         }
       }

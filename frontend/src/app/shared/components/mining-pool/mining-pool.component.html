@@ -1,0 +1,9 @@
+<img class="mining-pool-logo" [ngClass]="logoClass" [src]="logoSrc" [alt]="logoAlt" [style]="logoStyle" (error)="onImageError($event)">
+
+@if (showName) {
+  @if (searchText) {
+  <ngb-highlight class="mining-pool-name" [ngClass]="textClass" [result]="name" [term]="searchText" [style]="textStyle"></ngb-highlight>
+  } @else {
+  <span class="mining-pool-name" [ngClass]="textClass" [style]="textStyle">{{ name }}</span>
+  }
+}

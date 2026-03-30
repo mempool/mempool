@@ -174,7 +174,7 @@ export class HashrateChartPoolsComponent implements OnInit {
         name: name,
         inactiveColor: 'rgb(110, 112, 121)',
         textStyle: {
-          color: 'white',
+          color: 'var(--fg)',
         },
         icon: 'roundRect',
         itemStyle: {

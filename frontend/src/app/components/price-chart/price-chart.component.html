@@ -22,7 +22,7 @@
   <div class="card-header mb-0 mb-md-4" [style]="widget ? 'display:none' : ''">
     <div class="d-flex d-md-block align-items-baseline">
       <span i18n="price-chart.title">Bitcoin Price</span>
-      <button class="btn p-0 pl-2" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
+      <button class="btn p-0 ps-2" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
         <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
       </button>
     </div>  
@@ -30,25 +30,25 @@
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="pricesObservable$ | async">
       <div class="btn-group btn-group-toggle" name="radioBasic">
         <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '1m'">
-          <input type="radio" [value]="'1m'" fragment="1m" [routerLink]="['/graphs/price' | relativeUrl]" formControlName="dateSpan"> 1M
+          <input type="radio" class="btn-check" [value]="'1m'" fragment="1m" [routerLink]="['/graphs/price' | relativeUrl]" formControlName="dateSpan"> 1M
         </label>
         <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '3m'">
-          <input type="radio" [value]="'3m'" fragment="3m" [routerLink]="['/graphs/price' | relativeUrl]" formControlName="dateSpan"> 3M
+          <input type="radio" class="btn-check" [value]="'3m'" fragment="3m" [routerLink]="['/graphs/price' | relativeUrl]" formControlName="dateSpan"> 3M
         </label>
         <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '6m'">
-          <input type="radio" [value]="'6m'" fragment="6m" [routerLink]="['/graphs/price' | relativeUrl]" formControlName="dateSpan"> 6M
+          <input type="radio" class="btn-check" [value]="'6m'" fragment="6m" [routerLink]="['/graphs/price' | relativeUrl]" formControlName="dateSpan"> 6M
         </label>
         <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '1y'">
-          <input type="radio" [value]="'1y'" fragment="1y" [routerLink]="['/graphs/price' | relativeUrl]" formControlName="dateSpan"> 1Y
+          <input type="radio" class="btn-check" [value]="'1y'" fragment="1y" [routerLink]="['/graphs/price' | relativeUrl]" formControlName="dateSpan"> 1Y
         </label>
         <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '2y'">
-          <input type="radio" [value]="'2y'" fragment="2y" [routerLink]="['/graphs/price' | relativeUrl]" formControlName="dateSpan"> 2Y
+          <input type="radio" class="btn-check" [value]="'2y'" fragment="2y" [routerLink]="['/graphs/price' | relativeUrl]" formControlName="dateSpan"> 2Y
         </label>
         <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '3y'">
-          <input type="radio" [value]="'3y'" fragment="3y" [routerLink]="['/graphs/price' | relativeUrl]" formControlName="dateSpan"> 3Y
+          <input type="radio" class="btn-check" [value]="'3y'" fragment="3y" [routerLink]="['/graphs/price' | relativeUrl]" formControlName="dateSpan"> 3Y
         </label>
         <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === 'all'">
-          <input type="radio" [value]="'all'" fragment="all" [routerLink]="['/graphs/price' | relativeUrl]" formControlName="dateSpan"> ALL
+          <input type="radio" class="btn-check" [value]="'all'" fragment="all" [routerLink]="['/graphs/price' | relativeUrl]" formControlName="dateSpan"> ALL
         </label>
       </div>
     </form>

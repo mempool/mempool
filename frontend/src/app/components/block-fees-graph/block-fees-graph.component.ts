@@ -192,7 +192,7 @@ export class BlockFeesGraphComponent implements OnInit {
             name: feesBtcLabel,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           },
@@ -200,7 +200,7 @@ export class BlockFeesGraphComponent implements OnInit {
             name: feesFiatLabel,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           },

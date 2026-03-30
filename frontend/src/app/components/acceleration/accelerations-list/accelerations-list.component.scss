@@ -83,14 +83,6 @@ tr, td, th {
   @media (max-width: 700px) {
     display: none;
   }
-
-  .pool-logo {
-    width: 18px;
-    height: 18px;
-    position: relative;
-    top: -1px;
-    margin-right: 2px;
-  }
 }
 
 .status {
@@ -189,7 +181,7 @@ tr, td, th {
 }
 
 .no-data {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--transparent-fg);
   display: flex;
   height: 280px;
   width: 100%;

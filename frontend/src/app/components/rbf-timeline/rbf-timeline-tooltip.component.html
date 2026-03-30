@@ -19,23 +19,23 @@
       </tr>
       <tr>
         <td class="td-width" i18n="transaction.fee|Transaction fee">Fee</td>
-        <td>{{ rbfInfo.tx.fee | number }} <span class="symbol" i18n="shared.sats">sats</span></td>
+        <td>{{ rbfInfo.tx.fee | number }} <span class="symbol" [style.color]="'#ffffff66'" i18n="shared.sats">sats</span></td>
       </tr>
       <tr *only-vsize>
         <td class="td-width" i18n="transaction.vsize|Transaction Virtual Size">Virtual size</td>
-        <td [innerHTML]="'&lrm;' + (rbfInfo.tx.vsize | vbytes: 2)"></td>
+        <td class="fixed-unit-color" [innerHTML]="'&lrm;' + (rbfInfo.tx.vsize | vbytes: 2)"></td>
       </tr>
       <tr *only-weight>
         <td class="td-width" i18n="transaction.weight|Transaction Weight">Weight</td>
-        <td [innerHTML]="'&lrm;' + (rbfInfo.tx.vsize * 4 | vbytes: 2)"></td>
+        <td class="fixed-unit-color" [innerHTML]="'&lrm;' + (rbfInfo.tx.vsize * 4 | vbytes: 2)"></td>
       </tr>
       <tr>
         <td class="td-width" i18n="transaction.status|Transaction Status">Status</td>
         <td>
-          <span *ngIf="rbfInfo.tx.fullRbf" class="badge badge-info" i18n="transaction.full-rbf">Full RBF</span>
-          <span *ngIf="rbfInfo.tx.rbf; else rbfDisabled" class="badge badge-success" i18n="tx-features.tag.rbf|RBF">RBF</span>
-          <ng-template #rbfDisabled><span class="badge badge-danger mr-1"><del i18n="tx-features.tag.rbf|RBF">RBF</del></span></ng-template>
-          <span *ngIf="rbfInfo.tx.mined" class="badge badge-success" i18n="transaction.rbf.mined">Mined</span>
+          <span *ngIf="rbfInfo.tx.fullRbf" class="badge bg-info" i18n="transaction.full-rbf">Full RBF</span>
+          <span *ngIf="rbfInfo.tx.rbf; else rbfDisabled" class="badge bg-success" i18n="tx-features.tag.rbf|RBF">RBF</span>
+          <ng-template #rbfDisabled><span class="badge bg-danger me-1"><del i18n="tx-features.tag.rbf|RBF">RBF</del></span></ng-template>
+          <span *ngIf="rbfInfo.tx.mined" class="badge bg-success" i18n="transaction.rbf.mined">Mined</span>
         </td>
       </tr>
     </tbody>

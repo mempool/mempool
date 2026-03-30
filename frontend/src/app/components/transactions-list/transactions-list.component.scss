@@ -145,7 +145,7 @@
 
 .sig-overflow {
 	// background-color: var(--tertiary);
-	color: white;
+	color: var(--fg);
 	border-radius: 50%;
 	font-size: 10px;
 	font-weight: bold;
@@ -283,7 +283,7 @@ h2 {
 }
 
 .sigged {
-	background-color: #ffffff22;
+	background-color: color-mix(in srgb, var(--fg) 12%, transparent);
 }
 
 .summary {
@@ -332,13 +332,17 @@ h2 {
 }
 
 .badge-ord {
-	background-color: var(--grey);
+	--bs-btn-bg: var(--grey);
+	--bs-btn-border-color: transparent;
+	background-color: var(--bs-btn-bg);
+	border-color: var(--bs-btn-border-color);
+	color: var(--fg);
 	position: relative;
 	top: -2px;
 	font-size: 81%;
 	border: 0;
 	&.primary {
-		background-color: var(--primary);
+		--bs-btn-bg: var(--primary);
 	}
 }
 
@@ -365,13 +369,13 @@ h2 {
 }
 
 .merkle-branch:nth-child(2n + 1), .internal-key	{
-	color: #cccccc;
+	color: var(--transparent-fg);
 	font-weight: 500;
 }
 
 .merkle-branch, .internal-key, .leaf-version {
 	&:hover {
-		color: white;
+		color: var(--fg);
 		font-weight: 600;
 	}
 }
@@ -391,7 +395,7 @@ h2 {
 		white-space: nowrap;
 
 		&:first-child {
-			color: white;
+			color: var(--fg);
 			width: 50%;
 			white-space: nowrap;
 		}

@@ -13,6 +13,7 @@ import { EnterpriseService } from '@app/services/enterprise.service';
 import { ApiService } from '@app/services/api.service';
 import { isDevMode } from '@angular/core';
 import { StorageService } from '@app/services/storage.service';
+import { ThemeService } from '../../services/theme.service';
 
 export type PaymentMethod = 'balance' | 'bitcoin' | 'cashapp' | 'applePay' | 'googlePay' | 'cardOnFile';
 
@@ -133,6 +134,9 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   loadingBtcpayInvoice = false;
   invoice = undefined;
 
+  themeStateSubscription: Subscription;
+  loadedTheme = 'default';
+
   constructor(
     public stateService: StateService,
     private apiService: ApiService,
@@ -142,7 +146,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef,
     private authService: AuthServiceMempool,
     private enterpriseService: EnterpriseService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private themeService: ThemeService,
   ) {
     this.isProdDomain = this.stateService.isProdDomain;
 
@@ -183,6 +188,14 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         this.conversions = conversions;
       }
     );
+
+    this.themeStateSubscription = this.themeService.themeState$.subscribe((state) => {
+      if (state.loading) {
+        return;
+      }
+      this.loadedTheme = state.theme;
+      this.cd.markForCheck();
+    });
   }
 
   ngOnDestroy(): void {
@@ -191,6 +204,9 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     }
     if (this.authSubscription$) {
       this.authSubscription$.unsubscribe();
+    }
+    if (this.themeStateSubscription) {
+      this.themeStateSubscription.unsubscribe();
     }
   }
 
@@ -1090,6 +1106,10 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
   get timeSincePaid(): number {
     return Date.now() - this.timePaid;
+  }
+
+  get isLightMode(): boolean {
+    return this.loadedTheme === 'nymkappa';
   }
 
   @HostListener('window:resize', ['$event'])

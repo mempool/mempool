@@ -225,7 +225,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
             name: this.totalBidBoostLabel,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             itemStyle: {
               color: '#FFB300',
@@ -236,7 +236,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
             name: this.acceleratedLabel,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           },
