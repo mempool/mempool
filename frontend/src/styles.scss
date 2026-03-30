@@ -97,6 +97,8 @@ $dropdown-link-active-bg: $active-bg;
   --hover-bg: #{$hover-bg};
   --fg: #{$fg};
   --nav-bg: #{$nav-bg};
+  --nav-icon: #fff;
+  --nav-shadow: #000;
   --title-fg: #{$title-fg};
 
   --primary: #{$primary};
@@ -112,9 +114,17 @@ $dropdown-link-active-bg: $active-bg;
 
   --box-bg: #171c2a;
   --stat-box-bg: #0b1018;
+  --border-subtle: rgba(255, 255, 255, 0.11);
+  --block-top: #232838;
+  --block-side: #191c27;
+  --block-goggles-overlay: #181b2d7f;
+  --mempool-block-top: #403834;
+  --mempool-block-side: #2d2825;
+  --mempool-block-loading: #554b45;
   --alert-bg: #3a1c61;
   --navbar-bg: #212121;
   --transparent-fg: #ffffffbb;
+  --footer-fg: rgba(255, 255, 255, 0.4);
   --fade-out-box-bg-start: rgba(23, 28, 42, 0);
   --fade-out-box-bg-end: rgba(23, 28, 42, 1);
   --opacity: 0.57;
@@ -148,6 +158,9 @@ $dropdown-link-active-bg: $active-bg;
   --search-button-focus: #533180;
   --search-button-shadow: #7c58ab80;
   
+  --bs-body-color: var(--fg);
+  --bs-body-bg: var(--active-bg);
+  --bs-card-color: var(--fg);
   --bs-border-radius: 0.25rem;
   --bs-btn-border-color: transparent;
   --bs-btn-disabled-border-color: transparent;
@@ -159,6 +172,7 @@ html, body {
 
 body {
   background-color: var(--active-bg);
+  color: var(--fg);
   padding-bottom: 60px;
 }
 
@@ -227,11 +241,13 @@ main {
 .form-control:focus {
   color: var(--fg);
   background-color: var(--secondary);
+  border-color: rgba(17, 19, 31, 0.2);
 }
 
 .btn-purple {
   background-color: var(--tertiary);
   border-color: var(--tertiary);
+  color: #fff;
 }
 
 .btn-purple:not(:disabled):not(.disabled):active, .btn-purple:not(:disabled):not(.disabled).active, .show > .btn-purple.dropdown-toggle {
@@ -254,7 +270,7 @@ main {
 }
 
 .form-control.form-control-secondary {
-  color: #fff;
+  color: var(--fg);
   background-color: var(--secondary);
   border: 1px solid var(--secondary);
 }
@@ -325,14 +341,14 @@ main {
 
 .progress-text {
   span {
-    color: #fff !important;
+    color: var(--fg) !important;
   }
 }
 
 .block-size, .blocks-container {
   .symbol {
     font-size: 16px;
-    color: #fff !important;
+    color: var(--fg) !important;
   }
 }
 
@@ -345,7 +361,7 @@ main {
   color: var(--fg);
   padding-top: 20px;
   padding-bottom: 10px;
-  border-top: 3px solid var(--fg);
+  border-top: 3px solid var(--nav-icon);
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -381,6 +397,8 @@ main {
 .table {
   margin-bottom: 0;
   font-size: 0.9rem;
+  color: var(--fg);
+  --bs-table-color: var(--fg);
   @media (min-width: 576px) {
     font-size: 1rem;
   }
@@ -488,6 +506,9 @@ html:lang(ru) .card-title {
     color: #fff;
     .total-value {
       float: right;
+      .symbol {
+        color: #ffffffbb;
+      }
     }
   }
   .active {
@@ -592,6 +613,11 @@ html:lang(ru) .card-title {
     padding-left: 0px;
     span {
       font-size: 10px;
+    }
+    .total-parcial-vbytes {
+      .symbol {
+        color: #ffffffbb;
+      }
     }
     .symbol {
       font-size: 9px;
@@ -1289,7 +1315,7 @@ th {
       display: block;
       width: 100%;
       padding: 1rem 2rem;
-      color: #fff;
+      color: var(--fg);
       font-weight: bold;
       &:focus, &:hover, &:active {
         text-decoration: none;
@@ -1346,6 +1372,7 @@ th {
     border: 1px solid var(--tertiary);
   }
   .page-item.disabled .page-link {
+    color: var(--transparent-fg);
     background-color: var(--bg);
     border: 1px solid var(--bg);
   }
@@ -1373,7 +1400,7 @@ th {
 }
 
 .blink-bg {
-  color: #fff;
+  color: var(--fg);
   background: repeating-linear-gradient($taproot-dark, $taproot-dark 0.163525%, $taproot-light 100%) !important;
   animation: shadowyBackground 1s infinite;
   box-shadow: -10px -15px 75px rgba($taproot, 1);
@@ -1414,13 +1441,17 @@ app-global-footer {
 }
 
 .info-link fa-icon {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--transparent-fg);
   margin-left: 5px;
 }
 
 .dropdown-menu {
   background-color: var(--bg);
   color: var(--fg);
+
+  .dropdown-item {
+    color: var(--fg);
+  }
   .dropdown-item:hover, .dropdown-item:focus {
     background-color: var(--active-bg);
     color: var(--fg);
@@ -1430,11 +1461,12 @@ app-global-footer {
 .btn-secondary {
   background-color: var(--secondary);
   border-color: var(--secondary);
+  color: var(--fg);
 }
 
 a {
   color: var(--link-color);
-  &:hover {
+  &:hover:where(:not(.health-badge):not(.btn-purple)) {
     color: var(--link-hover-color);
   }
 }
@@ -1484,6 +1516,10 @@ button {
 }
 
 .btn-success {
+  --bs-btn-color: #fff;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-active-color: #fff;
+  --bs-btn-disabled-color: #fff;
   color: #fff;
   &:focus, &:hover, &:active, &:disabled {
     color: #fff;
@@ -1492,6 +1528,10 @@ button {
 
 .badge {
   padding: 0.25em 0.4em;
+}
+
+a.badge:hover, a.badge:focus {
+  text-decoration: none;
 }
 
 .table th, .table td {
@@ -1572,7 +1612,7 @@ button {
 }
 
 .nav-tabs .nav-link.active {
-  color: #fff;
+  color: var(--fg);
 }
 
 .text-muted {

@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-const THEMES = ['contrast', 'softsimon', 'bukele'];
+const THEMES = ['contrast', 'softsimon', 'bukele', 'nymkappa'];
 const STAGING_DIR = path.join(__dirname, '.theme-build');
 const DIST_DIR = path.join(__dirname, 'dist/mempool/browser');
 const MANIFEST_FILE = path.join(__dirname, 'theme-manifest.json');
