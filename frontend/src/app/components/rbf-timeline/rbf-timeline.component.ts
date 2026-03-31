@@ -18,6 +18,17 @@ interface TimelineCell {
 }
 
 /**
+ * Represents a single replacement edge in the RBF tree (parent replaced child).
+ * Used to let users navigate and diff any adjacent pair in a branching tree.
+ */
+interface RbfEdge {
+  oldTxid: string;      // the replaced (older) transaction
+  newTxid: string;      // the replacement (newer) transaction
+  oldTxidShort: string; // first 8 chars for display
+  newTxidShort: string; // first 8 chars for display
+}
+
+/**
  * Represents a single row in the comparison table
  * Each row shows: label, previous value, current value, and optional highlighting
  */
@@ -79,9 +90,13 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
   selectedNewTx: Transaction | null = null;
   rbfDiff: RbfDiff | null = null;
   showDiff: boolean = false;
+  diffLoading: boolean = false;
   diffError: boolean = false;
   comparisonData: ComparisonTableData | null = null;
-  predecessorTxid: string | null = null;
+
+  // Edge navigation for branching RBF trees
+  allEdges: RbfEdge[] = [];
+  selectedEdgeIndex: number = 0;
 
   constructor(
     private router: Router,
@@ -96,12 +111,12 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.rows = this.buildTimelines(this.replacements);
-    this.updatePredecessorTxid();
+    this.updateEdges();
   }
 
   ngOnChanges(changes): void {
     this.rows = this.buildTimelines(this.replacements);
-    this.updatePredecessorTxid();
+    this.updateEdges();
     if (changes.txid && !changes.txid.firstChange && changes.txid.previousValue !== changes.txid.currentValue) {
       setTimeout(() => { this.scrollToSelected(); });
     }
@@ -275,16 +290,21 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
    */
   compareTxs(oldTxid: string, newTxid: string): void {
     this.diffError = false;
+    this.diffLoading = true;
+    this.comparisonData = null;
     forkJoin({
-      oldTx: this.apiService.getRbfCachedTx$(oldTxid),
-      newTx: this.apiService.getRbfCachedTx$(newTxid),
-    }).pipe(
-      catchError(() => {
+      oldTx: this.apiService.getRbfCachedTx$(oldTxid).pipe(
+        catchError(() => of(null))
+      ),
+      newTx: this.apiService.getRbfCachedTx$(newTxid).pipe(
+        catchError(() => of(null))
+      ),
+    }).subscribe((result) => {
+      this.diffLoading = false;
+      if (!result.oldTx || !result.newTx) {
         this.diffError = true;
-        return of(null);
-      })
-    ).subscribe((result) => {
-      if (!result) { return; }
+        return;
+      }
       this.selectedOldTx = result.oldTx;
       this.selectedNewTx = result.newTx;
       this.rbfDiff = calculateRbfDiff(result.oldTx, result.newTx);
@@ -295,6 +315,7 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
 
   closeDiff(): void {
     this.showDiff = false;
+    this.diffLoading = false;
     this.diffError = false;
     this.selectedOldTx = null;
     this.selectedNewTx = null;
@@ -563,24 +584,59 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
     throw new TypeError(`asNumber: Expected a numeric value or numeric string, received ${typeof value}`);
   }
 
-  // Finds the RbfTree node for the currently viewed transaction
-
-  private findCurrentNode(tree: RbfTree): RbfTree | null {
-    if (!tree) { return null; }
-    if (tree.tx.txid === this.txid) {
-      return tree;
+  /**
+   * Extracts all parent→child replacement edges from the RBF tree using BFS.
+   * BFS ordering means users see all direct replacements at each level before
+   * going deeper into branches — more intuitive for dropdown navigation.
+   */
+  private extractEdges(tree: RbfTree): RbfEdge[] {
+    if (!tree) { return []; }
+    const edges: RbfEdge[] = [];
+    const queue: RbfTree[] = [tree];
+    while (queue.length > 0) {
+      const node = queue.shift();
+      for (const child of node.replaces) {
+        edges.push({
+          oldTxid: child.tx.txid,
+          newTxid: node.tx.txid,
+          oldTxidShort: child.tx.txid.substring(0, 8),
+          newTxidShort: node.tx.txid.substring(0, 8),
+        });
+        queue.push(child);
+      }
     }
-    for (const replaced of tree.replaces) {
-      const found = this.findCurrentNode(replaced);
-      if (found) { return found; }
-    }
-    return null;
+    return edges;
   }
 
-  private updatePredecessorTxid(): void {
-    const currentNode = this.findCurrentNode(this.replacements);
-    this.predecessorTxid = currentNode && currentNode.replaces.length > 0
-      ? currentNode.replaces[0].tx.txid
+  /**
+   * Rebuilds the edge list and sets the default selected edge
+   * to the one where the current tx is the replacement (newTxid).
+   */
+  private updateEdges(): void {
+    this.allEdges = this.extractEdges(this.replacements);
+    const currentEdgeIndex = this.allEdges.findIndex(e => e.newTxid === this.txid);
+    this.selectedEdgeIndex = currentEdgeIndex >= 0 ? currentEdgeIndex : 0;
+  }
+
+  /**
+   * Selects an edge by index and loads the diff for that pair.
+   */
+  selectEdge(index: number): void {
+    if (index < 0 || index >= this.allEdges.length) { return; }
+    this.selectedEdgeIndex = index;
+    const edge = this.allEdges[index];
+    this.compareTxs(edge.oldTxid, edge.newTxid);
+  }
+
+  get highlightedOldTxid(): string | null {
+    return this.showDiff && this.allEdges.length > 0
+      ? this.allEdges[this.selectedEdgeIndex]?.oldTxid
+      : null;
+  }
+
+  get highlightedNewTxid(): string | null {
+    return this.showDiff && this.allEdges.length > 0
+      ? this.allEdges[this.selectedEdgeIndex]?.newTxid
       : null;
   }
 
@@ -588,11 +644,8 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
   toggleStructuralDiff(): void {
     if (this.showDiff) {
       this.closeDiff();
-    } else {
-      const predecessorTxid = this.predecessorTxid;
-      if (predecessorTxid && this.txid) {
-        this.compareTxs(predecessorTxid, this.txid);
-      }
+    } else if (this.allEdges.length > 0) {
+      this.selectEdge(this.selectedEdgeIndex);
     }
   }
 }
