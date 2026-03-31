@@ -40,7 +40,11 @@ export class TwitterWidgetComponent implements OnChanges {
     if (!this.handle) {
       return;
     }
-    const url = `https://${this.stateService.env.TWIDGET_DOMAIN}/api/v1/social/x/${this.handle}`;
+    const baseOrigin = this.stateService.env.TWIDGET_DOMAIN;
+    const normalizedOrigin = baseOrigin && !/^https?:\/\//i.test(baseOrigin)
+      ? `https://${baseOrigin}`
+      : baseOrigin;
+    const url = new URL(`/api/v1/social/x/${this.handle}`, normalizedOrigin).toString();
     this.iframeSrc = this.sanitizer.bypassSecurityTrustResourceUrl(this.sanitizer.sanitize(SecurityContext.URL, url));
   }
 
