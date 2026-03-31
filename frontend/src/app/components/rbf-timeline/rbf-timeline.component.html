@@ -21,6 +21,8 @@
               [class.selected]="txid === cell.replacement.tx.txid"
               [class.mined]="cell.replacement.tx.mined"
               [class.first-node]="cell.first"
+              [class.diff-old]="highlightedOldTxid === cell.replacement.tx.txid"
+              [class.diff-new]="highlightedNewTxid === cell.replacement.tx.txid"
             >
               <div class="track left" [class.fullrbf]="cell.replacement?.tx?.fullRbf"></div>
               <div class="track right" [class.fullrbf]="cell.fullRbf"></div>
@@ -63,12 +65,43 @@
   </div>
 
   <!-- RBF Structural Diff Button -->
-  <div class="diff-button-wrapper" *ngIf="predecessorTxid">
+  <div class="diff-button-wrapper" *ngIf="allEdges.length > 0">
     <button class="btn btn-sm btn-secondary diff-toggle" (click)="toggleStructuralDiff();">
       <i class="bi bi-code-slash" aria-hidden="true"></i>
       <span *ngIf="!showDiff" i18n="rbf-diff-show">Show structural diff</span>
       <span *ngIf="showDiff" i18n="rbf-diff-hide">Hide structural diff</span>
     </button>
+  </div>
+
+  <!-- Edge Navigator (only when multiple edges exist) -->
+  <div class="edge-navigator" *ngIf="showDiff && allEdges.length > 1">
+    <button class="btn btn-sm btn-outline-secondary"
+      [disabled]="selectedEdgeIndex === 0"
+      (click)="selectEdge(selectedEdgeIndex - 1)"
+      aria-label="Previous replacement">
+      &#8249;
+    </button>
+    <select class="form-select form-select-sm edge-select"
+      [ngModel]="selectedEdgeIndex"
+      (ngModelChange)="selectEdge($event)">
+      <option *ngFor="let edge of allEdges; let i = index" [ngValue]="i">
+        {{ edge.oldTxidShort }}&hellip; &#8594; {{ edge.newTxidShort }}&hellip;
+      </option>
+    </select>
+    <button class="btn btn-sm btn-outline-secondary"
+      [disabled]="selectedEdgeIndex === allEdges.length - 1"
+      (click)="selectEdge(selectedEdgeIndex + 1)"
+      aria-label="Next replacement">
+      &#8250;
+    </button>
+    <span class="edge-counter">{{ selectedEdgeIndex + 1 }} / {{ allEdges.length }}</span>
+  </div>
+
+  <!-- RBF Diff Loading -->
+  <div class="diff-loading text-center" *ngIf="showDiff && diffLoading">
+    <div class="spinner-border spinner-border-sm text-primary" role="status">
+      <span class="visually-hidden" i18n="loading">Loading...</span>
+    </div>
   </div>
 
   <!-- RBF Diff Error -->
@@ -77,7 +110,7 @@
   </div>
 
   <!-- RBF Structural Diff Content -->
-  <div class="rbf-diff-section" *ngIf="showDiff && comparisonData && selectedOldTx && selectedNewTx">
+  <div class="rbf-diff-section" *ngIf="showDiff && !diffLoading && comparisonData && selectedOldTx && selectedNewTx">
     <div class="row">
       <!-- Left Column: Previous Transaction -->
       <div class="col-sm">
