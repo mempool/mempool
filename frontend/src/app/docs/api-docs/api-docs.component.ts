@@ -3,7 +3,7 @@ import { Env, StateService } from '@app/services/state.service';
 import { Observable, merge, of, Subject, Subscription } from 'rxjs';
 import { tap, takeUntil } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
-import { faqData, restApiDocsData, wsApiDocsData, electrumApiDocsData } from '@app/docs/api-docs/api-docs-data';
+import { faqData, restApiDocsData, wsApiDocsData, electrumApiDocsData, acceleratorDocsData } from '@app/docs/api-docs/api-docs-data';
 import { FaqTemplateDirective } from '@app/docs/faq-template/faq-template.component';
 
 @Component({
@@ -37,6 +37,10 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
   timeLtrSubscription: Subscription;
   timeLtr: boolean = this.stateService.timeLtr.value;
   isMempoolSpaceBuild = this.stateService.isMempoolSpaceBuild;
+  activeAcceleratorTab = 0;
+  activeAccDetail: string = 'pub-accelerate';
+  accEndpoints: { [fragment: string]: any } = {};
+  accSecondary: { [tab: string]: any[] } = {};
 
   @ViewChildren(FaqTemplateDirective) faqTemplates: QueryList<FaqTemplateDirective>;
   dict = {};
@@ -101,6 +105,16 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
     this.wsDocs = wsApiDocsData;
     this.electrumDocs = electrumApiDocsData;
 
+    for (const ep of acceleratorDocsData) {
+      this.accEndpoints[ep.fragment] = ep;
+      if (ep.cardPosition === 'secondary') {
+        if (!this.accSecondary[ep.tab]) {
+          this.accSecondary[ep.tab] = [];
+        }
+        this.accSecondary[ep.tab].push(ep);
+      }
+    }
+
     this.network$.pipe(takeUntil(this.destroy$)).subscribe((network) => {
       this.active = (network === 'liquid' || network === 'liquidtestnet') ? 2 : 0;
       switch( network ) {
@@ -152,7 +166,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
     if (document.getElementById( targetId + '-tab-header' )) {
       tabHeaderHeight = document.getElementById( targetId + '-tab-header' ).scrollHeight;
     }
-    if( ( window.innerWidth <= 992 ) && ( ( this.whichTab === 'rest' ) || ( this.whichTab === 'faq' ) || ( this.whichTab === 'websocket' ) ) && targetId ) {
+    if( ( window.innerWidth <= 992 ) && ( ( this.whichTab === 'rest' ) || ( this.whichTab === 'faq' ) || ( this.whichTab === 'accelerator' ) || ( this.whichTab === 'websocket' ) ) && targetId ) {
       const endpointContainerEl = document.querySelector<HTMLElement>( '#' + targetId );
       const endpointContentEl = document.querySelector<HTMLElement>( '#' + targetId + ' .endpoint-content' );
       const endPointContentElHeight = endpointContentEl.clientHeight;
@@ -169,6 +183,19 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
         endpointContentEl.classList.add( 'open' );
       }
     }
+  }
+
+  toggleAccDetail(id: string) {
+    this.activeAccDetail = this.activeAccDetail === id ? null : id;
+  }
+
+  onAccTabChange(tabId: number) {
+    const defaults = { 0: 'pub-accelerate', 1: 'pro-accelerate', 2: 'auto-create' };
+    this.activeAccDetail = defaults[tabId] || null;
+  }
+
+  replaceHostname(text: string): string {
+    return text ? text.replace(/\[\[hostname\]\]/g, this.hostname) : '';
   }
 
   wrapUrl(network: string, code: any, websocket: boolean = false) {

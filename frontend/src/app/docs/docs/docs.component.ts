@@ -17,6 +17,7 @@ export class DocsComponent implements OnInit {
   env: Env;
   showWebSocketTab = true;
   showFaqTab = true;
+  showAcceleratorApiTab = false;
   showElectrsTab = true;
 
   @HostBinding('attr.dir') dir = 'ltr';
@@ -33,6 +34,7 @@ export class DocsComponent implements OnInit {
     this.websocket.want(['blocks']);
     this.env = this.stateService.env;
     this.showFaqTab = ( this.env.BASE_MODULE === 'mempool' ) ? true : false;
+    this.showAcceleratorApiTab = this.env.OFFICIAL_MEMPOOL_SPACE && this.env.BASE_MODULE === 'mempool';
     this.showElectrsTab = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
 
     document.querySelector<HTMLElement>( 'html' ).style.scrollBehavior = 'smooth';
@@ -63,6 +65,10 @@ export class DocsComponent implements OnInit {
       } else {
         this.seoService.setDescription($localize`:@@meta.description.docs.websocket-bitcoin:Documentation for the mempool.space WebSocket API service: get real-time info on blocks, mempools, transactions, addresses, and more.`);
       }
+    } else if( url[1].path === 'accelerator' ) {
+      this.activeTab = 4;
+      this.seoService.setTitle($localize`:@@meta.title.docs.accelerator-api:API - Accelerator`);
+      this.seoService.setDescription($localize`:@@meta.description.docs.accelerator-api:Mempool Accelerator\u00AE API documentation for developers and AI agents: public API, partner commissions, Pro API, and Auto Accelerator API.`);
     } else {
       this.activeTab = 3;
       this.seoService.setTitle($localize`:@@meta.title.docs.electrum:Electrum RPC`);
