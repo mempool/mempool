@@ -154,10 +154,10 @@ class Server {
     }
 
     this.server = http.createServer(this.app);
-    this.wss = new WebSocket.Server({ server: this.server });
+    this.wss = new WebSocket.Server({ server: this.server, maxPayload: websocketHandler.MAX_MESSAGE_SIZE });
     if (config.MEMPOOL.UNIX_SOCKET_PATH) {
       this.serverUnixSocket = http.createServer(this.app);
-      this.wssUnixSocket = new WebSocket.Server({ server: this.serverUnixSocket });
+      this.wssUnixSocket = new WebSocket.Server({ server: this.serverUnixSocket, maxPayload: websocketHandler.MAX_MESSAGE_SIZE });
     }
 
     this.setUpWebsocketHandling();

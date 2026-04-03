@@ -62,6 +62,12 @@ class WebsocketHandler {
 
   private accelerations: Record<string, Acceleration> = {};
 
+  private MAX_BUFFERED_AMOUNT = 10_000_000;
+  public MAX_MESSAGE_SIZE = 50_000;
+  private MAX_TRACKED_TXS = 100;
+  private MSG_RATE_LIMIT = 100;
+  private MSG_RATE_WINDOW = 10_000;
+
   constructor() { }
 
   addWebsocketServer(wss: WebSocket.Server) {
@@ -118,6 +124,7 @@ class WebsocketHandler {
     server.on('connection', (client: WebSocket, req) => {
       this.numConnected++;
       client['remoteAddress'] = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown';
+      client['msgTimestamps'] = [];
       client.on('error', (e) => {
         logger.info(`websocket client error from ${client['remoteAddress']}: ` + (e instanceof Error ? e.message : e));
         client.close();
@@ -125,9 +132,30 @@ class WebsocketHandler {
       client.on('close', () => {
         this.numDisconnected++;
       });
-      client.on('message', async (message: string) => {
+      client.on('message', async (message) => {
         try {
-          const parsedMessage: WebsocketResponse = JSON.parse(message);
+          const msgLength = Buffer.isBuffer(message) ? message.byteLength
+            : message instanceof ArrayBuffer ? message.byteLength
+            : message.reduce((sum, buf) => sum + buf.byteLength, 0);
+          if (msgLength > this.MAX_MESSAGE_SIZE) {
+            logger.debug(`Dropping oversized websocket message from ${client['remoteAddress']}: ${msgLength} bytes`);
+            client.terminate();
+            return;
+          }
+
+          const now = Date.now();
+          const timestamps: number[] = client['msgTimestamps'];
+          timestamps.push(now);
+          while (timestamps.length && timestamps[0] <= now - this.MSG_RATE_WINDOW) {
+            timestamps.shift();
+          }
+          if (timestamps.length > this.MSG_RATE_LIMIT) {
+            logger.debug(`Rate limiting websocket client ${client['remoteAddress']}`);
+            client.close();
+            return;
+          }
+
+          const parsedMessage: WebsocketResponse = JSON.parse(message as any);
           const response = {};
 
           const wantNow = {};
@@ -223,36 +251,48 @@ class WebsocketHandler {
           if (parsedMessage && parsedMessage['track-txs']) {
             const txids: string[] = [];
             if (Array.isArray(parsedMessage['track-txs'])) {
+              if (parsedMessage['track-txs'].length > this.MAX_TRACKED_TXS) {
+                response['track-txs-error'] = `"too many txids requested, this connection supports tracking a maximum of ${this.MAX_TRACKED_TXS} transactions"`;
+                this.send(client, this.serializeResponse(response));
+                client['track-txs'] = null;
+                client.close();
+                return;
+              }
               for (const txid of parsedMessage['track-txs']) {
                 if (/^[a-fA-F0-9]{64}$/.test(txid)) {
                   txids.push(txid);
                 }
               }
+            } else {
+              response['track-txs-error'] = `"incorrect track-txs format"`;
+              this.send(client, this.serializeResponse(response));
+              client['track-txs'] = null;
+              client.close();
+              return;
             }
 
             const txs: { [txid: string]: TxTrackingInfo } = {};
             for (const txid of txids) {
-              const txInfo: TxTrackingInfo = {
-                confirmed: true,
-              };
+              const txInfo: TxTrackingInfo = {};
               const rbfCacheTxid = rbfCache.getReplacedBy(txid);
               if (rbfCacheTxid) {
                 txInfo.replacedBy = rbfCacheTxid;
                 txInfo.confirmed = false;
+                txs[txid] = txInfo;
               }
               const tx = memPool.getMempool()[txid];
-              if (tx && tx.position) {
-                txInfo.position = {
-                  ...tx.position
-                };
-                if (tx.acceleration) {
-                  txInfo.accelerated = tx.acceleration;
-                }
-              }
               if (tx) {
+                if (tx.position) {
+                  txInfo.position = {
+                    ...tx.position
+                  };
+                  if (tx.acceleration) {
+                    txInfo.accelerated = tx.acceleration;
+                  }
+                }
                 txInfo.confirmed = false;
+                txs[txid] = txInfo;
               }
-              txs[txid] = txInfo;
             }
 
             if (txids.length) {
@@ -313,8 +353,10 @@ class WebsocketHandler {
           if (parsedMessage && parsedMessage['track-wallet']) {
             if (parsedMessage['track-wallet'] === 'stop') {
               client['track-wallet'] = null;
-            } else {
+            } else if (typeof parsedMessage['track-wallet'] === 'string' && walletApi.getWallets().includes(parsedMessage['track-wallet'])) {
               client['track-wallet'] = parsedMessage['track-wallet'];
+            } else {
+              client['track-wallet'] = null;
             }
           }
 
@@ -379,14 +421,14 @@ class WebsocketHandler {
             if (!this.socketData['blocks']?.length) {
               return;
             }
-            client.send(this.serializedInitData);
+            this.send(client, this.serializedInitData);
           }
 
           if (parsedMessage.action === 'ping') {
             response['pong'] = JSON.stringify(true);
           }
 
-          if (parsedMessage['track-donation'] && parsedMessage['track-donation'].length === 22) {
+          if (typeof parsedMessage['track-donation'] === 'string' && parsedMessage['track-donation'].length === 22) {
             client['track-donation'] = parsedMessage['track-donation'];
           }
 
@@ -403,7 +445,7 @@ class WebsocketHandler {
           }
 
           if (parsedMessage && parsedMessage['track-stratum'] != null) {
-            if (parsedMessage['track-stratum']) {
+            if (parsedMessage['track-stratum'] === 'all' || typeof parsedMessage['track-stratum'] === 'number') {
               const sub = parsedMessage['track-stratum'];
               client['track-stratum'] = sub;
               response['stratumJobs'] = this.socketData['stratumJobs'];
@@ -413,7 +455,7 @@ class WebsocketHandler {
           }
 
           if (Object.keys(response).length) {
-            client.send(this.serializeResponse(response));
+            this.send(client, this.serializeResponse(response));
           }
         } catch (e) {
           logger.debug(`Error parsing websocket message from ${client['remoteAddress']}: ` + (e instanceof Error ? e.message : e));
@@ -436,7 +478,7 @@ class WebsocketHandler {
         return;
       }
       if (client['track-donation'] === id) {
-        client.send(JSON.stringify({ donationConfirmed: true }));
+        this.send(client, JSON.stringify({ donationConfirmed: true }));
       }
     });
     }
@@ -456,7 +498,7 @@ class WebsocketHandler {
       if (client.readyState !== WebSocket.OPEN) {
         return;
       }
-      client.send(response);
+      this.send(client, response);
     });
     }
   }
@@ -475,7 +517,7 @@ class WebsocketHandler {
       if (client.readyState !== WebSocket.OPEN) {
         return;
       }
-      client.send(response);
+      this.send(client, response);
     });
     }
   }
@@ -502,7 +544,7 @@ class WebsocketHandler {
         return;
       }
 
-      client.send(response);
+      this.send(client, response);
     });
     }
   }
@@ -535,7 +577,7 @@ class WebsocketHandler {
           if (client.readyState !== WebSocket.OPEN) {
             return;
           }
-          client.send(response);
+          this.send(client, response);
         });
       }
     } catch (e) {
@@ -573,7 +615,7 @@ class WebsocketHandler {
       }
 
       if (Object.keys(response).length) {
-        client.send(this.serializeResponse(response));
+        this.send(client, this.serializeResponse(response));
       }
     });
     }
@@ -923,13 +965,16 @@ class WebsocketHandler {
         const txs: { [txid: string]: TxTrackingInfo } = {};
         for (const txid of txids) {
           const txInfo: TxTrackingInfo = {};
+          let txHasInfo = false;
           const outspends = outspendCache[txid];
           if (outspends && Object.keys(outspends).length) {
             txInfo.utxoSpent = outspends;
+            txHasInfo = true;
           }
           const replacedBy = rbfChanges.map[txid] ? rbfCache.getReplacedBy(txid) : false;
           if (replacedBy) {
             txInfo.replacedBy = replacedBy;
+            txHasInfo = true;
           }
           const mempoolTx = newMempool[txid];
           if (mempoolTx && mempoolTx.position) {
@@ -953,8 +998,11 @@ class WebsocketHandler {
                 adjustedVsize: mempoolTx.adjustedVsize,
               };
             }
+            txHasInfo = true;
           }
-          txs[txid] = txInfo;
+          if (txHasInfo) {
+            txs[txid] = txInfo;
+          }
         }
         if (Object.keys(txs).length) {
           response['tracked-txs'] = JSON.stringify(txs);
@@ -995,7 +1043,7 @@ class WebsocketHandler {
       }
 
       if (Object.keys(response).length) {
-        client.send(this.serializeResponse(response));
+        this.send(client, this.serializeResponse(response));
       }
     });
     }
@@ -1382,7 +1430,7 @@ class WebsocketHandler {
       }
 
       if (Object.keys(response).length) {
-        client.send(this.serializeResponse(response));
+        this.send(client, this.serializeResponse(response));
       }
     });
     }
@@ -1401,12 +1449,20 @@ class WebsocketHandler {
           return;
         }
         if (client['track-stratum'] && (client['track-stratum'] === 'all' || client['track-stratum'] === job.pool)) {
-          client.send(JSON.stringify({
+          this.send(client, JSON.stringify({
             'stratumJob': job
         }));
         }
       });
     }
+  }
+
+  private send(client: WebSocket.WebSocket, data: string): void {
+    if (client.bufferedAmount > this.MAX_BUFFERED_AMOUNT) {
+      client.terminate();
+      return;
+    }
+    client.send(data);
   }
 
   // takes a dictionary of JSON serialized values
