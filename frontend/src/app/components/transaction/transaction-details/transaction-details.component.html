@@ -48,7 +48,7 @@
   <ng-container *ngTemplateOutlet="feeRateRow"></ng-container>
   @if (showAcceleratorSavingsMsg) {
     <tr>
-      <td colspan="2" style="--bs-table-bg-type: var(--tertiary); white-space: normal; text-align: center;">Could have saved <app-fiat [blockConversion]="tx.price" [value]="acceleratorSavingsSats"></app-fiat> using <a href="https://mempool.space/enterprise#accelerator-pro" target="_blank">Mempool Accelerator Pro&trade;</a></td>
+      <td colspan="2" style="--bs-table-bg-type: var(--tertiary); white-space: normal; text-align: center;">Could have saved <app-fiat [blockConversion]="tx.price" [value]="acceleratorSavingsSats"></app-fiat> using <a href="https://mempool.space/enterprise#accelerator-pro" target="_blank" rel="noopener">Mempool Accelerator Pro&trade;</a></td>
     </tr>
   }
   @if (!isLoadingTx && !tx?.status?.confirmed && isAcceleration) {

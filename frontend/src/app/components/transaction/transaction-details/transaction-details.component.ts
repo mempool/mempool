@@ -64,7 +64,7 @@ export class TransactionDetailsComponent implements OnChanges {
       return;
     }
     this.acceleratorSavingsSats = 0;
-    const hasIneligibleFlags = this.tx?.flags && (this.tx.flags & (TransactionFlags.inscription | TransactionFlags.sighash_none | TransactionFlags.sighash_single | TransactionFlags.sighash_acp)) > 0n;
+    const hasIneligibleFlags = ((this.tx?.flags ?? 0n) & (TransactionFlags.inscription | TransactionFlags.sighash_none | TransactionFlags.sighash_single | TransactionFlags.sighash_acp)) > 0n;
     if (this.officialMempoolSpace
       && this.tx?.status?.confirmed
       && !this.tx.acceleration && !this.accelerationInfo
@@ -93,14 +93,14 @@ export class TransactionDetailsComponent implements OnChanges {
 
   calculateAcceleratorSavings(block: BlockExtended): void {
     const minBlockRate = block?.extras?.feeRange?.[0];
-    if (minBlockRate) {
+    if (minBlockRate !== undefined) {
       const vsize = this.tx.weight / 4;
       this.acceleratorSavingsSats = Math.max(0, this.tx.fee - Math.ceil(minBlockRate * vsize) - 75000);
     }
   }
 
   get showAcceleratorSavingsMsg(): boolean {
-    return this.acceleratorSavingsSats > 0 && this.cpfpInfo != null && !this.hasCpfp;
+    return this.acceleratorSavingsSats > 0 && this.cpfpInfo !== null && this.cpfpInfo !== undefined && !this.hasCpfp;
   }
 
   onAccelerateClicked(): void {
