@@ -11,7 +11,7 @@ const config = {
   verbose: parseInt(process.env.VERBOSE) === 1,
   mempoolCDN: parseInt(process.env.MEMPOOL_CDN) === 1,
   dryRun: parseInt(process.env.DRY_RUN) === 1,
-  githubToken: process.env.GITHUB_TOKEN,
+  githubToken: process.argv[3] || process.env.GITHUB_TOKEN,
 };
 
 // Early exit if SKIP_SYNC is set

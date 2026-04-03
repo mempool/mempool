@@ -165,9 +165,8 @@ jobs:
       #   run: unzip assets.zip -d assets/frontend/dist/mempool/browser/resources
 
       - name: Sync-assets
-        run: npm run sync-assets-dev
+        run: node sync-assets.js 'src/resources/' '${{ secrets.GITHUB_TOKEN }}'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MEMPOOL_CDN: 1
           VERBOSE: 1
         working-directory: assets/frontend
@@ -304,8 +303,7 @@ jobs:
       - name: Build
         run: npm run build
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/frontend
-        env: 
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        env:
           MEMPOOL_CDN: 1
           VERBOSE: 1
   
