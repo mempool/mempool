@@ -398,11 +398,10 @@ jobs:
           group: Tests on Chrome (${{ matrix.module }})
           browser: "chrome"
           ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
+          record-key: ${{ secrets.CYPRESS_RECORD_KEY }}
+          project-id: ${{ secrets.CYPRESS_PROJECT_ID }}
         env:
           COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
 
       # liquid
       - name: Chrome browser tests (${{ matrix.module }})
@@ -423,11 +422,10 @@ jobs:
           group: Tests on Chrome (${{ matrix.module }})
           browser: "chrome"
           ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
+          record-key: ${{ secrets.CYPRESS_RECORD_KEY }}
+          project-id: ${{ secrets.CYPRESS_PROJECT_ID }}
         env:
           COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
 
       # testnet
       - name: Chrome browser tests (${{ matrix.module }})
@@ -447,12 +445,11 @@ jobs:
           group: Tests on Chrome (${{ matrix.module }})
           browser: "chrome"
           ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
+          record-key: ${{ secrets.CYPRESS_RECORD_KEY }}
+          project-id: ${{ secrets.CYPRESS_PROJECT_ID }}
         env:
           CYPRESS_REROUTE_TESTNET: true
           COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
   validate_docker_json:
     if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
     runs-on: mempool-ci
