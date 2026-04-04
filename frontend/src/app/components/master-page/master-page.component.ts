@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, ViewChild, HostBinding } from '@angular/core';
 import { Router } from '@angular/router';
 import { Env, StateService } from '@app/services/state.service';
 import { Observable, merge, of, Subscription } from 'rxjs';
@@ -35,6 +35,9 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   menuOpen = false;
   isDropdownVisible: boolean;
 
+  screenshotMode = false;
+  @HostBinding('class.screenshot-mode') get isScreenshotMode() { return this.screenshotMode; }
+
   enterpriseInfo: any;
   enterpriseInfo$: Subscription;
 
@@ -51,6 +54,10 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.screenshotMode = new URLSearchParams(window.location.search).get('screenshot') === 'true';
+    if (this.screenshotMode) {
+      this.router.navigate([], { queryParams: {}, replaceUrl: true });
+    }
     this.env = this.stateService.env;
     this.connectionState$ = this.stateService.connectionState$;
     this.network$ = merge(of(''), this.stateService.networkChanged$);

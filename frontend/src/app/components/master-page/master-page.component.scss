@@ -327,3 +327,26 @@ main {
   top: 65px;
   padding-bottom: 20px;
 }
+
+// Screenshot mode: disable sticky/fixed positioning so elements
+// don't repeat in full-page screenshot stitching.
+:host(.screenshot-mode) {
+  .sticky-header {
+    position: relative;
+  }
+
+  .navbar-collapse {
+    display: flex !important;
+  }
+
+  .navbar-nav {
+    position: relative;
+    bottom: auto;
+    left: auto;
+  }
+
+  .empty-sidenav {
+    position: relative;
+    height: auto;
+  }
+}
