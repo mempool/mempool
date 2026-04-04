@@ -19,3 +19,21 @@ import './commands';
 import failOnConsoleError from 'cypress-fail-on-console-error';
 
 failOnConsoleError();
+
+beforeEach(() => {
+  cy.on('window:before:load', (win) => {
+    const originalGet = win.URLSearchParams.prototype.get;
+    win.URLSearchParams.prototype.get = function (name: string) {
+      if (name === 'screenshot') {
+        return 'true';
+      }
+      return originalGet.call(this, name);
+    };
+  });
+});
+
+afterEach(() => {
+  cy.screenshot({
+    capture: 'fullPage',
+  });
+});
