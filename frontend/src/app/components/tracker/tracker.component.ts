@@ -84,6 +84,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
   blocksSubscription: Subscription;
   miningSubscription: Subscription;
   currencyChangeSubscription: Subscription;
+  enterpriseInfoSubscription: Subscription;
   rbfTransaction: undefined | Transaction;
   replaced: boolean = false;
   latestReplacement: string;
@@ -154,15 +155,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.onResize();
-
-    // Accelerator partner code in fragment
-    const fragmentsParams = new URLSearchParams(window.location.hash.slice(1));
-    this.partnerCode = fragmentsParams.get('partnerCode') ?? this.storageService.getValue('partnerCode') ?? undefined;
-    if (this.partnerCode) {
-      this.storageService.setValue('partnerCode', this.partnerCode);
-      // Cleanup partnerCode from url after storing it in localStorage to avoid re-use upon page reload
-      window.location.hash = window.location.hash.replace(`&partnerCode=${this.partnerCode}`, '').replace(`#partnerCode=${this.partnerCode}`, '');
-    }
+    this.setupPartnerCode();
 
     this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
 
@@ -870,5 +863,26 @@ export class TrackerComponent implements OnInit, OnDestroy {
     this.currencyChangeSubscription?.unsubscribe();
     this.enterpriseInfo$?.unsubscribe();
     this.leaveTransaction();
+    this.enterpriseInfoSubscription?.unsubscribe();
+  }
+
+  setupPartnerCode() {
+    this.enterpriseInfoSubscription?.unsubscribe();
+    // Initialize the accelerator partner code
+    // The partner code determines which entity the transaction acceleration is attributed to.
+    // Resolution priority: enterprise info name > URL fragment parameter > localStorage value
+    this.enterpriseInfoSubscription = this.enterpriseService.info$.subscribe((info: { name: string }) => {
+      if (info?.name) {
+        this.partnerCode = info.name;
+      } else {
+        const fragmentsParams = new URLSearchParams(window.location.hash.slice(1));
+        this.partnerCode = fragmentsParams.get('partnerCode') ?? this.storageService.getValue('partnerCode') ?? undefined;
+      }
+      if (this.partnerCode) {
+        this.storageService.setValue('partnerCode', this.partnerCode);
+        // Prevents the same partner code from being re-applied upon reloading the page
+        window.location.hash = window.location.hash.replace(`&partnerCode=${this.partnerCode}`, '').replace(`#partnerCode=${this.partnerCode}`, '');
+      }
+    });
   }
 }

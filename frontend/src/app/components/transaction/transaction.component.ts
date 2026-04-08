@@ -15,7 +15,6 @@ import {
   startWith,
   repeat,
   take,
-  debounceTime,
   distinctUntilChanged
 } from 'rxjs/operators';
 import { Transaction } from '@interfaces/electrs.interface';
@@ -104,6 +103,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   auditSubscription: Subscription;
   txConfirmedSubscription: Subscription;
   currencyChangeSubscription: Subscription;
+  enterpriseInfoSubscription: Subscription;
   fragmentParams: URLSearchParams;
   rbfTransaction: undefined | Transaction;
   replaced: boolean = false;
@@ -219,20 +219,13 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.setupPartnerCode();
+
     this.enterpriseService.page();
     this.isDetailsOpen = this.route.snapshot.queryParams['showDetails'] === 'true';
 
     const urlParams = new URLSearchParams(window.location.search);
     this.forceAccelerationSummary = !!urlParams.get('cash_request_id');
-
-    // Accelerator partner code
-    const fragmentsParams = new URLSearchParams(window.location.hash.slice(1));
-    this.partnerCode = fragmentsParams.get('partnerCode') ?? this.storageService.getValue('partnerCode') ?? undefined;
-    if (this.partnerCode) {
-      this.storageService.setValue('partnerCode', this.partnerCode);
-      // Cleanup partnerCode from url after storing it in localStorage to avoid re-use upon page reload
-      window.location.hash = window.location.hash.replace(`&partnerCode=${this.partnerCode}`, '').replace(`#partnerCode=${this.partnerCode}`, '');
-    }
 
     this.hideAccelerationSummary = this.stateService.isMempoolSpaceBuild ? this.storageService.getValue('hide-accelerator-pref') == 'true' : true;
 
@@ -1246,5 +1239,26 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.txConfirmedSubscription?.unsubscribe();
     this.currencyChangeSubscription?.unsubscribe();
     this.leaveTransaction();
+    this.enterpriseInfoSubscription?.unsubscribe();
+  }
+
+  setupPartnerCode() {
+    this.enterpriseInfoSubscription?.unsubscribe();
+    // Initialize the accelerator partner code
+    // The partner code determines which entity the transaction acceleration is attributed to.
+    // Resolution priority: enterprise info name > URL fragment parameter > localStorage value
+    this.enterpriseInfoSubscription = this.enterpriseService.info$.subscribe((info: { name: string }) => {
+      if (info?.name) {
+        this.partnerCode = info.name;
+      } else {
+        const fragmentsParams = new URLSearchParams(window.location.hash.slice(1));
+        this.partnerCode = fragmentsParams.get('partnerCode') ?? this.storageService.getValue('partnerCode') ?? undefined;
+      }
+      if (this.partnerCode) {
+        this.storageService.setValue('partnerCode', this.partnerCode);
+        // Prevents the same partner code from being re-applied upon reloading the page
+        window.location.hash = window.location.hash.replace(`&partnerCode=${this.partnerCode}`, '').replace(`#partnerCode=${this.partnerCode}`, '');
+      }
+    });
   }
 }
