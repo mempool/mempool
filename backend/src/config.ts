@@ -386,6 +386,9 @@ class Config implements IConfig {
     this.MEMPOOL_SERVICES = configs.MEMPOOL_SERVICES;
     this.REDIS = configs.REDIS;
     this.FIAT_PRICE = configs.FIAT_PRICE;
+    if (this.FIAT_PRICE.API_KEY === '__FIAT_PRICE_API_KEY__') {
+      this.FIAT_PRICE.API_KEY = '';
+    }
     this.WALLETS = configs.WALLETS;
     this.STRATUM = configs.STRATUM;
   }
