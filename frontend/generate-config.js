@@ -96,16 +96,33 @@ if (process.env.DOCKER_COMMIT_HASH) {
   }
 }
 
+function formatConfigValue(value) {
+  if (typeof value === 'string') {
+    return `'${value}'`;
+  }
+  return JSON.stringify(value);
+}
+
+function formatTemplateValue(key, value) {
+  if (typeof value === 'string') {
+    return `'\${__${key}__}'`;
+  }
+  if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+    return JSON.stringify(value);
+  }
+  return `\${__${key}__}`;
+}
+
 const newConfig = `(function (window) {
   window.__env = window.__env || {};${settings.reduce((str, obj) => `${str}
-    window.__env.${obj.key} = ${typeof obj.value === 'string' ? `'${obj.value}'` : obj.value};`, '')}
+    window.__env.${obj.key} = ${formatConfigValue(obj.value)};`, '')}
     window.__env.GIT_COMMIT_HASH = '${gitCommitHash}';
     window.__env.PACKAGE_JSON_VERSION = '${packetJsonVersion}';
   }((typeof global !== 'undefined') ? global : this));`;
 
 const newConfigTemplate = `(function (window) {
   window.__env = window.__env || {};${settings.reduce((str, obj) => `${str}
-    window.__env.${obj.key} = ${typeof obj.value === 'string' ? `'\${__${obj.key}__}'` : `\${__${obj.key}__}`};`, '')}
+    window.__env.${obj.key} = ${formatTemplateValue(obj.key, obj.value)};`, '')}
     window.__env.GIT_COMMIT_HASH = '${gitCommitHash}';
     window.__env.PACKAGE_JSON_VERSION = '${packetJsonVersion}';
   }(this));`;
