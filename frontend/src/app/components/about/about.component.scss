@@ -103,6 +103,21 @@
 
   .alliances {
     margin-bottom: 100px;
+    .wrapper {
+      display: grid;
+      grid-template-columns: auto;
+      justify-content: center;
+      align-items: center;
+      column-gap: 40px;
+
+      @media (min-width: 600px) {
+        grid-template-columns: repeat(2, auto);
+      }
+
+      @media (min-width: 960px) {
+        grid-template-columns: repeat(4, auto);
+      }
+    }
     a {
       &:nth-child(3) {
         position: relative;
@@ -113,13 +128,7 @@
       display: inline-block;
       margin: 15px auto;
       height: 62px;
-      @media (min-width: 425px) {
-        margin: 15px 60px;
-      }
-      @media (min-width: 576px) {
-        margin: 15px 120px;
-      }
-      @media (min-width: 850px) {
+      @media (min-width: 1100px) {
         margin: 50px 30px 0px;
       }
     }
@@ -137,6 +146,11 @@
       height: 85px;
       width: auto;
       position: relative;
+    }
+    .bdk {
+      position: relative;
+      top: 11px;
+      height: 68px;
     }
   }
 
