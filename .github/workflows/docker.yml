@@ -18,7 +18,8 @@ permissions:
 
 jobs:
   test-images:
-    # Always run on tag pushes and all pull requests
+    # Run on tag pushes and pull requests, except PRs with "ops" label or "ops/" branch prefix
+    if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
     runs-on: mempool-ci
     timeout-minutes: 30
     name: Test built Docker images
@@ -222,11 +223,15 @@ jobs:
 
   build:
     needs: test-images
-    # Run on tag pushes OR on PRs with "docker-push" label (after test-images passes)
+    # Run on tag pushes OR on PRs with "docker-push" label (after test-images passes).
+    # Skip PRs with "ops" label or "ops/" branch prefix.
     if: |
       needs.test-images.result == 'success' &&
       (github.event_name == 'push' ||
-       (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'docker-push')))
+       (github.event_name == 'pull_request' &&
+        contains(github.event.pull_request.labels.*.name, 'docker-push') &&
+        !contains(github.event.pull_request.labels.*.name, 'ops') &&
+        !contains(github.head_ref, 'ops/')))
     strategy:
       matrix:
         service:
