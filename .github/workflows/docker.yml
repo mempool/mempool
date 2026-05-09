@@ -19,7 +19,7 @@ permissions:
 jobs:
   test-images:
     # Run on tag pushes and pull requests, except PRs with "ops" label or "ops/" branch prefix
-    if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
+    if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !startsWith(github.head_ref, 'ops/')) || github.event_name == 'push'"
     runs-on: mempool-ci
     timeout-minutes: 30
     name: Test built Docker images
