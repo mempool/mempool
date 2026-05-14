@@ -173,6 +173,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   graphContainer: ElementRef;
   private txList: TransactionsListComponent;
+  private fragmentAnchor: string | null = null;
+  private scrolledFragmentAnchor: string | null = null;
+  private firstFragmentScroll = true;
 
   @ViewChild('txList')
   set txListSetter(component: TransactionsListComponent | undefined) {
@@ -609,7 +612,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             }
             this.router.navigate([this.relativeUrlPipe.transform('/tx'), this.txId], {
               queryParamsHandling: 'merge',
-              fragment: this.fragmentParams.toString(),
+              fragment: this.formatFragment(this.fragmentParams),
             });
           } else {
             this.txId = urlMatch[0];
@@ -620,7 +623,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               this.fragmentParams.delete('vin');
               this.router.navigate([this.relativeUrlPipe.transform('/tx'), this.txId], {
                 queryParamsHandling: 'merge',
-                fragment: this.fragmentParams.toString(),
+                fragment: this.formatFragment(this.fragmentParams),
               });
             }
           }
@@ -630,7 +633,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           if (window.innerWidth <= 767.98) {
             this.router.navigate([this.relativeUrlPipe.transform('/tx'), this.txId], {
               queryParamsHandling: 'merge',
-              preserveFragment: true,
+              fragment: this.formatFragment(this.fragmentParams, this.fragmentAnchor),
               queryParams: { mode: 'details' },
               replaceUrl: true,
             });
@@ -888,7 +891,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       relativeTo: this.route,
       queryParams: { showDetails: this.isDetailsOpen ? 'true' : null },
       queryParamsHandling: 'merge',
-      preserveFragment: true,
+      fragment: this.formatFragment(this.fragmentParams),
       replaceUrl: true,
     });
     this.txList?.setDetailsOpen(this.isDetailsOpen);
@@ -1081,6 +1084,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   resetTransaction() {
     this.firstLoad = false;
+    this.firstFragmentScroll = this.fragmentAnchor !== null;
+    this.scrolledFragmentAnchor = null;
     this.gotInitialPosition = false;
     this.error = undefined;
     this.tx = null;
@@ -1133,7 +1138,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         relativeTo: this.route,
         queryParams: { cpfp: this.cpfpMode ? 'true' : null },
         queryParamsHandling: 'merge',
-        fragment: this.getCpfpFragment(),
+        fragment: this.formatFragment(this.fragmentParams, this.cpfpMode ? 'cluster' : null),
         replaceUrl: true,
       });
     } else {
@@ -1141,7 +1146,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         relativeTo: this.route,
         queryParams: { cpfp: this.cpfpMode ? 'simple' : null },
         queryParamsHandling: 'merge',
-        preserveFragment: true,
+        fragment: this.formatFragment(this.fragmentParams),
         replaceUrl: true,
       });
     }
@@ -1151,18 +1156,17 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     return cpfpParam === 'true' || cpfpParam === 'advanced' || cpfpParam === 'simple';
   }
 
-  private getCpfpFragment(): string | null {
-    const currentParams = new URLSearchParams(this.fragmentParams?.toString() || this.route.snapshot.fragment || '');
-    const fragmentParams = new URLSearchParams();
-    if (this.cpfpMode) {
-      fragmentParams.set('cluster', '');
-    }
-    for (const [key, value] of currentParams.entries()) {
-      if (key !== 'cluster') {
-        fragmentParams.set(key, value);
+  private formatFragment(fragmentParams: URLSearchParams, anchor: string | null = null): string | null {
+    const params = new URLSearchParams(fragmentParams.toString());
+    for (const [key, value] of Array.from(params.entries())) {
+      if (value === '') {
+        params.delete(key);
       }
     }
-    return fragmentParams.toString() || null;
+    if (anchor) {
+      params.set(anchor, '');
+    }
+    return params.toString() || null;
   }
 
   toggleGraph() {
@@ -1172,7 +1176,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       relativeTo: this.route,
       queryParams: { showFlow: showFlow },
       queryParamsHandling: 'merge',
-      fragment: 'flow'
+      fragment: this.formatFragment(this.fragmentParams, showFlow ? 'flow' : null)
     });
   }
 
@@ -1192,11 +1196,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // simulate normal anchor fragment behavior
   applyFragment(): void {
-    const anchor = Array.from(this.fragmentParams.entries()).find(([frag, value]) => value === '');
-    if (anchor?.length) {
-      const anchorElement = document.getElementById(anchor[0]);
+    if (this.fragmentAnchor && this.scrolledFragmentAnchor !== this.fragmentAnchor) {
+      const anchorElement = document.getElementById(this.fragmentAnchor);
       if (anchorElement) {
-        anchorElement.scrollIntoView({ behavior: 'smooth' });
+        anchorElement.scrollIntoView({ behavior: this.firstFragmentScroll ? 'auto' : 'smooth' });
+        this.firstFragmentScroll = false;
+        this.scrolledFragmentAnchor = this.fragmentAnchor;
       }
     }
   }
@@ -1205,12 +1210,35 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fragmentParams = new URLSearchParams(fragment || '');
     const vin = parseInt(this.fragmentParams.get('vin'), 10);
     const vout = parseInt(this.fragmentParams.get('vout'), 10);
-    this.inputIndex = (!isNaN(vin) && vin >= 0) ? vin : null;
-    this.outputIndex = (!isNaN(vout) && vout >= 0) ? vout : null;
+    const inputIndex = (!isNaN(vin) && vin >= 0) ? vin : null;
+    const outputIndex = (!isNaN(vout) && vout >= 0) ? vout : null;
+    const selectionChanged = inputIndex !== this.inputIndex || outputIndex !== this.outputIndex;
+    const anchor = Array.from(this.fragmentParams.entries()).find(([, value]) => value === '')?.[0] || null;
+    this.inputIndex = inputIndex;
+    this.outputIndex = outputIndex;
     if (this.fragmentParams.has('accelerate')) {
       this.forceAccelerationSummary = true;
     }
-    setTimeout(() => { this.applyFragment(); }, 0);
+    if (!anchor && !this.fragmentAnchor) {
+      this.firstFragmentScroll = false;
+    }
+    if (selectionChanged && anchor) {
+      this.scrolledFragmentAnchor = null;
+    }
+    if (anchor !== this.fragmentAnchor) {
+      this.fragmentAnchor = anchor;
+      this.scrolledFragmentAnchor = null;
+      if (!this.fragmentAnchor) {
+        this.firstFragmentScroll = false;
+      }
+    }
+    if (this.scrolledFragmentAnchor !== this.fragmentAnchor) {
+      if (this.fragmentAnchor) {
+        setTimeout(() => { this.applyFragment(); }, 0);
+      } else {
+        this.firstFragmentScroll = false;
+      }
+    }
   }
 
   setHasAccelerationDetails(hasDetails: boolean): void {
@@ -1237,20 +1265,20 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onAccelerationCompleted(): void {
-    this.router.navigate([], { fragment: null, queryParamsHandling: 'merge' });
+    this.router.navigate([], { fragment: this.formatFragment(this.fragmentParams), queryParamsHandling: 'merge' });
     this.accelerationFlowCompleted = true;
     this.forceAccelerationSummary = false;
   }
 
   closeAccelerator(): void {
-    this.router.navigate([], { fragment: null, queryParamsHandling: 'merge' });
+    this.router.navigate([], { fragment: this.formatFragment(this.fragmentParams), queryParamsHandling: 'merge' });
     this.hideAccelerationSummary = true;
     this.forceAccelerationSummary = false;
     this.storageService.setValue('hide-accelerator-pref', 'true');
   }
 
   openAccelerator(): void {
-    this.router.navigate([], { fragment: 'accelerate', queryParamsHandling: 'merge' });
+    this.router.navigate([], { fragment: this.formatFragment(this.fragmentParams, 'accelerate'), queryParamsHandling: 'merge' });
     this.accelerationFlowCompleted = false;
     this.hideAccelerationSummary = false;
     this.storageService.setValue('hide-accelerator-pref', 'false');
