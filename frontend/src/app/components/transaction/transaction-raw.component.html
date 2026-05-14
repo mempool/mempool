@@ -104,7 +104,7 @@
       <ng-container *ngIf="cpfpInfo?.cluster; else legacyCpfpRaw">
         <div class="box">
           <app-cluster-diagram
-            [cluster]="cpfpInfo.cluster" [txid]="transaction.txid">
+            [cluster]="cpfpInfo.cluster" [txid]="transaction.txid" [isMobile]="isMobile">
           </app-cluster-diagram>
         </div>
       </ng-container>
