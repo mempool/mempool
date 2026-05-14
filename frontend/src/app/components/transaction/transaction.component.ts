@@ -1130,6 +1130,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       relativeTo: this.route,
       queryParams: { cpfp: this.cpfpMode ? 'true' : null },
       queryParamsHandling: 'merge',
+      fragment: this.formatFragment(this.fragmentParams),
       replaceUrl: true,
     });
   }
