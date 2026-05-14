@@ -200,13 +200,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  @ViewChild('cluster')
-  set clusterAnchor(element: ElementRef | null | undefined) {
-    if (element) {
-      setTimeout(() => { this.applyFragment(); }, 0);
-    }
-  }
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -231,7 +224,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.enterpriseService.page();
     this.isDetailsOpen = this.route.snapshot.queryParams['showDetails'] === 'true';
-    this.cpfpMode = this.isCpfpParamEnabled(this.route.snapshot.queryParams['cpfp']);
+    this.cpfpMode = this.route.snapshot.queryParams['cpfp'] === 'true';
 
     const urlParams = new URLSearchParams(window.location.search);
     this.forceAccelerationSummary = !!urlParams.get('cash_request_id');
@@ -1113,7 +1106,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.auditStatus = null;
     this.accelerationPositions = null;
     this.isDetailsOpen = this.route.snapshot.queryParams['showDetails'] === 'true';
-    this.cpfpMode = this.isCpfpParamEnabled(this.route.snapshot.queryParams['cpfp']);
+    this.cpfpMode = this.route.snapshot.queryParams['cpfp'] === 'true';
     document.body.scrollTo(0, 0);
     this.isAcceleration = false;
     this.isAccelerated$.next(this.isAcceleration);
@@ -1133,27 +1126,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   toggleCpfp() {
     this.cpfpMode = !this.cpfpMode;
-    if (this.cpfpInfo?.cluster) {
-      this.router.navigate([], {
-        relativeTo: this.route,
-        queryParams: { cpfp: this.cpfpMode ? 'true' : null },
-        queryParamsHandling: 'merge',
-        fragment: this.formatFragment(this.fragmentParams, this.cpfpMode ? 'cluster' : null),
-        replaceUrl: true,
-      });
-    } else {
-      this.router.navigate([], {
-        relativeTo: this.route,
-        queryParams: { cpfp: this.cpfpMode ? 'simple' : null },
-        queryParamsHandling: 'merge',
-        fragment: this.formatFragment(this.fragmentParams),
-        replaceUrl: true,
-      });
-    }
-  }
-
-  private isCpfpParamEnabled(cpfpParam: string | undefined): boolean {
-    return cpfpParam === 'true' || cpfpParam === 'advanced' || cpfpParam === 'simple';
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { cpfp: this.cpfpMode ? 'true' : null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 
   private formatFragment(fragmentParams: URLSearchParams, anchor: string | null = null): string | null {
