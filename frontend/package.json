@@ -69,7 +69,7 @@
     "@angular/localize": "^20.3.19",
     "@angular/platform-browser": "^20.3.19",
     "@angular/platform-browser-dynamic": "^20.3.19",
-    "@angular/platform-server": "^20.3.19",
+    "@angular/platform-server": "^20.3.21",
     "@angular/router": "^20.3.19",
     "@angular/ssr": "^20.3.25",
     "@fortawesome/angular-fontawesome": "^3.0.0",
