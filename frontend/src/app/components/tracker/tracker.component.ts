@@ -27,12 +27,12 @@ import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment
 import { PriceService } from '@app/services/price.service';
 import { ServicesApiServices } from '@app/services/services-api.service';
 import { EnterpriseService } from '@app/services/enterprise.service';
+import { PartnerCodeService } from '@app/services/partner-code.service';
 import { ZONE_SERVICE } from '@app/injection-tokens';
 import { TrackerStage } from '@components/tracker/tracker-bar.component';
 import { MiningService, MiningStats } from '@app/services/mining.service';
 import { ETA, EtaService } from '@app/services/eta.service';
 import { getTransactionFlags, getUnacceleratedFeeRate } from '@app/shared/transaction.utils';
-import { StorageService } from '@app/services/storage.service';
 
 
 interface Pool {
@@ -84,6 +84,8 @@ export class TrackerComponent implements OnInit, OnDestroy {
   blocksSubscription: Subscription;
   miningSubscription: Subscription;
   currencyChangeSubscription: Subscription;
+  urlFragmentSubscription: Subscription;
+  partnerCodeSubscription: Subscription;
   rbfTransaction: undefined | Transaction;
   replaced: boolean = false;
   latestReplacement: string;
@@ -144,25 +146,20 @@ export class TrackerComponent implements OnInit, OnDestroy {
     private seoService: SeoService,
     private priceService: PriceService,
     private enterpriseService: EnterpriseService,
+    private partnerCodeService: PartnerCodeService,
     private miningService: MiningService,
     private router: Router,
     private cd: ChangeDetectorRef,
     private zone: NgZone,
-    private storageService: StorageService,
     @Inject(ZONE_SERVICE) private zoneService: any,
   ) {}
 
   ngOnInit() {
     this.onResize();
-
-    // Accelerator partner code in fragment
-    const fragmentsParams = new URLSearchParams(window.location.hash.slice(1));
-    this.partnerCode = fragmentsParams.get('partnerCode') ?? this.storageService.getValue('partnerCode') ?? undefined;
-    if (this.partnerCode) {
-      this.storageService.setValue('partnerCode', this.partnerCode);
-      // Cleanup partnerCode from url after storing it in localStorage to avoid re-use upon page reload
-      window.location.hash = window.location.hash.replace(`&partnerCode=${this.partnerCode}`, '').replace(`#partnerCode=${this.partnerCode}`, '');
-    }
+    this.setupPartnerCode();
+    this.urlFragmentSubscription = this.route.fragment.subscribe((fragment) => {
+      this.consumePartnerCodeFragment(fragment);
+    });
 
     this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
 
@@ -869,6 +866,36 @@ export class TrackerComponent implements OnInit, OnDestroy {
     this.miningSubscription?.unsubscribe();
     this.currencyChangeSubscription?.unsubscribe();
     this.enterpriseInfo$?.unsubscribe();
+    this.urlFragmentSubscription?.unsubscribe();
     this.leaveTransaction();
+    this.partnerCodeSubscription?.unsubscribe();
+  }
+
+  setupPartnerCode(): void {
+    this.partnerCodeSubscription?.unsubscribe();
+    this.partnerCodeSubscription = this.partnerCodeService.partnerCode$.subscribe((partnerCode) => {
+      this.partnerCode = partnerCode;
+      this.cd.markForCheck();
+    });
+  }
+
+  // extract the partnerCode from the fragment string, pass to the partnerCodeService, and then remove from the URL
+  private consumePartnerCodeFragment(fragment: string | null): void {
+    const fragmentParams = new URLSearchParams(fragment || '');
+    if (!fragmentParams.has('partnerCode')) {
+      return;
+    }
+
+    const partnerCode = fragmentParams.get('partnerCode');
+    if (partnerCode) {
+      this.partnerCodeService.setFragmentPartnerCode(partnerCode);
+    }
+    fragmentParams.delete('partnerCode');
+    this.router.navigate([], {
+      relativeTo: this.route,
+      fragment: fragmentParams.toString() || null,
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 }

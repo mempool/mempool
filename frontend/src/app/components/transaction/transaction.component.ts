@@ -15,7 +15,6 @@ import {
   startWith,
   repeat,
   take,
-  debounceTime,
   distinctUntilChanged
 } from 'rxjs/operators';
 import { Transaction } from '@interfaces/electrs.interface';
@@ -37,6 +36,7 @@ import { PriceService } from '@app/services/price.service';
 import { isFeatureActive } from '@app/bitcoin.utils';
 import { ServicesApiServices } from '@app/services/services-api.service';
 import { EnterpriseService } from '@app/services/enterprise.service';
+import { PartnerCodeService } from '@app/services/partner-code.service';
 import { ZONE_SERVICE } from '@app/injection-tokens';
 import { MiningService, MiningStats } from '@app/services/mining.service';
 import { ETA, EtaService } from '@app/services/eta.service';
@@ -104,6 +104,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   auditSubscription: Subscription;
   txConfirmedSubscription: Subscription;
   currencyChangeSubscription: Subscription;
+  partnerCodeSubscription: Subscription;
   fragmentParams: URLSearchParams;
   rbfTransaction: undefined | Transaction;
   replaced: boolean = false;
@@ -215,6 +216,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     private priceService: PriceService,
     private storageService: StorageService,
     private enterpriseService: EnterpriseService,
+    private partnerCodeService: PartnerCodeService,
     private miningService: MiningService,
     private etaService: EtaService,
     private cd: ChangeDetectorRef,
@@ -222,21 +224,14 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.setupPartnerCode();
+
     this.enterpriseService.page();
     this.isDetailsOpen = this.route.snapshot.queryParams['showDetails'] === 'true';
     this.cpfpMode = this.route.snapshot.queryParams['cpfp'] === 'true';
 
     const urlParams = new URLSearchParams(window.location.search);
     this.forceAccelerationSummary = !!urlParams.get('cash_request_id');
-
-    // Accelerator partner code
-    const fragmentsParams = new URLSearchParams(window.location.hash.slice(1));
-    this.partnerCode = fragmentsParams.get('partnerCode') ?? this.storageService.getValue('partnerCode') ?? undefined;
-    if (this.partnerCode) {
-      this.storageService.setValue('partnerCode', this.partnerCode);
-      // Cleanup partnerCode from url after storing it in localStorage to avoid re-use upon page reload
-      window.location.hash = window.location.hash.replace(`&partnerCode=${this.partnerCode}`, '').replace(`#partnerCode=${this.partnerCode}`, '');
-    }
 
     this.hideAccelerationSummary = this.stateService.isMempoolSpaceBuild ? this.storageService.getValue('hide-accelerator-pref') == 'true' : true;
 
@@ -1145,7 +1140,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     if (anchor) {
       params.set(anchor, '');
     }
-    return Array.from(params.entries()).map(([key, value]) => `${key}=${value}`).join('&') || null;
+    return Array.from(params.entries()).map(([key, value]) => value ? `${key}=${value}` : key).join('&') || null;
   }
 
   toggleGraph() {
@@ -1187,6 +1182,22 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   updateFragmentParams(fragment: string | null): void {
     this.fragmentParams = new URLSearchParams(fragment || '');
+    // remove any partnerCode param from the URL and pass it to the partnerCodeService
+    if (this.fragmentParams.has('partnerCode')) {
+      const partnerCode = this.fragmentParams.get('partnerCode');
+      if (partnerCode) {
+        this.partnerCodeService.setFragmentPartnerCode(partnerCode);
+      }
+      this.fragmentParams.delete('partnerCode');
+      // update the URL with the new fragment string in a way Angular Router understands
+      const anchor = Array.from(this.fragmentParams.entries()).find(([, value]) => value === '')?.[0] || null;
+      this.router.navigate([], {
+        relativeTo: this.route,
+        fragment: this.formatFragment(this.fragmentParams, anchor),
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+    }
     const vin = parseInt(this.fragmentParams.get('vin'), 10);
     const vout = parseInt(this.fragmentParams.get('vout'), 10);
     const inputIndex = (!isNaN(vin) && vin >= 0) ? vin : null;
@@ -1298,5 +1309,13 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.txConfirmedSubscription?.unsubscribe();
     this.currencyChangeSubscription?.unsubscribe();
     this.leaveTransaction();
+    this.partnerCodeSubscription?.unsubscribe();
+  }
+
+  setupPartnerCode(): void {
+    this.partnerCodeSubscription?.unsubscribe();
+    this.partnerCodeSubscription = this.partnerCodeService.partnerCode$.subscribe((partnerCode) => {
+      this.partnerCode = partnerCode;
+    });
   }
 }
