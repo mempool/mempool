@@ -1,5 +1,7 @@
 import { GridLayout, GridNode, GridEdge, ChunkRegion, cellKey, cellCol, cellRow } from './cluster-layout';
 
+export type RelatedKind = null | 'ancestor' | 'descendant' | 'direct';
+
 export interface RenderedNode {
   index: number;
   tx: { txid: string; fee: number; weight: number };
@@ -7,13 +9,17 @@ export interface RenderedNode {
   y: number;
   rectX: number;
   rectY: number;
+  width: number;
+  height: number;
+  rx: number;
   color: string;
   chunkIndex: number;
   feerate: number;
   inactive: boolean;
   isCurrent: boolean;
   hovered: boolean;
-  related: boolean;
+  relation: RelatedKind;
+  visible: boolean;
 }
 
 export interface RenderedEdge {
@@ -31,6 +37,8 @@ export interface RenderedEdge {
   x2: number;
   y2: number;
   highlighted: boolean;
+  highlightKind: RelatedKind;
+  visible: boolean;
 }
 
 export interface RenderedChunkOutline {
@@ -50,6 +58,8 @@ export interface RenderParams {
   txids: string[];
   chunkFeerates: number[];
   getColor: (feerate: number) => string;
+  preview?: boolean;
+  idPrefix: string;
 }
 
 interface RenderResult {
@@ -58,6 +68,19 @@ interface RenderResult {
   chunkOutlines: RenderedChunkOutline[];
   svgWidth: number;
   svgHeight: number;
+  viewBox: string | null;
+}
+
+interface RenderDimensions {
+  nodeW: number;
+  nodeH: number;
+  cellPadY: number;
+  minCellW: number;
+  maxCellW: number;
+  marginX: number;
+  marginY: number;
+  laneSpacing: number;
+  nodeRx: number;
 }
 
 interface GridGeometry {
@@ -68,55 +91,100 @@ interface GridGeometry {
   cellW: number;
   totalCols: number;
   totalRows: number;
+  virtualTopY: number;
+  virtualBottomY: number;
+  dim: RenderDimensions;
 }
 
-export const NODE_W = 64;
-export const NODE_H = 30;
-const MIN_CELL_W = 80;
-const MAX_CELL_W = 120;
-const CELL_PAD_Y = 16;
-const MARGIN_X = 20;
-const MARGIN_Y = 30;
-const LANE_SPACING = 6;
-const MIN_GUTTER_W = 3 * LANE_SPACING;
-const MIN_GUTTER_H = 3 * LANE_SPACING;
+const DEFAULT_DIMENSIONS: RenderDimensions = {
+  nodeW: 64,
+  nodeH: 30,
+  cellPadY: 16,
+  minCellW: 80,
+  maxCellW: 120,
+  marginX: 20,
+  marginY: 30,
+  laneSpacing: 6,
+  nodeRx: 6,
+};
+
+const PREVIEW_DIMENSIONS: RenderDimensions = {
+  nodeW: 10,
+  nodeH: 10,
+  cellPadY: 2,
+  minCellW: 18,
+  maxCellW: 80,
+  marginX: 3,
+  marginY: 3,
+  laneSpacing: 2,
+  nodeRx: 2,
+};
+
+const PREVIEW_VIEWPORT_HEIGHT = 48;
 const OUTLINE_PAD = 6;
 
 export function renderLayout(layout: GridLayout, params: RenderParams): RenderResult {
   if (layout.nodes.length === 0) {
-    return { nodes: [], edges: [], chunkOutlines: [], svgWidth: 0, svgHeight: 0 };
+    return { nodes: [], edges: [], chunkOutlines: [], svgWidth: 0, svgHeight: 0, viewBox: null };
   }
 
-  const cellH = NODE_H + CELL_PAD_Y;
+  const dim = params.preview ? PREVIEW_DIMENSIONS : DEFAULT_DIMENSIONS;
+  const minGutterW = 3 * dim.laneSpacing;
+  const minGutterH = 3 * dim.laneSpacing;
+  const cellH = dim.nodeH + dim.cellPadY;
 
   const rowHeights: number[] = [];
   for (let r = 0; r < layout.rows; r++) {
     const laneCount = (layout.rowLaneCounts && layout.rowLaneCounts[r]) || 0;
     if (r % 2 === 0) {
-      rowHeights.push(Math.max(cellH, (laneCount + 1) * LANE_SPACING));
+      rowHeights.push(Math.max(cellH, (laneCount + 1) * dim.laneSpacing));
     } else {
-      rowHeights.push(Math.max(MIN_GUTTER_H, (laneCount + 1) * LANE_SPACING));
+      rowHeights.push(Math.max(minGutterH, (laneCount + 1) * dim.laneSpacing));
     }
   }
 
-  const rowTopY: number[] = [MARGIN_Y];
+  let needsVirtualTop = false;
+  let needsVirtualBottom = false;
+  for (const e of layout.edges) {
+    for (const wp of e.waypoints) {
+      if (wp.row < 0) { needsVirtualTop = true; }
+      if (wp.row >= layout.rows) { needsVirtualBottom = true; }
+    }
+  }
+  const virtualGap = dim.laneSpacing * 3;
+  const topPad = needsVirtualTop ? virtualGap : 0;
+  const bottomPad = needsVirtualBottom ? virtualGap : 0;
+
+  const rowTopY: number[] = [dim.marginY + topPad];
   for (let r = 1; r < layout.rows; r++) {
     rowTopY.push(rowTopY[r - 1] + rowHeights[r - 1]);
   }
+  const virtualTopY = needsVirtualTop ? dim.marginY + topPad / 2 : dim.marginY;
+  const virtualBottomY = layout.rows > 0
+    ? rowTopY[layout.rows - 1] + rowHeights[layout.rows - 1] + bottomPad / 2
+    : dim.marginY;
 
   const gutterWidths: number[] = [];
   for (let c = 0; c < layout.cols - 1; c++) {
     const laneCount = (layout.colLaneCounts && layout.colLaneCounts[c]) || 0;
-    gutterWidths.push(Math.max(MIN_GUTTER_W, (laneCount + 1) * LANE_SPACING));
+    gutterWidths.push(Math.max(minGutterW, (laneCount + 1) * dim.laneSpacing));
   }
   const totalGutterW = gutterWidths.reduce((a, b) => a + b, 0);
 
-  const fixedWidth = MARGIN_X * 2 + totalGutterW;
-  const cellW = layout.cols > 0
-    ? Math.max(MIN_CELL_W, Math.min(MAX_CELL_W, (params.containerWidth - fixedWidth) / layout.cols))
-    : MIN_CELL_W;
+  const fixedWidth = dim.marginX * 2 + totalGutterW;
+  let cellW: number;
+  if (params.preview) {
+    const activeCols = activeChunkColCount(layout, params.activeChunkIndex);
+    const denom = Math.max(1, activeCols);
+    cellW = Math.max(dim.minCellW, Math.min(dim.maxCellW,
+      (params.containerWidth - dim.marginX * 2) / denom));
+  } else if (layout.cols > 0) {
+    cellW = Math.max(dim.minCellW, Math.min(dim.maxCellW, (params.containerWidth - fixedWidth) / layout.cols));
+  } else {
+    cellW = dim.minCellW;
+  }
 
-  const colLeftX: number[] = [MARGIN_X];
+  const colLeftX: number[] = [dim.marginX];
   for (let c = 1; c < layout.cols; c++) {
     colLeftX.push(colLeftX[c - 1] + cellW + gutterWidths[c - 1]);
   }
@@ -124,16 +192,67 @@ export function renderLayout(layout: GridLayout, params: RenderParams): RenderRe
   const geo: GridGeometry = {
     colLeftX, rowTopY, rowHeights, gutterWidths, cellW,
     totalCols: layout.cols, totalRows: layout.rows,
+    virtualTopY, virtualBottomY,
+    dim,
   };
 
   const nodes = renderNodes(layout.nodes, params, geo);
-  const edges = renderEdges(layout.edges, nodes, geo);
-  const chunkOutlines = renderChunkOutlines(layout.chunks, params, geo);
+  const edges = renderEdges(layout.edges, nodes, geo, params.idPrefix);
+  const chunkOutlines = params.preview ? [] : renderChunkOutlines(layout.chunks, params, geo);
 
-  const svgWidth = MARGIN_X * 2 + layout.cols * cellW + totalGutterW;
-  const svgHeight = rowTopY[layout.rows - 1] + rowHeights[layout.rows - 1] + MARGIN_Y;
+  const fullWidth = dim.marginX * 2 + layout.cols * cellW + totalGutterW;
+  const fullHeight = rowTopY[layout.rows - 1] + rowHeights[layout.rows - 1] + bottomPad + dim.marginY;
 
-  return { nodes, edges, chunkOutlines, svgWidth, svgHeight };
+  if (params.preview) {
+    const selected = nodes.find(n => n.isCurrent && n.visible) ?? nodes.find(n => n.visible);
+    if (!selected) {
+      return { nodes, edges, chunkOutlines, svgWidth: fullWidth, svgHeight: fullHeight, viewBox: null };
+    }
+
+    const vbHeight = PREVIEW_VIEWPORT_HEIGHT;
+    const vbWidth = Math.max(dim.minCellW * 3, params.containerWidth || dim.minCellW * 8);
+
+    let activeMinX = Infinity, activeMaxX = -Infinity;
+    let activeMinY = Infinity, activeMaxY = -Infinity;
+    for (const n of nodes) {
+      if (n.visible) {
+        activeMinX = Math.min(activeMinX, n.rectX);
+        activeMaxX = Math.max(activeMaxX, n.rectX + n.width);
+        activeMinY = Math.min(activeMinY, n.rectY);
+        activeMaxY = Math.max(activeMaxY, n.rectY + n.height);
+      }
+    }
+    const pad = dim.marginX;
+    const chunkFits = isFinite(activeMinX) && (activeMaxX - activeMinX) + 2 * pad <= vbWidth;
+    const vbX = chunkFits
+      ? (activeMinX + activeMaxX) / 2 - vbWidth / 2
+      : selected.x - vbWidth / 2;
+    const chunkFitsVertically = isFinite(activeMinY) && (activeMaxY - activeMinY) + 2 * dim.marginY <= vbHeight;
+    const vbY = chunkFitsVertically
+      ? (activeMinY + activeMaxY) / 2 - vbHeight / 2
+      : selected.y - vbHeight / 2;
+
+    return {
+      nodes, edges, chunkOutlines,
+      svgWidth: vbWidth,
+      svgHeight: vbHeight,
+      viewBox: `${vbX} ${vbY} ${vbWidth} ${vbHeight}`,
+    };
+  }
+
+  return { nodes, edges, chunkOutlines, svgWidth: fullWidth, svgHeight: fullHeight, viewBox: null };
+}
+
+function activeChunkColCount(layout: GridLayout, activeChunkIndex: number): number {
+  let minCol = Infinity, maxCol = -Infinity;
+  for (const n of layout.nodes) {
+    if (n.chunkIndex === activeChunkIndex) {
+      if (n.col < minCol) { minCol = n.col; }
+      if (n.col > maxCol) { maxCol = n.col; }
+    }
+  }
+  if (!isFinite(minCol)) { return layout.cols; }
+  return maxCol - minCol + 1;
 }
 
 function geoCellX(geo: GridGeometry, col: number): number {
@@ -141,7 +260,8 @@ function geoCellX(geo: GridGeometry, col: number): number {
 }
 
 function geoCellY(geo: GridGeometry, row: number): number {
-  if (row < 0 || row >= geo.totalRows) { return MARGIN_Y; }
+  if (row < 0) { return geo.virtualTopY; }
+  if (row >= geo.totalRows) { return geo.virtualBottomY; }
   return geo.rowTopY[row] + geo.rowHeights[row] / 2;
 }
 
@@ -154,7 +274,8 @@ function geoCellLeft(geo: GridGeometry, col: number): number {
 }
 
 function geoCellTop(geo: GridGeometry, row: number): number {
-  if (row < 0 || row >= geo.totalRows) { return MARGIN_Y; }
+  if (row < 0) { return geo.virtualTopY; }
+  if (row >= geo.totalRows) { return geo.virtualBottomY; }
   return geo.rowTopY[row];
 }
 
@@ -163,19 +284,24 @@ function geoCellRight(geo: GridGeometry, col: number): number {
 }
 
 function geoCellBottom(geo: GridGeometry, row: number): number {
-  if (row < 0 || row >= geo.totalRows) { return MARGIN_Y; }
+  if (row < 0) { return geo.virtualTopY; }
+  if (row >= geo.totalRows) { return geo.virtualBottomY; }
   return geo.rowTopY[row] + geo.rowHeights[row];
 }
 
-function borderX(geo: GridGeometry, b: number): number {
+function borderX(geo: GridGeometry, b: number, side: 'left' | 'right' | null = null): number {
   if (b <= 0) { return geoCellLeft(geo, 0) - OUTLINE_PAD; }
   if (b >= geo.totalCols) { return geoCellRight(geo, geo.totalCols - 1) + OUTLINE_PAD; }
+  if (side === 'left') { return geoCellLeft(geo, b) - geo.dim.laneSpacing / 2; }
+  if (side === 'right') { return geoCellRight(geo, b - 1) + geo.dim.laneSpacing / 2; }
   return (geoCellRight(geo, b - 1) + geoCellLeft(geo, b)) / 2;
 }
 
-function borderY(geo: GridGeometry, b: number): number {
+function borderY(geo: GridGeometry, b: number, side: 'top' | 'bottom' | null = null): number {
   if (b <= 0) { return geoCellTop(geo, 0) - OUTLINE_PAD; }
   if (b >= geo.totalRows) { return geoCellBottom(geo, geo.totalRows - 1) + OUTLINE_PAD; }
+  if (side === 'top') { return geoCellTop(geo, b) + geo.dim.laneSpacing / 2; }
+  if (side === 'bottom') { return geoCellBottom(geo, b - 1) - geo.dim.laneSpacing / 2; }
   return (geoCellBottom(geo, b - 1) + geoCellTop(geo, b)) / 2;
 }
 
@@ -186,6 +312,7 @@ function renderNodes(gridNodes: GridNode[], params: RenderParams, geo: GridGeome
     const feerate = params.txFees[gn.index] / (params.txWeights[gn.index] / 4);
     const color = params.getColor(feerate);
     const inactive = gn.chunkIndex !== params.activeChunkIndex;
+    const visible = !params.preview || !inactive;
 
     return {
       index: gn.index,
@@ -195,15 +322,19 @@ function renderNodes(gridNodes: GridNode[], params: RenderParams, geo: GridGeome
         weight: params.txWeights[gn.index],
       },
       x, y,
-      rectX: x - NODE_W / 2,
-      rectY: y - NODE_H / 2,
+      rectX: x - geo.dim.nodeW / 2,
+      rectY: y - geo.dim.nodeH / 2,
+      width: geo.dim.nodeW,
+      height: geo.dim.nodeH,
+      rx: geo.dim.nodeRx,
       color,
       chunkIndex: gn.chunkIndex,
       feerate,
       inactive,
       isCurrent: params.txids[gn.index] === params.currentTxid,
       hovered: false,
-      related: false,
+      relation: null,
+      visible,
     };
   });
 }
@@ -216,8 +347,9 @@ interface FanInfo {
 function computeFanInfos(
   gridEdges: GridEdge[],
   side: 'exit' | 'entry',
+  dim: RenderDimensions,
 ): (FanInfo | undefined)[] {
-  const nodeHalfH = NODE_H / 2;
+  const nodeHalfH = dim.nodeH / 2;
   const nodeKey = side === 'exit' ? 'parent' : 'child';
 
   const groups = new Map<number, number[]>();
@@ -241,7 +373,7 @@ function computeFanInfos(
     for (const ei of edgeIndices) {
       const slot = side === 'exit' ? gridEdges[ei].exitSlot : gridEdges[ei].entrySlot;
       const count = side === 'exit' ? gridEdges[ei].exitCount : gridEdges[ei].entryCount;
-      if (Math.abs(slotToOffset(slot, count)) > nodeHalfH) {
+      if (Math.abs(slotToOffset(slot, count, dim)) > nodeHalfH) {
         anyNeedsFan = true;
         break;
       }
@@ -250,14 +382,14 @@ function computeFanInfos(
     if (!anyNeedsFan) { continue; }
 
     const nodeCount = edgeIndices.length;
-    const edgeSpacing = (NODE_H - 2) / Math.max(1, nodeCount - 1);
+    const edgeSpacing = (dim.nodeH - 2) / Math.max(1, nodeCount - 1);
 
     let maxDy = 0;
     const nodeEdgeOffsets: number[] = [];
     for (let k = 0; k < edgeIndices.length; k++) {
       const slot = side === 'exit' ? gridEdges[edgeIndices[k]].exitSlot : gridEdges[edgeIndices[k]].entrySlot;
       const count = side === 'exit' ? gridEdges[edgeIndices[k]].exitCount : gridEdges[edgeIndices[k]].entryCount;
-      const laneOffset = slotToOffset(slot, count);
+      const laneOffset = slotToOffset(slot, count, dim);
       const nodeEdgeOffset = (k - (nodeCount - 1) / 2) * edgeSpacing;
       nodeEdgeOffsets.push(nodeEdgeOffset);
       maxDy = Math.max(maxDy, Math.abs(laneOffset - nodeEdgeOffset));
@@ -275,9 +407,10 @@ function computeFanInfos(
 
 function renderEdges(
   gridEdges: GridEdge[], renderedNodes: RenderedNode[], geo: GridGeometry,
+  idPrefix: string,
 ): RenderedEdge[] {
-  const exitFanInfos = computeFanInfos(gridEdges, 'exit');
-  const entryFanInfos = computeFanInfos(gridEdges, 'entry');
+  const exitFanInfos = computeFanInfos(gridEdges, 'exit', geo.dim);
+  const entryFanInfos = computeFanInfos(gridEdges, 'entry', geo.dim);
 
   return gridEdges.map((ge, idx) => {
     const pNode = renderedNodes[ge.parent];
@@ -293,8 +426,8 @@ function renderEdges(
       parentIndex: ge.parent,
       childIndex: ge.child,
       path,
-      gradientId: `edge-grad-${idx}`,
-      markerId: `edge-arrow-${idx}`,
+      gradientId: `${idPrefix}-edge-grad-${idx}`,
+      markerId: `${idPrefix}-edge-arrow-${idx}`,
       parentColor: pNode.color,
       childColor: cNode.color,
       parentInactive: pNode.inactive,
@@ -302,6 +435,8 @@ function renderEdges(
       x1: first.x, y1: first.y,
       x2: last.x, y2: last.y,
       highlighted: false,
+      highlightKind: null,
+      visible: pNode.visible && cNode.visible,
     };
   });
 }
@@ -319,11 +454,11 @@ function waypointsToPixels(
   const wp = edge.waypoints;
   if (wp.length < 2) { return []; }
 
-  const exitOffset = slotToOffset(edge.exitSlot, edge.exitCount);
-  const entryOffset = slotToOffset(edge.entrySlot, edge.entryCount);
+  const exitOffset = slotToOffset(edge.exitSlot, edge.exitCount, geo.dim);
+  const entryOffset = slotToOffset(edge.entrySlot, edge.entryCount, geo.dim);
   const points: PathPoint[] = [];
 
-  const startNodeX = geoCellX(geo, wp[0].col) + NODE_W / 2;
+  const startNodeX = geoCellX(geo, wp[0].col) + geo.dim.nodeW / 2;
   const cy0 = geoCellY(geo, wp[0].row);
 
   if (exitFan) {
@@ -336,7 +471,7 @@ function waypointsToPixels(
   let curY = cy0 + exitOffset;
   for (let i = 0; i < wp.length - 1; i++) {
     const vInfo = edge.verticalSlots[i];
-    const gx = geoGutterCenterX(geo, wp[i].col) + slotToOffset(vInfo.slot, vInfo.count);
+    const gx = geoGutterCenterX(geo, wp[i].col) + slotToOffset(vInfo.slot, vInfo.count, geo.dim);
     const isLast = i === wp.length - 2;
 
     let nextY: number;
@@ -344,7 +479,7 @@ function waypointsToPixels(
       nextY = geoCellY(geo, wp[i + 1].row) + entryOffset;
     } else {
       const hInfo = edge.horizontalSlots[i];
-      nextY = geoCellY(geo, wp[i + 1].row) + slotToOffset(hInfo.slot, hInfo.count);
+      nextY = geoCellY(geo, wp[i + 1].row) + slotToOffset(hInfo.slot, hInfo.count, geo.dim);
     }
 
     if (points[points.length - 1].x !== gx) {
@@ -358,12 +493,12 @@ function waypointsToPixels(
 
     if (!isLast) {
       const nextVInfo = edge.verticalSlots[i + 1];
-      const nextGx = geoGutterCenterX(geo, wp[i + 1].col) + slotToOffset(nextVInfo.slot, nextVInfo.count);
+      const nextGx = geoGutterCenterX(geo, wp[i + 1].col) + slotToOffset(nextVInfo.slot, nextVInfo.count, geo.dim);
       points.push({ x: nextGx, y: curY });
     }
   }
 
-  const endNodeX = geoCellX(geo, wp[wp.length - 1].col) - NODE_W / 2;
+  const endNodeX = geoCellX(geo, wp[wp.length - 1].col) - geo.dim.nodeW / 2;
   const cyLast = geoCellY(geo, wp[wp.length - 1].row);
 
   if (entryFan) {
@@ -376,9 +511,9 @@ function waypointsToPixels(
   return points;
 }
 
-function slotToOffset(slot: number, count: number): number {
+function slotToOffset(slot: number, count: number, dim: RenderDimensions): number {
   if (count <= 1) { return 0; }
-  return (slot - (count - 1) / 2) * LANE_SPACING;
+  return (slot - (count - 1) / 2) * dim.laneSpacing;
 }
 
 function buildEdgePath(points: PathPoint[]): string {
@@ -445,7 +580,7 @@ function renderChunkOutlines(
       const ty = borderY(geo, r);
       if (ty < labelY || (ty === labelY && cx < labelX)) {
         labelX = cx;
-        labelY = ty - 4;
+        labelY = ty - 8;
       }
     }
 
@@ -469,10 +604,16 @@ function collectBoundarySegments(chunk: ChunkRegion, geo: GridGeometry): Segment
 
   for (const cell of chunk.cells) {
     const c = cellCol(cell), r = cellRow(cell);
-    const left = borderX(geo, c);
-    const right = borderX(geo, c + 1);
-    const top = borderY(geo, r);
-    const bottom = borderY(geo, r + 1);
+    const left = cornerX(chunk, geo, c, r);
+    const right = cornerX(chunk, geo, c + 1, r);
+    const bottomLeft = cornerX(chunk, geo, c, r + 1);
+    const bottomRight = cornerX(chunk, geo, c + 1, r + 1);
+    const top = borderY(geo, r, 'top');
+    const bottom = borderY(geo, r + 1, 'bottom');
+    const leftTop = cornerY(chunk, geo, c, r);
+    const leftBottom = cornerY(chunk, geo, c, r + 1);
+    const rightTop = cornerY(chunk, geo, c + 1, r);
+    const rightBottom = cornerY(chunk, geo, c + 1, r + 1);
 
     const hasAbove = chunk.cells.has(cellKey(c, r - 1));
     const hasBelow = chunk.cells.has(cellKey(c, r + 1));
@@ -480,12 +621,52 @@ function collectBoundarySegments(chunk: ChunkRegion, geo: GridGeometry): Segment
     const hasRight = chunk.cells.has(cellKey(c + 1, r));
 
     if (!hasAbove) { segments.push({ x1: left, y1: top, x2: right, y2: top }); }
-    if (!hasBelow) { segments.push({ x1: right, y1: bottom, x2: left, y2: bottom }); }
-    if (!hasLeft) { segments.push({ x1: left, y1: bottom, x2: left, y2: top }); }
-    if (!hasRight) { segments.push({ x1: right, y1: top, x2: right, y2: bottom }); }
+    if (!hasBelow) { segments.push({ x1: bottomRight, y1: bottom, x2: bottomLeft, y2: bottom }); }
+    if (!hasLeft) {
+      const x = borderX(geo, c, 'left');
+      segments.push({ x1: x, y1: leftBottom, x2: x, y2: leftTop });
+    }
+    if (!hasRight) {
+      const x = borderX(geo, c + 1, 'right');
+      segments.push({ x1: x, y1: rightTop, x2: x, y2: rightBottom });
+    }
   }
 
   return segments;
+}
+
+function cornerX(chunk: ChunkRegion, geo: GridGeometry, col: number, row: number): number {
+  const side = verticalBoundarySide(
+    chunk.cells.has(cellKey(col - 1, row)),
+    chunk.cells.has(cellKey(col, row)),
+  ) || verticalBoundarySide(
+    chunk.cells.has(cellKey(col - 1, row - 1)),
+    chunk.cells.has(cellKey(col, row - 1)),
+  );
+  return borderX(geo, col, side);
+}
+
+function verticalBoundarySide(leftOccupied: boolean, rightOccupied: boolean): 'left' | 'right' | null {
+  if (!leftOccupied && rightOccupied) { return 'left'; }
+  if (leftOccupied && !rightOccupied) { return 'right'; }
+  return null;
+}
+
+function cornerY(chunk: ChunkRegion, geo: GridGeometry, col: number, row: number): number {
+  const side = horizontalBoundarySide(
+    chunk.cells.has(cellKey(col, row - 1)),
+    chunk.cells.has(cellKey(col, row)),
+  ) || horizontalBoundarySide(
+    chunk.cells.has(cellKey(col - 1, row - 1)),
+    chunk.cells.has(cellKey(col - 1, row)),
+  );
+  return borderY(geo, row, side);
+}
+
+function horizontalBoundarySide(aboveOccupied: boolean, belowOccupied: boolean): 'top' | 'bottom' | null {
+  if (!aboveOccupied && belowOccupied) { return 'top'; }
+  if (aboveOccupied && !belowOccupied) { return 'bottom'; }
+  return null;
 }
 
 function endpointKey(x: number, y: number): string {

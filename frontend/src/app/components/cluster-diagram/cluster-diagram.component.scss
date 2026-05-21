@@ -1,3 +1,11 @@
+:host {
+  position: relative;
+  display: block;
+  --cluster-ancestor-color: var(--info);
+  --cluster-descendant-color: var(--primary);
+  --cluster-direct-color: white;
+}
+
 .graph-container {
   position: relative;
   width: 100%;
@@ -8,6 +16,39 @@
 
   svg {
     display: inline-block;
+  }
+
+  &.preview {
+    padding: 0;
+    overflow: hidden;
+    pointer-events: none;
+    border-radius: 4px;
+    background-color: transparent;
+    box-shadow: var(--cluster-preview-shadow, none);
+    cursor: var(--cluster-preview-cursor, default);
+    transition: box-shadow 150ms ease;
+
+    svg {
+      display: block;
+      width: 100%;
+      -webkit-mask:
+        linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%),
+        linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
+      -webkit-mask-composite: source-in;
+      mask:
+        linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%),
+        linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
+      mask-composite: intersect;
+    }
+
+    .node-rect {
+      stroke-width: 2;
+    }
+
+    .edge-line {
+      stroke-width: 0.5;
+      opacity: 0.55;
+    }
   }
 }
 
@@ -40,6 +81,30 @@
   stroke-width: 2;
   transition: stroke 150ms;
   pointer-events: none;
+
+  &.ancestor {
+    stroke: var(--cluster-ancestor-color);
+  }
+
+  &.descendant {
+    stroke: var(--cluster-descendant-color);
+  }
+
+  &.direct {
+    stroke: var(--cluster-direct-color);
+  }
+}
+
+.edge-arrow-ancestor-path {
+  fill: var(--cluster-ancestor-color);
+}
+
+.edge-arrow-descendant-path {
+  fill: var(--cluster-descendant-color);
+}
+
+.edge-arrow-direct-path {
+  fill: var(--cluster-direct-color);
 }
 
 .node-group {
@@ -56,15 +121,19 @@
   transition: stroke 150ms;
 
   &.current {
-    stroke: var(--mainnet-alt);
+    stroke: var(--cluster-direct-color);
   }
 
-  &.related {
-    stroke: rgba(255, 255, 255, 0.6);
+  &.ancestor {
+    stroke: var(--cluster-ancestor-color);
+  }
+
+  &.descendant {
+    stroke: var(--cluster-descendant-color);
   }
 
   &.hovered {
-    stroke: white;
+    stroke: var(--cluster-direct-color);
   }
 }
 
@@ -81,13 +150,78 @@
   border-radius: 4px;
   box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
   color: var(--tooltip-grey);
-  padding: 10px 15px;
+  padding: 8px 12px;
   text-align: left;
   pointer-events: none;
-  max-width: 350px;
+  max-width: 360px;
+  white-space: nowrap;
 
-  p {
-    margin: 0;
-    white-space: nowrap;
+  .tx-id-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .this-tx-badge {
+    font-size: 0.75em;
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+    border-radius: 3px;
+    padding: 1px 6px;
+  }
+
+  .tooltip-body {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  table.stats {
+    border-collapse: collapse;
+
+    th, td {
+      padding: 1px 0;
+      font-weight: normal;
+      vertical-align: baseline;
+    }
+
+    th {
+      text-align: left;
+      padding-right: 10px;
+      opacity: 0.7;
+    }
+
+    .unit {
+      opacity: 0.7;
+      font-size: 0.85em;
+    }
+  }
+
+  .legend {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.85em;
+    padding-left: 10px;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+
+    > div {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+  }
+
+  .swatch {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+
+    &.ancestor { background: var(--cluster-ancestor-color); }
+    &.descendant { background: var(--cluster-descendant-color); }
   }
 }

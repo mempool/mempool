@@ -40,6 +40,7 @@ export class TransactionDetailsComponent implements OnInit {
   @Input() isCached: boolean;
   @Input() ETA$: Observable<ETA>;
   @Input() unbroadcasted: boolean;
+  @Input() cpfpMode: boolean = false;
 
   @Output() accelerateClicked = new EventEmitter<boolean>();
   @Output() toggleCpfp$ = new EventEmitter<void>();
@@ -54,5 +55,15 @@ export class TransactionDetailsComponent implements OnInit {
 
   toggleCpfp(): void {
     this.toggleCpfp$.emit();
+  }
+
+  get clusterPreviewStats(): { chunkSize: number; chunkFeerate: number; otherChunks: number } {
+    const cluster = this.cpfpInfo?.cluster;
+    const chunk = cluster?.chunks[cluster.chunkIndex];
+    return {
+      chunkSize: chunk?.txs.length ?? 0,
+      chunkFeerate: chunk?.feerate ?? 0,
+      otherChunks: Math.max(0, (cluster?.chunks.length ?? 0) - 1),
+    };
   }
 }

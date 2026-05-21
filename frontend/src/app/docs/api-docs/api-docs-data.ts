@@ -11982,7 +11982,7 @@ export const restApiDocsData = [
         codeSampleMainnet: {
           esModule: [],
           commonJS: [],
-          curl: ['txInput=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29'],
+          curl: ['txid=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29'],
           headers: 'X-Mempool-Auth: stacksats',
           response: `{
   "txSummary": {
@@ -12136,13 +12136,13 @@ export const restApiDocsData = [
       Filters can be applied:<ul>
       <li><code>status</code>: <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code></li>
       <li><code>timeframe</code>: <code>24h</code>, <code>3d</code>, <code>1w</code>, <code>1m</code>, <code>3m</code>, <code>6m</code>, <code>1y</code>, <code>2y</code>, <code>3y</code>, <code>4y</code>, <code>all</code></li>
-      <li><code>minedByPoolUniqueId</code>: any id from <a target="_blank" href="https://github.com/mempool/mining-pools/blob/master/pools-v2.json">pools-v2.json</a>
-      <li><code>blockHash</code>: a block hash</a>
-      <li><code>blockHeight</code>: a block height</a>
-      <li><code>page</code>: the requested page number if using pagination <i>(min: 1)</i></a>
-      <li><code>pageLength</code>: the page lenght if using pagination <i>(min: 1, max: 50)</i></a>
-      <li><code>from</code>: unix timestamp (<i>overrides <code>timeframe</code></i>)</a>
-      <li><code>to</code>: unix timestamp (<i>overrides <code>timeframe</code></i>)</a>
+      <li><code>minedByPoolUniqueId</code>: any id from <a target="_blank" href="https://github.com/mempool/mining-pools/blob/master/pools-v2.json">pools-v2.json</a></li>
+      <li><code>blockHash</code>: a block hash</li>
+      <li><code>blockHeight</code>: a block height</li>
+      <li><code>page</code>: the requested page number if using pagination <i>(min: 1)</i></li>
+      <li><code>pageLength</code>: the page length if using pagination <i>(min: 1, max: 50)</i></li>
+      <li><code>from</code>: unix timestamp (<i>overrides <code>timeframe</code></i>)</li>
+      <li><code>to</code>: unix timestamp (<i>overrides <code>timeframe</code></i>)</li>
       </ul></p>`
     },
     urlString: '/v1/services/accelerator/accelerations/history',
@@ -12182,6 +12182,65 @@ export const restApiDocsData = [
 ]`,
         },
       }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-public',
+    httpRequestMethod: 'GET',
+    fragment: 'accelerator-public-stats',
+    title: 'GET Acceleration Stats',
+    description: {
+      default: `<p>Aggregated statistics for transaction accelerations, with optional filtering by pool, block, or time range.
+      Filters can be applied:<ul>
+      <li><code>timeframe</code>: <code>24h</code>, <code>3d</code>, <code>1w</code>, <code>1m</code>, <code>3m</code>, <code>6m</code>, <code>1y</code>, <code>2y</code>, <code>3y</code>, <code>4y</code>, <code>all</code></li>
+      <li><code>poolUniqueId</code>: any id from <a target="_blank" href="https://github.com/mempool/mining-pools/blob/master/pools-v2.json">pools-v2.json</a></li>
+      <li><code>blockHash</code>: a block hash</li>
+      <li><code>blockHeight</code>: a block height</li>
+      <li><code>from</code>: unix timestamp (<i>overrides <code>timeframe</code></i>)</li>
+      <li><code>to</code>: unix timestamp (<i>overrides <code>timeframe</code></i>)</li>
+      </ul></p>
+      <p>
+        Response fields:
+        <ul>
+          <li><code>totalRequested</code>: number of acceleration requests.</li>
+          <li><code>totalAccepted</code>: accelerations accepted into a block template.
+            <br><strong class="ms-3">- Per-pool</strong>: count this pool put in its template.
+            <br><strong class="ms-3">- Global</strong>: count accepted by any pool. Per-pool values do not sum to the global value.</li>
+          <li><code>totalCompleted</code>: accelerations mined into a confirmed block. Per-pool values sum to roughly the global value.</li>
+          <li><code>totalBidBoost</code>: total acceleration fees in sats.</li>
+          <li><code>totalVsize</code>: Total virtual size of accelerated transactions, in vbytes.</li>
+        </ul>
+      </p>
+      `
+    },
+    urlString: '/v1/services/accelerator/accelerations/stats',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/services/accelerator/accelerations/stats?blockHash=000000000000000000002c55e353486c1013ce8bd6d637fd5be7798f44b731dc`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          headers: '',
+          response: `
+  {
+   "totalRequested": 3,
+   "totalAccepted": 3,
+   "totalCompleted": 3,
+   "totalBidBoost": 1552,
+   "totalVsize": 1846
+  }
+`,
+        },
+      },
     }
   },
 
@@ -12339,7 +12398,7 @@ export const restApiDocsData = [
         codeSampleMainnet: {
           esModule: [],
           commonJS: [],
-          curl: ['txInput=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&userBid=21000000'],
+          curl: ['txid=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&maxBidBoost=21000000'],
           headers: 'X-Mempool-Auth: stacksats',
           response: `HTTP/1.1 200 OK`,
         },
@@ -12412,7 +12471,7 @@ export const restApiDocsData = [
         codeSampleMainnet: {
           esModule: [],
           commonJS: [],
-          curl: ['txInput=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&type=time_delay&value=0.5'],
+          curl: ['txid=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&type=time_delay&value=0.5'],
           headers: 'X-Mempool-Auth: stacksats',
           response: `HTTP/1.1 200 OK`,
         },

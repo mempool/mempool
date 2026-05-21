@@ -4,6 +4,8 @@ import { ServicesApiServices } from '@app/services/services-api.service';
 
 export type AccelerationStats = {
   totalRequested: number;
+  totalAccepted: number;
+  totalCompleted: number;
   totalBidBoost: number;
   totalVsize: number;
 }

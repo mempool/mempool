@@ -1,5 +1,5 @@
-<div class="graph-container" #graphContainer>
-  <svg [attr.width]="svgWidth" [attr.height]="svgHeight" xmlns="http://www.w3.org/2000/svg">
+<div class="graph-container" [class.preview]="preview" #graphContainer>
+  <svg [attr.width]="svgWidth" [attr.height]="svgHeight" [attr.viewBox]="svgViewBox" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient *ngFor="let edge of edges; trackBy: trackByEdgeId"
         [attr.id]="edge.gradientId"
@@ -19,75 +19,138 @@
           [attr.fill]="edge.childColor"
           [attr.fill-opacity]="edge.childInactive ? 0.45 : 1" />
       </marker>
-      <marker id="edge-arrow-highlight"
+      <marker [attr.id]="idPrefix + '-edge-arrow-ancestor'"
         markerUnits="userSpaceOnUse"
         markerWidth="8" markerHeight="8"
         refX="5" refY="4"
         orient="auto">
-        <path d="M 0,0.5 L 7.5,4 L 0,7.5 Z" fill="white" />
+        <path class="edge-arrow-ancestor-path" d="M 0,0.5 L 7.5,4 L 0,7.5 Z" />
+      </marker>
+      <marker [attr.id]="idPrefix + '-edge-arrow-descendant'"
+        markerUnits="userSpaceOnUse"
+        markerWidth="8" markerHeight="8"
+        refX="5" refY="4"
+        orient="auto">
+        <path class="edge-arrow-descendant-path" d="M 0,0.5 L 7.5,4 L 0,7.5 Z" />
+      </marker>
+      <marker [attr.id]="idPrefix + '-edge-arrow-direct'"
+        markerUnits="userSpaceOnUse"
+        markerWidth="8" markerHeight="8"
+        refX="5" refY="4"
+        orient="auto">
+        <path class="edge-arrow-direct-path" d="M 0,0.5 L 7.5,4 L 0,7.5 Z" />
       </marker>
     </defs>
 
-    <path *ngFor="let outline of chunkOutlines; trackBy: trackByChunkIndex"
-      class="chunk-border"
-      [class.inactive]="outline.chunkIndex !== activeChunkIndex"
-      [attr.d]="outline.path" />
+    <ng-container *ngIf="!preview">
+      <path *ngFor="let outline of chunkOutlines; trackBy: trackByChunkIndex"
+        class="chunk-border"
+        [class.inactive]="outline.chunkIndex !== effectiveActiveChunk"
+        [attr.d]="outline.path"
+        [ngbTooltip]="chunkLabelTooltip"
+        container="body"
+        placement="top"
+        (mouseenter)="onChunkEnter(outline.chunkIndex)"
+        (mouseleave)="onChunkLeave()" />
 
-    <text *ngFor="let outline of chunkOutlines; trackBy: trackByChunkIndex"
-      class="chunk-label"
-      [class.inactive]="outline.chunkIndex !== activeChunkIndex"
-      [attr.x]="outline.labelX" [attr.y]="outline.labelY"
-      text-anchor="middle">
-      {{ outline.feerate | feeRounding }} sat/vB
-    </text>
-
-    <g *ngFor="let edge of edges; let i = index; trackBy: trackByEdgeId">
-      <path class="edge-hitarea"
-        [attr.d]="edge.path"
-        fill="none"
-        stroke="transparent"
-        stroke-width="12"
-        (mouseenter)="onEdgeEnter(i)"
-        (mouseleave)="onEdgeLeave()" />
-      <path class="edge-line"
-        [class.highlighted]="edge.highlighted"
-        [attr.d]="edge.path"
-        [attr.stroke]="edge.highlighted ? 'white' : 'url(#' + edge.gradientId + ')'"
-        [attr.marker-end]="edge.highlighted ? 'url(#edge-arrow-highlight)' : 'url(#' + edge.markerId + ')'"
-        fill="none" />
-    </g>
-
-    <g *ngFor="let node of nodes; trackBy: trackByNodeIndex"
-      class="node-group"
-      [class.inactive-fill]="node.inactive"
-      (mouseenter)="onNodeEnter(node, $event)"
-      (mousemove)="onNodeMove($event)"
-      (mouseleave)="onNodeLeave()"
-      (click)="onNodeClick(node)">
-      <rect class="node-rect"
-        [class.current]="node.isCurrent"
-        [class.hovered]="node.hovered"
-        [class.related]="node.related"
-        [attr.x]="node.rectX" [attr.y]="node.rectY"
-        [attr.width]="nodeW" [attr.height]="nodeH"
-        [attr.rx]="nodeRx"
-        [attr.fill]="node.color" />
-      <text class="node-label"
-        [attr.x]="node.x" [attr.y]="node.y"
-        text-anchor="middle" dominant-baseline="central">
-        {{ node.feerate | feeRounding }}
+      <text *ngFor="let outline of chunkOutlines; trackBy: trackByChunkIndex"
+        class="chunk-label"
+        [class.inactive]="outline.chunkIndex !== effectiveActiveChunk"
+        [attr.x]="outline.labelX" [attr.y]="outline.labelY"
+        text-anchor="middle"
+        [ngbTooltip]="chunkLabelTooltip"
+        container="body"
+        placement="top"
+        (mouseenter)="onChunkEnter(outline.chunkIndex)"
+        (mouseleave)="onChunkLeave()">
+        {{ outline.feerate | feeRounding }} sat/vB
       </text>
-    </g>
-  </svg>
+    </ng-container>
 
-  <div #tooltip
-    class="cluster-tooltip"
-    *ngIf="hoverNode"
-    [style.left.px]="tooltipPosition.x"
-    [style.top.px]="tooltipPosition.y">
-    <p>{{ hoverNode.tx.txid | shortenString }}</p>
-    <p>{{ hoverNode.tx.fee | number }} sat</p>
-    <p [innerHTML]="hoverNode.tx.weight / 4 | vbytes: 2"></p>
-    <p>{{ hoverNode.feerate | feeRounding }} sat/vB</p>
+    <ng-container *ngFor="let edge of edges; let i = index; trackBy: trackByEdgeId">
+      <g *ngIf="edge.visible">
+        <path class="edge-hitarea"
+          [attr.d]="edge.path"
+          fill="none"
+          stroke="transparent"
+          stroke-width="12"
+          (mouseenter)="onEdgeEnter(i, $event)"
+          (mousemove)="onEdgeMove($event)"
+          (mouseleave)="onEdgeLeave()" />
+        <path class="edge-line"
+          [class.highlighted]="edge.highlighted"
+          [class.ancestor]="edge.highlightKind === 'ancestor'"
+          [class.descendant]="edge.highlightKind === 'descendant'"
+          [class.direct]="edge.highlightKind === 'direct'"
+          [attr.d]="edge.path"
+          [attr.stroke]="preview ? 'white' : (edge.highlighted ? null : 'url(#' + edge.gradientId + ')')"
+          [attr.marker-end]="preview ? null : (edge.highlightKind === 'ancestor' ? 'url(#' + idPrefix + '-edge-arrow-ancestor)' : edge.highlightKind === 'descendant' ? 'url(#' + idPrefix + '-edge-arrow-descendant)' : edge.highlightKind === 'direct' ? 'url(#' + idPrefix + '-edge-arrow-direct)' : 'url(#' + edge.markerId + ')')"
+          fill="none" />
+      </g>
+    </ng-container>
+
+    <ng-container *ngFor="let node of nodes; trackBy: trackByNodeIndex">
+      <g *ngIf="node.visible"
+        class="node-group"
+        [class.inactive-fill]="node.inactive"
+        (mouseenter)="onNodeEnter(node, $event)"
+        (mousemove)="onNodeMove($event)"
+        (mouseleave)="onNodeLeave()"
+        (click)="onNodeClick(node)">
+        <rect class="node-rect"
+          [class.current]="node.isCurrent"
+          [class.hovered]="node.hovered"
+          [class.ancestor]="node.relation === 'ancestor'"
+          [class.descendant]="node.relation === 'descendant'"
+          [attr.x]="node.rectX" [attr.y]="node.rectY"
+          [attr.width]="node.width" [attr.height]="node.height"
+          [attr.rx]="node.rx"
+          [attr.fill]="node.color" />
+        <text *ngIf="!preview" class="node-label"
+          [attr.x]="node.x" [attr.y]="node.y"
+          text-anchor="middle" dominant-baseline="central">
+          {{ node.feerate | feeRounding }}
+        </text>
+      </g>
+    </ng-container>
+  </svg>
+</div>
+
+<ng-template #chunkLabelTooltip><span i18n="cluster.mempool-chunk|Mempool chunk tooltip">mempool chunk</span></ng-template>
+
+<div #tooltip
+  class="cluster-tooltip"
+  *ngIf="hoverNode || hoverEdge"
+  [style.left.px]="tooltipPosition.x"
+  [style.top.px]="tooltipPosition.y">
+  <ng-container *ngIf="hoverNode">
+    <div class="tx-id-row">
+      <span>{{ hoverNode.tx.txid | shortenString }}</span>
+      <span class="this-tx-badge" *ngIf="hoverNode.isCurrent" i18n="cluster.this-transaction|this transaction">this transaction</span>
+    </div>
+    <div class="tooltip-body">
+      <table class="stats">
+        <tr>
+          <th i18n="transaction.fee|Transaction fee">Fee</th>
+          <td>{{ hoverNode.tx.fee | number }} <span class="unit" i18n="shared.sats">sats</span></td>
+        </tr>
+        <tr>
+          <th i18n="transaction.vsize|Virtual size">Size</th>
+          <td><span [innerHTML]="hoverNode.tx.weight / 4 | vbytes: 2"></span></td>
+        </tr>
+        <tr>
+          <th i18n="transaction.fee-rate|Transaction fee rate">Fee rate</th>
+          <td>{{ hoverNode.feerate | feeRounding }} <span class="unit">sat/vB</span></td>
+        </tr>
+      </table>
+      <div class="legend">
+        <div><span class="swatch ancestor"></span><span i18n="cluster.parents|parents">parents</span></div>
+        <div><span class="swatch descendant"></span><span i18n="cluster.children|children">children</span></div>
+      </div>
+    </div>
+  </ng-container>
+  <div class="legend edge-legend" *ngIf="!hoverNode && hoverEdge">
+    <div><span class="swatch ancestor"></span><span i18n="cluster.parent|parent">parent</span></div>
+    <div><span class="swatch descendant"></span><span i18n="cluster.child|child">child</span></div>
   </div>
 </div>

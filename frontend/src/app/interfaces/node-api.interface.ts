@@ -447,11 +447,13 @@ export interface Acceleration {
 export interface AccelerationHistoryParams {
   status?: string; // Single status or comma separated list of status
   timeframe?: string;
-  poolUniqueId?: number;
+  minedByPoolUniqueId?: number;
   blockHash?: string;
   blockHeight?: number;
   page?: number;
   pageLength?: number;
+  from?: number;
+  to?: number;
 }
 
 export interface AccelerationInfo {

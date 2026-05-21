@@ -140,6 +140,18 @@ function assignRows(
 ): Int32Array {
   const rows = new Int32Array(n);
   const placed = new Uint8Array(n);
+  const nodeCol = new Int32Array(n);
+  for (let c = 0; c < colNodes.length; c++) {
+    for (const i of colNodes[c]) { nodeCol[i] = c; }
+  }
+
+  const nearestDescendantCol = new Int32Array(n);
+  nearestDescendantCol.fill(maxCol + 1);
+  for (let i = n - 1; i >= 0; i--) {
+    for (const ch of children[i]) {
+      nearestDescendantCol[i] = Math.min(nearestDescendantCol[i], nodeCol[ch], nearestDescendantCol[ch]);
+    }
+  }
 
   for (let c = maxCol; c >= 0; c--) {
     const layer = colNodes[c];
@@ -160,14 +172,24 @@ function assignRows(
       return (totalRows - 1) / 2;
     });
 
-    const sorted = layer.map((nodeIdx, arrIdx) => ({ nodeIdx, arrIdx, target: targets[arrIdx], chunk: txChunk[nodeIdx] }));
+    const sorted = layer.map((nodeIdx, arrIdx) => ({
+      nodeIdx, arrIdx, target: targets[arrIdx], chunk: txChunk[nodeIdx], nearestDescendantCol: nearestDescendantCol[nodeIdx],
+    }));
     sorted.sort((a, b) => {
       const dt = a.target - b.target;
       if (Math.abs(dt) > 0.001) { return dt; }
-      return a.chunk - b.chunk;
+      if (a.chunk !== b.chunk) { return a.chunk - b.chunk; }
+      if (a.nearestDescendantCol !== b.nearestDescendantCol) {
+        return a.nearestDescendantCol - b.nearestDescendantCol;
+      }
+      return a.nodeIdx - b.nodeIdx;
     });
 
-    const slots = pickSlots(sorted.map(s => s.target), totalRows);
+    const slots = pickSlots(
+      sorted.map(s => s.target),
+      totalRows,
+      hasDescendantColumnTie(sorted.map(s => s.nodeIdx), sorted.map(s => s.target), nearestDescendantCol, maxCol),
+    );
     for (let k = 0; k < sorted.length; k++) {
       rows[sorted[k].nodeIdx] = slots[k];
       placed[sorted[k].nodeIdx] = 1;
@@ -178,7 +200,7 @@ function assignRows(
     const forward = pass % 2 === 0;
     for (let c = forward ? 0 : maxCol; forward ? c <= maxCol : c >= 0; forward ? c++ : c--) {
       const layer = colNodes[c];
-      if (layer.length <= 1) { continue; }
+      if (layer.length === 0) { continue; }
 
       const targets = layer.map(i => {
         const neighbors = forward ? txs[i].parents : children[i];
@@ -189,11 +211,22 @@ function assignRows(
       });
 
       const indexed = layer.map((_, idx) => idx);
-      indexed.sort((a, b) => targets[a] - targets[b]);
+      indexed.sort((a, b) => {
+        const dt = targets[a] - targets[b];
+        if (Math.abs(dt) > 0.001) { return dt; }
+        if (nearestDescendantCol[layer[a]] !== nearestDescendantCol[layer[b]]) {
+          return nearestDescendantCol[layer[a]] - nearestDescendantCol[layer[b]];
+        }
+        return layer[a] - layer[b];
+      });
 
-      const currentSlots = layer.map(i => rows[i]).sort((a, b) => a - b);
+      const slots = pickSlots(
+        indexed.map(i => targets[i]),
+        totalRows,
+        hasDescendantColumnTie(indexed.map(i => layer[i]), indexed.map(i => targets[i]), nearestDescendantCol, maxCol),
+      );
       for (let k = 0; k < indexed.length; k++) {
-        rows[layer[indexed[k]]] = currentSlots[k];
+        rows[layer[indexed[k]]] = slots[k];
       }
     }
   }
@@ -203,9 +236,30 @@ function assignRows(
   return rows;
 }
 
-function pickSlots(targets: number[], totalRows: number): number[] {
+function hasDescendantColumnTie(
+  nodes: number[],
+  targets: number[],
+  nearestDescendantCol: Int32Array,
+  maxCol: number,
+): boolean {
+  for (let i = 0; i < nodes.length; i++) {
+    if (nearestDescendantCol[nodes[i]] > maxCol) { continue; }
+    for (let j = 0; j < nodes.length; j++) {
+      if (
+        i !== j
+        && nearestDescendantCol[nodes[i]] !== nearestDescendantCol[nodes[j]]
+        && Math.abs(targets[i] - targets[j]) < 0.001
+      ) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+function pickSlots(targets: number[], totalRows: number, packFullLayer = false): number[] {
   const count = targets.length;
-  if (count >= totalRows) {
+  if (count >= totalRows && !packFullLayer) {
     return targets.map((_, i) => i);
   }
 
@@ -278,23 +332,48 @@ function computeWaypoints(
     return waypoints;
   }
 
+  const lo = -1;
+  const hi = maxRow + 1;
   for (let c = pNode.col + 1; c < cNode.col; c++) {
     const frac = (c - pNode.col) / (cNode.col - pNode.col);
     const idealRow = pNode.row + frac * (cNode.row - pNode.row);
-    let bestRow = Math.max(0, Math.min(maxRow, Math.round(idealRow)));
+    const targetRow = Math.max(lo, Math.min(hi, Math.round(idealRow)));
 
-    if (nodeAt.has(cellKey(c, bestRow))) {
-      for (let dr = 1; dr <= maxRow; dr++) {
-        if (bestRow + dr <= maxRow && !nodeAt.has(cellKey(c, bestRow + dr))) { bestRow = bestRow + dr; break; }
-        if (bestRow - dr >= 0 && !nodeAt.has(cellKey(c, bestRow - dr))) { bestRow = bestRow - dr; break; }
-      }
-    }
-
-    waypoints.push({ col: c, row: bestRow });
+    waypoints.push({
+      col: c,
+      row: selectOpenWaypointRow(c, targetRow, idealRow, nodeAt, lo, hi),
+    });
   }
 
   waypoints.push({ col: cNode.col, row: cNode.row });
   return waypoints;
+}
+
+function selectOpenWaypointRow(
+  col: number,
+  targetRow: number,
+  idealRow: number,
+  nodeAt: Map<string, number>,
+  lo: number,
+  hi: number,
+): number {
+  if (!nodeAt.has(cellKey(col, targetRow))) {
+    return targetRow;
+  }
+
+  const preferDown = idealRow > targetRow;
+  for (let dr = 1; dr <= hi - lo; dr++) {
+    const first = preferDown ? targetRow + dr : targetRow - dr;
+    const second = preferDown ? targetRow - dr : targetRow + dr;
+    if (first >= lo && first <= hi && !nodeAt.has(cellKey(col, first))) {
+      return first;
+    }
+    if (second >= lo && second <= hi && !nodeAt.has(cellKey(col, second))) {
+      return second;
+    }
+  }
+
+  return targetRow;
 }
 
 interface VSeg {
@@ -775,7 +854,11 @@ function assignHorizontalLanes(edges: GridEdge[], rowLaneCounts: number[]): void
       edgeSegments.sort((a, b) => a.col - b.col);
       let start = 0;
       for (let i = 1; i <= edgeSegments.length; i++) {
-        if (i === edgeSegments.length || edgeSegments[i].col !== edgeSegments[i - 1].col + 1) {
+        const prev = edgeSegments[i - 1];
+        const curr = edgeSegments[i];
+        const contiguous = curr && curr.col === prev.col + 1
+          && !(prev.type === 'approach' && curr.type === 'approach');
+        if (i === edgeSegments.length || !contiguous) {
           const spanSegs = edgeSegments.slice(start, i);
           const colOrders = new Map<number, number>();
           for (const s of spanSegs) { if (s.type !== 'approach') { colOrders.set(s.col, s.order); } }
@@ -907,7 +990,32 @@ function assignLanes(
   for (let i = 0; i < n; i++) {
     lane[i] = Math.floor((minLane[i] + totalLanes - 1 - distToSink[i]) / 2);
   }
+  separateOverlappingLanes(lines, lane, compare);
   return lane;
+}
+
+function separateOverlappingLanes(
+  lines: { minPos: number; maxPos: number }[],
+  lane: number[],
+  compare: (i: number, j: number) => number,
+): void {
+  for (let pass = 0; pass < lines.length * lines.length; pass++) {
+    let changed = false;
+
+    for (let i = 0; i < lines.length; i++) {
+      for (let j = i + 1; j < lines.length; j++) {
+        const lo = Math.max(lines[i].minPos, lines[j].minPos);
+        const hi = Math.min(lines[i].maxPos, lines[j].maxPos);
+        if (lo >= hi || lane[i] !== lane[j]) { continue; }
+
+        const cmp = compare(i, j);
+        lane[cmp > 0 ? i : j]++;
+        changed = true;
+      }
+    }
+
+    if (!changed) { return; }
+  }
 }
 
 
@@ -1049,19 +1157,17 @@ function computeAlternativeWaypoints(
 ): { col: number; row: number }[] {
   const waypoints: { col: number; row: number }[] = [{ col: pNode.col, row: pNode.row }];
 
+  const lo = -1;
+  const hi = maxRow + 1;
   for (let c = pNode.col + 1; c < cNode.col; c++) {
     const frac = (c - pNode.col) / (cNode.col - pNode.col);
     const idealRow = pNode.row + frac * (cNode.row - pNode.row);
-    let targetRow = Math.max(0, Math.min(maxRow, Math.round(idealRow) + offset));
+    const targetRow = Math.max(lo, Math.min(hi, Math.round(idealRow) + offset));
 
-    if (nodeAt.has(cellKey(c, targetRow))) {
-      for (let dr = 1; dr <= maxRow; dr++) {
-        if (targetRow + dr <= maxRow && !nodeAt.has(cellKey(c, targetRow + dr))) { targetRow = targetRow + dr; break; }
-        if (targetRow - dr >= 0 && !nodeAt.has(cellKey(c, targetRow - dr))) { targetRow = targetRow - dr; break; }
-      }
-    }
-
-    waypoints.push({ col: c, row: targetRow });
+    waypoints.push({
+      col: c,
+      row: selectOpenWaypointRow(c, targetRow, idealRow, nodeAt, lo, hi),
+    });
   }
 
   waypoints.push({ col: cNode.col, row: cNode.row });

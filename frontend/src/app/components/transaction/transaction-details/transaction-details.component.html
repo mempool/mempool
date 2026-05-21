@@ -245,6 +245,31 @@
 <ng-template #effectiveRateRow>
   @if (!isLoadingTx) {
     @if ((cpfpInfo && hasEffectiveFeeRate) || (accelerationInfo && isAcceleration)) {
+      <ng-template #clusterPreviewButton let-cluster="cluster" let-txid="txid">
+        <div class="cluster-preview-inline" role="button" tabindex="0"
+          [ngbTooltip]="clusterPreviewTooltip"
+          placement="bottom"
+          tooltipClass="cluster-preview-ngb-tooltip"
+          container="body"
+          (click)="toggleCpfp()"
+          (keydown.enter)="toggleCpfp()"
+          (keydown.space)="toggleCpfp(); $event.preventDefault()">
+          <app-cluster-diagram class="cluster-preview-diagram" [cluster]="cluster" [txid]="txid" [preview]="true"></app-cluster-diagram>
+          <fa-icon class="cluster-preview-expand" [icon]="['fas', cpfpMode ? 'compress' : 'expand']" [fixedWidth]="true"></fa-icon>
+        </div>
+        <ng-template #clusterPreviewTooltip>
+          @if (clusterPreviewStats.chunkSize === 1) {
+            <p i18n="cluster.preview.chunk-line-one">This transaction belongs to a chunk of 1 transaction, with combined effective fee rate <strong>{{ clusterPreviewStats.chunkFeerate | feeRounding }} sat/vB</strong>.</p>
+          } @else {
+            <p i18n="cluster.preview.chunk-line-many">This transaction belongs to a chunk of {{ clusterPreviewStats.chunkSize }} transactions, with combined effective fee rate <strong>{{ clusterPreviewStats.chunkFeerate | feeRounding }} sat/vB</strong>.</p>
+          }
+          @if (clusterPreviewStats.otherChunks === 1) {
+            <p i18n="cluster.preview.cluster-line-one">In a mempool cluster containing 1 other chunk.</p>
+          } @else if (clusterPreviewStats.otherChunks > 1) {
+            <p i18n="cluster.preview.cluster-line-many">In a mempool cluster containing {{ clusterPreviewStats.otherChunks }} other chunks.</p>
+          }
+        </ng-template>
+      </ng-template>
       <tr>
         @if (isAcceleration) {
           <td i18n="transaction.accelerated-fee-rate|Accelerated transaction fee rate">Accelerated fee rate</td>
@@ -252,26 +277,33 @@
           <td i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
         }
         <td>
-          <div class="effective-fee-container">
-            @if (accelerationInfo?.acceleratedFeeRate && (!tx.effectiveFeePerVsize || accelerationInfo.acceleratedFeeRate >= tx.effectiveFeePerVsize || tx.acceleration)) {
-              <app-fee-rate [class.oobFees]="isAcceleration" [fee]="accelerationInfo.acceleratedFeeRate"></app-fee-rate>
-            } @else {
-              <app-fee-rate [class.oobFees]="isAcceleration" [fee]="tx.effectiveFeePerVsize"></app-fee-rate>
-            }
+          <div class="effective-fee-row" [class.has-cluster-preview]="cpfpInfo?.cluster && tx?.txid && !isAcceleration">
+            <div class="effective-fee-container">
+              @if (accelerationInfo?.acceleratedFeeRate && (!tx.effectiveFeePerVsize || accelerationInfo.acceleratedFeeRate >= tx.effectiveFeePerVsize || tx.acceleration)) {
+                <app-fee-rate [class.oobFees]="isAcceleration" [fee]="accelerationInfo.acceleratedFeeRate"></app-fee-rate>
+              } @else {
+                <app-fee-rate [class.oobFees]="isAcceleration" [fee]="tx.effectiveFeePerVsize"></app-fee-rate>
+              }
 
-            @if (tx?.status?.confirmed && !tx.acceleration && !accelerationInfo && tx.fee && tx.effectiveFeePerVsize) {
-              <app-tx-fee-rating class="ms-2 me-2 effective-fee-rating" [tx]="tx"></app-tx-fee-rating>
-            }
-          </div>
-          @if (hasCpfp) {
-            @if (cpfpInfo?.cluster) {
-              <button type="button" class="btn btn-outline-info btn-sm btn-small-height float-end" (click)="toggleCpfp()" i18n="transaction.cluster|Cluster">Cluster</button>
-            } @else {
+              @if (tx?.status?.confirmed && !tx.acceleration && !accelerationInfo && tx.fee && tx.effectiveFeePerVsize) {
+                <app-tx-fee-rating class="ms-2 me-2 effective-fee-rating" [tx]="tx"></app-tx-fee-rating>
+              }
+            </div>
+            @if (cpfpInfo?.cluster && tx?.txid && !isAcceleration) {
+              <ng-container *ngTemplateOutlet="clusterPreviewButton; context: { cluster: cpfpInfo.cluster, txid: tx.txid }"></ng-container>
+            } @else if (hasCpfp) {
               <button type="button" class="btn btn-outline-info btn-sm btn-small-height float-end" (click)="toggleCpfp()">CPFP</button>
             }
-          }
+          </div>
         </td>
       </tr>
+      @if (cpfpInfo?.cluster && tx?.txid && !isAcceleration) {
+        <tr class="cluster-preview-table-row">
+          <td colspan="2">
+            <ng-container *ngTemplateOutlet="clusterPreviewButton; context: { cluster: cpfpInfo.cluster, txid: tx.txid }"></ng-container>
+          </td>
+        </tr>
+      }
     }
   } @else {
     <ng-container *ngTemplateOutlet="skeletonDetailsRow"></ng-container>

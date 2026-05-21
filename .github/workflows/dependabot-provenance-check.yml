@@ -44,7 +44,7 @@ jobs:
             DEP=$(echo "$DEP" | xargs)
 
             NEW_VERSION=$(echo "$UPDATED_DEPS_JSON" | jq -r --arg name "$DEP" '
-              .[] | select(.["dependency-name"] == $name) | .["new-version"]
+              .[] | select(.dependencyName == $name) | .newVersion
             ' | head -n 1)
 
             if [ -z "$NEW_VERSION" ] || [ "$NEW_VERSION" = "null" ]; then

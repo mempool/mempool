@@ -68,7 +68,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
   fetchCpfp: boolean;
   cpfpInfo: CpfpInfo | null;
   hasCpfp: boolean = false;
-  cpfpMode: 'advanced' | 'simple' | null = null;
+  cpfpMode: boolean = false;
   mempoolBlocksSubscription: Subscription;
 
   constructor(
@@ -90,10 +90,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.seoService.setTitle($localize`:@@d7f92e6fe26fba6fff568cbdae5db4a5c8c6a55c:Preview Transaction`);
     this.seoService.setDescription($localize`:@@meta.description.preview-tx:Preview a transaction to the Bitcoin${seoDescriptionNetwork(this.stateService.network)} network using the transaction's raw hex data.`);
     this.websocketService.want(['blocks', 'mempool-blocks']);
-    const cpfpParam = this.route.snapshot.queryParams['cpfp'];
-    if (cpfpParam === 'advanced' || cpfpParam === 'simple') {
-      this.cpfpMode = cpfpParam;
-    }
+    this.cpfpMode = this.isCpfpParamEnabled(this.route.snapshot.queryParams['cpfp']);
     this.pushTxForm = this.formBuilder.group({
       txRaw: ['', Validators.required],
     });
@@ -338,7 +335,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.isLoadingCpfpInfo = false;
     this.isLoadingBroadcast = false;
     this.adjustedVsize = null;
-    this.cpfpMode = null;
+    this.cpfpMode = false;
     this.hasCpfp = false;
     this.fetchCpfp = false;
     this.cpfpInfo = null;
@@ -383,6 +380,10 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     }
   }
 
+  private isCpfpParamEnabled(cpfpParam: string | undefined): boolean {
+    return cpfpParam === 'true' || cpfpParam === 'advanced' || cpfpParam === 'simple';
+  }
+
   setupGraph() {
     this.maxInOut = Math.min(this.inOutLimit, Math.max(this.transaction?.vin?.length || 1, this.transaction?.vout?.length + 1 || 1));
     this.graphHeight = this.graphExpanded ? this.maxInOut * 15 : Math.min(360, this.maxInOut * 80);
@@ -394,15 +395,10 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
   }
 
   toggleCpfp() {
-    const newMode = this.cpfpMode ? null : (this.cpfpInfo?.cluster ? 'advanced' : 'simple');
-    this.updateCpfpMode(newMode);
-  }
-
-  private updateCpfpMode(mode: 'advanced' | 'simple' | null) {
-    this.cpfpMode = mode;
+    this.cpfpMode = !this.cpfpMode;
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { cpfp: mode },
+      queryParams: { cpfp: this.cpfpMode ? 'true' : null },
       queryParamsHandling: 'merge',
       preserveFragment: true,
       replaceUrl: true,
