@@ -1,5 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Subscription, of, catchError } from 'rxjs';
 import { retry, tap } from 'rxjs/operators';
@@ -11,19 +10,17 @@ import { ServicesApiServices } from '@app/services/services-api.service';
   styleUrls: ['./bitcoin-invoice.component.scss'],
   standalone: false,
 })
-export class BitcoinInvoiceComponent implements OnInit, OnChanges, OnDestroy {
+export class BitcoinInvoiceComponent implements OnChanges, OnDestroy {
   @Input() invoice;
   @Input() redirect = true;
   @Input() minimal = false;
   @Output() completed = new EventEmitter();
 
-  paymentForm: FormGroup;
   paymentStatusSubscription: Subscription | undefined;
   paymentStatus = 1; // 1 - Waiting for invoice | 2 - Pending payment | 3 - Payment completed
   paymentErrorMessage: string = '';
 
   constructor(
-    private formBuilder: FormBuilder,
     private apiService: ServicesApiServices,
     private sanitizer: DomSanitizer
   ) { }
@@ -32,12 +29,6 @@ export class BitcoinInvoiceComponent implements OnInit, OnChanges, OnDestroy {
     if (this.paymentStatusSubscription) {
       this.paymentStatusSubscription.unsubscribe();
     }
-  }
-
-  ngOnInit(): void {
-    this.paymentForm = this.formBuilder.group({
-      'method': 'lightning'
-    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -94,11 +85,36 @@ export class BitcoinInvoiceComponent implements OnInit, OnChanges, OnDestroy {
     ).subscribe();
   }
 
-  get availableMethods(): string[] {
-    return Object.keys(this.invoice?.addresses || {}).filter(k => k === 'BTC_LightningLike');
-  }
-
   bypassSecurityTrustUrl(text: string): SafeUrl {
     return this.sanitizer.bypassSecurityTrustUrl(text);
+  }
+
+  /**
+   * Builds a BIP21 payment URI string for QR code display.
+   *
+   * - If a BTC address is present, produces `bitcoin:<address>?amount=<btcDue>`
+   *   with an optional `&label=<itemDesc>` parameter when a description is set.
+   * - If a Lightning address is also present, appends `&lightning=<invoice>` to the
+   *   bitcoin URI, or falls back to a standalone `lightning:<invoice>` URI when no
+   *   on-chain address is available.
+   * - Returns an empty string when neither address type is present.
+   */
+  get qrCodeString(): string {
+    if (!this.invoice?.addresses || (!this.invoice.addresses.BTC && !this.invoice.addresses.BTC_LightningLike)) {
+      return '';
+    }
+
+    let str = '';
+    if (this.invoice.addresses.BTC) {
+      str = `bitcoin:${this.invoice.addresses.BTC}?amount=${this.invoice.btcDue}`;
+      if (this.invoice.itemDesc) {
+        str += `&label=${encodeURIComponent(this.invoice.itemDesc)}`;
+      }
+    }
+    if (this.invoice.addresses.BTC_LightningLike) {
+      str += `${str.length ? '&lightning=' : 'lightning:'}${this.invoice.addresses.BTC_LightningLike}`;
+    }
+
+    return str;
   }
 }

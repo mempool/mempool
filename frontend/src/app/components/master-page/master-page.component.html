@@ -5,7 +5,10 @@
   <!-- Hamburger -->
   <ng-container *ngIf="servicesEnabled">
     <div *ngIf="user" class="profile_image_container" (click)="hamburgerClick($event)">
-      <img [src]="'/api/v1/services/account/images/' + user.username" class="profile_image" onError="this.src = '/resources/anon.svg'; this.className = 'anon'" />
+      <img [src]="'/api/v1/services/account/images/' + user.username" class="profile_image" onError="this.style.display='none'; this.nextElementSibling.style.display='block'" />
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="anon" style="display: none">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 9.5v-2a3 3 0 116 0v2c0 1.11-.603 2.08-1.5 2.599v1.224a1 1 0 00.629.928l2.05.82A3.693 3.693 0 0118.5 18.5h-13c0-1.51.92-2.868 2.321-3.428l2.05-.82a1 1 0 00.629-.929v-1.224A2.999 2.999 0 019 9.5z"></path>
+      </svg>
     </div>
     <div *ngIf="false && user === null" class="profile_image_container" (click)="hamburgerClick($event)">
       <app-svg-images name="hamburger" height="40"></app-svg-images>

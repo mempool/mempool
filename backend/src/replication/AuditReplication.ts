@@ -114,6 +114,7 @@ class AuditReplication {
     });
     await blocksAuditsRepository.$saveAudit({
       version: auditSummary.version || 0,
+      templateAlgorithm: auditSummary.templateAlgorithm ?? 0,
       hash: blockHash,
       height: auditSummary.height,
       time: auditSummary.timestamp || auditSummary.time,

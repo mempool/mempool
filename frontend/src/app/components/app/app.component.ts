@@ -1,6 +1,6 @@
-import { Location } from '@angular/common';
+import { Location, ViewportScroller } from '@angular/common';
 import { Component, HostListener, OnInit, Inject, LOCALE_ID, HostBinding } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, Scroll } from '@angular/router';
 import { StateService } from '@app/services/state.service';
 import { OpenGraphService } from '@app/services/opengraph.service';
 import { NgbTooltipConfig } from '@ng-bootstrap/ng-bootstrap';
@@ -22,6 +22,7 @@ export class AppComponent implements OnInit {
     private seoService: SeoService,
     private themeService: ThemeService,
     private location: Location,
+    private viewportScroller: ViewportScroller,
     tooltipConfig: NgbTooltipConfig,
     @Inject(LOCALE_ID) private locale: string,
   ) {
@@ -39,6 +40,7 @@ export class AppComponent implements OnInit {
 
   @HostBinding('attr.dir') dir = 'ltr';
   @HostBinding('class') class;
+  private previousUrl: string = '';
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvents(event: KeyboardEvent) {
@@ -57,6 +59,22 @@ export class AppComponent implements OnInit {
       if (val instanceof NavigationEnd) {
         this.seoService.updateCanonical(this.location.path());
       }
+      if (val instanceof Scroll) {
+        if (val.position) {
+          this.viewportScroller.scrollToPosition(val.position);
+        } else if (!history.state?.skipScroll
+          && val.routerEvent instanceof NavigationEnd
+          && this.getBasePath(val.routerEvent.urlAfterRedirects) !== this.getBasePath(this.previousUrl)) {
+          this.viewportScroller.scrollToPosition([0, 0]);
+        }
+        if (val.routerEvent instanceof NavigationEnd) {
+          this.previousUrl = val.routerEvent.urlAfterRedirects;
+        }
+      }
     });
+  }
+
+  private getBasePath(url: string): string {
+    return url.split('?')[0].split('#')[0];
   }
 }

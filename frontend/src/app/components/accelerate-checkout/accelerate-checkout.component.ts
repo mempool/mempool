@@ -51,7 +51,7 @@ export const MIN_BID_RATIO = 1;
 export const DEFAULT_BID_RATIO = 2;
 export const MAX_BID_RATIO = 4;
 
-type CheckoutStep = 'quote' | 'summary' | 'checkout' | 'cashapp' | 'applepay' | 'googlepay' | 'cardonfile' | 'processing' | 'paid' | 'success';
+type CheckoutStep = 'quote' | 'summary' | 'checkout' | 'cashapp' | 'applepay' | 'googlepay' | 'cardonfile' | 'bitcoin' | 'processing' | 'paid' | 'success';
 
 @Component({
   selector: 'app-accelerate-checkout',
@@ -225,19 +225,25 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     if (this.timeoutTimer) {
       clearTimeout(this.timeoutTimer);
     }
+
     if (!this.estimate && ['quote', 'summary', 'checkout', 'processing'].includes(this.step)) {
       this.fetchEstimate();
     }
+
     if (this._step === 'checkout') {
       this.insertSquare();
       this.enterpriseService.goal(8);
       this.scrollToElementWithTimeout('acceleratePreviewAnchor', 'start', 100);
     }
+    
     if (this._step === 'checkout' && this.canPayWithBitcoin) {
       this.btcpayInvoiceFailed = false;
       this.invoice = undefined;
-      this.requestBTCPayInvoice();
-      this.scrollToElementWithTimeout('acceleratePreviewAnchor', 'start', 100);
+      this.requestBTCPayInvoice(); // preload invoice
+      // If only bitcoin available, go straight to showing the QR code (eg on self hosted)
+      if (this.canOnlyPayWithBitcoin && this.conversions) {
+        this.moveToStep('bitcoin');
+      }
     } else if (this._step === 'cashapp') {
       this.loadingCashapp = true;
       this.setupSquare();
@@ -254,6 +260,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.loadingCardOnFile = true;
       this.setupSquare();
       this.scrollToElementWithTimeout('confirm-title', 'center', 100);
+    } else if (this._step === 'bitcoin') {
+      this.scrollToElementWithTimeout('confirm-title', 'nearest', 100);
     } else if (this._step === 'paid') {
       this.timePaid = Date.now();
       this.timeoutTimer = setTimeout(() => {
@@ -779,7 +787,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             this.tx.txid,
             cardOnFile.card.card_id,
             verificationToken.token,
-            `accelerator-${this.tx.txid.substring(0, 15)}-${Math.round(new Date().getTime() / 1000)}`,
             costUSD,
             verificationToken.userChallenged,
             this.partnerCode
@@ -1017,6 +1024,10 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
   get couldPay(): boolean {
     return this.couldPayWithBalance || this.couldPayWithBitcoin || this.couldPayWithCashapp || this.couldPayWithApplePay || this.couldPayWithGooglePay;
+  }
+
+  get canOnlyPayWithBitcoin(): boolean {
+    return this.canPayWithBitcoin && !this.canPayWithApplePay && !this.canPayWithBalance && !this.canPayWithCardOnFile && !this.canPayWithCashapp && !this.canPayWithGooglePay
   }
 
   get canPayWithBitcoin(): boolean {

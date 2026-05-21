@@ -1081,7 +1081,7 @@ echo "[*] Installing nvm.sh from GitHub"
 osSudo "${MEMPOOL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash'
 
 echo "[*] Building NodeJS via nvm.sh"
-osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; CC=gcc CXX=g++ nvm install v24.13.0 --shared-zlib'
+osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm install v24.13.0 --shared-zlib'
 osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm alias default 24.13.0'
 
 ####################
@@ -1382,15 +1382,6 @@ if [ "${ELEMENTS_ELECTRS_INSTALL}" = ON ];then
 
     echo "[*] Building Liquid Electrs release binary"
     osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_ELECTRS_HOME} && cargo run --release --features liquid --bin electrs -- --network liquid --version" || true
-
-    case $OS in
-        FreeBSD)
-            echo "[*] Patching Liquid Electrs code for FreeBSD"
-            osSudo "${ELEMENTS_USER}" sh -c "cd \"${ELEMENTS_HOME}/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sysconf-0.3.4\" && patch -p1 < \"${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/freebsd/sysconf.patch\""
-        ;;
-        Debian)
-        ;;
-    esac
 
     echo "[*] Building Liquid Electrs release binary"
     osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_ELECTRS_HOME} && cargo run --release --features liquid --bin electrs -- --network liquid --version" || true

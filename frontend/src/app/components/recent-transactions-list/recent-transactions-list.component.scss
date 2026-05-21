@@ -1,0 +1,112 @@
+.new-tx-pill {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 999px;
+  background-color: var(--primary);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+
+  &:hover {
+    filter: brightness(1.1);
+  }
+}
+
+.title-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+
+  h1 {
+    margin-bottom: 0.5rem;
+  }
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 0.5rem;
+
+  .btn-group {
+    .btn {
+      font-size: 12px;
+    }
+  }
+
+  .btn-pause {
+    font-size: 12px;
+    &.active {
+      opacity: 0.5;
+    }
+  }
+}
+
+.latest-transactions {
+  width: 100%;
+  text-align: left;
+  table-layout: fixed;
+  tr, td, th {
+    border: 0px;
+    padding-top: 0.71rem !important;
+    padding-bottom: 0.75rem !important;
+  }
+  td {
+    overflow: hidden;
+    width: 25%;
+  }
+  .table-cell-satoshis {
+    display: none;
+    text-align: right;
+    @media (min-width: 576px) {
+      display: table-cell;
+    }
+  }
+  .table-cell-fiat {
+    display: none;
+    text-align: right;
+    @media (min-width: 485px) {
+      display: table-cell;
+    }
+  }
+  .table-cell-vsize {
+    display: none;
+    text-align: right;
+    @media (min-width: 576px) {
+      display: table-cell;
+    }
+  }
+  .table-cell-fees {
+    text-align: right;
+  }
+}
+
+.widget .latest-transactions {
+  .table-cell-satoshis {
+    @media (min-width: 768px) {
+      display: none;
+    }
+    @media (min-width: 1100px) {
+      display: table-cell;
+    }
+  }
+  .table-cell-fiat {
+    @media (min-width: 768px) {
+      display: none;
+    }
+    @media (min-width: 992px) {
+      display: table-cell;
+    }
+  }
+}

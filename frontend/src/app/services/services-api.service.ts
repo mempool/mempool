@@ -147,8 +147,8 @@ export class ServicesApiServices {
     return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/googlePay`, { txInput: txInput, cardTag: cardTag, token: token, verificationToken: verificationToken, referenceId: referenceId, userApprovedUSD: userApprovedUSD, userChallenged: userChallenged, partnerCode: partnerCode });
   }
 
-  accelerateWithCardOnFile$(txInput: string, token: string, verificationToken: string, referenceId: string, userApprovedUSD: number, userChallenged: boolean, partnerCode: string | undefined) {
-    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/cardOnFile`, { txInput: txInput, token: token, verificationToken: verificationToken, referenceId: referenceId, userApprovedUSD: userApprovedUSD, userChallenged: userChallenged, partnerCode: partnerCode  });
+  accelerateWithCardOnFile$(txInput: string, cardId: string, verificationToken: string, userApprovedUSD: number, userChallenged: boolean, partnerCode: string | undefined) {
+    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/cardOnFile`, { txInput: txInput, token: cardId, verificationToken: verificationToken, userApprovedUSD: userApprovedUSD, userChallenged: userChallenged, partnerCode: partnerCode  });
   }
 
   getAccelerations$(): Observable<Acceleration[]> {

@@ -164,3 +164,109 @@
   opacity: 0.5;
   pointer-events: none;
 }
+
+.effective-fee-row {
+  &.has-cluster-preview {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+
+    .effective-fee-container {
+      flex: 0 0 auto;
+    }
+  }
+}
+
+.cluster-preview-inline {
+  position: relative;
+  flex: 1 1 120px;
+  min-width: 120px;
+  max-width: 300px;
+  display: flex;
+  align-items: center;
+  overflow: visible;
+  margin: -0.75rem -0.75rem -0.75rem auto;
+  cursor: pointer;
+
+  .cluster-preview-diagram {
+    display: block;
+    width: 100%;
+    --cluster-preview-cursor: pointer;
+  }
+
+  .cluster-preview-expand {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: var(--info);
+    font-size: 0.85em;
+    opacity: 0;
+    transition: opacity 150ms ease;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &:focus-visible { outline: none; }
+
+  &:hover .cluster-preview-expand,
+  &:focus-visible .cluster-preview-expand {
+    opacity: 1;
+  }
+
+  &:hover .cluster-preview-diagram,
+  &:focus-visible .cluster-preview-diagram {
+    --cluster-preview-shadow: 0 0 0 1px var(--info), 0 0 8px color-mix(in srgb, var(--info) 35%, transparent);
+  }
+}
+
+.cluster-preview-table-row {
+  display: none;
+}
+
+@media (max-width: 849.98px) and (min-width: 500px) {
+  .cluster-preview-inline {
+    order: -1;
+    margin-right: 0;
+  }
+}
+
+@media (max-width: 499.98px) {
+  .effective-fee-row.has-cluster-preview .cluster-preview-inline {
+    display: none;
+  }
+
+  .cluster-preview-table-row {
+    display: table-row;
+
+    td {
+      padding-top: 0;
+    }
+
+    .cluster-preview-inline {
+      width: 100%;
+      flex-basis: 100%;
+      max-width: 100%;
+      margin: -0.25rem 0 -0.75rem;
+    }
+  }
+}
+
+::ng-deep .cluster-preview-ngb-tooltip .tooltip-inner {
+  text-align: left;
+  max-width: 320px;
+  padding: 10px 12px;
+
+  p {
+    margin: 0 0 6px;
+    line-height: 1.35;
+
+    &:last-child { margin-bottom: 0; }
+
+    &.hint {
+      margin-top: 8px;
+      opacity: 0.8;
+      font-style: italic;
+    }
+  }
+}

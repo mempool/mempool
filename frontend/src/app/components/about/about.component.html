@@ -408,25 +408,37 @@
 
   <div class="alliances" id="community-alliances">
     <h3 i18n="about.alliances">Community Alliances</h3>
-    <div class="wrapper">
-      <a href="https://liquid.net/" title="Liquid Network">
-        @if (isLightMode) {
-          <img class="liquid" src="/resources/profile/liquid-light.svg" />
-        } @else {
-          <img class="liquid" src="/resources/profile/liquid.svg" />
-        }
+    <div class="row alliances-logos">
+      <a target="_blank" class="d-block col-12 col-md-6 col-lg-3 pt-2" href="https://liquid.net/" title="Liquid Network">
+        <div class="p-2 alliance-logo">
+          @if (isLightMode) {
+            <img src="/resources/profile/liquid-light.svg" />
+          } @else {
+            <img src="/resources/profile/liquid.svg" />
+          }
+        </div>
       </a>
-      <a href="https://opencrypto.org/" title="Copa - Crypto Open Patent Alliance">
-        <img class="copa" src="/resources/profile/copa.png" />
+      <a target="_blank" class="d-block col-12 col-md-6 col-lg-4" href="https://opencrypto.org/" title="Copa - Crypto Open Patent Alliance" >
+        <div class="p-2 alliance-logo copa">
+          <img src="/resources/profile/copa.png" />
+        </div>
       </a>
-      <a href="https://bitcoin.gob.sv" title="Oficina Nacional del Bitcoin">
-        @if (isLightMode) {
-          <img class="sv" src="/resources/profile/onbtc-full-light.svg" />
-        } @else {
-          <img class="sv" src="/resources/profile/onbtc-full.svg" />
-        }
+      <a target="_blank" class="d-block col-12 col-md-6 col-lg-2" href="https://bitcoin.gob.sv" title="Oficina Nacional del Bitcoin" >
+        <div class="alliance-logo">
+          @if (isLightMode) {
+            <img src="/resources/profile/onbtc-full-light.svg" />
+          } @else {
+            <img src="/resources/profile/onbtc-full.svg" />
+          }
+        </div>
+      </a>
+      <a target="_blank" class="d-block col-12 col-md-6 col-lg-3" href="https://bitcoindevkit.org/foundation/about/" title="Bitcoin Dev Kit Foundation" >
+        <div class="p-2 alliance-logo">
+          <img src="/resources/profile/bdk.svg" />
+        </div>
       </a>
     </div>
+  
   </div>
 
   <ng-container *ngIf="translators$ | async | keyvalue as translators else loadingSponsors">

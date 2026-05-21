@@ -119,7 +119,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   isAcceleration: boolean = false;
   accelerationCanceled: boolean = false;
   filters: Filter[] = [];
-  showCpfpDetails = false;
+  cpfpMode: boolean = false;
   miningStats: MiningStats;
   fetchCpfp$ = new Subject<string>();
   transactionTimes$ = new Subject<string>();
@@ -197,6 +197,13 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  @ViewChild('cluster')
+  set clusterAnchor(element: ElementRef | null | undefined) {
+    if (element) {
+      setTimeout(() => { this.applyFragment(); }, 0);
+    }
+  }
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -223,6 +230,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.enterpriseService.page();
     this.isDetailsOpen = this.route.snapshot.queryParams['showDetails'] === 'true';
+    this.cpfpMode = this.isCpfpParamEnabled(this.route.snapshot.queryParams['cpfp']);
 
     const urlParams = new URLSearchParams(window.location.search);
     this.forceAccelerationSummary = !!urlParams.get('cash_request_id');
@@ -876,9 +884,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       preserveFragment: true,
       replaceUrl: true,
     });
-    if (this.txList) {
-      this.txList.setDetailsOpen(this.isDetailsOpen);
-    }
+    this.txList?.setDetailsOpen(this.isDetailsOpen);
   }
 
   dismissAccelAlert(): void {
@@ -1085,7 +1091,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.rbfInfo = null;
     this.rbfReplaces = [];
     this.filters = [];
-    this.showCpfpDetails = false;
     this.showAccelerationDetails = false;
     this.accelerationFlowCompleted = false;
     this.accelerationInfo = null;
@@ -1096,6 +1101,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.auditStatus = null;
     this.accelerationPositions = null;
     this.isDetailsOpen = this.route.snapshot.queryParams['showDetails'] === 'true';
+    this.cpfpMode = this.isCpfpParamEnabled(this.route.snapshot.queryParams['cpfp']);
     document.body.scrollTo(0, 0);
     this.isAcceleration = false;
     this.isAccelerated$.next(this.isAcceleration);
@@ -1111,6 +1117,45 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   setupGraph() {
     this.maxInOut = Math.min(this.inOutLimit, Math.max(this.tx?.vin?.length || 1, this.tx?.vout?.length + 1 || 1));
     this.graphHeight = this.graphExpanded ? this.maxInOut * 15 : Math.min(360, this.maxInOut * 80);
+  }
+
+  toggleCpfp() {
+    this.cpfpMode = !this.cpfpMode;
+    if (this.cpfpInfo?.cluster) {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { cpfp: this.cpfpMode ? 'true' : null },
+        queryParamsHandling: 'merge',
+        fragment: this.getCpfpFragment(),
+        replaceUrl: true,
+      });
+    } else {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { cpfp: this.cpfpMode ? 'simple' : null },
+        queryParamsHandling: 'merge',
+        preserveFragment: true,
+        replaceUrl: true,
+      });
+    }
+  }
+
+  private isCpfpParamEnabled(cpfpParam: string | undefined): boolean {
+    return cpfpParam === 'true' || cpfpParam === 'advanced' || cpfpParam === 'simple';
+  }
+
+  private getCpfpFragment(): string | null {
+    const currentParams = new URLSearchParams(this.fragmentParams?.toString() || this.route.snapshot.fragment || '');
+    const fragmentParams = new URLSearchParams();
+    if (this.cpfpMode) {
+      fragmentParams.set('cluster', '');
+    }
+    for (const [key, value] of currentParams.entries()) {
+      if (key !== 'cluster') {
+        fragmentParams.set(key, value);
+      }
+    }
+    return fragmentParams.toString() || null;
   }
 
   toggleGraph() {

@@ -1,0 +1,79 @@
+<button *ngIf="!widget && (bufferedCount$ | async) > 0 && !(manualPaused$ | async)"
+  type="button"
+  class="new-tx-pill"
+  (click)="scrollToTop()"
+  data-cy="new-tx-pill">
+  <fa-icon [icon]="['fas', 'angle-up']" [fixedWidth]="true"></fa-icon>
+  <span *ngIf="(bufferedCount$ | async) === 1" i18n="recent-transactions.new-tx-pill.singular">1 new transaction</span>
+  <span *ngIf="(bufferedCount$ | async) > 1" i18n="recent-transactions.new-tx-pill.plural">{{ bufferedCount$ | async }} new transactions</span>
+</button>
+
+<div [class.container-xl]="!widget" [class.widget]="widget" [style.min-height.px]="widget ? null : 335">
+  <div class="title-row" *ngIf="!widget">
+    <h1 i18n="page.recent-transactions">Recent Transactions</h1>
+
+    <div class="controls">
+      <div class="btn-group" role="group">
+        <button *ngFor="let limit of limitOptions"
+          type="button"
+          class="btn btn-primary btn-sm"
+          [class.active]="(limit$ | async) === limit"
+          [attr.data-cy]="'limit-' + limit"
+          (click)="setLimit(limit)">
+          {{ limit }}
+        </button>
+      </div>
+      <button class="btn btn-primary btn-sm btn-pause" [class.active]="manualPaused$ | async" (click)="togglePause()" title="Pause/Resume" i18n-title="recent-transactions.pause-toggle.title|Tooltip for the pause/resume updates button" aria-label="Pause/Resume" i18n-aria-label="recent-transactions.pause-toggle.aria-label|Accessible label for the pause/resume updates button" data-cy="btn-pause">
+        <fa-icon [icon]="['fas', (manualPaused$ | async) ? 'play' : 'pause']" [fixedWidth]="true"></fa-icon>
+      </button>
+    </div>
+  </div>
+
+  <table class="table latest-transactions">
+    <thead>
+      <th class="table-cell-txid" i18n="dashboard.latest-transactions.txid">TXID</th>
+      <th class="table-cell-fiat" *ngIf="(network$ | async) === ''">{{ currency }}</th>
+      <th class="table-cell-satoshis" i18n="dashboard.latest-transactions.amount">Amount</th>
+      <th class="table-cell-vsize" *ngIf="!widget" i18n="transaction.vsize|Transaction Virtual Size">vSize</th>
+      <th class="table-cell-fees" i18n="transaction.fee|Transaction fee">Fee</th>
+    </thead>
+    <tbody data-cy="transactions-list" *ngIf="transactions$ | async as transactions; else skeleton">
+      <tr *ngFor="let transaction of transactions; trackBy: trackByTxid">
+        <td class="table-cell-txid">
+          <a [routerLink]="['/tx' | relativeUrl, transaction.txid]">
+            <app-truncate [text]="transaction.txid" [lastChars]="5"></app-truncate>
+          </a>
+        </td>
+        <td class="table-cell-fiat" *ngIf="(network$ | async) === ''">
+          <app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat>
+        </td>
+        <td class="table-cell-satoshis">
+          <app-amount *ngIf="(network$ | async) !== 'liquidtestnet'; else liquidAmount" [satoshis]="transaction.value" digitsInfo="1.2-4" [noFiat]="true"></app-amount>
+          <ng-template #liquidAmount i18n="shared.confidential">Confidential</ng-template>
+        </td>
+        <td class="table-cell-vsize" *ngIf="!widget" [innerHTML]="'&lrm;' + (transaction.vsize | vbytes: 2)"></td>
+        <td class="table-cell-fees">
+          <app-fee-rate [fee]="transaction.fee" [weight]="transaction.vsize * 4"></app-fee-rate>
+        </td>
+      </tr>
+      <tr *ngIf="!widget && transactions.length < (limit$ | async)" data-cy="transactions-skeleton-row">
+        <td class="table-cell-txid"><span class="skeleton-loader"></span></td>
+        <td class="table-cell-fiat" *ngIf="(network$ | async) === ''"><span class="skeleton-loader"></span></td>
+        <td class="table-cell-satoshis"><span class="skeleton-loader"></span></td>
+        <td class="table-cell-vsize"><span class="skeleton-loader"></span></td>
+        <td class="table-cell-fees"><span class="skeleton-loader"></span></td>
+      </tr>
+    </tbody>
+    <ng-template #skeleton>
+      <tbody>
+        <tr *ngFor="let i of (widget ? [1,2,3,4,5,6] : [1])">
+          <td class="table-cell-txid"><span class="skeleton-loader"></span></td>
+          <td class="table-cell-fiat" *ngIf="(network$ | async) === ''"><span class="skeleton-loader"></span></td>
+          <td class="table-cell-satoshis"><span class="skeleton-loader"></span></td>
+          <td class="table-cell-vsize" *ngIf="!widget"><span class="skeleton-loader"></span></td>
+          <td class="table-cell-fees"><span class="skeleton-loader"></span></td>
+        </tr>
+      </tbody>
+    </ng-template>
+  </table>
+</div>

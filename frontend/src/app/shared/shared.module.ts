@@ -9,7 +9,7 @@ import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, fa
   faCircleCheck, faUserCircle, faCheck, faRocket, faScaleBalanced, faHourglassStart, faHourglassHalf, faHourglassEnd, faWandMagicSparkles, faTimeline,
   faCircleXmark, faCalendarCheck, faMoneyBillTrendUp, faRobot, faShareNodes, faCreditCard, faMicroscope, faExclamationTriangle, faLockOpen, faPaperclip, faAddressCard,
   faMedal, faBug, faFilePdf, faPiggyBank, faLayerGroup, faHeart, faCashRegister, faCodeFork, faCode, 
-  faCalendar} from '@fortawesome/free-solid-svg-icons';
+  faCalendar, faPause, faPlay, faExpand, faCompress} from '@fortawesome/free-solid-svg-icons';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MenuComponent } from '@components/menu/menu.component';
 import { PreviewTitleComponent } from '@components/master-page-preview/preview-title.component';
@@ -85,6 +85,7 @@ import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { DifficultyAdjustmentsTable } from '@components/difficulty-adjustments-table/difficulty-adjustments-table.components';
 import { BlocksList } from '@components/blocks-list/blocks-list.component';
 import { RbfList } from '@components/rbf-list/rbf-list.component';
+import { RecentTransactionsList } from '@components/recent-transactions-list/recent-transactions-list.component';
 import { StaleList } from '@components/stale-list/stale-list.component';
 import { StratumList } from '@components/stratum/stratum-list/stratum-list.component';
 import { RewardStatsComponent } from '@components/reward-stats/reward-stats.component';
@@ -211,6 +212,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     DifficultyAdjustmentsTable,
     BlocksList,
     RbfList,
+    RecentTransactionsList,
     StaleList,
     StratumList,
     DataCyDirective,
@@ -365,6 +367,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     AmountShortenerPipe,
     DifficultyAdjustmentsTable,
     BlocksList,
+    RecentTransactionsList,
     StaleList,
     StratumList,
     DataCyDirective,
@@ -493,5 +496,9 @@ export class SharedModule {
     library.addIcons(faCashRegister);
     library.addIcons(faCodeFork);
     library.addIcons(faCode);
+    library.addIcons(faPause);
+    library.addIcons(faPlay);
+    library.addIcons(faExpand);
+    library.addIcons(faCompress);
   }
 }
