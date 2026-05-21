@@ -12444,16 +12444,18 @@ export const restApiDocsData = [
     title: 'POST Auto-Accelerate A Transaction (Pro)',
     description: {
       default: `
-      <div class="pb-1">
-        <span>Sends a request to automatically accelerate a transaction based on specified trigger conditions.</span><br>
+      <p>
+        <span>Sends a request to automatically accelerate a transaction based on specified trigger conditions. Competing requests are allowed (one per <code>txInput</code>/<code>type</code>).</span>
+      </p>
+      <div>
         <span>The <code>type</code> parameter must be one of: <code>time_delay</code>, <code>block_height</code>, <code>timestamp</code>, or <code>next_block</code>.</span><br>
-        <span>The <code>value</code> parameter is required for types other than <code>next_block</code> and depends on the type:</span><br>
+        <span>The <code>value</code> parameter is required for types other than <code>next_block</code> and depends on the type:</span>
+        <ul>
+          <li><code>time_delay</code> - in hours, a floating point value >= 0.5</li>
+          <li><code>block_height</code> - a block height >= next block height</li>
+          <li><code>timestamp</code> - a Unix timestamp in seconds >= now + 60 seconds</li>
+        </ul>
       </div>
-      <ul>
-        <li><code>time_delay</code> - in hours, a floating point value >= 0.5</li>
-        <li><code>block_height</code> - a block height >= next block height</li>
-        <li><code>timestamp</code> - a Unix timestamp in seconds >= now + 60 seconds</li>
-      </ul>
       `
     },
     urlString: '/v1/services/accelerator/auto-accelerate',
@@ -12540,7 +12542,19 @@ export const restApiDocsData = [
     fragment: 'accelerator-auto-accelerate-cancel',
     title: 'POST Cancel Auto-Acceleration (Pro)',
     description: {
-      default: '<p>Sends a request to cancel an auto-acceleration in the <code>tracking</code> status.<br>You can retrieve eligible auto-acceleration <code>txid</code> using the history endpoint GET <code>/api/v1/services/accelerator/auto-accelerate/history</code>.</p>'
+      default: `
+        <p>
+          <span>Sends a request to cancel an auto-acceleration in the <code>tracking</code> status.</span><br>
+          <span>You can retrieve eligible auto-acceleration <code>txid</code> using the history endpoint GET <code>/api/v1/services/accelerator/auto-accelerate/history</code>.</span>
+        </p>
+        <p>
+          <span>When calling this endpoint without a <code>type</code> parameter, this will cancel all your active auto-acceleration requests matching the <code>txid</code>.</span>
+          <span>To cancel a single auto-acceleration request, send both <code>txid</code> and <code>type</code> parameters.</span><br>
+        </p>
+        <p>
+          <span>Parameter <code>type</code> can take the following values: <code>next_block</code>, <code>time_delay</code>, <code>block_height</code> or <code>timestamp</code>.</span>
+        </p>
+      `
     },
     urlString: '/v1/services/accelerator/auto-accelerate/cancel',
     showConditions: [''],
@@ -12555,9 +12569,9 @@ export const restApiDocsData = [
         codeSampleMainnet: {
           esModule: [],
           commonJS: [],
-          curl: ['txid=178b5b9b310f0d667d7ea563a2cdcc17bc8cd15261b58b1653860a724ca83458'],
+          curl: ['txid=178b5b9b310f0d667d7ea563a2cdcc17bc8cd15261b58b1653860a724ca83458&type=time_delay'],
           headers: 'X-Mempool-Auth: stacksats',
-          response: `HTTP/1.1 200 OK`,
+          response: `If a request has been canceled:\nHTTP/1.1 200 OK\n\nWhen no request matches the query parameters:\nHTTP/1.1 204 No Content`,
         },
       }
     }
