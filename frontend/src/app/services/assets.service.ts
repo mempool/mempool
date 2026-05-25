@@ -5,19 +5,21 @@ import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import { StateService } from '@app/services/state.service';
 import { environment } from '@environments/environment';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
-import { Asset, AssetExtended, AssetRegistryItem } from '@interfaces/electrs.interface';
+import { Asset, AssetExtended, AssetRegistryItem, Transaction } from '@interfaces/electrs.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AssetsService {
-  nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;
-
   getAssetsJson$: Observable<{ array: AssetExtended[]; objects: any}>;
   getAssetsMinimalJson$: Observable<any>;
   getWorldMapJson$: Observable<any>;
   registryAvailable = true;
   private apiBaseUrl = '';
+  private nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;
+  private assetsMinimalCache: any = {
+    [this.nativeAssetId]: this.stateService.network === 'liquid' ? [null, 'LBTC', 'Liquid Bitcoin', 8] : [null, 'tLBTC', 'Test Liquid Bitcoin', 8],
+  };
 
   constructor(
     private httpClient: HttpClient,
@@ -30,6 +32,10 @@ export class AssetsService {
     }
     this.stateService.networkChanged$.subscribe(() => {
       this.registryAvailable = true;
+      this.nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;
+      this.assetsMinimalCache = {
+        [this.nativeAssetId]: this.stateService.network === 'liquid' ? [null, 'LBTC', 'Liquid Bitcoin', 8] : [null, 'tLBTC', 'Test Liquid Bitcoin', 8],
+      };
     });
 
     this.getAssetsJson$ = this.stateService.networkChanged$
@@ -97,6 +103,40 @@ export class AssetsService {
 
     const assets = await firstValueFrom(this.getAssetsJson$);
     return assets.objects[assetId] || {};
+  }
+
+  public async getLiquidAssetMinimalData(assetId: string): Promise<any[]> {
+    if (this.assetsMinimalCache[assetId]) {
+      return this.assetsMinimalCache[assetId];
+    }
+
+    const asset: any = await this.getLiquidAssetData(assetId);
+    if (asset.name || asset.ticker || asset.precision != null) {
+      this.assetsMinimalCache[assetId] = [asset.entity?.domain || asset.domain || null, asset.ticker, asset.name, asset.precision || 0];
+      return this.assetsMinimalCache[assetId];
+    }
+    return null;
+  }
+
+  public async getLiquidAssetsMinimalData(transactions: Transaction[]): Promise<any> {
+    const assetIds = new Set<string>();
+    for (const tx of transactions || []) {
+      for (const vin of tx.vin || []) {
+        if (vin.prevout?.asset && vin.prevout.asset !== this.nativeAssetId) {
+          assetIds.add(vin.prevout.asset);
+        }
+      }
+      for (const vout of tx.vout || []) {
+        if (vout.asset && vout.asset !== this.nativeAssetId) {
+          assetIds.add(vout.asset);
+        }
+      }
+    }
+
+    const missingAssetIds = Array.from(assetIds).filter((assetId) => !this.assetsMinimalCache[assetId]);
+    await Promise.all(missingAssetIds.map((assetId) => this.getLiquidAssetMinimalData(assetId)));
+
+    return this.assetsMinimalCache;
   }
 
   public enrichLiquidAsset$(asset: Asset): Observable<Asset> {
