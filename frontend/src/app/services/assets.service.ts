@@ -205,10 +205,25 @@ export class AssetsService {
           entity: assetData[0] ? { domain: assetData[0] } : undefined,
           ticker: assetData[1] || '',
           name: assetData[2] || '',
-        })).filter((asset) => asset.name.toLowerCase().indexOf(lowerSearchText) > -1
+        })).filter((asset) => asset.asset_id.indexOf(lowerSearchText) > -1
+          || asset.name.toLowerCase().indexOf(lowerSearchText) > -1
           || (asset.ticker || '').toLowerCase().indexOf(lowerSearchText) > -1
           || (asset.entity && asset.entity.domain || '').toLowerCase().indexOf(lowerSearchText) > -1)),
       )),
+      switchMap((assets) => {
+        if (!/^[0-9a-f]{64}$/i.test(searchText) || assets.some((asset) => asset.asset_id.toLowerCase() === lowerSearchText)) {
+          return of(assets);
+        }
+        return this.electrsApiService.getAsset$(searchText).pipe(
+          map((asset) => asset.name || asset.ticker || asset.precision != null ? [{
+            asset_id: asset.asset_id,
+            entity: asset.entity,
+            ticker: asset.ticker || '',
+            name: asset.name || asset.asset_id,
+          }, ...assets] : assets),
+          catchError(() => of(assets)),
+        );
+      }),
       map((assets) => assets.map((asset) => ({
         ...asset,
         entity: asset.entity || (asset.domain ? { domain: asset.domain } : undefined),
