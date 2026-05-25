@@ -238,6 +238,11 @@ export class ElectrsApiService {
     return this.httpClient.get<AssetRegistryItem[]>(this.apiBaseUrl + this.apiBasePath + '/api/assets/registry', { params, observe: 'response' });
   }
 
+  getLiquidAssetsRegistrySearch$(query: string): Observable<AssetRegistryItem[]> {
+    const params = new HttpParams().set('q', query);
+    return this.httpClient.get<AssetRegistryItem[]>(this.apiBaseUrl + this.apiBasePath + '/api/assets/registry/search', { params });
+  }
+
   getAssetTransactions$(assetId: string): Observable<Transaction[]> {
     return this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/asset/' + assetId + '/txs');
   }

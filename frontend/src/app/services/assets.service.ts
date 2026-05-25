@@ -187,4 +187,32 @@ export class AssetsService {
       })),
     );
   }
+
+  public searchLiquidAssets$(searchText: string, limit: number): Observable<AssetRegistryItem[]> {
+    const lowerSearchText = searchText.toLowerCase();
+    return (this.registryAvailable ? this.electrsApiService.getLiquidAssetsRegistrySearch$(searchText).pipe(
+      catchError((error) => {
+        if (![404, 501].includes(error.status)) {
+          return throwError(() => error);
+        }
+        this.registryAvailable = false;
+        return of(null);
+      }),
+    ) : of(null)).pipe(
+      switchMap((registryAssets) => registryAssets ? of(registryAssets) : this.getAssetsMinimalJson$.pipe(
+        map((assets) => Object.entries(assets).map(([assetId, assetData]: [string, any[]]) => ({
+          asset_id: assetId,
+          entity: assetData[0] ? { domain: assetData[0] } : undefined,
+          ticker: assetData[1] || '',
+          name: assetData[2] || '',
+        })).filter((asset) => asset.name.toLowerCase().indexOf(lowerSearchText) > -1
+          || (asset.ticker || '').toLowerCase().indexOf(lowerSearchText) > -1
+          || (asset.entity && asset.entity.domain || '').toLowerCase().indexOf(lowerSearchText) > -1)),
+      )),
+      map((assets) => assets.map((asset) => ({
+        ...asset,
+        entity: asset.entity || (asset.domain ? { domain: asset.domain } : undefined),
+      })).slice(0, limit)),
+    );
+  }
 }
