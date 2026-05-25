@@ -225,6 +225,14 @@ export interface Entity {
   domain: string;
 }
 
+export interface AssetRegistryItem {
+  asset_id: string;
+  name: string;
+  ticker?: string;
+  domain?: string;
+  entity?: Entity;
+}
+
 interface IssuanceTxin {
   txid: string;
   vin: number;

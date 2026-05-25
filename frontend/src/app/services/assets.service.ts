@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { map, shareReplay, switchMap } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import { StateService } from '@app/services/state.service';
 import { environment } from '@environments/environment';
-import { Asset, AssetExtended } from '@interfaces/electrs.interface';
+import { ElectrsApiService } from '@app/services/electrs-api.service';
+import { Asset, AssetExtended, AssetRegistryItem } from '@interfaces/electrs.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -15,19 +16,25 @@ export class AssetsService {
   getAssetsJson$: Observable<{ array: AssetExtended[]; objects: any}>;
   getAssetsMinimalJson$: Observable<any>;
   getWorldMapJson$: Observable<any>;
+  registryAvailable = true;
+  private apiBaseUrl = '';
 
   constructor(
     private httpClient: HttpClient,
     private stateService: StateService,
+    private electrsApiService: ElectrsApiService,
   ) {
-    let apiBaseUrl = '';
-    if (!this.stateService.isBrowser) {
-      apiBaseUrl = this.stateService.env.NGINX_PROTOCOL + '://' + this.stateService.env.NGINX_HOSTNAME + ':' + this.stateService.env.NGINX_PORT;
+    this.apiBaseUrl = ''; // use relative URL by default
+    if (!stateService.isBrowser) { // except when inside AU SSR process
+      this.apiBaseUrl = this.stateService.env.NGINX_PROTOCOL + '://' + this.stateService.env.NGINX_HOSTNAME + ':' + this.stateService.env.NGINX_PORT;
     }
+    this.stateService.networkChanged$.subscribe(() => {
+      this.registryAvailable = true;
+    });
 
     this.getAssetsJson$ = this.stateService.networkChanged$
       .pipe(
-        switchMap(() => this.httpClient.get(`${apiBaseUrl}/resources/assets${this.stateService.network === 'liquidtestnet' ? '-testnet' : ''}.json`)),
+        switchMap(() => this.httpClient.get(`${this.apiBaseUrl}/resources/assets${this.stateService.network === 'liquidtestnet' ? '-testnet' : ''}.json`)),
         map((rawAssets) => {
           const assets: AssetExtended[] = Object.values(rawAssets);
 
@@ -56,7 +63,7 @@ export class AssetsService {
       );
     this.getAssetsMinimalJson$ = this.stateService.networkChanged$
     .pipe(
-      switchMap(() => this.httpClient.get(`${apiBaseUrl}/resources/assets${this.stateService.network === 'liquidtestnet' ? '-testnet' : ''}.minimal.json`)),
+      switchMap(() => this.httpClient.get(`${this.apiBaseUrl}/resources/assets${this.stateService.network === 'liquidtestnet' ? '-testnet' : ''}.minimal.json`)),
       map((assetsMinimal) => {
         if (this.stateService.network === 'liquidtestnet') {
           // Hard coding the Liquid Testnet native asset
@@ -67,7 +74,7 @@ export class AssetsService {
       shareReplay(1),
     );
 
-    this.getWorldMapJson$ = this.httpClient.get(apiBaseUrl + '/resources/worldmap.json').pipe(shareReplay());
+    this.getWorldMapJson$ = this.httpClient.get(this.apiBaseUrl + '/resources/worldmap.json').pipe(shareReplay());
   }
 
   public enrichLiquidAsset$(asset: Asset): Observable<Asset> {
@@ -82,5 +89,40 @@ export class AssetsService {
         map((assets) => assets.objects[asset.asset_id] ? { ...asset, ...assets.objects[asset.asset_id] } : asset),
       );
     }
+  }
+
+  public getLiquidAssetsPage$(startIndex: number, limit: number): Observable<{ assets: AssetRegistryItem[]; total: number }> {
+    return (this.registryAvailable ? this.electrsApiService.getLiquidAssetsRegistry$(startIndex, limit).pipe(
+      map((response) => {
+        const assets = response.body || [];
+        const total = parseInt(response.headers.get('X-Total-Results') || `${assets.length}`, 10);
+        if (!total && !assets.length) {
+          this.registryAvailable = false;
+          return null;
+        }
+        return { assets, total };
+      }),
+      catchError((error) => {
+        if (![404, 501].includes(error.status)) {
+          return throwError(() => error);
+        }
+        this.registryAvailable = false;
+        return of(null);
+      }),
+    ) : of(null)).pipe(
+      switchMap((registryPage) => registryPage ? of(registryPage) : this.getAssetsJson$.pipe(
+        map((assets) => ({
+          assets: assets.array.slice(startIndex, startIndex + limit),
+          total: assets.array.length,
+        })),
+      )),
+      map((page) => ({
+        ...page,
+        assets: page.assets.map((asset) => ({
+          ...asset,
+          entity: asset.entity || (asset.domain ? { domain: asset.domain } : undefined),
+        })),
+      })),
+    );
   }
 }
