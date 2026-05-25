@@ -7,7 +7,7 @@ import { WebsocketService } from '@app/services/websocket.service';
 import { StateService } from '@app/services/state.service';
 import { AudioService } from '@app/services/audio.service';
 import { ApiService } from '@app/services/api.service';
-import { of, merge, Subscription, combineLatest } from 'rxjs';
+import { of, merge, Subscription, EMPTY } from 'rxjs';
 import { SeoService } from '@app/services/seo.service';
 import { environment } from '@environments/environment';
 import { AssetsService } from '@app/services/assets.service';
@@ -82,30 +82,26 @@ export class AssetComponent implements OnInit, OnDestroy {
           )
           .pipe(
             switchMap(() => {
-              return combineLatest([this.electrsApiService.getAsset$(this.assetString)
+              return this.electrsApiService.getAsset$(this.assetString)
                 .pipe(
                   catchError((err) => {
                     this.isLoadingAsset = false;
                     this.error = err;
                     this.seoService.logSoft404();
                     console.log(err);
-                    return of(null);
-                  })
-                ), this.assetsService.getAssetsMinimalJson$])
-              .pipe(
-                take(1)
-              );
+                    return EMPTY;
+                  }),
+                  switchMap((asset) => this.assetsService.enrichLiquidAsset$(asset)),
+                  take(1)
+                );
             })
           );
         })
       )
       .pipe(
-        switchMap(([asset, assetsData]) => {
+        switchMap((asset) => {
           this.asset = asset;
-          this.assetContract = assetsData[this.asset.asset_id];
-          if (!this.assetContract) {
-            this.assetContract = [null, '?', 'Unknown', 0];
-          }
+          this.assetContract = [asset.entity?.domain || null, asset.ticker || '?', asset.name || 'Unknown', asset.precision || 0];
           this.seoService.setDescription($localize`:@@meta.description.liquid.asset:Browse an overview of the Liquid asset ${this.assetContract[2]}:INTERPOLATION: (${this.assetContract[1]}:INTERPOLATION:): see issued amount, burned amount, circulating amount, related transactions, and more.`);
           this.blindedIssuance = this.asset.chain_stats.has_blinded_issuances || this.asset.mempool_stats.has_blinded_issuances;
           this.isNativeAsset = asset.asset_id === this.nativeAssetId;
