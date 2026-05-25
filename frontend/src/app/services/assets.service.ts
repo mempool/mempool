@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
+import { firstValueFrom, Observable, of, throwError } from 'rxjs';
 import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import { StateService } from '@app/services/state.service';
 import { environment } from '@environments/environment';
@@ -75,6 +75,28 @@ export class AssetsService {
     );
 
     this.getWorldMapJson$ = this.httpClient.get(this.apiBaseUrl + '/resources/worldmap.json').pipe(shareReplay());
+  }
+
+  public async getLiquidAssetData(assetId: string): Promise<Partial<Asset>> {
+    if (this.stateService.network === 'liquid' && assetId === environment.nativeAssetId) {
+      return { asset_id: assetId, name: 'Liquid Bitcoin', ticker: 'LBTC', precision: 8 };
+    } else if (this.stateService.network === 'liquidtestnet' && assetId === environment.nativeTestAssetId) {
+      return { asset_id: assetId, name: 'Test Liquid Bitcoin', ticker: 'tLBTC', precision: 8 };
+    } else if (this.registryAvailable) {
+      try {
+        const apiAsset = await firstValueFrom(this.electrsApiService.getAsset$(assetId));
+        if (apiAsset.name || apiAsset.ticker || apiAsset.precision != null) {
+          return apiAsset;
+        }
+      } catch (error: any) {
+        if (![404, 501].includes(error?.status)) {
+          throw error;
+        }
+      }
+    }
+
+    const assets = await firstValueFrom(this.getAssetsJson$);
+    return assets.objects[assetId] || {};
   }
 
   public enrichLiquidAsset$(asset: Asset): Observable<Asset> {
