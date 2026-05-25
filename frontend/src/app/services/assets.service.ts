@@ -85,24 +85,40 @@ export class AssetsService {
 
   public async getLiquidAssetData(assetId: string): Promise<Partial<Asset>> {
     if (this.stateService.network === 'liquid' && assetId === environment.nativeAssetId) {
-      return { asset_id: assetId, name: 'Liquid Bitcoin', ticker: 'LBTC', precision: 8 };
+      const asset = { asset_id: assetId, name: 'Liquid Bitcoin', ticker: 'LBTC', precision: 8 };
+      return asset;
     } else if (this.stateService.network === 'liquidtestnet' && assetId === environment.nativeTestAssetId) {
-      return { asset_id: assetId, name: 'Test Liquid Bitcoin', ticker: 'tLBTC', precision: 8 };
+      const asset = { asset_id: assetId, name: 'Test Liquid Bitcoin', ticker: 'tLBTC', precision: 8 };
+      return asset;
     } else if (this.registryAvailable) {
       try {
-        const apiAsset = await firstValueFrom(this.electrsApiService.getAsset$(assetId));
+        const apiAsset = await firstValueFrom(this.electrsApiService.getLiquidAssetRegistry$(assetId));
         if (apiAsset.name || apiAsset.ticker || apiAsset.precision != null) {
-          return apiAsset;
+          const asset = { ...apiAsset, asset_id: assetId };
+          this.assetsMinimalCache[assetId] = [asset.entity?.domain || asset.domain || null, asset.ticker, asset.name, asset.precision || 0];
+          return asset;
         }
       } catch (error: any) {
-        if (![404, 501].includes(error?.status)) {
+        if (error?.status === 501) {
+          this.registryAvailable = false;
+        } else if (error?.status !== 404) {
           throw error;
         }
       }
     }
 
     const assets = await firstValueFrom(this.getAssetsJson$);
-    return assets.objects[assetId] || {};
+    const asset: any = assets.objects[assetId] || { asset_id: assetId };
+    if (asset.name || asset.ticker || asset.precision != null) {
+      this.assetsMinimalCache[assetId] = [asset.entity?.domain || asset.domain || null, asset.ticker, asset.name, asset.precision || 0];
+    }
+    return asset;
+  }
+
+  private cacheLiquidAssetMinimalData(asset: Partial<Asset>): void {
+    if (asset.asset_id && (asset.name || asset.ticker || asset.precision != null)) {
+      this.assetsMinimalCache[asset.asset_id] = [asset.entity?.domain || (asset as any).domain || null, asset.ticker, asset.name, asset.precision || 0];
+    }
   }
 
   public async getLiquidAssetMinimalData(assetId: string): Promise<any[]> {
@@ -112,7 +128,6 @@ export class AssetsService {
 
     const asset: any = await this.getLiquidAssetData(assetId);
     if (asset.name || asset.ticker || asset.precision != null) {
-      this.assetsMinimalCache[assetId] = [asset.entity?.domain || asset.domain || null, asset.ticker, asset.name, asset.precision || 0];
       return this.assetsMinimalCache[assetId];
     }
     return null;
@@ -141,14 +156,21 @@ export class AssetsService {
 
   public enrichLiquidAsset$(asset: Asset): Observable<Asset> {
     if (asset.name || asset.ticker || asset.precision != null) {
+      this.cacheLiquidAssetMinimalData(asset);
       return of(asset);
     } else if (this.stateService.network === 'liquid' && asset.asset_id === environment.nativeAssetId) {
-      return of({ ...asset, name: 'Liquid Bitcoin', ticker: 'LBTC', precision: 8 });
+      const nativeAsset = { ...asset, name: 'Liquid Bitcoin', ticker: 'LBTC', precision: 8 };
+      return of(nativeAsset);
     } else if (this.stateService.network === 'liquidtestnet' && asset.asset_id === environment.nativeTestAssetId) {
-      return of({ ...asset, name: 'Test Liquid Bitcoin', ticker: 'tLBTC', precision: 8 });
+      const nativeAsset = { ...asset, name: 'Test Liquid Bitcoin', ticker: 'tLBTC', precision: 8 };
+      return of(nativeAsset);
     } else {
       return this.getAssetsJson$.pipe(
-        map((assets) => assets.objects[asset.asset_id] ? { ...asset, ...assets.objects[asset.asset_id] } : asset),
+        map((assets) => {
+          const enrichedAsset = assets.objects[asset.asset_id] ? { ...asset, ...assets.objects[asset.asset_id] } : asset;
+          this.cacheLiquidAssetMinimalData(enrichedAsset);
+          return enrichedAsset;
+        }),
       );
     }
   }
@@ -214,13 +236,19 @@ export class AssetsService {
         if (!/^[0-9a-f]{64}$/i.test(searchText) || assets.some((asset) => asset.asset_id.toLowerCase() === lowerSearchText)) {
           return of(assets);
         }
-        return this.electrsApiService.getAsset$(searchText).pipe(
-          map((asset) => asset.name || asset.ticker || asset.precision != null ? [{
-            asset_id: asset.asset_id,
-            entity: asset.entity,
-            ticker: asset.ticker || '',
-            name: asset.name || asset.asset_id,
-          }, ...assets] : assets),
+        return this.electrsApiService.getLiquidAssetRegistry$(searchText).pipe(
+          map((asset) => {
+            if (asset.name || asset.ticker || asset.precision != null) {
+              this.assetsMinimalCache[asset.asset_id] = [asset.entity?.domain || asset.domain || null, asset.ticker, asset.name, asset.precision || 0];
+              return [{
+                asset_id: asset.asset_id,
+                entity: asset.entity,
+                ticker: asset.ticker || '',
+                name: asset.name || asset.asset_id,
+              }, ...assets];
+            }
+            return assets;
+          }),
           catchError(() => of(assets)),
         );
       }),

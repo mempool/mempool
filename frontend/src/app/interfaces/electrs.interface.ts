@@ -229,6 +229,7 @@ export interface AssetRegistryItem {
   asset_id: string;
   name: string;
   ticker?: string;
+  precision?: number;
   domain?: string;
   entity?: Entity;
 }
