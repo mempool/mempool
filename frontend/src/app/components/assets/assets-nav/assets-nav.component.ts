@@ -4,12 +4,18 @@ import { Router } from '@angular/router';
 import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
 import { merge, Observable, of, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
-import { AssetExtended } from '@interfaces/electrs.interface';
 import { AssetsService } from '@app/services/assets.service';
 import { SeoService } from '@app/services/seo.service';
 import { StateService } from '@app/services/state.service';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { environment } from '@environments/environment';
+
+interface AssetSearchResult {
+  asset_id: string;
+  name: string;
+  ticker: string;
+  entity?: { domain: string };
+}
 
 @Component({
   selector: 'app-assets-nav',
@@ -21,10 +27,10 @@ export class AssetsNavComponent implements OnInit {
   @ViewChild('instance', {static: true}) instance: NgbTypeahead;
   nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;
   searchForm: UntypedFormGroup;
-  assetsCache: AssetExtended[];
+  assetsCache: AssetSearchResult[];
 
   typeaheadSearchFn: ((text: Observable<string>) => Observable<readonly any[]>);
-  formatterFn = (asset: AssetExtended) => asset.name + ' (' + asset.ticker  + ')';
+  formatterFn = (asset: AssetSearchResult) => asset.name + ' (' + asset.ticker  + ')';
   focus$ = new Subject<string>();
   click$ = new Subject<string>();
 
@@ -62,15 +68,20 @@ export class AssetsNavComponent implements OnInit {
           if (!searchText.length) {
             return of([]);
           }
-          return this.assetsService.getAssetsJson$.pipe(
+          return this.assetsService.getAssetsMinimalJson$.pipe(
             map((assets) => {
               if (searchText.length ) {
-                const filteredAssets = assets.array.filter((asset) => asset.name.toLowerCase().indexOf(searchText.toLowerCase()) > -1
+                const filteredAssets = Object.entries(assets).map(([assetId, assetData]: [string, any[]]) => ({
+                  asset_id: assetId,
+                  entity: assetData[0] ? { domain: assetData[0] } : undefined,
+                  ticker: assetData[1] || '',
+                  name: assetData[2] || '',
+                })).filter((asset) => asset.name.toLowerCase().indexOf(searchText.toLowerCase()) > -1
                   || (asset.ticker || '').toLowerCase().indexOf(searchText.toLowerCase()) > -1
                   || (asset.entity && asset.entity.domain || '').toLowerCase().indexOf(searchText.toLowerCase()) > -1);
                 return filteredAssets.slice(0, this.itemsPerPage);
               } else {
-                return assets.array.slice(0, this.itemsPerPage);
+                return [];
               }
             })
           );
