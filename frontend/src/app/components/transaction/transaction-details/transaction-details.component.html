@@ -248,13 +248,14 @@
       <ng-template #clusterPreviewButton let-cluster="cluster" let-txid="txid">
         <div class="cluster-preview-inline" role="button" tabindex="0"
           [ngbTooltip]="clusterPreviewTooltip"
+          [disableTooltip]="isMobile"
           placement="bottom"
           tooltipClass="cluster-preview-ngb-tooltip"
           container="body"
           (click)="toggleCpfp()"
           (keydown.enter)="toggleCpfp()"
           (keydown.space)="toggleCpfp(); $event.preventDefault()">
-          <app-cluster-diagram class="cluster-preview-diagram" [cluster]="cluster" [txid]="txid" [preview]="true"></app-cluster-diagram>
+          <app-cluster-diagram class="cluster-preview-diagram" [cluster]="cluster" [txid]="txid" [preview]="true" [isMobile]="isMobile"></app-cluster-diagram>
           <fa-icon class="cluster-preview-expand" [icon]="['fas', cpfpMode ? 'compress' : 'expand']" [fixedWidth]="true"></fa-icon>
         </div>
         <ng-template #clusterPreviewTooltip>
