@@ -206,6 +206,10 @@ export interface Asset {
   status: Status;
   chain_stats: AssetStats;
   mempool_stats: AssetStats;
+  name?: string;
+  ticker?: string;
+  precision?: number;
+  entity?: Entity;
 }
 
 export interface AssetExtended extends Asset {
@@ -219,6 +223,15 @@ export interface AssetExtended extends Asset {
 
 export interface Entity {
   domain: string;
+}
+
+export interface AssetRegistryItem {
+  asset_id: string;
+  name: string;
+  ticker?: string;
+  precision?: number;
+  domain?: string;
+  entity?: Entity;
 }
 
 interface IssuanceTxin {
