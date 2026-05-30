@@ -1,0 +1,11 @@
+#!/usr/bin/env zsh
+set -e
+
+export NVM_DIR="$HOME/.nvm"
+source "$NVM_DIR/nvm.sh"
+nvm use v24.13.0
+
+cd "$HOME/liquid/frontend"
+npm run sync-assets
+
+rsync -av "$HOME/liquid/frontend/dist/mempool/browser/resources/assets"* "$HOME/public_html/liquid/resources/"

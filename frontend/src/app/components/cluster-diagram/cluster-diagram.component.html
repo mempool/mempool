@@ -48,10 +48,12 @@
         [class.inactive]="outline.chunkIndex !== effectiveActiveChunk"
         [attr.d]="outline.path"
         [ngbTooltip]="chunkLabelTooltip"
+        [disableTooltip]="isMobile"
         container="body"
         placement="top"
         (mouseenter)="onChunkEnter(outline.chunkIndex)"
-        (mouseleave)="onChunkLeave()" />
+        (mouseleave)="onChunkLeave()"
+        (click)="onChunkClick(outline.chunkIndex, $event)" />
 
       <text *ngFor="let outline of chunkOutlines; trackBy: trackByChunkIndex"
         class="chunk-label"
@@ -59,10 +61,12 @@
         [attr.x]="outline.labelX" [attr.y]="outline.labelY"
         text-anchor="middle"
         [ngbTooltip]="chunkLabelTooltip"
+        [disableTooltip]="isMobile"
         container="body"
         placement="top"
         (mouseenter)="onChunkEnter(outline.chunkIndex)"
-        (mouseleave)="onChunkLeave()">
+        (mouseleave)="onChunkLeave()"
+        (click)="onChunkClick(outline.chunkIndex, $event)">
         {{ outline.feerate | feeRounding }} sat/vB
       </text>
     </ng-container>
@@ -76,7 +80,8 @@
           stroke-width="12"
           (mouseenter)="onEdgeEnter(i, $event)"
           (mousemove)="onEdgeMove($event)"
-          (mouseleave)="onEdgeLeave()" />
+          (mouseleave)="onEdgeLeave()"
+          (click)="onEdgeClick(i, $event)" />
         <path class="edge-line"
           [class.highlighted]="edge.highlighted"
           [class.ancestor]="edge.highlightKind === 'ancestor'"
@@ -96,7 +101,7 @@
         (mouseenter)="onNodeEnter(node, $event)"
         (mousemove)="onNodeMove($event)"
         (mouseleave)="onNodeLeave()"
-        (click)="onNodeClick(node)">
+        (click)="onNodeClick(node, $event)">
         <rect class="node-rect"
           [class.current]="node.isCurrent"
           [class.hovered]="node.hovered"
@@ -120,12 +125,48 @@
 
 <div #tooltip
   class="cluster-tooltip"
-  *ngIf="hoverNode || hoverEdge"
+  *ngIf="!isMobile && (hoverNode || hoverEdge)"
   [style.left.px]="tooltipPosition.x"
   [style.top.px]="tooltipPosition.y">
   <ng-container *ngIf="hoverNode">
     <div class="tx-id-row">
       <span>{{ hoverNode.tx.txid | shortenString }}</span>
+      <span class="this-tx-badge" *ngIf="hoverNode.isCurrent" i18n="cluster.this-transaction|this transaction">this transaction</span>
+    </div>
+    <div class="tooltip-body">
+      <table class="stats">
+        <tr>
+          <th i18n="transaction.fee|Transaction fee">Fee</th>
+          <td>{{ hoverNode.tx.fee | number }} <span class="unit" i18n="shared.sats">sats</span></td>
+        </tr>
+        <tr>
+          <th i18n="transaction.vsize|Virtual size">Size</th>
+          <td><span [innerHTML]="hoverNode.tx.weight / 4 | vbytes: 2"></span></td>
+        </tr>
+        <tr>
+          <th i18n="transaction.fee-rate|Transaction fee rate">Fee rate</th>
+          <td>{{ hoverNode.feerate | feeRounding }} <span class="unit">sat/vB</span></td>
+        </tr>
+      </table>
+      <div class="legend">
+        <div><span class="swatch ancestor"></span><span i18n="cluster.parents|parents">parents</span></div>
+        <div><span class="swatch descendant"></span><span i18n="cluster.children|children">children</span></div>
+      </div>
+    </div>
+  </ng-container>
+  <div class="legend edge-legend" *ngIf="!hoverNode && hoverEdge">
+    <div><span class="swatch ancestor"></span><span i18n="cluster.parent|parent">parent</span></div>
+    <div><span class="swatch descendant"></span><span i18n="cluster.child|child">child</span></div>
+  </div>
+</div>
+
+<div
+  class="cluster-mobile-panel"
+  *ngIf="isMobile && (hoverNode || hoverEdge)"
+  (click)="$event.stopPropagation()">
+  <ng-container *ngIf="hoverNode">
+    <div class="tx-id-row">
+      <a [routerLink]="['/tx/' | relativeUrl, hoverNode.tx.txid]">{{ hoverNode.tx.txid | shortenString }}</a>
       <span class="this-tx-badge" *ngIf="hoverNode.isCurrent" i18n="cluster.this-transaction|this transaction">this transaction</span>
     </div>
     <div class="tooltip-body">

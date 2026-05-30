@@ -82,7 +82,6 @@
 
     <!-- CPFP Details -->
     <ng-container *ngIf="cpfpMode && hasCpfp">
-      <span id="cluster" #cluster class="anchor"></span>
       <br>
       <div class="title float-start">
         <h2 *ngIf="cpfpInfo?.cluster && !isAcceleration" i18n="transaction.cluster|Cluster">Cluster</h2>
@@ -93,7 +92,7 @@
       <ng-container *ngIf="cpfpInfo?.cluster && !isAcceleration; else legacyCpfp">
         <div class="box">
           <app-cluster-diagram
-            [cluster]="cpfpInfo.cluster" [txid]="tx.txid">
+            [cluster]="cpfpInfo.cluster" [txid]="tx.txid" [isMobile]="isMobile">
           </app-cluster-diagram>
         </div>
       </ng-container>

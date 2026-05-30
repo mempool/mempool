@@ -46,6 +46,11 @@
 <ng-template #detailsRight>
   <ng-container *ngTemplateOutlet="feeRow"></ng-container>
   <ng-container *ngTemplateOutlet="feeRateRow"></ng-container>
+  @if (showAcceleratorSavingsMsg) {
+    <tr>
+      <td colspan="2" style="--bs-table-bg-type: var(--tertiary); white-space: normal; text-align: center;">Could have saved <app-fiat [blockConversion]="tx.price" [value]="acceleratorSavingsSats"></app-fiat> using <a href="https://mempool.space/enterprise#accelerator-pro" target="_blank" rel="noopener">Mempool Accelerator&reg; Pro</a></td>
+    </tr>
+  }
   @if (!isLoadingTx && !tx?.status?.confirmed && isAcceleration) {
     <ng-container *ngTemplateOutlet="acceleratingRow"></ng-container>
   } @else {
@@ -248,13 +253,14 @@
       <ng-template #clusterPreviewButton let-cluster="cluster" let-txid="txid">
         <div class="cluster-preview-inline" role="button" tabindex="0"
           [ngbTooltip]="clusterPreviewTooltip"
+          [disableTooltip]="isMobile"
           placement="bottom"
           tooltipClass="cluster-preview-ngb-tooltip"
           container="body"
           (click)="toggleCpfp()"
           (keydown.enter)="toggleCpfp()"
           (keydown.space)="toggleCpfp(); $event.preventDefault()">
-          <app-cluster-diagram class="cluster-preview-diagram" [cluster]="cluster" [txid]="txid" [preview]="true"></app-cluster-diagram>
+          <app-cluster-diagram class="cluster-preview-diagram" [cluster]="cluster" [txid]="txid" [preview]="true" [isMobile]="isMobile"></app-cluster-diagram>
           <fa-icon class="cluster-preview-expand" [icon]="['fas', cpfpMode ? 'compress' : 'expand']" [fixedWidth]="true"></fa-icon>
         </div>
         <ng-template #clusterPreviewTooltip>

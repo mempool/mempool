@@ -121,6 +121,7 @@ const PREVIEW_DIMENSIONS: RenderDimensions = {
 };
 
 const PREVIEW_VIEWPORT_HEIGHT = 48;
+const PREVIEW_SAFE_INSET = 16;
 const OUTLINE_PAD = 6;
 
 export function renderLayout(layout: GridLayout, params: RenderParams): RenderResult {
@@ -175,7 +176,7 @@ export function renderLayout(layout: GridLayout, params: RenderParams): RenderRe
   let cellW: number;
   if (params.preview) {
     const activeCols = activeChunkColCount(layout, params.activeChunkIndex);
-    const denom = Math.max(1, activeCols);
+    const denom = Math.max(1, activeCols + 1);
     cellW = Math.max(dim.minCellW, Math.min(dim.maxCellW,
       (params.containerWidth - dim.marginX * 2) / denom));
   } else if (layout.cols > 0) {
@@ -222,15 +223,21 @@ export function renderLayout(layout: GridLayout, params: RenderParams): RenderRe
         activeMaxY = Math.max(activeMaxY, n.rectY + n.height);
       }
     }
-    const pad = dim.marginX;
+    const pad = dim.marginX + PREVIEW_SAFE_INSET;
     const chunkFits = isFinite(activeMinX) && (activeMaxX - activeMinX) + 2 * pad <= vbWidth;
-    const vbX = chunkFits
+    let vbX = chunkFits
       ? (activeMinX + activeMaxX) / 2 - vbWidth / 2
       : selected.x - vbWidth / 2;
+    if (!chunkFits && isFinite(activeMinX)) {
+      vbX = Math.max(activeMinX - pad, Math.min(activeMaxX + pad - vbWidth, vbX));
+    }
     const chunkFitsVertically = isFinite(activeMinY) && (activeMaxY - activeMinY) + 2 * dim.marginY <= vbHeight;
-    const vbY = chunkFitsVertically
+    let vbY = chunkFitsVertically
       ? (activeMinY + activeMaxY) / 2 - vbHeight / 2
       : selected.y - vbHeight / 2;
+    if (!chunkFitsVertically && isFinite(activeMinY)) {
+      vbY = Math.max(activeMinY - dim.marginY, Math.min(activeMaxY + dim.marginY - vbHeight, vbY));
+    }
 
     return {
       nodes, edges, chunkOutlines,
