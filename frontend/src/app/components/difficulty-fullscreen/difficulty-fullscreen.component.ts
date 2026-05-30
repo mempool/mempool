@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, Inject, LOCALE_ID, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, Inject, LOCALE_ID, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { combineLatest, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { StateService } from '@app/services/state.service';
@@ -12,8 +12,10 @@ import { BlockStatus, EPOCH_BLOCK_LENGTH, EpochProgress, getEpochProgress, getEp
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DifficultyFullscreenComponent implements OnInit, OnDestroy {
+export class DifficultyFullscreenComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('epochCanvas') canvas: ElementRef<HTMLCanvasElement>;
+
+  readonly epochBlockLength = EPOCH_BLOCK_LENGTH;
 
   isLoadingWebSocket$: Observable<boolean>;
   difficultyEpoch$: Observable<EpochProgress>;
@@ -90,6 +92,14 @@ export class DifficultyFullscreenComponent implements OnInit, OnDestroy {
       this.epochSubscription = this.difficultyEpoch$.subscribe(() => {
         this.resizeCanvas();
       });
+    }
+  }
+
+  ngAfterViewInit(): void {
+    // The canvas lives behind an *ngIf and is only available after the view is
+    // initialized, so do the first draw and start the animation here.
+    if (this.stateService.isBrowser) {
+      this.resizeCanvas();
       this.startAnimation();
     }
   }
@@ -114,10 +124,23 @@ export class DifficultyFullscreenComponent implements OnInit, OnDestroy {
   }
 
   startAnimation(): void {
-    const loop = (): void => {
+    // Redraw at ~30fps rather than every frame: drawing all 2016 cells each
+    // frame is wasteful, and the pulse animation reads fine at this rate.
+    const minFrameInterval = 1000 / 30;
+    let lastDraw = 0;
+    const loop = (now: number): void => {
+      this.animationFrame = requestAnimationFrame(loop);
+      // Nothing animates once the epoch is full (no "next" block to pulse),
+      // so skip the per-frame redraws entirely.
+      if (!this.hasNextBlock) {
+        return;
+      }
+      if (now - lastDraw < minFrameInterval) {
+        return;
+      }
+      lastDraw = now;
       this.pulse = (Math.sin(Date.now() / 1000 * Math.PI) + 1) / 2; // 0..1, ~2s period
       this.draw();
-      this.animationFrame = requestAnimationFrame(loop);
     };
     this.animationFrame = requestAnimationFrame(loop);
   }

@@ -84,10 +84,12 @@ export function getEpochState(latestBlockHeight: number, da: DifficultyAdjustmen
  * (fewer than 1870 remaining blocks) the time of day is included as well.
  */
 export function getRetargetDateString(da: DifficultyAdjustment, locale: string): string {
+  const date = new Date(da.estimatedRetargetDate);
   if (da.remainingBlocks > 1870) {
-    return (new Date(da.estimatedRetargetDate)).toLocaleDateString(locale, { month: 'long', day: 'numeric' });
+    return date.toLocaleDateString(locale, { month: 'long', day: 'numeric' });
   }
-  return (new Date(da.estimatedRetargetDate)).toLocaleTimeString(locale, { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' });
+  // toLocaleString (not toLocaleTimeString) so month/day are reliably included alongside the time.
+  return date.toLocaleString(locale, { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' });
 }
 
 /**
