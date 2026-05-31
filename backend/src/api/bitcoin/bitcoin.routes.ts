@@ -144,6 +144,7 @@ class BitcoinRoutes {
     const result = feeApi.getPreciseRecommendedFee();
 
     res.json({
+      'warning': 'This endpoint is deprecated and will be removed in a future release. Please use /api/v1/fees/precise instead.',
       '1': result.fastestFee,
       '2': result.fastestFee,
       '3': result.halfHourFee,
