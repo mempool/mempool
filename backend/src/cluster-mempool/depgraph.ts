@@ -5,8 +5,6 @@ export class ClusterTx {
   effectiveFee: number;
   weight: number;
   order: number;
-  ancestors: Set<ClusterTx>;
-  descendants: Set<ClusterTx>;
   parents: Set<ClusterTx>;
   children: Set<ClusterTx>;
 
@@ -15,10 +13,47 @@ export class ClusterTx {
     this.effectiveFee = effectiveFee;
     this.weight = weight;
     this.order = order;
-    this.ancestors = new Set([this]);
-    this.descendants = new Set([this]);
     this.parents = new Set();
     this.children = new Set();
+  }
+
+  // Transitive ancestor/descendant sets (including self), derived on demand from the
+  // stored direct `parents`/`children` edges.
+  //
+  // These used to be eagerly materialized and maintained on every addDependency(), which
+  // cost O(K^2) memory per connected component of size K and OOM'd the backend on the
+  // production mempool (millions of txs, large CPFP clusters during congestion). They are
+  // now computed lazily so the graph only stores direct edges.
+  //
+  // WARNING: each access is an O(cluster size) traversal. Do NOT call these from hot paths
+  // that run over the whole mempool. Internal consumers (linearization, chunk relatives,
+  // topological sort, connected-component discovery) all walk `parents`/`children` directly
+  // and never trigger these getters.
+  get ancestors(): Set<ClusterTx> {
+    return this.closure(true);
+  }
+
+  get descendants(): Set<ClusterTx> {
+    return this.closure(false);
+  }
+
+  private closure(upwards: boolean): Set<ClusterTx> {
+    const result = new Set<ClusterTx>([this]);
+    const stack: ClusterTx[] = [this];
+    while (stack.length > 0) {
+      const node = stack.pop();
+      if (node === undefined) {
+        break;
+      }
+      const next = upwards ? node.parents : node.children;
+      for (const relative of next) {
+        if (!result.has(relative)) {
+          result.add(relative);
+          stack.push(relative);
+        }
+      }
+    }
+    return result;
   }
 }
 
@@ -41,19 +76,9 @@ export class DepGraph {
       return;
     }
 
+    // Only the direct edge is stored; transitive ancestry is derived on demand.
     parent.children.add(child);
     child.parents.add(parent);
-
-    if (child.ancestors.has(parent)) {
-      return;
-    }
-
-    for (const descendant of child.descendants) {
-      for (const ancestor of parent.ancestors) {
-        descendant.ancestors.add(ancestor);
-        ancestor.descendants.add(descendant);
-      }
-    }
   }
 
   removeTransactions(toRemove: Set<ClusterTx>): void {
@@ -65,33 +90,6 @@ export class DepGraph {
         child.parents.delete(tx);
       }
       this.txs.delete(tx);
-    }
-
-    for (const tx of this.txs) {
-      for (const removed of toRemove) {
-        tx.ancestors.delete(removed);
-        tx.descendants.delete(removed);
-      }
-    }
-
-    this.rederiveAncestorsDescendants();
-  }
-
-  private rederiveAncestorsDescendants(): void {
-    const ordered = [...this.txs].sort((a, b) => a.ancestors.size - b.ancestors.size);
-    for (const tx of this.txs) {
-      tx.ancestors = new Set([tx]);
-      tx.descendants = new Set([tx]);
-    }
-    for (const tx of ordered) {
-      for (const parent of tx.parents) {
-        for (const ancestor of parent.ancestors) {
-          tx.ancestors.add(ancestor);
-        }
-      }
-      for (const ancestor of tx.ancestors) {
-        ancestor.descendants.add(tx);
-      }
     }
   }
 
@@ -116,14 +114,14 @@ export class DepGraph {
           if (node && !visited.has(node)) {
             visited.add(node);
             component.add(node);
-            for (const a of node.ancestors) {
-              if (!visited.has(a) && this.txs.has(a)) {
-                stack.push(a);
+            for (const p of node.parents) {
+              if (!visited.has(p) && this.txs.has(p)) {
+                stack.push(p);
               }
             }
-            for (const d of node.descendants) {
-              if (!visited.has(d) && this.txs.has(d)) {
-                stack.push(d);
+            for (const c of node.children) {
+              if (!visited.has(c) && this.txs.has(c)) {
+                stack.push(c);
               }
             }
           }
@@ -136,8 +134,57 @@ export class DepGraph {
 
 }
 
+// Topological order (parents before children) over a subset, computed via Kahn's algorithm
+// on the direct edges restricted to the subset. Replaces the previous sort-by-ancestor-count
+// implementation so it does not depend on the (now lazy) transitive ancestor sets.
 export function sortTopological(subset: Set<ClusterTx>): ClusterTx[] {
-  return [...subset].sort((a, b) => a.ancestors.size - b.ancestors.size);
+  const result: ClusterTx[] = [];
+  const emitted = new Set<ClusterTx>();
+  const remainingParents = new Map<ClusterTx, number>();
+  const queue: ClusterTx[] = [];
+
+  for (const tx of subset) {
+    let count = 0;
+    for (const parent of tx.parents) {
+      if (subset.has(parent)) {
+        count++;
+      }
+    }
+    remainingParents.set(tx, count);
+    if (count === 0) {
+      queue.push(tx);
+    }
+  }
+
+  while (queue.length > 0) {
+    const tx = queue.shift();
+    if (tx === undefined) {
+      break;
+    }
+    result.push(tx);
+    emitted.add(tx);
+    for (const child of tx.children) {
+      if (subset.has(child)) {
+        const remaining = (remainingParents.get(child) ?? 0) - 1;
+        remainingParents.set(child, remaining);
+        if (remaining === 0) {
+          queue.push(child);
+        }
+      }
+    }
+  }
+
+  // Safety net: if any members were not emitted (e.g. an unexpected cycle), preserve them
+  // so callers never silently drop transactions.
+  if (result.length < subset.size) {
+    for (const tx of subset) {
+      if (!emitted.has(tx)) {
+        result.push(tx);
+      }
+    }
+  }
+
+  return result;
 }
 
 export function subgraph(txSubset: Set<ClusterTx>): { depgraph: DepGraph; txMap: Map<ClusterTx, ClusterTx> } {

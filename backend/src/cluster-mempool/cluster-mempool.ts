@@ -334,15 +334,29 @@ export class ClusterMempool {
     chunkSet: Set<ClusterTx>,
     direction: 'ancestors' | 'descendants'
   ): { txid: string; fee: number; weight: number }[] {
+    // Walk direct edges within the chunk rather than reading the (lazy) transitive
+    // closure, so cost is bounded by the chunk size, not the whole cluster. This is
+    // equivalent to the previous closure-then-filter approach because minimizeChunks
+    // guarantees each chunk is a connected component over its in-chunk edges.
     const relatives: { txid: string; fee: number; weight: number }[] = [];
-    const related = direction === 'ancestors' ? clusterTx.ancestors : clusterTx.descendants;
-    for (const rel of related) {
-      if (rel !== clusterTx && chunkSet.has(rel)) {
-        const mempoolTx = this.mempool[rel.txid];
-        if (mempoolTx) {
-          relatives.push({ txid: rel.txid, fee: mempoolTx.fee, weight: mempoolTx.weight });
-        } else {
-          logger.warn(`ClusterMempool.getChunkRelatives: ${rel.txid} missing from mempool`);
+    const visited = new Set<ClusterTx>([clusterTx]);
+    const stack: ClusterTx[] = [clusterTx];
+    while (stack.length > 0) {
+      const node = stack.pop();
+      if (node === undefined) {
+        break;
+      }
+      const adjacent = direction === 'ancestors' ? node.parents : node.children;
+      for (const rel of adjacent) {
+        if (chunkSet.has(rel) && !visited.has(rel)) {
+          visited.add(rel);
+          stack.push(rel);
+          const mempoolTx = this.mempool[rel.txid];
+          if (mempoolTx) {
+            relatives.push({ txid: rel.txid, fee: mempoolTx.fee, weight: mempoolTx.weight });
+          } else {
+            logger.warn(`ClusterMempool.getChunkRelatives: ${rel.txid} missing from mempool`);
+          }
         }
       }
     }
