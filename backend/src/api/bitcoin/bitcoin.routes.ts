@@ -38,6 +38,7 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'difficulty-adjustment', this.getDifficultyChange)
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/recommended', this.getRecommendedFees)
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/precise', this.getPreciseRecommendedFees)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'fee-estimates', this.getPreciseRecommendedFeesEsploraTransformed)
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/mempool-blocks', this.getMempoolBlocks)
       .get(config.MEMPOOL.API_URL_PREFIX + 'backend-info', this.getBackendInfo)
       .get(config.MEMPOOL.API_URL_PREFIX + 'init-data', this.getInitData)
@@ -132,6 +133,46 @@ class BitcoinRoutes {
     }
     const result = feeApi.getPreciseRecommendedFee();
     res.json(result);
+  }
+
+  private getPreciseRecommendedFeesEsploraTransformed(req: Request, res: Response) {
+    if (!mempool.isInSync()) {
+      res.statusCode = 503;
+      res.send('Service Unavailable');
+      return;
+    }
+    const result = feeApi.getPreciseRecommendedFee();
+
+    res.json({
+      '1': result.fastestFee,
+      '2': result.fastestFee,
+      '3': result.halfHourFee,
+      '4': result.halfHourFee,
+      '5': result.halfHourFee,
+      '6': result.hourFee,
+      '7': result.hourFee,
+      '8': result.hourFee,
+      '9': result.hourFee,
+      '10': result.hourFee,
+      '11': result.hourFee,
+      '12': result.hourFee,
+      '13': result.hourFee,
+      '14': result.hourFee,
+      '15': result.hourFee,
+      '16': result.hourFee,
+      '17': result.hourFee,
+      '18': result.hourFee,
+      '19': result.hourFee,
+      '20': result.hourFee,
+      '21': result.hourFee,
+      '22': result.hourFee,
+      '23': result.hourFee,
+      '24': result.hourFee,
+      '25': result.hourFee,
+      '144': result.economyFee,
+      '504': result.economyFee,
+      '1008': result.minimumFee,
+    });
   }
 
   private getMempoolBlocks(req: Request, res: Response) {
