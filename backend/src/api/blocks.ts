@@ -520,6 +520,7 @@ class Blocks {
       delete _memPool[txId];
       rbfCache.mined(txId);
     }
+    redisCache.queueTransactionsForRemoval(txIds);
 
     let candidates;
     let transactionIds: string[];
@@ -1288,7 +1289,7 @@ class Blocks {
       if (config.REDIS.ENABLED) {
         await redisCache.$updateBlocks(this.blocks);
         await redisCache.$updateBlockSummaries(this.blockSummaries);
-        await redisCache.$removeTransactions(txIds);
+        await redisCache.$removeTransactions();
         await rbfCache.updateCache();
       }
 
