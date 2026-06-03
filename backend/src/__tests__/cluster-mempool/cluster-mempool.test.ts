@@ -95,6 +95,23 @@ describe('ClusterMempool', () => {
       expect(cm.getTxCount()).toBe(2);
     });
 
+    it('should skip duplicate tx additions', () => {
+      const mempool = buildMempool([]);
+      const cm = new ClusterMempool(mempool);
+      const tx = makeTx(txid('a1'), 100, 100);
+      mempool[tx.txid] = tx;
+
+      cm.applyMempoolChange({
+        added: [tx, tx],
+        removed: [],
+        accelerations: {},
+      });
+
+      expect(cm.getClusterCount()).toBe(1);
+      expect(cm.getTxCount()).toBe(1);
+      expect(cm.getBlocks(1)[0].txids).toEqual([tx.txid]);
+    });
+
     it('should handle removing a tx', () => {
       const parentId = txid('a1');
       const childId = txid('a2');
