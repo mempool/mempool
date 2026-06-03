@@ -431,6 +431,12 @@ export class ClusterMempool {
     for (const tx of added) {
       const txid = tx.txid;
 
+      // sanity check for duplicate transactions
+      if (this.getClusterForTx(txid) !== null) {
+        logger.warn(`ClusterMempool.processAdditions: ${txid} was already added, skipping`);
+        continue;
+      }
+
       for (const vin of tx.vin) {
         if (!vin.is_coinbase) {
           this.spentBy.set(`${vin.txid}:${vin.vout}`, txid);
