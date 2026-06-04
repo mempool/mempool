@@ -288,6 +288,12 @@ h3 {
   }
 }
 
+.taproot-faq-widget {
+  background-color: var(--bg);
+  margin: 1rem 0;
+  padding: 16px;
+}
+
 :host-context(.ltr-layout) {
   .blockchain-wrapper.time-ltr .blocks-wrapper,
   .blockchain-wrapper .blocks-wrapper {

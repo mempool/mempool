@@ -12925,6 +12925,20 @@ export const faqData = [
     title: 'Why do the projected block fee ranges overlap?',
   },
   {
+    type: 'endpoint',
+    category: 'advanced',
+    showConditions: bitcoinNetworks,
+    fragment: 'how-does-the-taproot-tree-work',
+    title: 'How does the Taproot Tree work?',
+  },
+  {
+    type: 'endpoint',
+    category: 'advanced',
+    showConditions: bitcoinNetworks,
+    fragment: 'how-can-i-share-or-verify-taproot-scripts',
+    title: 'How can I share or verify Taproot scripts?',
+  },
+  {
     type: 'category',
     category: 'self-hosting',
     fragment: 'self-hosting',
