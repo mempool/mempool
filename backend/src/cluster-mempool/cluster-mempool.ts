@@ -6,7 +6,7 @@ import logger from '../logger';
 
 export interface MempoolDiff {
   added: MempoolTransactionExtended[];
-  removed: string[];
+  removed: MempoolTransactionExtended[];
   accelerations: { [txid: string]: { feeDelta: number } };
 }
 
@@ -349,27 +349,25 @@ export class ClusterMempool {
     return relatives;
   }
 
-  private processRemovals(removed: string[]): void {
-    for (const txid of removed) {
-      const tx = this.mempool[txid];
-      if (tx) {
-        for (const vin of tx.vin) {
-          if (!vin.is_coinbase) {
-            this.spentBy.delete(`${vin.txid}:${vin.vout}`);
+  private processRemovals(removed: MempoolTransactionExtended[]): void {
+    for (const tx of removed) {
+      for (const vin of tx.vin) {
+        if (!vin.is_coinbase) {
+          const spentOutpoint = `${vin.txid}:${vin.vout}`;
+          if (this.spentBy.get(spentOutpoint) === tx.txid) {
+            this.spentBy.delete(spentOutpoint);
           }
         }
-      } else if (this.txToCluster.has(txid)) {
-        logger.warn(`ClusterMempool.processRemovals: ${txid} missing from mempool, spentBy cleanup skipped`);
       }
     }
 
-    for (const txid of removed) {
-      const match = this.getClusterForTx(txid);
+    for (const tx of removed) {
+      const match = this.getClusterForTx(tx.txid);
       if (match) {
         match.cluster.depgraph.removeTransactions(new Set([match.clusterTx]));
-        match.cluster.txs.delete(txid);
+        match.cluster.txs.delete(tx.txid);
         match.cluster.linearization = match.cluster.linearization.filter(t => t !== match.clusterTx);
-        this.txToCluster.delete(txid);
+        this.txToCluster.delete(tx.txid);
         match.cluster.dirty = true;
       }
     }
