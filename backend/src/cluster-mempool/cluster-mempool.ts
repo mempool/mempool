@@ -42,7 +42,6 @@ const DEFAULT_COST_BUDGET = 75000;
 export class ClusterMempool {
   private clusters = new Map<number, Cluster>();
   private txToCluster = new Map<string, number>();
-  private parentMap = new Map<string, Set<string>>();
   private spentBy = new Map<string, string>();
   private mempool: Readonly<{ [txid: string]: MempoolTransactionExtended }>;
   private accelerations: { [txid: string]: { feeDelta: number } } = {};
@@ -147,15 +146,15 @@ export class ClusterMempool {
   }
 
   private buildFromMempool(): void {
-    this.buildRelativeMaps();
-    const components = this.findMempoolComponents();
+    const parentMap = this.buildRelativeMaps();
+    const components = this.findMempoolComponents(parentMap);
     for (const component of components) {
-      this.createClusterFromTxids(component);
+      this.createClusterFromTxids(component, parentMap);
     }
   }
 
-  private buildRelativeMaps(): void {
-    this.parentMap.clear();
+  private buildRelativeMaps(): Map<string, Set<string>> {
+    const parentMap = new Map<string, Set<string>>();
     this.spentBy.clear();
     for (const txid in this.mempool) {
       const tx = this.mempool[txid];
@@ -167,18 +166,19 @@ export class ClusterMempool {
         }
       }
       if (txParents.size > 0) {
-        this.parentMap.set(txid, txParents);
+        parentMap.set(txid, txParents);
       }
     }
+    return parentMap;
   }
 
-  private findMempoolComponents(): Set<string>[] {
+  private findMempoolComponents(parentMap: Map<string, Set<string>>): Set<string>[] {
     const visited = new Set<string>();
     const components: Set<string>[] = [];
 
     for (const txid in this.mempool) {
       if (!visited.has(txid)) {
-        const component = this.dfsComponent(txid, visited);
+        const component = this.dfsComponent(txid, visited, parentMap);
         components.push(component);
       }
     }
@@ -187,7 +187,8 @@ export class ClusterMempool {
 
   private dfsComponent(
     startTxid: string,
-    visited: Set<string>
+    visited: Set<string>,
+    parentMap: Map<string, Set<string>>
   ): Set<string> {
     const component = new Set<string>();
     const stack = [startTxid];
@@ -197,7 +198,7 @@ export class ClusterMempool {
         visited.add(current);
         component.add(current);
 
-        const txParents = this.parentMap.get(current);
+        const txParents = parentMap.get(current);
         if (txParents) {
           for (const p of txParents) {
             if (!visited.has(p)) {
@@ -229,7 +230,8 @@ export class ClusterMempool {
   }
 
   private createClusterFromTxids(
-    txids: Set<string>
+    txids: Set<string>,
+    parentMap: Map<string, Set<string>>
   ): Cluster | null {
     const clusterId = this.nextClusterId++;
     const depgraph = new DepGraph();
@@ -246,7 +248,7 @@ export class ClusterMempool {
     }
 
     for (const txid of txids) {
-      const txParents = this.parentMap.get(txid);
+      const txParents = parentMap.get(txid);
       if (txParents) {
         for (const parentTxid of txParents) {
           if (txids.has(parentTxid)) {
