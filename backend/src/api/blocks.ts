@@ -511,7 +511,7 @@ class Blocks {
     if (config.MEMPOOL.CLUSTER_MEMPOOL) {
       memPool.clusterMempool?.applyMempoolChange({
         added: [],
-        removed: txIds,
+        removed: transactions,
         accelerations: mempool.getAccelerations(),
       });
     }

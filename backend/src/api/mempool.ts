@@ -398,7 +398,7 @@ class Mempool {
     if (config.MEMPOOL.CLUSTER_MEMPOOL && (newTransactions.length || deletedTransactions.length || accelerationDelta.length)) {
       this.clusterMempool?.applyMempoolChange({
         added: newTransactions,
-        removed: deletedTransactions.map(tx => tx.txid),
+        removed: deletedTransactions,
         accelerations: this.getAccelerations(),
       });
     }
