@@ -75,12 +75,12 @@ jobs:
 
       - name: Install
         if: ${{ matrix.flavor == 'dev'}}
-        run: npm ci
+        run: bash meta/scripts/check-install-scripts.sh && npm ci
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/backend
 
       - name: Install (Prod dependencies only)
         if: ${{ matrix.flavor == 'prod'}}
-        run: npm ci --omit=dev --omit=optional
+        run: bash meta/scripts/check-install-scripts.sh && npm ci --omit=dev --omit=optional
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/backend
 
       - name: Lint
@@ -131,7 +131,7 @@ jobs:
             ${{ runner.os }}-cache-frontend-
 
       - name: Install (Prod dependencies only)
-        run: npm ci --omit=dev --omit=optional
+        run: bash meta/scripts/check-install-scripts.sh && npm ci --omit=dev --omit=optional
         working-directory: assets/frontend
 
       - name: Restore cached mining pool assets
@@ -244,13 +244,13 @@ jobs:
             ${{ runner.os }}-frontend-${{ matrix.flavor }}-
 
       - name: Install (Prod dependencies only)
-        run: npm ci --omit=dev --omit=optional
+        run: bash meta/scripts/check-install-scripts.sh && npm ci --omit=dev --omit=optional
         if: ${{ matrix.flavor == 'prod'}}
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/frontend
 
       - name: Install
         if: ${{ matrix.flavor == 'dev'}}
-        run: npm ci
+        run: bash meta/scripts/check-install-scripts.sh && npm ci
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/frontend
 
       - name: Lint

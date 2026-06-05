@@ -50,7 +50,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Install (Prod dependencies only)
-        run: npm ci --omit=dev --omit=optional
+        run: bash meta/scripts/check-install-scripts.sh && npm ci --omit=dev --omit=optional
         working-directory: assets/frontend
 
       - name: Restore cached mining pool assets
