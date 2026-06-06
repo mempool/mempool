@@ -9,7 +9,7 @@ COPY . .
 RUN apt-get update
 RUN apt-get install -y build-essential rsync
 RUN cp mempool-frontend-config.sample.json mempool-frontend-config.json
-RUN npm install --omit=dev --omit=optional
+RUN bash meta/scripts/check-install-scripts.sh && npm ci --omit=dev --omit=optional
 
 RUN npm run build
 
