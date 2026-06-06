@@ -95,18 +95,36 @@ describe('ClusterMempool', () => {
       expect(cm.getTxCount()).toBe(2);
     });
 
+    it('should skip duplicate tx additions', () => {
+      const mempool = buildMempool([]);
+      const cm = new ClusterMempool(mempool);
+      const tx = makeTx(txid('a1'), 100, 100);
+      mempool[tx.txid] = tx;
+
+      cm.applyMempoolChange({
+        added: [tx, tx],
+        removed: [],
+        accelerations: {},
+      });
+
+      expect(cm.getClusterCount()).toBe(1);
+      expect(cm.getTxCount()).toBe(1);
+      expect(cm.getBlocks(1)[0].txids).toEqual([tx.txid]);
+    });
+
     it('should handle removing a tx', () => {
       const parentId = txid('a1');
       const childId = txid('a2');
+      const childTx = makeTx(childId, 5000, 100, [parentId]);
       const mempool = buildMempool([
         makeTx(parentId, 100, 100),
-        makeTx(childId, 5000, 100, [parentId]),
+        childTx,
       ]);
       const cm = new ClusterMempool(mempool);
 
       cm.applyMempoolChange({
         added: [],
-        removed: [childId],
+        removed: [childTx],
         accelerations: {},
       });
 
@@ -115,13 +133,61 @@ describe('ClusterMempool', () => {
       expect(cm.getClusterInfo(parentId)).not.toBeNull();
     });
 
+    it('should clean spentBy when removed tx is already missing from mempool', () => {
+      const parentId = txid('a1');
+      const childId = txid('a2');
+      const childTx = makeTx(childId, 5000, 100, [parentId]);
+      const mempool = buildMempool([
+        makeTx(parentId, 100, 100),
+        childTx,
+      ]);
+      const cm = new ClusterMempool(mempool);
+      const spentBy = (cm as unknown as { spentBy: Map<string, string> }).spentBy;
+
+      expect(spentBy.get(`${parentId}:0`)).toBe(childId);
+
+      delete mempool[childId];
+      cm.applyMempoolChange({
+        added: [],
+        removed: [childTx],
+        accelerations: {},
+      });
+
+      expect(spentBy.has(`${parentId}:0`)).toBe(false);
+    });
+
+    it('should not delete spentBy for a replacement transaction', () => {
+      const parentId = txid('a1');
+      const replacedId = txid('a2');
+      const replacementId = txid('a3');
+      const replacedTx = makeTx(replacedId, 5000, 100, [parentId]);
+      const replacementTx = makeTx(replacementId, 6000, 100, [parentId]);
+      const mempool = buildMempool([
+        makeTx(parentId, 100, 100),
+        replacementTx,
+      ]);
+      const cm = new ClusterMempool(mempool);
+      const spentBy = (cm as unknown as { spentBy: Map<string, string> }).spentBy;
+
+      expect(spentBy.get(`${parentId}:0`)).toBe(replacementId);
+
+      cm.applyMempoolChange({
+        added: [],
+        removed: [replacedTx],
+        accelerations: {},
+      });
+
+      expect(spentBy.get(`${parentId}:0`)).toBe(replacementId);
+    });
+
     it('should split cluster when middle tx is removed', () => {
       const a = txid('a1');
       const b = txid('b1');
       const c = txid('c1');
+      const bTx = makeTx(b, 200, 100, [a]);
       const mempool = buildMempool([
         makeTx(a, 100, 100),
-        makeTx(b, 200, 100, [a]),
+        bTx,
         makeTx(c, 300, 100, [b]),
       ]);
       const cm = new ClusterMempool(mempool);
@@ -129,7 +195,7 @@ describe('ClusterMempool', () => {
 
       cm.applyMempoolChange({
         added: [],
-        removed: [b],
+        removed: [bTx],
         accelerations: {},
       });
 
@@ -260,7 +326,7 @@ describe('ClusterMempool', () => {
       const cm = new ClusterMempool(mempool);
       expect(cm.getClusterCount()).toBe(1);
 
-      cm.applyMempoolChange({ added: [], removed: [center], accelerations: {} });
+      cm.applyMempoolChange({ added: [], removed: [centerTx], accelerations: {} });
 
       expect(cm.getTxCount()).toBe(5);
       expect(cm.getClusterCount()).toBe(5);
@@ -280,7 +346,7 @@ describe('ClusterMempool', () => {
       const cm = new ClusterMempool(mempool);
       expect(cm.getClusterCount()).toBe(1);
 
-      cm.applyMempoolChange({ added: [], removed: [c], accelerations: {} });
+      cm.applyMempoolChange({ added: [], removed: [cTx], accelerations: {} });
 
       expect(cm.getClusterCount()).toBe(1);
       expect(cm.getTxCount()).toBe(2);
@@ -289,13 +355,14 @@ describe('ClusterMempool', () => {
     it('should produce singleton when tx is removed from 2-tx cluster', () => {
       const a = txid('a1');
       const b = txid('b1');
+      const bTx = makeTx(b, 200, 100, [a]);
       const mempool = buildMempool([
         makeTx(a, 100, 100),
-        makeTx(b, 200, 100, [a]),
+        bTx,
       ]);
       const cm = new ClusterMempool(mempool);
 
-      cm.applyMempoolChange({ added: [], removed: [b], accelerations: {} });
+      cm.applyMempoolChange({ added: [], removed: [bTx], accelerations: {} });
 
       expect(cm.getClusterCount()).toBe(1);
       expect(cm.getTxCount()).toBe(1);
@@ -322,7 +389,7 @@ describe('ClusterMempool', () => {
       const cm = new ClusterMempool(mempool);
       expect(cm.getClusterCount()).toBe(1);
 
-      cm.applyMempoolChange({ added: [], removed: [hub], accelerations: {} });
+      cm.applyMempoolChange({ added: [], removed: [hubTx], accelerations: {} });
 
       expect(cm.getClusterCount()).toBe(3);
       expect(cm.getTxCount()).toBe(3);
@@ -467,7 +534,7 @@ describe('ClusterMempool', () => {
 
       cm.applyMempoolChange({
         added: [],
-        removed: [txid('nonexistent')],
+        removed: [makeTx(txid('nonexistent'), 100, 100)],
         accelerations: {},
       });
 

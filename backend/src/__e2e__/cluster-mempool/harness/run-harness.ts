@@ -244,8 +244,10 @@ class Harness {
 
       const added = await this.fetchTransactions(addedTxids);
 
-      // Apply diff before deleting from cache — processRemovals needs the tx data
-      const diff: MempoolDiff = { added, removed: removedTxids, accelerations: {} };
+      const removed = removedTxids
+        .map(txid => this.mempool[txid])
+        .filter((tx): tx is MempoolTransactionExtended => !!tx);
+      const diff: MempoolDiff = { added, removed, accelerations: {} };
       const t0 = Date.now();
       this.clusterMempool.applyMempoolChange(diff);
       const dt = Date.now() - t0;
