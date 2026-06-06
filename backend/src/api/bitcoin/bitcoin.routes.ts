@@ -143,8 +143,19 @@ class BitcoinRoutes {
     }
     const result = feeApi.getPreciseRecommendedFee();
 
+    // Note: Manually tested against rust-esplora-client 0.12.3
+    // to make sure the status code and extra header didn't blow everything up.
+    // 3xx redirects with a Location header were silently followed and caused the client to
+    // blow up, 4xx and 5xx caused errors in the client as well, so only 2xx was acceptable for this endpoint.
+
+    // HTTP 203 Non-Authoritative Information is used to indicate
+    // that the response is not the original from the server, but a transformed version of it.
+    res.statusCode = 203;
+    res.setHeader(
+      'x-warning-from-mempool',
+      `This endpoint is deprecated and will be removed in a future release. Please use /api/v1/fees/precise instead.`,
+    );
     res.json({
-      'warning': 'This endpoint is deprecated and will be removed in a future release. Please use /api/v1/fees/precise instead.',
       '1': result.fastestFee,
       '2': result.fastestFee,
       '3': result.halfHourFee,
