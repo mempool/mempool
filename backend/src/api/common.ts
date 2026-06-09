@@ -749,7 +749,15 @@ export class Common {
     // fast but bad heuristic to detect possible coinjoins
     // (at least 5 inputs and 5 outputs, less than half of which are unique amounts, with no address reuse)
     const addressReuse = Object.keys(reusedOutputAddresses).reduce((acc, key) => Math.max(acc, (reusedInputAddresses[key] || 0) + (reusedOutputAddresses[key] || 0)), 0) > 1;
-    if (!addressReuse && tx.vin.length >= 5 && tx.vout.length >= 5 && (Object.keys(inValues).length + Object.keys(outValues).length) <= (tx.vin.length + tx.vout.length) / 2 ) {
+    const tokenRelated = (flags & (TransactionFlags.inscription | TransactionFlags.op_return)) !== 0n;
+    if (!addressReuse &&
+        tx.vin.length >= 5 &&
+        tx.vout.length >= 5 &&
+        (Object.keys(inValues).length + Object.keys(outValues).length) <= (tx.vin.length + tx.vout.length) / 2 &&
+        !tokenRelated &&
+        tx.vin.length / tx.vout.length < 5 &&
+        tx.vin.length / tx.vout.length > 0.2
+      ) {
       flags |= TransactionFlags.coinjoin;
     }
     // more than 5:1 input:output ratio
