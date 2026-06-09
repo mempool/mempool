@@ -223,6 +223,7 @@ export function sleep$(ms: number): Promise<void> {
 }
 
 export function handleDemoRedirect(route: ActivatedRoute, router: Router) {
+  let demoRedirectTimer: ReturnType<typeof setTimeout>;
   route.queryParams
     .subscribe(params => {
       if (params.next) {
@@ -230,7 +231,10 @@ export function handleDemoRedirect(route: ActivatedRoute, router: Router) {
         const index = path.indexOf(params.next);
         if (index >= 0) {
           const nextPath = path[(index + 1) % path.length];
-          setTimeout(() => { window.location.replace(`${params.next}?next=${nextPath}`); }, 300000);
+          clearTimeout(demoRedirectTimer);
+          demoRedirectTimer = setTimeout(() => {
+            window.location.replace(`${path[index]}?next=${nextPath}`);
+          }, 300000);
         }
       }
     }
