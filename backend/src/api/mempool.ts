@@ -382,6 +382,7 @@ class Mempool {
       for (const tx of deletedTransactions) {
         delete this.mempoolCache[tx.txid];
       }
+      redisCache.queueTransactionsForRemoval(deletedTransactions.map(tx => tx.txid));
     }
 
     const candidates = await this.getNextCandidates(minFeeMempool, minFeeTip, deletedTransactions);
@@ -398,7 +399,7 @@ class Mempool {
     if (config.MEMPOOL.CLUSTER_MEMPOOL && (newTransactions.length || deletedTransactions.length || accelerationDelta.length)) {
       this.clusterMempool?.applyMempoolChange({
         added: newTransactions,
-        removed: deletedTransactions.map(tx => tx.txid),
+        removed: deletedTransactions,
         accelerations: this.getAccelerations(),
       });
     }
@@ -428,7 +429,7 @@ class Mempool {
     // Update Redis cache
     if (config.REDIS.ENABLED) {
       await redisCache.$flushTransactions();
-      await redisCache.$removeTransactions(deletedTransactions.map(tx => tx.txid));
+      await redisCache.$removeTransactions();
       await rbfCache.updateCache();
     }
 

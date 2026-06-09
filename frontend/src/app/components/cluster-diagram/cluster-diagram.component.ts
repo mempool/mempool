@@ -22,6 +22,7 @@ export class ClusterDiagramComponent implements OnChanges, AfterViewInit, OnDest
   @Input() cluster: { txs: CpfpClusterTx[]; chunks: CpfpClusterChunk[]; chunkIndex: number };
   @Input() txid: string;
   @Input() preview = false;
+  @Input() isMobile = false;
 
   @ViewChild('graphContainer', { static: true }) graphContainer: ElementRef;
   @ViewChild('tooltip') tooltipElement: ElementRef;
@@ -125,8 +126,17 @@ export class ClusterDiagramComponent implements OnChanges, AfterViewInit, OnDest
   }
 
   onNodeEnter(node: RenderedNode, event: MouseEvent): void {
-    if (this.preview) { return; }
+    if (this.preview || this.isMobile) { return; }
+    this.applyNodeHighlight(node);
+    this.updateTooltipPosition(event);
+    this.cd.markForCheck();
+  }
+
+  private applyNodeHighlight(node: RenderedNode): void {
     this.hoverNode = node;
+    this.hoverEdge = null;
+    this.hoverChunkIndex = null;
+    this.applyEffectiveChunk();
     this.clearHighlights();
     node.hovered = true;
     for (const edge of this.edges) {
@@ -140,58 +150,63 @@ export class ClusterDiagramComponent implements OnChanges, AfterViewInit, OnDest
         edge.highlightKind = 'ancestor';
       }
     }
-    this.updateTooltipPosition(event);
-    this.cd.markForCheck();
   }
 
   onNodeMove(event: MouseEvent): void {
-    if (this.preview) { return; }
+    if (this.preview || this.isMobile) { return; }
     this.updateTooltipPosition(event);
     this.cd.markForCheck();
   }
 
   onNodeLeave(): void {
-    if (this.preview) { return; }
+    if (this.preview || this.isMobile) { return; }
     this.hoverNode = null;
     this.clearHighlights();
     this.cd.markForCheck();
   }
 
   onEdgeEnter(edgeIndex: number, event: MouseEvent): void {
-    if (this.preview) { return; }
+    if (this.preview || this.isMobile) { return; }
+    this.applyEdgeHighlight(edgeIndex);
+    this.updateTooltipPosition(event);
+    this.cd.markForCheck();
+  }
+
+  private applyEdgeHighlight(edgeIndex: number): void {
     this.clearHighlights();
+    this.hoverNode = null;
+    this.hoverChunkIndex = null;
+    this.applyEffectiveChunk();
     const edge = this.edges[edgeIndex];
     edge.highlighted = true;
     edge.highlightKind = 'direct';
     this.nodes[edge.parentIndex].relation = 'ancestor';
     this.nodes[edge.childIndex].relation = 'descendant';
     this.hoverEdge = edge;
-    this.updateTooltipPosition(event);
-    this.cd.markForCheck();
   }
 
   onEdgeMove(event: MouseEvent): void {
-    if (this.preview) { return; }
+    if (this.preview || this.isMobile) { return; }
     this.updateTooltipPosition(event);
     this.cd.markForCheck();
   }
 
   onEdgeLeave(): void {
-    if (this.preview) { return; }
+    if (this.preview || this.isMobile) { return; }
     this.hoverEdge = null;
     this.clearHighlights();
     this.cd.markForCheck();
   }
 
   onChunkEnter(chunkIndex: number): void {
-    if (this.preview) { return; }
+    if (this.preview || this.isMobile) { return; }
     this.hoverChunkIndex = chunkIndex;
     this.applyEffectiveChunk();
     this.cd.markForCheck();
   }
 
   onChunkLeave(): void {
-    if (this.preview) { return; }
+    if (this.preview || this.isMobile) { return; }
     this.hoverChunkIndex = null;
     this.applyEffectiveChunk();
     this.cd.markForCheck();
@@ -212,11 +227,59 @@ export class ClusterDiagramComponent implements OnChanges, AfterViewInit, OnDest
     }
   }
 
-  onNodeClick(node: RenderedNode): void {
+  onNodeClick(node: RenderedNode, event: MouseEvent): void {
     if (this.preview) { return; }
+    if (this.isMobile) {
+      event.stopPropagation();
+      if (this.hoverNode?.index === node.index) {
+        this.clearMobileSelection();
+      } else {
+        this.applyNodeHighlight(node);
+        this.cd.markForCheck();
+      }
+      return;
+    }
     const network = this.stateService.network;
     const prefix = network && network !== 'mainnet' ? `/${network}` : '';
     this.router.navigate([prefix + '/tx/', node.tx.txid]);
+  }
+
+  onEdgeClick(edgeIndex: number, event: MouseEvent): void {
+    if (this.preview || !this.isMobile) { return; }
+    event.stopPropagation();
+    const edge = this.edges[edgeIndex];
+    if (this.hoverEdge === edge) {
+      this.clearMobileSelection();
+    } else {
+      this.applyEdgeHighlight(edgeIndex);
+      this.cd.markForCheck();
+    }
+  }
+
+  onChunkClick(chunkIndex: number, event: MouseEvent): void {
+    if (this.preview || !this.isMobile) { return; }
+    event.stopPropagation();
+    this.hoverNode = null;
+    this.hoverEdge = null;
+    this.clearHighlights();
+    this.hoverChunkIndex = chunkIndex;
+    this.applyEffectiveChunk();
+    this.cd.markForCheck();
+  }
+
+  @HostListener('click')
+  onBackgroundClick(): void {
+    if (this.preview || !this.isMobile) { return; }
+    this.clearMobileSelection();
+  }
+
+  private clearMobileSelection(): void {
+    this.hoverNode = null;
+    this.hoverEdge = null;
+    this.hoverChunkIndex = null;
+    this.clearHighlights();
+    this.applyEffectiveChunk();
+    this.cd.markForCheck();
   }
 
   private clearHighlights(): void {

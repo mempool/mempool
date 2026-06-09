@@ -90,7 +90,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     this.seoService.setTitle($localize`:@@d7f92e6fe26fba6fff568cbdae5db4a5c8c6a55c:Preview Transaction`);
     this.seoService.setDescription($localize`:@@meta.description.preview-tx:Preview a transaction to the Bitcoin${seoDescriptionNetwork(this.stateService.network)} network using the transaction's raw hex data.`);
     this.websocketService.want(['blocks', 'mempool-blocks']);
-    this.cpfpMode = this.isCpfpParamEnabled(this.route.snapshot.queryParams['cpfp']);
+    this.cpfpMode = this.route.snapshot.queryParams['cpfp'] === 'true';
     this.pushTxForm = this.formBuilder.group({
       txRaw: ['', Validators.required],
     });
@@ -378,10 +378,6 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
     } else {
       setTimeout(() => { this.setGraphSize(); }, 1);
     }
-  }
-
-  private isCpfpParamEnabled(cpfpParam: string | undefined): boolean {
-    return cpfpParam === 'true' || cpfpParam === 'advanced' || cpfpParam === 'simple';
   }
 
   setupGraph() {
