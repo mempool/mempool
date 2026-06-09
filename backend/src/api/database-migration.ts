@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 109;
+  private static currentVersion = 111;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -1245,6 +1245,15 @@ class DatabaseMigration {
             ('bc1qwnevjp8nsq7adu3hxlvdvslrf242q4vuavfg0y929jp2zntp3vgq7cq6z2', '5b21020e0338c96a8870479f2396c373cc7696ba124e8635d41b0ea581112b678172612102675333a4e4b8fb51d9d4e22fa5a8eaced3fdac8a8cbf9be8c030f75712e6af9921021fad939f956beae2e6765b450552f1a75236c8b7314ec30474d8f4978b252ab221029e51a5ef5db3137051de8323b001749932f2ff0d34c82e96a2c2461de96ae56c2102a4e1a9638d46923272c266631d94d36bdb03a64ee0e14c7518e49d2f29bc401021031c41fdbcebe17bec8d49816e00ca1b5ac34766b91c9f2ac37d39c63e5e008afb2102e323a079079582cf6bb68583df94bd68c9590e5904062b503ef5476109ad739e2103111cf405b627e22135b3b3733a4a34aa5723fb0f58379a16d32861bf576b0ec2210318f331b3e5d38156da6633b31929c5b220349859cc9ca3d33fb4e68aa08401742103230dae6b4ac93480aeab26d000841298e3b8f6157028e47b0897c1e025165de121035abff4281ff00660f99ab27bb53e6b33689c2cd8dcd364bc3c90ca5aea0d71a62103bd45cddfacf2083b14310ae4a84e25de61e451637346325222747b157446614c2103cc297026b06c71cbfa52089149157b5ff23de027ac5ab781800a578192d175462103d3bde5d63bdb3a6379b461be64dad45eabff42f758543a9645afd42f6d4248282103ed1e8d5109c9ed66f7941bc53cc71137baa76d50d274bda8d5e8ffbd6e61fe9a5fae736402c00fb269522103aab896d53a8e7d6433137bbba940f9c521e085dd07e60994579b64a6d992cf79210291b7d0b1b692f8f524516ed950872e5da10fb1b808b5a526dedc6fed1cf29807210386aa9372fbab374593466bc5451dc59954e90787f08060964d95c87ef34ca5bb53ae68', 4032, 3729600);
         `);
       await this.updateToSchemaVersion(109);
+    }
+    if (databaseSchemaVersion < 110 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD template_algo TINYINT UNSIGNED NOT NULL DEFAULT 0');
+      await this.updateToSchemaVersion(110);
+    }
+
+    if (databaseSchemaVersion < 111 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `compact_cpfp_clusters` ADD template_algo TINYINT UNSIGNED NOT NULL DEFAULT 0');
+      await this.updateToSchemaVersion(111);
     }
   }
 

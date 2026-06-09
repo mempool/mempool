@@ -11982,7 +11982,7 @@ export const restApiDocsData = [
         codeSampleMainnet: {
           esModule: [],
           commonJS: [],
-          curl: ['txInput=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29'],
+          curl: ['txid=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29'],
           headers: 'X-Mempool-Auth: stacksats',
           response: `{
   "txSummary": {
@@ -12136,13 +12136,13 @@ export const restApiDocsData = [
       Filters can be applied:<ul>
       <li><code>status</code>: <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code></li>
       <li><code>timeframe</code>: <code>24h</code>, <code>3d</code>, <code>1w</code>, <code>1m</code>, <code>3m</code>, <code>6m</code>, <code>1y</code>, <code>2y</code>, <code>3y</code>, <code>4y</code>, <code>all</code></li>
-      <li><code>minedByPoolUniqueId</code>: any id from <a target="_blank" href="https://github.com/mempool/mining-pools/blob/master/pools-v2.json">pools-v2.json</a>
-      <li><code>blockHash</code>: a block hash</a>
-      <li><code>blockHeight</code>: a block height</a>
-      <li><code>page</code>: the requested page number if using pagination <i>(min: 1)</i></a>
-      <li><code>pageLength</code>: the page lenght if using pagination <i>(min: 1, max: 50)</i></a>
-      <li><code>from</code>: unix timestamp (<i>overrides <code>timeframe</code></i>)</a>
-      <li><code>to</code>: unix timestamp (<i>overrides <code>timeframe</code></i>)</a>
+      <li><code>minedByPoolUniqueId</code>: any id from <a target="_blank" href="https://github.com/mempool/mining-pools/blob/master/pools-v2.json">pools-v2.json</a></li>
+      <li><code>blockHash</code>: a block hash</li>
+      <li><code>blockHeight</code>: a block height</li>
+      <li><code>page</code>: the requested page number if using pagination <i>(min: 1)</i></li>
+      <li><code>pageLength</code>: the page length if using pagination <i>(min: 1, max: 50)</i></li>
+      <li><code>from</code>: unix timestamp (<i>overrides <code>timeframe</code></i>)</li>
+      <li><code>to</code>: unix timestamp (<i>overrides <code>timeframe</code></i>)</li>
       </ul></p>`
     },
     urlString: '/v1/services/accelerator/accelerations/history',
@@ -12182,6 +12182,65 @@ export const restApiDocsData = [
 ]`,
         },
       }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-public',
+    httpRequestMethod: 'GET',
+    fragment: 'accelerator-public-stats',
+    title: 'GET Acceleration Stats',
+    description: {
+      default: `<p>Aggregated statistics for transaction accelerations, with optional filtering by pool, block, or time range.
+      Filters can be applied:<ul>
+      <li><code>timeframe</code>: <code>24h</code>, <code>3d</code>, <code>1w</code>, <code>1m</code>, <code>3m</code>, <code>6m</code>, <code>1y</code>, <code>2y</code>, <code>3y</code>, <code>4y</code>, <code>all</code></li>
+      <li><code>poolUniqueId</code>: any id from <a target="_blank" href="https://github.com/mempool/mining-pools/blob/master/pools-v2.json">pools-v2.json</a></li>
+      <li><code>blockHash</code>: a block hash</li>
+      <li><code>blockHeight</code>: a block height</li>
+      <li><code>from</code>: unix timestamp (<i>overrides <code>timeframe</code></i>)</li>
+      <li><code>to</code>: unix timestamp (<i>overrides <code>timeframe</code></i>)</li>
+      </ul></p>
+      <p>
+        Response fields:
+        <ul>
+          <li><code>totalRequested</code>: number of acceleration requests.</li>
+          <li><code>totalAccepted</code>: accelerations accepted into a block template.
+            <br><strong class="ms-3">- Per-pool</strong>: count this pool put in its template.
+            <br><strong class="ms-3">- Global</strong>: count accepted by any pool. Per-pool values do not sum to the global value.</li>
+          <li><code>totalCompleted</code>: accelerations mined into a confirmed block. Per-pool values sum to roughly the global value.</li>
+          <li><code>totalBidBoost</code>: total acceleration fees in sats.</li>
+          <li><code>totalVsize</code>: Total virtual size of accelerated transactions, in vbytes.</li>
+        </ul>
+      </p>
+      `
+    },
+    urlString: '/v1/services/accelerator/accelerations/stats',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/services/accelerator/accelerations/stats?blockHash=000000000000000000002c55e353486c1013ce8bd6d637fd5be7798f44b731dc`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          headers: '',
+          response: `
+  {
+   "totalRequested": 3,
+   "totalAccepted": 3,
+   "totalCompleted": 3,
+   "totalBidBoost": 1552,
+   "totalVsize": 1846
+  }
+`,
+        },
+      },
     }
   },
 
@@ -12339,7 +12398,7 @@ export const restApiDocsData = [
         codeSampleMainnet: {
           esModule: [],
           commonJS: [],
-          curl: ['txInput=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&userBid=21000000'],
+          curl: ['txid=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&maxBidBoost=21000000'],
           headers: 'X-Mempool-Auth: stacksats',
           response: `HTTP/1.1 200 OK`,
         },
@@ -12385,16 +12444,18 @@ export const restApiDocsData = [
     title: 'POST Auto-Accelerate A Transaction (Pro)',
     description: {
       default: `
-      <div class="pb-1">
-        <span>Sends a request to automatically accelerate a transaction based on specified trigger conditions.</span><br>
+      <p>
+        <span>Sends a request to automatically accelerate a transaction based on specified trigger conditions. Competing requests are allowed (one per <code>txInput</code>/<code>type</code>).</span>
+      </p>
+      <div>
         <span>The <code>type</code> parameter must be one of: <code>time_delay</code>, <code>block_height</code>, <code>timestamp</code>, or <code>next_block</code>.</span><br>
-        <span>The <code>value</code> parameter is required for types other than <code>next_block</code> and depends on the type:</span><br>
+        <span>The <code>value</code> parameter is required for types other than <code>next_block</code> and depends on the type:</span>
+        <ul>
+          <li><code>time_delay</code> - in hours, a floating point value >= 0.5</li>
+          <li><code>block_height</code> - a block height >= next block height</li>
+          <li><code>timestamp</code> - a Unix timestamp in seconds >= now + 60 seconds</li>
+        </ul>
       </div>
-      <ul>
-        <li><code>time_delay</code> - in hours, a floating point value >= 0.5</li>
-        <li><code>block_height</code> - a block height >= next block height</li>
-        <li><code>timestamp</code> - a Unix timestamp in seconds >= now + 60 seconds</li>
-      </ul>
       `
     },
     urlString: '/v1/services/accelerator/auto-accelerate',
@@ -12410,7 +12471,7 @@ export const restApiDocsData = [
         codeSampleMainnet: {
           esModule: [],
           commonJS: [],
-          curl: ['txInput=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&type=time_delay&value=0.5'],
+          curl: ['txid=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&type=time_delay&value=0.5'],
           headers: 'X-Mempool-Auth: stacksats',
           response: `HTTP/1.1 200 OK`,
         },
@@ -12481,7 +12542,19 @@ export const restApiDocsData = [
     fragment: 'accelerator-auto-accelerate-cancel',
     title: 'POST Cancel Auto-Acceleration (Pro)',
     description: {
-      default: '<p>Sends a request to cancel an auto-acceleration in the <code>tracking</code> status.<br>You can retrieve eligible auto-acceleration <code>txid</code> using the history endpoint GET <code>/api/v1/services/accelerator/auto-accelerate/history</code>.</p>'
+      default: `
+        <p>
+          <span>Sends a request to cancel an auto-acceleration in the <code>tracking</code> status.</span><br>
+          <span>You can retrieve eligible auto-acceleration <code>txid</code> using the history endpoint GET <code>/api/v1/services/accelerator/auto-accelerate/history</code>.</span>
+        </p>
+        <p>
+          <span>When calling this endpoint without a <code>type</code> parameter, this will cancel all your active auto-acceleration requests matching the <code>txid</code>.</span>
+          <span>To cancel a single auto-acceleration request, send both <code>txid</code> and <code>type</code> parameters.</span><br>
+        </p>
+        <p>
+          <span>Parameter <code>type</code> can take the following values: <code>next_block</code>, <code>time_delay</code>, <code>block_height</code> or <code>timestamp</code>.</span>
+        </p>
+      `
     },
     urlString: '/v1/services/accelerator/auto-accelerate/cancel',
     showConditions: [''],
@@ -12496,9 +12569,9 @@ export const restApiDocsData = [
         codeSampleMainnet: {
           esModule: [],
           commonJS: [],
-          curl: ['txid=178b5b9b310f0d667d7ea563a2cdcc17bc8cd15261b58b1653860a724ca83458'],
+          curl: ['txid=178b5b9b310f0d667d7ea563a2cdcc17bc8cd15261b58b1653860a724ca83458&type=time_delay'],
           headers: 'X-Mempool-Auth: stacksats',
-          response: `HTTP/1.1 200 OK`,
+          response: `If a request has been canceled:\nHTTP/1.1 200 OK\n\nWhen no request matches the query parameters:\nHTTP/1.1 204 No Content`,
         },
       }
     }
@@ -12850,6 +12923,20 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: 'why-do-the-projected-block-fee-ranges-overlap',
     title: 'Why do the projected block fee ranges overlap?',
+  },
+  {
+    type: 'endpoint',
+    category: 'advanced',
+    showConditions: bitcoinNetworks,
+    fragment: 'how-does-the-taproot-tree-work',
+    title: 'How does the Taproot Tree work?',
+  },
+  {
+    type: 'endpoint',
+    category: 'advanced',
+    showConditions: bitcoinNetworks,
+    fragment: 'how-can-i-share-or-verify-taproot-scripts',
+    title: 'How can I share or verify Taproot scripts?',
   },
   {
     type: 'category',

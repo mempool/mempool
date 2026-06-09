@@ -59,7 +59,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   refreshOutspends$: ReplaySubject<string[]> = new ReplaySubject();
   refreshChannels$: ReplaySubject<string[]> = new ReplaySubject();
   showDetails$ = new BehaviorSubject<boolean>(false);
-  assetsMinimal: any;
+  assetsMinimal: any = {};
   transactionsLength: number = 0;
   inputRowLimit: number = 12;
   outputRowLimit: number = 12;
@@ -117,12 +117,6 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
         this.updateSignaturesMode();
       }
     });
-
-    if (this.network === 'liquid' || this.network === 'liquidtestnet') {
-      this.assetsService.getAssetsMinimalJson$.subscribe((assets) => {
-        this.assetsMinimal = assets;
-      });
-    }
 
     this.outspendsSubscription = merge(
       this.refreshOutspends$
@@ -238,6 +232,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
       }
 
       this.transactionsLength = this.transactions.length;
+      this.loadLiquidAssetData();
 
       if (!this.txPreview) {
         this.cacheService.setTxCache(this.transactions);
@@ -368,6 +363,19 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
     }
+  }
+
+  private loadLiquidAssetData(): void {
+    if (!this.isLiquid) {
+      return;
+    }
+
+    this.assetsService.getLiquidAssetsMinimalData(this.transactions).then((assets) => {
+      this.assetsMinimal = assets;
+      this.ref.markForCheck();
+    }).catch(() => {
+      this.ref.markForCheck();
+    });
   }
 
   updateAddressSimilarities(): void {
@@ -549,6 +557,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
           for (const [index, vin] of temp.entries()) {
             newTx.vin[index].isInscription = vin.isInscription;
           }
+          this.loadLiquidAssetData();
           this.ref.markForCheck();
         });
     }

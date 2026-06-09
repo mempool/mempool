@@ -19,7 +19,7 @@ ENV PATH="/usr/local/cargo/bin:$PATH"
 COPY --from=backend . .
 COPY --from=rustgbt . ../rust/
 ENV FD=/build/rust-gbt
-RUN npm install --omit=dev --omit=optional
+RUN bash meta/scripts/check-install-scripts.sh && npm ci --omit=dev --omit=optional
 
 WORKDIR /build
 RUN npm run package

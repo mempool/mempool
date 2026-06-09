@@ -22,7 +22,6 @@ export class SearchFormComponent implements OnInit {
   @Input() hamburgerOpen = false;
   env: Env;
   network = '';
-  assets: object = {};
   pools: object[] = [];
   isSearching = false;
   isTypeaheading$ = new BehaviorSubject<boolean>(false);
@@ -96,13 +95,6 @@ export class SearchFormComponent implements OnInit {
       searchText: ['', Validators.required],
     });
 
-    if (this.network === 'liquid' || this.network === 'liquidtestnet') {
-      this.assetsService.getAssetsMinimalJson$
-        .subscribe((assets) => {
-          this.assets = assets;
-        });
-    }
-
     const searchText$ = this.searchForm.get('searchText').valueChanges
     .pipe(
       map((text) => {
@@ -121,7 +113,8 @@ export class SearchFormComponent implements OnInit {
           return of([
             [],
             { nodes: [], channels: [] },
-            this.pools
+            this.pools,
+            [],
           ]);
         }
         this.isTypeaheading$.next(true);
@@ -129,7 +122,8 @@ export class SearchFormComponent implements OnInit {
           return zip(
             this.electrsApiService.getAddressesByPrefix$(text).pipe(catchError(() => of([]))),
             [{ nodes: [], channels: [] }],
-            this.getMiningPools()
+            this.getMiningPools(),
+            this.getLiquidAssetSearch$(text),
           );
         }
         return zip(
@@ -138,7 +132,8 @@ export class SearchFormComponent implements OnInit {
             nodes: [],
             channels: [],
           }))),
-          this.getMiningPools()
+          this.getMiningPools(),
+          this.getLiquidAssetSearch$(text),
         );
       }),
       map((result: any[]) => {
@@ -159,7 +154,8 @@ export class SearchFormComponent implements OnInit {
             nodes: [],
             channels: [],
           },
-          this.pools
+          this.pools,
+          [],
         ]))
       ]
       ).pipe(
@@ -178,7 +174,7 @@ export class SearchFormComponent implements OnInit {
               addresses: [],
               nodes: [],
               channels: [],
-              liquidAsset: [],
+              liquidAssets: [],
               pools: []
             };
           }
@@ -186,6 +182,7 @@ export class SearchFormComponent implements OnInit {
           const result = latestData[1];
           const addressPrefixSearchResults = result[0];
           const lightningResults = result[1];
+          const liquidAssets = result[3];
 
           // Do not show date and timestamp results for liquid
           const isNetworkBitcoin = this.network === '' || this.network === 'testnet' || this.network === 'testnet4' || this.network === 'signet';
@@ -198,8 +195,8 @@ export class SearchFormComponent implements OnInit {
           const matchesAddress = !matchesTxId && this.regexAddress.test(searchText);
           const publicKey = matchesAddress && searchText.startsWith('0');
           const otherNetworks = findOtherNetworks(searchText, this.network as any || 'mainnet', this.env);
-          const liquidAsset = this.assets ? (this.assets[searchText] || []) : [];
           const pools = this.pools.filter(pool => pool['name'].toLowerCase().includes(searchText.toLowerCase())).slice(0, 10);
+          const hashQuickMatch = +(matchesBlockHeight || matchesBlockHash || (matchesTxId && !liquidAssets.length) || matchesAddress || matchesUnixTimestamp || matchesDateTime);
 
           if (matchesDateTime && searchText.indexOf('/') !== -1) {
             searchText = searchText.replace(/\//g, '-');
@@ -211,7 +208,7 @@ export class SearchFormComponent implements OnInit {
 
           return {
             searchText: searchText,
-            hashQuickMatch: +(matchesBlockHeight || matchesBlockHash || matchesTxId || matchesAddress || matchesUnixTimestamp || matchesDateTime),
+            hashQuickMatch: hashQuickMatch,
             blockHeight: matchesBlockHeight,
             dateTime: matchesDateTime,
             unixTimestamp: matchesUnixTimestamp,
@@ -223,7 +220,7 @@ export class SearchFormComponent implements OnInit {
             otherNetworks: otherNetworks,
             nodes: lightningResults.nodes,
             channels: lightningResults.channels,
-            liquidAsset: liquidAsset,
+            liquidAssets: liquidAssets,
             pools: pools
           };
         })
@@ -258,6 +255,8 @@ export class SearchFormComponent implements OnInit {
       }
     } else if (result.slug) {
       this.navigate('/mining/pool/', result.slug);
+    } else if (result.asset_id) {
+      this.navigate('/assets/asset/', result.asset_id);
     }
   }
 
@@ -275,19 +274,24 @@ export class SearchFormComponent implements OnInit {
       } else if (this.regexTransaction.test(searchText)) {
         const matches = this.regexTransaction.exec(searchText);
         if (this.network === 'liquid' || this.network === 'liquidtestnet') {
-          if (this.assets[matches[0]]) {
-            this.navigate('/assets/asset/', matches[0]);
-          }
-          this.electrsApiService.getAsset$(matches[0])
-            .subscribe(
-              () => { this.navigate('/assets/asset/', matches[0]); },
-              () => {
-                this.electrsApiService.getBlock$(matches[0])
+          this.assetsService.searchLiquidAssets$(matches[0], 1)
+            .pipe(catchError(() => of([])))
+            .subscribe((assets) => {
+              if (assets[0]?.asset_id === matches[0]) {
+                this.navigate('/assets/asset/', matches[0]);
+              } else {
+                this.electrsApiService.getAsset$(matches[0])
                   .subscribe(
-                    (block) => { this.navigate('/block/', matches[0], { state: { data: { block } } }); },
-                    () => { this.navigate('/tx/', matches[0]); });
+                    () => { this.navigate('/assets/asset/', matches[0]); },
+                    () => {
+                      this.electrsApiService.getBlock$(matches[0])
+                        .subscribe(
+                          (block) => { this.navigate('/block/', matches[0], { state: { data: { block } } }); },
+                          () => { this.navigate('/tx/', matches[0]); });
+                    }
+                  );
               }
-            );
+            });
         } else {
           this.navigate('/tx/', matches[0]);
         }
@@ -346,5 +350,12 @@ export class SearchFormComponent implements OnInit {
       }),
       catchError(() => of([]))
     );
+  }
+
+  getLiquidAssetSearch$(searchText: string): Observable<any[]> {
+    if (this.network !== 'liquid' && this.network !== 'liquidtestnet') {
+      return of([]);
+    }
+    return this.assetsService.searchLiquidAssets$(searchText, 10).pipe(catchError(() => of([])));
   }
 }

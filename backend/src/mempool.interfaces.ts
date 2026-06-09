@@ -28,6 +28,11 @@ export interface PoolStats extends PoolInfo {
   emptyBlocks: number;
 }
 
+export enum TemplateAlgorithm {
+  legacy = 0,
+  clusterMempool = 1,
+}
+
 export interface BlockAudit {
   version: number,
   time: number,
@@ -45,6 +50,7 @@ export interface BlockAudit {
   expectedFees?: number,
   expectedWeight?: number,
   template?: any[];
+  templateAlgorithm?: TemplateAlgorithm,
 }
 
 export interface TransactionAudit {
@@ -132,6 +138,8 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
   replacement?: boolean;
   uid?: number;
   flags?: number;
+  clusterId?: number;
+  chunkIndex?: number;
 }
 
 export interface MempoolTransactionExtended extends TransactionExtended {
@@ -227,6 +235,7 @@ export interface CpfpInfo {
   adjustedVsize?: number,
   acceleration?: boolean,
   fee?: number;
+  cluster?: CpfpClusterData & { chunkIndex: number };
 }
 
 export interface TransactionStripped {
@@ -388,6 +397,25 @@ export interface CpfpCluster {
   height: number,
   txs: Ancestor[],
   effectiveFeePerVsize: number,
+  templateAlgorithm?: TemplateAlgorithm,
+  clusterData?: CpfpClusterData,
+}
+
+export interface CpfpClusterTx {
+  txid: string;
+  fee: number;
+  weight: number;
+  parents: number[];
+}
+
+export interface CpfpClusterChunk {
+  txs: number[];
+  feerate: number;
+}
+
+export interface CpfpClusterData {
+  txs: CpfpClusterTx[];
+  chunks: CpfpClusterChunk[];
 }
 
 export interface CpfpSummary {

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { combineLatest, Observable } from 'rxjs';
+import { from, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { ApiService } from '@app/services/api.service';
 import { AssetsService } from '@app/services/assets.service';
@@ -24,22 +24,17 @@ export class AssetGroupComponent implements OnInit {
     this.group$ = this.route.paramMap
       .pipe(
         switchMap((params: ParamMap) => {
-          return combineLatest([
-            this.assetsService.getAssetsJson$,
-            this.apiService.getAssetGroup$(params.get('id')),
-          ]);
+          return this.apiService.getAssetGroup$(params.get('id'));
         }),
-        map(([assets, group]) => {
-          const items = [];
-          // @ts-ignore
-          for (const item of group.assets) {
-            items.push(assets.objects[item]);
-          }
-          return {
-            group: group,
-            assets: items
-          };
-        })
+        switchMap((group) => {
+          return from(Promise.all(group.assets.map((assetId) => this.assetsService.getLiquidAssetData(assetId).catch(() => ({ asset_id: assetId })))))
+            .pipe(
+              map((assets) => ({
+                group: group,
+                assets: assets,
+              }))
+            );
+        }),
       );
   }
 }

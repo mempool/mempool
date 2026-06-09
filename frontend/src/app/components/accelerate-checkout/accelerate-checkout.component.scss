@@ -1,3 +1,7 @@
+hr {
+  border-color: var(--secondary)
+}
+
 .close-button {
   position: absolute;
   top: 0.5em;
@@ -159,8 +163,14 @@
   background: var(--bg);
   margin-top: 0.5rem;
   padding: 0.5rem;
-  @media (max-width: 575px) {
-    padding-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+}
+
+.payment-options {
+  display: flex;
+  flex-direction: row;
+  @media (max-width: 640px) {
+    flex-direction: column;
   }
 }
 

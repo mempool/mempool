@@ -177,8 +177,14 @@ class Server {
       if (config.MEMPOOL.CACHE_ENABLED) {
         await diskCache.$loadMempoolCache();
       } else if (config.REDIS.ENABLED) {
+        let currentMempoolTxids: Set<string> | undefined;
+        try {
+          currentMempoolTxids = new Set(await bitcoinApi.$getRawMempool());
+        } catch (e) {
+          logger.warn(`Failed to fetch raw mempool before loading Redis cache. Reason: ${e instanceof Error ? e.message : e}`);
+        }
         /** @asyncUnsafe */
-        await redisCache.$loadCache();
+        await redisCache.$loadCache(currentMempoolTxids);
       }
     }
 
@@ -334,7 +340,6 @@ class Server {
     if (config.MEMPOOL.ENABLED) {
       statistics.setNewStatisticsEntryCallback(websocketHandler.handleNewStatistic.bind(websocketHandler));
       memPool.setAsyncMempoolChangedCallback(websocketHandler.$handleMempoolChange.bind(websocketHandler));
-      blocks.setNewAsyncBlockCallback(websocketHandler.handleNewBlock.bind(websocketHandler));
     }
     if (config.FIAT_PRICE.ENABLED) {
       priceUpdater.setRatesChangedCallback(websocketHandler.handleNewConversionRates.bind(websocketHandler));

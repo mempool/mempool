@@ -66,39 +66,55 @@ build_frontend()
     npm run build || exit 1
 }
 
+check_config()
+{
+    local site="$1"
+    local conf="$HOME/${site}/backend/mempool-config.json"
+    if [ ! -e "${conf}" ];then
+        echo "[*] Config file missing for ${site}"
+        generate_config "${site}"
+    fi
+}
+
+generate_config()
+{
+    local site="$1"
+    local conf="$HOME/${site}/backend/mempool-config.json"
+    echo "[*] Generating config file for ${site}"
+    cp "${HOME}/mempool/production/mempool-config.${site}.json" "${conf}"
+    sed -i .orig \
+    -e "s!__BITCOIN_RPC_USER__!${BITCOIN_RPC_USER}!" \
+    -e "s!__BITCOIN_RPC_PASS__!${BITCOIN_RPC_PASS}!" \
+    -e "s!__ELEMENTS_RPC_USER__!${ELEMENTS_RPC_USER}!" \
+    -e "s!__ELEMENTS_RPC_PASS__!${ELEMENTS_RPC_PASS}!" \
+    -e "s!__MEMPOOL_MAINNET_USER__!${MEMPOOL_MAINNET_USER}!" \
+    -e "s!__MEMPOOL_MAINNET_PASS__!${MEMPOOL_MAINNET_PASS}!" \
+    -e "s!__MEMPOOL_TESTNET_USER__!${MEMPOOL_TESTNET_USER}!" \
+    -e "s!__MEMPOOL_TESTNET_PASS__!${MEMPOOL_TESTNET_PASS}!" \
+    -e "s!__MEMPOOL_TESTNET4_USER__!${MEMPOOL_TESTNET4_USER}!" \
+    -e "s!__MEMPOOL_TESTNET4_PASS__!${MEMPOOL_TESTNET4_PASS}!" \
+    -e "s!__MEMPOOL_SIGNET_USER__!${MEMPOOL_SIGNET_USER}!" \
+    -e "s!__MEMPOOL_SIGNET_PASS__!${MEMPOOL_SIGNET_PASS}!" \
+    -e "s!__MEMPOOL_MAINNET_LIGHTNING_USER__!${MEMPOOL_MAINNET_LIGHTNING_USER}!" \
+    -e "s!__MEMPOOL_MAINNET_LIGHTNING_PASS__!${MEMPOOL_MAINNET_LIGHTNING_PASS}!" \
+    -e "s!__MEMPOOL_TESTNET_LIGHTNING_USER__!${MEMPOOL_TESTNET_LIGHTNING_USER}!" \
+    -e "s!__MEMPOOL_TESTNET_LIGHTNING_PASS__!${MEMPOOL_TESTNET_LIGHTNING_PASS}!" \
+    -e "s!__MEMPOOL_SIGNET_LIGHTNING_USER__!${MEMPOOL_SIGNET_LIGHTNING_USER}!" \
+    -e "s!__MEMPOOL_SIGNET_LIGHTNING_PASS__!${MEMPOOL_SIGNET_LIGHTNING_PASS}!" \
+    -e "s!__MEMPOOL_LIQUID_USER__!${MEMPOOL_LIQUID_USER}!" \
+    -e "s!__MEMPOOL_LIQUID_PASS__!${MEMPOOL_LIQUID_PASS}!" \
+    -e "s!__MEMPOOL_LIQUIDTESTNET_USER__!${MEMPOOL_LIQUIDTESTNET_USER}!" \
+    -e "s!__MEMPOOL_LIQUIDTESTNET_PASS__!${MEMPOOL_LIQUIDTESTNET_PASS}!" \
+    "${conf}"
+    rm -f "${conf}.orig"
+}
+
 build_backend()
 {
     local site="$1"
     echo "[*] Building backend for ${site}"
     [ -z "${HASH}" ] && exit 1
     cd "$HOME/${site}/backend" || exit 1
-    if [ ! -e "mempool-config.json" ];then
-        cp "${HOME}/mempool/production/mempool-config.${site}.json" "mempool-config.json"
-	sed -i .orig \
-	-e "s!__BITCOIN_RPC_USER__!${BITCOIN_RPC_USER}!" \
-	-e "s!__BITCOIN_RPC_PASS__!${BITCOIN_RPC_PASS}!" \
-	-e "s!__ELEMENTS_RPC_USER__!${ELEMENTS_RPC_USER}!" \
-	-e "s!__ELEMENTS_RPC_PASS__!${ELEMENTS_RPC_PASS}!" \
-        -e "s!__MEMPOOL_MAINNET_USER__!${MEMPOOL_MAINNET_USER}!" \
-        -e "s!__MEMPOOL_MAINNET_PASS__!${MEMPOOL_MAINNET_PASS}!" \
-        -e "s!__MEMPOOL_TESTNET_USER__!${MEMPOOL_TESTNET_USER}!" \
-        -e "s!__MEMPOOL_TESTNET_PASS__!${MEMPOOL_TESTNET_PASS}!" \
-        -e "s!__MEMPOOL_TESTNET4_USER__!${MEMPOOL_TESTNET4_USER}!" \
-        -e "s!__MEMPOOL_TESTNET4_PASS__!${MEMPOOL_TESTNET4_PASS}!" \
-        -e "s!__MEMPOOL_SIGNET_USER__!${MEMPOOL_SIGNET_USER}!" \
-        -e "s!__MEMPOOL_SIGNET_PASS__!${MEMPOOL_SIGNET_PASS}!" \
-        -e "s!__MEMPOOL_MAINNET_LIGHTNING_USER__!${MEMPOOL_MAINNET_LIGHTNING_USER}!" \
-        -e "s!__MEMPOOL_MAINNET_LIGHTNING_PASS__!${MEMPOOL_MAINNET_LIGHTNING_PASS}!" \
-        -e "s!__MEMPOOL_TESTNET_LIGHTNING_USER__!${MEMPOOL_TESTNET_LIGHTNING_USER}!" \
-        -e "s!__MEMPOOL_TESTNET_LIGHTNING_PASS__!${MEMPOOL_TESTNET_LIGHTNING_PASS}!" \
-        -e "s!__MEMPOOL_SIGNET_LIGHTNING_USER__!${MEMPOOL_SIGNET_LIGHTNING_USER}!" \
-        -e "s!__MEMPOOL_SIGNET_LIGHTNING_PASS__!${MEMPOOL_SIGNET_LIGHTNING_PASS}!" \
-        -e "s!__MEMPOOL_LIQUID_USER__!${MEMPOOL_LIQUID_USER}!" \
-        -e "s!__MEMPOOL_LIQUID_PASS__!${MEMPOOL_LIQUID_PASS}!" \
-        -e "s!__MEMPOOL_LIQUIDTESTNET_USER__!${MEMPOOL_LIQUIDTESTNET_USER}!" \
-        -e "s!__MEMPOOL_LIQUIDTESTNET_PASS__!${MEMPOOL_LIQUIDTESTNET_PASS}!" \
-	"mempool-config.json"
-    fi
     npm install --omit=dev --omit=optional || exit 1
     npm run build || exit 1
 }
@@ -135,6 +151,11 @@ done
 # update all repos
 for repo in $frontend_repos $backend_repos;do
     update_repo "${repo}"
+done
+
+# fix backend configs
+for repo in $backend_repos;do
+    check_config "${repo}"
 done
 
 # build backends
