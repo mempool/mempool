@@ -230,7 +230,7 @@ export function handleDemoRedirect(route: ActivatedRoute, router: Router) {
         const index = path.indexOf(params.next);
         if (index >= 0) {
           const nextPath = path[(index + 1) % path.length];
-          setTimeout(() => { window.location.replace(`${params.next}?next=${nextPath}`); }, 15000);
+          setTimeout(() => { window.location.replace(`${params.next}?next=${nextPath}`); }, 300000);
         }
       }
     }
