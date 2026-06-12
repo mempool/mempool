@@ -3,17 +3,31 @@
   <p class="description" i18n="getting-started.description">Your node is syncing the Bitcoin blockchain. This can take 24–72 hours depending on your hardware and connection.</p>
 
   <section class="sync-section">
-    <h2 i18n="getting-started.bitcoin-core.title">Bitcoin Core — Downloading blocks</h2>
-
-    <div class="percentage">{{ syncProgress.bitcoind.verificationprogress * 100 | number: '1.1-1' }}%</div>
-
-    <div class="sync-bar">
-      <div class="sync-bar-fill" [style.width]="(syncProgress.bitcoind.verificationprogress * 100) + '%'"></div>
+    <div class="sync-header">
+      <span class="sync-label" i18n="getting-started.bitcoin-core.label">Downloading and validating blocks</span>
+      <span class="sync-network">mainnet</span>
     </div>
 
-    <div class="sync-meta">
-      <span>{{ syncProgress.bitcoind.blocks | number }} / {{ syncProgress.bitcoind.headers | number }}</span>
-      <span>{{ formatETA(syncProgress.bitcoind.estimatedTimeRemaining) }}</span>
+    <div class="sync-bar-wrapper">
+      <div class="sync-bar">
+        <div class="sync-bar-fill" [style.width]="(syncProgress.bitcoind.verificationprogress * 100) + '%'"></div>
+      </div>
+      <div class="sync-bar-tooltip" [style.left]="(syncProgress.bitcoind.verificationprogress * 100) + '%'">
+        {{ syncProgress.bitcoind.verificationprogress * 100 | number: '1.1-1' }}<span i18n="getting-started.bar.downloaded">% downloaded</span>
+      </div>
+    </div>
+
+    <div class="sync-stats">
+      <div class="item">
+        <div class="card-text">
+          {{ syncProgress.bitcoind.blocks | number }}<span class="secondary" i18n="getting-started.blocks.of"> of {{ syncProgress.bitcoind.headers | number }}</span>
+        </div>
+        <div class="symbol" i18n="getting-started.blocks.synced">Blocks synced</div>
+      </div>
+      <div class="item text-end">
+        <div class="card-text">{{ formatETA(syncProgress.bitcoind.estimatedTimeRemaining) }}</div>
+        <div class="symbol" i18n="getting-started.eta.label">Time remaining</div>
+      </div>
     </div>
   </section>
 
@@ -28,10 +42,53 @@
     </ng-container>
 
     <ng-template #electrsSyncing>
-      <div *ngIf="syncProgress.ibd" class="sync-waiting" i18n="getting-started.electrs.waiting">Waiting for Bitcoin Core...</div>
+      <div *ngIf="syncProgress.ibd" class="sync-pending">
+        <svg class="atom" width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+          <g class="orbit" transform="rotate(0 18 18)">
+            <ellipse cx="18" cy="18" rx="16" ry="6" fill="none" stroke="var(--mainnet-alt)" stroke-opacity="0.35" />
+            <circle r="2" fill="var(--mainnet-alt)">
+              <animateMotion dur="2s" repeatCount="indefinite" path="M 2,18 A 16,6 0 1,1 34,18 A 16,6 0 1,1 2,18" />
+            </circle>
+          </g>
+          <g class="orbit" transform="rotate(60 18 18)">
+            <ellipse cx="18" cy="18" rx="16" ry="6" fill="none" stroke="var(--mainnet-alt)" stroke-opacity="0.35" />
+            <circle r="2" fill="var(--mainnet-alt)">
+              <animateMotion dur="2.8s" repeatCount="indefinite" path="M 2,18 A 16,6 0 1,1 34,18 A 16,6 0 1,1 2,18" />
+            </circle>
+          </g>
+          <g class="orbit" transform="rotate(120 18 18)">
+            <ellipse cx="18" cy="18" rx="16" ry="6" fill="none" stroke="var(--mainnet-alt)" stroke-opacity="0.35" />
+            <circle r="2" fill="var(--mainnet-alt)">
+              <animateMotion dur="3.6s" repeatCount="indefinite" path="M 2,18 A 16,6 0 1,1 34,18 A 16,6 0 1,1 2,18" />
+            </circle>
+          </g>
+          <circle cx="18" cy="18" r="2.5" fill="var(--mainnet-alt)" />
+        </svg>
+        <span i18n="getting-started.electrs.waiting">Waiting for Bitcoin Core to finish. Indexing will begin automatically once the blockchain download is complete.</span>
+      </div>
       <ng-container *ngIf="!syncProgress.ibd">
-        <div *ngIf="syncProgress.electrs.progress === null" class="sync-indexing">
-          <div class="spinner-border" role="status"></div>
+        <div *ngIf="syncProgress.electrs.progress === null" class="sync-pending">
+          <svg class="atom" width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+            <g class="orbit" transform="rotate(0 18 18)">
+              <ellipse cx="18" cy="18" rx="16" ry="6" fill="none" stroke="var(--mainnet-alt)" stroke-opacity="0.35" />
+              <circle r="2" fill="var(--mainnet-alt)">
+                <animateMotion dur="2s" repeatCount="indefinite" path="M 2,18 A 16,6 0 1,1 34,18 A 16,6 0 1,1 2,18" />
+              </circle>
+            </g>
+            <g class="orbit" transform="rotate(60 18 18)">
+              <ellipse cx="18" cy="18" rx="16" ry="6" fill="none" stroke="var(--mainnet-alt)" stroke-opacity="0.35" />
+              <circle r="2" fill="var(--mainnet-alt)">
+                <animateMotion dur="2.8s" repeatCount="indefinite" path="M 2,18 A 16,6 0 1,1 34,18 A 16,6 0 1,1 2,18" />
+              </circle>
+            </g>
+            <g class="orbit" transform="rotate(120 18 18)">
+              <ellipse cx="18" cy="18" rx="16" ry="6" fill="none" stroke="var(--mainnet-alt)" stroke-opacity="0.35" />
+              <circle r="2" fill="var(--mainnet-alt)">
+                <animateMotion dur="3.6s" repeatCount="indefinite" path="M 2,18 A 16,6 0 1,1 34,18 A 16,6 0 1,1 2,18" />
+              </circle>
+            </g>
+            <circle cx="18" cy="18" r="2.5" fill="var(--mainnet-alt)" />
+          </svg>
           <span i18n="getting-started.electrs.indexing">Indexing in progress...</span>
         </div>
         <ng-container *ngIf="syncProgress.electrs.progress !== null">
