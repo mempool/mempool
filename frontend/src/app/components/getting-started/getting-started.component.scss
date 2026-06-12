@@ -1,0 +1,33 @@
+.getting-started {
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+.sync-section {
+  margin-bottom: 40px;
+}
+
+.progress {
+  height: 1.5rem;
+  background: var(--secondary);
+}
+
+.progress-bar {
+  background: linear-gradient(to right, var(--mainnet-alt), var(--primary));
+}
+
+.sync-details {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.sync-waiting {
+  color: var(--transparent-fg);
+}
+
+.sync-indexing {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

@@ -12,7 +12,7 @@ import backendInfo from '../backend-info';
 import transactionUtils from '../transaction-utils';
 import { IEsploraApi } from './esplora-api.interface';
 import loadingIndicators from '../loading-indicators';
-import { CpfpInfo, TransactionExtended } from '../../mempool.interfaces';
+import { CpfpInfo, IBDProgress, TransactionExtended } from '../../mempool.interfaces';
 import logger from '../../logger';
 import blocks from '../blocks';
 import bitcoinClient from './bitcoin-client';
@@ -30,6 +30,8 @@ const ADDRESS_REGEX = /^[a-z0-9]{2,120}$/i;
 const SCRIPT_HASH_REGEX = /^([a-f0-9]{2})+$/i;
 const MAX_TRANSACTION_TIMES = 100;
 
+let lastIBDSample: { time: number; progress: number } | null = null;
+
 class BitcoinRoutes {
   public initRoutes(app: Application) {
     app
@@ -42,6 +44,7 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/mempool-blocks', this.getMempoolBlocks)
       .get(config.MEMPOOL.API_URL_PREFIX + 'backend-info', this.getBackendInfo)
       .get(config.MEMPOOL.API_URL_PREFIX + 'init-data', this.getInitData)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'sync-progress', this.$getSyncProgress)
       .get(config.MEMPOOL.API_URL_PREFIX + 'validate-address/:address', this.validateAddress)
       .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/rbf', this.getRbfHistory)
       .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/cached', this.getCachedTx)
@@ -113,6 +116,45 @@ class BitcoinRoutes {
       res.send(result);
     } catch (e) {
       handleError(req, res, 500, 'Failed to get init data');
+    }
+  }
+
+  private async $getSyncProgress(req: Request, res: Response): Promise<void> {
+    try {
+      const blockchainInfo = await bitcoinClient.getBlockchainInfo();
+
+      let estimatedTimeRemaining: number | null = null;
+      if (blockchainInfo.initialblockdownload && blockchainInfo.verificationprogress < 1) {
+        const now = Date.now();
+        if (lastIBDSample && blockchainInfo.verificationprogress > lastIBDSample.progress) {
+          const progressPerSecond = (blockchainInfo.verificationprogress - lastIBDSample.progress) / ((now - lastIBDSample.time) / 1000);
+          if (progressPerSecond > 0) {
+            estimatedTimeRemaining = Math.round((1 - blockchainInfo.verificationprogress) / progressPerSecond);
+          }
+        }
+        lastIBDSample = { time: now, progress: blockchainInfo.verificationprogress };
+      }
+
+      const result: IBDProgress = {
+        ibd: blockchainInfo.initialblockdownload,
+        bitcoind: {
+          blocks: blockchainInfo.blocks,
+          headers: blockchainInfo.headers,
+          verificationprogress: blockchainInfo.verificationprogress,
+          estimatedTimeRemaining,
+        },
+      };
+
+      if (config.MEMPOOL.BACKEND === 'esplora' || config.MEMPOOL.BACKEND === 'electrum') {
+        result.electrs = {
+          indexed: !blockchainInfo.initialblockdownload && mempool.isInSync(),
+          progress: null,
+        };
+      }
+
+      res.json(result);
+    } catch (e) {
+      handleError(req, res, 500, 'Failed to get sync progress');
     }
   }
 

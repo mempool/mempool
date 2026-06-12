@@ -1,6 +1,7 @@
 import { Location, ViewportScroller } from '@angular/common';
 import { Component, HostListener, OnInit, Inject, LOCALE_ID, HostBinding } from '@angular/core';
 import { Router, NavigationEnd, Scroll } from '@angular/router';
+import { ApiService } from '@app/services/api.service';
 import { StateService } from '@app/services/state.service';
 import { OpenGraphService } from '@app/services/opengraph.service';
 import { NgbTooltipConfig } from '@ng-bootstrap/ng-bootstrap';
@@ -17,6 +18,7 @@ import { SeoService } from '@app/services/seo.service';
 export class AppComponent implements OnInit {
   constructor(
     public router: Router,
+    private apiService: ApiService,
     private stateService: StateService,
     private openGraphService: OpenGraphService,
     private seoService: SeoService,
@@ -55,6 +57,12 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.apiService.getSyncProgress$().subscribe((progress) => {
+      if (progress.ibd && !this.location.path().startsWith('/getting-started')) {
+        this.router.navigate(['/getting-started']);
+      }
+    });
+
     this.router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) {
         this.seoService.updateCanonical(this.location.path());
