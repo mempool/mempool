@@ -223,7 +223,7 @@ class ChainTips {
 
     const staleBlocks = await BlocksRepository.$getStaleBlocks(fromHeight, limit);
 
-    // map the previous block hashes of each stale block so we can reconstrunct branch lengths
+    // map the previous block hashes of each stale block so we can reconstruct branch lengths
     const staleByPrevhash: { [prevhash: string]: BlockExtended } = {};
     for (const block of staleBlocks) {
       if (block.previousblockhash) {
