@@ -163,7 +163,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   acceleratorAvailable: boolean = this.stateService.env.ACCELERATOR_BUTTON && this.stateService.network === '';
   eligibleForAcceleration: boolean = false;
   forceAccelerationSummary = false;
-  hideAccelerationSummary = false;
   accelerationFlowCompleted = false;
   showAccelerationDetails = false;
   hasAccelerationDetails = false;
@@ -237,8 +236,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       // Cleanup partnerCode from url after storing it in localStorage to avoid re-use upon page reload
       window.location.hash = window.location.hash.replace(`&partnerCode=${this.partnerCode}`, '').replace(`#partnerCode=${this.partnerCode}`, '');
     }
-
-    this.hideAccelerationSummary = this.stateService.isMempoolSpaceBuild ? this.storageService.getValue('hide-accelerator-pref') == 'true' : true;
 
     if (!this.stateService.isLiquid()) {
       this.miningService.getMiningStats('1m').subscribe(stats => {
@@ -576,7 +573,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
           if (this.stateService.network === '') {
             if (!this.mempoolPosition.accelerated) {
-              if (!this.accelerationFlowCompleted && !this.hideAccelerationSummary && !this.showAccelerationSummary) {
+              if (!this.accelerationFlowCompleted && this.acceleratorCheckoutRequested && !this.showAccelerationSummary) {
                 this.miningService.getMiningStats('1m').subscribe(stats => {
                   this.miningStats = stats;
                 });
@@ -1195,9 +1192,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     const anchor = Array.from(this.fragmentParams.entries()).find(([, value]) => value === '')?.[0] || null;
     this.inputIndex = inputIndex;
     this.outputIndex = outputIndex;
-    if (this.fragmentParams.has('accelerate')) {
-      this.forceAccelerationSummary = true;
-    }
     if (!anchor && !this.fragmentAnchor) {
       this.firstFragmentScroll = false;
     }
@@ -1251,31 +1245,58 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   closeAccelerator(): void {
     this.router.navigate([], { fragment: this.formatFragment(this.fragmentParams), queryParamsHandling: 'merge' });
-    this.hideAccelerationSummary = true;
     this.forceAccelerationSummary = false;
-    this.storageService.setValue('hide-accelerator-pref', 'true');
   }
 
   openAccelerator(): void {
     this.router.navigate([], { fragment: this.formatFragment(this.fragmentParams, 'accelerate'), queryParamsHandling: 'merge' });
     this.accelerationFlowCompleted = false;
-    this.hideAccelerationSummary = false;
-    this.storageService.setValue('hide-accelerator-pref', 'false');
   }
 
   get showAccelerationSummary(): boolean {
     return (
       this.tx
+      && !this.tx.status?.confirmed
       && !this.replaced
       && !this.isCached
       && this.acceleratorAvailable
       && this.eligibleForAcceleration
-      && (
-        (!this.hideAccelerationSummary && !this.accelerationFlowCompleted)
-        || this.forceAccelerationSummary
-      )
+      && !this.accelerationFlowCompleted
+      && (this.acceleratorCheckoutRequested || this.forceAccelerationSummary)
       && this.notAcceleratedOnLoad // avoid briefly showing accelerator checkout on already accelerated txs
     );
+  }
+
+  get acceleratorCheckoutRequested(): boolean {
+    return this.fragmentParams?.has('accelerate') === true;
+  }
+
+  get acceleratorCheckoutLoading(): boolean {
+    if (!this.acceleratorCheckoutRequested || this.error || this.showAccelerationSummary) {
+      return false;
+    }
+
+    return (
+      this.isLoadingTx
+      || this.loadingCachedTx
+      || !!(
+        this.tx
+        && !this.tx.status?.confirmed
+        && !this.replaced
+        && !this.isCached
+        && this.acceleratorAvailable
+        && this.eligibleForAcceleration
+        && this.notAcceleratedOnLoad === null
+      )
+    );
+  }
+
+  get acceleratorCheckoutActive(): boolean {
+    return this.acceleratorCheckoutReady || this.acceleratorCheckoutLoading;
+  }
+
+  get acceleratorCheckoutReady(): boolean {
+    return this.acceleratorCheckoutRequested && !this.error && this.showAccelerationSummary;
   }
 
   ngOnDestroy() {

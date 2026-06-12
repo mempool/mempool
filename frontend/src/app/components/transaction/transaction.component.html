@@ -1,5 +1,6 @@
 <div class="container-xl">
 
+  @if (!acceleratorCheckoutActive) {
   <div class="title-block">
     <div *ngIf="rbfTransaction && !tx?.status?.confirmed" class="alert alert-mempool" role="alert">
       <span i18n="transaction.rbf.replacement|RBF replacement">This transaction has been replaced by:</span>
@@ -63,7 +64,7 @@
       [acceleratorAvailable]="acceleratorAvailable"
       [accelerateCtaType]="accelerateCtaType"
       [notAcceleratedOnLoad]="notAcceleratedOnLoad"
-      [showAccelerationSummary]="showAccelerationSummary"
+      [showAccelerationSummary]="acceleratorCheckoutActive"
       [eligibleForAcceleration]="eligibleForAcceleration"
       [hasEffectiveFeeRate]="hasEffectiveFeeRate"
       [cpfpInfo]="cpfpInfo"
@@ -99,35 +100,6 @@
       <ng-template #legacyCpfp>
         <app-cpfp-info [cpfpInfo]="cpfpInfo" [tx]="tx"></app-cpfp-info>
       </ng-template>
-    </ng-container>
-
-    <!-- Accelerator -->
-    <ng-container *ngIf="!tx?.status?.confirmed && showAccelerationSummary && (ETA$ | async) as eta;">
-      <span id='accelerate' #accelerate class="anchor"></span>
-      <br>
-      <div class="title float-start mb-1">
-        <h2><a [href]="[ isMempoolSpaceBuild ? '/accelerator' : 'https://mempool.space/accelerator']" [target]="isMempoolSpaceBuild ? '' : 'blank'"><app-svg-images name="accelerator" [height]="isMobile ? '35px' : '45px'"></app-svg-images></a></h2>
-      </div>
-      <button type="button" class="btn btn-outline-info accelerator-toggle btn-sm float-end" [class.hide-on-mobile]="hasAccelerationDetails" (click)="closeAccelerator()" i18n="accelerator.hide">Hide accelerator</button>
-      <button *ngIf="hasAccelerationDetails" class="btn btn-sm btn-outline-info details-button float-end ms-2" (click)="showAccelerationDetails = !showAccelerationDetails" i18n="transaction.details|Transaction Details">Details</button>
-
-      <div class="clearfix"></div>
-
-      <app-accelerate-checkout
-        *ngIf="(da$ | async) as da;"
-        [advancedEnabled]="true"
-        [tx]="tx"
-        [accelerating]="isAcceleration"
-        [eta]="eta"
-        [miningStats]="miningStats"
-        [showDetails]="showAccelerationDetails"
-        [noCTA]="true"
-        [partnerCode]="this.partnerCode"
-        (hasDetails)="setHasAccelerationDetails($event)"
-        (completed)="onAccelerationCompleted()"
-        (unavailable)="eligibleForAcceleration = false"
-        class="h-100 w-100"
-      ></app-accelerate-checkout>
     </ng-container>
 
     <br>
@@ -393,4 +365,45 @@
     </ng-template>
   </ng-template>
 
+  } @else {
+    <span id='accelerate' #accelerate class="anchor"></span>
+    <div class="title-block">
+      <div class="title mb-1">
+        <h2><a [href]="[ isMempoolSpaceBuild ? '/accelerator' : 'https://mempool.space/accelerator']" [target]="isMempoolSpaceBuild ? '' : 'blank'"><app-svg-images name="accelerator" [height]="isMobile ? '35px' : '45px'"></app-svg-images></a></h2>
+      </div>
+      <button *ngIf="hasAccelerationDetails" class="btn btn-sm btn-outline-info details-button ms-2" (click)="showAccelerationDetails = !showAccelerationDetails" i18n="transaction.details|Transaction Details">Details</button>
+    </div>
+
+    @if (acceleratorCheckoutLoading) {
+      <ng-container *ngTemplateOutlet="acceleratorCheckoutLoadingWidget"></ng-container>
+    } @else {
+      <app-accelerate-checkout
+        *ngIf="!tx?.status?.confirmed && showAccelerationSummary && (da$ | async) && (ETA$ | async) as eta; else acceleratorCheckoutLoadingWidget"
+        [advancedEnabled]="true"
+        [tx]="tx"
+        [accelerating]="isAcceleration"
+        [eta]="eta"
+        [miningStats]="miningStats"
+        [showDetails]="showAccelerationDetails"
+        [noCTA]="true"
+        [initialStep]="acceleratorCheckoutRequested ? 'checkout' : 'summary'"
+        [partnerCode]="this.partnerCode"
+        (hasDetails)="setHasAccelerationDetails($event)"
+        (completed)="onAccelerationCompleted()"
+        (unavailable)="this.eligibleForAcceleration = false"
+        class="h-100 w-100"
+      ></app-accelerate-checkout>
+    }
+    <ng-template #acceleratorCheckoutLoadingWidget>
+      <div class="box card w-100 accelerate-checkout-inner" style="background: var(--box-bg)">
+        <div class="row">
+          <div class="col-md">
+            <div class="d-flex flex-row justify-content-center align-items-center">
+              <div class="m-4 spinner-border text-light" style="width: 25px; height: 25px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  }
 </div>
