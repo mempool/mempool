@@ -1136,7 +1136,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private formatFragment(fragmentParams: URLSearchParams, anchor: string | null = null): string | null {
-    const params = new URLSearchParams(fragmentParams.toString());
+    const params = new URLSearchParams(fragmentParams);
     for (const [key, value] of Array.from(params.entries())) {
       if (value === '') {
         params.delete(key);
@@ -1145,7 +1145,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     if (anchor) {
       params.set(anchor, '');
     }
-    return params.toString() || null;
+    return Array.from(params.entries()).map(([key, value]) => `${key}=${value}`).join('&') || null;
   }
 
   toggleGraph() {
