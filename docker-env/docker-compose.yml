@@ -1,0 +1,218 @@
+# Dev stack for the mempool backend.
+#
+# Brings up bitcoind + mempool/electrs + mariadb so you can run the mempool
+# backend locally against a real, continuously-syncing chain (or a regtest
+# chain you control).
+#
+# Usage:
+#   mkdir -p ~/bitcoin/mainnet
+#   docker compose -f dev/docker-compose.yml up -d
+#   docker compose -f dev/docker-compose.yml logs -f bitcoind
+#
+# Backend wiring (`backend/mempool-config.json`):
+#   "MEMPOOL":   { "BACKEND": "electrum", "NETWORK": "mainnet" }
+#   "CORE_RPC":  { "HOST": "127.0.0.1", "PORT": 8332, "USERNAME": "mempool", "PASSWORD": "mempool" }
+#   "ELECTRUM":  { "HOST": "127.0.0.1", "PORT": 50001, "TLS_ENABLED": false }
+#   "DATABASE":  { "ENABLED": true, "HOST": "127.0.0.1", "PORT": 3306,
+#                  "DATABASE": "mempool", "USERNAME": "mempool", "PASSWORD": "mempool" }
+#
+# To switch to regtest: stop the stack, comment out the mainnet services,
+# uncomment the regtest block at the bottom, then bring it back up. Update
+# `backend/mempool-config.json`'s NETWORK and ports accordingly (regtest
+# defaults below: bitcoind RPC 18443, electrs electrum 60401).
+
+services:
+  bitcoind:
+    # Official Bitcoin Core image. Runs as user `bitcoin` (uid 101).
+    # Host bind-mount must be writable by that uid; on a fresh setup run:
+    #   mkdir -p ~/bitcoin/mainnet && sudo chown -R 101:101 ~/bitcoin/mainnet
+    # (chown is unnecessary on macOS Docker Desktop, which translates uids.)
+    image: bitcoin/bitcoin:latest
+    restart: unless-stopped
+    stop_grace_period: 1m
+    command:
+      - -chain=main
+      - -server=1
+      - -txindex=1
+      - -coinstatsindex=1
+      - -rpcbind=0.0.0.0
+      - -rpcallowip=0.0.0.0/0
+      - -rpcuser=mempool
+      - -rpcpassword=mempool
+      - -zmqpubrawblock=tcp://0.0.0.0:28332
+      - -zmqpubrawtx=tcp://0.0.0.0:28333
+      - -printtoconsole=1
+      - -addnode=umbrel.local:8333
+      - -addnode=umbrel-2.local:8333
+      - -addnode=start9.local:8333
+    volumes:
+      - ${HOME}/bitcoin/mainnet:/home/bitcoin/.bitcoin
+    ports:
+      - "8332:8332"   # RPC
+      - "8333:8333"   # P2P
+      - "28332:28332" # ZMQ rawblock
+      - "28333:28333" # ZMQ rawtx
+    healthcheck:
+      test: ["CMD-SHELL", "bitcoin-cli -rpcuser=mempool -rpcpassword=mempool getblockchaininfo > /dev/null 2>&1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # electrs:
+  #   # Builds mempool's electrs fork from source on first run.
+  #   # Pin a commit by appending #<sha> to the context URL if you need reproducibility.
+  #   build:
+  #     context: https://github.com/mempool/electrs.git#mempool
+  #   restart: unless-stopped
+  #   stop_grace_period: 1m
+  #   environment:
+  #     RUST_BACKTRACE: "full"
+  #   depends_on:
+  #     bitcoind:
+  #       condition: service_healthy
+  #   command:
+  #     - --network=mainnet
+  #     - --daemon-rpc-addr=bitcoind:8332
+  #     - --daemon-dir=/home/bitcoin/.bitcoin 
+  #     - --cookie=mempool:mempool
+  #     - --db-dir=/electrs-db
+  #     - --http-addr=0.0.0.0:3000
+  #     - --electrum-rpc-addr=0.0.0.0:50002
+  #     # - --jsonrpc-import
+  #     - -vvv
+  #   volumes:
+  #     - ${HOME}/bitcoin/mainnet:/home/bitcoin/.bitcoin:ro
+  #     - ${HOME}/bitcoin/mainnet/electrs-mempool:/electrs-db
+  #   ports:
+  #     - "3000:3000"   # esplora-style HTTP
+  #     - "50002:50002" # electrum RPC
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 128G
+  #       reservations:
+  #         memory: 96G
+
+# ---------------------------------------------------------------------------
+# Alternative electrs: romanz/electrs (upstream)
+# Comment out the mempool/electrs service above and uncomment this block to
+# swap. Notes:
+#   - romanz/electrs only exposes the Electrum RPC (port 50002 below). It does
+#     NOT serve the esplora-style HTTP REST API on :3000, so the mempool
+#     backend must be configured with `"BACKEND": "electrum"` — the esplora
+#     code path won't work against romanz.
+#   - Network alias for mainnet is `bitcoin` (vs. the mempool fork's `mainnet`).
+#   - Uses a separate db-dir so swapping back to mempool/electrs doesn't have
+#     to re-index from scratch — each fork keeps its own on-disk state.
+# ---------------------------------------------------------------------------
+  electrs:
+    build:
+      context: https://github.com/romanz/electrs.git
+    restart: unless-stopped
+    stop_grace_period: 1m
+    environment:
+      RUST_BACKTRACE: "full"
+    depends_on:
+      bitcoind:
+        condition: service_healthy
+    command:
+      - --network=mainnet
+      - --daemon-rpc-addr=bitcoind:8332
+      - --daemon-dir=/home/bitcoin/.bitcoin 
+      - --cookie=mempool:mempool
+      - --db-dir=/electrs-db
+      - --electrum-rpc-addr=0.0.0.0:50002
+      # - --jsonrpc-import
+      - -vvvv
+    volumes:
+      - ${HOME}/bitcoin/mainnet:/home/bitcoin/.bitcoin:ro
+      - ${HOME}/bitcoin/mainnet/electrs-romanz:/electrs-db
+    ports:
+      - "50002:50002" # electrum RPC (no HTTP REST API on romanz/electrs)
+    deploy:
+      resources:
+        limits:
+          memory: 96G
+        reservations:
+          memory: 64G
+
+  db:
+    image: mariadb:10.5.21
+    restart: unless-stopped
+    stop_grace_period: 1m
+    environment:
+      MYSQL_DATABASE: mempool
+      MYSQL_USER: mempool
+      MYSQL_PASSWORD: mempool
+      MYSQL_ROOT_PASSWORD: mempool
+      MARIADB_AUTO_UPGRADE: "1"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mempool_dev_db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "mempool", "-pmempool"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+# ---------------------------------------------------------------------------
+# regtest (uncomment to use; ensure mainnet services above are commented out)
+# ---------------------------------------------------------------------------
+#  bitcoind:
+#    image: bitcoin/bitcoin:latest
+#    restart: unless-stopped
+#    stop_grace_period: 1m
+#    command:
+#      - -chain=regtest
+#      - -server=1
+#      - -txindex=1
+#      - -coinstatsindex=1
+#      - -fallbackfee=0.0002
+#      - -rpcbind=0.0.0.0
+#      - -rpcallowip=0.0.0.0/0
+#      - -rpcuser=mempool
+#      - -rpcpassword=mempool
+#      - -zmqpubrawblock=tcp://0.0.0.0:28332
+#      - -zmqpubrawtx=tcp://0.0.0.0:28333
+#      - -printtoconsole=1
+#    volumes:
+#      - ${HOME}/bitcoin/regtest:/home/bitcoin/.bitcoin
+#    ports:
+#      - "18443:18443" # RPC
+#      - "18444:18444" # P2P
+#      - "28332:28332" # ZMQ rawblock
+#      - "28333:28333" # ZMQ rawtx
+#    healthcheck:
+#      test: ["CMD-SHELL", "bitcoin-cli -regtest -rpcuser=mempool -rpcpassword=mempool getblockchaininfo > /dev/null 2>&1"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+#      start_period: 10s
+#
+#  electrs:
+#    build:
+#      context: https://github.com/mempool/electrs.git#mempool
+#    restart: unless-stopped
+#    stop_grace_period: 1m
+#    depends_on:
+#      bitcoind:
+#        condition: service_healthy
+#    command:
+#      - --network=regtest
+#      - --daemon-rpc-addr=bitcoind:18443
+#      - --cookie=mempool:mempool
+#      - --db-dir=/electrs-db
+#      - --http-addr=0.0.0.0:3000
+#      - --electrum-rpc-addr=0.0.0.0:60401
+#      - --jsonrpc-import
+#      - -vvv
+#    volumes:
+#      - ${HOME}/bitcoin/regtest/electrs:/electrs-db
+#    ports:
+#      - "3000:3000"
+#      - "60401:60401" # electrum RPC (regtest)
+
+volumes:
+  mempool_dev_db_data:
