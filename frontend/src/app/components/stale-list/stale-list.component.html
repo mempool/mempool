@@ -4,7 +4,7 @@
 
   <div class="clearfix"></div>
 
-  <div class="chain-tips" [ngStyle]="{ 'min-height': '295px', 'opacity': isLoading ? '0.75' : '1' }">
+  <div class="chain-tips" infiniteScroll [alwaysCallback]="true" [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50" (scrolled)="loadMore()" [ngStyle]="{ 'min-height': '295px', 'opacity': isLoading ? '0.75' : '1' }">
     <ng-container *ngIf="chainTips$ | async as chainTips">
       <div *ngFor="let chainTip of chainTips" class="chain-tip">
         <p class="info">
@@ -116,10 +116,14 @@
         </div>
       </div>
 
-      <div class="no-chain-tips" *ngIf="!chainTips?.length">
+      <div class="no-chain-tips" *ngIf="!chainTips?.length && !isLoading">
         <p i18n="chain-tips.no-stale-blocks-yet">This node hasn't seen any stale blocks yet!</p>
       </div>
     </ng-container>
+
+    <div *ngIf="isLoadingMore" class="text-center loading-more">
+      <div class="spinner-border" role="status"></div>
+    </div>
   </div>
   
 </div>

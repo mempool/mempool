@@ -600,6 +600,42 @@ class BlocksRepository {
   }
 
   /**
+   * Get a page of stale blocks, ordered by descending height, paginated by height.
+   * When fromHeight is defined, only stale blocks strictly below it are returned.
+   * @asyncSafe
+   */
+  public async $getStaleBlocks(fromHeight: number | undefined, limit: number): Promise<BlockExtended[]> {
+    try {
+      const params: (number)[] = [];
+      let heightFilter = '';
+      if (fromHeight !== undefined) {
+        heightFilter = ' AND blocks.height < ?';
+        params.push(fromHeight);
+      }
+      params.push(limit);
+
+      const [rows]: any[] = await DB.query(`
+        SELECT ${BLOCK_DB_FIELDS}
+        FROM blocks
+        JOIN pools ON blocks.pool_id = pools.id
+        WHERE blocks.stale = 1${heightFilter}
+        ORDER BY blocks.height DESC
+        LIMIT ?`,
+        params
+      );
+
+      const staleBlocks: BlockExtended[] = [];
+      for (const row of rows) {
+        staleBlocks.push(await this.formatDbBlockIntoExtendedBlock(row as DatabaseBlock));
+      }
+      return staleBlocks;
+    } catch (e) {
+      logger.err(`Cannot get stale blocks. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
    * Return blocks difficulty
    * @asyncSafe
    */
