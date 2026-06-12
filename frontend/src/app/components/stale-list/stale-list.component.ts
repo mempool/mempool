@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { catchError, distinctUntilChanged, map, share, switchMap, tap } from 'rxjs/operators';
 import { StaleTip, BlockExtended } from '@interfaces/node-api.interface';
 import { ApiService } from '@app/services/api.service';
 import { StateService } from '@app/services/state.service';
@@ -16,9 +16,12 @@ import { seoDescriptionNetwork } from '@app/shared/common.utils';
 })
 export class StaleList implements OnInit {
   chainTips$: Observable<StaleTip[]>;
-  nextChainTipSubject = new BehaviorSubject(null);
-  urlFragmentSubscription: Subscription;
+  loadMoreSubject = new BehaviorSubject<number | undefined>(undefined);
+  chainTips: StaleTip[] = [];
   isLoading = true;
+  isLoadingMore = false;
+  fullyLoaded = false;
+  error: any;
 
   gradientColors = {
     '': ['var(--mainnet-alt)', 'var(--primary)'],
@@ -37,30 +40,50 @@ export class StaleList implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.chainTips$ = this.apiService.getStaleTips$().pipe(
-      map((chainTips) => {
-        const filtered = chainTips.filter((chainTip) => chainTip.status !== 'active') as StaleTip[];
-
-        filtered.forEach((chainTip) => {
-          if (chainTip.stale?.extras) {
-            chainTip.stale.extras.minFee = this.getMinBlockFee(chainTip.stale);
-            chainTip.stale.extras.maxFee = this.getMaxBlockFee(chainTip.stale);
-          }
-          if (chainTip.canonical?.extras) {
-            chainTip.canonical.extras.minFee = this.getMinBlockFee(chainTip.canonical);
-            chainTip.canonical.extras.maxFee = this.getMaxBlockFee(chainTip.canonical);
-          }
-        });
-
-        return filtered;
-      }),
-      tap(() => {
+    this.chainTips$ = this.loadMoreSubject.pipe(
+      distinctUntilChanged(),
+      switchMap(() => this.apiService.getStaleTips$(this.chainTips[this.chainTips.length - 1]?.height).pipe(
+        map((chainTips) => chainTips.filter((chainTip) => chainTip.status !== 'active') as StaleTip[]),
+        catchError((err) => {
+          this.error = err;
+          this.isLoading = false;
+          this.isLoadingMore = false;
+          return of([]);
+        }),
+      )),
+      tap((newChainTips) => {
+        if (!newChainTips.length) {
+          this.fullyLoaded = true;
+        } else {
+          newChainTips.forEach((chainTip) => {
+            if (chainTip.stale?.extras) {
+              chainTip.stale.extras.minFee = this.getMinBlockFee(chainTip.stale);
+              chainTip.stale.extras.maxFee = this.getMaxBlockFee(chainTip.stale);
+            }
+            if (chainTip.canonical?.extras) {
+              chainTip.canonical.extras.minFee = this.getMinBlockFee(chainTip.canonical);
+              chainTip.canonical.extras.maxFee = this.getMaxBlockFee(chainTip.canonical);
+            }
+          });
+          this.chainTips = this.chainTips.concat(newChainTips);
+        }
         this.isLoading = false;
-      })
+        this.isLoadingMore = false;
+      }),
+      map(() => this.chainTips),
+      share(),
     );
 
     this.seoService.setTitle($localize`:@@page.stale-chain-tips:Stale Chain Tips`);
     this.seoService.setDescription($localize`:@@meta.description.stale-chain-tips:See the most recent stale chain tips on the Bitcoin${seoDescriptionNetwork(this.stateService.network)} network.`);
+  }
+
+  loadMore(): void {
+    if (this.isLoadingMore || this.fullyLoaded) {
+      return;
+    }
+    this.isLoadingMore = true;
+    this.loadMoreSubject.next(this.chainTips[this.chainTips.length - 1]?.height);
   }
 
   getBlockGradient(block: BlockExtended): string {

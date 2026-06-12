@@ -2,6 +2,7 @@ import config from '../config';
 import logger from '../logger';
 import { BlockExtended } from '../mempool.interfaces';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
+import BlocksRepository from '../repositories/BlocksRepository';
 import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import bitcoinClient from './bitcoin/bitcoin-client';
 import { IEsploraApi } from './bitcoin/esplora-api.interface';
@@ -12,7 +13,7 @@ export interface ChainTip {
   height: number;
   hash: string;
   branchlen: number;
-  status: 'invalid' | 'active' | 'valid-fork' | 'valid-headers' | 'headers-only';
+  status?: 'invalid' | 'active' | 'valid-fork' | 'valid-headers' | 'headers-only';
 };
 
 export interface StaleTip extends ChainTip {
@@ -210,6 +211,60 @@ class ChainTips {
 
   public getStaleTips(): StaleTip[] {
     return Object.values(this.staleTips).sort((a, b) => b.height - a.height);
+  }
+
+  /** @asyncSafe */
+  public async $getStaleTipsPage(fromHeight: number | undefined, limit: number): Promise<StaleTip[]> {
+    const cacheTips = this.getStaleTips();
+    if (!Common.indexingEnabled()) {
+      const page = fromHeight === undefined ? cacheTips : cacheTips.filter(tip => tip.height < fromHeight);
+      return page.slice(0, limit);
+    }
+
+    const staleBlocks = await BlocksRepository.$getStaleBlocks(fromHeight, limit);
+
+    // map the previous block hashes of each stale block so we can reconstrunct branch lengths
+    const staleByPrevhash: { [prevhash: string]: BlockExtended } = {};
+    for (const block of staleBlocks) {
+      if (block.previousblockhash) {
+        staleByPrevhash[block.previousblockhash] = block;
+      }
+    }
+
+    const cacheTipsMap = new Map<string, StaleTip>();
+    for (const cacheTip of cacheTips) {
+      cacheTipsMap.set(cacheTip.hash, cacheTip);
+    }
+
+    const tips: StaleTip[] = [];
+    for (const staleBlock of staleBlocks) {
+
+      const cachedTip = cacheTipsMap.get(staleBlock.id);
+      if (cachedTip) {
+        tips.push(cachedTip);
+        continue;
+      }
+
+      const canonical = await BlocksRepository.$getBlockByHeight(staleBlock.height);
+      if (!canonical) {
+        continue;
+      }
+      // walk up the stale branch to find its tip, depth = branchTipHeight - staleHeight
+      let branchTip = staleBlock;
+      while (staleByPrevhash[branchTip.id]) {
+        branchTip = staleByPrevhash[branchTip.id];
+      }
+
+      tips.push({
+        height: staleBlock.height,
+        hash: staleBlock.id,
+        branchlen: branchTip.height - staleBlock.height,
+        stale: staleBlock,
+        canonical,
+      });
+    }
+
+    return tips;
   }
 
   clearOrphanCacheAboveHeight(height: number): void {

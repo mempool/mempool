@@ -61,6 +61,7 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from/:to', this.getBlocksByBulk.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'chain-tips', this.getChainTips.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'stale-tips', this.getStaleTips.bind(this))
+      .get(config.MEMPOOL.API_URL_PREFIX + 'stale-tips/:height', this.getStaleTips.bind(this))
       .post(config.MEMPOOL.API_URL_PREFIX + 'prevouts', this.$getPrevouts)
       .post(config.MEMPOOL.API_URL_PREFIX + 'cpfp', this.getCpfpLocalTxs)
       // Temporarily add txs/package endpoint for all backends until esplora supports it
@@ -628,14 +629,18 @@ class BitcoinRoutes {
   private async getStaleTips(req: Request, res: Response) {
     try {
       if (['mainnet', 'testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK)) { // Bitcoin
-        res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
-        const tips = await chainTips.getStaleTips();
-        if (tips.length > 0) {
-          res.json(tips);
-        } else {
-          handleError(req, res, 503, `Temporarily unavailable`);
-          return;
+        let fromHeight: number | undefined;
+        if (req.params.height !== undefined) {
+          fromHeight = parseInt(req.params.height, 10);
+          if (isNaN(fromHeight) || fromHeight < 0) {
+            handleError(req, res, 400, `Parameter 'height' must be a block height (integer)`);
+            return;
+          }
         }
+
+        res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+        const tips = await chainTips.$getStaleTipsPage(fromHeight, 10);
+        res.json(tips);
       } else { // Liquid
         handleError(req, res, 404, `This API is only available for Bitcoin networks`);
         return;
