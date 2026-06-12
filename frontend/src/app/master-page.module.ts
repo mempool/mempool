@@ -49,6 +49,10 @@ const routes: Routes = [
         loadChildren: () => import('@components/about/about.module').then(m => m.AboutModule),
       },
       {
+        path: 'getting-started',
+        loadChildren: () => import('@components/getting-started/getting-started.module').then(m => m.GettingStartedModule),
+      },
+      {
         path: 'blocks/stale',
         component: StaleList,
       },

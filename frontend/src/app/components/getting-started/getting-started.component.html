@@ -1,19 +1,19 @@
 <div class="container-xl getting-started" *ngIf="syncProgress">
   <h1 i18n="getting-started.title">Getting started</h1>
-  <p i18n="getting-started.description">Your node is syncing the Bitcoin blockchain. This can take 24–72 hours depending on your hardware and connection.</p>
+  <p class="description" i18n="getting-started.description">Your node is syncing the Bitcoin blockchain. This can take 24–72 hours depending on your hardware and connection.</p>
 
   <section class="sync-section">
     <h2 i18n="getting-started.bitcoin-core.title">Bitcoin Core — Downloading blocks</h2>
 
-    <div class="progress">
-      <div class="progress-bar" [style.width]="(syncProgress.bitcoind.verificationprogress * 100) + '%'"></div>
+    <div class="percentage">{{ syncProgress.bitcoind.verificationprogress * 100 | number: '1.1-1' }}%</div>
+
+    <div class="sync-bar">
+      <div class="sync-bar-fill" [style.width]="(syncProgress.bitcoind.verificationprogress * 100) + '%'"></div>
     </div>
 
-    <div class="sync-details">
+    <div class="sync-meta">
       <span>{{ syncProgress.bitcoind.blocks | number }} / {{ syncProgress.bitcoind.headers | number }}</span>
-      <span>{{ syncProgress.bitcoind.verificationprogress * 100 | number: '1.1-1' }}%</span>
-      <span *ngIf="syncProgress.bitcoind.estimatedTimeRemaining !== null; else calculating">~{{ syncProgress.bitcoind.estimatedTimeRemaining | number: '1.0-0' }}s remaining</span>
-      <ng-template #calculating><span i18n="getting-started.eta.calculating">Calculating...</span></ng-template>
+      <span>{{ formatETA(syncProgress.bitcoind.estimatedTimeRemaining) }}</span>
     </div>
   </section>
 
@@ -21,8 +21,9 @@
     <h2 i18n="getting-started.electrs.title">Electrs — Indexing transactions</h2>
 
     <ng-container *ngIf="syncProgress.electrs.indexed; else electrsSyncing">
-      <div class="progress">
-        <div class="progress-bar" style="width: 100%"></div>
+      <div class="percentage">100%</div>
+      <div class="sync-bar">
+        <div class="sync-bar-fill" style="width: 100%"></div>
       </div>
     </ng-container>
 
@@ -33,9 +34,12 @@
           <div class="spinner-border" role="status"></div>
           <span i18n="getting-started.electrs.indexing">Indexing in progress...</span>
         </div>
-        <div *ngIf="syncProgress.electrs.progress !== null" class="progress">
-          <div class="progress-bar" [style.width]="(syncProgress.electrs.progress * 100) + '%'"></div>
-        </div>
+        <ng-container *ngIf="syncProgress.electrs.progress !== null">
+          <div class="percentage">{{ syncProgress.electrs.progress * 100 | number: '1.1-1' }}%</div>
+          <div class="sync-bar">
+            <div class="sync-bar-fill" [style.width]="(syncProgress.electrs.progress * 100) + '%'"></div>
+          </div>
+        </ng-container>
       </ng-container>
     </ng-template>
   </section>

@@ -32,4 +32,22 @@ export class GettingStartedComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.syncProgressSubscription?.unsubscribe();
   }
+
+  formatETA(seconds: number | null): string {
+    if (seconds === null) {
+      return $localize`:@@getting-started.eta.calculating:Calculating...`;
+    }
+    if (seconds < 60) {
+      return $localize`:@@getting-started.eta.less-than-minute:Less than a minute remaining`;
+    }
+    if (seconds < 3600) {
+      return $localize`:@@getting-started.eta.minutes:~${Math.round(seconds / 60)}:minutes: minutes remaining`;
+    }
+    if (seconds < 86400) {
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.round((seconds % 3600) / 60);
+      return $localize`:@@getting-started.eta.hours:~${hours}:hours:h ${minutes}:minutes:m remaining`;
+    }
+    return $localize`:@@getting-started.eta.days:~${Math.round(seconds / 86400)}:days: days remaining`;
+  }
 }

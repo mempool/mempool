@@ -192,10 +192,6 @@ let routes: Routes = [
   ...signetRoutes,
   ...regtestRoutes,
   {
-    path: 'getting-started',
-    loadChildren: () => import('@components/getting-started/getting-started.module').then(m => m.GettingStartedModule),
-  },
-  {
     path: '',
     pathMatch: 'full',
     loadChildren: () => import('@app/bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
