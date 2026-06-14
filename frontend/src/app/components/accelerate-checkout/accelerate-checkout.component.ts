@@ -10,9 +10,9 @@ import { Transaction } from '@interfaces/electrs.interface';
 import { MiningStats } from '@app/services/mining.service';
 import { IAuth, AuthServiceMempool } from '@app/services/auth.service';
 import { EnterpriseService } from '@app/services/enterprise.service';
+import { PartnerCodeService } from '@app/services/partner-code.service';
 import { ApiService } from '@app/services/api.service';
 import { isDevMode } from '@angular/core';
-import { StorageService } from '@app/services/storage.service';
 import { ThemeService } from '../../services/theme.service';
 
 export type PaymentMethod = 'balance' | 'bitcoin' | 'cashapp' | 'applePay' | 'googlePay' | 'cardOnFile';
@@ -146,7 +146,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef,
     private authService: AuthServiceMempool,
     private enterpriseService: EnterpriseService,
-    private storageService: StorageService,
+    private partnerCodeService: PartnerCodeService,
     private themeService: ThemeService,
   ) {
     this.isProdDomain = this.stateService.isProdDomain;
@@ -562,8 +562,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                   this.partnerCode
                 ).subscribe({
                   next: (response) => {
-                    this.storageService.removeItem('partnerCode'); // Consume localStorage partnerCode
-                    this.partnerCode = undefined;
+                    this.partnerCodeService.clearStoredPartnerCode();
                     this.accelerationResponse = response;
                     this.processing = false;
                     this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
@@ -687,8 +686,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
                 this.partnerCode
               ).subscribe({
                 next: (response) => {
-                  this.storageService.removeItem('partnerCode'); // Consume localStorage partnerCode
-                  this.partnerCode = undefined;
+                  this.partnerCodeService.clearStoredPartnerCode();
                   this.accelerationResponse = response;
                   this.processing = false;
                   this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
@@ -792,8 +790,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             this.partnerCode
           ).subscribe({
             next: (response) => {
-              this.storageService.removeItem('partnerCode'); // Consume localStorage partnerCode
-              this.partnerCode = undefined;
+              this.partnerCodeService.clearStoredPartnerCode();
               this.accelerationResponse = response;
               this.processing = false;
               this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
@@ -883,8 +880,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               this.partnerCode
             ).subscribe({
               next: (response) => {
-                this.storageService.removeItem('partnerCode'); // Consume localStorage partnerCode
-                this.partnerCode = undefined;
+                this.partnerCodeService.clearStoredPartnerCode();
                 this.accelerationResponse = response;
                 this.processing = false;
                 this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
@@ -966,8 +962,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   bitcoinPaymentCompleted(): void {
-    this.storageService.removeItem('partnerCode'); // Consume localStorage partnerCode
-    this.partnerCode = undefined;
+    this.partnerCodeService.clearStoredPartnerCode();
     this.apiService.logAccelerationRequest$(this.tx.txid).subscribe();
     this.audioService.playSound('ascend-chime-cartoon');
     this.estimateSubscription.unsubscribe();
