@@ -1,7 +1,15 @@
 import { Location, ViewportScroller } from '@angular/common';
-import { Component, HostListener, OnInit, Inject, LOCALE_ID, HostBinding } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  OnInit,
+  Inject,
+  LOCALE_ID,
+  HostBinding,
+} from '@angular/core';
 import { Router, NavigationEnd, Scroll } from '@angular/router';
 import { ApiService } from '@app/services/api.service';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from '@app/services/state.service';
 import { OpenGraphService } from '@app/services/opengraph.service';
 import { NgbTooltipConfig } from '@ng-bootstrap/ng-bootstrap';
@@ -13,7 +21,7 @@ import { SeoService } from '@app/services/seo.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   standalone: false,
-  providers: [NgbTooltipConfig]
+  providers: [NgbTooltipConfig],
 })
 export class AppComponent implements OnInit {
   constructor(
@@ -26,9 +34,13 @@ export class AppComponent implements OnInit {
     private location: Location,
     private viewportScroller: ViewportScroller,
     tooltipConfig: NgbTooltipConfig,
-    @Inject(LOCALE_ID) private locale: string,
+    @Inject(LOCALE_ID) private locale: string
   ) {
-    if (this.locale.startsWith('ar') || this.locale.startsWith('fa') || this.locale.startsWith('he')) {
+    if (
+      this.locale.startsWith('ar') ||
+      this.locale.startsWith('fa') ||
+      this.locale.startsWith('he')
+    ) {
       this.dir = 'rtl';
       this.class = 'rtl-layout';
     } else {
@@ -46,11 +58,14 @@ export class AppComponent implements OnInit {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvents(event: KeyboardEvent) {
-    if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+    if (
+      event.target instanceof HTMLInputElement ||
+      event.target instanceof HTMLTextAreaElement
+    ) {
       return;
     }
     // prevent arrow key horizontal scrolling
-    if(['ArrowLeft','ArrowRight'].indexOf(event.code) > -1) {
+    if (['ArrowLeft', 'ArrowRight'].indexOf(event.code) > -1) {
       event.preventDefault();
     }
     this.stateService.keyNavigation$.next(event);
@@ -58,8 +73,13 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.apiService.getSyncProgress$().subscribe((progress) => {
-      if (progress.ibd && !this.location.path().startsWith('/getting-started')) {
-        this.router.navigate(['/getting-started']);
+      const gettingStartedUrl = new RelativeUrlPipe(
+        this.stateService
+      ).transform('/getting-started');
+      const nodeNotReady =
+        progress.ibd || (progress.electrs != null && !progress.electrs.indexed);
+      if (nodeNotReady && !this.location.path().startsWith(gettingStartedUrl)) {
+        this.router.navigate([gettingStartedUrl]);
       }
     });
 
@@ -70,9 +90,12 @@ export class AppComponent implements OnInit {
       if (val instanceof Scroll) {
         if (val.position) {
           this.viewportScroller.scrollToPosition(val.position);
-        } else if (!history.state?.skipScroll
-          && val.routerEvent instanceof NavigationEnd
-          && this.getBasePath(val.routerEvent.urlAfterRedirects) !== this.getBasePath(this.previousUrl)) {
+        } else if (
+          !history.state?.skipScroll &&
+          val.routerEvent instanceof NavigationEnd &&
+          this.getBasePath(val.routerEvent.urlAfterRedirects) !==
+            this.getBasePath(this.previousUrl)
+        ) {
           this.viewportScroller.scrollToPosition([0, 0]);
         }
         if (val.routerEvent instanceof NavigationEnd) {

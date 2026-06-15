@@ -8,27 +8,17 @@ const routes: Routes = [
   {
     path: '',
     component: GettingStartedComponent,
-  }
+  },
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forChild(routes)
-  ],
-  exports: [
-    RouterModule
-  ]
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule],
 })
-export class GettingStartedRoutingModule { }
+export class GettingStartedRoutingModule {}
 
 @NgModule({
-  imports: [
-    CommonModule,
-    GettingStartedRoutingModule,
-    SharedModule,
-  ],
-  declarations: [
-    GettingStartedComponent,
-  ]
+  imports: [CommonModule, GettingStartedRoutingModule, SharedModule],
+  declarations: [GettingStartedComponent],
 })
-export class GettingStartedModule { }
+export class GettingStartedModule {}

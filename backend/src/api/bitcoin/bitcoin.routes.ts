@@ -29,6 +29,7 @@ const BLOCK_HASH_REGEX = /^[a-f0-9]{64}$/i;
 const ADDRESS_REGEX = /^[a-z0-9]{2,120}$/i;
 const SCRIPT_HASH_REGEX = /^([a-f0-9]{2})+$/i;
 const MAX_TRANSACTION_TIMES = 100;
+const IBD_ETA_BASELINE_MS = 30 * 60 * 1000;
 
 let lastIBDSample: { time: number; progress: number } | null = null;
 
@@ -132,7 +133,10 @@ class BitcoinRoutes {
             estimatedTimeRemaining = Math.round((1 - blockchainInfo.verificationprogress) / progressPerSecond);
           }
         }
-        lastIBDSample = { time: now, progress: blockchainInfo.verificationprogress };
+        // Advance the baseline only once it is old enough, so the ETA is averaged over a long, stable window
+        if (!lastIBDSample || (now - lastIBDSample.time) >= IBD_ETA_BASELINE_MS) {
+          lastIBDSample = { time: now, progress: blockchainInfo.verificationprogress };
+        }
       }
 
       const result: IBDProgress = {
