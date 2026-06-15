@@ -13,7 +13,7 @@ export interface ChainTip {
   height: number;
   hash: string;
   branchlen: number;
-  status?: 'invalid' | 'active' | 'valid-fork' | 'valid-headers' | 'headers-only';
+  status: 'invalid' | 'active' | 'valid-fork' | 'valid-headers' | 'headers-only';
 };
 
 export interface StaleTip extends ChainTip {
@@ -218,12 +218,9 @@ class ChainTips {
   /** @asyncUnsafe */
   public async $getStaleTipsPage(fromHeight: number | undefined, limit: number): Promise<StaleTip[]> {
     const cacheTips = this.getStaleTips();
-    if (!Common.indexingEnabled()) {
-      const page = fromHeight === undefined ? cacheTips : cacheTips.filter(tip => tip.height < fromHeight);
-      return page.slice(0, limit);
-    }
 
-    const staleTips = await BlocksRepository.$getStaleTips(fromHeight, limit);
+    const allStaleTips = this.chainTips.filter(chainTip => chainTip.status === 'valid-fork' || chainTip.status === 'valid-headers').sort((a, b) => b.height - a.height);
+    const staleTipsPage = fromHeight === undefined ? allStaleTips.slice(0, limit) : allStaleTips.filter(tip => tip.height < fromHeight).slice(0, limit);
 
     const cacheTipsMap = new Map<string, StaleTip>();
     for (const cacheTip of cacheTips) {
@@ -231,31 +228,25 @@ class ChainTips {
     }
 
     const tips: StaleTip[] = [];
-    for (const staleTip of staleTips) {
-
-      const cachedTip = cacheTipsMap.get(staleTip.id);
+    for (const staleTip of staleTipsPage) {
+      const cachedTip = cacheTipsMap.get(staleTip.hash);
       if (cachedTip) {
         tips.push(cachedTip);
         continue;
       }
 
       const canonical = await BlocksRepository.$getBlockByHeight(staleTip.height);
-      if (!canonical) {
+      const stale = await BlocksRepository.$getBlockByHash(staleTip.hash);
+      if (!canonical || !stale) {
         continue;
-      }
-
-      let prevBlock = await BlocksRepository.$getBlockByHash(staleTip.previousblockhash);
-      let branchlen = 0;
-      while(prevBlock?.stale) {
-        prevBlock = await BlocksRepository.$getBlockByHash(prevBlock.previousblockhash);
-        branchlen++;
       }
 
       tips.push({
         height: staleTip.height,
-        hash: staleTip.id,
-        branchlen,
-        stale: staleTip,
+        hash: staleTip.hash,
+        branchlen: staleTip.branchlen - 1,
+        status: staleTip.status,
+        stale,
         canonical,
       });
     }
