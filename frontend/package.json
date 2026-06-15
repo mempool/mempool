@@ -64,7 +64,7 @@
     "@angular/cli": "^20.3.25",
     "@angular/common": "^20.3.19",
     "@angular/compiler": "^20.3.19",
-    "@angular/core": "^20.3.19",
+    "@angular/core": "^20.3.25",
     "@angular/forms": "^20.3.19",
     "@angular/localize": "^20.3.19",
     "@angular/platform-browser": "^20.3.19",
