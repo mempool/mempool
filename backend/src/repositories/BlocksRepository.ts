@@ -604,7 +604,7 @@ class BlocksRepository {
    * When fromHeight is defined, only stale blocks strictly below it are returned.
    * @asyncSafe
    */
-  public async $getStaleBlocks(fromHeight: number | undefined, limit: number): Promise<BlockExtended[]> {
+  public async $getStaleTips(fromHeight: number | undefined, limit: number): Promise<BlockExtended[]> {
     try {
       const params: (number)[] = [];
       let heightFilter = '';
@@ -619,18 +619,23 @@ class BlocksRepository {
         FROM blocks
         JOIN pools ON blocks.pool_id = pools.id
         WHERE blocks.stale = 1${heightFilter}
+        AND NOT EXISTS (
+          SELECT 1 FROM blocks AS child
+          WHERE child.previous_block_hash = blocks.hash
+          AND child.stale = 1
+        )
         ORDER BY blocks.height DESC
         LIMIT ?`,
         params
       );
 
-      const staleBlocks: BlockExtended[] = [];
+      const staleTips: BlockExtended[] = [];
       for (const row of rows) {
-        staleBlocks.push(await this.formatDbBlockIntoExtendedBlock(row as DatabaseBlock));
+        staleTips.push(await this.formatDbBlockIntoExtendedBlock(row as DatabaseBlock));
       }
-      return staleBlocks;
+      return staleTips;
     } catch (e) {
-      logger.err(`Cannot get stale blocks. Reason: ` + (e instanceof Error ? e.message : e));
+      logger.err(`Cannot get stale tips. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -1292,6 +1297,7 @@ class BlocksRepository {
     blk.previousblockhash = dbBlk.previousblockhash;
     blk.mediantime = dbBlk.mediantime;
     blk.indexVersion = dbBlk.index_version;
+    blk.stale = dbBlk.stale;
     // BlockExtension
     extras.totalFees = dbBlk.totalFees;
     extras.medianFee = dbBlk.medianFee;
