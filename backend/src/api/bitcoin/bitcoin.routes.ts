@@ -15,6 +15,7 @@ import loadingIndicators from '../loading-indicators';
 import { CpfpInfo, IBDProgress, TransactionExtended } from '../../mempool.interfaces';
 import logger from '../../logger';
 import blocks from '../blocks';
+import indexer from '../../indexer';
 import bitcoinClient from './bitcoin-client';
 import difficultyAdjustment from '../difficulty-adjustment';
 import transactionRepository from '../../repositories/TransactionRepository';
@@ -147,11 +148,23 @@ class BitcoinRoutes {
           verificationprogress: blockchainInfo.verificationprogress,
           estimatedTimeRemaining,
         },
+        mempool: {
+          inSync: mempool.isInSync(),
+          indexing: indexer.indexerIsRunning(),
+          progress: loadingIndicators.getLoadingIndicators()['mempool'] ?? null,
+        },
       };
 
       if (config.MEMPOOL.BACKEND === 'esplora' || config.MEMPOOL.BACKEND === 'electrum') {
+        let indexed = false;
+        try {
+          const electrsTip = await bitcoinApi.$getBlockHeightTip();
+          indexed = !blockchainInfo.initialblockdownload && electrsTip >= blockchainInfo.blocks;
+        } catch (e) {
+          // electrs/electrum unreachable or still starting up — treat as not yet indexed
+        }
         result.electrs = {
-          indexed: !blockchainInfo.initialblockdownload && mempool.isInSync(),
+          indexed,
           progress: null,
         };
       }

@@ -1,294 +1,155 @@
 <div class="container-xl getting-started" *ngIf="syncProgress">
   <h1 i18n="getting-started.title">Getting started</h1>
   <p class="description" i18n="getting-started.description">
-    Your node is syncing the Bitcoin blockchain. This can take hours depending
-    on your hardware and connection.
+    Your node is completing its initial setup. Each stage will begin
+    automatically when the previous one is ready.
   </p>
 
-  <section class="sync-section">
+  <!-- Stage 1 — Bitcoin Core IBD / indexing -->
+  <section
+    class="sync-section"
+    [class.is-waiting]="bitcoinStatus === 'waiting'"
+  >
     <div class="sync-header">
-      <span class="sync-label" i18n="getting-started.bitcoin-core.label"
-        >Downloading and validating blocks</span
-      >
-      <span class="sync-network">{{ networkDisplayName }}</span>
-    </div>
-
-    <div class="sync-bar">
-      <div
-        class="sync-bar-fill"
-        [style.width]="syncProgress.bitcoind.verificationprogress * 100 + '%'"
-      ></div>
-    </div>
-
-    <div class="sync-stats">
-      <div class="item">
-        <div class="card-text">
-          {{ syncProgress.bitcoind.blocks | number
-          }}<span class="secondary" i18n="getting-started.blocks.of">
-            of {{ syncProgress.bitcoind.headers | number }}</span
-          >
-        </div>
-        <div class="symbol" i18n="getting-started.blocks.synced">
-          Blocks synced
-        </div>
+      <div class="sync-heading">
+        <span class="sync-label" i18n="getting-started.bitcoin-core.label"
+          >Bitcoin Core IBD / indexing</span
+        >
+        <span class="sync-description">{{ bitcoinDescription }}</span>
       </div>
-      <div
-        class="item has-tooltip"
-        i18n-ngbTooltip="getting-started.validation.tooltip"
-        ngbTooltip="How much of the chain's transaction history has been downloaded and verified."
-        placement="top"
-      >
-        <div class="card-text">
-          {{
-            syncProgress.bitcoind.verificationprogress * 100 | number: "1.1-1"
-          }}%
-        </div>
-        <div class="symbol" i18n="getting-started.validation.label">
-          Validation progress
-        </div>
-      </div>
-      <div
-        class="item has-tooltip"
-        i18n-ngbTooltip="getting-started.eta.tooltip"
-        ngbTooltip="the actual time can vary."
-        placement="top"
-      >
-        <div class="card-text">
-          {{ formatETA(syncProgress.bitcoind.estimatedTimeRemaining) }}
-        </div>
-        <div class="symbol" i18n="getting-started.eta.label">
-          Time remaining
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="sync-section" *ngIf="syncProgress.electrs">
-    <div class="sync-header" *ngIf="!syncProgress.ibd">
-      <span class="sync-label" i18n="getting-started.electrs.title"
-        >Electrs — Indexing transactions</span
-      >
+      <ng-container
+        *ngTemplateOutlet="statusBadge; context: { $implicit: bitcoinStatus }"
+      ></ng-container>
     </div>
 
-    <ng-container *ngIf="syncProgress.electrs.indexed; else electrsSyncing">
-      <div class="percentage">100%</div>
+    <ng-container *ngIf="bitcoinStatus === 'active'">
       <div class="sync-bar">
-        <div class="sync-bar-fill" style="width: 100%"></div>
+        <div
+          class="sync-bar-fill"
+          [style.width]="syncProgress.bitcoind.verificationprogress * 100 + '%'"
+        ></div>
+      </div>
+
+      <div class="sync-stats">
+        <div class="item">
+          <div class="card-text">
+            {{ syncProgress.bitcoind.blocks | number
+            }}<span class="secondary" i18n="getting-started.blocks.of">
+              of {{ syncProgress.bitcoind.headers | number }}</span
+            >
+          </div>
+          <div class="symbol" i18n="getting-started.blocks.synced">
+            Blocks synced
+          </div>
+        </div>
+        <div
+          class="item has-tooltip"
+          i18n-ngbTooltip="getting-started.validation.tooltip"
+          ngbTooltip="How much of the chain's transaction history has been downloaded and verified."
+          placement="top"
+        >
+          <div class="card-text">
+            {{
+              syncProgress.bitcoind.verificationprogress * 100
+                | number: "1.1-1"
+            }}%
+          </div>
+          <div class="symbol" i18n="getting-started.validation.label">
+            Validation progress
+          </div>
+        </div>
+        <div
+          class="item has-tooltip"
+          i18n-ngbTooltip="getting-started.eta.tooltip"
+          ngbTooltip="the actual time can vary."
+          placement="top"
+        >
+          <div class="card-text">
+            {{ formatETA(syncProgress.bitcoind.estimatedTimeRemaining) }}
+          </div>
+          <div class="symbol" i18n="getting-started.eta.label">
+            Time remaining
+          </div>
+        </div>
       </div>
     </ng-container>
-
-    <ng-template #electrsSyncing>
-      <div *ngIf="syncProgress.ibd" class="electrs-waiting">
-        <div class="electrs-main">
-          <div class="electrs-atom">
-            <svg
-              class="electrs-atom-svg"
-              viewBox="0 0 120 120"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <defs>
-                <linearGradient
-                  id="electrs-ring-gradient"
-                  x1="0"
-                  y1="0"
-                  x2="1"
-                  y2="1"
-                >
-                  <stop offset="0%" stop-color="var(--primary)" />
-                  <stop offset="50%" stop-color="#6457f9" />
-                  <stop offset="100%" stop-color="var(--mainnet-alt)" />
-                </linearGradient>
-                <radialGradient id="electrs-nucleus-gradient">
-                  <stop offset="0%" stop-color="#cfe0ff" />
-                  <stop offset="100%" stop-color="var(--primary)" />
-                </radialGradient>
-                <filter
-                  id="electrs-glow"
-                  x="-60%"
-                  y="-60%"
-                  width="220%"
-                  height="220%"
-                >
-                  <feGaussianBlur stdDeviation="2.4" result="blur" />
-                  <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
-              <g
-                fill="none"
-                stroke="url(#electrs-ring-gradient)"
-                stroke-width="1.5"
-                stroke-opacity="0.6"
-              >
-                <ellipse cx="60" cy="60" rx="52" ry="20" />
-                <ellipse
-                  cx="60"
-                  cy="60"
-                  rx="52"
-                  ry="20"
-                  transform="rotate(60 60 60)"
-                />
-                <ellipse
-                  cx="60"
-                  cy="60"
-                  rx="52"
-                  ry="20"
-                  transform="rotate(120 60 60)"
-                />
-              </g>
-              <g filter="url(#electrs-glow)">
-                <g transform="rotate(0 60 60)">
-                  <circle r="3.5" fill="var(--primary)">
-                    <animateMotion
-                      dur="3s"
-                      repeatCount="indefinite"
-                      path="M 8,60 A 52,20 0 1,1 112,60 A 52,20 0 1,1 8,60"
-                    />
-                  </circle>
-                </g>
-                <g transform="rotate(60 60 60)">
-                  <circle r="3.5" fill="#6457f9">
-                    <animateMotion
-                      dur="3.8s"
-                      repeatCount="indefinite"
-                      path="M 8,60 A 52,20 0 1,1 112,60 A 52,20 0 1,1 8,60"
-                    />
-                  </circle>
-                </g>
-                <g transform="rotate(120 60 60)">
-                  <circle r="3.5" fill="var(--mainnet-alt)">
-                    <animateMotion
-                      dur="4.6s"
-                      repeatCount="indefinite"
-                      path="M 8,60 A 52,20 0 1,1 112,60 A 52,20 0 1,1 8,60"
-                    />
-                  </circle>
-                </g>
-              </g>
-              <circle
-                cx="60"
-                cy="60"
-                r="5"
-                fill="url(#electrs-nucleus-gradient)"
-                filter="url(#electrs-glow)"
-              >
-                <animate
-                  attributeName="r"
-                  values="4.5;6.5;4.5"
-                  dur="2.4s"
-                  repeatCount="indefinite"
-                />
-                <animate
-                  attributeName="opacity"
-                  values="0.85;1;0.85"
-                  dur="2.4s"
-                  repeatCount="indefinite"
-                />
-              </circle>
-            </svg>
-          </div>
-          <div class="electrs-text">
-            <div class="electrs-eyebrow" i18n="getting-started.electrs.eyebrow">
-              ELECTRS · INDEXER
-            </div>
-            <div
-              class="electrs-headline"
-              i18n="getting-started.electrs.headline"
-            >
-              Indexing transactions
-            </div>
-            <p class="electrs-body" i18n="getting-started.electrs.waiting">
-              Waiting for Bitcoin Core to finish. Electrs will begin indexing
-              automatically once the blockchain download is complete.
-            </p>
-          </div>
-        </div>
-        <div class="electrs-scan">
-          <div class="electrs-scan-segment"></div>
-        </div>
-      </div>
-      <ng-container *ngIf="!syncProgress.ibd">
-        <div
-          *ngIf="syncProgress.electrs.progress === null"
-          class="sync-pending"
-        >
-          <svg
-            class="atom"
-            width="36"
-            height="36"
-            viewBox="0 0 36 36"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <g class="orbit" transform="rotate(0 18 18)">
-              <ellipse
-                cx="18"
-                cy="18"
-                rx="16"
-                ry="6"
-                fill="none"
-                stroke="var(--mainnet-alt)"
-                stroke-opacity="0.35"
-              />
-            </g>
-            <g class="orbit" transform="rotate(60 18 18)">
-              <ellipse
-                cx="18"
-                cy="18"
-                rx="16"
-                ry="6"
-                fill="none"
-                stroke="var(--mainnet-alt)"
-                stroke-opacity="0.35"
-              />
-            </g>
-            <g class="orbit" transform="rotate(120 18 18)">
-              <ellipse
-                cx="18"
-                cy="18"
-                rx="16"
-                ry="6"
-                fill="none"
-                stroke="var(--mainnet-alt)"
-                stroke-opacity="0.35"
-              />
-            </g>
-            <g class="electron">
-              <animateTransform
-                attributeName="transform"
-                attributeType="XML"
-                type="rotate"
-                from="0 18 18"
-                to="360 18 18"
-                dur="6s"
-                repeatCount="indefinite"
-              />
-              <circle r="2" fill="var(--mainnet-alt)">
-                <animateMotion
-                  dur="2s"
-                  repeatCount="indefinite"
-                  path="M 2,18 A 16,6 0 1,1 34,18 A 16,6 0 1,1 2,18"
-                />
-              </circle>
-            </g>
-          </svg>
-          <span i18n="getting-started.electrs.indexing"
-            >Indexing in progress...</span
-          >
-        </div>
-        <ng-container *ngIf="syncProgress.electrs.progress !== null">
-          <div class="percentage">
-            {{ syncProgress.electrs.progress * 100 | number: "1.1-1" }}%
-          </div>
-          <div class="sync-bar">
-            <div
-              class="sync-bar-fill"
-              [style.width]="syncProgress.electrs.progress * 100 + '%'"
-            ></div>
-          </div>
-        </ng-container>
-      </ng-container>
-    </ng-template>
   </section>
+
+  <!-- Stage 2 — Electrs / Electrum indexing -->
+  <section
+    class="sync-section"
+    *ngIf="syncProgress.electrs"
+    [class.is-waiting]="electrsStatus === 'waiting'"
+  >
+    <div class="sync-header">
+      <div class="sync-heading">
+        <span class="sync-label" i18n="getting-started.electrs.label"
+          >Electrs / Electrum indexing</span
+        >
+        <span class="sync-description">{{ electrsDescription }}</span>
+      </div>
+      <ng-container
+        *ngTemplateOutlet="statusBadge; context: { $implicit: electrsStatus }"
+      ></ng-container>
+    </div>
+
+    <div class="scan-loader" *ngIf="electrsStatus === 'active'">
+      <div class="scan-segment"></div>
+    </div>
+  </section>
+
+  <!-- Stage 3 — Mempool backend indexing -->
+  <section
+    class="sync-section"
+    *ngIf="syncProgress.mempool"
+    [class.is-waiting]="mempoolStatus === 'waiting'"
+  >
+    <div class="sync-header">
+      <div class="sync-heading">
+        <span class="sync-label" i18n="getting-started.mempool.label"
+          >Mempool backend indexing</span
+        >
+        <span class="sync-description">{{ mempoolDescription }}</span>
+      </div>
+      <ng-container
+        *ngTemplateOutlet="statusBadge; context: { $implicit: mempoolStatus }"
+      ></ng-container>
+    </div>
+
+    <ng-container *ngIf="mempoolStatus === 'active'">
+      <ng-container *ngIf="syncProgress.mempool.progress; else mempoolScan">
+        <div class="sync-bar">
+          <div
+            class="sync-bar-fill"
+            [style.width]="syncProgress.mempool.progress + '%'"
+          ></div>
+        </div>
+      </ng-container>
+      <ng-template #mempoolScan>
+        <div class="scan-loader"><div class="scan-segment"></div></div>
+      </ng-template>
+    </ng-container>
+  </section>
+
+  <a
+    class="btn btn-sm btn-primary return-dashboard"
+    [routerLink]="['/' | relativeUrl]"
+    i18n="getting-started.return-dashboard"
+    >Return to dashboard</a
+  >
 </div>
+
+<ng-template #statusBadge let-status>
+  <span class="status-badge" [ngClass]="status" [ngSwitch]="status">
+    <span *ngSwitchCase="'complete'" i18n="getting-started.status.complete"
+      >Complete</span
+    >
+    <span
+      *ngSwitchCase="'active'"
+      class="pulse"
+      i18n="getting-started.status.in-progress"
+      >In progress</span
+    >
+    <span *ngSwitchDefault i18n="getting-started.status.waiting">Waiting</span>
+  </span>
+</ng-template>

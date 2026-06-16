@@ -77,7 +77,9 @@ export class AppComponent implements OnInit {
         this.stateService
       ).transform('/getting-started');
       const nodeNotReady =
-        progress.ibd || (progress.electrs != null && !progress.electrs.indexed);
+        progress.ibd ||
+        (progress.electrs != null && !progress.electrs.indexed) ||
+        (progress.mempool != null && !progress.mempool.inSync);
       if (nodeNotReady && !this.location.path().startsWith(gettingStartedUrl)) {
         this.router.navigate([gettingStartedUrl]);
       }
