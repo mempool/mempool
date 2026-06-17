@@ -116,13 +116,18 @@
         </div>
       </div>
 
-      <div class="no-chain-tips" *ngIf="!chainTips?.length && !isLoading">
+      <div class="no-chain-tips" *ngIf="!chainTips?.length && !isLoading && !error">
         <p i18n="chain-tips.no-stale-blocks-yet">This node hasn't seen any stale blocks yet!</p>
       </div>
     </ng-container>
 
     <div *ngIf="isLoadingMore" class="text-center loading-more">
       <div class="spinner-border" role="status"></div>
+    </div>
+
+    <div *ngIf="error && !isLoading && !isLoadingMore" class="alert alert-danger text-center loading-more" role="alert">
+      <span i18n="chain-tips.load-error">Failed to load more stale chain tips.</span>
+      <button type="button" class="btn btn-sm btn-danger ms-2" (click)="retryLoadMore()" i18n="chain-tips.retry">Retry</button>
     </div>
   </div>
   

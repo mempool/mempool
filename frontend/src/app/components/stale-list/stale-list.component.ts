@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, distinctUntilChanged, map, share, switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, timer } from 'rxjs';
+import { catchError, map, retry, share, switchMap, tap } from 'rxjs/operators';
 import { StaleTip, BlockExtended } from '@interfaces/node-api.interface';
 import { ApiService } from '@app/services/api.service';
 import { StateService } from '@app/services/state.service';
@@ -21,7 +21,7 @@ export class StaleList implements OnInit {
   isLoading = true;
   isLoadingMore = false;
   fullyLoaded = false;
-  error: any;
+  error: unknown = null;
 
   gradientColors = {
     '': ['var(--mainnet-alt)', 'var(--primary)'],
@@ -41,17 +41,27 @@ export class StaleList implements OnInit {
 
   ngOnInit(): void {
     this.chainTips$ = this.loadMoreSubject.pipe(
-      distinctUntilChanged(),
-      switchMap(() => this.apiService.getStaleTips$(this.chainTips[this.chainTips.length - 1]?.height).pipe(
+      switchMap((height) => this.apiService.getStaleTips$(height).pipe(
         map((chainTips) => chainTips.filter((chainTip) => chainTip.status !== 'active') as StaleTip[]),
+        retry({
+          count: 2,
+          delay: (err) => {
+            this.error = err;
+            return timer(1000);
+          },
+        }),
         catchError((err) => {
           this.error = err;
           this.isLoading = false;
           this.isLoadingMore = false;
-          return of([]);
+          return of(null);
         }),
       )),
       tap((newChainTips) => {
+        if (newChainTips === null) {
+          return;
+        }
+        this.error = null;
         if (!newChainTips.length) {
           this.fullyLoaded = true;
         } else {
@@ -79,11 +89,22 @@ export class StaleList implements OnInit {
   }
 
   loadMore(): void {
-    if (this.isLoadingMore || this.fullyLoaded) {
+    if (this.isLoading || this.isLoadingMore || this.fullyLoaded || this.error) {
       return;
     }
     this.isLoadingMore = true;
-    this.loadMoreSubject.next(this.chainTips[this.chainTips.length - 1]?.height);
+    const height = this.chainTips[this.chainTips.length - 1]?.height;
+    this.loadMoreSubject.next(height);
+  }
+
+  retryLoadMore(): void {
+    if (this.isLoading || this.isLoadingMore || this.fullyLoaded) {
+      return;
+    }
+    this.error = null;
+    this.isLoadingMore = true;
+    const height = this.chainTips[this.chainTips.length - 1]?.height;
+    this.loadMoreSubject.next(height);
   }
 
   getBlockGradient(block: BlockExtended): string {
