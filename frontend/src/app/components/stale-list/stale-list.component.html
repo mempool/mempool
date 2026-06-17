@@ -17,7 +17,7 @@
               <span *ngSwitchCase="'invalid'" class="badge bg-info" i18n="chain-tips.invalid">Invalid</span>
               <span *ngSwitchDefault>{{ chainTip.status }}</span>
             </span>
-            <span class="badge bg-secondary depth-badge" i18n="chain-tips.depth">Depth {{ chainTip.branchlen + 1 }}</span>
+            <span class="badge bg-secondary depth-badge" i18n="chain-tips.depth">Depth {{ chainTip.branchlen }}</span>
           </span>
         </p>
         <div class="stale-tip-wrapper">
