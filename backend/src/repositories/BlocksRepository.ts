@@ -577,6 +577,7 @@ class BlocksRepository {
 
   /**
    * Get one block by hash
+   * @asyncSafe
    */
   public async $getBlockByHash(hash: string): Promise<BlockExtended | null> {
     try {
