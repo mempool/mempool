@@ -639,7 +639,7 @@ class BitcoinRoutes {
         }
 
         res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
-        const tips = await chainTips.$getStaleTipsPage(fromHeight, 10);
+        const tips = await chainTips.$getStaleTipsPage(fromHeight, 25);
         res.json(tips);
       } else { // Liquid
         handleError(req, res, 404, `This API is only available for Bitcoin networks`);

@@ -230,14 +230,31 @@ class ChainTips {
     return this.chainTips;
   }
 
-  /** @asyncSafe */
-  public async $getStaleTipsPage(fromHeight: number | undefined, limit: number): Promise<StaleTip[]> {
+  /**
+   * get paginated stale chain tips
+   * @param fromHeight - start height (exclusive)
+   * @param count - requested page size (target, but not strictly enforced)
+   *
+   * @asyncSafe
+   */
+  public async $getStaleTipsPage(fromHeight: number | undefined, count: number): Promise<StaleTip[]> {
     const start = fromHeight === undefined ? 0 : this.validChainTips.findIndex(tip => tip.height < fromHeight);
-    const staleTipsPage = start === -1 ? [] : this.validChainTips.slice(start, start + limit);
+    // no tips beyond the requested height, we can return early
+    if (start === -1) {
+      return [];
+    }
 
-    // hydrate tips with block data
+    // fill the response array with hydrated tip data
     const tips: StaleTip[] = [];
-    for (const staleTip of staleTipsPage) {
+    let lastHeight;
+    for (let index = start; index < this.validChainTips.length; index++) {
+      const staleTip = this.validChainTips[index];
+      // stretch the page to include any remaining blocks at the last included height to avoid pagination gaps with a height-based cursor
+      if (tips.length >= count) {
+        if (staleTip.height !== lastHeight) {
+          break;
+        }
+      }
       // fetch blocks from caches if available, or DB otherwise
       const canonical = blocks.getBlocks().find(block => block.height === staleTip.height) || await BlocksRepository.$getBlockByHeight(staleTip.height);
       let stale: BlockExtended | null | undefined = this.staleBlocks[staleTip.hash];
@@ -254,6 +271,7 @@ class ChainTips {
         stale,
         canonical,
       });
+      lastHeight = staleTip.height;
     }
 
     return tips;
