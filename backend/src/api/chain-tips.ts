@@ -71,7 +71,7 @@ class ChainTips {
                 orphan = {
                   height: block.height,
                   hash: block.id,
-                  branchlen: chain.branchlen - 1,
+                  branchlen: chain.branchlen,
                   status: chain.status,
                   prevhash: block.previousblockhash,
                 };
@@ -244,7 +244,7 @@ class ChainTips {
       tips.push({
         height: staleTip.height,
         hash: staleTip.hash,
-        branchlen: staleTip.branchlen - 1,
+        branchlen: staleTip.branchlen,
         status: staleTip.status,
         stale,
         canonical,
