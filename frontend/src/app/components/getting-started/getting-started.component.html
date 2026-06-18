@@ -61,7 +61,7 @@
         <div
           class="item has-tooltip"
           i18n-ngbTooltip="getting-started.eta.tooltip"
-          ngbTooltip="the actual time can vary."
+          ngbTooltip="The actual time can vary."
           placement="top"
         >
           <div class="card-text">
@@ -117,7 +117,7 @@
     </div>
 
     <ng-container *ngIf="mempoolStatus === 'active'">
-      <ng-container *ngIf="syncProgress.mempool.progress; else mempoolScan">
+      <ng-container *ngIf="syncProgress.mempool.progress != null; else mempoolScan">
         <div class="sync-bar">
           <div
             class="sync-bar-fill"
