@@ -8,6 +8,8 @@ import {
   HostBinding,
 } from '@angular/core';
 import { Router, NavigationEnd, Scroll } from '@angular/router';
+import { EMPTY } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { ApiService } from '@app/services/api.service';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from '@app/services/state.service';
@@ -72,18 +74,24 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.apiService.getSyncProgress$().subscribe((progress) => {
-      const gettingStartedUrl = new RelativeUrlPipe(
-        this.stateService
-      ).transform('/getting-started');
-      const nodeNotReady =
-        progress.ibd ||
-        (progress.electrs != null && !progress.electrs.indexed) ||
-        (progress.mempool != null && !progress.mempool.inSync);
-      if (nodeNotReady && !this.location.path().startsWith(gettingStartedUrl)) {
-        this.router.navigate([gettingStartedUrl]);
-      }
-    });
+    this.apiService
+      .getSyncProgress$()
+      .pipe(catchError(() => EMPTY))
+      .subscribe((progress) => {
+        const gettingStartedUrl = new RelativeUrlPipe(
+          this.stateService
+        ).transform('/getting-started');
+        const nodeNotReady =
+          progress.ibd ||
+          (progress.electrs != null && !progress.electrs.indexed) ||
+          (progress.mempool != null && !progress.mempool.inSync);
+        if (
+          nodeNotReady &&
+          !this.location.path().startsWith(gettingStartedUrl)
+        ) {
+          this.router.navigate([gettingStartedUrl]);
+        }
+      });
 
     this.router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) {

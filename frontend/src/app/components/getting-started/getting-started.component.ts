@@ -5,8 +5,8 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
 } from '@angular/core';
-import { Subscription, timer } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { EMPTY, Subscription, timer } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 import { ApiService } from '@app/services/api.service';
 import { StateService } from '@app/services/state.service';
 import { SyncProgress } from '@interfaces/node-api.interface';
@@ -95,7 +95,11 @@ export class GettingStartedComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.syncProgressSubscription = timer(0, 30000)
-      .pipe(switchMap(() => this.apiService.getSyncProgress$()))
+      .pipe(
+        switchMap(() =>
+          this.apiService.getSyncProgress$().pipe(catchError(() => EMPTY))
+        )
+      )
       .subscribe((progress) => {
         this.syncProgress = progress;
         this.cd.markForCheck();
