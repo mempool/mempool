@@ -576,7 +576,33 @@ class BlocksRepository {
   }
 
   /**
+   * Get the canonical block hash at a given height
+   * @asyncSafe
+   */
+  public async $getCanonicalBlockHashByHeight(height: number): Promise<string | null> {
+    try {
+      const [rows]: any[] = await DB.query(`
+        SELECT hash
+        FROM blocks
+        WHERE height = ? AND stale = 0
+        LIMIT 1`,
+        [height]
+      );
+
+      if (rows.length <= 0) {
+        return null;
+      }
+
+      return rows[0].hash;
+    } catch (e) {
+      logger.err(`Cannot get canonical block hash at height ${height}. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
    * Get one block by hash
+   * @asyncSafe
    */
   public async $getBlockByHash(hash: string): Promise<BlockExtended | null> {
     try {
@@ -1256,6 +1282,10 @@ class BlocksRepository {
     blk.previousblockhash = dbBlk.previousblockhash;
     blk.mediantime = dbBlk.mediantime;
     blk.indexVersion = dbBlk.index_version;
+    blk.stale = dbBlk.stale;
+    if (dbBlk.stale) {
+      blk.canonical = await this.$getCanonicalBlockHashByHeight(dbBlk.height) || undefined;
+    }
     // BlockExtension
     extras.totalFees = dbBlk.totalFees;
     extras.medianFee = dbBlk.medianFee;

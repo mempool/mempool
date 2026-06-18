@@ -172,8 +172,8 @@ export class ApiService {
     return this.httpClient.get<ChainTip[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/chain-tips');
   }
 
-  getStaleTips$(): Observable<StaleTip[]> {
-    return this.httpClient.get<StaleTip[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/stale-tips');
+  getStaleTips$(height?: number): Observable<StaleTip[]> {
+    return this.httpClient.get<StaleTip[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/stale-tips' + (height !== undefined ? `/${height}` : ``));
   }
 
   liquidPegs$(): Observable<CurrentPegs> {
