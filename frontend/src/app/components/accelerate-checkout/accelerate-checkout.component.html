@@ -443,7 +443,11 @@
     <hr>
     <div class="row mt-2 mb-2 text-center">
       <div class="col-sm d-flex flex-column">
-        <button type="button" class="mt-1 btn btn-secondary btn-sm rounded-pill align-self-center" style="width: 200px" (click)="moveToStep('summary')" i18n="go-back">Go back</button>
+        @if (startedPastSummary) {
+          <button type="button" class="btn btn-secondary btn-sm rounded-pill align-self-center" style="width: 200px" (click)="closeModal()" i18n="transaction.view-details|View Transaction Details">View Transaction Details</button>
+        } @else {
+          <button type="button" class="btn btn-secondary btn-sm rounded-pill align-self-center" style="width: 200px" (click)="moveToStep('summary')" i18n="go-back">Go back</button>
+        }
       </div>
     </div>
   } @else if (step === 'cashapp' || step === 'applepay' || step === 'googlepay' || step === 'cardonfile' || step === 'bitcoin') {
@@ -602,7 +606,13 @@
     <hr>
     <div class="row mt-2 mb-2 text-center">
       <div class="col-sm d-flex flex-column">
-        <button type="button" class="mt-1 btn btn-secondary btn-sm rounded-pill align-self-center" style="width: 200px" (click)="closeModal()" i18n="close">Close</button>
+        <button type="button" class="mt-1 btn btn-secondary btn-sm rounded-pill align-self-center" style="width: 200px" (click)="closeModal()">
+          @if (startedPastSummary) {
+            <span i18n="transaction.view-transaction|View Transaction">View Transaction</span>
+          } @else {
+            <span i18n="close">Close</span>
+          }
+        </button>
       </div>
     </div>
   }
