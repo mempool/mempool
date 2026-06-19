@@ -17,29 +17,13 @@
             </td>
           </tr>
           <tr>
+            <td i18n="address.cost-to-spend.utxos">Spendable UTXOs</td>
+            <td class="wrap-cell">{{ utxoCount | number }}</td>
+          </tr>
+          <tr>
             <td i18n="address.cost-to-spend.fee-rate">Fee rate (~30 min)</td>
             <td class="wrap-cell">
               <app-fee-rate [fee]="cost.feeRate"></app-fee-rate>
-            </td>
-          </tr>
-          <tr>
-            <td
-              i18n-ngbTooltip="address.cost-to-spend.max-cost-tooltip"
-              ngbTooltip="Worst case: each UTXO is spent separately, each in its own transaction with one typical output, so every spend pays full overhead"
-              placement="bottom"
-            >
-              <span i18n="address.cost-to-spend.max-cost"
-                >Max cost to spend</span
-              >
-            </td>
-            <td class="wrap-cell">
-              <app-amount
-                [satoshis]="cost.maxCost"
-                [noFiat]="true"
-              ></app-amount>
-              <span class="fiat"
-                ><app-fiat [value]="cost.maxCost"></app-fiat
-              ></span>
             </td>
           </tr>
         </tbody>
@@ -48,10 +32,6 @@
     <div class="col-md">
       <table class="table table-borderless table-striped cost-to-spend-table">
         <tbody>
-          <tr>
-            <td i18n="address.cost-to-spend.utxos">Spendable UTXOs</td>
-            <td class="wrap-cell">{{ utxoCount | number }}</td>
-          </tr>
           <tr>
             <td
               i18n-ngbTooltip="address.cost-to-spend.min-cost-tooltip"
@@ -74,24 +54,66 @@
           </tr>
           <tr>
             <td
-              i18n-ngbTooltip="address.cost-to-spend.effective-balance-tooltip"
-              ngbTooltip="Balance remaining after paying to spend every UTXO, from worst case (each spent separately) to best case (all consolidated)"
+              i18n-ngbTooltip="address.cost-to-spend.max-cost-tooltip"
+              ngbTooltip="Worst case: each UTXO is spent separately, each in its own transaction with one typical output, so every spend pays full overhead"
               placement="bottom"
             >
-              <span i18n="address.cost-to-spend.effective-balance-range"
-                >Effective balance range</span
+              <span i18n="address.cost-to-spend.max-cost"
+                >Max cost to spend</span
               >
             </td>
             <td class="wrap-cell">
               <app-amount
-                [satoshis]="cost.worstEffectiveBalance"
+                [satoshis]="cost.maxCost"
                 [noFiat]="true"
               ></app-amount>
-              <span class="range-sep">–</span>
+              <span class="fiat"
+                ><app-fiat [value]="cost.maxCost"></app-fiat
+              ></span>
+            </td>
+          </tr>
+          <tr>
+            <td
+              i18n-ngbTooltip="
+                address.cost-to-spend.min-effective-balance-tooltip
+              "
+              ngbTooltip="Balance minus the maximum cost to spend (each UTXO spent separately)"
+              placement="bottom"
+            >
+              <span i18n="address.cost-to-spend.min-effective-balance"
+                >Min effective balance</span
+              >
+            </td>
+            <td class="wrap-cell">
               <app-amount
-                [satoshis]="cost.bestEffectiveBalance"
+                [satoshis]="cost.minEffectiveBalance"
                 [noFiat]="true"
               ></app-amount>
+              <span class="fiat"
+                ><app-fiat [value]="cost.minEffectiveBalance"></app-fiat
+              ></span>
+            </td>
+          </tr>
+          <tr>
+            <td
+              i18n-ngbTooltip="
+                address.cost-to-spend.max-effective-balance-tooltip
+              "
+              ngbTooltip="Balance minus the minimum cost to spend (all UTXOs consolidated)"
+              placement="bottom"
+            >
+              <span i18n="address.cost-to-spend.max-effective-balance"
+                >Max effective balance</span
+              >
+            </td>
+            <td class="wrap-cell">
+              <app-amount
+                [satoshis]="cost.maxEffectiveBalance"
+                [noFiat]="true"
+              ></app-amount>
+              <span class="fiat"
+                ><app-fiat [value]="cost.maxEffectiveBalance"></app-fiat
+              ></span>
             </td>
           </tr>
         </tbody>
@@ -106,7 +128,7 @@
       <div class="col-md" *ngFor="let col of [1, 2]">
         <table class="table table-borderless table-striped cost-to-spend-table">
           <tbody>
-            <tr *ngFor="let i of [1, 2, 3]">
+            <tr *ngFor="let i of [1, 2, 3, 4]">
               <td colspan="2"><span class="skeleton-loader"></span></td>
             </tr>
           </tbody>

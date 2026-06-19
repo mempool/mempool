@@ -1,6 +1,15 @@
 .cost-to-spend-table {
   margin-bottom: 0;
 
+  thead th {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--transparent-fg);
+    padding-bottom: 2px;
+  }
+
   tr td {
     &:last-child {
       text-align: right;
@@ -21,8 +30,4 @@
 
 .estimate-marker {
   cursor: help;
-}
-
-.range-sep {
-  margin: 0 4px;
 }

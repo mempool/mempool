@@ -21,8 +21,8 @@ interface CostToSpend {
   estimated: boolean;
   minCost: number;
   maxCost: number;
-  worstEffectiveBalance: number;
-  bestEffectiveBalance: number;
+  minEffectiveBalance: number;
+  maxEffectiveBalance: number;
 }
 
 @Component({
@@ -70,8 +70,9 @@ export class CostToSpendComponent implements OnInit, OnChanges {
       estimated,
       minCost,
       maxCost,
-      worstEffectiveBalance: Math.max(0, this.balance - maxCost),
-      bestEffectiveBalance: Math.max(0, this.balance - minCost),
+      // min effective balance subtracts the max cost; max subtracts the min
+      minEffectiveBalance: Math.max(0, this.balance - maxCost),
+      maxEffectiveBalance: Math.max(0, this.balance - minCost),
     };
   }
 }
